@@ -444,6 +444,7 @@ PURPOSE		: BRFREPORT
 			var filename = button.getAttribute('data-filename');
 			var type = button.getAttribute('data-type');
 			var version = button.getAttribute('data-version');
+			var format = button.getAttribute('data-format');
 
 			$('#loader').modal('show');
 			$.ajax({
@@ -456,15 +457,16 @@ PURPOSE		: BRFREPORT
 					'&secid=' + secid +
 					'&filename=' + filename +
 					'&type=' + type +
+					'&format='+ format +
 					'&version=' + version,
 				type: 'GET',
 				xhrFields: {
 					responseType: 'blob'
 				},
 				success: function (data) {
-					alert("Before")
+					
 					$('#loader').modal('hide');
-					alert("After")
+					
 					if (data && data.size > 100) {
 						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
 						const url = window.URL.createObjectURL(blob);
@@ -682,7 +684,9 @@ PURPOSE		: BRFREPORT
 		// ==============================
 		// ✅ Enable Editing
 		// ==============================
+			
 		function showmodify(btn) {
+			console.log("Button Clicked!")
 			for (let i = 11; i <= 450; i++) {
 				[
 					"_NAME_INSIDER_BORROWER", "_TYPE_FACILITY", "_LOAN_CLASSIFICATION", "_DESCRIPTION", "_APPROVED_LIMIT", "_INTEREST_RATE",
@@ -835,8 +839,8 @@ PURPOSE		: BRFREPORT
 				const numericFields = [
 					"_APPROVED_LIMIT", "_OUTSTANDING_AMOUNT", "_EXCESS_OVER_CEILING",
 					"_CURRENT_PROVISIONS", "_VALUE",
-					"_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT",
-					"_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+					 "_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT",
+					"_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT" 
 				];
 
 				if (numericFields.some(suffix => id.endsWith(suffix))) {
@@ -1037,7 +1041,7 @@ PURPOSE		: BRFREPORT
 	</script>
 	<script type="text/javascript">
 
-		$(document).ready(function () {
+		$(document).ready(function () {		
 			var value = $("#selectedTab").val();
 			alert(value);
 		})
@@ -1082,25 +1086,33 @@ PURPOSE		: BRFREPORT
 						<!-- Buttons -->
 										<input type="hidden" id="selectedTab" th:value="${displaymode}">
 										<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-											th:if="${displaymode == 'detail' or displaymode == 'resubDetail'}">Summary</button>
+											th:if="${displaymode == 'Details'}">Summary</button>
 										<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-											th:if="${displaymode == 'summary'or displaymode == 'resubSummary'}">Details</button>
+											th:if="${displaymode == 'summary'}">Details</button>
+
+                                       <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummaryArc();"
+											th:if="${displaymode == 'DetailsArc'}">Summary</button>
+										<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetailsArc();"
+											th:if="${displaymode == 'summaryArc'}">Details</button>
+
+                                         <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummaryResub();"
+											th:if="${displaymode == 'DetailsResub'}">Summary</button>
+										<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetailsResub();"
+											th:if="${displaymode == 'summaryResub'}">Details</button>
 
 
-										<!-- Modify button -->
-										<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-											title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'} and ${dtltype != 'detail'}"
-											th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit'"
-											id="addRecord">
-											Modify
-										</button>
 
-										<!-- Cancel button (hidden initially) -->
+						<button type="button" class="custom-tab-btn"
+							onclick="showmodify(this);" title="Click to EDIT Records"
+							th:if="${displaymode == 'summary' or displaymode == 'summaryResub' }"
+							id="addRecord">Modify</button>
+
+						<!-- Cancel button (hidden initially) -->
 										<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 											onclick="cancelModify();" style="display: none;">Cancel</button>
 										<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
 											onclick="downloadfile(this)"
-											th:if="${displaymode == 'summary' or displaymode == 'detail'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+											th:if="${displaymode == 'summary' or displaymode == 'Details' or displaymode == 'summaryArc' or displaymode == 'DetailsArc' or  displaymode == 'summaryResub' or displaymode == 'DetailsResub'}"
 											th:attr="data-reportid=${reportid},
 											                   data-asondate=${asondate},
 											                   data-fromdate=${fromdate},
@@ -1115,7 +1127,7 @@ PURPOSE		: BRFREPORT
 										</button>
 										<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
 											onclick="downloadfile(this)"
-											th:if="${displaymode == 'summary' or displaymode == 'detail'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+											th:if="${displaymode == 'summary' or displaymode == 'Details' or displaymode == 'summaryArc' or displaymode == 'DetailsArc' or  displaymode == 'summaryResub' or displaymode == 'DetailsResub'}"
 											th:attr="data-reportid=${reportid},
 											            data-asondate=${asondate},
 											            data-fromdate=${fromdate},
@@ -1171,7 +1183,7 @@ PURPOSE		: BRFREPORT
 								</p>
 
 								<div
-									th:if="${displaymode == 'summary' or displaymode == 'detail'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}">
+									th:if="${displaymode == 'summary' or displaymode == 'Details'or displaymode == 'summaryArc' or displaymode == 'DetailsArc' or  displaymode == 'summaryResub' or displaymode == 'DetailsResub'}">
 
 					<div class="row">
 						<div class="col-sm-12">

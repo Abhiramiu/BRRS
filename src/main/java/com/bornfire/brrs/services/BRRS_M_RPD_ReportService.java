@@ -29,6 +29,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
@@ -63,6 +64,27 @@ import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Repo6;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Repo7;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Repo8;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Repo9;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Repo1;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Repo2;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Repo3;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Repo4;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Repo5;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Repo6;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Repo7;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Repo8;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Repo9;
+
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Repo1;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Repo2;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Repo3;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Repo4;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Repo5;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Repo6;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Repo7;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Repo8;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Repo9;
+
+
 import com.bornfire.brrs.entities.BRRS_M_RPD_Detail_Repo1;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Detail_Repo2;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Detail_Repo3;
@@ -72,6 +94,37 @@ import com.bornfire.brrs.entities.BRRS_M_RPD_Detail_Repo6;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Detail_Repo7;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Detail_Repo8;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Detail_Repo9;
+
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Entity1;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Entity2;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Entity3;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Entity4;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Entity5;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Entity6;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Entity7;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Entity8;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Entity9;
+
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Repo1;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Repo2;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Repo3;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Repo4;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Repo5;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Repo6;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Repo7;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Repo8;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Repo9;
+
+
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Entity1;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Entity2;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Entity3;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Entity4;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Entity5;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Entity6;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Entity7;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Entity8;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Entity9;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Entity4;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Entity5;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Entity6;
@@ -79,6 +132,15 @@ import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Entity7;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Entity8;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Entity9;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Repo2;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Entity1;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Entity2;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Entity3;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Entity4;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Entity5;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Entity6;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Entity7;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Entity8;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Entity9;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Entity1;
 import com.bornfire.brrs.entities.M_RPD_Summary_Entity1;
 import com.bornfire.brrs.entities.M_RPD_Summary_Entity2;
@@ -148,6 +210,27 @@ public class BRRS_M_RPD_ReportService {
 	BRRS_M_RPD_Archival_Summary_Repo8 BRRS_M_RPD_Archival_Summary_Repo8;
 	@Autowired
 	BRRS_M_RPD_Archival_Summary_Repo9 BRRS_M_RPD_Archival_Summary_Repo9;
+	
+	@Autowired
+	BRRS_M_RPD_Resub_Detail_Repo1 BRRS_M_RPD_Resub_Detail_Repo1;
+	@Autowired	
+	BRRS_M_RPD_Resub_Detail_Repo2 BRRS_M_RPD_Resub_Detail_Repo2;
+	@Autowired	
+	BRRS_M_RPD_Resub_Detail_Repo3 BRRS_M_RPD_Resub_Detail_Repo3;
+	@Autowired	
+	BRRS_M_RPD_Resub_Detail_Repo4 BRRS_M_RPD_Resub_Detail_Repo4;
+	@Autowired
+	BRRS_M_RPD_Resub_Detail_Repo5 BRRS_M_RPD_Resub_Detail_Repo5;
+	@Autowired
+	BRRS_M_RPD_Resub_Detail_Repo6 BRRS_M_RPD_Resub_Detail_Repo6;
+	@Autowired
+	BRRS_M_RPD_Resub_Detail_Repo7 BRRS_M_RPD_Resub_Detail_Repo7;
+	@Autowired
+	BRRS_M_RPD_Resub_Detail_Repo8 BRRS_M_RPD_Resub_Detail_Repo8;
+	@Autowired
+	BRRS_M_RPD_Resub_Detail_Repo9 BRRS_M_RPD_Resub_Detail_Repo9;
+	
+	
 	@Autowired
 	BRRS_M_RPD_Detail_Repo1 brrs_M_RPD_Detail_Repo1;
 	@Autowired
@@ -167,6 +250,43 @@ public class BRRS_M_RPD_ReportService {
 	@Autowired
 	BRRS_M_RPD_Detail_Repo9 brrs_M_RPD_Detail_Repo9;
 	
+	@Autowired
+	BRRS_M_RPD_Archival_Detail_Repo1 BRRS_M_RPD_Archival_Detail_Repo1;
+	@Autowired	
+	BRRS_M_RPD_Archival_Detail_Repo2 BRRS_M_RPD_Archival_Detail_Repo2;
+	@Autowired	
+	BRRS_M_RPD_Archival_Detail_Repo3 BRRS_M_RPD_Archival_Detail_Repo3;
+	@Autowired	
+	BRRS_M_RPD_Archival_Detail_Repo4 BRRS_M_RPD_Archival_Detail_Repo4;
+	@Autowired
+	BRRS_M_RPD_Archival_Detail_Repo5 BRRS_M_RPD_Archival_Detail_Repo5;
+	@Autowired
+	BRRS_M_RPD_Archival_Detail_Repo6 BRRS_M_RPD_Archival_Detail_Repo6;
+	@Autowired
+	BRRS_M_RPD_Archival_Detail_Repo7 BRRS_M_RPD_Archival_Detail_Repo7;
+	@Autowired
+	BRRS_M_RPD_Archival_Detail_Repo8 BRRS_M_RPD_Archival_Detail_Repo8;
+	@Autowired
+	BRRS_M_RPD_Archival_Detail_Repo9 BRRS_M_RPD_Archival_Detail_Repo9;
+	
+	@Autowired
+	BRRS_M_RPD_Resub_Summary_Repo1 BRRS_M_RPD_Resub_Summary_Repo1;
+	@Autowired	
+	BRRS_M_RPD_Resub_Summary_Repo2 BRRS_M_RPD_Resub_Summary_Repo2;
+	@Autowired	
+	BRRS_M_RPD_Resub_Summary_Repo3 BRRS_M_RPD_Resub_Summary_Repo3;
+	@Autowired	
+	BRRS_M_RPD_Resub_Summary_Repo4 BRRS_M_RPD_Resub_Summary_Repo4;
+	@Autowired
+	BRRS_M_RPD_Resub_Summary_Repo5 BRRS_M_RPD_Resub_Summary_Repo5;
+	@Autowired
+	BRRS_M_RPD_Resub_Summary_Repo6 BRRS_M_RPD_Resub_Summary_Repo6;
+	@Autowired
+	BRRS_M_RPD_Resub_Summary_Repo7 BRRS_M_RPD_Resub_Summary_Repo7;
+	@Autowired
+	BRRS_M_RPD_Resub_Summary_Repo8 BRRS_M_RPD_Resub_Summary_Repo8;
+	@Autowired
+	BRRS_M_RPD_Resub_Summary_Repo9 BRRS_M_RPD_Resub_Summary_Repo9;
 	
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
@@ -435,15 +555,18 @@ public void updateReport1(M_RPD_Summary_Entity1 entity1) {
             String prefix = "R" + i + "_";
             // You can add more fields here if needed later
             String[] fields = {
-            		"NAME_INSIDER_BORROWER",
+            	    "NAME_INSIDER_BORROWER",
+            	    "TYPE_FACILITY",
+            	    "APPROVED_LIMIT",
+            	    "OUTSTANDING_AMOUNT",
+            	    "EXCESS_OVER_CEILING",
+            	    "LOAN_CLASSIFICATION",
+            	    "CURRENT_PROVISIONS",
             	    "DESCRIPTION",
-                "APPROVED_LIMIT",
-                "OUTSTANDING_AMOUNT",
-                "EXCESS_OVER_CEILING",
-                "CURRENT_PROVISIONS",
-                "VALUE"
-                
-            };
+            	    "VALUE",
+            	    "INTEREST_RATE"
+            	};
+
 
             for (String field : fields) {
                 String getterName = "get" + prefix + field;
@@ -487,14 +610,18 @@ public void updateReport2(M_RPD_Summary_Entity2 entity2) {
             String prefix = "R" + i + "_";
             // You can add more fields here if needed later
             String[] fields = {
-            		"NAME_INSIDER_BORROWER",
+            	    "NAME_INSIDER_BORROWER",
+            	    "TYPE_FACILITY",
+            	    "APPROVED_LIMIT",
+            	    "OUTSTANDING_AMOUNT",
+            	    "EXCESS_OVER_CEILING",
+            	    "LOAN_CLASSIFICATION",
+            	    "CURRENT_PROVISIONS",
             	    "DESCRIPTION",
-            		  "APPROVED_LIMIT",
-                      "OUTSTANDING_AMOUNT",
-                      "EXCESS_OVER_CEILING",
-                      "CURRENT_PROVISIONS",
-                      "VALUE"
-            };
+            	    "VALUE",
+            	    "INTEREST_RATE"
+            	};
+
 
             for (String field : fields) {
                 String getterName = "get" + prefix + field;
@@ -538,17 +665,18 @@ public void updateReport3(M_RPD_Summary_Entity3 entity3) {
             String prefix = "R" + i + "_";
             // You can add more fields here if needed later
             String[] fields = {
-            		"NAME_INSIDER_BORROWER",
+            	    "NAME_INSIDER_BORROWER",
+            	    "TYPE_FACILITY",
+            	    "APPROVED_LIMIT",
+            	    "OUTSTANDING_AMOUNT",
+            	    "EXCESS_OVER_CEILING",
+            	    "LOAN_CLASSIFICATION",
+            	    "CURRENT_PROVISIONS",
             	    "DESCRIPTION",
-            		  "APPROVED_LIMIT",
-                      "OUTSTANDING_AMOUNT",
-                      "EXCESS_OVER_CEILING",
-                      "CURRENT_PROVISIONS",
-                      "VALUE",
-                      "TYPE_FACILITY",         
-                      "LOAN_CLASSIFICATION",   
-                      "INTEREST_RATE"    
-            };
+            	    "VALUE",
+            	    "INTEREST_RATE"
+            	};
+
 
             for (String field : fields) {
                 String getterName = "get" + prefix + field;
@@ -592,17 +720,18 @@ public void updateReport4(M_RPD_Summary_Entity4 entity4) {
             String prefix = "R" + i + "_";
             // You can add more fields here if needed later
             String[] fields = {
-            		"NAME_INSIDER_BORROWER",
+            	    "NAME_INSIDER_BORROWER",
+            	    "TYPE_FACILITY",
+            	    "APPROVED_LIMIT",
+            	    "OUTSTANDING_AMOUNT",
+            	    "EXCESS_OVER_CEILING",
+            	    "LOAN_CLASSIFICATION",
+            	    "CURRENT_PROVISIONS",
             	    "DESCRIPTION",
-            		  "APPROVED_LIMIT",
-                      "OUTSTANDING_AMOUNT",
-                      "EXCESS_OVER_CEILING",
-                      "CURRENT_PROVISIONS",
-                      "VALUE",
-                      "TYPE_FACILITY",         
-                      "LOAN_CLASSIFICATION",   
-                      "INTEREST_RATE" 
-            };
+            	    "VALUE",
+            	    "INTEREST_RATE"
+            	};
+
 
             for (String field : fields) {
                 String getterName = "get" + prefix + field;
@@ -646,17 +775,17 @@ public void updateReport5(M_RPD_Summary_Entity5 entity5) {
             String prefix = "R" + i + "_";
             // You can add more fields here if needed later
             String[] fields = {
-            		"NAME_INSIDER_BORROWER",
+            	    "NAME_INSIDER_BORROWER",
+            	    "TYPE_FACILITY",
+            	    "APPROVED_LIMIT",
+            	    "OUTSTANDING_AMOUNT",
+            	    "EXCESS_OVER_CEILING",
+            	    "LOAN_CLASSIFICATION",
+            	    "CURRENT_PROVISIONS",
             	    "DESCRIPTION",
-            		  "APPROVED_LIMIT",
-                      "OUTSTANDING_AMOUNT",
-                      "EXCESS_OVER_CEILING",
-                      "CURRENT_PROVISIONS",
-                      "VALUE",
-                      "TYPE_FACILITY",         
-                      "LOAN_CLASSIFICATION",   
-                      "INTEREST_RATE" 
-            };
+            	    "VALUE",
+            	    "INTEREST_RATE"
+            	};
 
             for (String field : fields) {
                 String getterName = "get" + prefix + field;
@@ -700,17 +829,18 @@ public void updateReport6(M_RPD_Summary_Entity6 entity6) {
             String prefix = "R" + i + "_";
             // You can add more fields here if needed later
             String[] fields = {
-            		"NAME_INSIDER_BORROWER",
+            	    "NAME_INSIDER_BORROWER",
+            	    "TYPE_FACILITY",
+            	    "APPROVED_LIMIT",
+            	    "OUTSTANDING_AMOUNT",
+            	    "EXCESS_OVER_CEILING",
+            	    "LOAN_CLASSIFICATION",
+            	    "CURRENT_PROVISIONS",
             	    "DESCRIPTION",
-            		  "APPROVED_LIMIT",
-                      "OUTSTANDING_AMOUNT",
-                      "EXCESS_OVER_CEILING",
-                      "CURRENT_PROVISIONS",
-                      "VALUE",
-                      "TYPE_FACILITY",         
-                      "LOAN_CLASSIFICATION",   
-                      "INTEREST_RATE" 
-            };
+            	    "VALUE",
+            	    "INTEREST_RATE"
+            	};
+
 
             for (String field : fields) {
                 String getterName = "get" + prefix + field;
@@ -754,17 +884,18 @@ public void updateReport7(M_RPD_Summary_Entity7 entity7) {
             String prefix = "R" + i + "_";
             // You can add more fields here if needed later
             String[] fields = {
-            		"NAME_INSIDER_BORROWER",
+            	    "NAME_INSIDER_BORROWER",
+            	    "TYPE_FACILITY",
+            	    "APPROVED_LIMIT",
+            	    "OUTSTANDING_AMOUNT",
+            	    "EXCESS_OVER_CEILING",
+            	    "LOAN_CLASSIFICATION",
+            	    "CURRENT_PROVISIONS",
             	    "DESCRIPTION",
-            		  "APPROVED_LIMIT",
-                      "OUTSTANDING_AMOUNT",
-                      "EXCESS_OVER_CEILING",
-                      "CURRENT_PROVISIONS",
-                      "VALUE",
-                      "TYPE_FACILITY",         
-                      "LOAN_CLASSIFICATION",   
-                      "INTEREST_RATE" 
-            };
+            	    "VALUE",
+            	    "INTEREST_RATE"
+            	};
+
 
             for (String field : fields) {
                 String getterName = "get" + prefix + field;
@@ -808,17 +939,18 @@ public void updateReport8(M_RPD_Summary_Entity8 entity8) {
             String prefix = "R" + i + "_";
             // You can add more fields here if needed later
             String[] fields = {
-            		"NAME_INSIDER_BORROWER",
+            	    "NAME_INSIDER_BORROWER",
+            	    "TYPE_FACILITY",
+            	    "APPROVED_LIMIT",
+            	    "OUTSTANDING_AMOUNT",
+            	    "EXCESS_OVER_CEILING",
+            	    "LOAN_CLASSIFICATION",
+            	    "CURRENT_PROVISIONS",
             	    "DESCRIPTION",
-            		  "APPROVED_LIMIT",
-                      "OUTSTANDING_AMOUNT",
-                      "EXCESS_OVER_CEILING",
-                      "CURRENT_PROVISIONS",
-                      "VALUE",
-                      "TYPE_FACILITY",         
-                      "LOAN_CLASSIFICATION",   
-                      "INTEREST_RATE" 
-            };
+            	    "VALUE",
+            	    "INTEREST_RATE"
+            	};
+
 
             for (String field : fields) {
                 String getterName = "get" + prefix + field;
@@ -862,17 +994,17 @@ public void updateReport9(M_RPD_Summary_Entity9 entity9) {
             String prefix = "R" + i + "_";
             // You can add more fields here if needed later
             String[] fields = {
-            		"NAME_INSIDER_BORROWER",
+            	    "NAME_INSIDER_BORROWER",
+            	    "TYPE_FACILITY",
+            	    "APPROVED_LIMIT",
+            	    "OUTSTANDING_AMOUNT",
+            	    "EXCESS_OVER_CEILING",
+            	    "LOAN_CLASSIFICATION",
+            	    "CURRENT_PROVISIONS",
             	    "DESCRIPTION",
-            		  "APPROVED_LIMIT",
-                      "OUTSTANDING_AMOUNT",
-                      "EXCESS_OVER_CEILING",
-                      "CURRENT_PROVISIONS",
-                      "VALUE",
-                      "TYPE_FACILITY",         
-                      "LOAN_CLASSIFICATION",   
-                      "INTEREST_RATE" 
-            };
+            	    "VALUE",
+            	    "INTEREST_RATE"
+            	};
 
             for (String field : fields) {
                 String getterName = "get" + prefix + field;
@@ -936,6 +1068,7 @@ System.out.println("Detail Existing .......6");
         throw new RuntimeException("Error while updating R401-450 fields", e);
     	//e.printStackTrace();
     	}
+    BeanUtils.copyProperties(existing, detailexisting);
     BRRS_M_RPD_Summary_Repo9.save(existing);
    brrs_M_RPD_Detail_Repo9.save(detailexisting);
 }
@@ -964,7 +1097,7 @@ public List<Object> getM_RPDarchival() {
 	return M_RPDArchivallist;
 }
 
-public byte[] getM_RPDExcel(String filename,String reportId, String fromdate, String todate, String currency, String dtltype,String type,BigDecimal version) throws Exception {
+public byte[] getM_RPDExcel(String filename,String reportId, String fromdate, String todate, String currency, String dtltype,String type,String format,BigDecimal version) throws Exception {
 	logger.info("Service: Starting Excel generation process in memory.");
 
 
@@ -975,41 +1108,70 @@ Date reportDate = dateformat.parse(todate);
 	System.out.println(type);
 	System.out.println(version);
 	if (type.equals("ARCHIVAL") & version != null) {
+		System.out.println("M_RPD_ARCHIVAL");
+		if(format.equals("email"))
+		{
+			System.out.println("Arc_Email");
+			byte[] reportEmail = getExcel_Email_M_RPDExcelArc(filename, reportId, fromdate, todate, currency, dtltype, type,format,
+					version);
+			return reportEmail;
+		}
+		else
+		{
 		byte[] ARCHIVALreport = getExcelM_RPDARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type,
 				version);
 		return ARCHIVALreport;
+		}
 	}
 
 
 	// RESUB check
 	else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+		System.out.println("M_RPD_RESUB");
 	logger.info("Service: Generating RESUB report for version {}", version);
 
+	if(format.equals("email"))
+	{
+		System.out.println("Resub_Email");
+		byte[] reportEmail = getExcel_Email_M_RPDExcelResub(filename, reportId, fromdate, todate, currency, dtltype, type,format,
+				version);
+		return reportEmail;
+	}
 
-	List<BRRS_M_RPD_Archival_Summary_Entity1> T1Master =
-			BRRS_M_RPD_Archival_Summary_Repo1.getdatabydateListarchival(reportDate, version);
-	List<BRRS_M_RPD_Archival_Summary_Entity2> T2Master = BRRS_M_RPD_Archival_Summary_Repo2
-			.getdatabydateListarchival(reportDate, version);
-	List<BRRS_M_RPD_Archival_Summary_Entity3> T3Master = BRRS_M_RPD_Archival_Summary_Repo3
-			.getdatabydateListarchival(reportDate, version);
-	List<BRRS_M_RPD_Archival_Summary_Entity4> T4Master = BRRS_M_RPD_Archival_Summary_Repo4
-			.getdatabydateListarchival(reportDate, version);
-	List<BRRS_M_RPD_Archival_Summary_Entity5> T5Master = BRRS_M_RPD_Archival_Summary_Repo5
-			.getdatabydateListarchival(reportDate, version);
-	List<BRRS_M_RPD_Archival_Summary_Entity6> T6Master = BRRS_M_RPD_Archival_Summary_Repo6
-			.getdatabydateListarchival(reportDate, version);
-	List<BRRS_M_RPD_Archival_Summary_Entity7> T7Master = BRRS_M_RPD_Archival_Summary_Repo7
-			.getdatabydateListarchival(reportDate, version);
-	List<BRRS_M_RPD_Archival_Summary_Entity8> T8Master = BRRS_M_RPD_Archival_Summary_Repo8
-			.getdatabydateListarchival(reportDate, version);
-
-	List<BRRS_M_RPD_Archival_Summary_Entity9> T9Master = BRRS_M_RPD_Archival_Summary_Repo9
-			.getdatabydateListarchival(reportDate, version);
+//	List<BRRS_M_RPD_Archival_Summary_Entity1> T1Master =
+//			BRRS_M_RPD_Archival_Summary_Repo1.getdatabydateListarchival(reportDate, version);
+//	List<BRRS_M_RPD_Archival_Summary_Entity2> T2Master = BRRS_M_RPD_Archival_Summary_Repo2
+//			.getdatabydateListarchival(reportDate, version);
+//	List<BRRS_M_RPD_Archival_Summary_Entity3> T3Master = BRRS_M_RPD_Archival_Summary_Repo3
+//			.getdatabydateListarchival(reportDate, version);
+//	List<BRRS_M_RPD_Archival_Summary_Entity4> T4Master = BRRS_M_RPD_Archival_Summary_Repo4
+//			.getdatabydateListarchival(reportDate, version);
+//	List<BRRS_M_RPD_Archival_Summary_Entity5> T5Master = BRRS_M_RPD_Archival_Summary_Repo5
+//			.getdatabydateListarchival(reportDate, version);
+//	List<BRRS_M_RPD_Archival_Summary_Entity6> T6Master = BRRS_M_RPD_Archival_Summary_Repo6
+//			.getdatabydateListarchival(reportDate, version);
+//	List<BRRS_M_RPD_Archival_Summary_Entity7> T7Master = BRRS_M_RPD_Archival_Summary_Repo7
+//			.getdatabydateListarchival(reportDate, version);
+//	List<BRRS_M_RPD_Archival_Summary_Entity8> T8Master = BRRS_M_RPD_Archival_Summary_Repo8
+//			.getdatabydateListarchival(reportDate, version);
+//
+//	List<BRRS_M_RPD_Archival_Summary_Entity9> T9Master = BRRS_M_RPD_Archival_Summary_Repo9
+//			.getdatabydateListarchival(reportDate, version);
 
 	
 	// Generate Excel for RESUB
+	else
+	{
 	return BRRS_M_RPDResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 	}
+	}
+	else if(format.equals("email"))
+	{
+		byte[] reportEmail = getExcel_Email_M_RPDExcelNormal(filename, reportId, fromdate, todate, currency, dtltype, type,format,
+				version);
+		return reportEmail;
+	}
+	
 	
 	List<M_RPD_Summary_Entity1> dataList1 =BRRS_M_RPD_Summary_Repo1.getdatabydateList(dateformat.parse(todate)) ;
 	List<M_RPD_Summary_Entity2> dataList2 =BRRS_M_RPD_Summary_Repo2.getdatabydateList(dateformat.parse(todate)) ;
@@ -9811,6 +9973,7 @@ CreationHelper createHelper = workbook.getCreationHelper();
 				next101(sheet,record3,record4,numberStyle,textStyle);
 				next201_1(sheet,record5,record6,numberStyle,textStyle);
 				next301_2(sheet,record7,record8,numberStyle,textStyle);
+				next401_3(sheet,record9,numberStyle,textStyle);
 				
 }
 workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
@@ -26247,6 +26410,1171 @@ public void next201_1(Sheet sheet,M_RPD_Summary_Entity5 record5,M_RPD_Summary_En
 
 }
 
+public void next301_2(Sheet sheet,BRRS_M_RPD_Archival_Summary_Entity7 record7,BRRS_M_RPD_Archival_Summary_Entity8 record8,CellStyle numberStyle,CellStyle textStyle) {
+
+
+	//ROW301
+	Row row = sheet.getRow(300);
+
+	Cell cell1 = row.getCell(1);
+	if (record7.getR301_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record7.getR301_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record7.getR301_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record7.getR301_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record7.getR301_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record7.getR301_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record7.getR301_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record7.getR301_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record7.getR301_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record7.getR301_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record7.getR301_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record7.getR301_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record7.getR301_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record7.getR301_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record7.getR301_DESCRIPTION() != null) {
+	    cell1.setCellValue(record7.getR301_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record7.getR301_VALUE() != null) {
+	    cell1.setCellValue(record7.getR301_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+	//ROW302
+	row = sheet.getRow(301);
+
+	cell1 = row.getCell(1);
+	if (record7.getR302_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record7.getR302_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record7.getR302_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record7.getR302_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record7.getR302_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record7.getR302_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record7.getR302_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record7.getR302_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record7.getR302_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record7.getR302_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record7.getR302_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record7.getR302_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record7.getR302_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record7.getR302_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record7.getR302_DESCRIPTION() != null) {
+	    cell1.setCellValue(record7.getR302_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record7.getR302_VALUE() != null) {
+	    cell1.setCellValue(record7.getR302_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+
+	//ROW303
+	row = sheet.getRow(302);
+
+	cell1 = row.getCell(1);
+	if (record7.getR303_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record7.getR303_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record7.getR303_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record7.getR303_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record7.getR303_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record7.getR303_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record7.getR303_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record7.getR303_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record7.getR303_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record7.getR303_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record7.getR303_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record7.getR303_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record7.getR303_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record7.getR303_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record7.getR303_DESCRIPTION() != null) {
+	    cell1.setCellValue(record7.getR303_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record7.getR303_VALUE() != null) {
+	    cell1.setCellValue(record7.getR303_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+
+	//ROW304
+	row = sheet.getRow(303);
+
+	cell1 = row.getCell(1);
+	if (record7.getR304_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record7.getR304_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record7.getR304_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record7.getR304_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record7.getR304_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record7.getR304_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record7.getR304_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record7.getR304_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record7.getR304_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record7.getR304_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record7.getR304_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record7.getR304_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record7.getR304_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record7.getR304_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record7.getR304_DESCRIPTION() != null) {
+	    cell1.setCellValue(record7.getR304_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record7.getR304_VALUE() != null) {
+	    cell1.setCellValue(record7.getR304_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+
+	//ROW305
+	row = sheet.getRow(304);
+
+	cell1 = row.getCell(1);
+	if (record7.getR305_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record7.getR305_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record7.getR305_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record7.getR305_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record7.getR305_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record7.getR305_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record7.getR305_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record7.getR305_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record7.getR305_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record7.getR305_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record7.getR305_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record7.getR305_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record7.getR305_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record7.getR305_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record7.getR305_DESCRIPTION() != null) {
+	    cell1.setCellValue(record7.getR305_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record7.getR305_VALUE() != null) {
+	    cell1.setCellValue(record7.getR305_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+
+	//ROW306
+	row = sheet.getRow(305);
+
+	cell1 = row.getCell(1);
+	if (record7.getR306_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record7.getR306_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record7.getR306_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record7.getR306_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record7.getR306_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record7.getR306_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record7.getR306_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record7.getR306_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record7.getR306_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record7.getR306_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record7.getR306_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record7.getR306_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record7.getR306_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record7.getR306_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record7.getR306_DESCRIPTION() != null) {
+	    cell1.setCellValue(record7.getR306_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record7.getR306_VALUE() != null) {
+	    cell1.setCellValue(record7.getR306_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+
+	//ROW307
+	row = sheet.getRow(306);
+
+	cell1 = row.getCell(1);
+	if (record7.getR307_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record7.getR307_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record7.getR307_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record7.getR307_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record7.getR307_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record7.getR307_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record7.getR307_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record7.getR307_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record7.getR307_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record7.getR307_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record7.getR307_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record7.getR307_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record7.getR307_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record7.getR307_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record7.getR307_DESCRIPTION() != null) {
+	    cell1.setCellValue(record7.getR307_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record7.getR307_VALUE() != null) {
+	    cell1.setCellValue(record7.getR307_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+
+	//ROW308
+	row = sheet.getRow(307);
+
+	cell1 = row.getCell(1);
+	if (record7.getR308_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record7.getR308_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record7.getR308_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record7.getR308_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record7.getR308_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record7.getR308_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record7.getR308_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record7.getR308_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record7.getR308_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record7.getR308_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record7.getR308_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record7.getR308_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+	//ROW309
+	row = sheet.getRow(308);
+
+	cell1 = row.getCell(1);
+	if (record7.getR309_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record7.getR309_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record7.getR309_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record7.getR309_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record7.getR309_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record7.getR309_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record7.getR309_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record7.getR309_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record7.getR309_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record7.getR309_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record7.getR309_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record7.getR309_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record7.getR309_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record7.getR309_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record7.getR309_DESCRIPTION() != null) {
+	    cell1.setCellValue(record7.getR309_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record7.getR309_VALUE() != null) {
+	    cell1.setCellValue(record7.getR309_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+
+	//ROW310
+	row = sheet.getRow(309);
+
+	cell1 = row.getCell(1);
+	if (record7.getR310_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record7.getR310_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record7.getR310_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record7.getR310_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record7.getR310_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record7.getR310_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record7.getR310_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record7.getR310_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record7.getR310_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record7.getR310_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record7.getR310_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record7.getR310_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record7.getR310_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record7.getR310_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record7.getR310_DESCRIPTION() != null) {
+	    cell1.setCellValue(record7.getR310_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record7.getR310_VALUE() != null) {
+	    cell1.setCellValue(record7.getR310_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+	//ROW311
+	row = sheet.getRow(310);
+
+	cell1 = row.getCell(1);
+	if (record7.getR311_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record7.getR311_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record7.getR311_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record7.getR311_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record7.getR311_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record7.getR311_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record7.getR311_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record7.getR311_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record7.getR311_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record7.getR311_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record7.getR311_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record7.getR311_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record7.getR311_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record7.getR311_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record7.getR311_DESCRIPTION() != null) {
+	    cell1.setCellValue(record7.getR311_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record7.getR311_VALUE() != null) {
+	    cell1.setCellValue(record7.getR311_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+
+	//ROW312
+	row = sheet.getRow(311);
+
+	cell1 = row.getCell(1);
+	if (record7.getR312_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record7.getR312_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record7.getR312_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record7.getR312_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record7.getR312_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record7.getR312_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record7.getR312_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record7.getR312_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record7.getR312_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record7.getR312_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record7.getR312_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record7.getR312_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record7.getR312_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record7.getR312_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record7.getR312_DESCRIPTION() != null) {
+	    cell1.setCellValue(record7.getR312_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record7.getR312_VALUE() != null) {
+	    cell1.setCellValue(record7.getR312_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+
+	//ROW313
+	row = sheet.getRow(312);
+
+	cell1 = row.getCell(1);
+	if (record7.getR313_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record7.getR313_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record7.getR313_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record7.getR313_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record7.getR313_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record7.getR313_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record7.getR313_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record7.getR313_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record7.getR313_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record7.getR313_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record7.getR313_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record7.getR313_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record7.getR313_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record7.getR313_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record7.getR313_DESCRIPTION() != null) {
+	    cell1.setCellValue(record7.getR313_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record7.getR313_VALUE() != null) {
+	    cell1.setCellValue(record7.getR313_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+	//ROW314
+	row = sheet.getRow(313);
+
+	cell1 = row.getCell(1);
+	if (record7.getR314_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record7.getR314_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record7.getR314_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record7.getR314_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record7.getR314_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record7.getR314_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record7.getR314_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record7.getR314_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record7.getR314_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record7.getR314_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record7.getR314_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record7.getR314_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record7.getR314_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record7.getR314_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record7.getR314_DESCRIPTION() != null) {
+	    cell1.setCellValue(record7.getR314_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record7.getR314_VALUE() != null) {
+	    cell1.setCellValue(record7.getR314_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+
+	//ROW315
+	row = sheet.getRow(314);
+
+	cell1 = row.getCell(1);
+	if (record7.getR315_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record7.getR315_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record7.getR315_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record7.getR315_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record7.getR315_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record7.getR315_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record7.getR315_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record7.getR315_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record7.getR315_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record7.getR315_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record7.getR315_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record7.getR315_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record7.getR315_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record7.getR315_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record7.getR315_DESCRIPTION() != null) {
+	    cell1.setCellValue(record7.getR315_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record7.getR315_VALUE() != null) {
+	    cell1.setCellValue(record7.getR315_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+
+	//ROW316
+	row = sheet.getRow(315);
+
+	cell1 = row.getCell(1);
+	if (record7.getR316_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record7.getR316_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record7.getR316_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record7.getR316_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record7.getR316_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record7.getR316_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record7.getR316_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record7.getR316_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record7.getR316_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record7.getR316_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record7.getR316_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record7.getR316_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record7.getR316_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record7.getR316_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record7.getR316_DESCRIPTION() != null) {
+	    cell1.setCellValue(record7.getR316_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record7.getR316_VALUE() != null) {
+	    cell1.setCellValue(record7.getR316_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+
+	//ROW317
+	row = sheet.getRow(316);
+
+	cell1 = row.getCell(1);
+	if (record7.getR317_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record7.getR317_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record7.getR317_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record7.getR317_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record7.getR317_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record7.getR317_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record7.getR317_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record7.getR317_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record7.getR317_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record7.getR317_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record7.getR317_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record7.getR317_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record7.getR317_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record7.getR317_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record7.getR317_DESCRIPTION() != null) {
+	    cell1.setCellValue(record7.getR317_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record7.getR317_VALUE() != null) {
+	    cell1.setCellValue(record7.getR317_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+
+	//ROW318
+	row = sheet.getRow(317);
+
+	cell1 = row.getCell(1);
+	if (record7.getR318_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record7.getR318_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record7.getR318_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record7.getR318_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record7.getR318_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record7.getR318_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record7.getR318_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record7.getR318_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record7.getR318_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record7.getR318_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record7.getR318_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record7.getR318_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record7.getR318_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record7.getR318_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record7.getR318_DESCRIPTION() != null) {
+	    cell1.setCellValue(record7.getR318_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record7.getR318_VALUE() != null) {
+	    cell1.setCellValue(record7.getR318_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+
+	//ROW319
+	row = sheet.getRow(318);
+
+	cell1 = row.getCell(1);
+	if (record7.getR319_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record7.getR319_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record7.getR319_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record7.getR319_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record7.getR319_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record7.getR319_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record7.getR319_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record7.getR319_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record7.getR319_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record7.getR319_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record7.getR319_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record7.getR319_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record7.getR319_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record7.getR319_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record7.getR319_DESCRIPTION() != null) {
+	    cell1.setCellValue(record7.getR319_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record7.getR319_VALUE() != null) {
+	    cell1.setCellValue(record7.getR319_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+
+	//ROW320
+	row = sheet.getRow(319);
+
+	cell1 = row.getCell(1);
+	if (record7.getR320_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record7.getR320_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record7.getR320_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record7.getR320_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record7.getR320_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record7.getR320_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record7.getR320_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record7.getR320_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record7.getR320_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record7.getR320_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record7.getR320_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record7.getR320_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record7.getR320_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record7.getR320_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record7.getR320_DESCRIPTION() != null) {
+	    cell1.setCellValue(record7.getR320_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record7.getR320_VALUE() != null) {
+	    cell1.setCellValue(record7.getR320_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+	for (int i = 320; i <= 350; i++) {
+	    row = sheet.getRow(i - 1); // Excel row index starts at 0
+
+	    String rowStr = String.valueOf(i);
+
+	    String[] fields = {
+	        "NAME_INSIDER_BORROWER",
+	        "TYPE_FACILITY",
+	        "APPROVED_LIMIT",
+	        "OUTSTANDING_AMOUNT",
+	        "EXCESS_OVER_CEILING",
+	        "LOAN_CLASSIFICATION",
+	        "CURRENT_PROVISIONS",
+	        "DESCRIPTION",
+	        "VALUE"
+	    };
+
+	    for (int j = 0; j < fields.length; j++) {
+	        String methodName = "getR" + rowStr + "_" + fields[j];
+	        try {
+	            Method method = record7.getClass().getMethod(methodName);
+	            Object value = method.invoke(record7);
+	            cell1 = row.getCell(j + 1); // Cell index starts at 1
+	            if (value != null) {
+	                if (value instanceof Number) {
+	                    cell1.setCellValue(((Number) value).doubleValue());
+	                    cell1.setCellStyle(numberStyle);
+	                } else {
+	                    cell1.setCellValue(value.toString());
+	                }
+	            } else {
+	                cell1.setCellValue("");
+	                cell1.setCellStyle(textStyle);
+	            }
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	    }
+	}
+	for (int i = 351; i <= 400; i++) {
+	    row = sheet.getRow(i - 1); // 351 -> index 350
+	    if (row == null) row = sheet.createRow(i - 1);
+
+	    String rowStr = String.valueOf(i);
+
+	    String[] fields = {
+	        "NAME_INSIDER_BORROWER",
+	        "TYPE_FACILITY",
+	        "APPROVED_LIMIT",
+	        "OUTSTANDING_AMOUNT",
+	        "EXCESS_OVER_CEILING",
+	        "LOAN_CLASSIFICATION",
+	        "CURRENT_PROVISIONS",
+	        "DESCRIPTION",
+	        "VALUE"
+	    };
+
+	    for (int j = 0; j < fields.length; j++) {
+	        String methodName = "getR" + rowStr + "_" + fields[j];
+	        try {
+	            Method method = record8.getClass().getMethod(methodName);
+	            Object value = method.invoke(record8);
+	            cell1 = row.getCell(j + 1);
+	            if (cell1 == null) cell1 = row.createCell(j + 1);
+
+	            if (value != null) {
+	                if (value instanceof Number) {
+	                    cell1.setCellValue(((Number) value).doubleValue());
+	                    cell1.setCellStyle(numberStyle);
+	                } else {
+	                    cell1.setCellValue(value.toString());
+	                    cell1.setCellStyle(textStyle);
+	                }
+	            } else {
+	                cell1.setCellValue("");
+	                cell1.setCellStyle(textStyle);
+	            }
+	        } catch (Exception e) {
+	            logger.error("Failed to invoke method " + methodName, e);
+	        }
+	    }
+	}
+
+}
 public void next301_2(Sheet sheet,M_RPD_Summary_Entity7 record7,M_RPD_Summary_Entity8 record8,CellStyle numberStyle,CellStyle textStyle) {
 
 
@@ -27508,7 +28836,102 @@ public void next401_3(Sheet sheet, M_RPD_Summary_Entity9 record9, CellStyle numb
 	    }
 	}
 	}
+public void next401_3(Sheet sheet, BRRS_M_RPD_Archival_Summary_Entity9 record9, CellStyle numberStyle, CellStyle textStyle) {
 
+	//ROW320
+	Row row = sheet.getRow(400);
+
+	Cell cell1 = row.getCell(1);
+	if (record9.getR401_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record9.getR401_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record9.getR401_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record9.getR401_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record9.getR401_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record9.getR401_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record9.getR401_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record9.getR401_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record9.getR401_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record9.getR404_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record9.getR401_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record9.getR401_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record9.getR401_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record9.getR401_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record9.getR401_DESCRIPTION() != null) {
+	    cell1.setCellValue(record9.getR401_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record9.getR401_VALUE() != null) {
+	    cell1.setCellValue(record9.getR401_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+	for (int i = 402; i <= 451; i++) {
+	    row = sheet.getRow(i - 1); // Excel row index starts at 0
+
+	    String rowStr = String.valueOf(i);
+
+	    String[] fields = {
+	        "NAME_INSIDER_BORROWER",
+	        "TYPE_FACILITY",
+	        "APPROVED_LIMIT",
+	        "OUTSTANDING_AMOUNT",
+	        "EXCESS_OVER_CEILING",
+	        "LOAN_CLASSIFICATION",
+	        "CURRENT_PROVISIONS",
+	        "DESCRIPTION",
+	        "VALUE"
+	    };
+
+	    for (int j = 0; j < fields.length; j++) {
+	        String methodName = "getR" + rowStr + "_" + fields[j];
+	        try {
+	            Method method = record9.getClass().getMethod(methodName);
+	            Object value = method.invoke(record9);
+	            cell1 = row.getCell(j + 1); // Cell index starts at 1
+	            if (value != null) {
+	                if (value instanceof Number) {
+	                    cell1.setCellValue(((Number) value).doubleValue());
+	                    cell1.setCellStyle(numberStyle);
+	                } else {
+	                    cell1.setCellValue(value.toString());
+	                }
+	            } else {
+	                cell1.setCellValue("");
+	                cell1.setCellStyle(textStyle);
+	            }
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	    }
+	}
+	}
 public byte[] getExcelM_RPDARCHIVAL(String filename,String reportId, String fromdate, String todate, String currency, String dtltype,String type,BigDecimal version) throws Exception {
 	logger.info("Service: Starting Excel generation process in memory.");
 	System.out.println(type);
@@ -36311,8 +37734,8 @@ CreationHelper createHelper = workbook.getCreationHelper();
 				
 				next101(sheet,record3,record4,numberStyle,textStyle);
 				next201_1(sheet,record5,record6,numberStyle,textStyle);
-			//	next301_2(sheet,record7,record8,numberStyle,textStyle);
-			//	next401_3(sheet,record9,numberStyle,textStyle);
+				next301_2(sheet,record7,record8,numberStyle,textStyle);
+				next401_3(sheet,record9,numberStyle,textStyle);
 				//M_RPD_Archival_Summary_Entity1
 			
 }
@@ -49686,7 +51109,8 @@ if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
 for (BRRS_M_RPD_Archival_Summary_Entity1 entity : latestArchivalList) {
 resubList.add(new Object[] {
 entity.getReportDate(),
-entity.getReportVersion()
+entity.getReportVersion(),
+entity.getReportResubDate()
 });
 }
 System.out.println("Fetched " + resubList.size() + " record(s)");
@@ -49736,11 +51160,11 @@ public void updateReportReSub(
         M_RPD_Summary_Entity8 updatedEntity8,
         M_RPD_Summary_Entity9 updatedEntity9) {
 
-     System.out.println("Came toM_LARADV Resub Service");
+     System.out.println("Came toM_RPD Resub Service");
      System.out.println("Report Date: " + updatedEntity1.getReportDate());
 
      Date reportDate = updatedEntity1.getReportDate();
-     int newVersion = 1;
+     BigDecimal newVersion = BigDecimal.ONE;
 
      try {
          // 🔹 Fetch the latest archival version for this report date from Entity1
@@ -49750,10 +51174,10 @@ public void updateReportReSub(
          if (latestArchivalOpt1.isPresent()) {
         	 BRRS_M_RPD_Archival_Summary_Entity1 latestArchival = latestArchivalOpt1.get();
              try {
-                 newVersion = Integer.parseInt(latestArchival.getReportVersion()) + 1;
+            	 newVersion = latestArchival.getReportVersion().add(BigDecimal.ONE);
              } catch (NumberFormatException e) {
                  System.err.println("Invalid version format. Defaulting to version 1");
-                 newVersion = 1;
+                 newVersion = BigDecimal.ONE;
              }
          } else {
              System.out.println("No previous archival found for date: " + reportDate);
@@ -49761,7 +51185,7 @@ public void updateReportReSub(
 
          // 🔹 Prevent duplicate version number in Repo1
          boolean exists =BRRS_M_RPD_Archival_Summary_Repo1
-                 .findByReportDateAndReportVersion(reportDate, String.valueOf(newVersion))
+                 .findByReportDateAndReportVersion(reportDate, newVersion)
                  .isPresent();
 
          if (exists) {
@@ -49778,6 +51202,40 @@ public void updateReportReSub(
          BRRS_M_RPD_Archival_Summary_Entity7 archivalEntity7 = new BRRS_M_RPD_Archival_Summary_Entity7();
          BRRS_M_RPD_Archival_Summary_Entity8 archivalEntity8 = new BRRS_M_RPD_Archival_Summary_Entity8();
          BRRS_M_RPD_Archival_Summary_Entity9 archivalEntity9 = new BRRS_M_RPD_Archival_Summary_Entity9();
+         
+         BRRS_M_RPD_Archival_Detail_Entity1 archivalDetEntity1 = new BRRS_M_RPD_Archival_Detail_Entity1();
+         BRRS_M_RPD_Archival_Detail_Entity2 archivalDetEntity2 = new BRRS_M_RPD_Archival_Detail_Entity2();
+         BRRS_M_RPD_Archival_Detail_Entity3 archivalDetEntity3 = new BRRS_M_RPD_Archival_Detail_Entity3();
+         BRRS_M_RPD_Archival_Detail_Entity4 archivalDetEntity4 = new BRRS_M_RPD_Archival_Detail_Entity4();
+         BRRS_M_RPD_Archival_Detail_Entity5 archivalDetEntity5 = new BRRS_M_RPD_Archival_Detail_Entity5();
+         BRRS_M_RPD_Archival_Detail_Entity6 archivalDetEntity6 = new BRRS_M_RPD_Archival_Detail_Entity6();
+         BRRS_M_RPD_Archival_Detail_Entity7 archivalDetEntity7 = new BRRS_M_RPD_Archival_Detail_Entity7();
+         BRRS_M_RPD_Archival_Detail_Entity8 archivalDetEntity8 = new BRRS_M_RPD_Archival_Detail_Entity8();
+         BRRS_M_RPD_Archival_Detail_Entity9 archivalDetEntity9 = new BRRS_M_RPD_Archival_Detail_Entity9();
+         
+         BRRS_M_RPD_Resub_Summary_Entity1 ResubEntity1 = new BRRS_M_RPD_Resub_Summary_Entity1();
+         BRRS_M_RPD_Resub_Summary_Entity2 ResubEntity2 = new BRRS_M_RPD_Resub_Summary_Entity2();
+         BRRS_M_RPD_Resub_Summary_Entity3 ResubEntity3 = new BRRS_M_RPD_Resub_Summary_Entity3();
+         BRRS_M_RPD_Resub_Summary_Entity4 ResubEntity4 = new BRRS_M_RPD_Resub_Summary_Entity4();
+         BRRS_M_RPD_Resub_Summary_Entity5 ResubEntity5 = new BRRS_M_RPD_Resub_Summary_Entity5();
+         BRRS_M_RPD_Resub_Summary_Entity6 ResubEntity6 = new BRRS_M_RPD_Resub_Summary_Entity6();
+         BRRS_M_RPD_Resub_Summary_Entity7 ResubEntity7 = new BRRS_M_RPD_Resub_Summary_Entity7();
+         BRRS_M_RPD_Resub_Summary_Entity8 ResubEntity8 = new BRRS_M_RPD_Resub_Summary_Entity8();
+         BRRS_M_RPD_Resub_Summary_Entity9 ResubEntity9 = new BRRS_M_RPD_Resub_Summary_Entity9();
+         
+         BRRS_M_RPD_Resub_Detail_Entity1 ResubDetEntity1 = new BRRS_M_RPD_Resub_Detail_Entity1();
+         BRRS_M_RPD_Resub_Detail_Entity2 ResubDetEntity2 = new BRRS_M_RPD_Resub_Detail_Entity2();
+         BRRS_M_RPD_Resub_Detail_Entity3 ResubDetEntity3 = new BRRS_M_RPD_Resub_Detail_Entity3();
+         BRRS_M_RPD_Resub_Detail_Entity4 ResubDetEntity4 = new BRRS_M_RPD_Resub_Detail_Entity4();
+         BRRS_M_RPD_Resub_Detail_Entity5 ResubDetEntity5 = new BRRS_M_RPD_Resub_Detail_Entity5();
+         BRRS_M_RPD_Resub_Detail_Entity6 ResubDetEntity6 = new BRRS_M_RPD_Resub_Detail_Entity6();
+         BRRS_M_RPD_Resub_Detail_Entity7 ResubDetEntity7 = new BRRS_M_RPD_Resub_Detail_Entity7();
+         BRRS_M_RPD_Resub_Detail_Entity8 ResubDetEntity8 = new BRRS_M_RPD_Resub_Detail_Entity8();
+         BRRS_M_RPD_Resub_Detail_Entity9 ResubDetEntity9 = new BRRS_M_RPD_Resub_Detail_Entity9();    
+         
+         
+         
+         
          org.springframework.beans.BeanUtils.copyProperties(updatedEntity1, archivalEntity1);
          org.springframework.beans.BeanUtils.copyProperties(updatedEntity2, archivalEntity2);
          org.springframework.beans.BeanUtils.copyProperties(updatedEntity3, archivalEntity3);
@@ -49788,6 +51246,39 @@ public void updateReportReSub(
 	         org.springframework.beans.BeanUtils.copyProperties(updatedEntity7, archivalEntity7);
 	         org.springframework.beans.BeanUtils.copyProperties(updatedEntity8, archivalEntity8);
 				org.springframework.beans.BeanUtils.copyProperties(updatedEntity9, archivalEntity9);
+				
+				org.springframework.beans.BeanUtils.copyProperties(updatedEntity1, archivalDetEntity1);
+		         org.springframework.beans.BeanUtils.copyProperties(updatedEntity2, archivalDetEntity2);
+		         org.springframework.beans.BeanUtils.copyProperties(updatedEntity3, archivalDetEntity3);
+		         org.springframework.beans.BeanUtils.copyProperties(updatedEntity4, archivalDetEntity4);
+					org.springframework.beans.BeanUtils.copyProperties(updatedEntity5, archivalDetEntity5);
+
+			         org.springframework.beans.BeanUtils.copyProperties(updatedEntity6, archivalDetEntity6);
+			         org.springframework.beans.BeanUtils.copyProperties(updatedEntity7, archivalDetEntity7);
+			         org.springframework.beans.BeanUtils.copyProperties(updatedEntity8, archivalDetEntity8);
+						org.springframework.beans.BeanUtils.copyProperties(updatedEntity9, archivalDetEntity9);
+						
+						org.springframework.beans.BeanUtils.copyProperties(updatedEntity1, ResubEntity1);
+				         org.springframework.beans.BeanUtils.copyProperties(updatedEntity2, ResubEntity2);
+				         org.springframework.beans.BeanUtils.copyProperties(updatedEntity3, ResubEntity3);
+				         org.springframework.beans.BeanUtils.copyProperties(updatedEntity4, ResubEntity4);
+							org.springframework.beans.BeanUtils.copyProperties(updatedEntity5, ResubEntity5);
+
+					         org.springframework.beans.BeanUtils.copyProperties(updatedEntity6, ResubEntity6);
+					         org.springframework.beans.BeanUtils.copyProperties(updatedEntity7, ResubEntity7);
+					         org.springframework.beans.BeanUtils.copyProperties(updatedEntity8, ResubEntity8);
+								org.springframework.beans.BeanUtils.copyProperties(updatedEntity9, ResubEntity9);
+								
+								org.springframework.beans.BeanUtils.copyProperties(updatedEntity1, ResubDetEntity1);
+								org.springframework.beans.BeanUtils.copyProperties(updatedEntity2, ResubDetEntity2);
+								org.springframework.beans.BeanUtils.copyProperties(updatedEntity3, ResubDetEntity3);
+								org.springframework.beans.BeanUtils.copyProperties(updatedEntity4, ResubDetEntity4);
+								org.springframework.beans.BeanUtils.copyProperties(updatedEntity5, ResubDetEntity5);
+
+								org.springframework.beans.BeanUtils.copyProperties(updatedEntity6, ResubDetEntity6);
+								org.springframework.beans.BeanUtils.copyProperties(updatedEntity7, ResubDetEntity7);
+								org.springframework.beans.BeanUtils.copyProperties(updatedEntity8, ResubDetEntity8);
+								org.springframework.beans.BeanUtils.copyProperties(updatedEntity9, ResubDetEntity9);
 
          // Set common fields
          Date now = new Date();
@@ -49801,16 +51292,16 @@ public void updateReportReSub(
 	         archivalEntity8.setReportDate(reportDate);
 				archivalEntity9.setReportDate(reportDate);
 
-         archivalEntity1.setReportVersion(String.valueOf(newVersion));
-         archivalEntity2.setReportVersion(String.valueOf(newVersion));
-         archivalEntity3.setReportVersion(String.valueOf(newVersion));
-         archivalEntity4.setReportVersion(String.valueOf(newVersion));
-			archivalEntity5.setReportVersion(String.valueOf(newVersion));
-	         archivalEntity6.setReportVersion(String.valueOf(newVersion));
-	         archivalEntity7.setReportVersion(String.valueOf(newVersion));
-	         archivalEntity8.setReportVersion(String.valueOf(newVersion));
-				archivalEntity9.setReportVersion(String.valueOf(newVersion));
-
+         archivalEntity1.setReportVersion(newVersion);
+         archivalEntity2.setReportVersion(newVersion);
+         archivalEntity3.setReportVersion(newVersion);
+         archivalEntity4.setReportVersion(newVersion);
+         archivalEntity5.setReportVersion(newVersion);
+         archivalEntity6.setReportVersion(newVersion);
+         archivalEntity7.setReportVersion(newVersion);
+         archivalEntity8.setReportVersion(newVersion);
+         archivalEntity9.setReportVersion(newVersion);
+         
          archivalEntity1.setReportResubDate(now);
          archivalEntity2.setReportResubDate(now);
          archivalEntity3.setReportResubDate(now);
@@ -49821,6 +51312,98 @@ public void updateReportReSub(
 	         archivalEntity8.setReportResubDate(now);
 				 archivalEntity9.setReportResubDate(now);
 
+				 
+				 archivalDetEntity1.setReportDate(reportDate);
+				 archivalDetEntity2.setReportDate(reportDate);
+				 archivalDetEntity3.setReportDate(reportDate);
+				 archivalDetEntity4.setReportDate(reportDate);
+				 archivalDetEntity5.setReportDate(reportDate);
+				 archivalDetEntity6.setReportDate(reportDate);
+				 archivalDetEntity7.setReportDate(reportDate);
+				 archivalDetEntity8.setReportDate(reportDate);
+				 archivalDetEntity9.setReportDate(reportDate);
+
+				 archivalDetEntity1.setReportVersion(newVersion);
+				 archivalDetEntity2.setReportVersion(newVersion);
+				 archivalDetEntity3.setReportVersion(newVersion);
+				 archivalDetEntity4.setReportVersion(newVersion);
+				 archivalDetEntity5.setReportVersion(newVersion);
+				 archivalDetEntity6.setReportVersion(newVersion);
+				 archivalDetEntity7.setReportVersion(newVersion);
+				 archivalDetEntity8.setReportVersion(newVersion);
+				 archivalDetEntity9.setReportVersion(newVersion);
+
+				 archivalDetEntity1.setReportResubDate(now);
+				 archivalDetEntity2.setReportResubDate(now);
+				 archivalDetEntity3.setReportResubDate(now);
+				 archivalDetEntity4.setReportResubDate(now);
+				 archivalDetEntity5.setReportResubDate(now);
+				 archivalDetEntity6.setReportResubDate(now);
+				 archivalDetEntity7.setReportResubDate(now);
+				 archivalDetEntity8.setReportResubDate(now);
+				 archivalDetEntity9.setReportResubDate(now);
+				 
+				 ResubEntity1.setReportDate(reportDate);
+				 ResubEntity2.setReportDate(reportDate);
+				 ResubEntity3.setReportDate(reportDate);
+				 ResubEntity4.setReportDate(reportDate);
+				 ResubEntity5.setReportDate(reportDate);
+				 ResubEntity6.setReportDate(reportDate);
+				 ResubEntity7.setReportDate(reportDate);
+				 ResubEntity8.setReportDate(reportDate);
+				 ResubEntity9.setReportDate(reportDate);
+
+				 ResubEntity1.setReportVersion(newVersion);
+				 ResubEntity2.setReportVersion(newVersion);
+				 ResubEntity3.setReportVersion(newVersion);
+				 ResubEntity4.setReportVersion(newVersion);
+				 ResubEntity5.setReportVersion(newVersion);
+				 ResubEntity6.setReportVersion(newVersion);
+				 ResubEntity7.setReportVersion(newVersion);
+				 ResubEntity8.setReportVersion(newVersion);
+				 ResubEntity9.setReportVersion(newVersion);
+
+				 ResubEntity1.setReportResubDate(now);
+				 ResubEntity2.setReportResubDate(now);
+				 ResubEntity3.setReportResubDate(now);
+				 ResubEntity4.setReportResubDate(now);
+				 ResubEntity5.setReportResubDate(now);
+				 ResubEntity6.setReportResubDate(now);
+				 ResubEntity7.setReportResubDate(now);
+				 ResubEntity8.setReportResubDate(now);
+				 ResubEntity9.setReportResubDate(now);
+				 
+				 
+				 ResubDetEntity1.setReportDate(reportDate);
+				 ResubDetEntity2.setReportDate(reportDate);
+				 ResubDetEntity3.setReportDate(reportDate);
+				 ResubDetEntity4.setReportDate(reportDate);
+				 ResubDetEntity5.setReportDate(reportDate);
+				 ResubDetEntity6.setReportDate(reportDate);
+				 ResubDetEntity7.setReportDate(reportDate);
+				 ResubDetEntity8.setReportDate(reportDate);
+				 ResubDetEntity9.setReportDate(reportDate);
+
+				 ResubDetEntity1.setReportVersion(newVersion);
+				 ResubDetEntity2.setReportVersion(newVersion);
+				 ResubDetEntity3.setReportVersion(newVersion);
+				 ResubDetEntity4.setReportVersion(newVersion);
+				 ResubDetEntity5.setReportVersion(newVersion);
+				 ResubDetEntity6.setReportVersion(newVersion);
+				 ResubDetEntity7.setReportVersion(newVersion);
+				 ResubDetEntity8.setReportVersion(newVersion);
+				 ResubDetEntity9.setReportVersion(newVersion);
+
+				 ResubDetEntity1.setReportResubDate(now);
+				 ResubDetEntity2.setReportResubDate(now);
+				 ResubDetEntity3.setReportResubDate(now);
+				 ResubDetEntity4.setReportResubDate(now);
+				 ResubDetEntity5.setReportResubDate(now);
+				 ResubDetEntity6.setReportResubDate(now);
+				 ResubDetEntity7.setReportResubDate(now);
+				 ResubDetEntity8.setReportResubDate(now);
+				 ResubDetEntity9.setReportResubDate(now);
+				 				 
          System.out.println("Saving new archival version: " + newVersion);
 
          // Save to all three archival repositories
@@ -49833,6 +51416,36 @@ public void updateReportReSub(
          BRRS_M_RPD_Archival_Summary_Repo7.save(archivalEntity7);
          BRRS_M_RPD_Archival_Summary_Repo8.save(archivalEntity8);
          BRRS_M_RPD_Archival_Summary_Repo9.save(archivalEntity9);
+         
+         BRRS_M_RPD_Archival_Detail_Repo1.save(archivalDetEntity1);
+         BRRS_M_RPD_Archival_Detail_Repo2.save(archivalDetEntity2);
+         BRRS_M_RPD_Archival_Detail_Repo3.save(archivalDetEntity3);
+         BRRS_M_RPD_Archival_Detail_Repo4.save(archivalDetEntity4);
+         BRRS_M_RPD_Archival_Detail_Repo5.save(archivalDetEntity5);
+         BRRS_M_RPD_Archival_Detail_Repo6.save(archivalDetEntity6);
+         BRRS_M_RPD_Archival_Detail_Repo7.save(archivalDetEntity7);
+         BRRS_M_RPD_Archival_Detail_Repo8.save(archivalDetEntity8);
+         BRRS_M_RPD_Archival_Detail_Repo9.save(archivalDetEntity9);
+         
+         BRRS_M_RPD_Resub_Summary_Repo1.save(ResubEntity1);
+         BRRS_M_RPD_Resub_Summary_Repo2.save(ResubEntity2);
+         BRRS_M_RPD_Resub_Summary_Repo3.save(ResubEntity3);
+         BRRS_M_RPD_Resub_Summary_Repo4.save(ResubEntity4);
+         BRRS_M_RPD_Resub_Summary_Repo5.save(ResubEntity5);
+         BRRS_M_RPD_Resub_Summary_Repo6.save(ResubEntity6);
+         BRRS_M_RPD_Resub_Summary_Repo7.save(ResubEntity7);
+         BRRS_M_RPD_Resub_Summary_Repo8.save(ResubEntity8);
+         BRRS_M_RPD_Resub_Summary_Repo9.save(ResubEntity9);
+         
+         BRRS_M_RPD_Resub_Detail_Repo1.save(ResubDetEntity1);
+         BRRS_M_RPD_Resub_Detail_Repo2.save(ResubDetEntity2);
+         BRRS_M_RPD_Resub_Detail_Repo3.save(ResubDetEntity3);
+         BRRS_M_RPD_Resub_Detail_Repo4.save(ResubDetEntity4);
+         BRRS_M_RPD_Resub_Detail_Repo5.save(ResubDetEntity5);
+         BRRS_M_RPD_Resub_Detail_Repo6.save(ResubDetEntity6);
+         BRRS_M_RPD_Resub_Detail_Repo7.save(ResubDetEntity7);
+         BRRS_M_RPD_Resub_Detail_Repo8.save(ResubDetEntity8);
+         BRRS_M_RPD_Resub_Detail_Repo9.save(ResubDetEntity9);
 
          System.out.println("Saved archival version successfully: " + newVersion);
 
@@ -49841,6 +51454,1762 @@ public void updateReportReSub(
          throw new RuntimeException("Error while creatingM_RPD archival resubmission record", e);
      }
  }
+public byte[] getExcel_Email_M_RPDExcelNormal(String filename,String reportId, String fromdate, String todate, String currency, String dtltype,String type,String format,BigDecimal version) throws Exception
+{
+	  
+	  List<M_RPD_Summary_Entity1> dataList1 =BRRS_M_RPD_Summary_Repo1.getdatabydateList(dateformat.parse(todate)) ;
+		List<M_RPD_Summary_Entity2> dataList2 =BRRS_M_RPD_Summary_Repo2.getdatabydateList(dateformat.parse(todate)) ;
+		List<M_RPD_Summary_Entity3> dataList3 =BRRS_M_RPD_Summary_Repo3.getdatabydateList(dateformat.parse(todate)) ;
+		List<M_RPD_Summary_Entity4> dataList4 =BRRS_M_RPD_Summary_Repo4.getdatabydateList(dateformat.parse(todate)) ;
+		List<M_RPD_Summary_Entity5> dataList5 =BRRS_M_RPD_Summary_Repo5.getdatabydateList(dateformat.parse(todate)) ;
+		List<M_RPD_Summary_Entity6> dataList6 =BRRS_M_RPD_Summary_Repo6.getdatabydateList(dateformat.parse(todate)) ;
+		List<M_RPD_Summary_Entity7> dataList7 =BRRS_M_RPD_Summary_Repo7.getdatabydateList(dateformat.parse(todate)) ;
+		List<M_RPD_Summary_Entity8> dataList8 =BRRS_M_RPD_Summary_Repo8.getdatabydateList(dateformat.parse(todate)) ;
+		List<M_RPD_Summary_Entity9> dataList9 =BRRS_M_RPD_Summary_Repo9.getdatabydateList(dateformat.parse(todate)) ;
+
+		if (dataList1.isEmpty()) {
+			logger.warn("Service: No data found for M_RPD report. Returning empty result.");
+			return new byte[0];
+		}
+
+		String templateDir = env.getProperty("output.exportpathtemp");
+		String templateFileName = filename;
+		System.out.println(filename+" = FILENAME");
+		Path templatePath = Paths.get(templateDir, templateFileName);
+		System.out.println(templatePath);
+		
+		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+		if (!Files.exists(templatePath)) {
+			// This specific exception will be caught by the controller.
+			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+		}
+		if (!Files.isReadable(templatePath)) {
+			// A specific exception for permission errors.
+			throw new SecurityException(
+					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+		}
+
+		// This try-with-resources block is perfect. It guarantees all resources are
+		// closed automatically.
+		try (InputStream templateInputStream = Files.newInputStream(templatePath);
+				Workbook workbook = WorkbookFactory.create(templateInputStream);
+				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+		
+			
+			Sheet sheet = workbook.getSheetAt(0);
+
+			// --- Style Definitions ---
+	CreationHelper createHelper = workbook.getCreationHelper();
+			
+
+			CellStyle dateStyle = workbook.createCellStyle();
+			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+			dateStyle.setBorderBottom(BorderStyle.THIN);
+			dateStyle.setBorderTop(BorderStyle.THIN);
+			dateStyle.setBorderLeft(BorderStyle.THIN);
+			dateStyle.setBorderRight(BorderStyle.THIN);
+
+			CellStyle textStyle = workbook.createCellStyle();
+			textStyle.setBorderBottom(BorderStyle.THIN);
+			textStyle.setBorderTop(BorderStyle.THIN);
+			textStyle.setBorderLeft(BorderStyle.THIN);
+			textStyle.setBorderRight(BorderStyle.THIN);
+			
+			// Create the font
+			Font font = workbook.createFont();
+			font.setFontHeightInPoints((short)8); // size 8
+			font.setFontName("Arial");    
+
+			CellStyle numberStyle = workbook.createCellStyle();
+			//numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+			numberStyle.setBorderBottom(BorderStyle.THIN);
+			numberStyle.setBorderTop(BorderStyle.THIN);
+			numberStyle.setBorderLeft(BorderStyle.THIN);
+			numberStyle.setBorderRight(BorderStyle.THIN);
+			numberStyle.setFont(font);
+			
+			int startRow = 10;
+	      		
+	  if (!dataList1.isEmpty()) {
+			for (int i = 0; i < dataList1.size(); i++) {
+				M_RPD_Summary_Entity1 record1 = dataList1.get(i);
+				M_RPD_Summary_Entity2 record2 = dataList2.get(i);
+				M_RPD_Summary_Entity3 record3 = dataList3.get(i);
+				M_RPD_Summary_Entity4 record4 = dataList4.get(i);
+				M_RPD_Summary_Entity5 record5 = dataList5.get(i);
+				M_RPD_Summary_Entity6 record6 = dataList6.get(i);
+				M_RPD_Summary_Entity7 record7 = dataList7.get(i);
+				M_RPD_Summary_Entity8 record8 = dataList8.get(i);
+				M_RPD_Summary_Entity9 record9 = dataList9.get(i);
+				System.out.println("rownumber="+startRow + i);
+				Row row = sheet.getRow(startRow + i);
+				if (row == null) {
+					row = sheet.createRow(startRow + i);
+				}
+				//ROW11		
+				//COL-B
+				Cell cell1=row.getCell(3);
+				if(record1.getR11_TYPE_FACILITY() != null) {
+					cell1.setCellValue(record1.getR11_TYPE_FACILITY().doubleValue());
+					cell1.setCellStyle(numberStyle);
+					
+				}else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+					
+				}
+				//COL-D
+				cell1 = row.getCell(4);
+				if (record1.getR11_APPROVED_LIMIT() != null) {
+					cell1.setCellValue(record1.getR11_APPROVED_LIMIT().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-E
+				 cell1 = row.getCell(5);
+				if (record1.getR11_OUTSTANDING_AMOUNT() != null) {
+					cell1.setCellValue(record1.getR11_OUTSTANDING_AMOUNT().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-F
+				 cell1 = row.getCell(6);
+				if (record1.getR11_EXCESS_OVER_CEILING() != null) {
+					cell1.setCellValue(record1.getR11_EXCESS_OVER_CEILING().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-G
+				cell1 = row.getCell(7);
+				if (record1.getR11_LOAN_CLASSIFICATION() != null) {
+					cell1.setCellValue(record1.getR11_LOAN_CLASSIFICATION().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-H
+				 cell1 = row.getCell(8);
+				if (record1.getR11_CURRENT_PROVISIONS() != null) {
+					cell1.setCellValue(record1.getR11_CURRENT_PROVISIONS().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-I
+				 cell1=row.getCell(9);
+				if(record1.getR11_DESCRIPTION() != null) {
+					cell1.setCellValue(record1.getR11_DESCRIPTION());
+					
+				}else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+					
+				}
+				//COL-J
+				 cell1 = row.getCell(10);
+				if (record1.getR11_VALUE() != null) {
+					cell1.setCellValue(record1.getR11_VALUE().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				
+				//ROW12		
+				//COL-B
+				row=sheet.getRow(11);
+				 
+				//COL-C
+				 cell1=row.getCell(3);
+				if(record1.getR12_TYPE_FACILITY() != null) {
+					cell1.setCellValue(record1.getR12_TYPE_FACILITY().doubleValue());
+					cell1.setCellStyle(numberStyle);
+					
+				}else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+					
+				}
+				//COL-D
+				cell1 = row.getCell(4);
+				if (record1.getR12_APPROVED_LIMIT() != null) {
+					cell1.setCellValue(record1.getR12_APPROVED_LIMIT().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-E
+				 cell1 = row.getCell(5);
+				if (record1.getR12_OUTSTANDING_AMOUNT() != null) {
+					cell1.setCellValue(record1.getR12_OUTSTANDING_AMOUNT().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-F
+				 cell1 = row.getCell(6);
+				if (record1.getR12_EXCESS_OVER_CEILING() != null) {
+					cell1.setCellValue(record1.getR12_EXCESS_OVER_CEILING().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-G
+				cell1 = row.getCell(7);
+				if (record1.getR12_LOAN_CLASSIFICATION() != null) {
+					cell1.setCellValue(record1.getR12_LOAN_CLASSIFICATION().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-H
+				 cell1 = row.getCell(8);
+				if (record1.getR12_CURRENT_PROVISIONS() != null) {
+					cell1.setCellValue(record1.getR12_CURRENT_PROVISIONS().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-I
+				 cell1=row.getCell(9);
+				if(record1.getR12_DESCRIPTION() != null) {
+					cell1.setCellValue(record1.getR12_DESCRIPTION());
+					
+				}else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+					
+				}
+				//COL-J
+				 cell1 = row.getCell(10);
+				if (record1.getR12_VALUE() != null) {
+					cell1.setCellValue(record1.getR12_VALUE().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				
+				//ROW13		
+				//COL-B
+				row=sheet.getRow(12);
+				
+				//COL-C
+				 cell1=row.getCell(3);
+				if(record1.getR13_TYPE_FACILITY() != null) {
+					cell1.setCellValue(record1.getR13_TYPE_FACILITY().doubleValue());
+					cell1.setCellStyle(numberStyle);
+					
+				}else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+					
+				}
+				//COL-D
+				cell1 = row.getCell(4);
+				if (record1.getR13_APPROVED_LIMIT() != null) {
+					cell1.setCellValue(record1.getR13_APPROVED_LIMIT().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-E
+				 cell1 = row.getCell(5);
+				if (record1.getR13_OUTSTANDING_AMOUNT() != null) {
+					cell1.setCellValue(record1.getR13_OUTSTANDING_AMOUNT().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-F
+				 cell1 = row.getCell(6);
+				if (record1.getR13_EXCESS_OVER_CEILING() != null) {
+					cell1.setCellValue(record1.getR13_EXCESS_OVER_CEILING().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-G
+				cell1 = row.getCell(7);
+				if (record1.getR13_LOAN_CLASSIFICATION() != null) {
+					cell1.setCellValue(record1.getR13_LOAN_CLASSIFICATION().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-H
+				 cell1 = row.getCell(8);
+				if (record1.getR13_CURRENT_PROVISIONS() != null) {
+					cell1.setCellValue(record1.getR13_CURRENT_PROVISIONS().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-I
+				 cell1=row.getCell(9);
+				if(record1.getR13_DESCRIPTION() != null) {
+					cell1.setCellValue(record1.getR13_DESCRIPTION());
+					
+				}else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+					
+				}
+				//COL-J
+				 cell1 = row.getCell(10);
+				if (record1.getR13_VALUE() != null) {
+					cell1.setCellValue(record1.getR13_VALUE().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				
+				
+		//ROW_4
+		
+		    row=sheet.getRow(13);
+				
+				//COL-C
+				cell1=row.getCell(3);
+				if(record2.getR51_TYPE_FACILITY() != null) {
+					cell1.setCellValue(record2.getR51_TYPE_FACILITY().doubleValue());
+					cell1.setCellStyle(numberStyle);
+					
+				}else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+					
+				}
+				 
+				//COL-D
+				cell1 = row.getCell(4);
+				if (record2.getR51_APPROVED_LIMIT() != null) {
+					cell1.setCellValue(record2.getR51_APPROVED_LIMIT().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-E
+				 cell1 = row.getCell(5);
+				if (record2.getR51_OUTSTANDING_AMOUNT() != null) {
+					cell1.setCellValue(record2.getR51_OUTSTANDING_AMOUNT().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-F
+				 cell1 = row.getCell(6);
+				if (record2.getR51_EXCESS_OVER_CEILING() != null) {
+					cell1.setCellValue(record2.getR51_EXCESS_OVER_CEILING().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-G
+				cell1 = row.getCell(7);
+				if (record2.getR51_LOAN_CLASSIFICATION() != null) {
+					cell1.setCellValue(record2.getR51_LOAN_CLASSIFICATION().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-H
+				 cell1 = row.getCell(8);
+				if (record2.getR51_CURRENT_PROVISIONS() != null) {
+					cell1.setCellValue(record2.getR51_CURRENT_PROVISIONS().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-I
+				 cell1=row.getCell(9);
+				if(record2.getR51_DESCRIPTION() != null) {
+					cell1.setCellValue(record2.getR51_DESCRIPTION());
+					
+				}else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+					
+				}
+				//COL-J
+				 cell1 = row.getCell(10);
+				if (record2.getR51_VALUE() != null) {
+					cell1.setCellValue(record2.getR51_VALUE().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				
+				//ROW52		
+				//COL-B
+				row=sheet.getRow(14);
+				 
+				//COL-C
+				 cell1=row.getCell(3);
+				if(record2.getR52_TYPE_FACILITY() != null) {
+					cell1.setCellValue(record2.getR52_TYPE_FACILITY().doubleValue());
+					cell1.setCellStyle(numberStyle);
+					
+				}else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+					
+				}
+				//COL-D
+				cell1 = row.getCell(4);
+				if (record2.getR52_APPROVED_LIMIT() != null) {
+					cell1.setCellValue(record2.getR52_APPROVED_LIMIT().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-E
+				 cell1 = row.getCell(5);
+				if (record2.getR52_OUTSTANDING_AMOUNT() != null) {
+					cell1.setCellValue(record2.getR52_OUTSTANDING_AMOUNT().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-F
+				 cell1 = row.getCell(6);
+				if (record2.getR52_EXCESS_OVER_CEILING() != null) {
+					cell1.setCellValue(record2.getR52_EXCESS_OVER_CEILING().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-G
+				cell1 = row.getCell(7);
+				if (record2.getR52_LOAN_CLASSIFICATION() != null) {
+					cell1.setCellValue(record2.getR52_LOAN_CLASSIFICATION().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-H
+				 cell1 = row.getCell(8);
+				if (record2.getR52_CURRENT_PROVISIONS() != null) {
+					cell1.setCellValue(record2.getR52_CURRENT_PROVISIONS().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-I
+				 cell1=row.getCell(9);
+				if(record2.getR52_DESCRIPTION() != null) {
+					cell1.setCellValue(record2.getR52_DESCRIPTION());
+					
+				}else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+					
+				}
+				//COL-J
+				 cell1 = row.getCell(10);
+				if (record2.getR52_VALUE() != null) {
+					cell1.setCellValue(record2.getR52_VALUE().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				
+				
+				
+				//ROW53		
+				//COL-B
+				row=sheet.getRow(15);
+				
+				//COL-C
+				 cell1=row.getCell(3);
+				if(record2.getR53_TYPE_FACILITY() != null) {
+					cell1.setCellValue(record2.getR53_TYPE_FACILITY().doubleValue());
+					cell1.setCellStyle(numberStyle);
+					
+				}else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+					
+				}
+				//COL-D
+				cell1 = row.getCell(4);
+				if (record2.getR53_APPROVED_LIMIT() != null) {
+					cell1.setCellValue(record2.getR53_APPROVED_LIMIT().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-E
+				 cell1 = row.getCell(5);
+				if (record2.getR53_OUTSTANDING_AMOUNT() != null) {
+					cell1.setCellValue(record2.getR53_OUTSTANDING_AMOUNT().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-F
+				 cell1 = row.getCell(6);
+				if (record2.getR53_EXCESS_OVER_CEILING() != null) {
+					cell1.setCellValue(record2.getR53_EXCESS_OVER_CEILING().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-G
+				cell1 = row.getCell(7);
+				if (record2.getR53_LOAN_CLASSIFICATION() != null) {
+					cell1.setCellValue(record2.getR53_LOAN_CLASSIFICATION().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-H
+				 cell1 = row.getCell(8);
+				if (record2.getR53_CURRENT_PROVISIONS() != null) {
+					cell1.setCellValue(record2.getR53_CURRENT_PROVISIONS().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+				//COL-I
+				 cell1=row.getCell(9);
+				if(record2.getR53_DESCRIPTION() != null) {
+					cell1.setCellValue(record2.getR53_DESCRIPTION());
+					
+				}else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+					
+				}
+				//COL-J
+				 cell1 = row.getCell(10);
+				if (record2.getR53_VALUE() != null) {
+					cell1.setCellValue(record2.getR53_VALUE().doubleValue());
+					cell1.setCellStyle(numberStyle);
+				} else {
+					cell1.setCellValue("");
+					cell1.setCellStyle(textStyle);
+				}
+			
+	//ROW_17
+
+     row=sheet.getRow(16);
+	
+	//COL-C
+	Cell cell2=row.getCell(3);
+	if(record3.getR101_TYPE_FACILITY() != null) {
+		cell2.setCellValue(record3.getR101_TYPE_FACILITY().doubleValue());
+		cell2.setCellStyle(numberStyle);
+		
+	}else {
+		cell2.setCellValue("");
+		cell2.setCellStyle(textStyle);
+		
+	}
+	//COL-D
+	cell2 = row.getCell(4);
+	if (record3.getR101_APPROVED_LIMIT() != null) {
+		cell2.setCellValue(record3.getR101_APPROVED_LIMIT().doubleValue());
+		cell2.setCellStyle(numberStyle);
+	} else {
+		cell2.setCellValue("");
+		cell2.setCellStyle(textStyle);
+	}
+	//COL-E
+	 cell2 = row.getCell(5);
+	if (record3.getR101_OUTSTANDING_AMOUNT() != null) {
+		cell2.setCellValue(record3.getR101_OUTSTANDING_AMOUNT().doubleValue());
+		cell2.setCellStyle(numberStyle);
+	} else {
+		cell2.setCellValue("");
+		cell2.setCellStyle(textStyle);
+	}
+	//COL-F
+	 cell2 = row.getCell(6);
+	if (record3.getR101_EXCESS_OVER_CEILING() != null) {
+		cell2.setCellValue(record3.getR101_EXCESS_OVER_CEILING().doubleValue());
+		cell2.setCellStyle(numberStyle);
+	} else {
+		cell2.setCellValue("");
+		cell2.setCellStyle(textStyle);
+	}
+	//COL-G
+	cell2 = row.getCell(7);
+	if (record3.getR101_LOAN_CLASSIFICATION() != null) {
+		cell2.setCellValue(record3.getR101_LOAN_CLASSIFICATION().doubleValue());
+		cell2.setCellStyle(numberStyle);
+	} else {
+		cell2.setCellValue("");
+		cell2.setCellStyle(textStyle);
+	}
+	//COL-H
+	 cell2 = row.getCell(8);
+	if (record3.getR101_CURRENT_PROVISIONS() != null) {
+		cell2.setCellValue(record3.getR101_CURRENT_PROVISIONS().doubleValue());
+		cell2.setCellStyle(numberStyle);
+	} else {
+		cell2.setCellValue("");
+		cell2.setCellStyle(textStyle);
+	}
+	//COL-I
+	 cell2=row.getCell(9);
+	if(record3.getR101_DESCRIPTION() != null) {
+		cell2.setCellValue(record3.getR101_DESCRIPTION());
+		
+	}else {
+		cell2.setCellValue("");
+		cell2.setCellStyle(textStyle);
+		
+	}
+	//COL-J
+	 cell2 = row.getCell(10);
+	if (record3.getR101_VALUE() != null) {
+		cell2.setCellValue(record3.getR101_VALUE().doubleValue());
+		cell2.setCellStyle(numberStyle);
+	} else {
+		cell2.setCellValue("");
+		cell2.setCellStyle(textStyle);
+	}
+	
+	//ROW102		
+	//COL-B
+	row=sheet.getRow(17);
+	
+	//COL-C
+	 cell2=row.getCell(3);
+	if(record3.getR102_TYPE_FACILITY() != null) {
+		cell2.setCellValue(record3.getR102_TYPE_FACILITY().doubleValue());
+		cell2.setCellStyle(numberStyle);
+		
+	}else {
+		cell2.setCellValue("");
+		cell2.setCellStyle(textStyle);
+		
+	}
+	//COL-D
+	cell2 = row.getCell(4);
+	if (record3.getR102_APPROVED_LIMIT() != null) {
+		cell2.setCellValue(record3.getR102_APPROVED_LIMIT().doubleValue());
+		cell2.setCellStyle(numberStyle);
+	} else {
+		cell2.setCellValue("");
+		cell2.setCellStyle(textStyle);
+	}
+	//COL-E
+	 cell2 = row.getCell(5);
+	if (record3.getR102_OUTSTANDING_AMOUNT() != null) {
+		cell2.setCellValue(record3.getR102_OUTSTANDING_AMOUNT().doubleValue());
+		cell2.setCellStyle(numberStyle);
+	} else {
+		cell2.setCellValue("");
+		cell2.setCellStyle(textStyle);
+	}
+	//COL-F
+	 cell2 = row.getCell(6);
+	if (record3.getR102_EXCESS_OVER_CEILING() != null) {
+		cell2.setCellValue(record3.getR102_EXCESS_OVER_CEILING().doubleValue());
+		cell2.setCellStyle(numberStyle);
+	} else {
+		cell2.setCellValue("");
+		cell2.setCellStyle(textStyle);
+	}
+	//COL-G
+	cell2 = row.getCell(7);
+	if (record3.getR102_LOAN_CLASSIFICATION() != null) {
+		cell2.setCellValue(record3.getR102_LOAN_CLASSIFICATION().doubleValue());
+		cell2.setCellStyle(numberStyle);
+	} else {
+		cell2.setCellValue("");
+		cell2.setCellStyle(textStyle);
+	}
+	//COL-H
+	 cell2 = row.getCell(8);
+	if (record3.getR102_CURRENT_PROVISIONS() != null) {
+		cell2.setCellValue(record3.getR102_CURRENT_PROVISIONS().doubleValue());
+		cell2.setCellStyle(numberStyle);
+	} else {
+		cell2.setCellValue("");
+		cell2.setCellStyle(textStyle);
+	}
+	//COL-I
+	 cell2=row.getCell(9);
+	if(record3.getR102_DESCRIPTION() != null) {
+		cell2.setCellValue(record3.getR102_DESCRIPTION());
+		
+	}else {
+		cell2.setCellValue("");
+		cell2.setCellStyle(textStyle);
+		
+	}
+	//COL-J
+	 cell2 = row.getCell(10);
+	if (record3.getR102_VALUE() != null) {
+		cell2.setCellValue(record3.getR102_VALUE().doubleValue());
+		cell2.setCellStyle(numberStyle);
+	} else {
+		cell2.setCellValue("");
+		cell2.setCellStyle(textStyle);
+	}
+	
+	//ROW103		
+	//COL-B
+	row=sheet.getRow(18);
+	
+	//COL-C
+	 cell2=row.getCell(3);
+	if(record3.getR103_TYPE_FACILITY() != null) {
+		cell2.setCellValue(record3.getR103_TYPE_FACILITY().doubleValue());
+		cell2.setCellStyle(numberStyle);
+		
+	}else {
+		cell2.setCellValue("");
+		cell2.setCellStyle(textStyle);
+		
+	}
+	//COL-D
+	cell2 = row.getCell(4);
+	if (record3.getR103_APPROVED_LIMIT() != null) {
+		cell2.setCellValue(record3.getR103_APPROVED_LIMIT().doubleValue());
+		cell2.setCellStyle(numberStyle);
+	} else {
+		cell2.setCellValue("");
+		cell2.setCellStyle(textStyle);
+	}
+	//COL-E
+	 cell2 = row.getCell(5);
+	if (record3.getR103_OUTSTANDING_AMOUNT() != null) {
+		cell2.setCellValue(record3.getR103_OUTSTANDING_AMOUNT().doubleValue());
+		cell2.setCellStyle(numberStyle);
+	} else {
+		cell2.setCellValue("");
+		cell2.setCellStyle(textStyle);
+	}
+	//COL-F
+	 cell2 = row.getCell(6);
+	if (record3.getR103_EXCESS_OVER_CEILING() != null) {
+		cell2.setCellValue(record3.getR103_EXCESS_OVER_CEILING().doubleValue());
+		cell2.setCellStyle(numberStyle);
+	} else {
+		cell2.setCellValue("");
+		cell2.setCellStyle(textStyle);
+	}
+	//COL-G
+	cell2 = row.getCell(7);
+	if (record3.getR103_LOAN_CLASSIFICATION() != null) {
+		cell2.setCellValue(record3.getR103_LOAN_CLASSIFICATION().doubleValue());
+		cell2.setCellStyle(numberStyle);
+	} else {
+		cell2.setCellValue("");
+		cell2.setCellStyle(textStyle);
+	}
+	//COL-H
+	 cell2 = row.getCell(8);
+	if (record3.getR103_CURRENT_PROVISIONS() != null) {
+		cell2.setCellValue(record3.getR103_CURRENT_PROVISIONS().doubleValue());
+		cell2.setCellStyle(numberStyle);
+	} else {
+		cell2.setCellValue("");
+		cell2.setCellStyle(textStyle);
+	}
+	//COL-I
+	 cell2=row.getCell(9);
+	if(record3.getR103_DESCRIPTION() != null) {
+		cell2.setCellValue(record3.getR103_DESCRIPTION());
+		
+	}else {
+		cell2.setCellValue("");
+		cell2.setCellStyle(textStyle);
+		
+	}
+	//COL-J
+	 cell2 = row.getCell(10);
+	if (record3.getR103_VALUE() != null) {
+		cell2.setCellValue(record3.getR103_VALUE().doubleValue());
+		cell2.setCellStyle(numberStyle);
+	} else {
+		cell2.setCellValue("");
+		cell2.setCellStyle(textStyle);
+	}
+		
+	//ROW_20
+
+   row=sheet.getRow(19);
+	
+	//COL-C
+	 cell1=row.getCell(3);
+	if(record4.getR151_TYPE_FACILITY() != null) {
+		cell1.setCellValue(record4.getR151_TYPE_FACILITY().doubleValue());
+		cell1.setCellStyle(numberStyle);
+		
+	}else {
+		cell1.setCellValue("");
+		cell1.setCellStyle(textStyle);
+		
+	}
+	//COL-D
+//	cell1 = row.getCell(4);
+//	if (record4.getR151_APPROVED_LIMIT() != null) {
+//		cell1.setCellValue(record4.getR151_APPROVED_LIMIT().doubleValue());
+//		cell1.setCellStyle(numberStyle);
+//	} else {
+//		cell1.setCellValue("");
+//		cell1.setCellStyle(textStyle);
+//	}
+	//COL-E
+//	 cell1 = row.getCell(5);
+//	if (record4.getR151_OUTSTANDING_AMOUNT() != null) {
+//		cell1.setCellValue(record4.getR151_OUTSTANDING_AMOUNT().doubleValue());
+//		cell1.setCellStyle(numberStyle);
+//	} else {
+//		cell1.setCellValue("");
+//		cell1.setCellStyle(textStyle);
+//	}
+	//COL-F
+//	 cell1 = row.getCell(6);
+//	if (record4.getR151_EXCESS_OVER_CEILING() != null) {
+//		cell1.setCellValue(record4.getR151_EXCESS_OVER_CEILING().doubleValue());
+//		cell1.setCellStyle(numberStyle);
+//	} else {
+//		cell1.setCellValue("");
+//		cell1.setCellStyle(textStyle);
+//	}
+//	//COL-G
+//	cell1 = row.getCell(7);
+//	if (record4.getR151_LOAN_CLASSIFICATION() != null) {
+//		cell1.setCellValue(record4.getR151_LOAN_CLASSIFICATION().doubleValue());
+//		cell1.setCellStyle(numberStyle);
+//	} else {
+//		cell1.setCellValue("");
+//		cell1.setCellStyle(textStyle);
+//	}
+//	//COL-H
+//	 cell1 = row.getCell(8);
+//	if (record4.getR151_CURRENT_PROVISIONS() != null) {
+//		cell1.setCellValue(record4.getR151_CURRENT_PROVISIONS().doubleValue());
+//		cell1.setCellStyle(numberStyle);
+//	} else {
+//		cell1.setCellValue("");
+//		cell1.setCellStyle(textStyle);
+//	}
+	//COL-I
+	 cell1=row.getCell(9);
+	if(record4.getR151_DESCRIPTION() != null) {
+		cell1.setCellValue(record4.getR151_DESCRIPTION());
+		
+	}else {
+		cell1.setCellValue("");
+		cell1.setCellStyle(textStyle);
+		
+	}
+	//COL-J
+	 cell1 = row.getCell(10);
+	if (record4.getR151_VALUE() != null) {
+		cell1.setCellValue(record4.getR151_VALUE().doubleValue());
+		cell1.setCellStyle(numberStyle);
+	} else {
+		cell1.setCellValue("");
+		cell1.setCellStyle(textStyle);
+	}
+	
+	//ROW152		
+	//COL-B
+	row=sheet.getRow(20);
+	 
+	//COL-C
+	 cell1=row.getCell(3);
+	if(record4.getR152_TYPE_FACILITY() != null) {
+		cell1.setCellValue(record4.getR152_TYPE_FACILITY().doubleValue());
+		cell1.setCellStyle(numberStyle);
+		
+	}else {
+		cell1.setCellValue("");
+		cell1.setCellStyle(textStyle);
+		
+	}
+	//COL-D
+//	cell1 = row.getCell(4);
+//	if (record4.getR152_APPROVED_LIMIT() != null) {
+//		cell1.setCellValue(record4.getR152_APPROVED_LIMIT().doubleValue());
+//		cell1.setCellStyle(numberStyle);
+//	} else {
+//		cell1.setCellValue("");
+//		cell1.setCellStyle(textStyle);
+//	}
+//	//COL-E
+//	 cell1 = row.getCell(5);
+//	if (record4.getR152_OUTSTANDING_AMOUNT() != null) {
+//		cell1.setCellValue(record4.getR152_OUTSTANDING_AMOUNT().doubleValue());
+//		cell1.setCellStyle(numberStyle);
+//	} else {
+//		cell1.setCellValue("");
+//		cell1.setCellStyle(textStyle);
+//	}
+//	//COL-F
+//	 cell1 = row.getCell(6);
+//	if (record4.getR152_EXCESS_OVER_CEILING() != null) {
+//		cell1.setCellValue(record4.getR152_EXCESS_OVER_CEILING().doubleValue());
+//		cell1.setCellStyle(numberStyle);
+//	} else {
+//		cell1.setCellValue("");
+//		cell1.setCellStyle(textStyle);
+//	}
+//	//COL-G
+//	cell1 = row.getCell(7);
+//	if (record4.getR152_LOAN_CLASSIFICATION() != null) {
+//		cell1.setCellValue(record4.getR152_LOAN_CLASSIFICATION().doubleValue());
+//		cell1.setCellStyle(numberStyle);
+//	} else {
+//		cell1.setCellValue("");
+//		cell1.setCellStyle(textStyle);
+//	}
+//	//COL-H
+//	 cell1 = row.getCell(8);
+//	if (record4.getR152_CURRENT_PROVISIONS() != null) {
+//		cell1.setCellValue(record4.getR152_CURRENT_PROVISIONS().doubleValue());
+//		cell1.setCellStyle(numberStyle);
+//	} else {
+//		cell1.setCellValue("");
+//		cell1.setCellStyle(textStyle);
+//	}
+	//COL-I
+	 cell1=row.getCell(9);
+	if(record4.getR152_DESCRIPTION() != null) {
+		cell1.setCellValue(record4.getR152_DESCRIPTION());
+		
+	}else {
+		cell1.setCellValue("");
+		cell1.setCellStyle(textStyle);
+		
+	}
+	//COL-J
+	 cell1 = row.getCell(10);
+	if (record4.getR152_VALUE() != null) {
+		cell1.setCellValue(record4.getR152_VALUE().doubleValue());
+		cell1.setCellStyle(numberStyle);
+	} else {
+		cell1.setCellValue("");
+		cell1.setCellStyle(textStyle);
+	}
+	
+	//ROW153		
+	
+	row=sheet.getRow(21);
+	
+	//COL-C
+	 cell1=row.getCell(3);
+	if(record4.getR153_TYPE_FACILITY() != null) {
+		cell1.setCellValue(record4.getR153_TYPE_FACILITY().doubleValue());
+		cell1.setCellStyle(numberStyle);
+		
+	}else {
+		cell1.setCellValue("");
+		cell1.setCellStyle(textStyle);
+		
+	}
+	//COL-D
+//	cell1 = row.getCell(4);
+//	if (record4.getR153_APPROVED_LIMIT() != null) {
+//		cell1.setCellValue(record4.getR153_APPROVED_LIMIT().doubleValue());
+//		cell1.setCellStyle(numberStyle);
+//	} else {
+//		cell1.setCellValue("");
+//		cell1.setCellStyle(textStyle);
+//	}
+//	//COL-E
+//	 cell1 = row.getCell(5);
+//	if (record4.getR153_OUTSTANDING_AMOUNT() != null) {
+//		cell1.setCellValue(record4.getR153_OUTSTANDING_AMOUNT().doubleValue());
+//		cell1.setCellStyle(numberStyle);
+//	} else {
+//		cell1.setCellValue("");
+//		cell1.setCellStyle(textStyle);
+//	}
+//	//COL-F
+//	 cell1 = row.getCell(6);
+//	if (record4.getR153_EXCESS_OVER_CEILING() != null) {
+//		cell1.setCellValue(record4.getR153_EXCESS_OVER_CEILING().doubleValue());
+//		cell1.setCellStyle(numberStyle);
+//	} else {
+//		cell1.setCellValue("");
+//		cell1.setCellStyle(textStyle);
+//	}
+//	//COL-G
+//	cell1 = row.getCell(7);
+//	if (record4.getR153_LOAN_CLASSIFICATION() != null) {
+//		cell1.setCellValue(record4.getR153_LOAN_CLASSIFICATION().doubleValue());
+//		cell1.setCellStyle(numberStyle);
+//	} else {
+//		cell1.setCellValue("");
+//		cell1.setCellStyle(textStyle);
+//	}
+//	//COL-H
+//	 cell1 = row.getCell(8);
+//	if (record4.getR153_CURRENT_PROVISIONS() != null) {
+//		cell1.setCellValue(record4.getR153_CURRENT_PROVISIONS().doubleValue());
+//		cell1.setCellStyle(numberStyle);
+//	} else {
+//		cell1.setCellValue("");
+//		cell1.setCellStyle(textStyle);
+//	}
+	//COL-I
+	 cell1=row.getCell(9);
+	if(record4.getR153_DESCRIPTION() != null) {
+		cell1.setCellValue(record4.getR153_DESCRIPTION());
+		
+	}else {
+		cell1.setCellValue("");
+		cell1.setCellStyle(textStyle);
+		
+	}
+	//COL-J
+	 cell1 = row.getCell(10);
+	if (record4.getR153_VALUE() != null) {
+		cell1.setCellValue(record4.getR153_VALUE().doubleValue());
+		cell1.setCellStyle(numberStyle);
+	} else {
+		cell1.setCellValue("");
+		cell1.setCellStyle(textStyle);
+	}
+		
+  //ROW_ 22
+
+        row = sheet.getRow(22);
+	
+	//COL-C
+	cell1 = row.getCell(3);
+	if (record5.getR201_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR201_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//COL-D
+//	cell1 = row.getCell(4);
+//	if (record5.getR201_APPROVED_LIMIT() != null) {
+//	    cell1.setCellValue(record5.getR201_APPROVED_LIMIT().doubleValue());
+//	    cell1.setCellStyle(numberStyle);
+//	} else {
+//	    cell1.setCellValue("");
+//	    cell1.setCellStyle(textStyle);
+//	}
+//	//COL-E
+//	cell1 = row.getCell(5);
+//	if (record5.getR201_OUTSTANDING_AMOUNT() != null) {
+//	    cell1.setCellValue(record5.getR201_OUTSTANDING_AMOUNT().doubleValue());
+//	    cell1.setCellStyle(numberStyle);
+//	} else {
+//	    cell1.setCellValue("");
+//	    cell1.setCellStyle(textStyle);
+//	}
+//	//COL-F
+//	cell1 = row.getCell(6);
+//	if (record5.getR201_EXCESS_OVER_CEILING() != null) {
+//	    cell1.setCellValue(record5.getR201_EXCESS_OVER_CEILING().doubleValue());
+//	    cell1.setCellStyle(numberStyle);
+//	} else {
+//	    cell1.setCellValue("");
+//	    cell1.setCellStyle(textStyle);
+//	}
+//	//COL-G
+//	cell1 = row.getCell(7);
+//	if (record5.getR201_LOAN_CLASSIFICATION() != null) {
+//	    cell1.setCellValue(record5.getR201_LOAN_CLASSIFICATION().doubleValue());
+//	    cell1.setCellStyle(numberStyle);
+//	} else {
+//	    cell1.setCellValue("");
+//	    cell1.setCellStyle(textStyle);
+//	}
+//	//COL-H
+//	cell1 = row.getCell(8);
+//	if (record5.getR201_CURRENT_PROVISIONS() != null) {
+//	    cell1.setCellValue(record5.getR201_CURRENT_PROVISIONS().doubleValue());
+//	    cell1.setCellStyle(numberStyle);
+//	} else {
+//	    cell1.setCellValue("");
+//	    cell1.setCellStyle(textStyle);
+//	}
+	//COL-I
+	cell1 = row.getCell(9);
+	if (record5.getR201_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR201_DESCRIPTION());
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//COL-J
+	cell1 = row.getCell(10);
+	if (record5.getR201_VALUE() != null) {
+	    cell1.setCellValue(record5.getR201_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	
+	//ROW202
+	row = sheet.getRow(23);
+	
+	//COL-C
+	cell1 = row.getCell(3);
+	if (record5.getR202_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR202_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//COL-D
+//	cell1 = row.getCell(4);
+//	if (record5.getR202_APPROVED_LIMIT() != null) {
+//	    cell1.setCellValue(record5.getR202_APPROVED_LIMIT().doubleValue());
+//	    cell1.setCellStyle(numberStyle);
+//	} else {
+//	    cell1.setCellValue("");
+//	    cell1.setCellStyle(textStyle);
+//	}
+//	//COL-E
+//	cell1 = row.getCell(5);
+//	if (record5.getR202_OUTSTANDING_AMOUNT() != null) {
+//	    cell1.setCellValue(record5.getR202_OUTSTANDING_AMOUNT().doubleValue());
+//	    cell1.setCellStyle(numberStyle);
+//	} else {
+//	    cell1.setCellValue("");
+//	    cell1.setCellStyle(textStyle);
+//	}
+//	//COL-F
+//	cell1 = row.getCell(6);
+//	if (record5.getR202_EXCESS_OVER_CEILING() != null) {
+//	    cell1.setCellValue(record5.getR202_EXCESS_OVER_CEILING().doubleValue());
+//	    cell1.setCellStyle(numberStyle);
+//	} else {
+//	    cell1.setCellValue("");
+//	    cell1.setCellStyle(textStyle);
+//	}
+//	//COL-G
+//	cell1 = row.getCell(7);
+//	if (record5.getR202_LOAN_CLASSIFICATION() != null) {
+//	    cell1.setCellValue(record5.getR202_LOAN_CLASSIFICATION().doubleValue());
+//	    cell1.setCellStyle(numberStyle);
+//	} else {
+//	    cell1.setCellValue("");
+//	    cell1.setCellStyle(textStyle);
+//	}
+//	//COL-H
+//	cell1 = row.getCell(8);
+//	if (record5.getR202_CURRENT_PROVISIONS() != null) {
+//	    cell1.setCellValue(record5.getR202_CURRENT_PROVISIONS().doubleValue());
+//	    cell1.setCellStyle(numberStyle);
+//	} else {
+//	    cell1.setCellValue("");
+//	    cell1.setCellStyle(textStyle);
+//	}
+	//COL-I
+	cell1 = row.getCell(9);
+	if (record5.getR202_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR202_DESCRIPTION());
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//COL-J
+	cell1 = row.getCell(10);
+	if (record5.getR202_VALUE() != null) {
+	    cell1.setCellValue(record5.getR202_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	
+	//ROW203
+	row = sheet.getRow(24);
+
+	
+	//COL-C
+	cell1 = row.getCell(3);
+	if (record5.getR203_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR203_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-D
+//	cell1 = row.getCell(4);
+//	if (record5.getR203_APPROVED_LIMIT() != null) {
+//	    cell1.setCellValue(record5.getR203_APPROVED_LIMIT().doubleValue());
+//	    cell1.setCellStyle(numberStyle);
+//	} else {
+//	    cell1.setCellValue("");
+//	    cell1.setCellStyle(textStyle);
+//	}
+//
+//	//COL-E
+//	cell1 = row.getCell(5);
+//	if (record5.getR203_OUTSTANDING_AMOUNT() != null) {
+//	    cell1.setCellValue(record5.getR203_OUTSTANDING_AMOUNT().doubleValue());
+//	    cell1.setCellStyle(numberStyle);
+//	} else {
+//	    cell1.setCellValue("");
+//	    cell1.setCellStyle(textStyle);
+//	}
+//
+//	//COL-F
+//	cell1 = row.getCell(6);
+//	if (record5.getR203_EXCESS_OVER_CEILING() != null) {
+//	    cell1.setCellValue(record5.getR203_EXCESS_OVER_CEILING().doubleValue());
+//	    cell1.setCellStyle(numberStyle);
+//	} else {
+//	    cell1.setCellValue("");
+//	    cell1.setCellStyle(textStyle);
+//	}
+//
+//	//COL-G
+//	cell1 = row.getCell(7);
+//	if (record5.getR203_LOAN_CLASSIFICATION() != null) {
+//	    cell1.setCellValue(record5.getR203_LOAN_CLASSIFICATION().doubleValue());
+//	    cell1.setCellStyle(numberStyle);
+//	} else {
+//	    cell1.setCellValue("");
+//	    cell1.setCellStyle(textStyle);
+//	}
+//
+//	//COL-H
+//	cell1 = row.getCell(8);
+//	if (record5.getR203_CURRENT_PROVISIONS() != null) {
+//	    cell1.setCellValue(record5.getR203_CURRENT_PROVISIONS().doubleValue());
+//	    cell1.setCellStyle(numberStyle);
+//	} else {
+//	    cell1.setCellValue("");
+//	    cell1.setCellStyle(textStyle);
+//	}
+
+	//COL-I
+	cell1 = row.getCell(9);
+	if (record5.getR203_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR203_DESCRIPTION());
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-J
+	cell1 = row.getCell(10);
+	if (record5.getR203_VALUE() != null) {
+	    cell1.setCellValue(record5.getR203_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	  
+	//ROW_26
+
+    row = sheet.getRow(25);
+
+	cell1 = row.getCell(3);
+	if (record6.getR251_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR251_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR251_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR251_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR251_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR251_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR251_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR251_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR251_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR251_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR251_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR251_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR251_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR251_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR251_VALUE() != null) {
+	    cell1.setCellValue(record6.getR251_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//ROW252
+	row = sheet.getRow(26);
+
+	cell1 = row.getCell(3);
+	if (record6.getR252_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR252_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR252_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR252_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR252_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR252_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR252_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR252_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR252_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR252_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR252_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR252_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR252_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR252_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR252_VALUE() != null) {
+	    cell1.setCellValue(record6.getR252_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//ROW253
+	row = sheet.getRow(27);
+
+	cell1 = row.getCell(3);
+	if (record6.getR253_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR253_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR253_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR253_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR253_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR253_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR253_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR253_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR253_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR253_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR253_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR253_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR253_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR253_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR253_VALUE() != null) {
+	    cell1.setCellValue(record6.getR253_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	
+	//Row_29
+row = sheet.getRow(28);
+
+	cell1 = row.getCell(3);
+	if (record7.getR301_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record7.getR301_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record7.getR301_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record7.getR301_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record7.getR301_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record7.getR301_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record7.getR301_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record7.getR301_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record7.getR301_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record7.getR301_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record7.getR301_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record7.getR301_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record7.getR301_DESCRIPTION() != null) {
+	    cell1.setCellValue(record7.getR301_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record7.getR301_VALUE() != null) {
+	    cell1.setCellValue(record7.getR301_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+	//ROW30
+	row = sheet.getRow(29);
+
+	cell1 = row.getCell(3);
+	if (record7.getR302_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record7.getR302_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record7.getR302_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record7.getR302_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record7.getR302_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record7.getR302_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record7.getR302_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record7.getR302_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record7.getR302_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record7.getR302_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record7.getR302_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record7.getR302_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record7.getR302_DESCRIPTION() != null) {
+	    cell1.setCellValue(record7.getR302_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record7.getR302_VALUE() != null) {
+	    cell1.setCellValue(record7.getR302_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+
+	//ROW31
+	row = sheet.getRow(30);
+
+	
+	cell1 = row.getCell(3);
+	if (record7.getR303_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record7.getR303_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record7.getR303_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record7.getR303_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record7.getR303_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record7.getR303_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record7.getR303_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record7.getR303_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record7.getR303_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record7.getR303_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record7.getR303_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record7.getR303_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record7.getR303_DESCRIPTION() != null) {
+	    cell1.setCellValue(record7.getR303_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record7.getR303_VALUE() != null) {
+	    cell1.setCellValue(record7.getR303_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+
+	
+//	record-8
+//ROW 32
+row = sheet.getRow(31);
+
+	cell1 = row.getCell(3);
+	if (record8.getR351_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record8.getR351_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record8.getR351_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record8.getR351_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record8.getR351_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record8.getR351_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record8.getR351_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record8.getR351_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record8.getR351_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record8.getR351_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record8.getR351_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record8.getR351_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record8.getR351_DESCRIPTION() != null) {
+	    cell1.setCellValue(record8.getR351_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record8.getR351_VALUE() != null) {
+	    cell1.setCellValue(record8.getR351_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+	//ROW33
+	row = sheet.getRow(32);
+
+	cell1 = row.getCell(3);
+	if (record8.getR352_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record8.getR352_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record8.getR352_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record8.getR352_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record8.getR352_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record8.getR352_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record8.getR352_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record8.getR352_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record8.getR352_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record8.getR352_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record8.getR352_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record8.getR352_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record8.getR352_DESCRIPTION() != null) {
+	    cell1.setCellValue(record8.getR352_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record8.getR352_VALUE() != null) {
+	    cell1.setCellValue(record8.getR352_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+
+	//ROW34
+	row = sheet.getRow(33);
+
+	cell1 = row.getCell(3);
+	if (record8.getR353_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record8.getR353_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record8.getR353_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record8.getR353_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record8.getR353_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record8.getR353_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record8.getR353_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record8.getR353_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record8.getR353_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record8.getR353_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record8.getR353_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record8.getR353_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record8.getR353_DESCRIPTION() != null) {
+	    cell1.setCellValue(record8.getR353_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record8.getR353_VALUE() != null) {
+	    cell1.setCellValue(record8.getR353_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+			}
+
+     workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+} else {
+
+}
+// Write the final workbook content to the in-memory stream.
+workbook.write(out);
+
+logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+return out.toByteArray();
+	  }	
+}
 
 public byte[] BRRS_M_RPDResubExcel(String filename, String reportId, String fromdate,
 		String todate, String currency, String dtltype,
@@ -49848,28 +53217,28 @@ public byte[] BRRS_M_RPDResubExcel(String filename, String reportId, String from
 
 	logger.info("Service: Starting Excel generation process in memory for RESUB Excel.");
 
-	if (type.equals("RESUB") & version != null) {
+//	if (type.equals("RESUB") & version != null) {
+//
+//	}
 
-	}
-
-	List<BRRS_M_RPD_Archival_Summary_Entity1> dataList1 = BRRS_M_RPD_Archival_Summary_Repo1
+	List<BRRS_M_RPD_Resub_Summary_Entity1> dataList1 = BRRS_M_RPD_Resub_Summary_Repo1
 			.getdatabydateListarchival(dateformat.parse(todate), version);
-	List<BRRS_M_RPD_Archival_Summary_Entity2> dataList2 = BRRS_M_RPD_Archival_Summary_Repo2
+	List<BRRS_M_RPD_Resub_Summary_Entity2> dataList2 = BRRS_M_RPD_Resub_Summary_Repo2
 			.getdatabydateListarchival(dateformat.parse(todate), version);
-	List<BRRS_M_RPD_Archival_Summary_Entity3> dataList3 = BRRS_M_RPD_Archival_Summary_Repo3
+	List<BRRS_M_RPD_Resub_Summary_Entity3> dataList3 = BRRS_M_RPD_Resub_Summary_Repo3
 			.getdatabydateListarchival(dateformat.parse(todate), version);
-	List<BRRS_M_RPD_Archival_Summary_Entity4> dataList4 = BRRS_M_RPD_Archival_Summary_Repo4
+	List<BRRS_M_RPD_Resub_Summary_Entity4> dataList4 = BRRS_M_RPD_Resub_Summary_Repo4
 			.getdatabydateListarchival(dateformat.parse(todate), version);
-	List<BRRS_M_RPD_Archival_Summary_Entity5> dataList5 = BRRS_M_RPD_Archival_Summary_Repo5
+	List<BRRS_M_RPD_Resub_Summary_Entity5> dataList5 = BRRS_M_RPD_Resub_Summary_Repo5
 			.getdatabydateListarchival(dateformat.parse(todate), version);
-	List<BRRS_M_RPD_Archival_Summary_Entity6> dataList6 = BRRS_M_RPD_Archival_Summary_Repo6
+	List<BRRS_M_RPD_Resub_Summary_Entity6> dataList6 = BRRS_M_RPD_Resub_Summary_Repo6
 			.getdatabydateListarchival(dateformat.parse(todate), version);
-	List<BRRS_M_RPD_Archival_Summary_Entity7> dataList7 = BRRS_M_RPD_Archival_Summary_Repo7
+	List<BRRS_M_RPD_Resub_Summary_Entity7> dataList7 = BRRS_M_RPD_Resub_Summary_Repo7
 			.getdatabydateListarchival(dateformat.parse(todate), version);
-	List<BRRS_M_RPD_Archival_Summary_Entity8> dataList8 = BRRS_M_RPD_Archival_Summary_Repo8
+	List<BRRS_M_RPD_Resub_Summary_Entity8> dataList8 = BRRS_M_RPD_Resub_Summary_Repo8
 			.getdatabydateListarchival(dateformat.parse(todate), version);
 
-	List<BRRS_M_RPD_Archival_Summary_Entity9> dataList9 = BRRS_M_RPD_Archival_Summary_Repo9
+	List<BRRS_M_RPD_Resub_Summary_Entity9> dataList9 = BRRS_M_RPD_Resub_Summary_Repo9
 			.getdatabydateListarchival(dateformat.parse(todate), version);
 
 	if (dataList1.isEmpty()) {
@@ -49935,15 +53304,15 @@ public byte[] BRRS_M_RPDResubExcel(String filename, String reportId, String from
 
 			if (!dataList1.isEmpty()) {
 				for (int i = 0; i < dataList1.size(); i++) {
-					BRRS_M_RPD_Archival_Summary_Entity1 record1 = dataList1.get(i);
-					BRRS_M_RPD_Archival_Summary_Entity2 record2 = dataList2.get(i);
-					BRRS_M_RPD_Archival_Summary_Entity3 record3 = dataList3.get(i);
-					BRRS_M_RPD_Archival_Summary_Entity4 record4 = dataList4.get(i);
-					BRRS_M_RPD_Archival_Summary_Entity5 record5 = dataList5.get(i);
-					BRRS_M_RPD_Archival_Summary_Entity6 record6 = dataList6.get(i);
-					BRRS_M_RPD_Archival_Summary_Entity7 record7 = dataList7.get(i);
-					BRRS_M_RPD_Archival_Summary_Entity8 record8 = dataList8.get(i);
-					BRRS_M_RPD_Archival_Summary_Entity9 record9 = dataList9.get(i);
+					BRRS_M_RPD_Resub_Summary_Entity1 record1 = dataList1.get(i);
+					BRRS_M_RPD_Resub_Summary_Entity2 record2 = dataList2.get(i);
+					BRRS_M_RPD_Resub_Summary_Entity3 record3 = dataList3.get(i);
+					BRRS_M_RPD_Resub_Summary_Entity4 record4 = dataList4.get(i);
+					BRRS_M_RPD_Resub_Summary_Entity5 record5 = dataList5.get(i);
+					BRRS_M_RPD_Resub_Summary_Entity6 record6 = dataList6.get(i);
+					BRRS_M_RPD_Resub_Summary_Entity7 record7 = dataList7.get(i);
+					BRRS_M_RPD_Resub_Summary_Entity8 record8 = dataList8.get(i);
+					BRRS_M_RPD_Resub_Summary_Entity9 record9 = dataList9.get(i);
 					System.out.println("rownumber="+startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
@@ -58659,7 +62028,9 @@ public byte[] BRRS_M_RPDResubExcel(String filename, String reportId, String from
 						cell1.setCellStyle(textStyle);
 					}
 					next101_3_4(sheet,record3,record4,numberStyle,textStyle);
-					
+					next201_5_6(sheet,record5,record6,numberStyle,textStyle);
+					next301_7_8(sheet,record7,record8,numberStyle,textStyle);
+					next401_9(sheet,record9,numberStyle,textStyle);
 					
 	}
 	workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
@@ -58676,7 +62047,7 @@ public byte[] BRRS_M_RPDResubExcel(String filename, String reportId, String from
 	}
 	}
 
-public void next101_3_4(Sheet sheet,BRRS_M_RPD_Archival_Summary_Entity3 record3,BRRS_M_RPD_Archival_Summary_Entity4 record4,CellStyle numberStyle,CellStyle textStyle) {
+public void next101_3_4(Sheet sheet,BRRS_M_RPD_Resub_Summary_Entity3 record3,BRRS_M_RPD_Resub_Summary_Entity4 record4,CellStyle numberStyle,CellStyle textStyle) {
 	//ROW101		
 	//COL-B
 	Row row=sheet.getRow(100);
@@ -68562,4 +71933,11315 @@ public void next101_3_4(Sheet sheet,BRRS_M_RPD_Archival_Summary_Entity3 record3,
 		cell1.setCellStyle(textStyle);
 	}
 }
+
+public void next201_5_6(Sheet sheet,BRRS_M_RPD_Resub_Summary_Entity5 record5,BRRS_M_RPD_Resub_Summary_Entity6 record6,CellStyle numberStyle,CellStyle textStyle) {
+	//ROW201
+	Row row = sheet.getRow(200);
+	//COL-B
+	Cell cell1 = row.getCell(1);
+	if (record5.getR201_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR201_NAME_INSIDER_BORROWER());
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//COL-C
+	cell1 = row.getCell(2);
+	if (record5.getR201_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR201_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//COL-D
+	cell1 = row.getCell(3);
+	if (record5.getR201_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR201_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//COL-E
+	cell1 = row.getCell(4);
+	if (record5.getR201_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR201_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//COL-F
+	cell1 = row.getCell(5);
+	if (record5.getR201_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR201_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//COL-G
+	cell1 = row.getCell(6);
+	if (record5.getR201_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR201_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//COL-H
+	cell1 = row.getCell(7);
+	if (record5.getR201_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR201_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//COL-I
+	cell1 = row.getCell(8);
+	if (record5.getR201_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR201_DESCRIPTION());
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//COL-J
+	cell1 = row.getCell(9);
+	if (record5.getR201_VALUE() != null) {
+	    cell1.setCellValue(record5.getR201_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//COL-K
+	cell1 = row.getCell(10);
+	if (record5.getR201_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR201_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//ROW202
+	row = sheet.getRow(201);
+	//COL-B
+	cell1 = row.getCell(1);
+	if (record5.getR202_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR202_NAME_INSIDER_BORROWER());
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//COL-C
+	cell1 = row.getCell(2);
+	if (record5.getR202_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR202_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//COL-D
+	cell1 = row.getCell(3);
+	if (record5.getR202_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR202_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//COL-E
+	cell1 = row.getCell(4);
+	if (record5.getR202_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR202_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//COL-F
+	cell1 = row.getCell(5);
+	if (record5.getR202_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR202_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//COL-G
+	cell1 = row.getCell(6);
+	if (record5.getR202_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR202_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//COL-H
+	cell1 = row.getCell(7);
+	if (record5.getR202_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR202_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//COL-I
+	cell1 = row.getCell(8);
+	if (record5.getR202_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR202_DESCRIPTION());
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//COL-J
+	cell1 = row.getCell(9);
+	if (record5.getR202_VALUE() != null) {
+	    cell1.setCellValue(record5.getR202_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//COL-K
+	cell1 = row.getCell(10);
+	if (record5.getR202_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR202_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//ROW203
+	row = sheet.getRow(202);
+
+	//COL-B
+	cell1 = row.getCell(1);
+	if (record5.getR203_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR203_NAME_INSIDER_BORROWER());
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-C
+	cell1 = row.getCell(2);
+	if (record5.getR203_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR203_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-D
+	cell1 = row.getCell(3);
+	if (record5.getR203_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR203_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-E
+	cell1 = row.getCell(4);
+	if (record5.getR203_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR203_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-F
+	cell1 = row.getCell(5);
+	if (record5.getR203_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR203_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-G
+	cell1 = row.getCell(6);
+	if (record5.getR203_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR203_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-H
+	cell1 = row.getCell(7);
+	if (record5.getR203_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR203_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-I
+	cell1 = row.getCell(8);
+	if (record5.getR203_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR203_DESCRIPTION());
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-J
+	cell1 = row.getCell(9);
+	if (record5.getR203_VALUE() != null) {
+	    cell1.setCellValue(record5.getR203_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-K
+	cell1 = row.getCell(10);
+	if (record5.getR203_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR203_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//ROW204
+	row = sheet.getRow(203);
+
+	//COL-B
+	cell1 = row.getCell(1);
+	if (record5.getR204_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR204_NAME_INSIDER_BORROWER());
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-C
+	cell1 = row.getCell(2);
+	if (record5.getR204_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR204_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-D
+	cell1 = row.getCell(3);
+	if (record5.getR204_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR204_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-E
+	cell1 = row.getCell(4);
+	if (record5.getR204_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR204_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-F
+	cell1 = row.getCell(5);
+	if (record5.getR204_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR204_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-G
+	cell1 = row.getCell(6);
+	if (record5.getR204_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR204_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-H
+	cell1 = row.getCell(7);
+	if (record5.getR204_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR204_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-I
+	cell1 = row.getCell(8);
+	if (record5.getR204_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR204_DESCRIPTION());
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-J
+	cell1 = row.getCell(9);
+	if (record5.getR204_VALUE() != null) {
+	    cell1.setCellValue(record5.getR204_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-K
+	cell1 = row.getCell(10);
+	if (record5.getR204_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR204_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//ROW205
+	row = sheet.getRow(204);
+
+	//COL-B
+	cell1 = row.getCell(1);
+	if (record5.getR205_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR205_NAME_INSIDER_BORROWER());
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-C
+	cell1 = row.getCell(2);
+	if (record5.getR205_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR205_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-D
+	cell1 = row.getCell(3);
+	if (record5.getR205_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR205_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-E
+	cell1 = row.getCell(4);
+	if (record5.getR205_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR205_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-F
+	cell1 = row.getCell(5);
+	if (record5.getR205_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR205_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-G
+	cell1 = row.getCell(6);
+	if (record5.getR205_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR205_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-H
+	cell1 = row.getCell(7);
+	if (record5.getR205_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR205_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-I
+	cell1 = row.getCell(8);
+	if (record5.getR205_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR205_DESCRIPTION());
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-J
+	cell1 = row.getCell(9);
+	if (record5.getR205_VALUE() != null) {
+	    cell1.setCellValue(record5.getR205_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-K
+	cell1 = row.getCell(10);
+	if (record5.getR205_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR205_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+	//ROW206
+	row = sheet.getRow(205);
+
+	//COL-B
+	cell1 = row.getCell(1);
+	if (record5.getR206_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR206_NAME_INSIDER_BORROWER());
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-C
+	cell1 = row.getCell(2);
+	if (record5.getR206_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR206_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-D
+	cell1 = row.getCell(3);
+	if (record5.getR206_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR206_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-E
+	cell1 = row.getCell(4);
+	if (record5.getR206_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR206_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-F
+	cell1 = row.getCell(5);
+	if (record5.getR206_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR206_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-G
+	cell1 = row.getCell(6);
+	if (record5.getR206_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR206_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-H
+	cell1 = row.getCell(7);
+	if (record5.getR206_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR206_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-I
+	cell1 = row.getCell(8);
+	if (record5.getR206_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR206_DESCRIPTION());
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-J
+	cell1 = row.getCell(9);
+	if (record5.getR206_VALUE() != null) {
+	    cell1.setCellValue(record5.getR206_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-K
+	cell1 = row.getCell(10);
+	if (record5.getR206_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR206_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+
+	//ROW207
+	row = sheet.getRow(206);
+
+	//COL-B
+	cell1 = row.getCell(1);
+	if (record5.getR207_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR207_NAME_INSIDER_BORROWER());
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-C
+	cell1 = row.getCell(2);
+	if (record5.getR207_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR207_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-D
+	cell1 = row.getCell(3);
+	if (record5.getR207_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR207_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-E
+	cell1 = row.getCell(4);
+	if (record5.getR207_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR207_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-F
+	cell1 = row.getCell(5);
+	if (record5.getR207_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR207_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-G
+	cell1 = row.getCell(6);
+	if (record5.getR207_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR207_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-H
+	cell1 = row.getCell(7);
+	if (record5.getR207_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR207_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-I
+	cell1 = row.getCell(8);
+	if (record5.getR207_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR207_DESCRIPTION());
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-J
+	cell1 = row.getCell(9);
+	if (record5.getR207_VALUE() != null) {
+	    cell1.setCellValue(record5.getR207_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-K
+	cell1 = row.getCell(10);
+	if (record5.getR207_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR207_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+
+	//ROW208
+	row = sheet.getRow(207);
+
+	//COL-B
+	cell1 = row.getCell(1);
+	if (record5.getR208_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR208_NAME_INSIDER_BORROWER());
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-C
+	cell1 = row.getCell(2);
+	if (record5.getR208_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR208_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-D
+	cell1 = row.getCell(3);
+	if (record5.getR208_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR208_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-E
+	cell1 = row.getCell(4);
+	if (record5.getR208_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR208_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-F
+	cell1 = row.getCell(5);
+	if (record5.getR208_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR208_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-G
+	cell1 = row.getCell(6);
+	if (record5.getR208_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR208_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-H
+	cell1 = row.getCell(7);
+	if (record5.getR208_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR208_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-I
+	cell1 = row.getCell(8);
+	if (record5.getR208_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR208_DESCRIPTION());
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-J
+	cell1 = row.getCell(9);
+	if (record5.getR208_VALUE() != null) {
+	    cell1.setCellValue(record5.getR208_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-K
+	cell1 = row.getCell(10);
+	if (record5.getR208_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR208_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+
+	//ROW209
+	row = sheet.getRow(208);
+
+	//COL-B
+	cell1 = row.getCell(1);
+	if (record5.getR209_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR209_NAME_INSIDER_BORROWER());
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-C
+	cell1 = row.getCell(2);
+	if (record5.getR209_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR209_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-D
+	cell1 = row.getCell(3);
+	if (record5.getR209_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR209_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-E
+	cell1 = row.getCell(4);
+	if (record5.getR209_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR209_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-F
+	cell1 = row.getCell(5);
+	if (record5.getR209_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR209_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-G
+	cell1 = row.getCell(6);
+	if (record5.getR209_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR209_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-H
+	cell1 = row.getCell(7);
+	if (record5.getR209_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR209_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-I
+	cell1 = row.getCell(8);
+	if (record5.getR209_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR209_DESCRIPTION());
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-J
+	cell1 = row.getCell(9);
+	if (record5.getR209_VALUE() != null) {
+	    cell1.setCellValue(record5.getR209_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-K
+	cell1 = row.getCell(10);
+	if (record5.getR209_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR209_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+
+	//ROW210
+	row = sheet.getRow(209);
+
+	//COL-B
+	cell1 = row.getCell(1);
+	if (record5.getR210_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR210_NAME_INSIDER_BORROWER());
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-C
+	cell1 = row.getCell(2);
+	if (record5.getR210_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR210_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-D
+	cell1 = row.getCell(3);
+	if (record5.getR210_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR210_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-E
+	cell1 = row.getCell(4);
+	if (record5.getR210_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR210_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-F
+	cell1 = row.getCell(5);
+	if (record5.getR210_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR210_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-G
+	cell1 = row.getCell(6);
+	if (record5.getR210_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR210_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-H
+	cell1 = row.getCell(7);
+	if (record5.getR210_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR210_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-I
+	cell1 = row.getCell(8);
+	if (record5.getR210_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR210_DESCRIPTION());
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-J
+	cell1 = row.getCell(9);
+	if (record5.getR210_VALUE() != null) {
+	    cell1.setCellValue(record5.getR210_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//COL-K
+	cell1 = row.getCell(10);
+	if (record5.getR210_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR210_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else {
+	    cell1.setCellValue("");
+	    cell1.setCellStyle(textStyle);
+	}
+
+	//====================== ROW 211 ======================
+	row = sheet.getRow(210);
+
+	//COL-B
+	cell1 = row.getCell(1);
+	if (record5.getR211_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR211_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-C
+	cell1 = row.getCell(2);
+	if (record5.getR211_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR211_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-D
+	cell1 = row.getCell(3);
+	if (record5.getR211_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR211_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-E
+	cell1 = row.getCell(4);
+	if (record5.getR211_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR211_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-F
+	cell1 = row.getCell(5);
+	if (record5.getR211_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR211_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-G
+	cell1 = row.getCell(6);
+	if (record5.getR211_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR211_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-H
+	cell1 = row.getCell(7);
+	if (record5.getR211_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR211_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-I
+	cell1 = row.getCell(8);
+	if (record5.getR211_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR211_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-J
+	cell1 = row.getCell(9);
+	if (record5.getR211_VALUE() != null) {
+	    cell1.setCellValue(record5.getR211_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-K
+	cell1 = row.getCell(10);
+	if (record5.getR211_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR211_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//====================== ROW 212 ======================
+	row = sheet.getRow(211);
+
+	cell1 = row.getCell(1);
+	if (record5.getR212_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR212_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR212_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR212_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR212_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR212_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR212_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR212_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR212_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR212_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR212_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR212_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR212_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR212_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR212_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR212_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR212_VALUE() != null) {
+	    cell1.setCellValue(record5.getR212_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR212_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR212_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	//====================== ROW 213 ======================
+	row = sheet.getRow(212);
+
+	//COL-B
+	cell1 = row.getCell(1);
+	if (record5.getR213_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR213_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-C
+	cell1 = row.getCell(2);
+	if (record5.getR213_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR213_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-D
+	cell1 = row.getCell(3);
+	if (record5.getR213_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR213_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-E
+	cell1 = row.getCell(4);
+	if (record5.getR213_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR213_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-F
+	cell1 = row.getCell(5);
+	if (record5.getR213_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR213_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-G
+	cell1 = row.getCell(6);
+	if (record5.getR213_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR213_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-H
+	cell1 = row.getCell(7);
+	if (record5.getR213_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR213_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-I
+	cell1 = row.getCell(8);
+	if (record5.getR213_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR213_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-J
+	cell1 = row.getCell(9);
+	if (record5.getR213_VALUE() != null) {
+	    cell1.setCellValue(record5.getR213_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-K
+	cell1 = row.getCell(10);
+	if (record5.getR213_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR213_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//====================== ROW 214 ======================
+	row = sheet.getRow(213);
+
+	cell1 = row.getCell(1);
+	if (record5.getR214_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR214_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR214_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR214_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR214_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR214_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR214_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR214_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR214_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR214_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR214_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR214_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR214_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR214_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR214_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR214_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR214_VALUE() != null) {
+	    cell1.setCellValue(record5.getR214_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR214_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR214_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//====================== ROW 215 ======================
+	row = sheet.getRow(214);
+
+	cell1 = row.getCell(1);
+	if (record5.getR215_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR215_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR215_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR215_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR215_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR215_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR215_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR215_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR215_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR215_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR215_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR215_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR215_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR215_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR215_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR215_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR215_VALUE() != null) {
+	    cell1.setCellValue(record5.getR215_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR215_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR215_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//====================== ROW 216 ======================
+	row = sheet.getRow(215);
+
+	cell1 = row.getCell(1);
+	if (record5.getR216_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR216_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR216_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR216_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR216_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR216_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR216_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR216_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR216_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR216_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR216_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR216_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR216_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR216_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR216_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR216_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR216_VALUE() != null) {
+	    cell1.setCellValue(record5.getR216_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR216_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR216_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//====================== ROW 217 ======================
+	row = sheet.getRow(216);
+
+	cell1 = row.getCell(1);
+	if (record5.getR217_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR217_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR217_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR217_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR217_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR217_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR217_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR217_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR217_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR217_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR217_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR217_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR217_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR217_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR217_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR217_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR217_VALUE() != null) {
+	    cell1.setCellValue(record5.getR217_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR217_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR217_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//====================== ROW 218 ======================
+	row = sheet.getRow(217);
+
+	cell1 = row.getCell(1);
+	if (record5.getR218_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR218_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR218_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR218_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR218_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR218_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR218_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR218_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR218_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR218_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR218_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR218_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR218_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR218_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR218_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR218_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR218_VALUE() != null) {
+	    cell1.setCellValue(record5.getR218_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR218_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR218_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	//====================== ROW 219 ======================
+	row = sheet.getRow(218);
+
+	cell1 = row.getCell(1);
+	if (record5.getR219_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR219_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR219_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR219_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR219_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR219_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR219_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR219_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR219_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR219_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR219_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR219_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR219_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR219_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR219_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR219_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR219_VALUE() != null) {
+	    cell1.setCellValue(record5.getR219_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR219_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR219_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//====================== ROW 220 ======================
+	row = sheet.getRow(219);
+
+	cell1 = row.getCell(1);
+	if (record5.getR220_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR220_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR220_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR220_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR220_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR220_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR220_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR220_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR220_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR220_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR220_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR220_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR220_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR220_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR220_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR220_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR220_VALUE() != null) {
+	    cell1.setCellValue(record5.getR220_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR220_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR220_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//====================== ROW 221 ======================
+	row = sheet.getRow(220);
+
+	cell1 = row.getCell(1);
+	if (record5.getR221_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR221_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR221_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR221_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR221_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR221_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR221_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR221_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR221_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR221_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR221_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR221_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR221_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR221_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR221_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR221_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR221_VALUE() != null) {
+	    cell1.setCellValue(record5.getR221_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR221_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR221_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//====================== ROW 222 ======================
+	row = sheet.getRow(221);
+
+	cell1 = row.getCell(1);
+	if (record5.getR222_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR222_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR222_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR222_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR222_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR222_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR222_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR222_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR222_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR222_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR222_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR222_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR222_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR222_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR222_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR222_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR222_VALUE() != null) {
+	    cell1.setCellValue(record5.getR222_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR222_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR222_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//====================== ROW 223 ======================
+	row = sheet.getRow(222);
+
+	cell1 = row.getCell(1);
+	if (record5.getR223_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR223_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR223_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR223_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR223_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR223_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR223_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR223_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR223_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR223_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR223_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR223_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR223_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR223_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR223_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR223_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR223_VALUE() != null) {
+	    cell1.setCellValue(record5.getR223_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR223_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR223_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//====================== ROW 224 ======================
+	row = sheet.getRow(223);
+
+	cell1 = row.getCell(1);
+	if (record5.getR224_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR224_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR224_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR224_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR224_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR224_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR224_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR224_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR224_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR224_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR224_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR224_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR224_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR224_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR224_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR224_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR224_VALUE() != null) {
+	    cell1.setCellValue(record5.getR224_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR224_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR224_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//====================== ROW 225 ======================
+	row = sheet.getRow(224);
+
+	cell1 = row.getCell(1);
+	if (record5.getR225_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR225_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR225_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR225_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR225_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR225_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR225_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR225_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR225_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR225_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR225_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR225_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR225_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR225_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR225_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR225_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR225_VALUE() != null) {
+	    cell1.setCellValue(record5.getR225_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR225_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR225_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	//====================== ROW 226 ======================
+	row = sheet.getRow(225);
+
+	//COL-B
+	cell1 = row.getCell(1);
+	if (record5.getR226_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR226_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-C
+	cell1 = row.getCell(2);
+	if (record5.getR226_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR226_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-D
+	cell1 = row.getCell(3);
+	if (record5.getR226_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR226_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-E
+	cell1 = row.getCell(4);
+	if (record5.getR226_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR226_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-F
+	cell1 = row.getCell(5);
+	if (record5.getR226_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR226_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-G
+	cell1 = row.getCell(6);
+	if (record5.getR226_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR226_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-H
+	cell1 = row.getCell(7);
+	if (record5.getR226_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR226_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-I
+	cell1 = row.getCell(8);
+	if (record5.getR226_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR226_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-J
+	cell1 = row.getCell(9);
+	if (record5.getR226_VALUE() != null) {
+	    cell1.setCellValue(record5.getR226_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	//COL-K
+	cell1 = row.getCell(10);
+	if (record5.getR226_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR226_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+	//====================== ROW 227 ======================
+	row = sheet.getRow(226);
+
+	cell1 = row.getCell(1);
+	if (record5.getR227_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR227_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR227_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR227_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR227_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR227_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR227_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR227_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR227_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR227_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR227_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR227_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR227_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR227_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR227_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR227_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR227_VALUE() != null) {
+	    cell1.setCellValue(record5.getR227_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR227_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR227_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+	//====================== ROW 228 ======================
+	row = sheet.getRow(227);
+
+	cell1 = row.getCell(1);
+	if (record5.getR228_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR228_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR228_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR228_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR228_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR228_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR228_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR228_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR228_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR228_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR228_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR228_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR228_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR228_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR228_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR228_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR228_VALUE() != null) {
+	    cell1.setCellValue(record5.getR228_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR228_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR228_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+	//====================== ROW 229 ======================
+	row = sheet.getRow(228);
+
+	cell1 = row.getCell(1);
+	if (record5.getR229_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR229_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR229_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR229_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR229_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR229_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR229_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR229_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR229_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR229_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR229_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR229_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR229_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR229_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR229_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR229_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR229_VALUE() != null) {
+	    cell1.setCellValue(record5.getR229_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR229_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR229_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+	//====================== ROW 230 ======================
+	row = sheet.getRow(229);
+
+	cell1 = row.getCell(1);
+	if (record5.getR230_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR230_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR230_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR230_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR230_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR230_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR230_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR230_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR230_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR230_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR230_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR230_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR230_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR230_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR230_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR230_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR230_VALUE() != null) {
+	    cell1.setCellValue(record5.getR230_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR230_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR230_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+	//====================== ROW 231 ======================
+	row = sheet.getRow(230);
+
+	cell1 = row.getCell(1);
+	if (record5.getR231_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR231_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR231_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR231_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR231_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR231_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR231_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR231_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR231_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR231_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR231_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR231_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR231_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR231_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR231_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR231_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR231_VALUE() != null) {
+	    cell1.setCellValue(record5.getR231_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR231_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR231_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	row = sheet.getRow(231);
+
+	cell1 = row.getCell(1);
+	if (record5.getR232_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR232_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR232_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR232_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR232_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR232_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR232_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR232_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR232_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR232_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR232_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR232_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR232_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR232_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR232_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR232_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR232_VALUE() != null) {
+	    cell1.setCellValue(record5.getR232_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR232_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR232_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	row = sheet.getRow(232);
+
+	cell1 = row.getCell(1);
+	if (record5.getR233_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR233_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR233_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR233_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR233_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR233_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR233_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR233_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR233_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR233_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR233_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR233_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR233_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR233_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR233_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR233_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR233_VALUE() != null) {
+	    cell1.setCellValue(record5.getR233_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR233_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR233_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	row = sheet.getRow(233);
+
+	cell1 = row.getCell(1);
+	if (record5.getR234_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR234_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR234_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR234_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR234_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR234_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR234_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR234_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR234_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR234_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR234_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR234_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR234_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR234_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR234_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR234_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR234_VALUE() != null) {
+	    cell1.setCellValue(record5.getR234_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR234_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR234_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	row = sheet.getRow(234);
+
+	cell1 = row.getCell(1);
+	if (record5.getR235_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR235_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR235_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR235_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR235_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR235_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR235_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR235_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR235_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR235_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR235_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR235_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR235_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR235_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR235_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR235_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR235_VALUE() != null) {
+	    cell1.setCellValue(record5.getR235_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR235_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR235_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	row = sheet.getRow(235);
+
+	cell1 = row.getCell(1);
+	if (record5.getR236_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR236_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR236_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR236_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR236_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR236_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR236_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR236_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR236_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR236_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR236_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR236_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR236_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR236_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR236_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR236_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR236_VALUE() != null) {
+	    cell1.setCellValue(record5.getR236_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR236_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR236_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	row = sheet.getRow(236);
+
+	cell1 = row.getCell(1);
+	if (record5.getR237_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR237_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR237_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR237_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR237_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR237_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR237_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR237_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR237_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR237_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR237_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR237_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR237_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR237_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR237_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR237_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR237_VALUE() != null) {
+	    cell1.setCellValue(record5.getR237_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR237_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR237_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	row = sheet.getRow(237);
+
+	cell1 = row.getCell(1);
+	if (record5.getR238_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR238_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR238_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR238_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR238_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR238_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR238_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR238_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR238_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR238_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR238_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR238_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR238_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR238_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR238_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR238_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR238_VALUE() != null) {
+	    cell1.setCellValue(record5.getR238_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR238_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR238_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	row = sheet.getRow(238);
+
+	cell1 = row.getCell(1);
+	if (record5.getR239_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR239_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR239_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR239_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR239_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR239_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR239_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR239_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR239_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR239_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR239_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR239_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR239_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR239_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR239_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR239_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR239_VALUE() != null) {
+	    cell1.setCellValue(record5.getR239_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR239_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR239_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	row = sheet.getRow(239);
+
+	cell1 = row.getCell(1);
+	if (record5.getR240_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR240_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR240_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR240_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR240_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR240_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR240_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR240_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR240_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR240_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR240_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR240_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR240_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR240_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR240_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR240_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR240_VALUE() != null) {
+	    cell1.setCellValue(record5.getR240_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR240_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR240_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	//ROW241
+	row = sheet.getRow(240);
+
+	cell1 = row.getCell(1);
+	if (record5.getR241_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR241_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR241_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR241_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR241_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR241_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR241_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR241_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR241_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR241_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR241_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR241_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR241_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR241_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR241_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR241_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR241_VALUE() != null) {
+	    cell1.setCellValue(record5.getR241_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR241_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR241_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	//ROW242
+	row = sheet.getRow(241);
+
+	cell1 = row.getCell(1);
+	if (record5.getR242_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR242_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR242_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR242_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR242_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR242_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR242_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR242_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR242_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR242_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR242_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR242_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR242_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR242_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR242_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR242_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR242_VALUE() != null) {
+	    cell1.setCellValue(record5.getR242_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR242_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR242_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	//ROW243
+	row = sheet.getRow(242);
+
+	cell1 = row.getCell(1);
+	if (record5.getR243_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR243_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR243_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR243_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR243_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR243_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR243_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR243_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR243_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR243_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR243_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR243_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR243_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR243_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR243_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR243_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR243_VALUE() != null) {
+	    cell1.setCellValue(record5.getR243_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR243_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR243_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	//ROW244
+	row = sheet.getRow(243);
+
+	cell1 = row.getCell(1);
+	if (record5.getR244_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR244_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR244_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR244_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR244_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR244_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR244_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR244_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR244_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR244_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR244_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR244_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR244_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR244_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR244_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR244_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR244_VALUE() != null) {
+	    cell1.setCellValue(record5.getR244_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR244_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR244_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	//ROW245
+	row = sheet.getRow(244);
+
+	cell1 = row.getCell(1);
+	if (record5.getR245_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR245_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR245_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR245_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR245_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR245_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR245_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR245_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR245_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR245_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR245_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR245_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR245_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR245_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR245_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR245_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR245_VALUE() != null) {
+	    cell1.setCellValue(record5.getR245_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR245_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR245_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	//ROW246
+	row = sheet.getRow(245);
+
+	cell1 = row.getCell(1);
+	if (record5.getR246_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR246_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR246_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR246_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR246_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR246_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR246_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR246_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR246_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR246_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR246_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR246_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR246_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR246_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR246_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR246_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR246_VALUE() != null) {
+	    cell1.setCellValue(record5.getR246_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR246_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR246_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	//ROW247
+	row = sheet.getRow(246);
+
+	cell1 = row.getCell(1);
+	if (record5.getR247_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR247_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR247_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR247_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR247_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR247_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR247_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR247_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR247_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR247_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR247_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR247_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR247_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR247_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR247_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR247_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR247_VALUE() != null) {
+	    cell1.setCellValue(record5.getR247_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR247_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR247_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	//ROW248
+	row = sheet.getRow(247);
+
+	cell1 = row.getCell(1);
+	if (record5.getR248_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR248_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR248_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR248_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR248_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR248_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR248_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR248_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR248_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR248_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR248_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR248_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR248_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR248_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR248_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR248_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR248_VALUE() != null) {
+	    cell1.setCellValue(record5.getR248_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR248_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR248_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	//ROW249
+	row = sheet.getRow(248);
+
+	cell1 = row.getCell(1);
+	if (record5.getR249_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR249_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR249_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR249_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR249_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR249_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR249_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR249_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR249_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR249_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR249_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR249_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR249_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR249_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR249_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR249_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR249_VALUE() != null) {
+	    cell1.setCellValue(record5.getR249_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR249_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR249_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	//ROW250
+	row = sheet.getRow(249);
+
+	cell1 = row.getCell(1);
+	if (record5.getR250_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record5.getR250_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record5.getR250_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record5.getR250_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record5.getR250_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record5.getR250_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record5.getR250_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record5.getR250_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record5.getR250_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record5.getR250_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record5.getR250_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record5.getR250_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record5.getR250_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record5.getR250_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record5.getR250_DESCRIPTION() != null) {
+	    cell1.setCellValue(record5.getR250_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record5.getR250_VALUE() != null) {
+	    cell1.setCellValue(record5.getR250_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record5.getR250_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record5.getR250_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	//ROW251
+	row = sheet.getRow(250);
+
+	cell1 = row.getCell(1);
+	if (record6.getR251_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR251_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR251_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR251_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR251_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR251_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR251_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR251_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR251_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR251_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR251_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR251_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR251_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR251_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR251_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR251_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR251_VALUE() != null) {
+	    cell1.setCellValue(record6.getR251_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR251_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR251_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	//ROW252
+	row = sheet.getRow(251);
+
+	cell1 = row.getCell(1);
+	if (record6.getR252_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR252_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR252_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR252_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR252_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR252_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR252_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR252_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR252_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR252_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR252_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR252_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR252_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR252_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR252_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR252_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR252_VALUE() != null) {
+	    cell1.setCellValue(record6.getR252_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR252_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR252_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	//ROW253
+	row = sheet.getRow(252);
+
+	cell1 = row.getCell(1);
+	if (record6.getR253_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR253_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR253_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR253_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR253_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR253_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR253_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR253_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR253_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR253_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR253_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR253_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR253_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR253_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR253_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR253_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR253_VALUE() != null) {
+	    cell1.setCellValue(record6.getR253_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR253_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR253_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	//ROW254
+	row = sheet.getRow(253);
+
+	cell1 = row.getCell(1);
+	if (record6.getR254_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR254_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR254_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR254_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR254_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR254_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR254_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR254_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR254_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR254_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR254_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR254_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR254_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR254_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR254_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR254_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR254_VALUE() != null) {
+	    cell1.setCellValue(record6.getR254_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR254_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR254_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW255
+	row = sheet.getRow(254);
+
+	cell1 = row.getCell(1);
+	if (record6.getR255_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR255_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR255_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR255_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR255_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR255_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR255_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR255_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR255_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR255_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR255_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR255_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR255_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR255_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR255_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR255_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR255_VALUE() != null) {
+	    cell1.setCellValue(record6.getR255_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR255_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR255_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW256
+	row = sheet.getRow(255);
+
+	cell1 = row.getCell(1);
+	if (record6.getR256_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR256_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR256_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR256_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR256_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR256_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR256_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR256_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR256_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR256_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR256_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR256_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR256_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR256_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR256_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR256_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR256_VALUE() != null) {
+	    cell1.setCellValue(record6.getR256_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR256_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR256_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW257
+	row = sheet.getRow(256);
+
+	cell1 = row.getCell(1);
+	if (record6.getR257_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR257_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR257_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR257_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR257_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR257_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR257_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR257_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR257_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR257_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR257_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR257_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR257_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR257_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR257_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR257_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR257_VALUE() != null) {
+	    cell1.setCellValue(record6.getR257_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR257_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR257_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW258
+	row = sheet.getRow(257);
+
+	cell1 = row.getCell(1);
+	if (record6.getR258_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR258_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR258_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR258_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR258_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR258_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR258_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR258_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR258_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR258_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR258_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR258_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR258_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR258_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR258_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR258_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR258_VALUE() != null) {
+	    cell1.setCellValue(record6.getR258_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR258_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR258_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW259
+	row = sheet.getRow(258);
+
+	cell1 = row.getCell(1);
+	if (record6.getR259_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR259_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR259_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR259_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR259_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR259_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR259_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR259_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR259_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR259_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR259_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR259_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR259_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR259_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR259_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR259_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR259_VALUE() != null) {
+	    cell1.setCellValue(record6.getR259_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR259_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR259_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW260
+	row = sheet.getRow(259);
+
+	cell1 = row.getCell(1);
+	if (record6.getR260_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR260_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR260_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR260_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR260_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR260_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR260_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR260_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR260_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR260_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR260_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR260_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR260_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR260_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR260_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR260_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR260_VALUE() != null) {
+	    cell1.setCellValue(record6.getR260_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR260_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR260_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	//ROW261
+	row = sheet.getRow(260);
+
+	cell1 = row.getCell(1);
+	if (record6.getR261_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR261_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR261_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR261_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR261_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR261_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR261_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR261_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR261_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR261_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR261_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR261_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR261_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR261_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR261_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR261_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR261_VALUE() != null) {
+	    cell1.setCellValue(record6.getR261_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR261_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR261_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW262
+	row = sheet.getRow(261);
+
+	cell1 = row.getCell(1);
+	if (record6.getR262_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR262_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR262_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR262_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR262_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR262_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR262_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR262_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR262_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR262_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR262_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR262_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR262_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR262_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR262_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR262_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR262_VALUE() != null) {
+	    cell1.setCellValue(record6.getR262_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR262_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR262_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW263
+	row = sheet.getRow(262);
+
+	cell1 = row.getCell(1);
+	if (record6.getR263_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR263_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR263_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR263_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR263_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR263_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR263_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR263_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR263_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR263_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR263_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR263_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR263_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR263_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR263_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR263_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR263_VALUE() != null) {
+	    cell1.setCellValue(record6.getR263_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR263_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR263_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW264
+	row = sheet.getRow(263);
+
+	cell1 = row.getCell(1);
+	if (record6.getR264_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR264_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR264_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR264_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR264_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR264_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR264_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR264_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR264_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR264_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR264_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR264_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR264_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR264_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR264_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR264_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR264_VALUE() != null) {
+	    cell1.setCellValue(record6.getR264_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR264_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR264_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW265
+	row = sheet.getRow(264);
+
+	cell1 = row.getCell(1);
+	if (record6.getR265_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR265_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR265_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR265_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR265_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR265_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR265_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR265_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR265_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR265_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR265_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR265_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR265_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR265_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR265_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR265_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR265_VALUE() != null) {
+	    cell1.setCellValue(record6.getR265_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR265_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR265_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW266
+	row = sheet.getRow(265);
+
+	cell1 = row.getCell(1);
+	if (record6.getR266_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR266_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR266_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR266_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR266_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR266_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR266_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR266_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR266_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR266_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR266_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR266_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR266_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR266_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR266_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR266_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR266_VALUE() != null) {
+	    cell1.setCellValue(record6.getR266_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR266_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR266_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW267
+	row = sheet.getRow(266);
+
+	cell1 = row.getCell(1);
+	if (record6.getR267_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR267_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR267_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR267_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR267_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR267_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR267_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR267_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR267_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR267_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR267_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR267_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR267_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR267_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR267_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR267_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR267_VALUE() != null) {
+	    cell1.setCellValue(record6.getR267_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR267_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR267_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW268
+	row = sheet.getRow(267);
+
+	cell1 = row.getCell(1);
+	if (record6.getR268_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR268_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR268_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR268_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR268_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR268_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR268_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR268_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR268_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR268_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR268_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR268_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR268_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR268_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR268_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR268_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR268_VALUE() != null) {
+	    cell1.setCellValue(record6.getR268_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR268_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR268_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW269
+	row = sheet.getRow(268);
+
+	cell1 = row.getCell(1);
+	if (record6.getR269_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR269_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR269_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR269_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR269_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR269_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR269_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR269_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR269_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR269_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR269_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR269_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR269_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR269_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR269_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR269_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR269_VALUE() != null) {
+	    cell1.setCellValue(record6.getR269_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR269_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR269_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW270
+	row = sheet.getRow(269);
+
+	cell1 = row.getCell(1);
+	if (record6.getR270_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR270_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR270_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR270_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR270_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR270_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR270_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR270_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR270_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR270_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR270_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR270_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR270_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR270_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR270_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR270_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR270_VALUE() != null) {
+	    cell1.setCellValue(record6.getR270_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR270_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR270_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	//ROW271
+	row = sheet.getRow(270);
+
+	cell1 = row.getCell(1);
+	if (record6.getR271_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR271_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR271_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR271_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR271_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR271_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR271_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR271_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR271_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR271_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR271_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR271_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR271_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR271_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR271_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR271_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR271_VALUE() != null) {
+	    cell1.setCellValue(record6.getR271_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR271_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR271_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW272
+	row = sheet.getRow(271);
+
+	cell1 = row.getCell(1);
+	if (record6.getR272_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR272_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR272_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR272_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR272_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR272_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR272_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR272_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR272_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR272_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR272_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR272_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR272_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR272_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR272_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR272_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR272_VALUE() != null) {
+	    cell1.setCellValue(record6.getR272_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR272_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR272_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW273
+	row = sheet.getRow(272);
+
+	cell1 = row.getCell(1);
+	if (record6.getR273_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR273_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR273_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR273_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR273_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR273_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR273_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR273_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR273_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR273_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR273_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR273_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR273_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR273_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR273_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR273_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR273_VALUE() != null) {
+	    cell1.setCellValue(record6.getR273_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR273_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR273_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW274
+	row = sheet.getRow(273);
+
+	cell1 = row.getCell(1);
+	if (record6.getR274_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR274_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR274_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR274_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR274_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR274_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR274_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR274_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR274_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR274_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR274_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR274_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR274_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR274_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR274_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR274_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR274_VALUE() != null) {
+	    cell1.setCellValue(record6.getR274_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR274_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR274_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW275
+	row = sheet.getRow(274);
+
+	cell1 = row.getCell(1);
+	if (record6.getR275_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR275_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR275_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR275_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR275_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR275_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR275_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR275_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR275_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR275_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR275_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR275_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR275_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR275_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR275_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR275_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR275_VALUE() != null) {
+	    cell1.setCellValue(record6.getR275_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR275_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR275_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW276
+	row = sheet.getRow(275);
+
+	cell1 = row.getCell(1);
+	if (record6.getR276_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR276_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR276_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR276_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR276_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR276_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR276_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR276_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR276_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR276_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR276_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR276_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR276_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR276_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR276_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR276_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR276_VALUE() != null) {
+	    cell1.setCellValue(record6.getR276_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR276_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR276_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW277
+	row = sheet.getRow(276);
+
+	cell1 = row.getCell(1);
+	if (record6.getR277_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR277_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR277_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR277_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR277_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR277_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR277_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR277_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR277_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR277_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR277_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR277_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR277_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR277_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR277_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR277_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR277_VALUE() != null) {
+	    cell1.setCellValue(record6.getR277_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR277_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR277_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW278
+	row = sheet.getRow(277);
+
+	cell1 = row.getCell(1);
+	if (record6.getR278_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR278_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR278_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR278_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR278_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR278_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR278_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR278_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR278_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR278_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR278_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR278_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR278_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR278_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR278_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR278_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR278_VALUE() != null) {
+	    cell1.setCellValue(record6.getR278_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR278_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR278_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW279
+	row = sheet.getRow(278);
+
+	cell1 = row.getCell(1);
+	if (record6.getR279_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR279_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR279_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR279_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR279_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR279_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR279_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR279_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR279_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR279_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR279_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR279_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR279_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR279_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR279_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR279_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR279_VALUE() != null) {
+	    cell1.setCellValue(record6.getR279_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR279_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR279_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW280
+	row = sheet.getRow(279);
+
+	cell1 = row.getCell(1);
+	if (record6.getR280_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR280_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR280_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR280_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR280_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR280_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR280_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR280_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR280_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR280_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR280_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR280_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR280_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR280_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR280_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR280_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR280_VALUE() != null) {
+	    cell1.setCellValue(record6.getR280_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR280_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR280_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	//ROW281
+	row = sheet.getRow(280);
+
+	cell1 = row.getCell(1);
+	if (record6.getR281_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR281_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR281_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR281_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR281_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR281_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR281_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR281_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR281_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR281_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR281_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR281_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR281_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR281_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR281_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR281_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR281_VALUE() != null) {
+	    cell1.setCellValue(record6.getR281_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR281_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR281_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW282
+	row = sheet.getRow(281);
+
+	cell1 = row.getCell(1);
+	if (record6.getR282_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR282_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR282_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR282_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR282_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR282_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR282_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR282_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR282_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR282_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR282_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR282_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR282_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR282_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR282_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR282_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR282_VALUE() != null) {
+	    cell1.setCellValue(record6.getR282_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR282_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR282_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW283
+	row = sheet.getRow(282);
+
+	cell1 = row.getCell(1);
+	if (record6.getR283_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR283_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR283_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR283_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR283_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR283_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR283_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR283_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR283_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR283_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR283_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR283_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR283_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR283_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR283_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR283_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR283_VALUE() != null) {
+	    cell1.setCellValue(record6.getR283_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR283_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR283_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW284
+	row = sheet.getRow(283);
+
+	cell1 = row.getCell(1);
+	if (record6.getR284_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR284_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR284_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR284_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR284_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR284_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR284_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR284_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR284_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR284_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR284_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR284_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR284_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR284_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR284_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR284_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR284_VALUE() != null) {
+	    cell1.setCellValue(record6.getR284_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR284_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR284_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW285
+	row = sheet.getRow(284);
+
+	cell1 = row.getCell(1);
+	if (record6.getR285_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR285_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR285_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR285_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR285_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR285_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR285_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR285_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR285_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR285_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR285_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR285_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR285_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR285_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR285_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR285_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR285_VALUE() != null) {
+	    cell1.setCellValue(record6.getR285_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR285_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR285_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW286
+	row = sheet.getRow(285);
+
+	cell1 = row.getCell(1);
+	if (record6.getR286_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR286_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR286_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR286_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR286_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR286_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR286_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR286_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR286_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR286_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR286_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR286_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR286_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR286_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR286_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR286_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR286_VALUE() != null) {
+	    cell1.setCellValue(record6.getR286_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR286_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR286_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW287
+	row = sheet.getRow(286);
+
+	cell1 = row.getCell(1);
+	if (record6.getR287_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR287_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR287_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR287_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR287_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR287_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR287_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR287_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR287_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR287_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR287_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR287_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR287_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR287_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR287_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR287_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR287_VALUE() != null) {
+	    cell1.setCellValue(record6.getR287_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR287_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR287_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW288
+	row = sheet.getRow(287);
+
+	cell1 = row.getCell(1);
+	if (record6.getR288_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR288_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR288_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR288_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR288_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR288_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR288_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR288_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR288_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR288_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR288_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR288_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR288_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR288_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR288_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR288_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR288_VALUE() != null) {
+	    cell1.setCellValue(record6.getR288_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR288_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR288_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW289
+	row = sheet.getRow(288);
+
+	cell1 = row.getCell(1);
+	if (record6.getR289_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR289_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR289_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR289_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR289_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR289_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR289_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR289_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR289_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR289_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR289_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR289_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR289_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR289_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR289_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR289_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR289_VALUE() != null) {
+	    cell1.setCellValue(record6.getR289_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR289_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR289_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW290
+	row = sheet.getRow(289);
+
+	cell1 = row.getCell(1);
+	if (record6.getR290_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR290_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR290_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR290_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR290_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR290_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR290_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR290_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR290_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR290_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR290_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR290_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR290_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR290_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR290_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR290_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR290_VALUE() != null) {
+	    cell1.setCellValue(record6.getR290_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR290_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR290_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	//ROW291
+	row = sheet.getRow(290);
+
+	cell1 = row.getCell(1);
+	if (record6.getR291_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR291_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR291_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR291_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR291_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR291_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR291_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR291_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR291_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR291_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR291_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR291_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR291_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR291_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR291_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR291_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR291_VALUE() != null) {
+	    cell1.setCellValue(record6.getR291_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR291_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR291_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW292
+	row = sheet.getRow(291);
+
+	cell1 = row.getCell(1);
+	if (record6.getR292_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR292_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR292_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR292_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR292_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR292_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR292_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR292_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR292_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR292_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR292_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR292_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR292_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR292_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR292_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR292_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR292_VALUE() != null) {
+	    cell1.setCellValue(record6.getR292_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR292_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR292_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW293
+	row = sheet.getRow(292);
+
+	cell1 = row.getCell(1);
+	if (record6.getR293_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR293_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR293_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR293_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR293_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR293_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR293_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR293_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR293_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR293_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR293_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR293_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR293_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR293_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR293_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR293_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR293_VALUE() != null) {
+	    cell1.setCellValue(record6.getR293_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR293_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR293_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW294
+	row = sheet.getRow(293);
+
+	cell1 = row.getCell(1);
+	if (record6.getR294_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR294_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR294_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR294_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR294_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR294_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR294_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR294_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR294_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR294_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR294_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR294_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR294_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR294_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR294_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR294_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR294_VALUE() != null) {
+	    cell1.setCellValue(record6.getR294_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR294_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR294_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+	//ROW295
+	row = sheet.getRow(294);
+
+	cell1 = row.getCell(1);
+	if (record6.getR295_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR295_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR295_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR295_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR295_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR295_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR295_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR295_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR295_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR295_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR295_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR295_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR295_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR295_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR295_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR295_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR295_VALUE() != null) {
+	    cell1.setCellValue(record6.getR295_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR295_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR295_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW296
+	row = sheet.getRow(295);
+
+	cell1 = row.getCell(1);
+	if (record6.getR296_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR296_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR296_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR296_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR296_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR296_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR296_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR296_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR296_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR296_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR296_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR296_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR296_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR296_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR296_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR296_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR296_VALUE() != null) {
+	    cell1.setCellValue(record6.getR296_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR296_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR296_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW297
+	row = sheet.getRow(296);
+
+	cell1 = row.getCell(1);
+	if (record6.getR297_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR297_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR297_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR297_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR297_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR297_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR297_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR297_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR297_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR297_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR297_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR297_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR297_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR297_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR297_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR297_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR297_VALUE() != null) {
+	    cell1.setCellValue(record6.getR297_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR297_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR297_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW298
+	row = sheet.getRow(297);
+
+	cell1 = row.getCell(1);
+	if (record6.getR298_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR298_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR298_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR298_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR298_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR298_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR298_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR298_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR298_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR298_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR298_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR298_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR298_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR298_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR298_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR298_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR298_VALUE() != null) {
+	    cell1.setCellValue(record6.getR298_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR298_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR298_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW299
+	row = sheet.getRow(298);
+
+	cell1 = row.getCell(1);
+	if (record6.getR299_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR299_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR299_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR299_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR299_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR299_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR299_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR299_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR299_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR299_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR299_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR299_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR299_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR299_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR299_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR299_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR299_VALUE() != null) {
+	    cell1.setCellValue(record6.getR299_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(10);
+	if (record6.getR299_INTEREST_RATE() != null) {
+	    cell1.setCellValue(record6.getR299_INTEREST_RATE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+	//ROW300
+	row = sheet.getRow(299);
+
+	cell1 = row.getCell(1);
+	if (record6.getR300_NAME_INSIDER_BORROWER() != null) {
+	    cell1.setCellValue(record6.getR300_NAME_INSIDER_BORROWER());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(2);
+	if (record6.getR300_TYPE_FACILITY() != null) {
+	    cell1.setCellValue(record6.getR300_TYPE_FACILITY().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(3);
+	if (record6.getR300_APPROVED_LIMIT() != null) {
+	    cell1.setCellValue(record6.getR300_APPROVED_LIMIT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(4);
+	if (record6.getR300_OUTSTANDING_AMOUNT() != null) {
+	    cell1.setCellValue(record6.getR300_OUTSTANDING_AMOUNT().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(5);
+	if (record6.getR300_EXCESS_OVER_CEILING() != null) {
+	    cell1.setCellValue(record6.getR300_EXCESS_OVER_CEILING().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(6);
+	if (record6.getR300_LOAN_CLASSIFICATION() != null) {
+	    cell1.setCellValue(record6.getR300_LOAN_CLASSIFICATION().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(7);
+	if (record6.getR300_CURRENT_PROVISIONS() != null) {
+	    cell1.setCellValue(record6.getR300_CURRENT_PROVISIONS().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(8);
+	if (record6.getR300_DESCRIPTION() != null) {
+	    cell1.setCellValue(record6.getR300_DESCRIPTION());
+	} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+	cell1 = row.getCell(9);
+	if (record6.getR300_VALUE() != null) {
+	    cell1.setCellValue(record6.getR300_VALUE().doubleValue());
+	    cell1.setCellStyle(numberStyle);
+	}
+	else
+	{
+		
+	}
+}
+	public void next301_7_8(Sheet sheet,BRRS_M_RPD_Resub_Summary_Entity7 record7,BRRS_M_RPD_Resub_Summary_Entity8 record8,CellStyle numberStyle,CellStyle textStyle) {
+
+
+		//ROW301
+		Row row = sheet.getRow(300);
+
+		Cell cell1 = row.getCell(1);
+		if (record7.getR301_NAME_INSIDER_BORROWER() != null) {
+		    cell1.setCellValue(record7.getR301_NAME_INSIDER_BORROWER());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(2);
+		if (record7.getR301_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record7.getR301_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(3);
+		if (record7.getR301_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record7.getR301_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record7.getR301_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record7.getR301_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record7.getR301_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record7.getR301_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record7.getR301_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record7.getR301_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record7.getR301_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record7.getR301_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record7.getR301_DESCRIPTION() != null) {
+		    cell1.setCellValue(record7.getR301_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record7.getR301_VALUE() != null) {
+		    cell1.setCellValue(record7.getR301_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+		//ROW302
+		row = sheet.getRow(301);
+
+		cell1 = row.getCell(1);
+		if (record7.getR302_NAME_INSIDER_BORROWER() != null) {
+		    cell1.setCellValue(record7.getR302_NAME_INSIDER_BORROWER());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(2);
+		if (record7.getR302_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record7.getR302_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(3);
+		if (record7.getR302_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record7.getR302_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record7.getR302_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record7.getR302_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record7.getR302_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record7.getR302_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record7.getR302_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record7.getR302_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record7.getR302_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record7.getR302_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record7.getR302_DESCRIPTION() != null) {
+		    cell1.setCellValue(record7.getR302_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record7.getR302_VALUE() != null) {
+		    cell1.setCellValue(record7.getR302_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+
+		//ROW303
+		row = sheet.getRow(302);
+
+		cell1 = row.getCell(1);
+		if (record7.getR303_NAME_INSIDER_BORROWER() != null) {
+		    cell1.setCellValue(record7.getR303_NAME_INSIDER_BORROWER());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(2);
+		if (record7.getR303_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record7.getR303_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(3);
+		if (record7.getR303_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record7.getR303_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record7.getR303_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record7.getR303_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record7.getR303_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record7.getR303_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record7.getR303_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record7.getR303_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record7.getR303_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record7.getR303_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record7.getR303_DESCRIPTION() != null) {
+		    cell1.setCellValue(record7.getR303_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record7.getR303_VALUE() != null) {
+		    cell1.setCellValue(record7.getR303_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+
+		//ROW304
+		row = sheet.getRow(303);
+
+		cell1 = row.getCell(1);
+		if (record7.getR304_NAME_INSIDER_BORROWER() != null) {
+		    cell1.setCellValue(record7.getR304_NAME_INSIDER_BORROWER());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(2);
+		if (record7.getR304_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record7.getR304_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(3);
+		if (record7.getR304_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record7.getR304_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record7.getR304_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record7.getR304_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record7.getR304_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record7.getR304_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record7.getR304_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record7.getR304_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record7.getR304_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record7.getR304_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record7.getR304_DESCRIPTION() != null) {
+		    cell1.setCellValue(record7.getR304_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record7.getR304_VALUE() != null) {
+		    cell1.setCellValue(record7.getR304_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+
+		//ROW305
+		row = sheet.getRow(304);
+
+		cell1 = row.getCell(1);
+		if (record7.getR305_NAME_INSIDER_BORROWER() != null) {
+		    cell1.setCellValue(record7.getR305_NAME_INSIDER_BORROWER());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(2);
+		if (record7.getR305_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record7.getR305_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(3);
+		if (record7.getR305_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record7.getR305_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record7.getR305_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record7.getR305_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record7.getR305_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record7.getR305_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record7.getR305_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record7.getR305_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record7.getR305_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record7.getR305_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record7.getR305_DESCRIPTION() != null) {
+		    cell1.setCellValue(record7.getR305_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record7.getR305_VALUE() != null) {
+		    cell1.setCellValue(record7.getR305_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+
+		//ROW306
+		row = sheet.getRow(305);
+
+		cell1 = row.getCell(1);
+		if (record7.getR306_NAME_INSIDER_BORROWER() != null) {
+		    cell1.setCellValue(record7.getR306_NAME_INSIDER_BORROWER());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(2);
+		if (record7.getR306_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record7.getR306_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(3);
+		if (record7.getR306_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record7.getR306_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record7.getR306_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record7.getR306_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record7.getR306_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record7.getR306_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record7.getR306_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record7.getR306_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record7.getR306_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record7.getR306_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record7.getR306_DESCRIPTION() != null) {
+		    cell1.setCellValue(record7.getR306_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record7.getR306_VALUE() != null) {
+		    cell1.setCellValue(record7.getR306_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+
+		//ROW307
+		row = sheet.getRow(306);
+
+		cell1 = row.getCell(1);
+		if (record7.getR307_NAME_INSIDER_BORROWER() != null) {
+		    cell1.setCellValue(record7.getR307_NAME_INSIDER_BORROWER());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(2);
+		if (record7.getR307_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record7.getR307_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(3);
+		if (record7.getR307_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record7.getR307_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record7.getR307_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record7.getR307_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record7.getR307_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record7.getR307_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record7.getR307_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record7.getR307_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record7.getR307_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record7.getR307_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record7.getR307_DESCRIPTION() != null) {
+		    cell1.setCellValue(record7.getR307_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record7.getR307_VALUE() != null) {
+		    cell1.setCellValue(record7.getR307_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+
+		//ROW308
+		row = sheet.getRow(307);
+
+		cell1 = row.getCell(1);
+		if (record7.getR308_NAME_INSIDER_BORROWER() != null) {
+		    cell1.setCellValue(record7.getR308_NAME_INSIDER_BORROWER());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(2);
+		if (record7.getR308_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record7.getR308_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(3);
+		if (record7.getR308_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record7.getR308_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record7.getR308_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record7.getR308_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record7.getR308_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record7.getR308_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record7.getR308_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record7.getR308_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+		//ROW309
+		row = sheet.getRow(308);
+
+		cell1 = row.getCell(1);
+		if (record7.getR309_NAME_INSIDER_BORROWER() != null) {
+		    cell1.setCellValue(record7.getR309_NAME_INSIDER_BORROWER());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(2);
+		if (record7.getR309_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record7.getR309_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(3);
+		if (record7.getR309_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record7.getR309_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record7.getR309_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record7.getR309_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record7.getR309_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record7.getR309_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record7.getR309_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record7.getR309_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record7.getR309_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record7.getR309_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record7.getR309_DESCRIPTION() != null) {
+		    cell1.setCellValue(record7.getR309_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record7.getR309_VALUE() != null) {
+		    cell1.setCellValue(record7.getR309_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+
+		//ROW310
+		row = sheet.getRow(309);
+
+		cell1 = row.getCell(1);
+		if (record7.getR310_NAME_INSIDER_BORROWER() != null) {
+		    cell1.setCellValue(record7.getR310_NAME_INSIDER_BORROWER());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(2);
+		if (record7.getR310_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record7.getR310_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(3);
+		if (record7.getR310_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record7.getR310_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record7.getR310_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record7.getR310_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record7.getR310_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record7.getR310_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record7.getR310_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record7.getR310_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record7.getR310_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record7.getR310_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record7.getR310_DESCRIPTION() != null) {
+		    cell1.setCellValue(record7.getR310_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record7.getR310_VALUE() != null) {
+		    cell1.setCellValue(record7.getR310_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+		//ROW311
+		row = sheet.getRow(310);
+
+		cell1 = row.getCell(1);
+		if (record7.getR311_NAME_INSIDER_BORROWER() != null) {
+		    cell1.setCellValue(record7.getR311_NAME_INSIDER_BORROWER());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(2);
+		if (record7.getR311_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record7.getR311_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(3);
+		if (record7.getR311_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record7.getR311_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record7.getR311_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record7.getR311_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record7.getR311_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record7.getR311_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record7.getR311_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record7.getR311_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record7.getR311_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record7.getR311_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record7.getR311_DESCRIPTION() != null) {
+		    cell1.setCellValue(record7.getR311_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record7.getR311_VALUE() != null) {
+		    cell1.setCellValue(record7.getR311_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+
+		//ROW312
+		row = sheet.getRow(311);
+
+		cell1 = row.getCell(1);
+		if (record7.getR312_NAME_INSIDER_BORROWER() != null) {
+		    cell1.setCellValue(record7.getR312_NAME_INSIDER_BORROWER());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(2);
+		if (record7.getR312_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record7.getR312_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(3);
+		if (record7.getR312_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record7.getR312_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record7.getR312_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record7.getR312_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record7.getR312_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record7.getR312_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record7.getR312_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record7.getR312_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record7.getR312_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record7.getR312_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record7.getR312_DESCRIPTION() != null) {
+		    cell1.setCellValue(record7.getR312_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record7.getR312_VALUE() != null) {
+		    cell1.setCellValue(record7.getR312_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+
+		//ROW313
+		row = sheet.getRow(312);
+
+		cell1 = row.getCell(1);
+		if (record7.getR313_NAME_INSIDER_BORROWER() != null) {
+		    cell1.setCellValue(record7.getR313_NAME_INSIDER_BORROWER());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(2);
+		if (record7.getR313_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record7.getR313_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(3);
+		if (record7.getR313_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record7.getR313_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record7.getR313_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record7.getR313_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record7.getR313_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record7.getR313_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record7.getR313_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record7.getR313_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record7.getR313_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record7.getR313_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record7.getR313_DESCRIPTION() != null) {
+		    cell1.setCellValue(record7.getR313_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record7.getR313_VALUE() != null) {
+		    cell1.setCellValue(record7.getR313_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+		//ROW314
+		row = sheet.getRow(313);
+
+		cell1 = row.getCell(1);
+		if (record7.getR314_NAME_INSIDER_BORROWER() != null) {
+		    cell1.setCellValue(record7.getR314_NAME_INSIDER_BORROWER());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(2);
+		if (record7.getR314_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record7.getR314_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(3);
+		if (record7.getR314_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record7.getR314_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record7.getR314_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record7.getR314_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record7.getR314_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record7.getR314_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record7.getR314_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record7.getR314_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record7.getR314_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record7.getR314_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record7.getR314_DESCRIPTION() != null) {
+		    cell1.setCellValue(record7.getR314_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record7.getR314_VALUE() != null) {
+		    cell1.setCellValue(record7.getR314_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+
+		//ROW315
+		row = sheet.getRow(314);
+
+		cell1 = row.getCell(1);
+		if (record7.getR315_NAME_INSIDER_BORROWER() != null) {
+		    cell1.setCellValue(record7.getR315_NAME_INSIDER_BORROWER());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(2);
+		if (record7.getR315_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record7.getR315_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(3);
+		if (record7.getR315_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record7.getR315_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record7.getR315_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record7.getR315_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record7.getR315_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record7.getR315_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record7.getR315_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record7.getR315_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record7.getR315_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record7.getR315_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record7.getR315_DESCRIPTION() != null) {
+		    cell1.setCellValue(record7.getR315_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record7.getR315_VALUE() != null) {
+		    cell1.setCellValue(record7.getR315_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+
+		//ROW316
+		row = sheet.getRow(315);
+
+		cell1 = row.getCell(1);
+		if (record7.getR316_NAME_INSIDER_BORROWER() != null) {
+		    cell1.setCellValue(record7.getR316_NAME_INSIDER_BORROWER());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(2);
+		if (record7.getR316_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record7.getR316_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(3);
+		if (record7.getR316_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record7.getR316_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record7.getR316_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record7.getR316_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record7.getR316_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record7.getR316_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record7.getR316_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record7.getR316_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record7.getR316_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record7.getR316_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record7.getR316_DESCRIPTION() != null) {
+		    cell1.setCellValue(record7.getR316_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record7.getR316_VALUE() != null) {
+		    cell1.setCellValue(record7.getR316_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+
+		//ROW317
+		row = sheet.getRow(316);
+
+		cell1 = row.getCell(1);
+		if (record7.getR317_NAME_INSIDER_BORROWER() != null) {
+		    cell1.setCellValue(record7.getR317_NAME_INSIDER_BORROWER());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(2);
+		if (record7.getR317_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record7.getR317_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(3);
+		if (record7.getR317_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record7.getR317_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record7.getR317_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record7.getR317_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record7.getR317_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record7.getR317_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record7.getR317_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record7.getR317_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record7.getR317_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record7.getR317_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record7.getR317_DESCRIPTION() != null) {
+		    cell1.setCellValue(record7.getR317_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record7.getR317_VALUE() != null) {
+		    cell1.setCellValue(record7.getR317_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+
+		//ROW318
+		row = sheet.getRow(317);
+
+		cell1 = row.getCell(1);
+		if (record7.getR318_NAME_INSIDER_BORROWER() != null) {
+		    cell1.setCellValue(record7.getR318_NAME_INSIDER_BORROWER());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(2);
+		if (record7.getR318_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record7.getR318_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(3);
+		if (record7.getR318_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record7.getR318_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record7.getR318_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record7.getR318_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record7.getR318_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record7.getR318_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record7.getR318_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record7.getR318_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record7.getR318_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record7.getR318_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record7.getR318_DESCRIPTION() != null) {
+		    cell1.setCellValue(record7.getR318_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record7.getR318_VALUE() != null) {
+		    cell1.setCellValue(record7.getR318_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+
+		//ROW319
+		row = sheet.getRow(318);
+
+		cell1 = row.getCell(1);
+		if (record7.getR319_NAME_INSIDER_BORROWER() != null) {
+		    cell1.setCellValue(record7.getR319_NAME_INSIDER_BORROWER());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(2);
+		if (record7.getR319_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record7.getR319_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(3);
+		if (record7.getR319_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record7.getR319_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record7.getR319_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record7.getR319_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record7.getR319_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record7.getR319_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record7.getR319_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record7.getR319_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record7.getR319_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record7.getR319_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record7.getR319_DESCRIPTION() != null) {
+		    cell1.setCellValue(record7.getR319_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record7.getR319_VALUE() != null) {
+		    cell1.setCellValue(record7.getR319_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+
+		//ROW320
+		row = sheet.getRow(319);
+
+		cell1 = row.getCell(1);
+		if (record7.getR320_NAME_INSIDER_BORROWER() != null) {
+		    cell1.setCellValue(record7.getR320_NAME_INSIDER_BORROWER());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(2);
+		if (record7.getR320_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record7.getR320_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(3);
+		if (record7.getR320_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record7.getR320_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record7.getR320_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record7.getR320_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record7.getR320_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record7.getR320_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record7.getR320_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record7.getR320_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record7.getR320_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record7.getR320_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record7.getR320_DESCRIPTION() != null) {
+		    cell1.setCellValue(record7.getR320_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record7.getR320_VALUE() != null) {
+		    cell1.setCellValue(record7.getR320_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+		for (int i = 320; i <= 350; i++) {
+		    row = sheet.getRow(i - 1); // Excel row index starts at 0
+
+		    String rowStr = String.valueOf(i);
+
+		    String[] fields = {
+		        "NAME_INSIDER_BORROWER",
+		        "TYPE_FACILITY",
+		        "APPROVED_LIMIT",
+		        "OUTSTANDING_AMOUNT",
+		        "EXCESS_OVER_CEILING",
+		        "LOAN_CLASSIFICATION",
+		        "CURRENT_PROVISIONS",
+		        "DESCRIPTION",
+		        "VALUE"
+		    };
+
+		    for (int j = 0; j < fields.length; j++) {
+		        String methodName = "getR" + rowStr + "_" + fields[j];
+		        try {
+		            Method method = record7.getClass().getMethod(methodName);
+		            Object value = method.invoke(record7);
+		            cell1 = row.getCell(j + 1); // Cell index starts at 1
+		            if (value != null) {
+		                if (value instanceof Number) {
+		                    cell1.setCellValue(((Number) value).doubleValue());
+		                    cell1.setCellStyle(numberStyle);
+		                } else {
+		                    cell1.setCellValue(value.toString());
+		                }
+		            } else {
+		                cell1.setCellValue("");
+		                cell1.setCellStyle(textStyle);
+		            }
+		        } catch (Exception e) {
+		            e.printStackTrace();
+		        }
+		    }
+		}
+		for (int i = 351; i <= 400; i++) {
+		    row = sheet.getRow(i - 1); // 351 -> index 350
+		    if (row == null) row = sheet.createRow(i - 1);
+
+		    String rowStr = String.valueOf(i);
+
+		    String[] fields = {
+		        "NAME_INSIDER_BORROWER",
+		        "TYPE_FACILITY",
+		        "APPROVED_LIMIT",
+		        "OUTSTANDING_AMOUNT",
+		        "EXCESS_OVER_CEILING",
+		        "LOAN_CLASSIFICATION",
+		        "CURRENT_PROVISIONS",
+		        "DESCRIPTION",
+		        "VALUE"
+		    };
+
+		    for (int j = 0; j < fields.length; j++) {
+		        String methodName = "getR" + rowStr + "_" + fields[j];
+		        try {
+		            Method method = record8.getClass().getMethod(methodName);
+		            Object value = method.invoke(record8);
+		            cell1 = row.getCell(j + 1);
+		            if (cell1 == null) cell1 = row.createCell(j + 1);
+
+		            if (value != null) {
+		                if (value instanceof Number) {
+		                    cell1.setCellValue(((Number) value).doubleValue());
+		                    cell1.setCellStyle(numberStyle);
+		                } else {
+		                    cell1.setCellValue(value.toString());
+		                    cell1.setCellStyle(textStyle);
+		                }
+		            } else {
+		                cell1.setCellValue("");
+		                cell1.setCellStyle(textStyle);
+		            }
+		        } catch (Exception e) {
+		            logger.error("Failed to invoke method " + methodName, e);
+		        }
+		    }
+		}
+
+	}
+	
+	public void next401_9(Sheet sheet, BRRS_M_RPD_Resub_Summary_Entity9 record9, CellStyle numberStyle, CellStyle textStyle) {
+
+		//ROW320
+		Row row = sheet.getRow(400);
+
+		Cell cell1 = row.getCell(1);
+		if (record9.getR401_NAME_INSIDER_BORROWER() != null) {
+		    cell1.setCellValue(record9.getR401_NAME_INSIDER_BORROWER());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(2);
+		if (record9.getR401_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record9.getR401_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(3);
+		if (record9.getR401_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record9.getR401_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record9.getR401_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record9.getR401_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record9.getR401_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record9.getR404_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record9.getR401_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record9.getR401_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record9.getR401_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record9.getR401_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record9.getR401_DESCRIPTION() != null) {
+		    cell1.setCellValue(record9.getR401_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record9.getR401_VALUE() != null) {
+		    cell1.setCellValue(record9.getR401_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+		for (int i = 402; i <= 451; i++) {
+		    row = sheet.getRow(i - 1); // Excel row index starts at 0
+
+		    String rowStr = String.valueOf(i);
+
+		    String[] fields = {
+		        "NAME_INSIDER_BORROWER",
+		        "TYPE_FACILITY",
+		        "APPROVED_LIMIT",
+		        "OUTSTANDING_AMOUNT",
+		        "EXCESS_OVER_CEILING",
+		        "LOAN_CLASSIFICATION",
+		        "CURRENT_PROVISIONS",
+		        "DESCRIPTION",
+		        "VALUE"
+		    };
+
+		    for (int j = 0; j < fields.length; j++) {
+		        String methodName = "getR" + rowStr + "_" + fields[j];
+		        try {
+		            Method method = record9.getClass().getMethod(methodName);
+		            Object value = method.invoke(record9);
+		            cell1 = row.getCell(j + 1); // Cell index starts at 1
+		            if (value != null) {
+		                if (value instanceof Number) {
+		                    cell1.setCellValue(((Number) value).doubleValue());
+		                    cell1.setCellStyle(numberStyle);
+		                } else {
+		                    cell1.setCellValue(value.toString());
+		                }
+		            } else {
+		                cell1.setCellValue("");
+		                cell1.setCellStyle(textStyle);
+		            }
+		        } catch (Exception e) {
+		            e.printStackTrace();
+		        }
+		    }
+		}
+    }
+	
+	public byte[] getExcel_Email_M_RPDExcelArc(String filename,String reportId, String fromdate, String todate, String currency, String dtltype,String type,String format,BigDecimal version) throws Exception
+	{
+		  
+		List<BRRS_M_RPD_Archival_Summary_Entity1> dataList1 =BRRS_M_RPD_Archival_Summary_Repo1.getdatabydateListarchival(dateformat.parse(todate),version) ;
+		List<BRRS_M_RPD_Archival_Summary_Entity2> dataList2 =BRRS_M_RPD_Archival_Summary_Repo2.getdatabydateListarchival(dateformat.parse(todate),version) ;
+		List<BRRS_M_RPD_Archival_Summary_Entity3> dataList3 =BRRS_M_RPD_Archival_Summary_Repo3.getdatabydateListarchival(dateformat.parse(todate),version) ;
+		List<BRRS_M_RPD_Archival_Summary_Entity4> dataList4 =BRRS_M_RPD_Archival_Summary_Repo4.getdatabydateListarchival(dateformat.parse(todate),version) ;
+		List<BRRS_M_RPD_Archival_Summary_Entity5> dataList5 =BRRS_M_RPD_Archival_Summary_Repo5.getdatabydateListarchival(dateformat.parse(todate),version) ;
+		List<BRRS_M_RPD_Archival_Summary_Entity6> dataList6 =BRRS_M_RPD_Archival_Summary_Repo6.getdatabydateListarchival(dateformat.parse(todate),version) ;
+		List<BRRS_M_RPD_Archival_Summary_Entity7> dataList7 =BRRS_M_RPD_Archival_Summary_Repo7.getdatabydateListarchival(dateformat.parse(todate),version) ;
+		List<BRRS_M_RPD_Archival_Summary_Entity8> dataList8 =BRRS_M_RPD_Archival_Summary_Repo8.getdatabydateListarchival(dateformat.parse(todate),version) ;
+		List<BRRS_M_RPD_Archival_Summary_Entity9> dataList9 =BRRS_M_RPD_Archival_Summary_Repo9.getdatabydateListarchival(dateformat.parse(todate),version) ;
+
+			if (dataList1.isEmpty()) {
+				logger.warn("Service: No data found for M_RPD report. Returning empty result.");
+				return new byte[0];
+			}
+
+			String templateDir = env.getProperty("output.exportpathtemp");
+			String templateFileName = filename;
+			System.out.println(filename+" = FILENAME");
+			Path templatePath = Paths.get(templateDir, templateFileName);
+			System.out.println(templatePath);
+			
+			logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+			if (!Files.exists(templatePath)) {
+				// This specific exception will be caught by the controller.
+				throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+			}
+			if (!Files.isReadable(templatePath)) {
+				// A specific exception for permission errors.
+				throw new SecurityException(
+						"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+			}
+
+			// This try-with-resources block is perfect. It guarantees all resources are
+			// closed automatically.
+			try (InputStream templateInputStream = Files.newInputStream(templatePath);
+					Workbook workbook = WorkbookFactory.create(templateInputStream);
+					ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+			
+				
+				Sheet sheet = workbook.getSheetAt(0);
+
+				// --- Style Definitions ---
+		CreationHelper createHelper = workbook.getCreationHelper();
+				
+
+				CellStyle dateStyle = workbook.createCellStyle();
+				dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+				dateStyle.setBorderBottom(BorderStyle.THIN);
+				dateStyle.setBorderTop(BorderStyle.THIN);
+				dateStyle.setBorderLeft(BorderStyle.THIN);
+				dateStyle.setBorderRight(BorderStyle.THIN);
+
+				CellStyle textStyle = workbook.createCellStyle();
+				textStyle.setBorderBottom(BorderStyle.THIN);
+				textStyle.setBorderTop(BorderStyle.THIN);
+				textStyle.setBorderLeft(BorderStyle.THIN);
+				textStyle.setBorderRight(BorderStyle.THIN);
+				
+				// Create the font
+				Font font = workbook.createFont();
+				font.setFontHeightInPoints((short)8); // size 8
+				font.setFontName("Arial");    
+
+				CellStyle numberStyle = workbook.createCellStyle();
+				//numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+				numberStyle.setBorderBottom(BorderStyle.THIN);
+				numberStyle.setBorderTop(BorderStyle.THIN);
+				numberStyle.setBorderLeft(BorderStyle.THIN);
+				numberStyle.setBorderRight(BorderStyle.THIN);
+				numberStyle.setFont(font);
+				
+				int startRow = 10;
+		      		
+		  if (!dataList1.isEmpty()) {
+				for (int i = 0; i < dataList1.size(); i++) {
+					
+					BRRS_M_RPD_Archival_Summary_Entity1 record1 = dataList1.get(i);
+					BRRS_M_RPD_Archival_Summary_Entity2 record2 = dataList2.get(i);
+					BRRS_M_RPD_Archival_Summary_Entity3 record3 = dataList3.get(i);
+					BRRS_M_RPD_Archival_Summary_Entity4 record4 = dataList4.get(i);
+					BRRS_M_RPD_Archival_Summary_Entity5 record5 = dataList5.get(i);
+					BRRS_M_RPD_Archival_Summary_Entity6 record6 = dataList6.get(i);
+					BRRS_M_RPD_Archival_Summary_Entity7 record7 = dataList7.get(i);
+					BRRS_M_RPD_Archival_Summary_Entity8 record8 = dataList8.get(i);
+					BRRS_M_RPD_Archival_Summary_Entity9 record9 = dataList9.get(i);
+					
+					System.out.println("rownumber="+startRow + i);
+					Row row = sheet.getRow(startRow + i);
+					if (row == null) {
+						row = sheet.createRow(startRow + i);
+					}
+					//ROW11		
+					//COL-B
+					Cell cell1=row.getCell(3);
+					if(record1.getR11_TYPE_FACILITY() != null) {
+						cell1.setCellValue(record1.getR11_TYPE_FACILITY().doubleValue());
+						cell1.setCellStyle(numberStyle);
+						
+					}else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+						
+					}
+					//COL-D
+					cell1 = row.getCell(4);
+					if (record1.getR11_APPROVED_LIMIT() != null) {
+						cell1.setCellValue(record1.getR11_APPROVED_LIMIT().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-E
+					 cell1 = row.getCell(5);
+					if (record1.getR11_OUTSTANDING_AMOUNT() != null) {
+						cell1.setCellValue(record1.getR11_OUTSTANDING_AMOUNT().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-F
+					 cell1 = row.getCell(6);
+					if (record1.getR11_EXCESS_OVER_CEILING() != null) {
+						cell1.setCellValue(record1.getR11_EXCESS_OVER_CEILING().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-G
+					cell1 = row.getCell(7);
+					if (record1.getR11_LOAN_CLASSIFICATION() != null) {
+						cell1.setCellValue(record1.getR11_LOAN_CLASSIFICATION().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-H
+					 cell1 = row.getCell(8);
+					if (record1.getR11_CURRENT_PROVISIONS() != null) {
+						cell1.setCellValue(record1.getR11_CURRENT_PROVISIONS().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-I
+					 cell1=row.getCell(9);
+					if(record1.getR11_DESCRIPTION() != null) {
+						cell1.setCellValue(record1.getR11_DESCRIPTION());
+						
+					}else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+						
+					}
+					//COL-J
+					 cell1 = row.getCell(10);
+					if (record1.getR11_VALUE() != null) {
+						cell1.setCellValue(record1.getR11_VALUE().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					
+					//ROW12		
+					//COL-B
+					row=sheet.getRow(11);
+					 
+					//COL-C
+					 cell1=row.getCell(3);
+					if(record1.getR12_TYPE_FACILITY() != null) {
+						cell1.setCellValue(record1.getR12_TYPE_FACILITY().doubleValue());
+						cell1.setCellStyle(numberStyle);
+						
+					}else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+						
+					}
+					//COL-D
+					cell1 = row.getCell(4);
+					if (record1.getR12_APPROVED_LIMIT() != null) {
+						cell1.setCellValue(record1.getR12_APPROVED_LIMIT().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-E
+					 cell1 = row.getCell(5);
+					if (record1.getR12_OUTSTANDING_AMOUNT() != null) {
+						cell1.setCellValue(record1.getR12_OUTSTANDING_AMOUNT().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-F
+					 cell1 = row.getCell(6);
+					if (record1.getR12_EXCESS_OVER_CEILING() != null) {
+						cell1.setCellValue(record1.getR12_EXCESS_OVER_CEILING().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-G
+					cell1 = row.getCell(7);
+					if (record1.getR12_LOAN_CLASSIFICATION() != null) {
+						cell1.setCellValue(record1.getR12_LOAN_CLASSIFICATION().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-H
+					 cell1 = row.getCell(8);
+					if (record1.getR12_CURRENT_PROVISIONS() != null) {
+						cell1.setCellValue(record1.getR12_CURRENT_PROVISIONS().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-I
+					 cell1=row.getCell(9);
+					if(record1.getR12_DESCRIPTION() != null) {
+						cell1.setCellValue(record1.getR12_DESCRIPTION());
+						
+					}else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+						
+					}
+					//COL-J
+					 cell1 = row.getCell(10);
+					if (record1.getR12_VALUE() != null) {
+						cell1.setCellValue(record1.getR12_VALUE().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					
+					//ROW13		
+					//COL-B
+					row=sheet.getRow(12);
+					
+					//COL-C
+					 cell1=row.getCell(3);
+					if(record1.getR13_TYPE_FACILITY() != null) {
+						cell1.setCellValue(record1.getR13_TYPE_FACILITY().doubleValue());
+						cell1.setCellStyle(numberStyle);
+						
+					}else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+						
+					}
+					//COL-D
+					cell1 = row.getCell(4);
+					if (record1.getR13_APPROVED_LIMIT() != null) {
+						cell1.setCellValue(record1.getR13_APPROVED_LIMIT().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-E
+					 cell1 = row.getCell(5);
+					if (record1.getR13_OUTSTANDING_AMOUNT() != null) {
+						cell1.setCellValue(record1.getR13_OUTSTANDING_AMOUNT().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-F
+					 cell1 = row.getCell(6);
+					if (record1.getR13_EXCESS_OVER_CEILING() != null) {
+						cell1.setCellValue(record1.getR13_EXCESS_OVER_CEILING().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-G
+					cell1 = row.getCell(7);
+					if (record1.getR13_LOAN_CLASSIFICATION() != null) {
+						cell1.setCellValue(record1.getR13_LOAN_CLASSIFICATION().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-H
+					 cell1 = row.getCell(8);
+					if (record1.getR13_CURRENT_PROVISIONS() != null) {
+						cell1.setCellValue(record1.getR13_CURRENT_PROVISIONS().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-I
+					 cell1=row.getCell(9);
+					if(record1.getR13_DESCRIPTION() != null) {
+						cell1.setCellValue(record1.getR13_DESCRIPTION());
+						
+					}else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+						
+					}
+					//COL-J
+					 cell1 = row.getCell(10);
+					if (record1.getR13_VALUE() != null) {
+						cell1.setCellValue(record1.getR13_VALUE().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					
+					
+			//ROW_4
+			
+			    row=sheet.getRow(13);
+					
+					//COL-C
+					cell1=row.getCell(3);
+					if(record2.getR51_TYPE_FACILITY() != null) {
+						cell1.setCellValue(record2.getR51_TYPE_FACILITY().doubleValue());
+						cell1.setCellStyle(numberStyle);
+						
+					}else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+						
+					}
+					 
+					//COL-D
+					cell1 = row.getCell(4);
+					if (record2.getR51_APPROVED_LIMIT() != null) {
+						cell1.setCellValue(record2.getR51_APPROVED_LIMIT().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-E
+					 cell1 = row.getCell(5);
+					if (record2.getR51_OUTSTANDING_AMOUNT() != null) {
+						cell1.setCellValue(record2.getR51_OUTSTANDING_AMOUNT().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-F
+					 cell1 = row.getCell(6);
+					if (record2.getR51_EXCESS_OVER_CEILING() != null) {
+						cell1.setCellValue(record2.getR51_EXCESS_OVER_CEILING().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-G
+					cell1 = row.getCell(7);
+					if (record2.getR51_LOAN_CLASSIFICATION() != null) {
+						cell1.setCellValue(record2.getR51_LOAN_CLASSIFICATION().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-H
+					 cell1 = row.getCell(8);
+					if (record2.getR51_CURRENT_PROVISIONS() != null) {
+						cell1.setCellValue(record2.getR51_CURRENT_PROVISIONS().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-I
+					 cell1=row.getCell(9);
+					if(record2.getR51_DESCRIPTION() != null) {
+						cell1.setCellValue(record2.getR51_DESCRIPTION());
+						
+					}else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+						
+					}
+					//COL-J
+					 cell1 = row.getCell(10);
+					if (record2.getR51_VALUE() != null) {
+						cell1.setCellValue(record2.getR51_VALUE().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					
+					//ROW52		
+					//COL-B
+					row=sheet.getRow(14);
+					 
+					//COL-C
+					 cell1=row.getCell(3);
+					if(record2.getR52_TYPE_FACILITY() != null) {
+						cell1.setCellValue(record2.getR52_TYPE_FACILITY().doubleValue());
+						cell1.setCellStyle(numberStyle);
+						
+					}else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+						
+					}
+					//COL-D
+					cell1 = row.getCell(4);
+					if (record2.getR52_APPROVED_LIMIT() != null) {
+						cell1.setCellValue(record2.getR52_APPROVED_LIMIT().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-E
+					 cell1 = row.getCell(5);
+					if (record2.getR52_OUTSTANDING_AMOUNT() != null) {
+						cell1.setCellValue(record2.getR52_OUTSTANDING_AMOUNT().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-F
+					 cell1 = row.getCell(6);
+					if (record2.getR52_EXCESS_OVER_CEILING() != null) {
+						cell1.setCellValue(record2.getR52_EXCESS_OVER_CEILING().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-G
+					cell1 = row.getCell(7);
+					if (record2.getR52_LOAN_CLASSIFICATION() != null) {
+						cell1.setCellValue(record2.getR52_LOAN_CLASSIFICATION().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-H
+					 cell1 = row.getCell(8);
+					if (record2.getR52_CURRENT_PROVISIONS() != null) {
+						cell1.setCellValue(record2.getR52_CURRENT_PROVISIONS().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-I
+					 cell1=row.getCell(9);
+					if(record2.getR52_DESCRIPTION() != null) {
+						cell1.setCellValue(record2.getR52_DESCRIPTION());
+						
+					}else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+						
+					}
+					//COL-J
+					 cell1 = row.getCell(10);
+					if (record2.getR52_VALUE() != null) {
+						cell1.setCellValue(record2.getR52_VALUE().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					
+					
+					
+					//ROW53		
+					//COL-B
+					row=sheet.getRow(15);
+					
+					//COL-C
+					 cell1=row.getCell(3);
+					if(record2.getR53_TYPE_FACILITY() != null) {
+						cell1.setCellValue(record2.getR53_TYPE_FACILITY().doubleValue());
+						cell1.setCellStyle(numberStyle);
+						
+					}else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+						
+					}
+					//COL-D
+					cell1 = row.getCell(4);
+					if (record2.getR53_APPROVED_LIMIT() != null) {
+						cell1.setCellValue(record2.getR53_APPROVED_LIMIT().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-E
+					 cell1 = row.getCell(5);
+					if (record2.getR53_OUTSTANDING_AMOUNT() != null) {
+						cell1.setCellValue(record2.getR53_OUTSTANDING_AMOUNT().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-F
+					 cell1 = row.getCell(6);
+					if (record2.getR53_EXCESS_OVER_CEILING() != null) {
+						cell1.setCellValue(record2.getR53_EXCESS_OVER_CEILING().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-G
+					cell1 = row.getCell(7);
+					if (record2.getR53_LOAN_CLASSIFICATION() != null) {
+						cell1.setCellValue(record2.getR53_LOAN_CLASSIFICATION().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-H
+					 cell1 = row.getCell(8);
+					if (record2.getR53_CURRENT_PROVISIONS() != null) {
+						cell1.setCellValue(record2.getR53_CURRENT_PROVISIONS().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-I
+					 cell1=row.getCell(9);
+					if(record2.getR53_DESCRIPTION() != null) {
+						cell1.setCellValue(record2.getR53_DESCRIPTION());
+						
+					}else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+						
+					}
+					//COL-J
+					 cell1 = row.getCell(10);
+					if (record2.getR53_VALUE() != null) {
+						cell1.setCellValue(record2.getR53_VALUE().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+				
+		//ROW_17
+
+	     row=sheet.getRow(16);
+		
+		//COL-C
+		Cell cell2=row.getCell(3);
+		if(record3.getR101_TYPE_FACILITY() != null) {
+			cell2.setCellValue(record3.getR101_TYPE_FACILITY().doubleValue());
+			cell2.setCellStyle(numberStyle);
+			
+		}else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+			
+		}
+		//COL-D
+		cell2 = row.getCell(4);
+		if (record3.getR101_APPROVED_LIMIT() != null) {
+			cell2.setCellValue(record3.getR101_APPROVED_LIMIT().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-E
+		 cell2 = row.getCell(5);
+		if (record3.getR101_OUTSTANDING_AMOUNT() != null) {
+			cell2.setCellValue(record3.getR101_OUTSTANDING_AMOUNT().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-F
+		 cell2 = row.getCell(6);
+		if (record3.getR101_EXCESS_OVER_CEILING() != null) {
+			cell2.setCellValue(record3.getR101_EXCESS_OVER_CEILING().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-G
+		cell2 = row.getCell(7);
+		if (record3.getR101_LOAN_CLASSIFICATION() != null) {
+			cell2.setCellValue(record3.getR101_LOAN_CLASSIFICATION().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-H
+		 cell2 = row.getCell(8);
+		if (record3.getR101_CURRENT_PROVISIONS() != null) {
+			cell2.setCellValue(record3.getR101_CURRENT_PROVISIONS().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-I
+		 cell2=row.getCell(9);
+		if(record3.getR101_DESCRIPTION() != null) {
+			cell2.setCellValue(record3.getR101_DESCRIPTION());
+			
+		}else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+			
+		}
+		//COL-J
+		 cell2 = row.getCell(10);
+		if (record3.getR101_VALUE() != null) {
+			cell2.setCellValue(record3.getR101_VALUE().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		
+		//ROW102		
+		//COL-B
+		row=sheet.getRow(17);
+		
+		//COL-C
+		 cell2=row.getCell(3);
+		if(record3.getR102_TYPE_FACILITY() != null) {
+			cell2.setCellValue(record3.getR102_TYPE_FACILITY().doubleValue());
+			cell2.setCellStyle(numberStyle);
+			
+		}else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+			
+		}
+		//COL-D
+		cell2 = row.getCell(4);
+		if (record3.getR102_APPROVED_LIMIT() != null) {
+			cell2.setCellValue(record3.getR102_APPROVED_LIMIT().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-E
+		 cell2 = row.getCell(5);
+		if (record3.getR102_OUTSTANDING_AMOUNT() != null) {
+			cell2.setCellValue(record3.getR102_OUTSTANDING_AMOUNT().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-F
+		 cell2 = row.getCell(6);
+		if (record3.getR102_EXCESS_OVER_CEILING() != null) {
+			cell2.setCellValue(record3.getR102_EXCESS_OVER_CEILING().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-G
+		cell2 = row.getCell(7);
+		if (record3.getR102_LOAN_CLASSIFICATION() != null) {
+			cell2.setCellValue(record3.getR102_LOAN_CLASSIFICATION().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-H
+		 cell2 = row.getCell(8);
+		if (record3.getR102_CURRENT_PROVISIONS() != null) {
+			cell2.setCellValue(record3.getR102_CURRENT_PROVISIONS().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-I
+		 cell2=row.getCell(9);
+		if(record3.getR102_DESCRIPTION() != null) {
+			cell2.setCellValue(record3.getR102_DESCRIPTION());
+			
+		}else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+			
+		}
+		//COL-J
+		 cell2 = row.getCell(10);
+		if (record3.getR102_VALUE() != null) {
+			cell2.setCellValue(record3.getR102_VALUE().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		
+		//ROW103		
+		//COL-B
+		row=sheet.getRow(18);
+		
+		//COL-C
+		 cell2=row.getCell(3);
+		if(record3.getR103_TYPE_FACILITY() != null) {
+			cell2.setCellValue(record3.getR103_TYPE_FACILITY().doubleValue());
+			cell2.setCellStyle(numberStyle);
+			
+		}else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+			
+		}
+		//COL-D
+		cell2 = row.getCell(4);
+		if (record3.getR103_APPROVED_LIMIT() != null) {
+			cell2.setCellValue(record3.getR103_APPROVED_LIMIT().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-E
+		 cell2 = row.getCell(5);
+		if (record3.getR103_OUTSTANDING_AMOUNT() != null) {
+			cell2.setCellValue(record3.getR103_OUTSTANDING_AMOUNT().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-F
+		 cell2 = row.getCell(6);
+		if (record3.getR103_EXCESS_OVER_CEILING() != null) {
+			cell2.setCellValue(record3.getR103_EXCESS_OVER_CEILING().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-G
+		cell2 = row.getCell(7);
+		if (record3.getR103_LOAN_CLASSIFICATION() != null) {
+			cell2.setCellValue(record3.getR103_LOAN_CLASSIFICATION().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-H
+		 cell2 = row.getCell(8);
+		if (record3.getR103_CURRENT_PROVISIONS() != null) {
+			cell2.setCellValue(record3.getR103_CURRENT_PROVISIONS().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-I
+		 cell2=row.getCell(9);
+		if(record3.getR103_DESCRIPTION() != null) {
+			cell2.setCellValue(record3.getR103_DESCRIPTION());
+			
+		}else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+			
+		}
+		//COL-J
+		 cell2 = row.getCell(10);
+		if (record3.getR103_VALUE() != null) {
+			cell2.setCellValue(record3.getR103_VALUE().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+			
+		//ROW_20
+
+	   row=sheet.getRow(19);
+		
+		//COL-C
+		 cell1=row.getCell(3);
+		if(record4.getR151_TYPE_FACILITY() != null) {
+			cell1.setCellValue(record4.getR151_TYPE_FACILITY().doubleValue());
+			cell1.setCellStyle(numberStyle);
+			
+		}else {
+			cell1.setCellValue("");
+			cell1.setCellStyle(textStyle);
+			
+		}
+		//COL-D
+//		cell1 = row.getCell(4);
+//		if (record4.getR151_APPROVED_LIMIT() != null) {
+//			cell1.setCellValue(record4.getR151_APPROVED_LIMIT().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+		//COL-E
+//		 cell1 = row.getCell(5);
+//		if (record4.getR151_OUTSTANDING_AMOUNT() != null) {
+//			cell1.setCellValue(record4.getR151_OUTSTANDING_AMOUNT().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+		//COL-F
+//		 cell1 = row.getCell(6);
+//		if (record4.getR151_EXCESS_OVER_CEILING() != null) {
+//			cell1.setCellValue(record4.getR151_EXCESS_OVER_CEILING().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+//		//COL-G
+//		cell1 = row.getCell(7);
+//		if (record4.getR151_LOAN_CLASSIFICATION() != null) {
+//			cell1.setCellValue(record4.getR151_LOAN_CLASSIFICATION().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+//		//COL-H
+//		 cell1 = row.getCell(8);
+//		if (record4.getR151_CURRENT_PROVISIONS() != null) {
+//			cell1.setCellValue(record4.getR151_CURRENT_PROVISIONS().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+		//COL-I
+		 cell1=row.getCell(9);
+		if(record4.getR151_DESCRIPTION() != null) {
+			cell1.setCellValue(record4.getR151_DESCRIPTION());
+			
+		}else {
+			cell1.setCellValue("");
+			cell1.setCellStyle(textStyle);
+			
+		}
+		//COL-J
+		 cell1 = row.getCell(10);
+		if (record4.getR151_VALUE() != null) {
+			cell1.setCellValue(record4.getR151_VALUE().doubleValue());
+			cell1.setCellStyle(numberStyle);
+		} else {
+			cell1.setCellValue("");
+			cell1.setCellStyle(textStyle);
+		}
+		
+		//ROW152		
+		//COL-B
+		row=sheet.getRow(20);
+		 
+		//COL-C
+		 cell1=row.getCell(3);
+		if(record4.getR152_TYPE_FACILITY() != null) {
+			cell1.setCellValue(record4.getR152_TYPE_FACILITY().doubleValue());
+			cell1.setCellStyle(numberStyle);
+			
+		}else {
+			cell1.setCellValue("");
+			cell1.setCellStyle(textStyle);
+			
+		}
+		//COL-D
+//		cell1 = row.getCell(4);
+//		if (record4.getR152_APPROVED_LIMIT() != null) {
+//			cell1.setCellValue(record4.getR152_APPROVED_LIMIT().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+//		//COL-E
+//		 cell1 = row.getCell(5);
+//		if (record4.getR152_OUTSTANDING_AMOUNT() != null) {
+//			cell1.setCellValue(record4.getR152_OUTSTANDING_AMOUNT().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+//		//COL-F
+//		 cell1 = row.getCell(6);
+//		if (record4.getR152_EXCESS_OVER_CEILING() != null) {
+//			cell1.setCellValue(record4.getR152_EXCESS_OVER_CEILING().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+//		//COL-G
+//		cell1 = row.getCell(7);
+//		if (record4.getR152_LOAN_CLASSIFICATION() != null) {
+//			cell1.setCellValue(record4.getR152_LOAN_CLASSIFICATION().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+//		//COL-H
+//		 cell1 = row.getCell(8);
+//		if (record4.getR152_CURRENT_PROVISIONS() != null) {
+//			cell1.setCellValue(record4.getR152_CURRENT_PROVISIONS().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+		//COL-I
+		 cell1=row.getCell(9);
+		if(record4.getR152_DESCRIPTION() != null) {
+			cell1.setCellValue(record4.getR152_DESCRIPTION());
+			
+		}else {
+			cell1.setCellValue("");
+			cell1.setCellStyle(textStyle);
+			
+		}
+		//COL-J
+		 cell1 = row.getCell(10);
+		if (record4.getR152_VALUE() != null) {
+			cell1.setCellValue(record4.getR152_VALUE().doubleValue());
+			cell1.setCellStyle(numberStyle);
+		} else {
+			cell1.setCellValue("");
+			cell1.setCellStyle(textStyle);
+		}
+		
+		//ROW153		
+		
+		row=sheet.getRow(21);
+		
+		//COL-C
+		 cell1=row.getCell(3);
+		if(record4.getR153_TYPE_FACILITY() != null) {
+			cell1.setCellValue(record4.getR153_TYPE_FACILITY().doubleValue());
+			cell1.setCellStyle(numberStyle);
+			
+		}else {
+			cell1.setCellValue("");
+			cell1.setCellStyle(textStyle);
+			
+		}
+		//COL-D
+//		cell1 = row.getCell(4);
+//		if (record4.getR153_APPROVED_LIMIT() != null) {
+//			cell1.setCellValue(record4.getR153_APPROVED_LIMIT().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+//		//COL-E
+//		 cell1 = row.getCell(5);
+//		if (record4.getR153_OUTSTANDING_AMOUNT() != null) {
+//			cell1.setCellValue(record4.getR153_OUTSTANDING_AMOUNT().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+//		//COL-F
+//		 cell1 = row.getCell(6);
+//		if (record4.getR153_EXCESS_OVER_CEILING() != null) {
+//			cell1.setCellValue(record4.getR153_EXCESS_OVER_CEILING().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+//		//COL-G
+//		cell1 = row.getCell(7);
+//		if (record4.getR153_LOAN_CLASSIFICATION() != null) {
+//			cell1.setCellValue(record4.getR153_LOAN_CLASSIFICATION().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+//		//COL-H
+//		 cell1 = row.getCell(8);
+//		if (record4.getR153_CURRENT_PROVISIONS() != null) {
+//			cell1.setCellValue(record4.getR153_CURRENT_PROVISIONS().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+		//COL-I
+		 cell1=row.getCell(9);
+		if(record4.getR153_DESCRIPTION() != null) {
+			cell1.setCellValue(record4.getR153_DESCRIPTION());
+			
+		}else {
+			cell1.setCellValue("");
+			cell1.setCellStyle(textStyle);
+			
+		}
+		//COL-J
+		 cell1 = row.getCell(10);
+		if (record4.getR153_VALUE() != null) {
+			cell1.setCellValue(record4.getR153_VALUE().doubleValue());
+			cell1.setCellStyle(numberStyle);
+		} else {
+			cell1.setCellValue("");
+			cell1.setCellStyle(textStyle);
+		}
+			
+	  //ROW_ 22
+
+	        row = sheet.getRow(22);
+		
+		//COL-C
+		cell1 = row.getCell(3);
+		if (record5.getR201_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record5.getR201_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else {
+		    cell1.setCellValue("");
+		    cell1.setCellStyle(textStyle);
+		}
+		//COL-D
+//		cell1 = row.getCell(4);
+//		if (record5.getR201_APPROVED_LIMIT() != null) {
+//		    cell1.setCellValue(record5.getR201_APPROVED_LIMIT().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+//		//COL-E
+//		cell1 = row.getCell(5);
+//		if (record5.getR201_OUTSTANDING_AMOUNT() != null) {
+//		    cell1.setCellValue(record5.getR201_OUTSTANDING_AMOUNT().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+//		//COL-F
+//		cell1 = row.getCell(6);
+//		if (record5.getR201_EXCESS_OVER_CEILING() != null) {
+//		    cell1.setCellValue(record5.getR201_EXCESS_OVER_CEILING().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+//		//COL-G
+//		cell1 = row.getCell(7);
+//		if (record5.getR201_LOAN_CLASSIFICATION() != null) {
+//		    cell1.setCellValue(record5.getR201_LOAN_CLASSIFICATION().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+//		//COL-H
+//		cell1 = row.getCell(8);
+//		if (record5.getR201_CURRENT_PROVISIONS() != null) {
+//		    cell1.setCellValue(record5.getR201_CURRENT_PROVISIONS().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+		//COL-I
+		cell1 = row.getCell(9);
+		if (record5.getR201_DESCRIPTION() != null) {
+		    cell1.setCellValue(record5.getR201_DESCRIPTION());
+		} else {
+		    cell1.setCellValue("");
+		    cell1.setCellStyle(textStyle);
+		}
+		//COL-J
+		cell1 = row.getCell(10);
+		if (record5.getR201_VALUE() != null) {
+		    cell1.setCellValue(record5.getR201_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else {
+		    cell1.setCellValue("");
+		    cell1.setCellStyle(textStyle);
+		}
+		
+		//ROW202
+		row = sheet.getRow(23);
+		
+		//COL-C
+		cell1 = row.getCell(3);
+		if (record5.getR202_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record5.getR202_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else {
+		    cell1.setCellValue("");
+		    cell1.setCellStyle(textStyle);
+		}
+		//COL-D
+//		cell1 = row.getCell(4);
+//		if (record5.getR202_APPROVED_LIMIT() != null) {
+//		    cell1.setCellValue(record5.getR202_APPROVED_LIMIT().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+//		//COL-E
+//		cell1 = row.getCell(5);
+//		if (record5.getR202_OUTSTANDING_AMOUNT() != null) {
+//		    cell1.setCellValue(record5.getR202_OUTSTANDING_AMOUNT().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+//		//COL-F
+//		cell1 = row.getCell(6);
+//		if (record5.getR202_EXCESS_OVER_CEILING() != null) {
+//		    cell1.setCellValue(record5.getR202_EXCESS_OVER_CEILING().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+//		//COL-G
+//		cell1 = row.getCell(7);
+//		if (record5.getR202_LOAN_CLASSIFICATION() != null) {
+//		    cell1.setCellValue(record5.getR202_LOAN_CLASSIFICATION().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+//		//COL-H
+//		cell1 = row.getCell(8);
+//		if (record5.getR202_CURRENT_PROVISIONS() != null) {
+//		    cell1.setCellValue(record5.getR202_CURRENT_PROVISIONS().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+		//COL-I
+		cell1 = row.getCell(9);
+		if (record5.getR202_DESCRIPTION() != null) {
+		    cell1.setCellValue(record5.getR202_DESCRIPTION());
+		} else {
+		    cell1.setCellValue("");
+		    cell1.setCellStyle(textStyle);
+		}
+		//COL-J
+		cell1 = row.getCell(10);
+		if (record5.getR202_VALUE() != null) {
+		    cell1.setCellValue(record5.getR202_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else {
+		    cell1.setCellValue("");
+		    cell1.setCellStyle(textStyle);
+		}
+		
+		//ROW203
+		row = sheet.getRow(24);
+
+		
+		//COL-C
+		cell1 = row.getCell(3);
+		if (record5.getR203_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record5.getR203_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else {
+		    cell1.setCellValue("");
+		    cell1.setCellStyle(textStyle);
+		}
+
+		//COL-D
+//		cell1 = row.getCell(4);
+//		if (record5.getR203_APPROVED_LIMIT() != null) {
+//		    cell1.setCellValue(record5.getR203_APPROVED_LIMIT().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+	//
+//		//COL-E
+//		cell1 = row.getCell(5);
+//		if (record5.getR203_OUTSTANDING_AMOUNT() != null) {
+//		    cell1.setCellValue(record5.getR203_OUTSTANDING_AMOUNT().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+	//
+//		//COL-F
+//		cell1 = row.getCell(6);
+//		if (record5.getR203_EXCESS_OVER_CEILING() != null) {
+//		    cell1.setCellValue(record5.getR203_EXCESS_OVER_CEILING().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+	//
+//		//COL-G
+//		cell1 = row.getCell(7);
+//		if (record5.getR203_LOAN_CLASSIFICATION() != null) {
+//		    cell1.setCellValue(record5.getR203_LOAN_CLASSIFICATION().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+	//
+//		//COL-H
+//		cell1 = row.getCell(8);
+//		if (record5.getR203_CURRENT_PROVISIONS() != null) {
+//		    cell1.setCellValue(record5.getR203_CURRENT_PROVISIONS().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+
+		//COL-I
+		cell1 = row.getCell(9);
+		if (record5.getR203_DESCRIPTION() != null) {
+		    cell1.setCellValue(record5.getR203_DESCRIPTION());
+		} else {
+		    cell1.setCellValue("");
+		    cell1.setCellStyle(textStyle);
+		}
+
+		//COL-J
+		cell1 = row.getCell(10);
+		if (record5.getR203_VALUE() != null) {
+		    cell1.setCellValue(record5.getR203_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else {
+		    cell1.setCellValue("");
+		    cell1.setCellStyle(textStyle);
+		}
+		  
+		//ROW_26
+
+	    row = sheet.getRow(25);
+
+		cell1 = row.getCell(3);
+		if (record6.getR251_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record6.getR251_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record6.getR251_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record6.getR251_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record6.getR251_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record6.getR251_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record6.getR251_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record6.getR251_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record6.getR251_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record6.getR251_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record6.getR251_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record6.getR251_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record6.getR251_DESCRIPTION() != null) {
+		    cell1.setCellValue(record6.getR251_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(10);
+		if (record6.getR251_VALUE() != null) {
+		    cell1.setCellValue(record6.getR251_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		//ROW252
+		row = sheet.getRow(26);
+
+		cell1 = row.getCell(3);
+		if (record6.getR252_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record6.getR252_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record6.getR252_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record6.getR252_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record6.getR252_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record6.getR252_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record6.getR252_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record6.getR252_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record6.getR252_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record6.getR252_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record6.getR252_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record6.getR252_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record6.getR252_DESCRIPTION() != null) {
+		    cell1.setCellValue(record6.getR252_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(10);
+		if (record6.getR252_VALUE() != null) {
+		    cell1.setCellValue(record6.getR252_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		//ROW253
+		row = sheet.getRow(27);
+
+		cell1 = row.getCell(3);
+		if (record6.getR253_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record6.getR253_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record6.getR253_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record6.getR253_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record6.getR253_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record6.getR253_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record6.getR253_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record6.getR253_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record6.getR253_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record6.getR253_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record6.getR253_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record6.getR253_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record6.getR253_DESCRIPTION() != null) {
+		    cell1.setCellValue(record6.getR253_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(10);
+		if (record6.getR253_VALUE() != null) {
+		    cell1.setCellValue(record6.getR253_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		
+		//Row_29
+	row = sheet.getRow(28);
+
+		cell1 = row.getCell(3);
+		if (record7.getR301_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record7.getR301_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record7.getR301_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record7.getR301_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record7.getR301_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record7.getR301_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record7.getR301_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record7.getR301_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record7.getR301_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record7.getR301_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record7.getR301_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record7.getR301_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record7.getR301_DESCRIPTION() != null) {
+		    cell1.setCellValue(record7.getR301_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(10);
+		if (record7.getR301_VALUE() != null) {
+		    cell1.setCellValue(record7.getR301_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+		//ROW30
+		row = sheet.getRow(29);
+
+		cell1 = row.getCell(3);
+		if (record7.getR302_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record7.getR302_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record7.getR302_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record7.getR302_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record7.getR302_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record7.getR302_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record7.getR302_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record7.getR302_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record7.getR302_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record7.getR302_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record7.getR302_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record7.getR302_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record7.getR302_DESCRIPTION() != null) {
+		    cell1.setCellValue(record7.getR302_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(10);
+		if (record7.getR302_VALUE() != null) {
+		    cell1.setCellValue(record7.getR302_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+
+		//ROW31
+		row = sheet.getRow(30);
+
+		
+		cell1 = row.getCell(3);
+		if (record7.getR303_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record7.getR303_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record7.getR303_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record7.getR303_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record7.getR303_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record7.getR303_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record7.getR303_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record7.getR303_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record7.getR303_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record7.getR303_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record7.getR303_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record7.getR303_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record7.getR303_DESCRIPTION() != null) {
+		    cell1.setCellValue(record7.getR303_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(10);
+		if (record7.getR303_VALUE() != null) {
+		    cell1.setCellValue(record7.getR303_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+
+		
+//		record-8
+	//ROW 32
+	row = sheet.getRow(31);
+
+		cell1 = row.getCell(3);
+		if (record8.getR351_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record8.getR351_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record8.getR351_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record8.getR351_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record8.getR351_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record8.getR351_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record8.getR351_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record8.getR351_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record8.getR351_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record8.getR351_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record8.getR351_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record8.getR351_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record8.getR351_DESCRIPTION() != null) {
+		    cell1.setCellValue(record8.getR351_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(10);
+		if (record8.getR351_VALUE() != null) {
+		    cell1.setCellValue(record8.getR351_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+		//ROW33
+		row = sheet.getRow(32);
+
+		cell1 = row.getCell(3);
+		if (record8.getR352_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record8.getR352_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record8.getR352_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record8.getR352_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record8.getR352_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record8.getR352_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record8.getR352_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record8.getR352_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record8.getR352_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record8.getR352_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record8.getR352_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record8.getR352_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record8.getR352_DESCRIPTION() != null) {
+		    cell1.setCellValue(record8.getR352_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(10);
+		if (record8.getR352_VALUE() != null) {
+		    cell1.setCellValue(record8.getR352_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+
+		//ROW34
+		row = sheet.getRow(33);
+
+		cell1 = row.getCell(3);
+		if (record8.getR353_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record8.getR353_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record8.getR353_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record8.getR353_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record8.getR353_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record8.getR353_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record8.getR353_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record8.getR353_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record8.getR353_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record8.getR353_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record8.getR353_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record8.getR353_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record8.getR353_DESCRIPTION() != null) {
+		    cell1.setCellValue(record8.getR353_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(10);
+		if (record8.getR353_VALUE() != null) {
+		    cell1.setCellValue(record8.getR353_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+	else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+				}
+
+	     workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+	} else {
+
+	}
+	// Write the final workbook content to the in-memory stream.
+	workbook.write(out);
+
+	logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+	return out.toByteArray();
+		  }	
+	}
+	public byte[] getExcel_Email_M_RPDExcelResub(String filename,String reportId, String fromdate, String todate, String currency, String dtltype,String type,String format,BigDecimal version) throws Exception
+	{
+		  
+		List<BRRS_M_RPD_Resub_Summary_Entity1> dataList1 =BRRS_M_RPD_Resub_Summary_Repo1.getdatabydateListarchival(dateformat.parse(todate),version) ;
+		List<BRRS_M_RPD_Resub_Summary_Entity2> dataList2 =BRRS_M_RPD_Resub_Summary_Repo2.getdatabydateListarchival(dateformat.parse(todate),version) ;
+		List<BRRS_M_RPD_Resub_Summary_Entity3> dataList3 =BRRS_M_RPD_Resub_Summary_Repo3.getdatabydateListarchival(dateformat.parse(todate),version) ;
+		List<BRRS_M_RPD_Resub_Summary_Entity4> dataList4 =BRRS_M_RPD_Resub_Summary_Repo4.getdatabydateListarchival(dateformat.parse(todate),version) ;
+		List<BRRS_M_RPD_Resub_Summary_Entity5> dataList5 =BRRS_M_RPD_Resub_Summary_Repo5.getdatabydateListarchival(dateformat.parse(todate),version) ;
+		List<BRRS_M_RPD_Resub_Summary_Entity6> dataList6 =BRRS_M_RPD_Resub_Summary_Repo6.getdatabydateListarchival(dateformat.parse(todate),version) ;
+		List<BRRS_M_RPD_Resub_Summary_Entity7> dataList7 =BRRS_M_RPD_Resub_Summary_Repo7.getdatabydateListarchival(dateformat.parse(todate),version) ;
+		List<BRRS_M_RPD_Resub_Summary_Entity8> dataList8 =BRRS_M_RPD_Resub_Summary_Repo8.getdatabydateListarchival(dateformat.parse(todate),version) ;
+		List<BRRS_M_RPD_Resub_Summary_Entity9> dataList9 =BRRS_M_RPD_Resub_Summary_Repo9.getdatabydateListarchival(dateformat.parse(todate),version) ;
+
+			if (dataList1.isEmpty()) {
+				logger.warn("Service: No data found for M_RPD report. Returning empty result.");
+				return new byte[0];
+			}
+
+			String templateDir = env.getProperty("output.exportpathtemp");
+			String templateFileName = filename;
+			System.out.println(filename+" = FILENAME");
+			Path templatePath = Paths.get(templateDir, templateFileName);
+			System.out.println(templatePath);
+			
+			logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+			if (!Files.exists(templatePath)) {
+				// This specific exception will be caught by the controller.
+				throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+			}
+			if (!Files.isReadable(templatePath)) {
+				// A specific exception for permission errors.
+				throw new SecurityException(
+						"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+			}
+
+			// This try-with-resources block is perfect. It guarantees all resources are
+			// closed automatically.
+			try (InputStream templateInputStream = Files.newInputStream(templatePath);
+					Workbook workbook = WorkbookFactory.create(templateInputStream);
+					ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+			
+				
+				Sheet sheet = workbook.getSheetAt(0);
+
+				// --- Style Definitions ---
+		CreationHelper createHelper = workbook.getCreationHelper();
+				
+
+				CellStyle dateStyle = workbook.createCellStyle();
+				dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+				dateStyle.setBorderBottom(BorderStyle.THIN);
+				dateStyle.setBorderTop(BorderStyle.THIN);
+				dateStyle.setBorderLeft(BorderStyle.THIN);
+				dateStyle.setBorderRight(BorderStyle.THIN);
+
+				CellStyle textStyle = workbook.createCellStyle();
+				textStyle.setBorderBottom(BorderStyle.THIN);
+				textStyle.setBorderTop(BorderStyle.THIN);
+				textStyle.setBorderLeft(BorderStyle.THIN);
+				textStyle.setBorderRight(BorderStyle.THIN);
+				
+				// Create the font
+				Font font = workbook.createFont();
+				font.setFontHeightInPoints((short)8); // size 8
+				font.setFontName("Arial");    
+
+				CellStyle numberStyle = workbook.createCellStyle();
+				//numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+				numberStyle.setBorderBottom(BorderStyle.THIN);
+				numberStyle.setBorderTop(BorderStyle.THIN);
+				numberStyle.setBorderLeft(BorderStyle.THIN);
+				numberStyle.setBorderRight(BorderStyle.THIN);
+				numberStyle.setFont(font);
+				
+				int startRow = 10;
+		      		
+		  if (!dataList1.isEmpty()) {
+				for (int i = 0; i < dataList1.size(); i++) {
+					
+					BRRS_M_RPD_Resub_Summary_Entity1 record1 = dataList1.get(i);
+					BRRS_M_RPD_Resub_Summary_Entity2 record2 = dataList2.get(i);
+					BRRS_M_RPD_Resub_Summary_Entity3 record3 = dataList3.get(i);
+					BRRS_M_RPD_Resub_Summary_Entity4 record4 = dataList4.get(i);
+					BRRS_M_RPD_Resub_Summary_Entity5 record5 = dataList5.get(i);
+					BRRS_M_RPD_Resub_Summary_Entity6 record6 = dataList6.get(i);
+					BRRS_M_RPD_Resub_Summary_Entity7 record7 = dataList7.get(i);
+					BRRS_M_RPD_Resub_Summary_Entity8 record8 = dataList8.get(i);
+					BRRS_M_RPD_Resub_Summary_Entity9 record9 = dataList9.get(i);
+					
+					System.out.println("rownumber="+startRow + i);
+					Row row = sheet.getRow(startRow + i);
+					if (row == null) {
+						row = sheet.createRow(startRow + i);
+					}
+					//ROW11		
+					//COL-B
+					Cell cell1=row.getCell(3);
+					if(record1.getR11_TYPE_FACILITY() != null) {
+						cell1.setCellValue(record1.getR11_TYPE_FACILITY().doubleValue());
+						cell1.setCellStyle(numberStyle);
+						
+					}else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+						
+					}
+					//COL-D
+					cell1 = row.getCell(4);
+					if (record1.getR11_APPROVED_LIMIT() != null) {
+						cell1.setCellValue(record1.getR11_APPROVED_LIMIT().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-E
+					 cell1 = row.getCell(5);
+					if (record1.getR11_OUTSTANDING_AMOUNT() != null) {
+						cell1.setCellValue(record1.getR11_OUTSTANDING_AMOUNT().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-F
+					 cell1 = row.getCell(6);
+					if (record1.getR11_EXCESS_OVER_CEILING() != null) {
+						cell1.setCellValue(record1.getR11_EXCESS_OVER_CEILING().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-G
+					cell1 = row.getCell(7);
+					if (record1.getR11_LOAN_CLASSIFICATION() != null) {
+						cell1.setCellValue(record1.getR11_LOAN_CLASSIFICATION().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-H
+					 cell1 = row.getCell(8);
+					if (record1.getR11_CURRENT_PROVISIONS() != null) {
+						cell1.setCellValue(record1.getR11_CURRENT_PROVISIONS().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-I
+					 cell1=row.getCell(9);
+					if(record1.getR11_DESCRIPTION() != null) {
+						cell1.setCellValue(record1.getR11_DESCRIPTION());
+						
+					}else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+						
+					}
+					//COL-J
+					 cell1 = row.getCell(10);
+					if (record1.getR11_VALUE() != null) {
+						cell1.setCellValue(record1.getR11_VALUE().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					
+					//ROW12		
+					//COL-B
+					row=sheet.getRow(11);
+					 
+					//COL-C
+					 cell1=row.getCell(3);
+					if(record1.getR12_TYPE_FACILITY() != null) {
+						cell1.setCellValue(record1.getR12_TYPE_FACILITY().doubleValue());
+						cell1.setCellStyle(numberStyle);
+						
+					}else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+						
+					}
+					//COL-D
+					cell1 = row.getCell(4);
+					if (record1.getR12_APPROVED_LIMIT() != null) {
+						cell1.setCellValue(record1.getR12_APPROVED_LIMIT().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-E
+					 cell1 = row.getCell(5);
+					if (record1.getR12_OUTSTANDING_AMOUNT() != null) {
+						cell1.setCellValue(record1.getR12_OUTSTANDING_AMOUNT().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-F
+					 cell1 = row.getCell(6);
+					if (record1.getR12_EXCESS_OVER_CEILING() != null) {
+						cell1.setCellValue(record1.getR12_EXCESS_OVER_CEILING().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-G
+					cell1 = row.getCell(7);
+					if (record1.getR12_LOAN_CLASSIFICATION() != null) {
+						cell1.setCellValue(record1.getR12_LOAN_CLASSIFICATION().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-H
+					 cell1 = row.getCell(8);
+					if (record1.getR12_CURRENT_PROVISIONS() != null) {
+						cell1.setCellValue(record1.getR12_CURRENT_PROVISIONS().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-I
+					 cell1=row.getCell(9);
+					if(record1.getR12_DESCRIPTION() != null) {
+						cell1.setCellValue(record1.getR12_DESCRIPTION());
+						
+					}else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+						
+					}
+					//COL-J
+					 cell1 = row.getCell(10);
+					if (record1.getR12_VALUE() != null) {
+						cell1.setCellValue(record1.getR12_VALUE().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					
+					//ROW13		
+					//COL-B
+					row=sheet.getRow(12);
+					
+					//COL-C
+					 cell1=row.getCell(3);
+					if(record1.getR13_TYPE_FACILITY() != null) {
+						cell1.setCellValue(record1.getR13_TYPE_FACILITY().doubleValue());
+						cell1.setCellStyle(numberStyle);
+						
+					}else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+						
+					}
+					//COL-D
+					cell1 = row.getCell(4);
+					if (record1.getR13_APPROVED_LIMIT() != null) {
+						cell1.setCellValue(record1.getR13_APPROVED_LIMIT().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-E
+					 cell1 = row.getCell(5);
+					if (record1.getR13_OUTSTANDING_AMOUNT() != null) {
+						cell1.setCellValue(record1.getR13_OUTSTANDING_AMOUNT().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-F
+					 cell1 = row.getCell(6);
+					if (record1.getR13_EXCESS_OVER_CEILING() != null) {
+						cell1.setCellValue(record1.getR13_EXCESS_OVER_CEILING().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-G
+					cell1 = row.getCell(7);
+					if (record1.getR13_LOAN_CLASSIFICATION() != null) {
+						cell1.setCellValue(record1.getR13_LOAN_CLASSIFICATION().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-H
+					 cell1 = row.getCell(8);
+					if (record1.getR13_CURRENT_PROVISIONS() != null) {
+						cell1.setCellValue(record1.getR13_CURRENT_PROVISIONS().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-I
+					 cell1=row.getCell(9);
+					if(record1.getR13_DESCRIPTION() != null) {
+						cell1.setCellValue(record1.getR13_DESCRIPTION());
+						
+					}else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+						
+					}
+					//COL-J
+					 cell1 = row.getCell(10);
+					if (record1.getR13_VALUE() != null) {
+						cell1.setCellValue(record1.getR13_VALUE().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					
+					
+			//ROW_4
+			
+			    row=sheet.getRow(13);
+					
+					//COL-C
+					cell1=row.getCell(3);
+					if(record2.getR51_TYPE_FACILITY() != null) {
+						cell1.setCellValue(record2.getR51_TYPE_FACILITY().doubleValue());
+						cell1.setCellStyle(numberStyle);
+						
+					}else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+						
+					}
+					 
+					//COL-D
+					cell1 = row.getCell(4);
+					if (record2.getR51_APPROVED_LIMIT() != null) {
+						cell1.setCellValue(record2.getR51_APPROVED_LIMIT().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-E
+					 cell1 = row.getCell(5);
+					if (record2.getR51_OUTSTANDING_AMOUNT() != null) {
+						cell1.setCellValue(record2.getR51_OUTSTANDING_AMOUNT().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-F
+					 cell1 = row.getCell(6);
+					if (record2.getR51_EXCESS_OVER_CEILING() != null) {
+						cell1.setCellValue(record2.getR51_EXCESS_OVER_CEILING().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-G
+					cell1 = row.getCell(7);
+					if (record2.getR51_LOAN_CLASSIFICATION() != null) {
+						cell1.setCellValue(record2.getR51_LOAN_CLASSIFICATION().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-H
+					 cell1 = row.getCell(8);
+					if (record2.getR51_CURRENT_PROVISIONS() != null) {
+						cell1.setCellValue(record2.getR51_CURRENT_PROVISIONS().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-I
+					 cell1=row.getCell(9);
+					if(record2.getR51_DESCRIPTION() != null) {
+						cell1.setCellValue(record2.getR51_DESCRIPTION());
+						
+					}else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+						
+					}
+					//COL-J
+					 cell1 = row.getCell(10);
+					if (record2.getR51_VALUE() != null) {
+						cell1.setCellValue(record2.getR51_VALUE().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					
+					//ROW52		
+					//COL-B
+					row=sheet.getRow(14);
+					 
+					//COL-C
+					 cell1=row.getCell(3);
+					if(record2.getR52_TYPE_FACILITY() != null) {
+						cell1.setCellValue(record2.getR52_TYPE_FACILITY().doubleValue());
+						cell1.setCellStyle(numberStyle);
+						
+					}else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+						
+					}
+					//COL-D
+					cell1 = row.getCell(4);
+					if (record2.getR52_APPROVED_LIMIT() != null) {
+						cell1.setCellValue(record2.getR52_APPROVED_LIMIT().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-E
+					 cell1 = row.getCell(5);
+					if (record2.getR52_OUTSTANDING_AMOUNT() != null) {
+						cell1.setCellValue(record2.getR52_OUTSTANDING_AMOUNT().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-F
+					 cell1 = row.getCell(6);
+					if (record2.getR52_EXCESS_OVER_CEILING() != null) {
+						cell1.setCellValue(record2.getR52_EXCESS_OVER_CEILING().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-G
+					cell1 = row.getCell(7);
+					if (record2.getR52_LOAN_CLASSIFICATION() != null) {
+						cell1.setCellValue(record2.getR52_LOAN_CLASSIFICATION().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-H
+					 cell1 = row.getCell(8);
+					if (record2.getR52_CURRENT_PROVISIONS() != null) {
+						cell1.setCellValue(record2.getR52_CURRENT_PROVISIONS().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-I
+					 cell1=row.getCell(9);
+					if(record2.getR52_DESCRIPTION() != null) {
+						cell1.setCellValue(record2.getR52_DESCRIPTION());
+						
+					}else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+						
+					}
+					//COL-J
+					 cell1 = row.getCell(10);
+					if (record2.getR52_VALUE() != null) {
+						cell1.setCellValue(record2.getR52_VALUE().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					
+					
+					
+					//ROW53		
+					//COL-B
+					row=sheet.getRow(15);
+					
+					//COL-C
+					 cell1=row.getCell(3);
+					if(record2.getR53_TYPE_FACILITY() != null) {
+						cell1.setCellValue(record2.getR53_TYPE_FACILITY().doubleValue());
+						cell1.setCellStyle(numberStyle);
+						
+					}else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+						
+					}
+					//COL-D
+					cell1 = row.getCell(4);
+					if (record2.getR53_APPROVED_LIMIT() != null) {
+						cell1.setCellValue(record2.getR53_APPROVED_LIMIT().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-E
+					 cell1 = row.getCell(5);
+					if (record2.getR53_OUTSTANDING_AMOUNT() != null) {
+						cell1.setCellValue(record2.getR53_OUTSTANDING_AMOUNT().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-F
+					 cell1 = row.getCell(6);
+					if (record2.getR53_EXCESS_OVER_CEILING() != null) {
+						cell1.setCellValue(record2.getR53_EXCESS_OVER_CEILING().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-G
+					cell1 = row.getCell(7);
+					if (record2.getR53_LOAN_CLASSIFICATION() != null) {
+						cell1.setCellValue(record2.getR53_LOAN_CLASSIFICATION().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-H
+					 cell1 = row.getCell(8);
+					if (record2.getR53_CURRENT_PROVISIONS() != null) {
+						cell1.setCellValue(record2.getR53_CURRENT_PROVISIONS().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					//COL-I
+					 cell1=row.getCell(9);
+					if(record2.getR53_DESCRIPTION() != null) {
+						cell1.setCellValue(record2.getR53_DESCRIPTION());
+						
+					}else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+						
+					}
+					//COL-J
+					 cell1 = row.getCell(10);
+					if (record2.getR53_VALUE() != null) {
+						cell1.setCellValue(record2.getR53_VALUE().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+				
+		//ROW_17
+
+	     row=sheet.getRow(16);
+		
+		//COL-C
+		Cell cell2=row.getCell(3);
+		if(record3.getR101_TYPE_FACILITY() != null) {
+			cell2.setCellValue(record3.getR101_TYPE_FACILITY().doubleValue());
+			cell2.setCellStyle(numberStyle);
+			
+		}else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+			
+		}
+		//COL-D
+		cell2 = row.getCell(4);
+		if (record3.getR101_APPROVED_LIMIT() != null) {
+			cell2.setCellValue(record3.getR101_APPROVED_LIMIT().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-E
+		 cell2 = row.getCell(5);
+		if (record3.getR101_OUTSTANDING_AMOUNT() != null) {
+			cell2.setCellValue(record3.getR101_OUTSTANDING_AMOUNT().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-F
+		 cell2 = row.getCell(6);
+		if (record3.getR101_EXCESS_OVER_CEILING() != null) {
+			cell2.setCellValue(record3.getR101_EXCESS_OVER_CEILING().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-G
+		cell2 = row.getCell(7);
+		if (record3.getR101_LOAN_CLASSIFICATION() != null) {
+			cell2.setCellValue(record3.getR101_LOAN_CLASSIFICATION().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-H
+		 cell2 = row.getCell(8);
+		if (record3.getR101_CURRENT_PROVISIONS() != null) {
+			cell2.setCellValue(record3.getR101_CURRENT_PROVISIONS().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-I
+		 cell2=row.getCell(9);
+		if(record3.getR101_DESCRIPTION() != null) {
+			cell2.setCellValue(record3.getR101_DESCRIPTION());
+			
+		}else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+			
+		}
+		//COL-J
+		 cell2 = row.getCell(10);
+		if (record3.getR101_VALUE() != null) {
+			cell2.setCellValue(record3.getR101_VALUE().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		
+		//ROW102		
+		//COL-B
+		row=sheet.getRow(17);
+		
+		//COL-C
+		 cell2=row.getCell(3);
+		if(record3.getR102_TYPE_FACILITY() != null) {
+			cell2.setCellValue(record3.getR102_TYPE_FACILITY().doubleValue());
+			cell2.setCellStyle(numberStyle);
+			
+		}else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+			
+		}
+		//COL-D
+		cell2 = row.getCell(4);
+		if (record3.getR102_APPROVED_LIMIT() != null) {
+			cell2.setCellValue(record3.getR102_APPROVED_LIMIT().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-E
+		 cell2 = row.getCell(5);
+		if (record3.getR102_OUTSTANDING_AMOUNT() != null) {
+			cell2.setCellValue(record3.getR102_OUTSTANDING_AMOUNT().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-F
+		 cell2 = row.getCell(6);
+		if (record3.getR102_EXCESS_OVER_CEILING() != null) {
+			cell2.setCellValue(record3.getR102_EXCESS_OVER_CEILING().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-G
+		cell2 = row.getCell(7);
+		if (record3.getR102_LOAN_CLASSIFICATION() != null) {
+			cell2.setCellValue(record3.getR102_LOAN_CLASSIFICATION().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-H
+		 cell2 = row.getCell(8);
+		if (record3.getR102_CURRENT_PROVISIONS() != null) {
+			cell2.setCellValue(record3.getR102_CURRENT_PROVISIONS().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-I
+		 cell2=row.getCell(9);
+		if(record3.getR102_DESCRIPTION() != null) {
+			cell2.setCellValue(record3.getR102_DESCRIPTION());
+			
+		}else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+			
+		}
+		//COL-J
+		 cell2 = row.getCell(10);
+		if (record3.getR102_VALUE() != null) {
+			cell2.setCellValue(record3.getR102_VALUE().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		
+		//ROW103		
+		//COL-B
+		row=sheet.getRow(18);
+		
+		//COL-C
+		 cell2=row.getCell(3);
+		if(record3.getR103_TYPE_FACILITY() != null) {
+			cell2.setCellValue(record3.getR103_TYPE_FACILITY().doubleValue());
+			cell2.setCellStyle(numberStyle);
+			
+		}else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+			
+		}
+		//COL-D
+		cell2 = row.getCell(4);
+		if (record3.getR103_APPROVED_LIMIT() != null) {
+			cell2.setCellValue(record3.getR103_APPROVED_LIMIT().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-E
+		 cell2 = row.getCell(5);
+		if (record3.getR103_OUTSTANDING_AMOUNT() != null) {
+			cell2.setCellValue(record3.getR103_OUTSTANDING_AMOUNT().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-F
+		 cell2 = row.getCell(6);
+		if (record3.getR103_EXCESS_OVER_CEILING() != null) {
+			cell2.setCellValue(record3.getR103_EXCESS_OVER_CEILING().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-G
+		cell2 = row.getCell(7);
+		if (record3.getR103_LOAN_CLASSIFICATION() != null) {
+			cell2.setCellValue(record3.getR103_LOAN_CLASSIFICATION().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-H
+		 cell2 = row.getCell(8);
+		if (record3.getR103_CURRENT_PROVISIONS() != null) {
+			cell2.setCellValue(record3.getR103_CURRENT_PROVISIONS().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+		//COL-I
+		 cell2=row.getCell(9);
+		if(record3.getR103_DESCRIPTION() != null) {
+			cell2.setCellValue(record3.getR103_DESCRIPTION());
+			
+		}else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+			
+		}
+		//COL-J
+		 cell2 = row.getCell(10);
+		if (record3.getR103_VALUE() != null) {
+			cell2.setCellValue(record3.getR103_VALUE().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+			
+		//ROW_20
+
+	   row=sheet.getRow(19);
+		
+		//COL-C
+		 cell1=row.getCell(3);
+		if(record4.getR151_TYPE_FACILITY() != null) {
+			cell1.setCellValue(record4.getR151_TYPE_FACILITY().doubleValue());
+			cell1.setCellStyle(numberStyle);
+			
+		}else {
+			cell1.setCellValue("");
+			cell1.setCellStyle(textStyle);
+			
+		}
+		//COL-D
+//		cell1 = row.getCell(4);
+//		if (record4.getR151_APPROVED_LIMIT() != null) {
+//			cell1.setCellValue(record4.getR151_APPROVED_LIMIT().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+		//COL-E
+//		 cell1 = row.getCell(5);
+//		if (record4.getR151_OUTSTANDING_AMOUNT() != null) {
+//			cell1.setCellValue(record4.getR151_OUTSTANDING_AMOUNT().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+		//COL-F
+//		 cell1 = row.getCell(6);
+//		if (record4.getR151_EXCESS_OVER_CEILING() != null) {
+//			cell1.setCellValue(record4.getR151_EXCESS_OVER_CEILING().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+//		//COL-G
+//		cell1 = row.getCell(7);
+//		if (record4.getR151_LOAN_CLASSIFICATION() != null) {
+//			cell1.setCellValue(record4.getR151_LOAN_CLASSIFICATION().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+//		//COL-H
+//		 cell1 = row.getCell(8);
+//		if (record4.getR151_CURRENT_PROVISIONS() != null) {
+//			cell1.setCellValue(record4.getR151_CURRENT_PROVISIONS().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+		//COL-I
+		 cell1=row.getCell(9);
+		if(record4.getR151_DESCRIPTION() != null) {
+			cell1.setCellValue(record4.getR151_DESCRIPTION());
+			
+		}else {
+			cell1.setCellValue("");
+			cell1.setCellStyle(textStyle);
+			
+		}
+		//COL-J
+		 cell1 = row.getCell(10);
+		if (record4.getR151_VALUE() != null) {
+			cell1.setCellValue(record4.getR151_VALUE().doubleValue());
+			cell1.setCellStyle(numberStyle);
+		} else {
+			cell1.setCellValue("");
+			cell1.setCellStyle(textStyle);
+		}
+		
+		//ROW152		
+		//COL-B
+		row=sheet.getRow(20);
+		 
+		//COL-C
+		 cell1=row.getCell(3);
+		if(record4.getR152_TYPE_FACILITY() != null) {
+			cell1.setCellValue(record4.getR152_TYPE_FACILITY().doubleValue());
+			cell1.setCellStyle(numberStyle);
+			
+		}else {
+			cell1.setCellValue("");
+			cell1.setCellStyle(textStyle);
+			
+		}
+		//COL-D
+//		cell1 = row.getCell(4);
+//		if (record4.getR152_APPROVED_LIMIT() != null) {
+//			cell1.setCellValue(record4.getR152_APPROVED_LIMIT().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+//		//COL-E
+//		 cell1 = row.getCell(5);
+//		if (record4.getR152_OUTSTANDING_AMOUNT() != null) {
+//			cell1.setCellValue(record4.getR152_OUTSTANDING_AMOUNT().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+//		//COL-F
+//		 cell1 = row.getCell(6);
+//		if (record4.getR152_EXCESS_OVER_CEILING() != null) {
+//			cell1.setCellValue(record4.getR152_EXCESS_OVER_CEILING().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+//		//COL-G
+//		cell1 = row.getCell(7);
+//		if (record4.getR152_LOAN_CLASSIFICATION() != null) {
+//			cell1.setCellValue(record4.getR152_LOAN_CLASSIFICATION().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+//		//COL-H
+//		 cell1 = row.getCell(8);
+//		if (record4.getR152_CURRENT_PROVISIONS() != null) {
+//			cell1.setCellValue(record4.getR152_CURRENT_PROVISIONS().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+		//COL-I
+		 cell1=row.getCell(9);
+		if(record4.getR152_DESCRIPTION() != null) {
+			cell1.setCellValue(record4.getR152_DESCRIPTION());
+			
+		}else {
+			cell1.setCellValue("");
+			cell1.setCellStyle(textStyle);
+			
+		}
+		//COL-J
+		 cell1 = row.getCell(10);
+		if (record4.getR152_VALUE() != null) {
+			cell1.setCellValue(record4.getR152_VALUE().doubleValue());
+			cell1.setCellStyle(numberStyle);
+		} else {
+			cell1.setCellValue("");
+			cell1.setCellStyle(textStyle);
+		}
+		
+		//ROW153		
+		
+		row=sheet.getRow(21);
+		
+		//COL-C
+		 cell1=row.getCell(3);
+		if(record4.getR153_TYPE_FACILITY() != null) {
+			cell1.setCellValue(record4.getR153_TYPE_FACILITY().doubleValue());
+			cell1.setCellStyle(numberStyle);
+			
+		}else {
+			cell1.setCellValue("");
+			cell1.setCellStyle(textStyle);
+			
+		}
+		//COL-D
+//		cell1 = row.getCell(4);
+//		if (record4.getR153_APPROVED_LIMIT() != null) {
+//			cell1.setCellValue(record4.getR153_APPROVED_LIMIT().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+//		//COL-E
+//		 cell1 = row.getCell(5);
+//		if (record4.getR153_OUTSTANDING_AMOUNT() != null) {
+//			cell1.setCellValue(record4.getR153_OUTSTANDING_AMOUNT().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+//		//COL-F
+//		 cell1 = row.getCell(6);
+//		if (record4.getR153_EXCESS_OVER_CEILING() != null) {
+//			cell1.setCellValue(record4.getR153_EXCESS_OVER_CEILING().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+//		//COL-G
+//		cell1 = row.getCell(7);
+//		if (record4.getR153_LOAN_CLASSIFICATION() != null) {
+//			cell1.setCellValue(record4.getR153_LOAN_CLASSIFICATION().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+//		//COL-H
+//		 cell1 = row.getCell(8);
+//		if (record4.getR153_CURRENT_PROVISIONS() != null) {
+//			cell1.setCellValue(record4.getR153_CURRENT_PROVISIONS().doubleValue());
+//			cell1.setCellStyle(numberStyle);
+//		} else {
+//			cell1.setCellValue("");
+//			cell1.setCellStyle(textStyle);
+//		}
+		//COL-I
+		 cell1=row.getCell(9);
+		if(record4.getR153_DESCRIPTION() != null) {
+			cell1.setCellValue(record4.getR153_DESCRIPTION());
+			
+		}else {
+			cell1.setCellValue("");
+			cell1.setCellStyle(textStyle);
+			
+		}
+		//COL-J
+		 cell1 = row.getCell(10);
+		if (record4.getR153_VALUE() != null) {
+			cell1.setCellValue(record4.getR153_VALUE().doubleValue());
+			cell1.setCellStyle(numberStyle);
+		} else {
+			cell1.setCellValue("");
+			cell1.setCellStyle(textStyle);
+		}
+			
+	  //ROW_ 22
+
+	        row = sheet.getRow(22);
+		
+		//COL-C
+		cell1 = row.getCell(3);
+		if (record5.getR201_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record5.getR201_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else {
+		    cell1.setCellValue("");
+		    cell1.setCellStyle(textStyle);
+		}
+		//COL-D
+//		cell1 = row.getCell(4);
+//		if (record5.getR201_APPROVED_LIMIT() != null) {
+//		    cell1.setCellValue(record5.getR201_APPROVED_LIMIT().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+//		//COL-E
+//		cell1 = row.getCell(5);
+//		if (record5.getR201_OUTSTANDING_AMOUNT() != null) {
+//		    cell1.setCellValue(record5.getR201_OUTSTANDING_AMOUNT().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+//		//COL-F
+//		cell1 = row.getCell(6);
+//		if (record5.getR201_EXCESS_OVER_CEILING() != null) {
+//		    cell1.setCellValue(record5.getR201_EXCESS_OVER_CEILING().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+//		//COL-G
+//		cell1 = row.getCell(7);
+//		if (record5.getR201_LOAN_CLASSIFICATION() != null) {
+//		    cell1.setCellValue(record5.getR201_LOAN_CLASSIFICATION().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+//		//COL-H
+//		cell1 = row.getCell(8);
+//		if (record5.getR201_CURRENT_PROVISIONS() != null) {
+//		    cell1.setCellValue(record5.getR201_CURRENT_PROVISIONS().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+		//COL-I
+		cell1 = row.getCell(9);
+		if (record5.getR201_DESCRIPTION() != null) {
+		    cell1.setCellValue(record5.getR201_DESCRIPTION());
+		} else {
+		    cell1.setCellValue("");
+		    cell1.setCellStyle(textStyle);
+		}
+		//COL-J
+		cell1 = row.getCell(10);
+		if (record5.getR201_VALUE() != null) {
+		    cell1.setCellValue(record5.getR201_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else {
+		    cell1.setCellValue("");
+		    cell1.setCellStyle(textStyle);
+		}
+		
+		//ROW202
+		row = sheet.getRow(23);
+		
+		//COL-C
+		cell1 = row.getCell(3);
+		if (record5.getR202_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record5.getR202_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else {
+		    cell1.setCellValue("");
+		    cell1.setCellStyle(textStyle);
+		}
+		//COL-D
+//		cell1 = row.getCell(4);
+//		if (record5.getR202_APPROVED_LIMIT() != null) {
+//		    cell1.setCellValue(record5.getR202_APPROVED_LIMIT().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+//		//COL-E
+//		cell1 = row.getCell(5);
+//		if (record5.getR202_OUTSTANDING_AMOUNT() != null) {
+//		    cell1.setCellValue(record5.getR202_OUTSTANDING_AMOUNT().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+//		//COL-F
+//		cell1 = row.getCell(6);
+//		if (record5.getR202_EXCESS_OVER_CEILING() != null) {
+//		    cell1.setCellValue(record5.getR202_EXCESS_OVER_CEILING().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+//		//COL-G
+//		cell1 = row.getCell(7);
+//		if (record5.getR202_LOAN_CLASSIFICATION() != null) {
+//		    cell1.setCellValue(record5.getR202_LOAN_CLASSIFICATION().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+//		//COL-H
+//		cell1 = row.getCell(8);
+//		if (record5.getR202_CURRENT_PROVISIONS() != null) {
+//		    cell1.setCellValue(record5.getR202_CURRENT_PROVISIONS().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+		//COL-I
+		cell1 = row.getCell(9);
+		if (record5.getR202_DESCRIPTION() != null) {
+		    cell1.setCellValue(record5.getR202_DESCRIPTION());
+		} else {
+		    cell1.setCellValue("");
+		    cell1.setCellStyle(textStyle);
+		}
+		//COL-J
+		cell1 = row.getCell(10);
+		if (record5.getR202_VALUE() != null) {
+		    cell1.setCellValue(record5.getR202_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else {
+		    cell1.setCellValue("");
+		    cell1.setCellStyle(textStyle);
+		}
+		
+		//ROW203
+		row = sheet.getRow(24);
+
+		
+		//COL-C
+		cell1 = row.getCell(3);
+		if (record5.getR203_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record5.getR203_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else {
+		    cell1.setCellValue("");
+		    cell1.setCellStyle(textStyle);
+		}
+
+		//COL-D
+//		cell1 = row.getCell(4);
+//		if (record5.getR203_APPROVED_LIMIT() != null) {
+//		    cell1.setCellValue(record5.getR203_APPROVED_LIMIT().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+	//
+//		//COL-E
+//		cell1 = row.getCell(5);
+//		if (record5.getR203_OUTSTANDING_AMOUNT() != null) {
+//		    cell1.setCellValue(record5.getR203_OUTSTANDING_AMOUNT().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+	//
+//		//COL-F
+//		cell1 = row.getCell(6);
+//		if (record5.getR203_EXCESS_OVER_CEILING() != null) {
+//		    cell1.setCellValue(record5.getR203_EXCESS_OVER_CEILING().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+	//
+//		//COL-G
+//		cell1 = row.getCell(7);
+//		if (record5.getR203_LOAN_CLASSIFICATION() != null) {
+//		    cell1.setCellValue(record5.getR203_LOAN_CLASSIFICATION().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+	//
+//		//COL-H
+//		cell1 = row.getCell(8);
+//		if (record5.getR203_CURRENT_PROVISIONS() != null) {
+//		    cell1.setCellValue(record5.getR203_CURRENT_PROVISIONS().doubleValue());
+//		    cell1.setCellStyle(numberStyle);
+//		} else {
+//		    cell1.setCellValue("");
+//		    cell1.setCellStyle(textStyle);
+//		}
+
+		//COL-I
+		cell1 = row.getCell(9);
+		if (record5.getR203_DESCRIPTION() != null) {
+		    cell1.setCellValue(record5.getR203_DESCRIPTION());
+		} else {
+		    cell1.setCellValue("");
+		    cell1.setCellStyle(textStyle);
+		}
+
+		//COL-J
+		cell1 = row.getCell(10);
+		if (record5.getR203_VALUE() != null) {
+		    cell1.setCellValue(record5.getR203_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else {
+		    cell1.setCellValue("");
+		    cell1.setCellStyle(textStyle);
+		}
+		  
+		//ROW_26
+
+	    row = sheet.getRow(25);
+
+		cell1 = row.getCell(3);
+		if (record6.getR251_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record6.getR251_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record6.getR251_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record6.getR251_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record6.getR251_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record6.getR251_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record6.getR251_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record6.getR251_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record6.getR251_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record6.getR251_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record6.getR251_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record6.getR251_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record6.getR251_DESCRIPTION() != null) {
+		    cell1.setCellValue(record6.getR251_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(10);
+		if (record6.getR251_VALUE() != null) {
+		    cell1.setCellValue(record6.getR251_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		//ROW252
+		row = sheet.getRow(26);
+
+		cell1 = row.getCell(3);
+		if (record6.getR252_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record6.getR252_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record6.getR252_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record6.getR252_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record6.getR252_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record6.getR252_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record6.getR252_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record6.getR252_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record6.getR252_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record6.getR252_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record6.getR252_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record6.getR252_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record6.getR252_DESCRIPTION() != null) {
+		    cell1.setCellValue(record6.getR252_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(10);
+		if (record6.getR252_VALUE() != null) {
+		    cell1.setCellValue(record6.getR252_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		//ROW253
+		row = sheet.getRow(27);
+
+		cell1 = row.getCell(3);
+		if (record6.getR253_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record6.getR253_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record6.getR253_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record6.getR253_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record6.getR253_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record6.getR253_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record6.getR253_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record6.getR253_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record6.getR253_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record6.getR253_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record6.getR253_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record6.getR253_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record6.getR253_DESCRIPTION() != null) {
+		    cell1.setCellValue(record6.getR253_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(10);
+		if (record6.getR253_VALUE() != null) {
+		    cell1.setCellValue(record6.getR253_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		
+		//Row_29
+	row = sheet.getRow(28);
+
+		cell1 = row.getCell(3);
+		if (record7.getR301_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record7.getR301_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record7.getR301_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record7.getR301_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record7.getR301_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record7.getR301_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record7.getR301_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record7.getR301_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record7.getR301_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record7.getR301_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record7.getR301_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record7.getR301_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record7.getR301_DESCRIPTION() != null) {
+		    cell1.setCellValue(record7.getR301_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(10);
+		if (record7.getR301_VALUE() != null) {
+		    cell1.setCellValue(record7.getR301_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+		//ROW30
+		row = sheet.getRow(29);
+
+		cell1 = row.getCell(3);
+		if (record7.getR302_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record7.getR302_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record7.getR302_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record7.getR302_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record7.getR302_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record7.getR302_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record7.getR302_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record7.getR302_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record7.getR302_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record7.getR302_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record7.getR302_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record7.getR302_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record7.getR302_DESCRIPTION() != null) {
+		    cell1.setCellValue(record7.getR302_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(10);
+		if (record7.getR302_VALUE() != null) {
+		    cell1.setCellValue(record7.getR302_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+
+		//ROW31
+		row = sheet.getRow(30);
+
+		
+		cell1 = row.getCell(3);
+		if (record7.getR303_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record7.getR303_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record7.getR303_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record7.getR303_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record7.getR303_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record7.getR303_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record7.getR303_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record7.getR303_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record7.getR303_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record7.getR303_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record7.getR303_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record7.getR303_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record7.getR303_DESCRIPTION() != null) {
+		    cell1.setCellValue(record7.getR303_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(10);
+		if (record7.getR303_VALUE() != null) {
+		    cell1.setCellValue(record7.getR303_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+
+		
+//		record-8
+	//ROW 32
+	row = sheet.getRow(31);
+
+		cell1 = row.getCell(3);
+		if (record8.getR351_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record8.getR351_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record8.getR351_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record8.getR351_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record8.getR351_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record8.getR351_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record8.getR351_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record8.getR351_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record8.getR351_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record8.getR351_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record8.getR351_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record8.getR351_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record8.getR351_DESCRIPTION() != null) {
+		    cell1.setCellValue(record8.getR351_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(10);
+		if (record8.getR351_VALUE() != null) {
+		    cell1.setCellValue(record8.getR351_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+		//ROW33
+		row = sheet.getRow(32);
+
+		cell1 = row.getCell(3);
+		if (record8.getR352_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record8.getR352_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record8.getR352_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record8.getR352_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record8.getR352_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record8.getR352_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record8.getR352_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record8.getR352_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record8.getR352_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record8.getR352_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record8.getR352_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record8.getR352_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record8.getR352_DESCRIPTION() != null) {
+		    cell1.setCellValue(record8.getR352_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(10);
+		if (record8.getR352_VALUE() != null) {
+		    cell1.setCellValue(record8.getR352_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+
+		//ROW34
+		row = sheet.getRow(33);
+
+		cell1 = row.getCell(3);
+		if (record8.getR353_TYPE_FACILITY() != null) {
+		    cell1.setCellValue(record8.getR353_TYPE_FACILITY().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(4);
+		if (record8.getR353_APPROVED_LIMIT() != null) {
+		    cell1.setCellValue(record8.getR353_APPROVED_LIMIT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(5);
+		if (record8.getR353_OUTSTANDING_AMOUNT() != null) {
+		    cell1.setCellValue(record8.getR353_OUTSTANDING_AMOUNT().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(6);
+		if (record8.getR353_EXCESS_OVER_CEILING() != null) {
+		    cell1.setCellValue(record8.getR353_EXCESS_OVER_CEILING().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(7);
+		if (record8.getR353_LOAN_CLASSIFICATION() != null) {
+		    cell1.setCellValue(record8.getR353_LOAN_CLASSIFICATION().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(8);
+		if (record8.getR353_CURRENT_PROVISIONS() != null) {
+		    cell1.setCellValue(record8.getR353_CURRENT_PROVISIONS().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(9);
+		if (record8.getR353_DESCRIPTION() != null) {
+		    cell1.setCellValue(record8.getR353_DESCRIPTION());
+		} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+		cell1 = row.getCell(10);
+		if (record8.getR353_VALUE() != null) {
+		    cell1.setCellValue(record8.getR353_VALUE().doubleValue());
+		    cell1.setCellStyle(numberStyle);
+		}
+	else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+				}
+
+	     workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+	} else {
+
+	}
+	// Write the final workbook content to the in-memory stream.
+	workbook.write(out);
+
+	logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+	return out.toByteArray();
+		  }	
+	}
 }

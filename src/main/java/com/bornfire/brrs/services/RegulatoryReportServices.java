@@ -524,6 +524,11 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_M_SRWA_12E_reportservice.getBRRS_M_SRWA_12E_LTVView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
+			
+		case "M_RPD":
+			repsummary = BRRS_M_RPD_ReportService.getM_RPDView(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version);
+			break;
 		/*
 		 * 
 		 * 
@@ -721,9 +726,7 @@ public class RegulatoryReportServices {
 		 * case "Q_RLFA2":
 		 * 
 		 * repsummary = brrs_q_rlfa2_reportservice.getQ_RLFA2View(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version); break; case "M_RPD":
-		 * repsummary = BRRS_M_RPD_ReportService.getM_RPDView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version); break;
+		 * todate, currency, dtltype, pageable, type, version); break; 
 		 * 
 		 * case "M_OPTR": repsummary = BRRS_M_OPTR_ReportService.getMOPTRView(reportId,
 		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
@@ -2117,6 +2120,7 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
 
 		/*
 		 * case "M_SFINP2": try { repfile =
@@ -2587,6 +2591,15 @@ public class RegulatoryReportServices {
 				repfile = BRRS_M_FAS_reportservice.getM_FASExcel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_RPD":
+			try {
+				repfile = BRRS_M_RPD_ReportService.getM_RPDExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, format, version);
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			break;
