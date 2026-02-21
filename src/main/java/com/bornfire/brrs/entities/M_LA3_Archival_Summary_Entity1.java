@@ -142,6 +142,7 @@ public class M_LA3_Archival_Summary_Entity1{
 		@Column(name = "REPORT_VERSION")
 		private BigDecimal reportVersion;
 	    
+		
 	    @Column(name = "REPORT_RESUBDATE")
 	    private Date reportResubDate;
 	    
