@@ -263,7 +263,7 @@ public class BRRS_M_NOSVOS_ReportService {
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
-
+			System.out.println(T5Master.size()+"     ================ ");
 			mv.addObject("reportsummary", T1Master);
 			mv.addObject("reportsummary2", T2Master);
 			mv.addObject("reportsummary3", T3Master);
@@ -668,16 +668,20 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	            .orElseThrow(() -> new RuntimeException(
 	                    "Record not found for REPORT_DATE: " + cleanDate));
 
+	    System.out.println("Enrterd P5 ");
 	    
 	    BeanUtils.copyProperties(updatedEntity, existing);
 	    // 3️⃣ Save updated entity
 	    BrrsMNosvosP5epository.save(existing);
 	    
+	    System.out.println("Enrterd P5 save ");
+	    
 	    BrrsMNosvosP5Detail detail = new BrrsMNosvosP5Detail();
 
 	    BeanUtils.copyProperties(existing, detail);
 
-
+	    System.out.println("Enrterd P5 copy detail");
+	    
 	    BrrsMNosvosP5Repositorydetail.save(detail);
 	}
 	
