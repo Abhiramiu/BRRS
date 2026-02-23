@@ -4692,14 +4692,7 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "Q_ATF":
-			try {
-				archivalData = brrs_q_atf_reportservice.getQ_ATFArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		
 
 		case "M_SCI_E":
 			try {
@@ -5054,6 +5047,12 @@ public class RegulatoryReportServices {
 			List<Object[]> BOPList = BRRS_M_BOP_ReportService.getM_BOPArchival();
 			archivalData.addAll(BOPList);
 			System.out.println("Fetched M_BOP archival data: " + BOPList.size());
+			break;
+			
+		case "Q_ATF":
+			List<Object[]> q_atfList = brrs_q_atf_reportservice.getQ_ATFArchival();
+			archivalData.addAll(q_atfList);
+			System.out.println("Fetched Q_ATF archival data: " + q_atfList.size());
 			break;
 
 //		case "M_BOP":
@@ -6670,6 +6669,18 @@ public class RegulatoryReportServices {
 				System.out.println("Resubmission data fetched for M_EPR: " + resubList.size());
 			} catch (Exception e) {
 				System.err.println("Error fetching resubmission data for M_EPR: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+			
+			
+		case "Q_ATF":
+			try {
+				List<Object[]> resubList = brrs_q_atf_reportservice.getQ_ATFResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for Q_ATF: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for Q_ATF: " + e.getMessage());
 				e.printStackTrace();
 			}
 			break;

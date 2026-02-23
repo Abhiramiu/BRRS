@@ -19,11 +19,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 
 @Entity
-@Table(name = "BRRS_Q_ATF_ARCHIVALTABLE_SUMMARY")
+@Table(name = "BRRS_Q_ATF_RESUB_SUMMARYTABLE")
 @IdClass(Q_ATF_PK.class)
 
-public class Q_ATF_Archival_Summary_Entity {
-
+public class Q_ATF_Resub_Summary_Entity {
 	
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
@@ -42,7 +41,8 @@ public class Q_ATF_Archival_Summary_Entity {
     private String	entity_flg;
     private String	modify_flg;
     private String	del_flg;
-
+	
+	
 	private String	r11_num_by_inst_sec;
 	private BigDecimal	r11_num_depo;
 	private BigDecimal	r11_num_depo_acc;
@@ -316,7 +316,7 @@ public class Q_ATF_Archival_Summary_Entity {
 
 	
 	
-	
+
 	public String getR11_num_by_inst_sec() {
 		return r11_num_by_inst_sec;
 	}
@@ -1991,7 +1991,7 @@ public class Q_ATF_Archival_Summary_Entity {
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
 	}
-	public Q_ATF_Archival_Summary_Entity() {
+	public Q_ATF_Resub_Summary_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

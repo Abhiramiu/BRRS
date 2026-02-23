@@ -12,7 +12,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -30,9 +29,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -52,10 +48,14 @@ import org.springframework.web.servlet.ModelAndView;
 import com.bornfire.brrs.entities.BRRS_Q_ATF_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_Q_ATF_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_Q_ATF_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_Q_ATF_Resub_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_Q_ATF_Resub_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_Q_ATF_Summary_Repo;
 import com.bornfire.brrs.entities.Q_ATF_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.Q_ATF_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.Q_ATF_Detail_Entity;
+import com.bornfire.brrs.entities.Q_ATF_Resub_Detail_Entity;
+import com.bornfire.brrs.entities.Q_ATF_Resub_Summary_Entity;
 import com.bornfire.brrs.entities.Q_ATF_Summary_Entity;
 
 @Component
@@ -89,76 +89,104 @@ public class BRRS_Q_ATF_ReportService {
 	@Autowired
 	BRRS_Q_ATF_Archival_Detail_Repo q_atf_Archival_detail_Repo;
 
+	@Autowired
+	BRRS_Q_ATF_Resub_Summary_Repo  Q_ATF_resub_summary_repo;
 	
 	
-
+	@Autowired
+	BRRS_Q_ATF_Resub_Detail_Repo Q_ATF_resub_detail_repo;
+ 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	
 	
 	
 	
-	public ModelAndView getQ_ATFView(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, BigDecimal version) {
-		ModelAndView mv = new ModelAndView();
-		Session hs = sessionFactory.getCurrentSession();
-		int pageSize = pageable.getPageSize();
-		int currentPage = pageable.getPageNumber();
-		int startItem = currentPage * pageSize;
+	public ModelAndView getQ_ATFView(
+	        String reportId,
+	        String fromdate,
+	        String todate,
+	        String currency,
+	        String dtltype,     // kept but not used
+	        Pageable pageable,
+	        String type,
+	        BigDecimal version) {
 
-		if (type.equals("ARCHIVAL") & version != null) {
-			List<Q_ATF_Archival_Summary_Entity> T1Master = new ArrayList<Q_ATF_Archival_Summary_Entity>();
-		
-			try {
-				Date d1 = dateformat.parse(todate);
+	    ModelAndView mv = new ModelAndView();
 
-				T1Master = q_atf_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate), version);
-			
+	    try {
 
+	        // Parse date only once
+	        Date d1 = dateformat.parse(todate);
 
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
+	        System.out.println("======= VIEW DEBUG =======");
+	        System.out.println("TYPE    : " + type);
+	        System.out.println("DATE    : " + d1);
+	        System.out.println("VERSION : " + version);
+	        System.out.println("==========================");
 
-			mv.addObject("reportsummary", T1Master);
-			
-		} else {
-			List<Q_ATF_Summary_Entity> T1Master = new ArrayList<>();
-			
+	        // ===========================================================
+	        // SUMMARY ONLY
+	        // ===========================================================
 
-			try {
-				
-				// FIX the month name before parsing
-			    if(todate != null) {
-			        todate = todate.trim().replace("Sept", "Sep");
-			    }
-			    
-			    // Matches "30-Sep-2025"
-			    SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+	        /* ---------- ARCHIVAL SUMMARY ---------- */
+	        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 
-			    Date d1 = dateformat.parse(todate);  // todate = "30-Sep-2025"
+	            List<Q_ATF_Archival_Summary_Entity> summaryList =
+	                    q_atf_Archival_Summary_Repo
+	                            .getdatabydateListarchival(d1, version);
 
-			    T1Master = brrs_q_atf_summary_repo.getdatabydateList(d1);
-			   
-			    
-			    System.out.println("T1Master size for ATF is: " + T1Master.size());
+	            System.out.println("Archival Summary Size : " + summaryList.size());
 
-			} catch (ParseException e) {
-			    e.printStackTrace();
-			}
+	            mv.addObject("displaymode", "summary");
+	            mv.addObject("reportsummary", summaryList);
+	        }
 
-			mv.addObject("reportsummary", T1Master);
-			
-		}
+	        /* ---------- RESUB SUMMARY ---------- */
+	        else if ("RESUB".equalsIgnoreCase(type) && version != null) {
 
-		// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
-		mv.setViewName("BRRS/Q_ATF");
-		mv.addObject("displaymode", "summary");
-		System.out.println("scv" + mv.getViewName());
-		return mv;
+	            List<Q_ATF_Resub_Summary_Entity> summaryList =
+	                    Q_ATF_resub_summary_repo
+	                            .getdatabydateListarchival(d1, version);
+
+	            System.out.println("Resub Summary Size : " + summaryList.size());
+
+	            mv.addObject("displaymode", "resub");
+	            mv.addObject("reportsummary", summaryList);
+	        }
+
+	        /* ---------- NORMAL SUMMARY ---------- */
+	        else {
+
+	            List<Q_ATF_Summary_Entity> summaryList =
+	                    brrs_q_atf_summary_repo
+	                            .getdatabydateList(d1);
+
+	            System.out.println("Normal Summary Size : " + summaryList.size());
+
+	            mv.addObject("displaymode", "summary");
+	            mv.addObject("reportsummary", summaryList);
+	        }
+
+	    } catch (ParseException e) {
+	        e.printStackTrace();
+	    }
+
+	    mv.setViewName("BRRS/Q_ATF");
+	    System.out.println("View set to: " + mv.getViewName());
+
+	    return mv;
 	}
-	public ModelAndView getQ_ATFcurrentDtl(String reportId, String fromdate, String todate, String currency,
-	        String dtltype, Pageable pageable, String filter, String type, String version) {
+	public ModelAndView getQ_ATFcurrentDtl(
+	        String reportId,
+	        String fromdate,
+	        String todate,
+	        String currency,
+	        String dtltype,
+	        Pageable pageable,
+	        String filter,
+	        String type,
+	        String version) {
 
 	    int pageSize = pageable != null ? pageable.getPageSize() : 10;
 	    int currentPage = pageable != null ? pageable.getPageNumber() : 0;
@@ -185,33 +213,65 @@ public class BRRS_Q_ATF_ReportService {
 	            }
 	        }
 
-	        if ("ARCHIVAL".equals(type) && version != null) {
-	            // 🔹 Archival branch
+	        /* =========================================================
+	           ARCHIVAL DETAIL
+	        ========================================================= */
+	        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+
 	            List<Q_ATF_Archival_Detail_Entity> T1Dt1;
+
 	            if (rowId != null && columnId != null) {
-	                T1Dt1 = q_atf_Archival_detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
+	                T1Dt1 = q_atf_Archival_detail_Repo
+	                        .GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
 	            } else {
-	                T1Dt1 = q_atf_Archival_detail_Repo.getdatabydateList(parsedDate, version);
-	                
+	                T1Dt1 = q_atf_Archival_detail_Repo
+	                        .getdatabydateList(parsedDate, version);
 	            }
 
 	            mv.addObject("reportdetails", T1Dt1);
-	           
 	            System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+	        }
 
-	        } else {
-	            // 🔹 Current branch
-	            List<Q_ATF_Detail_Entity> T1Dt1;
+	        /* =========================================================
+	           RESUB DETAIL  ✅ ADDED
+	        ========================================================= */
+	        else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+
+	            List<Q_ATF_Resub_Detail_Entity> T1Dt1;
+
 	            if (rowId != null && columnId != null) {
-	                T1Dt1 = brrs_q_atf_detail_repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
+	                T1Dt1 = Q_ATF_resub_detail_repo
+	                        .GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
 	            } else {
-	                T1Dt1 = brrs_q_atf_detail_repo.getdatabydateList(parsedDate);
-	                totalPages = brrs_q_atf_detail_repo.getdatacount(parsedDate);
+	                T1Dt1 = Q_ATF_resub_detail_repo
+	                        .getdatabydateList(parsedDate, version);
+	            }
+
+	            mv.addObject("reportdetails", T1Dt1);
+	            System.out.println("RESUB COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+	        }
+
+	        /* =========================================================
+	           CURRENT DETAIL
+	        ========================================================= */
+	        else {
+
+	            List<Q_ATF_Detail_Entity> T1Dt1;
+
+	            if (rowId != null && columnId != null) {
+	                T1Dt1 = brrs_q_atf_detail_repo
+	                        .GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
+	            } else {
+	                T1Dt1 = brrs_q_atf_detail_repo
+	                        .getdatabydateList(parsedDate);
+
+	                totalPages = brrs_q_atf_detail_repo
+	                        .getdatacount(parsedDate);
+
 	                mv.addObject("pagination", "YES");
 	            }
 
 	            mv.addObject("reportdetails", T1Dt1);
-	           
 	            System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
 	        }
 
@@ -227,14 +287,12 @@ public class BRRS_Q_ATF_ReportService {
 	    mv.setViewName("BRRS/Q_ATF");
 	    mv.addObject("displaymode", "Details");
 	    mv.addObject("currentPage", currentPage);
-	    System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
 	    mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
 	    mv.addObject("reportsflag", "reportsflag");
 	    mv.addObject("menu", reportId);
 
 	    return mv;
 	}
-	
 	
 
 	
@@ -501,26 +559,83 @@ public class BRRS_Q_ATF_ReportService {
 	    }
 	}
 	
-	public List<Object> getQ_ATFArchival() {
-		List<Object> Q_ATFArchivallist = new ArrayList<>();
-		try {
-			Q_ATFArchivallist = q_atf_Archival_Summary_Repo.getQ_ATFarchival();
-			
-			System.out.println("countser" + Q_ATFArchivallist.size());
-			
-		} catch (Exception e) {
-			// Log the exception
-			System.err.println("Error fetching Q_ATFArchivallist Archival data: " + e.getMessage());
-			e.printStackTrace();
+//	public List<Object> getQ_ATFArchival() {
+//		List<Object> Q_ATFArchivallist = new ArrayList<>();
+//		try {
+//			Q_ATFArchivallist = q_atf_Archival_Summary_Repo.getQ_ATFarchival();
+//			
+//			System.out.println("countser" + Q_ATFArchivallist.size());
+//			
+//		} catch (Exception e) {
+//			// Log the exception
+//			System.err.println("Error fetching Q_ATFArchivallist Archival data: " + e.getMessage());
+//			e.printStackTrace();
+//
+//			
+//		}
+//		return Q_ATFArchivallist;
+//	}
+	
+	
+	//Archival View
+	public List<Object[]> getQ_ATFArchival() {
+		List<Object[]> archivalList = new ArrayList<>();
 
-			
+		try {
+			List<Q_ATF_Archival_Summary_Entity> repoData = q_atf_Archival_Summary_Repo
+					.getdatabydateListWithVersion();
+
+			if (repoData != null && !repoData.isEmpty()) {
+				for (Q_ATF_Archival_Summary_Entity entity : repoData) {
+					Object[] row = new Object[] {
+							entity.getReport_date(), 
+							entity.getReport_version(), 
+							 entity.getReportResubDate()
+					};
+					archivalList.add(row);
+				}
+
+				System.out.println("Fetched " + archivalList.size() + " archival records");
+				Q_ATF_Archival_Summary_Entity first = repoData.get(0);
+				System.out.println("Latest archival version: " + first.getReport_version());
+			} else {
+				System.out.println("No archival data found.");
+			}
+
+		} catch (Exception e) {
+			System.err.println("Error fetching  Q_ATF  Archival data: " + e.getMessage());
+			e.printStackTrace();
 		}
-		return Q_ATFArchivallist;
+
+		return archivalList;
 	}
 	
-	
 
-	
+	public List<Object[]> getQ_ATFResub() {
+	    List<Object[]> resubList = new ArrayList<>();
+	    try {
+	        List<Q_ATF_Archival_Summary_Entity> latestArchivalList =
+	        		q_atf_Archival_Summary_Repo.getdatabydateListWithVersion();
+
+	        if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+	            for (Q_ATF_Archival_Summary_Entity entity : latestArchivalList) {
+	                resubList.add(new Object[] {
+	                    entity.getReport_date(),
+	                    entity.getReport_version(),
+	                    entity.getReportResubDate()
+	                });
+	            }
+	            System.out.println("Fetched " + resubList.size() + " record(s)");
+	        } else {
+	            System.out.println("No archival data found.");
+	        }
+
+	    } catch (Exception e) {
+	        System.err.println("Error fetching Q_ATF Resub data: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+	    return resubList;
+	}
 	
 	
 	
