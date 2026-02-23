@@ -3147,7 +3147,7 @@ public class RegulatoryReportServices {
 			try {
 
 				repfile = BRRS_M_LA3_reportservice.BRRS_M_LA3Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+						dtltype, type, format, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}

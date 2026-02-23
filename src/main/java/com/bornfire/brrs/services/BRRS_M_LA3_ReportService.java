@@ -59,6 +59,7 @@ import com.bornfire.brrs.entities.BRRS_M_LA3_Summary_Repo1;
 import com.bornfire.brrs.entities.BRRS_M_LA3_Summary_Repo2;
 import com.bornfire.brrs.entities.M_LA1_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA1_Detail_Entity;
+import com.bornfire.brrs.entities.M_LA2_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA3_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA3_Archival_Summary_Entity1;
 import com.bornfire.brrs.entities.M_LA3_Archival_Summary_Entity2;
@@ -249,14 +250,14 @@ public class BRRS_M_LA3_ReportService {
 	
 	
 	public byte[] BRRS_M_LA3Excel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, BigDecimal version) throws Exception {
+			String dtltype, String type, String format, BigDecimal version) throws Exception {
 
 		logger.info("Service: Starting Excel generation process in memory.");
 
 		// ARCHIVAL check
 		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
-			return getExcelM_LA3ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+			return getExcelM_LA3ARCHIVAL(filename, reportId, fromdate, todate,currency, dtltype, type,format, version);
 		}
 
 		// Fetch data
@@ -1062,7 +1063,7 @@ public class BRRS_M_LA3_ReportService {
 			sanctionStyle.setBorderRight(border);
 
 			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "APPROVED LIMIT", "REPORT LABEL",
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "APPROVED LIMIT", "REPORT LABEL","REPORT LABEL_1",
 					"REPORT ADDL CRITERIA 1", "REPORT ADDL CRITERIA 2", "REPORT ADDL CRITERIA 3", "REPORT_DATE" };
 
 			XSSFRow headerRow = sheet.createRow(0);
@@ -1108,10 +1109,11 @@ public class BRRS_M_LA3_ReportService {
 					sanctionCell.setCellStyle(sanctionStyle);
 
 					row.createCell(5).setCellValue(item.getReport_label());
-					row.createCell(6).setCellValue(item.getReport_addl_criteria_1());
-					row.createCell(7).setCellValue(item.getReport_addl_criteria_2());
-					row.createCell(8).setCellValue(item.getReport_addl_criteria_3());
-					row.createCell(9)
+					row.createCell(6).setCellValue(item.getReport_label_1());
+					row.createCell(7).setCellValue(item.getReport_addl_criteria_1());
+					row.createCell(8).setCellValue(item.getReport_addl_criteria_2());
+					row.createCell(9).setCellValue(item.getReport_addl_criteria_3());
+					row.createCell(10)
 							.setCellValue(item.getReport_date() != null
 									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReport_date())
 									: "");
@@ -1165,11 +1167,18 @@ public class BRRS_M_LA3_ReportService {
 	}
 
 	public byte[] getExcelM_LA3ARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, BigDecimal version) throws Exception {
+			String currency, String dtltype, String type,String format, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
-		if (type.equals("ARCHIVAL") & version != null) {
-
-		}
+		
+		if ("email".equalsIgnoreCase(format) && version != null) {
+			try {
+				// Redirecting to Archival
+				return BRRS_M_LA3ArchivalEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
+		} 
 		List<M_LA3_Archival_Summary_Entity1> dataList = M_LA3_Archival_Summary_Repo1
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 
@@ -1974,7 +1983,7 @@ public class BRRS_M_LA3_ReportService {
 
 			// Header row
 						// Header row
-						String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "APPROVED LIMIT", "REPORT LABEL",
+						String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "APPROVED LIMIT", "REPORT LABEL","REPORT LABEL_1",
 								"REPORT ADDL CRITERIA 1", "REPORT ADDL CRITERIA 2", "REPORT ADDL CRITERIA 3", "REPORT_DATE" };
 
 
@@ -2024,10 +2033,11 @@ public class BRRS_M_LA3_ReportService {
 					sanctionCell.setCellStyle(sanctionStyle);
 
 					row.createCell(5).setCellValue(item.getReport_label());
-					row.createCell(6).setCellValue(item.getReport_addl_criteria_1());
-					row.createCell(7).setCellValue(item.getReport_addl_criteria_2());
-					row.createCell(8).setCellValue(item.getReport_addl_criteria_3());
-					row.createCell(9)
+					row.createCell(6).setCellValue(item.getReport_label_1());
+					row.createCell(7).setCellValue(item.getReport_addl_criteria_1());
+					row.createCell(8).setCellValue(item.getReport_addl_criteria_2());
+					row.createCell(9).setCellValue(item.getReport_addl_criteria_3());
+					row.createCell(10)
 							.setCellValue(item.getReportDate() != null
 									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
 									: "");
@@ -2249,7 +2259,7 @@ public class BRRS_M_LA3_ReportService {
 			// ARCHIVAL check
 			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
 				logger.info("Service: Generating ARCHIVAL report for version {}", version);
-				return getExcelM_LA3ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+				return BRRS_M_LA3ArchivalEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 			}
 
 			// Fetch data
@@ -2542,42 +2552,28 @@ public class BRRS_M_LA3_ReportService {
 							cell3.setCellStyle(textStyle);
 						}
 
-						// ====== R23 ======
-						row = sheet.getRow(22);
-						if (row == null) {
-							row = sheet.createRow(21);
-						}
-						cell1 = row.createCell(1);
-						if (record.getR22_no_of_ac() != null) {
-							cell1.setCellValue(record.getR22_no_of_ac().doubleValue());
-							cell1.setCellStyle(numberStyle);
-						} else {
-							cell1.setCellValue("");
-							cell1.setCellStyle(textStyle);
-						}
-
-						cell2 = row.createCell(2);
-						if (record.getR22_approved_limit() != null) {
-							cell2.setCellValue(record.getR22_approved_limit().doubleValue());
-							cell2.setCellStyle(numberStyle);
-						} else {
-							cell2.setCellValue("");
-							cell2.setCellStyle(textStyle);
-						}
-
-						cell3 = row.createCell(3);
-						if (record.getR22_amount_outstanding() != null) {
-							cell3.setCellValue(record.getR22_amount_outstanding().doubleValue());
-							cell3.setCellStyle(numberStyle);
-						} else {
-							cell3.setCellValue("");
-							cell3.setCellStyle(textStyle);
-						}
-
+						/*
+						 * // ====== R23 ====== row = sheet.getRow(22); if (row == null) { row =
+						 * sheet.createRow(22); } cell1 = row.createCell(1); if
+						 * (record.getR22_no_of_ac() != null) {
+						 * cell1.setCellValue(record.getR22_no_of_ac().doubleValue());
+						 * cell1.setCellStyle(numberStyle); } else { cell1.setCellValue("");
+						 * cell1.setCellStyle(textStyle); }
+						 * 
+						 * cell2 = row.createCell(2); if (record.getR22_approved_limit() != null) {
+						 * cell2.setCellValue(record.getR22_approved_limit().doubleValue());
+						 * cell2.setCellStyle(numberStyle); } else { cell2.setCellValue("");
+						 * cell2.setCellStyle(textStyle); }
+						 * 
+						 * cell3 = row.createCell(3); if (record.getR22_amount_outstanding() != null) {
+						 * cell3.setCellValue(record.getR22_amount_outstanding().doubleValue());
+						 * cell3.setCellStyle(numberStyle); } else { cell3.setCellValue("");
+						 * cell3.setCellStyle(textStyle); }
+						 */
 						// ====== R24 ======
 						row = sheet.getRow(23);
 						if (row == null) {
-							row = sheet.createRow(22);
+							row = sheet.createRow(23);
 						}
 						cell1 = row.createCell(1);
 						if (record.getR23_no_of_ac() != null) {
@@ -2609,7 +2605,7 @@ public class BRRS_M_LA3_ReportService {
 						// ====== R25 ======
 						row = sheet.getRow(24);
 						if (row == null) {
-							row = sheet.createRow(23);
+							row = sheet.createRow(24);
 						}
 						cell1 = row.createCell(1);
 						if (record.getR24_no_of_ac() != null) {
@@ -2641,7 +2637,7 @@ public class BRRS_M_LA3_ReportService {
 						// ====== R26 ======
 						row = sheet.getRow(25);
 						if (row == null) {
-							row = sheet.createRow(24);
+							row = sheet.createRow(25);
 						}
 						cell1 = row.createCell(1);
 						if (record.getR25_no_of_ac() != null) {
@@ -2673,7 +2669,7 @@ public class BRRS_M_LA3_ReportService {
 						// ====== R27 ======
 						row = sheet.getRow(26);
 						if (row == null) {
-							row = sheet.createRow(25);
+							row = sheet.createRow(26);
 						}
 						cell1 = row.createCell(1);
 						if (record.getR26_no_of_ac() != null) {
@@ -2705,7 +2701,7 @@ public class BRRS_M_LA3_ReportService {
 						// ====== R28 ======
 						row = sheet.getRow(27);
 						if (row == null) {
-							row = sheet.createRow(26);
+							row = sheet.createRow(27);
 						}
 						cell1 = row.createCell(1);
 						if (record.getR27_no_of_ac() != null) {
@@ -2737,7 +2733,7 @@ public class BRRS_M_LA3_ReportService {
 						// ====== R29 ======
 						row = sheet.getRow(28);
 						if (row == null) {
-							row = sheet.createRow(27);
+							row = sheet.createRow(28);
 						}
 						cell1 = row.createCell(1);
 						if (record.getR28_no_of_ac() != null) {
@@ -2831,7 +2827,7 @@ public class BRRS_M_LA3_ReportService {
 						}
 					}
 
-					int startRow1 = 38;
+					int startRow1 = 37;
 					// dataList1 for entity 2
 					if (!dataList1.isEmpty()) {
 						for (int i = 0; i < dataList1.size(); i++) {
@@ -2989,4 +2985,755 @@ public class BRRS_M_LA3_ReportService {
 				return out.toByteArray();
 			}
 		}	
+		
+		// Archival Email Excel
+		public byte[] BRRS_M_LA3ArchivalEmailExcel(String filename, String reportId, String fromdate, String todate,
+				String currency, String dtltype, String type, BigDecimal version) throws Exception {
+
+			logger.info("Service: Starting Archival Email Excel generation process in memory.");
+
+			
+			List<M_LA3_Archival_Summary_Entity1> dataList = M_LA3_Archival_Summary_Repo1
+					.getdatabydateListarchival(dateformat.parse(todate), version);
+
+			List<M_LA3_Archival_Summary_Entity2> dataList1 = M_LA3_Archival_Summary_Repo2
+					.getdatabydateListarchival(dateformat.parse(todate), version);
+
+			if (dataList.isEmpty()) {
+				logger.warn("Service: No data found for M_LA3 report. Returning empty result.");
+				return new byte[0];
+			}
+
+			String templateDir = env.getProperty("output.exportpathtemp");
+			String templateFileName = filename;
+			System.out.println(filename);
+			Path templatePath = Paths.get(templateDir, templateFileName);
+			System.out.println(templatePath);
+
+			logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+			if (!Files.exists(templatePath)) {
+				// This specific exception will be caught by the controller.
+				throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+			}
+			if (!Files.isReadable(templatePath)) {
+				// A specific exception for permission errors.
+				throw new SecurityException(
+						"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+			}
+
+			// This try-with-resources block is perfect. It guarantees all resources are
+			// closed automatically.
+			try (InputStream templateInputStream = Files.newInputStream(templatePath);
+					Workbook workbook = WorkbookFactory.create(templateInputStream);
+					ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+				Sheet sheet = workbook.getSheetAt(0);
+
+				// --- Style Definitions ---
+				CreationHelper createHelper = workbook.getCreationHelper();
+
+				CellStyle dateStyle = workbook.createCellStyle();
+				dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+				dateStyle.setBorderBottom(BorderStyle.THIN);
+				dateStyle.setBorderTop(BorderStyle.THIN);
+				dateStyle.setBorderLeft(BorderStyle.THIN);
+				dateStyle.setBorderRight(BorderStyle.THIN);
+
+				CellStyle textStyle = workbook.createCellStyle();
+				textStyle.setBorderBottom(BorderStyle.THIN);
+				textStyle.setBorderTop(BorderStyle.THIN);
+				textStyle.setBorderLeft(BorderStyle.THIN);
+				textStyle.setBorderRight(BorderStyle.THIN);
+
+				// Create the font
+				Font font = workbook.createFont();
+				font.setFontHeightInPoints((short) 8); // size 8
+				font.setFontName("Arial");
+
+				CellStyle numberStyle = workbook.createCellStyle();
+				// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+				numberStyle.setBorderBottom(BorderStyle.THIN);
+				numberStyle.setBorderTop(BorderStyle.THIN);
+				numberStyle.setBorderLeft(BorderStyle.THIN);
+				numberStyle.setBorderRight(BorderStyle.THIN);
+				numberStyle.setFont(font);
+				// --- End of Style Definitions ---
+
+				int startRow = 9;
+
+				if (!dataList.isEmpty()) {
+					for (int i = 0; i < dataList.size(); i++) {
+						M_LA3_Archival_Summary_Entity1 record = dataList.get(i);
+
+						System.out.println("rownumber=" + startRow + i);
+						Row row = sheet.getRow(startRow + i);
+						if (row == null) {
+							row = sheet.createRow(startRow + i);
+						}
+
+						Cell cell1 = row.createCell(1);
+						if (record.getR10_no_of_ac() != null) {
+							cell1.setCellValue(record.getR10_no_of_ac().doubleValue());
+							cell1.setCellStyle(numberStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						Cell cell2 = row.createCell(2);
+						if (record.getR10_approved_limit() != null) {
+							cell2.setCellValue(record.getR10_approved_limit().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						Cell cell3 = row.createCell(3);
+						if (record.getR10_amount_outstanding() != null) {
+							cell3.setCellValue(record.getR10_amount_outstanding().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						// ====== R11 ======
+						row = sheet.getRow(10);
+						if (row == null) {
+							row = sheet.createRow(10);
+						}
+						cell1 = row.createCell(1);
+						if (record.getR11_no_of_ac() != null) {
+							cell1.setCellValue(record.getR11_no_of_ac().doubleValue());
+							cell1.setCellStyle(numberStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record.getR11_approved_limit() != null) {
+							cell2.setCellValue(record.getR11_approved_limit().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(3);
+						if (record.getR11_amount_outstanding() != null) {
+							cell3.setCellValue(record.getR11_amount_outstanding().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						// ====== R12 ======
+						row = sheet.getRow(11);
+						if (row == null) {
+							row = sheet.createRow(11);
+						}
+						cell1 = row.createCell(1);
+						if (record.getR12_no_of_ac() != null) {
+							cell1.setCellValue(record.getR12_no_of_ac().doubleValue());
+							cell1.setCellStyle(numberStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record.getR12_approved_limit() != null) {
+							cell2.setCellValue(record.getR12_approved_limit().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(3);
+						if (record.getR12_amount_outstanding() != null) {
+							cell3.setCellValue(record.getR12_amount_outstanding().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						// ====== R13 ======
+						row = sheet.getRow(12);
+						if (row == null) {
+							row = sheet.createRow(12);
+						}
+						cell1 = row.createCell(1);
+						if (record.getR13_no_of_ac() != null) {
+							cell1.setCellValue(record.getR13_no_of_ac().doubleValue());
+							cell1.setCellStyle(numberStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record.getR13_approved_limit() != null) {
+							cell2.setCellValue(record.getR13_approved_limit().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(3);
+						if (record.getR13_amount_outstanding() != null) {
+							cell3.setCellValue(record.getR13_amount_outstanding().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						// ====== R14 ======
+						row = sheet.getRow(13);
+						if (row == null) {
+							row = sheet.createRow(13);
+						}
+						cell1 = row.createCell(1);
+						if (record.getR14_no_of_ac() != null) {
+							cell1.setCellValue(record.getR14_no_of_ac().doubleValue());
+							cell1.setCellStyle(numberStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record.getR14_approved_limit() != null) {
+							cell2.setCellValue(record.getR14_approved_limit().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(3);
+						if (record.getR14_amount_outstanding() != null) {
+							cell3.setCellValue(record.getR14_amount_outstanding().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						// ====== R15 ======
+						row = sheet.getRow(14);
+						if (row == null) {
+							row = sheet.createRow(14);
+						}
+						cell1 = row.createCell(1);
+						if (record.getR15_no_of_ac() != null) {
+							cell1.setCellValue(record.getR15_no_of_ac().doubleValue());
+							cell1.setCellStyle(numberStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record.getR15_approved_limit() != null) {
+							cell2.setCellValue(record.getR15_approved_limit().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(3);
+						if (record.getR15_amount_outstanding() != null) {
+							cell3.setCellValue(record.getR15_amount_outstanding().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						// ====== R21 ======
+						row = sheet.getRow(20);
+						if (row == null) {
+							row = sheet.createRow(20);
+						}
+						cell1 = row.createCell(1);
+						if (record.getR21_no_of_ac() != null) {
+							cell1.setCellValue(record.getR21_no_of_ac().doubleValue());
+							cell1.setCellStyle(numberStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record.getR21_approved_limit() != null) {
+							cell2.setCellValue(record.getR21_approved_limit().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(3);
+						if (record.getR21_amount_outstanding() != null) {
+							cell3.setCellValue(record.getR21_amount_outstanding().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						// ====== R22 ======
+						row = sheet.getRow(21);
+						if (row == null) {
+							row = sheet.createRow(21);
+						}
+						cell1 = row.createCell(1);
+						if (record.getR22_no_of_ac() != null) {
+							cell1.setCellValue(record.getR22_no_of_ac().doubleValue());
+							cell1.setCellStyle(numberStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record.getR22_approved_limit() != null) {
+							cell2.setCellValue(record.getR22_approved_limit().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(3);
+						if (record.getR22_amount_outstanding() != null) {
+							cell3.setCellValue(record.getR22_amount_outstanding().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						// ====== R23 ======
+						row = sheet.getRow(22);
+						if (row == null) {
+							row = sheet.createRow(22);
+						}
+						cell1 = row.createCell(1);
+						if (record.getR23_no_of_ac() != null) {
+							cell1.setCellValue(record.getR23_no_of_ac().doubleValue());
+							cell1.setCellStyle(numberStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record.getR23_approved_limit() != null) {
+							cell2.setCellValue(record.getR23_approved_limit().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(3);
+						if (record.getR23_amount_outstanding() != null) {
+							cell3.setCellValue(record.getR23_amount_outstanding().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						// ====== R24 ======
+						row = sheet.getRow(23);
+						if (row == null) {
+							row = sheet.createRow(23);
+						}
+						cell1 = row.createCell(1);
+						if (record.getR24_no_of_ac() != null) {
+							cell1.setCellValue(record.getR24_no_of_ac().doubleValue());
+							cell1.setCellStyle(numberStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record.getR24_approved_limit() != null) {
+							cell2.setCellValue(record.getR24_approved_limit().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(3);
+						if (record.getR24_amount_outstanding() != null) {
+							cell3.setCellValue(record.getR24_amount_outstanding().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						// ====== R25 ======
+						row = sheet.getRow(24);
+						if (row == null) {
+							row = sheet.createRow(24);
+						}
+						cell1 = row.createCell(1);
+						if (record.getR25_no_of_ac() != null) {
+							cell1.setCellValue(record.getR25_no_of_ac().doubleValue());
+							cell1.setCellStyle(numberStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record.getR25_approved_limit() != null) {
+							cell2.setCellValue(record.getR25_approved_limit().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(3);
+						if (record.getR25_amount_outstanding() != null) {
+							cell3.setCellValue(record.getR25_amount_outstanding().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						// ====== R26 ======
+						row = sheet.getRow(25);
+						if (row == null) {
+							row = sheet.createRow(25);
+						}
+						cell1 = row.createCell(1);
+						if (record.getR26_no_of_ac() != null) {
+							cell1.setCellValue(record.getR26_no_of_ac().doubleValue());
+							cell1.setCellStyle(numberStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record.getR26_approved_limit() != null) {
+							cell2.setCellValue(record.getR26_approved_limit().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(3);
+						if (record.getR26_amount_outstanding() != null) {
+							cell3.setCellValue(record.getR26_amount_outstanding().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						// ====== R27 ======
+						row = sheet.getRow(26);
+						if (row == null) {
+							row = sheet.createRow(26);
+						}
+						cell1 = row.createCell(1);
+						if (record.getR27_no_of_ac() != null) {
+							cell1.setCellValue(record.getR27_no_of_ac().doubleValue());
+							cell1.setCellStyle(numberStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record.getR27_approved_limit() != null) {
+							cell2.setCellValue(record.getR27_approved_limit().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(3);
+						if (record.getR27_amount_outstanding() != null) {
+							cell3.setCellValue(record.getR27_amount_outstanding().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						// ====== R28 ======
+						row = sheet.getRow(27);
+						if (row == null) {
+							row = sheet.createRow(27);
+						}
+						cell1 = row.createCell(1);
+						if (record.getR28_no_of_ac() != null) {
+							cell1.setCellValue(record.getR28_no_of_ac().doubleValue());
+							cell1.setCellStyle(numberStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record.getR28_approved_limit() != null) {
+							cell2.setCellValue(record.getR28_approved_limit().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(3);
+						if (record.getR28_amount_outstanding() != null) {
+							cell3.setCellValue(record.getR28_amount_outstanding().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						// ====== R29 ======
+						row = sheet.getRow(28);
+						if (row == null) {
+							row = sheet.createRow(28);
+						}
+						cell1 = row.createCell(1);
+						if (record.getR29_no_of_ac() != null) {
+							cell1.setCellValue(record.getR29_no_of_ac().doubleValue());
+							cell1.setCellStyle(numberStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record.getR29_approved_limit() != null) {
+							cell2.setCellValue(record.getR29_approved_limit().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(3);
+						if (record.getR29_amount_outstanding() != null) {
+							cell3.setCellValue(record.getR29_amount_outstanding().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						// ====== R30 ======
+						row = sheet.getRow(29);
+						if (row == null) {
+							row = sheet.createRow(29);
+						}
+						cell1 = row.createCell(1);
+						if (record.getR30_no_of_ac() != null) {
+							cell1.setCellValue(record.getR30_no_of_ac().doubleValue());
+							cell1.setCellStyle(numberStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record.getR30_approved_limit() != null) {
+							cell2.setCellValue(record.getR30_approved_limit().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(3);
+						if (record.getR30_amount_outstanding() != null) {
+							cell3.setCellValue(record.getR30_amount_outstanding().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+					}
+
+					int startRow1 = 37;
+					// dataList1 for entity 2
+					if (!dataList1.isEmpty()) {
+						for (int i = 0; i < dataList1.size(); i++) {
+							M_LA3_Archival_Summary_Entity2 record1 = dataList1.get(i);
+
+							System.out.println("rownumber = " + startRow + i);
+							Row row = sheet.getRow(startRow + i);
+							if (row == null) {
+								row = sheet.createRow(startRow + i);
+							}
+
+							// ====== R37 ======
+							row = sheet.getRow(36);
+							if (row == null) {
+								row = sheet.createRow(36);
+							}
+							Cell cell1 = row.createCell(1);
+							if (record1.getR37_NO_OF_AC() != null) {
+								cell1.setCellValue(record1.getR37_NO_OF_AC().doubleValue());
+								cell1.setCellStyle(numberStyle);
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}
+
+							Cell cell2 = row.createCell(2);
+							if (record1.getR37_CREDIT_LIMIT() != null) {
+								cell2.setCellValue(record1.getR37_CREDIT_LIMIT().doubleValue());
+								cell2.setCellStyle(numberStyle);
+							} else {
+								cell2.setCellValue("");
+								cell2.setCellStyle(textStyle);
+							}
+
+							Cell cell3 = row.createCell(3);
+							if (record1.getR37_AMOUNT_OUTSTANDING() != null) {
+								cell3.setCellValue(record1.getR37_AMOUNT_OUTSTANDING().doubleValue());
+								cell3.setCellStyle(numberStyle);
+							} else {
+								cell3.setCellValue("");
+								cell3.setCellStyle(textStyle);
+							}
+
+							// ====== R38 ======
+							row = sheet.getRow(37);
+							if (row == null) {
+								row = sheet.createRow(37);
+							}
+							Cell R38cell1 = row.createCell(1);
+							if (record1.getR38_NO_OF_AC() != null) {
+								R38cell1.setCellValue(record1.getR38_NO_OF_AC().doubleValue());
+								R38cell1.setCellStyle(numberStyle);
+							} else {
+								R38cell1.setCellValue("");
+								R38cell1.setCellStyle(textStyle);
+							}
+
+							Cell R38cell2 = row.createCell(2);
+							if (record1.getR38_CREDIT_LIMIT() != null) {
+								R38cell2.setCellValue(record1.getR38_CREDIT_LIMIT().doubleValue());
+								R38cell2.setCellStyle(numberStyle);
+							} else {
+								R38cell2.setCellValue("");
+								R38cell2.setCellStyle(textStyle);
+							}
+
+							Cell R38cell3 = row.createCell(3);
+							if (record1.getR38_AMOUNT_OUTSTANDING() != null) {
+								R38cell3.setCellValue(record1.getR38_AMOUNT_OUTSTANDING().doubleValue());
+								R38cell3.setCellStyle(numberStyle);
+							} else {
+								R38cell3.setCellValue("");
+								R38cell3.setCellStyle(textStyle);
+							}
+
+							// ====== R40 ======
+							row = sheet.getRow(39);
+							if (row == null) {
+								row = sheet.createRow(39);
+							}
+							Cell R40cell1 = row.createCell(1);
+							if (record1.getR40_NO_OF_AC() != null) {
+								R40cell1.setCellValue(record1.getR40_NO_OF_AC().doubleValue());
+								R40cell1.setCellStyle(numberStyle);
+							} else {
+								R40cell1.setCellValue("");
+								R40cell1.setCellStyle(textStyle);
+							}
+
+							Cell R40cell2 = row.createCell(2);
+							if (record1.getR40_CREDIT_LIMIT() != null) {
+								R40cell2.setCellValue(record1.getR40_CREDIT_LIMIT().doubleValue());
+								R40cell2.setCellStyle(numberStyle);
+							} else {
+								R40cell2.setCellValue("");
+								R40cell2.setCellStyle(textStyle);
+							}
+
+							Cell R40cell3 = row.createCell(3);
+							if (record1.getR40_AMOUNT_OUTSTANDING() != null) {
+								R40cell3.setCellValue(record1.getR40_AMOUNT_OUTSTANDING().doubleValue());
+								R40cell3.setCellStyle(numberStyle);
+							} else {
+								R40cell3.setCellValue("");
+								R40cell3.setCellStyle(textStyle);
+							}
+
+							// ====== R41 ======
+							row = sheet.getRow(40);
+							if (row == null) {
+								row = sheet.createRow(40);
+							}
+							Cell R41cell1 = row.createCell(1);
+							if (record1.getR41_NO_OF_AC() != null) {
+								R41cell1.setCellValue(record1.getR41_NO_OF_AC().doubleValue());
+								R41cell1.setCellStyle(numberStyle);
+							} else {
+								R41cell1.setCellValue("");
+								R41cell1.setCellStyle(textStyle);
+							}
+
+							Cell R41cell2 = row.createCell(2);
+							if (record1.getR41_CREDIT_LIMIT() != null) {
+								R41cell2.setCellValue(record1.getR41_CREDIT_LIMIT().doubleValue());
+								R41cell2.setCellStyle(numberStyle);
+							} else {
+								R41cell2.setCellValue("");
+								R41cell2.setCellStyle(textStyle);
+							}
+
+							Cell R41cell3 = row.createCell(3);
+							if (record1.getR41_AMOUNT_OUTSTANDING() != null) {
+								R41cell3.setCellValue(record1.getR41_AMOUNT_OUTSTANDING().doubleValue());
+								R41cell3.setCellStyle(numberStyle);
+							} else {
+								R41cell3.setCellValue("");
+								R41cell3.setCellStyle(textStyle);
+							}
+						}
+					}
+
+					workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				} else {
+
+				}
+
+				// Write the final workbook content to the in-memory stream.
+				workbook.write(out);
+
+				logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+				return out.toByteArray();
+			}
+		}
 }

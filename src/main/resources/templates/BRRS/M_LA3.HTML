@@ -1119,8 +1119,8 @@ PURPOSE		: BRRSREPORT
 													<th rowspan="1" style="text-align: left; width: 750px;"> (26A)
 														NOMINAL INTEREST
 														RATES </th>
-													<th style="text-align: right;">No. of A/Cs</th>
-													<th style="text-align: right;"> Approved Limit </th>
+													<th style="text-align: right;width: 450px;">No. of A/Cs</th>
+													<th style="text-align: right;width: 350px;"> Approved Limit </th>
 													<th style="text-align: right;">Amount Outstanding In Pula</th>
 
 												</tr>
@@ -1134,11 +1134,11 @@ PURPOSE		: BRRSREPORT
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${#numbers.formatDecimal(report.r10_no_of_ac,1,'COMMA',0,'POINT')}">
 											</td>
-											<td style="text-align: right;" th:attr="RowId='R10', ColumnId1='C3'"
+											<td style="text-align: right;" th:attr="RowId='R10', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${#numbers.formatDecimal(report.r10_approved_limit,1,'COMMA',0,'POINT')}">
 											</td>
-											<td style="text-align: right;" th:attr="RowId='R10', ColumnId2='C4'"
+											<td style="text-align: right;" th:attr="RowId='R10', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${#numbers.formatDecimal(report.r10_amount_outstanding,1,'COMMA',0,'POINT')}">
 											</td>
@@ -1149,11 +1149,11 @@ PURPOSE		: BRRSREPORT
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${#numbers.formatDecimal(report.r11_no_of_ac,1,'COMMA',0,'POINT')}">
 											</td>
-											<td style="text-align: right;" th:attr="RowId='R11', ColumnId1='C3'"
+											<td style="text-align: right;" th:attr="RowId='R11', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${#numbers.formatDecimal(report.r11_approved_limit,1,'COMMA',0,'POINT')}">
 											</td>
-											<td style="text-align: right;" th:attr="RowId='R11', ColumnId2='C4'"
+											<td style="text-align: right;" th:attr="RowId='R11', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${#numbers.formatDecimal(report.r11_amount_outstanding,1,'COMMA',0,'POINT')}">
 											</td>
@@ -1164,11 +1164,11 @@ PURPOSE		: BRRSREPORT
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${#numbers.formatDecimal(report.r12_no_of_ac,1,'COMMA',0,'POINT')}">
 											</td>
-											<td style="text-align: right;" th:attr="RowId='R12', ColumnId1='C3'"
+											<td style="text-align: right;" th:attr="RowId='R12', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${#numbers.formatDecimal(report.r12_approved_limit,1,'COMMA',0,'POINT')}">
 											</td>
-											<td style="text-align: right;" th:attr="RowId='R12', ColumnId2='C4'"
+											<td style="text-align: right;" th:attr="RowId='R12', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${#numbers.formatDecimal(report.r12_amount_outstanding,1,'COMMA',0,'POINT')}">
 											</td>
@@ -1179,11 +1179,11 @@ PURPOSE		: BRRSREPORT
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${#numbers.formatDecimal(report.r13_no_of_ac,1,'COMMA',0,'POINT')}">
 											</td>
-											<td style="text-align: right;" th:attr="RowId='R13', ColumnId1='C3'"
+											<td style="text-align: right;" th:attr="RowId='R13', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${#numbers.formatDecimal(report.r13_approved_limit,1,'COMMA',0,'POINT')}">
 											</td>
-											<td style="text-align: right;" th:attr="RowId='R13', ColumnId2='C4'"
+											<td style="text-align: right;" th:attr="RowId='R13', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${#numbers.formatDecimal(report.r13_amount_outstanding,1,'COMMA',0,'POINT')}">
 											</td>
@@ -1194,11 +1194,11 @@ PURPOSE		: BRRSREPORT
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${#numbers.formatDecimal(report.r14_no_of_ac,1,'COMMA',0,'POINT')}">
 											</td>
-											<td style="text-align: right;" th:attr="RowId='R14', ColumnId1='C3'"
+											<td style="text-align: right;" th:attr="RowId='R14', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${#numbers.formatDecimal(report.r14_approved_limit,1,'COMMA',0,'POINT')}">
 											</td>
-											<td style="text-align: right;" th:attr="RowId='R14', ColumnId2='C4'"
+											<td style="text-align: right;" th:attr="RowId='R14', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${#numbers.formatDecimal(report.r14_amount_outstanding,1,'COMMA',0,'POINT')}">
 											</td>
@@ -1209,11 +1209,11 @@ PURPOSE		: BRRSREPORT
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${#numbers.formatDecimal(report.r15_no_of_ac,1,'COMMA',0,'POINT')}">
 											</td>
-											<td style="text-align: right;" th:attr="RowId='R15', ColumnId1='C3'"
+											<td style="text-align: right;" th:attr="RowId='R15', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${#numbers.formatDecimal(report.r15_approved_limit,1,'COMMA',0,'POINT')}">
 											</td>
-											<td style="text-align: right;" th:attr="RowId='R15', ColumnId2='C4'"
+											<td style="text-align: right;" th:attr="RowId='R15', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${#numbers.formatDecimal(report.r15_amount_outstanding,1,'COMMA',0,'POINT')}">
 											</td>
@@ -1250,9 +1250,9 @@ PURPOSE		: BRRSREPORT
 
 														<th rowspan="1" style="text-align: left; width: 750px;"> (26B)
 															LOANS AND ADVANCES BY MATURITY </th>
-														<th style="text-align: right;">No. of A/Cs</th>
-														<th style="text-align: right;"> Approved Limit </th>
-														<th style="text-align: right;">Amount Outstanding In Pula</th>
+															<th style="text-align: right;width: 450px;">No. of A/Cs</th>
+															<th style="text-align: right;width: 350px;"> Approved Limit </th>
+															<th style="text-align: right;">Amount Outstanding In Pula</th>
 
 													</tr>
 												</thead>
@@ -1262,150 +1262,150 @@ PURPOSE		: BRRSREPORT
 
 											<tr>
 												<td th:text="${report.r21_product}"></td>
-												<td style="text-align: right;" th:attr="RowId='R21', ColumnId='C2'"
+												<td style="text-align: right;" th:attr="RowId='R21', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r21_no_of_ac,1,'COMMA',0,'POINT')}">
 												</td>
-												<td style="text-align: right;" th:attr="RowId='R21', ColumnId1='C3'"
+												<td style="text-align: right;" th:attr="RowId='R21', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r21_approved_limit,1,'COMMA',0,'POINT')}">
 												</td>
-												<td style="text-align: right;" th:attr="RowId='R21', ColumnId2='C4'"
+												<td style="text-align: right;" th:attr="RowId='R21', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r21_amount_outstanding,1,'COMMA',0,'POINT')}">
 												</td>
 											</tr>
 											<tr>
 												<td th:text="${report.r22_product}"></td>
-												<td style="text-align: right;" th:attr="RowId='R22', ColumnId='C2'"
+												<td style="text-align: right;" th:attr="RowId='R22', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r22_no_of_ac,1,'COMMA',0,'POINT')}">
 												</td>
-												<td style="text-align: right;" th:attr="RowId='R22', ColumnId1='C3'"
+												<td style="text-align: right;" th:attr="RowId='R22', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r22_approved_limit,1,'COMMA',0,'POINT')}">
 												</td>
-												<td style="text-align: right;" th:attr="RowId='R22', ColumnId2='C4'"
+												<td style="text-align: right;" th:attr="RowId='R22', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r22_amount_outstanding,1,'COMMA',0,'POINT')}">
 												</td>
 											</tr>
 											<tr>
 												<td th:text="${report.r23_product}"></td>
-												<td style="text-align: right;" th:attr="RowId='R23', ColumnId='C2'"
+												<td style="text-align: right;" th:attr="RowId='R23', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r23_no_of_ac,1,'COMMA',0,'POINT')}">
 												</td>
-												<td style="text-align: right;" th:attr="RowId='R23', ColumnId1='C3'"
+												<td style="text-align: right;" th:attr="RowId='R23', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r23_approved_limit,1,'COMMA',0,'POINT')}">
 												</td>
-												<td style="text-align: right;" th:attr="RowId='R23', ColumnId2='C4'"
+												<td style="text-align: right;" th:attr="RowId='R23', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r23_amount_outstanding,1,'COMMA',0,'POINT')}">
 												</td>
 											</tr>
 											<tr>
 												<td th:text="${report.r24_product}"></td>
-												<td style="text-align: right;" th:attr="RowId='R24', ColumnId='C2'"
+												<td style="text-align: right;" th:attr="RowId='R24', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r24_no_of_ac,1,'COMMA',0,'POINT')}">
 												</td>
-												<td style="text-align: right;" th:attr="RowId='R24', ColumnId1='C3'"
+												<td style="text-align: right;" th:attr="RowId='R24', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r24_approved_limit,1,'COMMA',0,'POINT')}">
 												</td>
-												<td style="text-align: right;" th:attr="RowId='R24', ColumnId2='C4'"
+												<td style="text-align: right;" th:attr="RowId='R24', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r24_amount_outstanding,1,'COMMA',0,'POINT')}">
 												</td>
 											</tr>
 											<tr>
 												<td th:text="${report.r25_product}"></td>
-												<td style="text-align: right;" th:attr="RowId='R25', ColumnId='C2'"
+												<td style="text-align: right;" th:attr="RowId='R25', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r25_no_of_ac,1,'COMMA',0,'POINT')}">
 												</td>
-												<td style="text-align: right;" th:attr="RowId='R25', ColumnId1='C3'"
+												<td style="text-align: right;" th:attr="RowId='R25', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r25_approved_limit,1,'COMMA',0,'POINT')}">
 												</td>
-												<td style="text-align: right;" th:attr="RowId='R25', ColumnId2='C4'"
+												<td style="text-align: right;" th:attr="RowId='R25', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r25_amount_outstanding,1,'COMMA',0,'POINT')}">
 												</td>
 											</tr>
 											<tr>
 												<td th:text="${report.r26_product}"></td>
-												<td style="text-align: right;" th:attr="RowId='R26', ColumnId='C2'"
+												<td style="text-align: right;" th:attr="RowId='R26', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r26_no_of_ac,1,'COMMA',0,'POINT')}">
 												</td>
-												<td style="text-align: right;" th:attr="RowId='R26', ColumnId1='C3'"
+												<td style="text-align: right;" th:attr="RowId='R26', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r26_approved_limit,1,'COMMA',0,'POINT')}">
 												</td>
-												<td style="text-align: right;" th:attr="RowId='R26', ColumnId2='C4'"
+												<td style="text-align: right;" th:attr="RowId='R26', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r26_amount_outstanding,1,'COMMA',0,'POINT')}">
 												</td>
 											</tr>
 											<tr>
 												<td th:text="${report.r27_product}"></td>
-												<td style="text-align: right;" th:attr="RowId='R27', ColumnId='C2'"
+												<td style="text-align: right;" th:attr="RowId='R27', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r27_no_of_ac,1,'COMMA',0,'POINT')}">
 												</td>
-												<td style="text-align: right;" th:attr="RowId='R27', ColumnId1='C3'"
+												<td style="text-align: right;" th:attr="RowId='R27', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r27_approved_limit,1,'COMMA',0,'POINT')}">
 												</td>
-												<td style="text-align: right;" th:attr="RowId='R27', ColumnId2='C4'"
+												<td style="text-align: right;" th:attr="RowId='R27', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r27_amount_outstanding,1,'COMMA',0,'POINT')}">
 												</td>
 											</tr>
 											<tr>
 												<td th:text="${report.r28_product}"></td>
-												<td style="text-align: right;" th:attr="RowId='R28', ColumnId='C2'"
+												<td style="text-align: right;" th:attr="RowId='R28', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r28_no_of_ac,1,'COMMA',0,'POINT')}">
 												</td>
-												<td style="text-align: right;" th:attr="RowId='R28', ColumnId1='C3'"
+												<td style="text-align: right;" th:attr="RowId='R28', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r28_approved_limit,1,'COMMA',0,'POINT')}">
 												</td>
-												<td style="text-align: right;" th:attr="RowId='R28', ColumnId2='C4'"
+												<td style="text-align: right;" th:attr="RowId='R28', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r28_amount_outstanding,1,'COMMA',0,'POINT')}">
 												</td>
 											</tr>
 											<tr>
 												<td th:text="${report.r29_product}"></td>
-												<td style="text-align: right;" th:attr="RowId='R29', ColumnId='C2'"
+												<td style="text-align: right;" th:attr="RowId='R29', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r29_no_of_ac,1,'COMMA',0,'POINT')}">
 												</td>
-												<td style="text-align: right;" th:attr="RowId='R29', ColumnId1='C3'"
+												<td style="text-align: right;" th:attr="RowId='R29', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r29_approved_limit,1,'COMMA',0,'POINT')}">
 												</td>
-												<td style="text-align: right;" th:attr="RowId='R29', ColumnId2='C4'"
+												<td style="text-align: right;" th:attr="RowId='R29', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r29_amount_outstanding,1,'COMMA',0,'POINT')}">
 												</td>
 											</tr>
 											<tr>
 												<td th:text="${report.r30_product}"></td>
-												<td style="text-align: right;" th:attr="RowId='R30', ColumnId='C2'"
+												<td style="text-align: right;" th:attr="RowId='R30', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r30_no_of_ac,1,'COMMA',0,'POINT')}">
 												</td>
-												<td style="text-align: right;" th:attr="RowId='R30', ColumnId1='C3'"
+												<td style="text-align: right;" th:attr="RowId='R30', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r30_approved_limit,1,'COMMA',0,'POINT')}">
 												</td>
-												<td style="text-align: right;" th:attr="RowId='R30', ColumnId2='C4'"
+												<td style="text-align: right;" th:attr="RowId='R30', ColumnId1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${#numbers.formatDecimal(report.r30_amount_outstanding,1,'COMMA',0,'POINT')}">
 												</td>
@@ -1430,10 +1430,14 @@ PURPOSE		: BRRSREPORT
 									<form action="#" method="POST" id="fileupload">
 
 
-										<div style="border-right: 1px solid #dee2e6; ">
+									
+											<div class="table-wrapper table-responsive scrollable-table-container"
+																			style="border-right: 1px solid #dee2e6; max-height:90vh; overflow-y: auto;">
 											<table
 												class="sticky-header-table table table-bordered  table-borderedSummary table-cell table-sm table-condensed"
-												id="reports">
+												id="reports" tyle="table-layout: fixed; width: 100%;">
+												
+
 												<thead class="thead-light"
 													style=" top: 0;border:2px solid black; background-color: #b3b6b9; z-index: 1;">
 													<tr style="background-color: black; ">
@@ -1737,9 +1741,9 @@ PURPOSE		: BRRSREPORT
 											<th>ACCT BALANCE IN PULA</th>
 											<th>APPROVED LIMIT</th>
 											<th>REPORT LABEL</th>
+											<th>REPORT LABEL_1</th>
 											<th>REPORT ADDL CRITERIA 1</th>
 											<th>REPORT ADDL CRITERIA 2</th>
-											<th>REPORT ADDL CRITERIA 3</th>
 											<th>REPORT DATE</th>
 										</tr>
 
@@ -1774,15 +1778,16 @@ PURPOSE		: BRRSREPORT
 </td>
 <td th:text="${report.report_label != null ? report.report_label : '-'}">
 											</td>
+											</td>
+											<td th:text="${report.report_label_1 != null ? report.report_label_1 : '-'}">
+																						</td>
 											<td
 												th:text="${report.report_addl_criteria_1 != null ? report.report_addl_criteria_1 : '-'}">
 											</td>
 											<td
 												th:text="${report.report_addl_criteria_2 != null ? report.report_addl_criteria_2 : '-'}">
 											</td>
-											<td
-												th:text="${report.report_addl_criteria_3 != null ? report.report_addl_criteria_3 : '-'}">
-											</td>
+											
 											<td th:text="${report.report_date != null 
 																													? #dates.format(report.report_date, 'dd-MM-yyyy') : '-'}"></td>
 										</tr>
