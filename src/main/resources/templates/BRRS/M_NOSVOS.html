@@ -1062,11 +1062,15 @@ function calculateR101Totals() {
         let riskWeightedAmountNostro =
             (weightNostro * amountDemandNostro) +
             (weightNostro * amountTimeNostro);
+        
+        riskWeightedAmountNostro = riskWeightedAmountNostro / 100;
 
         let riskWeightedAmountNostro1 =
             (weightNostro1 * amountDemandNostro1) +
             (weightNostro1 * amountTimeNostro1);
 
+        riskWeightedAmountNostro1 = riskWeightedAmountNostro1 / 100;
+        
         // Set calculated values back in UI
         $("#R" + i + "_RISK_WEIGHTED_AMOUNT_NOSTRO").val(riskWeightedAmountNostro.toFixed(2));
         $("#R" + i + "_RISK_WEIGHTED_AMOUNT_NOSTRO1").val(riskWeightedAmountNostro1.toFixed(2));
