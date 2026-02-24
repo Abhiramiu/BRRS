@@ -15,5 +15,9 @@ public interface BRRS_M_SFINP1_Archival_Summary_Repo extends JpaRepository<M_SFI
     List<Object> getM_SFINP1archival();
 
     @Query(value = "select * from BRRS_M_SFINP1_ARCHIVALTABLE_SUMMARY where REPORT_DATE = ?1 and REPORT_VERSION = ?2", nativeQuery = true)
-    List<M_SFINP1_Archival_Summary_Entity> getdatabydateListarchival(Date report_date, String report_version);
+    List<M_SFINP1_Archival_Summary_Entity> getdatabydateListarchival(Date report_date, BigDecimal report_version);
+    
+    
+    @Query(value = "SELECT * FROM BRRS_M_SFINP1_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC", nativeQuery = true)
+    List<M_SFINP1_Archival_Summary_Entity> getdatabydateListWithVersion();
 }

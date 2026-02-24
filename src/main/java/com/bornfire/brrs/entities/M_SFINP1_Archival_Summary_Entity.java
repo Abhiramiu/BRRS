@@ -3,6 +3,7 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -230,7 +231,10 @@ public class M_SFINP1_Archival_Summary_Entity {
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
 	private Date report_date;
-	private String report_version;
+	private BigDecimal report_version;
+	@Column(name = "REPORT_RESUBDATE")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date reportResubDate;
 	private String report_frequency;
 	private String report_code;
 	private String report_desc;
@@ -240,6 +244,18 @@ public class M_SFINP1_Archival_Summary_Entity {
 	
 	
 		
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+
+
+
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
+	}
+
+
+
 	public String getR10_product() {
 		return r10_product;
 	}
@@ -2748,13 +2764,13 @@ public class M_SFINP1_Archival_Summary_Entity {
 
 
 
-	public String getReport_version() {
+	public BigDecimal getReport_version() {
 		return report_version;
 	}
 
 
 
-	public void setReport_version(String report_version) {
+	public void setReport_version(BigDecimal report_version) {
 		this.report_version = report_version;
 	}
 

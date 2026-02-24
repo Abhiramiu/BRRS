@@ -1180,9 +1180,8 @@ public class RegulatoryReportServices {
 		 * case "M_RPD": repsummary = BRRS_M_RPD_ReportService.getM_RPDView(reportId,
 		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
 		 */
-			 case "M_SFINP2": repsummary =
-					 BRRS_M_SFINP2_reportservice.getM_SFINP2View(reportId, fromdate, todate,
-					currency, dtltype, pageable, type, version); break;
+			case "M_SFINP1": repsummary = BRRS_M_SFINP1_reportservice.getM_SFINP1View(reportId, fromdate, todate,
+					 currency, dtltype, pageable, type, version); break;
 					 
 					 
 					 
@@ -3204,6 +3203,15 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+		case "M_SFINP1":
+			try {
+				repfile = BRRS_M_SFINP1_reportservice.getM_SFINP1Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, format, version);
+				}
+			catch (Exception e) { 
+					e.printStackTrace();
+				 }
+			break;
 
 		/*
 		 * case "M_CA4": try { repfile =
@@ -4105,12 +4113,9 @@ public class RegulatoryReportServices {
 			break;
 
 		case "M_SFINP1":
-			try {
-				archivalData = BRRS_M_SFINP1_reportservice.getM_SFINP1Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> M_SFINP1 = BRRS_M_SFINP1_reportservice.getM_SFINP1Archival();
+			M_SFINP1.addAll(M_SFINP1);
+			System.out.println("Fetched M_SFINP1 archival data: " + M_SFINP1.size());
 			break;
 
 		case "M_LA4":
