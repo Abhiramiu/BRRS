@@ -1179,7 +1179,12 @@ public class RegulatoryReportServices {
 		 * case "M_RPD": repsummary = BRRS_M_RPD_ReportService.getM_RPDView(reportId,
 		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
 		 */
-			
+			 case "M_SFINP2": repsummary =
+					 BRRS_M_SFINP2_reportservice.getM_SFINP2View(reportId, fromdate, todate,
+					currency, dtltype, pageable, type, version); break;
+					 
+					 
+					 
 			case "Q_ATF":
 				 
 				 repsummary = brrs_q_atf_reportservice.getQ_ATFView(reportId, fromdate,
@@ -3746,7 +3751,15 @@ public class RegulatoryReportServices {
 		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
 		 * Auto-generated catch block e.printStackTrace(); } break;
 		 */
-			
+		 case "M_SFINP2":
+				try {
+					repfile = BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2Excel(filename, reportId, fromdate, todate, currency,
+							dtltype, type,  version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 			 
 		 case "Q_ATF":
 		try {

@@ -302,7 +302,7 @@ public class M_SFINP2_Archival_Summary_Entity {
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
 	public Date REPORT_DATE;
-	public String REPORT_VERSION;
+	public BigDecimal REPORT_VERSION;
 	public String REPORT_FREQUENCY;
 	public String REPORT_CODE;
 	public String REPORT_DESC;
@@ -2590,11 +2590,11 @@ public class M_SFINP2_Archival_Summary_Entity {
 		REPORT_DATE = rEPORT_DATE;
 	}
 
-	public String getREPORT_VERSION() {
+	public BigDecimal getREPORT_VERSION() {
 		return REPORT_VERSION;
 	}
 
-	public void setREPORT_VERSION(String rEPORT_VERSION) {
+	public void setREPORT_VERSION(BigDecimal rEPORT_VERSION) {
 		REPORT_VERSION = rEPORT_VERSION;
 	}
 
