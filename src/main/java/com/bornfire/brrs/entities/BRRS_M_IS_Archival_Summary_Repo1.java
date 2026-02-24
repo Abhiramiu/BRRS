@@ -1,5 +1,6 @@
 package com.bornfire.brrs.entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +15,7 @@ public interface BRRS_M_IS_Archival_Summary_Repo1
 
     // Fetch specific archival data by report date & version
     @Query(value = "SELECT * FROM BRRS_M_IS_ARCHIVALTABLE_SUMMARY1 WHERE REPORT_DATE = ?1 AND REPORT_VERSION = ?2", nativeQuery = true)
-    List<M_IS_Archival_Summary_Entity1> getdatabydateListarchival(Date reportDate, String reportVersion);
+    List<M_IS_Archival_Summary_Entity1> getdatabydateListarchival(Date reportDate, BigDecimal reportVersion);
 
     // Fetch latest archival version for given date (no version input)
     @Query(value = "SELECT * FROM BRRS_M_IS_ARCHIVALTABLE_SUMMARY1 "
@@ -23,7 +24,7 @@ public interface BRRS_M_IS_Archival_Summary_Repo1
     Optional<M_IS_Archival_Summary_Entity1> getLatestArchivalVersionByDate(Date reportDate);
 
     // Fetch by primary key (used internally by Spring Data JPA)
-    Optional<M_IS_Summary_Entity1> findByReportDateAndReportVersion(Date reportDate, String reportVersion);
+    Optional<M_IS_Summary_Entity1> findByReportDateAndReportVersion(Date reportDate, BigDecimal reportVersion);
 
     @Query(value = "SELECT * FROM BRRS_M_IS_ARCHIVALTABLE_SUMMARY1 " +
             "WHERE REPORT_VERSION IS NOT NULL " +

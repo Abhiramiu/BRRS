@@ -1,6 +1,8 @@
 package com.bornfire.brrs.controllers;
 
 import java.io.FileNotFoundException;
+
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -42,6 +44,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.entities.M_IS_Summary_Entity1;
+import com.bornfire.brrs.entities.M_IS_Summary_Entity2;
 import com.bornfire.brrs.dto.ReportLineItemDTO;
 import com.bornfire.brrs.entities.*;
 import com.bornfire.brrs.services.BRRS_ADISB1_ReportService;
@@ -3789,7 +3793,7 @@ public class BRRS_ReportsController {
 
 			@ModelAttribute M_IS_Summary_Entity1 request1, @ModelAttribute M_IS_Summary_Entity2 request2) {
 		try {
-			System.out.println("Came to single controller");
+			System.out.println("Came to single MIS Update controller");
 
 			// set date into all 3 entities
 			request1.setReportDate(asondate);
@@ -3833,6 +3837,7 @@ public class BRRS_ReportsController {
 					.body("M_IS Resubmission Update Failed: " + e.getMessage());
 		}
 	}
+
 
 	
 

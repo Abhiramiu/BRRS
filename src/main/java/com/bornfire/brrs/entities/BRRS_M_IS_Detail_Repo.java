@@ -1,14 +1,19 @@
 package com.bornfire.brrs.entities;
 
 import java.util.Date;
+
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
+
+@Repository
 public interface BRRS_M_IS_Detail_Repo extends JpaRepository<M_IS_Detail_Entity, String> {
 	
-	@Query(value = "select * from BRRS_M_IS_DETAILTABLE where REPORT_DATE =?1  ", nativeQuery = true)
+	@Query(value = "select * from BRRS_M_IS_DETAILTABLE where REPORT_DATE =?1", nativeQuery = true)
 	List<M_IS_Detail_Entity> getdatabydateList(Date reportdate);
 	
 	// ✅ Pagination fixed → use OFFSET and LIMIT correctly
@@ -23,7 +28,9 @@ public interface BRRS_M_IS_Detail_Repo extends JpaRepository<M_IS_Detail_Entity,
 	@Query(value = "select * from BRRS_M_IS_DETAILTABLE where REPORT_LABEL =?1 and REPORT_ADDL_CRITERIA_1=?2 AND REPORT_DATE=?3", nativeQuery = true)
 	List<M_IS_Detail_Entity> GetDataByRowIdAndColumnId(String reportLabel,String reportAddlCriteria_1,Date reportdate);
 	
-	
+	@Query(value = "SELECT * FROM BRRS_M_IS_DETAILTABLE WHERE SNO = :Sno", nativeQuery = true)
+	M_IS_Detail_Entity findBySno(@Param("Sno") String Sno);
+
 }
 
 

@@ -5,17 +5,17 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
 
-public class M_IS_Archival_Summary2_PK implements Serializable {
+public class M_IS_PK implements Serializable {
 
     private Date reportDate;
     private BigDecimal reportVersion;
 
     // default constructor
-    public M_IS_Archival_Summary2_PK() {
+    public M_IS_PK() {
     }
 
     // parameterized constructor
-    public M_IS_Archival_Summary2_PK(Date reportDate, BigDecimal reportVersion) {
+    public M_IS_PK(Date reportDate, BigDecimal reportVersion) {
         this.reportDate = reportDate;
         this.reportVersion = reportVersion;
     }
@@ -25,9 +25,9 @@ public class M_IS_Archival_Summary2_PK implements Serializable {
     public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (!(o instanceof M_IS_Archival_Summary2_PK))
+        if (!(o instanceof M_IS_PK))
             return false;
-        M_IS_Archival_Summary2_PK that = (M_IS_Archival_Summary2_PK) o;
+        M_IS_PK that = (M_IS_PK) o;
         return Objects.equals(reportDate, that.reportDate) &&
                 Objects.equals(reportVersion, that.reportVersion);
     }

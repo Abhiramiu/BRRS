@@ -411,9 +411,13 @@ public class RegulatoryReportServices {
 		logger.info("Getting View for the Report :" + reportId);
 		switch (reportId) {
 
+		case "M_IS": repsummary = BRRS_M_IS_reportservice.getM_ISView(reportId,
+				 fromdate, todate, currency, dtltype, pageable, type, version); break;
+				 
 		case "M_SP":
-			repsummary = BRRS_M_SP_reportservice.getM_SPView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
+			
+			repsummary = BRRS_M_SP_reportservice.getM_SPView(reportId,
+					fromdate, todate, currency, dtltype, pageable, type, version);
 			break;
 
 		case "M_PLL":
@@ -544,8 +548,7 @@ public class RegulatoryReportServices {
 		 * case "M_LA4": repsummary = BRRS_M_LA4_reportservice.getM_LA4View(reportId,
 		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
 		 * 
-		 * case "M_IS": repsummary = BRRS_M_IS_reportservice.getM_ISView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
+		 * 
 		 * 
 		 * case "M_CA4": repsummary =
 		 * BRRS_M_CA4_reportservice.getBRRS_M_CA4View(reportId, fromdate, todate,
@@ -880,8 +883,6 @@ public class RegulatoryReportServices {
 		 * case "M_LA4": repsummary = BRRS_M_LA4_reportservice.getM_LA4View(reportId,
 		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
 		 * 
-		 * case "M_IS": repsummary = BRRS_M_IS_reportservice.getM_ISView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
 		 * 
 		 * case "M_CA4": repsummary =
 		 * BRRS_M_CA4_reportservice.getBRRS_M_CA4View(reportId, fromdate, todate,
@@ -2143,10 +2144,7 @@ public class RegulatoryReportServices {
 		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
 		 * Auto-generated catch block e.printStackTrace(); } break;
 		 * 
-		 * case "M_IS": try { repfile = BRRS_M_IS_reportservice.BRRS_M_ISExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
+		 * 
 		 * 
 		 * case "M_CA2": try { repfile =
 		 * BRRS_M_CA2_reportservice.getM_CA2Excel(filename, reportId, fromdate, todate,
@@ -3869,6 +3867,13 @@ public class RegulatoryReportServices {
 			}
 			break;
 
+		case "M_IS": 
+			try { 
+				repfile = BRRS_M_IS_reportservice.BRRS_M_ISExcel(filename,
+				  reportId, fromdate, todate, currency, dtltype, type, format, version); 
+				} catch(Exception e) { // TODO Auto-generated catch block 
+					e.printStackTrace(); }
+				  break;
 		}
 
 		return repfile;
@@ -4117,14 +4122,6 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		// case "M_IS":
-		// try {
-		// archivalData = BRRS_M_IS_reportservice.getM_ISArchival();
-		// } catch (Exception e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// break;
 
 		case "M_CA2":
 			try {

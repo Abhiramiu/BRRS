@@ -64,7 +64,7 @@ public class M_IS_Summary_Entity2 {
    public BigDecimal R27_QUALIFYING_FOR_HEDGE_ACCOUNTING;
    public BigDecimal R27_TOTAL;
    public String R28_PRODUCT;
-//    public BigDecimal R28_HELD_FOR_TRADING;
+   public BigDecimal R28_HELD_FOR_TRADING;
    public BigDecimal R28_AMORTISED_COST;
    public BigDecimal R28_AVAILABLE_FOR_SALE;
    public BigDecimal R28_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS;
@@ -812,6 +812,13 @@ public class M_IS_Summary_Entity2 {
 	}
 	public void setDEL_FLG(String dEL_FLG) {
 		DEL_FLG = dEL_FLG;
+	}
+	
+	public BigDecimal getR28_HELD_FOR_TRADING() {
+		return R28_HELD_FOR_TRADING;
+	}
+	public void setR28_HELD_FOR_TRADING(BigDecimal r28_HELD_FOR_TRADING) {
+		R28_HELD_FOR_TRADING = r28_HELD_FOR_TRADING;
 	}
 	public M_IS_Summary_Entity2() {
 		super();

@@ -13,9 +13,15 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 public class M_IS_Detail_Entity {
 
+	
 	@Id
+	@Column(name = "SNO")
+	private Long sno;
+
+	
 	@Column(name = "CUST_ID")
 	private String custId;
+	
 	@Column(name = "ACCT_NUMBER")
 	private String acctNumber;
 	@Column(name = "ACCT_NAME")
@@ -25,8 +31,8 @@ public class M_IS_Detail_Entity {
 	@Column(name = "REPORT_ADDL_CRITERIA_1")
 	private String reportAddlCriteria_1;
 
-@Column(name = "REPORT_LABEL")
-private String reportLabel;   // ✔ correct spelling
+	@Column(name = "REPORT_LABEL")
+	private String reportLabel;   // ✔ correct spelling
 
 
 	@Column(name = "REPORT_REMARKS")
@@ -57,12 +63,27 @@ private String reportLabel;   // ✔ correct spelling
 	@Column(name = "VERIFY_TIME")
 	@DateTimeFormat(pattern = "dd-MM-yyyy")
 	private Date verifyTime;
+	
 	@Column(name = "ENTITY_FLG")
-	private char entityFlg;
+	private Character entityFlg;
+
 	@Column(name = "MODIFY_FLG")
-	private char modifyFlg;
+	private Character modifyFlg;
+
 	@Column(name = "DEL_FLG")
-	private char delFlg;
+	private Character delFlg;
+	
+	
+	
+	
+	
+	public Long getSno() {
+		return sno;
+	}
+
+	public void setSno(Long sno) {
+		this.sno = sno;
+	}
 
 	public String getCustId() {
 		return custId;
@@ -210,27 +231,27 @@ public void setReportLabel(String reportLabel) {
 		this.verifyTime = verifyTime;
 	}
 
-	public char getEntityFlg() {
+	public Character getEntityFlg() {
 		return entityFlg;
 	}
 
-	public void setEntityFlg(char entityFlg) {
+	public void setEntityFlg(Character entityFlg) {
 		this.entityFlg = entityFlg;
 	}
 
-	public char getModifyFlg() {
+	public Character getModifyFlg() {
 		return modifyFlg;
 	}
 
-	public void setModifyFlg(char modifyFlg) {
+	public void setModifyFlg(Character modifyFlg) {
 		this.modifyFlg = modifyFlg;
 	}
 
-	public char getDelFlg() {
+	public Character getDelFlg() {
 		return delFlg;
 	}
 
-	public void setDelFlg(char delFlg) {
+	public void setDelFlg(Character delFlg) {
 		this.delFlg = delFlg;
 	}
 
