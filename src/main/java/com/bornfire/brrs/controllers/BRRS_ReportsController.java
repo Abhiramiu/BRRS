@@ -1,8 +1,6 @@
 package com.bornfire.brrs.controllers;
 
 import java.io.FileNotFoundException;
-
-
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -44,8 +42,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.M_IS_Summary_Entity1;
-import com.bornfire.brrs.entities.M_IS_Summary_Entity2;
 import com.bornfire.brrs.dto.ReportLineItemDTO;
 import com.bornfire.brrs.entities.*;
 import com.bornfire.brrs.services.BRRS_ADISB1_ReportService;
@@ -103,6 +99,7 @@ import com.bornfire.brrs.services.BRRS_M_SECA_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SECL_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SEC_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SFINP1_ReportService;
+import com.bornfire.brrs.services.BRRS_M_SFINP2_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SIR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12A_New_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12A_ReportService;
@@ -927,6 +924,32 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
+	
+	@Autowired
+	BRRS_M_SFINP2_ReportService brrs_M_SFINP2_reportservice;
+
+	@RequestMapping(value = "/M_SFIN_P2updateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReport(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_SFINP2_Summary_Entity request) {
+		try {
+			System.out.println("came to single controller");
+
+			// ✅ set the asondate into entity
+			request.setREPORT_DATE(asondate);
+			// call services
+			brrs_M_SFINP2_reportservice.updateReport(request);
+
+			return ResponseEntity.ok(" Modifies Successfully");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+
+	
+	
 
 	@Autowired
 	BRRS_BASEL_III_COM_EQUITY_DISC_ReportService b_III_cetd_ReportService;
@@ -3793,7 +3816,7 @@ public class BRRS_ReportsController {
 
 			@ModelAttribute M_IS_Summary_Entity1 request1, @ModelAttribute M_IS_Summary_Entity2 request2) {
 		try {
-			System.out.println("Came to single MIS Update controller");
+			System.out.println("Came to single controller");
 
 			// set date into all 3 entities
 			request1.setReportDate(asondate);
@@ -3837,7 +3860,6 @@ public class BRRS_ReportsController {
 					.body("M_IS Resubmission Update Failed: " + e.getMessage());
 		}
 	}
-
 
 	
 
