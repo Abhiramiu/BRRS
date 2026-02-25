@@ -373,26 +373,26 @@ PURPOSE		: BRFREPORT
 		}
 		function showdetailsArc() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate},version = ${version}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
 				location.href = Callurl;
 		}
 
 		function showsummaryArc() {
 
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate},version = ${version},todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
 				location.href = Callurl;
 		}
 		function showdetailsResub() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate},version = ${version} ,todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
 				location.href = Callurl;
 		}
 
 		function showsummaryResub() {
 
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, version = ${version},todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
 				location.href = Callurl;
 		}
 	</script>
@@ -849,15 +849,15 @@ PURPOSE		: BRFREPORT
 					val = val.trim();
 				}
 
-			//	console.log("Sending:", id, val); // DEBUG
+				console.log("Sending:", id, val); // DEBUG
 				formDataObj[id] = val;
 			});
 
 			const formData = $.param(formDataObj); // serialize manually
 
-			
-			if (type && type.toUpperCase() === 'RESUB') 
-			{	var apiUrl = './UpdateM_RPD_ReSub';
+			let apiUrl = './M_RPDupdateAll';
+			if (type && type.toUpperCase() === 'RESUB') apiUrl = './UpdateM_RPD_ReSub';
+
 			$.ajax({
 				url: apiUrl,
 				type: 'POST',
@@ -866,12 +866,10 @@ PURPOSE		: BRFREPORT
 				success: function (response) {
 					$('#loader').modal('hide');
 					$("#resultModalLabel").text("BRRS");
-					$("#resultModalBody").text("Modify Successfully.");
+					$("#resultModalBody").text("Updated Successfully.");
 					$("#resultModal").modal("show");
 					$("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
-						window.location.href = previousUrl
-						? previousUrl
-						: "/BRRS/Resubmission?rptcode=M_RPD";
+						location.reload();
 					});
 				},
 				error: function (jqXHR) {
@@ -884,40 +882,6 @@ PURPOSE		: BRFREPORT
 					$('#loader').modal('hide');
 				}
 			});
-		}
-			else
-				{
-				var apiUrl = './M_RPDupdateAll';
-				
-				$.ajax({
-					url: apiUrl,
-					type: 'POST',
-					data: formData,
-					dataType: 'text',
-					success: function (response) {
-						console.log("Response = "+response)
-						$('#loader').modal('hide');
-						$("#resultModalLabel").text("BRRS");
-						$("#resultModalBody").text("Modify Successfully.");
-						$("#resultModal").modal("show");
-						$("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
-							window.location.href = previousUrl
-							? previousUrl
-							: "/BRRS/Resubmission?rptcode=M_RPD";
-						});
-					},
-					error: function (jqXHR) {
-						$('#loader').modal('hide');
-						$("#resultModalLabel").text("⚠️ Error");
-						$("#resultModalBody").text("Update failed. Please check console.");
-						$("#resultModal").modal("show");
-					},
-					complete: function () {
-						$('#loader').modal('hide');
-					}
-				});
-				}
-			
 		}
 
 
@@ -1086,7 +1050,7 @@ PURPOSE		: BRFREPORT
 
 
 </head>
-<title>M_RPD</title>
+<title>BRRS</title>
 
 <body>
 	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
@@ -1186,32 +1150,32 @@ PURPOSE		: BRFREPORT
 														margin-top:10px; margin-bottom:10px;padding: 5px;">Summary View - M_RPD</p>
 
 								<!-- Detail text -->
-								<p th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}" style="text-align: left; font-weight: bold;
+								<p th:if="${displaymode == 'detail' and type != 'ARCHIVAL'}" style="text-align: left; font-weight: bold;
 													 color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
 													 margin-top:10px; margin-bottom:10px;padding: 5px;">Detail View - M_RPD</p>
 
-								<p th:if="${displaymode == 'summaryArc'}" style="text-align: left; font-weight: bold; 
+								<p th:if="${type == 'ARCHIVAL' and displaymode == 'summary'}" style="text-align: left; font-weight: bold; 
 								          color: white; font-size: 20px;
 								          background-color: rgb(107, 122, 143); 
 								          margin-top:10px; margin-bottom:10px; padding: 5px;">
 									Archival Summary View - M_RPD
 								</p>
 
-								<p th:if="${displaymode == 'DetailsArc'}" style="text-align: left; font-weight: bold;
+								<p th:if="${type == 'ARCHIVAL' and displaymode == 'detail'}" style="text-align: left; font-weight: bold;
 								          color: white; font-size: 20px;
 								          background-color: rgb(107, 122, 143); 
 								          margin-top:10px; margin-bottom:10px; padding: 5px;">
 									Archival Detail View - M_RPD
 								</p>
 
-								<p th:if="${displaymode == 'summaryResub'}" style="text-align: left; font-weight: bold; 
+								<p th:if="${type == 'RESUB' and displaymode == 'resubSummary'}" style="text-align: left; font-weight: bold; 
 														          color: white; font-size: 20px;
 														          background-color: rgb(107, 122, 143); 
 														          margin-top:10px; margin-bottom:10px; padding: 5px;">
 									Resubmission Summary View - M_RPD
 								</p>
 
-								<p th:if="${displaymode == 'DetailsResub'}" style="text-align: left; font-weight: bold;
+								<p th:if="${type == 'RESUB' and displaymode == 'resubDetail'}" style="text-align: left; font-weight: bold;
 														          color: white; font-size: 20px;
 														          background-color: rgb(107, 122, 143); 
 														          margin-top:10px; margin-bottom:10px; padding: 5px;">
@@ -1231,20 +1195,26 @@ PURPOSE		: BRFREPORT
 										id="reports">
 										<thead>
 											<tr style="text-align: center;">
-												<th style="background-color: #D8D8D8;text-align: left;">Group</th>
-												<th style="background-color: #D8D8D8;text-align: left;">Names of insider borrower(s) including related interests of the borrower(s)</th>
-												<th style="background-color: #D8D8D8;text-align: left;">Type of Facility</th>
-												<th style="background-color: #D8D8D8;text-align: left;">Approved Limit</th>
-												<th style="background-color: #D8D8D8;text-align: left;">Outstanding Amount</th>
-												<th style="background-color: #D8D8D8;text-align: left;">Excess Over Ceiling</th>
-												<th style="background-color: #D8D8D8;text-align: left;">Loan Performance Classification</th>
-												<th style="background-color: #D8D8D8;text-align: left;">Current Provisions</th>
-												<th style="background-color: #D8D8D8;text-align: left;">Description</th>
-												<th style="background-color: #D8D8D8;text-align: left;">Value</th>
-												<th style="background-color: #D8D8D8;text-align: left;">Interest Rate</th>
+												<th style="text-align: left;">Group</th>
+												<th style="text-align: left;">Names of insider borrower(s) including
+													related interests of the borrower(s)</th>
+												<th style="text-align: right;">Type of Facility</th>
+												<th style="text-align: right;">Approved Limit</th>
+												<th style="text-align: right;">Outstanding Amount</th>
+												<th style="text-align: right;">Excess Over Ceiling</th>
+												<th style="text-align: right;">Loan Performance Classification</th>
+												<th style="text-align: right;">Current Provisions</th>
+												<th style="text-align: left;">Description</th>
+												<th style="text-align: right;">Value</th>
+												<th style="text-align: right;">Interest Rate</th>
 											</tr>
 										</thead>
-											<tbody th:each="report : ${reportsummary}">
+
+
+
+
+
+										<tbody th:each="report : ${reportsummary}">
 
 
 											<tr>
@@ -1259,7 +1229,7 @@ PURPOSE		: BRFREPORT
 													<input class="display-input show_input" type="text"
 														th:value="${#strings.defaultString(report.R11_NAME_INSIDER_BORROWER, 'N/A')}"
 														id="R11_NAME_INSIDER_BORROWER" name="R11_NAME_INSIDER_BORROWER"
-														style=" text-align: left; background-color:#FFFFFF; width: 200px; height: 28px; 
+														style="background-color:#FFFFFF; width: 200px; height: 28px; 
 		  	                  border-color: transparent; text-align: left;" readonly />
 												</td>
 												<td id="ROW11" style="padding-left: 10px; font-weight: bold;">
@@ -33917,7 +33887,7 @@ PURPOSE		: BRFREPORT
 											<tr>
 												<td></td>
 
-												<td id="ROW451" style="text-align: left; font-weight:bold;">TOTAL
+												<td id="ROW451" style="font-weight:bold;">TOTAL
 												</td>
 												<td style="background-color: black;">
 												</td>
