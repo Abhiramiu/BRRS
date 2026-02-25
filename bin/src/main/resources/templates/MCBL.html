@@ -1,0 +1,2317 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<link rel="icon" th:href="@{/images/client_Logo_bkp.png}"
+	type="image/x-icon">
+
+<!-- CSS -->
+<link rel="stylesheet"
+	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}" />
+<link rel="stylesheet"
+	th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}" />
+<link rel="stylesheet"
+	th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}" />
+<link rel="stylesheet"
+	th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}" />
+<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+
+
+<!-- JavaScript -->
+<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+<script
+	th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+<style>
+/* Adjust container below fixed header */
+.container-fluid {
+	margin-top: 70px;
+	padding: 20px;
+	zoom: 95%;
+}
+
+/* Back button */
+.back-btn {
+	background: linear-gradient(145deg, #ffffff, #f5f5f5);
+	color: #333;
+	border: 1px solid #ddd;
+	padding: 8px 16px;
+	border-radius: 8px;
+	cursor: pointer;
+	font-weight: 600;
+	font-size: 14px;
+	transition: all 0.3s ease;
+	box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Hover effect */
+.back-btn:hover {
+	background: linear-gradient(145deg, #f0f0f0, orange);
+	color: #000;
+	transform: translateY(-2px) scale(1.05);
+	box-shadow: 4px 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Active (when clicked) */
+.back-btn:active {
+	transform: scale(0.97);
+	box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Inline form */
+.inline-form {
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	padding: 10px 0;
+}
+
+/* Flex container for form groups */
+.formline {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 20px;
+	/* space between fields */
+}
+
+/* Form group */
+.form-group {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	/* space between label and input */
+}
+
+/* Labels */
+.form-group label {
+	white-space: nowrap;
+	font-size: 0.875rem;
+}
+
+/* Inputs & selects */
+.inline-input, .inline-select {
+	border: 1.5px solid #ccc;
+	border-radius: 5px;
+	padding: 4px 8px;
+	width: 200px;
+	/* unified width */
+	transition: border-color 0.3s, box-shadow 0.3s;
+	font-size: 0.875rem;
+}
+
+/* Focus effect */
+.inline-input:focus, .inline-select:focus {
+	border-color: #007bff;
+	box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+	outline: none;
+}
+
+/* Inline Date Input */
+.inline-date {
+	padding: 6px 10px;
+	font-size: 14px;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	background-color: #fff;
+	color: #333;
+	transition: all 0.3s ease;
+	outline: none;
+}
+
+/* Hover effect */
+.inline-date:hover {
+	border-color: #888;
+}
+
+/* Focus effect */
+.inline-date:focus {
+	border-color: #4a90e2;
+	/* blue highlight */
+	box-shadow: 0 0 6px rgba(74, 144, 226, 0.5);
+}
+
+/* Disabled state */
+.inline-date:disabled {
+	background-color: #f5f5f5;
+	color: #999;
+	cursor: not-allowed;
+}
+
+/* Feedback spans */
+.feedback {
+	font-size: 0.8rem;
+	color: red;
+}
+
+/* Make modal content rounded & elegant */
+#staticBackdrop .modal-content {
+	border-radius: 15px;
+	border: none;
+	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+	background: #f8f9fa;
+	/* light background */
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+/* Header */
+#staticBackdrop .modal-header {
+	background: #34495e;
+	color: white;
+	border-top-left-radius: 15px;
+	border-top-right-radius: 15px;
+	border-bottom: none;
+	padding: 15px 20px;
+	text-align: center;
+}
+
+#staticBackdrop .modal-title {
+	font-weight: 600;
+	font-size: 18px;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	text-align: center;
+}
+
+/* Body */
+#staticBackdrop .modal-body {
+	padding: 25px;
+	font-weight: 600;
+	font-size: 19px;
+	color: #2c3e50;
+	line-height: 1.5;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	text-align: center;
+}
+
+/* Footer */
+#staticBackdrop .modal-footer {
+	border-top: none;
+	padding: 15px 20px;
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+}
+
+/* Buttons */
+#staticBackdrop .btn {
+	border-radius: 8px;
+	padding: 8px 20px;
+	font-size: 14px;
+	font-weight: 500;
+}
+
+#staticBackdrop .btn-secondary {
+	background: #95a5a6;
+	border: none;
+}
+
+#staticBackdrop .btn-secondary:hover {
+	background: #7f8c8d;
+}
+
+#staticBackdrop .btn-primary {
+	background: #e74c3c;
+	border: none;
+}
+
+#staticBackdrop .btn-primary:hover {
+	background: #c0392b;
+}
+
+#staticBackdrop .modal-dialog {
+	max-width: 500px;
+}
+
+#notification-container {
+	position: fixed;
+	top: 85px;
+	right: 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	z-index: 9999;
+}
+
+.notification {
+	background: black;
+	color: white;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	font-weight: 600;
+	padding: 15px 20px;
+	border-radius: 8px;
+	min-width: 250px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	animation: slideIn 0.4s ease, fadeOut 0.5s ease forwards;
+	animation-delay: 0s, 3.5s;
+}
+
+.notification.success {
+	border-left: 5px solid #22c55e;
+}
+
+.notification.error {
+	border-left: 5px solid #ef4444;
+}
+
+.notification.info {
+	border-left: 5px solid #3b82f6;
+}
+
+.notification span {
+	flex: 1;
+	margin-right: 10px;
+}
+
+.notification button {
+	background: transparent;
+	border: none;
+	color: #888;
+	cursor: pointer;
+	font-size: 18px;
+}
+
+.loader {
+	width: fit-content;
+	font-weight: bold;
+	font-family: monospace;
+	font-size: 30px;
+	overflow: hidden;
+}
+
+.loader::before {
+	content: "Loading...";
+	color: #0000;
+	text-shadow: 0 0 0 #000, 10ch 0 0 #fff, 20ch 0 0 #000;
+	background: linear-gradient(90deg, #0000 calc(100%/ 3), #000 0
+		calc(2 * 100%/ 3), #0000 0) left/300% 100%;
+	animation: l23 2s infinite;
+}
+
+@
+keyframes l23 { 50% {
+	background-position: center;
+	text-shadow: -10ch 0 0 #000, 0 0 0 #fff, 10ch 0 0 #000
+}
+
+100%
+{
+background-position
+
+
+:
+
+ 
+
+right
+
+
+;
+text-shadow
+
+
+:
+
+ 
+
+-20
+ch
+
+ 
+
+0
+0
+#000
+,
+-10
+ch
+
+ 
+
+0
+0
+#fff
+,
+0
+0
+0
+#000
+
+
+			
+
+}
+}
+@
+keyframes slideIn {from { opacity:0;
+	transform: translateX(100%);
+}
+
+to {
+	opacity: 1;
+	transform: translateX(0);
+}
+
+}
+@
+keyframes fadeOut {to { opacity:0;
+	transform: translateX(100%);
+}
+
+}
+
+/* Responsive: stack vertically on small screens */
+@media ( max-width : 768px) {
+	.formline {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+	.form-group {
+		width: 100%;
+	}
+	.inline-input, .inline-select {
+		width: 100%;
+	}
+}
+</style>
+<style>
+.orange-loader {
+	border: 6px solid rgba(255, 165, 0, 0.2);
+	/* Light orange background ring */
+	border-top: 6px solid orange;
+	/* Main spinning color */
+	border-radius: 50%;
+	width: 80px;
+	height: 80px;
+	animation: spin 1s linear infinite;
+	margin: auto;
+}
+
+@
+keyframes spin { 0% {
+	transform: rotate(0deg);
+}
+100%
+{
+transform
+
+
+:
+
+ 
+
+rotate
+
+
+(360
+deg
+);
+
+
+			
+
+}
+}
+</style>
+<style>
+below Styles is for Report date validation
+.validation-message {
+	margin-top: 5px;
+	padding: 5px 10px;
+	border-radius: 4px;
+	font-size: 12px;
+	display: none;
+}
+
+.validation-message.error {
+	background: #ffebee;
+	color: #c62828;
+	border: 1px solid #ef5350;
+	display: block;
+}
+
+.validation-message.success {
+	background: #e8f5e9;
+	color: #2e7d32;
+	border: 1px solid #66bb6a;
+	display: block;
+}
+</style>
+<script>
+
+		function addrole(a) {
+			location.href = 'MCBL?formmode=add';
+		}
+
+		function back() {
+			window.history.back();
+		}
+		function list() {
+			location.href = 'MCBL?formmode=list';
+		}
+		function view_btn_submit(a) {
+			var tranid = a.getAttribute("data-tran_id");
+
+			location.href = 'MCBL?formmode=view&tranid=' + tranid;
+
+		}
+
+	</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dateInput = document.querySelector('.month-end-date-picker');
+    const validationMsg = document.getElementById('dateValidation');
+    
+    if (dateInput && validationMsg) {
+        dateInput.addEventListener('input', function() {
+            const selectedDate = this.value;
+            
+            if (!selectedDate) {
+                validationMsg.className = 'validation-message';
+                validationMsg.textContent = '';
+                return;
+            }
+            
+            const date = new Date(selectedDate + 'T00:00:00');
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            const lastDay = new Date(year, month + 1, 0).getDate();
+            const selectedDay = date.getDate();
+            
+            if (selectedDay !== lastDay) {
+                validationMsg.className = 'validation-message error';
+                validationMsg.textContent = `Only month-end dates allowed. Last day: ${year}-${String(month + 1).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+                this.value = '';
+            } else {
+                validationMsg.className = 'validation-message success';
+                validationMsg.textContent = '✓ Valid month-end date';
+                setTimeout(() => {
+                    validationMsg.className = 'validation-message';
+                    validationMsg.textContent = '';
+                }, 2000);
+            }
+        });
+    }
+});
+</script>
+<script>
+function showAlert(message) {
+    $("#alertmsgValidation1").text(message);
+    $("#alertValidation1").modal("show");
+}
+
+function checkReportDate() {
+    var reportDate = $("#report_date").val();
+
+    if (!reportDate) {
+        showAlert("Please select a Report Date first.");
+        return;
+    }
+
+    $("#loader").modal("show"); // Show loader
+
+    $.ajax({
+        url: "./checkReportDate",
+        type: "GET",
+        data: { report_date: reportDate },
+        success: function (exists) {
+            $("#loader").modal("hide");
+
+            if (exists === true) {
+                // Instead of window.confirm, show a custom modal for confirmation
+                $("#alertmsgValidation1").html(
+                    "Report Date (" + reportDate + ") already exists.<br>Do you want to replace it?"
+                );
+
+                // Add Yes/No buttons dynamically
+                $("#alertmsgValidation1").append(`
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-danger btn-sm" id="confirmYes">Yes</button>
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">No</button>
+                    </div>
+                `);
+
+                $("#alertValidation1").modal("show");
+
+                // Handle button clicks
+                $("#confirmYes").on("click", function () {
+                    $("#alertValidation1").modal("hide");
+                    // Continue silently — proceed with replacing
+                });
+
+                $("#alertValidation1").on("hidden.bs.modal", function () {
+                    $("#confirmYes").off("click"); // Clean up
+                });
+
+                // If user clicks "No", clear the date when modal closes
+                $("#alertValidation1").on("hide.bs.modal", function (e) {
+                    if (!$("#confirmYes").is(":focus")) {
+                        $("#report_date").val("");
+                    }
+                });
+            }
+        },
+        error: function (xhr, status, error) {
+            $("#loader").modal("hide");
+            console.error("Error checking report date:", status, error);
+            showAlert("Error checking report date!");
+        }
+    });
+}
+</script>
+
+
+
+
+
+
+<script>
+	/* 	function submitform(a) {
+			var requiredFields = ["#branch_name", "#report_date", "#file"];
+			var isValid = true;
+
+			requiredFields.forEach(function (selector) {
+				var $field = $(selector);
+				if ($field.length) {
+					var value = $field.val(); // could be null for <select>
+					if (value === null || value.trim() === "") {
+						$field.css("border", "2px solid red");
+						isValid = false;
+					} else {
+						$field.css("border", "");
+					}
+				}
+			});
+
+			if (!isValid) return false;
+
+
+			var reportDate = document.getElementById("report_date").value;
+			var form = document.getElementById("item");
+			if (!form) {
+				console.error("Form not found!");
+				return false;
+			}
+
+			var formData = new FormData(form);
+
+			$("#loader").modal("toggle");
+
+			$.ajax({
+				url: "./addmcbl?reportDate=" + reportDate,
+				type: "POST",
+				data: formData,
+				processData: false,
+				contentType: false,
+				success: function (response) {
+					$("#loader").modal("hide");
+					console.log('Success response:', response);
+					$("#alertmsg").html(response.replace(/\n/g, "<br>"));
+					$('#alert').modal("toggle");
+				},
+				error: function (xhr, status, error) {
+					$("#loader1").modal("hide");
+					console.error('AJAX error:', status, error);
+					$("#alertmsg").text("Error occurred: " + error);
+					$('#alert').modal("toggle");
+				}
+			});
+
+			return false;
+		} */
+		function get_list() {
+			var reportDate = document.getElementById("ReportDate").value;
+			if (reportDate) {
+				window.location.href = './inr_report_branch?date=' + reportDate;
+			}
+		}
+
+		function openConfirmModal() {
+			$('#exampleModal').modal('show');
+		}
+		function download_excel() {
+			var reportDate = $("#ReportDate").val().trim();
+			if (reportDate === "") {
+				showNotification("Please selected the value date", "info");
+				$("#ReportDate").focus();
+				return;
+			}
+			showNotification("Downloading report for " + reportDate, "success");
+			$('#exampleModal').modal('hide');
+			window.location.href = './Dwn_INR_Reporting_Branch?reportDate=' + reportDate;
+		}
+		function showNotification(message, type = "info") {
+			const container = document.getElementById("notification-container");
+
+			const notif = document.createElement("div");
+			notif.classList.add("notification", type);
+			notif.innerHTML = `
+						    <span>${message}</span>
+						    <button onclick="this.parentElement.remove()">×</button>
+						  `;
+
+			container.appendChild(notif);
+
+			// Auto remove after 4s
+			setTimeout(() => {
+				notif.remove();
+			}, 4000);
+		}
+	</script>
+
+<script>
+		$(document).ready(function () {
+			$("#FileType").change(function () {
+				var fileType = $(this).val();
+
+				// clear current report dates
+				$("#ReportDate").empty().append('<option value="">-- Select Report Date --</option>');
+
+				if (fileType !== "") {
+					$.ajax({
+						url: 'getReportDatesByFileType',  // controller endpoint
+						type: 'GET',
+						data: {fileType: fileType},
+						success: function (dates) {
+							$("#ReportDate").empty().append('<option value="">-- Select Report Date --</option>');
+							$.each(dates, function (index, formattedDate) {
+								var displayDate = formattedDate.split('-').reverse().join('-'); // dd-MM-yyyy
+								$("#ReportDate").append('<option value="' + formattedDate + '">' + displayDate + '</option>');
+							});
+						},
+						error: function () {
+							alert("Error fetching report dates!");
+						}
+					});
+				}
+			});
+		});
+	</script>
+<script>
+		$(document).ready(function () {
+			$("#FileType, #ReportDate").change(function () {
+				var fileType = $("#FileType").val();
+				var reportDate = $("#ReportDate").val();
+
+				if (fileType !== "" && reportDate !== "") {
+					window.location.href = "fetchRecords?fileType=" + fileType + "&reportDate=" + reportDate;
+				}
+			});
+
+		});
+	</script>
+
+
+
+<script>
+		document.getElementById("downloadMCBLBtn").addEventListener("click", function () {
+			const reportDate = document.getElementById("ReportDate").value;
+			if (!reportDate) {
+				alert("Please select a Report Date before downloading.");
+				return;
+			}
+
+			// Construct download URL
+			const downloadUrl = `/downloadMCBLExcel?reportDate=${encodeURIComponent(reportDate)}`;
+
+			// Trigger file download
+			window.location.href = downloadUrl;
+		});
+	</script>
+<script>
+		function startReport(button) {
+			const alertMsg = document.getElementById("alertMessage");
+			const filename = button.getAttribute('data-filename');
+			const todate = button.getAttribute('data-todate');
+
+			const sessionfilename = sessionStorage.getItem("filename");
+
+			if (sessionfilename == filename) {
+				alertMsg.innerHTML = 'Download request already processing...';
+				showAlert();
+				return;
+			}
+
+			alertMsg.innerHTML = 'Download request processing...';
+			showAlert();
+
+			const baseUrl = 'startreport';
+			const downloadUrl = baseUrl +
+				'?filename=' + encodeURIComponent(filename) +
+				'&todate=' + encodeURIComponent(todate);
+
+			fetch(downloadUrl)
+				.then(res => res.text())
+				.then(jobId => {
+					alertMsg.innerHTML = 'Download request received: ' + jobId;
+					showAlert();
+					sessionStorage.setItem("jobId", jobId);
+					sessionStorage.setItem("filename", filename);
+					checkReport(jobId);
+				});
+		}
+
+		function checkReport(jobId) {
+			const alertMsg = document.getElementById("alertMessage");
+			const filename = sessionStorage.getItem("filename");
+
+			fetch('checkreport?jobId=' + encodeURIComponent(jobId) + '&filename=' + encodeURIComponent(filename))
+				.then(res => res.text())
+				.then(status => {
+					if (status === "READY") {
+						alertMsg.innerHTML = 'Report is ready! Downloading…';
+						showAlert();
+						downloadDetailfile(jobId, filename);
+						sessionStorage.removeItem("jobId");
+						sessionStorage.removeItem("filename");
+					} else if (status === "PROCESSING") {
+						alertMsg.innerHTML = 'Download is processing…';
+						showAlert();
+						setTimeout(() => checkReport(jobId), 5000);
+					} else if (status === "ERROR") {
+						alertMsg.innerHTML = 'No data available to create a download.';
+						showAlert();
+						sessionStorage.removeItem("jobId");
+						sessionStorage.removeItem("filename");
+					}
+				})
+				.catch(err => {
+					console.error('Error checking report:', err);
+					alertMsg.innerHTML = 'An error occurred while checking report status.';
+					showAlert();
+				});
+		}
+
+		function downloadDetailfile(jobId, filename) {
+			$.ajax({
+				url: 'downloaddetailExcel?jobId=' + jobId + '&filename=' + filename,
+				type: 'GET',
+				xhrFields: {responseType: 'blob'},
+				success: function (data) {
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename + '.xlsx';
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+						showResultModal('Success', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
+	</script>
+<script>
+	</script>
+</head>
+
+<title>MCBL</title>
+
+<body>
+	<!-- Header -->
+	<div th:insert="HeaderMenu :: header" class="fixed-top"></div>
+
+	<!-- Main Container -->
+	<div class="container-fluid">
+		<div class="card">
+
+							<div class="row formline">
+								<label style="height: 2px;"></label>
+							</div>
+
+
+			<!-- Don't touch below list this is Representing Added and Deletd acccounts(mentioned Start and End)  -->
+			<!-- Start -->
+			<div class="row" th:if="${selectedFileType == 'AD'}">
+				<div class="col-sm-12 finuserapply">
+					<div class="card">
+						<div
+							class="card-header d-flex justify-content-between align-items-center">
+
+							<div class="d-flex align-items-center">
+								<button type="button" class="custom-tab-btn" id="btnBack"
+									onclick="back();" title="Back">
+									<i class="fa fa-arrow-left" style="color: black;"></i>
+								</button>
+
+								<!-- <h6 style="font-family: Verdana; font-weight: bold; margin: 0; font-size: 1.25rem;"
+									>
+									Added/Deleted Account - List
+								</h6> -->
+							</div>
+
+
+						</div>
+
+
+						<div class="card-body">
+
+							<div class="tab-pane fade"
+								th:classappend="${selectedFileType == 'AD'} ? ' show active' : ''"
+								id="addedDeleted" role="tabpanel"
+								aria-labelledby="addedDeleted-tab">
+								<div class="table-responsive"
+									style="max-height: 500px; overflow-y: auto;">
+									<table class="table table-bordered table-sm"
+										id="addedDeletedTable" style="margin-bottom: 0;">
+										<thead class="table-light"
+											style="position: sticky; top: 0; z-index: 2;">
+											<tr>
+												<th>Account No</th>
+												<th>Change Type</th>
+												<th>Report Date</th>
+												<th>Entry User</th>
+												<th>Entry Time</th>
+												<th>Remarks</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr th:each="track : ${accountTrackList}">
+												<td th:text="${track.accountNo}"></td>
+												<td><span th:text="${track.changeType}"
+													th:classappend="${track.changeType == 'ADDED'} ? 'text-success fw-bold' : 'text-danger fw-bold'">
+												</span></td>
+												<td
+													th:text="${#temporals.format(track.reportDate, 'dd-MM-yyyy')}"></td>
+												<td th:text="${track.entryUser}"></td>
+												<td
+													th:text="${#temporals.format(track.entryTime, 'dd-MM-yyyy HH:mm')}"></td>
+												<td th:text="${track.remarks}"></td>
+											</tr>
+											<tr th:if="${#lists.isEmpty(accountTrackList)}">
+												<td colspan="6" class="text-center">No added or deleted
+													accounts found</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- END -->
+
+
+
+
+
+			<div class="row" th:if="${formmode == 'list'}">
+				<div class="col-sm-12 finuserapply">
+					<div class="card">
+						<div
+							class="card-header d-flex justify-content-between align-items-center">
+
+							<!-- Left Section -->
+							<div class="d-flex align-items-center">
+								<button type="button" class="custom-tab-btn" id="btnBack"
+									onclick="back();" title="Back">
+									<i class="fa fa-arrow-left" style="color: black;"></i>
+								</button>
+
+								<h6
+									style="font-family: Verdana; font-weight: bold; margin: 0; font-size: 1.25rem;"
+									th:if="${formmode}=='list'">File upload - List</h6>
+							</div>
+
+							<!-- Right Section -->
+							<div class="text-center">
+								<button type="button" class="custom-tab-btn"
+									th:if="${selectedFileType != null}"
+									onclick="startReport(this);"
+									th:attr="data-todate=${selectedReportDate}, data-filename=${selectedFileType}">
+									<i class="fa fa-download"></i> Download Excel
+								</button>
+							</div>
+
+
+						</div>
+
+
+						<div class="card-body">
+
+							<!-- Dropdowns -->
+							<div class="row align-items-center formline"
+								style="margin-bottom: 0px;">
+								<!-- Empty space -->
+								<div class="col-sm-auto"></div>
+
+								<!-- File Type -->
+								<label class="col-sm-1">File Type</label>
+								<div class="col-sm-2">
+									<select id="FileType" class="form-control form-control-sm"
+										name="FileType" autocomplete="off" required>
+										<option value="">Select File Type</option>
+										<option value="MCBL"
+											th:selected="${selectedFileType == 'MCBL'}">MCBL</option>
+										<option value="LOAN_BOOK"
+											th:selected="${selectedFileType == 'LOAN_BOOK'}">LOAN
+											BOOK</option>
+										<option value="DEPOSIT_GENERAL"
+											th:selected="${selectedFileType == 'DEPOSIT_GENERAL'}">DEPOSIT
+											GENERAL</option>
+										<option value="DEPOSIT_BOOK"
+											th:selected="${selectedFileType == 'DEPOSIT_BOOK'}">DEPOSIT
+											BOOK</option>
+									</select>
+								</div>
+
+								<!-- Report Date -->
+								<label class="col-sm-1">Report Date</label>
+								<div class="col-sm-3">
+									<select id="ReportDate" name="ReportDate"
+										class="form-control form-control-sm">
+										<option value="">-- Select Report Date --</option>
+									</select>
+								</div>
+
+								<!-- Tabs on the right -->
+								<div class="col-sm d-flex justify-content-end">
+									<ul class="nav nav-tabs mb-0" id="mcblTabs" role="tablist">
+										<!-- <li class="nav-item" role="presentation">
+            <a href="./vieAddDel"  th:if="${selectedFileType == 'MCBL'}"
+               class="custom-tab-btn" 
+               id="addedDeleted-tab" 
+               role="tab" 
+               aria-controls="addedDeleted" 
+               aria-selected="false">
+                Added / Deleted Accounts
+            </a>
+        </li> -->
+									</ul>
+								</div>
+
+							</div>
+
+
+
+
+							<div class="row formline">
+								<label style="height: 2px;"></label>
+							</div>
+
+
+
+
+							<!-- Table Section -->
+							<!-- ================== MCBL TABLE ================== -->
+							<div th:if="${selectedFileType == 'MCBL'}">
+
+								<div class="table-responsive"
+									style="max-height: 500px; overflow-y: auto;">
+									<table class="table table-bordered table-sm" id="mcblTable"
+										style="margin-bottom: 0;">
+										<thead class="table-light"
+											style="position: sticky; top: 0; z-index: 2;">
+											<tr>
+												<th>GL Code</th>
+												<th>GL Sub Code</th>
+												<th>Head Acc No</th>
+												<th>Description</th>
+												<th>Currency</th>
+												<th class="text-end">Debit Balance</th>
+												<th class="text-end">Credit Balance</th>
+												<th class="text-end">Debit Equivalent</th>
+												<th class="text-end">Credit Equivalent</th>
+												<th>Report Date</th>
+											</tr>
+										</thead>
+
+										<tbody>
+											<tr th:each="record : ${MCBL_List}" th:if="${record != null}">
+												<td th:text="${record.mcblGlCode ?: ''}"></td>
+												<td th:text="${record.glSubHeadCode ?: ''}"></td>
+												<td th:text="${record.accountNo ?: ''}"></td>
+												<td th:text="${record.mcblDescription ?: ''}"></td>
+												<td th:text="${record.currency ?: ''}"></td>
+
+												<td class="text-end"
+													th:text="${record.mcblDebitBalance != null 
+                       ? #numbers.formatInteger(record.mcblDebitBalance,3,'COMMA') 
+                       : '0'}"></td>
+
+												<td class="text-end"
+													th:text="${record.mcblCreditBalance != null 
+                       ? #numbers.formatInteger(record.mcblCreditBalance,3,'COMMA') 
+                       : '0'}"></td>
+
+												<td class="text-end"
+													th:text="${record.mcblDebitEquivalent != null 
+                       ? #numbers.formatInteger(record.mcblDebitEquivalent,3,'COMMA') 
+                       : '0'}"></td>
+
+												<td class="text-end"
+													th:text="${record.mcblCreditEquivalent != null 
+                       ? #numbers.formatInteger(record.mcblCreditEquivalent,3,'COMMA') 
+                       : '0'}"></td>
+
+												<td
+													th:text="${record.reportDate != null 
+                       ? #dates.format(record.reportDate, 'dd-MM-yyyy') 
+                       : ''}"></td>
+											</tr>
+
+											<!-- No records -->
+											<tr th:if="${#lists.isEmpty(MCBL_List)}">
+												<td colspan="10" class="text-center">No records found</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+
+
+
+
+
+							<!-- ================== DEPOSIT GENERAL (BDGF) ================== -->
+							<div th:if="${selectedFileType == 'DEPOSIT_GENERAL'}"
+								class="table-responsive"
+								style="max-height: 500px; overflow-y: auto;">
+								<table class="table table-bordered table-sm">
+									<thead class="table-light"
+										style="position: sticky; top: 0; z-index: 2;">
+										<tr>
+											<th>Account No</th>
+											<th>Customer Id</th>
+											<th>Customer Name</th>
+											<th>Currency</th>
+											<th class="text-end">Amount Deposited</th>
+											<th class="text-end">Outstanding Balance</th>
+											<th>Maturity Date</th>
+											<th>Report Date</th>
+										</tr>
+									</thead>
+
+									<tbody>
+										<tr th:each="record : ${BDGF_List}" th:if="${record != null}">
+											<td th:text="${record.accountNo ?: ''}"></td>
+											<td th:text="${record.customerId ?: ''}"></td>
+											<td th:text="${record.customerName ?: ''}"></td>
+											<td th:text="${record.currency ?: ''}"></td>
+
+											<td class="text-end"
+												th:text="${record.amountDeposited != null 
+                     ? #numbers.formatDecimal(record.amountDeposited,0,'COMMA',2,'POINT') 
+                     : '0.00'}"></td>
+
+											<td class="text-end"
+												th:text="${record.outstandingBalance != null 
+                     ? #numbers.formatDecimal(record.outstandingBalance,0,'COMMA',2,'POINT') 
+                     : '0.00'}"></td>
+
+											<td
+												th:text="${record.maturityDate != null 
+                     ? #dates.format(record.maturityDate,'dd-MM-yyyy') 
+                     : ''}"></td>
+
+											<td
+												th:text="${record.reportDate != null 
+                     ? #dates.format(record.reportDate,'dd-MM-yyyy') 
+                     : ''}"></td>
+										</tr>
+
+										<tr th:if="${#lists.isEmpty(BDGF_List)}">
+											<td colspan="8" class="text-center">No records found</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+
+
+
+							<!-- ================== DEPOSIT BOOK (BFDB) ================== -->
+							<div th:if="${selectedFileType == 'DEPOSIT_BOOK'}"
+								class="table-responsive"
+								style="max-height: 500px; overflow-y: auto;">
+								<table class="table table-bordered table-sm">
+									<thead class="table-light">
+										<tr>
+											<th>Account No</th>
+											<th>Customer Id</th>
+											<th>Customer Name</th>
+											<th>Scheme Code</th>
+											<th>Scheme Desc</th>
+											<th>Currency</th>
+											<th>GL Sub Head</th>
+											<th class="text-end">Balance As On</th>
+											<th>Report Date</th>
+										</tr>
+									</thead>
+
+									<tbody>
+										<tr th:each="record : ${BFDB_List}" th:if="${record != null}">
+											<td th:text="${record.accountNo ?: ''}"></td>
+											<td th:text="${record.customerId ?: ''}"></td>
+											<td th:text="${record.customerName ?: ''}"></td>
+											<td th:text="${record.schmCode ?: ''}"></td>
+											<td th:text="${record.schmDesc ?: ''}"></td>
+											<td th:text="${record.currency ?: ''}"></td>
+											<td th:text="${record.glSubHeadCode ?: ''}"></td>
+
+											<td class="text-end"
+												th:text="${record.balanceAsOn != null 
+                     ? #numbers.formatInteger(record.balanceAsOn,3,'COMMA') 
+                     : '0'}"></td>
+
+											<td
+												th:text="${record.reportDate != null 
+                     ? #dates.format(record.reportDate,'dd-MM-yyyy') 
+                     : ''}"></td>
+										</tr>
+
+										<tr th:if="${#lists.isEmpty(BFDB_List)}">
+											<td colspan="9" class="text-center">No records found</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+
+
+							<!-- ================== LOAN BOOK (BLBF) ================== -->
+							<div th:if="${selectedFileType == 'LOAN_BOOK'}"
+								class="table-responsive"
+								style="max-height: 500px; overflow-y: auto;">
+								<table class="table table-bordered table-sm">
+									<thead class="table-light">
+										<tr>
+											<th>Account No</th>
+											<th>Customer ID</th>
+											<th>Customer Name</th>
+											<th>Scheme Code</th>
+											<th>Scheme Description</th>
+											<th>Currency</th>
+											<th class="text-end">Balance As On</th>
+											<th>Report Date</th>
+										</tr>
+									</thead>
+
+									<tbody>
+										<!-- Safe row rendering -->
+										<tr th:each="record : ${BLBF_List}" th:if="${record != null}">
+
+											<td
+												th:text="${record.accountNo != null ? record.accountNo : ''}"></td>
+											<td
+												th:text="${record.customerId != null ? record.customerId : ''}"></td>
+											<td
+												th:text="${record.customerName != null ? record.customerName : ''}"></td>
+											<td
+												th:text="${record.schmCode != null ? record.schmCode : ''}"></td>
+											<td
+												th:text="${record.schmDesc != null ? record.schmDesc : ''}"></td>
+											<td
+												th:text="${record.currency != null ? record.currency : ''}"></td>
+
+
+											<!-- Safe number formatting -->
+											<td class="text-end"
+												th:text="${record?.balanceAsOn != null 
+                       ? #numbers.formatDecimal(record.balanceAsOn, 0, 'COMMA', 2, 'POINT') 
+                       : '0.00'}">
+											</td>
+
+											<!-- Safe date formatting -->
+											<td
+												th:text="${record?.reportDate != null 
+                       ? #dates.format(record.reportDate, 'dd-MM-yyyy') 
+                       : ''}">
+											</td>
+
+										</tr>
+
+										<!-- No records -->
+										<tr th:if="${#lists.isEmpty(BLBF_List)}">
+											<td colspan="8" class="text-center">No records found</td>
+										</tr>
+
+									</tbody>
+
+								</table>
+							</div>
+
+
+
+
+
+
+
+						</div>
+
+					</div>
+				</div>
+			</div>
+
+
+
+
+			<div
+				th:if="${formmode}=='edit' or ${formmode}=='add' or ${formmode}=='delete' or ${formmode}=='view' or ${formmode}=='verify'">
+				<div class="row">
+					<div class="col-sm-12 finuserapply">
+						<div class="card">
+							<div class="card-header">
+								<div class="float-left w-50 d-flex align-items-center">
+									<button type="button" class="custom-tab-btn" id="btnBack"
+										onclick="back();" title="Back">
+										<i class="fa fa-arrow-left" style="color: black;"></i>
+									</button>
+
+									<h6
+										style="font-family: Verdana; font-weight: bold; margin: 0; font-size: 1.25rem;"
+										th:if="${formmode}=='edit'">File upload - Edit</h6>
+									<h6
+										style="font-family: Verdana; font-weight: bold; margin: 0; font-size: 1.25rem;"
+										th:if="${formmode}=='add'">File Upload</h6>
+									<h6
+										style="font-family: Verdana; font-weight: bold; margin: 0; font-size: 1.25rem;"
+										th:if="${formmode}=='verify'">File upload - Verfiy</h6>
+									<h6
+										style="font-family: Verdana; font-weight: bold; margin: 0; font-size: 1.25rem;"
+										th:if="${formmode}=='view'">File upload - View</h6>
+									<h6
+										style="font-family: Verdana; font-weight: bold; margin: 0; font-size: 1.25rem;"
+										th:if="${formmode}=='delete'">File upload - Delete</h6>
+								</div>
+
+								<div class="float-right"
+									style="padding-right: inherit; display: flex; align-items: center; gap: 10px;">
+									<div id="downloadBtnDiv" style="display: none;">
+										<button class="custom-tab-btn" type="button"
+											onclick="Download_Template()">
+											<i class="fas fa-download"></i> Download Template
+										</button>
+									</div>
+									<div id="downloadbfdbdiv" style="display: none;">
+										<button class="custom-tab-btn" type="button"
+											onclick="Download_Templatebfdb()">
+											<i class="fas fa-download"></i> Download Template
+										</button>
+									</div>
+
+									<div id="downloadblbfdiv" style="display: none;">
+										<button class="custom-tab-btn" type="button"
+											onclick="Download_TemplateBLBF()">
+											<i class="fas fa-download"></i> Download Template
+										</button>
+
+
+
+									</div>
+									<button class="custom-tab-btn" type="button" title="View List"
+										onclick="list()">
+										<i class="fa fa-list"></i>
+									</button>
+
+
+								</div>
+							</div>
+							<div class="card-body">
+								<form style="margin-left: 600px;">
+									<div class="row formline">
+										<label class="col-sm-2">File Type</label>
+										<div class="col-sm-3">
+											<select id="moduleSelect"
+												class="form-control form-control-sm"
+												onchange="toggleModuleForm();">
+												<option value="" disabled selected>Select</option>
+												<option value="MCBL">MCBL</option>
+												<option value="BDGF">Deposit General</option>
+												<option value="BFDB">Deposit Book</option>
+												<option value="BLBF">Loan Book</option>
+											</select>
+										</div>
+									</div>
+								</form>
+
+
+
+								<div id="mcblForm" style="display: none;">
+									<form action="#" th:object="${item}" method="post"
+										style="margin-left: 600px;" autocomplete="off" id="item"
+										th:fragment="finuserapply">
+
+										<div class="row formline">
+											<label style="height: 5px;"></label>
+										</div>
+
+										<!-- <div class="row formline">
+											<label class="col-sm-2">Branch Code</label>
+											<div class="col-sm-3">
+												<input th:if="${formmode}!='add'" type="hidden" id="id"
+													name="id" th:value="*{id}" />
+
+												Add Mode
+												<select th:if="${formmode}=='add'" id="branch_name"
+													name="branch_name" class="form-control form-control-sm"
+													required>
+													<option value="" disabled selected>Select</option>
+													<option value="9521">9521</option>
+													<option value="9522">9522</option>
+													<option value="9523">9523</option>
+													<option value="9524">9524</option>
+												</select>
+											</div>
+
+											<div class="col-sm-2"></div>
+
+										</div>
+										<div class="row formline">
+											<label style="height: 2px;"></label>
+										</div> -->
+
+
+										<div class="row formline">
+											<label class="col-sm-2">Report Date</label>
+											<div class="col-sm-3">
+												<input th:if="${formmode}=='add'" type="date"
+													id="report_date" name="report_date"
+													class="form-control form-control-sm month-end-date-picker"
+													maxlength="24" />
+												<div class="validation-message" id="dateValidation"></div>
+											</div>
+										</div>
+
+
+										<div class="row formline">
+											<label style="height: 2px;"></label>
+										</div>
+										<div class="row formline">
+											<label class="col-sm-2">MCBL File</label>
+											<div class="col-sm-3">
+												<input th:if="${formmode}=='add'" type="file" id="file"
+													name="file" class="form-control form-control-sm"
+													accept=".xlsx" />
+
+											</div>
+
+											<div class="col-sm-2"></div>
+
+										</div>
+
+										<div class="row formline">
+											<label style="height: 5px;"></label>
+										</div>
+
+									</form>
+
+
+
+
+									<div class="card-footer text-center">
+
+										<button th:if="${formmode}=='add'" type="button"
+											class="custom-tab-btn" form="item" id="btnSubmit"
+											onclick="submitMCBLUpload(this);" title="Submit">Submit</button>
+
+									</div>
+								</div>
+
+
+								<!-- ===== BDGF Form ===== -->
+								<div id="bdgfForm" style="display: none;">
+									<form action="#" th:object="${item}" method="post"
+										style="margin-left: 600px;" autocomplete="off" id="bdgfitem"
+										th:fragment="finuserapply">
+										<div class="row formline">
+											<label style="height: 5px;"></label>
+										</div>
+
+										<!--  <div class="row formline">
+											<label class="col-sm-2">Branch Code</label>
+											<div class="col-sm-3">
+												<input th:if="${formmode}!='add'" type="hidden" id="id"
+													name="id" th:value="*{id}" /> <select
+													th:if="${formmode}=='add'" id="branch_name1"
+													name="branch_name" class="form-control form-control-sm"
+													required>
+													<option value="" disabled selected>Select</option>
+													<option value="9521">9521</option>
+													<option value="9522">9522</option>
+													<option value="9523">9523</option>
+													<option value="9524">9524</option>
+												</select>
+											</div>
+										</div>
+										<div class="row formline">
+											<label style="height: 5px;"></label>
+										</div>-->
+										<div class="row formline">
+											<label class="col-sm-2">File</label>
+											<div class="col-sm-3">
+												<input th:if="${formmode}=='add'" type="file" id="file1"
+													name="file" class="form-control form-control-sm"
+													accept=".xlsx" />
+											</div>
+										</div>
+										<div class="row formline">
+											<label style="height: 5px;"></label>
+										</div>
+
+									</form>
+
+									<div class="card-footer text-center">
+										<button th:if="${formmode}=='add'" type="button"
+											class="custom-tab-btn" form="bdgfitem" id="btnSubmit"
+											onclick="submitformbdgf(this);" title="Submit">Submit</button>
+									</div>
+								</div>
+
+								<!-- ===== BFDB Form ===== -->
+								<div id="bfdbForm" style="display: none;">
+									<form action="#" th:object="${item}" method="post"
+										style="margin-left: 600px;" autocomplete="off" id="bfdbitem"
+										th:fragment="finuserapply">
+										<div class="row formline">
+											<label style="height: 5px;"></label>
+										</div>
+
+										<!-- <div class="row formline">
+											<label class="col-sm-2">Branch Code</label>
+											<div class="col-sm-3">
+												<input th:if="${formmode}!='add'" type="hidden" id="id"
+													name="id" th:value="*{id}" /> <select
+													th:if="${formmode}=='add'" id="branch_name2"
+													name="branch_name" class="form-control form-control-sm"
+													required>
+													<option value="" disabled selected>Select</option>
+													<option value="9521">9521</option>
+													<option value="9522">9522</option>
+													<option value="9523">9523</option>
+													<option value="9524">9524</option>
+												</select>
+											</div>
+										</div>
+										<div class="row formline">
+											<label style="height: 5px;"></label>
+										</div> -->
+										<div class="row formline">
+											<label class="col-sm-2">File</label>
+											<div class="col-sm-3">
+												<input th:if="${formmode}=='add'" type="file" id="file2"
+													name="file" class="form-control form-control-sm"
+													accept=".xlsx" />
+											</div>
+										</div>
+										<div class="row formline">
+											<label style="height: 5px;"></label>
+										</div>
+
+									</form>
+
+									<div class="card-footer text-center">
+										<button th:if="${formmode}=='add'" type="button"
+											class="custom-tab-btn" form="bfdbitem" id="btnSubmit"
+											onclick="submitformbfdb(this);" title="Submit">Submit</button>
+									</div>
+								</div>
+
+								<!-- ===== BLBF Form ===== -->
+								<div id="blbfForm" style="display: none;">
+									<form action="#" th:object="${item}" method="post"
+										style="margin-left: 600px;" autocomplete="off" id="blbfitem"
+										th:fragment="finuserapply">
+										<div class="row formline">
+											<label style="height: 5px;"></label>
+										</div>
+
+										<!-- <div class="row formline">
+											<label class="col-sm-2">Branch Code</label>
+											<div class="col-sm-3">
+												<input th:if="${formmode}!='add'" type="hidden" id="id"
+													name="id" th:value="*{id}" /> <select
+													th:if="${formmode}=='add'" id="branch_name3"
+													name="branch_name" class="form-control form-control-sm"
+													required>
+													<option value="" disabled selected>Select</option>
+													<option value="9521">9521</option>
+													<option value="9522">9522</option>
+													<option value="9523">9523</option>
+													<option value="9524">9524</option>
+												</select>
+											</div>
+										</div>
+										<div class="row formline">
+											<label style="height: 5px;"></label>
+										</div> -->
+										<div class="row formline">
+											<label class="col-sm-2">File</label>
+											<div class="col-sm-3">
+												<input th:if="${formmode}=='add'" type="file" id="file3"
+													name="file" class="form-control form-control-sm"
+													accept=".xlsx" />
+											</div>
+										</div>
+										<div class="row formline">
+											<label style="height: 5px;"></label>
+										</div>
+
+									</form>
+
+									<div class="card-footer text-center">
+										<button th:if="${formmode}=='add'" type="button"
+											class="custom-tab-btn" form="blbfitem" id="btnSubmit"
+											onclick="submitformBLBF(this);" title="Submit">Submit</button>
+									</div>
+								</div>
+
+
+
+
+
+
+
+
+
+
+
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+
+			</div>
+		</div>
+
+		<div id="notification-container"></div>
+		<!-- Loader Modal -->
+		<div class="modal fade" id="loader" data-bs-backdrop="static"
+			data-bs-keyboard="false" tabindex="-1">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content"
+					style="background: transparent; border: none; box-shadow: none;">
+					<div class="modal-body d-flex justify-content-center">
+						<div class="loader"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="modal fade" id="alertValidation">
+			<div
+				class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-body text-center">
+						<p id="alertmsgValidation"></p>
+
+						<button type="button" class="custom-tab-btn"
+							data-bs-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="modal fade" id="alertValidation1">
+			<div
+				class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-body text-center">
+						<p id="alertmsgValidation1"></p>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="alert">
+			<div
+				class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-body" style="text-align: center;">
+						<p id="alertmsg"></p>
+						<button type="button" class="custom-tab-btn" data-dismiss="modal"
+							onclick="addrole();">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="datadelete">
+			<div
+				class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-body"
+						style="margin-top: 8px; text-align: center; color: #f15362;">
+						<button type="button" class="close" data-dismiss="modal">×</button>
+						Are you Sure want to delete?
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary"
+							onclick="submitformdelete(this);" th:attr="data-formmode=delete">Submit</button>
+						<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="formmsg">
+			<div
+				class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-body"
+						style="margin-top: 8px; text-align: center; color: aliceblue;">
+						<button type="button" class="close" data-dismiss="modal">×</button>
+						<a th:value="${msg}"></a>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary"
+							onclick="submitformdelete(this);" th:attr="data-formmode=delete">Submit</button>
+						<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="loader1" data-backdrop="static"
+			data-keyboard="false">
+			<div
+				class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content"
+					style="background: transparent; border: none; box-shadow: none;">
+					<div class="modal-body" style="text-align: center">
+						<div class="orange-loader"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="exampleModal" tabindex="-1"
+			data-bs-backdrop="static" aria-labelledby="exampleModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header" style="background-color: orange;">
+						<h5 class="modal-title" id="exampleModalLabel"
+							style="font-family: Verdana, Geneva, Tahoma, sans-serif;">
+							Download Customer Special Rate</h5>
+						<button type="button" style="color: red;" class="btn-close"
+							data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-footer justify-content-center">
+
+						<button type="button" id="showAlert" class="btn btn-primary"
+							style="border: none; background-color: darkgray; font-family: Verdana, Geneva, Tahoma, sans-serif;"
+							onclick="download_excel()">Excel</button>
+						<button type="button" id="showAlert" class="btn btn-primary"
+							style="border: none; background-color: darkgray; font-family: Verdana, Geneva, Tahoma, sans-serif;"
+							onclick="download_excel()">Pdf</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+<script>
+	function toggleModuleForm() {
+		let selected = document.getElementById("moduleSelect").value;
+
+		// hide all forms first
+		document.getElementById("mcblForm").style.display = "none";
+		document.getElementById("bdgfForm").style.display = "none";
+		document.getElementById("bfdbForm").style.display = "none";
+		document.getElementById("blbfForm").style.display = "none";
+
+		// hide download button initially
+		document.getElementById("downloadBtnDiv").style.display = "none";
+		document.getElementById("downloadbfdbdiv").style.display = "none";
+		document.getElementById("downloadblbfdiv").style.display = "none";
+
+
+		// show selected form + button if BDGF
+		if (selected === "MCBL") {
+			document.getElementById("mcblForm").style.display = "block";
+		} else if (selected === "BDGF") {
+			document.getElementById("bdgfForm").style.display = "block";
+			document.getElementById("downloadBtnDiv").style.display = "block"; // show button
+		} else if (selected === "BFDB") {
+			document.getElementById("bfdbForm").style.display = "block";
+			document.getElementById("downloadbfdbdiv").style.display = "block"; // show button
+		} else if (selected === "BLBF") {
+			document.getElementById("blbfForm").style.display = "block";
+			document.getElementById("downloadblbfdiv").style.display = "block";
+
+		}
+	}
+
+</script>
+<script>
+	function Download_Template() {
+
+		location.href = 'download-templateBDGF';
+	}
+</script>
+
+
+
+
+<script>
+	function Download_Templatebfdb() {
+
+		location.href = 'download-templateBFDB';
+	}
+</script>
+
+
+
+
+
+<script>
+	function Download_TemplateBLBF() {
+
+		location.href = 'download-templateBLBF';
+	}
+</script>
+
+<!-- ===== JS SECTION ===== -->
+<script>
+	
+	function validateFields(fields) {
+		var isValid = true;
+		fields.forEach(function (selector) {
+			var $field = $(selector);
+			var value = $field.val();
+			if (!value || value.trim() === "") {
+				$field.css("border", "2px solid red");
+				isValid = false;
+			} else {
+				$field.css("border", "");
+			}
+		});
+		return isValid;
+	}
+
+
+	function handleSuccess(response) {
+		$("#loader").modal("hide");
+		$("#alertmsg").text(response);
+		$('#alert').modal("toggle");
+	}
+
+	function handleError(xhr, status, error) {
+		$("#loader").modal("hide");
+		console.error('AJAX error:', status, error);
+		$("#alertmsg").text("Error occurred: " + error);
+		$('#alert').modal("toggle");
+	}
+</script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // All file input IDs
+    const fileInputs = ["file", "file1", "file2", "file3"];
+    fileInputs.forEach(function (id) {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener("change", function () {
+                const file = this.files[0];
+                if (!file) return;
+                const fileName = file.name.toLowerCase();
+                const allowedExtension = /\.(xls|xlsx)$/i;
+                // ❌ Invalid extension
+                if (!allowedExtension.test(fileName)) {
+                    showModal("❌ Only .xls (Excel 97–2003) and .xlsx (Excel 2007+) files are allowed.<br>Please select a valid Excel file.");
+                    this.value = "";
+                    return false;
+                }
+                const validMimeTypes = [
+                    "application/vnd.ms-excel",                                                      // .xls
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"            // .xlsx
+                ];
+                // ❌ Invalid MIME type
+                if (!validMimeTypes.includes(file.type) && file.type !== "") {
+                    showModal("❌ Invalid file type detected.<br>Please upload only .xls or .xlsx Excel formats.");
+                    this.value = "";
+                    return false;
+                }
+            });
+        }
+    });
+    // Function to show modal alert
+    function showModal(message) {
+        document.getElementById("alertmsgValidation").innerHTML = message;
+        const modal = new bootstrap.Modal(document.getElementById("alertValidation"));
+        modal.show();
+    }
+});
+</script>
+
+<script>
+//Function in your existing <script> block
+/*
+function submitformbfdb() {
+    var requiredFields = ["#branch_name2", "#file2"];
+    var isValid = validateFields(requiredFields);
+    if (!isValid) return false;
+
+    const alertMsg = document.getElementById("alertMessage");
+    const form = document.getElementById("bfdbitem");
+    const formData = new FormData(form);
+
+    const uploadJobName = "BFDB_UPLOAD";
+
+    // ✅ Immediately block another upload attempt
+    if (sessionStorage.getItem("currentBFDBJobId")) {
+        alertMsg.innerHTML = 'BFDB upload is already processing. Please wait.';
+        showAlert();
+        return;
+    }
+
+    // ✅ TEMPORARY lock (prevents double click before backend responds)
+    sessionStorage.setItem("currentBFDBJobId", "TEMP_LOCK");
+
+    alertMsg.innerHTML = 'BFDB file upload initiated...';
+    showAlert();
+
+    $.ajax({
+        url: "./startBFDBUpload",
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(jobId) {
+            // ✅ Replace temp lock with real job ID
+            if (jobId && jobId.length > 20 && jobId !== "ERROR_STARTING_JOB") {
+                sessionStorage.setItem("currentBFDBJobId", jobId);
+                alertMsg.innerHTML = 'Upload job ID received: ' + jobId + '. Processing...';
+                showAlert();
+                checkBFDBUploadStatus(jobId);
+            } else {
+                sessionStorage.removeItem("currentBFDBJobId"); // release lock if failed
+                handleUploadError("Failed to start the upload job immediately.");
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            sessionStorage.removeItem("currentBFDBJobId"); // release lock if network error
+            handleUploadError("Network or server error during job initiation.");
+            console.error("Error starting BFDB upload:", textStatus, errorThrown);
+        }
+    });
+}
+
+
+function checkBFDBUploadStatus(jobId) {
+    const alertMsg = document.getElementById("alertMessage");
+
+    // 3. Poll the status endpoint using JQuery AJAX (replaces fetch)
+    $.ajax({
+        url: 'checkBFDBUpload?jobId=' + encodeURIComponent(jobId),
+        type: "GET",
+        dataType: "text", // Expecting a plain text string status
+        timeout: 10000,   // Set a reasonable timeout (e.g., 10 seconds)
+        success: function(status) {
+            // Success branch: status is the text returned by the controller
+
+            if (status.startsWith("COMPLETED:")) {
+            	 sessionStorage.removeItem("currentBFDBJobId");
+            	// Success: status = "COMPLETED:BFDB Added successfully..."
+                const resultMsg = status.substring("COMPLETED:".length);
+                
+                alertMsg.innerHTML = 'BFDB Upload Complete! ' + resultMsg;
+                showAlert();
+                showResultModal('Success', resultMsg);
+               
+
+            } else if (status === "PROCESSING") {
+                // Still working
+                alertMsg.innerHTML = 'BFDB Upload is processing... (Job ID: ' + jobId + ')';
+                showAlert();
+                // Continue polling
+                setTimeout(() => checkBFDBUploadStatus(jobId), 5000); 
+
+            } else if (status.startsWith("ERROR:") || status === "NOT_FOUND") {
+                // Failed or Job missing
+                const errorMsg = status.startsWith("ERROR:") 
+                                ? status.substring("ERROR:".length) 
+                                : "The processing job could not be found or encountered a fatal error.";
+                // Do NOT call handleUploadError, as the job might be finished/removed.
+                alertMsg.innerHTML = 'BFDB Upload finished with status: ' + errorMsg;
+                showAlert();
+                showResultModal('Job Status', errorMsg);
+                sessionStorage.removeItem("currentBFDBJobId");
+            
+            } else {
+                // Unexpected status
+                handleUploadError("An unexpected status was received for the upload job: " + status);
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            // Error branch: executed on network error, HTTP 4xx/5xx status, or timeout
+            console.error('Error checking BFDB upload status:', textStatus, errorThrown);
+            
+            // Check if it's a transient failure (before the job completed)
+            if (textStatus === "timeout" || jqXHR.status === 0) {
+                 // Try polling again, assuming a temporary issue
+                 alertMsg.innerHTML = 'BFDB Upload is processing... (Temporary Connection Issue)';
+                 showAlert();
+                 setTimeout(() => checkBFDBUploadStatus(jobId), 5000); 
+            } else {
+                // It's a genuine error (e.g., 404/500), so stop and report
+                handleUploadError('Fatal error while checking upload status: ' + textStatus + " (" + jqXHR.status + ")");
+            }
+        }
+    });
+}
+
+
+function handleUploadError(message) {
+    const alertMsg = document.getElementById("alertMessage");
+    console.error("BFDB Upload Error:", message);
+    alertMsg.innerHTML = message;
+    showAlert();
+    showResultModal('Error', message);
+   
+}*/
+</script>
+<script>
+function showUploadAlert(message, type = "success", showIcon = true) {
+    const alertDiv = document.getElementById("UploadAlert");
+    const alertMsg = alertDiv.querySelector("#alertMessage");
+
+    // Update message
+    if (showIcon)
+        alertMsg.innerHTML = `<i class="fa fa-check-circle"></i> ${message}`;
+    else
+        alertMsg.innerHTML = message;
+
+    // Set alert color
+    alertDiv.classList.remove("alert-success", "alert-danger", "alert-warning");
+    if (type === "success") alertDiv.classList.add("alert-success");
+    else if (type === "error") alertDiv.classList.add("alert-danger");
+    else alertDiv.classList.add("alert-warning");
+
+    alertDiv.style.display = "block"; // Show
+}
+
+function UploadhideAlert() {
+    document.getElementById("UploadAlert").style.display = "none";
+}
+</script>
+<script>
+function submitFileUpload(uploadType, formId, branchId, fileId, startUrl, checkUrl) {
+
+    const displayName = getUploadDisplayName(uploadType);
+
+    const requiredFields = ["#" + fileId];
+
+    const isValid = validateFields(requiredFields);
+    if (!isValid) return false;
+
+    const storageKey = "current" + uploadType + "JobId";
+
+    // Prevent duplicate upload
+    if (sessionStorage.getItem(storageKey)) {
+        showUploadAlert(`${displayName} upload is already processing. Please wait.`, "warning");
+        return;
+    }
+
+    const form = document.getElementById(formId);
+    const formData = new FormData(form);
+
+    sessionStorage.setItem(storageKey, "TEMP_LOCK");
+
+    showUploadAlert(`${displayName} file upload initiated...`, "warning");
+
+    $.ajax({
+        url: startUrl,
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+
+        success: function(jobId) {
+            if (jobId && jobId !== "ERROR_STARTING_JOB") {
+
+                sessionStorage.setItem(storageKey, jobId);
+
+                showUploadAlert(
+                    `${displayName} upload is processing...`,
+                    "warning"
+                );
+
+                checkFileUploadStatus(uploadType, jobId, checkUrl);
+
+            } else {
+                sessionStorage.removeItem(storageKey);
+                handleUploadError(displayName, "Failed to start the upload job.");
+            }
+        },
+
+        error: function() {
+            sessionStorage.removeItem(storageKey);
+            handleUploadError(displayName, "Network or server error during job initiation.");
+        }
+    });
+}
+
+function checkFileUploadStatus(uploadType, jobId, checkUrl) {
+
+    const displayName = getUploadDisplayName(uploadType);
+    const storageKey = "current" + uploadType + "JobId";
+
+    $.ajax({
+        url: checkUrl + '?jobId=' + encodeURIComponent(jobId),
+        type: "GET",
+        dataType: "text",
+        timeout: 10000,
+
+        success: function(status) {
+
+            if (status.startsWith("COMPLETED:")) {
+
+                sessionStorage.removeItem(storageKey);
+                const resultMsg = status.substring("COMPLETED:".length);
+
+                showUploadAlert(
+                    `${displayName} file processed successfully ✅ ${resultMsg}`,
+                    "success"
+                );
+
+                showResultModal('Success', resultMsg);
+
+            } else if (status === "PROCESSING") {
+
+                showUploadAlert(
+                    `${displayName} upload is processing...`,
+                    "warning"
+                );
+
+                setTimeout(() =>
+                    checkFileUploadStatus(uploadType, jobId, checkUrl),
+                    5000
+                );
+
+            } else if (status.startsWith("ERROR:") || status === "NOT_FOUND") {
+
+                const errorMsg = status.startsWith("ERROR:")
+                    ? status.substring("ERROR:".length)
+                    : "The processing job could not be found or encountered a fatal error.";
+
+                showUploadAlert(
+                    `${displayName} upload failed: ${errorMsg}`,
+                    "error"
+                );
+
+                showResultModal('Job Status', errorMsg);
+                sessionStorage.removeItem(storageKey);
+
+            } else {
+                handleUploadError(displayName, "Unexpected status received: " + status);
+            }
+        },
+
+        error: function(jqXHR, textStatus) {
+
+            if (textStatus === "timeout" || jqXHR.status === 0) {
+
+                showUploadAlert(
+                    `${displayName} upload is processing... (temporary connection issue)`,
+                    "warning"
+                );
+
+                setTimeout(() =>
+                    checkFileUploadStatus(uploadType, jobId, checkUrl),
+                    5000
+                );
+
+            } else {
+                handleUploadError(displayName, 'Fatal error while checking upload status.');
+            }
+        }
+    });
+}
+
+
+function handleUploadError(displayName, message) {
+    console.error(`${displayName} Upload Error:`, message);
+    showUploadAlert(`${displayName} Upload Error: ${message}`, "error");
+    showResultModal('Error', message);
+}
+
+</script>
+
+<script>
+function submitformbfdb() {
+	submitFileUpload("BFDB", "bfdbitem", "branch_name2", "file2", "./startBFDBUpload", "./checkBFDBUpload");
+}
+
+function submitformbdgf() {
+    submitFileUpload("BDGF", "bdgfitem", "branch_name1", "file1", "./startBDGFUpload", "./checkBDGFUpload");
+}
+
+
+function submitformBLBF() {
+    submitFileUpload("BLBF", "blbfitem", "branch_name3", "file3", "./startBLBFUpload", "./checkBLBFUpload");
+}
+
+
+
+
+</script>
+
+<script>
+function getUploadDisplayName(uploadType) {
+    switch (uploadType) {
+        case "BLBF":
+            return "Loan Book";
+        case "BDGF":
+            return "Deposit General";
+        case "BFDB":
+            return "Deposit Book";
+        default:
+            return uploadType;
+    }
+}
+</script>
+
+<script>
+// === MCBL Upload Logic ===
+function submitMCBLUpload() {
+    const uploadType = "MCBL";
+    const formId = "item";
+    const branchId = "branch_name";
+    const fileId = "file";
+    const requiredFields = ["#report_date", "#" + fileId];
+
+    if (!validateFields(requiredFields)) return false;
+
+    const form = document.getElementById(formId);
+    const formData = new FormData(form);
+    const reportDate = document.getElementById("report_date").value;
+    const storageKey = "current" + uploadType + "JobId";
+
+    // Prevent multiple uploads
+    if (sessionStorage.getItem(storageKey)) {
+        showUploadAlert(`${uploadType} upload is already processing. Please wait.`, "warning");
+        return;
+    }
+
+    // Initial alert
+    sessionStorage.setItem(storageKey, "TEMP_LOCK");
+    showUploadAlert(`${uploadType} file upload initiated...`, "warning");
+
+    // Start upload AJAX call
+    $.ajax({
+        url: `./startMCBLUpload?reportDate=${encodeURIComponent(reportDate)}`,
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(jobId) {
+            if (jobId && jobId.length > 20 && jobId !== "ERROR_STARTING_JOB") {
+                sessionStorage.setItem(storageKey, jobId);
+                showUploadAlert(`${uploadType} Upload Job ID: ${jobId}. Processing...`, "warning");
+                startProcessingAlert(uploadType, jobId, storageKey);
+                checkMCBLUploadStatus(uploadType, jobId);
+            } else {
+                sessionStorage.removeItem(storageKey);
+                handleUploadError(uploadType, "Failed to start the upload job.");
+            }
+        },
+        error: function() {
+            sessionStorage.removeItem(storageKey);
+            handleUploadError(uploadType, "Network or server error during job initiation.");
+        }
+    });
+}
+
+// === Processing Alert Timer ===
+function startProcessingAlert(uploadType, jobId, storageKey) {
+    if (window["mcblAlertTimer"]) {
+        clearInterval(window["mcblAlertTimer"]);
+        window["mcblAlertTimer"] = null;
+    }
+
+    // Repeat "processing" alert every 5 seconds
+    window["mcblAlertTimer"] = setInterval(() => {
+        if (sessionStorage.getItem(storageKey)) {
+            showUploadAlert(`${uploadType} Upload is processing... (Job ID: ${jobId})`, "warning");
+        } else {
+            clearInterval(window["mcblAlertTimer"]);
+            window["mcblAlertTimer"] = null;
+        }
+    }, 5000);
+}
+
+// === Status Check ===
+function checkMCBLUploadStatus(uploadType, jobId) {
+    const storageKey = "current" + uploadType + "JobId";
+
+    $.ajax({
+        url: `./checkMCBLUpload?jobId=${encodeURIComponent(jobId)}`,
+        type: "GET",
+        dataType: "text",
+        timeout: 10000,
+        success: function(status) {
+            if (status.startsWith("COMPLETED:")) {
+                sessionStorage.removeItem(storageKey);
+                clearProcessingTimer();
+                const resultMsg = status.substring("COMPLETED:".length);
+                showUploadAlert(`${uploadType} File Processed Successfully ✅ ${resultMsg}`, "success");
+                showResultModal("Success", resultMsg);
+            } else if (status === "PROCESSING") {
+                setTimeout(() => checkMCBLUploadStatus(uploadType, jobId), 5000);
+            } else if (status.startsWith("ERROR:") || status === "NOT_FOUND") {
+                sessionStorage.removeItem(storageKey);
+                clearProcessingTimer();
+                const errorMsg = status.startsWith("ERROR:")
+                    ? status.substring("ERROR:".length)
+                    : "The processing job could not be found or encountered a fatal error.";
+                showUploadAlert(`${uploadType} Upload failed ❌ ${errorMsg}`, "error");
+                showResultModal("Error", errorMsg);
+            } else {
+                handleUploadError(uploadType, "Unexpected status: " + status);
+            }
+        },
+        error: function(jqXHR, textStatus) {
+            if (textStatus === "timeout" || jqXHR.status === 0) {
+                setTimeout(() => checkMCBLUploadStatus(uploadType, jobId), 5000);
+            } else {
+                handleUploadError(uploadType, "Fatal error: " + textStatus);
+            }
+        }
+    });
+}
+
+// === Utility ===
+function clearProcessingTimer() {
+    if (window["mcblAlertTimer"]) {
+        clearInterval(window["mcblAlertTimer"]);
+        window["mcblAlertTimer"] = null;
+    }
+}
+
+function handleUploadError(uploadType, message) {
+    console.error(`${uploadType} Upload Error:`, message);
+    showUploadAlert(`${uploadType} Upload Error: ${message}`, "error");
+    showResultModal("Error", message);
+}
+</script>
+
+</html>

@@ -3895,7 +3895,9 @@ $.ajax({
 
 	    //  Wait for user to close the modal manually
 	    $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
-	        location.reload(); // reload ONLY when modal is closed
+	    	window.location.href = previousUrl
+			? previousUrl
+			: "/BRRS/Resubmission?rptcode=M_SECL";// reload ONLY when modal is closed
 	    });
 	},
     error: function (jqXHR) {
@@ -4077,7 +4079,7 @@ alert(version)
 
 
 </head>
-<title>BRRS</title>
+<title>M_SECL</title>
 
 <body>
 	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
@@ -4255,6 +4257,43 @@ alert(version)
 						</button> -->
 
 					</div>
+					
+					<p th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}" style="text-align: left; font-weight: bold; 
+														color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+														margin-top:10px; margin-bottom:10px;padding: 5px;">Summary View - M_SECL</p>
+
+								<!-- Detail text -->
+								<p th:if="${displaymode == 'details' and type != 'ARCHIVAL'}" style="text-align: left; font-weight: bold;
+													 color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+													 margin-top:10px; margin-bottom:10px;padding: 5px;">Detail View - M_SECL</p>
+
+								<p th:if="${type == 'ARCHIVAL' and displaymode == 'archivalSummary'}" style="text-align: left; font-weight: bold; 
+								          color: white; font-size: 20px;
+								          background-color: rgb(107, 122, 143); 
+								          margin-top:10px; margin-bottom:10px; padding: 5px;">
+									Archival Summary View - M_SECL
+								</p>
+
+								<p th:if="${type == 'ARCHIVAL' and displaymode == 'archivalDetails'}" style="text-align: left; font-weight: bold;
+								          color: white; font-size: 20px;
+								          background-color: rgb(107, 122, 143); 
+								          margin-top:10px; margin-bottom:10px; padding: 5px;">
+									Archival Detail View - M_SECL
+								</p>
+
+								<p th:if="${type == 'RESUB' and displaymode == 'resubSummary'}" style="text-align: left; font-weight: bold; 
+														          color: white; font-size: 20px;
+														          background-color: rgb(107, 122, 143); 
+														          margin-top:10px; margin-bottom:10px; padding: 5px;">
+									Resubmission Summary View - M_SECL
+								</p>
+
+								<p th:if="${type == 'RESUB' and displaymode == 'resubDetails'}" style="text-align: left; font-weight: bold;
+														          color: white; font-size: 20px;
+														          background-color: rgb(107, 122, 143); 
+														          margin-top:10px; margin-bottom:10px; padding: 5px;">
+									Resubmission Detail View - M_SECL
+								</p>
 					
 				</div>
 				<div th:if="${displaymode == 'summary' or displaymode == 'details' or displaymode == 'archivalSummary' or displaymode == 'archivalDetails' or displaymode == 'resubSummary' or displaymode == 'resubDetails'}">

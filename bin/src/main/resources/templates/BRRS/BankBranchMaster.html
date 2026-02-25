@@ -1,0 +1,644 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+
+<!-- 
+CREATED BY	: KRISHNAPANDI MG 
+CREATED ON	: 25.05.2025
+PURPOSE		: Access the Modules by Role
+ -->
+ 
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	    <!-- CSS (Bootstrap, FontAwesome, jQuery UI, DataTables) -->
+	    <link rel="stylesheet" type="text/css"
+	          href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css"
+	          th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}" />
+
+	    <link rel="stylesheet" type="text/css"
+	          href="/webjars/font-awesome/5.9.0/css/all.min.css"
+	          th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}" />
+
+	    <link rel="stylesheet" type="text/css"
+	          href="/webjars/jquery-ui/1.12.1/jquery-ui.min.css"
+	          th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}" />
+
+	    <link rel="stylesheet" type="text/css"
+	          href="/webjars/datatables/1.10.19/css/jquery.dataTables.min.css"
+	          th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}" />
+		
+			<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+		
+		
+	    <!-- Favicon -->
+	    <link rel="shortcut icon" type="image/x-icon" th:href="@{/favicon.ico}" />
+	    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}" />
+
+	    <!-- JavaScript: jQuery must come first -->
+	    <script src="/webjars/jquery/3.4.1/jquery.min.js"
+	            th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+
+	    <script src="/webjars/jquery-ui/1.12.1/jquery-ui.min.js"
+	            th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+
+	    <script src="/webjars/popper.js/1.14.7/umd/popper.min.js"
+	            th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+
+	    <script src="/webjars/bootstrap/4.3.1/js/bootstrap.min.js"
+	            th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+
+	    <script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+	            th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+
+	    <script src="/webjars/jquery-form/4.2.2/jquery.form.min.js"
+	            th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+
+	    <script src="/webjars/datatables/1.10.19/js/jquery.dataTables.min.js"
+	            th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+
+	    <script src="/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js"
+	            th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+
+<style>
+.btns {
+	float: right;
+	margin: 5px;
+}
+
+.col-sm-5 {
+	padding-bottom: 15px;
+}
+
+.list-body {
+	padding: 0px;
+}
+
+.error {
+	color: red;
+	padding-left: 10px;
+}
+
+.formline {
+	padding-bottom: 15px;
+}
+
+.btn-primary {
+	background-color: #E77400;
+	border-color: #0c0c0c;
+}
+
+.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
+	 (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+	{
+	color: #fff;
+	background-color: #cc000000;
+	border-color: #161617;
+}
+
+#finusertb {
+	width: 460px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 0px;
+}
+</style>
+<style>
+        /* Icon styling */
+.action-icon {
+  font-size: 16px;
+  cursor: pointer;
+  margin-right: 10px;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.action-icon:hover {
+  transform: scale(1.2);
+}
+
+/* Specific colors */
+.action-icon.modify { color: blue; }
+.action-icon.view { color: green; }
+.action-icon.delete { color: red; }
+.action-icon.verify { color: orange; }
+        
+        
+        
+        
+        
+    </style>
+<script th:inline="javascript">
+	
+
+	function home() {
+		location.href = 'Dashboard'
+	}
+
+	function back() {
+		window.history.back();
+	}
+	
+    </script>
+    <script>
+    function addrole(a) {
+		location.href = 'BranchMaster?formmode=add';
+	}
+     function editBranch(solId) {
+        location.href = 'BranchMaster?formmode=edit&solId=' + solId;
+    }
+
+    function viewBranch(solId) {
+        location.href = 'BranchMaster?formmode=view&solId=' + solId;
+    }
+
+    function deleteBranch(solId) {
+        location.href = 'BranchMaster?formmode=delete&solId=' + solId;
+    } 
+
+    
+    function list() {
+		location.href = 'BranchMaster?formmode=list';
+	}
+
+    
+    function submitBranchForm(btn) {
+        var formmode = btn.getAttribute("data-formmode");
+        console.log("Form mode:", formmode);
+
+        var formData = new FormData(document.getElementById("BankBranchMaster"));
+
+        // Show loader
+        $("#loader1").modal("show");
+
+        $.ajax({
+            url: "BranchMaster/save?formmode=" + encodeURIComponent(formmode),
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                console.log("Success response:", response);
+
+                // Hide loader
+                $("#loader1").modal("hide");
+
+                // Success alert
+                $("#alertmsg").text("Branch saved successfully!");
+                $("#alert").modal("toggle");
+
+                // Reset form if add mode
+                if (formmode === "add") {
+                    document.getElementById("BankBranchMaster").reset();
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX error:", status, error);
+
+                // Hide loader
+                $("#loader1").modal("hide");
+
+                $("#alertmsg").text("Error occurred while saving branch: " + error);
+                $("#alert").modal("toggle");
+            }
+        });
+
+        return false;
+    }
+
+    
+    function submitFormDelete(btn) {
+        var solId = btn.getAttribute("data-id");
+
+        // Show browser confirmation first
+        if (!confirm("Are you sure you want to delete this branch?")) {
+            return;
+        }
+
+        // Show loader
+        $("#loader1").modal("show");
+
+        $.ajax({
+            url: 'BranchMaster/delete',  // Controller endpoint
+            type: 'POST',
+            data: { solId: solId },
+            success: function(response) {
+                $("#loader1").modal("hide");
+                $("#alertmsg").text("Branch deleted successfully!");
+                $("#alert").modal("toggle");
+
+                // Redirect after short delay
+                setTimeout(function() {
+                    window.location.href = './BranchMaster?formmode=list';
+                }, 1500);
+            },
+            error: function(xhr, status, error) {
+                $("#loader1").modal("hide");
+                console.error('Delete error:', error);
+                $("#alertmsg").text("Error occurred while deleting branch: " + error);
+                $("#alert").modal("toggle");
+            }
+        });
+    }
+
+
+
+    </script>
+    
+</head>
+<title>BRRS</title>
+<body>
+	<div class="container-fluid">
+		<div class="row">
+	<div th:insert="HeaderMenu :: header"></div>
+	<div  class="col-sm-12">
+	<!-- -------------------Branch List Starts----------------------------------------------------- -->
+	
+		
+			<div class="col-sm-12" th:if="${formmode}=='list'">
+				<div class="card" style="width: 100%; margin-left: 2px;">
+					<div class="card-header" style="background-color: #376275; display: flex; justify-content: space-between; align-items: center;">
+    <!-- Left: Title -->
+    <div style="color: white;">
+        <h4 style="font-family: verdana; font-size: 20px; font-weight: bold; color: white; margin: 0;">
+            BANK AND BRANCH MASTER
+        </h4>
+    </div>
+
+    <!-- Right: Add Button -->
+    <div>
+        <button type="button" class="custom-tab-btn" onclick="addrole();"
+            style="background-color: #fff; color: #376275; font-weight: bold; border: none; padding: 6px 14px; cursor: pointer;">
+            Add
+        </button>
+    </div>
+</div>
+
+					
+					
+					
+						
+						
+						
+					<div class="row">
+  <div class="col-12">
+    <div class="table-container" style="max-height: 620px; overflow-y: auto;">
+      <table class="table table-striped table-bordered">
+            <thead style="background-color:#e9ecf0;">
+                <tr>
+                    <th>SOL ID</th>
+                    <th>Description</th>
+                    <th>Branch Code</th>
+                    <th>Opening Date</th>
+                    <th>Currency Code</th>
+                    <th>Address</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="branch : ${branchList}">
+                    <td th:text="${branch.solId}"></td>
+                    <td th:text="${branch.solDesc}"></td>
+                    <td th:text="${branch.brCode}"></td>
+                   <td th:text="${#temporals.format(branch.brOpenDate, 'dd-MM-yyyy')}"></td>
+                    <td th:text="${branch.homeCrncyCode}"></td>
+                    <td th:text="${branch.addr1} + ', ' + ${branch.addr2}"></td>
+                    <td>
+                        <i class="fa fa-edit action-icon modify" title="Edit"
+                           th:attr="onclick=|editBranch('${branch.solId}')|"></i>
+                        <i class="fa fa-eye action-icon view" title="View"
+                           th:attr="onclick=|viewBranch('${branch.solId}')|"></i>
+                        <i class="fa fa-trash action-icon delete" title="Delete"
+                           th:attr="onclick=|deleteBranch('${branch.solId}')|"></i>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card-footer text-center">
+      <button type="button" class="custom-tab-btn" id="btnHome" onclick="home();">Home</button>
+      <button type="button" class="custom-tab-btn" id="btnBack" onclick="back();">Back</button>
+    </div>
+  </div>
+</div>
+</div> <!-- Close card-body -->
+</div> <!-- Close card -->
+
+<div class="row">
+			<div class="col-sm-12 finuserapply" >
+				
+	<div
+			th:if="${formmode}=='edit' OR ${formmode}=='add' OR ${formmode}=='delete' OR ${formmode}=='view' OR ${formmode}=='verify'">
+			<div class="row">
+				<div class="col-sm-12 finuserapply">
+					<div class="card" style="margin-left: 10px;margin-right: 10px;">
+						<div class="card-header"style="background-color: #376275;">
+												<div class="float-left">
+								<h6 style="font-size: 1.5rem; color: white;"
+									th:if="${formmode}=='edit'">BANK AND BRANCH MASTER  - EDIT</h6>
+								<h6 style="font-size: 1.5rem; color: white;"
+									th:if="${formmode}=='add'">BANK AND BRANCH MASTER - ADD</h6>
+								<h6 style="font-size: 1.5rem; color: white;"
+									th:if="${formmode}=='view'">BANK AND BRANCH MASTER  - VIEW</h6>
+								<h6 style="font-size: 1.5rem; color: white;"
+									th:if="${formmode}=='delete'">BANK AND BRANCH MASTER  - DELETE</h6>
+							</div>
+						</div>
+
+						<div class="card-body" style="margin-top: -48px;">
+							<form th:action="@{/BranchMaster/save}" th:object="${branch}"
+      method="post" style="margin: 52px;" autocomplete="off" id="BankBranchMaster"
+      th:fragment="finuserapply">
+
+
+
+								<div class="row formline">
+									<label class="col-sm-2">Sol Id</label>
+									<div class="col-sm-3" th:if="${formmode}=='add'">
+										<input type="text" th:field="*{solId}"
+											class="form-control form-control-sm" required/>
+									</div>
+									<div class="col-sm-3"
+										th:if="${formmode}=='edit' OR ${formmode}=='view'OR ${formmode}=='verify' OR ${formmode}=='delete'">
+										<input type="text" th:field="*{solId}"
+										 class="form-control form-control-sm"
+											readonly />
+									</div>
+
+									<div class="col-sm-1"></div>
+									<label class="col-sm-2">Sol Description</label>
+									<div class="col-sm-3">
+										<input th:if="${formmode}=='add'" type="text" 
+											th:field="*{solDesc}" class="form-control form-control-sm" required/> 
+											<input
+											th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify'  OR ${formmode}=='delete'"
+											type="text" th:field="*{solDesc}" class="form-control form-control-sm"
+											th:readonly="${formmode}=='view'  OR ${formmode}=='delete'" />
+
+									</div>
+									<div class="col-sm-1"></div>
+								</div>
+								
+								<div class="row formline">
+									<label class="col-sm-2">Bank Code</label>
+									<div class="col-sm-3" th:if="${formmode}=='add'">
+										<input type="text" th:field="*{bankCode}"
+											class="form-control form-control-sm" required/>
+									</div>
+									<div class="col-sm-3"
+										th:if="${formmode}=='edit' OR ${formmode}=='view'OR ${formmode}=='verify' OR ${formmode}=='delete'">
+										<input type="text" th:field="*{bankCode}"
+										 class="form-control form-control-sm"
+											readonly />
+									</div>
+
+									<div class="col-sm-1"></div>
+									<label class="col-sm-2">ABBR Bank Name</label>
+									<div class="col-sm-3">
+										<input th:if="${formmode}=='add'" type="text" 
+											th:field="*{abbrBankName}" class="form-control form-control-sm" required/> 
+											<input
+											th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify'  OR ${formmode}=='delete'"
+											type="text" th:field="*{abbrBankName}" class="form-control form-control-sm"
+											th:readonly="${formmode}=='view'  OR ${formmode}=='delete'" />
+
+									</div>
+									<div class="col-sm-1"></div>
+								</div>
+								
+								<div class="row formline">
+									<label class="col-sm-2">BR CODE</label>
+									<div class="col-sm-3" th:if="${formmode}=='add'">
+										<input type="text" th:field="*{brCode}"
+											class="form-control form-control-sm" required/>
+									</div>
+									<div class="col-sm-3"
+										th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='delete'">
+										<input type="text" th:field="*{brCode}"
+										 class="form-control form-control-sm"
+											readonly />
+									</div>
+
+									<div class="col-sm-1"></div>
+									<label class="col-sm-2">ABBR BR NAME</label>
+									<div class="col-sm-3">
+										<input th:if="${formmode}=='add'" type="text" 
+											th:field="*{abbrBrName}" class="form-control form-control-sm" required/> 
+											<input
+											th:if="${formmode}=='edit' OR ${formmode}=='view'  OR ${formmode}=='delete'"
+											type="text" th:field="*{abbrBrName}" class="form-control form-control-sm"
+											th:readonly="${formmode}=='view'  OR ${formmode}=='delete'" />
+
+									</div>
+									<div class="col-sm-1"></div>
+								</div>
+								
+								<div class="row formline">
+    <!-- Address 1 -->
+    <label class="col-sm-2">ADDRESS 1</label>
+    <div class="col-sm-3" th:if="${formmode}=='add'">
+        <input type="text" th:field="*{addr1}" class="form-control form-control-sm" required/>
+    </div>
+    <div class="col-sm-3"
+         th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='delete'">
+        <input type="text" th:field="*{addr1}" class="form-control form-control-sm"
+               th:readonly="${formmode}=='view' OR ${formmode}=='delete'" />
+    </div>
+
+    <div class="col-sm-1"></div>
+
+    <!-- Address 2 -->
+    <label class="col-sm-2">ADDRESS 2</label>
+    <div class="col-sm-3" th:if="${formmode}=='add'">
+        <input type="text" th:field="*{addr2}" class="form-control form-control-sm" />
+    </div>
+    <div class="col-sm-3"
+         th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='delete'">
+        <input type="text" th:field="*{addr2}" class="form-control form-control-sm"
+               th:readonly="${formmode}=='view' OR ${formmode}=='delete'" />
+    </div>
+</div>
+
+<div class="row formline">
+    <!-- City Code -->
+    <label class="col-sm-2">CITY CODE</label>
+    <div class="col-sm-3" th:if="${formmode}=='add'">
+        <input type="text" th:field="*{cityCode}" class="form-control form-control-sm" />
+    </div>
+    <div class="col-sm-3"
+         th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='delete'">
+        <input type="text" th:field="*{cityCode}" class="form-control form-control-sm"
+               th:readonly="${formmode}=='view' OR ${formmode}=='delete'" />
+    </div>
+
+    <div class="col-sm-1"></div>
+
+    <!-- State Code -->
+    <label class="col-sm-2">STATE CODE</label>
+    <div class="col-sm-3" th:if="${formmode}=='add'">
+        <input type="text" th:field="*{stateCode}" class="form-control form-control-sm" />
+    </div>
+    <div class="col-sm-3"
+         th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='delete'">
+        <input type="text" th:field="*{stateCode}" class="form-control form-control-sm"
+               th:readonly="${formmode}=='view' OR ${formmode}=='delete'" />
+    </div>
+</div>
+<div class="row formline">
+    <!-- Pin Code -->
+    <label class="col-sm-2">PIN CODE</label>
+    <div class="col-sm-3" th:if="${formmode}=='add'">
+        <input type="text" th:field="*{pinCode}" class="form-control form-control-sm" />
+    </div>
+    <div class="col-sm-3"
+         th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='delete'">
+        <input type="text" th:field="*{pinCode}" class="form-control form-control-sm"
+               th:readonly="${formmode}=='view' OR ${formmode}=='delete'" />
+    </div>
+
+    <div class="col-sm-1"></div>
+
+    <!-- Branch Open Date -->
+    <label class="col-sm-2">BRANCH OPEN DATE</label>
+    <div class="col-sm-3" th:if="${formmode}=='add'">
+        <input type="date" th:field="*{brOpenDate}" class="form-control form-control-sm" required/>
+    </div>
+    <div class="col-sm-3"
+         th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='delete'">
+        <input type="date" th:field="*{brOpenDate}" class="form-control form-control-sm"
+               th:readonly="${formmode}=='view' OR ${formmode}=='delete'" />
+    </div>
+</div>
+<div class="row formline">
+    <label class="col-sm-2">HOME CURRENCY CODE</label>
+    <div class="col-sm-3" th:if="${formmode}=='add'">
+        <input type="text" th:field="*{homeCrncyCode}" class="form-control form-control-sm" maxlength="3" required/>
+    </div>
+    <div class="col-sm-3"
+         th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='delete'">
+        <input type="text" th:field="*{homeCrncyCode}" class="form-control form-control-sm"
+               th:readonly="${formmode}=='view' OR ${formmode}=='delete'" />
+    </div>
+</div>
+
+
+
+
+							</form>
+
+						</div>
+						<div class="card-footer text-center">
+    <button type="button" class="custom-tab-btn" id="btnHome"
+            onclick="home();">Home</button>
+
+    <button th:if="${formmode}=='edit' OR ${formmode}=='add'"
+        type="button" 
+        class="custom-tab-btn"
+        th:attr="data-formmode=${formmode}"
+        id="btnSubmit"
+        onclick="submitBranchForm(this);">Submit</button>
+
+
+   <button type="button" th:if="${formmode}=='delete'"
+        class="custom-tab-btn"
+        th:attr="data-id=${branch.solId}"
+        onclick="submitFormDelete(this);">Delete</button>
+
+    <button type="button" class="custom-tab-btn" id="btnBack"
+            onclick="back();">Back</button>
+</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
+			
+ <!-- Close card-footer -->
+ 
+ 
+ 
+
+				
+		</div> <!-- Close col -->
+	</div> <!-- Close row -->	
+		
+		
+			
+	</div>
+	<div class="modal fade" id="alert">
+		<div
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content">
+			<div class="menu-title-header">
+					<div class="modal-title" id="exampleModalLabel"
+						style="text-align: center; color: white;">BANK OF BARODA</div>
+				</div>
+				<div class="modal-body" style="text-align: center">
+					<p id="alertmsg"></p>
+					<button type="button" class="custom-tab-btn " onclick="list()"
+						data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+<div class="modal fade" id="loader1" data-backdrop="static"
+			data-keyboard="false">
+			<div
+				class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content" style="background: transparent;">
+					<div class="modal-body" style="text-align: center">
+						<div>
+							<img th:src=@{/images/loader.gif} id="bfirelogo"
+								style="width: 153px; height: auto; margin-left: 18px; background-color: transparent;
+								border-color: transparent;"
+								alt="Bornfire">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	<div class="modal fade" id="datadelete">
+		<div
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content">
+				<div class="modal-body"
+					style="margin-top: 8px; text-align: center; color: #f15362;">
+					<button type="button" class="close" data-dismiss="modal">×</button>
+					Are you Sure want to delete?
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary"
+						onclick="submitformdelete(this);" th:attr="data-formmode=delete">Submit</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="formmsg">
+		<div
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content">
+				<div class="modal-body"
+					style="margin-top: 8px; text-align: center; color: aliceblue;">
+					<button type="button" class="close" data-dismiss="modal">×</button>
+					<a th:value="${msg}"></a>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary"
+						onclick="submitformdelete(this);" th:attr="data-formmode=delete">Submit</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+</body>
+</html>

@@ -1,0 +1,4582 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+
+<!-- 
+CREATED BY : INFANT JONES J
+CREATED ON : 11.12.2025
+PURPOSE  : BRRSREPORT
+-->
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+   xmlns:th="http://www.thymeleaf.org">
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+
+ <!-- CSS -->
+ <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+ <link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+ <link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+ <link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+ <link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+ <link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+
+ <!-- JavaScript -->
+ <!-- jQuery core (required first) -->
+ 
+
+ <!-- ✅ Your manually placed jQuery validation
+ <script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+  <script th:src="/jquery/jquery.validate.min.js"></script>
+  -->
+ 
+ <!-- jQuery (required first) -->
+ <script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+
+<!-- ✅ jQuery Validation -->
+<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+ th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+ 
+ <!-- Bootstrap + Others -->
+ <script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+ <script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+ <script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+ <script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+ <script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+ <script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+
+<style>
+.btns {
+ float: right;
+ margin: 5px;
+}
+
+.col-sm-5 {
+ padding-bottom: 15px;
+}
+
+.list-body {
+ padding: 0px;
+}
+
+.error {
+ color: red;
+ padding-left: 10px;
+}
+
+.formline {
+ padding-bottom: 15px;
+}
+
+.btn-primary {
+ background-color: #E77400;
+ border-color: #0c0c0c;
+}
+
+.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
+  (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+ {
+ color: #fff;
+ background-color: #cc000000;
+ border-color: #161617;
+}
+
+#finusertb {
+ width: 460px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+ padding: 0px;
+}
+</style>
+ 
+  
+ 
+ 
+ <style>
+  div span {
+    font-weight: bold;
+    color: white !important;
+ }
+  .card {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+  }
+
+  .card-header h5 {
+    font-size: 22px;
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .nav-tabs .nav-link {
+    font-weight: 500;
+    border: 1px solid #dee2e6;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    background-color: #f1f1f1;
+    margin-right: 5px;
+  }
+
+  .nav-tabs .nav-link.active {
+    background-color: #ffffff;
+    border-color: #dee2e6 #dee2e6 #ffffff;
+  }
+
+  .table-responsive {
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+  }
+
+  .table-hover tbody tr:hover {
+    background-color: #f3f6f9;
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    background-color: #e9ecf0;
+    z-index: 1;
+  }
+  
+.table td{
+ background-color: #FFFFFF;
+
+}
+  
+  
+
+  .card-footer {
+    padding: 10px;
+    border-top: 1px solid #ccc;
+  }
+
+  .btn-xs {
+    padding: 4px 12px;
+    font-size: 14px;
+    border-radius: 4px;
+  }
+
+  #BRFvalidation th, #usertable td {
+    vertical-align: middle;
+    text-align: left;
+    font-size: 16px;
+    font-family: Arial;
+  }
+
+  .fa-edit:hover {
+    color: #28a745;
+    transform: scale(1.1);
+  }
+
+
+
+td {
+  border: 1px solid rgb(0,164,166);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+</style>
+ 
+
+<style>
+        .form-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            background: transparent;
+            transition: border-color 0.3s ease, padding-top 0.3s ease;
+        }
+        .error {
+      color: red;
+      padding-top: 15px;
+   }
+        
+        
+
+        .form-control:focus {
+            border-color: #007bff;
+        }
+
+        .form-legend {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            color: #aaa;
+            background: white;
+            padding: 0 5px;
+            pointer-events: none;
+            transition: 0.3s ease;
+        }
+
+        /* When input or select is focused or has a value, move the label up */
+        .form-control:focus ~ .form-legend,
+        .form-control:not(:placeholder-shown) ~ .form-legend {
+            top: -8px;
+            font-size: 1rem;
+            color: #007bff;
+        }
+
+        /* Hover effect when the input/select is focused */
+        .form-control:focus:hover ~ .form-legend {
+            color: #0056b3; /* Darker shade of blue on hover */
+        }
+
+        /* Ensure the label returns to the normal color after focus or hover is removed */
+        .form-control:not(:focus) ~ .form-legend {
+            color: #aaa; /* Normal label color */
+        }
+    </style>
+   
+    <style>
+/* Red border for invalid inputs */
+input.error, select.error {
+  border: 2px solid red !important;
+}
+
+/* Error message style */
+label.error {
+  color: red;
+  font-size: 0.85em;
+  margin-top: 5px;
+  display: block;
+}
+.underline {
+    text-decoration: underline;
+    color: #08a6f1;
+    cursor: pointer;
+}
+.left-arrow-circle {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.left-arrow-circle i {
+    color: rgb(107, 122, 143);
+}
+
+.left-arrow-circle:hover {
+    background-color: rgb(107, 122, 143);
+    cursor: pointer;
+    transform: scale(1.05);
+    border: 2px solid white;
+}
+
+.left-arrow-circle:hover i {
+    color: white;
+}
+
+.white-text span {
+ color: white !important;
+}
+.table-cell tbody td:hover {
+ background-color: #f0f0f0;
+ /* Hover color for cell */
+ cursor: pointer;
+ /* Optional: pointer cursor */
+}
+
+
+
+</style>
+<style>
+  #reports, 
+  #reports th, 
+  #reports td {
+    border: 1px solid black !important;
+  }
+
+  #reports {
+    border-collapse: collapse;
+  }
+</style>
+
+<style>
+   .header-bar {
+     display: flex;
+     align-items: center;
+     flex-wrap: wrap; /* ✅ allows wrapping on smaller screens */
+     gap: 10px; /* spacing between elements */
+     cursor: pointer;
+   }
+
+   /* 🔘 Circular arrow */
+   .left-arrow-circle {
+     width: 35px;
+   
+     height: 35px;
+     border-radius: 50%;
+     background-color: white;
+     color: #1f3a93;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     margin-right: 10px;
+   }
+
+   .left-arrow-circle i {
+     font-size: 18px;
+   }
+
+   /* 🏷️ Title */
+   .header-title {
+     font-family: Arial, sans-serif;
+     font-size: 20px;
+     font-weight: bold;
+     color: white;
+     margin: 0;
+     flex-shrink: 0;
+   }
+
+   /* 🚌 Bus display style box */
+   .boards {
+    
+    transform: translateY(6px);
+     background-color: rgb(107, 122, 143);
+     color: white;
+     padding: 5px 5px;
+     border-radius: 8px;
+     overflow: hidden;
+     white-space: nowrap;
+     flex: 1; /* ✅ makes it take available space dynamically */
+     min-width: 190px;
+     box-shadow: 0 0 10px rgb(107, 122, 143);
+     position: relative;
+   }
+
+   /* ✨ Scrolling animation */
+   .scrolling-text {
+     display: inline-block;
+     font-family: "Courier New", monospace;
+     font-weight: bold;
+     letter-spacing: 1px;
+     animation: scroll-left 10s linear infinite;
+   }
+
+   @keyframes scroll-left {
+     0% {
+       transform: translateX(100%);
+     }
+     100% {
+       transform: translateX(-100%);
+     }
+   }
+
+   </style>
+
+
+
+ <script th:inline="javascript">
+
+  $(document).ready(function () {
+   // hide loader on normal load
+   $('#loader').modal('hide');
+  });
+
+  $(window).on('pageshow', function () {
+   // hide loader on back/forward nav
+   $('#loader').modal('hide');
+  });
+
+  $(window).on('beforeunload', function () {
+   // hide loader on leaving page
+   $('#loader').modal('hide');
+  });
+
+    
+  $(document).ready(function() {
+   Maker_Checker_Function(); 
+  });
+
+  // if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
+  function Maker_Checker_Function() {
+   $.ajax({
+    url: "/BRRS/getUserRole",    
+    type: "GET",
+    success: function(roleId) {
+     // console.log("User Role ID:", roleId);
+    
+     if (roleId === "ADM-C" || roleId === "USR-C"  || roleId === "USER-AUDIT") {
+      const modifyBtn = document.getElementById("addRecord");
+      if (modifyBtn) modifyBtn.style.display = "none";
+     }
+
+     if (roleId === "ADM-M" || roleId === "USR-M") {
+        const button = document.getElementById("custom-tab-btnAdd");
+        if (button) button.style.display = "none";
+       }
+
+    },
+    error: function(err) {
+     console.error("Error fetching role:", err);
+       }
+      });
+  }
+
+
+
+
+  function home() {
+   $("#loader").modal("toggle");
+   location.href = 'Dashboard'
+  }
+
+  function back() {
+   $("#loader").modal("toggle");
+
+   window.history.back();
+  }
+
+  //to fetch summary from the database - called from the summary button
+  function showdetails() {
+
+   var Callurl;
+   $('#loader').modal('show');
+   Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
+    location.href = Callurl;
+   console.log(Callurl);
+
+  }
+
+  function showsummary() {
+   $('#loader').modal('show');
+   var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/
+    location.href = Callurl;
+
+  }
+ </script>
+
+ <script>
+
+  function activateTab(tabName) {
+   // Remove 'active' from all buttons
+   document.querySelectorAll('.custom-tab-btn').forEach(btn => {
+    btn.classList.remove('active');
+   });
+
+   // Add 'active' to selected button
+   if (tabName === 'summary') {
+    document.getElementById('custom-tab-btnSummary').classList.add('active');
+   } else if (tabName === 'Details') {
+    document.getElementById('custom-tab-btnDetails').classList.add('active');
+   }
+  }
+
+  window.onload = function () {
+   /* setTimeout(function() {
+    var selectedTab = document.getElementById("selectedTab").value;
+    alert(selectedTab);
+    activateTab(selectedTab);
+   }, 10000); */ // 10,000 milliseconds = 10 seconds
+
+   var selectedTab = document.getElementById("selectedTab").value;
+   activateTab(selectedTab);
+  };
+
+
+  function downloadfile(button) {
+      var reportid = button.getAttribute('data-reportid');
+      var asondate = button.getAttribute('data-asondate');
+      var fromdate = button.getAttribute('data-fromdate');
+      var todate = button.getAttribute('data-todate');
+      var currency = button.getAttribute('data-currency');
+      var subreportid = button.getAttribute('data-subreportid');
+      var secid = button.getAttribute('data-secid');
+      var dtltype = button.getAttribute('data-dtltype');
+      var filename = button.getAttribute('data-filename');
+   var type = button.getAttribute('data-type');
+   var version = button.getAttribute('data-version');
+
+      $('#loader').modal('show');
+
+      $.ajax({
+          url: './downloadExcel?reportid=' + reportid +
+              '&fromdate=' + fromdate +
+              '&asondate=' + asondate +
+              '&todate=' + todate +
+              '&currency=' + currency +
+              '&subreportid=' + subreportid +
+              '&secid=' + secid +
+              '&filename=' + filename +
+     '&type=' + type +
+     '&version=' + version,
+          type: 'GET',
+          xhrFields: { responseType: 'blob' },
+
+          success: function (data) {
+              if (data && data.size > 100) {
+                  const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+
+                  a.style.display = 'none';
+                  a.href = url;
+                  a.download = filename;
+
+                  document.body.appendChild(a);
+                  a.click();
+
+                  window.URL.revokeObjectURL(url);
+                  document.body.removeChild(a);
+
+                  showResultModal('BRRS', filename + ' downloaded successfully.');
+              } else {
+                  showResultModal('Information', 'No data was available to create a download.');
+              }
+          },
+
+          error: function (jqXHR, textStatus, errorThrown) {
+              console.error("Download failed:", textStatus, errorThrown);
+              showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+          },
+
+          complete: function () {
+              // 🔥 THIS ALWAYS RUNS (success or error or exceptions)
+              $('#loader').modal('hide');
+          }
+      });
+  }
+
+
+  function closemodel() {
+   // Hide the modals
+   $('#alert').modal('hide');
+   $('#resultModal').modal('hide');
+
+  }
+
+
+  function showResultModal(title, message) {
+   // Set the text for the modal elements
+   $('#resultModalLabel').text(title);
+   $('#resultModalBody').text(message);
+
+   // Show the modal
+   $('#resultModal').modal('show');
+  }
+
+ </script>
+ <script>
+
+  function startReport(button) {
+   const alertMsg = document.getElementById("alertMessage");
+   const filename = button.getAttribute('data-filename');
+   const fromdate = button.getAttribute('data-fromdate');
+   const todate = button.getAttribute('data-todate');
+   const currency = button.getAttribute('data-currency');
+   const dtltype = button.getAttribute('data-dtltype');
+   const type = button.getAttribute('data-type');
+   const version = button.getAttribute('data-version');
+   const sessionfilename = sessionStorage.getItem("filename");
+
+   if (sessionfilename == filename) {
+    alertMsg.innerHTML = 'Download request already Processing...';
+    showAlert();
+    return;
+   }
+
+   alertMsg.innerHTML = 'Download request Processing...';
+   showAlert();
+
+   const baseUrl = '/BRRS/Reports/startreport';
+   const downloadUrl = baseUrl +
+    '?filename=' + encodeURIComponent(filename) +
+    '&fromdate=' + encodeURIComponent(fromdate) +
+    '&todate=' + encodeURIComponent(todate) +
+    '&currency=' + encodeURIComponent(currency) +
+    '&dtltype=' + encodeURIComponent(dtltype) +
+    '&type=' + encodeURIComponent(type) +
+    '&version=' + encodeURIComponent(version);
+   fetch(downloadUrl)  // ✅ no invalid characters now
+    .then(res => res.text())
+    .then(jobId => {
+
+     alertMsg.innerHTML = 'Download request received...' + jobId;
+     showAlert();
+     sessionStorage.setItem("jobId", jobId);
+     sessionStorage.setItem("filename", filename);
+     checkReport(jobId);
+    });
+  }
+
+  function checkReport(jobId) {
+   const alertMsg = document.getElementById("alertMessage");
+   fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+    .then(res => res.text())
+    .then(status => {
+     if (status === "READY") {
+      alertMsg.innerHTML = 'Report is ready! Downloaded';
+      showAlert();
+      const filename = sessionStorage.getItem("filename");
+      downloadDetailfile(jobId, filename)
+      sessionStorage.removeItem("jobId");
+      sessionStorage.removeItem("filename");
+
+     } else if (status === "PROCESSING") {
+      alertMsg.innerHTML = 'Download Is Processing…';
+      showAlert();
+      setTimeout(() => checkReport(jobId), 5000);
+     }
+     else if (status === "ERROR") {
+      alertMsg.innerHTML = 'No data was available to create a download.';
+      showAlert();
+      sessionStorage.removeItem("jobId");
+      sessionStorage.removeItem("filename");
+     }
+    });
+  }
+
+
+
+  function downloadDetailfile(jobId, filename) {
+
+   //$('#loader').modal('show');
+
+   $.ajax({
+    url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId +
+     '&filename=' + filename,
+    type: 'GET',
+    xhrFields: {
+     responseType: 'blob'
+    },
+    success: function (data) {
+     $('#loader').modal('hide');
+
+     if (data && data.size > 100) {
+      const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      showResultModal('BRRS', filename + ' downloaded successfully');
+     } else {
+      showResultModal('Information', 'No data was available to create a download.');
+     }
+    },
+    error: function (jqXHR, textStatus, errorThrown) {
+     $('#loader').modal('hide');
+     console.error("Download failed:", textStatus, errorThrown);
+     showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+    }
+   });
+  }
+
+
+ </script>
+
+     <script th:inline="javascript">
+  function showdetailsbyRowAndColumn(a) {
+   var reportLable = a.getAttribute('reportLable');
+   var reportAddlCriteria1 = a.getAttribute('reportAddlCriteria1');
+   var cellValue = a.textContent || a.innerText;
+
+   if (cellValue !== '0') {
+    // Set dynamic message in modal (instead of confirm)
+    document.getElementById("cellresultModalLabel").innerText =
+     "Do you want to open details for Report Lable: " + reportLable + " and Report Addl Criteria1: " + reportAddlCriteria1 + "?";
+
+    // Show custom Bootstrap modal
+    $('#cellresultModal').modal('show');
+
+    // Handle Yes button
+    document.querySelector('.yes-btn').onclick = function () {
+     $('#cellresultModal').modal('hide');
+
+     // Show loader
+     const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
+      backdrop: 'static',
+      keyboard: false
+     });
+     $('#loader').modal('show');
+
+     // Build dynamic URL
+     var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+     Callurl += "&filter=" + encodeURIComponent(reportLable + "," + reportAddlCriteria1);
+
+     location.href = Callurl;
+    };
+   } else {
+    // Use your custom alert modal instead of window.alert
+    showResultModal("Alert", "No Records available for this selected cell.");
+   }
+  }
+ </script>
+
+
+  
+
+ <!-- 
+<script>
+function showmodify(btn) {
+    // Enable editable fields
+    $(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
+
+    // ===== GROUP 1 =====
+    let rows1 = [23,25,26,30,35,42,43,44,46];
+    let fields1 = ["total_value", "total_no_of_acct"];
+
+    rows1.forEach(r => {
+        fields1.forEach(f => {
+            const selector = `#r${r}_${f}`;
+            if ($(selector).length) $(selector).css("background-color", "#d3d3d3");
+        });
+    });
+
+
+
+    // Show buttons
+    $("#submitButton").show();
+    $("#cancelRecord").show();
+
+    // Hide the modify button clicked
+    $(btn).hide();
+}
+
+
+//Cancel / Reset function
+function cancelModify() {
+    if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+        // ✅ Only when user clicks YES
+        location.reload();
+        
+        $(".Show_input").attr("readonly", true).attr("disabled", true);
+
+        $("#submitButton, #btnBack_edit").hide();
+        $("#btnBack").show();
+
+        // Hide Cancel button again
+        $("#cancelRecord").hide();
+
+        // Show all Modify buttons
+        $("#addRecord").show();
+    }
+    // ❌ If user clicks CANCEL, nothing happens
+}
+
+</script>
+
+ -->
+
+
+
+<script>
+ 
+
+ // This function is for closing the modal after an action is complete.
+ // It hides the result and loader modals and reloads the page.
+ function closemodels() {
+     $("#resultModal").modal("hide");
+     $('#loader').modal('hide');
+
+  // Reload the page after a short delay to ensure the modal animation completes smoothly.
+      setTimeout(function () {
+          location.reload();
+      }, 300);
+ }
+
+ <!-- 
+ function fileuploads(btn) {
+     const asondate = btn.getAttribute("data-todate");
+     const type = btn.getAttribute("data-type");
+
+     // Show loader
+     $('#loader').modal('show');
+
+     try {
+         // ✅ Step 1: Calculate totals
+
+         // ✅ Step 2: Remove commas from all text inputs
+         $("#fileupload input[type='text']").each(function () {
+             $(this).val($(this).val().replace(/,/g, ''));
+         });
+
+         // ✅ Step 3: Validate form
+         if (!$("#fileupload").valid()) {
+             $('#loader').modal('hide');
+             return;
+         }
+
+         // ✅ Step 4: Build FormData
+         const formData = new FormData();
+         formData.append("asondate", asondate);
+         formData.append("type", type);
+
+         $('#fileupload').find(':input').each(function () {
+             const name = $(this).attr('name');
+             if (name) {
+                 formData.append(name, $(this).val());
+             }
+         });
+
+         // ✅ Step 5: AJAX submission
+         $.ajax({
+             url: './FSIupdateAll',
+             type: 'POST',
+             data: formData,
+             processData: false,
+             contentType: false,
+             dataType: 'text',
+             success: function () {
+                 $("#resultModalLabel").text("BRRS");
+                 $("#resultModalBody").text(" Updated Successfully.");
+                 $("#resultModal").modal("show");
+             },
+             error: function (jqXHR) {
+                 console.error("Error response:", jqXHR.responseText);
+                 $("#resultModalLabel").text("Error");
+                 $("#resultModalBody").text("Update failed. Check console for details.");
+                 $("#resultModal").modal("show");
+             },
+             complete: function () {
+                 $('#loader').modal('hide');
+             }
+         });
+
+     } catch (error) {
+         console.error("Error in fileuploads function:", error);
+         $('#loader').modal('hide');
+         $("#resultModalLabel").text("Error");
+         $("#resultModalBody").text("Unexpected error occurred. Check console.");
+         $("#resultModal").modal("show");
+     }
+ }
+ </script>
+ 
+   <script th:inline="javascript">
+       /*<![CDATA[*/
+       const reportId = /*[[${reportid}]]*/ null;
+       /*]]>*/
+   </script>
+
+  <script>
+   function openDetail(elem, mode) {
+    
+    var type = elem.getAttribute('data-type');   
+
+               if (type === "ARCHIVAL") {
+                   showResultModal('BRRS',"Archived Data cannot be modified");
+                   return;
+               } 
+    const acctNo = elem.getAttribute("data-acctNo");
+     const asondate = elem.getAttribute("data-asondate");
+    location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+   }
+  </script>
+     
+   <style>
+       
+
+   
+    /* Keep the header fixed and aligned */
+    .dataTables_scrollHeadInner,
+    .dataTables_scrollBody table {
+      width: 100% !important;
+    }
+
+    /* Prevent thead shrinking at zoom */
+    .dataTables_scrollHeadInner table {
+      width: 100% !important;
+      min-width: 100% !important;
+    }
+
+    #reportdetails {
+      width: 100% !important;
+      table-layout: fixed !important;
+    }
+
+    #reportdetails th, 
+    #reportdetails td {
+      white-space: nowrap;
+    }
+    table.dataTable th.dt-type-numeric,
+     table.dataTable th.dt-type-date,
+     table.dataTable td.dt-type-numeric,
+     table.dataTable td.dt-type-date {
+         text-align: left !important;
+     }
+       
+     /* Right-align header (6th column = ACCT BALANCE) */
+              table.dataTable th.dt-type-numeric:nth-child(6) {
+                text-align: right !important;
+              }
+              
+          
+              
+              /* Right-align data (6th column = ACCT BALANCE) */
+                        #reportdetails td:nth-child(6),
+                        .dataTables_scrollHeadInner table th:nth-child(6) {
+                         text-align: right !important;
+                         padding-right: 10px !important;
+                         }
+                         
+      
+
+           
+         </style>
+         
+       <script th:inline="javascript">
+         $(document).ready(function () {
+           var table = $('#reportdetails').DataTable({
+             scrollY: "550px",
+             scrollX: true,
+             scrollCollapse: true,
+             autoWidth: false,
+             paging: true,
+             searching: true,
+             lengthChange: false,
+             ordering: true,
+             pageLength: 100,
+             fixedHeader: true, // ✅ You can simply set it to true
+          // ✅ Column width settings
+           columnDefs: [
+             { width: "60px", targets: 0 },   // Edit icon column
+             { width: "180px", targets: 1 }  ,  // S No column
+          { width: "250px", targets: 5 },
+          { width: "250px", targets: 7 }// S No column
+           ],
+
+             dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+           });
+
+           // ✅ Fix alignment on resize / zoom
+           $(window).on('resize', function () {
+             table.columns.adjust().draw(false);
+           });
+
+           // ✅ Fix initial misalignment if loaded at non-100% zoom
+           setTimeout(function () {
+             table.columns.adjust().draw(false);
+           }, 500);
+         });
+       </script>
+    
+  <script>
+    function submitUpdate() {
+        const formData = $('#DetailForm').serialize(); // Ensure correct form ID
+
+        // ✅ Store the previous page URL
+        const previousUrl = document.referrer; // same as going back once in history
+
+        // Show loader while processing
+        $('#loader').modal('show');
+
+        $.ajax({
+            url: `/BRRS/Reports/${reportId}/update`,
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+                $('#loader').modal('hide');
+
+                // ✅ Handle SUCCESS & NON-SUCCESS (Information)
+                if (response && response.toLowerCase().includes('success')) {
+                 showResultModal('BRRS', response);
+                } else {
+                 showResultModal('Information', response || 'No data updated.');
+                }
+
+                // Redirect after 1.5 sec
+                setTimeout(() => {
+                    if (previousUrl) {
+                        window.location.href = previousUrl;
+                    } else {
+                        window.history.back(); // fallback
+                    }
+                }, 1500);
+            },
+
+            error: function (xhr, status, error) {
+                $('#loader').modal('hide');
+                console.error("Update error:", error);
+
+                // ✅ Handle ERROR
+                showResultModal('Error', 'Failed to update record. Please try again.');
+
+                // Redirect back after delay even on error
+                setTimeout(() => {
+                    if (previousUrl) {
+                        window.location.href = previousUrl;
+                    } else {
+                        window.history.back();
+                    }
+                }, 1500);
+            }
+        });
+    }
+</script>
+
+</head>
+
+
+
+<title>BRRS</title>
+<body> 
+<div class="container-fluid" style="padding-left:10px; padding-right:0px;">
+  <div class="row">
+  
+   <div th:insert="HeaderMenu :: header"></div>
+
+   
+   
+   <div class="card"  >
+    <div class="card-header" style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
+     <div class="header-bar" onclick="back();">
+       <!-- ⬅️ Left circular arrow -->
+       <div class="left-arrow-circle">
+         <i class="fa fa-arrow-left"></i>
+       </div>
+
+       <!-- Title -->
+       <h5 class="header-title">
+         RISK WEIGHTED ASSETS & EXPOSURES (INDIAN OFFICES)
+       </h5>
+
+       <!-- 🚌 Bus display box -->
+       <div class="boards">
+         <p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
+       </div>
+     </div>
+
+
+    <div class="custom-tab-btn-group nav-buttons" style="display: flex; color: white; align-items: center;">
+        <!-- 📅 Date -->
+        <span class="white-text" style="color:white !important; font-size: 17px; margin-right: 5px;margin-left: 10px;">Report Date:
+            <span th:text="${#strings.replace(asondate, '/', '-')}"></span>
+        </span>
+
+
+        <!-- Summary / Details -->
+        <button class="custom-tab-btn" th:if="${displaymode == 'Details'}" onclick="showsummary();">
+            Summary
+        </button>
+
+        <button class="custom-tab-btn" th:if="${displaymode == 'summary'}" onclick="showdetails();">
+            Details
+        </button>
+
+       <!-- Modify -->
+   <!--      <button class="custom-tab-btn"
+                onclick="showmodify(this);"
+                title="Click to EDIT Records"
+                th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
+                th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
+                id="addRecord">Modify</button>
+
+        Cancel
+        <button class="custom-tab-btn"
+                style="display:none;"
+                title="Cancel editing"
+                id="cancelRecord"
+                onclick="cancelModify();">
+            Cancel
+        </button> -->
+ 
+        <!-- Download button - Summary -->
+        <button type="button" class="custom-tab-btn"
+            th:if="${displaymode == 'summary'}"
+            th:attr="data-reportid=${reportid}, 
+                     data-asondate=${asondate}, 
+                     data-fromdate=${fromdate}, 
+                     data-todate=${todate}, 
+                     data-currency=${currency},  
+                     data-dtltype=${dtltype}, 
+                     data-filename='RWA.xlsx',
+                     data-type=${type},
+                     data-version=${version}"
+            onclick="downloadfile(this);">
+            <i class="fa fa-download"></i>
+        </button>
+
+        <!-- Download button - Details -->
+        <button type="button" class="custom-tab-btn"
+            th:if="${displaymode == 'Details'}"
+            th:attr="data-reportid=${reportid}, 
+                     data-asondate=${asondate}, 
+                     data-fromdate=${fromdate}, 
+                     data-todate=${todate}, 
+                     data-currency=${currency},  
+                     data-dtltype=${dtltype}, 
+                     data-filename='RWADetail',
+                     data-type=${type},
+                     data-version=${version}"
+            onclick="startReport(this)">
+            <i class="fa fa-download"></i>
+        </button>
+
+    </div>
+</div>
+
+</div>
+
+
+<div th:if="${displaymode == 'summary'}">
+					<div class="row">
+						<div class="col-sm-12">
+						<form action="#" method="POST" id="fileupload">
+						<input type="hidden" name="asondate" id="asondate" th:value="${asondate}" />
+							<div class="table-wrapper table-responsive scrollable-table-container"
+								style="border-right: 1px solid #dee2e6; ">
+								<table
+									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+									id="reports">
+									<thead class="thead-light">
+		                                   <tr  style="background-color: black; ">
+
+         <th colspan="4" style="text-align:left; font-weight:bold;">
+            RISK WEIGHTED ASSETS & EXPOSURES (INDIAN OFFICES)
+        </th>
+        <th colspan="7" style="text-align:right; font-weight:bold;">
+             (Amounts/values in BWP 000) 
+        </th>
+    </tr>
+    <tr  style="background-color: black; ">
+
+         <th colspan="7" style="text-align:center; font-weight:bold;">
+             SECTION A - ASSETS 
+
+        </th>
+     </tr>
+    
+ <tr>
+	<th style="text-align: center; color: black;">No.</th>
+	<th style="text-align: center; color: black;">Asset item</th>
+	<th style="text-align: center; color: black;"> Book </th>
+	<th style="text-align: center; color: black;"> Margins & </th>
+	<th style="text-align: center; color: black;"> Book Value </th>
+	<th style="text-align: center; color: black;"> RW(%) </th>
+	<th style="text-align: center; color: black;"> Risk Adju-</th>
+</tr>
+<tr>
+    <th style="text-align: center; color: black;"></th>
+	<th style="text-align: center; color: black;"></th>
+	<th style="text-align: center; color: black;"> Value </th>
+	<th style="text-align: center; color: black;"> Provisions </th>
+	<th style="text-align: center; color: black;"> (Net)  </th>
+	<th style="text-align: center; color: black;"> </th>
+	<th style="text-align: center; color: black;"> sted value </th>
+</tr>
+
+ </thead>
+  <tbody style="font-family: Arial"th:each="reportsummary: ${reportsummary}">
+  
+  <tr>
+    <td style="text-align:left; padding-left:10px;">1</td>
+    <td style="text-align:left; padding-left:10px;">2</td>
+    <td style="text-align:center; padding-left:10px;">3</td>
+    <td style="text-align:center; padding-left:10px;">4</td>
+    <td style="text-align:center; padding-left:10px;">5</td>
+    <td style="text-align:center; padding-left:10px;">6</td>
+    <td style="text-align:center; padding-left:10px;">7</td>
+  </tr>
+  
+  
+  <tr style="height:30px;">
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+  </tr>
+  
+  <tr>
+    <td style="text-align:left;">1. Cash & RBI</td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+     <td id="R8_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R8_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R8', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+     </td>
+     <td id="R8_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R8_MARGINS,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R8', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+     </td>
+     <td id="R8_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R8_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R8', reportAddlCriteria1='C4'">
+     </td>
+     <td id="R8_RW" th:text="${#numbers.formatDecimal(reportsummary.R8_RW,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R8', reportAddlCriteria1='C5'"
+         onclick="showdetailsbyRowAndColumn(this)">
+     </td>
+     <td id="R8_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R8_RISK_VALUE,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R8', reportAddlCriteria1='C6'">
+     </td>
+   </tr>
+   
+   <tr>
+    <td style="text-align:left;">2. Due from banks </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R9_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R9_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R9', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R9_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R9_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R9', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R9_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R9_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R9', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R9_RW" th:text="${#numbers.formatDecimal(reportsummary.R9_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R9', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R9_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R9_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R9', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;font-weight: bold;">3. INVESTMENTS </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R10_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R10_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R10', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R10_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R10_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R10', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R10_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R10_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R10', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R10_RW" th:text="${#numbers.formatDecimal(reportsummary.R10_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R10', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R10_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R10_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R10', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;"> - SLR assets
+</td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R11_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R11_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R11', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R11_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R11_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R11', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R11_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R11_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R11', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R11_RW" th:text="${#numbers.formatDecimal(reportsummary.R11_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R11', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R11_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R11_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R11', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - Recapitalisation Bonds
+</td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R12_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R12_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R12', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R12_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R12_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R12', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R12_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R12_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R12', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R12_RW" th:text="${#numbers.formatDecimal(reportsummary.R12_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R12', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R12_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R12_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R12', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;font-weight: bold;">Total other Debt. Securities
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R13_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R13_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R13', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R13_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R13_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R13', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R13_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R13_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R13', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R13_RW" th:text="${#numbers.formatDecimal(reportsummary.R13_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R13', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R13_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R13_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R13', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">    - Other debt securities
+    </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R14_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R14_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R14', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R14_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R14_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R14', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R14_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R14_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R14', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R14_RW" th:text="${#numbers.formatDecimal(reportsummary.R14_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R14', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R14_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R14_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R14', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;"> (Payment of intt. Guty. By Govt.)
+    </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R15_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R15_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R15', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R15_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R15_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R15', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R15_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R15_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R15', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R15_RW" th:text="${#numbers.formatDecimal(reportsummary.R15_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R15', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R15_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R15_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R15', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - Other debt securities
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R16_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R16_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R16', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R16_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R16_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R16', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R16_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R16_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R16', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R16_RW" th:text="${#numbers.formatDecimal(reportsummary.R16_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R16', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R16_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R16_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R16', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;"> </td>
+    <td style="text-align:left;">(Payment of intt. Guty. By Govt <br>which do not form part of approved <br> borrowing.)
+     </td>
+    <td id="R17_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R17_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R17', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R17_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R17_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R17', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R17_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R17_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R17', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R17_RW" th:text="${#numbers.formatDecimal(reportsummary.R17_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R17', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R17_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R17_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R17', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">    - Other debt securities
+    </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R18_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R18_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R18', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R18_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R18_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R18', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R18_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R18_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R18', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R18_RW" th:text="${#numbers.formatDecimal(reportsummary.R18_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R18', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R18_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R18_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R18', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;"> </td>
+    <td style="text-align:left;">(Guty. By Govt which default <br> inpayment.)
+     </td>
+    <td id="R19_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R19_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R19', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R19_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R19_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R19', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R19_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R19_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R19', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R19_RW" th:text="${#numbers.formatDecimal(reportsummary.R19_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R19', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R19_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R19_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R19', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - Other debt securities
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R20_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R20_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R20', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R20_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R20_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R20', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R20_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R20_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R20', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R20_RW" th:text="${#numbers.formatDecimal(reportsummary.R20_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R20', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R20_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R20_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R20', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;"> </td>
+    <td style="text-align:left;">(issued by other banks/PFIs.)
+     </td>
+    <td id="R21_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R21_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R21', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R21_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R21_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R21', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R21_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R21_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R21', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R21_RW" th:text="${#numbers.formatDecimal(reportsummary.R21_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R21', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R21_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R21_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R21', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;"> </td>
+    <td style="text-align:left;">Tier II capital issued by other banks
+     </td>
+    <td id="R22_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R22_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R22', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R22_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R22_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R22', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R22_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R22_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R22', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R22_RW" th:text="${#numbers.formatDecimal(reportsummary.R22_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R22', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R22_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R22_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R22', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:right;"> </td>
+    <td style="text-align:left;"> Mortgage backed securities of <br> residential assets of (HFCs)
+    </td>
+    <td id="R23_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R23_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R23', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R23_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R23_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R23', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R23_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R23_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R23', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R23_RW" th:text="${#numbers.formatDecimal(reportsummary.R23_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R23', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R23_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R23_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R23', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:right;"> </td>
+    <td style="text-align:left;">All others
+     </td>
+    <td id="R24_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R24_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R24', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R24_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R24_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R24', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R24_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R24_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R24', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R24_RW" th:text="${#numbers.formatDecimal(reportsummary.R24_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R24', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R24_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R24_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R24', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - Equities
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R25_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R25_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R25', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R25_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R25_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R25', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R25_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R25_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R25', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R25_RW" th:text="${#numbers.formatDecimal(reportsummary.R25_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R25', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R25_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R25_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R25', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - Foreign Investments
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R26_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R26_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R26', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R26_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R26_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R26', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R26_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R26_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R26', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R26_RW" th:text="${#numbers.formatDecimal(reportsummary.R26_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R26', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R26_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R26_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R26', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - Other participations
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R27_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R27_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R27', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R27_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R27_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R27', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R27_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R27_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R27', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R27_RW" th:text="${#numbers.formatDecimal(reportsummary.R27_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R27', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R27_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R27_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R27', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:right;"> </td>
+    <td style="text-align:left;">   TOTAL OF 3
+     </td>
+    <td id="R28_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R28_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R28', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R28_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R28_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R28', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R28_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R28_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R28', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R28_RW" th:text="${#numbers.formatDecimal(reportsummary.R28_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R28', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R28_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R28_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R28', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;"> 4. LOANS & ADVANCES
+    </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R29_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R29_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R29', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R29_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R29_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R29', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R29_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R29_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R29', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R29_RW" th:text="${#numbers.formatDecimal(reportsummary.R29_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R29', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R29_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R29_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R29', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - To staff
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R30_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R30_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R30', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R30_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R30_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R30', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R30_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R30_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R30', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R30_RW" th:text="${#numbers.formatDecimal(reportsummary.R30_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R30', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R30_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R30_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R30', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">    - Against Bank Deposits
+    </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R31_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R31_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R31', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R31_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R31_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R31', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R31_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R31_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R31', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R31_RW" th:text="${#numbers.formatDecimal(reportsummary.R31_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R31', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R31_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R31_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R31', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">     & specified collateral securities
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R32_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R32_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R32', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R32_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R32_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R32', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R32_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R32_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R32', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R32_RW" th:text="${#numbers.formatDecimal(reportsummary.R32_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R32', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R32_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R32_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R32', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - To Govt.(GOI/State)
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R33_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R33_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R33', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R33_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R33_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R33', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R33_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R33_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R33', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R33_RW" th:text="${#numbers.formatDecimal(reportsummary.R33_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R33', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R33_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R33_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R33', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;font-weight: bold;">Total Govt. Guaranteed advances
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R34_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R34_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R34', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R34_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R34_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R34', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R34_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R34_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R34', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R34_RW" th:text="${#numbers.formatDecimal(reportsummary.R34_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R34', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R34_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R34_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R34', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - Govt.guaranteed
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R35_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R35_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R35', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R35_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R35_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R35', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R35_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R35_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R35', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R35_RW" th:text="${#numbers.formatDecimal(reportsummary.R35_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R35', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R35_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R35_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R35', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - Govt.guaranteed
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R36_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R36_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R36', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R36_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R36_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R36', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R36_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R36_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R36', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R36_RW" th:text="${#numbers.formatDecimal(reportsummary.R36_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R36', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R36_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R36_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R36', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - Govt.guaranteed (Guty. invoked)
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R37_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R37_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R37', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R37_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R37_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R37', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R37_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R37_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R37', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R37_RW" th:text="${#numbers.formatDecimal(reportsummary.R37_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R37', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R37_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R37_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R37', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">    - Govt.guaranteed (FCI)
+    </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R38_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R38_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R38', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R38_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R38_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R38', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R38_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R38_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R38', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R38_RW" th:text="${#numbers.formatDecimal(reportsummary.R38_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R38', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R38_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R38_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R38', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - Bank guaranteed
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R39_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R39_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R39', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R39_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R39_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R39', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R39_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R39_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R39', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R39_RW" th:text="${#numbers.formatDecimal(reportsummary.R39_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R39', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R39_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R39_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R39', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - B.P.under Other Bank
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R40_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R40_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R40', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R40_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R40_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R40', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R40_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R40_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R40', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R40_RW" th:text="${#numbers.formatDecimal(reportsummary.R40_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R40', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R40_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R40_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R40', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">      L.Cs/Acceptance Credit
+    </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R41_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R41_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R41', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R41_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R41_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R41', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R41_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R41_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R41', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R41_RW" th:text="${#numbers.formatDecimal(reportsummary.R41_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R41', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R41_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R41_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R41', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">      L.Cs/Acceptance Credit (not confirmed)
+    </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R42_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R42_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R42', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R42_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R42_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R42', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R42_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R42_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R42', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R42_RW" th:text="${#numbers.formatDecimal(reportsummary.R42_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R42', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R42_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R42_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R42', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">    ECGE "covered" credit only
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R43_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R43_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R43', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R43_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R43_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R43', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R43_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R43_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R43', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R43_RW" th:text="${#numbers.formatDecimal(reportsummary.R43_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R43', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R43_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R43_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R43', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;"> Loans to indivisuals against mortgage of housing property	
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R44_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R44_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R44', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R44_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R44_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R44', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R44_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R44_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R44', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R44_RW" th:text="${#numbers.formatDecimal(reportsummary.R44_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R44', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R44_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R44_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R44', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">     All other loans & advances(incl. bills)
+    </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R45_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R45_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R45', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R45_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R45_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R45', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R45_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R45_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R45', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R45_RW" th:text="${#numbers.formatDecimal(reportsummary.R45_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R45', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R45_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R45_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R45', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;"> </td>
+    <td style="text-align:left;">   TOTAL OF 4
+     </td>
+    <td id="R46_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R46_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R46', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R46_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R46_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R46', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R46_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R46_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R46', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R46_RW" th:text="${#numbers.formatDecimal(reportsummary.R46_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R46', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R46_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R46_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R46', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr style="height:30px;">
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+  </tr>
+
+
+<tr>
+    <td style="text-align:left;">    C/F
+    </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R48_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R48_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R48', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R48_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R48_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R48', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R48_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R48_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R48', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R48_RW" th:text="${#numbers.formatDecimal(reportsummary.R48_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R48', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R48_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R48_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R48', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+   
+   </tbody>
+</table>
+
+<div class="table-wrapper table-responsive" style="border-right: 1px solid #dee2e6; ">
+ <table
+									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+									id="reports">
+									<thead class="thead-light" style=" top: 0;border:2px solid black; background-color: #b3b6b9; z-index: 1;">
+										<tr  style="background-color: black; ">
+										
+										<th colspan="7" style="text-align:center; font-weight:bold;">
+             SECTION A - ASSETS (INDIAN OPERATIONS)
+        </th>
+    </tr>
+    
+ <tr>
+	<th style="text-align: center; color: black;">No.</th>
+	<th style="text-align: center; color: black;">Asset item</th>
+	<th style="text-align: center; color: black;"> Book </th>
+	<th style="text-align: center; color: black;"> Margins & </th>
+	<th style="text-align: center; color: black;"> Book Value </th>
+	<th style="text-align: center; color: black;"> RW(%) </th>
+	<th style="text-align: center; color: black;"> Risk Adju-</th>
+</tr>
+<tr>
+    <th style="text-align: center; color: black;"></th>
+	<th style="text-align: center; color: black;"></th>
+	<th style="text-align: center; color: black;"> Value </th>
+	<th style="text-align: center; color: black;"> Provisions </th>
+	<th style="text-align: center; color: black;"> (Net)  </th>
+	<th style="text-align: center; color: black;"> </th>
+	<th style="text-align: center; color: black;"> sted value </th>
+</tr>
+
+</thead>
+  <tbody style="font-family: Arial"th:each="reportsummary: ${reportsummary}">
+  
+  <tr>
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"> NIL </td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"> (3-4) </td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"> (5x6) </td>
+  </tr>
+     
+  <tr style="height:30px;">
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+  </tr>
+  
+  <tr>
+    <td style="text-align:left; padding-left:10px;">1</td>
+    <td style="text-align:left; padding-left:10px;">2</td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+  </tr>
+  
+  <tr style="height:30px;">
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+  </tr>
+  
+  <tr>
+    <td style="text-align:left;">    B/F
+    </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R61_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R61_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R61', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R61_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R61_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R61', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R61_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R61_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R61', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R61_RW" th:text="${#numbers.formatDecimal(reportsummary.R61_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R61', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R61_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R61_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R61', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+<tr style="height:30px;">
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+  </tr>
+  
+  <tr>
+    <td style="text-align:left;"> 5. OTHER ASSETS
+    </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R63_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R63_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R63', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R63_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R63_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R63', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R63_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R63_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R63', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R63_RW" th:text="${#numbers.formatDecimal(reportsummary.R63_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R63', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R63_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R63_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R63', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - Interest due/accrued on Govt.Sec.
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R64_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R64_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R64', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R64_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R64_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R64', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R64_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R64_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R64', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R64_RW" th:text="${#numbers.formatDecimal(reportsummary.R64_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R64', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R64_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R64_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R64', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">  - Interest due/accrued others</td>
+    <td style="text-align:left;font-weight: bold;">  
+     </td>
+    <td id="R65_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R65_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R65', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R65_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R65_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R65', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R65_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R65_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R65', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R65_RW" th:text="${#numbers.formatDecimal(reportsummary.R65_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R65', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R65_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R65_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R65', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">  - Inter Office Adj.
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R66_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R66_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R66', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R66_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R66_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R66', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R66_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R66_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R66', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R66_RW" th:text="${#numbers.formatDecimal(reportsummary.R66_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R66', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R66_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R66_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R66', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - Advance Tax paid & 
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R67_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R67_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R67', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R67_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R67_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R67', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R67_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R67_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R67', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R67_RW" th:text="${#numbers.formatDecimal(reportsummary.R67_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R67', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R67_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R67_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R67', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">     TDS (Net)
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R68_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R68_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R68', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R68_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R68_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R68', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R68_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R68_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R68', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R68_RW" th:text="${#numbers.formatDecimal(reportsummary.R68_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R68', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R68_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R68_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R68', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">    - Due from RBI
+    </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R69_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R69_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R69', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R69_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R69_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R69', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R69_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R69_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R69', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R69_RW" th:text="${#numbers.formatDecimal(reportsummary.R69_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R69', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R69_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R69_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R69', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">      - Due from RBI
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R70_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R70_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R70', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R70_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R70_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R70', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R70_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R70_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R70', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R70_RW" th:text="${#numbers.formatDecimal(reportsummary.R70_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R70', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R70_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R70_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R70', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - Residuary Other Assets
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R71_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R71_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R71', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R71_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R71_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R71', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R71_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R71_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R71', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R71_RW" th:text="${#numbers.formatDecimal(reportsummary.R71_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R71', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R71_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R71_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R71', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;"> </td>
+    <td style="text-align:left;">WITH 0% RISK
+     </td>
+    <td id="R72_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R72_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R72', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R72_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R72_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R72', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R72_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R72_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R72', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R72_RW" th:text="${#numbers.formatDecimal(reportsummary.R72_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R72', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R72_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R72_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R72', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:right;"> </td>
+    <td style="text-align:left;">WITH 2 0% RISK </td>
+    <td id="R73_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R73_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R73', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R73_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R73_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R73', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R73_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R73_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R73', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R73_RW" th:text="${#numbers.formatDecimal(reportsummary.R73_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R73', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R73_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R73_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R73', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:right;"> </td>
+    <td style="text-align:left;">Others </td>
+    <td id="R74_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R74_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R74', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R74_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R74_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R74', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R74_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R74_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R74', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R74_RW" th:text="${#numbers.formatDecimal(reportsummary.R74_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R74', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R74_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R74_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R74', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+<tr style="height:30px;">
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+  </tr>
+  
+  <tr style="height:30px;">
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+  </tr>
+  
+  <tr>
+    <td style="text-align:left;"> </td>
+    <td style="text-align:left;">   TOTAL OF 5
+     </td>
+    <td id="R77_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R77_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R77', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R77_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R77_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R77', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R77_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R77_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R77', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R77_RW" th:text="${#numbers.formatDecimal(reportsummary.R77_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R77', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R77_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R77_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R77', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+<tr style="height:30px;">
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+  </tr>
+  
+  <tr>
+    <td style="text-align:left;">6. Fixed Assets (Net) </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R79_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R79_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R79', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R79_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R79_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R79', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R79_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R79_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R79', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R79_RW" th:text="${#numbers.formatDecimal(reportsummary.R79_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R79', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R79_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R79_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R79', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+<tr style="height:30px;">
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+ </tr>
+ 
+ <tr>
+    <td style="text-align:left;">TOTAL RISK WEIGHTED
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R81_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R81_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R81', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R81_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R81_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R81', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R81_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R81_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R81', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R81_RW" th:text="${#numbers.formatDecimal(reportsummary.R81_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R81', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R81_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R81_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R81', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;"> ASSETS (TRWA) 1 TO 6
+    </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R82_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R82_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R82', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R82_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R82_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R82', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R82_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R82_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R82', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R82_RW" th:text="${#numbers.formatDecimal(reportsummary.R82_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R82', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R82_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R82_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R82', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+<tr style="height:30px;">
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+ </tr>
+ 
+  </tbody>
+</table>
+
+<div class="table-wrapper table-responsive" style="border-right: 1px solid #dee2e6; ">
+ <table
+									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+									id="reports">
+									<thead class="thead-light" style=" top: 0;border:2px solid black; background-color: #b3b6b9; z-index: 1;">
+										<tr  style="background-color: black; ">
+										
+										<th colspan="7" style="text-align:center; font-weight:bold;">
+              SCHEDULE - 2(O) 
+        </th>
+    </tr>
+    <tr>
+    <th colspan="7" style="text-align:center; font-weight:bold;">
+            RISK WEIGHTED ASSETS & EXPOSURES (FOREIGN OPERATIONS)
+        </th>
+        </tr>
+        <tr>
+        <th colspan="7" style="text-align:center; font-weight:bold;">
+              SECTION A - ASSETS  
+        </th>
+        </tr>
+    
+ <tr>
+	<th style="text-align: center; color: black;">No.</th>
+	<th style="text-align: center; color: black;">Asset item</th>
+	<th style="text-align: center; color: black;"> Book </th>
+	<th style="text-align: center; color: black;"> Margins & </th>
+	<th style="text-align: center; color: black;"> Book Value </th>
+	<th style="text-align: center; color: black;"> RW(%) </th>
+	<th style="text-align: center; color: black;"> Risk Adju-</th>
+</tr>
+<tr>
+    <th style="text-align: center; color: black;"></th>
+	<th style="text-align: center; color: black;"></th>
+	<th style="text-align: center; color: black;"> Value </th>
+	<th style="text-align: center; color: black;"> Provisions </th>
+	<th style="text-align: center; color: black;"> (Net)  </th>
+	<th style="text-align: center; color: black;"> </th>
+	<th style="text-align: center; color: black;"> sted value </th>
+</tr>
+
+</thead>
+  <tbody style="font-family: Arial"th:each="reportsummary: ${reportsummary}">
+  
+  <tr style="height:30px;">
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+  </tr>
+  
+  <tr>
+    <td style="text-align:left; padding-left:10px;">1</td>
+    <td style="text-align:left; padding-left:10px;">2</td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+  </tr>
+  
+  <tr style="height:30px;">
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+  </tr>
+  
+  <tr>
+    <td style="text-align:left;">1. Cash & Central Bank of the Country
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R97_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R97_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R97', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R97_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R97_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R97', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R97_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R97_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R97', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R97_RW" th:text="${#numbers.formatDecimal(reportsummary.R97_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R97', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R97_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R97_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R97', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">2. Due from banks
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R98_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R98_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R98', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R98_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R98_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R98', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R98_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R98_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R98', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R98_RW" th:text="${#numbers.formatDecimal(reportsummary.R98_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R98', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R98_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R98_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R98', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">3. INVESTMENTS
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R99_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R99_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R99', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R99_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R99_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R99', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R99_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R99_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R99', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R99_RW" th:text="${#numbers.formatDecimal(reportsummary.R99_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R99', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R99_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R99_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R99', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">    - Govt. securities
+    </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R100_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R100_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R100', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R100_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R100_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R100', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R100_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R100_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R100', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R100_RW" th:text="${#numbers.formatDecimal(reportsummary.R100_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R100', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R100_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R100_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R100', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - Recapitalisation Bonds
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R101_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R101_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R101', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R101_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R101_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R101', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R101_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R101_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R101', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R101_RW" th:text="${#numbers.formatDecimal(reportsummary.R101_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R101', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R101_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R101_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R101', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - Other debt securities
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R102_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R102_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R102', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R102_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R102_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R102', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R102_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R102_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R102', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R102_RW" th:text="${#numbers.formatDecimal(reportsummary.R102_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R102', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R102_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R102_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R102', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - Equities
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R103_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R103_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R103', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R103_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R103_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R103', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R103_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R103_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R103', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R103_RW" th:text="${#numbers.formatDecimal(reportsummary.R103_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R103', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R103_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R103_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R103', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - Subsidiaries/Jt.ventures abroad
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R104_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R104_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R104', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R104_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R104_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R104', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R104_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R104_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R104', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R104_RW" th:text="${#numbers.formatDecimal(reportsummary.R104_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R104', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R104_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R104_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R104', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - Other investments
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R105_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R105_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R105', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R105_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R105_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R105', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R105_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R105_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R105', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R105_RW" th:text="${#numbers.formatDecimal(reportsummary.R105_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R105', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R105_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R105_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R105', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:right;"> </td>
+    <td style="text-align:left;">   TOTAL OF 3
+     </td>
+    <td id="R106_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R106_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R106', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R106_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R106_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R106', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R106_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R106_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R106', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R106_RW" th:text="${#numbers.formatDecimal(reportsummary.R106_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R106', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R106_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R106_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R106', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">4. LOANS & ADVANCES
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R107_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R107_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R107', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R107_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R107_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R107', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R107_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R107_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R107', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R107_RW" th:text="${#numbers.formatDecimal(reportsummary.R107_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R107', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R107_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R107_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R107', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - To staff
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R108_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R108_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R108', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R108_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R108_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R108', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R108_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R108_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R108', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R108_RW" th:text="${#numbers.formatDecimal(reportsummary.R108_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R108', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R108_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R108_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R108', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - Against Bank Own Deposits
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R109_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R109_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R109', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R109_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R109_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R109', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R109_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R109_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R109', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R109_RW" th:text="${#numbers.formatDecimal(reportsummary.R109_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R109', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R109_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R109_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R109', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">    - To Govt.(GOI/State)
+    </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R110_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R110_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R110', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R110_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R110_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R110', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R110_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R110_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R110', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R110_RW" th:text="${#numbers.formatDecimal(reportsummary.R110_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R110', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R110_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R110_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R110', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">    - Govt.guaranteed
+    </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R111_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R111_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R111', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R111_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R111_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R111', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R111_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R111_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R111', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R111_RW" th:text="${#numbers.formatDecimal(reportsummary.R111_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R111', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R111_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R111_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R111', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - Bank guaranteed
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R112_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R112_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R112', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R112_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R112_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R112', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R112_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R112_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R112', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R112_RW" th:text="${#numbers.formatDecimal(reportsummary.R112_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R112', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R112_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R112_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R112', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - Bills purchased under other bankL.Cs
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R113_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R113_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R113', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R113_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R113_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R113', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R113_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R113_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R113', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R113_RW" th:text="${#numbers.formatDecimal(reportsummary.R113_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R113', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R113_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R113_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R113', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">     acceptance credit
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R114_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R114_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R114', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R114_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R114_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R114', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R114_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R114_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R114', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R114_RW" th:text="${#numbers.formatDecimal(reportsummary.R114_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R114', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R114_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R114_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R114', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">    - ECGC/DICGC guaranteed
+    </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R115_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R115_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R115', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R115_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R115_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R115', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R115_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R115_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R115', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R115_RW" th:text="${#numbers.formatDecimal(reportsummary.R115_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R115', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R115_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R115_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R115', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">     "covered" credit only
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R116_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R116_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R116', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R116_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R116_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R116', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R116_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R116_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R116', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R116_RW" th:text="${#numbers.formatDecimal(reportsummary.R116_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R116', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R116_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R116_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R116', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - All other loans &
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R117_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R117_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R117', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R117_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R117_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R117', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R117_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R117_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R117', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R117_RW" th:text="${#numbers.formatDecimal(reportsummary.R117_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R117', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R117_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R117_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R117', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">     advances(incl. bills)
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R118_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R118_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R118', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R118_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R118_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R118', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R118_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R118_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R118', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R118_RW" th:text="${#numbers.formatDecimal(reportsummary.R118_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R118', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R118_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R118_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R118', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+<tr style="height:30px;">
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+  </tr>
+  
+  <tr>
+    <td style="text-align:left;"> </td>
+    <td style="text-align:left;">   TOTAL OF 4
+     </td>
+    <td id="R120_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R120_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R120', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R120_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R120_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R120', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R120_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R120_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R120', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R120_RW" th:text="${#numbers.formatDecimal(reportsummary.R120_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R120', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R120_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R120_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R120', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">5. OTHER ASSETS
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R121_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R121_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R121', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R121_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R121_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R121', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R121_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R121_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R121', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R121_RW" th:text="${#numbers.formatDecimal(reportsummary.R121_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R121', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R121_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R121_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R121', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - Interest due/accrued
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R122_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R122_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R122', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R122_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R122_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R122', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R122_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R122_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R122', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R122_RW" th:text="${#numbers.formatDecimal(reportsummary.R122_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R122', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R122_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R122_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R122', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">     on Govt.securities
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R123_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R123_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R123', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R123_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R123_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R123', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R123_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R123_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R123', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R123_RW" th:text="${#numbers.formatDecimal(reportsummary.R123_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R123', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R123_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R123_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R123', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - Advance Tax paid & TDS (net)
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R124_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R124_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R124', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R124_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R124_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R124', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R124_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R124_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R124', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R124_RW" th:text="${#numbers.formatDecimal(reportsummary.R124_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R124', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R124_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R124_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R124', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">   - Residuary Other Assets
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R125_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R125_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R125', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R125_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R125_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R125', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R125_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R125_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R125', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R125_RW" th:text="${#numbers.formatDecimal(reportsummary.R125_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R125', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R125_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R125_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R125', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+<tr style="height:30px;">
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+  </tr>
+  
+  <tr>
+    <td style="text-align:left;"> </td>
+    <td style="text-align:left;">   TOTAL OF 5
+     </td>
+    <td id="R127_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R127_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R127', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R127_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R127_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R127', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R127_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R127_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R127', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R127_RW" th:text="${#numbers.formatDecimal(reportsummary.R127_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R127', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R127_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R127_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R127', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+<tr style="height:30px;">
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+  </tr>
+  
+  <tr>
+    <td style="text-align:left;">6. Fixed Assets (Net)
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R129_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R129_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R129', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R129_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R129_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R129', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R129_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R129_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R129', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R129_RW" th:text="${#numbers.formatDecimal(reportsummary.R129_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R129', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R129_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R129_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R129', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align:left;">Total Risk Weighted Assets(TRWA) 1 to 6
+     </td>
+    <td style="text-align:left;font-weight: bold;"> </td>
+    <td id="R130_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R130_BOOK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R130', reportAddlCriteria1='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R130_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R130_MARGINS,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R130', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R130_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R130_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R130', reportAddlCriteria1='C4'">
+    </td>
+    <td id="R130_RW" th:text="${#numbers.formatDecimal(reportsummary.R130_RW,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R130', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+    <td id="R130_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R130_RISK_VALUE,1,'COMMA',0,'POINT')}"
+        style="text-align: right; width: 200px;"
+        th:attr="reportLable='R130', reportAddlCriteria1='C6'">
+    </td>
+</tr>
+
+<tr style="height:30px;">
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:left; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+    <td style="text-align:center; padding-left:10px;"></td>
+  </tr>
+  
+  </tbody>
+</table>
+
+       </div>
+       </div>
+  <!--     <div style="text-align: center;  background-color: white;  padding:15px;">
+
+        <button id="submitButton" type="button"
+         class="custom-tab-btn Show_input" form="fileupload"
+         th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+         style="display: none;">Submit</button>
+       </div> -->
+    </form>
+  </div>
+ </div>
+</div>
+
+
+        
+        
+<!-- ------------------- -->
+<!--  DETAIL -->
+            <div th:if="${displaymode == 'Details'}">
+             <div class="row">
+              <div class="col-sm-12" style="max-height:90vh; overflow-y: auto; ">
+               <div class="table-container" 
+                style="border-right: 1px solid #dee2e6; ">
+                <table class="table table-striped table-bordered table-hover"
+                 id="reportdetails">
+                 <thead class="thead-light">
+                  
+                  <tr>
+                   <th> </th>
+                   <th>S No</th>
+                   <th>CUST ID</th>
+                   <th>ACCT NUMBER</th>
+                   <th>ACCT NAME</th>
+                   <th>ACCT BALANCE IN PULA</th>
+                   
+                   <th style="text-align:left;">REPORT LABLE</th>
+                   <th>REPORT ADDL CRITERIA 1</th>
+                   <th>REPORT DATE</th>
+                  </tr>
+
+                 </thead>
+
+                 <tbody style="font-family: Arial;">
+                  <tr th:each="report, srlno : ${reportdetails}">
+                   <td>
+                    <a data-toggle="tooltip" class="editrec"
+                     title="Click to Edit this Record">
+                     <i class="fas fa-edit" style="color: black; cursor:pointer;"
+                      th:attr="data-acctNo=${report.acctNumber},
+                      data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
+                      onclick="openDetail(this, 'edit')"></i>
+
+                    </a>
+                   </td>
+                   <td th:text="${srlno.index + 1}"></td>
+                   <td th:text="${report.custId != null ? report.custId : '-'}"></td>
+                   <td th:text="${report.acctNumber != null ? report.acctNumber : '-'}"></td>
+                   <td th:text="${report.acctName != null ? report.acctName : '-'}"></td>
+                   
+                   <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.acctBalanceInpula,1,'COMMA',0,'POINT')}"></td>
+                   
+                   <td style="text-align:left;" th:text="${report.reportLable != null ? report.reportLable : '-'}">
+                   </td>
+                   <td
+                    th:text="${report.reportAddlCriteria1 != null ? report.reportAddlCriteria1 : '-'}">
+                   </td>
+                   <td th:text="${report.reportDate != null ? #dates.format(report.reportDate, 'dd-MM-yyyy') : '-'}"></td>
+                  </tr>
+                 </tbody>
+                </table>
+
+               </div>
+
+               <!-- Submit Button -->
+               <div style="text-align: center; margin-top: 15px; background-color: white;">
+                <button id="submitButton" type="button" class="custom-tab-btn Show_input"
+                 onclick="updateform();" style="display: none;">
+                 Submit
+                </button>
+               </div>
+              </div>
+             </div>
+
+   </div>
+
+   <!-- FSI Detail Form Screen -->
+   <div th:if="${formmode == 'edit'}" class="card">
+     <div class="card-body">
+       <form th:object="${Data}" method="post" id="DetailForm">
+
+         <!-- Row 1 -->
+         <div class="row formline" style="margin-top:10px;">
+           <label class="col-sm-2">Customer ID</label>
+           <div class="col-sm-3">
+             <input type="text" th:field="*{custId}" class="form-control form-control-sm" readonly />
+           </div>
+
+           <div class="col-sm-1"></div>
+
+           <label class="col-sm-2">Account Number</label>
+           <div class="col-sm-3">
+             <input type="text" th:field="*{acctNumber}" class="form-control form-control-sm" readonly />
+           </div>
+         </div>
+
+         <!-- Row 2 -->
+         <div class="row formline" style="margin-top:10px;">
+           <label class="col-sm-2">Account Name</label>
+           <div class="col-sm-3">
+             <input type="text" th:field="*{acctName}" class="form-control form-control-sm" readonly />
+           </div>
+
+           <div class="col-sm-1"></div>
+
+           <label class="col-sm-2">Acct Balance</label>
+           <div class="col-sm-3">
+             <input type="number" step="0.01" th:field="*{acctBalanceInpula}" class="form-control form-control-sm" style="text-align:right;" />
+           </div>
+         </div>
+
+         <!-- Row 3 -->
+         <div class="row formline" style="margin-top:10px;">
+           <label class="col-sm-2">Report Lable</label>
+           <div class="col-sm-3">
+             <input type="text" th:field="*{reportLable}" class="form-control form-control-sm" readonly />
+           </div>
+
+           <div class="col-sm-1"></div>
+
+           <label class="col-sm-2">Report Addl Criteria 1</label>
+           <div class="col-sm-3">
+             <input type="text" th:field="*{reportAddlCriteria1}" class="form-control form-control-sm" readonly />
+           </div>
+         </div>
+
+         <!-- Row 4 -->
+         <div class="row formline" style="margin-top:10px;">
+           <label class="col-sm-2">Report Date</label>
+           <div class="col-sm-3">
+             <input type="date" name="reportDate" class="form-control form-control-sm"
+                    th:value="${#dates.format(Data.reportDate, 'yyyy-MM-dd')}" readonly/>
+           </div>
+         </div>
+
+             <!-- Update Button -->
+             <div style="text-align:center; margin-top:20px;">
+               <button type="button" class="custom-tab-btn" 
+               th:if="${formmode == 'edit'}" onclick="submitUpdate()">Update</button>
+             </div>
+           </form>
+         </div>
+       </div>
+
+  </div>
+
+
+
+ </div>
+
+
+
+ <div class="modal fade" id="loader" data-backdrop="static"
+  data-keyboard="false">
+  <div
+   class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+   <div class="modal-content" style="background: transparent;">
+    <div class="modal-body" style="text-align: center">
+     <div>
+      <img th:src=@{/images/loader.gif} id="bfirelogo"
+       style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+       alt="Bornfire">
+     </div>
+    </div>
+   </div>
+  </div>
+ </div>
+
+
+
+ <!-- Custom Alert/Result Modal (Matches your existing style) For Modify in Summary -->
+ <div class="modal fade" id="resultModal">
+  <div class="modal-dialog modal-dialog-centered">
+   <div class="modal-content">
+    <!-- Your custom styled header -->
+    <div class="menu-title-header">
+     <div class="modal-title" id="resultModalLabel"
+      style="text-align: center; color: white;">
+      <!-- Title will be set by JavaScript -->
+     </div>
+    </div>
+    <div class="modal-body"
+     style="text-align: center; font-size: 1.1rem;">
+     <p id="resultModalBody"></p>
+     <!-- Your custom styled button -->
+     <button type="button" class="custom-tab-btn" onclick="closemodels()"
+      data-dismiss="modal">ok</button>
+    </div>
+   </div>
+  </div>
+ </div>
+ <!-- For Edit in Detail page -->
+ <div class="modal fade" id="resultModal1">
+  <div class="modal-dialog modal-dialog-centered">
+   <div class="modal-content">
+    <!-- Your custom styled header -->
+     <div class="menu-title-header">
+     <div class="modal-title" id="resultModalLabel1"
+      style="text-align: center; color: white;">
+      <!-- Title will be set by JavaScript--> 
+     </div>
+    </div>
+    <div class="modal-body"
+     style="text-align: center; font-size: 1.1rem;">
+     <p id="resultModalBody1"></p>
+      
+     <button type="button" class="custom-tab-btn" onclick="closemodel()"
+      data-dismiss="modal">OK</button>
+    </div>
+   </div>
+  </div>
+ </div> 
+ 
+<!-- Custom Cellresult Modal -->
+  <div class="modal fade" id="cellresultModal">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        
+        <!-- Custom header -->
+        <div class="menu-title-header" style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+          <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
+            Do you want to open the report?
+          </div>
+        </div>
+
+        <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+          <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"  style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+            Cancel
+          </button>
+          <button type="button" class="custom-tab-btn yes-btn" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+            Yes
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>        
+
+
+<style>
+/* Your existing CSS - this is the correct approach */
+.scrollable-table-container {
+ /* This is the key: it creates the scroll context */
+ max-height: 620px;
+ /* Or a suitable height like 80vh for responsive design */
+ overflow-y: auto;
+ border: 1px solid #ccc;
+}
+
+/* Your existing sticky header CSS, targeting the tr elements within the thead */
+.scrollable-table-container thead tr:nth-child(1) {
+ position: sticky;
+ top: 0;
+ background-color: #b3b6b9;
+ z-index: 5;
+}
+
+.scrollable-table-container thead tr:nth-child(2) {
+ position: sticky;
+ top: 36px; /* adjust based on row height */
+ background-color: #b3b6b9;
+ z-index: 4;
+}
+
+.scrollable-table-container thead tr:nth-child(3) {
+ position: sticky;
+ top: 72px; /* Adjust based on row height */
+ background-color: #b3b6b9;
+ z-index: 3;
+}
+
+.scrollable-table-container thead tr:nth-child(4) {
+ position: sticky;
+ top: 100px; /* Adjust based on row height */
+ background-color: #b3b6b9;
+ z-index: 2;
+}
+
+.scrollable-table-container thead tr:nth-child(5) {
+ position: sticky;
+ top: 135px; /* Adjust based on row height */
+ background-color: #b3b6b9;
+ z-index: 1;
+}
+</style>
+
+
+<style>
+.inner {
+ max-height: 600px; /* Adjust height as needed */
+ overflow: auto;
+ border: 1px solid #dee2e6;
+}
+
+/* Sticky thead */
+#reports thead th {
+ position: sticky;
+ top: 0;
+ background-color: #D8D8D8; /* Match Bootstrap thead-light */
+ z-index: 2;
+}
+
+div.dataTables_wrapper div.dataTables_paginate {
+ text-align: right !important;
+ float: right !important;
+ width: auto;
+ margin-top: 10px;
+}
+
+/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+div.dataTables_wrapper div.dataTables_info {
+ float: left !important;
+ margin-top: 10px;
+}
+
+.pagination {
+ margin: 0;
+}
+
+.page-item.active .page-link {
+ background-color: #386276;
+ border-color: #386276;
+}
+
+.page-link {
+ color: #386276;
+}
+
+.page-link:hover {
+ color: #2a4a5c;
+}
+
+.form-select {
+ display: inline-block;
+ width: auto;
+}
+
+.scrollable-table-container thead tr:nth-child(1),
+.scrollable-table-container thead tr:nth-child(2),
+.scrollable-table-container thead tr:nth-child(3),
+.scrollable-table-container thead tr:nth-child(4),
+.scrollable-table-container thead tr:nth-child(5) {
+    background-color: #D8D8D8; /* set header color */
+}
+
+  .noborder td, tr {
+    border: none !important;
+    background-color:white;
+  }
+  
+  .empty-row td {
+    height: 30px;
+}
+/* 1. Force table to obey colgroup */
+/* #reports {
+    table-layout: fixed !important;
+     position: sticky;
+ top: 0;
+ background-color: #b3b6b9;
+}
+
+/* 2. Make header cells follow colgroup width */
+/* #reports th {
+    width: inherit !important;
+    background-color: #D8D8D8; /* set header color */
+    
+}
+ */
+ */  
+</style>
+
+</html>
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+    
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+
+    
+
+
+
+  
+  
+  
+  
+  
+  
+  
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+ 
+ 
+  
+  
+  
+  
+  
+  
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
