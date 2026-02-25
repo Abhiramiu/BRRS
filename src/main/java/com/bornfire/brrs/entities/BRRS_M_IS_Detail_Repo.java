@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface BRRS_M_IS_Detail_Repo extends JpaRepository<M_IS_Detail_Entity, String> {
+public interface BRRS_M_IS_Detail_Repo extends JpaRepository<M_IS_Detail_Entity, Long> {
 	
 	@Query(value = "select * from BRRS_M_IS_DETAILTABLE where REPORT_DATE =?1", nativeQuery = true)
 	List<M_IS_Detail_Entity> getdatabydateList(Date reportdate);
