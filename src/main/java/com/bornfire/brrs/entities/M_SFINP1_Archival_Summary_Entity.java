@@ -6,6 +6,7 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -14,7 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "BRRS_M_SFINP1_ARCHIVALTABLE_SUMMARY")
-
+@IdClass(M_SFINP1_PK.class)
 public class M_SFINP1_Archival_Summary_Entity {
 	private String r10_product;
 	private String r10_cross_ref;
@@ -224,14 +225,15 @@ public class M_SFINP1_Archival_Summary_Entity {
 	private String r61_cross_ref;
 	private BigDecimal r61_month_end;
 	private BigDecimal r61_average;
-
-	
-	
-	@Temporal(TemporalType.DATE)
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
-	private Date report_date;
-	private BigDecimal report_version;
+	@Temporal(TemporalType.DATE)
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+
+	@Id
+	@Column(name = "REPORT_VERSION")
+	private BigDecimal reportVersion;
+
 	@Column(name = "REPORT_RESUBDATE")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date reportResubDate;
@@ -2750,28 +2752,23 @@ public class M_SFINP1_Archival_Summary_Entity {
 		this.r61_average = r61_average;
 	}
 
+	public Date getReportDate() {
+		return reportDate;
+	}
+
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
+	}
 
 
-	public Date getReport_date() {
-		return report_date;
+	public BigDecimal getReportVersion() {
+		return reportVersion;
 	}
 
 
 
-	public void setReport_date(Date report_date) {
-		this.report_date = report_date;
-	}
-
-
-
-	public BigDecimal getReport_version() {
-		return report_version;
-	}
-
-
-
-	public void setReport_version(BigDecimal report_version) {
-		this.report_version = report_version;
+	public void setReportVersion(BigDecimal reportVersion) {
+		this.reportVersion = reportVersion;
 	}
 
 

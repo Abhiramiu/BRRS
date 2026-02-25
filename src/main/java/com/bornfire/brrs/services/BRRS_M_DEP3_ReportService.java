@@ -97,7 +97,7 @@ public class BRRS_M_DEP3_ReportService {
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getM_DEP3View(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type,  String version) {
+			Pageable pageable, String type,  BigDecimal version) {
 		ModelAndView mv = new ModelAndView();
 //		Session hs = sessionFactory.getCurrentSession();
 //		int pageSize = pageable.getPageSize();
@@ -643,13 +643,12 @@ return new byte[0];
 //		}
 //	}
 
-	public byte[] BRRS_M_DEP3Excel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) throws Exception {
+	public byte[] BRRS_M_DEP3Excel(String filename,String reportId, String fromdate, String todate, String currency, String dtltype,String type,String format,BigDecimal version) throws Exception {
 
 		logger.info("Service: Starting Excel generation process in memory.");
 
 		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+		if (type.equals("ARCHIVAL") & version != null) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getExcelM_DEP3ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
@@ -2518,7 +2517,7 @@ return new byte[0];
 
 
 	public byte[] getExcelM_DEP3ARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		if (type.equals("ARCHIVAL") & version != null) {
 

@@ -570,35 +570,37 @@ public class BRRS_M_LA5_ReportService {
 	}
 
 //	// Archival View
-	// Archival View
-		public List<Object[]> getM_LA5Archival() {
-			List<Object[]> archivalList = new ArrayList<>();
+	public List<Object[]> getM_LA5Archival() {
+		List<Object[]> archivalList = new ArrayList<>();
 
-			try {
-				List<M_LA5_Archival_Summary_Entity> repoData = BRRS_M_LA5_Archival_Summary_Repo
-						.getdatabydateListWithVersion();
+		try {
+			List<M_LA5_Archival_Summary_Entity> repoData = BRRS_M_LA5_Archival_Summary_Repo
+					.getdatabydateListWithVersion();
 
-				if (repoData != null && !repoData.isEmpty()) {
-					for (M_LA5_Archival_Summary_Entity entity : repoData) {
-						Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion(),
-								entity.getReportResubDate() };
-						archivalList.add(row);
-					}
-
-					System.out.println("Fetched " + archivalList.size() + " archival records");
-					M_LA5_Archival_Summary_Entity first = repoData.get(0);
-					System.out.println("Latest archival version: " + first.getReportVersion());
-				} else {
-					System.out.println("No archival data found.");
+			if (repoData != null && !repoData.isEmpty()) {
+				for (M_LA5_Archival_Summary_Entity entity : repoData) {
+					Object[] row = new Object[] {
+							entity.getReportDate(), 
+							entity.getReportVersion(), 
+							 entity.getReportResubDate()
+					};
+					archivalList.add(row);
 				}
 
-			} catch (Exception e) {
-				System.err.println("Error fetching M_LA5 Archival data: " + e.getMessage());
-				e.printStackTrace();
+				System.out.println("Fetched " + archivalList.size() + " archival records");
+				M_LA5_Archival_Summary_Entity first = repoData.get(0);
+				System.out.println("Latest archival version: " + first.getReportVersion());
+			} else {
+				System.out.println("No archival data found.");
 			}
 
-			return archivalList;
+		} catch (Exception e) {
+			System.err.println("Error fetching  M_LA5  Archival data: " + e.getMessage());
+			e.printStackTrace();
 		}
+
+		return archivalList;
+	}
 
 //	public List<Object> getM_LA5Archival() {
 //		List<Object> LA5Archivallist = new ArrayList<>();
