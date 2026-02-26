@@ -25,6 +25,7 @@ import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
@@ -286,85 +287,80 @@ public class BRRS_M_PI_ReportService {
 
 	
 	public byte[] getBRRS_M_PIExcel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, String format, BigDecimal version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.");
-		System.out.println(type);
-		System.out.println(version);
-		if (type.equals("ARCHIVAL") & version != null) {
-			byte[] ARCHIVALreport = getExcelM_PIARCHIVAL(filename, reportId, fromdate, todate,currency, dtltype, type,format, version);
-			return ARCHIVALreport;
-		}
+	        String dtltype, String type, String format, BigDecimal version) throws Exception {
 
-		List<M_PI_Summary_Entity> dataList = BRRS_M_PI_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+	    logger.info("Service: Starting Excel generation process in memory.");
 
-		List<M_PI_Manual_Summary_Entity> dataList1 = BRRS_M_PI_Manual_Summary_Repo.getdatabydateList(dateformat.parse(todate));
-		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for BRF2.4 report. Returning empty result.");
-			return new byte[0];
-		}
+	    // ARCHIVAL check
+	    if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
+	        logger.info("Service: Generating ARCHIVAL report for version {}", version);
+	        return getExcelM_PIARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, format, version);
+	    }
 
-		String templateDir = env.getProperty("output.exportpathtemp");
-		String templateFileName = filename;
-		System.out.println(filename);
-		Path templatePath = Paths.get(templateDir, templateFileName);
-		System.out.println(templatePath);
+	    List<M_PI_Summary_Entity> dataList =
+	            BRRS_M_PI_Summary_Repo.getdatabydateList(dateformat.parse(todate));
 
-		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+	    List<M_PI_Manual_Summary_Entity> dataList1 =
+	            BRRS_M_PI_Manual_Summary_Repo.getdatabydateList(dateformat.parse(todate));
 
-		if (!Files.exists(templatePath)) {
-			// This specific exception will be caught by the controller.
-			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
-		}
-		if (!Files.isReadable(templatePath)) {
-			// A specific exception for permission errors.
-			throw new SecurityException(
-					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
-		}
+	    if (dataList.isEmpty()) {
+	        logger.warn("Service: No data found for BRF2.4 report. Returning empty result.");
+	        return new byte[0];
+	    }
 
-		// This try-with-resources block is perfect. It guarantees all resources are
-		// closed automatically.
-		try (InputStream templateInputStream = Files.newInputStream(templatePath);
-				Workbook workbook = WorkbookFactory.create(templateInputStream);
-				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+	    String templateDir = env.getProperty("output.exportpathtemp");
+	    Path templatePath = Paths.get(templateDir, filename);
 
-			Sheet sheet = workbook.getSheetAt(0);
+	    logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
 
-			// --- Style Definitions ---
-			CreationHelper createHelper = workbook.getCreationHelper();
+	    if (!Files.exists(templatePath)) {
+	        throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+	    }
 
-			CellStyle dateStyle = workbook.createCellStyle();
-			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-			dateStyle.setBorderBottom(BorderStyle.THIN);
-			dateStyle.setBorderTop(BorderStyle.THIN);
-			dateStyle.setBorderLeft(BorderStyle.THIN);
-			dateStyle.setBorderRight(BorderStyle.THIN);
+	    if (!Files.isReadable(templatePath)) {
+	        throw new SecurityException(
+	                "Template file exists but is not readable (check permissions): "
+	                        + templatePath.toAbsolutePath());
+	    }
 
-			CellStyle textStyle = workbook.createCellStyle();
-			textStyle.setBorderBottom(BorderStyle.THIN);
-			textStyle.setBorderTop(BorderStyle.THIN);
-			textStyle.setBorderLeft(BorderStyle.THIN);
-			textStyle.setBorderRight(BorderStyle.THIN);
+	    try (InputStream templateInputStream = Files.newInputStream(templatePath);
+	         Workbook workbook = WorkbookFactory.create(templateInputStream);
+	         ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-			// Create the font
-			Font font = workbook.createFont();
-			font.setFontHeightInPoints((short) 8); // size 8
-			font.setFontName("Arial");
+	        Sheet sheet = workbook.getSheetAt(0);
 
-			CellStyle numberStyle = workbook.createCellStyle();
-			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
-			numberStyle.setBorderBottom(BorderStyle.THIN);
-			numberStyle.setBorderTop(BorderStyle.THIN);
-			numberStyle.setBorderLeft(BorderStyle.THIN);
-			numberStyle.setBorderRight(BorderStyle.THIN);
-			numberStyle.setFont(font);
+	        // ===========================
+	        // STYLE DEFINITIONS
+	        // ===========================
 
-			CellStyle percentStyle = workbook.createCellStyle();
-			percentStyle.cloneStyleFrom(numberStyle);
-			percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
-			percentStyle.setAlignment(HorizontalAlignment.RIGHT);
-			// --- End of Style Definitions ---
+	        CreationHelper createHelper = workbook.getCreationHelper();
 
-			int startRow = 7;
+	        CellStyle textStyle = workbook.createCellStyle();
+	        textStyle.setBorderBottom(BorderStyle.THIN);
+	        textStyle.setBorderTop(BorderStyle.THIN);
+	        textStyle.setBorderLeft(BorderStyle.THIN);
+	        textStyle.setBorderRight(BorderStyle.THIN);
+
+	        Font font = workbook.createFont();
+	        font.setFontHeightInPoints((short) 8);
+	        font.setFontName("Arial");
+
+	        CellStyle numberStyle = workbook.createCellStyle();
+	        numberStyle.setBorderBottom(BorderStyle.THIN);
+	        numberStyle.setBorderTop(BorderStyle.THIN);
+	        numberStyle.setBorderLeft(BorderStyle.THIN);
+	        numberStyle.setBorderRight(BorderStyle.THIN);
+	        numberStyle.setFont(font);
+
+	        CellStyle percentStyle = workbook.createCellStyle();
+	        percentStyle.cloneStyleFrom(numberStyle);
+	        percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
+	        percentStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+	        // ===========================
+
+	        int startRow = 7;
+
 
 			if (!dataList.isEmpty() || !dataList1.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -914,41 +910,47 @@ public class BRRS_M_PI_ReportService {
 					}
 
 				}
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
-			} else {
+				 FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+		            evaluator.setIgnoreMissingWorkbooks(true);
+		            evaluator.evaluateAll();
+		        }
 
-			}
+		        workbook.write(out);
 
-			// Write the final workbook content to the in-memory stream.
-			workbook.write(out);
+		        logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
 
-			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
-			return out.toByteArray();
+		        return out.toByteArray();
+		    }
 		}
-	}
 
-//	public byte[] BRRS_M_PIDetailExcel(String filename, String fromdate, String todate, String currency,
-	public byte[] BRRS_M_PIDetailExcel(String filename, String fromdate, String todate, String currency,
-			   String dtltype, String type, String version) {
+	public byte[] BRRS_M_PIDetailExcel(String filename, String fromdate, String todate,
+            String currency, String dtltype,
+            String type, String version) {
+
+ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
 try {
+
 logger.info("Generating Excel for M_PI Details...");
-System.out.println("came to Detail download service");
 
+// ✅ SAFE ARCHIVAL CHECK (Prevents NullPointerException)
+if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.isEmpty()) {
+return getDetailExcelARCHIVAL(filename, fromdate, todate,
+currency, dtltype, type, version);
+}
 
-if (type.equals("ARCHIVAL") & version != null) {
-byte[] ARCHIVALreport = getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type,
-version);
-return ARCHIVALreport;
+// ✅ Validate todate
+if (todate == null || todate.trim().isEmpty()) {
+logger.error("To Date is NULL or Empty!");
+return new byte[0];
 }
 
 XSSFWorkbook workbook = new XSSFWorkbook();
 XSSFSheet sheet = workbook.createSheet("M_PIDetail");
 
-//Common border style
 BorderStyle border = BorderStyle.THIN;
 
-//Header style (left aligned)
+// ================= HEADER STYLE =================
 CellStyle headerStyle = workbook.createCellStyle();
 Font headerFont = workbook.createFont();
 headerFont.setBold(true);
@@ -962,12 +964,10 @@ headerStyle.setBorderBottom(border);
 headerStyle.setBorderLeft(border);
 headerStyle.setBorderRight(border);
 
-//Right-aligned header style for ACCT BALANCE
 CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
 rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
 rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
 
-//Default data style (left aligned)
 CellStyle dataStyle = workbook.createCellStyle();
 dataStyle.setAlignment(HorizontalAlignment.LEFT);
 dataStyle.setBorderTop(border);
@@ -975,32 +975,28 @@ dataStyle.setBorderBottom(border);
 dataStyle.setBorderLeft(border);
 dataStyle.setBorderRight(border);
 
-//ACCT BALANCE style (right aligned with thousand separator)
 CellStyle balanceStyle = workbook.createCellStyle();
 balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,###"));
+balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0.000"));
 balanceStyle.setBorderTop(border);
 balanceStyle.setBorderBottom(border);
 balanceStyle.setBorderLeft(border);
 balanceStyle.setBorderRight(border);
 
-
-
-
-
-
-//Header row
+// ================= HEADER ROW =================
 String[] headers = {
-"CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABLE", "REPORT ADDL CRITERIA1",
-"REPORT_DATE"
+"CUST ID", "ACCT NO", "ACCT NAME",
+"ACCT BALANCE IN PULA", "REPORT LABEL",
+"REPORT ADDL CRITERIA1", "REPORT_DATE"
 };
 
 XSSFRow headerRow = sheet.createRow(0);
+
 for (int i = 0; i < headers.length; i++) {
 Cell cell = headerRow.createCell(i);
 cell.setCellValue(headers[i]);
 
-if (i == 3) { // ACCT BALANCE
+if (i == 3) {
 cell.setCellStyle(rightAlignedHeaderStyle);
 } else {
 cell.setCellStyle(headerStyle);
@@ -1009,52 +1005,79 @@ cell.setCellStyle(headerStyle);
 sheet.setColumnWidth(i, 5000);
 }
 
-//Get data
+// ================= FETCH DATA =================
 Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-List<M_PI_Detail_Entity> reportData = M_PI_Detail_Repo.getdatabydateList(parsedToDate);
+
+if (M_PI_Detail_Repo == null) {
+logger.error("M_PI_Detail_Repo is NULL!");
+return new byte[0];
+}
+
+List<M_PI_Detail_Entity> reportData =
+M_PI_Detail_Repo.getdatabydateList(parsedToDate);
+
+logger.info("Fetched {} records",
+reportData != null ? reportData.size() : 0);
 
 if (reportData != null && !reportData.isEmpty()) {
+
 int rowIndex = 1;
+
 for (M_PI_Detail_Entity item : reportData) {
+
+if (item == null) continue;
+
 XSSFRow row = sheet.createRow(rowIndex++);
 
-row.createCell(0).setCellValue(item.getCustId());
-row.createCell(1).setCellValue(item.getAcctNumber());
-row.createCell(2).setCellValue(item.getAcctName());
+// Cust ID
+Cell c0 = row.createCell(0);
+c0.setCellValue(item.getCustId() != null ? item.getCustId() : "");
+c0.setCellStyle(dataStyle);
 
-//ACCT BALANCE (right aligned, 3 decimal places)
+// Acct No
+Cell c1 = row.createCell(1);
+c1.setCellValue(item.getAcctNumber() != null ? item.getAcctNumber() : "");
+c1.setCellStyle(dataStyle);
+
+// Acct Name
+Cell c2 = row.createCell(2);
+c2.setCellValue(item.getAcctName() != null ? item.getAcctName() : "");
+c2.setCellStyle(dataStyle);
+
+// Balance
 Cell balanceCell = row.createCell(3);
 if (item.getAcctBalanceInpula() != null) {
 balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
 } else {
-balanceCell.setCellValue(0);
+balanceCell.setCellValue(0.000);
 }
 balanceCell.setCellStyle(balanceStyle);
 
-		row.createCell(4).setCellValue(item.getReportLable());
-		row.createCell(5).setCellValue(item.getReportAddlCriteria1());
-		row.createCell(6)
-				.setCellValue(item.getReportDate() != null
-						? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
-						: "");
+// Report Label
+Cell c4 = row.createCell(4);
+c4.setCellValue(item.getReportLabel() != null ? item.getReportLabel() : "");
+c4.setCellStyle(dataStyle);
 
-		// Apply data style for all other cells
-		for (int j = 0; j < 7; j++) {
-			if (j != 3) {
-				row.getCell(j).setCellStyle(dataStyle);
-			}
-		}
-	}
+// Addl Criteria
+Cell c5 = row.createCell(5);
+c5.setCellValue(item.getReportAddlCriteria1() != null ? item.getReportAddlCriteria1() : "");
+c5.setCellStyle(dataStyle);
+
+// Report Date
+Cell c6 = row.createCell(6);
+c6.setCellValue(item.getReportDate() != null
+ ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+ : "");
+c6.setCellStyle(dataStyle);
+}
 } else {
-	logger.info("No data found for M_PI — only header will be written.");
+logger.info("No data found for M_PI — only header written.");
 }
 
-//Write to byte[]
-ByteArrayOutputStream bos = new ByteArrayOutputStream();
 workbook.write(bos);
 workbook.close();
 
-logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
+logger.info("Excel generation completed successfully.");
 return bos.toByteArray();
 
 } catch (Exception e) {
@@ -1062,6 +1085,8 @@ logger.error("Error generating M_PI Excel", e);
 return new byte[0];
 }
 }
+	
+	
 	public List<Object> getM_PIArchival() {
 		List<Object> M_PIArchivallist = new ArrayList<>();
 		try {
@@ -1803,7 +1828,7 @@ balanceStyle.setBorderRight(border);
 
 //Header row
 String[] headers = {
-"CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABLE", "REPORT ADDL CRITERIA", "REPORT_DATE"
+"CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABEL", "REPORT ADDL CRITERIA", "REPORT_DATE"
 };
 
 XSSFRow headerRow = sheet.createRow(0);
@@ -1853,7 +1878,7 @@ balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
 
 balanceCell.setCellStyle(balanceStyle);
 
-row.createCell(4).setCellValue(item.getReportLable());
+row.createCell(4).setCellValue(item.getReportLabel());
 row.createCell(5).setCellValue(item.getReportAddlCriteria1());
 row.createCell(6).setCellValue(
 item.getReportDate() != null ?
@@ -2077,7 +2102,7 @@ return new byte[0];
 					percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
 					percentStyle.setAlignment(HorizontalAlignment.RIGHT);
 					// --- End of Style Definitions ---
-					int startRow = 7;
+					int startRow = 6;
 
 					if (!dataList.isEmpty() || !dataList1.isEmpty()) {
 						for (int i = 0; i < dataList.size(); i++) {
@@ -2103,29 +2128,29 @@ return new byte[0];
 							}
 
 							// row8
-							// Column G
+							// Single Cell (example: Column G -> index 6)
 							Cell cell6 = row.createCell(6);
-							if (record.getR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null) {
-								cell6.setCellValue(record.getR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue());
-								cell6.setCellStyle(numberStyle);
-							} else {
-								cell6.setCellValue("");
-								cell6.setCellStyle(textStyle);
-							}
 
-							// row8
-							// Column H
-							Cell cell7 = row.createCell(7);
-							if (record.getR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null) {
-								cell7.setCellValue(record.getR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue());
-								cell7.setCellStyle(numberStyle);
+							Double value1 = record.getR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null
+							        ? record.getR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue()
+							        : 0.0;
+
+							Double value2 = record.getR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null
+							        ? record.getR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue()
+							        : 0.0;
+
+							double total = value1 + value2;
+
+							if (value1 != 0.0 || value2 != 0.0) {
+							    cell6.setCellValue(total);
+							    cell6.setCellStyle(numberStyle);
 							} else {
-								cell7.setCellValue("");
-								cell7.setCellStyle(textStyle);
+							    cell6.setCellValue("");
+							    cell6.setCellStyle(textStyle);
 							}
 
 							// row9
-							row = sheet.getRow(8);
+							row = sheet.getRow(7);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR9_VALUE() != null) {
@@ -2137,29 +2162,29 @@ return new byte[0];
 							}
 
 							// row9
-							// Column G
+							// Column G (index 6) - Sum of both fields
 							cell6 = row.createCell(6);
-							if (record.getR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null) {
-								cell6.setCellValue(record.getR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue());
-								cell6.setCellStyle(numberStyle);
-							} else {
-								cell6.setCellValue("");
-								cell6.setCellStyle(textStyle);
-							}
 
-							// row9
-							// Column H
-							cell7 = row.createCell(7);
-							if (record.getR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null) {
-								cell7.setCellValue(record.getR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue());
-								cell7.setCellStyle(numberStyle);
-							} else {
-								cell7.setCellValue("");
-								cell7.setCellStyle(textStyle);
-							}
+							Double r9Value1 = record.getR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null
+							        ? record.getR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue()
+							        : 0.0;
 
+							Double r9Value2 = record.getR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null
+							        ? record.getR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue()
+							        : 0.0;
+
+							double r9Total = r9Value1 + r9Value2;
+
+							if (r9Value1 != 0.0 || r9Value2 != 0.0) {
+							    cell6.setCellValue(r9Total);
+							    cell6.setCellStyle(numberStyle);
+							} else {
+							    cell6.setCellValue("");
+							    cell6.setCellStyle(textStyle);
+							}
+							
 							// row10
-							row = sheet.getRow(9);
+							row = sheet.getRow(8);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR10_VALUE() != null) {
@@ -2171,29 +2196,29 @@ return new byte[0];
 							}
 
 							// row10
-							// Column G
+							// Column G (index 6) - Sum of both fields
 							cell6 = row.createCell(6);
-							if (record.getR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null) {
-								cell6.setCellValue(record.getR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue());
-								cell6.setCellStyle(numberStyle);
-							} else {
-								cell6.setCellValue("");
-								cell6.setCellStyle(textStyle);
-							}
 
-							// row10
-							// Column H
-							cell7 = row.createCell(7);
-							if (record.getR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null) {
-								cell7.setCellValue(record.getR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue());
-								cell7.setCellStyle(numberStyle);
-							} else {
-								cell7.setCellValue("");
-								cell7.setCellStyle(textStyle);
-							}
+							Double r10Value1 = record.getR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null
+							        ? record.getR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue()
+							        : 0.0;
 
+							Double r10Value2 = record.getR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null
+							        ? record.getR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue()
+							        : 0.0;
+
+							double r10Total = r10Value1 + r10Value2;
+
+							if (r10Value1 != 0.0 || r10Value2 != 0.0) {
+							    cell6.setCellValue(r10Total);
+							    cell6.setCellStyle(numberStyle);
+							} else {
+							    cell6.setCellValue("");
+							    cell6.setCellStyle(textStyle);
+							}
+							
 							// row11
-							row = sheet.getRow(10);
+							row = sheet.getRow(9);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR11_VALUE() != null) {
@@ -2205,29 +2230,29 @@ return new byte[0];
 							}
 
 							// row11
-							// Column G
+							// Column G (index 6) - Sum of both fields
 							cell6 = row.createCell(6);
-							if (record.getR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null) {
-								cell6.setCellValue(record.getR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue());
-								cell6.setCellStyle(numberStyle);
-							} else {
-								cell6.setCellValue("");
-								cell6.setCellStyle(textStyle);
-							}
 
-							// row11
-							// Column H
-							cell7 = row.createCell(7);
-							if (record.getR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null) {
-								cell7.setCellValue(record.getR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue());
-								cell7.setCellStyle(numberStyle);
+							Double r11Value1 = record.getR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null
+							        ? record.getR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue()
+							        : 0.0;
+
+							Double r11Value2 = record.getR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null
+							        ? record.getR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue()
+							        : 0.0;
+
+							double r11Total = r11Value1 + r11Value2;
+
+							if (r11Value1 != 0.0 || r11Value2 != 0.0) {
+							    cell6.setCellValue(r11Total);
+							    cell6.setCellStyle(numberStyle);
 							} else {
-								cell7.setCellValue("");
-								cell7.setCellStyle(textStyle);
+							    cell6.setCellValue("");
+							    cell6.setCellStyle(textStyle);
 							}
 
 							// row12
-							row = sheet.getRow(11);
+							row = sheet.getRow(10);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR12_VALUE() != null) {
@@ -2239,29 +2264,29 @@ return new byte[0];
 							}
 
 							// row12
-							// Column G
+							// Column G (index 6) - Sum of both fields
 							cell6 = row.createCell(6);
-							if (record.getR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null) {
-								cell6.setCellValue(record.getR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue());
-								cell6.setCellStyle(numberStyle);
-							} else {
-								cell6.setCellValue("");
-								cell6.setCellStyle(textStyle);
-							}
 
-							// row12
-							// Column H
-							cell7 = row.createCell(7);
-							if (record.getR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null) {
-								cell7.setCellValue(record.getR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue());
-								cell7.setCellStyle(numberStyle);
+							Double r12Value1 = record.getR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null
+							        ? record.getR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue()
+							        : 0.0;
+
+							Double r12Value2 = record.getR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null
+							        ? record.getR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue()
+							        : 0.0;
+
+							double r12Total = r12Value1 + r12Value2;
+
+							if (r12Value1 != 0.0 || r12Value2 != 0.0) {
+							    cell6.setCellValue(r12Total);
+							    cell6.setCellStyle(numberStyle);
 							} else {
-								cell7.setCellValue("");
-								cell7.setCellStyle(textStyle);
+							    cell6.setCellValue("");
+							    cell6.setCellStyle(textStyle);
 							}
 
 							// row13
-							row = sheet.getRow(12);
+							row = sheet.getRow(11);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR13_VALUE() != null) {
@@ -2273,29 +2298,29 @@ return new byte[0];
 							}
 
 							// row13
-							// Column G
+							// Column G (index 6) - Sum of both fields
 							cell6 = row.createCell(6);
-							if (record.getR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null) {
-								cell6.setCellValue(record.getR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue());
-								cell6.setCellStyle(numberStyle);
-							} else {
-								cell6.setCellValue("");
-								cell6.setCellStyle(textStyle);
-							}
 
-							// row13
-							// Column H
-							cell7 = row.createCell(7);
-							if (record.getR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null) {
-								cell7.setCellValue(record.getR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue());
-								cell7.setCellStyle(numberStyle);
+							Double r13Value1 = record.getR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null
+							        ? record.getR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue()
+							        : 0.0;
+
+							Double r13Value2 = record.getR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null
+							        ? record.getR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue()
+							        : 0.0;
+
+							double r13Total = r13Value1 + r13Value2;
+
+							if (r13Value1 != 0.0 || r13Value2 != 0.0) {
+							    cell6.setCellValue(r13Total);
+							    cell6.setCellStyle(numberStyle);
 							} else {
-								cell7.setCellValue("");
-								cell7.setCellStyle(textStyle);
+							    cell6.setCellValue("");
+							    cell6.setCellStyle(textStyle);
 							}
 
 							// row14
-							row = sheet.getRow(13);
+							row = sheet.getRow(12);
 							// Column F
 							cell5 = row.createCell(5);
 							if (record1.getR14_VALUE() != null) {
@@ -2307,29 +2332,29 @@ return new byte[0];
 							}
 
 							// row14
-							// Column G
+							// Column G (index 6) - Sum of both fields
 							cell6 = row.createCell(6);
-							if (record.getR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null) {
-								cell6.setCellValue(record.getR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue());
-								cell6.setCellStyle(numberStyle);
-							} else {
-								cell6.setCellValue("");
-								cell6.setCellStyle(textStyle);
-							}
 
-							// row14
-							// Column H
-							cell7 = row.createCell(7);
-							if (record.getR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null) {
-								cell7.setCellValue(record.getR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue());
-								cell7.setCellStyle(numberStyle);
-							} else {
-								cell7.setCellValue("");
-								cell7.setCellStyle(textStyle);
-							}
+							Double r14Value1 = record.getR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null
+							        ? record.getR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue()
+							        : 0.0;
 
+							Double r14Value2 = record.getR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null
+							        ? record.getR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue()
+							        : 0.0;
+
+							double r14Total = r14Value1 + r14Value2;
+
+							if (r14Value1 != 0.0 || r14Value2 != 0.0) {
+							    cell6.setCellValue(r14Total);
+							    cell6.setCellStyle(numberStyle);
+							} else {
+							    cell6.setCellValue("");
+							    cell6.setCellStyle(textStyle);
+							}
+							
 							// row15
-							row = sheet.getRow(14);
+							row = sheet.getRow(13);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR15_VALUE() != null) {
@@ -2352,7 +2377,7 @@ return new byte[0];
 							}
 
 							// row16
-							row = sheet.getRow(15);
+							row = sheet.getRow(14);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR16_VALUE() != null) {
@@ -2375,7 +2400,7 @@ return new byte[0];
 							}
 
 							// row17
-							row = sheet.getRow(16);
+							row = sheet.getRow(15);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR17_VALUE() != null) {
@@ -2398,7 +2423,7 @@ return new byte[0];
 							}
 
 							// row18
-							row = sheet.getRow(17);
+							row = sheet.getRow(16);
 							// Column F
 							cell5 = row.createCell(5);
 							if (record1.getR18_VALUE() != null) {
@@ -2421,7 +2446,7 @@ return new byte[0];
 							}
 
 							// row19
-							row = sheet.getRow(18);
+							row = sheet.getRow(17);
 							// Column F
 							cell5 = row.createCell(5);
 							if (record1.getR19_VALUE() != null) {
@@ -2444,7 +2469,7 @@ return new byte[0];
 							}
 
 							// row20
-							row = sheet.getRow(19);
+							row = sheet.getRow(18);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR20_VALUE() != null) {
@@ -2467,7 +2492,7 @@ return new byte[0];
 							}
 
 							// row21
-							row = sheet.getRow(20);
+							row = sheet.getRow(19);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR21_VALUE() != null) {
@@ -2490,7 +2515,7 @@ return new byte[0];
 							}
 
 							// row22
-							row = sheet.getRow(21);
+							row = sheet.getRow(20);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR22_VALUE() != null) {
@@ -2513,7 +2538,7 @@ return new byte[0];
 							}
 
 							// row23
-							row = sheet.getRow(22);
+							row = sheet.getRow(21);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR23_VALUE() != null) {
@@ -2536,7 +2561,7 @@ return new byte[0];
 							}
 
 							// row24
-							row = sheet.getRow(23);
+							row = sheet.getRow(22);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR24_VALUE() != null) {
@@ -2559,7 +2584,7 @@ return new byte[0];
 							}
 
 							// row25
-							row = sheet.getRow(24);
+							row = sheet.getRow(23);
 							// Column F
 							cell5 = row.createCell(5);
 							if (record1.getR25_VALUE() != null) {
@@ -2582,7 +2607,7 @@ return new byte[0];
 							}
 
 							// row26
-							row = sheet.getRow(25);
+							row = sheet.getRow(24);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR26_VALUE() != null) {
@@ -2605,7 +2630,7 @@ return new byte[0];
 							}
 
 							// row27
-							row = sheet.getRow(26);
+							row = sheet.getRow(25);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR27_VALUE() != null) {
@@ -2725,7 +2750,7 @@ return new byte[0];
 					percentStyle.setAlignment(HorizontalAlignment.RIGHT);
 					// --- End of Style Definitions ---
 
-					int startRow = 7;
+					int startRow = 6;
 
 					if (!dataList.isEmpty() || !dataList1.isEmpty()) {
 						for (int i = 0; i < dataList.size(); i++) {
@@ -2750,29 +2775,29 @@ return new byte[0];
 							}
 
 							// row8
-							// Column G
+							// Single Cell (example: Column G -> index 6)
 							Cell cell6 = row.createCell(6);
-							if (record.getR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null) {
-								cell6.setCellValue(record.getR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue());
-								cell6.setCellStyle(numberStyle);
-							} else {
-								cell6.setCellValue("");
-								cell6.setCellStyle(textStyle);
-							}
 
-							// row8
-							// Column H
-							Cell cell7 = row.createCell(7);
-							if (record.getR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null) {
-								cell7.setCellValue(record.getR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue());
-								cell7.setCellStyle(numberStyle);
+							Double value1 = record.getR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null
+							        ? record.getR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue()
+							        : 0.0;
+
+							Double value2 = record.getR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null
+							        ? record.getR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue()
+							        : 0.0;
+
+							double total = value1 + value2;
+
+							if (value1 != 0.0 || value2 != 0.0) {
+							    cell6.setCellValue(total);
+							    cell6.setCellStyle(numberStyle);
 							} else {
-								cell7.setCellValue("");
-								cell7.setCellStyle(textStyle);
+							    cell6.setCellValue("");
+							    cell6.setCellStyle(textStyle);
 							}
 
 							// row9
-							row = sheet.getRow(8);
+							row = sheet.getRow(7);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR9_VALUE() != null) {
@@ -2784,29 +2809,29 @@ return new byte[0];
 							}
 
 							// row9
-							// Column G
+							// Column G (index 6) - Sum of both fields
 							cell6 = row.createCell(6);
-							if (record.getR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null) {
-								cell6.setCellValue(record.getR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue());
-								cell6.setCellStyle(numberStyle);
-							} else {
-								cell6.setCellValue("");
-								cell6.setCellStyle(textStyle);
-							}
 
-							// row9
-							// Column H
-							cell7 = row.createCell(7);
-							if (record.getR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null) {
-								cell7.setCellValue(record.getR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue());
-								cell7.setCellStyle(numberStyle);
-							} else {
-								cell7.setCellValue("");
-								cell7.setCellStyle(textStyle);
-							}
+							Double r9Value1 = record.getR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null
+							        ? record.getR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue()
+							        : 0.0;
 
+							Double r9Value2 = record.getR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null
+							        ? record.getR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue()
+							        : 0.0;
+
+							double r9Total = r9Value1 + r9Value2;
+
+							if (r9Value1 != 0.0 || r9Value2 != 0.0) {
+							    cell6.setCellValue(r9Total);
+							    cell6.setCellStyle(numberStyle);
+							} else {
+							    cell6.setCellValue("");
+							    cell6.setCellStyle(textStyle);
+							}
+							
 							// row10
-							row = sheet.getRow(9);
+							row = sheet.getRow(8);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR10_VALUE() != null) {
@@ -2818,29 +2843,29 @@ return new byte[0];
 							}
 
 							// row10
-							// Column G
+							// Column G (index 6) - Sum of both fields
 							cell6 = row.createCell(6);
-							if (record.getR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null) {
-								cell6.setCellValue(record.getR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue());
-								cell6.setCellStyle(numberStyle);
-							} else {
-								cell6.setCellValue("");
-								cell6.setCellStyle(textStyle);
-							}
 
-							// row10
-							// Column H
-							cell7 = row.createCell(7);
-							if (record.getR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null) {
-								cell7.setCellValue(record.getR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue());
-								cell7.setCellStyle(numberStyle);
-							} else {
-								cell7.setCellValue("");
-								cell7.setCellStyle(textStyle);
-							}
+							Double r10Value1 = record.getR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null
+							        ? record.getR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue()
+							        : 0.0;
 
+							Double r10Value2 = record.getR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null
+							        ? record.getR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue()
+							        : 0.0;
+
+							double r10Total = r10Value1 + r10Value2;
+
+							if (r10Value1 != 0.0 || r10Value2 != 0.0) {
+							    cell6.setCellValue(r10Total);
+							    cell6.setCellStyle(numberStyle);
+							} else {
+							    cell6.setCellValue("");
+							    cell6.setCellStyle(textStyle);
+							}
+							
 							// row11
-							row = sheet.getRow(10);
+							row = sheet.getRow(9);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR11_VALUE() != null) {
@@ -2852,29 +2877,29 @@ return new byte[0];
 							}
 
 							// row11
-							// Column G
+							// Column G (index 6) - Sum of both fields
 							cell6 = row.createCell(6);
-							if (record.getR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null) {
-								cell6.setCellValue(record.getR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue());
-								cell6.setCellStyle(numberStyle);
-							} else {
-								cell6.setCellValue("");
-								cell6.setCellStyle(textStyle);
-							}
 
-							// row11
-							// Column H
-							cell7 = row.createCell(7);
-							if (record.getR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null) {
-								cell7.setCellValue(record.getR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue());
-								cell7.setCellStyle(numberStyle);
+							Double r11Value1 = record.getR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null
+							        ? record.getR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue()
+							        : 0.0;
+
+							Double r11Value2 = record.getR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null
+							        ? record.getR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue()
+							        : 0.0;
+
+							double r11Total = r11Value1 + r11Value2;
+
+							if (r11Value1 != 0.0 || r11Value2 != 0.0) {
+							    cell6.setCellValue(r11Total);
+							    cell6.setCellStyle(numberStyle);
 							} else {
-								cell7.setCellValue("");
-								cell7.setCellStyle(textStyle);
+							    cell6.setCellValue("");
+							    cell6.setCellStyle(textStyle);
 							}
 
 							// row12
-							row = sheet.getRow(11);
+							row = sheet.getRow(10);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR12_VALUE() != null) {
@@ -2886,29 +2911,29 @@ return new byte[0];
 							}
 
 							// row12
-							// Column G
+							// Column G (index 6) - Sum of both fields
 							cell6 = row.createCell(6);
-							if (record.getR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null) {
-								cell6.setCellValue(record.getR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue());
-								cell6.setCellStyle(numberStyle);
-							} else {
-								cell6.setCellValue("");
-								cell6.setCellStyle(textStyle);
-							}
 
-							// row12
-							// Column H
-							cell7 = row.createCell(7);
-							if (record.getR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null) {
-								cell7.setCellValue(record.getR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue());
-								cell7.setCellStyle(numberStyle);
+							Double r12Value1 = record.getR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null
+							        ? record.getR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue()
+							        : 0.0;
+
+							Double r12Value2 = record.getR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null
+							        ? record.getR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue()
+							        : 0.0;
+
+							double r12Total = r12Value1 + r12Value2;
+
+							if (r12Value1 != 0.0 || r12Value2 != 0.0) {
+							    cell6.setCellValue(r12Total);
+							    cell6.setCellStyle(numberStyle);
 							} else {
-								cell7.setCellValue("");
-								cell7.setCellStyle(textStyle);
+							    cell6.setCellValue("");
+							    cell6.setCellStyle(textStyle);
 							}
 
 							// row13
-							row = sheet.getRow(12);
+							row = sheet.getRow(11);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR13_VALUE() != null) {
@@ -2920,29 +2945,29 @@ return new byte[0];
 							}
 
 							// row13
-							// Column G
+							// Column G (index 6) - Sum of both fields
 							cell6 = row.createCell(6);
-							if (record.getR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null) {
-								cell6.setCellValue(record.getR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue());
-								cell6.setCellStyle(numberStyle);
-							} else {
-								cell6.setCellValue("");
-								cell6.setCellStyle(textStyle);
-							}
 
-							// row13
-							// Column H
-							cell7 = row.createCell(7);
-							if (record.getR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null) {
-								cell7.setCellValue(record.getR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue());
-								cell7.setCellStyle(numberStyle);
+							Double r13Value1 = record.getR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null
+							        ? record.getR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue()
+							        : 0.0;
+
+							Double r13Value2 = record.getR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null
+							        ? record.getR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue()
+							        : 0.0;
+
+							double r13Total = r13Value1 + r13Value2;
+
+							if (r13Value1 != 0.0 || r13Value2 != 0.0) {
+							    cell6.setCellValue(r13Total);
+							    cell6.setCellStyle(numberStyle);
 							} else {
-								cell7.setCellValue("");
-								cell7.setCellStyle(textStyle);
+							    cell6.setCellValue("");
+							    cell6.setCellStyle(textStyle);
 							}
 
 							// row14
-							row = sheet.getRow(13);
+							row = sheet.getRow(12);
 							// Column F
 							cell5 = row.createCell(5);
 							if (record1.getR14_VALUE() != null) {
@@ -2954,29 +2979,29 @@ return new byte[0];
 							}
 
 							// row14
-							// Column G
+							// Column G (index 6) - Sum of both fields
 							cell6 = row.createCell(6);
-							if (record.getR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null) {
-								cell6.setCellValue(record.getR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue());
-								cell6.setCellStyle(numberStyle);
-							} else {
-								cell6.setCellValue("");
-								cell6.setCellStyle(textStyle);
-							}
 
-							// row14
-							// Column H
-							cell7 = row.createCell(7);
-							if (record.getR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null) {
-								cell7.setCellValue(record.getR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue());
-								cell7.setCellStyle(numberStyle);
-							} else {
-								cell7.setCellValue("");
-								cell7.setCellStyle(textStyle);
-							}
+							Double r14Value1 = record.getR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() != null
+							        ? record.getR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS().doubleValue()
+							        : 0.0;
 
+							Double r14Value2 = record.getR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() != null
+							        ? record.getR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2().doubleValue()
+							        : 0.0;
+
+							double r14Total = r14Value1 + r14Value2;
+
+							if (r14Value1 != 0.0 || r14Value2 != 0.0) {
+							    cell6.setCellValue(r14Total);
+							    cell6.setCellStyle(numberStyle);
+							} else {
+							    cell6.setCellValue("");
+							    cell6.setCellStyle(textStyle);
+							}
+							
 							// row15
-							row = sheet.getRow(14);
+							row = sheet.getRow(13);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR15_VALUE() != null) {
@@ -2999,7 +3024,7 @@ return new byte[0];
 							}
 
 							// row16
-							row = sheet.getRow(15);
+							row = sheet.getRow(14);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR16_VALUE() != null) {
@@ -3022,7 +3047,7 @@ return new byte[0];
 							}
 
 							// row17
-							row = sheet.getRow(16);
+							row = sheet.getRow(15);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR17_VALUE() != null) {
@@ -3045,7 +3070,7 @@ return new byte[0];
 							}
 
 							// row18
-							row = sheet.getRow(17);
+							row = sheet.getRow(16);
 							// Column F
 							cell5 = row.createCell(5);
 							if (record1.getR18_VALUE() != null) {
@@ -3068,7 +3093,7 @@ return new byte[0];
 							}
 
 							// row19
-							row = sheet.getRow(18);
+							row = sheet.getRow(17);
 							// Column F
 							cell5 = row.createCell(5);
 							if (record1.getR19_VALUE() != null) {
@@ -3091,7 +3116,7 @@ return new byte[0];
 							}
 
 							// row20
-							row = sheet.getRow(19);
+							row = sheet.getRow(18);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR20_VALUE() != null) {
@@ -3114,7 +3139,7 @@ return new byte[0];
 							}
 
 							// row21
-							row = sheet.getRow(20);
+							row = sheet.getRow(19);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR21_VALUE() != null) {
@@ -3137,7 +3162,7 @@ return new byte[0];
 							}
 
 							// row22
-							row = sheet.getRow(21);
+							row = sheet.getRow(20);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR22_VALUE() != null) {
@@ -3160,7 +3185,7 @@ return new byte[0];
 							}
 
 							// row23
-							row = sheet.getRow(22);
+							row = sheet.getRow(21);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR23_VALUE() != null) {
@@ -3183,7 +3208,7 @@ return new byte[0];
 							}
 
 							// row24
-							row = sheet.getRow(23);
+							row = sheet.getRow(22);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR24_VALUE() != null) {
@@ -3206,7 +3231,7 @@ return new byte[0];
 							}
 
 							// row25
-							row = sheet.getRow(24);
+							row = sheet.getRow(23);
 							// Column F
 							cell5 = row.createCell(5);
 							if (record1.getR25_VALUE() != null) {
@@ -3229,7 +3254,7 @@ return new byte[0];
 							}
 
 							// row26
-							row = sheet.getRow(25);
+							row = sheet.getRow(24);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR26_VALUE() != null) {
@@ -3252,7 +3277,7 @@ return new byte[0];
 							}
 
 							// row27
-							row = sheet.getRow(26);
+							row = sheet.getRow(25);
 							// Column F
 							cell5 = row.getCell(5);
 							if (record.getR27_VALUE() != null) {
