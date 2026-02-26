@@ -394,6 +394,7 @@ public class M_LARADV_Resub_Summary_Entity5 implements Serializable{
     private BigDecimal R301_INTEREST_RATE;
     private BigDecimal R301_OUTSTANDING_BAL_PCT_UNIMPAIRED_CAP;
     private BigDecimal R301_LIMIT_PCT_UNIMPAIRED_CAP;
+    private String UNIMPAIREDCAPITAL;
 
     @Id
     private Date report_date;
@@ -2227,6 +2228,13 @@ public class M_LARADV_Resub_Summary_Entity5 implements Serializable{
 	}
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
+	}
+	
+	public String getUNIMPAIREDCAPITAL() {
+		return UNIMPAIREDCAPITAL;
+	}
+	public void setUNIMPAIREDCAPITAL(String uNIMPAIREDCAPITAL) {
+		UNIMPAIREDCAPITAL = uNIMPAIREDCAPITAL;
 	}
 	public M_LARADV_Resub_Summary_Entity5() {
 		super();

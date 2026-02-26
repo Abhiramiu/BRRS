@@ -393,7 +393,8 @@ public class M_LARADV_Resub_Detail_Entity5 {
     private BigDecimal R301_INTEREST_RATE;
     private BigDecimal R301_OUTSTANDING_BAL_PCT_UNIMPAIRED_CAP;
     private BigDecimal R301_LIMIT_PCT_UNIMPAIRED_CAP;
-
+    private String UNIMPAIREDCAPITAL;
+    
     @Id
     private Date report_date;
     private BigDecimal report_version;
@@ -2225,6 +2226,12 @@ public class M_LARADV_Resub_Detail_Entity5 {
 	}
 	public void setReport_version(BigDecimal report_version) {
 		this.report_version = report_version;
+	}
+	public String getUNIMPAIREDCAPITAL() {
+		return UNIMPAIREDCAPITAL;
+	}
+	public void setUNIMPAIREDCAPITAL(String uNIMPAIREDCAPITAL) {
+		UNIMPAIREDCAPITAL = uNIMPAIREDCAPITAL;
 	}
 	public M_LARADV_Resub_Detail_Entity5() {
 		super();

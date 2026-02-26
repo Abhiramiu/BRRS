@@ -384,6 +384,7 @@ public class M_LARADV_Summary_Entity5 {
     private String R301_FACILITY_TYPE;
     private BigDecimal R301_ORIGINAL_AMOUNT;
     private BigDecimal R301_UTILISATION_OUTSTANDING_BAL;
+    private String UNIMPAIREDCAPITAL;
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date R301_EFFECTIVE_DATE;
@@ -2216,6 +2217,13 @@ public class M_LARADV_Summary_Entity5 {
 	}
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
+	}
+	
+	public String getUNIMPAIREDCAPITAL() {
+		return UNIMPAIREDCAPITAL;
+	}
+	public void setUNIMPAIREDCAPITAL(String uNIMPAIREDCAPITAL) {
+		UNIMPAIREDCAPITAL = uNIMPAIREDCAPITAL;
 	}
 	public M_LARADV_Summary_Entity5() {
 		super();

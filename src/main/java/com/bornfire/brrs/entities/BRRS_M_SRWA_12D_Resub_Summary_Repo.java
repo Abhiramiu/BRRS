@@ -43,8 +43,8 @@ public interface BRRS_M_SRWA_12D_Resub_Summary_Repo
 	@Query(value = "SELECT *  FROM BRRS_M_SRWA_12D_RESUBTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ", nativeQuery = true)
 	List<M_SRWA_12D_Resub_Summary_Entity> getdatabydateListWithVersionAll();
 
-	@Query(value = "SELECT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE "
-			+ "FROM BRRS_M_SRWA_12D_RESUBTABLE_SUMMARY", nativeQuery = true)
+	@Query(value = "SELECT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE " + "FROM BRRS_M_SRWA_12D_RESUBTABLE_SUMMARY "
+			+ "ORDER BY REPORT_VERSION ASC", nativeQuery = true)
 	List<Object[]> getResubData();
 
 	@Query(value = "select * from BRRS_M_SRWA_12D_RESUBTABLE_SUMMARY ", nativeQuery = true)
@@ -57,4 +57,6 @@ public interface BRRS_M_SRWA_12D_Resub_Summary_Repo
 			+ "WHERE e.report_date = :reportDate")
 	BigDecimal findMaxVersionByDate(@Param("reportDate") Date reportDate);
 
+	@Query(value = "select * from BRRS_M_SRWA_12D_RESUBTABLE_SUMMARY where REPORT_DATE = ?1 and REPORT_VERSION = ?2", nativeQuery = true)
+	List<M_SRWA_12D_Resub_Summary_Entity> getdatabydateListarchival1(Date date, BigDecimal report_version);
 }
