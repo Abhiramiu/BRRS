@@ -799,6 +799,32 @@ label.error {
 	</script>
 	
 	<script>
+		function editRecord(icon) {
+			const row = icon.closest('tr');
+			const provisionInput = row.querySelector('.provision-field');
+
+			// Enable only provision field for editing
+			provisionInput.removeAttribute('readonly');
+			provisionInput.focus();
+
+			// Highlight editable cell
+			provisionInput.style.backgroundColor = '#fff8e1';
+
+			// Show submit button
+			document.getElementById('submitButton').style.display = 'inline-block';
+		}
+
+
+
+	</script>
+	
+	<script th:inline="javascript">
+	    /*<![CDATA[*/
+	    const reportId = /*[[${reportid}]]*/ null;
+	    /*]]>*/
+	</script>
+	
+	<script>
 
 		function submitMSFINP2Update() {
 			const formData = $('#msfinp2DetailForm').serialize(); // Ensure correct form ID
@@ -851,6 +877,17 @@ label.error {
 					}, 1500);
 				}
 			});
+		}
+		
+		
+
+		function showResultModalDetail(title, message) {
+			// Set the text for the modal elements
+			$('#resultModalLabel1').text(title);
+			$('#resultModalBody1').text(message);
+
+			// Show the modal
+			$('#resultModal1').modal('show');
 		}
 	</script>
 
@@ -1242,7 +1279,7 @@ function cancelModify() {
                     				 data-todate=${todate},
                     				 data-currency=${currency}, 
                     				 data-dtltype=${dtltype},
-                    				 data-filename='MSFinP2.xls',
+                    				 data-filename='MSFinP2.xlsx',
 					 				 data-type=${type},
 					    			 data-version=${version}"
 							onclick="downloadfile(this);">
@@ -2667,7 +2704,7 @@ function cancelModify() {
 							<label class="col-sm-2">AVERAGE</label>
 								<div class="col-sm-3">
 									<input type="text" th:field="*{average}"
-										class="form-control form-control-sm" readonly />
+										class="form-control form-control-sm"  />
 								</div>
 							
 							

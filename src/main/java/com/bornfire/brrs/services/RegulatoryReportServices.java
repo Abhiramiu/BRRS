@@ -6190,6 +6190,13 @@ public class RegulatoryReportServices {
 				modelAndView = BRRS_BORR_UFCE_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 						request.getParameter("formmode"));
 				break;
+				
+			case "M_SFINP2":
+				modelAndView = BRRS_M_SFINP2_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+						request.getParameter("formmode"));
+				break;
+				
+				
 			}
 		} catch (Exception e) {
 			logger.error("Error processing details for reportId: {}", reportId, e);
@@ -6462,6 +6469,12 @@ public class RegulatoryReportServices {
 			case "BORR_UFCE":
 				response = BRRS_BORR_UFCE_ReportService.updateDetailEdit(request);
 				break;
+				
+				
+
+			case "M_SFINP2":
+		response = BRRS_M_SFINP2_reportservice.updateDetailEdit(request);
+		break;
 
 			default:
 				logger.warn("Unsupported report ID: {}", reportId);
