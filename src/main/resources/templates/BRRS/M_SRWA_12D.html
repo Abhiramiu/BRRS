@@ -337,7 +337,8 @@ PURPOSE		: BWRBRREPORT
 			var dtltype = button.getAttribute('data-dtltype');
 			var filename = button.getAttribute('data-filename');
 			var type = button.getAttribute('data-type');
-			var version = "1";
+			var version = button.getAttribute('data-version');
+			
 			$('#loader').modal('show');
 			$.ajax({
 				url: './downloadExcel?reportid=' + reportid +
@@ -347,6 +348,7 @@ PURPOSE		: BWRBRREPORT
 					'&currency=' + currency +
 					'&subreportid=' + subreportid +
 					'&secid=' + secid +
+					'&dtltype=' + encodeURIComponent(dtltype)+   // ✅ FIX
 					'&filename=' + filename +
 					'&type=' + type +
 					'&version=' + version,
@@ -1680,7 +1682,10 @@ PURPOSE		: BWRBRREPORT
 			calculate_R14_PFCE_EXCHANGE();
 			calculateR12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS();
 			calculateR12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS();
-
+			
+			var value = $("#R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS").val();
+			alert("R15 Value: " + value);
+			
 			// Step 2: Remove commas AND percentage signs
 			$("#fileupload input[type='text']").each(function () {
 				let v = $(this).val();
@@ -1745,11 +1750,6 @@ PURPOSE		: BWRBRREPORT
 				}
 			});
 		}
-
-
-
-
-
 	</script>
 
 	<style>
