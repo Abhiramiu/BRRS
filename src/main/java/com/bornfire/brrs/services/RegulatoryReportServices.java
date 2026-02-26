@@ -1195,6 +1195,13 @@ public class RegulatoryReportServices {
 				 todate, currency, dtltype, pageable, type, version);
 				 
 				 break;
+				 
+				 
+
+			 case "M_SFINP2": repsummary =
+				 BRRS_M_SFINP2_reportservice.getM_SFINP2View(reportId, fromdate, todate,
+				currency, dtltype, pageable, type, version); break;
+				
 					 
 					 
 			
@@ -4117,14 +4124,20 @@ public class RegulatoryReportServices {
 
 		List<Object> archivalData = new ArrayList<>();
 		switch (rptcode) {
+		
 		case "M_SFINP2":
-			try {
-				archivalData = BRRS_M_SFINP2_reportservice.getM_SFINP2Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			
+			List<Object[]> msfinp2List = BRRS_M_SFINP2_reportservice.getM_SFINP2Archival();
+	archivalData.addAll(msfinp2List);
+	System.out.println("Fetched M_SFINP2 archival data: " + msfinp2List.size());
+	
+		
+		
+		/*
+		 * case "M_SFINP2": try { archivalData =
+		 * BRRS_M_SFINP2_reportservice.getM_SFINP2Archival(); } catch (Exception e) { //
+		 * TODO Auto-generated catch block e.printStackTrace(); } break;
+		 */
 
 		case "M_SFINP1":
 		List<Object[]> M_SFINP1List = BRRS_M_SFINP1_reportservice.getM_SFINP1Archival();
@@ -6697,6 +6710,17 @@ public class RegulatoryReportServices {
 				System.out.println("Resubmission data fetched for M_EPR: " + resubList.size());
 			} catch (Exception e) {
 				System.err.println("Error fetching resubmission data for M_EPR: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_SFINP2":
+			try {
+				List<Object[]> resubList = BRRS_M_SFINP2_reportservice.getM_SFINP2Resub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for M_SFINP2: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_SFINP2: " + e.getMessage());
 				e.printStackTrace();
 			}
 			break;

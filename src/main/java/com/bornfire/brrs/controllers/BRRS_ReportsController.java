@@ -941,7 +941,7 @@ public class BRRS_ReportsController {
 			// call services
 			brrs_M_SFINP2_reportservice.updateReport(request);
 
-			return ResponseEntity.ok(" Modifies Successfully");
+			return ResponseEntity.ok(" Modified Successfully");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());

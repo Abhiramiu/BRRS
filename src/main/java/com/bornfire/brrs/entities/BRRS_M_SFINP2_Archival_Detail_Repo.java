@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 
 public interface BRRS_M_SFINP2_Archival_Detail_Repo extends JpaRepository<M_SFINP2_Archival_Detail_Entity, String> {
@@ -14,5 +15,8 @@ public interface BRRS_M_SFINP2_Archival_Detail_Repo extends JpaRepository<M_SFIN
 	
 	@Query(value = "select * from BRRS_M_SFINP2_ARCHIVALTABLE_DETAIL where ROW_ID =?1 and COLUMN_ID=?2 AND REPORT_DATE=?3 AND DATA_ENTRY_VERSION=?4", nativeQuery = true)
 	List<M_SFINP2_Archival_Detail_Entity> GetDataByRowIdAndColumnId(String rowId,String ColumnId,Date reportdate,String DATA_ENTRY_VERSION);
+	
+	@Query(value = "SELECT * FROM BRRS_M_SFINP2_ARCHIVALTABLE_DETAIL WHERE ACCT_NUMBER = :acctNumber", nativeQuery = true)
+	M_SFINP2_Archival_Detail_Entity findByAcctnumber(@Param("acctNumber") String acctNumber);
 }
 

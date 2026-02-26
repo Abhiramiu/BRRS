@@ -7,13 +7,13 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import org.springframework.format.annotation.DateTimeFormat;
 @Entity
-@Table(name = "BRRS_M_SFINP2_ARCHIVALTABLE_DETAIL")
-public class M_SFINP2_Archival_Detail_Entity {
+@Table(name = "BRRS_M_SFINP2_RESUB_DETAILTABLE")
+public class M_SFINP2_RESUB_Detail_Entity {
 	
-
+	@Id
 	   @Column(name = "CUST_ID")
 	   private String custId;
-	@Id
+		
 	   @Column(name = "ACCT_NUMBER")
 	   private String acctNumber;
 	   
@@ -40,9 +40,6 @@ public class M_SFINP2_Archival_Detail_Entity {
 	   
 	   @Column(name = "DATA_ENTRY_VERSION")
 	   private String dataEntryVersion;
-	   
-	   @Column(name = "REPORT_VERSION")
-	   private String reportVersion;
 	   
 	   @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
 	   private BigDecimal acctBalanceInpula;
@@ -83,13 +80,12 @@ public class M_SFINP2_Archival_Detail_Entity {
 	   @Column(name = "DEL_FLG")
 	   private char delFlg;
 	   
-	 
+	   @Column(name = "SANCTION_LIMIT")
+	   private String sanctionLimit;
 	   
 	   
 	   @Column(name = "AVERAGE", precision = 24, scale = 3)
 	   private BigDecimal average;
-
-
 
 
 	public String getCustId() {
@@ -97,13 +93,9 @@ public class M_SFINP2_Archival_Detail_Entity {
 	}
 
 
-
-
 	public void setCustId(String custId) {
 		this.custId = custId;
 	}
-
-
 
 
 	public String getAcctNumber() {
@@ -111,13 +103,9 @@ public class M_SFINP2_Archival_Detail_Entity {
 	}
 
 
-
-
 	public void setAcctNumber(String acctNumber) {
 		this.acctNumber = acctNumber;
 	}
-
-
 
 
 	public String getAcctName() {
@@ -125,13 +113,9 @@ public class M_SFINP2_Archival_Detail_Entity {
 	}
 
 
-
-
 	public void setAcctName(String acctName) {
 		this.acctName = acctName;
 	}
-
-
 
 
 	public String getDataType() {
@@ -139,13 +123,9 @@ public class M_SFINP2_Archival_Detail_Entity {
 	}
 
 
-
-
 	public void setDataType(String dataType) {
 		this.dataType = dataType;
 	}
-
-
 
 
 	public String getColumnId() {
@@ -153,13 +133,9 @@ public class M_SFINP2_Archival_Detail_Entity {
 	}
 
 
-
-
 	public void setColumnId(String columnId) {
 		this.columnId = columnId;
 	}
-
-
 
 
 	public String getReportLabel() {
@@ -167,13 +143,9 @@ public class M_SFINP2_Archival_Detail_Entity {
 	}
 
 
-
-
 	public void setReportLabel(String reportLabel) {
 		this.reportLabel = reportLabel;
 	}
-
-
 
 
 	public String getReportAddlCriteria_1() {
@@ -181,13 +153,9 @@ public class M_SFINP2_Archival_Detail_Entity {
 	}
 
 
-
-
 	public void setReportAddlCriteria_1(String reportAddlCriteria_1) {
 		this.reportAddlCriteria_1 = reportAddlCriteria_1;
 	}
-
-
 
 
 	public String getReportRemarks() {
@@ -195,13 +163,9 @@ public class M_SFINP2_Archival_Detail_Entity {
 	}
 
 
-
-
 	public void setReportRemarks(String reportRemarks) {
 		this.reportRemarks = reportRemarks;
 	}
-
-
 
 
 	public String getModificationRemarks() {
@@ -209,13 +173,9 @@ public class M_SFINP2_Archival_Detail_Entity {
 	}
 
 
-
-
 	public void setModificationRemarks(String modificationRemarks) {
 		this.modificationRemarks = modificationRemarks;
 	}
-
-
 
 
 	public String getDataEntryVersion() {
@@ -223,27 +183,9 @@ public class M_SFINP2_Archival_Detail_Entity {
 	}
 
 
-
-
 	public void setDataEntryVersion(String dataEntryVersion) {
 		this.dataEntryVersion = dataEntryVersion;
 	}
-
-
-
-
-	public String getReportVersion() {
-		return reportVersion;
-	}
-
-
-
-
-	public void setReportVersion(String reportVersion) {
-		this.reportVersion = reportVersion;
-	}
-
-
 
 
 	public BigDecimal getAcctBalanceInpula() {
@@ -251,13 +193,9 @@ public class M_SFINP2_Archival_Detail_Entity {
 	}
 
 
-
-
 	public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
 		this.acctBalanceInpula = acctBalanceInpula;
 	}
-
-
 
 
 	public Date getReportDate() {
@@ -265,13 +203,9 @@ public class M_SFINP2_Archival_Detail_Entity {
 	}
 
 
-
-
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
 	}
-
-
 
 
 	public String getReportName() {
@@ -279,13 +213,9 @@ public class M_SFINP2_Archival_Detail_Entity {
 	}
 
 
-
-
 	public void setReportName(String reportName) {
 		this.reportName = reportName;
 	}
-
-
 
 
 	public String getCreateUser() {
@@ -293,13 +223,9 @@ public class M_SFINP2_Archival_Detail_Entity {
 	}
 
 
-
-
 	public void setCreateUser(String createUser) {
 		this.createUser = createUser;
 	}
-
-
 
 
 	public Date getCreateTime() {
@@ -307,13 +233,9 @@ public class M_SFINP2_Archival_Detail_Entity {
 	}
 
 
-
-
 	public void setCreateTime(Date createTime) {
 		this.createTime = createTime;
 	}
-
-
 
 
 	public String getModifyUser() {
@@ -321,13 +243,9 @@ public class M_SFINP2_Archival_Detail_Entity {
 	}
 
 
-
-
 	public void setModifyUser(String modifyUser) {
 		this.modifyUser = modifyUser;
 	}
-
-
 
 
 	public Date getModifyTime() {
@@ -335,13 +253,9 @@ public class M_SFINP2_Archival_Detail_Entity {
 	}
 
 
-
-
 	public void setModifyTime(Date modifyTime) {
 		this.modifyTime = modifyTime;
 	}
-
-
 
 
 	public String getVerifyUser() {
@@ -349,13 +263,9 @@ public class M_SFINP2_Archival_Detail_Entity {
 	}
 
 
-
-
 	public void setVerifyUser(String verifyUser) {
 		this.verifyUser = verifyUser;
 	}
-
-
 
 
 	public Date getVerifyTime() {
@@ -363,13 +273,9 @@ public class M_SFINP2_Archival_Detail_Entity {
 	}
 
 
-
-
 	public void setVerifyTime(Date verifyTime) {
 		this.verifyTime = verifyTime;
 	}
-
-
 
 
 	public char getEntityFlg() {
@@ -377,13 +283,9 @@ public class M_SFINP2_Archival_Detail_Entity {
 	}
 
 
-
-
 	public void setEntityFlg(char entityFlg) {
 		this.entityFlg = entityFlg;
 	}
-
-
 
 
 	public char getModifyFlg() {
@@ -391,13 +293,9 @@ public class M_SFINP2_Archival_Detail_Entity {
 	}
 
 
-
-
 	public void setModifyFlg(char modifyFlg) {
 		this.modifyFlg = modifyFlg;
 	}
-
-
 
 
 	public char getDelFlg() {
@@ -405,13 +303,19 @@ public class M_SFINP2_Archival_Detail_Entity {
 	}
 
 
-
-
 	public void setDelFlg(char delFlg) {
 		this.delFlg = delFlg;
 	}
 
 
+	public String getSanctionLimit() {
+		return sanctionLimit;
+	}
+
+
+	public void setSanctionLimit(String sanctionLimit) {
+		this.sanctionLimit = sanctionLimit;
+	}
 
 
 	public BigDecimal getAverage() {
@@ -419,21 +323,19 @@ public class M_SFINP2_Archival_Detail_Entity {
 	}
 
 
-
-
 	public void setAverage(BigDecimal average) {
 		this.average = average;
 	}
 
 
-
-
-	public M_SFINP2_Archival_Detail_Entity() {
+	public M_SFINP2_RESUB_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-
-
+	   
+	   
 	
+	   
+  
   
 }
