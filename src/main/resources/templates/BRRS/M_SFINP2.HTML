@@ -1082,6 +1082,13 @@ function cancelModify() {
 			getCellValue("#R78_MONTH_END") +
 			getCellValue("#R79_MONTH_END")
 		);
+		
+		// R80 = R72 + R73
+		setCellValue(
+			"#R80_MONTH_END",
+			getCellValue("#R72_MONTH_END") +
+			getCellValue("#R73_MONTH_END")
+		);
 	}
 
 	// ----------------------------
@@ -1097,9 +1104,9 @@ function cancelModify() {
 				"#R47_MONTH_END, #R48_MONTH_END," +
 				"#R51_MONTH_END, #R52_MONTH_END, #R53_MONTH_END, #R54_MONTH_END, #R55_MONTH_END, #R56_MONTH_END," +
 				"#R60_MONTH_END, #R61_MONTH_END," +
+				"#R72_MONTH_END, #R73_MONTH_END," +
 				"#R74_MONTH_END, #R75_MONTH_END, #R76_MONTH_END, #R77_MONTH_END, #R78_MONTH_END, #R79_MONTH_END"
 			).on("input", calculateMonthEndValues);
-		
 	});
 </script>
 
