@@ -500,7 +500,7 @@ public class BRRS_M_SECL_ReportService {
 	}
 
 	public byte[] getM_SECLExcel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, BigDecimal version) throws Exception {
+			String dtltype, String type, String format ,BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, version);
 
@@ -509,11 +509,26 @@ public class BRRS_M_SECL_ReportService {
 
 // ARCHIVAL check
 		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+			
+			if(format.equals("email")) {
+				logger.info("Service: Generating ARCHIVAL report for version {}", version);
+				return getExcelM_SECLARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+			}
+			
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getExcelM_SECLARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
 // RESUB check
 		else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+			
+			if(format.equals("email")) {
+				logger.info("Service: Generating RESUB report for version {}", version);
+
+				List<M_SECL_Archival_Summary_Entity> T1Master = M_SECL_Archival_Summary_Repo
+						.getdatabydateListarchival(reportDate, version);
+
+				return BRRS_M_SECLResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);			
+			}
 			logger.info("Service: Generating RESUB report for version {}", version);
 
 			List<M_SECL_Archival_Summary_Entity> T1Master = M_SECL_Archival_Summary_Repo
@@ -3774,7 +3789,7 @@ public class BRRS_M_SECL_ReportService {
 					}
 
 				}
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				workbook.setForceFormulaRecalculation(true);
 			} else {
 
 			}
@@ -6974,7 +6989,7 @@ public class BRRS_M_SECL_ReportService {
 						}
 
 					}
-					workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+					workbook.setForceFormulaRecalculation(true);
 				} else {
 
 				}
@@ -10269,7 +10284,7 @@ public class BRRS_M_SECL_ReportService {
 					}
 
 				}
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				workbook.setForceFormulaRecalculation(true);
 			} else {
 
 			}
@@ -13476,7 +13491,7 @@ public class BRRS_M_SECL_ReportService {
 							}
 
 						}
-						workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+						workbook.setForceFormulaRecalculation(true);
 					} else {
 
 					}
@@ -16896,7 +16911,8 @@ public class BRRS_M_SECL_ReportService {
 						cell9.setCellStyle(textStyle);
 					}
 				}
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				
+				workbook.setForceFormulaRecalculation(true);
 			} else {
 
 			}
@@ -20099,7 +20115,7 @@ public class BRRS_M_SECL_ReportService {
           						cell9.setCellStyle(textStyle);
           					}
           				}
-          				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+          				workbook.setForceFormulaRecalculation(true);
           			} else {
 
           			}

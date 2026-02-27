@@ -2601,7 +2601,7 @@ public class RegulatoryReportServices {
 		case "M_SECL":
 			try {
 				repfile = brrs_m_secl_reportservice.getM_SECLExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+						dtltype, type,format, version);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

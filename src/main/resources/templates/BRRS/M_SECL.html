@@ -423,6 +423,7 @@ function showresubsummary() {
 			var dtltype = button.getAttribute('data-dtltype');
 			var filename = button.getAttribute('data-filename');
 			var type = button.getAttribute('data-type');
+			var format = button.getAttribute('data-format');
 			var version = button.getAttribute('data-version');
 		
 			
@@ -441,7 +442,8 @@ function showresubsummary() {
 					'&secid=' + secid +
 					'&filename=' + filename +
 					'&type=' + type +
-					'&version=' + version +
+					'&version=' + version + 
+					'&format=' + format +
 					'&dtltype=' + dtltype,
 				type: 'GET',
 				xhrFields: {
@@ -3874,14 +3876,24 @@ for (let i = 12; i <= 57; i++) {
 }console.log("✅ Entity executed successfully");
 
 //Select API endpoint dynamically
-let apiUrl = './SECLupdateAll'; // normal update
+// normal update
+
+let apiUrl;
+let successMessage;
+let redirectUrl;
+
 if (type && type.toUpperCase() === 'RESUB') {
-	apiUrl = './UpdateM_SECL_ReSub'; // Resubmission endpoint
+    apiUrl = './UpdateM_SECL_ReSub';
+    successMessage = "Resub Modified Successfully.";
+    redirectUrl ='/BRRS/Resubmission?rptcode=M_SECL';   // 🔹 change this to your RESUB page
+} else {
+    apiUrl = './SECLupdateAll';
+    successMessage = "Modified Successfully.";
+    redirectUrl = '/BRRS/BRRSValidations?rptcode=M_SECL&todate='+asondate; // 🔹 change this to your normal page
 }
 
-
 // ✅ Single AJAX call with type info
-$.ajax({
+ $.ajax({
     url: apiUrl,
     type: 'POST',
     data: formData,
@@ -3890,12 +3902,12 @@ $.ajax({
     dataType: 'text',
     success: function (response) {
         $("#resultModalLabel").text("BRRS");
-        $("#resultModalBody").text(response);
+        $("#resultModalBody").text(successMessage);
         $("#resultModal").modal("show");
 
 	    //  Wait for user to close the modal manually
 	    $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
-	        location.reload(); // reload ONLY when modal is closed
+	    	 window.location.href = redirectUrl // reload ONLY when modal is closed
 	    });
 	},
     error: function (jqXHR) {
@@ -3907,7 +3919,7 @@ $.ajax({
     complete: function () {
         $('#loader').modal('hide');
     }
-});
+}); 
 
 console.log("✅ AJAX executed successfully");
 }
@@ -4077,7 +4089,7 @@ alert(version)
 
 
 </head>
-<title>BRRS</title>
+<title>M_SECL</title>
 
 <body>
 	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
@@ -4151,7 +4163,7 @@ alert(version)
                     				 data-filename='M_SECL.xlsx',
 					 				 data-type=${type},
 					    			 data-version=${version}"
-									  onclick="downloadfile(this);">EXCEL
+									  onclick="downloadfile(this);">Format
 							<i class="fa fa-download"></i>
 						</button>
 						
@@ -4169,7 +4181,7 @@ alert(version)
                     				 data-filename='M_SECL.xlsx',
 					 				 data-type=${type},
 					    			 data-version=${version}"
-									  onclick="downloadfile(this);">EXCEL
+									  onclick="downloadfile(this);">Format
 							<i class="fa fa-download"></i>
 						</button>
 						 <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
@@ -4181,6 +4193,7 @@ alert(version)
 									data-dtltype=${dtltype}, 
 								    data-filename='EMAIL_M_SECL.xlsx',
 									data-type=${type},
+									data-format='email',
 									data-version=${version}
 								  " onclick="downloadfile(this);" >E-MAIL
 							<i class="fa fa-download"></i>
@@ -4199,7 +4212,7 @@ alert(version)
                     				 data-filename='M_SECL.xlsx',
 					 				 data-type=${type},
 					    			 data-version=${version}"
-									  onclick="downloadfile(this);">EXCEL
+									  onclick="downloadfile(this);">Format
 							<i class="fa fa-download"></i>
 						</button>
 						 <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
@@ -4211,6 +4224,7 @@ alert(version)
 									data-dtltype=${dtltype}, 
 								    data-filename='EMAIL_M_SECL.xlsx',
 									data-type=${type},
+									data-format='email',
 									data-version=${version}
 								  " onclick="downloadfile(this);" >E-MAIL
 							<i class="fa fa-download"></i>
@@ -4225,6 +4239,7 @@ alert(version)
 									data-dtltype=${dtltype}, 
 								    data-filename='EMAIL_M_SECL.xlsx',
 									data-type=${type},
+									data-format='email',
 									data-version=${version}
 								  " onclick="downloadfile(this);" >E-MAIL
 							<i class="fa fa-download"></i>
@@ -4255,8 +4270,45 @@ alert(version)
 						</button> -->
 
 					</div>
-					
-				</div>
+					</div>
+					<p th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}" style="text-align: left; font-weight: bold; 
+						color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+						margin-top:10px; margin-bottom:10px;padding: 5px;">Summary View - M SECL</p>
+
+				<!-- Detail text -->
+				<p th:if="${displaymode == 'details' and type != 'ARCHIVAL'}" style="text-align: left; font-weight: bold;
+					 color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+					 margin-top:10px; margin-bottom:10px;padding: 5px;">Detail View - M SECL</p>
+
+				<p th:if="${type == 'ARCHIVAL' and displaymode == 'archivalSummary'}" style="text-align: left; font-weight: bold; 
+          color: white; font-size: 20px;
+          background-color: rgb(107, 122, 143); 
+          margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Archival Summary View - M SECL
+				</p>
+
+				<p th:if="${type == 'ARCHIVAL' and displaymode == 'archivalDetails'}" style="text-align: left; font-weight: bold;
+          color: white; font-size: 20px;
+          background-color: rgb(107, 122, 143); 
+          margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Archival Detail View - M SECL
+				</p>
+
+				<p th:if="${type == 'RESUB' and displaymode == 'resubSummary'}" style="text-align: left; font-weight: bold; 
+						          color: white; font-size: 20px;
+						          background-color: rgb(107, 122, 143); 
+						          margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Resubmission Summary View - M SECL
+				</p>
+
+				<p th:if="${type == 'RESUB' and displaymode == 'resubDetails'}" style="text-align: left; font-weight: bold;
+						          color: white; font-size: 20px;
+						          background-color: rgb(107, 122, 143); 
+						          margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Resubmission Detail View - M SECL
+				</p>
+		
+				
 				<div th:if="${displaymode == 'summary' or displaymode == 'details' or displaymode == 'archivalSummary' or displaymode == 'archivalDetails' or displaymode == 'resubSummary' or displaymode == 'resubDetails'}">
 					<div class="row">
 						<div class="col-sm-12">
