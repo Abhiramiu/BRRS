@@ -403,7 +403,7 @@ public class BRRS_M_SFINP1_ReportService {
 			for (int i = 0; i < headers.length; i++) {
 				Cell cell = headerRow.createCell(i);
 				cell.setCellValue(headers[i]);
-				if (i == 3) { // ACCT BALANCE
+				if (i == 3 || i == 4) { // ACCT BALANCE
 					cell.setCellStyle(rightAlignedHeaderStyle);
 				} else {
 					cell.setCellStyle(headerStyle);
@@ -465,28 +465,28 @@ public class BRRS_M_SFINP1_ReportService {
 	}
 
 
-//	public List<Object[]> getM_SFINP1Resub() {
-//		List<Object[]> resubList = new ArrayList<>();
-//		try {
-//			List<M_SFINP1_Archival_Summary_Entity> latestArchivalList = BRRS_M_SFINP1_Archival_Summary_Repo
-//					.getdatabydateListWithVersion();
-//
-//			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
-//				for (M_SFINP1_Archival_Summary_Entity entity : latestArchivalList) {
-//					resubList.add(new Object[] { entity.getReport_date(), entity.getReport_version(),
-//							entity.getReportResubDate() });
-//				}
-//				System.out.println("Fetched " + resubList.size() + " record(s)");
-//			} else {
-//				System.out.println("No archival data found.");
-//			}
-//
-//		} catch (Exception e) {
-//			System.err.println("Error fetching M_SFINP1 Resub data: " + e.getMessage());
-//			e.printStackTrace();
-//		}
-//		return resubList;
-//	}
+	public List<Object[]> getM_SFINP1Resub() {
+		List<Object[]> resubList = new ArrayList<>();
+		try {
+			List<M_SFINP1_Archival_Summary_Entity> latestArchivalList = BRRS_M_SFINP1_Archival_Summary_Repo
+					.getdatabydateListWithVersion();
+
+			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+				for (M_SFINP1_Archival_Summary_Entity entity : latestArchivalList) {
+					resubList.add(new Object[] { entity.getReportDate(), entity.getReportVersion(),
+							entity.getReportResubDate() });
+				}
+				System.out.println("Fetched " + resubList.size() + " record(s)");
+			} else {
+				System.out.println("No archival data found.");
+			}
+
+		} catch (Exception e) {
+			System.err.println("Error fetching M_SFINP1 Resub data: " + e.getMessage());
+			e.printStackTrace();
+		}
+		return resubList;
+	}
 
 //	// Archival View
 	public List<Object[]> getM_SFINP1Archival() {
@@ -572,7 +572,7 @@ public class BRRS_M_SFINP1_ReportService {
 			for (int i = 0; i < headers.length; i++) {
 				Cell cell = headerRow.createCell(i);
 				cell.setCellValue(headers[i]);
-				if (i == 3) { // ACCT BALANCE
+				if (i == 3 || i == 4) { // ACCT BALANCE
 					cell.setCellStyle(rightAlignedHeaderStyle);
 				} else {
 					cell.setCellStyle(headerStyle);

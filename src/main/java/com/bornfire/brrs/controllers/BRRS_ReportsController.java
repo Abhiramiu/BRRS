@@ -4448,14 +4448,14 @@ public class BRRS_ReportsController {
 	public ResponseEntity<String> updateAllReports(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-			@ModelAttribute M_DEP3_Manual_Summary_Entity request1
+			@ModelAttribute M_DEP3_Summary_Entity request1
 
 	) {
 		try {
 			System.out.println("Came to single controller");
 
 			// set date into entities
-			request1.setReport_date(asondate);
+			request1.setReportDate(asondate);
 
 			// call services
 			BRRS_M_DEP3_reportservice.updateReport(request1);

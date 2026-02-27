@@ -14,5 +14,8 @@ public interface BRRS_M_SFINP1_Archival_Summary_Manual_Repo extends JpaRepositor
 
     @Query(value = "SELECT * FROM BRRS_M_SFINP1_ARCHIVALTABLE_SUMMARY_MANUAL WHERE REPORT_DATE = :reportDate", nativeQuery = true)
     List<M_SFINP1_Archival_Summary_Manual_Entity> getdatabydateListarchival(@Param("reportDate") Date reportDate);
+    
+    @Query(value = "select * from BRRS_M_SFINP1_ARCHIVALTABLE_SUMMARY_MANUAL where REPORT_DATE = ?1 and REPORT_VERSION = ?2", nativeQuery = true)
+    List<M_SFINP1_Archival_Summary_Manual_Entity> getdatabydateListarchival(Date REPORT_DATE, BigDecimal REPORT_VERSION);
 
     }

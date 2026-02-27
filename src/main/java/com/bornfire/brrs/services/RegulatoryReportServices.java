@@ -4307,6 +4307,11 @@ public class RegulatoryReportServices {
 			break;
 
 
+		case "M_DEP3":
+			List<Object[]> DEP3RESUB = BRRS_M_DEP3_reportservice.getM_DEP3Archival();
+			archivalData.addAll(DEP3RESUB);
+			System.out.println("Fetched M_LA5 archival data: " + DEP3RESUB.size());
+			break;
 			
 		case "M_LA5":
 		List<Object[]> M_LA5List = BRRS_M_LA5_reportservice.getM_LA5Archival();
@@ -4345,14 +4350,6 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "M_DEP3":
-			try {
-				archivalData = BRRS_M_DEP3_reportservice.getM_DEP3Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
 			
 		case "Q_SMME_DEP":
 			List<Object[]> QSMMEDEPList = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPArchival();
@@ -6971,6 +6968,28 @@ public class RegulatoryReportServices {
 
 			break;
 
+			
+		case "M_SFINP1":
+			try {
+				List<Object[]> resubList = BRRS_M_SFINP1_reportservice.getM_SFINP1Resub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for M_SFINP1: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_SFINP1: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+		case "M_DEP3":
+			try {
+				List<Object[]> resubList = BRRS_M_DEP3_reportservice.getM_DEP3Resub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for M_DEP3: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_DEP3: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+			
 		case "BDISB2":
 			try {
 				List<Object[]> resubList = BRRS_BDISB2_ReportService.getBDISB2Resub();
