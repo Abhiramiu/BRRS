@@ -3,6 +3,7 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -16,8 +17,13 @@ public class M_LIQ_Detail_Entity {
 	
 	
 
-	private String	cust_id;
+
 	@Id
+	@Column(name = "SNO")
+	private Long sno;
+
+	private String	cust_id;
+	
 	private String	acct_number;
 	private String	acct_name;
 	private String	data_type;
@@ -31,6 +37,7 @@ public class M_LIQ_Detail_Entity {
 	private String	modification_remarks;
 	private String	data_entry_version;
 	private BigDecimal	acct_balance_in_pula;
+	
 	 @DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date	report_date;
 	private String	create_user;
@@ -45,6 +52,13 @@ public class M_LIQ_Detail_Entity {
 	private String	gl_code;
 	private String	glsh_code;
 	private String	currency;
+	
+	public Long getSno() {
+		return sno;
+	}
+	public void setSno(Long sno) {
+		this.sno = sno;
+	}
 	public String getCust_id() {
 		return cust_id;
 	}

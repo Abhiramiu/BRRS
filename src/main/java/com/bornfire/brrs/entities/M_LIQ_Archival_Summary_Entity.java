@@ -4,6 +4,7 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -100,6 +101,12 @@ public class M_LIQ_Archival_Summary_Entity {
 	private String	entity_flg;
 	private String	modify_flg;
 	private String	 del_flg;
+	
+	 @Column(name = "REPORT_RESUBDATE")
+	    @Temporal(TemporalType.TIMESTAMP)
+	    private Date reportResubDate;
+	 
+	 
 	public String getR10_product() {
 		return r10_product;
 	}
@@ -357,6 +364,14 @@ public class M_LIQ_Archival_Summary_Entity {
 	}
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
+	}
+	
+	
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
 	}
 	public M_LIQ_Archival_Summary_Entity() {
 		super();

@@ -17,9 +17,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class M_LIQ_Archival_Detail_Entity {
 	
 	
-	
-	private String	cust_id;
+
 	@Id
+	@Column(name = "SNO")
+	private Long sno;
+
+	private String	cust_id;
 	private String	acct_number;
 	private String	acct_name;
 	private String	data_type;
@@ -47,6 +50,13 @@ public class M_LIQ_Archival_Detail_Entity {
 	private String	gl_code;
 	private String	glsh_code;
 	private String	currency;
+	
+	public Long getSno() {
+		return sno;
+	}
+	public void setSno(Long sno) {
+		this.sno = sno;
+	}
 	public String getCust_id() {
 		return cust_id;
 	}

@@ -1,6 +1,7 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -47,6 +48,7 @@ import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.services.BRRS_M_LIQ_ReportService;
 import com.bornfire.brrs.entities.BRRS_M_LIQ_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LIQ_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LIQ_Detail_Repo;
@@ -92,8 +94,10 @@ public class BRRS_M_LIQ_ReportService {
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getM_LIQView(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, String version) {
+	public ModelAndView getM_LIQView(
+			String reportId, String fromdate, String todate,
+			String currency, String dtltype, Pageable pageable,
+			String type, BigDecimal version) {
 
 		ModelAndView mv = new ModelAndView();
 		/*Session hs = sessionFactory.getCurrentSession();
@@ -164,6 +168,33 @@ public class BRRS_M_LIQ_ReportService {
 		return mv;
 
 	}
+	
+	public List<Object[]> getM_LIQArchival() {
+		List<Object[]> archivalList = new ArrayList<>();
+		try {
+			List<M_LIQ_Archival_Summary_Entity> latestArchivalList = m_liq_Archival_Summary_Repo
+					.getdatabydateListWithVersion();
+
+			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+				for (M_LIQ_Archival_Summary_Entity entity : latestArchivalList) {
+					archivalList.add(new Object[] {
+							entity.getReport_date(),
+							entity.getReport_version(),
+							entity.getReportResubDate()
+					});
+				}
+				System.out.println("Fetched " + archivalList.size() + " record(s)");
+			} else {
+				System.out.println("No archival data found.");
+			}
+
+		} catch (Exception e) {
+			System.err.println("Error fetching M_LIQ Resub data: " + e.getMessage());
+			e.printStackTrace();
+		}
+		return archivalList;
+	}
+
 
 	public ModelAndView getM_LIQcurrentDtl(String reportId, String fromdate, String todate, String currency,
 			String dtltype, Pageable pageable, String filter, String type, String version) {
@@ -253,13 +284,14 @@ public class BRRS_M_LIQ_ReportService {
 	}
 
 	public byte[] getM_LIQExcel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) throws Exception {
+			String dtltype, String type, String format, BigDecimal version) throws Exception {
+
 		logger.info("Service: Starting Excel generation process in memory.");
 
 		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
-			return getExcelM_LIQARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+			return getExcelM_LIQARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, format, version);
 		}
 
 		// Fetch data
@@ -767,26 +799,9 @@ public class BRRS_M_LIQ_ReportService {
 		}
 	}
 
-	public List<Object> getM_LIQArchival() {
-		List<Object> M_LIQArchivallist = new ArrayList<>();
-		try {
-			M_LIQArchivallist = m_liq_Archival_Summary_Repo.getM_LIQarchival();
-			M_LIQArchivallist = m_liq_Manual_Archival_Summary_Repo.getM_LIQmanualarchival();
-			System.out.println("countser" + M_LIQArchivallist.size());
-			System.out.println("countser" + M_LIQArchivallist.size());
-		} catch (Exception e) {
-			// Log the exception
-			System.err.println("Error fetching M_LIQ Archival data: " + e.getMessage());
-			e.printStackTrace();
-
-			// Optionally, you can rethrow it or return empty list
-			// throw new RuntimeException("Failed to fetch data", e);
-		}
-		return M_LIQArchivallist;
-	}
 	
 	public byte[] getExcelM_LIQARCHIVAL(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) throws Exception {
+			String dtltype, String type, String format, BigDecimal version) throws Exception {
 
 		logger.info("Service: Starting Excel generation process in memory.");
 
@@ -864,7 +879,7 @@ public class BRRS_M_LIQ_ReportService {
 
 			int startRow = 11;
 
-			if (!dataList.isEmpty()) {
+			if (!dataList.isEmpty() && !dataList1.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
 					M_LIQ_Archival_Summary_Entity record = dataList.get(i);
 					M_LIQ_Archival_Manual_Summary_Entity record1 = dataList1.get(i);
@@ -1341,19 +1356,31 @@ public class BRRS_M_LIQ_ReportService {
 	private JdbcTemplate jdbcTemplate;
 
 	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
-	    ModelAndView mv = new ModelAndView("BRRS/M_LIQ"); // ✅ match the report name
-	    System.out.println("Hello");
+
+	    ModelAndView mv = new ModelAndView("BRRS/M_LIQ");
+
+	    System.out.println("ACCOUNT NO to update IS : "+acctNo);
+	    M_LIQ_Detail_Entity liqEntity = null;
+
 	    if (acctNo != null) {
-	    	M_LIQ_Detail_Entity liqEntity = brrs_m_liq_detail_Repo.findByAcctnumber(acctNo);
-	        if (liqEntity != null && liqEntity.getReport_date() != null) {
-	            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(liqEntity.getReport_date());
-	            mv.addObject("asondate", formattedDate);
-	        }
-	        mv.addObject("Data", liqEntity);
+	        liqEntity = brrs_m_liq_detail_Repo.findByAcctnumber(acctNo);
 	    }
 
+	    // 🔴 Important: Never send null to Thymeleaf
+	    if (liqEntity == null) {
+	        liqEntity = new M_LIQ_Detail_Entity();
+	    }
+
+	    if (liqEntity.getReport_date() != null) {
+	        String formattedDate = new SimpleDateFormat("dd/MM/yyyy")
+	                .format(liqEntity.getReport_date());
+	        mv.addObject("asondate", formattedDate);
+	    }
+
+	    mv.addObject("Data", liqEntity);
 	    mv.addObject("displaymode", "edit");
 	    mv.addObject("formmode", formMode != null ? formMode : "edit");
+
 	    return mv;
 	}
 

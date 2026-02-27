@@ -603,7 +603,12 @@ PURPOSE		: BRRS REPORT
 		    var dtltype = button.getAttribute('data-dtltype');
 		    var filename = button.getAttribute('data-filename');
 		    var type = button.getAttribute('data-type');
-		    var version = button.getAttribute('data-version');
+			var version = button.getAttribute('data-version');
+			var format = button.getAttribute('data-format');
+
+		    if (format === null) {
+		        format = '';   // treat as null
+		    }
 
 		    $('#loader').modal('show');
 
@@ -617,7 +622,8 @@ PURPOSE		: BRRS REPORT
 		            '&secid=' + secid +
 		            '&filename=' + filename +
 		            '&type=' + type +
-		            '&version=' + version,
+		            '&version=' + version  +
+					'&format=' + format,
 		        type: 'GET',
 		        xhrFields: { responseType: 'blob' },
 
@@ -914,22 +920,32 @@ PURPOSE		: BRRS REPORT
 
 
 		function fileuploads(btn) {
-		    const asondate = btn.getAttribute("data-todate");
-		    const type = btn.getAttribute("data-type");
+
+		    var asondate = btn.getAttribute("data-todate");
+		    const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
+
+		    // Mark RESUB once
+		    isResubmissionUpdate = (type && type.toUpperCase() === 'RESUB');
 
 		    // Show loader
 		    $('#loader').modal('show');
 
 		    try {
+
 		        // Step 1: Calculate totals
 		        calculateR14Totals();
 		        calculateR24Totals();
 		        calculateR10Totals();
 		        calculateR27Totals();
 
-		        // Step 2: Remove commas
+		        console.log("✅ Calculations executed successfully");
+
+		        // Step 2: Remove commas from numeric inputs
 		        $("#fileupload input[type='text']").each(function () {
-		            $(this).val($(this).val().replace(/,/g, ''));
+		            var val = $(this).val();
+		            if (val && val.includes(",")) {
+		                $(this).val(val.replace(/,/g, ''));
+		            }
 		        });
 
 		        // Step 3: Validate form
@@ -938,31 +954,43 @@ PURPOSE		: BRRS REPORT
 		            return;
 		        }
 
-		        // Step 4: Build FormData
-		        const formData = new FormData();
-		        formData.append("asondate", asondate);
-		        formData.append("type", type);
+		        // ✅ Step 4: SERIALIZE FORM DATA (NO MULTIPART)
+		        const formData =
+		            $('#fileupload').serialize()
+		            + '&asondate=' + encodeURIComponent(asondate)
+		            + '&type=' + encodeURIComponent(type);
 
-		        $('#fileupload').find(':input').each(function () {
-		            const name = $(this).attr('name');
-		            if (name) {
-		                formData.append(name, $(this).val());
-		            }
-		        });
+		        console.log("✅ Form data prepared");
 
-		        // Step 5: AJAX
+		        // Step 5: Select API dynamically (if needed)
+		        let apiUrl = './M_LIQupdateAll';
+		        if (type && type.toUpperCase() === 'RESUB') {
+		            apiUrl = './UpdateM_LIQ_ReSub';   // change if required
+		        }
+
+		        // ✅ Step 6: AJAX CALL (Normal POST – Not Multipart)
 		        $.ajax({
-		            url: './M_LIQupdateAll',
+		            url: apiUrl,
 		            type: 'POST',
 		            data: formData,
-		            processData: false,
-		            contentType: false,
 		            dataType: 'text',
 
-		            success: function () {
+		            success: function (response) {
+
 		                $("#resultModalLabel").text("BRRS");
-		                $("#resultModalBody").text("Updated Successfully.");
+		                $("#resultModalBody").text(response || "Updated Successfully.");
 		                $("#resultModal").modal("show");
+
+		                // Redirect only after modal close (RESUB only)
+		                $("#resultModal")
+		                    .off("hidden.bs.modal")
+		                    .on("hidden.bs.modal", function () {
+		                        if (isResubmissionUpdate) {
+		                            window.location.href = previousUrl
+		                                ? previousUrl
+		                                : "/BRRS/Resubmission?rptcode=M_LIQ";
+		                        }
+		                    });
 		            },
 
 		            error: function (jqXHR) {
@@ -974,26 +1002,19 @@ PURPOSE		: BRRS REPORT
 
 		            complete: function () {
 		                $('#loader').modal('hide');
-
-		                // 🔥 Refresh the page after modal closes
-		                setTimeout(() => {
-		                    location.reload();
-		                }, 800); // small delay so modal message is shown
 		            }
 		        });
 
+		        console.log("✅ AJAX executed successfully");
+
 		    } catch (error) {
+
 		        console.error("Error in fileuploads function:", error);
 		        $('#loader').modal('hide');
 
 		        $("#resultModalLabel").text("Error");
 		        $("#resultModalBody").text("Unexpected error occurred. Check console.");
 		        $("#resultModal").modal("show");
-
-		        // 🔥 Refresh after showing error
-		        setTimeout(() => {
-		            location.reload();
-		        }, 800);
 		    }
 		}
 
@@ -1290,18 +1311,36 @@ PURPOSE		: BRRS REPORT
 
 
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
-                     data-asondate=${asondate}, 
-                     data-fromdate=${fromdate}, 
-                     data-todate=${todate}, 
-                     data-currency=${currency},  
-                     data-dtltype=${dtltype}, 
-                     data-filename='M_LIQ.xlsx',
-                     data-type=${type},
-		                     data-version=${version}" onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
+							th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}" th:attr="data-reportid=${reportid},
+                   				 data-asondate=${asondate},
+                   				 data-fromdate=${fromdate},
+                    				 data-todate=${todate},
+                    				 data-currency=${currency}, 
+                    				 data-dtltype=${dtltype},
+                    				 data-filename='M_LIQ.xlsx',
+					 				 data-type=${type},
+					    			 data-version=${version}" onclick="downloadfile(this);">
+							<i class="fa fa-download"></i>FORMAT
 						</button>
 
+					<button type="button" class="custom-tab-btn "
+							id="custom-tab-btnAdd" onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}"
+							th:attr="data-reportid=${reportid},
+            data-asondate=${asondate},
+            data-fromdate=${fromdate},
+            data-todate=${todate},
+            data-currency=${currency}, 
+            data-dtltype=${dtltype},
+            data-filename='EMAIL_M_LIQ.xlsx',
+             data-type=${type},
+            data-format='email',
+            data-version=${version != null ? version : ''}"
+							style="font-family: Arial; font-weight: bold;">
+							<i class="fa fa-download"></i> Email
+
+						</button>
+						
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
 							th:if="${displaymode == 'Details'}" th:attr="data-reportid=${reportid}, 
              data-asondate=${asondate}, 
@@ -1954,16 +1993,17 @@ PURPOSE		: BRRS REPORT
 
 									<tbody style="font-family: Arial;">
 										<tr th:each="report, srlno : ${reportdetails}">
-											<td>
-												<a data-toggle="tooltip" class="editrec"
-													title="Click to Edit this Record">
-													<i class="fas fa-edit" style="color: black; cursor:pointer;"
-														th:attr="data-acctNo=${report.acct_number},
-																							data-asondate=${#dates.format(report.report_date, 'dd-MM-yyyy')},data-type=${type}"
-														onclick="openDetail(this, 'edit')"></i>
-
-												</a>
-											</td>
+											<td style="min-width: 50px; text-align: center;"><a
+												data-toggle="tooltip" class="editrec"
+												title="Click to Edit this Record"
+												th:if="${report.report_remarks != 'MAN'}"> <i
+													class="fas fa-edit" style="color: black; cursor: pointer;"
+													th:attr="data-acctNo=${report.acct_number},
+													data-SNo=${report.sno},
+                                    data-asondate=${#dates.format(report.report_date, 'dd-MM-yyyy')},
+                                    data-type=${type}"
+													onclick="openDetail(this, 'edit')"></i>
+											</a></td>
 
 
 											<td th:text="${srlno.index + 1}"></td>
