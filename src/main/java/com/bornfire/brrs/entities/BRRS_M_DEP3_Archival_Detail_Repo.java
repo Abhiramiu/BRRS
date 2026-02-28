@@ -6,15 +6,17 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-
 public interface BRRS_M_DEP3_Archival_Detail_Repo extends JpaRepository<M_DEP3_Archival_Detail_Entity, String> {
 
 	@Query(value = "select * from BRRS_M_DEP3_ARCHIVALTABLE_DETAIL where REPORT_DATE=?1 AND DATA_ENTRY_VERSION=?2", nativeQuery = true)
-	List<M_DEP3_Archival_Detail_Entity> getdatabydateList(Date reportdate,String DATA_ENTRY_VERSION);
-	
-	@Query(value = "select * from BRRS_M_DEP3_ARCHIVALTABLE_DETAIL where REPORT_LABEL =?1 and REPORT_ADDL_CRITERIA_1=?2 AND REPORT_DATE=?3 AND DATA_ENTRY_VERSION=?4", nativeQuery = true)
-	List<M_DEP3_Archival_Detail_Entity> GetDataByRowIdAndColumnId(String reportLabel,String reportAddlCriteria_1,Date reportdate,String DATA_ENTRY_VERSION);
-	
-	
-}
+	List<M_DEP3_Archival_Detail_Entity> getdatabydateList(Date reportdate, String DATA_ENTRY_VERSION);
 
+	@Query(value = "select * from BRRS_M_DEP3_ARCHIVALTABLE_DETAIL where REPORT_LABEL =?1 and REPORT_ADDL_CRITERIA_1=?2 AND REPORT_DATE=?3 AND DATA_ENTRY_VERSION=?4", nativeQuery = true)
+	List<M_DEP3_Archival_Detail_Entity> GetDataByRowIdAndColumnId(String reportLabel, String reportAddlCriteria_1,
+			Date reportdate, String DATA_ENTRY_VERSION);
+
+	@Query(value = "SELECT COUNT(*) FROM BRRS_M_DEP3_ARCHIVALTABLE_DETAIL " + "WHERE TRUNC(REPORT_DATE) = TRUNC(?1) "
+			+ "AND DATA_ENTRY_VERSION = ?2", nativeQuery = true)
+	int getdatacount(Date reportdate, String version);
+
+}

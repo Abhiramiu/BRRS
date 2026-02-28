@@ -196,19 +196,27 @@ public class BRRS_M_SFINP1_ReportService {
 			}
 			System.out.println(type);
 			if ("ARCHIVAL".equals(type) && version != null) {
-				System.out.println(type);
-				// 🔹 Archival branch
-				List<M_SFINP1_Archival_Detail_Entity> T1Dt1;
-				if (rowId != null && columnId != null) {
-					T1Dt1 = BRRS_M_SFINP1_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate,
-							version);
-				} else {
-					T1Dt1 = BRRS_M_SFINP1_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
-				}
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
-			} else {
+
+			    List<M_SFINP1_Archival_Detail_Entity> T1Dt1;
+
+			    if (rowId != null && columnId != null) {
+			        T1Dt1 = BRRS_M_SFINP1_Archival_Detail_Repo
+			                .GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
+			    } else {
+			        T1Dt1 = BRRS_M_SFINP1_Archival_Detail_Repo
+			                .getdatabydateList(parsedDate, version);
+
+			        totalPages = BRRS_M_SFINP1_Archival_Detail_Repo
+			                .getdatacount(parsedDate, version);
+
+			        mv.addObject("pagination", "YES");
+			    }
+
+			    mv.addObject("reportdetails", T1Dt1);
+			    mv.addObject("reportmaster12", T1Dt1);
+
+			    System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+			}else {
 				// 🔹 Current branch
 				List<M_SFINP1_Detail_Entity> T1Dt1;
 				if (rowId != null && columnId != null) {
@@ -234,7 +242,7 @@ public class BRRS_M_SFINP1_ReportService {
 		mv.addObject("displaymode", "Details");
 		mv.addObject("currentPage", currentPage);
 		System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
-		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
+		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / pageSize));
 		mv.addObject("reportsflag", "reportsflag");
 		mv.addObject("menu", reportId);
 		return mv;
@@ -484,7 +492,7 @@ public class BRRS_M_SFINP1_ReportService {
 
 			}
 			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("MSFinP2Detail");
+			XSSFSheet sheet = workbook.createSheet("MSFinP1Detail");
 
 			// Common border style
 			BorderStyle border = BorderStyle.THIN;

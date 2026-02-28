@@ -4,314 +4,294 @@ CREATED BY	: PRAVEEN KUMAR M
 CREATED ON	: 01.08.2025
 PURPOSE		: BWRBRREPORT
 -->
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- CSS -->
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- CSS -->
 
 
-<link rel="stylesheet" type="text/css"
-	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
-<link rel="stylesheet" type="text/css"
-	th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
-<link rel="stylesheet" type="text/css"
-	th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
-<link rel="stylesheet" type="text/css"
-	th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
-<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
-<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
-<!-- JavaScript -->
-<!-- jQuery core (required first) -->
-<!-- ✅ Your manually placed jQuery validation
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+	<!-- JavaScript -->
+	<!-- jQuery core (required first) -->
+	<!-- ✅ Your manually placed jQuery validation
 	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 	 <script th:src="/jquery/jquery.validate.min.js"></script>
 	 -->
-<!-- jQuery (required first) -->
-<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
-<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
-<!-- ✅ jQuery Validation -->
-<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
-	th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
-<!-- Bootstrap + Others -->
-<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
-<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
-<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
-<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
-<script
-	th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
-<script
-	th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
-<style>
-.btns {
-	float: right;
-	margin: 5px;
-}
+	<!-- jQuery (required first) -->
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+	<!-- ✅ jQuery Validation -->
+	<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+		th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+	<!-- Bootstrap + Others -->
+	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+	<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+	<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+	<style>
+		.btns {
+			float: right;
+			margin: 5px;
+		}
 
-.col-sm-5 {
-	padding-bottom: 15px;
-}
+		.col-sm-5 {
+			padding-bottom: 15px;
+		}
 
-.list-body {
-	padding: 0px;
-}
+		.list-body {
+			padding: 0px;
+		}
 
-.error {
-	color: red;
-	padding-left: 10px;
-}
+		.error {
+			color: red;
+			padding-left: 10px;
+		}
 
-.formline {
-	padding-bottom: 15px;
-}
+		.formline {
+			padding-bottom: 15px;
+		}
 
-.btn-primary {
-	background-color: #E77400;
-	border-color: #0c0c0c;
-}
-
-.btn-primary:not (:disabled):not (.disabled).active, .btn-primary:not (:disabled):not (.disabled):active,
-	.show>.btn-primary.dropdown-toggle {
-	color: #fff;
-	background-color: #cc000000;
-	border-color: #161617;
-}
-
-#finusertb {
-	width: 460px;
-}
-
-.dataTables_wrapper .dataTables_paginate .paginate_button {
-	padding: 0px;
-}
-</style>
-<style>
-div span {
-	font-weight: bold;
-	color: white !important;
-}
-
-.card {
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-	border-radius: 8px;
-}
-
-.card-header h5 {
-	font-size: 22px;
-	color: #fff;
-	font-weight: 600;
-}
-
-.nav-tabs .nav-link {
-	font-weight: 500;
-	border: 1px solid #dee2e6;
-	border-bottom: none;
-	border-radius: 4px 4px 0 0;
-	background-color: #f1f1f1;
-	margin-right: 5px;
-}
-
-.nav-tabs .nav-link.active {
-	background-color: #ffffff;
-	border-color: #dee2e6 #dee2e6 #ffffff;
-}
-
-.table-responsive {
-	border: 1px solid #dee2e6;
-	border-radius: 4px;
-}
-
-.table-hover tbody tr:hover {
-	background-color: #f3f6f9;
-}
-
-thead th {
-	position: sticky;
-	top: 0;
-	background-color: #e9ecf0;
-	z-index: 1;
-}
-
-.table td {
-	background-color: #FFFFFF;
-}
-
-.card-footer {
-	padding: 10px;
-	border-top: 1px solid #ccc;
-}
-
-.btn-xs {
-	padding: 4px 12px;
-	font-size: 14px;
-	border-radius: 4px;
-}
-
-#BRRSvalidation th, #usertable td {
-	vertical-align: middle;
-	text-align: left;
-	font-size: 16px;
-	font-family: Arial;
-}
-
-.fa-edit:hover {
-	color: #28a745;
-	transform: scale(1.1);
-}
-
-td {
-	border: 1px solid rgb(0, 164, 166);
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-}
-</style>
-<style>
-.form-group {
-	position: relative;
-	margin-bottom: 1.5rem;
-}
-
-.form-control {
-	width: 100%;
-	border: 2px solid #ccc;
-	border-radius: 8px;
-	font-size: 1rem;
-	outline: none;
-	background: transparent;
-	transition: border-color 0.3s ease, padding-top 0.3s ease;
-}
-
-.error {
-	color: red;
-	padding-top: 15px;
-}
-
-.form-control:focus {
-	border-color: #007bff;
-}
-
-.form-legend {
-	position: absolute;
-	top: 50%;
-	left: 15px;
-	transform: translateY(-50%);
-	font-size: 1rem;
-	color: #aaa;
-	background: white;
-	padding: 0 5px;
-	pointer-events: none;
-	transition: 0.3s ease;
-}
-
-/* When input or select is focused or has a value, move the label up */
-.form-control:focus ~.form-legend, .form-control:not (:placeholder-shown)
-	~.form-legend {
-	top: -8px;
-	font-size: 1rem;
-	color: #007bff;
-}
-
-/* Hover effect when the input/select is focused */
-.form-control:focus:hover ~.form-legend {
-	color: #0056b3;
-	/* Darker shade of blue on hover */
-}
-
-/* Ensure the label returns to the normal color after focus or hover is removed */
-.form-control:not (:focus) ~.form-legend {
-	color: #aaa;
-	/* Normal label color */
-}
-</style>
-<style>
-/* Red border for invalid inputs */
-input.error, select.error {
-	border: 2px solid red !important;
-}
-
-/* Error message style */
-label.error {
-	color: red;
-	font-size: 0.85em;
-	margin-top: 5px;
-	display: block;
-}
-
-.underline {
-	text-decoration: underline;
-	color: #08a6f1;
-	cursor: pointer;
-}
-
-.left-arrow-circle {
-	width: 35px;
-	height: 35px;
-	border-radius: 50%;
-	background-color: white;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	margin-right: 10px;
-	transition: background-color 0.3s, transform 0.2s;
-}
-
-.left-arrow-circle i {
-	color: rgb(107, 122, 143);
-}
-
-.left-arrow-circle:hover {
-	background-color: rgb(107, 122, 143);
-	cursor: pointer;
-	transform: scale(1.05);
-	border: 2px solid white;
-}
-
-.left-arrow-circle:hover i {
-	color: white;
-}
-
-.white-text span {
-	color: white !important;
-}
-
-.table-cell tbody td:hover {
-	background-color: #f0f0f0;
-	/* Hover color for cell */
-	cursor: pointer;
-	/* Optional: pointer cursor */
-}
-
-.table-bordered td, .table-bordered th {
-	border: 1px solid #000 !important;
-}
+		.btn-primary {
+			background-color: #E77400;
+			border-color: #0c0c0c;
+		}
 
 
-#reportdetails {
-	width: 100% !important;
-	table-layout: fixed !important;
-}
+		#finusertb {
+			width: 460px;
+		}
 
-#reportdetails th, #reportdetails td {
-	white-space: nowrap;
-}
+		.dataTables_wrapper .dataTables_paginate .paginate_button {
+			padding: 0px;
+		}
+	</style>
+	<style>
+		div span {
+			font-weight: bold;
+			color: white !important;
+		}
 
-/* Right-align data (6th column = ACCT BALANCE) */
-#reportdetails td:nth-child(6), .dataTables_scrollHeadInner table th:nth-child(6)
-	{
-	text-align: right !important;
-	padding-right: 10px !important;
-}
+		.card {
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			border-radius: 8px;
+		}
 
-.table-bordereds td,
-        .table-bordereds th {
-            border: 1px solid #dfe0e3;
-        }
-</style>
+		.card-header h5 {
+			font-size: 22px;
+			color: #fff;
+			font-weight: 600;
+		}
 
-<style>
+		.nav-tabs .nav-link {
+			font-weight: 500;
+			border: 1px solid #dee2e6;
+			border-bottom: none;
+			border-radius: 4px 4px 0 0;
+			background-color: #f1f1f1;
+			margin-right: 5px;
+		}
+
+		.nav-tabs .nav-link.active {
+			background-color: #ffffff;
+			border-color: #dee2e6 #dee2e6 #ffffff;
+		}
+
+		.table-responsive {
+			border: 1px solid #dee2e6;
+			border-radius: 4px;
+		}
+
+		.table-hover tbody tr:hover {
+			background-color: #f3f6f9;
+		}
+
+		thead th {
+			position: sticky;
+			top: 0;
+			background-color: #e9ecf0;
+			z-index: 1;
+		}
+
+		.table td {
+			background-color: #FFFFFF;
+		}
+
+		.card-footer {
+			padding: 10px;
+			border-top: 1px solid #ccc;
+		}
+
+		.btn-xs {
+			padding: 4px 12px;
+			font-size: 14px;
+			border-radius: 4px;
+		}
+
+		#BRRSvalidation th,
+		#usertable td {
+			vertical-align: middle;
+			text-align: left;
+			font-size: 16px;
+			font-family: Arial;
+		}
+
+		.fa-edit:hover {
+			color: #28a745;
+			transform: scale(1.1);
+		}
+
+		td {
+			border: 1px solid rgb(0, 164, 166);
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+	</style>
+	<style>
+		.form-group {
+			position: relative;
+			margin-bottom: 1.5rem;
+		}
+
+		.form-control {
+			width: 100%;
+			border: 2px solid #ccc;
+			border-radius: 8px;
+			font-size: 1rem;
+			outline: none;
+			background: transparent;
+			transition: border-color 0.3s ease, padding-top 0.3s ease;
+		}
+
+		.error {
+			color: red;
+			padding-top: 15px;
+		}
+
+		.form-control:focus {
+			border-color: #007bff;
+		}
+
+		.form-legend {
+			position: absolute;
+			top: 50%;
+			left: 15px;
+			transform: translateY(-50%);
+			font-size: 1rem;
+			color: #aaa;
+			background: white;
+			padding: 0 5px;
+			pointer-events: none;
+			transition: 0.3s ease;
+		}
+
+
+
+		/* Hover effect when the input/select is focused */
+		.form-control:focus:hover~.form-legend {
+			color: #0056b3;
+			/* Darker shade of blue on hover */
+		}
+
+	</style>
+	<style>
+		/* Red border for invalid inputs */
+		input.error,
+		select.error {
+			border: 2px solid red !important;
+		}
+
+		/* Error message style */
+		label.error {
+			color: red;
+			font-size: 0.85em;
+			margin-top: 5px;
+			display: block;
+		}
+
+		.underline {
+			text-decoration: underline;
+			color: #08a6f1;
+			cursor: pointer;
+		}
+
+		.left-arrow-circle {
+			width: 35px;
+			height: 35px;
+			border-radius: 50%;
+			background-color: white;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 10px;
+			transition: background-color 0.3s, transform 0.2s;
+		}
+
+		.left-arrow-circle i {
+			color: rgb(107, 122, 143);
+		}
+
+		.left-arrow-circle:hover {
+			background-color: rgb(107, 122, 143);
+			cursor: pointer;
+			transform: scale(1.05);
+			border: 2px solid white;
+		}
+
+		.left-arrow-circle:hover i {
+			color: white;
+		}
+
+		.white-text span {
+			color: white !important;
+		}
+
+		.table-cell tbody td:hover {
+			background-color: #f0f0f0;
+			/* Hover color for cell */
+			cursor: pointer;
+			/* Optional: pointer cursor */
+		}
+
+		.table-bordered td,
+		.table-bordered th {
+			border: 1px solid #000 !important;
+		}
+
+
+		#reportdetails {
+			width: 100% !important;
+			table-layout: fixed !important;
+		}
+
+		#reportdetails th,
+		#reportdetails td {
+			white-space: nowrap;
+		}
+
+		/* Right-align data (6th column = ACCT BALANCE) */
+		#reportdetails td:nth-child(6),
+		.dataTables_scrollHeadInner table th:nth-child(6) {
+			text-align: right !important;
+			padding-right: 10px !important;
+		}
+
+		.table-bordereds td,
+		.table-bordereds th {
+			border: 1px solid #dfe0e3;
+		}
+	</style>
+
+	<style>
 		.left-arrow-circle {
 			background-color: white;
 			color: #007bff;
@@ -323,19 +303,20 @@ label.error {
 
 		/* 🚌 Bus display style box */
 		/* 🚌 Bus display style box */
-					.boards {
-						transform: translateY(6px);
-					  background-color: rgb(107, 122, 143);
-					  color: white;
-					  padding: 5px 80px;
-					  border-radius: 8px;
-					  overflow: hidden;
-					  white-space: nowrap;
-					  flex: 1; /* ✅ makes it take available space dynamically */
-					  min-width: 200px;
-					  box-shadow: 0 0 10px rgb(107, 122, 143);
-					  position: relative;
-					}
+		.boards {
+			transform: translateY(6px);
+			background-color: rgb(107, 122, 143);
+			color: white;
+			padding: 5px 80px;
+			border-radius: 8px;
+			overflow: hidden;
+			white-space: nowrap;
+			flex: 1;
+			/* ✅ makes it take available space dynamically */
+			min-width: 200px;
+			box-shadow: 0 0 10px rgb(107, 122, 143);
+			position: relative;
+		}
 
 		/* ✨ Scrolling animation */
 		.scrolling-text {
@@ -358,7 +339,7 @@ label.error {
 		}
 	</style>
 
-<script th:inline="javascript">
+	<script th:inline="javascript">
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
@@ -372,37 +353,37 @@ label.error {
 			$('#loader').modal('hide');
 		});
 
-		
-		
-		$(document).ready(function() {
-			Maker_Checker_Function(); 
+
+
+		$(document).ready(function () {
+			Maker_Checker_Function();
 		});
 
 		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
 		function Maker_Checker_Function() {
 			$.ajax({
-				url: "/BRRS/getUserRole",    
+				url: "/BRRS/getUserRole",
 				type: "GET",
-				success: function(roleId) {
+				success: function (roleId) {
 					// console.log("User Role ID:", roleId);
-				
+
 					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
 					}
 
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-								const button = document.getElementById("custom-tab-btnAdd");
-								if (button) button.style.display = "none";
-							}
+						const button = document.getElementById("custom-tab-btnAdd");
+						if (button) button.style.display = "none";
+					}
 
 				},
-				error: function(err) {
+				error: function (err) {
 					console.error("Error fetching role:", err);
-		     }
-		    });
+				}
+			});
 		}
-		
+
 
 		function home() {
 			$("#loader").modal("toggle");
@@ -445,48 +426,48 @@ label.error {
 
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
 			location.href = Callurl;
 		}
 
 
 	</script>
-	
+
 	<script th:inline="javascript">
-				  $(document).ready(function () {
-				    var table = $('#reportdetails').DataTable({
-				      scrollY: "550px",
-				      scrollX: true,
-				      scrollCollapse: true,
-				      autoWidth: false,
-				      paging: true,
-				      searching: true,
-				      lengthChange: false,
-				      ordering: true,
-				      pageLength: 100,
-				      fixedHeader: true, // ✅ You can simply set it to true
-					  // ✅ Column width settings
-					   columnDefs: [
-					     { width: "60px", targets: 0 },   // Edit icon column
-					     { width: "150px", targets: 1 }  ,  // S No column
-						 { width: "300px", targets: 8 }    // S No column
-					   ],
+		$(document).ready(function () {
+			var table = $('#reportdetails').DataTable({
+				scrollY: "550px",
+				scrollX: true,
+				scrollCollapse: true,
+				autoWidth: false,
+				paging: true,
+				searching: true,
+				lengthChange: false,
+				ordering: true,
+				pageLength: 100,
+				fixedHeader: true, // ✅ You can simply set it to true
+				// ✅ Column width settings
+				columnDefs: [
+					{width: "60px", targets: 0},   // Edit icon column
+					{width: "150px", targets: 1},  // S No column
+					{width: "300px", targets: 8}    // S No column
+				],
 
-				      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
-				    });
+				dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+			});
 
-				    // ✅ Fix alignment on resize / zoom
-				    $(window).on('resize', function () {
-				      table.columns.adjust().draw(false);
-				    });
+			// ✅ Fix alignment on resize / zoom
+			$(window).on('resize', function () {
+				table.columns.adjust().draw(false);
+			});
 
-				    // ✅ Fix initial misalignment if loaded at non-100% zoom
-				    setTimeout(function () {
-				      table.columns.adjust().draw(false);
-				    }, 500);
-				  });
-				</script>
-<script>
+			// ✅ Fix initial misalignment if loaded at non-100% zoom
+			setTimeout(function () {
+				table.columns.adjust().draw(false);
+			}, 500);
+		});
+	</script>
+	<script>
 		function activateTab(tabName) {
 			// Remove 'active' from all buttons
 			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
@@ -510,64 +491,64 @@ label.error {
 			activateTab(selectedTab);
 		};
 		function downloadfile(button) {
-		    var reportid = button.getAttribute('data-reportid');
-		    var asondate = button.getAttribute('data-asondate');
-		    var fromdate = button.getAttribute('data-fromdate');
-		    var todate = button.getAttribute('data-todate');
-		    var currency = button.getAttribute('data-currency');
-		    var subreportid = button.getAttribute('data-subreportid');
-		    var secid = button.getAttribute('data-secid');
-		    var dtltype = button.getAttribute('data-dtltype');
-		    var filename = button.getAttribute('data-filename');
-		    var type = button.getAttribute('data-type');
-		    var version = button.getAttribute('data-version');
-		    var format = button.getAttribute('data-format');
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+			var format = button.getAttribute('data-format');
 
-		    if (format === null) {
-		        format = '';   // treat as null
-		    }
+			if (format === null) {
+				format = '';   // treat as null
+			}
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    $.ajax({
-		        url: './downloadExcel?reportid=' + reportid +
-		             '&fromdate=' + fromdate +
-		             '&asondate=' + asondate +
-		             '&todate=' + todate +
-		             '&currency=' + currency +
-		             '&subreportid=' + subreportid +
-		             '&secid=' + secid +
-		             '&filename=' + filename +
-		             '&type=' + type +
-		             '&version=' + version +
-		             '&format=' + format,
-		        type: 'GET',
-		        xhrFields: {
-		            responseType: 'blob'
-		        },
-		        success: function (data) {
-		            $('#loader').modal('hide');
-		            if (data && data.size > 100) {
-		                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
-		                const url = window.URL.createObjectURL(blob);
-		                const a = document.createElement('a');
-		                a.style.display = 'none';
-		                a.href = url;
-		                a.download = filename;
-		                document.body.appendChild(a);
-		                a.click();
-		                window.URL.revokeObjectURL(url);
-		                document.body.removeChild(a);
-		                showResultModal('BRRS', filename + ' downloaded successfully.');
-		            } else {
-		                showResultModal('Information', 'No data was available to create a download.');
-		            }
-		        },
-		        error: function () {
-		            $('#loader').modal('hide');
-		            showResultModal('Error', 'An error occurred while downloading the file.');
-		        }
-		    });
+			$.ajax({
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version +
+					'&format=' + format,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function () {
+					$('#loader').modal('hide');
+					showResultModal('Error', 'An error occurred while downloading the file.');
+				}
+			});
 		}
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
@@ -588,9 +569,9 @@ label.error {
 	</script>
 
 
-<script>
-		
-		function startReport(button){
+	<script>
+
+		function startReport(button) {
 			const alertMsg = document.getElementById("alertMessage");
 			const filename = button.getAttribute('data-filename');
 			const fromdate = button.getAttribute('data-fromdate');
@@ -600,10 +581,10 @@ label.error {
 			const type = button.getAttribute('data-type');
 			const version = button.getAttribute('data-version');
 			const sessionfilename = sessionStorage.getItem("filename");
-			
-			if(sessionfilename==filename){
-				alertMsg.innerHTML ='Download request already Processing...';
-	       	 	showAlert();
+
+			if (sessionfilename == filename) {
+				alertMsg.innerHTML = 'Download request already Processing...';
+				showAlert();
 				return;
 			}
 
@@ -616,47 +597,47 @@ label.error {
 				'&dtltype=' + encodeURIComponent(dtltype) +
 				'&type=' + encodeURIComponent(type) +
 				'&version=' + encodeURIComponent(version);
-		    fetch(downloadUrl)  // ✅ no invalid characters now
-		        .then(res => res.text())
-		        .then(jobId => {
+			fetch(downloadUrl)  // ✅ no invalid characters now
+				.then(res => res.text())
+				.then(jobId => {
 
-		        	alertMsg.innerHTML ='Download request received...'+jobId;
-		       	 	showAlert();
-		            sessionStorage.setItem("jobId", jobId);
-		            sessionStorage.setItem("filename", filename);
-		            checkReport(jobId);
-		        });
+					alertMsg.innerHTML = 'Download request received...' + jobId;
+					showAlert();
+					sessionStorage.setItem("jobId", jobId);
+					sessionStorage.setItem("filename", filename);
+					checkReport(jobId);
+				});
 		}
 
 		function checkReport(jobId) {
 			const alertMsg = document.getElementById("alertMessage");
-		    fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
-		        .then(res => res.text())
-		        .then(status => {
-		            if (status === "READY") {
-		            	alertMsg.innerHTML ='Report is ready! Downloading…';
-		           	 	showAlert();
-		                const filename = sessionStorage.getItem("filename");
-		                downloadDetailfile(jobId,filename)
-		                sessionStorage.removeItem("jobId");
-		                sessionStorage.removeItem("filename");                
-		                
-		            } else {
-		                alertMsg.innerHTML ='Download Is Processing…';
-		            	showAlert();
-		                setTimeout(() => checkReport(jobId), 5000);
-		            }
-		        });
+			fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+				.then(res => res.text())
+				.then(status => {
+					if (status === "READY") {
+						alertMsg.innerHTML = 'Report is ready! Downloading…';
+						showAlert();
+						const filename = sessionStorage.getItem("filename");
+						downloadDetailfile(jobId, filename)
+						sessionStorage.removeItem("jobId");
+						sessionStorage.removeItem("filename");
+
+					} else {
+						alertMsg.innerHTML = 'Download Is Processing…';
+						showAlert();
+						setTimeout(() => checkReport(jobId), 5000);
+					}
+				});
 		}
 
 
 
-		function downloadDetailfile(jobId,filename) {
-			
+		function downloadDetailfile(jobId, filename) {
+
 			//$('#loader').modal('show');
-			
+
 			$.ajax({
-				url: '/BRRS/Reports/downloaddetailExcel?jobId='+ jobId +
+				url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId +
 					'&filename=' + filename,
 				type: 'GET',
 				xhrFields: {
@@ -689,15 +670,15 @@ label.error {
 				}
 			});
 		}
-		
-
-
-		</script>
 
 
 
+	</script>
 
-<!--<script>
+
+
+
+	<!--<script>
 		function downloadDetailfile(button) {
 			const filename = button.getAttribute('data-filename');
 			const fromdate = button.getAttribute('data-fromdate');
@@ -763,41 +744,41 @@ label.error {
 		}
 	</script>-->
 
-<script th:inline="javascript">
+	<script th:inline="javascript">
 		function showdetailsbyRowAndColumn(a) {
-					var rowId = a.getAttribute('RowId');
-					var columnId = a.getAttribute('ColumnId');
-					var cellValue = a.textContent || a.innerText;
+			var rowId = a.getAttribute('RowId');
+			var columnId = a.getAttribute('ColumnId');
+			var cellValue = a.textContent || a.innerText;
 
-					if (cellValue !== '0') {
-						// Set dynamic message
-						document.getElementById("cellresultModalLabel").innerText = 
-						    "Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
+			if (cellValue !== '0') {
+				// Set dynamic message
+				document.getElementById("cellresultModalLabel").innerText =
+					"Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
 
-						// Show custom modal
-						$('#cellresultModal').modal('show');
+				// Show custom modal
+				$('#cellresultModal').modal('show');
 
-						// Handle Yes button
-						document.querySelector('.yes-btn').onclick = function() {
-							$('#cellresultModal').modal('hide');
-							const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
-						        backdrop: 'static',
-						        keyboard: false
-						    });
-							$('#loader').modal('show');
+				// Handle Yes button
+				document.querySelector('.yes-btn').onclick = function () {
+					$('#cellresultModal').modal('hide');
+					const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
+						backdrop: 'static',
+						keyboard: false
+					});
+					$('#loader').modal('show');
 
-							var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
-							Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
+					var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+					Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
 
-							location.href = Callurl;
-						};
-					} else {
-						showResultModal("Alert", "No Records available for this selected cell.");
-					}
-				}
-				
+					location.href = Callurl;
+				};
+			} else {
+				showResultModal("Alert", "No Records available for this selected cell.");
+			}
+		}
+
 	</script>
-	
+
 	<script>
 		function editRecord(icon) {
 			const row = icon.closest('tr');
@@ -817,13 +798,13 @@ label.error {
 
 
 	</script>
-	
+
 	<script th:inline="javascript">
-	    /*<![CDATA[*/
-	    const reportId = /*[[${reportid}]]*/ null;
-	    /*]]>*/
+		/*<![CDATA[*/
+		const reportId = /*[[${reportid}]]*/ null;
+		/*]]>*/
 	</script>
-	
+
 	<script>
 
 		function submitMSFINP2Update() {
@@ -878,8 +859,8 @@ label.error {
 				}
 			});
 		}
-		
-		
+
+
 
 		function showResultModalDetail(title, message) {
 			// Set the text for the modal elements
@@ -891,213 +872,213 @@ label.error {
 		}
 	</script>
 
-	
+
 	<script>
-	    function openMSFINP2Detail(elem, mode) {
-			
-			var type = elem.getAttribute('data-type');   
+		function openMSFINP2Detail(elem, mode) {
 
-			        if (type === "ARCHIVAL") {
-			            showResultModal('BRRS',"Archived Data cannot be modified");
-			            return;
-			        }			
-			
-	        const acctNo = elem.getAttribute("data-acctNo");
-	        const asondate = elem.getAttribute("data-asondate");
-	        
-	        // Use the 'reportId' variable initialized above
-	        // Use backticks (`) for a template literal to easily include the variable
-	        location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
-	    }
+			var type = elem.getAttribute('data-type');
+
+			if (type === "ARCHIVAL") {
+				showResultModal('BRRS', "Archived Data cannot be modified");
+				return;
+			}
+
+			const acctNo = elem.getAttribute("data-acctNo");
+			const asondate = elem.getAttribute("data-asondate");
+
+			// Use the 'reportId' variable initialized above
+			// Use backticks (`) for a template literal to easily include the variable
+			location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+		}
 	</script>
-	
-	
-	
+
+
+
 	<script>
-	// Show Modify (enable inputs & dropdowns)
-function showmodify(btn) {
-    // IDs that should always remain readonly
-  $(".Show_input").removeAttr("readonly").removeAttr("disabled");
-    
-    
-    
-// Apply gray background to selected MONTH_END fields
-[
-    "#R34_MONTH_END",
-    "#R35_MONTH_END",
-    "#R39_MONTH_END",
-    "#R40_MONTH_END",
-    "#R43_MONTH_END",
-    "#R47_MONTH_END",
-    "#R48_MONTH_END",
-
-    // R51 to R58
-    "#R51_MONTH_END",
-    "#R52_MONTH_END",
-    "#R53_MONTH_END",
-    "#R54_MONTH_END",
-    "#R55_MONTH_END",
-    "#R56_MONTH_END",
-    "#R57_MONTH_END",
-    "#R58_MONTH_END",
-
-    "#R61_MONTH_END",
-    "#R62_MONTH_END",
-    "#R77_MONTH_END",
-    "#R78_MONTH_END"
-].forEach(selector => {
-    if ($(selector).length) {
-        $(selector).css("background-color", "#d3d3d3");
-    }
-});
-
-    // Toggle buttons
-    $("#submitButton, #btnBack_edit, #cancelRecord").show();
-    $("#btnBack").hide();
-
-    // Hide the clicked Modify button
-    $(btn).hide();
-}
+		// Show Modify (enable inputs & dropdowns)
+		function showmodify(btn) {
+			// IDs that should always remain readonly
+			$(".Show_input").removeAttr("readonly").removeAttr("disabled");
 
 
-//Cancel / Reset function
-function cancelModify() {
-    if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-        // ✅ Only when user clicks YES
-        location.reload();
-        
-        $(".Show_input").attr("readonly", true).attr("disabled", true);
+
+			// Apply gray background to selected MONTH_END fields
+			[
+				"#R34_MONTH_END",
+				"#R35_MONTH_END",
+				"#R39_MONTH_END",
+				"#R40_MONTH_END",
+				"#R43_MONTH_END",
+				"#R47_MONTH_END",
+				"#R48_MONTH_END",
+
+				// R51 to R58
+				"#R51_MONTH_END",
+				"#R52_MONTH_END",
+				"#R53_MONTH_END",
+				"#R54_MONTH_END",
+				"#R55_MONTH_END",
+				"#R56_MONTH_END",
+				"#R57_MONTH_END",
+				"#R58_MONTH_END",
+
+				"#R61_MONTH_END",
+				"#R62_MONTH_END",
+				"#R77_MONTH_END",
+				"#R78_MONTH_END"
+			].forEach(selector => {
+				if ($(selector).length) {
+					$(selector).css("background-color", "#d3d3d3");
+				}
+			});
+
+			// Toggle buttons
+			$("#submitButton, #btnBack_edit, #cancelRecord").show();
+			$("#btnBack").hide();
+
+			// Hide the clicked Modify button
+			$(btn).hide();
+		}
 
 
-        	
-        	
-            
-        
+		//Cancel / Reset function
+		function cancelModify() {
+			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+				// ✅ Only when user clicks YES
+				location.reload();
 
-        $("#submitButton, #btnBack_edit").hide();
-        $("#btnBack").show();
+				$(".Show_input").attr("readonly", true).attr("disabled", true);
 
-        // Hide Cancel button again
-        $("#cancelRecord").hide();
 
-        // Show all Modify buttons
-        $("#addRecord").show();
-    }
-    // ❌ If user clicks CANCEL, nothing happens
 
-    }
 
-	
+
+
+
+				$("#submitButton, #btnBack_edit").hide();
+				$("#btnBack").show();
+
+				// Hide Cancel button again
+				$("#cancelRecord").hide();
+
+				// Show all Modify buttons
+				$("#addRecord").show();
+			}
+			// ❌ If user clicks CANCEL, nothing happens
+
+		}
+
+
 
 	</script>
-	
-	
-	
-<script>
-	function getCellValue(selector) {
-		let el = $(selector);
-		if (!el.length) return 0;
 
-		if (el.is("input")) {
-			return parseFloat(el.val()?.replace(/,/g, "")) || 0;
-		} else {
-			return parseFloat(el.text()?.replace(/,/g, "")) || 0;
+
+
+	<script>
+		function getCellValue(selector) {
+			let el = $(selector);
+			if (!el.length) return 0;
+
+			if (el.is("input")) {
+				return parseFloat(el.val()?.replace(/,/g, "")) || 0;
+			} else {
+				return parseFloat(el.text()?.replace(/,/g, "")) || 0;
+			}
 		}
-	}
 
-	function setCellValue(selector, value) {
-		let el = $(selector);
-		if (!el.length) return;
+		function setCellValue(selector, value) {
+			let el = $(selector);
+			if (!el.length) return;
 
-		const formatted = value.toLocaleString('en-US', {
-			minimumFractionDigits: 0,
-			maximumFractionDigits: 0
-		});
+			const formatted = value.toLocaleString('en-US', {
+				minimumFractionDigits: 0,
+				maximumFractionDigits: 0
+			});
 
-		if (el.is("input")) {
-			el.val(formatted);
-		} else {
-			el.text(formatted);
+			if (el.is("input")) {
+				el.val(formatted);
+			} else {
+				el.text(formatted);
+			}
 		}
-	}
 
-	// ----------------------------
-	// SINGLE FUNCTION – ALL CALCS
-	// ----------------------------
-	function calculateMonthEndValues() {
+		// ----------------------------
+		// SINGLE FUNCTION – ALL CALCS
+		// ----------------------------
+		function calculateMonthEndValues() {
 
-		// R33 = R34 + R35
-		setCellValue("#R33_MONTH_END",
-			getCellValue("#R34_MONTH_END") +
-			getCellValue("#R35_MONTH_END")
-		);
+			// R33 = R34 + R35
+			setCellValue("#R33_MONTH_END",
+				getCellValue("#R34_MONTH_END") +
+				getCellValue("#R35_MONTH_END")
+			);
 
-		// R36 = R37 + R38 + R39 + R40
-		setCellValue("#R36_MONTH_END",
-			getCellValue("#R37_MONTH_END") +
-			getCellValue("#R38_MONTH_END") +
-			getCellValue("#R39_MONTH_END") +
-			getCellValue("#R40_MONTH_END")
-		);
+			// R36 = R37 + R38 + R39 + R40
+			setCellValue("#R36_MONTH_END",
+				getCellValue("#R37_MONTH_END") +
+				getCellValue("#R38_MONTH_END") +
+				getCellValue("#R39_MONTH_END") +
+				getCellValue("#R40_MONTH_END")
+			);
 
-		// R41 = R42 + R43 + R44 + R45  ✅ NEW
-		setCellValue("#R41_MONTH_END",
-			getCellValue("#R42_MONTH_END") +
-			getCellValue("#R43_MONTH_END") +
-			getCellValue("#R44_MONTH_END") +
-			getCellValue("#R45_MONTH_END")
-		);
+			// R41 = R42 + R43 + R44 + R45  ✅ NEW
+			setCellValue("#R41_MONTH_END",
+				getCellValue("#R42_MONTH_END") +
+				getCellValue("#R43_MONTH_END") +
+				getCellValue("#R44_MONTH_END") +
+				getCellValue("#R45_MONTH_END")
+			);
 
-		// R46 = R47 + R48
-		setCellValue("#R46_MONTH_END",
-			getCellValue("#R47_MONTH_END") +
-			getCellValue("#R48_MONTH_END")
-		);
+			// R46 = R47 + R48
+			setCellValue("#R46_MONTH_END",
+				getCellValue("#R47_MONTH_END") +
+				getCellValue("#R48_MONTH_END")
+			);
 
-		// R50 = R51 → R56
-		setCellValue("#R50_MONTH_END",
-			getCellValue("#R51_MONTH_END") +
-			getCellValue("#R52_MONTH_END") +
-			getCellValue("#R53_MONTH_END") +
-			getCellValue("#R54_MONTH_END") +
-			getCellValue("#R55_MONTH_END") +
-			getCellValue("#R56_MONTH_END")
-			
-		);
-		
-		
-		// R59 = R60 + R61
-		setCellValue("#R59_MONTH_END",
-			getCellValue("#R60_MONTH_END") +
-			getCellValue("#R61_MONTH_END")
-		);
-		
-		// R73 = R74 + R75 + R76 + R77 + R78 + R79
-		setCellValue(
-			"#R73_MONTH_END",
-			getCellValue("#R74_MONTH_END") +
-			getCellValue("#R75_MONTH_END") +
-			getCellValue("#R76_MONTH_END") +
-			getCellValue("#R77_MONTH_END") +
-			getCellValue("#R78_MONTH_END") +
-			getCellValue("#R79_MONTH_END")
-		);
-		
-		// R80 = R72 + R73
-		setCellValue(
-			"#R80_MONTH_END",
-			getCellValue("#R72_MONTH_END") +
-			getCellValue("#R73_MONTH_END")
-		);
-	}
+			// R50 = R51 → R56
+			setCellValue("#R50_MONTH_END",
+				getCellValue("#R51_MONTH_END") +
+				getCellValue("#R52_MONTH_END") +
+				getCellValue("#R53_MONTH_END") +
+				getCellValue("#R54_MONTH_END") +
+				getCellValue("#R55_MONTH_END") +
+				getCellValue("#R56_MONTH_END")
 
-	// ----------------------------
-	// EVENTS
-	// ----------------------------
-	$(document).ready(function () {
-		calculateMonthEndValues();
+			);
 
-		$(
+
+			// R59 = R60 + R61
+			setCellValue("#R59_MONTH_END",
+				getCellValue("#R60_MONTH_END") +
+				getCellValue("#R61_MONTH_END")
+			);
+
+			// R73 = R74 + R75 + R76 + R77 + R78 + R79
+			setCellValue(
+				"#R73_MONTH_END",
+				getCellValue("#R74_MONTH_END") +
+				getCellValue("#R75_MONTH_END") +
+				getCellValue("#R76_MONTH_END") +
+				getCellValue("#R77_MONTH_END") +
+				getCellValue("#R78_MONTH_END") +
+				getCellValue("#R79_MONTH_END")
+			);
+
+			// R80 = R72 + R73
+			setCellValue(
+				"#R80_MONTH_END",
+				getCellValue("#R72_MONTH_END") +
+				getCellValue("#R73_MONTH_END")
+			);
+		}
+
+		// ----------------------------
+		// EVENTS
+		// ----------------------------
+		$(document).ready(function () {
+			calculateMonthEndValues();
+
+			$(
 				"#R34_MONTH_END, #R35_MONTH_END," +
 				"#R39_MONTH_END, #R40_MONTH_END," +
 				"#R42_MONTH_END, #R43_MONTH_END, #R44_MONTH_END, #R45_MONTH_END," +
@@ -1107,116 +1088,115 @@ function cancelModify() {
 				"#R72_MONTH_END, #R73_MONTH_END," +
 				"#R74_MONTH_END, #R75_MONTH_END, #R76_MONTH_END, #R77_MONTH_END, #R78_MONTH_END, #R79_MONTH_END"
 			).on("input", calculateMonthEndValues);
-	});
-</script>
+		});
+	</script>
 
 
 
 
 
 
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	<script>
-	
 
-	// This function is for closing the modal after an action is complete.
-	// It hides the result and loader modals and reloads the page.
-	function closemodel() {
-	    $("#resultModal").modal("hide");
-	    $('#loader').modal('hide');
 
-	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
-	    setTimeout(function () {
-	        location.reload();
-	    }, 300);
-	}
+		// This function is for closing the modal after an action is complete.
+		// It hides the result and loader modals and reloads the page.
+		function closemodel() {
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
 
-	function fileuploads(btn) {
-	    const asondate = btn.getAttribute("data-todate");
-	    const type = btn.getAttribute("data-type");
+			// Reload the page after a short delay to ensure the modal animation completes smoothly.
+			setTimeout(function () {
+				location.reload();
+			}, 300);
+		}
 
-	    // Show loader
-	    $('#loader').modal('show');
+		function fileuploads(btn) {
+			const asondate = btn.getAttribute("data-todate");
+			const type = btn.getAttribute("data-type");
 
-	    try {
-	        // ✅ Step 1: Calculate totals
-	       /*  calculateR14Totals(); */
-	    	calculateMonthEndValues();
-	    
-	        // ✅ Step 2: Remove commas from all text inputs
-	        $("#fileupload input[type='text']").each(function () {
-	            $(this).val($(this).val().replace(/,/g, ''));
-	        });
+			// Show loader
+			$('#loader').modal('show');
 
-	        // ✅ Step 3: Validate form
-	        if (!$("#fileupload").valid()) {
-	            $('#loader').modal('hide');
-	            return;
-	        }
+			try {
+				// ✅ Step 1: Calculate totals
+				/*  calculateR14Totals(); */
+				calculateMonthEndValues();
 
-	        // ✅ Step 4: Build FormData
-	        const formData = new FormData();
-	        formData.append("asondate", asondate);
-	        formData.append("type", type);
+				// ✅ Step 2: Remove commas from all text inputs
+				$("#fileupload input[type='text']").each(function () {
+					$(this).val($(this).val().replace(/,/g, ''));
+				});
 
-	        $('#fileupload').find(':input').each(function () {
-	            const name = $(this).attr('name');
-	            if (name) {
-	                formData.append(name, $(this).val());
-	            }
-	        });
+				// ✅ Step 3: Validate form
+				if (!$("#fileupload").valid()) {
+					$('#loader').modal('hide');
+					return;
+				}
 
-	        // ✅ Step 5: AJAX submission
-	        $.ajax({
-	            url: './M_SFIN_P2updateAll',
-	            type: 'POST',
-	            data: formData,
-	            processData: false,
-	            contentType: false,
-	            dataType: 'text',
-	            success: function () {
-	                $("#resultModalLabel").text("BRRS");
-	                $("#resultModalBody").text(" Modified Successfully.");
-	                $("#resultModal").modal("show");
-	            },
-	            error: function (jqXHR) {
-	                console.error("Error response:", jqXHR.responseText);
-	                $("#resultModalLabel").text("Error");
-	                $("#resultModalBody").text("Update failed. Check console for details.");
-	                $("#resultModal").modal("show");
-	            },
-	            complete: function () {
-	                $('#loader').modal('hide');
-	            }
-	        });
+				// ✅ Step 4: Build FormData
+				const formData = new FormData();
+				formData.append("asondate", asondate);
+				formData.append("type", type);
 
-	    } catch (error) {
-	        console.error("Error in fileuploads function:", error);
-	        $('#loader').modal('hide');
-	        $("#resultModalLabel").text("Error");
-	        $("#resultModalBody").text("Unexpected error occurred. Check console.");
-	        $("#resultModal").modal("show");
-	    }
-	}
+				$('#fileupload').find(':input').each(function () {
+					const name = $(this).attr('name');
+					if (name) {
+						formData.append(name, $(this).val());
+					}
+				});
+
+				// ✅ Step 5: AJAX submission
+				$.ajax({
+					url: './M_SFIN_P2updateAll',
+					type: 'POST',
+					data: formData,
+					processData: false,
+					contentType: false,
+					dataType: 'text',
+					success: function () {
+						$("#resultModalLabel").text("BRRS");
+						$("#resultModalBody").text(" Modified Successfully.");
+						$("#resultModal").modal("show");
+					},
+					error: function (jqXHR) {
+						console.error("Error response:", jqXHR.responseText);
+						$("#resultModalLabel").text("Error");
+						$("#resultModalBody").text("Update failed. Check console for details.");
+						$("#resultModal").modal("show");
+					},
+					complete: function () {
+						$('#loader').modal('hide');
+					}
+				});
+
+			} catch (error) {
+				console.error("Error in fileuploads function:", error);
+				$('#loader').modal('hide');
+				$("#resultModalLabel").text("Error");
+				$("#resultModalBody").text("Unexpected error occurred. Check console.");
+				$("#resultModal").modal("show");
+			}
+		}
 
 
 
 
 
 	</script>
-	
+
 
 </head>
 <title>M_SFIN_P2</title>
 
 <body>
-	<div class="container-fluid"
-		style="padding-left: 0px; padding-right: 0px;">
+	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
 		<div class="row">
 			<div th:insert="HeaderMenu :: header"></div>
 			<div class="card">
@@ -1231,31 +1211,28 @@ function cancelModify() {
 						<h5
 							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
 							M-SFinP2: <br> Statement of Financial Position (Continued)</h5>
-								
-							
-								<!-- Moving bus-board text -->
+
+
+						<!-- Moving bus-board text -->
 						<div class="boards">
 							<p class="scrolling-text">BANK OF BOTSWANA - BANKING
 								SUPERVISION DEPARTMENT</p>
 						</div>
-							
-							
+
+
 					</div>
-					
+
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
-					<span class="white-text"
-      style="color: white !important; font-size: 16px; margin-right: 20px;">
-    Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
-</span>
+						<span class="white-text" style="color: white !important; font-size: 16px; margin-right: 20px;">
+							Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
+						</span>
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
-						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnSummary" onclick="showsummary();"
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
 							th:if="${displaymode == 'Details'}">Summary</button>
-						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnDetails" onclick="showdetails();"
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'}">Details</button>
 
 
@@ -1271,8 +1248,7 @@ function cancelModify() {
 						</button>
 
 						<!-- Cancel button (hidden initially) -->
-						<button type="button" class="custom-tab-btn"
-							title="Cancel editing" id="cancelRecord"
+						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
 
 
@@ -1280,9 +1256,8 @@ function cancelModify() {
 
 
 
-						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
-							th:attr="data-reportid=${reportid},
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
                    				 data-asondate=${asondate},
                    				 data-fromdate=${fromdate},
                     				 data-todate=${todate},
@@ -1290,15 +1265,13 @@ function cancelModify() {
                     				 data-dtltype=${dtltype},
                     				 data-filename='MSFinP2.xlsx',
 					 				 data-type=${type},
-					    			 data-version=${version}"
-							onclick="downloadfile(this);">
+					    			 data-version=${version}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i> Format
 						</button>
 
 
-<button type="button" class="custom-tab-btn "
-							id="custom-tab-btnAdd" onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or displaymode == 'resub'}"
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'resub'}"
 							th:attr="data-reportid=${reportid},
             data-asondate=${asondate},
             data-fromdate=${fromdate},
@@ -1308,15 +1281,12 @@ function cancelModify() {
             data-filename='EMAIL_MSFinP2.xlsx',
             data-type=${type},
             data-format='email',
-            data-version=${version != null ? version : ''}"
-							style="font-family: Arial; font-weight: bold;">
-							<i class="fa fa-download"></i> Email 
+            data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;">
+							<i class="fa fa-download"></i> Email
 
 						</button>
-						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
-							onclick="startReport(this);"
-							th:attr="
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
 								    data-fromdate=${fromdate},
 								    data-todate=${todate},
 									data-currency=${currency},  
@@ -1336,8 +1306,7 @@ function cancelModify() {
 						<div class="col-sm-12">
 
 							<form action="#" method="POST" id="fileupload">
-								<div
-									class="table-wrapper table-responsive scrollable-table-container"
+								<div class="table-wrapper table-responsive scrollable-table-container"
 									style="border-right: 1px solid #dee2e6;">
 									<table
 										class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
@@ -1347,10 +1316,16 @@ function cancelModify() {
 												<th rowspan="3"
 													style="text-align: left;  background-color: #D8D8D8;  padding: 10px; padding-left: 20px; width: 900px;">
 													LIABILITIES</th>
-												<th style="text-align: left;   background-color: #D8D8D8;  padding: 10px; width: 300px;">Cross
+												<th
+													style="text-align: left;   background-color: #D8D8D8;  padding: 10px; width: 300px;">
+													Cross
 													Reference</th>
-												<th style="text-align: right;   background-color: #D8D8D8;  padding: 10px; width: 150px;">MONTH-END</th>
-												<th style="text-align: right;   background-color: #D8D8D8;  padding: 10px; width: 150px;">AVERAGE*</th>
+												<th
+													style="text-align: right;   background-color: #D8D8D8;  padding: 10px; width: 150px;">
+													MONTH-END</th>
+												<th
+													style="text-align: right;   background-color: #D8D8D8;  padding: 10px; width: 150px;">
+													AVERAGE*</th>
 											</tr>
 
 											<!--	</tr>
@@ -1361,62 +1336,54 @@ function cancelModify() {
 										<th style="text-align: center; background-color: #b3b6b9">C0030</th>
 									</tr> -->
 										</thead>
-										<tbody th:each="report: ${reportsummary}"
-											style="font-family: Arial;">
+										<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
 
 											<tr>
 												<td style="padding-left: 20px; font-weight: bold;"
 													th:text="${report.R10_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R10_CROSS_REFERENCE}"></td>
-	<td id="R10_MONTH_END"
-    style="text-align: right;"
-    th:text="${report.R10_MONTH_END}">
-</td>
-												<td style="text-align: right;"
-													th:text="${report.R10_AVERAGE}"></td>
+												<td style="text-align: right;" th:text="${report.R10_CROSS_REFERENCE}">
+												</td>
+												<td id="R10_MONTH_END" style="text-align: right;"
+													th:text="${report.R10_MONTH_END}">
+												</td>
+												<td style="text-align: right;" th:text="${report.R10_AVERAGE}"></td>
 											</tr>
 											<tr>
 
-												<td style="padding-left: 20px;"
-													th:text="${report.R11_PRODUCT}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R11_PRODUCT}"></td>
 												<!--	<td style="text-align: right;"
 												th:text="${report.R11_CROSS_REFERENCE}"></td> -->
 												<td style="text-align: left;">M-DEP1 + M-DEP2</td>
-												
-												
+
+
 												<td id="R11_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R11', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R11_MONTH_END}"></td>
-													
-												<td style="text-align: right;"
-													th:attr="RowId='R11', ColumnId='C4'"
+
+												<td style="text-align: right;" th:attr="RowId='R11', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R11_AVERAGE}"></td>
 											</tr>
 											<tr>
 
-												<td style="padding-left: 20px;"
-													th:text="${report.R12_PRODUCT}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R12_PRODUCT}"></td>
 												<!---	<td style="text-align: right;"
 												th:text="${report.R12_CROSS_REFERENCE}"></td> -->
 												<td style="text-align: left;">M-DEP1 + M-DEP3</td>
-												
+
 												<td id="R12_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R12', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R12_MONTH_END}"></td>
-													
-												<td style="text-align: right;"
-													th:attr="RowId='R12', ColumnId='C4'"
+
+												<td style="text-align: right;" th:attr="RowId='R12', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R12_AVERAGE}"></td>
 											</tr>
 											<tr>
 
-												<td style="padding-left: 20px;"
-													th:text="${report.R13_PRODUCT}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R13_PRODUCT}"></td>
 												<!--	<td style="text-align: right;"
 											th:text="${report.R13_CROSS_REFERENCE}"></td> -->
 												<td style="text-align: left;">M-DEP1 + M-DEP4</td>
@@ -1424,47 +1391,41 @@ function cancelModify() {
 													th:attr="RowId='R13', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R13_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R13', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R13', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R13_AVERAGE}"></td>
 											</tr>
 											<tr>
 
-												<td style="padding-left: 20px;"
-													th:text="${report.R14_PRODUCT}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R14_PRODUCT}"></td>
 												<!---	<td style="text-align: right;"
 											th:text="${report.R14_CROSS_REFERENCE}"></td> -->
 												<td style="text-align: left;">M-DEP1 + M-DEP5</td>
-												<td id="R14_MONTH_END"  style="text-align: right;"
+												<td id="R14_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R14', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R14_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R14', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R14', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R14_AVERAGE}"></td>
 											</tr>
 											<tr>
 
-												<td style="padding-left: 20px;"
-													th:text="${report.R15_PRODUCT}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R15_PRODUCT}"></td>
 												<!--	<td style="text-align: right;"
 												th:text="${report.R15_CROSS_REFERENCE}"></td> -->
 												<td style="text-align: left;">M-DEP1 + M-DEP6</td>
-												<td  id="R15_MONTH_END" style="text-align: right;"
+												<td id="R15_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R15', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R15_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R15', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R15', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R15_AVERAGE}"></td>
 											</tr>
 											<tr>
 
-												<td style="padding-left: 20px;"
-													th:text="${report.R16_PRODUCT}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R16_PRODUCT}"></td>
 												<!---	<td style="text-align: right;"
 												th:text="${report.R16_CROSS_REFERENCE}"></td> -->
 												<td style="text-align: left;">M-DEP1 + M-DEP7</td>
@@ -1472,8 +1433,7 @@ function cancelModify() {
 													th:attr="RowId='R16', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R16_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R16', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R16', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R16_AVERAGE}"></td>
 
@@ -1483,29 +1443,25 @@ function cancelModify() {
 
 												<td style="padding-left: 20px; font-weight: bold;"
 													th:text="${report.R17_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R17_CROSS_REFERENCE}"></td>
+												<td style="text-align: right;" th:text="${report.R17_CROSS_REFERENCE}">
+												</td>
 												<td id="R17_MONTH_END" style="text-align: right;"
 													th:text="${report.R17_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R17_AVERAGE}"></td>
+												<td style="text-align: right;" th:text="${report.R17_AVERAGE}"></td>
 
 											</tr>
 											<tr>
 
-												<td style="padding-left: 20px;"
-													th:text="${report.R18_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R18_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R18_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R18_CROSS_REFERENCE}">
+												</td>
 												<td id="R18_MONTH_END" style="text-align: right;"
 													th:text="${report.R18_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R18_AVERAGE}"></td>
+												<td style="text-align: right;" th:text="${report.R18_AVERAGE}"></td>
 											</tr>
 											<tr>
 
-												<td style="padding-left: 20px;"
-													th:text="${report.R19_PRODUCT}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R19_PRODUCT}"></td>
 												<!--	<td style="text-align: right;"
 												th:text="${report.R19_CROSS_REFERENCE}"></td> -->
 												<td style="text-align: left;"></td>
@@ -1513,171 +1469,146 @@ function cancelModify() {
 													th:attr="RowId='R19', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R19_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R19_AVERAGE}"></td>
+												<td style="text-align: right;" th:text="${report.R19_AVERAGE}"></td>
 
 											</tr>
 											<tr>
 
-												<td style="padding-left: 20px;"
-													th:text="${report.R20_PRODUCT}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R20_PRODUCT}"></td>
 												<td>M-AIDP</td>
 												<td id="R20_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R20', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R20_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R20', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R20', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R20_AVERAGE}"></td>
 											</tr>
 											<tr>
 
-												<td style="padding-left: 20px;"
-													th:text="${report.R21_PRODUCT}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R21_PRODUCT}"></td>
 												<td>M-AIDP</td>
 												<td id="R21_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R21', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R21_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R21', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R21', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R21_AVERAGE}"></td>
 											</tr>
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R22_PRODUCT}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R22_PRODUCT}"></td>
 												<!--	<td style="text-align: right;"
 												th:text="${report.R22_CROSS_REFERENCE}"></td> -->
 												<td style="text-align: left;"></td>
 												<td id="R22_MONTH_END" style="text-align: right;"
 													th:text="${report.R22_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R22_AVERAGE}"></td>
+												<td style="text-align: right;" th:text="${report.R22_AVERAGE}"></td>
 											</tr>
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R23_PRODUCT}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R23_PRODUCT}"></td>
 												<td>M-AIDP</td>
 												<td id="R23_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R23', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R23_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R23', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R23', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R23_AVERAGE}"></td>
 											</tr>
 
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R24_PRODUCT}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R24_PRODUCT}"></td>
 												<td>M-AIDP</td>
 												<td id="R24_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R24', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R24_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R24', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R24', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R24_AVERAGE}"></td>
 											</tr>
 
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R25_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R25_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R25_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R25_CROSS_REFERENCE}">
+												</td>
 												<td id="R25_MONTH_END" style="text-align: right;"
 													th:text="${report.R25_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R25_AVERAGE}"></td>
+												<td style="text-align: right;" th:text="${report.R25_AVERAGE}"></td>
 											</tr>
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R26_PRODUCT}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R26_PRODUCT}"></td>
 												<!---	<td style="text-align: right;"
 												th:text="${report.R26_CROSS_REFERENCE}"></td>  -->
 												<td style="text-align: left;"></td>
 												<td id="R26_MONTH_END" style="text-align: right;"
 													th:text="${report.R26_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R26_AVERAGE}"></td>
+												<td style="text-align: right;" th:text="${report.R26_AVERAGE}"></td>
 
 
 											</tr>
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R27_PRODUCT}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R27_PRODUCT}"></td>
 												<td>M-NOSVOS</td>
 												<td id="R27_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R27', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R27_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R27', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R27', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R27_AVERAGE}"></td>
 											</tr>
 
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R28_PRODUCT}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R28_PRODUCT}"></td>
 												<td>M-NOSVOS</td>
 												<td id="R28_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R28', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R28_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R28', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R28', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R28_AVERAGE}"></td>
 											</tr>
 
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R29_PRODUCT}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R29_PRODUCT}"></td>
 												<!---	<td style="text-align: right;"
 												th:text="${report.R29_CROSS_REFERENCE}"></td> -->
 												<td style="text-align: left;"></td>
 												<td id="R29_MONTH_END" style="text-align: right;"
 													th:text="${report.R29_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R29', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R29', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R29_AVERAGE}"></td>
 
 											</tr>
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R30_PRODUCT}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R30_PRODUCT}"></td>
 												<td>M-NOSVOS</td>
 												<td id="R30_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R30', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R30_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R30', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R30', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R30_AVERAGE}"></td>
 											</tr>
 
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R31_PRODUCT}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R31_PRODUCT}"></td>
 												<td>M-NOSVOS</td>
 												<td id="R31_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R31', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R31_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R31', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R31', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R31_AVERAGE}"></td>
 											</tr>
@@ -1686,32 +1617,28 @@ function cancelModify() {
 											<tr>
 												<td style="padding-left: 20px; font-weight: bold;"
 													th:text="${report.R32_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R32_CROSS_REFERENCE}"></td>
+												<td style="text-align: right;" th:text="${report.R32_CROSS_REFERENCE}">
+												</td>
 												<td id="R32_MONTH_END" style="text-align: right;"
 													th:text="${report.R32_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R32_AVERAGE}"></td>
+												<td style="text-align: right;" th:text="${report.R32_AVERAGE}"></td>
 											</tr>
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R33_PRODUCT}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R33_PRODUCT}"></td>
 												<!---		<td style="text-align: right;"
 											th:text="${report.R33_CROSS_REFERENCE}"></td> -->
 												<td style="text-align: left;"></td>
-												<td id="R33_MONTH_END"  style="text-align: right;"
+												<td id="R33_MONTH_END" style="text-align: right;"
 													th:text="${report.R33_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R33_AVERAGE}"></td>
+												<td style="text-align: right;" th:text="${report.R33_AVERAGE}"></td>
 											</tr>
 
 
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R34_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R34_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R34_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R34_CROSS_REFERENCE}">
+												</td>
 
 
 												<!-- <td style="text-align: right;" th:attr="RowId='R34', ColumnId='C3'"
@@ -1720,16 +1647,15 @@ function cancelModify() {
 
 
 												<td id="ROW34"
-													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;"><input
-													class="display-input Show_input" type="text"
-													th:value="${report.R34_MONTH_END != null ? #numbers.formatDecimal(report.R34_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
-													id="R34_MONTH_END" name="R34_MONTH_END"
-													style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
-													readonly /></td>
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R34_MONTH_END != null ? #numbers.formatDecimal(report.R34_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R34_MONTH_END" name="R34_MONTH_END"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly /></td>
 
 
-												<td style="text-align: right;"
-													th:attr="RowId='R34', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R34', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R34_AVERAGE}"></td>
 											</tr>
@@ -1737,10 +1663,9 @@ function cancelModify() {
 
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R35_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R35_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R35_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R35_CROSS_REFERENCE}">
+												</td>
 
 												<!-- 	<td style="text-align: right;" th:attr="RowId='R35', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
@@ -1748,24 +1673,22 @@ function cancelModify() {
 												 -->
 
 												<td id="ROW35"
-													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;"><input
-													class="display-input Show_input" type="text"
-													th:value="${report.R35_MONTH_END != null ? #numbers.formatDecimal(report.R35_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
-													id="R35_MONTH_END" name="R35_MONTH_END"
-													style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
-													readonly /></td>
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R35_MONTH_END != null ? #numbers.formatDecimal(report.R35_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R35_MONTH_END" name="R35_MONTH_END"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly /></td>
 
 
 
-												<td style="text-align: right;"
-													th:attr="RowId='R35', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R35', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R35_AVERAGE}"></td>
 											</tr>
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R36_PRODUCT}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R36_PRODUCT}"></td>
 												<!--		<td style="text-align: right;"
 											th:text="${report.R36_CROSS_REFERENCE}"></td> -->
 												<td style="text-align: left;">M-SECL</td>
@@ -1773,136 +1696,121 @@ function cancelModify() {
 													th:attr="RowId='R36', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R36_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R36', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R36', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R36_AVERAGE}"></td>
 											</tr>
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R37_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R37_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R37_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R37_CROSS_REFERENCE}">
+												</td>
 												<td id="R37_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R37', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R37_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R37', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R37', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R37_AVERAGE}"></td>
 											</tr>
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R38_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R38_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R38_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R38_CROSS_REFERENCE}">
+												</td>
 												<td id="R38_MONTH_END" style="text-align: right;"
-													th:attr="RowId='R38', ColumnId='C3'"	
+													th:attr="RowId='R38', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R38_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R38', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R38', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R38_AVERAGE}"></td>
 											</tr>
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R39_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R39_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R39_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R39_CROSS_REFERENCE}">
+												</td>
 												<!-- <td style="text-align: right;" th:attr="RowId='R39', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R39_MONTH_END}"></td> -->
 
 												<td id="ROW39"
-													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;"><input
-													class="display-input Show_input" type="text"
-													th:value="${report.R39_MONTH_END != null ? #numbers.formatDecimal(report.R39_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
-													id="R39_MONTH_END" name="R39_MONTH_END"
-													style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
-													readonly /></td>
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R39_MONTH_END != null ? #numbers.formatDecimal(report.R39_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R39_MONTH_END" name="R39_MONTH_END"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly /></td>
 
 
-												<td style="text-align: right;"
-													th:attr="RowId='R39', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R39', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R39_AVERAGE}"></td>
 											</tr>
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R40_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R40_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R40_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R40_CROSS_REFERENCE}">
+												</td>
 												<!-- <td style="text-align: right;" th:attr="RowId='R40', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R40_MONTH_END}"></td> -->
 
 												<td id="ROW40"
-													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;"><input
-													class="display-input Show_input" type="text"
-													th:value="${report.R40_MONTH_END != null ? #numbers.formatDecimal(report.R40_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
-													id="R40_MONTH_END" name="R40_MONTH_END"
-													style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
-													readonly /></td>
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R40_MONTH_END != null ? #numbers.formatDecimal(report.R40_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R40_MONTH_END" name="R40_MONTH_END"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly /></td>
 
 
-												<td style="text-align: right;"
-													th:attr="RowId='R40', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R40', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R40_AVERAGE}"></td>
 											</tr>
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R41_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R41_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R41_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R41_CROSS_REFERENCE}">
+												</td>
 												<td id="R41_MONTH_END" style="text-align: right;"
 													th:text="${report.R41_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R41_AVERAGE}"></td>
+												<td style="text-align: right;" th:text="${report.R41_AVERAGE}"></td>
 											</tr>
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R42_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R42_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R42_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R42_CROSS_REFERENCE}">
+												</td>
 												<td id="R42_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R42', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R42_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R42', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R42', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R42_AVERAGE}"></td>
 											</tr>
 
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R43_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R43_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R43_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R43_CROSS_REFERENCE}">
+												</td>
 												<!-- <td style="text-align: right;" th:attr="RowId='R43', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R43_MONTH_END}"></td> -->
 
 												<td id="ROW43"
-													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;"><input
-													class="display-input Show_input" type="text"
-													th:value="${report.R43_MONTH_END != null ? #numbers.formatDecimal(report.R43_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
-													id="R43_MONTH_END" name="R43_MONTH_END"
-													style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
-													readonly /></td>
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R43_MONTH_END != null ? #numbers.formatDecimal(report.R43_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R43_MONTH_END" name="R43_MONTH_END"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly /></td>
 
 
-												<td style="text-align: right;"
-													th:attr="RowId='R43', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R43', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R43_AVERAGE}"></td>
 											</tr>
@@ -1910,166 +1818,149 @@ function cancelModify() {
 
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R44_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R44_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R44_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R44_CROSS_REFERENCE}">
+												</td>
 												<td id="R44_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R44', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R44_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R44', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R44', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R44_AVERAGE}"></td>
 											</tr>
 
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R45_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R45_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R45_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R45_CROSS_REFERENCE}">
+												</td>
 												<td id="R45_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R45', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R45_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R45', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R45', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R45_AVERAGE}"></td>
 											</tr>
 
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R46_PRODUCT}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R46_PRODUCT}"></td>
 												<!---	<td style="text-align: right;"
 											th:text="${report.R46_CROSS_REFERENCE}"></td> -->
 												<td style="text-align: left;"></td>
 												<td id="R46_MONTH_END" style="text-align: right;"
 													th:text="${report.R46_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R46_AVERAGE}"></td>
+												<td style="text-align: right;" th:text="${report.R46_AVERAGE}"></td>
 											</tr>
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R47_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R47_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R47_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R47_CROSS_REFERENCE}">
+												</td>
 												<!-- <td style="text-align: right;" th:attr="RowId='R47', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R47_MONTH_END}"></td> -->
 
 												<td id="ROW47"
-													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;"><input
-													class="display-input Show_input" type="text"
-													th:value="${report.R47_MONTH_END != null ? #numbers.formatDecimal(report.R47_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
-													id="R47_MONTH_END" name="R47_MONTH_END"
-													style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
-													readonly /></td>
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R47_MONTH_END != null ? #numbers.formatDecimal(report.R47_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R47_MONTH_END" name="R47_MONTH_END"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly /></td>
 
 
-												<td style="text-align: right;"
-													th:attr="RowId='R47', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R47', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R47_AVERAGE}"></td>
 											</tr>
 
 
 
-							<tr>
-	<td style="padding-left: 20px;"
-		th:text="${report.R48_PRODUCT}"></td>
+											<tr>
+												<td style="padding-left: 20px;" th:text="${report.R48_PRODUCT}"></td>
 
-	<td style="text-align: right;"
-		th:text="${report.R48_CROSS_REFERENCE}"></td>
+												<td style="text-align: right;" th:text="${report.R48_CROSS_REFERENCE}">
+												</td>
 
-	<!-- <td style="text-align: right;" th:attr="RowId='R48', ColumnId='C3'"
+												<!-- <td style="text-align: right;" th:attr="RowId='R48', ColumnId='C3'"
 		onclick="showdetailsbyRowAndColumn(this)"
 		th:text="${report.R48_MONTH_END}"></td> -->
 
-	<td id="ROW48"
-		style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
-		<input class="display-input Show_input" type="text"
-			th:value="${report.R48_MONTH_END != null ? #numbers.formatDecimal(report.R48_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
-			id="R48_MONTH_END" name="R48_MONTH_END"
-			style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
-			readonly />
-	</td>
+												<td id="ROW48"
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R48_MONTH_END != null ? #numbers.formatDecimal(report.R48_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R48_MONTH_END" name="R48_MONTH_END"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
 
-	<td style="text-align: right;"
-		th:attr="RowId='R48', ColumnId='C4'"
-		onclick="showdetailsbyRowAndColumn(this)"
-		th:text="${report.R48_AVERAGE}"></td>
-</tr>
+												<td style="text-align: right;" th:attr="RowId='R48', ColumnId='C4'"
+													onclick="showdetailsbyRowAndColumn(this)"
+													th:text="${report.R48_AVERAGE}"></td>
+											</tr>
 
 
-<tr>
-	<td style="padding-left: 20px;"
-		th:text="${report.R49_PRODUCT}"></td>
+											<tr>
+												<td style="padding-left: 20px;" th:text="${report.R49_PRODUCT}"></td>
 
-	<td style="text-align: left;">M-OB</td>
-	<!-- <td style="text-align: right;" th:attr="RowId='R49', ColumnId='C3'"
+												<td style="text-align: left;">M-OB</td>
+												<!-- <td style="text-align: right;" th:attr="RowId='R49', ColumnId='C3'"
 		onclick="showdetailsbyRowAndColumn(this)"
 		th:text="${report.R49_MONTH_END}"></td> -->
 
-	<td id="ROW49"
-		style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
-		<input class="display-input Show_input" type="text"
-			th:value="${report.R49_MONTH_END != null ? #numbers.formatDecimal(report.R49_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
-			id="R49_MONTH_END" name="R49_MONTH_END"
-			style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
-			readonly />
-	</td>
+												<td id="ROW49"
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R49_MONTH_END != null ? #numbers.formatDecimal(report.R49_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R49_MONTH_END" name="R49_MONTH_END"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
 
-	<td style="text-align: right;"
-		th:attr="RowId='R49', ColumnId='C4'"
-		onclick="showdetailsbyRowAndColumn(this)"
-		th:text="${report.R49_AVERAGE}"></td>
-</tr>
+												<td style="text-align: right;" th:attr="RowId='R49', ColumnId='C4'"
+													onclick="showdetailsbyRowAndColumn(this)"
+													th:text="${report.R49_AVERAGE}"></td>
+											</tr>
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R50_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R50_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R50_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R50_CROSS_REFERENCE}">
+												</td>
 												<td id="R50_MONTH_END" style="text-align: right;"
 													th:text="${report.R50_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R50_AVERAGE}"></td>
+												<td style="text-align: right;" th:text="${report.R50_AVERAGE}"></td>
 
 											</tr>
 
 
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R51_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R51_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R51_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R51_CROSS_REFERENCE}">
+												</td>
 												<!-- <td style="text-align: right;" th:attr="RowId='R51', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R51_MONTH_END}"></td> -->
 												<td id="ROW51"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
-													th:value="${report.R51_MONTH_END != null ? #numbers.formatDecimal(report.R51_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
-													id="R51_MONTH_END" name="R51_MONTH_END"
-													style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
-													readonly />
+														th:value="${report.R51_MONTH_END != null ? #numbers.formatDecimal(report.R51_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R51_MONTH_END" name="R51_MONTH_END"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
 												</td>
 
-												<td style="text-align: right;"
-													th:attr="RowId='R51', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R51', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R51_AVERAGE}"></td>
 											</tr>
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R52_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R52_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R52_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R52_CROSS_REFERENCE}">
+												</td>
 												<!-- <td style="text-align: right;" th:attr="RowId='R52', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R52_MONTH_END}"></td> -->
@@ -2077,23 +1968,21 @@ function cancelModify() {
 												<td id="ROW52"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
-													th:value="${report.R52_MONTH_END != null ? #numbers.formatDecimal(report.R52_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
-													id="R52_MONTH_END" name="R52_MONTH_END"
-													style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
-													readonly />
+														th:value="${report.R52_MONTH_END != null ? #numbers.formatDecimal(report.R52_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R52_MONTH_END" name="R52_MONTH_END"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
 												</td>
 
-												<td style="text-align: right;"
-													th:attr="RowId='R52', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R52', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R52_AVERAGE}"></td>
 											</tr>
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R53_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R53_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R53_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R53_CROSS_REFERENCE}">
+												</td>
 												<!-- <td style="text-align: right;" th:attr="RowId='R53', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R53_MONTH_END}"></td> -->
@@ -2101,24 +1990,22 @@ function cancelModify() {
 												<td id="ROW53"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
-													th:value="${report.R53_MONTH_END != null ? #numbers.formatDecimal(report.R53_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
-													id="R53_MONTH_END" name="R53_MONTH_END"
-													style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
-													readonly />
+														th:value="${report.R53_MONTH_END != null ? #numbers.formatDecimal(report.R53_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R53_MONTH_END" name="R53_MONTH_END"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
 												</td>
 
-												<td style="text-align: right;"
-													th:attr="RowId='R53', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R53', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R53_AVERAGE}"></td>
 											</tr>
 
 											<tr>
 
-												<td style="padding-left: 20px;"
-													th:text="${report.R54_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R54_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R54_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R54_CROSS_REFERENCE}">
+												</td>
 												<!-- <td style="text-align: right;" th:attr="RowId='R54', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R54_MONTH_END}"></td> -->
@@ -2126,23 +2013,21 @@ function cancelModify() {
 												<td id="ROW54"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
-													th:value="${report.R54_MONTH_END != null ? #numbers.formatDecimal(report.R54_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
-													id="R54_MONTH_END" name="R54_MONTH_END"
-													style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
-													readonly />
+														th:value="${report.R54_MONTH_END != null ? #numbers.formatDecimal(report.R54_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R54_MONTH_END" name="R54_MONTH_END"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
 												</td>
 
-												<td style="text-align: right;"
-													th:attr="RowId='R54', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R54', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R54_AVERAGE}"></td>
 											</tr>
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R55_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R55_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R55_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R55_CROSS_REFERENCE}">
+												</td>
 												<!-- <td style="text-align: right;" th:attr="RowId='R55', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R55_MONTH_END}"></td> -->
@@ -2150,22 +2035,20 @@ function cancelModify() {
 												<td id="ROW55"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
-													th:value="${report.R55_MONTH_END != null ? #numbers.formatDecimal(report.R55_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
-													id="R55_MONTH_END" name="R55_MONTH_END"
-													style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
-													readonly />
+														th:value="${report.R55_MONTH_END != null ? #numbers.formatDecimal(report.R55_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R55_MONTH_END" name="R55_MONTH_END"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
 												</td>
-												<td style="text-align: right;"
-													th:attr="RowId='R55', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R55', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R55_AVERAGE}"></td>
 											</tr>
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R56_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R56_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R56_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R56_CROSS_REFERENCE}">
+												</td>
 												<!-- <td style="text-align: right;" th:attr="RowId='R56', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R56_MONTH_END}"></td> -->
@@ -2173,22 +2056,20 @@ function cancelModify() {
 												<td id="ROW56"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
-													th:value="${report.R56_MONTH_END != null ? #numbers.formatDecimal(report.R56_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
-													id="R56_MONTH_END" name="R56_MONTH_END"
-													style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
-													readonly />
+														th:value="${report.R56_MONTH_END != null ? #numbers.formatDecimal(report.R56_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R56_MONTH_END" name="R56_MONTH_END"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
 												</td>
-												<td style="text-align: right;"
-													th:attr="RowId='R56', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R56', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R56_AVERAGE}"></td>
 											</tr>
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R57_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R57_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R57_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R57_CROSS_REFERENCE}">
+												</td>
 												<!-- <td style="text-align: right;" th:attr="RowId='R57', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R57_MONTH_END}"></td> -->
@@ -2197,22 +2078,20 @@ function cancelModify() {
 												<td id="ROW57"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
-													th:value="${report.R57_MONTH_END != null ? #numbers.formatDecimal(report.R57_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
-													id="R57_MONTH_END" name="R57_MONTH_END"
-													style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
-													readonly />
+														th:value="${report.R57_MONTH_END != null ? #numbers.formatDecimal(report.R57_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R57_MONTH_END" name="R57_MONTH_END"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
 												</td>
-												<td style="text-align: right;"
-													th:attr="RowId='R57', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R57', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R57_AVERAGE}"></td>
 											</tr>
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R58_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R58_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R58_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R58_CROSS_REFERENCE}">
+												</td>
 												<!-- <td style="text-align: right;" th:attr="RowId='R58', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R58_MONTH_END}"></td> -->
@@ -2221,49 +2100,43 @@ function cancelModify() {
 												<td id="ROW58"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
-													th:value="${report.R58_MONTH_END != null ? #numbers.formatDecimal(report.R58_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
-													id="R58_MONTH_END" name="R58_MONTH_END"
-													style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
-													readonly />
+														th:value="${report.R58_MONTH_END != null ? #numbers.formatDecimal(report.R58_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R58_MONTH_END" name="R58_MONTH_END"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
 												</td>
 
 
-												<td style="text-align: right;"
-													th:attr="RowId='R58', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R58', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R58_AVERAGE}"></td>
 											</tr>
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R59_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R59_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R59_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R59_CROSS_REFERENCE}">
+												</td>
 												<td id="R59_MONTH_END" style="text-align: right;"
 													th:text="${report.R59_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R59_AVERAGE}"></td>
+												<td style="text-align: right;" th:text="${report.R59_AVERAGE}"></td>
 											</tr>
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R60_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R60_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R60_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R60_CROSS_REFERENCE}">
+												</td>
 												<td id="R60_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R60', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R60_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R60', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R60', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R60_AVERAGE}"></td>
 											</tr>
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R61_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R61_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R61_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R61_CROSS_REFERENCE}">
+												</td>
 												<!-- <td style="text-align: right;" th:attr="RowId='R61', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R61_MONTH_END}"></td> -->
@@ -2271,22 +2144,20 @@ function cancelModify() {
 												<td id="ROW61"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
-													th:value="${report.R61_MONTH_END != null ? #numbers.formatDecimal(report.R61_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
-													id="R61_MONTH_END" name="R61_MONTH_END"
-													style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
-													readonly />
+														th:value="${report.R61_MONTH_END != null ? #numbers.formatDecimal(report.R61_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R61_MONTH_END" name="R61_MONTH_END"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
 												</td>
-												<td style="text-align: right;"
-													th:attr="RowId='R61', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R61', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R61_AVERAGE}"></td>
 											</tr>
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R62_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R62_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R62_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R62_CROSS_REFERENCE}">
+												</td>
 												<!-- <td style="text-align: right;" th:attr="RowId='R62', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R62_MONTH_END}"></td> -->
@@ -2294,111 +2165,95 @@ function cancelModify() {
 												<td id="ROW62"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
-													th:value="${report.R62_MONTH_END != null ? #numbers.formatDecimal(report.R62_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
-													id="R62_MONTH_END" name="R62_MONTH_END"
-													style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
-													readonly />
+														th:value="${report.R62_MONTH_END != null ? #numbers.formatDecimal(report.R62_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R62_MONTH_END" name="R62_MONTH_END"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
 												</td>
 
-												<td style="text-align: right;"
-													th:attr="RowId='R62', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R62', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R62_AVERAGE}"></td>
 											</tr>
 
 											<tr>
-												<td style="padding-left: 20px"
-													th:text="${report.R63_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R63_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px" th:text="${report.R63_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R63_CROSS_REFERENCE}">
+												</td>
 												<td id="R63_MONTH_END" style="text-align: right;"
 													th:text="${report.R63_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R63_AVERAGE}"></td>
+												<td style="text-align: right;" th:text="${report.R63_AVERAGE}"></td>
 											</tr>
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R64_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R64_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R64_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R64_CROSS_REFERENCE}">
+												</td>
 												<td id="R64_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R64', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R64_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R64', ColumnId='C3'"
+												<td style="text-align: right;" th:attr="RowId='R64', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R64_AVERAGE}"></td>
 											</tr>
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R65_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R65_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R65_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R65_CROSS_REFERENCE}">
+												</td>
 												<td id="R65_MONTH_END" style="text-align: right;"
 													th:text="${report.R65_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R65_AVERAGE}"></td>
+												<td style="text-align: right;" th:text="${report.R65_AVERAGE}"></td>
 											</tr>
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R66_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R66_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R66_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R66_CROSS_REFERENCE}">
+												</td>
 												<td id="R66_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R66', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R66_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R66', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R66', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R66_AVERAGE}"></td>
 											</tr>
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R67_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R67_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R67_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R67_CROSS_REFERENCE}">
+												</td>
 												<td id="R67_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R67', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R67_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R67', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R67', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R67_AVERAGE}"></td>
 											</tr>
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R68_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R68_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R68_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R68_CROSS_REFERENCE}">
+												</td>
 												<td id="R68_MONTH_END" style="text-align: right;"
 													th:text="${report.R68_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R68_AVERAGE}"></td>
+												<td style="text-align: right;" th:text="${report.R68_AVERAGE}"></td>
 											</tr>
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R69_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R69_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R69_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R69_CROSS_REFERENCE}">
+												</td>
 												<td id="R69_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R69', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R69_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R69', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R69', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R69_AVERAGE}"></td>
 											</tr>
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R70_PRODUCT}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R70_PRODUCT}"></td>
 												<!--		<td style="text-align: right;"
 												th:text="${report.R70_CROSS_REFERENCE}"></td> -->
 												<td style="text-align: left;"></td>
@@ -2406,23 +2261,20 @@ function cancelModify() {
 													th:attr="RowId='R70', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R70_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R70', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R70', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R70_AVERAGE}"></td>
 											</tr>
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R71_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R71_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R71_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R71_CROSS_REFERENCE}">
+												</td>
 												<td id="R71_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R71', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R71_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R71', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R71', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R71_AVERAGE}"></td>
 											</tr>
@@ -2430,88 +2282,77 @@ function cancelModify() {
 											<tr>
 												<td style="padding-left: 20px; font-weight: bold;"
 													th:text="${report.R72_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R72_CROSS_REFERENCE}"></td>
+												<td style="text-align: right;" th:text="${report.R72_CROSS_REFERENCE}">
+												</td>
 												<td id="R72_MONTH_END" style="text-align: right;"
 													th:text="${report.R72_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R72', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R72', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R72_AVERAGE}"></td>
 											</tr>
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R73_PRODUCT}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R73_PRODUCT}"></td>
 												<!---	<td style="text-align: right;"
 												th:text="${report.R73_CROSS_REFERENCE}"></td> -->
 												<td style="text-align: left;"></td>
 												<td id="R73_MONTH_END" style="text-align: right;"
 													th:text="${report.R73_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R73_AVERAGE}"></td>
+												<td style="text-align: right;" th:text="${report.R73_AVERAGE}"></td>
 											</tr>
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R74_PRODUCT}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R74_PRODUCT}"></td>
 												<td>M-CA2</td>
 												<td id="R74_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R74', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R74_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R74', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R74', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R74_AVERAGE}"></td>
 											</tr>
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R75_PRODUCT}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R75_PRODUCT}"></td>
 												<td>M-CA2</td>
 												<td id="R75_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R75', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R75_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R75', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R75', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R75_AVERAGE}"></td>
 											</tr>
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R76_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R76_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R76_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R76_CROSS_REFERENCE}">
+												</td>
 												<td id="R76_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R76', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R76_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R76', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R76', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R76_AVERAGE}"></td>
 											</tr>
 
 											<tr>
-												<td style="padding-left: 20px;"
-													th:text="${report.R77_PRODUCT}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R77_PRODUCT}"></td>
 												<td>M-CA2</td>
 												<!-- <td style="text-align: right;"
 													th:attr="RowId='R77', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R77_MONTH_END}"></td> -->
-													
-													 <td id="ROW77"
-													style=" font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width: 200px;"><input
-													class="display-input Show_input" type="text"
-													th:value="${report.R77_MONTH_END != null ? #numbers.formatDecimal(report.R77_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
-													id="R77_MONTH_END" name="R77_MONTH_END"
-													style="background-color: #FFFFFF; width:180px; height: 28px; border-color: transparent; text-align: right;"
-													readonly /></td>
-													
-												<td style="text-align: right;"
-													th:attr="RowId='R77', ColumnId='C4'"
+
+												<td id="ROW77"
+													style=" font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R77_MONTH_END != null ? #numbers.formatDecimal(report.R77_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R77_MONTH_END" name="R77_MONTH_END"
+														style="background-color: #FFFFFF; width:180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly /></td>
+
+												<td style="text-align: right;" th:attr="RowId='R77', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R77_AVERAGE}"></td>
 											</tr>
@@ -2524,34 +2365,31 @@ function cancelModify() {
 													th:attr="RowId='R78', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R78_MONTH_END}"></td> -->
-													
-													<td id="ROW78"
-													style=" font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width: 200px;"><input
-													class="display-input Show_input" type="text"
-													th:value="${report.R78_MONTH_END != null ? #numbers.formatDecimal(report.R78_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
-													id="R78_MONTH_END" name="R78_MONTH_END"
-													style="background-color: #FFFFFF; width:180px; height: 28px; border-color: transparent; text-align: right;"
-													readonly /></td>
-													
-													
-												<td style="text-align: right;"
-													th:attr="RowId='R78', ColumnId='C4'"
+
+												<td id="ROW78"
+													style=" font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R78_MONTH_END != null ? #numbers.formatDecimal(report.R78_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R78_MONTH_END" name="R78_MONTH_END"
+														style="background-color: #FFFFFF; width:180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly /></td>
+
+
+												<td style="text-align: right;" th:attr="RowId='R78', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R78_AVERAGE}"></td>
 											</tr>
 
 											<tr>
 
-												<td style="padding-left: 20px;"
-													th:text="${report.R79_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R79_CROSS_REFERENCE}"></td>
+												<td style="padding-left: 20px;" th:text="${report.R79_PRODUCT}"></td>
+												<td style="text-align: right;" th:text="${report.R79_CROSS_REFERENCE}">
+												</td>
 												<td id="R79_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R79', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R79_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:attr="RowId='R79', ColumnId='C4'"
+												<td style="text-align: right;" th:attr="RowId='R79', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R79_AVERAGE}"></td>
 											</tr>
@@ -2560,12 +2398,11 @@ function cancelModify() {
 
 												<td style="padding-left: 20px; font-weight: bold;"
 													th:text="${report.R80_PRODUCT}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R80_CROSS_REFERENCE}"></td>
+												<td style="text-align: right;" th:text="${report.R80_CROSS_REFERENCE}">
+												</td>
 												<td id="R80_MONTH_END" style="text-align: right;"
 													th:text="${report.R80_MONTH_END}"></td>
-												<td style="text-align: right;"
-													th:text="${report.R80_AVERAGE}"></td>
+												<td style="text-align: right;" th:text="${report.R80_AVERAGE}"></td>
 											</tr>
 
 										</tbody>
@@ -2574,9 +2411,8 @@ function cancelModify() {
 								</div>
 								<div style="text-align: center; margin-top: 10px;">
 
-									<button id="submitButton" type="button"
-										class="custom-tab-btn Show_input" form="fileupload"
-										th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+										form="fileupload" th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
 										style="display: none;">Submit</button>
 								</div>
 							</form>
@@ -2585,165 +2421,147 @@ function cancelModify() {
 					</div>
 				</div>
 				<div th:if="${displaymode == 'Details'}">
-					<div class="row">
-						<div class="col-sm-12">
-							<div class="table-responsive "
-								style="border-right: 1px solid #dee2e6;">
-								<table class="table table-striped table-hover table-bordereds" id="reportdetails">
-									<thead class="thead-light">
-										<tr>
-											<th></th>
-											<th>S No</th>
-											<th>CUST_ID</th>
-											<th>ACCT_NUMBER</th>
-											<th>ACCT_NAME</th>
-											<th style="text-align: right;">ACCT_BALANCE_IN_PULA</th>
-											<th>REPORT LABEL</th>
-											<th style="text-align: left;   width: 250px;">REPORT ADDL CRITERIA1</th>
-											<th style="text-align: right;">AVERAGE</th>
-											<th>REPORT_DATE</th>
-										</tr>
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="table-container" style="border-right: 1px solid #dee2e6; ">
+							<table class="table table-striped table-hover table-bordereds " id="reportdetails">
+								<thead class="thead-light">
+									<tr>
+										<th></th>
+										<th style="width: 60px; text-align:center;">S No</th>
+										<th>CUST ID</th>
+										<th>ACCT NO</th>
+										<th>ACCT NAME</th>
+										<th style="text-align:right;width: 250px;">ACCT BALANCE IN PULA</th>
+										<th style="text-align:right !important;">AVERAGE</th>
+										<th>REPORT LABEL</th>
+										<th style="width: 250px;">REPORT ADDL CRITERIA 1</th>
+										<th>REPORT_DATE</th>
+									</tr>
 
-									</thead>
+								</thead>
 
-									<tbody style="font-family: Arial;">
-										<tr th:each="report, srlno : ${reportdetails}">
-											<td><a data-toggle="tooltip" class="editrec"
-												title="Click to Edit this Record"> <i
-													class="fas fa-edit" style="color: black; cursor: pointer;"
-													th:attr="data-acctNo=${report.acctNumber},
-																							data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
-													onclick="openMSFINP2Detail(this, 'edit')"></i>
+								<tbody style="font-family: Arial;">
+									<tr th:each="report ,srlno: ${reportdetails}">
+										<td>
+											<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
+												<i class="fas fa-edit" style="color: black; cursor:pointer;" th:attr="data-acctNo=${report.acctNumber},
+																								                            data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},
+																								                            data-type=${type}" onclick="openDetail(this, 'edit')"></i>
+											</a>
+										</td>
+										<td style="text-align:center;" th:text="${srlno.index + 1}"></td>
+										<td th:text="${report.custId}"></td>
+										<td th:text="${report.acctNumber}"></td>
+										<td th:text="${report.acctName}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.acctBalanceInpula,1,'COMMA',0,'POINT')}">
+										</td>
+										<td style="text-align:right!important;"
+											th:text="${#numbers.formatDecimal(report.average,1,'COMMA',0,'POINT')}">
+										</td>
+										<td th:text="${report.reportLabel}"></td>
+										<td th:text="${report.reportAddlCriteria_1}"></td>
+										<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
 
-											</a></td>
-
-
-											<td th:text="${srlno.index + 1}"></td>
-											<td th:text="${report.custId}"></td>
-											<td th:text="${report.acctNumber}"></td>
-											<td th:text="${report.acctName}"></td>
-
-											<td style="text-align: right !important;"
-												th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 'COMMA', 0, 'POINT')}">
-											</td>
-
-
-											<td th:text="${report.reportLabel}"></td>
-											<td th:text="${report.reportAddlCriteria_1}"></td>
-											
-											<td style="text-align:right !important;"
-    th:text="${#numbers.formatDecimal(report.average, 1, 'COMMA', 0, 'POINT')}">
-</td>
-											
-											<td
-												th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
-										</tr>
-									</tbody>
-								</table>
-
-							</div>
-
-							<!-- Submit Button -->
-							<div
-								style="text-align: center; margin-top: 15px; background-color: white;">
-								<button id="submitButton" type="button"
-									class="custom-tab-btn Show_input" onclick="submitMSFINP2Update();"
-									style="display: none;">Submit</button>
-							</div>
+									</tr>
+								</tbody>
+							</table>
 						</div>
-					</div>
-				</div>
-				
-				
-				
-				<!-- MSCIE Detail Form Screen -->
-				<div th:if="${formmode == 'edit'}" class="card">
+						<div style="text-align: center; margin-top: 10px;">
 
-
-					<div class="card-body">
-						<form th:object="${msfinp2Data}" method="post" id="msfinp2DetailForm">
-							<div class="row formline" style="margin-top: 10px;">
-								<label class="col-sm-2">Customer ID</label>
-								<div class="col-sm-3">
-									<input type="text" th:field="*{custId}"
-										class="form-control form-control-sm" readonly />
-								</div>
-
-								<div class="col-sm-1"></div>
-
-								<label class="col-sm-2">Account Number</label>
-								<div class="col-sm-3">
-									<input type="text" th:field="*{acctNumber}" name="acctNumber"
-										class="form-control form-control-sm" readonly />
-								</div>
-							</div>
-
-							<div class="row formline" style="margin-top: 10px;">
-								<label class="col-sm-2">Account Name</label>
-								<div class="col-sm-3">
-									<input type="text" th:field="*{acctName}"
-										class="form-control form-control-sm" readonly />
-								</div>
-
-								<div class="col-sm-1"></div>
-
-								<label class="col-sm-2">Acct Balance</label>
-								<div class="col-sm-3">
-									<input type="number" step="0.01"
-										th:field="*{acctBalanceInpula}"
-										class="form-control form-control-sm"
-										style="text-align: right;" />
-								</div>
-							</div>
-
-							<div class="row formline" style="margin-top: 10px;">
-								<label class="col-sm-2">Report Label</label>
-								<div class="col-sm-3">
-									<input type="text" th:field="*{reportLabel}"
-										class="form-control form-control-sm" readonly />
-								</div>
-
-								<div class="col-sm-1"></div>
-
-								<label class="col-sm-2">Report Addl Criteria 1</label>
-								<div class="col-sm-3">
-									<input type="text" th:field="*{reportAddlCriteria_1}"
-										class="form-control form-control-sm" readonly />
-								</div>
-							</div>
-
-							<div class="row formline" style="margin-top: 10px;">
-							
-							<label class="col-sm-2">AVERAGE</label>
-								<div class="col-sm-3">
-									<input type="text" th:field="*{average}"
-										class="form-control form-control-sm"  />
-								</div>
-							
-							
-							<div class="col-sm-1"></div>
-							
-								<label class="col-sm-2">Report Date</label>
-								<div class="col-sm-3">
-									<input type="date" name="reportDate"
-										class="form-control form-control-sm" readonly
-										th:value="${#dates.format(msfinp2Data.reportDate, 'yyyy-MM-dd')}" />
-								</div>
-							</div>
-
-							<div style="text-align: center; margin-top: 20px;">
-								<button type="button" class="custom-tab-btn"
-									th:if="${formmode == 'edit'}" onclick="submitMSFINP2Update()">Update</button>
-
-							</div>
+						</div>
 						</form>
 					</div>
 				</div>
-			
-			
-			
+			</div>
 			</div>
 		</div>
+
+
+
+		<!-- MSCIE Detail Form Screen -->
+		<div th:if="${formmode == 'edit'}" class="card">
+
+
+			<div class="card-body">
+				<form th:object="${msfinp2Data}" method="post" id="msfinp2DetailForm">
+					<div class="row formline" style="margin-top: 10px;">
+						<label class="col-sm-2">Customer ID</label>
+						<div class="col-sm-3">
+							<input type="text" th:field="*{custId}" class="form-control form-control-sm" readonly />
+						</div>
+
+						<div class="col-sm-1"></div>
+
+						<label class="col-sm-2">Account Number</label>
+						<div class="col-sm-3">
+							<input type="text" th:field="*{acctNumber}" name="acctNumber"
+								class="form-control form-control-sm" readonly />
+						</div>
+					</div>
+
+					<div class="row formline" style="margin-top: 10px;">
+						<label class="col-sm-2">Account Name</label>
+						<div class="col-sm-3">
+							<input type="text" th:field="*{acctName}" class="form-control form-control-sm" readonly />
+						</div>
+
+						<div class="col-sm-1"></div>
+
+						<label class="col-sm-2">Acct Balance</label>
+						<div class="col-sm-3">
+							<input type="number" step="0.01" th:field="*{acctBalanceInpula}"
+								class="form-control form-control-sm" style="text-align: right;" />
+						</div>
+					</div>
+
+					<div class="row formline" style="margin-top: 10px;">
+						<label class="col-sm-2">Report Label</label>
+						<div class="col-sm-3">
+							<input type="text" th:field="*{reportLabel}" class="form-control form-control-sm"
+								readonly />
+						</div>
+
+						<div class="col-sm-1"></div>
+
+						<label class="col-sm-2">Report Addl Criteria 1</label>
+						<div class="col-sm-3">
+							<input type="text" th:field="*{reportAddlCriteria_1}" class="form-control form-control-sm"
+								readonly />
+						</div>
+					</div>
+
+					<div class="row formline" style="margin-top: 10px;">
+
+						<label class="col-sm-2">AVERAGE</label>
+						<div class="col-sm-3">
+							<input type="text" th:field="*{average}" class="form-control form-control-sm" />
+						</div>
+
+
+						<div class="col-sm-1"></div>
+
+						<label class="col-sm-2">Report Date</label>
+						<div class="col-sm-3">
+							<input type="date" name="reportDate" class="form-control form-control-sm" readonly
+								th:value="${#dates.format(msfinp2Data.reportDate, 'yyyy-MM-dd')}" />
+						</div>
+					</div>
+
+					<div style="text-align: center; margin-top: 20px;">
+						<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
+							onclick="submitMSFINP2Update()">Update</button>
+
+					</div>
+				</form>
+			</div>
+		</div>
+
+
+
+	</div>
+	</div>
 	</div>
 
 	<!-- Custom Cellresult Modal -->
@@ -2754,15 +2572,13 @@ function cancelModify() {
 				<!-- Custom header -->
 				<div class="menu-title-header"
 					style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
-					<div class="modal-title" id="cellresultModalLabel"
-						style="text-align: center; color: white;">Do you want to
+					<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">Do you
+						want to
 						open the report?</div>
 				</div>
 
-				<div class="modal-body"
-					style="text-align: center; font-size: 1.1rem;">
-					<button type="button" class="custom-tab-btn cancel-btn"
-						data-bs-dismiss="modal"
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
 						style="margin-right: 10px; border: 2px solid #6c7a91; background: white; color: black; border-radius: 20px; padding: 5px 15px;">
 						Cancel</button>
 					<button type="button" class="custom-tab-btn yes-btn"
@@ -2774,10 +2590,8 @@ function cancelModify() {
 	</div>
 
 
-	<div class="modal fade" id="loader" data-backdrop="static"
-		data-keyboard="false">
-		<div
-			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
 			<div class="modal-content" style="background: transparent;">
 				<div class="modal-body" style="text-align: center">
 					<div>
@@ -2795,13 +2609,11 @@ function cancelModify() {
 			<div class="modal-content">
 				<!-- Your custom styled header -->
 				<div class="menu-title-header">
-					<div class="modal-title" id="resultModalLabel"
-						style="text-align: center; color: white;">
+					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
 						<!-- Title will be set by JavaScript -->
 					</div>
 				</div>
-				<div class="modal-body"
-					style="text-align: center; font-size: 1.1rem;">
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
 					<p id="resultModalBody"></p>
 					<!-- Your custom styled button -->
 					<button type="button" class="custom-tab-btn" onclick="closemodel()"
@@ -2827,118 +2639,118 @@ function cancelModify() {
 														</script> -->
 
 <style>
-#BRFdet td {
-	border: 1px solid #ccc;
-	padding: 8px;
-}
+	#BRFdet td {
+		border: 1px solid #ccc;
+		padding: 8px;
+	}
 
-#BRFdet {
-	border-collapse: collapse;
-	width: 100%;
-}
+	#BRFdet {
+		border-collapse: collapse;
+		width: 100%;
+	}
 </style>
 
 <style>
-/* Your existing CSS - this is the correct approach */
-.scrollable-table-container {
-	/* This is the key: it creates the scroll context */
-	max-height: 590px;
-	/* Or a suitable height like 80vh for responsive design */
-	overflow-y: auto;
-	border: 1px solid #ccc;
-}
+	/* Your existing CSS - this is the correct approach */
+	.scrollable-table-container {
+		/* This is the key: it creates the scroll context */
+		max-height: 590px;
+		/* Or a suitable height like 80vh for responsive design */
+		overflow-y: auto;
+		border: 1px solid #ccc;
+	}
 
-/* Your existing sticky header CSS, targeting the tr elements within the thead */
-.scrollable-table-container thead tr:nth-child(1) {
-	position: sticky;
-	top: 0;
-	background-color: #b3b6b9;
-	z-index: 5;
-}
+	/* Your existing sticky header CSS, targeting the tr elements within the thead */
+	.scrollable-table-container thead tr:nth-child(1) {
+		position: sticky;
+		top: 0;
+		background-color: #b3b6b9;
+		z-index: 5;
+	}
 
-.scrollable-table-container thead tr:nth-child(2) {
-	position: sticky;
-	top: 36px;
-	/* adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 4;
-}
+	.scrollable-table-container thead tr:nth-child(2) {
+		position: sticky;
+		top: 36px;
+		/* adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 4;
+	}
 
-.scrollable-table-container thead tr:nth-child(3) {
-	position: sticky;
-	top: 72px;
-	/* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 3;
-}
+	.scrollable-table-container thead tr:nth-child(3) {
+		position: sticky;
+		top: 72px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 3;
+	}
 
-.scrollable-table-container thead tr:nth-child(4) {
-	position: sticky;
-	top: 100px;
-	/* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 2;
-}
+	.scrollable-table-container thead tr:nth-child(4) {
+		position: sticky;
+		top: 100px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 2;
+	}
 
-.scrollable-table-container thead tr:nth-child(5) {
-	position: sticky;
-	top: 135px;
-	/* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 1;
-}
+	.scrollable-table-container thead tr:nth-child(5) {
+		position: sticky;
+		top: 135px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 1;
+	}
 </style>
 <style>
-.inner {
-	max-height: 600px;
-	/* Adjust height as needed */
-	overflow: auto;
-	border: 1px solid #dee2e6;
-}
+	.inner {
+		max-height: 600px;
+		/* Adjust height as needed */
+		overflow: auto;
+		border: 1px solid #dee2e6;
+	}
 
-/* Sticky thead */
-#reports thead th {
-	position: sticky;
-	top: 0;
-	background-color: #f8f9fa;
-	/* Match Bootstrap thead-light */
-	z-index: 2;
-}
+	/* Sticky thead */
+	#reports thead th {
+		position: sticky;
+		top: 0;
+		background-color: #f8f9fa;
+		/* Match Bootstrap thead-light */
+		z-index: 2;
+	}
 
-div.dataTables_wrapper div.dataTables_paginate {
-	text-align: right !important;
-	float: right !important;
-	width: auto;
-	margin-top: 10px;
-}
+	div.dataTables_wrapper div.dataTables_paginate {
+		text-align: right !important;
+		float: right !important;
+		width: auto;
+		margin-top: 10px;
+	}
 
-/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
-div.dataTables_wrapper div.dataTables_info {
-	float: left !important;
-	margin-top: 10px;
-}
+	/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+	div.dataTables_wrapper div.dataTables_info {
+		float: left !important;
+		margin-top: 10px;
+	}
 
-.pagination {
-	margin: 0;
-}
+	.pagination {
+		margin: 0;
+	}
 
-.page-item.active .page-link {
-	background-color: #386276;
-	border-color: #386276;
-}
+	.page-item.active .page-link {
+		background-color: #386276;
+		border-color: #386276;
+	}
 
-.page-link {
-	color: #386276;
-}
+	.page-link {
+		color: #386276;
+	}
 
-.page-link:hover {
-	color: #2a4a5c;
-}
+	.page-link:hover {
+		color: #2a4a5c;
+	}
 
-.form-select {
-	display: inline-block;
-	width: auto;
-}
+	.form-select {
+		display: inline-block;
+		width: auto;
+	}
 </style>
 
 </html>

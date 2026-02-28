@@ -99,7 +99,8 @@ public class BRRS_M_DEP3_ReportService {
 
 			try {
 				Date d1 = dateformat.parse(todate);
-				T1Master = BRRS_M_DEP3_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate), version);
+				T1Master = BRRS_M_DEP3_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate),
+						version);
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
@@ -158,20 +159,24 @@ public class BRRS_M_DEP3_ReportService {
 
 			System.out.println(type);
 			if ("ARCHIVAL".equals(type) && version != null) {
-				System.out.println(type);
-				// 🔹 Archival branch
+
 				List<M_DEP3_Archival_Detail_Entity> T1Dt1;
+
 				if (reportLable != null && reportAddlCriteria_1 != null) {
 					T1Dt1 = BRRS_M_DEP3_Archival_Detail_Repo.GetDataByRowIdAndColumnId(reportLable,
 							reportAddlCriteria_1, parsedDate, version);
 				} else {
 					T1Dt1 = BRRS_M_DEP3_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
+
+					totalPages = BRRS_M_DEP3_Archival_Detail_Repo.getdatacount(parsedDate, version);
+
+					mv.addObject("pagination", "YES");
 				}
 
 				mv.addObject("reportdetails", T1Dt1);
 				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
 
+				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
 			} else {
 				// 🔹 Current branch
 				List<M_DEP3_Detail_Entity> T1Dt1;

@@ -6,17 +6,17 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-
 public interface BRRS_M_SFINP1_Archival_Detail_Repo extends JpaRepository<M_SFINP1_Archival_Detail_Entity, String> {
 
-	@Query(value = "SELECT * FROM BRRS_M_SFINP1_ARCHIVALTABLE_DETAIL " +
-            "WHERE TRUNC(REPORT_DATE) = TRUNC(?1) " +
-            "AND DATA_ENTRY_VERSION = ?2",
-    nativeQuery = true)
-List<M_SFINP1_Archival_Detail_Entity> 
-getdatabydateList(Date reportdate, String version);
-	
-	@Query(value = "select * from BRRS_M_SFINP1_ARCHIVALTABLE_DETAIL where ROW_ID =?1 and COLUMN_ID=?2 AND REPORT_DATE=?3 AND DATA_ENTRY_VERSION=?4", nativeQuery = true)
-	List<M_SFINP1_Archival_Detail_Entity> GetDataByRowIdAndColumnId(String rowId,String ColumnId,Date reportdate,String DATA_ENTRY_VERSION);
-}
+	@Query(value = "SELECT * FROM BRRS_M_SFINP1_ARCHIVALTABLE_DETAIL " + "WHERE TRUNC(REPORT_DATE) = TRUNC(?1) "
+			+ "AND DATA_ENTRY_VERSION = ?2", nativeQuery = true)
+	List<M_SFINP1_Archival_Detail_Entity> getdatabydateList(Date reportdate, String version);
 
+	@Query(value = "select * from BRRS_M_SFINP1_ARCHIVALTABLE_DETAIL where ROW_ID =?1 and COLUMN_ID=?2 AND REPORT_DATE=?3 AND DATA_ENTRY_VERSION=?4", nativeQuery = true)
+	List<M_SFINP1_Archival_Detail_Entity> GetDataByRowIdAndColumnId(String rowId, String ColumnId, Date reportdate,
+			String DATA_ENTRY_VERSION);
+
+	@Query(value = "SELECT COUNT(*) FROM BRRS_M_SFINP1_ARCHIVALTABLE_DETAIL " + "WHERE TRUNC(REPORT_DATE) = TRUNC(?1) "
+			+ "AND DATA_ENTRY_VERSION = ?2", nativeQuery = true)
+	int getdatacount(Date reportdate, String version);
+}

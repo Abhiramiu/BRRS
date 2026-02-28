@@ -466,7 +466,7 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 		function showsummary() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},,version=${version}, asondate=${asondate})}]]*/
-			location.href = Callurl;
+				location.href = Callurl;
 		}
 
 
@@ -1100,50 +1100,50 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 			setCellValue("#r56_month_end", r56_month_end);
 			setCellValue("#r56_average", r56_average);
 
-		
-		/* ---------------- R61 ---------------- */
-		let r61_month_end =
-			getCellValue("#r10_month_end") +
-			getCellValue("#r11_month_end") +
-			getCellValue("#r12_month_end") +
-			getCellValue("#r17_month_end") +
-			getCellValue("#r18_month_end") +
-			getCellValue("#r19_month_end") +
-			getCellValue("#r20_month_end") +
-			getCellValue("#r27_month_end") +
-			getCellValue("#r31_month_end") +
-			getCellValue("#R34_MONTH_END") +
-			getCellValue("#r35_month_end") +
-			getCellValue("#r38_month_end") +
-			getCellValue("#r44_month_end") +
-			getCellValue("#r49_month_end") +
-			getCellValue("#r53_month_end") +
-			getCellValue("#r54_month_end") +
-			getCellValue("#r55_month_end") +
-			getCellValue("#r56_month_end");
 
-		let r61_average =
-			getCellValue("#r10_average") +
-			getCellValue("#r11_average") +
-			getCellValue("#r12_average") +
-			getCellValue("#r17_average") +
-			getCellValue("#r18_average") +
-			getCellValue("#r19_average") +
-			getCellValue("#r20_average") +
-			getCellValue("#r27_average") +
-			getCellValue("#r31_average") +
-			getCellValue("#r34_average") +
-			getCellValue("#r35_average") +
-			getCellValue("#r38_average") +
-			getCellValue("#r44_average") +
-			getCellValue("#r49_average") +
-			getCellValue("#r53_average") +
-			getCellValue("#r54_average") +
-			getCellValue("#r55_average") +
-			getCellValue("#r56_average");
+			/* ---------------- R61 ---------------- */
+			let r61_month_end =
+				getCellValue("#r10_month_end") +
+				getCellValue("#r11_month_end") +
+				getCellValue("#r12_month_end") +
+				getCellValue("#r17_month_end") +
+				getCellValue("#r18_month_end") +
+				getCellValue("#r19_month_end") +
+				getCellValue("#r20_month_end") +
+				getCellValue("#r27_month_end") +
+				getCellValue("#r31_month_end") +
+				getCellValue("#R34_MONTH_END") +
+				getCellValue("#r35_month_end") +
+				getCellValue("#r38_month_end") +
+				getCellValue("#r44_month_end") +
+				getCellValue("#r49_month_end") +
+				getCellValue("#r53_month_end") +
+				getCellValue("#r54_month_end") +
+				getCellValue("#r55_month_end") +
+				getCellValue("#r56_month_end");
 
-		setCellValue("#r61_month_end", r61_month_end);
-}
+			let r61_average =
+				getCellValue("#r10_average") +
+				getCellValue("#r11_average") +
+				getCellValue("#r12_average") +
+				getCellValue("#r17_average") +
+				getCellValue("#r18_average") +
+				getCellValue("#r19_average") +
+				getCellValue("#r20_average") +
+				getCellValue("#r27_average") +
+				getCellValue("#r31_average") +
+				getCellValue("#r34_average") +
+				getCellValue("#r35_average") +
+				getCellValue("#r38_average") +
+				getCellValue("#r44_average") +
+				getCellValue("#r49_average") +
+				getCellValue("#r53_average") +
+				getCellValue("#r54_average") +
+				getCellValue("#r55_average") +
+				getCellValue("#r56_average");
+
+			setCellValue("#r61_month_end", r61_month_end);
+		}
 		/* Auto Recalculate When Input Changes */
 		$(document).on("input", "input", function () {
 			calculateAll();
@@ -1306,7 +1306,7 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; padding-top:10px; font-weight: bold; color: white;">
-							M-SFinP1: STATEMENT OF FINANCIAL POSITION 
+							M-SFinP1: STATEMENT OF FINANCIAL POSITION
 						</h5>
 
 						<!-- Bus Scrolling Text -->
@@ -1389,14 +1389,17 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 
 
 
-
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
 							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
-		    data-fromdate=${fromdate},
-		    data-todate=${todate},
-		    data-filename='MSFinP1Detail'
-		  ">
-							<i class="fa fa-download"></i> Detail
+																				    data-fromdate=${fromdate},
+																				    data-todate=${todate},
+																					data-currency=${currency},  
+																								data-dtltype=${dtltype}, 
+																				    data-filename='MSFinP1Detail',
+																					data-type=${type},
+																								data-version=${version}
+																				  ">
+							<i class="fa fa-download"></i> Download
 						</button>
 					</div>
 				</div>
