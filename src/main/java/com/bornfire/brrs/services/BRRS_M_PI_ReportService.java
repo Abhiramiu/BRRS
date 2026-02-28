@@ -1,7 +1,6 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
-
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -48,26 +47,20 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_PI_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_PI_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_PI_Manual_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_PI_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_PI_Summary_Repo;
-import com.bornfire.brrs.entities.M_LA3_Archival_Summary_Entity1;
-import com.bornfire.brrs.entities.M_LA3_Archival_Summary_Entity2;
-import com.bornfire.brrs.entities.M_LA3_Summary_Entity1;
-import com.bornfire.brrs.entities.M_LA3_Summary_Entity2;
+import com.bornfire.brrs.entities.BRRS_M_PI_Manual_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_PI_Manual_Summary_Repo;
+import com.bornfire.brrs.entities.BRRS_M_PI_Summary_Repo;
 import com.bornfire.brrs.entities.M_PI_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_PI_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_PI_Manual_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_PI_Detail_Entity;
-import com.bornfire.brrs.entities.M_PI_Summary_Entity;
+import com.bornfire.brrs.entities.M_PI_Manual_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_PI_Manual_Summary_Entity;
+import com.bornfire.brrs.entities.M_PI_Summary_Entity;
 
 @Component
 @Service

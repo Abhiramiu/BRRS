@@ -1291,6 +1291,13 @@ public class RegulatoryReportServices {
 					pageable, type, version);
 
 			break;
+			
+		case "M_CA1":
+
+			repsummary = BRRS_M_CA1_reportservice.getM_CA1View(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+
+			break;
 
 		case "M_SRWA_12G":
 
@@ -2373,6 +2380,16 @@ public class RegulatoryReportServices {
 			try {
 
 				repfile = BRRS_M_PI_reportservice.getBRRS_M_PIExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, format, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_CA1":
+			try {
+
+				repfile = BRRS_M_CA1_reportservice.getBRRS_M_CA1Excel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, format, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
