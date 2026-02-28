@@ -205,15 +205,15 @@ public ModelAndView getM_SFINP2currentDtl(
 	            parsedDate = dateformat.parse(todate);
 	        }
 
-	        String rowId = null;
-	        String columnId = null;
+	        String reportLable = null;
+	        String reportAddlCriteria_1 = null;
 
 	        // ✅ Split filter string into rowId & columnId
 	        if (filter != null && filter.contains(",")) {
 	            String[] parts = filter.split(",");
 	            if (parts.length >= 2) {
-	                rowId = parts[0];
-	                columnId = parts[1];
+	            	reportLable = parts[0];
+	            	reportAddlCriteria_1 = parts[1];
 	            }
 	        }
 
@@ -224,9 +224,9 @@ public ModelAndView getM_SFINP2currentDtl(
 
 	            List<M_SFINP2_Archival_Detail_Entity> T1Dt1;
 
-	            if (rowId != null && columnId != null) {
+	            if (reportLable != null && reportAddlCriteria_1 != null) {
 	                T1Dt1 = M_SFINP2_Archival_Detail_Repo
-	                        .GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
+	                        .GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1, parsedDate, version);
 	            } else {
 	                T1Dt1 = M_SFINP2_Archival_Detail_Repo
 	                        .getdatabydateList(parsedDate, version);
@@ -243,9 +243,9 @@ public ModelAndView getM_SFINP2currentDtl(
 
 	            List<M_SFINP2_RESUB_Detail_Entity> T1Dt1;
 
-	            if (rowId != null && columnId != null) {
+	            if (reportLable != null && reportAddlCriteria_1 != null) {
 	                T1Dt1 = M_SFINP2_resub_detail_repo
-	                        .GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
+	                        .GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1, parsedDate, version);
 	            } else {
 	                T1Dt1 = M_SFINP2_resub_detail_repo
 	                        .getdatabydateList(parsedDate, version);
@@ -262,9 +262,9 @@ public ModelAndView getM_SFINP2currentDtl(
 
 	            List<M_SFINP2_Detail_Entity> T1Dt1;
 
-	            if (rowId != null && columnId != null) {
+	            if (reportLable != null && reportAddlCriteria_1 != null) {
 	                T1Dt1 = M_SFINP2_DETAIL_Repo
-	                        .GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
+	                        .GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1, parsedDate);
 	            } else {
 	                T1Dt1 = M_SFINP2_DETAIL_Repo
 	                        .getdatabydateList(parsedDate);

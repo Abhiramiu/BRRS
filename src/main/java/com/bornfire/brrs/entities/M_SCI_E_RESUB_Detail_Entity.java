@@ -12,10 +12,11 @@ import javax.persistence.Table;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_SCI_E_ARCHIVALTABLE_DETAIL")
-public class M_SCI_E_Archival_Detail_Entity {
+@Table(name = "BRRS_M_SCI_E_RESUB_DETAILTABLE")
+public class M_SCI_E_RESUB_Detail_Entity {
 
-
+   
+	
 	 @Column(name = "CUST_ID")
  private String custId;
 	 @Id
@@ -328,14 +329,14 @@ public void setMonthlyInt(BigDecimal monthlyInt) {
 	this.monthlyInt = monthlyInt;
 }
 
-public M_SCI_E_Archival_Detail_Entity() {
+public M_SCI_E_RESUB_Detail_Entity() {
 	super();
 	// TODO Auto-generated constructor stub
 }
-   
-   
-   
-   
+	
     
+    
+
+	
 
 }

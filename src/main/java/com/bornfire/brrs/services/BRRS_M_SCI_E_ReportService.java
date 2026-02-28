@@ -55,12 +55,16 @@ import com.bornfire.brrs.entities.BRRS_M_SCI_E_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SCI_E_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SCI_E_Manual_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SCI_E_Manual_Summary_Repo;
+import com.bornfire.brrs.entities.BRRS_M_SCI_E_Resub_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_M_SCI_E_Resub_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SCI_E_Summary_Repo;
 import com.bornfire.brrs.entities.M_SCI_E_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_SCI_E_Archival_Manual_Summary_Entity;
+
 import com.bornfire.brrs.entities.M_SCI_E_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_SCI_E_Detail_Entity;
 import com.bornfire.brrs.entities.M_SCI_E_Manual_Summary_Entity;
+import com.bornfire.brrs.entities.M_SCI_E_RESUB_Detail_Entity;
+import com.bornfire.brrs.entities.M_SCI_E_RESUB_Summary_Entity;
 import com.bornfire.brrs.entities.M_SCI_E_Summary_Entity;
 
 @Component
@@ -100,3312 +104,272 @@ public class BRRS_M_SCI_E_ReportService {
 	BRRS_M_SCI_E_Archival_Summary_Repo brrs_m_sci_e_Archival_summary_repo;
 	
 	
+
+@Autowired
+	BRRS_M_SCI_E_Resub_Summary_Repo  M_SCI_E_resub_summary_repo;
 	
+	
+	@Autowired
+	BRRS_M_SCI_E_Resub_Detail_Repo M_SCI_E_resub_detail_repo;
 	
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	
-	public ModelAndView getM_SCI_EView(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, String version) {
+	public ModelAndView getM_SCI_EView(
+	        String reportId,
+	        String fromdate,
+	        String todate,
+	        String currency,
+	        String dtltype,     // kept but not used
+	        Pageable pageable,
+	        String type,
+	        BigDecimal version) {
 
-		ModelAndView mv = new ModelAndView();
-		
+	    ModelAndView mv = new ModelAndView();
 
-		System.out.println("testing");
-		System.out.println(version);
+	    try {
 
-		if ("ARCHIVAL".equals(type) && version != null && !version.isEmpty()) {
+	        // Parse date only once
+	        Date d1 = dateformat.parse(todate);
 
-		    System.out.println("ARCHIVAL MODE");
-		    System.out.println("version = " + version);
+	        System.out.println("======= VIEW DEBUG =======");
+	        System.out.println("TYPE    : " + type);
+	        System.out.println("DATE    : " + d1);
+	        System.out.println("VERSION : " + version);
+	        System.out.println("==========================");
 
-		    List<M_SCI_E_Archival_Summary_Entity> T1Master = new ArrayList<>();
-		    List<M_SCI_E_Archival_Manual_Summary_Entity> T2Master = new ArrayList<>();
+	        // ===========================================================
+	        // SUMMARY ONLY
+	        // ===========================================================
 
-		    try {
-		        Date dt = dateformat.parse(todate);
+	        /* ---------- ARCHIVAL SUMMARY ---------- */
+	        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 
-		        T1Master = brrs_m_sci_e_Archival_summary_repo.getdatabydateListarchival(dt, version);
-		        T2Master = m_sci_e_manual_Archival_Summary_Repo.getdatabydateListarchival(dt, version);
+	            List<M_SCI_E_Archival_Summary_Entity> summaryList =
+	                    brrs_m_sci_e_Archival_summary_repo
+	                            .getdatabydateListarchival(d1, version);
 
-		        System.out.println("T1Master size = " + T1Master.size());
-		        System.out.println("T2Master size = " + T2Master.size());
+	            System.out.println("Archival Summary Size : " + summaryList.size());
 
-		    } catch (ParseException e) {
-		        e.printStackTrace();
-		    }
+	            mv.addObject("displaymode", "summary");
+	            mv.addObject("reportsummary", summaryList);
+	        }
 
-		    mv.addObject("reportsummary", T1Master);
-		    mv.addObject("reportsummary1", T2Master);
-		} else {
+	        /* ---------- RESUB SUMMARY ---------- */
+	        else if ("RESUB".equalsIgnoreCase(type) && version != null) {
 
-			List<M_SCI_E_Summary_Entity> T1Master = new ArrayList<M_SCI_E_Summary_Entity>();
-			List<M_SCI_E_Manual_Summary_Entity> T2Master = new ArrayList<M_SCI_E_Manual_Summary_Entity>();
-			try {
-				Date d1 = dateformat.parse(todate);
-				
-				T1Master = brrs_m_sci_e_summary_repo.getdatabydateList(dateformat.parse(todate));
-				T2Master = brrs_m_sci_e_manual_summary_repo.getdatabydateList(dateformat.parse(todate));
-				System.out.println("T2Master size " + T2Master.size());
-				mv.addObject("report_date", dateformat.format(d1));
+	            List<M_SCI_E_RESUB_Summary_Entity> summaryList =
+	                    M_SCI_E_resub_summary_repo
+	                            .getdatabydateListarchival(d1, version);
 
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-			mv.addObject("reportsummary", T1Master);
-			mv.addObject("reportsummary1", T2Master);
-		}
+	            System.out.println("Resub Summary Size : " + summaryList.size());
 
-	
+	            mv.addObject("displaymode", "resub");
+	            mv.addObject("reportsummary", summaryList);
+	        }
 
-		mv.setViewName("BRRS/M_SCI_E");
+	        /* ---------- NORMAL SUMMARY ---------- */
+	        else {
 
-		mv.addObject("displaymode", "summary");
+	            List<M_SCI_E_Summary_Entity> summaryList =
+	                    brrs_m_sci_e_summary_repo
+	                            .getdatabydateList(d1);
 
-		System.out.println("scv" + mv.getViewName());
+	            System.out.println("Normal Summary Size : " + summaryList.size());
 
-		return mv;
+	            mv.addObject("displaymode", "summary");
+	            mv.addObject("reportsummary", summaryList);
+	        }
 
+	    } catch (ParseException e) {
+	        e.printStackTrace();
+	    }
+
+	    mv.setViewName("BRRS/M_SCI_E");
+	    System.out.println("View set to: " + mv.getViewName());
+
+	    return mv;
 	}
-	 
 	
 	
-	public ModelAndView getM_SCI_EcurrentDtl(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String filter, String type, String version) {
+	
+		public ModelAndView getM_SCI_EcurrentDtl(
+	        String reportId,
+	        String fromdate,
+	        String todate,
+	        String currency,
+	        String dtltype,
+	        Pageable pageable,
+	        String filter,
+	        String type,
+	        String version) {
 
-		int pageSize = pageable != null ? pageable.getPageSize() : 10;
-		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
-		int totalPages = 0;
+	    int pageSize = pageable != null ? pageable.getPageSize() : 10;
+	    int currentPage = pageable != null ? pageable.getPageNumber() : 0;
+	    int totalPages = 0;
 
-		ModelAndView mv = new ModelAndView();
+	    ModelAndView mv = new ModelAndView();
+		/* Session hs = sessionFactory.getCurrentSession(); */
 
-		//Session hs = sessionFactory.getCurrentSession();
+	    try {
+	        Date parsedDate = null;
+	        if (todate != null && !todate.isEmpty()) {
+	            parsedDate = dateformat.parse(todate);
+	        }
+
+	        String rowId = null;
+	        String columnId = null;
+
+	        // ✅ Split filter string into rowId & columnId
+	        if (filter != null && filter.contains(",")) {
+	            String[] parts = filter.split(",");
+	            if (parts.length >= 2) {
+	                rowId = parts[0];
+	                columnId = parts[1];
+	            }
+	        }
+
+	        /* =========================================================
+	           ARCHIVAL DETAIL
+	        ========================================================= */
+	        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+
+	            List<M_SCI_E_Archival_Detail_Entity> T1Dt1;
+
+	            if (rowId != null && columnId != null) {
+	                T1Dt1 = m_sci_e_Archival_Detail_Repo
+	                        .GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
+	            } else {
+	                T1Dt1 = m_sci_e_Archival_Detail_Repo
+	                        .getdatabydateList(parsedDate, version);
+	            }
+
+	            mv.addObject("reportdetails", T1Dt1);
+	            System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+	        }
+
+	        /* =========================================================
+	           RESUB DETAIL  ✅ ADDED
+	        ========================================================= */
+	        else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+
+	            List<M_SCI_E_RESUB_Detail_Entity> T1Dt1;
+
+	            if (rowId != null && columnId != null) {
+	                T1Dt1 = M_SCI_E_resub_detail_repo
+	                        .GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
+	            } else {
+	                T1Dt1 = M_SCI_E_resub_detail_repo
+	                        .getdatabydateList(parsedDate, version);
+	            }
+
+	            mv.addObject("reportdetails", T1Dt1);
+	            System.out.println("RESUB COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+	        }
+
+	        /* =========================================================
+	           CURRENT DETAIL
+	        ========================================================= */
+	        else {
+
+	            List<M_SCI_E_Detail_Entity> T1Dt1;
+
+	            if (rowId != null && columnId != null) {
+	                T1Dt1 = brrs_m_sci_e_detail_repo
+	                        .GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
+	            } else {
+	                T1Dt1 = brrs_m_sci_e_detail_repo
+	                        .getdatabydateList(parsedDate);
+
+	                totalPages = brrs_m_sci_e_detail_repo
+	                        .getdatacount(parsedDate);
+
+	                mv.addObject("pagination", "YES");
+	            }
+
+	            mv.addObject("reportdetails", T1Dt1);
+	            System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+	        }
+
+	    } catch (ParseException e) {
+	        e.printStackTrace();
+	        mv.addObject("errorMessage", "Invalid date format: " + todate);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
+	    }
+
+	    // ✅ Common attributes
+	    mv.setViewName("BRRS/M_SCI_E");
+	    mv.addObject("displaymode", "Details");
+	    mv.addObject("currentPage", currentPage);
+	    mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
+	    mv.addObject("reportsflag", "reportsflag");
+	    mv.addObject("menu", reportId);
+
+	    return mv;
+	}
+	
+	
+		//Archival View
+	public List<Object[]> getM_SCI_EArchival() {
+		List<Object[]> archivalList = new ArrayList<>();
 
 		try {
-			Date parsedDate = null;
+			List<M_SCI_E_Archival_Summary_Entity> repoData = brrs_m_sci_e_Archival_summary_repo
+					.getdatabydateListWithVersion();
 
-			if (todate != null && !todate.isEmpty()) {
-				parsedDate = dateformat.parse(todate);
-			}
-
-			String reportLable = null;
-			String reportAddlCriteria_1 = null;
-			// ✅ Split filter string into rowId & columnId
-			if (filter != null && filter.contains(",")) {
-				String[] parts = filter.split(",");
-				if (parts.length >= 2) {
-					reportLable = parts[0];
-					reportAddlCriteria_1 = parts[1];
-				}
-			}
-
-			System.out.println(type);
-			if ("ARCHIVAL".equals(type) && version != null) {
-				System.out.println(type);
-				// 🔹 Archival branch
-				List<M_SCI_E_Archival_Detail_Entity> T1Dt1;
-				if (reportLable != null && reportAddlCriteria_1 != null) {
-					T1Dt1 = m_sci_e_Archival_Detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1, parsedDate, version);
-				} else {
-					T1Dt1 = m_sci_e_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
+			if (repoData != null && !repoData.isEmpty()) {
+				for (M_SCI_E_Archival_Summary_Entity entity : repoData) {
+					Object[] row = new Object[] {
+							entity.getReport_date(), 
+							entity.getReport_version(), 
+							 entity.getReportResubDate()
+					};
+					archivalList.add(row);
 				}
 
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
-
+				System.out.println("Fetched " + archivalList.size() + " archival records");
+				M_SCI_E_Archival_Summary_Entity first = repoData.get(0);
+				System.out.println("Latest archival version: " + first.getReport_version());
 			} else {
-				// 🔹 Current branch
-				List<M_SCI_E_Detail_Entity> T1Dt1;
-
-				if (reportLable != null && reportAddlCriteria_1 != null) {
-					T1Dt1 = brrs_m_sci_e_detail_repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1, parsedDate);
-				} else {
-					T1Dt1 = brrs_m_sci_e_detail_repo.getdatabydateList(parsedDate);
-					totalPages = brrs_m_sci_e_detail_repo.getdatacount(parsedDate);
-					mv.addObject("pagination", "YES");
-
-				}
-
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-
-				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+				System.out.println("No archival data found.");
 			}
-		} catch (ParseException e) {
-			e.printStackTrace();
-			mv.addObject("errorMessage", "Invalid date format: " + todate);
+
 		} catch (Exception e) {
+			System.err.println("Error fetching  M_SCI_E  Archival data: " + e.getMessage());
 			e.printStackTrace();
-			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
 		}
 
-	
-
-	
-		mv.setViewName("BRRS/M_SCI_E");
-		mv.addObject("displaymode", "Details");
-		mv.addObject("currentPage", currentPage);
-		System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
-		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
-		mv.addObject("reportsflag", "reportsflag");
-		mv.addObject("menu", reportId);
-		return mv;
+		return archivalList;
 	}
 	
-	
-	
-	
 
-	public byte[] getM_SCI_EExcel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.");
-
-		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
-			logger.info("Service: Generating ARCHIVAL report for version {}", version);
-			return getExcelM_SCI_EARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
-		}
-
-		// Fetch data
-
-		List<M_SCI_E_Summary_Entity> dataList = brrs_m_sci_e_summary_repo.getdatabydateList(dateformat.parse(todate));
-		List<M_SCI_E_Manual_Summary_Entity> dataList1 = brrs_m_sci_e_manual_summary_repo
-				.getdatabydateList(dateformat.parse(todate));
-
-		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for M_SCI_E report. Returning empty result.");
-			return new byte[0];
-		}
-
-		String templateDir = env.getProperty("output.exportpathtemp");
-		String templateFileName = filename;
-		System.out.println(filename);
-		Path templatePath = Paths.get(templateDir, templateFileName);
-		System.out.println(templatePath);
-
-		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
-
-		if (!Files.exists(templatePath)) {
-			// This specific exception will be caught by the controller.
-			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
-		}
-		if (!Files.isReadable(templatePath)) {
-			// A specific exception for permission errors.
-			throw new SecurityException(
-					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
-		}
-
-		// This try-with-resources block is perfect. It guarantees all resources are
-		// closed automatically.
-		try (InputStream templateInputStream = Files.newInputStream(templatePath);
-				Workbook workbook = WorkbookFactory.create(templateInputStream);
-				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-
-			Sheet sheet = workbook.getSheetAt(0);
-
-			// --- Style Definitions ---
-			CreationHelper createHelper = workbook.getCreationHelper();
-
-			CellStyle dateStyle = workbook.createCellStyle();
-			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-			dateStyle.setBorderBottom(BorderStyle.THIN);
-			dateStyle.setBorderTop(BorderStyle.THIN);
-			dateStyle.setBorderLeft(BorderStyle.THIN);
-			dateStyle.setBorderRight(BorderStyle.THIN);
-
-			CellStyle textStyle = workbook.createCellStyle();
-			textStyle.setBorderBottom(BorderStyle.THIN);
-			textStyle.setBorderTop(BorderStyle.THIN);
-			textStyle.setBorderLeft(BorderStyle.THIN);
-			textStyle.setBorderRight(BorderStyle.THIN);
-
-			// Create the font
-			Font font = workbook.createFont();
-			font.setFontHeightInPoints((short) 8); // size 8
-			font.setFontName("Arial");
-
-			CellStyle numberStyle = workbook.createCellStyle();
-			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
-			numberStyle.setBorderBottom(BorderStyle.THIN);
-			numberStyle.setBorderTop(BorderStyle.THIN);
-			numberStyle.setBorderLeft(BorderStyle.THIN);
-			numberStyle.setBorderRight(BorderStyle.THIN);
-			numberStyle.setFont(font);
-			// --- End of Style Definitions ---
-
-			int startRow = 10;
-
-			if (!dataList.isEmpty()) {
-				for (int i = 0; i < dataList.size(); i++) {
-					M_SCI_E_Summary_Entity record = dataList.get(i);
-					M_SCI_E_Manual_Summary_Entity record1 = dataList1.get(i);
-					System.out.println("rownumber=" + startRow + i);
-					Row row = sheet.getRow(startRow + i);
-					if (row == null) {
-						row = sheet.createRow(startRow + i);
-					}
-
-Cell cellC,cellD;    
-					
-					// row11
-					
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR11_month() != null) {
-						cellC.setCellValue(record.getR11_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR11_ytd() != null) {
-						cellD.setCellValue(record.getR11_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row12
-					row = sheet.getRow(11);
-					// Column 1 - product name
-					
-
-					// Column 2 - cross_reference
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR12_month() != null) {
-						cellC.setCellValue(record.getR12_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR12_ytd() != null) {
-						cellD.setCellValue(record.getR12_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row13
-					row = sheet.getRow(12);
-					// Column 1 - product name
-					
-
-					// Column 2 - cross_reference
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR13_month() != null) {
-						cellC.setCellValue(record.getR13_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR13_ytd() != null) {
-						cellD.setCellValue(record.getR13_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					
-
-					// row15
-					row = sheet.getRow(14); // Row index for R15 (0-based index)
-
-					// Column 1 - product name
-					
-
-					// Column 2 - cross_reference
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR15_month() != null) {
-						cellC.setCellValue(record.getR15_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR15_ytd() != null) {
-						cellD.setCellValue(record.getR15_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row16
-					row = sheet.getRow(15);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR16_month() != null) {
-						cellC.setCellValue(record.getR16_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR16_ytd() != null) {
-						cellD.setCellValue(record.getR16_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row17
-					row = sheet.getRow(16);
-
-					
-
-					cellC = row.createCell(2);
-					if (record.getR17_month() != null) {
-						cellC.setCellValue(record.getR17_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					cellD = row.createCell(3);
-					if (record.getR17_ytd() != null) {
-						cellD.setCellValue(record.getR17_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row18
-					row = sheet.getRow(17);
-
-					
-
-					cellC = row.createCell(2);
-					if (record.getR18_month() != null) {
-						cellC.setCellValue(record.getR18_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					cellD = row.createCell(3);
-					if (record.getR18_ytd() != null) {
-						cellD.setCellValue(record.getR18_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row19
-					row = sheet.getRow(18);
-
-					
-
-					cellC = row.createCell(2);
-					if (record.getR19_month() != null) {
-						cellC.setCellValue(record.getR19_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					cellD = row.createCell(3);
-					if (record.getR19_ytd() != null) {
-						cellD.setCellValue(record.getR19_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row20
-					row = sheet.getRow(19);
-
-					
-
-					cellC = row.createCell(2);
-					if (record.getR20_month() != null) {
-						cellC.setCellValue(record.getR20_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					cellD = row.createCell(3);
-					if (record.getR20_ytd() != null) {
-						cellD.setCellValue(record.getR20_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row21
-					row = sheet.getRow(20);
-
-					
-
-					cellC = row.createCell(2);
-					if (record.getR21_month() != null) {
-						cellC.setCellValue(record.getR21_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					cellD = row.createCell(3);
-					if (record.getR21_ytd() != null) {
-						cellD.setCellValue(record.getR21_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row22
-					row = sheet.getRow(21);
-
-					
-
-					cellC = row.createCell(2);
-					if (record.getR22_month() != null) {
-						cellC.setCellValue(record.getR22_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					cellD = row.createCell(3);
-					if (record.getR22_ytd() != null) {
-						cellD.setCellValue(record.getR22_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row23
-					row = sheet.getRow(22);
-
-					
-
-					cellC = row.createCell(2);
-					if (record.getR23_month() != null) {
-						cellC.setCellValue(record.getR23_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					cellD = row.createCell(3);
-					if (record.getR23_ytd() != null) {
-						cellD.setCellValue(record.getR23_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row24
-					row = sheet.getRow(23);
-
-					
-
-					cellC = row.createCell(2);
-					if (record.getR24_month() != null) {
-						cellC.setCellValue(record.getR24_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					cellD = row.createCell(3);
-					if (record.getR24_ytd() != null) {
-						cellD.setCellValue(record.getR24_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row25
-					row = sheet.getRow(24);
-
-					
-
-					cellC = row.createCell(2);
-					if (record.getR25_month() != null) {
-						cellC.setCellValue(record.getR25_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					cellD = row.createCell(3);
-					if (record.getR25_ytd() != null) {
-						cellD.setCellValue(record.getR25_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row26
-					row = sheet.getRow(25);
-
-					// Column 1 - product name
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR26_month() != null) {
-						cellC.setCellValue(record.getR26_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR26_ytd() != null) {
-						cellD.setCellValue(record.getR26_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row27
-					row = sheet.getRow(26);
-
-					
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR27_month() != null) {
-						cellC.setCellValue(record.getR27_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR27_ytd() != null) {
-						cellD.setCellValue(record.getR27_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					
-
-					// row29
-					row = sheet.getRow(28);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR29_month() != null) {
-						cellC.setCellValue(record.getR29_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR29_ytd() != null) {
-						cellD.setCellValue(record.getR29_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row30
-					row = sheet.getRow(29);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR30_month() != null) {
-						cellC.setCellValue(record.getR30_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR30_ytd() != null) {
-						cellD.setCellValue(record.getR30_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row31
-					row = sheet.getRow(30);
-					
-					
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR31_month() != null) {
-						cellC.setCellValue(record.getR31_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR31_ytd() != null) {
-						cellD.setCellValue(record.getR31_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// ------------------------- Row 32 -------------------------
-					row = sheet.getRow(31);
-					// Column 1 - product name
-					
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR32_month() != null) {
-						cellC.setCellValue(record.getR32_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR32_ytd() != null) {
-						cellD.setCellValue(record.getR32_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// ------------------------- Row 33 -------------------------
-					row = sheet.getRow(32);
-					
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR33_month() != null) {
-						cellC.setCellValue(record.getR33_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR33_ytd() != null) {
-						cellD.setCellValue(record.getR33_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// ------------------------- Row 34 -------------------------
-					row = sheet.getRow(33);
-					
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR34_month() != null) {
-						cellC.setCellValue(record.getR34_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR34_ytd() != null) {
-						cellD.setCellValue(record.getR34_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// ------------------------- Row 35 -------------------------
-					row = sheet.getRow(34);
-					
-					cellC = row.createCell(2);
-					if (record.getR35_month() != null) {
-						cellC.setCellValue(record.getR35_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-					cellD = row.createCell(3);
-					if (record.getR35_ytd() != null) {
-						cellD.setCellValue(record.getR35_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// ------------------------- Row 36 -------------------------
-					row = sheet.getRow(35);
-
-					
-					cellC = row.createCell(2);
-					if (record.getR36_month() != null) {
-						cellC.setCellValue(record.getR36_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-					cellD = row.createCell(3);
-					if (record.getR36_ytd() != null) {
-						cellD.setCellValue(record.getR36_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					
-
-					// ------------------------- Row 38 -------------------------
-					row = sheet.getRow(37);
-
-					
-
-					cellC = row.createCell(2);
-					if (record.getR38_month() != null) {
-						cellC.setCellValue(record.getR38_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					cellD = row.createCell(3);
-					if (record.getR38_ytd() != null) {
-						cellD.setCellValue(record.getR38_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-               
-					// row39
-					row = sheet.getRow(38);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR39_month() != null) {
-					    cellC.setCellValue(record.getR39_month().doubleValue()); // assuming it's BigDecimal or Double
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR39_ytd() != null) {
-					    cellD.setCellValue(record.getR39_ytd().doubleValue()); // assuming it's BigDecimal or Double
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					
-
-					
-					
-					// row42
-					row = sheet.getRow(41);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR42_month() != null) {
-					    cellC.setCellValue(record.getR42_month().doubleValue()); // assuming it's BigDecimal or Double
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR42_ytd() != null) {
-					    cellD.setCellValue(record.getR42_ytd().doubleValue()); // assuming it's BigDecimal or Double
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row43
-					row = sheet.getRow(42);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR43_month() != null) {
-					    cellC.setCellValue(record.getR43_month().doubleValue()); // assuming it's BigDecimal or Double
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR43_ytd() != null) {
-					    cellD.setCellValue(record.getR43_ytd().doubleValue()); // assuming it's BigDecimal or Double
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-				
-
-					// row45
-					row = sheet.getRow(44);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record1.getR45_month() != null) {
-					    cellC.setCellValue(record1.getR45_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR45_ytd() != null) {
-					    cellD.setCellValue(record.getR45_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row46
-					row = sheet.getRow(45);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record1.getR46_month() != null) {
-					    cellC.setCellValue(record1.getR46_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR46_ytd() != null) {
-					    cellD.setCellValue(record.getR46_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row47
-					row = sheet.getRow(46);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR47_month() != null) {
-					    cellC.setCellValue(record.getR47_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR47_ytd() != null) {
-					    cellD.setCellValue(record.getR47_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					
-
-					
-
-					// row50
-					row = sheet.getRow(49);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR50_month() != null) {
-					    cellC.setCellValue(record.getR50_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR50_ytd() != null) {
-					    cellD.setCellValue(record.getR50_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-					
-					// row51
-					row = sheet.getRow(50);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR51_month() != null) {
-					    cellC.setCellValue(record.getR51_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR51_ytd() != null) {
-					    cellD.setCellValue(record.getR51_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row52
-					row = sheet.getRow(51);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR52_month() != null) {
-					    cellC.setCellValue(record.getR52_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR52_ytd() != null) {
-					    cellD.setCellValue(record.getR52_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row53
-					row = sheet.getRow(52);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR53_month() != null) {
-					    cellC.setCellValue(record.getR53_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR53_ytd() != null) {
-					    cellD.setCellValue(record.getR53_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row54
-					row = sheet.getRow(53);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record1.getR54_month() != null) {
-					    cellC.setCellValue(record1.getR54_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR54_ytd() != null) {
-					    cellD.setCellValue(record.getR54_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row55
-					row = sheet.getRow(54);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR55_month() != null) {
-					    cellC.setCellValue(record.getR55_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR55_ytd() != null) {
-					    cellD.setCellValue(record.getR55_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					
-
-					
-
-					// row58
-					row = sheet.getRow(57);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record1.getR58_month() != null) {
-					    cellC.setCellValue(record1.getR58_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR58_ytd() != null) {
-					    cellD.setCellValue(record.getR58_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row59
-					row = sheet.getRow(58);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record1.getR59_month() != null) {
-					    cellC.setCellValue(record1.getR59_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR59_ytd() != null) {
-					    cellD.setCellValue(record.getR59_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-					
-					// row60
-					row = sheet.getRow(59);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record1.getR60_month() != null) {
-					    cellC.setCellValue(record1.getR60_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR60_ytd() != null) {
-					    cellD.setCellValue(record.getR60_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-					
-					
-					
-					
-					// row63
-					row = sheet.getRow(62);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR63_month() != null) {
-					    cellC.setCellValue(record.getR63_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR63_ytd() != null) {
-					    cellD.setCellValue(record.getR63_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-					
-					// row64
-					row = sheet.getRow(63);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR64_month() != null) {
-					    cellC.setCellValue(record.getR64_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR64_ytd() != null) {
-					    cellD.setCellValue(record.getR64_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-					
-					// row65
-					row = sheet.getRow(64);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR65_month() != null) {
-					    cellC.setCellValue(record.getR65_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR65_ytd() != null) {
-					    cellD.setCellValue(record.getR65_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-					
-					// row66
-					row = sheet.getRow(65);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record1.getR66_month() != null) {
-					    cellC.setCellValue(record1.getR66_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR66_ytd() != null) {
-					    cellD.setCellValue(record.getR66_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-					
-					// row67
-					row = sheet.getRow(66);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record1.getR67_month() != null) {
-					    cellC.setCellValue(record1.getR67_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR67_ytd() != null) {
-					    cellD.setCellValue(record.getR67_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-					
-					// row68
-					row = sheet.getRow(67);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record1.getR68_month() != null) {
-					    cellC.setCellValue(record1.getR68_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR68_ytd() != null) {
-					    cellD.setCellValue(record.getR68_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-					
-					// row69
-					row = sheet.getRow(68);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR69_month() != null) {
-					    cellC.setCellValue(record.getR69_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR69_ytd() != null) {
-					    cellD.setCellValue(record.getR69_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					
-
-					// row71
-					row = sheet.getRow(70);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR71_month() != null) {
-					    cellC.setCellValue(record.getR71_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR71_ytd() != null) {
-					    cellD.setCellValue(record.getR71_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row72
-					row = sheet.getRow(71);
-
-				
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR72_month() != null) {
-					    cellC.setCellValue(record.getR72_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR72_ytd() != null) {
-					    cellD.setCellValue(record.getR72_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row73
-					row = sheet.getRow(72);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR73_month() != null) {
-					    cellC.setCellValue(record.getR73_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR73_ytd() != null) {
-					    cellD.setCellValue(record.getR73_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row74
-					row = sheet.getRow(73);
-
-					
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record1.getR74_month() != null) {
-					    cellC.setCellValue(record1.getR74_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR74_ytd() != null) {
-					    cellD.setCellValue(record.getR74_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					
-
-					// row76
-					row = sheet.getRow(75);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR76_month() != null) {
-					    cellC.setCellValue(record.getR76_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR76_ytd() != null) {
-					    cellD.setCellValue(record.getR76_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row77
-					row = sheet.getRow(76);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR77_month() != null) {
-					    cellC.setCellValue(record.getR77_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR77_ytd() != null) {
-					    cellD.setCellValue(record.getR77_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-					
-					// row78
-					row = sheet.getRow(77);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR78_month() != null) {
-					    cellC.setCellValue(record.getR78_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR78_ytd() != null) {
-					    cellD.setCellValue(record.getR78_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row79
-					row = sheet.getRow(78);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR79_month() != null) {
-					    cellC.setCellValue(record.getR79_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR79_ytd() != null) {
-					    cellD.setCellValue(record.getR79_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row80
-					row = sheet.getRow(79);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR80_month() != null) {
-					    cellC.setCellValue(record.getR80_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR80_ytd() != null) {
-					    cellD.setCellValue(record.getR80_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					
-
-					
-
-					// row83
-					row = sheet.getRow(82);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR83_month() != null) {
-					    cellC.setCellValue(record.getR83_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR83_ytd() != null) {
-					    cellD.setCellValue(record.getR83_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					
-					
-					// row85
-					row = sheet.getRow(84);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record1.getR85_month() != null) {
-					    cellC.setCellValue(record1.getR85_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR85_ytd() != null) {
-					    cellD.setCellValue(record.getR85_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-				}
-
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
-			} else {
-
-			}
-
-// Write the final workbook content to the in-memory stream.
-			workbook.write(out);
-
-			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
-			return out.toByteArray();
-		}
-
-	}
-
-	
-	public byte[] getExcelM_SCI_EARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
-
-		logger.info("Service: Starting Excel generation process in memory.");
-
-		if (type.equals("ARCHIVAL") & version != null) {
-
-		}
-		
-		List<M_SCI_E_Archival_Summary_Entity> dataList = brrs_m_sci_e_Archival_summary_repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
-		List<M_SCI_E_Archival_Manual_Summary_Entity> dataList1 = m_sci_e_manual_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
-
-
-		
-
-		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for M_SCI_E report. Returning empty result.");
-			return new byte[0];
-		}
-
-		String templateDir = env.getProperty("output.exportpathtemp");
-		String templateFileName = filename;
-		System.out.println(filename);
-		Path templatePath = Paths.get(templateDir, templateFileName);
-		System.out.println(templatePath);
-
-		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
-
-		if (!Files.exists(templatePath)) {
-// This specific exception will be caught by the controller.
-			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
-		}
-		if (!Files.isReadable(templatePath)) {
-// A specific exception for permission errors.
-			throw new SecurityException(
-					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
-		}
-
-// This try-with-resources block is perfect. It guarantees all resources are
-// closed automatically.
-		try (InputStream templateInputStream = Files.newInputStream(templatePath);
-				Workbook workbook = WorkbookFactory.create(templateInputStream);
-				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-
-			Sheet sheet = workbook.getSheetAt(0);
-
-// --- Style Definitions ---
-			CreationHelper createHelper = workbook.getCreationHelper();
-
-			CellStyle dateStyle = workbook.createCellStyle();
-			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-			dateStyle.setBorderBottom(BorderStyle.THIN);
-			dateStyle.setBorderTop(BorderStyle.THIN);
-			dateStyle.setBorderLeft(BorderStyle.THIN);
-			dateStyle.setBorderRight(BorderStyle.THIN);
-
-			CellStyle textStyle = workbook.createCellStyle();
-			textStyle.setBorderBottom(BorderStyle.THIN);
-			textStyle.setBorderTop(BorderStyle.THIN);
-			textStyle.setBorderLeft(BorderStyle.THIN);
-			textStyle.setBorderRight(BorderStyle.THIN);
-
-// Create the font
-			Font font = workbook.createFont();
-			font.setFontHeightInPoints((short) 8); // size 8
-			font.setFontName("Arial");
-
-			CellStyle numberStyle = workbook.createCellStyle();
-// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
-			numberStyle.setBorderBottom(BorderStyle.THIN);
-			numberStyle.setBorderTop(BorderStyle.THIN);
-			numberStyle.setBorderLeft(BorderStyle.THIN);
-			numberStyle.setBorderRight(BorderStyle.THIN);
-			numberStyle.setFont(font);
-// --- End of Style Definitions ---
-
-			int startRow = 10;
-
-			if (!dataList.isEmpty()) {
-				for (int i = 0; i < dataList.size(); i++) {
-					M_SCI_E_Archival_Summary_Entity record = dataList.get(i);
-					M_SCI_E_Archival_Manual_Summary_Entity record1 = dataList1.get(i);
-					System.out.println("rownumber=" + startRow + i);
-					Row row = sheet.getRow(startRow + i);
-					if (row == null) {
-						row = sheet.createRow(startRow + i);
-					}
-
-Cell cellC,cellD;    
-					
-					// row11
-					
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR11_month() != null) {
-						cellC.setCellValue(record.getR11_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR11_ytd() != null) {
-						cellD.setCellValue(record.getR11_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row12
-					row = sheet.getRow(11);
-					// Column 1 - product name
-					
-
-					// Column 2 - cross_reference
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR12_month() != null) {
-						cellC.setCellValue(record.getR12_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR12_ytd() != null) {
-						cellD.setCellValue(record.getR12_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row13
-					row = sheet.getRow(12);
-					// Column 1 - product name
-					
-
-					// Column 2 - cross_reference
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR13_month() != null) {
-						cellC.setCellValue(record.getR13_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR13_ytd() != null) {
-						cellD.setCellValue(record.getR13_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					
-
-					// row15
-					row = sheet.getRow(14); // Row index for R15 (0-based index)
-
-					// Column 1 - product name
-					
-
-					// Column 2 - cross_reference
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR15_month() != null) {
-						cellC.setCellValue(record.getR15_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR15_ytd() != null) {
-						cellD.setCellValue(record.getR15_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row16
-					row = sheet.getRow(15);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR16_month() != null) {
-						cellC.setCellValue(record.getR16_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR16_ytd() != null) {
-						cellD.setCellValue(record.getR16_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row17
-					row = sheet.getRow(16);
-
-					
-
-					cellC = row.createCell(2);
-					if (record.getR17_month() != null) {
-						cellC.setCellValue(record.getR17_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					cellD = row.createCell(3);
-					if (record.getR17_ytd() != null) {
-						cellD.setCellValue(record.getR17_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row18
-					row = sheet.getRow(17);
-
-					
-
-					cellC = row.createCell(2);
-					if (record.getR18_month() != null) {
-						cellC.setCellValue(record.getR18_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					cellD = row.createCell(3);
-					if (record.getR18_ytd() != null) {
-						cellD.setCellValue(record.getR18_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row19
-					row = sheet.getRow(18);
-
-					
-
-					cellC = row.createCell(2);
-					if (record.getR19_month() != null) {
-						cellC.setCellValue(record.getR19_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					cellD = row.createCell(3);
-					if (record.getR19_ytd() != null) {
-						cellD.setCellValue(record.getR19_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row20
-					row = sheet.getRow(19);
-
-					
-
-					cellC = row.createCell(2);
-					if (record.getR20_month() != null) {
-						cellC.setCellValue(record.getR20_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					cellD = row.createCell(3);
-					if (record.getR20_ytd() != null) {
-						cellD.setCellValue(record.getR20_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row21
-					row = sheet.getRow(20);
-
-					
-
-					cellC = row.createCell(2);
-					if (record.getR21_month() != null) {
-						cellC.setCellValue(record.getR21_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					cellD = row.createCell(3);
-					if (record.getR21_ytd() != null) {
-						cellD.setCellValue(record.getR21_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row22
-					row = sheet.getRow(21);
-
-					
-
-					cellC = row.createCell(2);
-					if (record.getR22_month() != null) {
-						cellC.setCellValue(record.getR22_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					cellD = row.createCell(3);
-					if (record.getR22_ytd() != null) {
-						cellD.setCellValue(record.getR22_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row23
-					row = sheet.getRow(22);
-
-					
-
-					cellC = row.createCell(2);
-					if (record.getR23_month() != null) {
-						cellC.setCellValue(record.getR23_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					cellD = row.createCell(3);
-					if (record.getR23_ytd() != null) {
-						cellD.setCellValue(record.getR23_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row24
-					row = sheet.getRow(23);
-
-					
-
-					cellC = row.createCell(2);
-					if (record.getR24_month() != null) {
-						cellC.setCellValue(record.getR24_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					cellD = row.createCell(3);
-					if (record.getR24_ytd() != null) {
-						cellD.setCellValue(record.getR24_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row25
-					row = sheet.getRow(24);
-
-					
-
-					cellC = row.createCell(2);
-					if (record.getR25_month() != null) {
-						cellC.setCellValue(record.getR25_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					cellD = row.createCell(3);
-					if (record.getR25_ytd() != null) {
-						cellD.setCellValue(record.getR25_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row26
-					row = sheet.getRow(25);
-
-					// Column 1 - product name
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR26_month() != null) {
-						cellC.setCellValue(record.getR26_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR26_ytd() != null) {
-						cellD.setCellValue(record.getR26_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row27
-					row = sheet.getRow(26);
-
-					
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR27_month() != null) {
-						cellC.setCellValue(record.getR27_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR27_ytd() != null) {
-						cellD.setCellValue(record.getR27_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					
-
-					// row29
-					row = sheet.getRow(28);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR29_month() != null) {
-						cellC.setCellValue(record.getR29_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR29_ytd() != null) {
-						cellD.setCellValue(record.getR29_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row30
-					row = sheet.getRow(29);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR30_month() != null) {
-						cellC.setCellValue(record.getR30_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR30_ytd() != null) {
-						cellD.setCellValue(record.getR30_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// row31
-					row = sheet.getRow(30);
-					
-					
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR31_month() != null) {
-						cellC.setCellValue(record.getR31_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR31_ytd() != null) {
-						cellD.setCellValue(record.getR31_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// ------------------------- Row 32 -------------------------
-					row = sheet.getRow(31);
-					// Column 1 - product name
-					
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR32_month() != null) {
-						cellC.setCellValue(record.getR32_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR32_ytd() != null) {
-						cellD.setCellValue(record.getR32_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// ------------------------- Row 33 -------------------------
-					row = sheet.getRow(32);
-					
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR33_month() != null) {
-						cellC.setCellValue(record.getR33_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR33_ytd() != null) {
-						cellD.setCellValue(record.getR33_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// ------------------------- Row 34 -------------------------
-					row = sheet.getRow(33);
-					
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR34_month() != null) {
-						cellC.setCellValue(record.getR34_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR34_ytd() != null) {
-						cellD.setCellValue(record.getR34_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// ------------------------- Row 35 -------------------------
-					row = sheet.getRow(34);
-					
-					cellC = row.createCell(2);
-					if (record.getR35_month() != null) {
-						cellC.setCellValue(record.getR35_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-					cellD = row.createCell(3);
-					if (record.getR35_ytd() != null) {
-						cellD.setCellValue(record.getR35_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					// ------------------------- Row 36 -------------------------
-					row = sheet.getRow(35);
-
-					
-					cellC = row.createCell(2);
-					if (record.getR36_month() != null) {
-						cellC.setCellValue(record.getR36_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-					cellD = row.createCell(3);
-					if (record.getR36_ytd() != null) {
-						cellD.setCellValue(record.getR36_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-
-					
-
-					// ------------------------- Row 38 -------------------------
-					row = sheet.getRow(37);
-
-					
-
-					cellC = row.createCell(2);
-					if (record.getR38_month() != null) {
-						cellC.setCellValue(record.getR38_month().doubleValue());
-						cellC.setCellStyle(numberStyle);
-					} else {
-						cellC.setCellValue("");
-						cellC.setCellStyle(textStyle);
-					}
-
-					cellD = row.createCell(3);
-					if (record.getR38_ytd() != null) {
-						cellD.setCellValue(record.getR38_ytd().doubleValue());
-						cellD.setCellStyle(numberStyle);
-					} else {
-						cellD.setCellValue("");
-						cellD.setCellStyle(textStyle);
-					}
-               
-					// row39
-					row = sheet.getRow(38);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR39_month() != null) {
-					    cellC.setCellValue(record.getR39_month().doubleValue()); // assuming it's BigDecimal or Double
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR39_ytd() != null) {
-					    cellD.setCellValue(record.getR39_ytd().doubleValue()); // assuming it's BigDecimal or Double
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					
-
-					
-					
-					// row42
-					row = sheet.getRow(41);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR42_month() != null) {
-					    cellC.setCellValue(record.getR42_month().doubleValue()); // assuming it's BigDecimal or Double
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR42_ytd() != null) {
-					    cellD.setCellValue(record.getR42_ytd().doubleValue()); // assuming it's BigDecimal or Double
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row43
-					row = sheet.getRow(42);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR43_month() != null) {
-					    cellC.setCellValue(record.getR43_month().doubleValue()); // assuming it's BigDecimal or Double
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR43_ytd() != null) {
-					    cellD.setCellValue(record.getR43_ytd().doubleValue()); // assuming it's BigDecimal or Double
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-				
-
-					// row45
-					row = sheet.getRow(44);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record1.getR45_month() != null) {
-					    cellC.setCellValue(record1.getR45_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR45_ytd() != null) {
-					    cellD.setCellValue(record.getR45_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row46
-					row = sheet.getRow(45);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record1.getR46_month() != null) {
-					    cellC.setCellValue(record1.getR46_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR46_ytd() != null) {
-					    cellD.setCellValue(record.getR46_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row47
-					row = sheet.getRow(46);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR47_month() != null) {
-					    cellC.setCellValue(record.getR47_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR47_ytd() != null) {
-					    cellD.setCellValue(record.getR47_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					
-
-					
-
-					// row50
-					row = sheet.getRow(49);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR50_month() != null) {
-					    cellC.setCellValue(record.getR50_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR50_ytd() != null) {
-					    cellD.setCellValue(record.getR50_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-					
-					// row51
-					row = sheet.getRow(50);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR51_month() != null) {
-					    cellC.setCellValue(record.getR51_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR51_ytd() != null) {
-					    cellD.setCellValue(record.getR51_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row52
-					row = sheet.getRow(51);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR52_month() != null) {
-					    cellC.setCellValue(record.getR52_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR52_ytd() != null) {
-					    cellD.setCellValue(record.getR52_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row53
-					row = sheet.getRow(52);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR53_month() != null) {
-					    cellC.setCellValue(record.getR53_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR53_ytd() != null) {
-					    cellD.setCellValue(record.getR53_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row54
-					row = sheet.getRow(53);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record1.getR54_month() != null) {
-					    cellC.setCellValue(record1.getR54_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR54_ytd() != null) {
-					    cellD.setCellValue(record.getR54_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row55
-					row = sheet.getRow(54);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR55_month() != null) {
-					    cellC.setCellValue(record.getR55_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR55_ytd() != null) {
-					    cellD.setCellValue(record.getR55_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					
-
-					
-
-					// row58
-					row = sheet.getRow(57);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record1.getR58_month() != null) {
-					    cellC.setCellValue(record1.getR58_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR58_ytd() != null) {
-					    cellD.setCellValue(record.getR58_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row59
-					row = sheet.getRow(58);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record1.getR59_month() != null) {
-					    cellC.setCellValue(record1.getR59_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR59_ytd() != null) {
-					    cellD.setCellValue(record.getR59_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-					
-					// row60
-					row = sheet.getRow(59);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record1.getR60_month() != null) {
-					    cellC.setCellValue(record1.getR60_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR60_ytd() != null) {
-					    cellD.setCellValue(record.getR60_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-					
-					
-					
-					
-					// row63
-					row = sheet.getRow(62);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR63_month() != null) {
-					    cellC.setCellValue(record.getR63_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR63_ytd() != null) {
-					    cellD.setCellValue(record.getR63_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-					
-					// row64
-					row = sheet.getRow(63);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR64_month() != null) {
-					    cellC.setCellValue(record.getR64_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR64_ytd() != null) {
-					    cellD.setCellValue(record.getR64_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-					
-					// row65
-					row = sheet.getRow(64);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR65_month() != null) {
-					    cellC.setCellValue(record.getR65_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR65_ytd() != null) {
-					    cellD.setCellValue(record.getR65_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-					
-					// row66
-					row = sheet.getRow(65);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record1.getR66_month() != null) {
-					    cellC.setCellValue(record1.getR66_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR66_ytd() != null) {
-					    cellD.setCellValue(record.getR66_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-					
-					// row67
-					row = sheet.getRow(66);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record1.getR67_month() != null) {
-					    cellC.setCellValue(record1.getR67_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR67_ytd() != null) {
-					    cellD.setCellValue(record.getR67_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-					
-					// row68
-					row = sheet.getRow(67);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record1.getR68_month() != null) {
-					    cellC.setCellValue(record1.getR68_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR68_ytd() != null) {
-					    cellD.setCellValue(record.getR68_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-					
-					// row69
-					row = sheet.getRow(68);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR69_month() != null) {
-					    cellC.setCellValue(record.getR69_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR69_ytd() != null) {
-					    cellD.setCellValue(record.getR69_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					
-
-					// row71
-					row = sheet.getRow(70);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR71_month() != null) {
-					    cellC.setCellValue(record.getR71_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR71_ytd() != null) {
-					    cellD.setCellValue(record.getR71_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row72
-					row = sheet.getRow(71);
-
-				
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR72_month() != null) {
-					    cellC.setCellValue(record.getR72_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR72_ytd() != null) {
-					    cellD.setCellValue(record.getR72_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row73
-					row = sheet.getRow(72);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR73_month() != null) {
-					    cellC.setCellValue(record.getR73_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR73_ytd() != null) {
-					    cellD.setCellValue(record.getR73_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row74
-					row = sheet.getRow(73);
-
-					
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record1.getR74_month() != null) {
-					    cellC.setCellValue(record1.getR74_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR74_ytd() != null) {
-					    cellD.setCellValue(record.getR74_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					
-
-					// row76
-					row = sheet.getRow(75);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR76_month() != null) {
-					    cellC.setCellValue(record.getR76_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR76_ytd() != null) {
-					    cellD.setCellValue(record.getR76_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row77
-					row = sheet.getRow(76);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR77_month() != null) {
-					    cellC.setCellValue(record.getR77_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR77_ytd() != null) {
-					    cellD.setCellValue(record.getR77_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-					
-					// row78
-					row = sheet.getRow(77);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR78_month() != null) {
-					    cellC.setCellValue(record.getR78_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR78_ytd() != null) {
-					    cellD.setCellValue(record.getR78_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row79
-					row = sheet.getRow(78);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR79_month() != null) {
-					    cellC.setCellValue(record.getR79_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR79_ytd() != null) {
-					    cellD.setCellValue(record.getR79_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// row80
-					row = sheet.getRow(79);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR80_month() != null) {
-					    cellC.setCellValue(record.getR80_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR80_ytd() != null) {
-					    cellD.setCellValue(record.getR80_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					
-
-					
-
-					// row83
-					row = sheet.getRow(82);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record.getR83_month() != null) {
-					    cellC.setCellValue(record.getR83_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR83_ytd() != null) {
-					    cellD.setCellValue(record.getR83_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					
-					
-					// row85
-					row = sheet.getRow(84);
-
-					
-
-					// Column 3 - month
-					cellC = row.createCell(2);
-					if (record1.getR85_month() != null) {
-					    cellC.setCellValue(record1.getR85_month().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 4 - ytd
-					cellD = row.createCell(3);
-					if (record.getR85_ytd() != null) {
-					    cellD.setCellValue(record.getR85_ytd().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-				}
-
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
-			} else {
-
-			}
-
-// Write the final workbook content to the in-memory stream.
-			workbook.write(out);
-
-			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
-			return out.toByteArray();
-		}
-
-	}
-	
-	
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	public List<Object> getM_SCI_EArchival() {
-		List<Object> M_SCI_EArchivallist = new ArrayList<>();
-		try {
-			M_SCI_EArchivallist = brrs_m_sci_e_Archival_summary_repo.getM_SCI_Earchival();
-			M_SCI_EArchivallist = m_sci_e_manual_Archival_Summary_Repo.getM_SCI_Earchival();
-			System.out.println("countser" + M_SCI_EArchivallist.size());
-			System.out.println("countser" + M_SCI_EArchivallist.size());
-		} catch (Exception e) {
-			// Log the exception
-			System.err.println("Error fetching M_SCI_EArchivallist Archival data: " + e.getMessage());
-			e.printStackTrace();
-
-			// Optionally, you can rethrow it or return empty list
-			// throw new RuntimeException("Failed to fetch data", e);
-		}
-		return M_SCI_EArchivallist;
+	public List<Object[]> getM_SCI_EResub() {
+	    List<Object[]> resubList = new ArrayList<>();
+	    try {
+	        List<M_SCI_E_Archival_Summary_Entity> latestArchivalList =
+	        		brrs_m_sci_e_Archival_summary_repo.getdatabydateListWithVersion();
+
+	        if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+	            for (M_SCI_E_Archival_Summary_Entity entity : latestArchivalList) {
+	                resubList.add(new Object[] {
+	                    entity.getReport_date(),
+	                    entity.getReport_version(),
+	                    entity.getReportResubDate()
+	                });
+	            }
+	            System.out.println("Fetched " + resubList.size() + " record(s)");
+	        } else {
+	            System.out.println("No archival data found.");
+	        }
+
+	    } catch (Exception e) {
+	        System.err.println("Error fetching M_SCI_E Resub data: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+	    return resubList;
 	}
 	
 	
@@ -3458,7 +422,7 @@ Cell cellC,cellD;
 			// ACCT BALANCE style (right aligned with 3 decimals)
 			CellStyle balanceStyle = workbook.createCellStyle();
 			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
 			balanceStyle.setBorderTop(border);
 			balanceStyle.setBorderBottom(border);
 			balanceStyle.setBorderLeft(border);
@@ -3498,7 +462,7 @@ Cell cellC,cellD;
 					if (item.getMonthlyInt() != null) {
 						balanceCell.setCellValue(item.getMonthlyInt().doubleValue());
 					} else {
-						balanceCell.setCellValue(0.000);
+						balanceCell.setCellValue(0);
 					}
 					balanceCell.setCellStyle(balanceStyle);
 					
@@ -3507,7 +471,7 @@ Cell cellC,cellD;
 					if (item.getBalanceAmt() != null) {
 						balanceCell.setCellValue(item.getBalanceAmt().doubleValue());
 					} else {
-						balanceCell.setCellValue(0.000);
+						balanceCell.setCellValue(0);
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
@@ -3521,10 +485,10 @@ Cell cellC,cellD;
 									: "");
 
 					// Apply data style for all other cells
-					for (int j = 0; j < 7; j++) {
-						if (j != 3) {
-							row.getCell(j).setCellStyle(dataStyle);
-						}
+					for (int j = 0; j < 8; j++) {
+					    if (j != 3 && j != 4) {
+					        row.getCell(j).setCellStyle(dataStyle);
+					    }
 					}
 				}
 			} else {
@@ -3593,7 +557,7 @@ Cell cellC,cellD;
 // ACCT BALANCE style (right aligned with 3 decimals)
 			CellStyle balanceStyle = workbook.createCellStyle();
 			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
 			balanceStyle.setBorderTop(border);
 			balanceStyle.setBorderBottom(border);
 			balanceStyle.setBorderLeft(border);
@@ -3607,14 +571,15 @@ Cell cellC,cellD;
 				Cell cell = headerRow.createCell(i);
 				cell.setCellValue(headers[i]);
 
-				if (i == 3) { // ACCT BALANCE
-					cell.setCellStyle(rightAlignedHeaderStyle);
+				if (i == 3 || i == 4) {  // MONTHLY_INT (3) and BALANCE_AMT (4)
+				    cell.setCellStyle(rightAlignedHeaderStyle);
 				} else {
-					cell.setCellStyle(headerStyle);
+				    cell.setCellStyle(headerStyle);
 				}
 
 				sheet.setColumnWidth(i, 5000);
 			}
+
 
 // Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
@@ -3635,10 +600,18 @@ Cell cellC,cellD;
 					if (item.getAcctBalanceInpula() != null) {
 						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
 					} else {
-						balanceCell.setCellValue(0.000);
+						balanceCell.setCellValue(0);
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
+					// BALANCE_AMT (right aligned, 3 decimal places)
+					 balanceCell = row.createCell(4);
+					if (item.getBalanceAmt() != null) {
+						balanceCell.setCellValue(item.getBalanceAmt().doubleValue());
+					} else {
+						balanceCell.setCellValue(0);
+					}
+					balanceCell.setCellStyle(balanceStyle);
 					
 					row.createCell(4).setCellValue(item.getReportLable());
 					row.createCell(5).setCellValue(item.getReportAddlCriteria_1());
@@ -3647,11 +620,12 @@ Cell cellC,cellD;
 									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
 									: "");
 
-// Apply data style for all other cells
-					for (int j = 0; j < 7; j++) {
-						if (j != 3) {
-							row.getCell(j).setCellStyle(dataStyle);
-						}
+
+					// Apply data style for all other cells
+					for (int j = 0; j < 8; j++) {
+					    if (j != 3 && j != 4) {
+					        row.getCell(j).setCellStyle(dataStyle);
+					    }
 					}
 				}
 			} else {
@@ -3674,80 +648,55 @@ Cell cellC,cellD;
 	
 	
 	
-	public void updateReport(M_SCI_E_Manual_Summary_Entity updatedEntity) {
+	public void updateReport(M_SCI_E_Summary_Entity updatedEntity) {
+
 	    System.out.println("Came to services");
 	    System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-	    //  Use your query to fetch by date
-	    List<M_SCI_E_Manual_Summary_Entity> list = brrs_m_sci_e_manual_summary_repo
-	        .getdatabydateList(updatedEntity.getReport_date());
+	    M_SCI_E_Summary_Entity existing =
+	            brrs_m_sci_e_summary_repo.findById(updatedEntity.getReport_date())
+	            .orElseThrow(() ->
+	                    new RuntimeException("Record not found for REPORT_DATE: "
+	                            + updatedEntity.getReport_date()));
 
-	    M_SCI_E_Manual_Summary_Entity existing;
-	    if (list.isEmpty()) {
-	        // Record not found — optionally create it
-	        System.out.println("No record found for REPORT_DATE: " + updatedEntity.getReport_date());
-	        existing = new M_SCI_E_Manual_Summary_Entity();
-	        existing.setReport_date(updatedEntity.getReport_date());
-	    } else {
-	        existing = list.get(0);
-	    }
+	    // ✅ Only allowed R-numbers
+	     int[] allowedIndexes = {45, 46, 54, 58, 59, 60, 66, 67, 68, 74, 85};
 
 	    try {
-	        //  Only for specific row numbers
-	        int[] rows = {45, 46, 54, 58, 59, 60, 66, 67, 68, 74, 85};
+	        for (int i : allowedIndexes) {
 
-	        for (int row : rows) {
-	            String prefix = "R" + row + "_";
+	            String field = "month";
 
-	            // Fields to update
-	            String[] fields = {"month"};
+	            String getterName = "getR" + i + "_" + field;
+	            String setterName = "setR" + i + "_" + field;
 
-	            for (String field : fields) {
-	                String getterName = "get" + prefix + field; // e.g. getR45_month
-	                String setterName = "set" + prefix + field; // e.g. setR45_month
+	            try {
+	                Method getter =
+	                        M_SCI_E_Summary_Entity.class.getMethod(getterName);
 
-	                try {
-	                    Method getter = M_SCI_E_Manual_Summary_Entity.class.getMethod(getterName);
-	                    Method setter = M_SCI_E_Manual_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+	                Method setter =
+	                        M_SCI_E_Summary_Entity.class.getMethod(
+	                                setterName,
+	                                getter.getReturnType()
+	                        );
 
-	                    Object newValue = getter.invoke(updatedEntity);
-	                    setter.invoke(existing, newValue);
+	                Object newValue = getter.invoke(updatedEntity);
+	                setter.invoke(existing, newValue);
 
-	                } catch (NoSuchMethodException e) {
-	                    // Skip missing fields gracefully
-	                    continue;
-	                }
+	            } catch (NoSuchMethodException e) {
+	                // Safely skip if field doesn't exist
+	                continue;
 	            }
 	        }
 
-	        // Metadata
-	        existing.setReport_version(updatedEntity.getReport_version());
-	        existing.setReport_frequency(updatedEntity.getReport_frequency());
-	        existing.setReport_code(updatedEntity.getReport_code());
-	        existing.setReport_desc(updatedEntity.getReport_desc());
-	        existing.setEntity_flg(updatedEntity.getEntity_flg());
-	        existing.setModify_flg(updatedEntity.getModify_flg());
-	        existing.setDel_flg(updatedEntity.getDel_flg());
-
 	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating M_SCI_E Summary fields", e);
+	        throw new RuntimeException("Error while updating report fields", e);
 	    }
 
-	    //  FIRST COMMIT — forces immediate commit
-	    brrs_m_sci_e_manual_summary_repo.saveAndFlush(existing);
-	    System.out.println("M_SCI_E Summary updated and COMMITTED");
-
-	    //  Execute procedure with updated data
-	    String oracleDate = new SimpleDateFormat("dd-MM-yyyy")
-	            .format(updatedEntity.getReport_date())
-	            .toUpperCase();
-
-	    String sql = "BEGIN BRRS.BRRS_M_SCI_E_SUMMARY_PROCEDURE ('" + oracleDate + "'); END;";
-	    jdbcTemplate.execute(sql);
-
-	    System.out.println("Procedure executed for date: " + oracleDate);
+	    // ✅ Save only intended updates
+	    brrs_m_sci_e_summary_repo.save(existing);
 	}
-
+		
 	 @Autowired BRRS_M_SCI_E_Detail_Repo m_sci_e_detail_repo;
 	
 	
@@ -3856,6 +805,10245 @@ Cell cellC,cellD;
 
 	
 	
+
+
+//Normal format Excel
+
+public byte[] getM_SCI_EExcel(String filename, String reportId, String fromdate, String todate, String currency,
+String dtltype, String type, String format, BigDecimal version) throws Exception {
+logger.info("Service: Starting Excel generation process in memory.");
+
+System.out.println("======= VIEW SCREEN =======");
+System.out.println("TYPE      : " + type);
+System.out.println("FORMAT      : " + format);
+System.out.println("DTLTYPE   : " + dtltype);
+System.out.println("DATE      : " + dateformat.parse(todate));
+System.out.println("VERSION   : " + version);
+System.out.println("==========================");
+
+
+// ARCHIVAL check
+if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+try {
+// Redirecting to Archival
+return getExcelM_SCI_EARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type,format, version);
+} catch (ParseException e) {
+logger.error("Invalid report date format: {}", fromdate, e);
+throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+}
+} else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+logger.info("Service: Generating RESUB report for version {}", version);
+
+try {
+// ✅ Redirecting to Resub Excel
+return BRRS_M_SCI_EResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type,format, version);
+
+} catch (ParseException e) {
+logger.error("Invalid report date format: {}", fromdate, e);
+throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+}
+} else {
+
+if ("email".equalsIgnoreCase(format) && version == null) {
+logger.info("Got format as Email");
+logger.info("Service: Generating Email report for version {}", version);
+return BRRS_M_SCI_EEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+} else {
+
+// Fetch data
+
+List<M_SCI_E_Summary_Entity> dataList = brrs_m_sci_e_summary_repo
+.getdatabydateList(dateformat.parse(todate));
+
+if (dataList.isEmpty()) {
+logger.warn("Service: No data found for BRRS_M_SCI_E report. Returning empty result.");
+return new byte[0];
+}
+
+String templateDir = env.getProperty("output.exportpathtemp");
+String templateFileName = filename;
+System.out.println(filename);
+Path templatePath = Paths.get(templateDir, templateFileName);
+System.out.println(templatePath);
+
+logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+if (!Files.exists(templatePath)) {
+// This specific exception will be caught by the controller.
+throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+}
+if (!Files.isReadable(templatePath)) {
+// A specific exception for permission errors.
+throw new SecurityException("Template file exists but is not readable (check permissions): "
++ templatePath.toAbsolutePath());
+}
+
+// This try-with-resources block is perfect. It guarantees all resources are
+// closed automatically.
+try (InputStream templateInputStream = Files.newInputStream(templatePath);
+Workbook workbook = WorkbookFactory.create(templateInputStream);
+ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+Sheet sheet = workbook.getSheetAt(0);
+
+// --- Style Definitions ---
+CreationHelper createHelper = workbook.getCreationHelper();
+
+CellStyle dateStyle = workbook.createCellStyle();
+dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+dateStyle.setBorderBottom(BorderStyle.THIN);
+dateStyle.setBorderTop(BorderStyle.THIN);
+dateStyle.setBorderLeft(BorderStyle.THIN);
+dateStyle.setBorderRight(BorderStyle.THIN);
+
+CellStyle textStyle = workbook.createCellStyle();
+textStyle.setBorderBottom(BorderStyle.THIN);
+textStyle.setBorderTop(BorderStyle.THIN);
+textStyle.setBorderLeft(BorderStyle.THIN);
+textStyle.setBorderRight(BorderStyle.THIN);
+
+// Create the font
+Font font = workbook.createFont();
+font.setFontHeightInPoints((short) 8); // size 8
+font.setFontName("Arial");
+
+CellStyle numberStyle = workbook.createCellStyle();
+// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+numberStyle.setBorderBottom(BorderStyle.THIN);
+numberStyle.setBorderTop(BorderStyle.THIN);
+numberStyle.setBorderLeft(BorderStyle.THIN);
+numberStyle.setBorderRight(BorderStyle.THIN);
+numberStyle.setFont(font);
+// --- End of Style Definitions ---
+
+int startRow = 10;
+
+if (!dataList.isEmpty()) {
+for (int i = 0; i < dataList.size(); i++) {
+M_SCI_E_Summary_Entity record = dataList.get(i);
+System.out.println("rownumber=" + startRow + i);
+Row row = sheet.getRow(startRow + i);
+if (row == null) {
+row = sheet.createRow(startRow + i);
+}
+
+Cell cellC,cellD;    
+
+// row11
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR11_month() != null) {
+cellC.setCellValue(record.getR11_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR11_ytd() != null) {
+cellD.setCellValue(record.getR11_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row12
+row = sheet.getRow(11);
+// Column 1 - product name
+
+
+// Column 2 - cross_reference
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR12_month() != null) {
+cellC.setCellValue(record.getR12_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR12_ytd() != null) {
+cellD.setCellValue(record.getR12_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row13
+row = sheet.getRow(12);
+// Column 1 - product name
+
+
+// Column 2 - cross_reference
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR13_month() != null) {
+cellC.setCellValue(record.getR13_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR13_ytd() != null) {
+cellD.setCellValue(record.getR13_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+// row15
+row = sheet.getRow(14); // Row index for R15 (0-based index)
+
+// Column 1 - product name
+
+
+// Column 2 - cross_reference
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR15_month() != null) {
+cellC.setCellValue(record.getR15_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR15_ytd() != null) {
+cellD.setCellValue(record.getR15_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row16
+row = sheet.getRow(15);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR16_month() != null) {
+cellC.setCellValue(record.getR16_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR16_ytd() != null) {
+cellD.setCellValue(record.getR16_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row17
+row = sheet.getRow(16);
+
+
+
+cellC = row.createCell(2);
+if (record.getR17_month() != null) {
+cellC.setCellValue(record.getR17_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR17_ytd() != null) {
+cellD.setCellValue(record.getR17_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row18
+row = sheet.getRow(17);
+
+
+
+cellC = row.createCell(2);
+if (record.getR18_month() != null) {
+cellC.setCellValue(record.getR18_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR18_ytd() != null) {
+cellD.setCellValue(record.getR18_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row19
+row = sheet.getRow(18);
+
+
+
+cellC = row.createCell(2);
+if (record.getR19_month() != null) {
+cellC.setCellValue(record.getR19_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR19_ytd() != null) {
+cellD.setCellValue(record.getR19_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row20
+row = sheet.getRow(19);
+
+
+
+cellC = row.createCell(2);
+if (record.getR20_month() != null) {
+cellC.setCellValue(record.getR20_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR20_ytd() != null) {
+cellD.setCellValue(record.getR20_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row21
+row = sheet.getRow(20);
+
+
+
+cellC = row.createCell(2);
+if (record.getR21_month() != null) {
+cellC.setCellValue(record.getR21_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR21_ytd() != null) {
+cellD.setCellValue(record.getR21_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row22
+row = sheet.getRow(21);
+
+
+
+cellC = row.createCell(2);
+if (record.getR22_month() != null) {
+cellC.setCellValue(record.getR22_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR22_ytd() != null) {
+cellD.setCellValue(record.getR22_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row23
+row = sheet.getRow(22);
+
+
+
+cellC = row.createCell(2);
+if (record.getR23_month() != null) {
+cellC.setCellValue(record.getR23_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR23_ytd() != null) {
+cellD.setCellValue(record.getR23_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row24
+row = sheet.getRow(23);
+
+
+
+cellC = row.createCell(2);
+if (record.getR24_month() != null) {
+cellC.setCellValue(record.getR24_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR24_ytd() != null) {
+cellD.setCellValue(record.getR24_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row25
+row = sheet.getRow(24);
+
+
+
+cellC = row.createCell(2);
+if (record.getR25_month() != null) {
+cellC.setCellValue(record.getR25_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR25_ytd() != null) {
+cellD.setCellValue(record.getR25_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row26
+row = sheet.getRow(25);
+
+// Column 1 - product name
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR26_month() != null) {
+cellC.setCellValue(record.getR26_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR26_ytd() != null) {
+cellD.setCellValue(record.getR26_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row27
+row = sheet.getRow(26);
+
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR27_month() != null) {
+cellC.setCellValue(record.getR27_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR27_ytd() != null) {
+cellD.setCellValue(record.getR27_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+// row29
+row = sheet.getRow(28);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR29_month() != null) {
+cellC.setCellValue(record.getR29_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR29_ytd() != null) {
+cellD.setCellValue(record.getR29_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row30
+row = sheet.getRow(29);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR30_month() != null) {
+cellC.setCellValue(record.getR30_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR30_ytd() != null) {
+cellD.setCellValue(record.getR30_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row31
+row = sheet.getRow(30);
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR31_month() != null) {
+cellC.setCellValue(record.getR31_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR31_ytd() != null) {
+cellD.setCellValue(record.getR31_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// ------------------------- Row 32 -------------------------
+row = sheet.getRow(31);
+// Column 1 - product name
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR32_month() != null) {
+cellC.setCellValue(record.getR32_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR32_ytd() != null) {
+cellD.setCellValue(record.getR32_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// ------------------------- Row 33 -------------------------
+row = sheet.getRow(32);
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR33_month() != null) {
+cellC.setCellValue(record.getR33_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR33_ytd() != null) {
+cellD.setCellValue(record.getR33_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// ------------------------- Row 34 -------------------------
+row = sheet.getRow(33);
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR34_month() != null) {
+cellC.setCellValue(record.getR34_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR34_ytd() != null) {
+cellD.setCellValue(record.getR34_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// ------------------------- Row 35 -------------------------
+row = sheet.getRow(34);
+
+cellC = row.createCell(2);
+if (record.getR35_month() != null) {
+cellC.setCellValue(record.getR35_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+cellD = row.createCell(3);
+if (record.getR35_ytd() != null) {
+cellD.setCellValue(record.getR35_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// ------------------------- Row 36 -------------------------
+row = sheet.getRow(35);
+
+
+cellC = row.createCell(2);
+if (record.getR36_month() != null) {
+cellC.setCellValue(record.getR36_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+cellD = row.createCell(3);
+if (record.getR36_ytd() != null) {
+cellD.setCellValue(record.getR36_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+// ------------------------- Row 38 -------------------------
+row = sheet.getRow(37);
+
+
+
+cellC = row.createCell(2);
+if (record.getR38_month() != null) {
+cellC.setCellValue(record.getR38_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR38_ytd() != null) {
+cellD.setCellValue(record.getR38_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row39
+row = sheet.getRow(38);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR39_month() != null) {
+cellC.setCellValue(record.getR39_month().doubleValue()); // assuming it's BigDecimal or Double
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR39_ytd() != null) {
+cellD.setCellValue(record.getR39_ytd().doubleValue()); // assuming it's BigDecimal or Double
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+
+
+// row42
+row = sheet.getRow(41);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR42_month() != null) {
+cellC.setCellValue(record.getR42_month().doubleValue()); // assuming it's BigDecimal or Double
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR42_ytd() != null) {
+cellD.setCellValue(record.getR42_ytd().doubleValue()); // assuming it's BigDecimal or Double
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row43
+row = sheet.getRow(42);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR43_month() != null) {
+cellC.setCellValue(record.getR43_month().doubleValue()); // assuming it's BigDecimal or Double
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR43_ytd() != null) {
+cellD.setCellValue(record.getR43_ytd().doubleValue()); // assuming it's BigDecimal or Double
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+// row45
+row = sheet.getRow(44);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR45_month() != null) {
+cellC.setCellValue(record.getR45_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR45_ytd() != null) {
+cellD.setCellValue(record.getR45_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row46
+row = sheet.getRow(45);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR46_month() != null) {
+cellC.setCellValue(record.getR46_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR46_ytd() != null) {
+cellD.setCellValue(record.getR46_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row47
+row = sheet.getRow(46);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR47_month() != null) {
+cellC.setCellValue(record.getR47_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR47_ytd() != null) {
+cellD.setCellValue(record.getR47_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+
+
+// row50
+row = sheet.getRow(49);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR50_month() != null) {
+cellC.setCellValue(record.getR50_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR50_ytd() != null) {
+cellD.setCellValue(record.getR50_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row51
+row = sheet.getRow(50);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR51_month() != null) {
+cellC.setCellValue(record.getR51_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR51_ytd() != null) {
+cellD.setCellValue(record.getR51_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row52
+row = sheet.getRow(51);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR52_month() != null) {
+cellC.setCellValue(record.getR52_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR52_ytd() != null) {
+cellD.setCellValue(record.getR52_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row53
+row = sheet.getRow(52);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR53_month() != null) {
+cellC.setCellValue(record.getR53_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR53_ytd() != null) {
+cellD.setCellValue(record.getR53_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row54
+row = sheet.getRow(53);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR54_month() != null) {
+cellC.setCellValue(record.getR54_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR54_ytd() != null) {
+cellD.setCellValue(record.getR54_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row55
+row = sheet.getRow(54);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR55_month() != null) {
+cellC.setCellValue(record.getR55_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR55_ytd() != null) {
+cellD.setCellValue(record.getR55_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+
+
+// row58
+row = sheet.getRow(57);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR58_month() != null) {
+cellC.setCellValue(record.getR58_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR58_ytd() != null) {
+cellD.setCellValue(record.getR58_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row59
+row = sheet.getRow(58);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR59_month() != null) {
+cellC.setCellValue(record.getR59_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR59_ytd() != null) {
+cellD.setCellValue(record.getR59_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row60
+row = sheet.getRow(59);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR60_month() != null) {
+cellC.setCellValue(record.getR60_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR60_ytd() != null) {
+cellD.setCellValue(record.getR60_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+
+// row63
+row = sheet.getRow(62);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR63_month() != null) {
+cellC.setCellValue(record.getR63_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR63_ytd() != null) {
+cellD.setCellValue(record.getR63_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row64
+row = sheet.getRow(63);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR64_month() != null) {
+cellC.setCellValue(record.getR64_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR64_ytd() != null) {
+cellD.setCellValue(record.getR64_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row65
+row = sheet.getRow(64);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR65_month() != null) {
+cellC.setCellValue(record.getR65_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR65_ytd() != null) {
+cellD.setCellValue(record.getR65_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row66
+row = sheet.getRow(65);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR66_month() != null) {
+cellC.setCellValue(record.getR66_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR66_ytd() != null) {
+cellD.setCellValue(record.getR66_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row67
+row = sheet.getRow(66);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR67_month() != null) {
+cellC.setCellValue(record.getR67_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR67_ytd() != null) {
+cellD.setCellValue(record.getR67_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row68
+row = sheet.getRow(67);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR68_month() != null) {
+cellC.setCellValue(record.getR68_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR68_ytd() != null) {
+cellD.setCellValue(record.getR68_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row69
+row = sheet.getRow(68);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR69_month() != null) {
+cellC.setCellValue(record.getR69_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR69_ytd() != null) {
+cellD.setCellValue(record.getR69_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+// row71
+row = sheet.getRow(70);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR71_month() != null) {
+cellC.setCellValue(record.getR71_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR71_ytd() != null) {
+cellD.setCellValue(record.getR71_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row72
+row = sheet.getRow(71);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR72_month() != null) {
+cellC.setCellValue(record.getR72_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR72_ytd() != null) {
+cellD.setCellValue(record.getR72_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row73
+row = sheet.getRow(72);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR73_month() != null) {
+cellC.setCellValue(record.getR73_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR73_ytd() != null) {
+cellD.setCellValue(record.getR73_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row74
+row = sheet.getRow(73);
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR74_month() != null) {
+cellC.setCellValue(record.getR74_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR74_ytd() != null) {
+cellD.setCellValue(record.getR74_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+// row76
+row = sheet.getRow(75);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR76_month() != null) {
+cellC.setCellValue(record.getR76_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR76_ytd() != null) {
+cellD.setCellValue(record.getR76_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row77
+row = sheet.getRow(76);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR77_month() != null) {
+cellC.setCellValue(record.getR77_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR77_ytd() != null) {
+cellD.setCellValue(record.getR77_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row78
+row = sheet.getRow(77);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR78_month() != null) {
+cellC.setCellValue(record.getR78_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR78_ytd() != null) {
+cellD.setCellValue(record.getR78_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row79
+row = sheet.getRow(78);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR79_month() != null) {
+cellC.setCellValue(record.getR79_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR79_ytd() != null) {
+cellD.setCellValue(record.getR79_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row80
+row = sheet.getRow(79);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR80_month() != null) {
+cellC.setCellValue(record.getR80_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR80_ytd() != null) {
+cellD.setCellValue(record.getR80_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+
+
+// row83
+row = sheet.getRow(82);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR83_month() != null) {
+cellC.setCellValue(record.getR83_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR83_ytd() != null) {
+cellD.setCellValue(record.getR83_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+// row85
+row = sheet.getRow(84);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR85_month() != null) {
+cellC.setCellValue(record.getR85_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR85_ytd() != null) {
+cellD.setCellValue(record.getR85_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+}
+workbook.setForceFormulaRecalculation(true);
+} else {
+
+}
+
+// Write the final workbook content to the in-memory stream.
+workbook.write(out);
+
+logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+return out.toByteArray();
+}	
+}
+}
+}
+
+// Normal Email Excel
+public byte[] BRRS_M_SCI_EEmailExcel(String filename, String reportId, String fromdate, String todate,
+String currency, String dtltype, String type, BigDecimal version) throws Exception {
+
+logger.info("Service: Starting Email Excel generation process in memory.");
+
+if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+try {
+// Redirecting to Archival
+return BRRS_M_SCI_EARCHIVALEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+} catch (ParseException e) {
+logger.error("Invalid report date format: {}", fromdate, e);
+throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+}
+} else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+logger.info("Service: Generating RESUB report for version {}", version);
+
+try {
+// ✅ Redirecting to Resub Excel
+return BRRS_M_SCI_EEmailResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+
+} catch (ParseException e) {
+logger.error("Invalid report date format: {}", fromdate, e);
+throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+}
+} 
+else {
+List<M_SCI_E_Summary_Entity> dataList = brrs_m_sci_e_summary_repo.getdatabydateList(dateformat.parse(todate));
+
+if (dataList.isEmpty()) {
+logger.warn("Service: No data found for BRRS_M_SCI_E report. Returning empty result.");
+return new byte[0];
+}
+
+String templateDir = env.getProperty("output.exportpathtemp");
+String templateFileName = filename;
+System.out.println(filename);
+Path templatePath = Paths.get(templateDir, templateFileName);
+System.out.println(templatePath);
+
+logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+if (!Files.exists(templatePath)) {
+// This specific exception will be caught by the controller.
+throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+}
+if (!Files.isReadable(templatePath)) {
+// A specific exception for permission errors.
+throw new SecurityException(
+"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+}
+
+// This try-with-resources block is perfect. It guarantees all resources are
+// closed automatically.
+try (InputStream templateInputStream = Files.newInputStream(templatePath);
+Workbook workbook = WorkbookFactory.create(templateInputStream);
+ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+Sheet sheet = workbook.getSheetAt(0);
+
+// --- Style Definitions ---
+CreationHelper createHelper = workbook.getCreationHelper();
+
+CellStyle dateStyle = workbook.createCellStyle();
+dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+dateStyle.setBorderBottom(BorderStyle.THIN);
+dateStyle.setBorderTop(BorderStyle.THIN);
+dateStyle.setBorderLeft(BorderStyle.THIN);
+dateStyle.setBorderRight(BorderStyle.THIN);
+
+CellStyle textStyle = workbook.createCellStyle();
+textStyle.setBorderBottom(BorderStyle.THIN);
+textStyle.setBorderTop(BorderStyle.THIN);
+textStyle.setBorderLeft(BorderStyle.THIN);
+textStyle.setBorderRight(BorderStyle.THIN);
+
+// Create the font
+Font font = workbook.createFont();
+font.setFontHeightInPoints((short) 8); // size 8
+font.setFontName("Arial");
+
+CellStyle numberStyle = workbook.createCellStyle();
+// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+numberStyle.setBorderBottom(BorderStyle.THIN);
+numberStyle.setBorderTop(BorderStyle.THIN);
+numberStyle.setBorderLeft(BorderStyle.THIN);
+numberStyle.setBorderRight(BorderStyle.THIN);
+numberStyle.setFont(font);
+// --- End of Style Definitions ---
+
+int startRow = 10;
+
+if (!dataList.isEmpty()) {
+for (int i = 0; i < dataList.size(); i++) {
+M_SCI_E_Summary_Entity record = dataList.get(i);
+System.out.println("rownumber=" + startRow + i);
+Row row = sheet.getRow(startRow + i);
+if (row == null) {
+row = sheet.createRow(startRow + i);
+}
+
+
+
+Cell cellC,cellD;   
+
+
+//--R10 1. Total interest and fee income from loans and advances (sum of lines (i) to (viii))
+
+//---R11 (i) Central Government (Government of Botswana)
+
+
+//row11
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR11_month() != null) {
+cellC.setCellValue(record.getR11_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR11_ytd() != null) {
+cellD.setCellValue(record.getR11_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R12 (ii) Local Government
+
+// row12
+row = sheet.getRow(11);
+// Column 1 - product name
+
+
+// Column 2 - cross_reference
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR12_month() != null) {
+cellC.setCellValue(record.getR12_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR12_ytd() != null) {
+cellD.setCellValue(record.getR12_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R13 (iii) Public Non-Financial Corporations
+
+
+//row13
+row = sheet.getRow(12);
+// Column 1 - product name
+
+
+// Column 2 - cross_reference
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR13_month() != null) {
+cellC.setCellValue(record.getR13_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR13_ytd() != null) {
+cellD.setCellValue(record.getR13_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+//---R14 (iv) Other Non-Financial Corporations (Private business enterprises) 
+
+//------R15 a) Agriculture, Forestry, Fishing
+
+//row15
+row = sheet.getRow(14); // Row index for R15 (0-based index)
+
+// Column 1 - product name
+
+
+// Column 2 - cross_reference
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR15_month() != null) {
+cellC.setCellValue(record.getR15_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR15_ytd() != null) {
+cellD.setCellValue(record.getR15_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R16 b) Mining and Quarrying
+// row16
+row = sheet.getRow(15);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR16_month() != null) {
+cellC.setCellValue(record.getR16_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR16_ytd() != null) {
+cellD.setCellValue(record.getR16_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+//------R17 c) Manufacturing
+// row17
+row = sheet.getRow(16);
+
+
+
+cellC = row.createCell(2);
+if (record.getR17_month() != null) {
+cellC.setCellValue(record.getR17_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR17_ytd() != null) {
+cellD.setCellValue(record.getR17_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+//------R18 d) Construction
+
+//row18
+row = sheet.getRow(17);
+
+
+
+cellC = row.createCell(2);
+if (record.getR18_month() != null) {
+cellC.setCellValue(record.getR18_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR18_ytd() != null) {
+cellD.setCellValue(record.getR18_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+//------R19 e) Commercial real estate
+
+// row19
+row = sheet.getRow(18);
+
+
+
+cellC = row.createCell(2);
+if (record.getR19_month() != null) {
+cellC.setCellValue(record.getR19_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR19_ytd() != null) {
+cellD.setCellValue(record.getR19_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R20 f) Electricity
+
+// row20
+row = sheet.getRow(19);
+
+
+
+cellC = row.createCell(2);
+if (record.getR20_month() != null) {
+cellC.setCellValue(record.getR20_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR20_ytd() != null) {
+cellD.setCellValue(record.getR20_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R21 g) Water
+
+//row21
+row = sheet.getRow(20);
+
+
+
+cellC = row.createCell(2);
+if (record.getR21_month() != null) {
+cellC.setCellValue(record.getR21_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR21_ytd() != null) {
+cellD.setCellValue(record.getR21_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+//------R22 h) Telecommunication and Post
+// row22
+row = sheet.getRow(21);
+
+
+
+cellC = row.createCell(2);
+if (record.getR22_month() != null) {
+cellC.setCellValue(record.getR22_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR22_ytd() != null) {
+cellD.setCellValue(record.getR22_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R23 i) Tourism and hotels
+
+//row23
+row = sheet.getRow(22);
+
+
+
+cellC = row.createCell(2);
+if (record.getR23_month() != null) {
+cellC.setCellValue(record.getR23_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR23_ytd() != null) {
+cellD.setCellValue(record.getR23_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R24 j) Transport and Storage
+
+//row24
+row = sheet.getRow(23);
+
+
+
+cellC = row.createCell(2);
+if (record.getR24_month() != null) {
+cellC.setCellValue(record.getR24_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR24_ytd() != null) {
+cellD.setCellValue(record.getR24_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R25 k) Trade, restaurants and bars
+
+// row25
+row = sheet.getRow(24);
+
+
+
+cellC = row.createCell(2);
+if (record.getR25_month() != null) {
+cellC.setCellValue(record.getR25_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR25_ytd() != null) {
+cellD.setCellValue(record.getR25_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+//------R26 l) Business Services
+
+// row26
+row = sheet.getRow(25);
+
+// Column 1 - product name
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR26_month() != null) {
+cellC.setCellValue(record.getR26_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR26_ytd() != null) {
+cellD.setCellValue(record.getR26_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+//------R27 m) Other Community, Social and Personal Services
+// row27
+row = sheet.getRow(26);
+
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR27_month() != null) {
+cellC.setCellValue(record.getR27_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR27_ytd() != null) {
+cellD.setCellValue(record.getR27_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R28 (v) Households (sum of lines (a) to (h))
+//------R29 a) Residential property (owner occupied)
+
+// row29
+row = sheet.getRow(28);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR29_month() != null) {
+cellC.setCellValue(record.getR29_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR29_ytd() != null) {
+cellD.setCellValue(record.getR29_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R30 b) Residential property (Rented)
+
+//row30
+row = sheet.getRow(29);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR30_month() != null) {
+cellC.setCellValue(record.getR30_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR30_ytd() != null) {
+cellD.setCellValue(record.getR30_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//------R31 c) Personal Loans
+
+// row31
+row = sheet.getRow(30);
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR31_month() != null) {
+cellC.setCellValue(record.getR31_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR31_ytd() != null) {
+cellD.setCellValue(record.getR31_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R32 d) Motor Vehicle
+
+// ------------------------- Row 32 -------------------------
+row = sheet.getRow(31);
+// Column 1 - product name
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR32_month() != null) {
+cellC.setCellValue(record.getR32_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR32_ytd() != null) {
+cellD.setCellValue(record.getR32_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R33 e) Household goods
+
+// ------------------------- Row 33 -------------------------
+row = sheet.getRow(32);
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR33_month() != null) {
+cellC.setCellValue(record.getR33_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR33_ytd() != null) {
+cellD.setCellValue(record.getR33_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R34 f) Credit card loans
+// ------------------------- Row 34 -------------------------
+row = sheet.getRow(33);
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR34_month() != null) {
+cellC.setCellValue(record.getR34_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR34_ytd() != null) {
+cellD.setCellValue(record.getR34_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R35 g) Non-Profit Institutions Serving Households
+
+//------------------------- Row 35 -------------------------
+row = sheet.getRow(34);
+
+cellC = row.createCell(2);
+if (record.getR35_month() != null) {
+cellC.setCellValue(record.getR35_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+cellD = row.createCell(3);
+if (record.getR35_ytd() != null) {
+cellD.setCellValue(record.getR35_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R36 h) Other*
+
+// ------------------------- Row 36 -------------------------
+row = sheet.getRow(35);
+
+
+cellC = row.createCell(2);
+if (record.getR36_month() != null) {
+cellC.setCellValue(record.getR36_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+cellD = row.createCell(3);
+if (record.getR36_ytd() != null) {
+cellD.setCellValue(record.getR36_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+//---R37 (vi) Total interest income on balances with other banks
+
+//------R38 a) Domestic banks
+
+// ------------------------- Row 38 -------------------------
+row = sheet.getRow(37);
+
+
+
+cellC = row.createCell(2);
+if (record.getR38_month() != null) {
+cellC.setCellValue(record.getR38_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR38_ytd() != null) {
+cellD.setCellValue(record.getR38_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//------R39 b) Banks abroad (Foreign banks)
+
+//row39
+row = sheet.getRow(38);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR39_month() != null) {
+cellC.setCellValue(record.getR39_month().doubleValue()); // assuming it's BigDecimal or Double
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR39_ytd() != null) {
+cellD.setCellValue(record.getR39_ytd().doubleValue()); // assuming it's BigDecimal or Double
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+//---R40 (vii) Total income on investment and securities
+//------R41 a) Held to maturity
+
+//---------R42 (i) BOBCs
+
+// row42
+row = sheet.getRow(41);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR42_month() != null) {
+cellC.setCellValue(record.getR42_month().doubleValue()); // assuming it's BigDecimal or Double
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR42_ytd() != null) {
+cellD.setCellValue(record.getR42_ytd().doubleValue()); // assuming it's BigDecimal or Double
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---------R43 (ii) Other
+
+// row43
+row = sheet.getRow(42);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR43_month() != null) {
+cellC.setCellValue(record.getR43_month().doubleValue()); // assuming it's BigDecimal or Double
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR43_ytd() != null) {
+cellD.setCellValue(record.getR43_ytd().doubleValue()); // assuming it's BigDecimal or Double
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}	
+
+//------R44 b) Available for Sale
+//---------R45 (i) BOBCs
+
+// row45
+row = sheet.getRow(44);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR45_month() != null) {
+cellC.setCellValue(record.getR45_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR45_ytd() != null) {
+cellD.setCellValue(record.getR45_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+//---------R46 (ii) Other
+
+//row46
+row = sheet.getRow(45);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR46_month() != null) {
+cellC.setCellValue(record.getR46_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR46_ytd() != null) {
+cellD.setCellValue(record.getR46_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R47 (viii) All other interest income*
+
+// row47
+row = sheet.getRow(46);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR47_month() != null) {
+cellC.setCellValue(record.getR47_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR47_ytd() != null) {
+cellD.setCellValue(record.getR47_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+
+//--R48 2. Total interest expenses (sum of lines 2(i) to (iv))
+
+//---R49 (i) Total interest expense on deposit accounts
+
+//------R50 a) Demand
+
+// row50
+row = sheet.getRow(49);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR50_month() != null) {
+cellC.setCellValue(record.getR50_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR50_ytd() != null) {
+cellD.setCellValue(record.getR50_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R51 b) Savings
+
+// row51
+row = sheet.getRow(50);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR51_month() != null) {
+cellC.setCellValue(record.getR51_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR51_ytd() != null) {
+cellD.setCellValue(record.getR51_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R52 c) Time
+
+// row52
+row = sheet.getRow(51);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR52_month() != null) {
+cellC.setCellValue(record.getR52_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR52_ytd() != null) {
+cellD.setCellValue(record.getR52_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R53 (ii) Interest expense on inter-bank loans
+
+// row53
+row = sheet.getRow(52);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR53_month() != null) {
+cellC.setCellValue(record.getR53_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR53_ytd() != null) {
+cellD.setCellValue(record.getR53_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R54 (iii) Interest expense on funds borrowed from Bank of Botswana
+
+// row54
+row = sheet.getRow(53);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR54_month() != null) {
+cellC.setCellValue(record.getR54_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR54_ytd() != null) {
+cellD.setCellValue(record.getR54_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R55 (iv) Interest expense on other borrowed funds*
+
+//row55
+row = sheet.getRow(54);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR55_month() != null) {
+cellC.setCellValue(record.getR55_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR55_ytd() != null) {
+cellD.setCellValue(record.getR55_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+
+//--R56 3. Net interest income (line 1 minus 2)
+//--R57 4. Total Impairments (sum of lines 4(i) to (iii))
+
+//---R58 (i) Impairment of loans and advances – Specific
+
+
+// row58
+row = sheet.getRow(57);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR58_month() != null) {
+cellC.setCellValue(record.getR58_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR58_ytd() != null) {
+cellD.setCellValue(record.getR58_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R59 (ii) Impairment of loans and advances – Portfolio
+
+
+// row59
+row = sheet.getRow(58);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR59_month() != null) {
+cellC.setCellValue(record.getR59_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR59_ytd() != null) {
+cellD.setCellValue(record.getR59_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R60 (iii) Impairment loss on other financial assets
+
+//row60
+row = sheet.getRow(59);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR60_month() != null) {
+cellC.setCellValue(record.getR60_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR60_ytd() != null) {
+cellD.setCellValue(record.getR60_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//--R61 5. Net Interest Income after Provisions (line 3 minus 4)
+//--R62 6. Total non-interest income (sum of lines 6(i) to (viii))
+
+//---R63 (i) Retail banking customer fees
+
+//row63
+row = sheet.getRow(62);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR63_month() != null) {
+cellC.setCellValue(record.getR63_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR63_ytd() != null) {
+cellD.setCellValue(record.getR63_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R64 (ii) Credit related fees
+
+// row64
+row = sheet.getRow(63);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR64_month() != null) {
+cellC.setCellValue(record.getR64_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR64_ytd() != null) {
+cellD.setCellValue(record.getR64_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R65 (iii) Foreign exchange (includes fees and commissions)
+
+
+// row65
+row = sheet.getRow(64);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR65_month() != null) {
+cellC.setCellValue(record.getR65_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR65_ytd() != null) {
+cellD.setCellValue(record.getR65_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R66 (iv) Bond trading
+
+// row66
+row = sheet.getRow(65);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR66_month() != null) {
+cellC.setCellValue(record.getR66_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR66_ytd() != null) {
+cellD.setCellValue(record.getR66_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R67 (v) Dividends
+
+// row67
+row = sheet.getRow(66);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR67_month() != null) {
+cellC.setCellValue(record.getR67_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR67_ytd() != null) {
+cellD.setCellValue(record.getR67_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R68 (vi) Insurance commissions
+
+// row68
+row = sheet.getRow(67);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR68_month() != null) {
+cellC.setCellValue(record.getR68_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR68_ytd() != null) {
+cellD.setCellValue(record.getR68_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R69 (vii) Professional fees (sum of lines (a) to (d))
+
+//------R70 a) Lawyer's fees
+
+
+// row76
+row = sheet.getRow(69);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR76_month() != null) {
+cellC.setCellValue(record.getR76_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR76_ytd() != null) {
+cellD.setCellValue(record.getR76_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//------R71 b) Auditor's fees
+
+// row77
+row = sheet.getRow(70);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR77_month() != null) {
+cellC.setCellValue(record.getR77_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR77_ytd() != null) {
+cellD.setCellValue(record.getR77_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//------R72 c) Management fees
+
+//row78
+row = sheet.getRow(71);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR78_month() != null) {
+cellC.setCellValue(record.getR78_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR78_ytd() != null) {
+cellD.setCellValue(record.getR78_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//------R73 d) Other*
+
+// row79
+row = sheet.getRow(72);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR79_month() != null) {
+cellC.setCellValue(record.getR79_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR79_ytd() != null) {
+cellD.setCellValue(record.getR79_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R74 (viii) All other non-interest income*
+
+// row69
+row = sheet.getRow(73);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR69_month() != null) {
+cellC.setCellValue(record.getR69_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR69_ytd() != null) {
+cellD.setCellValue(record.getR69_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+//--R75 7. Total non-interest expense (sum of lines 7(i) to (vi))
+
+//---R76 (i) Salaries and employee benefits
+
+// row71
+row = sheet.getRow(75);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR71_month() != null) {
+cellC.setCellValue(record.getR71_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR71_ytd() != null) {
+cellD.setCellValue(record.getR71_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R77 (ii) Occupancy (net of rental income)
+
+// row72
+row = sheet.getRow(76);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR72_month() != null) {
+cellC.setCellValue(record.getR72_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR72_ytd() != null) {
+cellD.setCellValue(record.getR72_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R78 (iii) Depreciation
+
+// row73
+row = sheet.getRow(77);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR73_month() != null) {
+cellC.setCellValue(record.getR73_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR73_ytd() != null) {
+cellD.setCellValue(record.getR73_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R79 (iv) Impairment loss on other non-financial assets
+
+// row74
+row = sheet.getRow(78);
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR74_month() != null) {
+cellC.setCellValue(record.getR74_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR74_ytd() != null) {
+cellD.setCellValue(record.getR74_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+
+//---R80 (v) All other non-interest expense*
+
+// row80
+row = sheet.getRow(79);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR80_month() != null) {
+cellC.setCellValue(record.getR80_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR80_ytd() != null) {
+cellD.setCellValue(record.getR80_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+//---R81 (vi) Professional fees (sum of lines (a) to (d))
+
+//row75
+row = sheet.getRow(80);
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR75_month() != null) {
+cellC.setCellValue(record.getR75_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR75_ytd() != null) {
+cellD.setCellValue(record.getR75_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+//------R82 a) Lawyer's fees
+
+// row76
+row = sheet.getRow(81);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR76_month() != null) {
+cellC.setCellValue(record.getR76_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR76_ytd() != null) {
+cellD.setCellValue(record.getR76_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R83 b) Auditor's fees
+
+// row77
+row = sheet.getRow(82);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR77_month() != null) {
+cellC.setCellValue(record.getR77_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR77_ytd() != null) {
+cellD.setCellValue(record.getR77_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//------R84 c) Management fees
+
+// row78
+row = sheet.getRow(83);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR78_month() != null) {
+cellC.setCellValue(record.getR78_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR78_ytd() != null) {
+cellD.setCellValue(record.getR78_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//------R85 d) Other*
+
+// row79
+row = sheet.getRow(84);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR79_month() != null) {
+cellC.setCellValue(record.getR79_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR79_ytd() != null) {
+cellD.setCellValue(record.getR79_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//--R87 8. Net non-interest income (line 6 minus 7)
+//--R88 9. Income before taxation (line 5 plus 8)
+
+//--R89 10. Taxation
+
+//row83
+row = sheet.getRow(88);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR83_month() != null) {
+cellC.setCellValue(record.getR83_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR83_ytd() != null) {
+cellD.setCellValue(record.getR83_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//--R90 11. Income (loss) after taxes (line 9 minus 10)
+
+//--R91 12. Provision for dividends
+
+// row85
+row = sheet.getRow(90);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR85_month() != null) {
+cellC.setCellValue(record.getR85_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR85_ytd() != null) {
+cellD.setCellValue(record.getR85_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+}
+workbook.setForceFormulaRecalculation(true);
+} else {
+
+}
+
+// Write the final workbook content to the in-memory stream.
+workbook.write(out);
+
+logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+return out.toByteArray();
+}
+}
+}
+
+
+
+// Archival format excel
+public byte[] getExcelM_SCI_EARCHIVAL(String filename, String reportId, String fromdate, String todate,
+String currency, String dtltype, String type,String format, BigDecimal version) throws Exception {
+
+logger.info("Service: Starting Excel generation process in memory in Archival.");
+
+if ("email".equalsIgnoreCase(format) && version != null) {
+try {
+// Redirecting to Archival
+return BRRS_M_SCI_EARCHIVALEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+} catch (ParseException e) {
+logger.error("Invalid report date format: {}", fromdate, e);
+throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+}
+} 
+
+List<M_SCI_E_Archival_Summary_Entity> dataList = brrs_m_sci_e_Archival_summary_repo
+.getdatabydateListarchival(dateformat.parse(todate), version);
+
+if (dataList.isEmpty()) {
+logger.warn("Service: No data found for M_SCI_E report. Returning empty result.");
+return new byte[0];
+}
+
+String templateDir = env.getProperty("output.exportpathtemp");
+String templateFileName = filename;
+System.out.println(filename);
+Path templatePath = Paths.get(templateDir, templateFileName);
+System.out.println(templatePath);
+
+logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+if (!Files.exists(templatePath)) {
+//This specific exception will be caught by the controller.
+throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+}
+if (!Files.isReadable(templatePath)) {
+//A specific exception for permission errors.
+throw new SecurityException(
+"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+}
+
+//This try-with-resources block is perfect. It guarantees all resources are
+//closed automatically.
+try (InputStream templateInputStream = Files.newInputStream(templatePath);
+Workbook workbook = WorkbookFactory.create(templateInputStream);
+ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+Sheet sheet = workbook.getSheetAt(0);
+
+//--- Style Definitions ---
+CreationHelper createHelper = workbook.getCreationHelper();
+
+CellStyle dateStyle = workbook.createCellStyle();
+dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+dateStyle.setBorderBottom(BorderStyle.THIN);
+dateStyle.setBorderTop(BorderStyle.THIN);
+dateStyle.setBorderLeft(BorderStyle.THIN);
+dateStyle.setBorderRight(BorderStyle.THIN);
+
+CellStyle textStyle = workbook.createCellStyle();
+textStyle.setBorderBottom(BorderStyle.THIN);
+textStyle.setBorderTop(BorderStyle.THIN);
+textStyle.setBorderLeft(BorderStyle.THIN);
+textStyle.setBorderRight(BorderStyle.THIN);
+
+//Create the font
+Font font = workbook.createFont();
+font.setFontHeightInPoints((short) 8); // size 8
+font.setFontName("Arial");
+
+CellStyle numberStyle = workbook.createCellStyle();
+//numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+numberStyle.setBorderBottom(BorderStyle.THIN);
+numberStyle.setBorderTop(BorderStyle.THIN);
+numberStyle.setBorderLeft(BorderStyle.THIN);
+numberStyle.setBorderRight(BorderStyle.THIN);
+numberStyle.setFont(font);
+//--- End of Style Definitions ---
+
+int startRow = 10;
+
+if (!dataList.isEmpty()) {
+for (int i = 0; i < dataList.size(); i++) {
+M_SCI_E_Archival_Summary_Entity record = dataList.get(i);
+System.out.println("rownumber=" + startRow + i);
+Row row = sheet.getRow(startRow + i);
+if (row == null) {
+row = sheet.createRow(startRow + i);
+}
+
+Cell cellC,cellD;    
+
+// row11
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR11_month() != null) {
+cellC.setCellValue(record.getR11_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR11_ytd() != null) {
+cellD.setCellValue(record.getR11_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row12
+row = sheet.getRow(11);
+// Column 1 - product name
+
+
+// Column 2 - cross_reference
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR12_month() != null) {
+cellC.setCellValue(record.getR12_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR12_ytd() != null) {
+cellD.setCellValue(record.getR12_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row13
+row = sheet.getRow(12);
+// Column 1 - product name
+
+
+// Column 2 - cross_reference
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR13_month() != null) {
+cellC.setCellValue(record.getR13_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR13_ytd() != null) {
+cellD.setCellValue(record.getR13_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+// row15
+row = sheet.getRow(14); // Row index for R15 (0-based index)
+
+// Column 1 - product name
+
+
+// Column 2 - cross_reference
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR15_month() != null) {
+cellC.setCellValue(record.getR15_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR15_ytd() != null) {
+cellD.setCellValue(record.getR15_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row16
+row = sheet.getRow(15);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR16_month() != null) {
+cellC.setCellValue(record.getR16_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR16_ytd() != null) {
+cellD.setCellValue(record.getR16_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row17
+row = sheet.getRow(16);
+
+
+
+cellC = row.createCell(2);
+if (record.getR17_month() != null) {
+cellC.setCellValue(record.getR17_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR17_ytd() != null) {
+cellD.setCellValue(record.getR17_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row18
+row = sheet.getRow(17);
+
+
+
+cellC = row.createCell(2);
+if (record.getR18_month() != null) {
+cellC.setCellValue(record.getR18_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR18_ytd() != null) {
+cellD.setCellValue(record.getR18_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row19
+row = sheet.getRow(18);
+
+
+
+cellC = row.createCell(2);
+if (record.getR19_month() != null) {
+cellC.setCellValue(record.getR19_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR19_ytd() != null) {
+cellD.setCellValue(record.getR19_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row20
+row = sheet.getRow(19);
+
+
+
+cellC = row.createCell(2);
+if (record.getR20_month() != null) {
+cellC.setCellValue(record.getR20_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR20_ytd() != null) {
+cellD.setCellValue(record.getR20_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row21
+row = sheet.getRow(20);
+
+
+
+cellC = row.createCell(2);
+if (record.getR21_month() != null) {
+cellC.setCellValue(record.getR21_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR21_ytd() != null) {
+cellD.setCellValue(record.getR21_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row22
+row = sheet.getRow(21);
+
+
+
+cellC = row.createCell(2);
+if (record.getR22_month() != null) {
+cellC.setCellValue(record.getR22_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR22_ytd() != null) {
+cellD.setCellValue(record.getR22_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row23
+row = sheet.getRow(22);
+
+
+
+cellC = row.createCell(2);
+if (record.getR23_month() != null) {
+cellC.setCellValue(record.getR23_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR23_ytd() != null) {
+cellD.setCellValue(record.getR23_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row24
+row = sheet.getRow(23);
+
+
+
+cellC = row.createCell(2);
+if (record.getR24_month() != null) {
+cellC.setCellValue(record.getR24_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR24_ytd() != null) {
+cellD.setCellValue(record.getR24_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row25
+row = sheet.getRow(24);
+
+
+
+cellC = row.createCell(2);
+if (record.getR25_month() != null) {
+cellC.setCellValue(record.getR25_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR25_ytd() != null) {
+cellD.setCellValue(record.getR25_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row26
+row = sheet.getRow(25);
+
+// Column 1 - product name
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR26_month() != null) {
+cellC.setCellValue(record.getR26_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR26_ytd() != null) {
+cellD.setCellValue(record.getR26_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row27
+row = sheet.getRow(26);
+
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR27_month() != null) {
+cellC.setCellValue(record.getR27_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR27_ytd() != null) {
+cellD.setCellValue(record.getR27_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+// row29
+row = sheet.getRow(28);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR29_month() != null) {
+cellC.setCellValue(record.getR29_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR29_ytd() != null) {
+cellD.setCellValue(record.getR29_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row30
+row = sheet.getRow(29);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR30_month() != null) {
+cellC.setCellValue(record.getR30_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR30_ytd() != null) {
+cellD.setCellValue(record.getR30_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row31
+row = sheet.getRow(30);
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR31_month() != null) {
+cellC.setCellValue(record.getR31_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR31_ytd() != null) {
+cellD.setCellValue(record.getR31_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// ------------------------- Row 32 -------------------------
+row = sheet.getRow(31);
+// Column 1 - product name
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR32_month() != null) {
+cellC.setCellValue(record.getR32_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR32_ytd() != null) {
+cellD.setCellValue(record.getR32_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// ------------------------- Row 33 -------------------------
+row = sheet.getRow(32);
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR33_month() != null) {
+cellC.setCellValue(record.getR33_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR33_ytd() != null) {
+cellD.setCellValue(record.getR33_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// ------------------------- Row 34 -------------------------
+row = sheet.getRow(33);
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR34_month() != null) {
+cellC.setCellValue(record.getR34_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR34_ytd() != null) {
+cellD.setCellValue(record.getR34_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// ------------------------- Row 35 -------------------------
+row = sheet.getRow(34);
+
+cellC = row.createCell(2);
+if (record.getR35_month() != null) {
+cellC.setCellValue(record.getR35_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+cellD = row.createCell(3);
+if (record.getR35_ytd() != null) {
+cellD.setCellValue(record.getR35_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// ------------------------- Row 36 -------------------------
+row = sheet.getRow(35);
+
+
+cellC = row.createCell(2);
+if (record.getR36_month() != null) {
+cellC.setCellValue(record.getR36_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+cellD = row.createCell(3);
+if (record.getR36_ytd() != null) {
+cellD.setCellValue(record.getR36_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+// ------------------------- Row 38 -------------------------
+row = sheet.getRow(37);
+
+
+
+cellC = row.createCell(2);
+if (record.getR38_month() != null) {
+cellC.setCellValue(record.getR38_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR38_ytd() != null) {
+cellD.setCellValue(record.getR38_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row39
+row = sheet.getRow(38);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR39_month() != null) {
+cellC.setCellValue(record.getR39_month().doubleValue()); // assuming it's BigDecimal or Double
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR39_ytd() != null) {
+cellD.setCellValue(record.getR39_ytd().doubleValue()); // assuming it's BigDecimal or Double
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+
+
+// row42
+row = sheet.getRow(41);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR42_month() != null) {
+cellC.setCellValue(record.getR42_month().doubleValue()); // assuming it's BigDecimal or Double
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR42_ytd() != null) {
+cellD.setCellValue(record.getR42_ytd().doubleValue()); // assuming it's BigDecimal or Double
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row43
+row = sheet.getRow(42);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR43_month() != null) {
+cellC.setCellValue(record.getR43_month().doubleValue()); // assuming it's BigDecimal or Double
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR43_ytd() != null) {
+cellD.setCellValue(record.getR43_ytd().doubleValue()); // assuming it's BigDecimal or Double
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+// row45
+row = sheet.getRow(44);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR45_month() != null) {
+cellC.setCellValue(record.getR45_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR45_ytd() != null) {
+cellD.setCellValue(record.getR45_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row46
+row = sheet.getRow(45);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR46_month() != null) {
+cellC.setCellValue(record.getR46_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR46_ytd() != null) {
+cellD.setCellValue(record.getR46_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row47
+row = sheet.getRow(46);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR47_month() != null) {
+cellC.setCellValue(record.getR47_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR47_ytd() != null) {
+cellD.setCellValue(record.getR47_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+
+
+// row50
+row = sheet.getRow(49);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR50_month() != null) {
+cellC.setCellValue(record.getR50_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR50_ytd() != null) {
+cellD.setCellValue(record.getR50_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row51
+row = sheet.getRow(50);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR51_month() != null) {
+cellC.setCellValue(record.getR51_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR51_ytd() != null) {
+cellD.setCellValue(record.getR51_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row52
+row = sheet.getRow(51);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR52_month() != null) {
+cellC.setCellValue(record.getR52_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR52_ytd() != null) {
+cellD.setCellValue(record.getR52_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row53
+row = sheet.getRow(52);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR53_month() != null) {
+cellC.setCellValue(record.getR53_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR53_ytd() != null) {
+cellD.setCellValue(record.getR53_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row54
+row = sheet.getRow(53);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR54_month() != null) {
+cellC.setCellValue(record.getR54_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR54_ytd() != null) {
+cellD.setCellValue(record.getR54_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row55
+row = sheet.getRow(54);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR55_month() != null) {
+cellC.setCellValue(record.getR55_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR55_ytd() != null) {
+cellD.setCellValue(record.getR55_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+
+
+// row58
+row = sheet.getRow(57);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR58_month() != null) {
+cellC.setCellValue(record.getR58_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR58_ytd() != null) {
+cellD.setCellValue(record.getR58_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row59
+row = sheet.getRow(58);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR59_month() != null) {
+cellC.setCellValue(record.getR59_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR59_ytd() != null) {
+cellD.setCellValue(record.getR59_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row60
+row = sheet.getRow(59);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR60_month() != null) {
+cellC.setCellValue(record.getR60_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR60_ytd() != null) {
+cellD.setCellValue(record.getR60_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+
+// row63
+row = sheet.getRow(62);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR63_month() != null) {
+cellC.setCellValue(record.getR63_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR63_ytd() != null) {
+cellD.setCellValue(record.getR63_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row64
+row = sheet.getRow(63);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR64_month() != null) {
+cellC.setCellValue(record.getR64_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR64_ytd() != null) {
+cellD.setCellValue(record.getR64_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row65
+row = sheet.getRow(64);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR65_month() != null) {
+cellC.setCellValue(record.getR65_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR65_ytd() != null) {
+cellD.setCellValue(record.getR65_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row66
+row = sheet.getRow(65);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR66_month() != null) {
+cellC.setCellValue(record.getR66_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR66_ytd() != null) {
+cellD.setCellValue(record.getR66_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row67
+row = sheet.getRow(66);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR67_month() != null) {
+cellC.setCellValue(record.getR67_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR67_ytd() != null) {
+cellD.setCellValue(record.getR67_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row68
+row = sheet.getRow(67);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR68_month() != null) {
+cellC.setCellValue(record.getR68_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR68_ytd() != null) {
+cellD.setCellValue(record.getR68_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row69
+row = sheet.getRow(68);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR69_month() != null) {
+cellC.setCellValue(record.getR69_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR69_ytd() != null) {
+cellD.setCellValue(record.getR69_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+// row71
+row = sheet.getRow(70);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR71_month() != null) {
+cellC.setCellValue(record.getR71_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR71_ytd() != null) {
+cellD.setCellValue(record.getR71_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row72
+row = sheet.getRow(71);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR72_month() != null) {
+cellC.setCellValue(record.getR72_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR72_ytd() != null) {
+cellD.setCellValue(record.getR72_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row73
+row = sheet.getRow(72);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR73_month() != null) {
+cellC.setCellValue(record.getR73_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR73_ytd() != null) {
+cellD.setCellValue(record.getR73_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row74
+row = sheet.getRow(73);
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR74_month() != null) {
+cellC.setCellValue(record.getR74_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR74_ytd() != null) {
+cellD.setCellValue(record.getR74_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+// row76
+row = sheet.getRow(75);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR76_month() != null) {
+cellC.setCellValue(record.getR76_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR76_ytd() != null) {
+cellD.setCellValue(record.getR76_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row77
+row = sheet.getRow(76);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR77_month() != null) {
+cellC.setCellValue(record.getR77_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR77_ytd() != null) {
+cellD.setCellValue(record.getR77_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row78
+row = sheet.getRow(77);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR78_month() != null) {
+cellC.setCellValue(record.getR78_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR78_ytd() != null) {
+cellD.setCellValue(record.getR78_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row79
+row = sheet.getRow(78);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR79_month() != null) {
+cellC.setCellValue(record.getR79_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR79_ytd() != null) {
+cellD.setCellValue(record.getR79_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row80
+row = sheet.getRow(79);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR80_month() != null) {
+cellC.setCellValue(record.getR80_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR80_ytd() != null) {
+cellD.setCellValue(record.getR80_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+
+
+// row83
+row = sheet.getRow(82);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR83_month() != null) {
+cellC.setCellValue(record.getR83_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR83_ytd() != null) {
+cellD.setCellValue(record.getR83_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+// row85
+row = sheet.getRow(84);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR85_month() != null) {
+cellC.setCellValue(record.getR85_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR85_ytd() != null) {
+cellD.setCellValue(record.getR85_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+}
+
+workbook.setForceFormulaRecalculation(true);
+} else {
+
+}
+
+//Write the final workbook content to the in-memory stream.
+workbook.write(out);
+
+logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+return out.toByteArray();
+}
+
+}
+
+// Archival Email Excel
+public byte[] BRRS_M_SCI_EARCHIVALEmailExcel(String filename, String reportId, String fromdate, String todate,
+String currency, String dtltype, String type, BigDecimal version) throws Exception {
+
+logger.info("Service: Starting Archival Email Excel generation process in memory.");
+
+List<M_SCI_E_Archival_Summary_Entity> dataList = brrs_m_sci_e_Archival_summary_repo
+.getdatabydateListarchival(dateformat.parse(todate), version);
+
+if (dataList.isEmpty()) {
+logger.warn("Service: No data found for BRRS_M_SCI_E report. Returning empty result.");
+return new byte[0];
+}
+
+String templateDir = env.getProperty("output.exportpathtemp");
+String templateFileName = filename;
+System.out.println(filename);
+Path templatePath = Paths.get(templateDir, templateFileName);
+System.out.println(templatePath);
+
+logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+if (!Files.exists(templatePath)) {
+// This specific exception will be caught by the controller.
+throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+}
+if (!Files.isReadable(templatePath)) {
+// A specific exception for permission errors.
+throw new SecurityException(
+"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+}
+
+// This try-with-resources block is perfect. It guarantees all resources are
+// closed automatically.
+try (InputStream templateInputStream = Files.newInputStream(templatePath);
+Workbook workbook = WorkbookFactory.create(templateInputStream);
+ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+Sheet sheet = workbook.getSheetAt(0);
+
+// --- Style Definitions ---
+CreationHelper createHelper = workbook.getCreationHelper();
+
+CellStyle dateStyle = workbook.createCellStyle();
+dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+dateStyle.setBorderBottom(BorderStyle.THIN);
+dateStyle.setBorderTop(BorderStyle.THIN);
+dateStyle.setBorderLeft(BorderStyle.THIN);
+dateStyle.setBorderRight(BorderStyle.THIN);
+
+CellStyle textStyle = workbook.createCellStyle();
+textStyle.setBorderBottom(BorderStyle.THIN);
+textStyle.setBorderTop(BorderStyle.THIN);
+textStyle.setBorderLeft(BorderStyle.THIN);
+textStyle.setBorderRight(BorderStyle.THIN);
+
+// Create the font
+Font font = workbook.createFont();
+font.setFontHeightInPoints((short) 8); // size 8
+font.setFontName("Arial");
+
+CellStyle numberStyle = workbook.createCellStyle();
+// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+numberStyle.setBorderBottom(BorderStyle.THIN);
+numberStyle.setBorderTop(BorderStyle.THIN);
+numberStyle.setBorderLeft(BorderStyle.THIN);
+numberStyle.setBorderRight(BorderStyle.THIN);
+numberStyle.setFont(font);
+// --- End of Style Definitions ---
+
+int startRow = 10;
+
+if (!dataList.isEmpty()) {
+for (int i = 0; i < dataList.size(); i++) {
+M_SCI_E_Archival_Summary_Entity record = dataList.get(i);
+System.out.println("rownumber=" + startRow + i);
+Row row = sheet.getRow(startRow + i);
+if (row == null) {
+row = sheet.createRow(startRow + i);
+}
+
+
+
+Cell cellC,cellD;   
+
+
+//--R10 1. Total interest and fee income from loans and advances (sum of lines (i) to (viii))
+
+//---R11 (i) Central Government (Government of Botswana)
+
+
+//row11
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR11_month() != null) {
+cellC.setCellValue(record.getR11_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR11_ytd() != null) {
+cellD.setCellValue(record.getR11_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R12 (ii) Local Government
+
+// row12
+row = sheet.getRow(11);
+// Column 1 - product name
+
+
+// Column 2 - cross_reference
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR12_month() != null) {
+cellC.setCellValue(record.getR12_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR12_ytd() != null) {
+cellD.setCellValue(record.getR12_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R13 (iii) Public Non-Financial Corporations
+
+
+//row13
+row = sheet.getRow(12);
+// Column 1 - product name
+
+
+// Column 2 - cross_reference
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR13_month() != null) {
+cellC.setCellValue(record.getR13_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR13_ytd() != null) {
+cellD.setCellValue(record.getR13_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+//---R14 (iv) Other Non-Financial Corporations (Private business enterprises) 
+
+//------R15 a) Agriculture, Forestry, Fishing
+
+//row15
+row = sheet.getRow(14); // Row index for R15 (0-based index)
+
+// Column 1 - product name
+
+
+// Column 2 - cross_reference
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR15_month() != null) {
+cellC.setCellValue(record.getR15_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR15_ytd() != null) {
+cellD.setCellValue(record.getR15_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R16 b) Mining and Quarrying
+// row16
+row = sheet.getRow(15);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR16_month() != null) {
+cellC.setCellValue(record.getR16_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR16_ytd() != null) {
+cellD.setCellValue(record.getR16_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+//------R17 c) Manufacturing
+// row17
+row = sheet.getRow(16);
+
+
+
+cellC = row.createCell(2);
+if (record.getR17_month() != null) {
+cellC.setCellValue(record.getR17_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR17_ytd() != null) {
+cellD.setCellValue(record.getR17_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+//------R18 d) Construction
+
+//row18
+row = sheet.getRow(17);
+
+
+
+cellC = row.createCell(2);
+if (record.getR18_month() != null) {
+cellC.setCellValue(record.getR18_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR18_ytd() != null) {
+cellD.setCellValue(record.getR18_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+//------R19 e) Commercial real estate
+
+// row19
+row = sheet.getRow(18);
+
+
+
+cellC = row.createCell(2);
+if (record.getR19_month() != null) {
+cellC.setCellValue(record.getR19_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR19_ytd() != null) {
+cellD.setCellValue(record.getR19_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R20 f) Electricity
+
+// row20
+row = sheet.getRow(19);
+
+
+
+cellC = row.createCell(2);
+if (record.getR20_month() != null) {
+cellC.setCellValue(record.getR20_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR20_ytd() != null) {
+cellD.setCellValue(record.getR20_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R21 g) Water
+
+//row21
+row = sheet.getRow(20);
+
+
+
+cellC = row.createCell(2);
+if (record.getR21_month() != null) {
+cellC.setCellValue(record.getR21_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR21_ytd() != null) {
+cellD.setCellValue(record.getR21_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+//------R22 h) Telecommunication and Post
+// row22
+row = sheet.getRow(21);
+
+
+
+cellC = row.createCell(2);
+if (record.getR22_month() != null) {
+cellC.setCellValue(record.getR22_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR22_ytd() != null) {
+cellD.setCellValue(record.getR22_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R23 i) Tourism and hotels
+
+//row23
+row = sheet.getRow(22);
+
+
+
+cellC = row.createCell(2);
+if (record.getR23_month() != null) {
+cellC.setCellValue(record.getR23_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR23_ytd() != null) {
+cellD.setCellValue(record.getR23_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R24 j) Transport and Storage
+
+//row24
+row = sheet.getRow(23);
+
+
+
+cellC = row.createCell(2);
+if (record.getR24_month() != null) {
+cellC.setCellValue(record.getR24_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR24_ytd() != null) {
+cellD.setCellValue(record.getR24_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R25 k) Trade, restaurants and bars
+
+// row25
+row = sheet.getRow(24);
+
+
+
+cellC = row.createCell(2);
+if (record.getR25_month() != null) {
+cellC.setCellValue(record.getR25_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR25_ytd() != null) {
+cellD.setCellValue(record.getR25_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+//------R26 l) Business Services
+
+// row26
+row = sheet.getRow(25);
+
+// Column 1 - product name
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR26_month() != null) {
+cellC.setCellValue(record.getR26_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR26_ytd() != null) {
+cellD.setCellValue(record.getR26_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+//------R27 m) Other Community, Social and Personal Services
+// row27
+row = sheet.getRow(26);
+
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR27_month() != null) {
+cellC.setCellValue(record.getR27_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR27_ytd() != null) {
+cellD.setCellValue(record.getR27_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R28 (v) Households (sum of lines (a) to (h))
+//------R29 a) Residential property (owner occupied)
+
+// row29
+row = sheet.getRow(28);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR29_month() != null) {
+cellC.setCellValue(record.getR29_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR29_ytd() != null) {
+cellD.setCellValue(record.getR29_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R30 b) Residential property (Rented)
+
+//row30
+row = sheet.getRow(29);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR30_month() != null) {
+cellC.setCellValue(record.getR30_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR30_ytd() != null) {
+cellD.setCellValue(record.getR30_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//------R31 c) Personal Loans
+
+// row31
+row = sheet.getRow(30);
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR31_month() != null) {
+cellC.setCellValue(record.getR31_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR31_ytd() != null) {
+cellD.setCellValue(record.getR31_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R32 d) Motor Vehicle
+
+// ------------------------- Row 32 -------------------------
+row = sheet.getRow(31);
+// Column 1 - product name
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR32_month() != null) {
+cellC.setCellValue(record.getR32_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR32_ytd() != null) {
+cellD.setCellValue(record.getR32_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R33 e) Household goods
+
+// ------------------------- Row 33 -------------------------
+row = sheet.getRow(32);
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR33_month() != null) {
+cellC.setCellValue(record.getR33_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR33_ytd() != null) {
+cellD.setCellValue(record.getR33_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R34 f) Credit card loans
+// ------------------------- Row 34 -------------------------
+row = sheet.getRow(33);
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR34_month() != null) {
+cellC.setCellValue(record.getR34_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR34_ytd() != null) {
+cellD.setCellValue(record.getR34_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R35 g) Non-Profit Institutions Serving Households
+
+//------------------------- Row 35 -------------------------
+row = sheet.getRow(34);
+
+cellC = row.createCell(2);
+if (record.getR35_month() != null) {
+cellC.setCellValue(record.getR35_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+cellD = row.createCell(3);
+if (record.getR35_ytd() != null) {
+cellD.setCellValue(record.getR35_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R36 h) Other*
+
+// ------------------------- Row 36 -------------------------
+row = sheet.getRow(35);
+
+
+cellC = row.createCell(2);
+if (record.getR36_month() != null) {
+cellC.setCellValue(record.getR36_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+cellD = row.createCell(3);
+if (record.getR36_ytd() != null) {
+cellD.setCellValue(record.getR36_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+//---R37 (vi) Total interest income on balances with other banks
+
+//------R38 a) Domestic banks
+
+// ------------------------- Row 38 -------------------------
+row = sheet.getRow(37);
+
+
+
+cellC = row.createCell(2);
+if (record.getR38_month() != null) {
+cellC.setCellValue(record.getR38_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR38_ytd() != null) {
+cellD.setCellValue(record.getR38_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//------R39 b) Banks abroad (Foreign banks)
+
+//row39
+row = sheet.getRow(38);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR39_month() != null) {
+cellC.setCellValue(record.getR39_month().doubleValue()); // assuming it's BigDecimal or Double
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR39_ytd() != null) {
+cellD.setCellValue(record.getR39_ytd().doubleValue()); // assuming it's BigDecimal or Double
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+//---R40 (vii) Total income on investment and securities
+//------R41 a) Held to maturity
+
+//---------R42 (i) BOBCs
+
+// row42
+row = sheet.getRow(41);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR42_month() != null) {
+cellC.setCellValue(record.getR42_month().doubleValue()); // assuming it's BigDecimal or Double
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR42_ytd() != null) {
+cellD.setCellValue(record.getR42_ytd().doubleValue()); // assuming it's BigDecimal or Double
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---------R43 (ii) Other
+
+// row43
+row = sheet.getRow(42);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR43_month() != null) {
+cellC.setCellValue(record.getR43_month().doubleValue()); // assuming it's BigDecimal or Double
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR43_ytd() != null) {
+cellD.setCellValue(record.getR43_ytd().doubleValue()); // assuming it's BigDecimal or Double
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}	
+
+//------R44 b) Available for Sale
+//---------R45 (i) BOBCs
+
+// row45
+row = sheet.getRow(44);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR45_month() != null) {
+cellC.setCellValue(record.getR45_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR45_ytd() != null) {
+cellD.setCellValue(record.getR45_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+//---------R46 (ii) Other
+
+//row46
+row = sheet.getRow(45);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR46_month() != null) {
+cellC.setCellValue(record.getR46_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR46_ytd() != null) {
+cellD.setCellValue(record.getR46_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R47 (viii) All other interest income*
+
+// row47
+row = sheet.getRow(46);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR47_month() != null) {
+cellC.setCellValue(record.getR47_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR47_ytd() != null) {
+cellD.setCellValue(record.getR47_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+
+//--R48 2. Total interest expenses (sum of lines 2(i) to (iv))
+
+//---R49 (i) Total interest expense on deposit accounts
+
+//------R50 a) Demand
+
+// row50
+row = sheet.getRow(49);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR50_month() != null) {
+cellC.setCellValue(record.getR50_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR50_ytd() != null) {
+cellD.setCellValue(record.getR50_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R51 b) Savings
+
+// row51
+row = sheet.getRow(50);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR51_month() != null) {
+cellC.setCellValue(record.getR51_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR51_ytd() != null) {
+cellD.setCellValue(record.getR51_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R52 c) Time
+
+// row52
+row = sheet.getRow(51);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR52_month() != null) {
+cellC.setCellValue(record.getR52_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR52_ytd() != null) {
+cellD.setCellValue(record.getR52_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R53 (ii) Interest expense on inter-bank loans
+
+// row53
+row = sheet.getRow(52);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR53_month() != null) {
+cellC.setCellValue(record.getR53_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR53_ytd() != null) {
+cellD.setCellValue(record.getR53_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R54 (iii) Interest expense on funds borrowed from Bank of Botswana
+
+// row54
+row = sheet.getRow(53);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR54_month() != null) {
+cellC.setCellValue(record.getR54_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR54_ytd() != null) {
+cellD.setCellValue(record.getR54_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R55 (iv) Interest expense on other borrowed funds*
+
+//row55
+row = sheet.getRow(54);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR55_month() != null) {
+cellC.setCellValue(record.getR55_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR55_ytd() != null) {
+cellD.setCellValue(record.getR55_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+
+//--R56 3. Net interest income (line 1 minus 2)
+//--R57 4. Total Impairments (sum of lines 4(i) to (iii))
+
+//---R58 (i) Impairment of loans and advances – Specific
+
+
+// row58
+row = sheet.getRow(57);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR58_month() != null) {
+cellC.setCellValue(record.getR58_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR58_ytd() != null) {
+cellD.setCellValue(record.getR58_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R59 (ii) Impairment of loans and advances – Portfolio
+
+
+// row59
+row = sheet.getRow(58);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR59_month() != null) {
+cellC.setCellValue(record.getR59_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR59_ytd() != null) {
+cellD.setCellValue(record.getR59_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R60 (iii) Impairment loss on other financial assets
+
+//row60
+row = sheet.getRow(59);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR60_month() != null) {
+cellC.setCellValue(record.getR60_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR60_ytd() != null) {
+cellD.setCellValue(record.getR60_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//--R61 5. Net Interest Income after Provisions (line 3 minus 4)
+//--R62 6. Total non-interest income (sum of lines 6(i) to (viii))
+
+//---R63 (i) Retail banking customer fees
+
+//row63
+row = sheet.getRow(62);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR63_month() != null) {
+cellC.setCellValue(record.getR63_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR63_ytd() != null) {
+cellD.setCellValue(record.getR63_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R64 (ii) Credit related fees
+
+// row64
+row = sheet.getRow(63);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR64_month() != null) {
+cellC.setCellValue(record.getR64_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR64_ytd() != null) {
+cellD.setCellValue(record.getR64_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R65 (iii) Foreign exchange (includes fees and commissions)
+
+
+// row65
+row = sheet.getRow(64);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR65_month() != null) {
+cellC.setCellValue(record.getR65_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR65_ytd() != null) {
+cellD.setCellValue(record.getR65_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R66 (iv) Bond trading
+
+// row66
+row = sheet.getRow(65);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR66_month() != null) {
+cellC.setCellValue(record.getR66_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR66_ytd() != null) {
+cellD.setCellValue(record.getR66_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R67 (v) Dividends
+
+// row67
+row = sheet.getRow(66);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR67_month() != null) {
+cellC.setCellValue(record.getR67_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR67_ytd() != null) {
+cellD.setCellValue(record.getR67_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R68 (vi) Insurance commissions
+
+// row68
+row = sheet.getRow(67);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR68_month() != null) {
+cellC.setCellValue(record.getR68_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR68_ytd() != null) {
+cellD.setCellValue(record.getR68_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R69 (vii) Professional fees (sum of lines (a) to (d))
+
+//------R70 a) Lawyer's fees
+
+
+// row76
+row = sheet.getRow(69);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR76_month() != null) {
+cellC.setCellValue(record.getR76_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR76_ytd() != null) {
+cellD.setCellValue(record.getR76_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//------R71 b) Auditor's fees
+
+// row77
+row = sheet.getRow(70);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR77_month() != null) {
+cellC.setCellValue(record.getR77_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR77_ytd() != null) {
+cellD.setCellValue(record.getR77_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//------R72 c) Management fees
+
+//row78
+row = sheet.getRow(71);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR78_month() != null) {
+cellC.setCellValue(record.getR78_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR78_ytd() != null) {
+cellD.setCellValue(record.getR78_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//------R73 d) Other*
+
+// row79
+row = sheet.getRow(72);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR79_month() != null) {
+cellC.setCellValue(record.getR79_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR79_ytd() != null) {
+cellD.setCellValue(record.getR79_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R74 (viii) All other non-interest income*
+
+// row69
+row = sheet.getRow(73);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR69_month() != null) {
+cellC.setCellValue(record.getR69_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR69_ytd() != null) {
+cellD.setCellValue(record.getR69_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+//--R75 7. Total non-interest expense (sum of lines 7(i) to (vi))
+
+//---R76 (i) Salaries and employee benefits
+
+// row71
+row = sheet.getRow(75);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR71_month() != null) {
+cellC.setCellValue(record.getR71_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR71_ytd() != null) {
+cellD.setCellValue(record.getR71_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R77 (ii) Occupancy (net of rental income)
+
+// row72
+row = sheet.getRow(76);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR72_month() != null) {
+cellC.setCellValue(record.getR72_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR72_ytd() != null) {
+cellD.setCellValue(record.getR72_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R78 (iii) Depreciation
+
+// row73
+row = sheet.getRow(77);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR73_month() != null) {
+cellC.setCellValue(record.getR73_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR73_ytd() != null) {
+cellD.setCellValue(record.getR73_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R79 (iv) Impairment loss on other non-financial assets
+
+// row74
+row = sheet.getRow(78);
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR74_month() != null) {
+cellC.setCellValue(record.getR74_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR74_ytd() != null) {
+cellD.setCellValue(record.getR74_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+
+//---R80 (v) All other non-interest expense*
+
+// row80
+row = sheet.getRow(79);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR80_month() != null) {
+cellC.setCellValue(record.getR80_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR80_ytd() != null) {
+cellD.setCellValue(record.getR80_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+//---R81 (vi) Professional fees (sum of lines (a) to (d))
+
+//row75
+row = sheet.getRow(80);
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR75_month() != null) {
+cellC.setCellValue(record.getR75_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR75_ytd() != null) {
+cellD.setCellValue(record.getR75_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+//------R82 a) Lawyer's fees
+
+// row76
+row = sheet.getRow(81);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR76_month() != null) {
+cellC.setCellValue(record.getR76_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR76_ytd() != null) {
+cellD.setCellValue(record.getR76_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R83 b) Auditor's fees
+
+// row77
+row = sheet.getRow(82);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR77_month() != null) {
+cellC.setCellValue(record.getR77_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR77_ytd() != null) {
+cellD.setCellValue(record.getR77_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//------R84 c) Management fees
+
+// row78
+row = sheet.getRow(83);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR78_month() != null) {
+cellC.setCellValue(record.getR78_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR78_ytd() != null) {
+cellD.setCellValue(record.getR78_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//------R85 d) Other*
+
+// row79
+row = sheet.getRow(84);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR79_month() != null) {
+cellC.setCellValue(record.getR79_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR79_ytd() != null) {
+cellD.setCellValue(record.getR79_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//--R87 8. Net non-interest income (line 6 minus 7)
+//--R88 9. Income before taxation (line 5 plus 8)
+
+//--R89 10. Taxation
+
+//row83
+row = sheet.getRow(88);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR83_month() != null) {
+cellC.setCellValue(record.getR83_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR83_ytd() != null) {
+cellD.setCellValue(record.getR83_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//--R90 11. Income (loss) after taxes (line 9 minus 10)
+
+//--R91 12. Provision for dividends
+
+// row85
+row = sheet.getRow(90);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR85_month() != null) {
+cellC.setCellValue(record.getR85_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR85_ytd() != null) {
+cellD.setCellValue(record.getR85_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+}
+workbook.setForceFormulaRecalculation(true);
+} else {
+
+}
+
+// Write the final workbook content to the in-memory stream.
+workbook.write(out);
+
+logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+return out.toByteArray();
+}
+}
+
+// Resub Format excel
+public byte[] BRRS_M_SCI_EResubExcel(String filename, String reportId, String fromdate, String todate,
+String currency, String dtltype, String type,String format, BigDecimal version) throws Exception {
+
+logger.info("Service: Starting Excel generation process in memory for RESUB (Format) Excel.");
+
+if ("email".equalsIgnoreCase(format) && version != null) {
+logger.info("Service: Generating RESUB report for version {}", version);
+
+try {
+// ✅ Redirecting to Resub Excel
+return BRRS_M_SCI_EEmailResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+
+} catch (ParseException e) {
+logger.error("Invalid report date format: {}", fromdate, e);
+throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+}
+}
+
+List<M_SCI_E_RESUB_Summary_Entity> dataList = M_SCI_E_resub_summary_repo
+.getdatabydateListarchival(dateformat.parse(todate), version);
+
+if (dataList.isEmpty()) {
+logger.warn("Service: No data found for M_SCI_E report. Returning empty result.");
+return new byte[0];
+}
+
+String templateDir = env.getProperty("output.exportpathtemp");
+String templateFileName = filename;
+System.out.println(filename);
+Path templatePath = Paths.get(templateDir, templateFileName);
+System.out.println(templatePath);
+
+logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+if (!Files.exists(templatePath)) {
+// This specific exception will be caught by the controller.
+throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+}
+if (!Files.isReadable(templatePath)) {
+// A specific exception for permission errors.
+throw new SecurityException(
+"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+}
+
+// This try-with-resources block is perfect. It guarantees all resources are
+// closed automatically.
+try (InputStream templateInputStream = Files.newInputStream(templatePath);
+Workbook workbook = WorkbookFactory.create(templateInputStream);
+ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+Sheet sheet = workbook.getSheetAt(0);
+
+// --- Style Definitions ---
+CreationHelper createHelper = workbook.getCreationHelper();
+
+CellStyle dateStyle = workbook.createCellStyle();
+dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+dateStyle.setBorderBottom(BorderStyle.THIN);
+dateStyle.setBorderTop(BorderStyle.THIN);
+dateStyle.setBorderLeft(BorderStyle.THIN);
+dateStyle.setBorderRight(BorderStyle.THIN);
+
+CellStyle textStyle = workbook.createCellStyle();
+textStyle.setBorderBottom(BorderStyle.THIN);
+textStyle.setBorderTop(BorderStyle.THIN);
+textStyle.setBorderLeft(BorderStyle.THIN);
+textStyle.setBorderRight(BorderStyle.THIN);
+
+// Create the font
+Font font = workbook.createFont();
+font.setFontHeightInPoints((short) 8); // size 8
+font.setFontName("Arial");
+
+CellStyle numberStyle = workbook.createCellStyle();
+// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+numberStyle.setBorderBottom(BorderStyle.THIN);
+numberStyle.setBorderTop(BorderStyle.THIN);
+numberStyle.setBorderLeft(BorderStyle.THIN);
+numberStyle.setBorderRight(BorderStyle.THIN);
+numberStyle.setFont(font);
+// --- End of Style Definitions ---
+
+int startRow = 10;
+
+if (!dataList.isEmpty()) {
+for (int i = 0; i < dataList.size(); i++) {
+
+M_SCI_E_RESUB_Summary_Entity record = dataList.get(i);
+System.out.println("rownumber=" + startRow + i);
+System.out.println("rownumber=" + startRow + i);
+Row row = sheet.getRow(startRow + i);
+if (row == null) {
+row = sheet.createRow(startRow + i);
+}
+
+Cell cellC,cellD;    
+
+// row11
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR11_month() != null) {
+cellC.setCellValue(record.getR11_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR11_ytd() != null) {
+cellD.setCellValue(record.getR11_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row12
+row = sheet.getRow(11);
+// Column 1 - product name
+
+
+// Column 2 - cross_reference
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR12_month() != null) {
+cellC.setCellValue(record.getR12_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR12_ytd() != null) {
+cellD.setCellValue(record.getR12_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row13
+row = sheet.getRow(12);
+// Column 1 - product name
+
+
+// Column 2 - cross_reference
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR13_month() != null) {
+cellC.setCellValue(record.getR13_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR13_ytd() != null) {
+cellD.setCellValue(record.getR13_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+// row15
+row = sheet.getRow(14); // Row index for R15 (0-based index)
+
+// Column 1 - product name
+
+
+// Column 2 - cross_reference
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR15_month() != null) {
+cellC.setCellValue(record.getR15_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR15_ytd() != null) {
+cellD.setCellValue(record.getR15_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row16
+row = sheet.getRow(15);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR16_month() != null) {
+cellC.setCellValue(record.getR16_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR16_ytd() != null) {
+cellD.setCellValue(record.getR16_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row17
+row = sheet.getRow(16);
+
+
+
+cellC = row.createCell(2);
+if (record.getR17_month() != null) {
+cellC.setCellValue(record.getR17_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR17_ytd() != null) {
+cellD.setCellValue(record.getR17_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row18
+row = sheet.getRow(17);
+
+
+
+cellC = row.createCell(2);
+if (record.getR18_month() != null) {
+cellC.setCellValue(record.getR18_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR18_ytd() != null) {
+cellD.setCellValue(record.getR18_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row19
+row = sheet.getRow(18);
+
+
+
+cellC = row.createCell(2);
+if (record.getR19_month() != null) {
+cellC.setCellValue(record.getR19_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR19_ytd() != null) {
+cellD.setCellValue(record.getR19_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row20
+row = sheet.getRow(19);
+
+
+
+cellC = row.createCell(2);
+if (record.getR20_month() != null) {
+cellC.setCellValue(record.getR20_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR20_ytd() != null) {
+cellD.setCellValue(record.getR20_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row21
+row = sheet.getRow(20);
+
+
+
+cellC = row.createCell(2);
+if (record.getR21_month() != null) {
+cellC.setCellValue(record.getR21_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR21_ytd() != null) {
+cellD.setCellValue(record.getR21_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row22
+row = sheet.getRow(21);
+
+
+
+cellC = row.createCell(2);
+if (record.getR22_month() != null) {
+cellC.setCellValue(record.getR22_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR22_ytd() != null) {
+cellD.setCellValue(record.getR22_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row23
+row = sheet.getRow(22);
+
+
+
+cellC = row.createCell(2);
+if (record.getR23_month() != null) {
+cellC.setCellValue(record.getR23_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR23_ytd() != null) {
+cellD.setCellValue(record.getR23_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row24
+row = sheet.getRow(23);
+
+
+
+cellC = row.createCell(2);
+if (record.getR24_month() != null) {
+cellC.setCellValue(record.getR24_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR24_ytd() != null) {
+cellD.setCellValue(record.getR24_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row25
+row = sheet.getRow(24);
+
+
+
+cellC = row.createCell(2);
+if (record.getR25_month() != null) {
+cellC.setCellValue(record.getR25_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR25_ytd() != null) {
+cellD.setCellValue(record.getR25_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row26
+row = sheet.getRow(25);
+
+// Column 1 - product name
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR26_month() != null) {
+cellC.setCellValue(record.getR26_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR26_ytd() != null) {
+cellD.setCellValue(record.getR26_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row27
+row = sheet.getRow(26);
+
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR27_month() != null) {
+cellC.setCellValue(record.getR27_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR27_ytd() != null) {
+cellD.setCellValue(record.getR27_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+// row29
+row = sheet.getRow(28);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR29_month() != null) {
+cellC.setCellValue(record.getR29_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR29_ytd() != null) {
+cellD.setCellValue(record.getR29_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row30
+row = sheet.getRow(29);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR30_month() != null) {
+cellC.setCellValue(record.getR30_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR30_ytd() != null) {
+cellD.setCellValue(record.getR30_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row31
+row = sheet.getRow(30);
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR31_month() != null) {
+cellC.setCellValue(record.getR31_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR31_ytd() != null) {
+cellD.setCellValue(record.getR31_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// ------------------------- Row 32 -------------------------
+row = sheet.getRow(31);
+// Column 1 - product name
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR32_month() != null) {
+cellC.setCellValue(record.getR32_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR32_ytd() != null) {
+cellD.setCellValue(record.getR32_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// ------------------------- Row 33 -------------------------
+row = sheet.getRow(32);
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR33_month() != null) {
+cellC.setCellValue(record.getR33_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR33_ytd() != null) {
+cellD.setCellValue(record.getR33_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// ------------------------- Row 34 -------------------------
+row = sheet.getRow(33);
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR34_month() != null) {
+cellC.setCellValue(record.getR34_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR34_ytd() != null) {
+cellD.setCellValue(record.getR34_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// ------------------------- Row 35 -------------------------
+row = sheet.getRow(34);
+
+cellC = row.createCell(2);
+if (record.getR35_month() != null) {
+cellC.setCellValue(record.getR35_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+cellD = row.createCell(3);
+if (record.getR35_ytd() != null) {
+cellD.setCellValue(record.getR35_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// ------------------------- Row 36 -------------------------
+row = sheet.getRow(35);
+
+
+cellC = row.createCell(2);
+if (record.getR36_month() != null) {
+cellC.setCellValue(record.getR36_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+cellD = row.createCell(3);
+if (record.getR36_ytd() != null) {
+cellD.setCellValue(record.getR36_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+// ------------------------- Row 38 -------------------------
+row = sheet.getRow(37);
+
+
+
+cellC = row.createCell(2);
+if (record.getR38_month() != null) {
+cellC.setCellValue(record.getR38_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR38_ytd() != null) {
+cellD.setCellValue(record.getR38_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row39
+row = sheet.getRow(38);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR39_month() != null) {
+cellC.setCellValue(record.getR39_month().doubleValue()); // assuming it's BigDecimal or Double
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR39_ytd() != null) {
+cellD.setCellValue(record.getR39_ytd().doubleValue()); // assuming it's BigDecimal or Double
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+
+
+// row42
+row = sheet.getRow(41);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR42_month() != null) {
+cellC.setCellValue(record.getR42_month().doubleValue()); // assuming it's BigDecimal or Double
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR42_ytd() != null) {
+cellD.setCellValue(record.getR42_ytd().doubleValue()); // assuming it's BigDecimal or Double
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row43
+row = sheet.getRow(42);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR43_month() != null) {
+cellC.setCellValue(record.getR43_month().doubleValue()); // assuming it's BigDecimal or Double
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR43_ytd() != null) {
+cellD.setCellValue(record.getR43_ytd().doubleValue()); // assuming it's BigDecimal or Double
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+// row45
+row = sheet.getRow(44);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR45_month() != null) {
+cellC.setCellValue(record.getR45_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR45_ytd() != null) {
+cellD.setCellValue(record.getR45_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row46
+row = sheet.getRow(45);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR46_month() != null) {
+cellC.setCellValue(record.getR46_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR46_ytd() != null) {
+cellD.setCellValue(record.getR46_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row47
+row = sheet.getRow(46);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR47_month() != null) {
+cellC.setCellValue(record.getR47_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR47_ytd() != null) {
+cellD.setCellValue(record.getR47_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+
+
+// row50
+row = sheet.getRow(49);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR50_month() != null) {
+cellC.setCellValue(record.getR50_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR50_ytd() != null) {
+cellD.setCellValue(record.getR50_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row51
+row = sheet.getRow(50);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR51_month() != null) {
+cellC.setCellValue(record.getR51_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR51_ytd() != null) {
+cellD.setCellValue(record.getR51_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row52
+row = sheet.getRow(51);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR52_month() != null) {
+cellC.setCellValue(record.getR52_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR52_ytd() != null) {
+cellD.setCellValue(record.getR52_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row53
+row = sheet.getRow(52);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR53_month() != null) {
+cellC.setCellValue(record.getR53_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR53_ytd() != null) {
+cellD.setCellValue(record.getR53_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row54
+row = sheet.getRow(53);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR54_month() != null) {
+cellC.setCellValue(record.getR54_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR54_ytd() != null) {
+cellD.setCellValue(record.getR54_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row55
+row = sheet.getRow(54);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR55_month() != null) {
+cellC.setCellValue(record.getR55_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR55_ytd() != null) {
+cellD.setCellValue(record.getR55_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+
+
+// row58
+row = sheet.getRow(57);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR58_month() != null) {
+cellC.setCellValue(record.getR58_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR58_ytd() != null) {
+cellD.setCellValue(record.getR58_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row59
+row = sheet.getRow(58);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR59_month() != null) {
+cellC.setCellValue(record.getR59_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR59_ytd() != null) {
+cellD.setCellValue(record.getR59_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row60
+row = sheet.getRow(59);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR60_month() != null) {
+cellC.setCellValue(record.getR60_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR60_ytd() != null) {
+cellD.setCellValue(record.getR60_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+
+// row63
+row = sheet.getRow(62);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR63_month() != null) {
+cellC.setCellValue(record.getR63_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR63_ytd() != null) {
+cellD.setCellValue(record.getR63_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row64
+row = sheet.getRow(63);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR64_month() != null) {
+cellC.setCellValue(record.getR64_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR64_ytd() != null) {
+cellD.setCellValue(record.getR64_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row65
+row = sheet.getRow(64);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR65_month() != null) {
+cellC.setCellValue(record.getR65_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR65_ytd() != null) {
+cellD.setCellValue(record.getR65_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row66
+row = sheet.getRow(65);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR66_month() != null) {
+cellC.setCellValue(record.getR66_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR66_ytd() != null) {
+cellD.setCellValue(record.getR66_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row67
+row = sheet.getRow(66);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR67_month() != null) {
+cellC.setCellValue(record.getR67_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR67_ytd() != null) {
+cellD.setCellValue(record.getR67_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row68
+row = sheet.getRow(67);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR68_month() != null) {
+cellC.setCellValue(record.getR68_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR68_ytd() != null) {
+cellD.setCellValue(record.getR68_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row69
+row = sheet.getRow(68);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR69_month() != null) {
+cellC.setCellValue(record.getR69_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR69_ytd() != null) {
+cellD.setCellValue(record.getR69_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+// row71
+row = sheet.getRow(70);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR71_month() != null) {
+cellC.setCellValue(record.getR71_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR71_ytd() != null) {
+cellD.setCellValue(record.getR71_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row72
+row = sheet.getRow(71);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR72_month() != null) {
+cellC.setCellValue(record.getR72_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR72_ytd() != null) {
+cellD.setCellValue(record.getR72_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row73
+row = sheet.getRow(72);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR73_month() != null) {
+cellC.setCellValue(record.getR73_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR73_ytd() != null) {
+cellD.setCellValue(record.getR73_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row74
+row = sheet.getRow(73);
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR74_month() != null) {
+cellC.setCellValue(record.getR74_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR74_ytd() != null) {
+cellD.setCellValue(record.getR74_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+// row76
+row = sheet.getRow(75);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR76_month() != null) {
+cellC.setCellValue(record.getR76_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR76_ytd() != null) {
+cellD.setCellValue(record.getR76_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row77
+row = sheet.getRow(76);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR77_month() != null) {
+cellC.setCellValue(record.getR77_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR77_ytd() != null) {
+cellD.setCellValue(record.getR77_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row78
+row = sheet.getRow(77);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR78_month() != null) {
+cellC.setCellValue(record.getR78_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR78_ytd() != null) {
+cellD.setCellValue(record.getR78_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row79
+row = sheet.getRow(78);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR79_month() != null) {
+cellC.setCellValue(record.getR79_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR79_ytd() != null) {
+cellD.setCellValue(record.getR79_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+// row80
+row = sheet.getRow(79);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR80_month() != null) {
+cellC.setCellValue(record.getR80_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR80_ytd() != null) {
+cellD.setCellValue(record.getR80_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+
+
+// row83
+row = sheet.getRow(82);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR83_month() != null) {
+cellC.setCellValue(record.getR83_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR83_ytd() != null) {
+cellD.setCellValue(record.getR83_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+// row85
+row = sheet.getRow(84);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR85_month() != null) {
+cellC.setCellValue(record.getR85_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR85_ytd() != null) {
+cellD.setCellValue(record.getR85_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+}
+workbook.setForceFormulaRecalculation(true);
+} else {
+
+}
+
+// Write the final workbook content to the in-memory stream.
+workbook.write(out);
+
+logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+return out.toByteArray();
+}
+
+}
+
+// Resub Email Excel
+public byte[] BRRS_M_SCI_EEmailResubExcel(String filename, String reportId, String fromdate, String todate,
+String currency, String dtltype, String type, BigDecimal version) throws Exception {
+
+logger.info("Service: Starting Archival Email Excel generation process in memory.");
+
+List<M_SCI_E_RESUB_Summary_Entity> dataList = M_SCI_E_resub_summary_repo
+.getdatabydateListarchival(dateformat.parse(todate), version);
+
+if (dataList.isEmpty()) {
+logger.warn("Service: No data found for BRRS_M_SCI_E report. Returning empty result.");
+return new byte[0];
+}
+
+String templateDir = env.getProperty("output.exportpathtemp");
+String templateFileName = filename;
+System.out.println(filename);
+Path templatePath = Paths.get(templateDir, templateFileName);
+System.out.println(templatePath);
+
+logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+if (!Files.exists(templatePath)) {
+// This specific exception will be caught by the controller.
+throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+}
+if (!Files.isReadable(templatePath)) {
+// A specific exception for permission errors.
+throw new SecurityException(
+"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+}
+
+// This try-with-resources block is perfect. It guarantees all resources are
+// closed automatically.
+try (InputStream templateInputStream = Files.newInputStream(templatePath);
+Workbook workbook = WorkbookFactory.create(templateInputStream);
+ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+Sheet sheet = workbook.getSheetAt(0);
+
+// --- Style Definitions ---
+CreationHelper createHelper = workbook.getCreationHelper();
+
+CellStyle dateStyle = workbook.createCellStyle();
+dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+dateStyle.setBorderBottom(BorderStyle.THIN);
+dateStyle.setBorderTop(BorderStyle.THIN);
+dateStyle.setBorderLeft(BorderStyle.THIN);
+dateStyle.setBorderRight(BorderStyle.THIN);
+
+CellStyle textStyle = workbook.createCellStyle();
+textStyle.setBorderBottom(BorderStyle.THIN);
+textStyle.setBorderTop(BorderStyle.THIN);
+textStyle.setBorderLeft(BorderStyle.THIN);
+textStyle.setBorderRight(BorderStyle.THIN);
+
+// Create the font
+Font font = workbook.createFont();
+font.setFontHeightInPoints((short) 8); // size 8
+font.setFontName("Arial");
+
+CellStyle numberStyle = workbook.createCellStyle();
+// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+numberStyle.setBorderBottom(BorderStyle.THIN);
+numberStyle.setBorderTop(BorderStyle.THIN);
+numberStyle.setBorderLeft(BorderStyle.THIN);
+numberStyle.setBorderRight(BorderStyle.THIN);
+numberStyle.setFont(font);
+// --- End of Style Definitions ---
+
+int startRow = 10;
+
+if (!dataList.isEmpty()) {
+for (int i = 0; i < dataList.size(); i++) {
+M_SCI_E_RESUB_Summary_Entity record = dataList.get(i);
+System.out.println("rownumber=" + startRow + i);
+Row row = sheet.getRow(startRow + i);
+if (row == null) {
+row = sheet.createRow(startRow + i);
+}
+
+
+
+Cell cellC,cellD;   
+
+
+//--R10 1. Total interest and fee income from loans and advances (sum of lines (i) to (viii))
+
+//---R11 (i) Central Government (Government of Botswana)
+
+
+//row11
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR11_month() != null) {
+cellC.setCellValue(record.getR11_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR11_ytd() != null) {
+cellD.setCellValue(record.getR11_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R12 (ii) Local Government
+
+// row12
+row = sheet.getRow(11);
+// Column 1 - product name
+
+
+// Column 2 - cross_reference
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR12_month() != null) {
+cellC.setCellValue(record.getR12_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR12_ytd() != null) {
+cellD.setCellValue(record.getR12_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R13 (iii) Public Non-Financial Corporations
+
+
+//row13
+row = sheet.getRow(12);
+// Column 1 - product name
+
+
+// Column 2 - cross_reference
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR13_month() != null) {
+cellC.setCellValue(record.getR13_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR13_ytd() != null) {
+cellD.setCellValue(record.getR13_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+//---R14 (iv) Other Non-Financial Corporations (Private business enterprises) 
+
+//------R15 a) Agriculture, Forestry, Fishing
+
+//row15
+row = sheet.getRow(14); // Row index for R15 (0-based index)
+
+// Column 1 - product name
+
+
+// Column 2 - cross_reference
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR15_month() != null) {
+cellC.setCellValue(record.getR15_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR15_ytd() != null) {
+cellD.setCellValue(record.getR15_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R16 b) Mining and Quarrying
+// row16
+row = sheet.getRow(15);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR16_month() != null) {
+cellC.setCellValue(record.getR16_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR16_ytd() != null) {
+cellD.setCellValue(record.getR16_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+//------R17 c) Manufacturing
+// row17
+row = sheet.getRow(16);
+
+
+
+cellC = row.createCell(2);
+if (record.getR17_month() != null) {
+cellC.setCellValue(record.getR17_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR17_ytd() != null) {
+cellD.setCellValue(record.getR17_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+//------R18 d) Construction
+
+//row18
+row = sheet.getRow(17);
+
+
+
+cellC = row.createCell(2);
+if (record.getR18_month() != null) {
+cellC.setCellValue(record.getR18_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR18_ytd() != null) {
+cellD.setCellValue(record.getR18_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+//------R19 e) Commercial real estate
+
+// row19
+row = sheet.getRow(18);
+
+
+
+cellC = row.createCell(2);
+if (record.getR19_month() != null) {
+cellC.setCellValue(record.getR19_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR19_ytd() != null) {
+cellD.setCellValue(record.getR19_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R20 f) Electricity
+
+// row20
+row = sheet.getRow(19);
+
+
+
+cellC = row.createCell(2);
+if (record.getR20_month() != null) {
+cellC.setCellValue(record.getR20_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR20_ytd() != null) {
+cellD.setCellValue(record.getR20_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R21 g) Water
+
+//row21
+row = sheet.getRow(20);
+
+
+
+cellC = row.createCell(2);
+if (record.getR21_month() != null) {
+cellC.setCellValue(record.getR21_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR21_ytd() != null) {
+cellD.setCellValue(record.getR21_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+//------R22 h) Telecommunication and Post
+// row22
+row = sheet.getRow(21);
+
+
+
+cellC = row.createCell(2);
+if (record.getR22_month() != null) {
+cellC.setCellValue(record.getR22_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR22_ytd() != null) {
+cellD.setCellValue(record.getR22_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R23 i) Tourism and hotels
+
+//row23
+row = sheet.getRow(22);
+
+
+
+cellC = row.createCell(2);
+if (record.getR23_month() != null) {
+cellC.setCellValue(record.getR23_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR23_ytd() != null) {
+cellD.setCellValue(record.getR23_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R24 j) Transport and Storage
+
+//row24
+row = sheet.getRow(23);
+
+
+
+cellC = row.createCell(2);
+if (record.getR24_month() != null) {
+cellC.setCellValue(record.getR24_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR24_ytd() != null) {
+cellD.setCellValue(record.getR24_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R25 k) Trade, restaurants and bars
+
+// row25
+row = sheet.getRow(24);
+
+
+
+cellC = row.createCell(2);
+if (record.getR25_month() != null) {
+cellC.setCellValue(record.getR25_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR25_ytd() != null) {
+cellD.setCellValue(record.getR25_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+//------R26 l) Business Services
+
+// row26
+row = sheet.getRow(25);
+
+// Column 1 - product name
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR26_month() != null) {
+cellC.setCellValue(record.getR26_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR26_ytd() != null) {
+cellD.setCellValue(record.getR26_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+//------R27 m) Other Community, Social and Personal Services
+// row27
+row = sheet.getRow(26);
+
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR27_month() != null) {
+cellC.setCellValue(record.getR27_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR27_ytd() != null) {
+cellD.setCellValue(record.getR27_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R28 (v) Households (sum of lines (a) to (h))
+//------R29 a) Residential property (owner occupied)
+
+// row29
+row = sheet.getRow(28);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR29_month() != null) {
+cellC.setCellValue(record.getR29_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR29_ytd() != null) {
+cellD.setCellValue(record.getR29_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R30 b) Residential property (Rented)
+
+//row30
+row = sheet.getRow(29);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR30_month() != null) {
+cellC.setCellValue(record.getR30_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR30_ytd() != null) {
+cellD.setCellValue(record.getR30_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//------R31 c) Personal Loans
+
+// row31
+row = sheet.getRow(30);
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR31_month() != null) {
+cellC.setCellValue(record.getR31_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR31_ytd() != null) {
+cellD.setCellValue(record.getR31_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R32 d) Motor Vehicle
+
+// ------------------------- Row 32 -------------------------
+row = sheet.getRow(31);
+// Column 1 - product name
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR32_month() != null) {
+cellC.setCellValue(record.getR32_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR32_ytd() != null) {
+cellD.setCellValue(record.getR32_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R33 e) Household goods
+
+// ------------------------- Row 33 -------------------------
+row = sheet.getRow(32);
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR33_month() != null) {
+cellC.setCellValue(record.getR33_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR33_ytd() != null) {
+cellD.setCellValue(record.getR33_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R34 f) Credit card loans
+// ------------------------- Row 34 -------------------------
+row = sheet.getRow(33);
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR34_month() != null) {
+cellC.setCellValue(record.getR34_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR34_ytd() != null) {
+cellD.setCellValue(record.getR34_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R35 g) Non-Profit Institutions Serving Households
+
+//------------------------- Row 35 -------------------------
+row = sheet.getRow(34);
+
+cellC = row.createCell(2);
+if (record.getR35_month() != null) {
+cellC.setCellValue(record.getR35_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+cellD = row.createCell(3);
+if (record.getR35_ytd() != null) {
+cellD.setCellValue(record.getR35_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R36 h) Other*
+
+// ------------------------- Row 36 -------------------------
+row = sheet.getRow(35);
+
+
+cellC = row.createCell(2);
+if (record.getR36_month() != null) {
+cellC.setCellValue(record.getR36_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+cellD = row.createCell(3);
+if (record.getR36_ytd() != null) {
+cellD.setCellValue(record.getR36_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+//---R37 (vi) Total interest income on balances with other banks
+
+//------R38 a) Domestic banks
+
+// ------------------------- Row 38 -------------------------
+row = sheet.getRow(37);
+
+
+
+cellC = row.createCell(2);
+if (record.getR38_month() != null) {
+cellC.setCellValue(record.getR38_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+cellD = row.createCell(3);
+if (record.getR38_ytd() != null) {
+cellD.setCellValue(record.getR38_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//------R39 b) Banks abroad (Foreign banks)
+
+//row39
+row = sheet.getRow(38);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR39_month() != null) {
+cellC.setCellValue(record.getR39_month().doubleValue()); // assuming it's BigDecimal or Double
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR39_ytd() != null) {
+cellD.setCellValue(record.getR39_ytd().doubleValue()); // assuming it's BigDecimal or Double
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+//---R40 (vii) Total income on investment and securities
+//------R41 a) Held to maturity
+
+//---------R42 (i) BOBCs
+
+// row42
+row = sheet.getRow(41);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR42_month() != null) {
+cellC.setCellValue(record.getR42_month().doubleValue()); // assuming it's BigDecimal or Double
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR42_ytd() != null) {
+cellD.setCellValue(record.getR42_ytd().doubleValue()); // assuming it's BigDecimal or Double
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---------R43 (ii) Other
+
+// row43
+row = sheet.getRow(42);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR43_month() != null) {
+cellC.setCellValue(record.getR43_month().doubleValue()); // assuming it's BigDecimal or Double
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR43_ytd() != null) {
+cellD.setCellValue(record.getR43_ytd().doubleValue()); // assuming it's BigDecimal or Double
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}	
+
+//------R44 b) Available for Sale
+//---------R45 (i) BOBCs
+
+// row45
+row = sheet.getRow(44);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR45_month() != null) {
+cellC.setCellValue(record.getR45_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR45_ytd() != null) {
+cellD.setCellValue(record.getR45_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+//---------R46 (ii) Other
+
+//row46
+row = sheet.getRow(45);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR46_month() != null) {
+cellC.setCellValue(record.getR46_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR46_ytd() != null) {
+cellD.setCellValue(record.getR46_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R47 (viii) All other interest income*
+
+// row47
+row = sheet.getRow(46);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR47_month() != null) {
+cellC.setCellValue(record.getR47_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR47_ytd() != null) {
+cellD.setCellValue(record.getR47_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+
+//--R48 2. Total interest expenses (sum of lines 2(i) to (iv))
+
+//---R49 (i) Total interest expense on deposit accounts
+
+//------R50 a) Demand
+
+// row50
+row = sheet.getRow(49);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR50_month() != null) {
+cellC.setCellValue(record.getR50_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR50_ytd() != null) {
+cellD.setCellValue(record.getR50_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R51 b) Savings
+
+// row51
+row = sheet.getRow(50);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR51_month() != null) {
+cellC.setCellValue(record.getR51_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR51_ytd() != null) {
+cellD.setCellValue(record.getR51_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R52 c) Time
+
+// row52
+row = sheet.getRow(51);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR52_month() != null) {
+cellC.setCellValue(record.getR52_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR52_ytd() != null) {
+cellD.setCellValue(record.getR52_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R53 (ii) Interest expense on inter-bank loans
+
+// row53
+row = sheet.getRow(52);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR53_month() != null) {
+cellC.setCellValue(record.getR53_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR53_ytd() != null) {
+cellD.setCellValue(record.getR53_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R54 (iii) Interest expense on funds borrowed from Bank of Botswana
+
+// row54
+row = sheet.getRow(53);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR54_month() != null) {
+cellC.setCellValue(record.getR54_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR54_ytd() != null) {
+cellD.setCellValue(record.getR54_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R55 (iv) Interest expense on other borrowed funds*
+
+//row55
+row = sheet.getRow(54);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR55_month() != null) {
+cellC.setCellValue(record.getR55_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR55_ytd() != null) {
+cellD.setCellValue(record.getR55_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+
+//--R56 3. Net interest income (line 1 minus 2)
+//--R57 4. Total Impairments (sum of lines 4(i) to (iii))
+
+//---R58 (i) Impairment of loans and advances – Specific
+
+
+// row58
+row = sheet.getRow(57);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR58_month() != null) {
+cellC.setCellValue(record.getR58_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR58_ytd() != null) {
+cellD.setCellValue(record.getR58_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R59 (ii) Impairment of loans and advances – Portfolio
+
+
+// row59
+row = sheet.getRow(58);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR59_month() != null) {
+cellC.setCellValue(record.getR59_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR59_ytd() != null) {
+cellD.setCellValue(record.getR59_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R60 (iii) Impairment loss on other financial assets
+
+//row60
+row = sheet.getRow(59);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR60_month() != null) {
+cellC.setCellValue(record.getR60_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR60_ytd() != null) {
+cellD.setCellValue(record.getR60_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//--R61 5. Net Interest Income after Provisions (line 3 minus 4)
+//--R62 6. Total non-interest income (sum of lines 6(i) to (viii))
+
+//---R63 (i) Retail banking customer fees
+
+//row63
+row = sheet.getRow(62);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR63_month() != null) {
+cellC.setCellValue(record.getR63_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR63_ytd() != null) {
+cellD.setCellValue(record.getR63_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R64 (ii) Credit related fees
+
+// row64
+row = sheet.getRow(63);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR64_month() != null) {
+cellC.setCellValue(record.getR64_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR64_ytd() != null) {
+cellD.setCellValue(record.getR64_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R65 (iii) Foreign exchange (includes fees and commissions)
+
+
+// row65
+row = sheet.getRow(64);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR65_month() != null) {
+cellC.setCellValue(record.getR65_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR65_ytd() != null) {
+cellD.setCellValue(record.getR65_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R66 (iv) Bond trading
+
+// row66
+row = sheet.getRow(65);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR66_month() != null) {
+cellC.setCellValue(record.getR66_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR66_ytd() != null) {
+cellD.setCellValue(record.getR66_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R67 (v) Dividends
+
+// row67
+row = sheet.getRow(66);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR67_month() != null) {
+cellC.setCellValue(record.getR67_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR67_ytd() != null) {
+cellD.setCellValue(record.getR67_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R68 (vi) Insurance commissions
+
+// row68
+row = sheet.getRow(67);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR68_month() != null) {
+cellC.setCellValue(record.getR68_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR68_ytd() != null) {
+cellD.setCellValue(record.getR68_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R69 (vii) Professional fees (sum of lines (a) to (d))
+
+//------R70 a) Lawyer's fees
+
+
+// row76
+row = sheet.getRow(69);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR76_month() != null) {
+cellC.setCellValue(record.getR76_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR76_ytd() != null) {
+cellD.setCellValue(record.getR76_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//------R71 b) Auditor's fees
+
+// row77
+row = sheet.getRow(70);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR77_month() != null) {
+cellC.setCellValue(record.getR77_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR77_ytd() != null) {
+cellD.setCellValue(record.getR77_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//------R72 c) Management fees
+
+//row78
+row = sheet.getRow(71);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR78_month() != null) {
+cellC.setCellValue(record.getR78_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR78_ytd() != null) {
+cellD.setCellValue(record.getR78_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//------R73 d) Other*
+
+// row79
+row = sheet.getRow(72);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR79_month() != null) {
+cellC.setCellValue(record.getR79_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR79_ytd() != null) {
+cellD.setCellValue(record.getR79_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R74 (viii) All other non-interest income*
+
+// row69
+row = sheet.getRow(73);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR69_month() != null) {
+cellC.setCellValue(record.getR69_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR69_ytd() != null) {
+cellD.setCellValue(record.getR69_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+//--R75 7. Total non-interest expense (sum of lines 7(i) to (vi))
+
+//---R76 (i) Salaries and employee benefits
+
+// row71
+row = sheet.getRow(75);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR71_month() != null) {
+cellC.setCellValue(record.getR71_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR71_ytd() != null) {
+cellD.setCellValue(record.getR71_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R77 (ii) Occupancy (net of rental income)
+
+// row72
+row = sheet.getRow(76);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR72_month() != null) {
+cellC.setCellValue(record.getR72_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR72_ytd() != null) {
+cellD.setCellValue(record.getR72_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//---R78 (iii) Depreciation
+
+// row73
+row = sheet.getRow(77);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR73_month() != null) {
+cellC.setCellValue(record.getR73_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR73_ytd() != null) {
+cellD.setCellValue(record.getR73_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//---R79 (iv) Impairment loss on other non-financial assets
+
+// row74
+row = sheet.getRow(78);
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR74_month() != null) {
+cellC.setCellValue(record.getR74_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR74_ytd() != null) {
+cellD.setCellValue(record.getR74_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+
+//---R80 (v) All other non-interest expense*
+
+// row80
+row = sheet.getRow(79);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR80_month() != null) {
+cellC.setCellValue(record.getR80_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR80_ytd() != null) {
+cellD.setCellValue(record.getR80_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+//---R81 (vi) Professional fees (sum of lines (a) to (d))
+
+//row75
+row = sheet.getRow(80);
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR75_month() != null) {
+cellC.setCellValue(record.getR75_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR75_ytd() != null) {
+cellD.setCellValue(record.getR75_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+//------R82 a) Lawyer's fees
+
+// row76
+row = sheet.getRow(81);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR76_month() != null) {
+cellC.setCellValue(record.getR76_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR76_ytd() != null) {
+cellD.setCellValue(record.getR76_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//------R83 b) Auditor's fees
+
+// row77
+row = sheet.getRow(82);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR77_month() != null) {
+cellC.setCellValue(record.getR77_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR77_ytd() != null) {
+cellD.setCellValue(record.getR77_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//------R84 c) Management fees
+
+// row78
+row = sheet.getRow(83);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR78_month() != null) {
+cellC.setCellValue(record.getR78_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR78_ytd() != null) {
+cellD.setCellValue(record.getR78_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+//------R85 d) Other*
+
+// row79
+row = sheet.getRow(84);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR79_month() != null) {
+cellC.setCellValue(record.getR79_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR79_ytd() != null) {
+cellD.setCellValue(record.getR79_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//--R87 8. Net non-interest income (line 6 minus 7)
+//--R88 9. Income before taxation (line 5 plus 8)
+
+//--R89 10. Taxation
+
+//row83
+row = sheet.getRow(88);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR83_month() != null) {
+cellC.setCellValue(record.getR83_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR83_ytd() != null) {
+cellD.setCellValue(record.getR83_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+//--R90 11. Income (loss) after taxes (line 9 minus 10)
+
+//--R91 12. Provision for dividends
+
+// row85
+row = sheet.getRow(90);
+
+
+
+// Column 3 - month
+cellC = row.createCell(2);
+if (record.getR85_month() != null) {
+cellC.setCellValue(record.getR85_month().doubleValue());
+cellC.setCellStyle(numberStyle);
+} else {
+cellC.setCellValue("");
+cellC.setCellStyle(textStyle);
+}
+
+// Column 4 - ytd
+cellD = row.createCell(3);
+if (record.getR85_ytd() != null) {
+cellD.setCellValue(record.getR85_ytd().doubleValue());
+cellD.setCellStyle(numberStyle);
+} else {
+cellD.setCellValue("");
+cellD.setCellStyle(textStyle);
+}
+
+
+
+}
+workbook.setForceFormulaRecalculation(true);
+} else {
+
+}
+
+// Write the final workbook content to the in-memory stream.
+workbook.write(out);
+
+logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+return out.toByteArray();
+}
+}
+
+
 	
 	
 	

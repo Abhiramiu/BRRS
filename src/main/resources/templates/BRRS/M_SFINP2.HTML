@@ -1230,7 +1230,7 @@ function cancelModify() {
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
-							M-SFinP2: Statement of Financial Position (Continued)</h5>
+							M-SFinP2: <br> Statement of Financial Position (Continued)</h5>
 								
 							
 								<!-- Moving bus-board text -->
@@ -1263,10 +1263,12 @@ function cancelModify() {
 
 
 						<!-- Modify button -->
-						<button type="button" class="custom-tab-btn"
-							onclick="showmodify(this);" title="Click to EDIT Records"
-							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button>
+						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
+							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
+							id="addRecord">
+							Modify
+						</button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn"
@@ -1323,7 +1325,7 @@ function cancelModify() {
 									data-type=${type},
 												data-version=${version}
 								  ">
-							<i class="fa fa-download"></i> Detail
+							<i class="fa fa-download"></i> Download
 						</button>
 
 
@@ -2597,8 +2599,8 @@ function cancelModify() {
 											<th>ACCT_NAME</th>
 											<th style="text-align: right;">ACCT_BALANCE_IN_PULA</th>
 											<th>REPORT LABEL</th>
-											<th>REPORT ADDL CRITERIA1</th>
-											<th>AVERAGE</th>
+											<th style="text-align: left;   width: 250px;">REPORT ADDL CRITERIA1</th>
+											<th style="text-align: right;">AVERAGE</th>
 											<th>REPORT_DATE</th>
 										</tr>
 
@@ -2628,7 +2630,11 @@ function cancelModify() {
 
 											<td th:text="${report.reportLabel}"></td>
 											<td th:text="${report.reportAddlCriteria_1}"></td>
-											<td th:text="${report.average}"></td>
+											
+											<td style="text-align:right !important;"
+    th:text="${#numbers.formatDecimal(report.average, 1, 'COMMA', 0, 'POINT')}">
+</td>
+											
 											<td
 												th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
 										</tr>

@@ -201,12 +201,12 @@ public class M_SCI_E_Summary_Entity {
 		
 		private String	r45_product_name;
 		private String	r45_cross_reference;
-		/* private BigDecimal r45_month; */
+		 private BigDecimal r45_month;
 		private BigDecimal	r45_ytd;
 		
 		private String	r46_product_name;
 		private String	r46_cross_reference;
-		/* private BigDecimal r46_month; */
+	 private BigDecimal r46_month;
 		private BigDecimal	r46_ytd;
 		
 		private String	r47_product_name;
@@ -246,7 +246,7 @@ public class M_SCI_E_Summary_Entity {
 		
 		private String	r54_product_name;
 		private String	r54_cross_reference;
-		/* private BigDecimal r54_month; */
+	 private BigDecimal r54_month; 
 		private BigDecimal	r54_ytd;
 		
 		private String	r55_product_name;
@@ -266,17 +266,17 @@ public class M_SCI_E_Summary_Entity {
 		
 		private String	r58_product_name;
 		private String	r58_cross_reference;
-		/* private BigDecimal r58_month; */
+		 private BigDecimal r58_month; 
 		private BigDecimal	r58_ytd;
 		
 		private String	r59_product_name;
 		private String	r59_cross_reference;
-		/* private BigDecimal r59_month; */
+		 private BigDecimal r59_month; 
 		private BigDecimal	r59_ytd;
 		
 		private String	r60_product_name;
 		private String	r60_cross_reference;
-		/* private BigDecimal r60_month; */
+		 private BigDecimal r60_month; 
 		private BigDecimal	r60_ytd;
 		
 		private String	r61_product_name;
@@ -306,17 +306,17 @@ public class M_SCI_E_Summary_Entity {
 		
 		private String	r66_product_name;
 		private String	r66_cross_reference;
-		/* private BigDecimal r66_month; */
+		 private BigDecimal r66_month;
 		private BigDecimal	r66_ytd;
 		
 		private String	r67_product_name;
 		private String	r67_cross_reference;
-		/* private BigDecimal r67_month; */
+		 private BigDecimal r67_month; 
 		private BigDecimal	r67_ytd;
 		
 		private String	r68_product_name;
 		private String	r68_cross_reference;
-		/* private BigDecimal r68_month; */
+		 private BigDecimal r68_month; 
 		private BigDecimal	r68_ytd;
 		
 		private String	r69_product_name;
@@ -346,7 +346,7 @@ public class M_SCI_E_Summary_Entity {
 		
 		private String	r74_product_name;
 		private String	r74_cross_reference;
-		/* private BigDecimal r74_month; */
+		 private BigDecimal r74_month; 
 		private BigDecimal	r74_ytd;
 		
 		private String	r75_product_name;
@@ -401,7 +401,7 @@ public class M_SCI_E_Summary_Entity {
 		
 		private String	r85_product_name;
 		private String	r85_cross_reference;
-		/* private BigDecimal r85_month; */
+	 private BigDecimal r85_month; 
 		private BigDecimal	r85_ytd;
 		
 		private String	r86_product_name;
@@ -415,7 +415,7 @@ public class M_SCI_E_Summary_Entity {
 		@Id
 			
 		private Date	report_date;
-		private String	report_version;
+		private BigDecimal	report_version;
 		private String	report_frequency;
 		private String	report_code;
 		private String	report_desc;
@@ -1274,6 +1274,12 @@ public class M_SCI_E_Summary_Entity {
 		public void setR45_cross_reference(String r45_cross_reference) {
 			this.r45_cross_reference = r45_cross_reference;
 		}
+		public BigDecimal getR45_month() {
+			return r45_month;
+		}
+		public void setR45_month(BigDecimal r45_month) {
+			this.r45_month = r45_month;
+		}
 		public BigDecimal getR45_ytd() {
 			return r45_ytd;
 		}
@@ -1291,6 +1297,12 @@ public class M_SCI_E_Summary_Entity {
 		}
 		public void setR46_cross_reference(String r46_cross_reference) {
 			this.r46_cross_reference = r46_cross_reference;
+		}
+		public BigDecimal getR46_month() {
+			return r46_month;
+		}
+		public void setR46_month(BigDecimal r46_month) {
+			this.r46_month = r46_month;
 		}
 		public BigDecimal getR46_ytd() {
 			return r46_ytd;
@@ -1478,6 +1490,12 @@ public class M_SCI_E_Summary_Entity {
 		public void setR54_cross_reference(String r54_cross_reference) {
 			this.r54_cross_reference = r54_cross_reference;
 		}
+		public BigDecimal getR54_month() {
+			return r54_month;
+		}
+		public void setR54_month(BigDecimal r54_month) {
+			this.r54_month = r54_month;
+		}
 		public BigDecimal getR54_ytd() {
 			return r54_ytd;
 		}
@@ -1568,6 +1586,12 @@ public class M_SCI_E_Summary_Entity {
 		public void setR58_cross_reference(String r58_cross_reference) {
 			this.r58_cross_reference = r58_cross_reference;
 		}
+		public BigDecimal getR58_month() {
+			return r58_month;
+		}
+		public void setR58_month(BigDecimal r58_month) {
+			this.r58_month = r58_month;
+		}
 		public BigDecimal getR58_ytd() {
 			return r58_ytd;
 		}
@@ -1586,6 +1610,12 @@ public class M_SCI_E_Summary_Entity {
 		public void setR59_cross_reference(String r59_cross_reference) {
 			this.r59_cross_reference = r59_cross_reference;
 		}
+		public BigDecimal getR59_month() {
+			return r59_month;
+		}
+		public void setR59_month(BigDecimal r59_month) {
+			this.r59_month = r59_month;
+		}
 		public BigDecimal getR59_ytd() {
 			return r59_ytd;
 		}
@@ -1603,6 +1633,12 @@ public class M_SCI_E_Summary_Entity {
 		}
 		public void setR60_cross_reference(String r60_cross_reference) {
 			this.r60_cross_reference = r60_cross_reference;
+		}
+		public BigDecimal getR60_month() {
+			return r60_month;
+		}
+		public void setR60_month(BigDecimal r60_month) {
+			this.r60_month = r60_month;
 		}
 		public BigDecimal getR60_ytd() {
 			return r60_ytd;
@@ -1742,6 +1778,12 @@ public class M_SCI_E_Summary_Entity {
 		public void setR66_cross_reference(String r66_cross_reference) {
 			this.r66_cross_reference = r66_cross_reference;
 		}
+		public BigDecimal getR66_month() {
+			return r66_month;
+		}
+		public void setR66_month(BigDecimal r66_month) {
+			this.r66_month = r66_month;
+		}
 		public BigDecimal getR66_ytd() {
 			return r66_ytd;
 		}
@@ -1760,6 +1802,12 @@ public class M_SCI_E_Summary_Entity {
 		public void setR67_cross_reference(String r67_cross_reference) {
 			this.r67_cross_reference = r67_cross_reference;
 		}
+		public BigDecimal getR67_month() {
+			return r67_month;
+		}
+		public void setR67_month(BigDecimal r67_month) {
+			this.r67_month = r67_month;
+		}
 		public BigDecimal getR67_ytd() {
 			return r67_ytd;
 		}
@@ -1777,6 +1825,12 @@ public class M_SCI_E_Summary_Entity {
 		}
 		public void setR68_cross_reference(String r68_cross_reference) {
 			this.r68_cross_reference = r68_cross_reference;
+		}
+		public BigDecimal getR68_month() {
+			return r68_month;
+		}
+		public void setR68_month(BigDecimal r68_month) {
+			this.r68_month = r68_month;
 		}
 		public BigDecimal getR68_ytd() {
 			return r68_ytd;
@@ -1915,6 +1969,12 @@ public class M_SCI_E_Summary_Entity {
 		}
 		public void setR74_cross_reference(String r74_cross_reference) {
 			this.r74_cross_reference = r74_cross_reference;
+		}
+		public BigDecimal getR74_month() {
+			return r74_month;
+		}
+		public void setR74_month(BigDecimal r74_month) {
+			this.r74_month = r74_month;
 		}
 		public BigDecimal getR74_ytd() {
 			return r74_ytd;
@@ -2174,6 +2234,12 @@ public class M_SCI_E_Summary_Entity {
 		public void setR85_cross_reference(String r85_cross_reference) {
 			this.r85_cross_reference = r85_cross_reference;
 		}
+		public BigDecimal getR85_month() {
+			return r85_month;
+		}
+		public void setR85_month(BigDecimal r85_month) {
+			this.r85_month = r85_month;
+		}
 		public BigDecimal getR85_ytd() {
 			return r85_ytd;
 		}
@@ -2210,10 +2276,10 @@ public class M_SCI_E_Summary_Entity {
 		public void setReport_date(Date report_date) {
 			this.report_date = report_date;
 		}
-		public String getReport_version() {
+		public BigDecimal getReport_version() {
 			return report_version;
 		}
-		public void setReport_version(String report_version) {
+		public void setReport_version(BigDecimal report_version) {
 			this.report_version = report_version;
 		}
 		public String getReport_frequency() {
@@ -2256,16 +2322,8 @@ public class M_SCI_E_Summary_Entity {
 			super();
 			// TODO Auto-generated constructor stub
 		}
-	
-	
-	
-   
 		
 		
-	
-	 
-	
-
-	
+		
 
 }

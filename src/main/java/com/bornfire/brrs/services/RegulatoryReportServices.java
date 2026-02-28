@@ -1187,7 +1187,10 @@ public class RegulatoryReportServices {
 			case "M_SFINP1": repsummary = BRRS_M_SFINP1_reportservice.getM_SFINP1View(reportId, fromdate, todate,
 					 currency, dtltype, pageable, type, version); break;
 					 
-					 
+			 case "M_SCI_E":
+					
+				 repsummary = brrs_m_sci_e_reportservice.getM_SCI_EView(reportId, fromdate,
+			     todate, currency, dtltype, pageable, type, version); break;	 
 					 
 			case "Q_ATF":
 				 
@@ -2031,6 +2034,7 @@ public class RegulatoryReportServices {
 			repdetail = BRRS_BDISB2_ReportService.getBDISB2currentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
 			break;
+		
 
 		// case "M_SRWA_12F":
 
@@ -3796,6 +3800,17 @@ public class RegulatoryReportServices {
 		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
 		 * Auto-generated catch block e.printStackTrace(); } break;
 		 */
+		  case "M_SCI_E":
+				try {
+					repfile = brrs_m_sci_e_reportservice.getM_SCI_EExcel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, format, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+			
+			
 		 case "M_SFINP2":
 				try {
 					repfile = BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2Excel(filename, reportId, fromdate, todate, currency,
@@ -4749,15 +4764,21 @@ public class RegulatoryReportServices {
 			break;
 
 		
-
+			
 		case "M_SCI_E":
-			try {
-				archivalData = brrs_m_sci_e_reportservice.getM_SCI_EArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> mscieList =  brrs_m_sci_e_reportservice.getM_SCI_EArchival();
+			archivalData.addAll(mscieList);
+			System.out.println("Fetched Q_ATF archival data: " + mscieList.size());
 			break;
+//
+//		case "M_SCI_E":
+//			try {
+//				archivalData = brrs_m_sci_e_reportservice.getM_SCI_EArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
 
 		case "M_I_S_CA":
 			try {
