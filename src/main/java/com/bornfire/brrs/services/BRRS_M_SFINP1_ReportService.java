@@ -355,7 +355,7 @@ public class BRRS_M_SFINP1_ReportService {
 		try {
 			logger.info("Generating Excel for M_SFINP1 Details...");
 			System.out.println("came to Detail download service");
-			if (type.equals("ARCHIVAL") & version != null) {
+			if ("ARCHIVAL".equals(type) && version != null && !version.isEmpty()) {
 				byte[] ARCHIVALreport = getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type,
 						version);
 				return ARCHIVALreport;
@@ -397,7 +397,7 @@ public class BRRS_M_SFINP1_ReportService {
 			balanceStyle.setBorderLeft(border);
 			balanceStyle.setBorderRight(border);
 			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA " ,"AVERAGE", "ROWID", "COLUMNID",
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA " ,"AVERAGE", "REPORT LABEL", "REPORT ADDL CRITERIA 1",
 					"REPORT_DATE" };
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
@@ -444,9 +444,9 @@ public class BRRS_M_SFINP1_ReportService {
 									: "");
 					// Apply data style for all other cells
 					for (int j = 0; j < 8; j++) {
-						if (j != 3) {
-							row.getCell(j).setCellStyle(dataStyle);
-						}
+					    if (j != 3 && j != 4) {   // CHANGE || TO &&
+					        row.getCell(j).setCellStyle(dataStyle);
+					    }
 					}
 				}
 			} else {
@@ -560,13 +560,13 @@ public class BRRS_M_SFINP1_ReportService {
 			// ACCT BALANCE style (right aligned with 3 decimals)
 			CellStyle balanceStyle = workbook.createCellStyle();
 			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,###"));
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
 			balanceStyle.setBorderTop(border);
 			balanceStyle.setBorderBottom(border);
 			balanceStyle.setBorderLeft(border);
 			balanceStyle.setBorderRight(border);
 			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA ","AVERAGE", "ROWID", "COLUMNID",
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA ","AVERAGE", "REPORT LABEL", "REPORT ADDL CRITERIA 1",
 					"REPORT_DATE" };
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
@@ -600,7 +600,7 @@ public class BRRS_M_SFINP1_ReportService {
 					if (item.getAcctBalanceInPula() != null) {
 						balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
 					} else {
-						balanceCell.setCellValue(0.000);
+						balanceCell.setCellValue(0);
 					}
 					balanceCell.setCellStyle(balanceStyle);
 			          // AVERAGE  (right aligned, 3 decimal places)
@@ -619,9 +619,9 @@ public class BRRS_M_SFINP1_ReportService {
 									: "");
 					// Apply data style for all other cells
 					for (int j = 0; j < 8; j++) {
-						if (j != 3) {
-							row.getCell(j).setCellStyle(dataStyle);
-						}
+					    if (j != 3 && j != 4) {   // CHANGE || TO &&
+					        row.getCell(j).setCellStyle(dataStyle);
+					    }
 					}
 				}
 			} else {

@@ -2202,9 +2202,9 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 										<th>ACCT NO</th>
 										<th>ACCT NAME</th>
 										<th style="text-align:right;width: 250px;">ACCT BALANCE IN PULA</th>
-										<th style="text-align:right;">AVERAGE</th>
-										<th>ROW ID</th>
-										<th>COLUMN ID</th>
+										<th style="text-align:right !important;">AVERAGE</th>
+										<th>REPORT LABEL</th>
+										<th style="width: 250px;">REPORT ADDL CRITERIA 1</th>
 										<th>REPORT_DATE</th>
 									</tr>
 
@@ -2226,7 +2226,7 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.acctBalanceInPula,1,'COMMA',0,'POINT')}">
 										</td>
-										<td style="text-align:right;"
+										<td style="text-align:right!important;"
 											th:text="${#numbers.formatDecimal(report.average,1,'COMMA',0,'POINT')}">
 										</td>
 										<td th:text="${report.rowId}"></td>
