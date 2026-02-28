@@ -352,16 +352,18 @@ public class BRRS_M_SFINP1_ReportService {
 
 	public byte[] getM_SFINP1DetailExcel(String filename, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) {
+
 		try {
-			logger.info("Generating Excel for M_SFINP1 Details...");
+			logger.info("Generating Excel for BRRS_M_SFINP1 Details...");
 			System.out.println("came to Detail download service");
-			if ("ARCHIVAL".equals(type) && version != null && !version.isEmpty()) {
+			if (type.equals("ARCHIVAL") & version != null) {
 				byte[] ARCHIVALreport = getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type,
 						version);
 				return ARCHIVALreport;
 			}
 			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("M_SFINP1Details");
+			XSSFSheet sheet = workbook.createSheet("BRRS_M_SFINP1Details");
+
 			// Common border style
 			BorderStyle border = BorderStyle.THIN;
 			// Header style (left aligned)
@@ -377,10 +379,12 @@ public class BRRS_M_SFINP1_ReportService {
 			headerStyle.setBorderBottom(border);
 			headerStyle.setBorderLeft(border);
 			headerStyle.setBorderRight(border);
+
 			// Right-aligned header style for ACCT BALANCE
 			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
 			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
 			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
 			// Default data style (left aligned)
 			CellStyle dataStyle = workbook.createCellStyle();
 			dataStyle.setAlignment(HorizontalAlignment.LEFT);
@@ -388,27 +392,31 @@ public class BRRS_M_SFINP1_ReportService {
 			dataStyle.setBorderBottom(border);
 			dataStyle.setBorderLeft(border);
 			dataStyle.setBorderRight(border);
+
 			// ACCT BALANCE style (right aligned with 3 decimals)
 			CellStyle balanceStyle = workbook.createCellStyle();
 			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-		     balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
 			balanceStyle.setBorderTop(border);
 			balanceStyle.setBorderBottom(border);
 			balanceStyle.setBorderLeft(border);
 			balanceStyle.setBorderRight(border);
 			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA " ,"AVERAGE", "REPORT LABEL", "REPORT ADDL CRITERIA 1",
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "AVERAGE","REPORT LABEL", "REPORT ADDL CRETIRIA",
 					"REPORT_DATE" };
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
-				Cell cell = headerRow.createCell(i);
-				cell.setCellValue(headers[i]);
-				if (i == 3 || i == 4) { // ACCT BALANCE
-					cell.setCellStyle(rightAlignedHeaderStyle);
-				} else {
-					cell.setCellStyle(headerStyle);
-				}
-				sheet.setColumnWidth(i, 5000);
+			    Cell cell = headerRow.createCell(i);
+			    cell.setCellValue(headers[i]);
+
+			    // Amount columns: ACCT BALANCE (i=3) and average (i=4)
+			    if (i == 3 || i == 4) {
+			        cell.setCellStyle(rightAlignedHeaderStyle);
+			    } else {
+			        cell.setCellStyle(headerStyle);
+			    }
+
+			    sheet.setColumnWidth(i, 5000);
 			}
 			// Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
@@ -421,21 +429,21 @@ public class BRRS_M_SFINP1_ReportService {
 					row.createCell(1).setCellValue(item.getAcctNumber());
 					row.createCell(2).setCellValue(item.getAcctName());
 					// ACCT BALANCE (right aligned, 3 decimal places)
-				     Cell balanceCell = row.createCell(3);
-	                    if (item.getAcctBalanceInPula() != null) {
-	                        balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
-	                    } else {
-	                        balanceCell.setCellValue(0);
-	                    }
-	                    balanceCell.setCellStyle(balanceStyle);
-			          // AVERAGE  (right aligned, 3 decimal places)
-                    Cell balanceCell1 = row.createCell(4);
-                    if (item.getAverage() != null) {
-                        balanceCell1.setCellValue(item.getAverage().doubleValue());
-                    } else {
-                        balanceCell1.setCellValue(0);
-                    }
-                    balanceCell1.setCellStyle(balanceStyle);
+					Cell balanceCell = row.createCell(3);
+					if (item.getAcctBalanceInPula() != null) {
+						balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
+					} else {
+						balanceCell.setCellValue(0);
+					}
+					balanceCell.setCellStyle(balanceStyle);
+					// Average (right aligned, 3 decimal places)
+					 balanceCell = row.createCell(4);
+					if (item.getAverage() != null) {
+						balanceCell.setCellValue(item.getAverage().doubleValue());
+					} else {
+						balanceCell.setCellValue(0);
+					}
+					balanceCell.setCellStyle(balanceStyle);
 					row.createCell(5).setCellValue(item.getRowId());
 					row.createCell(6).setCellValue(item.getColumnId());
 					row.createCell(7)
@@ -444,13 +452,13 @@ public class BRRS_M_SFINP1_ReportService {
 									: "");
 					// Apply data style for all other cells
 					for (int j = 0; j < 8; j++) {
-					    if (j != 3 && j != 4) {   // CHANGE || TO &&
+					    if (j != 3 && j != 4) {
 					        row.getCell(j).setCellStyle(dataStyle);
 					    }
 					}
 				}
 			} else {
-				logger.info("No data found for M_SFINP1 — only header will be written.");
+				logger.info("No data found for BRRS_M_SFINP1 — only header will be written.");
 			}
 			// Write to byte[]
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -459,11 +467,147 @@ public class BRRS_M_SFINP1_ReportService {
 			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
 			return bos.toByteArray();
 		} catch (Exception e) {
-			logger.error("Error generating M_SFINP1 Excel", e);
-			return new byte[0];
+			 logger.error("Error generating BRRS_M_SFINP1 Excel", e);
+		     return null;  // important
 		}
 	}
 
+	
+	
+
+	public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
+			String dtltype, String type, String version) {
+		try {
+			logger.info("Generating Excel for BRRS_M_SFINP1 ARCHIVAL Details...");
+			System.out.println("came to Detail download service");
+			if (type.equals("ARCHIVAL") & version != null) {
+
+			}
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			XSSFSheet sheet = workbook.createSheet("MSFinP2Detail");
+
+			// Common border style
+			BorderStyle border = BorderStyle.THIN;
+
+			// Header style (left aligned)
+			CellStyle headerStyle = workbook.createCellStyle();
+			Font headerFont = workbook.createFont();
+			headerFont.setBold(true);
+			headerFont.setFontHeightInPoints((short) 10);
+			headerStyle.setFont(headerFont);
+			headerStyle.setAlignment(HorizontalAlignment.LEFT);
+			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+			headerStyle.setBorderTop(border);
+			headerStyle.setBorderBottom(border);
+			headerStyle.setBorderLeft(border);
+			headerStyle.setBorderRight(border);
+
+			// Right-aligned header style for ACCT BALANCE
+			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
+			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
+			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+			// Default data style (left aligned)
+			CellStyle dataStyle = workbook.createCellStyle();
+			dataStyle.setAlignment(HorizontalAlignment.LEFT);
+			dataStyle.setBorderTop(border);
+			dataStyle.setBorderBottom(border);
+			dataStyle.setBorderLeft(border);
+			dataStyle.setBorderRight(border);
+
+			// ACCT BALANCE style (right aligned with 3 decimals)
+			CellStyle balanceStyle = workbook.createCellStyle();
+			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
+			balanceStyle.setBorderTop(border);
+			balanceStyle.setBorderBottom(border);
+			balanceStyle.setBorderLeft(border);
+			balanceStyle.setBorderRight(border);
+
+			// Header row
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "AVERAGE","REPORT LABEL", "REPORT ADDL CRETIRIA",
+					"REPORT_DATE" };
+
+			XSSFRow headerRow = sheet.createRow(0);
+			for (int i = 0; i < headers.length; i++) {
+			    Cell cell = headerRow.createCell(i);
+			    cell.setCellValue(headers[i]);
+
+			    // Amount columns: ACCT BALANCE (i=3) and average (i=4)
+			    if (i == 3 || i == 4) {
+			        cell.setCellStyle(rightAlignedHeaderStyle);
+			    } else {
+			        cell.setCellStyle(headerStyle);
+			    }
+
+			    sheet.setColumnWidth(i, 5000);
+			}
+
+			// Get data
+			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+			List<M_SFINP1_Archival_Detail_Entity> reportData = BRRS_M_SFINP1_Archival_Detail_Repo
+					.getdatabydateList(parsedToDate, version);
+
+			if (reportData != null && !reportData.isEmpty()) {
+				int rowIndex = 1;
+				for (M_SFINP1_Archival_Detail_Entity item : reportData) {
+					XSSFRow row = sheet.createRow(rowIndex++);
+
+					row.createCell(0).setCellValue(item.getCustId());
+					row.createCell(1).setCellValue(item.getAcctNumber());
+					row.createCell(2).setCellValue(item.getAcctName());
+
+					// ACCT BALANCE (right aligned, 3 decimal places)
+					Cell balanceCell = row.createCell(3);
+					if (item.getAcctBalanceInPula() != null) {
+						balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
+					} else {
+						balanceCell.setCellValue(0);
+					}
+					balanceCell.setCellStyle(balanceStyle);
+					
+					// Average (right aligned, 3 decimal places)
+					 balanceCell = row.createCell(4);
+					if (item.getAverage() != null) {
+						balanceCell.setCellValue(item.getAverage().doubleValue());
+					} else {
+						balanceCell.setCellValue(0);
+					}
+					balanceCell.setCellStyle(balanceStyle);
+					
+
+					row.createCell(5).setCellValue(item.getRowId());
+					row.createCell(6).setCellValue(item.getColumnId());
+					row.createCell(7)
+							.setCellValue(item.getReportDate() != null
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+									: "");
+
+					// Apply data style for all other cells
+					for (int j = 0; j < 8; j++) {
+					    if (j != 3 && j != 4) {
+					        row.getCell(j).setCellStyle(dataStyle);
+					    }
+					}
+				}
+			} else {
+				logger.info("No data found for BRRS_M_SFINP1 — only header will be written.");
+			}
+
+			// Write to byte[]
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			workbook.write(bos);
+			workbook.close();
+
+			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
+			return bos.toByteArray();
+
+		} catch (Exception e) {
+			logger.error("Error generating BRRS_M_SFINP1Excel", e);
+			return new byte[0];
+		}
+	}
 
 	public List<Object[]> getM_SFINP1Resub() {
 		List<Object[]> resubList = new ArrayList<>();
@@ -520,124 +664,7 @@ public class BRRS_M_SFINP1_ReportService {
 
 		return archivalList;
 	}
-	public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) {
-		
 
-		try {
-			logger.info("Generating Excel for BRRS_M_SFINP1 ARCHIVAL Details...");
-			System.out.println("came to Detail download service");
-			if (type.equals("ARCHIVAL") & version != null) {
-			}
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("M_SFINP1Details");
-			// Common border style
-			BorderStyle border = BorderStyle.THIN;
-			// Header style (left aligned)
-			CellStyle headerStyle = workbook.createCellStyle();
-			Font headerFont = workbook.createFont();
-			headerFont.setBold(true);
-			headerFont.setFontHeightInPoints((short) 10);
-			headerStyle.setFont(headerFont);
-			headerStyle.setAlignment(HorizontalAlignment.LEFT);
-			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-			headerStyle.setBorderTop(border);
-			headerStyle.setBorderBottom(border);
-			headerStyle.setBorderLeft(border);
-			headerStyle.setBorderRight(border);
-			// Right-aligned header style for ACCT BALANCE
-			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
-			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
-			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-			// Default data style (left aligned)
-			CellStyle dataStyle = workbook.createCellStyle();
-			dataStyle.setAlignment(HorizontalAlignment.LEFT);
-			dataStyle.setBorderTop(border);
-			dataStyle.setBorderBottom(border);
-			dataStyle.setBorderLeft(border);
-			dataStyle.setBorderRight(border);
-			// ACCT BALANCE style (right aligned with 3 decimals)
-			CellStyle balanceStyle = workbook.createCellStyle();
-			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
-			balanceStyle.setBorderTop(border);
-			balanceStyle.setBorderBottom(border);
-			balanceStyle.setBorderLeft(border);
-			balanceStyle.setBorderRight(border);
-			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA ","AVERAGE", "REPORT LABEL", "REPORT ADDL CRITERIA 1",
-					"REPORT_DATE" };
-			XSSFRow headerRow = sheet.createRow(0);
-			for (int i = 0; i < headers.length; i++) {
-				Cell cell = headerRow.createCell(i);
-				cell.setCellValue(headers[i]);
-				if (i == 3 || i == 4) { // ACCT BALANCE
-					cell.setCellStyle(rightAlignedHeaderStyle);
-				} else {
-					cell.setCellStyle(headerStyle);
-				}
-				sheet.setColumnWidth(i, 5000);
-			}
-			// Get data
-			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			
-			logger.info("Parsed Date = {}", parsedToDate);
-			logger.info("Version = {}", version);
-
-			List<M_SFINP1_Archival_Detail_Entity> reportData = BRRS_M_SFINP1_Archival_Detail_Repo.getdatabydateList(parsedToDate, version);
-			
-			logger.info("ROWS FOUND IN DB = {}", reportData == null ? "NULL" : reportData.size());
-			if (reportData != null && !reportData.isEmpty()) {
-				int rowIndex = 1;
-				for (M_SFINP1_Archival_Detail_Entity item : reportData) {
-					XSSFRow row = sheet.createRow(rowIndex++);
-					row.createCell(0).setCellValue(item.getCustId());
-					row.createCell(1).setCellValue(item.getAcctNumber());
-					row.createCell(2).setCellValue(item.getAcctName());
-					// ACCT BALANCE (right aligned, 3 decimal places)
-					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInPula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
-					} else {
-						balanceCell.setCellValue(0);
-					}
-					balanceCell.setCellStyle(balanceStyle);
-			          // AVERAGE  (right aligned, 3 decimal places)
-                    Cell balanceCell1 = row.createCell(4);
-                    if (item.getAverage() != null) {
-                        balanceCell1.setCellValue(item.getAverage().doubleValue());
-                    } else {
-                        balanceCell1.setCellValue(0);
-                    }
-                    balanceCell1.setCellStyle(balanceStyle);
-					row.createCell(5).setCellValue(item.getRowId());
-					row.createCell(6).setCellValue(item.getColumnId());
-					row.createCell(7)
-							.setCellValue(item.getReportDate() != null
-									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
-									: "");
-					// Apply data style for all other cells
-					for (int j = 0; j < 8; j++) {
-					    if (j != 3 && j != 4) {   // CHANGE || TO &&
-					        row.getCell(j).setCellStyle(dataStyle);
-					    }
-					}
-				}
-			} else {
-				logger.info("No data found for M_SFINP1 — only header will be written.");
-			}
-			// Write to byte[]
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			workbook.write(bos);
-			workbook.close();
-			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
-			return bos.toByteArray();
-		} catch (Exception e) {
-			logger.error("Error generating M_SFINP1 Excel", e);
-			return new byte[0];
-		}
-	}
 	
 	
 
