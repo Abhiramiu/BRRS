@@ -429,14 +429,14 @@ public class BRRS_M_SCI_E_ReportService {
 			balanceStyle.setBorderRight(border);
 
 			// Header row
-			String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME","MONTHLY_INT", "BALANCE_AMT", "REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT_DATE" };
+			String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME","MONTHLY_INT",  "CREDIT_EQUIVALENT","DEBIT_EQUIVALENT", "REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT_DATE" };
 
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
 				Cell cell = headerRow.createCell(i);
 				cell.setCellValue(headers[i]);
 
-				if (i == 3 || i == 4) {  // MONTHLY_INT (3) and BALANCE_AMT (4)
+				if (i == 3 || i == 4 || i == 5) {  // MONTHLY_INT (3) and CREDIT_EQUIVALENT (4) nd DEBIT_EQUIVALENT(5)
 				    cell.setCellStyle(rightAlignedHeaderStyle);
 				} else {
 				    cell.setCellStyle(headerStyle);
@@ -466,27 +466,36 @@ public class BRRS_M_SCI_E_ReportService {
 					}
 					balanceCell.setCellStyle(balanceStyle);
 					
-					// BALANCE_AMT (right aligned, 3 decimal places)
+					// CREDIT_EQUIVALENT (right aligned, 3 decimal places)
 					 balanceCell = row.createCell(4);
-					if (item.getBalanceAmt() != null) {
-						balanceCell.setCellValue(item.getBalanceAmt().doubleValue());
+					if (item.getCreditEquivalent() != null) {
+						balanceCell.setCellValue(item.getCreditEquivalent().doubleValue());
 					} else {
 						balanceCell.setCellValue(0);
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
-					
 
-					row.createCell(5).setCellValue(item.getReportLable());
-					row.createCell(6).setCellValue(item.getReportAddlCriteria_1());
-					row.createCell(7)
+					// CREDIT_EQUIVALENT (right aligned, 3 decimal places)
+					 balanceCell = row.createCell(5);
+					if (item.getDebitEquivalent() != null) {
+						balanceCell.setCellValue(item.getDebitEquivalent().doubleValue());
+					} else {
+						balanceCell.setCellValue(0);
+					}
+					balanceCell.setCellStyle(balanceStyle);
+
+
+					row.createCell(6).setCellValue(item.getReportLable());
+					row.createCell(7).setCellValue(item.getReportAddlCriteria_1());
+					row.createCell(8)
 							.setCellValue(item.getReportDate() != null
 									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
 									: "");
 
 					// Apply data style for all other cells
-					for (int j = 0; j < 8; j++) {
-					    if (j != 3 && j != 4) {
+					for (int j = 0; j < 9; j++) {
+					    if (j != 3 && j != 4 && j != 5) {
 					        row.getCell(j).setCellStyle(dataStyle);
 					    }
 					}
@@ -564,14 +573,14 @@ public class BRRS_M_SCI_E_ReportService {
 			balanceStyle.setBorderRight(border);
 
 // Header row
-			String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE",  "REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT_DATE" };
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME","MONTHLY_INT",  "CREDIT_EQUIVALENT","DEBIT_EQUIVALENT", "REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT_DATE" };
 
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
 				Cell cell = headerRow.createCell(i);
 				cell.setCellValue(headers[i]);
 
-				if (i == 3 || i == 4) {  // MONTHLY_INT (3) and BALANCE_AMT (4)
+				if (i == 3 || i == 4 || i == 5) {  // MONTHLY_INT (3) and CREDIT_EQUIVALENT (4) nd DEBIT_EQUIVALENT(5)
 				    cell.setCellStyle(rightAlignedHeaderStyle);
 				} else {
 				    cell.setCellStyle(headerStyle);
@@ -595,35 +604,46 @@ public class BRRS_M_SCI_E_ReportService {
 					row.createCell(1).setCellValue(item.getAcctNumber());
 					 row.createCell(2).setCellValue(item.getAcctName()); 
 
-// ACCT BALANCE (right aligned, 3 decimal places)
-					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInpula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
-					} else {
-						balanceCell.setCellValue(0);
-					}
-					balanceCell.setCellStyle(balanceStyle);
+/// MONTHLY_INT (right aligned, 3 decimal places)
+						Cell balanceCell = row.createCell(3);
+						if (item.getMonthlyInt() != null) {
+							balanceCell.setCellValue(item.getMonthlyInt().doubleValue());
+						} else {
+							balanceCell.setCellValue(0);
+						}
+						balanceCell.setCellStyle(balanceStyle);
+						
+						// CREDIT_EQUIVALENT (right aligned, 3 decimal places)
+						 balanceCell = row.createCell(4);
+						if (item.getCreditEquivalent() != null) {
+							balanceCell.setCellValue(item.getCreditEquivalent().doubleValue());
+						} else {
+							balanceCell.setCellValue(0);
+						}
+						balanceCell.setCellStyle(balanceStyle);
 
-					// BALANCE_AMT (right aligned, 3 decimal places)
-					 balanceCell = row.createCell(4);
-					if (item.getBalanceAmt() != null) {
-						balanceCell.setCellValue(item.getBalanceAmt().doubleValue());
-					} else {
-						balanceCell.setCellValue(0);
-					}
-					balanceCell.setCellStyle(balanceStyle);
+
+						// CREDIT_EQUIVALENT (right aligned, 3 decimal places)
+						 balanceCell = row.createCell(5);
+						if (item.getDebitEquivalent() != null) {
+							balanceCell.setCellValue(item.getDebitEquivalent().doubleValue());
+						} else {
+							balanceCell.setCellValue(0);
+						}
+						balanceCell.setCellStyle(balanceStyle);
+
 					
-					row.createCell(4).setCellValue(item.getReportLable());
-					row.createCell(5).setCellValue(item.getReportAddlCriteria_1());
-					row.createCell(6)
+					row.createCell(6).setCellValue(item.getReportLable());
+					row.createCell(7).setCellValue(item.getReportAddlCriteria_1());
+					row.createCell(8)
 							.setCellValue(item.getReportDate() != null
 									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
 									: "");
 
 
 					// Apply data style for all other cells
-					for (int j = 0; j < 8; j++) {
-					    if (j != 3 && j != 4) {
+					for (int j = 0; j < 9; j++) {
+						   if (j != 3 && j != 4 && j != 5) {
 					        row.getCell(j).setCellStyle(dataStyle);
 					    }
 					}

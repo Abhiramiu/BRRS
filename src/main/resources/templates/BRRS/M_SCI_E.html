@@ -3187,7 +3187,8 @@ function cancelModify() {
 											<th>ACCT_NUMBER</th>
 											<th>ACCT_NAME</th>
 											<th style="text-align:right;">MONTHLY_INT</th>
-												<th style="text-align:right;">BALANCE_AMT</th>
+												<th style="text-align:right;">CREDIT EQUIVALENT</th>
+												<th style="text-align:right;">DEBIT_EQUIVALENT</th>
 											<th>REPORT LABEL</th>
 											<th>REPORT ADDL CRITERIA1</th>
 											<th>REPORT_DATE</th>
@@ -3218,7 +3219,11 @@ function cancelModify() {
     th:text="${#numbers.formatDecimal(report.monthlyInt, 1, 'COMMA', 0, 'POINT')}">
 </td>
 <td style="text-align:right !important;"
-    th:text="${#numbers.formatDecimal(report.balanceAmt, 1, 'COMMA', 0, 'POINT')}">
+    th:text="${#numbers.formatDecimal(report.creditEquivalent, 1, 'COMMA', 0, 'POINT')}">
+</td>
+
+<td style="text-align:right !important;"
+    th:text="${#numbers.formatDecimal(report.debitEquivalent, 1, 'COMMA', 0, 'POINT')}">
 </td>
 
 											<td th:text="${report.reportLable}"></td>
@@ -3286,9 +3291,9 @@ function cancelModify() {
 							</div>
 							<div class="col-sm-1"></div>
 
-							<label class="col-sm-2">Balance Amount</label>
+							<label class="col-sm-2">Credit Equivalent</label>
 							<div class="col-sm-3">
-									<input type="number" step="0.01"  name="balanceAmt" th:field="*{balanceAmt}"
+									<input type="number" step="0.01"  name="creditEquivalent" th:field="*{creditEquivalent}"
 										class="form-control form-control-sm" style="text-align:right;" />
 								</div>
 						</div>
@@ -3306,19 +3311,23 @@ function cancelModify() {
 							
 							<div class="col-sm-1"></div>
 							
+							<label class="col-sm-2">Debit Equivalent</label>
+							<div class="col-sm-3">
+									<input type="number" step="0.01"  name="debitEquivalent" th:field="*{debitEquivalent}"
+										class="form-control form-control-sm" style="text-align:right;" />
+								</div>
 							
-							<label class="col-sm-2">Report Date</label>
+							
+						</div>
+						
+						<div class="row formline" style="margin-top:10px;">
+						<label class="col-sm-2">Report Date</label>
 							<div class="col-sm-3">
 								<input type="date" name="reportDate" class="form-control form-control-sm"readonly
 									th:value="${#dates.format(msciData.reportDate, 'yyyy-MM-dd')}" />
 							</div>
 							
-							
-							
-							
-							
-							
-						</div>
+							</div>
 
 					<!-- 	<div class="row formline" style="margin-top:10px;">
 							
@@ -3450,7 +3459,7 @@ function cancelModify() {
 					   columnDefs: [
 					     { width: "60px", targets: 0 },   // Edit icon column
 					     { width: "150px", targets: 1 }  ,  // S No column
-						 { width: "300px", targets: 7 }    // S No column
+						 { width: "300px", targets: 9 }    // S No column
 					   ],
 
 				      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
