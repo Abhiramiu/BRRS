@@ -777,22 +777,48 @@ public byte[] getExcelM_CA1ARCHIVAL(String filename, String reportId, String fro
 	}
 
 
-public List<Object> getM_CA1Archival() {
-		List<Object> M_CA1Archivallist = new ArrayList<>();
-		try {
-			M_CA1Archivallist = BRRS_M_CA1_Archival_Summary_Repo.getM_CA1archival();
-			System.out.println("countser" + M_CA1Archivallist.size());
-		} catch (Exception e) {
-			// Log the exception
-			System.err.println("Error fetching M_CA1 Archival data: " + e.getMessage());
-			e.printStackTrace();
+	// Archival View
+	public List<Object[]> getM_CA1Archival() {
 
-			// Optionally, you can rethrow it or return empty list
-			// throw new RuntimeException("Failed to fetch data", e);
-		}
-		return M_CA1Archivallist;
+	    List<Object[]> archivalList = new ArrayList<>();
+
+	    try {
+
+	        // Fetch full archival list ordered by version
+	        List<M_CA1_Archival_Summary_Entity> repoData =
+	                BRRS_M_CA1_Archival_Summary_Repo.getdatabydateListWithVersion();
+
+	        if (repoData != null && !repoData.isEmpty()) {
+
+	            for (M_CA1_Archival_Summary_Entity entity : repoData) {
+
+	                Object[] row = new Object[] {
+	                        entity.getREPORT_DATE(),
+	                        entity.getREPORT_VERSION(),
+	                        entity.getReportResubDate()
+	                };
+
+	                archivalList.add(row);
+	            }
+
+	            System.out.println("Fetched " + archivalList.size() + " archival records");
+
+	            // Print latest version (first record if ordered ASC)
+	            M_CA1_Archival_Summary_Entity first = repoData.get(0);
+	            System.out.println("Latest archival version: " + first.getREPORT_VERSION());
+
+	        } else {
+	            System.out.println("No archival data found.");
+	        }
+
+	    } catch (Exception e) {
+
+	        System.err.println("Error fetching M_CA1 Archival data: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+
+	    return archivalList;
 	}
-
 
 
 //Archival Email Excel
@@ -877,7 +903,7 @@ public List<Object> getM_CA1Archival() {
 				
 							//row9
 							// Column D
-							Cell cell3 = row.getCell(3);
+							Cell cell3 = row.getCell(2);
 							if (record.getR9_AMOUNT() != null) {
 								cell3.setCellValue(record.getR9_AMOUNT().doubleValue());
 
@@ -892,7 +918,7 @@ public List<Object> getM_CA1Archival() {
 							//row10
 							row = sheet.getRow(9);			
 							// Column D 
-							 cell3 = row.getCell(3);
+							 cell3 = row.getCell(2);
 							if (record.getR10_AMOUNT() != null) {
 								cell3.setCellValue(record.getR10_AMOUNT().doubleValue());
 
@@ -904,7 +930,7 @@ public List<Object> getM_CA1Archival() {
 							//row11
 							row = sheet.getRow(10);			
 							// Column D
-							 cell3 = row.getCell(3);
+							 cell3 = row.getCell(2);
 							if (record.getR11_AMOUNT() != null) {
 								cell3.setCellValue(record.getR11_AMOUNT().doubleValue());
 
@@ -916,7 +942,7 @@ public List<Object> getM_CA1Archival() {
 							//row12
 							row = sheet.getRow(11);			
 							// Column F 
-							 cell3 = row.getCell(3);
+							 cell3 = row.getCell(2);
 							if (record.getR12_AMOUNT() != null) {
 								cell3.setCellValue(record.getR12_AMOUNT().doubleValue());
 
@@ -943,10 +969,10 @@ public List<Object> getM_CA1Archival() {
 							
 							
 
-							//row17
-							row = sheet.getRow(16);			
-							// Column F 
-							 cell3 = row.getCell(3);
+							//row18
+							row = sheet.getRow(17);			
+							// Column C
+							 cell3 = row.getCell(2);
 							if (record.getR17_AMOUNT() != null) {
 								cell3.setCellValue(record.getR17_AMOUNT().doubleValue());
 
@@ -955,13 +981,10 @@ public List<Object> getM_CA1Archival() {
 								cell3.setCellStyle(textStyle);
 							}
 							
-
-							//row18
-							row = sheet.getRow(17);			
-							// Column F 
+							// Column D
 							 cell3 = row.getCell(3);
-							if (record.getR18_AMOUNT() != null) {
-								cell3.setCellValue(record.getR18_AMOUNT().doubleValue());
+							if (record.getR17_CAR() != null) {
+								cell3.setCellValue(record.getR17_CAR().doubleValue());
 
 							} else {
 								cell3.setCellValue("");
@@ -971,8 +994,31 @@ public List<Object> getM_CA1Archival() {
 
 							//row19
 							row = sheet.getRow(18);			
-							// Column F 
+							// Column C
+							 cell3 = row.getCell(2);
+							if (record.getR18_AMOUNT() != null) {
+								cell3.setCellValue(record.getR18_AMOUNT().doubleValue());
+
+							} else {
+								cell3.setCellValue("");
+								cell3.setCellStyle(textStyle);
+							}
+							
+							
+							// Column D
 							 cell3 = row.getCell(3);
+							if (record.getR18_CAR() != null) {
+								cell3.setCellValue(record.getR18_CAR().doubleValue());
+
+							} else {
+								cell3.setCellValue("");
+								cell3.setCellStyle(textStyle);
+							}
+
+							//row20
+							row = sheet.getRow(19);			
+							// Column C 
+							 cell3 = row.getCell(2);
 							if (record.getR19_AMOUNT() != null) {
 								cell3.setCellValue(record.getR19_AMOUNT().doubleValue());
 
@@ -981,11 +1027,21 @@ public List<Object> getM_CA1Archival() {
 								cell3.setCellStyle(textStyle);
 							}
 							
-
-							//row20
-							row = sheet.getRow(19);			
-							// Column F 
+							
+							// Column D
 							 cell3 = row.getCell(3);
+							if (record.getR19_CAR() != null) {
+								cell3.setCellValue(record.getR19_CAR().doubleValue());
+
+							} else {
+								cell3.setCellValue("");
+								cell3.setCellStyle(textStyle);
+							}
+
+							//row21
+							row = sheet.getRow(20);			
+							// Column C
+							 cell3 = row.getCell(2);
 							if (record.getR20_AMOUNT() != null) {
 								cell3.setCellValue(record.getR20_AMOUNT().doubleValue());
 
@@ -994,11 +1050,21 @@ public List<Object> getM_CA1Archival() {
 								cell3.setCellStyle(textStyle);
 							}
 							
-
-							//row21
-							row = sheet.getRow(20);			
-							// Column F 
+							
+							// Column D
 							 cell3 = row.getCell(3);
+							if (record.getR20_CAR() != null) {
+								cell3.setCellValue(record.getR20_CAR().doubleValue());
+
+							} else {
+								cell3.setCellValue("");
+								cell3.setCellStyle(textStyle);
+							}
+
+							//row22
+							row = sheet.getRow(21);			
+							// Column C 
+							 cell3 = row.getCell(2);
 							if (record.getR21_AMOUNT() != null) {
 								cell3.setCellValue(record.getR21_AMOUNT().doubleValue());
 
@@ -1007,7 +1073,15 @@ public List<Object> getM_CA1Archival() {
 								cell3.setCellStyle(textStyle);
 							}
 									
-												
+							// Column D
+							 cell3 = row.getCell(3);
+							if (record.getR21_CAR() != null) {
+								cell3.setCellValue(record.getR21_CAR().doubleValue());
+
+							} else {
+								cell3.setCellValue("");
+								cell3.setCellStyle(textStyle);
+							}					
 						}
 
 
@@ -1114,7 +1188,7 @@ public List<Object> getM_CA1Archival() {
 				
 							//row9
 							// Column D
-							Cell cell3 = row.getCell(3);
+							Cell cell3 = row.getCell(2);
 							if (record.getR9_AMOUNT() != null) {
 								cell3.setCellValue(record.getR9_AMOUNT().doubleValue());
 
@@ -1129,7 +1203,7 @@ public List<Object> getM_CA1Archival() {
 							//row10
 							row = sheet.getRow(9);			
 							// Column D 
-							 cell3 = row.getCell(3);
+							 cell3 = row.getCell(2);
 							if (record.getR10_AMOUNT() != null) {
 								cell3.setCellValue(record.getR10_AMOUNT().doubleValue());
 
@@ -1141,7 +1215,7 @@ public List<Object> getM_CA1Archival() {
 							//row11
 							row = sheet.getRow(10);			
 							// Column D
-							 cell3 = row.getCell(3);
+							 cell3 = row.getCell(2);
 							if (record.getR11_AMOUNT() != null) {
 								cell3.setCellValue(record.getR11_AMOUNT().doubleValue());
 
@@ -1153,7 +1227,7 @@ public List<Object> getM_CA1Archival() {
 							//row12
 							row = sheet.getRow(11);			
 							// Column F 
-							 cell3 = row.getCell(3);
+							 cell3 = row.getCell(2);
 							if (record.getR12_AMOUNT() != null) {
 								cell3.setCellValue(record.getR12_AMOUNT().doubleValue());
 
@@ -1180,10 +1254,10 @@ public List<Object> getM_CA1Archival() {
 							
 							
 
-							//row17
-							row = sheet.getRow(16);			
-							// Column F 
-							 cell3 = row.getCell(3);
+							//row18
+							row = sheet.getRow(17);			
+							// Column C
+							 cell3 = row.getCell(2);
 							if (record.getR17_AMOUNT() != null) {
 								cell3.setCellValue(record.getR17_AMOUNT().doubleValue());
 
@@ -1192,13 +1266,10 @@ public List<Object> getM_CA1Archival() {
 								cell3.setCellStyle(textStyle);
 							}
 							
-
-							//row18
-							row = sheet.getRow(17);			
-							// Column F 
+							// Column D
 							 cell3 = row.getCell(3);
-							if (record.getR18_AMOUNT() != null) {
-								cell3.setCellValue(record.getR18_AMOUNT().doubleValue());
+							if (record.getR17_CAR() != null) {
+								cell3.setCellValue(record.getR17_CAR().doubleValue());
 
 							} else {
 								cell3.setCellValue("");
@@ -1208,8 +1279,31 @@ public List<Object> getM_CA1Archival() {
 
 							//row19
 							row = sheet.getRow(18);			
-							// Column F 
+							// Column C
+							 cell3 = row.getCell(2);
+							if (record.getR18_AMOUNT() != null) {
+								cell3.setCellValue(record.getR18_AMOUNT().doubleValue());
+
+							} else {
+								cell3.setCellValue("");
+								cell3.setCellStyle(textStyle);
+							}
+							
+							
+							// Column D
 							 cell3 = row.getCell(3);
+							if (record.getR18_CAR() != null) {
+								cell3.setCellValue(record.getR18_CAR().doubleValue());
+
+							} else {
+								cell3.setCellValue("");
+								cell3.setCellStyle(textStyle);
+							}
+
+							//row20
+							row = sheet.getRow(19);			
+							// Column C 
+							 cell3 = row.getCell(2);
 							if (record.getR19_AMOUNT() != null) {
 								cell3.setCellValue(record.getR19_AMOUNT().doubleValue());
 
@@ -1218,11 +1312,21 @@ public List<Object> getM_CA1Archival() {
 								cell3.setCellStyle(textStyle);
 							}
 							
-
-							//row20
-							row = sheet.getRow(19);			
-							// Column F 
+							
+							// Column D
 							 cell3 = row.getCell(3);
+							if (record.getR19_CAR() != null) {
+								cell3.setCellValue(record.getR19_CAR().doubleValue());
+
+							} else {
+								cell3.setCellValue("");
+								cell3.setCellStyle(textStyle);
+							}
+
+							//row21
+							row = sheet.getRow(20);			
+							// Column C
+							 cell3 = row.getCell(2);
 							if (record.getR20_AMOUNT() != null) {
 								cell3.setCellValue(record.getR20_AMOUNT().doubleValue());
 
@@ -1231,11 +1335,21 @@ public List<Object> getM_CA1Archival() {
 								cell3.setCellStyle(textStyle);
 							}
 							
-
-							//row21
-							row = sheet.getRow(20);			
-							// Column F 
+							
+							// Column D
 							 cell3 = row.getCell(3);
+							if (record.getR20_CAR() != null) {
+								cell3.setCellValue(record.getR20_CAR().doubleValue());
+
+							} else {
+								cell3.setCellValue("");
+								cell3.setCellStyle(textStyle);
+							}
+
+							//row22
+							row = sheet.getRow(21);			
+							// Column C 
+							 cell3 = row.getCell(2);
 							if (record.getR21_AMOUNT() != null) {
 								cell3.setCellValue(record.getR21_AMOUNT().doubleValue());
 
@@ -1244,8 +1358,18 @@ public List<Object> getM_CA1Archival() {
 								cell3.setCellStyle(textStyle);
 							}
 									
-												
+							// Column D
+							 cell3 = row.getCell(3);
+							if (record.getR21_CAR() != null) {
+								cell3.setCellValue(record.getR21_CAR().doubleValue());
+
+							} else {
+								cell3.setCellValue("");
+								cell3.setCellStyle(textStyle);
+							}					
 						}
+
+
 					
 						workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
 					} else {

@@ -62,6 +62,7 @@ import com.bornfire.brrs.entities.M_LA3_Archival_Summary_Entity2;
 import com.bornfire.brrs.entities.M_LA3_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA3_Summary_Entity1;
 import com.bornfire.brrs.entities.M_LA3_Summary_Entity2;
+import com.bornfire.brrs.entities.M_SFINP1_Detail_Entity;
 
 @Component
 @Service
@@ -1005,13 +1006,11 @@ public class BRRS_M_LA3_ReportService {
 						version);
 				return ARCHIVALreport;
 			}
-
 			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("BRRS_M_LA1Details");
+			XSSFSheet sheet = workbook.createSheet("M_LA3Detail");
 
 			// Common border style
 			BorderStyle border = BorderStyle.THIN;
-
 			// Header style (left aligned)
 			CellStyle headerStyle = workbook.createCellStyle();
 			Font headerFont = workbook.createFont();
@@ -1040,44 +1039,33 @@ public class BRRS_M_LA3_ReportService {
 			dataStyle.setBorderRight(border);
 
 			// ACCT BALANCE style (right aligned with 3 decimals)
-			 CellStyle balanceStyle = workbook.createCellStyle();
-		        balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-		        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,###"));
-		        balanceStyle.setBorderTop(border);
-		        balanceStyle.setBorderBottom(border);
-		        balanceStyle.setBorderLeft(border);
-		        balanceStyle.setBorderRight(border);
-
-
-			// sanction style (right aligned with 3 decimals)
-			CellStyle sanctionStyle = workbook.createCellStyle();
-			sanctionStyle.setAlignment(HorizontalAlignment.RIGHT);
-			sanctionStyle.setDataFormat(workbook.createDataFormat().getFormat("#,###"));
-			sanctionStyle.setBorderTop(border);
-			sanctionStyle.setBorderBottom(border);
-			sanctionStyle.setBorderLeft(border);
-			sanctionStyle.setBorderRight(border);
-
+			CellStyle balanceStyle = workbook.createCellStyle();
+			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
+			balanceStyle.setBorderTop(border);
+			balanceStyle.setBorderBottom(border);
+			balanceStyle.setBorderLeft(border);
+			balanceStyle.setBorderRight(border);
 			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "APPROVED LIMIT", "REPORT LABEL","REPORT LABEL_1",
-					"REPORT ADDL CRITERIA 1", "REPORT ADDL CRITERIA 2", "REPORT ADDL CRITERIA 3", "REPORT_DATE" };
-
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "SANCTION_LIMIT","REPORT LABEL","REPORT LABEL_1", "REPORT ADDL CRETIRIA_1",
+					"REPORT ADDL CRETIRIA_2","REPORT ADDL CRETIRIA_3",	"REPORT_DATE" };
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
-				Cell cell = headerRow.createCell(i);
-				cell.setCellValue(headers[i]);
-				if (i == 3) { // ACCT BALANCE
-					cell.setCellStyle(rightAlignedHeaderStyle);
-				} else {
-					cell.setCellStyle(headerStyle);
-				}
-				sheet.setColumnWidth(i, 5000);
-			}
+			    Cell cell = headerRow.createCell(i);
+			    cell.setCellValue(headers[i]);
 
+			    // Amount columns: ACCT BALANCE (i=3) and average (i=4)
+			    if (i == 3 || i == 4) {
+			        cell.setCellStyle(rightAlignedHeaderStyle);
+			    } else {
+			        cell.setCellStyle(headerStyle);
+			    }
+
+			    sheet.setColumnWidth(i, 5000);
+			}
 			// Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
 			List<M_LA3_Detail_Entity> reportData = M_LA3_DETAIL_Repo.getdatabydateList(parsedToDate);
-
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
 				for (M_LA3_Detail_Entity item : reportData) {
@@ -1085,25 +1073,22 @@ public class BRRS_M_LA3_ReportService {
 					row.createCell(0).setCellValue(item.getCust_id());
 					row.createCell(1).setCellValue(item.getAcct_number());
 					row.createCell(2).setCellValue(item.getAcct_name());
-
 					// ACCT BALANCE (right aligned, 3 decimal places)
 					Cell balanceCell = row.createCell(3);
 					if (item.getAcct_balance_in_pula() != null) {
 						balanceCell.setCellValue(item.getAcct_balance_in_pula().doubleValue());
 					} else {
-						balanceCell.setCellValue(0.000);
+						balanceCell.setCellValue(0);
 					}
 					balanceCell.setCellStyle(balanceStyle);
-
-					// sanction (right aligned, 3 decimal places)
-					Cell sanctionCell = row.createCell(4);
+					// Average (right aligned, 3 decimal places)
+					 balanceCell = row.createCell(4);
 					if (item.getSanction_limit() != null) {
-						sanctionCell.setCellValue(item.getSanction_limit().doubleValue());
+						balanceCell.setCellValue(item.getSanction_limit().doubleValue());
 					} else {
-						sanctionCell.setCellValue(0.000);
+						balanceCell.setCellValue(0);
 					}
-					sanctionCell.setCellStyle(sanctionStyle);
-
+					balanceCell.setCellStyle(balanceStyle);
 					row.createCell(5).setCellValue(item.getReport_label());
 					row.createCell(6).setCellValue(item.getReport_label_1());
 					row.createCell(7).setCellValue(item.getReport_addl_criteria_1());
@@ -1113,53 +1098,96 @@ public class BRRS_M_LA3_ReportService {
 							.setCellValue(item.getReport_date() != null
 									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReport_date())
 									: "");
-
-					// Apply border style to all cells in the row
-					for (int colIndex = 0; colIndex < headers.length; colIndex++) {
-						Cell cell = row.getCell(colIndex);
-						if (cell != null) {
-							if (colIndex == 3) { // ACCT BALANCE
-								cell.setCellStyle(balanceStyle);
-							} else if (colIndex == 4) { // APPROVED LIMIT
-								cell.setCellStyle(sanctionStyle);
-							} else {
-								cell.setCellStyle(dataStyle);
-							}
-						}
+					// Apply data style for all other cells
+					for (int j = 0; j < 8; j++) {
+					    if (j != 3 && j != 4) {
+					        row.getCell(j).setCellStyle(dataStyle);
+					    }
 					}
 				}
 			} else {
 				logger.info("No data found for BRRS_M_LA3 — only header will be written.");
 			}
-
 			// Write to byte[]
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			workbook.write(bos);
 			workbook.close();
 			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
 			return bos.toByteArray();
-
 		} catch (Exception e) {
-			logger.error("Error generating BRRS_M_LA3 Excel", e);
-			return new byte[0];
+			 logger.error("Error generating BRRS_M_LA3 Excel", e);
+		     return null;  // important
 		}
 	}
 
-	public List<Object> getM_LA3Archival() {
-		List<Object> M_LA3Archivallist = new ArrayList<>();
-		try {
-			M_LA3Archivallist = M_LA3_Archival_Summary_Repo1.getM_LA3archival();
-			M_LA3Archivallist = M_LA3_Archival_Summary_Repo2.getM_LA3archival();
-			System.out.println("countser" + M_LA3Archivallist.size());
-		} catch (Exception e) {
-			// Log the exception
-			System.err.println("Error fetching M_LA3 Archival data: " + e.getMessage());
-			e.printStackTrace();
 
-			// Optionally, you can rethrow it or return empty list
-			// throw new RuntimeException("Failed to fetch data", e);
-		}
-		return M_LA3Archivallist;
+	// Archival View
+	public List<Object[]> getM_LA3Archival() {
+
+	    List<Object[]> archivalList = new ArrayList<>();
+
+	    try {
+
+	        // Fetch data from Repository 1
+	        List<M_LA3_Archival_Summary_Entity1> repoData1 =
+	                M_LA3_Archival_Summary_Repo1.getdatabydateListWithVersion();
+
+	        if (repoData1 != null && !repoData1.isEmpty()) {
+
+	            for (M_LA3_Archival_Summary_Entity1 entity : repoData1) {
+
+	                Object[] row = new Object[] {
+	                        entity.getReportDate(),
+	                        entity.getReportVersion(),
+	                        entity.getReportResubDate()
+	                };
+
+	                archivalList.add(row);
+	            }
+
+	            System.out.println("Fetched " + archivalList.size() + " archival records from Repo1");
+
+	            M_LA3_Archival_Summary_Entity1 first = repoData1.get(0);
+	            System.out.println("Latest archival version (Repo1): " + first.getReportVersion());
+
+	        } else {
+	            System.out.println("No archival data found in Repo1.");
+	        }
+
+
+	        // Fetch data from Repository 2
+	        List<M_LA3_Archival_Summary_Entity2> repoData2 =
+	                M_LA3_Archival_Summary_Repo2.getdatabydateListWithVersion();
+
+	        if (repoData2 != null && !repoData2.isEmpty()) {
+
+	            for (M_LA3_Archival_Summary_Entity2 entity : repoData2) {
+
+	                Object[] row = new Object[] {
+	                        entity.getReportDate(),
+	                        entity.getReportVersion(),
+	                        entity.getReportResubDate()
+	                };
+
+	                archivalList.add(row);
+	            }
+
+	            System.out.println("Fetched additional " + repoData2.size() + " archival records from Repo2");
+
+	            M_LA3_Archival_Summary_Entity2 first = repoData2.get(0);
+	            System.out.println("Latest archival version (Repo2): " + first.getReportVersion());
+
+	        } else {
+	            System.out.println("No archival data found in Repo2.");
+	        }
+
+	    } catch (Exception e) {
+
+	        System.err.println("Error fetching M_LA3 Archival data: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+
+	    return archivalList;
 	}
 
 	public byte[] getExcelM_LA3ARCHIVAL(String filename, String reportId, String fromdate, String todate,
@@ -2132,12 +2160,12 @@ public class BRRS_M_LA3_ReportService {
 	    ModelAndView mv = new ModelAndView("BRRS/M_LA3"); // ✅ match the report name
 	    System.out.println("Hello");
 	    if (acctNo != null) {
-	        M_LA3_Detail_Entity la1Entity = M_LA3_DETAIL_Repo.findByAcctnumber(acctNo);
-	        if (la1Entity != null && la1Entity.getReport_date() != null) {
-	            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReport_date());
+	        M_LA3_Detail_Entity la3Entity = M_LA3_DETAIL_Repo.findByAcctnumber(acctNo);
+	        if (la3Entity != null && la3Entity.getReport_date() != null) {
+	            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la3Entity.getReport_date());
 	            mv.addObject("asondate", formattedDate);
 	        }
-	        mv.addObject("Data", la1Entity);
+	        mv.addObject("Data", la3Entity);
 	    }
 
 	    mv.addObject("displaymode", "edit");

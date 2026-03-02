@@ -43,8 +43,7 @@ import org.springframework.data.repository.query.Param;
 		    @Query(value = "SELECT * FROM BRRS_M_LA3_DETAILTABLE WHERE ACCT_NUMBER = :acct_number", nativeQuery = true)
 		    M_LA3_Detail_Entity findByAcctnumber(@Param("acct_number") String acct_number);
 			
-			
-			
+		    
 	}
 
 	

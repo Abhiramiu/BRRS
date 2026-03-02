@@ -4022,9 +4022,9 @@ break;
 		} else if ("M_DEP1Detail".equals(filename)) {
 			return BRRS_M_DEP1_reportservice.BRRS_M_DEP1DetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
-		} else if ("M_LA3Detail".equals(filename)) {
-			return BRRS_M_LA3_reportservice.BRRS_M_LA3DetailExcel(filename, fromdate, todate, currency, dtltype, type,
-					version);
+		} else if ("M_LA3Detail".equals(filename)) { 
+			return BRRS_M_LA3_reportservice.BRRS_M_LA3DetailExcel(filename, fromdate, todate,
+			currency, dtltype, type, version); 
 		} else if ("M_LA5Detail".equals(filename)) {
 			return BRRS_M_LA5_reportservice.BRRS_M_LA5DetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
@@ -4208,6 +4208,23 @@ break;
 		archivalData.addAll(M_SFINP1List);
 		System.out.println("Fetched M_SFINP1 archival data: " + M_SFINP1List.size());
 		break;
+		
+		
+		case "M_LA3":
+			List<Object[]> M_LA3List = BRRS_M_LA3_reportservice.getM_LA3Archival();
+			archivalData.addAll(M_LA3List);
+			System.out.println("Fetched M_LA3 archival data: " + M_LA3List.size());
+			break;
+			
+		case "M_CA1":
+			List<Object[]> M_CA1List = BRRS_M_CA1_reportservice.getM_CA1Archival();
+			archivalData.addAll(M_CA1List);
+			System.out.println("Fetched M_CA1 archival data: " + M_CA1List.size());
+			break;
+		
+		
+		
+			
 		case "M_LA4":
 			try {
 				archivalData = BRRS_M_LA4_reportservice.getM_LA4Archival();
@@ -4349,15 +4366,7 @@ break;
 //			}
 //			break;
 
-		case "M_LA3":
-			try {
-				archivalData = BRRS_M_LA3_reportservice.getM_LA3Archival();
-
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		
 
 
 		case "M_DEP3":
@@ -5235,14 +5244,7 @@ break;
 				e.printStackTrace();
 			}
 			break;
-		case "M_CA1":
-			try {
-				archivalData = BRRS_M_CA1_reportservice.getM_CA1Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		
 
 		case "M_PD":
 			try {

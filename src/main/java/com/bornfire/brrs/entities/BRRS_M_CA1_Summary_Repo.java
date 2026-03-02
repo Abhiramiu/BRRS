@@ -5,18 +5,14 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface BRRS_M_CA1_Summary_Repo extends JpaRepository<M_CA1_Summary_Entity, Date> {
 
-	/*
-	 * @Query(value = "select * from BRRS_M_CA1_SUMMARYTABLE WHERE REPORT_DATE   ",
-	 * nativeQuery = true)
-	 * 
-	 * List<M_CA1_Summary_Entity> getdatabydateList(Date rpDate);
-	 */
-	 @Query(value = "SELECT * FROM BRRS_M_CA1_SUMMARYTABLE WHERE REPORT_DATE = ?1", nativeQuery = true)
-	    List<M_CA1_Summary_Entity> getdatabydateList(Date reportdate);
+
 	    
+	@Query(value = "SELECT * FROM BRRS_M_CA1_SUMMARYTABLE WHERE REPORT_DATE = :reportDate", nativeQuery = true)
+    List<M_CA1_Summary_Entity> getdatabydateList(@Param("reportDate") Date reportDate);
 
 }
 

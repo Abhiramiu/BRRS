@@ -3,6 +3,7 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -42,22 +43,27 @@ public class M_CA1_Archival_Summary_Entity {
     private String R17_REF_PARM;
     private String R17_PRODUCT;
     private BigDecimal R17_AMOUNT;
+    private BigDecimal R17_CAR;
 
     private String R18_REF_PARM;
     private String R18_PRODUCT;
     private BigDecimal R18_AMOUNT;
+    private BigDecimal R18_CAR;
 
     private String R19_REF_PARM;
     private String R19_PRODUCT;
     private BigDecimal R19_AMOUNT;
+    private BigDecimal R19_CAR;
 
     private String R20_REF_PARM;
     private String R20_PRODUCT;
     private BigDecimal R20_AMOUNT;
+    private BigDecimal R20_CAR;
 
     private String R21_REF_PARM;
     private String R21_PRODUCT;
     private BigDecimal R21_AMOUNT;
+    private BigDecimal R21_CAR;
 
     @Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
@@ -65,6 +71,9 @@ public class M_CA1_Archival_Summary_Entity {
     private Date REPORT_DATE;
 
     private BigDecimal REPORT_VERSION;
+    
+    @Column(name = "REPORT_RESUBDATE")
+    private Date reportResubDate;
     private String REPORT_FREQUENCY;
     private String REPORT_CODE;
     private String REPORT_DESC;
@@ -198,6 +207,12 @@ public class M_CA1_Archival_Summary_Entity {
 	public void setR17_AMOUNT(BigDecimal r17_AMOUNT) {
 		R17_AMOUNT = r17_AMOUNT;
 	}
+	public BigDecimal getR17_CAR() {
+		return R17_CAR;
+	}
+	public void setR17_CAR(BigDecimal r17_CAR) {
+		R17_CAR = r17_CAR;
+	}
 	public String getR18_REF_PARM() {
 		return R18_REF_PARM;
 	}
@@ -215,6 +230,12 @@ public class M_CA1_Archival_Summary_Entity {
 	}
 	public void setR18_AMOUNT(BigDecimal r18_AMOUNT) {
 		R18_AMOUNT = r18_AMOUNT;
+	}
+	public BigDecimal getR18_CAR() {
+		return R18_CAR;
+	}
+	public void setR18_CAR(BigDecimal r18_CAR) {
+		R18_CAR = r18_CAR;
 	}
 	public String getR19_REF_PARM() {
 		return R19_REF_PARM;
@@ -234,6 +255,12 @@ public class M_CA1_Archival_Summary_Entity {
 	public void setR19_AMOUNT(BigDecimal r19_AMOUNT) {
 		R19_AMOUNT = r19_AMOUNT;
 	}
+	public BigDecimal getR19_CAR() {
+		return R19_CAR;
+	}
+	public void setR19_CAR(BigDecimal r19_CAR) {
+		R19_CAR = r19_CAR;
+	}
 	public String getR20_REF_PARM() {
 		return R20_REF_PARM;
 	}
@@ -251,6 +278,12 @@ public class M_CA1_Archival_Summary_Entity {
 	}
 	public void setR20_AMOUNT(BigDecimal r20_AMOUNT) {
 		R20_AMOUNT = r20_AMOUNT;
+	}
+	public BigDecimal getR20_CAR() {
+		return R20_CAR;
+	}
+	public void setR20_CAR(BigDecimal r20_CAR) {
+		R20_CAR = r20_CAR;
 	}
 	public String getR21_REF_PARM() {
 		return R21_REF_PARM;
@@ -270,6 +303,12 @@ public class M_CA1_Archival_Summary_Entity {
 	public void setR21_AMOUNT(BigDecimal r21_AMOUNT) {
 		R21_AMOUNT = r21_AMOUNT;
 	}
+	public BigDecimal getR21_CAR() {
+		return R21_CAR;
+	}
+	public void setR21_CAR(BigDecimal r21_CAR) {
+		R21_CAR = r21_CAR;
+	}
 	public Date getREPORT_DATE() {
 		return REPORT_DATE;
 	}
@@ -281,6 +320,12 @@ public class M_CA1_Archival_Summary_Entity {
 	}
 	public void setREPORT_VERSION(BigDecimal rEPORT_VERSION) {
 		REPORT_VERSION = rEPORT_VERSION;
+	}
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
 	}
 	public String getREPORT_FREQUENCY() {
 		return REPORT_FREQUENCY;
@@ -322,5 +367,6 @@ public class M_CA1_Archival_Summary_Entity {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
     
 }
