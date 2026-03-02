@@ -1515,11 +1515,12 @@ function cancelModify() {
 							
 							
 							
-								<!-- Modify button -->
-						<button type="button" class="custom-tab-btn"
-							onclick="showmodify(this);" title="Click to EDIT Records"
-							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button>
+						
+						<!-- Modify -->
+						<button class="custom-tab-btn" onclick="showmodify(this);" title="Click to EDIT Records"
+							th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
+							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
+							id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn"
