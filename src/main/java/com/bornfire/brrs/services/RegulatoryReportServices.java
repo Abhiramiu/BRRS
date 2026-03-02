@@ -539,6 +539,8 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_M_RPD_ReportService.getM_RPDView(reportId, fromdate, todate, currency, dtltype, pageable,
 					type, version);
 			break;
+		case "M_FAS": repsummary = BRRS_M_FAS_reportservice.getBRRS_M_FASView(reportId, fromdate, todate,
+				 currency, dtltype, pageable, type, version); break;
 		/*
 		 * 
 		 * 
@@ -871,8 +873,7 @@ public class RegulatoryReportServices {
 					pageable, type, version);
 			break;
 			
-			case "M_FAS": repsummary = BRRS_M_FAS_reportservice.getBRRS_M_FASView(reportId, fromdate, todate,
-					 currency, dtltype, pageable, type, version); break;
+
 					 
 			case "M_DEP3": 
 				repsummary = BRRS_M_DEP3_reportservice.getM_DEP3View(reportId, fromdate, todate, currency, dtltype, pageable, type, version);
@@ -2643,15 +2644,14 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-			
-		case "M_FAS":
-			try {
-				repfile = BRRS_M_FAS_reportservice.getM_FASExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) { // TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+ 		case "M_FAS":
+try {
+	repfile = BRRS_M_FAS_reportservice.getM_FASExcel(filename, reportId, fromdate, todate,
+			currency, dtltype, type, format, version);
+} catch (Exception e) { // TODO Auto-generated catch block
+	e.printStackTrace();
+}
+break;
 			
 		case "M_RPD":
 			try {
@@ -4227,6 +4227,13 @@ public class RegulatoryReportServices {
 			}
 			break;
 
+			
+		case "M_FAS":
+	List<Object[]> FASList = BRRS_M_FAS_reportservice.getM_FASArchival();
+	archivalData.addAll(FASList);
+	System.out.println("Fetched FASList archival data: " + FASList.size());
+	break;
+	
 		case "M_OR1":
 			try {
 				archivalData = brrs_m_or1_reportservice.getM_OR1Archival();
@@ -5246,14 +5253,7 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "M_FAS":
-			try {
-				archivalData = BRRS_M_FAS_reportservice.getM_FASArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+	
 		case "M_DEP4":
 			List<Object[]> DEP4List = BRRS_M_DEP4_ReportService.getM_DEP4Archival();
 			archivalData.addAll(DEP4List);
@@ -6735,6 +6735,17 @@ public class RegulatoryReportServices {
 			e.printStackTrace();
 		}
 		break;
+		
+		case "M_FAS":
+			try {
+				List<Object[]> resubList = BRRS_M_FAS_reportservice.getM_FASResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for M_FAS: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_FAS: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
 		
 		case "M_LA5":
 			try {
