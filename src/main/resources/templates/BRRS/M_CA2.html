@@ -745,63 +745,68 @@ window.onload = function() {
 
 
 function downloadfile(button) {
-	var reportid = button.getAttribute('data-reportid');
-	var asondate = button.getAttribute('data-asondate');
-	var fromdate = button.getAttribute('data-fromdate');
-	var todate = button.getAttribute('data-todate');
-	var currency = button.getAttribute('data-currency');
-	var subreportid = button.getAttribute('data-subreportid');
-	var secid = button.getAttribute('data-secid');
-	var dtltype = button.getAttribute('data-dtltype');
-	var filename = button.getAttribute('data-filename');
-	var type = button.getAttribute('data-type');
-	var version = button.getAttribute('data-version');
+    var reportid = button.getAttribute('data-reportid');
+    var asondate = button.getAttribute('data-asondate');
+    var fromdate = button.getAttribute('data-fromdate');
+    var todate = button.getAttribute('data-todate');
+    var currency = button.getAttribute('data-currency');
+    var subreportid = button.getAttribute('data-subreportid');
+    var secid = button.getAttribute('data-secid');
+    var dtltype = button.getAttribute('data-dtltype');
+    var filename = button.getAttribute('data-filename');
+    var type = button.getAttribute('data-type');
+    var version = button.getAttribute('data-version');
+    var format = button.getAttribute('data-format');
+
+    if (format === null) {
+        format = '';   // treat as null
+    }
+
+    $('#loader').modal('show');
+
+    $.ajax({
+        url: './downloadExcel?reportid=' + reportid +
+             '&fromdate=' + fromdate +
+             '&asondate=' + asondate +
+             '&todate=' + todate +
+             '&currency=' + currency +
+             '&subreportid=' + subreportid +
+             '&secid=' + secid +
+             '&filename=' + filename +
+             '&type=' + type +
+             '&version=' + version +
+             '&format=' + format,
+        type: 'GET',
+        xhrFields: {
+            responseType: 'blob'
+        },
+        success: function (data) {
+            $('#loader').modal('hide');
+            if (data && data.size > 100) {
+                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                showResultModal('BRRS', filename + ' downloaded successfully.');
+            } else {
+                showResultModal('Information', 'No data was available to create a download.');
+            }
+        },
+        error: function () {
+            $('#loader').modal('hide');
+            showResultModal('Error', 'An error occurred while downloading the file.');
+        }
+    });
+}
+function editRecord(){
+	showResultModal('Alert', 'Development in progress');
 	
-
-	$('#loader').modal('show');
-
-	$.ajax({
-		url: './downloadExcel?reportid=' + reportid +
-			'&fromdate=' + fromdate +
-			'&asondate=' + asondate +
-			'&todate=' + todate +
-			'&currency=' + currency +
-			'&subreportid=' + subreportid +
-			'&secid=' + secid +
-			'&filename=' + filename +
-			'&type=' + type +
-			'&version=' + version,
-		type: 'GET',
-		xhrFields: {
-			responseType: 'blob'
-		},
-		success: function (data) {
-			$('#loader').modal('hide');
-
-			if (data && data.size > 100) {
-				const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
-				const url = window.URL.createObjectURL(blob);
-				const a = document.createElement('a');
-				a.style.display = 'none';
-				a.href = url;
-				a.download = filename;
-				document.body.appendChild(a);
-				a.click();
-				window.URL.revokeObjectURL(url);
-				document.body.removeChild(a);
-
-
-				showResultModal('BRRS', 'M_CA2 downloaded successfully.');
-			} else {
-				showResultModal('Information', 'No data was available to create a download.');
-			}
-		},
-		error: function (jqXHR, textStatus, errorThrown) {
-			$('#loader').modal('hide');
-			console.error("Download failed:", textStatus, errorThrown);
-			showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-		}
-	});
 }
 
 
@@ -1415,41 +1420,58 @@ function cancelModify() {
         </button>
 
         <!-- Download button - Summary -->
-        <button type="button" class="custom-tab-btn"
-            th:if="${displaymode == 'summary'}"
-            th:attr="data-reportid=${reportid}, 
-                     data-asondate=${asondate}, 
-                     data-fromdate=${fromdate}, 
-                     data-todate=${todate}, 
-                     data-currency=${currency},  
-                     data-dtltype=${dtltype}, 
-                     data-filename='M_CA2.xlsx',
-                     data-type=${type},
-                     data-version=${version}"
-            onclick="downloadfile(this);">
-            <i class="fa fa-download"></i>
-        </button>
+ 	<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
+							th:attr="data-reportid=${reportid}, 
+                    				 data-asondate=${asondate}, 
+                    				 data-fromdate=${fromdate}, 
+                     				 data-todate=${todate}, 
+                     				 data-currency=${currency},  
+                     				 data-dtltype=${dtltype}, 
+                     				 data-filename='M_CA2.xlsx',
+					 				 data-type=${type},
+					    			 data-version=${version}"
+							onclick="downloadfile(this);">
+							<i class="fa fa-download"></i> Format
+						</button>
+						
+						
+						<button type="button" class="custom-tab-btn "
+							id="custom-tab-btnAdd" onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'resub'}"
+							th:attr="data-reportid=${reportid},
+            data-asondate=${asondate},
+            data-fromdate=${fromdate},
+            data-todate=${todate},
+            data-currency=${currency}, 
+            data-dtltype=${dtltype},
+            data-filename='EMAIL_M_CA2.xlsx',
+            data-type=${type},
+            data-format='email',
+            data-version=${version != null ? version : ''}"
+							style="font-family: Arial; font-weight: bold;">
+							<i class="fa fa-download"></i> Email 
 
-        <!-- Download button - Details -->
-        <button type="button" class="custom-tab-btn"
-            th:if="${displaymode == 'Details'}"
-            th:attr="data-reportid=${reportid}, 
-                     data-asondate=${asondate}, 
-                     data-fromdate=${fromdate}, 
-                     data-todate=${todate}, 
-                     data-currency=${currency},  
-                     data-dtltype=${dtltype}, 
-                     data-filename='M_CA2Detail',
-                     data-type=${type},
-                     data-version=${version}"
-            onclick="startReport(this)">
-            <i class="fa fa-download"></i>
-        </button>
+						</button>
+						
+						
+						
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
+							onclick="startReport(this);"
+							th:attr="
+						    data-fromdate=${fromdate},
+						    data-todate=${todate},
+						    data-filename='M_CA2Detail',
+						 data-type=${type},
+					data-version=${version}  ">
+							<i class="fa fa-download"></i> Detail
+						</button>
 
     </div>
 </div>
 
-</div>
+
 
 
 <div th:if="${displaymode == 'summary'}" >
@@ -1459,7 +1481,7 @@ function cancelModify() {
 						<!--  <h5 style = "font-weight:bold;color:black;">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT<br>(7) MONTHLY SCHEDULE: M-CA2: COMPOSITION OF CAPITAL<br> </h5> -->
 							<div
 								class="table-wrapper table-responsive scrollable-table-container"
-								style="border-right: 1px solid #dee2e6;max-height:90vh; overflow-y: auto;">
+								style="border-right: 1px solid #dee2e6;">
 								<h5 style = "font-weight:bold;color:black;">Common Equity Tier 1 (CET1) Capital<br> </h5>
 								<table
 									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
@@ -1491,7 +1513,7 @@ function cancelModify() {
         <td style="font-weight:bold;" th:text="${report.r11_product}"></td>
         <td th:attr="reportLable='R11', reportAddlCriteria1='C2'" style="text-align: right;background-color:black;"></td>
         <!-- <td th:text="${#numbers.formatDecimal(report.r11_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R11', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="vertical-align: middle; text-align: right;"></td> -->
-    	<td th:each="report: ${reportsummary1}" id="R11" style="text-align: right; width: 250px; padding-left:10px; ">
+    	<td th:each="report: ${reportsummary}" id="R11" style="text-align: right; width: 250px; padding-left:10px; ">
     	<input
 			class="display-input Show_input " type="text"
 			th:value="${report.r11_amount_2 != null ? #numbers.formatDecimal(report.r11_amount_2, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -1507,7 +1529,7 @@ function cancelModify() {
     </tr>
     <tr>
 		<td style="font-weight:bold; padding-left: 30px;" th:text="${report.r13_product}"></td>
-        <td th:each="report: ${reportsummary1}" id="R13" style="text-align: right;   padding-left:10px; ">
+        <td th:each="report: ${reportsummary}" id="R13" style="text-align: right;   padding-left:10px; ">
     	<input
 			class="display-input Show_input " type="text"
 			th:value="${report.r13_amount_1 != null ? #numbers.formatDecimal(report.r13_amount_1, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -1520,7 +1542,7 @@ function cancelModify() {
         <td style="padding-left: 30px;" th:text="${report.r14_product}"></td>
         <!-- <td th:each="report: ${reportsummary}" th:text="${#numbers.formatDecimal(report.r14_amount_1, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R14', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)" style="vertical-align: middle; text-align: right;"></td> -->
         
-        <td th:each="report: ${reportsummary1}" id="R14" style="text-align: right; width: 250px;  padding-left:10px; ">
+        <td th:each="report: ${reportsummary}" id="R14" style="text-align: right; width: 250px;  padding-left:10px; ">
     	<input
 			class="display-input Show_input " type="text"
 			th:value="${report.r14_amount_1 != null ? #numbers.formatDecimal(report.r14_amount_1, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -1533,7 +1555,7 @@ function cancelModify() {
         <td style="padding-left: 30px;" th:text="${report.r15_product}"></td>
         <!-- <td th:each="report: ${reportsummary}" th:text="${#numbers.formatDecimal(report.r15_amount_1, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R15', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)" style="vertical-align: middle; text-align: right;"></td> -->
         
-        <td th:each="report: ${reportsummary1}" id="R15" style="text-align: right; width: 250px;  padding-left:10px; ">
+        <td th:each="report: ${reportsummary}" id="R15" style="text-align: right; width: 250px;  padding-left:10px; ">
     	<input
 			class="display-input Show_input " type="text"
 			th:value="${report.r15_amount_1 != null ? #numbers.formatDecimal(report.r15_amount_1, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -1546,7 +1568,7 @@ function cancelModify() {
         <td style="padding-left: 30px;" th:text="${report.r16_product}"></td>
         <!-- <td th:each="report: ${reportsummary}" th:text="${#numbers.formatDecimal(report.r16_amount_1, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R16', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)" style="vertical-align: middle; text-align: right;"></td> -->
         
-        <td th:each="report: ${reportsummary1}" id="R16" style="text-align: right; width: 250px;  padding-left:10px; ">
+        <td th:each="report: ${reportsummary}" id="R16" style="text-align: right; width: 250px;  padding-left:10px; ">
     	<input
 			class="display-input Show_input " type="text"
 			th:value="${report.r16_amount_1 != null ? #numbers.formatDecimal(report.r16_amount_1, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -1566,7 +1588,7 @@ function cancelModify() {
         <td style="" th:text="${report.r18_product}"></td>
         
         <!-- <td th:each="report: ${reportsummary}" th:text="${#numbers.formatDecimal(report.r18_amount_1, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R18', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)" style="vertical-align: middle; text-align: right;"></td> -->
-        <td th:each="report: ${reportsummary1}" id="R18" style="text-align: right; width: 250px;  padding-left:10px; ">
+        <td th:each="report: ${reportsummary}" id="R18" style="text-align: right; width: 250px;  padding-left:10px; ">
     	<input
 			class="display-input Show_input " type="text"
 			th:value="${report.r18_amount_1 != null ? #numbers.formatDecimal(report.r18_amount_1, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -1580,7 +1602,7 @@ function cancelModify() {
         <td style="" th:text="${report.r19_product}"></td>
         <!-- <td th:each="report: ${reportsummary}" th:text="${#numbers.formatDecimal(report.r19_amount_1, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R19', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)" style="vertical-align: middle; text-align: right;"></td> -->
         
-        <td th:each="report: ${reportsummary1}" id="R19" style="text-align: right; width: 250px;  padding-left:10px; ">
+        <td th:each="report: ${reportsummary}" id="R19" style="text-align: right; width: 250px;  padding-left:10px; ">
     	<input
 			class="display-input Show_input " type="text"
 			th:value="${report.r19_amount_1 != null ? #numbers.formatDecimal(report.r19_amount_1, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -1600,7 +1622,7 @@ function cancelModify() {
         <td style="" th:text="${report.r21_product}"></td>
         <!-- <td th:each="report: ${reportsummary}" th:text="${#numbers.formatDecimal(report.r21_amount_1, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R21', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)" style="vertical-align: middle; text-align: right;"></td> -->
         
-        <td th:each="report: ${reportsummary1}" id="R21" style="text-align: right; width: 250px;  padding-left:10px; ">
+        <td th:each="report: ${reportsummary}" id="R21" style="text-align: right; width: 250px;  padding-left:10px; ">
     	<input
 			class="display-input Show_input " type="text"
 			th:value="${report.r21_amount_1 != null ? #numbers.formatDecimal(report.r21_amount_1, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -1696,7 +1718,7 @@ function cancelModify() {
         </td>
         <td th:text="${#numbers.formatDecimal(report.r32_amount_1, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R32', reportAddlCriteria1='C2'" style="text-align: right;background-color :#C0C0C0;"></td>
         <!-- <td th:each="report: ${reportsummary}" th:text="${#numbers.formatDecimal(report.r32_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R32', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="vertical-align: middle; text-align: right;"></td> -->
-   		<td th:each="report: ${reportsummary1}" id="R32" style="text-align: right; width: 250px;  padding-left:10px; ">
+   		<td th:each="report: ${reportsummary}" id="R32" style="text-align: right; width: 250px;  padding-left:10px; ">
     	<input
 			class="display-input Show_input " type="text"
 			th:value="${report.r32_amount_2 != null ? #numbers.formatDecimal(report.r32_amount_2, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -1775,7 +1797,7 @@ function cancelModify() {
         <td style="font-weight:bold;" th:text="${report.r42_product}"></td>
         <td th:attr="reportLable='R42', reportAddlCriteria1='C2'" style="text-align: right;background-color :#C0C0C0;"></td>
         <!-- <td th:each="report: ${reportsummary}" th:text="${#numbers.formatDecimal(report.r42_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R42', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="vertical-align: middle; text-align: right;"></td> -->
-    	<td th:each="report: ${reportsummary1}" id="R42" style="text-align: right; width: 250px;  padding-left:10px; ">
+    	<td th:each="report: ${reportsummary}" id="R42" style="text-align: right; width: 250px;  padding-left:10px; ">
     	<input
 			class="display-input Show_input " type="text"
 			th:value="${report.r42_amount_2 != null ? #numbers.formatDecimal(report.r42_amount_2, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -1788,7 +1810,7 @@ function cancelModify() {
         <td style="font-weight:bold;" th:text="${report.r43_product}"></td>
         <td th:attr="reportLable='R43', reportAddlCriteria1='C2'" style="text-align: right;background-color :#C0C0C0;"></td>
         <!-- <td th:text="${#numbers.formatDecimal(report.r43_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R43', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="vertical-align: middle; text-align: right;"></td> -->
-        <td th:each="report: ${reportsummary1}" id="R43" style="text-align: right; width: 250px;  padding-left:10px; ">
+        <td th:each="report: ${reportsummary}" id="R43" style="text-align: right; width: 250px;  padding-left:10px; ">
     	<input
 			class="display-input Show_input " type="text"
 			th:value="${report.r43_amount_2 != null ? #numbers.formatDecimal(report.r43_amount_2, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -1802,7 +1824,7 @@ function cancelModify() {
         <td style="font-weight:bold;" th:text="${report.r44_product}"></td>
         <td th:attr="reportLable='R44', reportAddlCriteria1='C2'" style="text-align: right;background-color :#C0C0C0;"></td>
         <!-- <td th:each="report: ${reportsummary}" th:text="${#numbers.formatDecimal(report.r44_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R44', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="vertical-align: middle; text-align: right;"></td> -->
-        <td th:each="report: ${reportsummary1}" id="R44" style="text-align: right; width: 250px;  padding-left:10px; ">
+        <td th:each="report: ${reportsummary}" id="R44" style="text-align: right; width: 250px;  padding-left:10px; ">
     	<input
 			class="display-input Show_input " type="text"
 			th:value="${report.r44_amount_2 != null ? #numbers.formatDecimal(report.r44_amount_2, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -1827,7 +1849,7 @@ function cancelModify() {
         </td>
         <td th:attr="reportLable='R46', reportAddlCriteria1='C2'" style="text-align: left;background-color :#C0C0C0;"></td>
         <!-- <td th:each="report: ${reportsummary}" th:text="${#numbers.formatDecimal(report.r46_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R46', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="vertical-align: middle; text-align: right;"></td> -->
-        <td th:each="report: ${reportsummary1}" id="R46" style="text-align: right; width: 250px;  padding-left:10px; ">
+        <td th:each="report: ${reportsummary}" id="R46" style="text-align: right; width: 250px;  padding-left:10px; ">
     	<input
 			class="display-input Show_input " type="text"
 			th:value="${report.r46_amount_2 != null ? #numbers.formatDecimal(report.r46_amount_2, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -2002,7 +2024,7 @@ function cancelModify() {
 
 		</div>
 
-
+</div>
 
 	</div>
 
@@ -2128,7 +2150,7 @@ function cancelModify() {
 /* Your existing CSS - this is the correct approach */
 .scrollable-table-container {
 	/* This is the key: it creates the scroll context */
-	max-height: 620px;
+	max-height: 650px;
 	/* Or a suitable height like 80vh for responsive design */
 	overflow-y: auto;
 	border: 1px solid #ccc;

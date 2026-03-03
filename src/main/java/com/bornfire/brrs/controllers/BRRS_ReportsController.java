@@ -565,7 +565,7 @@ public class BRRS_ReportsController {
 	public ResponseEntity<String> updateAllReports(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-			@ModelAttribute M_CA2_Manual_Summary_Entity request1
+			@ModelAttribute M_CA2_Summary_Entity request1
 
 	) {
 		try {

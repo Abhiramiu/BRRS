@@ -11,9 +11,9 @@ import javax.persistence.Table;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_CA2_ARCHIVALTABLE_DETAIL")
+@Table(name = "BRRS_M_CA2_RESUB_DETAILTABLE")
 
-public class M_CA2_Archival_Detail_Entity {
+public class M_CA2_RESUB_Detail_Entity {
 	
 
     @Column(name = "CUST_ID", length = 100)
@@ -323,7 +323,7 @@ public class M_CA2_Archival_Detail_Entity {
 		this.glSubCode = glSubCode;
 	}
 
-	public M_CA2_Archival_Detail_Entity() {
+	public M_CA2_RESUB_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -332,7 +332,6 @@ public class M_CA2_Archival_Detail_Entity {
 	
 	
 
-    
 	
 
 }

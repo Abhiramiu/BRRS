@@ -1204,7 +1204,12 @@ public class RegulatoryReportServices {
 				 
 				 break;
 				 
+			case "M_CA2":
 				 
+				 repsummary = BRRS_M_CA2_reportservice.getM_CA2View(reportId, fromdate,
+				 todate, currency, dtltype, pageable, type, version);
+				 
+				 break;
 
 			 case "M_SFINP2": repsummary =
 				 BRRS_M_SFINP2_reportservice.getM_SFINP2View(reportId, fromdate, todate,
@@ -2201,6 +2206,17 @@ public class RegulatoryReportServices {
 		 * 
 		 * 
 		 */
+			
+			
+		case "M_CA2":
+			try {
+				repfile = BRRS_M_CA2_reportservice.getM_CA2Excel(filename, reportId, fromdate, todate,
+						currency, dtltype, type, format, version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 			
 		case "M_SRWA_12E":
 		try {
@@ -4235,15 +4251,19 @@ break;
 			break;
 
 
-		case "M_CA2":
-			try {
-				archivalData = BRRS_M_CA2_reportservice.getM_CA2Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-
+//		case "M_CA2":
+//			try {
+//				archivalData = BRRS_M_CA2_reportservice.getM_CA2Archival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
+case "M_CA2":
+			
+			List<Object[]> ca2List = BRRS_M_CA2_reportservice.getM_CA2Archival();
+	archivalData.addAll(ca2List);
+	System.out.println("Fetched M_SFINP2 archival data: " + ca2List.size());
 			
 		case "M_FAS":
 	List<Object[]> FASList = BRRS_M_FAS_reportservice.getM_FASArchival();
@@ -7110,6 +7130,17 @@ break;
 			}
 			break;
 
+			
+			case "M_CA2":
+				try {
+					List<Object[]> resubList = BRRS_M_CA2_reportservice.getM_CA2Resub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_CA2: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_CA2: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
 
 
 		case "M_AIDP":
