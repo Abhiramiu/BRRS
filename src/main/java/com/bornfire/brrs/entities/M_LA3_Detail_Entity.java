@@ -3,6 +3,7 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -13,9 +14,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name = "BRRS_M_LA3_DETAILTABLE")
 public class M_LA3_Detail_Entity {
 	
-	
-	private String	cust_id;
 	@Id
+	@Column(name = "SNO")
+	private Long sno;
+	private String	cust_id;
 	private String	acct_number;
 	private String	acct_name;
 	private String	data_type;
@@ -46,6 +48,12 @@ public class M_LA3_Detail_Entity {
 	private BigDecimal	sanction_limit;
 	private String	report_label;
 	private String	report_label_1;
+	public Long getSno() {
+		return sno;
+	}
+	public void setSno(Long sno) {
+		this.sno = sno;
+	}
 	public String getCust_id() {
 		return cust_id;
 	}
@@ -224,8 +232,6 @@ public class M_LA3_Detail_Entity {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
-	
 	
 
 	

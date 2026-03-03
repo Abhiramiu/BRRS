@@ -1728,7 +1728,7 @@ public class RegulatoryReportServices {
 
 		case "M_CA1":
 			repdetail = BRRS_M_CA1_reportservice.getM_CA1currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter);
+					pageable, Filter, type, version);
 			break;
 
 		case "M_PI":
@@ -2403,16 +2403,15 @@ public class RegulatoryReportServices {
 			}
 			break;
 			
+		
 		case "M_CA1":
 			try {
-
-				repfile = BRRS_M_CA1_reportservice.getBRRS_M_CA1Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, format, version);
+				repfile = BRRS_M_CA1_reportservice.BRRS_M_CA1Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			break;
-			
 		
 
 		case "M_SRWA_12G":
@@ -4232,14 +4231,16 @@ break;
 			System.out.println("Fetched M_LA3 archival data: " + M_LA3List.size());
 			break;
 			
+		
+		
 		case "M_CA1":
-			List<Object[]> M_CA1List = BRRS_M_CA1_reportservice.getM_CA1Archival();
-			archivalData.addAll(M_CA1List);
-			System.out.println("Fetched M_CA1 archival data: " + M_CA1List.size());
+			try {
+				archivalData = BRRS_M_CA1_reportservice.getM_CA1Archival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			break;
-		
-		
-		
 			
 		case "M_LA4":
 			try {

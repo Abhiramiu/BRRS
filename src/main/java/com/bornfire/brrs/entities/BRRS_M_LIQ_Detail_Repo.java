@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface BRRS_M_LIQ_Detail_Repo extends JpaRepository<M_LIQ_Detail_Entity, String> {
+public interface BRRS_M_LIQ_Detail_Repo extends JpaRepository<M_LIQ_Detail_Entity, Long> {
 
 	// Fetch all records for a given date
 

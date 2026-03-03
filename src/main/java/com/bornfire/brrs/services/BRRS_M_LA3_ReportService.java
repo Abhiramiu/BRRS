@@ -62,7 +62,6 @@ import com.bornfire.brrs.entities.M_LA3_Archival_Summary_Entity2;
 import com.bornfire.brrs.entities.M_LA3_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA3_Summary_Entity1;
 import com.bornfire.brrs.entities.M_LA3_Summary_Entity2;
-import com.bornfire.brrs.entities.M_SFINP1_Detail_Entity;
 
 @Component
 @Service
