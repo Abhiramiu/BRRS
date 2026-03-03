@@ -282,7 +282,7 @@ public class BRRS_M_SECL_ReportService {
 			}
 
 			// Loop from R17 to R30 and copy fields
-			for (int i = 17; i <= 30; i++) {
+			for (int i = 16; i <= 30; i++) {
 				String prefix = "R" + i + "_";
 				String[] fields = { "EQUITY", "BONDS", "BOBCS", "TREASURY_BILLS", "OTHER_SPECIFY",
 						"REPURCHASE_AGREEMENTS", "COMMERCIAL_PAPER", "CERTIFICATES_OF_DEPOSITS", "PLEDGED_ASSETS" };
@@ -308,7 +308,7 @@ public class BRRS_M_SECL_ReportService {
 			}
 
 			// Loop from R32 to R33 and copy fields
-			for (int i = 32; i <= 33; i++) {
+			for (int i = 31; i <= 33; i++) {
 				String prefix = "R" + i + "_";
 				String[] fields = { "EQUITY", "BONDS", "BOBCS", "TREASURY_BILLS", "OTHER_SPECIFY",
 						"REPURCHASE_AGREEMENTS", "COMMERCIAL_PAPER", "CERTIFICATES_OF_DEPOSITS", "PLEDGED_ASSETS" };
@@ -334,7 +334,7 @@ public class BRRS_M_SECL_ReportService {
 			}
 
 			// Loop from R35 to R36 and copy fields
-			for (int i = 35; i <= 36; i++) {
+			for (int i = 34; i <= 36; i++) {
 				String prefix = "R" + i + "_";
 				String[] fields = { "EQUITY", "BONDS", "BOBCS", "TREASURY_BILLS", "OTHER_SPECIFY",
 						"REPURCHASE_AGREEMENTS", "COMMERCIAL_PAPER", "CERTIFICATES_OF_DEPOSITS", "PLEDGED_ASSETS" };
@@ -360,7 +360,7 @@ public class BRRS_M_SECL_ReportService {
 			}
 
 			// Loop from R38 to R41 and copy fields
-			for (int i = 38; i <= 41; i++) {
+			for (int i = 37; i <= 41; i++) {
 				String prefix = "R" + i + "_";
 				String[] fields = { "EQUITY", "BONDS", "BOBCS", "TREASURY_BILLS", "OTHER_SPECIFY",
 						"REPURCHASE_AGREEMENTS", "COMMERCIAL_PAPER", "CERTIFICATES_OF_DEPOSITS", "PLEDGED_ASSETS" };
@@ -386,7 +386,7 @@ public class BRRS_M_SECL_ReportService {
 			}
 
 			// Loop from R43 to R45 and copy fields
-			for (int i = 43; i <= 45; i++) {
+			for (int i = 42; i <= 45; i++) {
 				String prefix = "R" + i + "_";
 				String[] fields = { "EQUITY", "BONDS", "BOBCS", "TREASURY_BILLS", "OTHER_SPECIFY",
 						"REPURCHASE_AGREEMENTS", "COMMERCIAL_PAPER", "CERTIFICATES_OF_DEPOSITS", "PLEDGED_ASSETS" };
@@ -412,7 +412,7 @@ public class BRRS_M_SECL_ReportService {
 			}
 
 			// Loop from R47 to R49 and copy fields
-			for (int i = 47; i <= 49; i++) {
+			for (int i = 46; i <= 49; i++) {
 				String prefix = "R" + i + "_";
 				String[] fields = { "EQUITY", "BONDS", "BOBCS", "TREASURY_BILLS", "OTHER_SPECIFY",
 						"REPURCHASE_AGREEMENTS", "COMMERCIAL_PAPER", "CERTIFICATES_OF_DEPOSITS", "PLEDGED_ASSETS" };
@@ -438,7 +438,7 @@ public class BRRS_M_SECL_ReportService {
 			}
 
 			// Loop from R51 to R56 and copy fields
-			for (int i = 51; i <= 56; i++) {
+			for (int i = 50; i <= 56; i++) {
 				String prefix = "R" + i + "_";
 				String[] fields = { "EQUITY", "BONDS", "BOBCS", "TREASURY_BILLS", "OTHER_SPECIFY",
 						"REPURCHASE_AGREEMENTS", "COMMERCIAL_PAPER", "CERTIFICATES_OF_DEPOSITS", "PLEDGED_ASSETS" };
