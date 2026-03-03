@@ -246,229 +246,223 @@ public class BRRS_M_CA1_ReportService {
 	}
 
 	public byte[] BRRS_M_CA1Excel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, BigDecimal version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.");
+	        String dtltype, String type, BigDecimal version) throws Exception {
 
-		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
-			logger.info("Service: Generating ARCHIVAL report for version {}", version);
-			return getExcelM_CA1ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
-		}
-		List<M_CA1_Summary_Entity> dataList = BRRS_M_CA1_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+	    logger.info("Service: Starting Excel generation process in memory.");
 
-		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for LA1 report. Returning empty result.");
-			return new byte[0];
-		}
+	    // ARCHIVAL check
+	    if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
+	        logger.info("Service: Generating ARCHIVAL report for version {}", version);
+	        return getExcelM_CA1ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+	    }
 
-		String templateDir = env.getProperty("output.exportpathtemp");
-		String templateFileName = filename;
-		System.out.println(filename);
-		Path templatePath = Paths.get(templateDir, templateFileName);
-		System.out.println(templatePath);
+	    List<M_CA1_Summary_Entity> dataList =
+	            BRRS_M_CA1_Summary_Repo.getdatabydateList(dateformat.parse(todate));
 
-		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+	    if (dataList.isEmpty()) {
+	        logger.warn("Service: No data found for LA1 report. Returning empty result.");
+	        return new byte[0];
+	    }
 
-		if (!Files.exists(templatePath)) {
-			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
-		}
+	    String templateDir = env.getProperty("output.exportpathtemp");
+	    String templateFileName = filename;
+	    Path templatePath = Paths.get(templateDir, templateFileName);
 
-		if (!Files.isReadable(templatePath)) {
-			throw new SecurityException(
-					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
-		}
+	    logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
 
-		// This try-with-resources block is perfect. It guarantees all resources are
-		// closed automatically.
-		try (InputStream templateInputStream = Files.newInputStream(templatePath);
-				Workbook workbook = WorkbookFactory.create(templateInputStream);
-				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-			Sheet sheet = workbook.getSheetAt(0);
+	    if (!Files.exists(templatePath)) {
+	        throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+	    }
 
-			// --- Style Definitions ---
-			CreationHelper createHelper = workbook.getCreationHelper();
+	    if (!Files.isReadable(templatePath)) {
+	        throw new SecurityException(
+	                "Template file exists but is not readable: " + templatePath.toAbsolutePath());
+	    }
 
-			CellStyle dateStyle = workbook.createCellStyle();
-			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-			dateStyle.setBorderBottom(BorderStyle.THIN);
-			dateStyle.setBorderTop(BorderStyle.THIN);
-			dateStyle.setBorderLeft(BorderStyle.THIN);
-			dateStyle.setBorderRight(BorderStyle.THIN);
-			CellStyle textStyle = workbook.createCellStyle();
-			textStyle.setBorderBottom(BorderStyle.THIN);
-			textStyle.setBorderTop(BorderStyle.THIN);
-			textStyle.setBorderLeft(BorderStyle.THIN);
-			textStyle.setBorderRight(BorderStyle.THIN);
+	    try (InputStream templateInputStream = Files.newInputStream(templatePath);
+	         Workbook workbook = WorkbookFactory.create(templateInputStream);
+	         ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-			// Create the font
-			Font font = workbook.createFont();
-			font.setFontHeightInPoints((short) 8); // size 8
-			font.setFontName("Arial");
-			CellStyle numberStyle = workbook.createCellStyle();
-			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
-			numberStyle.setBorderBottom(BorderStyle.THIN);
-			numberStyle.setBorderTop(BorderStyle.THIN);
-			numberStyle.setBorderLeft(BorderStyle.THIN);
-			numberStyle.setBorderRight(BorderStyle.THIN);
-			numberStyle.setFont(font);
-			// --- End of Style Definitions ---
-			int startRow = 8;
+	        Sheet sheet = workbook.getSheetAt(0);
 
-			if (!dataList.isEmpty()) {
-				for (int i = 0; i < dataList.size(); i++) {
-					M_CA1_Summary_Entity record = dataList.get(i);
-					System.out.println("rownumber=" + startRow + i);
-					Row row = sheet.getRow(startRow + i);
-					if (row == null) {
-						row = sheet.createRow(startRow + i);
-					}
+	        CreationHelper createHelper = workbook.getCreationHelper();
 
-					//row9
-					// Column D
-					Cell cell3 = row.getCell(3);
-					if (record.getR9_AMOUNT() != null) {
-						cell3.setCellValue(record.getR9_AMOUNT().doubleValue());
+	        CellStyle textStyle = workbook.createCellStyle();
+	        textStyle.setBorderBottom(BorderStyle.THIN);
+	        textStyle.setBorderTop(BorderStyle.THIN);
+	        textStyle.setBorderLeft(BorderStyle.THIN);
+	        textStyle.setBorderRight(BorderStyle.THIN);
 
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-					
-					
-									
-					
-					//row10
-					row = sheet.getRow(9);			
-					// Column D 
-					 cell3 = row.getCell(3);
-					if (record.getR10_AMOUNT() != null) {
-						cell3.setCellValue(record.getR10_AMOUNT().doubleValue());
+	        Font font = workbook.createFont();
+	        font.setFontHeightInPoints((short) 8);
+	        font.setFontName("Arial");
 
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-					
-					//row11
-					row = sheet.getRow(10);			
-					// Column D
-					 cell3 = row.getCell(3);
-					if (record.getR11_AMOUNT() != null) {
-						cell3.setCellValue(record.getR11_AMOUNT().doubleValue());
+	        CellStyle numberStyle = workbook.createCellStyle();
+	        numberStyle.setBorderBottom(BorderStyle.THIN);
+	        numberStyle.setBorderTop(BorderStyle.THIN);
+	        numberStyle.setBorderLeft(BorderStyle.THIN);
+	        numberStyle.setBorderRight(BorderStyle.THIN);
+	        numberStyle.setFont(font);
 
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-					
-					//row12
-					row = sheet.getRow(11);			
-					// Column F 
-					 cell3 = row.getCell(3);
-					if (record.getR12_AMOUNT() != null) {
-						cell3.setCellValue(record.getR12_AMOUNT().doubleValue());
+	        int startRow = 8;
 
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-					
+	        if (!dataList.isEmpty()) {
 
-					//row13
-					row = sheet.getRow(12);			
-					// Column F 
-					 cell3 = row.getCell(3);
-					if (record.getR13_AMOUNT() != null) {
-						cell3.setCellValue(record.getR13_AMOUNT().doubleValue());
-			
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-					
+	            for (int i = 0; i < dataList.size(); i++) {
 
-										
-					
-					
+	                M_CA1_Summary_Entity record = dataList.get(i);
 
-					//row17
-					row = sheet.getRow(16);			
-					// Column F 
-					 cell3 = row.getCell(3);
-					if (record.getR17_AMOUNT() != null) {
-						cell3.setCellValue(record.getR17_AMOUNT().doubleValue());
+	                // Row 9
+	                Row row = sheet.getRow(startRow);
+	                if (row == null) row = sheet.createRow(startRow);
+	                Cell cell3 = row.getCell(3);
+	                if (cell3 == null) cell3 = row.createCell(3);
 
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-					
+	                if (record.getR9_AMOUNT() != null) {
+	                    cell3.setCellValue(record.getR9_AMOUNT().doubleValue());
+	                    cell3.setCellStyle(numberStyle);
+	                } else {
+	                    cell3.setCellType(CellType.BLANK);
+	                    cell3.setCellStyle(textStyle);
+	                }
 
-					//row18
-					row = sheet.getRow(17);			
-					// Column F 
-					 cell3 = row.getCell(3);
-					if (record.getR18_AMOUNT() != null) {
-						cell3.setCellValue(record.getR18_AMOUNT().doubleValue());
+	                // Row 10
+	                row = sheet.getRow(9);
+	                if (row == null) row = sheet.createRow(9);
+	                cell3 = row.getCell(3);
+	                if (cell3 == null) cell3 = row.createCell(3);
 
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-					
+	                if (record.getR10_AMOUNT() != null) {
+	                    cell3.setCellValue(record.getR10_AMOUNT().doubleValue());
+	                    cell3.setCellStyle(numberStyle);
+	                } else {
+	                    cell3.setCellType(CellType.BLANK);
+	                    cell3.setCellStyle(textStyle);
+	                }
 
-					//row19
-					row = sheet.getRow(18);			
-					// Column F 
-					 cell3 = row.getCell(3);
-					if (record.getR19_AMOUNT() != null) {
-						cell3.setCellValue(record.getR19_AMOUNT().doubleValue());
+	                // Row 11
+	                row = sheet.getRow(10);
+	                if (row == null) row = sheet.createRow(10);
+	                cell3 = row.getCell(3);
+	                if (cell3 == null) cell3 = row.createCell(3);
 
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-					
+	                if (record.getR11_AMOUNT() != null) {
+	                    cell3.setCellValue(record.getR11_AMOUNT().doubleValue());
+	                    cell3.setCellStyle(numberStyle);
+	                } else {
+	                    cell3.setCellType(CellType.BLANK);
+	                    cell3.setCellStyle(textStyle);
+	                }
 
-					//row20
-					row = sheet.getRow(19);			
-					// Column F 
-					 cell3 = row.getCell(3);
-					if (record.getR20_AMOUNT() != null) {
-						cell3.setCellValue(record.getR20_AMOUNT().doubleValue());
+	                // Row 12
+	                row = sheet.getRow(11);
+	                if (row == null) row = sheet.createRow(11);
+	                cell3 = row.getCell(3);
+	                if (cell3 == null) cell3 = row.createCell(3);
 
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-					
+	                if (record.getR12_AMOUNT() != null) {
+	                    cell3.setCellValue(record.getR12_AMOUNT().doubleValue());
+	                    cell3.setCellStyle(numberStyle);
+	                } else {
+	                    cell3.setCellType(CellType.BLANK);
+	                    cell3.setCellStyle(textStyle);
+	                }
 
-					//row21
-					row = sheet.getRow(20);			
-					// Column F 
-					 cell3 = row.getCell(3);
-					if (record.getR21_AMOUNT() != null) {
-						cell3.setCellValue(record.getR21_AMOUNT().doubleValue());
+	                // Row 13
+	                row = sheet.getRow(12);
+	                if (row == null) row = sheet.createRow(12);
+	                cell3 = row.getCell(3);
+	                if (cell3 == null) cell3 = row.createCell(3);
 
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-							
-										
-				}
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
-			} else {
+	                if (record.getR13_AMOUNT() != null) {
+	                    cell3.setCellValue(record.getR13_AMOUNT().doubleValue());
+	                    cell3.setCellStyle(numberStyle);
+	                } else {
+	                    cell3.setCellType(CellType.BLANK);
+	                    cell3.setCellStyle(textStyle);
+	                }
 
-			}
+	                // Row 17
+	                row = sheet.getRow(16);
+	                if (row == null) row = sheet.createRow(16);
+	                cell3 = row.getCell(3);
+	                if (cell3 == null) cell3 = row.createCell(3);
 
-			// Write the final workbook content to the in-memory stream.
-			workbook.write(out);
+	                if (record.getR17_AMOUNT() != null) {
+	                    cell3.setCellValue(record.getR17_AMOUNT().doubleValue());
+	                    cell3.setCellStyle(numberStyle);
+	                } else {
+	                    cell3.setCellType(CellType.BLANK);
+	                    cell3.setCellStyle(textStyle);
+	                }
 
-			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+	                // Row 18
+	                row = sheet.getRow(17);
+	                if (row == null) row = sheet.createRow(17);
+	                cell3 = row.getCell(3);
+	                if (cell3 == null) cell3 = row.createCell(3);
 
-			return out.toByteArray();
-		}
+	                if (record.getR18_AMOUNT() != null) {
+	                    cell3.setCellValue(record.getR18_AMOUNT().doubleValue());
+	                    cell3.setCellStyle(numberStyle);
+	                } else {
+	                    cell3.setCellType(CellType.BLANK);
+	                    cell3.setCellStyle(textStyle);
+	                }
+
+	                // Row 19
+	                row = sheet.getRow(18);
+	                if (row == null) row = sheet.createRow(18);
+	                cell3 = row.getCell(3);
+	                if (cell3 == null) cell3 = row.createCell(3);
+
+	                if (record.getR19_AMOUNT() != null) {
+	                    cell3.setCellValue(record.getR19_AMOUNT().doubleValue());
+	                    cell3.setCellStyle(numberStyle);
+	                } else {
+	                    cell3.setCellType(CellType.BLANK);
+	                    cell3.setCellStyle(textStyle);
+	                }
+
+	                // Row 20
+	                row = sheet.getRow(19);
+	                if (row == null) row = sheet.createRow(19);
+	                cell3 = row.getCell(3);
+	                if (cell3 == null) cell3 = row.createCell(3);
+
+	                if (record.getR20_AMOUNT() != null) {
+	                    cell3.setCellValue(record.getR20_AMOUNT().doubleValue());
+	                    cell3.setCellStyle(numberStyle);
+	                } else {
+	                    cell3.setCellType(CellType.BLANK);
+	                    cell3.setCellStyle(textStyle);
+	                }
+
+	                // Row 21
+	                row = sheet.getRow(20);
+	                if (row == null) row = sheet.createRow(20);
+	                cell3 = row.getCell(3);
+	                if (cell3 == null) cell3 = row.createCell(3);
+
+	                if (record.getR21_AMOUNT() != null) {
+	                    cell3.setCellValue(record.getR21_AMOUNT().doubleValue());
+	                    cell3.setCellStyle(numberStyle);
+	                } else {
+	                    cell3.setCellType(CellType.BLANK);
+	                    cell3.setCellStyle(textStyle);
+	                }
+	            }
+
+	            // DO NOT evaluate formulas (causes external workbook error)
+	            workbook.setForceFormulaRecalculation(true);
+	        }
+
+	        workbook.write(out);
+
+	        logger.info("Service: Excel successfully written to memory ({} bytes).", out.size());
+
+	        return out.toByteArray();
+	    }
 	}
 
 	public byte[] BRRS_M_CA1DetailExcel(String filename, String fromdate, String todate, String currency,
@@ -1258,7 +1252,7 @@ public class BRRS_M_CA1_ReportService {
 					//row13
 					row = sheet.getRow(12);			
 					// Column F 
-					 cell3 = row.getCell(3);
+					 cell3 = row.getCell(2);
 					if (record.getR13_AMOUNT() != null) {
 						cell3.setCellValue(record.getR13_AMOUNT().doubleValue());
 			
@@ -1543,7 +1537,7 @@ public class BRRS_M_CA1_ReportService {
 					//row13
 					row = sheet.getRow(12);			
 					// Column F 
-					 cell3 = row.getCell(3);
+					 cell3 = row.getCell(2);
 					if (record.getR13_AMOUNT() != null) {
 						cell3.setCellValue(record.getR13_AMOUNT().doubleValue());
 			

@@ -67,7 +67,6 @@ public class M_CA1_Summary_Entity {
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
     private Date REPORT_DATE;
-
     private BigDecimal REPORT_VERSION;
     private String REPORT_FREQUENCY;
     private String REPORT_CODE;
