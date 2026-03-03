@@ -35,6 +35,7 @@ public interface BRRS_M_LA3_Archival_Detail_Repo extends JpaRepository<M_LA3_Arc
 
 	    @Query(value = "SELECT * FROM BRRS_M_LA3_ARCHIVALTABLE_DETAIL " +
 	            "WHERE report_label = :rowId " +
+	            "AND ( :rowId1 IS NULL OR :rowId1 = '' OR report_label_1 = :rowId1 ) " + 
 	            "AND ( :columnId IS NULL OR :columnId = '' OR report_addl_criteria_1 = :columnId ) " + // Corrected Line
 	            "AND ( :columnId1 IS NULL OR :columnId1 = '' OR report_addl_criteria_2 = :columnId1 ) " +
 	            "AND ( :columnId2 IS NULL OR :columnId2 = '' OR report_addl_criteria_3 = :columnId2 ) " +
