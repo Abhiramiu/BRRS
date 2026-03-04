@@ -332,6 +332,7 @@ public class BRRS_M_CA2_ReportService {
 		return resubList;
 	}
 
+	@Transactional
 	public void updateReport(M_CA2_Summary_Entity updatedEntity) {
 
 	    System.out.println("Came to services");
@@ -344,16 +345,16 @@ public class BRRS_M_CA2_ReportService {
 	                            + updatedEntity.getReport_date()));
 
 	    // Only allowed R-numbers
-	    int[] amount2Indexes = { 11, 32, 42, 43, 44, 46 };     // AMOUNT_2
-	    int[] amount1Indexes = { 13, 14, 15, 16, 18, 19, 21 }; // AMOUNT_1
+	    int[] amount2Indexes = { 11, 32, 42, 44, 46 };     // AMOUNT_2	
+	    int[] amount1Indexes = {  14, 15, 16, 18, 19, 21 }; // AMOUNT_1
 
 	    try {
 
 	        // ===== AMOUNT_2 updates =====
 	        for (int i : amount2Indexes) {
 
-	            String getterName = "getR" + i + "_AMOUNT_2";
-	            String setterName = "setR" + i + "_AMOUNT_2";
+	            String getterName = "getR" + i + "_amount_2";
+	            String setterName = "setR" + i + "_amount_2";
 
 	            try {
 	                Method getter = M_CA2_Summary_Entity.class.getMethod(getterName);
@@ -373,8 +374,8 @@ public class BRRS_M_CA2_ReportService {
 	        // ===== AMOUNT_1 updates =====
 	        for (int i : amount1Indexes) {
 
-	            String getterName = "getR" + i + "_AMOUNT_1";
-	            String setterName = "setR" + i + "_AMOUNT_1";
+	            String getterName = "getR" + i + "_amount_1";
+	            String setterName = "setR" + i + "_amount_1";
 
 	            try {
 	                Method getter = M_CA2_Summary_Entity.class.getMethod(getterName);
@@ -396,7 +397,7 @@ public class BRRS_M_CA2_ReportService {
 	    }
 
 	    // Save only intended updates
-	    BRRS_M_CA2_Summary_Repo.save(existing);
+	    BRRS_M_CA2_Summary_Repo.saveAndFlush(existing);
 	}
 
 	public byte[] getM_CA2DetailExcel(String filename, String fromdate, String todate, String currency, String dtltype,
@@ -1004,7 +1005,7 @@ public class BRRS_M_CA2_ReportService {
 					numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-					int startRow = 10;
+					int startRow = 9;
 
 					if (!dataList.isEmpty()) {
 						for (int i = 0; i < dataList.size(); i++) {
@@ -1426,7 +1427,7 @@ public class BRRS_M_CA2_ReportService {
 				numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-				int startRow = 10;
+				int startRow = 9;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -1474,7 +1475,7 @@ public class BRRS_M_CA2_ReportService {
 
 //===== Row 13 / Col C =====
 						row = sheet.getRow(12);
-						cell3 = row.getCell(2);
+						cell3 = row.getCell(3);
 						if (cell3 == null)
 							cell3 = row.createCell(2);
 						originalStyle = cell3.getCellStyle();
@@ -1488,7 +1489,7 @@ public class BRRS_M_CA2_ReportService {
 
 // ===== Row 14 / Col C =====
 						row = sheet.getRow(13);
-						cell3 = row.getCell(2);
+						cell3 = row.getCell(3);
 						if (cell3 == null)
 							cell3 = row.createCell(2);
 						originalStyle = cell3.getCellStyle();
@@ -1502,7 +1503,7 @@ public class BRRS_M_CA2_ReportService {
 
 // ===== Row 15 / Col C =====
 						row = sheet.getRow(14);
-						cell3 = row.getCell(2);
+						cell3 = row.getCell(3);
 						if (cell3 == null)
 							cell3 = row.createCell(2);
 						originalStyle = cell3.getCellStyle();
@@ -1516,7 +1517,7 @@ public class BRRS_M_CA2_ReportService {
 
 // ===== Row 16 / Col C =====
 						row = sheet.getRow(15);
-						cell3 = row.getCell(2);
+						cell3 = row.getCell(3);
 						if (cell3 == null)
 							cell3 = row.createCell(2);
 						originalStyle = cell3.getCellStyle();
@@ -1855,7 +1856,7 @@ public class BRRS_M_CA2_ReportService {
 			numberStyle.setFont(font);
 //--- End of Style Definitions ---
 
-			int startRow = 10;
+			int startRow = 9;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -2254,7 +2255,7 @@ public class BRRS_M_CA2_ReportService {
 			numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-			int startRow = 10;
+			int startRow = 9;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -2302,7 +2303,7 @@ public class BRRS_M_CA2_ReportService {
 
 //===== Row 13 / Col C =====
 					row = sheet.getRow(12);
-					cell3 = row.getCell(2);
+					cell3 = row.getCell(3);
 					if (cell3 == null)
 						cell3 = row.createCell(2);
 					originalStyle = cell3.getCellStyle();
@@ -2316,7 +2317,7 @@ public class BRRS_M_CA2_ReportService {
 
 // ===== Row 14 / Col C =====
 					row = sheet.getRow(13);
-					cell3 = row.getCell(2);
+					cell3 = row.getCell(3);
 					if (cell3 == null)
 						cell3 = row.createCell(2);
 					originalStyle = cell3.getCellStyle();
@@ -2330,7 +2331,7 @@ public class BRRS_M_CA2_ReportService {
 
 // ===== Row 15 / Col C =====
 					row = sheet.getRow(14);
-					cell3 = row.getCell(2);
+					cell3 = row.getCell(3);
 					if (cell3 == null)
 						cell3 = row.createCell(2);
 					originalStyle = cell3.getCellStyle();
@@ -2344,7 +2345,7 @@ public class BRRS_M_CA2_ReportService {
 
 // ===== Row 16 / Col C =====
 					row = sheet.getRow(15);
-					cell3 = row.getCell(2);
+					cell3 = row.getCell(3);
 					if (cell3 == null)
 						cell3 = row.createCell(2);
 					originalStyle = cell3.getCellStyle();
@@ -2685,7 +2686,7 @@ public class BRRS_M_CA2_ReportService {
 			numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-			int startRow = 10;
+			int startRow = 9;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -3086,7 +3087,7 @@ public class BRRS_M_CA2_ReportService {
 			numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-			int startRow = 10;
+			int startRow = 9;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -3134,7 +3135,7 @@ public class BRRS_M_CA2_ReportService {
 
 //===== Row 13 / Col C =====
 					row = sheet.getRow(12);
-					cell3 = row.getCell(2);
+					cell3 = row.getCell(3);
 					if (cell3 == null)
 						cell3 = row.createCell(2);
 					originalStyle = cell3.getCellStyle();
@@ -3148,7 +3149,7 @@ public class BRRS_M_CA2_ReportService {
 
 // ===== Row 14 / Col C =====
 					row = sheet.getRow(13);
-					cell3 = row.getCell(2);
+					cell3 = row.getCell(3);
 					if (cell3 == null)
 						cell3 = row.createCell(2);
 					originalStyle = cell3.getCellStyle();
@@ -3162,7 +3163,7 @@ public class BRRS_M_CA2_ReportService {
 
 // ===== Row 15 / Col C =====
 					row = sheet.getRow(14);
-					cell3 = row.getCell(2);
+					cell3 = row.getCell(3);
 					if (cell3 == null)
 						cell3 = row.createCell(2);
 					originalStyle = cell3.getCellStyle();
@@ -3176,7 +3177,7 @@ public class BRRS_M_CA2_ReportService {
 
 // ===== Row 16 / Col C =====
 					row = sheet.getRow(15);
-					cell3 = row.getCell(2);
+					cell3 = row.getCell(3);
 					if (cell3 == null)
 						cell3 = row.createCell(2);
 					originalStyle = cell3.getCellStyle();

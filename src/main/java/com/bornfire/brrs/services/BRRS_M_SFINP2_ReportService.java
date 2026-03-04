@@ -302,18 +302,28 @@ public ModelAndView getM_SFINP2currentDtl(
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 	
+	@Transactional
 	public void updateReport(M_SFINP2_Summary_Entity updatedEntity) {
 
 	    System.out.println("Came to services");
 	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-	    M_SFINP2_Summary_Entity existing =
-	            M_SFINP2_Summary_Repo.findById(updatedEntity.getREPORT_DATE())
-	            .orElseThrow(() ->
-	                    new RuntimeException("Record not found for REPORT_DATE: "
-	                            + updatedEntity.getREPORT_DATE()));
+	    List<M_SFINP2_Summary_Entity> list =
+	            M_SFINP2_Summary_Repo.getdatabydateList(updatedEntity.getREPORT_DATE());
 
-	    // ✅ Only allowed R-numbers
+	    M_SFINP2_Summary_Entity existing;
+
+	    if (list.isEmpty()) {
+	        // 🔹 INSERT
+	        existing = new M_SFINP2_Summary_Entity();
+	        existing.setREPORT_DATE(updatedEntity.getREPORT_DATE());
+	        System.out.println("Creating new record");
+	    } else {
+	        // 🔹 UPDATE
+	        existing = list.get(0);
+	        System.out.println("Updating existing record");
+	    }
+
 	    int[] allowedIndexes = {
 	        34, 35, 39, 40, 43, 47, 48,
 	        51, 52, 53, 54, 55, 56, 57, 58,
@@ -343,8 +353,7 @@ public ModelAndView getM_SFINP2currentDtl(
 	                setter.invoke(existing, newValue);
 
 	            } catch (NoSuchMethodException e) {
-	                // Safely skip if field doesn't exist
-	                continue;
+	                // skip missing R fields
 	            }
 	        }
 
@@ -352,10 +361,9 @@ public ModelAndView getM_SFINP2currentDtl(
 	        throw new RuntimeException("Error while updating report fields", e);
 	    }
 
-	    // ✅ Save only intended updates
+	    // ✅ ALWAYS SAVE
 	    M_SFINP2_Summary_Repo.save(existing);
 	}
-	
 	@Autowired BRRS_M_SFINP2_Detail_Repo M_SFINP2_detail_repo;
 	
 	
