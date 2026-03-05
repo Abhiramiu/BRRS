@@ -1121,11 +1121,14 @@ function calculateR101Totals() {
         riskWeightedAmountNostro1 = riskWeightedAmountNostro1 / 100;
         
         // Set calculated values back in UI
-        $("#R" + i + "_RISK_WEIGHTED_AMOUNT_NOSTRO").val(riskWeightedAmountNostro.toFixed(2));
-        $("#R" + i + "_RISK_WEIGHTED_AMOUNT_NOSTRO1").val(riskWeightedAmountNostro1.toFixed(2));
+        $("#R" + i + "_RISK_WEIGHTED_AMOUNT_NOSTRO").val(riskWeightedAmountNostro.toFixed(0));
+        $("#R" + i + "_RISK_WEIGHTED_AMOUNT_NOSTRO1").val(riskWeightedAmountNostro1.toFixed(0));
 
         // Add totals
-        totalAmountDemandNostro += amountDemandNostro;
+		if(i<=29){
+			totalAmountDemandNostro += amountDemandNostro;
+		}
+        
         totalAmountTimeNostro += amountTimeNostro;
         totalRiskWeightedAmountNostro += riskWeightedAmountNostro;
 
@@ -1224,7 +1227,14 @@ function calculateR101Totals() {
 			$('#fileupload').find(':input').each(function () {
 				const name = $(this).attr('name');
 				if (name) {
-					formData.append(name, $(this).val());
+
+					let value = $(this).val();
+					if ($(this).is("select") && value == "") {
+						value = "N/A";   // default value
+					}
+					formData.append(name, value);
+					
+					// formData.append(name, $(this).val());
 				}
 			});
 
@@ -1250,7 +1260,7 @@ function calculateR101Totals() {
                 if (type && type.toUpperCase() === 'RESUB') {
                     location.href = '/BRRS/Resubmission?rptcode=M_NOSVOS'
                 }else{
-                    location.href = '/BRRS/BRRSValidations?rptcode=M_NOSVOS&todate='+asondate
+                    location.reload();
                 }
 
 				},
