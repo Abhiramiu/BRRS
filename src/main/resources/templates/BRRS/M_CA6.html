@@ -1083,6 +1083,11 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 	/*]]>*/
 </script>
 
+<script th:inline="javascript">
+    var data = [[${reportsummary}]];
+    console.log("Data  = "+data);
+</script>
+
 
 
 </head>
@@ -1244,9 +1249,9 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 												<th rowspan="3"
 													style="text-align: left; width: 33%; background-color: #D8D8D8; font-weight: bold; color: black; padding-left: 20px;">
 													Calendar year</th>
-												<td
+												<th
 													style="text-align: center; background-color: #D8D8D8; color: black; padding-left: 20px;">
-													Cap (%)</td>
+													Cap (%)</th>
 												<th
 													style="text-align: right; background-color: #D8D8D8; font-weight: bold; color: black; padding-left: 20px;">
 													Cap on amount eligible for phase-out treatment P'000</th>
@@ -1266,8 +1271,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 										</thead>
 
 
-										<tbody th:each="report: ${reportsummary}"
-											style="font-family: Arial;">
+										<tbody th:each="report : ${reportsummary}" style="font-family: Arial;">
 
 											<tr>
 

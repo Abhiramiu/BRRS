@@ -857,8 +857,8 @@ function fileuploads(btn) {
                     .off("hidden.bs.modal")
                     .on("hidden.bs.modal", function () {
 
-                        if (redirectUrl) {
-                            window.location.href = redirectUrl;
+                        if (type && type.toUpperCase() === 'RESUB') {
+                            window.location.href = "/BRRS/Resubmission?rptcode=M_CA7";
                         } else {
                             location.reload();
                         }

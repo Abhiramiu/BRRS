@@ -1591,7 +1591,14 @@ function fileuploads(btn) {
 
 			    //  Wait for user to close the modal manually
 			    $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
-			        location.reload(); // reload ONLY when modal is closed
+			    	if(type && type.toUpperCase() != 'RESUB')
+			    	{
+			    	window.location.reload();// reload ONLY when modal is closed
+			    	}
+			    	else
+			    		{
+			    		 window.location.href = "/BRRS/Resubmission?rptcode=M_OR2";
+			    		} 
 			    });
 			},
 	        error: function (jqXHR) {
@@ -1760,7 +1767,7 @@ function fileuploads(btn) {
 
 
 </head>
-<title>BRRS</title>
+<title>M_OR2</title>
 
 <body>
 	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">

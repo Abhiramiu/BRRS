@@ -3916,7 +3916,15 @@ if (type && type.toUpperCase() === 'RESUB') {
 
 	    //  Wait for user to close the modal manually
 	    $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
+	    	if(type && type.toUpperCase() != 'RESUB')
+	    	{
 	    	window.location.reload();// reload ONLY when modal is closed
+	    	}
+	    	else
+	    		{
+	    		 window.location.href = redirectUrl;
+	    		}
+	    	
 	    });
 	},
     error: function (jqXHR) {
