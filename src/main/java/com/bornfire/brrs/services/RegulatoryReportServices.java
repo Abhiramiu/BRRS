@@ -541,7 +541,15 @@ public class RegulatoryReportServices {
 			break;
 		case "M_FAS": repsummary = BRRS_M_FAS_reportservice.getBRRS_M_FASView(reportId, fromdate, todate,
 				 currency, dtltype, pageable, type, version); break;
-		/*
+		
+		case "M_OR1": 
+			repsummary = brrs_m_or1_reportservice.getM_OR1View(reportId,
+				  fromdate, todate, currency, dtltype, pageable, 
+				  type, version); 
+			break;
+				 
+			
+				 /*
 		 * 
 		 * 
 		 * 
@@ -1736,6 +1744,7 @@ public class RegulatoryReportServices {
 					pageable, Filter, type, version);
 			break;
 
+		
 		case "M_LA1":
 			repdetail = BRRS_M_LA1_reportservice.getM_LA1currentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
@@ -2141,6 +2150,16 @@ public class RegulatoryReportServices {
 			}
 			break;
 
+		case "M_OR1":
+			try {
+				repfile = brrs_m_or1_reportservice.BRRS_M_OR1Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, format, version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
 		case "M_SRWA_12B":
 			try {
 				repfile = brrs_m_srwa_12b_reportservice.getM_SRWA_12BExcel(filename, reportId, fromdate, todate,
@@ -4010,7 +4029,7 @@ break;
 		} else if ("MCA2Detail".equals(filename)) {
 			return BRRS_M_CA2_reportservice.getM_CA2DetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
-		} else if ("MOR1Detail".equals(filename)) {
+		} else if ("M_OR1Detail".equals(filename)) {
 			return brrs_m_or1_reportservice.BRRS_M_OR1DetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
 		} else if ("MLIQGAPDetail".equals(filename)) {
@@ -4210,7 +4229,11 @@ break;
 	archivalData.addAll(msfinp2List);
 	System.out.println("Fetched M_SFINP2 archival data: " + msfinp2List.size());
 	
-		
+		case "M_OR1":
+			List<Object[]> MOR1List = brrs_m_or1_reportservice.getM_OR1Archival();
+			archivalData.addAll(MOR1List);
+			System.out.println("Fetched M_OR1 archival data: " + MOR1List.size());
+			break;
 		
 		/*
 		 * case "M_SFINP2": try { archivalData =
@@ -4272,14 +4295,7 @@ case "M_CA2":
 	System.out.println("Fetched FASList archival data: " + FASList.size());
 	break;
 	
-		case "M_OR1":
-			try {
-				archivalData = brrs_m_or1_reportservice.getM_OR1Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		
 
 		case "M_LIQGAP":
 			try {
@@ -5489,18 +5505,15 @@ case "M_CA2":
 		} else if (filename.equals("M_ISDetail")) {
 			fileData = BRRS_M_IS_reportservice.BRRS_M_ISDetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
-			// } else if (filename.equals("M_SRWA_12HDetail")) {
-			// fileData = BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HDetailExcel(filename,
-			// fromdate, todate, currency,
-			// dtltype, type, version);
-		} else if (filename.equals("M_MRCDetail")) {
+			
+		} else if ("M_OR1Detail".equals(filename)) {
+			fileData = brrs_m_or1_reportservice.BRRS_M_OR1DetailExcel(filename, fromdate, todate, currency, dtltype, type,
+					version);
+			}
+		else if (filename.equals("M_MRCDetail")) {
 			fileData = BRRS_M_MRC_reportservice.getM_MRCDetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
-		} /*
-			 * else if (filename.equals("M_SRWA_12CDetail")) { fileData =
-			 * BRRS_M_SRWA_12C_reportservice.BRRS_M_SRWA_12CDetailExcel(filename, fromdate,
-			 * todate, currency, dtltype, type ,version); }
-			 */
+		} 
 		else if (filename.equals("M_CA1Detail")) {
 			fileData = BRRS_M_CA1_reportservice.BRRS_M_CA1DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
@@ -5555,9 +5568,6 @@ case "M_CA2":
 		} else if (filename.equals("M_CA2Detail")) {
 			fileData = BRRS_M_CA2_reportservice.getM_CA2DetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
-		} else if (filename.equals("M_CA2Detail")) {
-			fileData = brrs_m_or1_reportservice.BRRS_M_OR1DetailExcel(filename, fromdate, todate, currency, dtltype,
-					type, version);
 		} else if (filename.equals("M_LIQGAPDetail")) {
 			fileData = brrs_m_liqgap_reportservice.getM_LIQGAPDetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);

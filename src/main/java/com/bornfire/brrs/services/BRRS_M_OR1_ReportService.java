@@ -2,11 +2,10 @@ package com.bornfire.brrs.services;
 
 
 import java.io.ByteArrayOutputStream;
-
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,7 +18,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -35,7 +33,6 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,57 +52,45 @@ import com.bornfire.brrs.entities.BRRS_M_OR1_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_OR1_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_OR1_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_OR1_Summary_Repo;
-import com.bornfire.brrs.entities.M_DEP1_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_DEP1_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_DEP1_Detail_Entity;
-import com.bornfire.brrs.entities.M_DEP1_Summary_Entity;
-import com.bornfire.brrs.entities.M_DEP3_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.M_OR1_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_OR1_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_OR1_Detail_Entity;
 import com.bornfire.brrs.entities.M_OR1_Summary_Entity;
-import com.bornfire.brrs.entities.M_OR2_Summary_Entity;
-
-import java.math.BigDecimal;
 
 @Component
 @Service
 public class BRRS_M_OR1_ReportService {
-private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportService.class);
-	
-
+	private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportService.class);
 
 	@Autowired
 	private Environment env;
-	
-	
+
 	@Autowired
 	SessionFactory sessionFactory;
-	
 
 	@Autowired
 	BRRS_M_OR1_Detail_Repo M_OR1_Detail_Repo;
-	
+
 	@Autowired
 	BRRS_M_OR1_Summary_Repo M_OR1_Summary_Repo;
-	
+
 	@Autowired
 	BRRS_M_OR1_Archival_Detail_Repo M_OR1_Archival_Detail_Repo;
 
 	@Autowired
 	BRRS_M_OR1_Archival_Summary_Repo M_OR1_Archival_Summary_Repo;
-	
-	
+
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
-	
-	public ModelAndView getM_OR1View(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, String version) {
+
+	public ModelAndView getM_OR1View(String reportId, String fromdate, String todate, String currency, String dtltype,
+			Pageable pageable, String type, BigDecimal version) {
 
 		ModelAndView mv = new ModelAndView();
-/*		Session hs = sessionFactory.getCurrentSession();
-		int pageSize = pageable.getPageSize();
-		int currentPage = pageable.getPageNumber();
-		int startItem = currentPage * pageSize;*/
+		/*
+		 * Session hs = sessionFactory.getCurrentSession(); int pageSize =
+		 * pageable.getPageSize(); int currentPage = pageable.getPageNumber(); int
+		 * startItem = currentPage * pageSize;
+		 */
 
 		if (type.equals("ARCHIVAL") & version != null) {
 			List<M_OR1_Archival_Summary_Entity> T1Master = new ArrayList<M_OR1_Archival_Summary_Entity>();
@@ -128,11 +113,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportSe
 			List<M_OR1_Summary_Entity> T1Master = new ArrayList<M_OR1_Summary_Entity>();
 			try {
 				Date d1 = dateformat.parse(todate);
-				// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
-
-				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
-				// ", BRF1_REPORT_ENTITY.class)
-				// .setParameter(1, df.parse(todate)).getResultList();
 				T1Master = M_OR1_Summary_Repo.getdatabydateList(dateformat.parse(todate));
 
 			} catch (ParseException e) {
@@ -189,7 +169,8 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportSe
 				// 🔹 Archival branch
 				List<M_OR1_Archival_Detail_Entity> T1Dt1;
 				if (reportLable != null && reportAddlCriteria1 != null) {
-					T1Dt1 = M_OR1_Archival_Detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria1, parsedDate, version);
+					T1Dt1 = M_OR1_Archival_Detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria1,
+							parsedDate, version);
 				} else {
 					T1Dt1 = M_OR1_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
 					totalPages = M_OR1_Detail_Repo.getdatacount(parsedDate);
@@ -203,7 +184,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportSe
 				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
 
 			} else {
-				System.out.println("Praveen");
+				System.out.println("came to detail method");
 				// 🔹 Current branch
 				List<M_OR1_Detail_Entity> T1Dt1;
 				if (reportLable != null && reportAddlCriteria1 != null) {
@@ -216,7 +197,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportSe
 
 				mv.addObject("reportdetails", T1Dt1);
 				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+				System.out.println("LISTCOUNT for Detail page is : " + (T1Dt1 != null ? T1Dt1.size() : 0));
 			}
 
 		} catch (ParseException e) {
@@ -238,197 +219,212 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportSe
 
 		return mv;
 	}
-	
-	
+
 	public void updateReport(M_OR1_Summary_Entity updatedEntity) {
-	    System.out.println("Came to services");
-	    System.out.println("report_date: " + updatedEntity.getReport_date());
+		System.out.println("Came to services");
+		System.out.println("report_date: " + updatedEntity.getReport_date());
 
-	    M_OR1_Summary_Entity existing = M_OR1_Summary_Repo.findById(updatedEntity.getReport_date())
-	            .orElseThrow(() -> new RuntimeException(
-	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+		M_OR1_Summary_Entity existing = M_OR1_Summary_Repo.findById(updatedEntity.getReport_date()).orElseThrow(
+				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
-	    try {
-	    	// Loop from R11 to R50 and copy fields
-	    	int[] rows = new int[56];
-	    	for (int k = 0, r = 10; r <= 22; r++, k++) {
-	    	    rows[k] = r;
-	    	}
+		try {
+			// Loop from R11 to R50 and copy fields
+			int[] rows = new int[56];
+			for (int k = 0, r = 10; r <= 22; r++, k++) {
+				rows[k] = r;
+			}
 
-	    	for (int i : rows) {
-	    	    String prefix = "R" + i + "_";   // Use capital R (same as your working code)
-	    	    String[] fields = {"gross_income"};
+			for (int i : rows) {
+				String prefix = "R" + i + "_"; // Use capital R (same as your working code)
+				String[] fields = { "gross_income" };
 
-	    	    for (String field : fields) {
-	    	        try {
-	    	            String getterName = "get" + prefix + field;
-	    	            String setterName = "set" + prefix + field;
+				for (String field : fields) {
+					try {
+						String getterName = "get" + prefix + field;
+						String setterName = "set" + prefix + field;
 
-	    	            Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
-	    	            Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+						Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
+						Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
-	    	            Object newValue = getter.invoke(updatedEntity);
-	    	            setter.invoke(existing, newValue);
+						Object newValue = getter.invoke(updatedEntity);
+						setter.invoke(existing, newValue);
 
-	    	        } catch (NoSuchMethodException e) {
-	    	            // Skip missing getter/setter gracefully
-	    	            continue;
-	    	        }
-	    	    }
-	    	}
+					} catch (NoSuchMethodException e) {
+						// Skip missing getter/setter gracefully
+						continue;
+					}
+				}
+			}
 
+			// Loop from R17 to R30 and copy fields
+			// Loop from R23 to R34 and copy fields
+			int[] rows2 = new int[12];
+			for (int k = 0, r = 23; r <= 34; r++, k++) {
+				rows2[k] = r;
+			}
 
-	        // Loop from R17 to R30 and copy fields
-	    	// Loop from R23 to R34 and copy fields
-	    	int[] rows2 = new int[12];
-	    	for (int k = 0, r = 23; r <= 34; r++, k++) {
-	    	    rows2[k] = r;
-	    	}
+			for (int i : rows2) {
+				String prefix = "R" + i + "_"; // FIX: Capital R (same as your working model)
+				String[] fields = { "gross_income" };
 
-	    	for (int i : rows2) {
-	    	    String prefix = "R" + i + "_";   // FIX: Capital R (same as your working model)
-	    	    String[] fields = {"gross_income"};
+				for (String field : fields) {
+					try {
+						String getterName = "get" + prefix + field;
+						String setterName = "set" + prefix + field;
 
-	    	    for (String field : fields) {
-	    	        try {
-	    	            String getterName = "get" + prefix + field;
-	    	            String setterName = "set" + prefix + field;
+						Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
+						Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
-	    	            Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
-	    	            Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+						Object newValue = getter.invoke(updatedEntity);
+						setter.invoke(existing, newValue);
 
-	    	            Object newValue = getter.invoke(updatedEntity);
-	    	            setter.invoke(existing, newValue);
+					} catch (NoSuchMethodException e) {
+						// Skip missing getter/setter gracefully
+						continue;
+					}
+				}
+			}
 
-	    	        } catch (NoSuchMethodException e) {
-	    	            // Skip missing getter/setter gracefully
-	    	            continue;
-	    	        }
-	    	    }
-	    	}
+			// Loop from R36 to R46 and copy fields
+			int[] rows3 = new int[11];
+			for (int k = 0, r = 36; r <= 46; r++, k++) {
+				rows3[k] = r;
+			}
 
+			for (int i : rows3) {
+				String prefix = "R" + i + "_"; // FIXED: Capital 'R'
+				String[] fields = { "gross_income" };
 
-	    	// Loop from R36 to R46 and copy fields
-	    	int[] rows3 = new int[11];
-	    	for (int k = 0, r = 36; r <= 46; r++, k++) {
-	    	    rows3[k] = r;
-	    	}
+				for (String field : fields) {
+					try {
+						String getterName = "get" + prefix + field;
+						String setterName = "set" + prefix + field;
 
-	    	for (int i : rows3) {
-	    	    String prefix = "R" + i + "_";   // FIXED: Capital 'R'
-	    	    String[] fields = {"gross_income"};
+						Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
+						Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
-	    	    for (String field : fields) {
-	    	        try {
-	    	            String getterName = "get" + prefix + field;
-	    	            String setterName = "set" + prefix + field;
+						Object newValue = getter.invoke(updatedEntity);
+						setter.invoke(existing, newValue);
 
-	    	            Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
-	    	            Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+					} catch (NoSuchMethodException e) {
+						// Skip missing getter/setter gracefully
+						continue;
+					}
+				}
+			}
 
-	    	            Object newValue = getter.invoke(updatedEntity);
-	    	            setter.invoke(existing, newValue);
+			int[] Rows = { 22, 35, 48 };
+			for (int i : Rows) {
+				String prefix = "R" + i + "_";
+				String[] fields = { "gross_income" };
 
-	    	        } catch (NoSuchMethodException e) {
-	    	            // Skip missing getter/setter gracefully
-	    	            continue;
-	    	        }
-	    	    }
-	    	}
+				for (String field : fields) {
+					try {
+						String getterName = "get" + prefix + field;
+						String setterName = "set" + prefix + field;
 
+						Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
+						Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
-	        int[] Rows = {22,35,48};
-	        for (int i : Rows) {
-	            String prefix = "R" + i + "_";
-	            String[] fields = {"gross_income" };
+						Object newValue = getter.invoke(updatedEntity);
+						setter.invoke(existing, newValue);
 
-	            for (String field : fields) {
-	                try {
-	                    String getterName = "get" + prefix + field;
-	                    String setterName = "set" + prefix + field;
+					} catch (NoSuchMethodException e) {
+						// Skip missing getter/setter gracefully
+						continue;
+					}
+				}
+			}
 
-	                    Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
-	                    Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+			int[] Rows1 = { 50, 51, 52, 53, 54 };
+			for (int i : Rows1) {
+				String prefix = "R" + i + "_";
+				String[] fields = { "aggregate_gross_income" };
 
-	                    Object newValue = getter.invoke(updatedEntity);
-	                    setter.invoke(existing, newValue);
+				for (String field : fields) {
+					try {
+						String getterName = "get" + prefix + field;
+						String setterName = "set" + prefix + field;
 
-	                } catch (NoSuchMethodException e) {
-	                    // Skip missing getter/setter gracefully
-	                    continue;
-	                }
-	            }
-	        }
-	        
-	        int[] Rows1 = {50,52,54};
-	        for (int i : Rows1) {
-	            String prefix = "R" + i + "_";
-	            String[] fields = {"aggregate_gross_income" };
+						Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
+						Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
-	            for (String field : fields) {
-	                try {
-	                    String getterName = "get" + prefix + field;
-	                    String setterName = "set" + prefix + field;
+						Object newValue = getter.invoke(updatedEntity);
+						setter.invoke(existing, newValue);
 
-	                    Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
-	                    Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+					} catch (NoSuchMethodException e) {
+						// Skip missing getter/setter gracefully
+						continue;
+					}
+				}
+			}
 
-	                    Object newValue = getter.invoke(updatedEntity);
-	                    setter.invoke(existing, newValue);
+			int[] Rows2 = { 55, 56 };
+			for (int i : Rows2) {
+				String prefix = "R" + i + "_";
+				String[] fields = { "risk_weight_factor" };
 
-	                } catch (NoSuchMethodException e) {
-	                    // Skip missing getter/setter gracefully
-	                    continue;
-	                }
-	            }
-	        }
+				for (String field : fields) {
+					try {
+						String getterName = "get" + prefix + field;
+						String setterName = "set" + prefix + field;
 
-	        int[] Rows2 = {56};
-	        for (int i : Rows2) {
-	            String prefix = "R" + i + "_";
-	            String[] fields = {"risk_weight_factor" };
+						Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
+						Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
-	            for (String field : fields) {
-	                try {
-	                    String getterName = "get" + prefix + field;
-	                    String setterName = "set" + prefix + field;
+						Object newValue = getter.invoke(updatedEntity);
+						setter.invoke(existing, newValue);
 
-	                    Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
-	                    Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+					} catch (NoSuchMethodException e) {
+						// Skip missing getter/setter gracefully
+						continue;
+					}
+				}
+			}
 
-	                    Object newValue = getter.invoke(updatedEntity);
-	                    setter.invoke(existing, newValue);
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields", e);
+		}
 
-	                } catch (NoSuchMethodException e) {
-	                    // Skip missing getter/setter gracefully
-	                    continue;
-	                }
-	            }
-	        }
-	            
-	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
-
-	    // Save updated entity
-	    System.out.println("abc");
-	    M_OR1_Summary_Repo.save(existing);
+		// Save updated entity
+		System.out.println("abc");
+		M_OR1_Summary_Repo.save(existing);
 	}
-	
-	
-	
-	
 
 	public byte[] BRRS_M_OR1Excel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) throws Exception {
+			String dtltype, String type, String format, BigDecimal version) throws Exception {
+		
 		logger.info("Service: Starting Excel generation process in memory.");
-		System.out.println(type);
-		System.out.println(version);
+		System.out.println("======= DOWNLOAD DETAILS =======");
+		System.out.println("TYPE      : " + type);
+		System.out.println("FORMAT      : " + format);
+		System.out.println("DTLTYPE   : " + dtltype);
+		System.out.println("DATE      : " + dateformat.parse(todate));
+		System.out.println("VERSION   : " + version);
+		System.out.println("==========================");
+		
+		
 		if (type.equals("ARCHIVAL") & version != null) {
-			byte[] ARCHIVALreport = getExcelM_OR1ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type,
+			
+			if ("email".equalsIgnoreCase(format)) {
+				logger.info("Got format as Email");
+				logger.info("Service: Generating Email report for version {}", version);
+				return BRRS_M_OR1ArchivalEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+			} 
+			
+			else {
+			byte[] ARCHIVALreport = getExcelM_OR1ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, format,
 					version);
 			return ARCHIVALreport;
+			}
 		}
+		else {
+
+			if ("email".equalsIgnoreCase(format) && version == null) {
+				logger.info("Got format as Email");
+				logger.info("Service: Generating Email report for version {}", version);
+				return BRRS_M_OR1EmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+			} else {
 
 		List<M_OR1_Summary_Entity> dataList = M_OR1_Summary_Repo.getdatabydateList(dateformat.parse(todate));
 
@@ -1000,6 +996,1173 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportSe
 
 			return out.toByteArray();
 		}
+			}
+			}
+	}
+
+	public byte[] BRRS_M_OR1EmailExcel(String filename, String reportId, String fromdate, String todate, String currency,
+					String dtltype, String type, BigDecimal version) throws Exception {
+				
+				logger.info("Service: Starting Excel generation process in memory.");
+				System.out.println("======= DOWNLOAD DETAILS =======");
+				System.out.println("TYPE      : " + type);
+				System.out.println("DTLTYPE   : " + dtltype);
+				System.out.println("DATE      : " + dateformat.parse(todate));
+				System.out.println("VERSION   : " + version);
+				System.out.println("==========================");
+				
+				
+			
+				List<M_OR1_Summary_Entity> dataList = M_OR1_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+
+				if (dataList.isEmpty()) {
+					logger.warn("Service: No data found for M-OR1 report. Returning empty result.");
+					return new byte[0];
+				}
+
+				String templateDir = env.getProperty("output.exportpathtemp");
+				String templateFileName = filename;
+				System.out.println(filename);
+				Path templatePath = Paths.get(templateDir, templateFileName);
+				System.out.println(templatePath);
+
+				logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+				if (!Files.exists(templatePath)) {
+					// This specific exception will be caught by the controller.
+					throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+				}
+				if (!Files.isReadable(templatePath)) {
+					// A specific exception for permission errors.
+					throw new SecurityException(
+							"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+				}
+
+				// This try-with-resources block is perfect. It guarantees all resources are
+				// closed automatically.
+				try (InputStream templateInputStream = Files.newInputStream(templatePath);
+						Workbook workbook = WorkbookFactory.create(templateInputStream);
+						ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+					Sheet sheet = workbook.getSheetAt(0);
+
+					// --- Style Definitions ---
+					CreationHelper createHelper = workbook.getCreationHelper();
+
+					CellStyle dateStyle = workbook.createCellStyle();
+					dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+					dateStyle.setBorderBottom(BorderStyle.THIN);
+					dateStyle.setBorderTop(BorderStyle.THIN);
+					dateStyle.setBorderLeft(BorderStyle.THIN);
+					dateStyle.setBorderRight(BorderStyle.THIN);
+
+					CellStyle textStyle = workbook.createCellStyle();
+					textStyle.setBorderBottom(BorderStyle.THIN);
+					textStyle.setBorderTop(BorderStyle.THIN);
+					textStyle.setBorderLeft(BorderStyle.THIN);
+					textStyle.setBorderRight(BorderStyle.THIN);
+
+					// Create the font
+					Font font = workbook.createFont();
+					font.setFontHeightInPoints((short) 8); // size 8
+					font.setFontName("Arial");
+
+					CellStyle numberStyle = workbook.createCellStyle();
+					// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+					numberStyle.setBorderBottom(BorderStyle.THIN);
+					numberStyle.setBorderTop(BorderStyle.THIN);
+					numberStyle.setBorderLeft(BorderStyle.THIN);
+					numberStyle.setBorderRight(BorderStyle.THIN);
+					numberStyle.setFont(font);
+
+					CellStyle percentStyle = workbook.createCellStyle();
+					percentStyle.cloneStyleFrom(numberStyle);
+					percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
+					percentStyle.setAlignment(HorizontalAlignment.RIGHT);
+					// --- End of Style Definitions ---
+					
+					int startRow = 9;
+					
+					if (!dataList.isEmpty()) {
+						for (int i = 0; i < dataList.size(); i++) {
+							M_OR1_Summary_Entity record = dataList.get(i);
+							System.out.println("rownumber="+startRow + i);
+							Row row = sheet.getRow(startRow + i);
+							if (row == null) {
+								row = sheet.createRow(startRow + i);
+							}
+
+
+							//row11
+							// Column C
+							Cell cell3 = row.createCell(2);
+							if (record.getR10_gross_income() != null) {
+								cell3.setCellValue(record.getR10_gross_income().doubleValue());
+								cell3.setCellStyle(numberStyle);
+							} else {
+								cell3.setCellValue("");
+								cell3.setCellStyle(textStyle);
+							}
+							
+							row = sheet.getRow(10);
+							cell3 = row.createCell(2);
+							if (record.getR11_gross_income() != null) {
+							    cell3.setCellValue(record.getR11_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(11);
+							cell3 = row.createCell(2);
+							if (record.getR12_gross_income() != null) {
+							    cell3.setCellValue(record.getR12_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(12);
+							cell3 = row.createCell(2);
+							if (record.getR13_gross_income() != null) {
+							    cell3.setCellValue(record.getR13_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(13);
+							cell3 = row.createCell(2);
+							if (record.getR14_gross_income() != null) {
+							    cell3.setCellValue(record.getR14_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(14);
+							cell3 = row.createCell(2);
+							if (record.getR15_gross_income() != null) {
+							    cell3.setCellValue(record.getR15_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(15);
+							cell3 = row.createCell(2);
+							if (record.getR16_gross_income() != null) {
+							    cell3.setCellValue(record.getR16_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(16);
+							cell3 = row.createCell(2);
+							if (record.getR17_gross_income() != null) {
+							    cell3.setCellValue(record.getR17_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(17);
+							cell3 = row.createCell(2);
+							if (record.getR18_gross_income() != null) {
+							    cell3.setCellValue(record.getR18_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(18);
+							cell3 = row.createCell(2);
+							if (record.getR19_gross_income() != null) {
+							    cell3.setCellValue(record.getR19_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(19);
+							cell3 = row.createCell(2);
+							if (record.getR20_gross_income() != null) {
+							    cell3.setCellValue(record.getR20_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(20);
+							cell3 = row.createCell(2);
+							if (record.getR21_gross_income() != null) {
+							    cell3.setCellValue(record.getR21_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(21);
+							cell3 = row.createCell(2);
+							if (record.getR22_gross_income() != null) {
+							    cell3.setCellValue(record.getR22_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(22);
+							cell3 = row.createCell(2);
+							if (record.getR23_gross_income() != null) {
+							    cell3.setCellValue(record.getR23_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(23);
+							cell3 = row.createCell(2);
+							if (record.getR24_gross_income() != null) {
+							    cell3.setCellValue(record.getR24_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(24);
+							cell3 = row.createCell(2);
+							if (record.getR25_gross_income() != null) {
+							    cell3.setCellValue(record.getR25_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(25);
+							cell3 = row.createCell(2);
+							if (record.getR26_gross_income() != null) {
+							    cell3.setCellValue(record.getR26_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(26);
+							cell3 = row.createCell(2);
+							if (record.getR27_gross_income() != null) {
+							    cell3.setCellValue(record.getR27_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(27);
+							cell3 = row.createCell(2);
+							if (record.getR28_gross_income() != null) {
+							    cell3.setCellValue(record.getR28_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(28);
+							cell3 = row.createCell(2);
+							if (record.getR29_gross_income() != null) {
+							    cell3.setCellValue(record.getR29_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(29);
+							cell3 = row.createCell(2);
+							if (record.getR30_gross_income() != null) {
+							    cell3.setCellValue(record.getR30_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(30);
+							cell3 = row.createCell(2);
+							if (record.getR31_gross_income() != null) {
+							    cell3.setCellValue(record.getR31_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(31);
+							cell3 = row.createCell(2);
+							if (record.getR32_gross_income() != null) {
+							    cell3.setCellValue(record.getR32_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(32);
+							cell3 = row.createCell(2);
+							if (record.getR33_gross_income() != null) {
+							    cell3.setCellValue(record.getR33_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(33);
+							cell3 = row.createCell(2);
+							if (record.getR34_gross_income() != null) {
+							    cell3.setCellValue(record.getR34_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(34);
+							cell3 = row.createCell(2);
+							if (record.getR35_gross_income() != null) {
+							    cell3.setCellValue(record.getR35_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(35);
+							cell3 = row.createCell(2);
+							if (record.getR36_gross_income() != null) {
+							    cell3.setCellValue(record.getR36_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(36);
+							cell3 = row.createCell(2);
+							if (record.getR37_gross_income() != null) {
+							    cell3.setCellValue(record.getR37_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(37);
+							cell3 = row.createCell(2);
+							if (record.getR38_gross_income() != null) {
+							    cell3.setCellValue(record.getR38_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(38);
+							cell3 = row.createCell(2);
+							if (record.getR39_gross_income() != null) {
+							    cell3.setCellValue(record.getR39_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(39);
+							cell3 = row.createCell(2);
+							if (record.getR40_gross_income() != null) {
+							    cell3.setCellValue(record.getR40_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(40);
+							cell3 = row.createCell(2);
+							if (record.getR41_gross_income() != null) {
+							    cell3.setCellValue(record.getR41_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(41);
+							cell3 = row.createCell(2);
+							if (record.getR42_gross_income() != null) {
+							    cell3.setCellValue(record.getR42_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(42);
+							cell3 = row.createCell(2);
+							if (record.getR43_gross_income() != null) {
+							    cell3.setCellValue(record.getR43_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(43);
+							cell3 = row.createCell(2);
+							if (record.getR44_gross_income() != null) {
+							    cell3.setCellValue(record.getR44_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(44);
+							cell3 = row.createCell(2);
+							if (record.getR45_gross_income() != null) {
+							    cell3.setCellValue(record.getR45_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(45);
+							cell3 = row.createCell(2);
+							if (record.getR46_gross_income() != null) {
+							    cell3.setCellValue(record.getR46_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(46);
+							cell3 = row.createCell(2);
+							if (record.getR47_gross_income() != null) {
+							    cell3.setCellValue(record.getR47_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(47);
+							cell3 = row.createCell(2);
+							if (record.getR48_gross_income() != null) {
+							    cell3.setCellValue(record.getR48_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+							
+							/*
+							 * row = sheet.getRow(48); cell3 = row.createCell(2); if
+							 * (record.getR49_gross_income() != null) {
+							 * cell3.setCellValue(record.getR49_gross_income().doubleValue());
+							 * cell3.setCellStyle(numberStyle); } else { cell3.setCellValue("");
+							 * cell3.setCellStyle(textStyle); }
+							 */
+							row = sheet.getRow(48);
+							cell3 = row.createCell(3);
+							if (record.getR50_aggregate_gross_income() != null) {
+							    cell3.setCellValue(record.getR50_aggregate_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+							
+							row = sheet.getRow(49);
+							cell3 = row.createCell(3);
+							if (record.getR51_aggregate_gross_income() != null) {
+							    cell3.setCellValue(record.getR51_aggregate_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+							
+							
+							row = sheet.getRow(50);
+							cell3 = row.createCell(3);
+							if (record.getR52_aggregate_gross_income() != null) {
+							    cell3.setCellValue(record.getR52_aggregate_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+							
+							
+							row = sheet.getRow(51);
+							cell3 = row.createCell(3);
+							if (record.getR53_aggregate_gross_income() != null) {
+							    cell3.setCellValue(record.getR53_aggregate_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+							
+							
+							row = sheet.getRow(52);
+							cell3 = row.createCell(3);
+							if (record.getR54_aggregate_gross_income() != null) {
+							    cell3.setCellValue(record.getR54_aggregate_gross_income().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+							
+							row = sheet.getRow(53);
+							cell3 = row.createCell(4);
+							if (record.getR55_risk_weight_factor() != null) {
+							    cell3.setCellValue(record.getR55_risk_weight_factor().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+							
+							row = sheet.getRow(54);
+							cell3 = row.createCell(4);
+							if (record.getR56_risk_weight_factor() != null) {
+							    cell3.setCellValue(record.getR56_risk_weight_factor().doubleValue());
+							    cell3.setCellStyle(numberStyle);
+							} else {
+							    cell3.setCellValue("");
+							    cell3.setCellStyle(textStyle);
+							}
+							
+							
+
+							
+						}
+						workbook.setForceFormulaRecalculation(true);
+					} else {
+						
+					}
+
+					// Write the final workbook content to the in-memory stream.
+					workbook.write(out);
+
+					logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+					return out.toByteArray();
+				}
+			}
+
+	public byte[] BRRS_M_OR1ArchivalEmailExcel(String filename, String reportId, String fromdate, String todate, String currency,
+			String dtltype, String type, BigDecimal version) throws Exception {
+		
+		logger.info("Service: Starting Excel generation process in memory for EMAIL ARCHIVAL.");
+		
+		System.out.println("======= DOWNLOAD DETAILS =======");
+		System.out.println("TYPE      : " + type);
+		System.out.println("DTLTYPE   : " + dtltype);
+		System.out.println("DATE      : " + dateformat.parse(todate));
+		System.out.println("VERSION   : " + version);
+		System.out.println("==========================");
+		
+		
+	
+		List<M_OR1_Summary_Entity> dataList = M_OR1_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+
+		if (dataList.isEmpty()) {
+			logger.warn("Service: No data found for M-OR1 report. Returning empty result.");
+			return new byte[0];
+		}
+
+		String templateDir = env.getProperty("output.exportpathtemp");
+		String templateFileName = filename;
+		System.out.println(filename);
+		Path templatePath = Paths.get(templateDir, templateFileName);
+		System.out.println(templatePath);
+
+		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+		if (!Files.exists(templatePath)) {
+			// This specific exception will be caught by the controller.
+			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+		}
+		if (!Files.isReadable(templatePath)) {
+			// A specific exception for permission errors.
+			throw new SecurityException(
+					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+		}
+
+		// This try-with-resources block is perfect. It guarantees all resources are
+		// closed automatically.
+		try (InputStream templateInputStream = Files.newInputStream(templatePath);
+				Workbook workbook = WorkbookFactory.create(templateInputStream);
+				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+			Sheet sheet = workbook.getSheetAt(0);
+
+			// --- Style Definitions ---
+			CreationHelper createHelper = workbook.getCreationHelper();
+
+			CellStyle dateStyle = workbook.createCellStyle();
+			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+			dateStyle.setBorderBottom(BorderStyle.THIN);
+			dateStyle.setBorderTop(BorderStyle.THIN);
+			dateStyle.setBorderLeft(BorderStyle.THIN);
+			dateStyle.setBorderRight(BorderStyle.THIN);
+
+			CellStyle textStyle = workbook.createCellStyle();
+			textStyle.setBorderBottom(BorderStyle.THIN);
+			textStyle.setBorderTop(BorderStyle.THIN);
+			textStyle.setBorderLeft(BorderStyle.THIN);
+			textStyle.setBorderRight(BorderStyle.THIN);
+
+			// Create the font
+			Font font = workbook.createFont();
+			font.setFontHeightInPoints((short) 8); // size 8
+			font.setFontName("Arial");
+
+			CellStyle numberStyle = workbook.createCellStyle();
+			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+			numberStyle.setBorderBottom(BorderStyle.THIN);
+			numberStyle.setBorderTop(BorderStyle.THIN);
+			numberStyle.setBorderLeft(BorderStyle.THIN);
+			numberStyle.setBorderRight(BorderStyle.THIN);
+			numberStyle.setFont(font);
+
+			CellStyle percentStyle = workbook.createCellStyle();
+			percentStyle.cloneStyleFrom(numberStyle);
+			percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
+			percentStyle.setAlignment(HorizontalAlignment.RIGHT);
+			// --- End of Style Definitions ---
+			
+			int startRow = 9;
+			
+			if (!dataList.isEmpty()) {
+				for (int i = 0; i < dataList.size(); i++) {
+					M_OR1_Summary_Entity record = dataList.get(i);
+					System.out.println("rownumber="+startRow + i);
+					Row row = sheet.getRow(startRow + i);
+					if (row == null) {
+						row = sheet.createRow(startRow + i);
+					}
+
+
+					//row11
+					// Column C
+					Cell cell3 = row.createCell(2);
+					if (record.getR10_gross_income() != null) {
+						cell3.setCellValue(record.getR10_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+					
+					row = sheet.getRow(10);
+					cell3 = row.createCell(2);
+					if (record.getR11_gross_income() != null) {
+					    cell3.setCellValue(record.getR11_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(11);
+					cell3 = row.createCell(2);
+					if (record.getR12_gross_income() != null) {
+					    cell3.setCellValue(record.getR12_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(12);
+					cell3 = row.createCell(2);
+					if (record.getR13_gross_income() != null) {
+					    cell3.setCellValue(record.getR13_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(13);
+					cell3 = row.createCell(2);
+					if (record.getR14_gross_income() != null) {
+					    cell3.setCellValue(record.getR14_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(14);
+					cell3 = row.createCell(2);
+					if (record.getR15_gross_income() != null) {
+					    cell3.setCellValue(record.getR15_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(15);
+					cell3 = row.createCell(2);
+					if (record.getR16_gross_income() != null) {
+					    cell3.setCellValue(record.getR16_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(16);
+					cell3 = row.createCell(2);
+					if (record.getR17_gross_income() != null) {
+					    cell3.setCellValue(record.getR17_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(17);
+					cell3 = row.createCell(2);
+					if (record.getR18_gross_income() != null) {
+					    cell3.setCellValue(record.getR18_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(18);
+					cell3 = row.createCell(2);
+					if (record.getR19_gross_income() != null) {
+					    cell3.setCellValue(record.getR19_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(19);
+					cell3 = row.createCell(2);
+					if (record.getR20_gross_income() != null) {
+					    cell3.setCellValue(record.getR20_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(20);
+					cell3 = row.createCell(2);
+					if (record.getR21_gross_income() != null) {
+					    cell3.setCellValue(record.getR21_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(21);
+					cell3 = row.createCell(2);
+					if (record.getR22_gross_income() != null) {
+					    cell3.setCellValue(record.getR22_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(22);
+					cell3 = row.createCell(2);
+					if (record.getR23_gross_income() != null) {
+					    cell3.setCellValue(record.getR23_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(23);
+					cell3 = row.createCell(2);
+					if (record.getR24_gross_income() != null) {
+					    cell3.setCellValue(record.getR24_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(24);
+					cell3 = row.createCell(2);
+					if (record.getR25_gross_income() != null) {
+					    cell3.setCellValue(record.getR25_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(25);
+					cell3 = row.createCell(2);
+					if (record.getR26_gross_income() != null) {
+					    cell3.setCellValue(record.getR26_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(26);
+					cell3 = row.createCell(2);
+					if (record.getR27_gross_income() != null) {
+					    cell3.setCellValue(record.getR27_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(27);
+					cell3 = row.createCell(2);
+					if (record.getR28_gross_income() != null) {
+					    cell3.setCellValue(record.getR28_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(28);
+					cell3 = row.createCell(2);
+					if (record.getR29_gross_income() != null) {
+					    cell3.setCellValue(record.getR29_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(29);
+					cell3 = row.createCell(2);
+					if (record.getR30_gross_income() != null) {
+					    cell3.setCellValue(record.getR30_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(30);
+					cell3 = row.createCell(2);
+					if (record.getR31_gross_income() != null) {
+					    cell3.setCellValue(record.getR31_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(31);
+					cell3 = row.createCell(2);
+					if (record.getR32_gross_income() != null) {
+					    cell3.setCellValue(record.getR32_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(32);
+					cell3 = row.createCell(2);
+					if (record.getR33_gross_income() != null) {
+					    cell3.setCellValue(record.getR33_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(33);
+					cell3 = row.createCell(2);
+					if (record.getR34_gross_income() != null) {
+					    cell3.setCellValue(record.getR34_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(34);
+					cell3 = row.createCell(2);
+					if (record.getR35_gross_income() != null) {
+					    cell3.setCellValue(record.getR35_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(35);
+					cell3 = row.createCell(2);
+					if (record.getR36_gross_income() != null) {
+					    cell3.setCellValue(record.getR36_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(36);
+					cell3 = row.createCell(2);
+					if (record.getR37_gross_income() != null) {
+					    cell3.setCellValue(record.getR37_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(37);
+					cell3 = row.createCell(2);
+					if (record.getR38_gross_income() != null) {
+					    cell3.setCellValue(record.getR38_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(38);
+					cell3 = row.createCell(2);
+					if (record.getR39_gross_income() != null) {
+					    cell3.setCellValue(record.getR39_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(39);
+					cell3 = row.createCell(2);
+					if (record.getR40_gross_income() != null) {
+					    cell3.setCellValue(record.getR40_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(40);
+					cell3 = row.createCell(2);
+					if (record.getR41_gross_income() != null) {
+					    cell3.setCellValue(record.getR41_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(41);
+					cell3 = row.createCell(2);
+					if (record.getR42_gross_income() != null) {
+					    cell3.setCellValue(record.getR42_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(42);
+					cell3 = row.createCell(2);
+					if (record.getR43_gross_income() != null) {
+					    cell3.setCellValue(record.getR43_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(43);
+					cell3 = row.createCell(2);
+					if (record.getR44_gross_income() != null) {
+					    cell3.setCellValue(record.getR44_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(44);
+					cell3 = row.createCell(2);
+					if (record.getR45_gross_income() != null) {
+					    cell3.setCellValue(record.getR45_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(45);
+					cell3 = row.createCell(2);
+					if (record.getR46_gross_income() != null) {
+					    cell3.setCellValue(record.getR46_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(46);
+					cell3 = row.createCell(2);
+					if (record.getR47_gross_income() != null) {
+					    cell3.setCellValue(record.getR47_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(47);
+					cell3 = row.createCell(2);
+					if (record.getR48_gross_income() != null) {
+					    cell3.setCellValue(record.getR48_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+					
+					/*
+					 * row = sheet.getRow(48); cell3 = row.createCell(2); if
+					 * (record.getR49_gross_income() != null) {
+					 * cell3.setCellValue(record.getR49_gross_income().doubleValue());
+					 * cell3.setCellStyle(numberStyle); } else { cell3.setCellValue("");
+					 * cell3.setCellStyle(textStyle); }
+					 */
+					row = sheet.getRow(48);
+					cell3 = row.createCell(3);
+					if (record.getR50_aggregate_gross_income() != null) {
+					    cell3.setCellValue(record.getR50_aggregate_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+					
+					row = sheet.getRow(49);
+					cell3 = row.createCell(3);
+					if (record.getR51_aggregate_gross_income() != null) {
+					    cell3.setCellValue(record.getR51_aggregate_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+					
+					
+					row = sheet.getRow(50);
+					cell3 = row.createCell(3);
+					if (record.getR52_aggregate_gross_income() != null) {
+					    cell3.setCellValue(record.getR52_aggregate_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+					
+					
+					row = sheet.getRow(51);
+					cell3 = row.createCell(3);
+					if (record.getR53_aggregate_gross_income() != null) {
+					    cell3.setCellValue(record.getR53_aggregate_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+					
+					
+					row = sheet.getRow(52);
+					cell3 = row.createCell(3);
+					if (record.getR54_aggregate_gross_income() != null) {
+					    cell3.setCellValue(record.getR54_aggregate_gross_income().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+					
+					row = sheet.getRow(53);
+					cell3 = row.createCell(4);
+					if (record.getR55_risk_weight_factor() != null) {
+					    cell3.setCellValue(record.getR55_risk_weight_factor().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+					
+					row = sheet.getRow(54);
+					cell3 = row.createCell(4);
+					if (record.getR56_risk_weight_factor() != null) {
+					    cell3.setCellValue(record.getR56_risk_weight_factor().doubleValue());
+					    cell3.setCellStyle(numberStyle);
+					} else {
+					    cell3.setCellValue("");
+					    cell3.setCellStyle(textStyle);
+					}
+					
+					
+
+					
+				}
+				workbook.setForceFormulaRecalculation(true);
+			} else {
+				
+			}
+
+			// Write the final workbook content to the in-memory stream.
+			workbook.write(out);
+
+			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+			return out.toByteArray();
+		}
 	}
 
 	public byte[] BRRS_M_OR1DetailExcel(String filename, String fromdate, String todate, String currency,
@@ -1054,8 +2217,8 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportSe
 			balanceStyle.setBorderLeft(border);
 			balanceStyle.setBorderRight(border);
 // Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT_LABLE", "REPORT_ADDL_CRITERIA_1",
-					"REPORT_DATE" };
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT_LABLE",
+					"REPORT_ADDL_CRITERIA_1", "REPORT_DATE" };
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
 				Cell cell = headerRow.createCell(i);
@@ -1085,7 +2248,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportSe
 						balanceCell.setCellValue(0.000);
 					}
 					balanceCell.setCellStyle(balanceStyle);
-					row.createCell(4).setCellValue(item.getReportLable());
+					row.createCell(4).setCellValue(item.getReportLabel());
 					row.createCell(5).setCellValue(item.getReportAddlCriteria1());
 					row.createCell(6)
 							.setCellValue(item.getReportDate() != null
@@ -1113,28 +2276,51 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportSe
 		}
 	}
 
-	public List<Object> getM_OR1Archival() {
-		List<Object> M_OR1Archivallist = new ArrayList<>();
+	public List<Object[]> getM_OR1Archival() {
+		
+		
+		List<Object[]> archivalList = new ArrayList<>();
 		try {
-			M_OR1Archivallist = M_OR1_Archival_Summary_Repo.getM_OR1archival();
-			System.out.println("countser" + M_OR1Archivallist.size());
-		} catch (Exception e) {
-			// Log the exception
-			System.err.println("Error fetching M_OR1 Archival data: " + e.getMessage());
-			e.printStackTrace();
+			List<M_OR1_Archival_Summary_Entity> latestArchivalList = M_OR1_Archival_Summary_Repo
+					.getdatabydateListWithVersion();
 
-			// Optionally, you can rethrow it or return empty list
-			// throw new RuntimeException("Failed to fetch data", e);
+			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+				for (M_OR1_Archival_Summary_Entity entity : latestArchivalList) {
+					archivalList.add(new Object[] { 
+							entity.getReport_date(), 
+							entity.getReport_version(),
+							entity.getReportResubDate() });
+				}
+				System.out.println("Fetched " + archivalList.size() + " record(s)");
+			} else {
+				System.out.println("No archival data found.");
+			}
+
+		} catch (Exception e) {
+			System.err.println("Error fetching M_OR1 Resub data: " + e.getMessage());
+			e.printStackTrace();
 		}
-		return M_OR1Archivallist;
+		return archivalList;
 	}
 
 	public byte[] getExcelM_OR1ARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.");
-		if (type.equals("ARCHIVAL") & version != null) {
-
-		}
+			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
+		
+		
+		System.out.println("======= DOWNLOAD DETAILS in ARCHIVAL =======");
+		System.out.println("TYPE      : " + type);
+		System.out.println("FORMAT      : " + format);
+		System.out.println("DTLTYPE   : " + dtltype);
+		System.out.println("DATE      : " + dateformat.parse(todate));
+		System.out.println("VERSION   : " + version);
+		System.out.println("==========================");
+		
+		
+		
+			
+		
+			logger.info("Service: Starting Excel generation process in memory fOR FORMAT ARCHIVAL.");
+			
 		List<M_OR1_Archival_Summary_Entity> dataList = M_OR1_Archival_Summary_Repo
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 
@@ -1203,20 +2389,19 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportSe
 			percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
 			percentStyle.setAlignment(HorizontalAlignment.RIGHT);
 			// --- End of Style Definitions ---
-			
-            int startRow = 9;
-			
+
+			int startRow = 9;
+
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
 					M_OR1_Archival_Summary_Entity record = dataList.get(i);
-					System.out.println("rownumber="+startRow + i);
+					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
 
-
-					//row11
+					// row11
 					// Column C
 					Cell cell3 = row.createCell(3);
 					if (record.getR10_gross_income() != null) {
@@ -1226,477 +2411,471 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportSe
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(10);
 					cell3 = row.createCell(3);
 					if (record.getR11_gross_income() != null) {
-					    cell3.setCellValue(record.getR11_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR11_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(11);
 					cell3 = row.createCell(3);
 					if (record.getR12_gross_income() != null) {
-					    cell3.setCellValue(record.getR12_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR12_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(12);
 					cell3 = row.createCell(3);
 					if (record.getR13_gross_income() != null) {
-					    cell3.setCellValue(record.getR13_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR13_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(13);
 					cell3 = row.createCell(3);
 					if (record.getR14_gross_income() != null) {
-					    cell3.setCellValue(record.getR14_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR14_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(14);
 					cell3 = row.createCell(3);
 					if (record.getR15_gross_income() != null) {
-					    cell3.setCellValue(record.getR15_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR15_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(15);
 					cell3 = row.createCell(3);
 					if (record.getR16_gross_income() != null) {
-					    cell3.setCellValue(record.getR16_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR16_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(16);
 					cell3 = row.createCell(3);
 					if (record.getR17_gross_income() != null) {
-					    cell3.setCellValue(record.getR17_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR17_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(17);
 					cell3 = row.createCell(3);
 					if (record.getR18_gross_income() != null) {
-					    cell3.setCellValue(record.getR18_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR18_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(18);
 					cell3 = row.createCell(3);
 					if (record.getR19_gross_income() != null) {
-					    cell3.setCellValue(record.getR19_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR19_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(19);
 					cell3 = row.createCell(3);
 					if (record.getR20_gross_income() != null) {
-					    cell3.setCellValue(record.getR20_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR20_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(20);
 					cell3 = row.createCell(3);
 					if (record.getR21_gross_income() != null) {
-					    cell3.setCellValue(record.getR21_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR21_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(21);
 					cell3 = row.createCell(3);
 					if (record.getR22_gross_income() != null) {
-					    cell3.setCellValue(record.getR22_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR22_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(22);
 					cell3 = row.createCell(3);
 					if (record.getR23_gross_income() != null) {
-					    cell3.setCellValue(record.getR23_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR23_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(23);
 					cell3 = row.createCell(3);
 					if (record.getR24_gross_income() != null) {
-					    cell3.setCellValue(record.getR24_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR24_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(24);
 					cell3 = row.createCell(3);
 					if (record.getR25_gross_income() != null) {
-					    cell3.setCellValue(record.getR25_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR25_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(25);
 					cell3 = row.createCell(3);
 					if (record.getR26_gross_income() != null) {
-					    cell3.setCellValue(record.getR26_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR26_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(26);
 					cell3 = row.createCell(3);
 					if (record.getR27_gross_income() != null) {
-					    cell3.setCellValue(record.getR27_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR27_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(27);
 					cell3 = row.createCell(3);
 					if (record.getR28_gross_income() != null) {
-					    cell3.setCellValue(record.getR28_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR28_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(28);
 					cell3 = row.createCell(3);
 					if (record.getR29_gross_income() != null) {
-					    cell3.setCellValue(record.getR29_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR29_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(29);
 					cell3 = row.createCell(3);
 					if (record.getR30_gross_income() != null) {
-					    cell3.setCellValue(record.getR30_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR30_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(30);
 					cell3 = row.createCell(3);
 					if (record.getR31_gross_income() != null) {
-					    cell3.setCellValue(record.getR31_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR31_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(31);
 					cell3 = row.createCell(3);
 					if (record.getR32_gross_income() != null) {
-					    cell3.setCellValue(record.getR32_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR32_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(32);
 					cell3 = row.createCell(3);
 					if (record.getR33_gross_income() != null) {
-					    cell3.setCellValue(record.getR33_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR33_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(33);
 					cell3 = row.createCell(3);
 					if (record.getR34_gross_income() != null) {
-					    cell3.setCellValue(record.getR34_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR34_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(34);
 					cell3 = row.createCell(3);
 					if (record.getR35_gross_income() != null) {
-					    cell3.setCellValue(record.getR35_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR35_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(35);
 					cell3 = row.createCell(3);
 					if (record.getR36_gross_income() != null) {
-					    cell3.setCellValue(record.getR36_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR36_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(36);
 					cell3 = row.createCell(3);
 					if (record.getR37_gross_income() != null) {
-					    cell3.setCellValue(record.getR37_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR37_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(37);
 					cell3 = row.createCell(3);
 					if (record.getR38_gross_income() != null) {
-					    cell3.setCellValue(record.getR38_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR38_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(38);
 					cell3 = row.createCell(3);
 					if (record.getR39_gross_income() != null) {
-					    cell3.setCellValue(record.getR39_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR39_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(39);
 					cell3 = row.createCell(3);
 					if (record.getR40_gross_income() != null) {
-					    cell3.setCellValue(record.getR40_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR40_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(40);
 					cell3 = row.createCell(3);
 					if (record.getR41_gross_income() != null) {
-					    cell3.setCellValue(record.getR41_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR41_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(41);
 					cell3 = row.createCell(3);
 					if (record.getR42_gross_income() != null) {
-					    cell3.setCellValue(record.getR42_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR42_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(42);
 					cell3 = row.createCell(3);
 					if (record.getR43_gross_income() != null) {
-					    cell3.setCellValue(record.getR43_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR43_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(43);
 					cell3 = row.createCell(3);
 					if (record.getR44_gross_income() != null) {
-					    cell3.setCellValue(record.getR44_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR44_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(44);
 					cell3 = row.createCell(3);
 					if (record.getR45_gross_income() != null) {
-					    cell3.setCellValue(record.getR45_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR45_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(45);
 					cell3 = row.createCell(3);
 					if (record.getR46_gross_income() != null) {
-					    cell3.setCellValue(record.getR46_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR46_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(46);
 					cell3 = row.createCell(3);
 					if (record.getR47_gross_income() != null) {
-					    cell3.setCellValue(record.getR47_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR47_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(47);
 					cell3 = row.createCell(3);
 					if (record.getR48_gross_income() != null) {
-					    cell3.setCellValue(record.getR48_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR48_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(48);
 					cell3 = row.createCell(3);
 					if (record.getR49_gross_income() != null) {
-					    cell3.setCellValue(record.getR49_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR49_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(49);
 					cell3 = row.createCell(4);
 					if (record.getR50_aggregate_gross_income() != null) {
-					    cell3.setCellValue(record.getR50_aggregate_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR50_aggregate_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(50);
 					cell3 = row.createCell(4);
 					if (record.getR51_aggregate_gross_income() != null) {
-					    cell3.setCellValue(record.getR51_aggregate_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR51_aggregate_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
-					
-					
+
 					row = sheet.getRow(51);
 					cell3 = row.createCell(4);
 					if (record.getR52_aggregate_gross_income() != null) {
-					    cell3.setCellValue(record.getR52_aggregate_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR52_aggregate_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
-					
-					
+
 					row = sheet.getRow(52);
 					cell3 = row.createCell(4);
 					if (record.getR53_aggregate_gross_income() != null) {
-					    cell3.setCellValue(record.getR53_aggregate_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR53_aggregate_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
-					
-					
+
 					row = sheet.getRow(53);
 					cell3 = row.createCell(4);
 					if (record.getR54_aggregate_gross_income() != null) {
-					    cell3.setCellValue(record.getR54_aggregate_gross_income().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR54_aggregate_gross_income().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(54);
 					cell3 = row.createCell(5);
 					if (record.getR55_risk_weight_factor() != null) {
-					    cell3.setCellValue(record.getR55_risk_weight_factor().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR55_risk_weight_factor().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(55);
 					cell3 = row.createCell(5);
 					if (record.getR56_risk_weight_factor() != null) {
-					    cell3.setCellValue(record.getR56_risk_weight_factor().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR56_risk_weight_factor().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
-					
-					
 
-					
 				}
 				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
 			} else {
-				
+
 			}
 
 			// Write the final workbook content to the in-memory stream.
@@ -1707,6 +2886,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportSe
 			return out.toByteArray();
 		}
 	}
+
 	public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) {
 		try {
@@ -1758,8 +2938,8 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportSe
 			balanceStyle.setBorderRight(border);
 
 			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT_LABLE", "REPORT_ADDL_CRITERIA_1",
-					"REPORT_DATE" };
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT_LABLE",
+					"REPORT_ADDL_CRITERIA_1", "REPORT_DATE" };
 
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
@@ -1799,7 +2979,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportSe
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
-					row.createCell(4).setCellValue(item.getReportLable());
+					row.createCell(4).setCellValue(item.getReportLabel());
 					row.createCell(5).setCellValue(item.getReportAddlCriteria1());
 					row.createCell(6)
 							.setCellValue(item.getReportDate() != null
@@ -1833,117 +3013,113 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportSe
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
-	
-	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
-	    ModelAndView mv = new ModelAndView("BRRS/M_OR1"); // ✅ match the report name
-	    System.out.println("Hello");
-	    if (acctNo != null) {
-	    	M_OR1_Detail_Entity la1Entity = M_OR1_Detail_Repo.findByAcctnumber(acctNo);
-	        if (la1Entity != null && la1Entity.getReportDate() != null) {
-	            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReportDate());
-	            mv.addObject("asondate", formattedDate);
-	        }
-	        mv.addObject("Data", la1Entity);
-	    }
 
-	    mv.addObject("displaymode", "edit");
-	    mv.addObject("formmode", formMode != null ? formMode : "edit");
-	    return mv;
+	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
+		ModelAndView mv = new ModelAndView("BRRS/M_OR1"); // ✅ match the report name
+		System.out.println("Hello");
+		if (acctNo != null) {
+			M_OR1_Detail_Entity la1Entity = M_OR1_Detail_Repo.findByAcctnumber(acctNo);
+			if (la1Entity != null && la1Entity.getReportDate() != null) {
+				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReportDate());
+				mv.addObject("asondate", formattedDate);
+			}
+			mv.addObject("Data", la1Entity);
+		}
+
+		mv.addObject("displaymode", "edit");
+		mv.addObject("formmode", formMode != null ? formMode : "edit");
+		return mv;
 	}
 
+	public ModelAndView updateDetailEdit(String acctNo, String formMode) {
+		ModelAndView mv = new ModelAndView("BRRS/M_OR1"); // ✅ match the report name
 
-	
-public ModelAndView updateDetailEdit(String acctNo, String formMode) {
-    ModelAndView mv = new ModelAndView("BRRS/M_OR1"); // ✅ match the report name
+		if (acctNo != null) {
+			M_OR1_Detail_Entity la1Entity = M_OR1_Detail_Repo.findByAcctnumber(acctNo);
+			if (la1Entity != null && la1Entity.getReportDate() != null) {
+				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReportDate());
+				mv.addObject("asondate", formattedDate);
+				System.out.println(formattedDate);
+			}
+			mv.addObject("Data", la1Entity);
+		}
 
-    if (acctNo != null) {
-        M_OR1_Detail_Entity la1Entity = M_OR1_Detail_Repo.findByAcctnumber(acctNo);
-        if (la1Entity != null && la1Entity.getReportDate() != null) {
-            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReportDate());
-            mv.addObject("asondate", formattedDate);
-            System.out.println(formattedDate);
-        }
-        mv.addObject("Data", la1Entity);
-    }
+		mv.addObject("displaymode", "edit");
+		mv.addObject("formmode", formMode != null ? formMode : "edit");
+		return mv;
+	}
 
-    mv.addObject("displaymode", "edit");
-    mv.addObject("formmode", formMode != null ? formMode : "edit");
-    return mv;
-}
+	@Transactional
+	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
+		try {
+			String acctNo = request.getParameter("acctNumber");
+			String provisionStr = request.getParameter("acctBalanceInpula");
+			String acctName = request.getParameter("acctName");
+			String reportDateStr = request.getParameter("reportDate");
 
-@Transactional
-public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
-    try {
-        String acctNo = request.getParameter("acctNumber");
-        String provisionStr = request.getParameter("acctBalanceInpula");
-        String acctName = request.getParameter("acctName");
-        String reportDateStr = request.getParameter("reportDate");
+			logger.info("Received update for ACCT_NO: {}", acctNo);
 
-        logger.info("Received update for ACCT_NO: {}", acctNo);
+			M_OR1_Detail_Entity existing = M_OR1_Detail_Repo.findByAcctnumber(acctNo);
+			if (existing == null) {
+				logger.warn("No record found for ACCT_NO: {}", acctNo);
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+			}
 
-        M_OR1_Detail_Entity existing = M_OR1_Detail_Repo.findByAcctnumber(acctNo);
-        if (existing == null) {
-            logger.warn("No record found for ACCT_NO: {}", acctNo);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
-        }
+			boolean isChanged = false;
 
-        boolean isChanged = false;
+			if (acctName != null && !acctName.isEmpty()) {
+				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
+					existing.setAcctName(acctName);
+					isChanged = true;
+					logger.info("Account name updated to {}", acctName);
+				}
+			}
 
-        if (acctName != null && !acctName.isEmpty()) {
-            if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
-                existing.setAcctName(acctName);
-                isChanged = true;
-                logger.info("Account name updated to {}", acctName);
-            }
-        }
+			if (provisionStr != null && !provisionStr.isEmpty()) {
+				BigDecimal newProvision = new BigDecimal(provisionStr);
+				if (existing.getAcctBalanceInpula() == null
+						|| existing.getAcctBalanceInpula().compareTo(newProvision) != 0) {
+					existing.setAcctBalanceInpula(newProvision);
+					isChanged = true;
+					logger.info("Balance updated to {}", newProvision);
+				}
+			}
 
-        if (provisionStr != null && !provisionStr.isEmpty()) {
-            BigDecimal newProvision = new BigDecimal(provisionStr);
-            if (existing.getAcctBalanceInpula() == null ||
-                existing.getAcctBalanceInpula().compareTo(newProvision) != 0) {
-                existing.setAcctBalanceInpula(newProvision);
-                isChanged = true;
-                logger.info("Balance updated to {}", newProvision);
-            }
-        }
-        
-        
+			if (isChanged) {
+				M_OR1_Detail_Repo.save(existing);
+				logger.info("Record updated successfully for account {}", acctNo);
 
-        if (isChanged) {
-        	M_OR1_Detail_Repo.save(existing);
-            logger.info("Record updated successfully for account {}", acctNo);
+				// Format date for procedure
+				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
 
-            // Format date for procedure
-            String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-                    .format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+				// Run summary procedure after commit
+				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+					@Override
+					public void afterCommit() {
+						try {
+							logger.info("Transaction committed — calling BRRS_M_OR1_SUMMARY_PROCEDURE({})",
+									formattedDate);
+							jdbcTemplate.update("BEGIN BRRS_M_OR1_SUMMARY_PROCEDURE(?); END;", formattedDate);
+							logger.info("Procedure executed successfully after commit.");
+						} catch (Exception e) {
+							logger.error("Error executing procedure after commit", e);
+						}
+					}
+				});
 
-            // Run summary procedure after commit
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-                @Override
-                public void afterCommit() {
-                    try {
-                        logger.info("Transaction committed — calling BRRS_M_OR1_SUMMARY_PROCEDURE({})",
-                                formattedDate);
-                        jdbcTemplate.update("BEGIN BRRS_M_OR1_SUMMARY_PROCEDURE(?); END;", formattedDate);
-                        logger.info("Procedure executed successfully after commit.");
-                    } catch (Exception e) {
-                        logger.error("Error executing procedure after commit", e);
-                    }
-                }
-            });
+				return ResponseEntity.ok("Record updated successfully!");
+			} else {
+				logger.info("No changes detected for ACCT_NO: {}", acctNo);
+				return ResponseEntity.ok("No changes were made.");
+			}
 
-            return ResponseEntity.ok("Record updated successfully!");
-        } else {
-            logger.info("No changes detected for ACCT_NO: {}", acctNo);
-            return ResponseEntity.ok("No changes were made.");
-        }
-
-    } catch (Exception e) {
-        logger.error("Error updating M_OR1 record", e);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Error updating record: " + e.getMessage());
-    }
-}
-
+		} catch (Exception e) {
+			logger.error("Error updating M_OR1 record", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error updating record: " + e.getMessage());
+		}
+	}
 
 }
+

@@ -423,39 +423,47 @@ label.error {
 									</style>
 									
 							<script th:inline="javascript">
-							  $(document).ready(function () {
-							    var table = $('#reportdetails').DataTable({
-							      scrollY: "550px",
-							      scrollX: true,
-							      scrollCollapse: true,
-							      autoWidth: false,
-							      paging: true,
-							      searching: true,
-							      lengthChange: false,
-							      ordering: true,
-							      pageLength: 100,
-							      fixedHeader: true, // ✅ You can simply set it to true
-								  // ✅ Column width settings
-								   columnDefs: [
-								     { width: "60px", targets: 0 },   // Edit icon column
-								     { width: "150px", targets: 1 }  ,  // S No column
-									 { width: "300px", targets: 7 }    // S No column
-								   ],
+    function initializeReportTable() {
 
-							      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
-							    });
+        if ($.fn.DataTable.isDataTable('#reportdetails')) {
+            $('#reportdetails').DataTable().clear().destroy();
+        }
 
-							    // ✅ Fix alignment on resize / zoom
-							    $(window).on('resize', function () {
-							      table.columns.adjust().draw(false);
-							    });
+        var table = $('#reportdetails').DataTable({
+            scrollY: "500px",
+            scrollX: true,
+            scrollCollapse: true,
+            autoWidth: false,
+            paging: true,
+            searching: true,
+            lengthChange: false,
+            ordering: true,
+            pageLength: 100,
+            fixedHeader: true,
+            destroy: true,   // 🔥 IMPORTANT
 
-							    // ✅ Fix initial misalignment if loaded at non-100% zoom
-							    setTimeout(function () {
-							      table.columns.adjust().draw(false);
-							    }, 500);
-							  });
-							</script>
+            columnDefs: [
+                { width: "60px", targets: 0 },
+                { width: "150px", targets: 1 },
+                { width: "300px", targets: 7 }
+            ],
+
+            dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+        });
+
+        $(window).off('resize').on('resize', function () {
+            table.columns.adjust().draw(false);
+        });
+
+        setTimeout(function () {
+            table.columns.adjust().draw(false);
+        }, 500);
+    }
+
+    $(document).ready(function () {
+        initializeReportTable();
+    });
+</script>
     
 
 <script th:inline="javascript">
@@ -744,104 +752,6 @@ window.onload = function() {
 };
 
 
-function downloadfile(button) {
-	var reportid = button.getAttribute('data-reportid');
-	var asondate = button.getAttribute('data-asondate');
-	var fromdate = button.getAttribute('data-fromdate');
-	var todate = button.getAttribute('data-todate');
-	var currency = button.getAttribute('data-currency');
-	var subreportid = button.getAttribute('data-subreportid');
-	var secid = button.getAttribute('data-secid');
-	var dtltype = button.getAttribute('data-dtltype');
-	var filename = button.getAttribute('data-filename');
-	var type = button.getAttribute('data-type');
-	var version = button.getAttribute('data-version');
-	
-
-	$('#loader').modal('show');
-
-	$.ajax({
-		url: './downloadExcel?reportid=' + reportid +
-			'&fromdate=' + fromdate +
-			'&asondate=' + asondate +
-			'&todate=' + todate +
-			'&currency=' + currency +
-			'&subreportid=' + subreportid +
-			'&secid=' + secid +
-			'&filename=' + filename +
-			'&type=' + type +
-			'&version=' + version,
-		type: 'GET',
-		xhrFields: {
-			responseType: 'blob'
-		},
-		success: function (data) {
-			$('#loader').modal('hide');
-
-			if (data && data.size > 100) {
-				const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
-				const url = window.URL.createObjectURL(blob);
-				const a = document.createElement('a');
-				a.style.display = 'none';
-				a.href = url;
-				a.download = filename;
-				document.body.appendChild(a);
-				a.click();
-				window.URL.revokeObjectURL(url);
-				document.body.removeChild(a);
-
-
-
-				showResultModal('BRRS', 'M-OR1.xlsx downloaded successfully.');
-			} else {
-				showResultModal('Information', 'No data was available to create a download.');
-			}
-		},
-
-				// ✅ BRRS style popup
-                $("#resultModalLabel").text("BRRS");
-                $("#resultModalBody").text(filename + " downloaded successfully.");
-                $("#resultModal").modal("show");
-            } else {
-                $("#resultModalLabel").text("BRRS");
-                $("#resultModalBody").text("No data was available to create a download.");
-                $("#resultModal").modal("show");
-            }
-        },
-
-		error: function (jqXHR, textStatus, errorThrown) {
-			$('#loader').modal('hide');
-			console.error("Download failed:", textStatus, errorThrown);
-			showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-		}
-	});
-}
-
-
-function closemodel(){
-	$('#alert').modal('hide');
-	$('#resultModal').modal('hide');
-		
-}
-
-function showResultModal(title, message) {
-	// Set the text for the modal elements
-	$('#resultModalLabel').text(title);
-	$('#resultModalBody').text(message);
-
-	// Show the modal
-	$('#resultModal').modal('show');
-}
-
-function showResultModalDetail(title, message) {
-	// Set the text for the modal elements
-	$('#resultModalLabel1').text(title);
-	$('#resultModalBody1').text(message);
-
-	// Show the modal
-	$('#resultModal1').modal('show');
-}
-
 
 </script>  
 
@@ -854,8 +764,8 @@ function showmodify(btn) {
     $(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
     
     const readonlyIds = [
-    	"r22_gross_income","r35_gross_income","r48_gross_income","r50_aggregate_gross_income","r51_aggregate_gross_income","r52_aggregate_gross_income",
-    	,"r53_aggregate_gross_income","r54_aggregate_gross_income","r55_risk_weight_factor","r56_risk_weight_factor"
+    	"r22_gross_income","r35_gross_income","r48_gross_income","r50_aggregate_gross_income","r52_aggregate_gross_income",
+    	,"r54_aggregate_gross_income","r56_risk_weight_factor"
 
     	
     	
@@ -930,6 +840,105 @@ function cancelModify() {
 	
 
 	</script>
+	
+	<script>
+	function downloadfile(button) {
+	    var reportid = button.getAttribute('data-reportid');
+	    var asondate = button.getAttribute('data-asondate');
+	    var fromdate = button.getAttribute('data-fromdate');
+	    var todate = button.getAttribute('data-todate');
+	    var currency = button.getAttribute('data-currency');
+	    var subreportid = button.getAttribute('data-subreportid');
+	    var secid = button.getAttribute('data-secid');
+	    var dtltype = button.getAttribute('data-dtltype');
+	    var filename = button.getAttribute('data-filename');
+	    var type = button.getAttribute('data-type');
+		var version = button.getAttribute('data-version');
+		var format = button.getAttribute('data-format');
+
+	    if (format === null) {
+	        format = '';   // treat as null
+	    }
+
+	    $('#loader').modal('show');
+
+	    $.ajax({
+	        url: './downloadExcel?reportid=' + reportid +
+	            '&fromdate=' + fromdate +
+	            '&asondate=' + asondate +
+	            '&todate=' + todate +
+	            '&currency=' + currency +
+	            '&subreportid=' + subreportid +
+	            '&secid=' + secid +
+	            '&filename=' + filename +
+	            '&type=' + type +
+	            '&version=' + version  +
+				'&format=' + format,
+	        type: 'GET',
+	        xhrFields: { responseType: 'blob' },
+
+	        success: function (data) {
+	            if (data && data.size > 100) {
+
+	                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+	                const url = window.URL.createObjectURL(blob);
+	                const a = document.createElement('a');
+
+	                a.style.display = 'none';
+	                a.href = url;
+	                a.download = filename;
+
+	                document.body.appendChild(a);
+	                a.click();
+
+	                window.URL.revokeObjectURL(url);
+	                document.body.removeChild(a);
+
+	                showResultModal('BRRS', filename + ' downloaded successfully.');
+	            } else {
+	                showResultModal('Information', 'No data was available to create a download.');
+	            }
+	        },
+
+	        error: function (jqXHR, textStatus, errorThrown) {
+	            console.error("Download failed:", textStatus, errorThrown);
+	            showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+	        },
+
+	        complete: function () {
+	            // 🔥 Always hide loader (success/error/all cases)
+	            $('#loader').modal('hide');
+	        }
+	    });
+	}
+
+
+
+	function closemodel(){
+		$('#alert').modal('hide');
+		$('#resultModal').modal('hide');
+			
+	}
+
+	function showResultModal(title, message) {
+		// Set the text for the modal elements
+		$('#resultModalLabel').text(title);
+		$('#resultModalBody').text(message);
+
+		// Show the modal
+		$('#resultModal').modal('show');
+	}
+
+	function showResultModalDetail(title, message) {
+		// Set the text for the modal elements
+		$('#resultModalLabel1').text(title);
+		$('#resultModalBody1').text(message);
+
+		// Show the modal
+		$('#resultModal1').modal('show');
+	}
+
+</script>
 
 <script>
 
@@ -1309,7 +1318,7 @@ for (let i = 10; i <= 56; i++) {
 	            dataType: 'text',
 	            success: function () {
 	                $("#resultModalLabel").text("BRRS");
-	                $("#resultModalBody").text(" Updated Successfully.");
+	                $("#resultModalBody").text(" Modified Successfully.");
 	                $("#resultModal").modal("show");
 	            },
 	            error: function (jqXHR) {
@@ -1486,21 +1495,39 @@ for (let i = 10; i <= 56; i++) {
             Cancel
         </button>
 
-        <!-- Download button - Summary -->
-        <button type="button" class="custom-tab-btn"
-            th:if="${displaymode == 'summary'}"
-            th:attr="data-reportid=${reportid}, 
-                     data-asondate=${asondate}, 
-                     data-fromdate=${fromdate}, 
-                     data-todate=${todate}, 
-                     data-currency=${currency},  
-                     data-dtltype=${dtltype}, 
-                     data-filename='M_OR1.xlsx',
-                     data-type=${type},
-                     data-version=${version}"
-            onclick="downloadfile(this);">
-            <i class="fa fa-download"></i>
-        </button>
+     
+        
+        	<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}" th:attr="data-reportid=${reportid},
+                   				 data-asondate=${asondate},
+                   				 data-fromdate=${fromdate},
+                    				 data-todate=${todate},
+                    				 data-currency=${currency}, 
+                    				 data-dtltype=${dtltype},
+                    				 data-filename='M_OR1.xlsx',
+					 				 data-type=${type},
+					    			 data-version=${version}" onclick="downloadfile(this);">
+							<i class="fa fa-download"></i> FORMAT
+						</button>
+
+					<button type="button" class="custom-tab-btn "
+							id="custom-tab-btnAdd" onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}"
+							th:attr="data-reportid=${reportid},
+            data-asondate=${asondate},
+            data-fromdate=${fromdate},
+            data-todate=${todate},
+            data-currency=${currency}, 
+            data-dtltype=${dtltype},
+            data-filename='EMAIL_M_OR1.xlsx',
+             data-type=${type},
+            data-format='email',
+            data-version=${version != null ? version : ''}"
+							style="font-family: Arial; font-weight: bold;">
+							<i class="fa fa-download"></i> Email
+
+						</button>
+						       
 
         <!-- Download button - Details -->
         <button type="button" class="custom-tab-btn"
@@ -2262,64 +2289,60 @@ for (let i = 10; i <= 56; i++) {
 					</div>
 				</div>
 
-				<div th:if="${displaymode == 'Details'}">
-					<div class="row">
-						<div class="col-sm-12">
-							<div class="table-container"
-								style="border-right: 1px solid #dee2e6;">
-								<table
-									class="table table-striped table-bordered table-hover"
-									id="reportdetails">
-									<thead class="thead-light">
-										<tr>
-											<th></th>
-											<th>S No</th>
-											<th>CUST ID</th>
-											<th style="text-align:left;">ACCT NO</th>
-											<th>ACCT NAME</th>
-											<th style="text-align: right;">ACCT BALANCE</th>
-											<th style="text-align: left;">REPORT LABLE</th>
-											<th>REPORT ADDL CRITERIA 1</th>
-											<th>REPORT DATE</th>
-										</tr>
+<div th:if="${displaymode == 'Details'}">
 
-									</thead>
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="table-container" style="border-right: 1px solid #dee2e6;">
+							<table class="table table-striped table-bordered table-hover" id="reportdetails">
+								<thead class="thead-light">
+									<tr>
+										<th></th>
+										<th>S No</th>
+										<th>CUST ID</th>
+										<th style="text-align:left;">ACCT NO</th>
+										<th>ACCT NAME</th>
+										<th style="text-align:right;">PROVISION AMOUNT</th>
+										<th style="text-align:left;"> REPORT LABEL</th>
+										<th>REPORT ADDL CRITERIA</th>
+										<th>REPORT DATE</th>
+									</tr>
+								</thead>
 
-									<tbody style="font-family: Arial;">
-										<tr th:each="report, srlno : ${reportdetails}">
-											<td><a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
-                        <i class="fas fa-edit" style="color: black; cursor:pointer;"
-                            th:attr="data-acctNo=${report.acctNumber},
-                            data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},
-                            data-type=${type}"
-                            onclick="openDetail(this, 'edit')"></i>
-                    </a></td>
-                                            <td th:text="${srlno.index + 1}"></td>
-											<td th:text="${report.custId}"></td>
-											<td th:text="${report.acctNumber}"></td>
-											<td th:text="${report.acctName}"></td>
-											<!---	<td th:text="${report.acctBalanceInpula} "></td> -->
-											<td th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 2)}"
-												style="text-align: right;"></td>
+								<tbody style="font-family: Arial;">
+									<tr th:each="report, srlno : ${reportdetails}">
+										<td>
+											<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record" th:if="${report.reportRemarks != 'MAN'}">
+												<i class="fas fa-edit" style="color: black; cursor:pointer;" th:attr="data-acctNo=${report.sno}, 
+											                    data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
+													onclick="openMPLLDetail(this, 'edit')">
+												</i>
+											</a>
+										</td>
 
-											<td style="text-align: left;" th:text="${report.reportLable}"></td>
-											<td th:text="${report.reportAddlCriteria1}"></td>
-											<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
 
-										</tr>
-									</tbody>
 
-								 </table>
-</div>
+										<td th:text="${srlno.index + 1}"></td>
+										<td th:text="${report.custId}"></td>
+										<td style="text-align:left;" th:text="${report.acctNumber}"></td>
+										<td th:text="${report.acctName}"></td>
+										<td style="text-align:right;" th:text="${#numbers.formatDecimal(report.acctBalanceInpula,1,'COMMA',0,'POINT')}"></td>
+										<td style="text-align:left;" th:text="${report.reportLabel}"></td>
+										<td th:text="${report.reportAddlCriteria1}"></td>
+										<td th:text="${#dates.format(report.reportDate,'dd-MM-yyyy')}"></td>
 
-							
-							
+									</tr>
+								</tbody>
+							</table>
 
 						</div>
+
+						
 					</div>
 				</div>
-
 			</div>
+			
+				
 
 			<!-- M_DEP1 Detail Form Screen -->
 			<div th:if="${formmode == 'edit'}" class="card">
@@ -2358,9 +2381,9 @@ for (let i = 10; i <= 56; i++) {
 
 			      <!-- Row 3 -->
 			      <div class="row formline" style="margin-top:10px;">
-			        <label class="col-sm-2">Report Lable</label>
+			        <label class="col-sm-2">Report LabeL</label>
 			        <div class="col-sm-3">
-			          <input type="text" th:field="*{reportLable}" class="form-control form-control-sm" readonly />
+			          <input type="text" th:field="*{reportLabel}" class="form-control form-control-sm" readonly />
 			        </div>
 
 			        <div class="col-sm-1"></div>
@@ -2521,7 +2544,7 @@ for (let i = 10; i <= 56; i++) {
 	/* Your existing CSS - this is the correct approach */
 	.scrollable-table-container {
 		/* This is the key: it creates the scroll context */
-		max-height: 700px;
+		max-height: 560px;
 		/* Or a suitable height like 80vh for responsive design */
 		overflow-y: auto;
 		overflow-x: auto;

@@ -12,6 +12,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class M_OR1_Archival_Detail_Entity {
 	
 	@Id
+	@Column(name = "SNO")
+	private Long sno;
+	
+	
    @Column(name = "CUST_ID")
    private String custId;
    @Column(name = "ACCT_NUMBER")
@@ -23,8 +27,8 @@ public class M_OR1_Archival_Detail_Entity {
    @Column(name = "REPORT_ADDL_CRITERIA_1")
    private String reportAddlCriteria1;
   
-   @Column(name = "REPORT_LABLE")
-   private String reportLable;
+   @Column(name = "REPORT_LABEL")
+   private String reportLabel;
    @Column(name = "REPORT_REMARKS")
    private String reportRemarks;
    @Column(name = "MODIFICATION_REMARKS")
@@ -61,6 +65,15 @@ public class M_OR1_Archival_Detail_Entity {
 
    @Column(name = "DEL_FLG", length = 1)
    private String delFlg;
+
+   
+public Long getSno() {
+	return sno;
+}
+
+public void setSno(Long sno) {
+	this.sno = sno;
+}
 
 public String getCustId() {
 	return custId;
@@ -102,12 +115,14 @@ public void setReportAddlCriteria1(String reportAddlCriteria1) {
 	this.reportAddlCriteria1 = reportAddlCriteria1;
 }
 
-public String getReportLable() {
-	return reportLable;
+
+
+public String getReportLabel() {
+	return reportLabel;
 }
 
-public void setReportLable(String reportLable) {
-	this.reportLable = reportLable;
+public void setReportLabel(String reportLabel) {
+	this.reportLabel = reportLabel;
 }
 
 public String getReportRemarks() {
