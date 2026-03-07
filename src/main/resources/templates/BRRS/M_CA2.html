@@ -552,9 +552,8 @@ $(window).on('beforeunload', function() {
 	
 	function showsummary() {
 		$('#loader').modal('show');
-		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/;								
-		location.href = Callurl;
-
+		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/
+			location.href = Callurl;
 	}
     </script>
   

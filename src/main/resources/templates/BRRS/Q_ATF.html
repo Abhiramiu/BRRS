@@ -495,12 +495,11 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
         }
     }); */
 }
-		function showsummary() {
-			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+	function showsummary() {
+		$('#loader').modal('show');
+		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/
 			location.href = Callurl;
-		}
-
+	}
 
 	</script>
 

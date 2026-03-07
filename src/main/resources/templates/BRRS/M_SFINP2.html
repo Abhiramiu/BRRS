@@ -424,10 +424,11 @@ PURPOSE		: BWRBRREPORT
 			 }); */
 		}
 
+		
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
-			location.href = Callurl;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/
+				location.href = Callurl;
 		}
 
 
@@ -450,7 +451,7 @@ PURPOSE		: BWRBRREPORT
 				columnDefs: [
 					{width: "60px", targets: 0},   // Edit icon column
 					{width: "150px", targets: 1},  // S No column
-					{width: "300px", targets: 8}    // S No column
+					{width: "300px", targets: 7}    // S No column
 				],
 
 				dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
