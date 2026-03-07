@@ -69,6 +69,7 @@ import com.bornfire.brrs.entities.M_LA4_Archival_Summary_Entity2;
 import com.bornfire.brrs.entities.M_LA4_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA4_Summary_Entity1;
 import com.bornfire.brrs.entities.M_LA4_Summary_Entity2;
+import com.bornfire.brrs.entities.Q_STAFF_Archival_Summary_Entity;
 
 @Component
 @Service
@@ -104,8 +105,8 @@ public class BRRS_M_LA4_ReportService {
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getM_LA4View(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, String version) {
+	public ModelAndView getM_LA4View(String reportId, String fromdate, String todate, String currency, String dtltype,
+			Pageable pageable, String type, BigDecimal version) {
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
 		int pageSize = pageable.getPageSize();
@@ -244,2376 +245,6 @@ public class BRRS_M_LA4_ReportService {
 		return mv;
 	}
 
-	public byte[] BRRS_M_LA4Excel(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
-		logger.info("Service: Starting Excel generation process with two-entity mapping.");
-
-		// === ARCHIVAL handling ===
-		System.out.println(type);
-		System.out.println(version);
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
-			return getExcelM_LA4ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
-		}
-
-		// === Fetch both entities' data ===
-		List<M_LA4_Summary_Entity1> entity1List = M_LA4_Summary_Repo.getdatabydateList(dateformat.parse(todate));
-		List<M_LA4_Summary_Entity2> entity2List = M_LA4_Summary_Repo2.getdatabydateList(dateformat.parse(todate));
-
-		if (entity1List.isEmpty() || entity2List.isEmpty()) {
-			logger.warn("No data found for one or both entities. Returning empty result.");
-			return new byte[0];
-		}
-
-		M_LA4_Summary_Entity1 e1 = entity1List.get(0);
-		M_LA4_Summary_Entity2 e2 = entity2List.get(0);
-		System.out.println(e1 + "testing data");
-
-		// === Load Excel template ===
-		String templateDir = env.getProperty("output.exportpathtemp");
-		Path templatePath = Paths.get(templateDir, filename);
-		if (!Files.exists(templatePath))
-			throw new FileNotFoundException("Template file not found: " + templatePath);
-
-		try (InputStream templateInputStream = Files.newInputStream(templatePath);
-				Workbook workbook = WorkbookFactory.create(templateInputStream);
-				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-
-			Sheet sheet = workbook.getSheetAt(0);
-
-			// === Define rows to skip ===
-			Set<Integer> skipRows = new HashSet<>(Arrays.asList(11, 15, 29, 38, 41, 44, 49, 53, 57, 64));
-
-			// === Start writing R11–R64 ===
-			int startRow = 10; // Excel row 11 (0-based)
-			for (int r = 11; r <= 64; r++) {
-				if (skipRows.contains(r))
-					continue; // Skip these rows
-
-				String prefix = "r" + r;
-				int excelRowIndex = startRow + (r - 11);
-
-				Row row = sheet.getRow(excelRowIndex);
-				if (row == null)
-					continue; // skip if row missing in template
-
-				BiConsumer<Cell, BigDecimal> setValuePreserveStyle = new BiConsumer<Cell, BigDecimal>() {
-					@Override
-					public void accept(Cell cell, BigDecimal value) {
-						if (value != null) {
-							cell.setCellValue(value.doubleValue());
-						} else {
-							cell.setCellType(Cell.CELL_TYPE_BLANK);
-						}
-					}
-				};
-
-				// 🟩 Col1 → From Entity2 (FactoringDebtors)
-				Cell c1 = row.getCell(1);
-				if (c1 == null)
-					c1 = row.createCell(1);
-				setValuePreserveStyle.accept(c1, getBigDecimalValue(e2, prefix + "FactoringDebtors"));
-
-				// 🟩 Col2 → From Entity2 (Leasing)
-				Cell c2 = row.getCell(2);
-				if (c2 == null)
-					c2 = row.createCell(2);
-				setValuePreserveStyle.accept(c2, getBigDecimalValue(e2, prefix + "Leasing"));
-
-				// 🟩 Col3 → From Entity1 (Overdrafts)
-				Cell c3 = row.getCell(3);
-				if (c3 == null)
-					c3 = row.createCell(3);
-				setValuePreserveStyle.accept(c3, getBigDecimalValue(e1, prefix + "Overdrafts"));
-
-				// 🟩 Col4 → From Entity1 (OtherInstallmentLoans)
-				Cell c4 = row.getCell(4);
-				if (c4 == null)
-					c4 = row.createCell(4);
-				setValuePreserveStyle.accept(c4, getBigDecimalValue(e1, prefix + "OtherInstallmentLoans"));
-
-				// 🟩 Col5 → From Entity1 (Total)
-				Cell c5 = row.getCell(5);
-				if (c5 == null)
-					c5 = row.createCell(5);
-				setValuePreserveStyle.accept(c5, getBigDecimalValue(e1, prefix + "Total"));
-			}
-
-			workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
-			workbook.write(out);
-
-			// === Audit logging ===
-			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-			if (attrs != null) {
-				HttpServletRequest request = attrs.getRequest();
-				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_LA4_SUMMARY", null, "BRRS_M_LA4_SUMMARYTABLE");
-			}
-
-			logger.info("✅ Excel generation completed successfully. Bytes: {}", out.size());
-			return out.toByteArray();
-		}
-	}
-
-	private BigDecimal getBigDecimalValue(Object obj, String fieldName) {
-		try {
-			Method getter = obj.getClass().getMethod("get" + capitalize(fieldName));
-			Object value = getter.invoke(obj);
-			return value != null ? (BigDecimal) value : null;
-		} catch (Exception e) {
-			return null;
-		}
-	}
-
-	private String getStringValue(Object obj, String fieldName) {
-		try {
-			Method getter = obj.getClass().getMethod("get" + capitalize(fieldName));
-			Object value = getter.invoke(obj);
-			return value != null ? value.toString() : null;
-		} catch (Exception e) {
-			return null;
-		}
-	}
-
-	private String capitalize(String str) {
-		if (str == null || str.isEmpty())
-			return str;
-		return Character.toUpperCase(str.charAt(0)) + str.substring(1);
-	}
-
-	/*
-	 * public byte[] BRRS_M_LA4Excel(String filename, String reportId, String
-	 * fromdate, String todate, String currency,
-	 * String dtltype, String type, String version) throws Exception {
-	 * logger.info("Service: Starting Excel generation process in memory.");
-	 * 
-	 * // ARCHIVAL check
-	 * if ("ARCHIVAL".equalsIgnoreCase(type) && version != null &&
-	 * !version.trim().isEmpty()) {
-	 * logger.info("Service: Generating ARCHIVAL report for version {}", version);
-	 * return getExcelM_LA4ARCHIVAL(filename, reportId, fromdate, todate, currency,
-	 * dtltype, type, version);
-	 * }
-	 * 
-	 * // Fetch data
-	 * List<M_LA4_Summary_Entity1> dataList =
-	 * M_LA4_Summary_Repo.getdatabydateList(dateformat.parse(todate));
-	 * 
-	 * if (dataList.isEmpty()) {
-	 * logger.
-	 * warn("Service: No data found for M_LA4 report. Returning empty result.");
-	 * return new byte[0];
-	 * }
-	 * 
-	 * String templateDir = env.getProperty("output.exportpathtemp");
-	 * String templateFileName = filename;
-	 * System.out.println(filename);
-	 * Path templatePath = Paths.get(templateDir, templateFileName);
-	 * System.out.println(templatePath);
-	 * 
-	 * logger.info("Service: Attempting to load template from path: {}",
-	 * templatePath.toAbsolutePath());
-	 * 
-	 * if (!Files.exists(templatePath)) {
-	 * throw new FileNotFoundException("Template file not found at: " +
-	 * templatePath.toAbsolutePath());
-	 * }
-	 * 
-	 * if (!Files.isReadable(templatePath)) {
-	 * throw new SecurityException(
-	 * "Template file exists but is not readable (check permissions): " +
-	 * templatePath.toAbsolutePath());
-	 * }
-	 * 
-	 * // This try-with-resources block is perfect. It guarantees all resources are
-	 * // closed automatically.
-	 * try (InputStream templateInputStream = Files.newInputStream(templatePath);
-	 * Workbook workbook = WorkbookFactory.create(templateInputStream);
-	 * ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-	 * Sheet sheet = workbook.getSheetAt(0);
-	 * 
-	 * // --- Style Definitions ---
-	 * CreationHelper createHelper = workbook.getCreationHelper();
-	 * 
-	 * CellStyle dateStyle = workbook.createCellStyle();
-	 * dateStyle.setDataFormat(createHelper.createDataFormat().getFormat(
-	 * "dd-MM-yyyy"));
-	 * dateStyle.setBorderBottom(BorderStyle.THIN);
-	 * dateStyle.setBorderTop(BorderStyle.THIN);
-	 * dateStyle.setBorderLeft(BorderStyle.THIN);
-	 * dateStyle.setBorderRight(BorderStyle.THIN);
-	 * CellStyle textStyle = workbook.createCellStyle();
-	 * textStyle.setBorderBottom(BorderStyle.THIN);
-	 * textStyle.setBorderTop(BorderStyle.THIN);
-	 * textStyle.setBorderLeft(BorderStyle.THIN);
-	 * textStyle.setBorderRight(BorderStyle.THIN);
-	 * 
-	 * // Create the font
-	 * Font font = workbook.createFont();
-	 * font.setFontHeightInPoints((short) 8); // size 8
-	 * font.setFontName("Arial");
-	 * CellStyle numberStyle = workbook.createCellStyle();
-	 * //
-	 * numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"))
-	 * ;
-	 * numberStyle.setBorderBottom(BorderStyle.THIN);
-	 * numberStyle.setBorderTop(BorderStyle.THIN);
-	 * numberStyle.setBorderLeft(BorderStyle.THIN);
-	 * numberStyle.setBorderRight(BorderStyle.THIN);
-	 * numberStyle.setFont(font);
-	 * // --- End of Style Definitions ---
-	 * int startRow = 10;
-	 * 
-	 * if (!dataList.isEmpty()) {
-	 * for (int i = 0; i < dataList.size(); i++) {
-	 * M_LA4_Summary_Entity1 record = dataList.get(i);
-	 * System.out.println("rownumber="+startRow + i);
-	 * Row row = sheet.getRow(startRow + i);
-	 * if (row == null) {
-	 * row = sheet.createRow(startRow + i);
-	 * }
-	 * 
-	 * Cell cell1 = row.createCell(2);
-	 * if (record.getR12_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR11_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * Cell cell2 = row.createCell(3);
-	 * if (record.getR12_leasing() != null) {
-	 * cell2.setCellValue(record.getR12_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * Cell cell3 = row.createCell(4);
-	 * if (record.getR12_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR12_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * Cell cell4 = row.createCell(5);
-	 * if (record.getR12_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR12_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * 
-	 * row = sheet.getRow(12);
-	 * if (row == null) {
-	 * row = sheet.createRow(12);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR13_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR13_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR13_leasing() != null) {
-	 * cell2.setCellValue(record.getR13_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR13_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR13_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR13_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR13_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(13);
-	 * if (row == null) {
-	 * row = sheet.createRow(13);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR14_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR14_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR14_leasing() != null) {
-	 * cell2.setCellValue(record.getR14_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR14_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR14_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR14_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR14_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(14);
-	 * if (row == null) {
-	 * row = sheet.createRow(14);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR15_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR15_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR15_leasing() != null) {
-	 * cell2.setCellValue(record.getR15_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR15_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR15_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR15_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR15_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(15);
-	 * if (row == null) {
-	 * row = sheet.createRow(15);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR16_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR16_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR16_leasing() != null) {
-	 * cell2.setCellValue(record.getR16_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR16_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR16_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR16_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR16_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(16);
-	 * if (row == null) {
-	 * row = sheet.createRow(16);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR17_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR17_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR17_leasing() != null) {
-	 * cell2.setCellValue(record.getR17_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR17_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR17_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR17_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR17_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(17);
-	 * if (row == null) {
-	 * row = sheet.createRow(17);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR18_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR18_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR18_leasing() != null) {
-	 * cell2.setCellValue(record.getR18_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR18_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR18_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR18_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR18_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(18);
-	 * if (row == null) {
-	 * row = sheet.createRow(18);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR19_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR19_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR19_leasing() != null) {
-	 * cell2.setCellValue(record.getR19_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR19_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR19_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR19_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR19_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(19);
-	 * if (row == null) {
-	 * row = sheet.createRow(19);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR20_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR20_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR20_leasing() != null) {
-	 * cell2.setCellValue(record.getR20_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR20_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR20_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR20_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR20_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(20);
-	 * if (row == null) {
-	 * row = sheet.createRow(20);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR21_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR21_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR21_leasing() != null) {
-	 * cell2.setCellValue(record.getR21_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR21_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR21_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR21_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR21_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(21);
-	 * if (row == null) {
-	 * row = sheet.createRow(21);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR22_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR22_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR22_leasing() != null) {
-	 * cell2.setCellValue(record.getR22_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR22_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR22_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR22_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR22_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(22);
-	 * if (row == null) {
-	 * row = sheet.createRow(22);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR23_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR23_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR23_leasing() != null) {
-	 * cell2.setCellValue(record.getR23_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR23_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR23_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR23_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR23_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(23);
-	 * if (row == null) {
-	 * row = sheet.createRow(23);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR24_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR24_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR24_leasing() != null) {
-	 * cell2.setCellValue(record.getR24_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR24_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR24_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR24_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR24_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(24);
-	 * if (row == null) {
-	 * row = sheet.createRow(24);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR25_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR25_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR25_leasing() != null) {
-	 * cell2.setCellValue(record.getR25_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR25_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR25_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR25_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR25_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(25);
-	 * if (row == null) {
-	 * row = sheet.createRow(25);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR26_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR26_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR26_leasing() != null) {
-	 * cell2.setCellValue(record.getR26_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR26_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR26_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR26_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR26_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(26);
-	 * if (row == null) {
-	 * row = sheet.createRow(26);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR27_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR27_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR27_leasing() != null) {
-	 * cell2.setCellValue(record.getR27_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR27_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR27_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR27_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR27_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(27);
-	 * if (row == null) {
-	 * row = sheet.createRow(27);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR28_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR28_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR28_leasing() != null) {
-	 * cell2.setCellValue(record.getR28_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR28_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR28_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR28_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR28_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(28);
-	 * if (row == null) {
-	 * row = sheet.createRow(28);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR29_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR29_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR29_leasing() != null) {
-	 * cell2.setCellValue(record.getR29_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR29_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR29_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR29_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR29_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(29);
-	 * if (row == null) {
-	 * row = sheet.createRow(29);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR30_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR30_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR30_leasing() != null) {
-	 * cell2.setCellValue(record.getR30_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR30_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR30_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR30_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR30_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(30);
-	 * if (row == null) {
-	 * row = sheet.createRow(30);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR31_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR31_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR31_leasing() != null) {
-	 * cell2.setCellValue(record.getR31_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR31_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR31_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR31_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR31_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(31);
-	 * if (row == null) {
-	 * row = sheet.createRow(31);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR32_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR32_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR32_leasing() != null) {
-	 * cell2.setCellValue(record.getR32_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR32_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR32_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR32_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR32_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(32);
-	 * if (row == null) {
-	 * row = sheet.createRow(32);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR33_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR33_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR33_leasing() != null) {
-	 * cell2.setCellValue(record.getR33_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR33_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR33_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR33_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR33_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(33);
-	 * if (row == null) {
-	 * row = sheet.createRow(33);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR34_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR34_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR34_leasing() != null) {
-	 * cell2.setCellValue(record.getR34_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR34_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR34_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR34_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR34_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(34);
-	 * if (row == null) {
-	 * row = sheet.createRow(34);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR35_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR35_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR35_leasing() != null) {
-	 * cell2.setCellValue(record.getR35_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR35_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR35_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR35_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR35_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(35);
-	 * if (row == null) {
-	 * row = sheet.createRow(35);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR36_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR36_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR36_leasing() != null) {
-	 * cell2.setCellValue(record.getR36_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR36_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR36_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR36_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR36_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(36);
-	 * if (row == null) {
-	 * row = sheet.createRow(36);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR37_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR37_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR37_leasing() != null) {
-	 * cell2.setCellValue(record.getR37_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR37_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR37_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR37_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR37_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(37);
-	 * if (row == null) {
-	 * row = sheet.createRow(37);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR38_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR38_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR38_leasing() != null) {
-	 * cell2.setCellValue(record.getR38_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR38_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR38_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR38_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR38_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(38);
-	 * if (row == null) {
-	 * row = sheet.createRow(38);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR39_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR39_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR39_leasing() != null) {
-	 * cell2.setCellValue(record.getR39_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR39_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR39_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR39_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR39_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(39);
-	 * if (row == null) {
-	 * row = sheet.createRow(39);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR40_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR40_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR40_leasing() != null) {
-	 * cell2.setCellValue(record.getR40_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR40_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR40_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR40_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR40_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(40);
-	 * if (row == null) {
-	 * row = sheet.createRow(40);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR41_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR41_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR41_leasing() != null) {
-	 * cell2.setCellValue(record.getR41_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR41_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR41_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR41_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR41_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(41);
-	 * if (row == null) {
-	 * row = sheet.createRow(41);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR42_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR42_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR42_leasing() != null) {
-	 * cell2.setCellValue(record.getR42_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR42_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR42_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR42_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR42_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(42);
-	 * if (row == null) {
-	 * row = sheet.createRow(42);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR43_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR43_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR43_leasing() != null) {
-	 * cell2.setCellValue(record.getR43_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR43_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR43_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR43_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR43_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(43);
-	 * if (row == null) {
-	 * row = sheet.createRow(43);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR44_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR44_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR44_leasing() != null) {
-	 * cell2.setCellValue(record.getR44_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR44_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR44_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR44_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR44_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(44);
-	 * if (row == null) {
-	 * row = sheet.createRow(44);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR45_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR45_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR45_leasing() != null) {
-	 * cell2.setCellValue(record.getR45_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR45_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR45_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR45_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR45_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(45);
-	 * if (row == null) {
-	 * row = sheet.createRow(45);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR46_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR46_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR46_leasing() != null) {
-	 * cell2.setCellValue(record.getR46_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR46_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR46_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR46_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR46_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(46);
-	 * if (row == null) {
-	 * row = sheet.createRow(46);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR47_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR47_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR47_leasing() != null) {
-	 * cell2.setCellValue(record.getR47_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR47_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR47_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR47_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR47_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(47);
-	 * if (row == null) {
-	 * row = sheet.createRow(47);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR48_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR48_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR48_leasing() != null) {
-	 * cell2.setCellValue(record.getR48_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR48_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR48_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR48_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR48_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(48);
-	 * if (row == null) {
-	 * row = sheet.createRow(48);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR49_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR49_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR49_leasing() != null) {
-	 * cell2.setCellValue(record.getR49_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR49_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR49_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR49_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR49_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(49);
-	 * if (row == null) {
-	 * row = sheet.createRow(49);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR50_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR50_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR50_leasing() != null) {
-	 * cell2.setCellValue(record.getR50_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR50_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR50_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR50_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR50_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(50);
-	 * if (row == null) {
-	 * row = sheet.createRow(50);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR51_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR51_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR51_leasing() != null) {
-	 * cell2.setCellValue(record.getR51_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR51_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR51_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR51_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR51_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(51);
-	 * if (row == null) {
-	 * row = sheet.createRow(51);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR52_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR52_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR52_leasing() != null) {
-	 * cell2.setCellValue(record.getR52_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR52_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR52_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR52_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR52_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(52);
-	 * if (row == null) {
-	 * row = sheet.createRow(52);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR53_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR53_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR53_leasing() != null) {
-	 * cell2.setCellValue(record.getR53_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR53_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR53_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR53_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR53_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(53);
-	 * if (row == null) {
-	 * row = sheet.createRow(53);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR54_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR54_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR54_leasing() != null) {
-	 * cell2.setCellValue(record.getR54_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR54_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR54_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR54_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR54_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(54);
-	 * if (row == null) {
-	 * row = sheet.createRow(54);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR55_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR55_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR55_leasing() != null) {
-	 * cell2.setCellValue(record.getR55_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR55_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR55_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR55_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR55_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(55);
-	 * if (row == null) {
-	 * row = sheet.createRow(55);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR56_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR56_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR56_leasing() != null) {
-	 * cell2.setCellValue(record.getR56_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR56_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR56_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR56_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR56_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(56);
-	 * if (row == null) {
-	 * row = sheet.createRow(56);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR57_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR57_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR57_leasing() != null) {
-	 * cell2.setCellValue(record.getR57_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR57_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR57_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR57_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR57_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(57);
-	 * if (row == null) {
-	 * row = sheet.createRow(57);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR58_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR58_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR58_leasing() != null) {
-	 * cell2.setCellValue(record.getR58_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR58_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR58_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR58_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR58_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(58);
-	 * if (row == null) {
-	 * row = sheet.createRow(58);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR59_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR59_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR59_leasing() != null) {
-	 * cell2.setCellValue(record.getR59_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR59_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR59_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR59_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR59_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(59);
-	 * if (row == null) {
-	 * row = sheet.createRow(59);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR60_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR60_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR60_leasing() != null) {
-	 * cell2.setCellValue(record.getR60_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR60_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR60_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR60_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR60_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(60);
-	 * if (row == null) {
-	 * row = sheet.createRow(60);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR61_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR61_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR61_leasing() != null) {
-	 * cell2.setCellValue(record.getR61_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR61_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR61_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR61_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR61_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(61);
-	 * if (row == null) {
-	 * row = sheet.createRow(61);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR62_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR62_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR62_leasing() != null) {
-	 * cell2.setCellValue(record.getR62_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR62_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR62_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR62_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR62_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(62);
-	 * if (row == null) {
-	 * row = sheet.createRow(62);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR63_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR63_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR63_leasing() != null) {
-	 * cell2.setCellValue(record.getR63_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR63_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR63_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR63_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR63_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * row = sheet.getRow(63);
-	 * if (row == null) {
-	 * row = sheet.createRow(63);
-	 * }
-	 * cell1 = row.createCell(1);
-	 * if (record.getR64_factoring_debtors() != null) {
-	 * cell1.setCellValue(record.getR64_factoring_debtors().doubleValue());
-	 * cell1.setCellStyle(numberStyle);
-	 * } else {
-	 * cell1.setCellValue("");
-	 * cell1.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell2 = row.createCell(2);
-	 * if (record.getR64_leasing() != null) {
-	 * cell2.setCellValue(record.getR64_leasing().doubleValue());
-	 * cell2.setCellStyle(numberStyle);
-	 * } else {
-	 * cell2.setCellValue("");
-	 * cell2.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell3 = row.createCell(3);
-	 * if (record.getR64_overdrafts() != null) {
-	 * cell3.setCellValue(record.getR64_overdrafts().doubleValue());
-	 * cell3.setCellStyle(numberStyle);
-	 * } else {
-	 * cell3.setCellValue("");
-	 * cell3.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * cell4 = row.createCell(4);
-	 * if (record.getR64_other_installment_loans() != null) {
-	 * cell4.setCellValue(record.getR64_other_installment_loans().doubleValue());
-	 * cell4.setCellStyle(numberStyle);
-	 * } else {
-	 * cell4.setCellValue("");
-	 * cell4.setCellStyle(textStyle);
-	 * }
-	 * 
-	 * 
-	 * 
-	 * }
-	 * workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
-	 * } else {
-	 * 
-	 * }
-	 * // Write the final workbook content to the in-memory stream.
-	 * workbook.write(out);
-	 * logger.
-	 * info("Service: Excel data successfully written to memory buffer ({} bytes).",
-	 * out.size());
-	 * // audit
-	 * ServletRequestAttributes attrs = (ServletRequestAttributes)
-	 * RequestContextHolder.getRequestAttributes();
-	 * if (attrs != null) {
-	 * HttpServletRequest request = attrs.getRequest();
-	 * String userid = (String) request.getSession().getAttribute("USERID");
-	 * auditService.createBusinessAudit(userid, "DOWNLOAD", "M_LA4_SUMMARY", null,
-	 * "BRRS_M_LA4_SUMMARYTABLE");
-	 * }
-	 * return out.toByteArray();
-	 * }
-	 * }
-	 */
 	public byte[] BRRS_M_LA4DetailExcel(String filename, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) {
 
@@ -2660,14 +291,14 @@ public class BRRS_M_LA4_ReportService {
 			// ACCT BALANCE style (right aligned with 3 decimals)
 			CellStyle balanceStyle = workbook.createCellStyle();
 			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
 			balanceStyle.setBorderTop(border);
 			balanceStyle.setBorderBottom(border);
 			balanceStyle.setBorderLeft(border);
 			balanceStyle.setBorderRight(border);
 			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "ROWID", "COLUMNID",
-					"REPORT_DATE" };
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABEL",
+					"REPORT ADDL CRETIRIA", "REPORT_DATE" };
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
 				Cell cell = headerRow.createCell(i);
@@ -2725,2356 +356,6 @@ public class BRRS_M_LA4_ReportService {
 		}
 	}
 
-	public List<Object> getM_LA4Archival() {
-		List<Object> M_LA4Archivallist = new ArrayList<>();
-		try {
-			M_LA4Archivallist = M_LA4_Archival_Summary_Repo.getM_LA4archival();
-			System.out.println("countser" + M_LA4Archivallist.size());
-		} catch (Exception e) {
-			// Log the exception
-			System.err.println("Error fetching M_LA4 Archival data: " + e.getMessage());
-			e.printStackTrace();
-
-			// Optionally, you can rethrow it or return empty list
-			// throw new RuntimeException("Failed to fetch data", e);
-		}
-		return M_LA4Archivallist;
-	}
-
-	public byte[] getExcelM_LA4ARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
-		logger.info("Service: Starting Excel generation process with two-entity mapping.");
-
-		if (type.equals("ARCHIVAL") & version != null) {
-
-		}
-
-		// === Fetch both entities' data ===
-		List<M_LA4_Archival_Summary_Entity> entity1List = M_LA4_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
-		List<M_LA4_Archival_Summary_Entity2> entity2List = M_LA4_Archival_Summary_Repo2
-				.getdatabydateListarchival(dateformat.parse(todate), version);
-
-		if (entity1List.isEmpty() || entity2List.isEmpty()) {
-			logger.warn("No data found for one or both entities. Returning empty result.");
-			return new byte[0];
-		}
-
-		M_LA4_Archival_Summary_Entity e1 = entity1List.get(0);
-		M_LA4_Archival_Summary_Entity2 e2 = entity2List.get(0);
-
-		// === Load Excel template ===
-		String templateDir = env.getProperty("output.exportpathtemp");
-		Path templatePath = Paths.get(templateDir, filename);
-		if (!Files.exists(templatePath))
-			throw new FileNotFoundException("Template file not found: " + templatePath);
-
-		try (InputStream templateInputStream = Files.newInputStream(templatePath);
-				Workbook workbook = WorkbookFactory.create(templateInputStream);
-				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-
-			Sheet sheet = workbook.getSheetAt(0);
-
-			// === Define rows to skip ===
-			Set<Integer> skipRows = new HashSet<>(Arrays.asList(11, 15, 29, 38, 41, 44, 49, 53, 57, 64));
-
-			// === Start writing R11–R64 ===
-			int startRow = 10; // Excel row 11 (0-based)
-			for (int r = 11; r <= 64; r++) {
-				if (skipRows.contains(r))
-					continue; // Skip these rows
-
-				String prefix = "r" + r;
-				int excelRowIndex = startRow + (r - 11);
-
-				Row row = sheet.getRow(excelRowIndex);
-				if (row == null)
-					continue; // skip if row missing in template
-
-				// Helper to set value without overriding style
-				BiConsumer<Cell, BigDecimal> setValuePreserveStyle = new BiConsumer<Cell, BigDecimal>() {
-					@Override
-					public void accept(Cell cell, BigDecimal value) {
-						if (value != null) {
-							cell.setCellValue(value.doubleValue());
-						} else {
-							cell.setCellType(Cell.CELL_TYPE_BLANK);
-						}
-					}
-				};
-
-				// 🟩 Col1 → From Entity2 (FactoringDebtors)
-				Cell c1 = row.getCell(1);
-				if (c1 == null)
-					c1 = row.createCell(1);
-				setValuePreserveStyle.accept(c1, getBigDecimalValue(e2, prefix + "FactoringDebtors"));
-
-				// 🟩 Col2 → From Entity2 (Leasing)
-				Cell c2 = row.getCell(2);
-				if (c2 == null)
-					c2 = row.createCell(2);
-				setValuePreserveStyle.accept(c2, getBigDecimalValue(e2, prefix + "Leasing"));
-
-				// 🟩 Col3 → From Entity1 (Overdrafts)
-				Cell c3 = row.getCell(3);
-				if (c3 == null)
-					c3 = row.createCell(3);
-				setValuePreserveStyle.accept(c3, getBigDecimalValue(e1, prefix + "Overdrafts"));
-
-				// 🟩 Col4 → From Entity1 (OtherInstallmentLoans)
-				Cell c4 = row.getCell(4);
-				if (c4 == null)
-					c4 = row.createCell(4);
-				setValuePreserveStyle.accept(c4, getBigDecimalValue(e1, prefix + "OtherInstallmentLoans"));
-
-				// 🟩 Col5 → From Entity1 (Total)
-				Cell c5 = row.getCell(5);
-				if (c5 == null)
-					c5 = row.createCell(5);
-				setValuePreserveStyle.accept(c5, getBigDecimalValue(e1, prefix + "Total"));
-			}
-
-			workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
-			workbook.write(out);
-
-			// === Audit logging ===
-			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-			if (attrs != null) {
-				HttpServletRequest request = attrs.getRequest();
-				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_LA4_SUMMARY", null,
-						"BRRS_M_LA4_ARCHIVALTABLE_SUMMARY");
-			}
-
-			logger.info("✅ Excel generation completed successfully. Bytes: {}", out.size());
-			return out.toByteArray();
-		}
-	}
-
-	// public byte[] getExcelM_LA4ARCHIVAL(String filename, String reportId, String
-	// fromdate, String todate,
-	// String currency, String dtltype, String type, String version) throws
-	// Exception {
-	// logger.info("Service: Starting Excel generation process in memory.");
-	// if (type.equals("ARCHIVAL") & version != null) {
-	//
-	// }
-	// List<M_LA4_Archival_Summary_Entity> dataList = M_LA4_Archival_Summary_Repo
-	// .getdatabydateListarchival(dateformat.parse(todate), version);
-	//
-	// if (dataList.isEmpty()) {
-	// logger.warn("Service: No data found for M_LA4 report. Returning empty
-	// result.");
-	// return new byte[0];
-	// }
-	//
-	// String templateDir = env.getProperty("output.exportpathtemp");
-	// String templateFileName = filename;
-	// System.out.println(filename);
-	// Path templatePath = Paths.get(templateDir, templateFileName);
-	// System.out.println(templatePath);
-	//
-	// logger.info("Service: Attempting to load template from path: {}",
-	// templatePath.toAbsolutePath());
-	//
-	// if (!Files.exists(templatePath)) {
-	// // This specific exception will be caught by the controller.
-	// throw new FileNotFoundException("Template file not found at: " +
-	// templatePath.toAbsolutePath());
-	// }
-	// if (!Files.isReadable(templatePath)) {
-	// // A specific exception for permission errors.
-	// throw new SecurityException(
-	// "Template file exists but is not readable (check permissions): " +
-	// templatePath.toAbsolutePath());
-	// }
-	//
-	// // This try-with-resources block is perfect. It guarantees all resources are
-	// // closed automatically.
-	// try (InputStream templateInputStream = Files.newInputStream(templatePath);
-	// Workbook workbook = WorkbookFactory.create(templateInputStream);
-	// ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-	//
-	// Sheet sheet = workbook.getSheetAt(0);
-	//
-	// // --- Style Definitions ---
-	// CreationHelper createHelper = workbook.getCreationHelper();
-	//
-	// CellStyle dateStyle = workbook.createCellStyle();
-	// dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-	// dateStyle.setBorderBottom(BorderStyle.THIN);
-	// dateStyle.setBorderTop(BorderStyle.THIN);
-	// dateStyle.setBorderLeft(BorderStyle.THIN);
-	// dateStyle.setBorderRight(BorderStyle.THIN);
-	//
-	// CellStyle textStyle = workbook.createCellStyle();
-	// textStyle.setBorderBottom(BorderStyle.THIN);
-	// textStyle.setBorderTop(BorderStyle.THIN);
-	// textStyle.setBorderLeft(BorderStyle.THIN);
-	// textStyle.setBorderRight(BorderStyle.THIN);
-	//
-	// // Create the font
-	// Font font = workbook.createFont();
-	// font.setFontHeightInPoints((short) 8); // size 8
-	// font.setFontName("Arial");
-	//
-	// CellStyle numberStyle = workbook.createCellStyle();
-	// //
-	// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
-	// numberStyle.setBorderBottom(BorderStyle.THIN);
-	// numberStyle.setBorderTop(BorderStyle.THIN);
-	// numberStyle.setBorderLeft(BorderStyle.THIN);
-	// numberStyle.setBorderRight(BorderStyle.THIN);
-	// numberStyle.setFont(font);
-	// // --- End of Style Definitions ---
-	//
-	// int startRow = 10;
-	//
-	// if (!dataList.isEmpty()) {
-	// for (int i = 0; i < dataList.size(); i++) {
-	// M_LA4_Archival_Summary_Entity record = dataList.get(i);
-	// System.out.println("rownumber="+startRow + i);
-	// Row row = sheet.getRow(startRow + i);
-	// if (row == null) {
-	// row = sheet.createRow(startRow + i);
-	// }
-	//
-	// Cell cell1 = row.createCell(2);
-	// if (record.getR12_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR11_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// Cell cell2 = row.createCell(3);
-	// if (record.getR12_leasing() != null) {
-	// cell2.setCellValue(record.getR12_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// Cell cell3 = row.createCell(4);
-	// if (record.getR12_overdrafts() != null) {
-	// cell3.setCellValue(record.getR12_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// Cell cell4 = row.createCell(5);
-	// if (record.getR12_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR12_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	//
-	// row = sheet.getRow(12);
-	// if (row == null) {
-	// row = sheet.createRow(12);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR13_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR13_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR13_leasing() != null) {
-	// cell2.setCellValue(record.getR13_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR13_overdrafts() != null) {
-	// cell3.setCellValue(record.getR13_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR13_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR13_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(13);
-	// if (row == null) {
-	// row = sheet.createRow(13);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR14_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR14_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR14_leasing() != null) {
-	// cell2.setCellValue(record.getR14_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR14_overdrafts() != null) {
-	// cell3.setCellValue(record.getR14_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR14_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR14_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(14);
-	// if (row == null) {
-	// row = sheet.createRow(14);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR15_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR15_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR15_leasing() != null) {
-	// cell2.setCellValue(record.getR15_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR15_overdrafts() != null) {
-	// cell3.setCellValue(record.getR15_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR15_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR15_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(15);
-	// if (row == null) {
-	// row = sheet.createRow(15);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR16_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR16_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR16_leasing() != null) {
-	// cell2.setCellValue(record.getR16_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR16_overdrafts() != null) {
-	// cell3.setCellValue(record.getR16_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR16_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR16_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(16);
-	// if (row == null) {
-	// row = sheet.createRow(16);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR17_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR17_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR17_leasing() != null) {
-	// cell2.setCellValue(record.getR17_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR17_overdrafts() != null) {
-	// cell3.setCellValue(record.getR17_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR17_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR17_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(17);
-	// if (row == null) {
-	// row = sheet.createRow(17);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR18_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR18_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR18_leasing() != null) {
-	// cell2.setCellValue(record.getR18_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR18_overdrafts() != null) {
-	// cell3.setCellValue(record.getR18_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR18_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR18_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(18);
-	// if (row == null) {
-	// row = sheet.createRow(18);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR19_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR19_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR19_leasing() != null) {
-	// cell2.setCellValue(record.getR19_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR19_overdrafts() != null) {
-	// cell3.setCellValue(record.getR19_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR19_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR19_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(19);
-	// if (row == null) {
-	// row = sheet.createRow(19);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR20_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR20_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR20_leasing() != null) {
-	// cell2.setCellValue(record.getR20_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR20_overdrafts() != null) {
-	// cell3.setCellValue(record.getR20_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR20_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR20_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(20);
-	// if (row == null) {
-	// row = sheet.createRow(20);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR21_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR21_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR21_leasing() != null) {
-	// cell2.setCellValue(record.getR21_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR21_overdrafts() != null) {
-	// cell3.setCellValue(record.getR21_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR21_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR21_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(21);
-	// if (row == null) {
-	// row = sheet.createRow(21);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR22_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR22_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR22_leasing() != null) {
-	// cell2.setCellValue(record.getR22_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR22_overdrafts() != null) {
-	// cell3.setCellValue(record.getR22_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR22_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR22_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(22);
-	// if (row == null) {
-	// row = sheet.createRow(22);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR23_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR23_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR23_leasing() != null) {
-	// cell2.setCellValue(record.getR23_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR23_overdrafts() != null) {
-	// cell3.setCellValue(record.getR23_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR23_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR23_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(23);
-	// if (row == null) {
-	// row = sheet.createRow(23);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR24_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR24_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR24_leasing() != null) {
-	// cell2.setCellValue(record.getR24_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR24_overdrafts() != null) {
-	// cell3.setCellValue(record.getR24_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR24_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR24_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(24);
-	// if (row == null) {
-	// row = sheet.createRow(24);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR25_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR25_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR25_leasing() != null) {
-	// cell2.setCellValue(record.getR25_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR25_overdrafts() != null) {
-	// cell3.setCellValue(record.getR25_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR25_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR25_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(25);
-	// if (row == null) {
-	// row = sheet.createRow(25);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR26_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR26_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR26_leasing() != null) {
-	// cell2.setCellValue(record.getR26_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR26_overdrafts() != null) {
-	// cell3.setCellValue(record.getR26_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR26_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR26_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(26);
-	// if (row == null) {
-	// row = sheet.createRow(26);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR27_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR27_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR27_leasing() != null) {
-	// cell2.setCellValue(record.getR27_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR27_overdrafts() != null) {
-	// cell3.setCellValue(record.getR27_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR27_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR27_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(27);
-	// if (row == null) {
-	// row = sheet.createRow(27);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR28_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR28_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR28_leasing() != null) {
-	// cell2.setCellValue(record.getR28_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR28_overdrafts() != null) {
-	// cell3.setCellValue(record.getR28_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR28_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR28_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(28);
-	// if (row == null) {
-	// row = sheet.createRow(28);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR29_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR29_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR29_leasing() != null) {
-	// cell2.setCellValue(record.getR29_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR29_overdrafts() != null) {
-	// cell3.setCellValue(record.getR29_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR29_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR29_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(29);
-	// if (row == null) {
-	// row = sheet.createRow(29);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR30_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR30_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR30_leasing() != null) {
-	// cell2.setCellValue(record.getR30_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR30_overdrafts() != null) {
-	// cell3.setCellValue(record.getR30_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR30_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR30_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(30);
-	// if (row == null) {
-	// row = sheet.createRow(30);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR31_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR31_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR31_leasing() != null) {
-	// cell2.setCellValue(record.getR31_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR31_overdrafts() != null) {
-	// cell3.setCellValue(record.getR31_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR31_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR31_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(31);
-	// if (row == null) {
-	// row = sheet.createRow(31);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR32_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR32_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR32_leasing() != null) {
-	// cell2.setCellValue(record.getR32_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR32_overdrafts() != null) {
-	// cell3.setCellValue(record.getR32_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR32_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR32_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(32);
-	// if (row == null) {
-	// row = sheet.createRow(32);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR33_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR33_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR33_leasing() != null) {
-	// cell2.setCellValue(record.getR33_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR33_overdrafts() != null) {
-	// cell3.setCellValue(record.getR33_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR33_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR33_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(33);
-	// if (row == null) {
-	// row = sheet.createRow(33);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR34_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR34_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR34_leasing() != null) {
-	// cell2.setCellValue(record.getR34_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR34_overdrafts() != null) {
-	// cell3.setCellValue(record.getR34_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR34_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR34_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(34);
-	// if (row == null) {
-	// row = sheet.createRow(34);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR35_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR35_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR35_leasing() != null) {
-	// cell2.setCellValue(record.getR35_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR35_overdrafts() != null) {
-	// cell3.setCellValue(record.getR35_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR35_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR35_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(35);
-	// if (row == null) {
-	// row = sheet.createRow(35);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR36_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR36_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR36_leasing() != null) {
-	// cell2.setCellValue(record.getR36_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR36_overdrafts() != null) {
-	// cell3.setCellValue(record.getR36_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR36_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR36_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(36);
-	// if (row == null) {
-	// row = sheet.createRow(36);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR37_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR37_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR37_leasing() != null) {
-	// cell2.setCellValue(record.getR37_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR37_overdrafts() != null) {
-	// cell3.setCellValue(record.getR37_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR37_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR37_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(37);
-	// if (row == null) {
-	// row = sheet.createRow(37);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR38_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR38_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR38_leasing() != null) {
-	// cell2.setCellValue(record.getR38_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR38_overdrafts() != null) {
-	// cell3.setCellValue(record.getR38_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR38_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR38_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(38);
-	// if (row == null) {
-	// row = sheet.createRow(38);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR39_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR39_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR39_leasing() != null) {
-	// cell2.setCellValue(record.getR39_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR39_overdrafts() != null) {
-	// cell3.setCellValue(record.getR39_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR39_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR39_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(39);
-	// if (row == null) {
-	// row = sheet.createRow(39);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR40_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR40_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR40_leasing() != null) {
-	// cell2.setCellValue(record.getR40_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR40_overdrafts() != null) {
-	// cell3.setCellValue(record.getR40_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR40_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR40_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(40);
-	// if (row == null) {
-	// row = sheet.createRow(40);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR41_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR41_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR41_leasing() != null) {
-	// cell2.setCellValue(record.getR41_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR41_overdrafts() != null) {
-	// cell3.setCellValue(record.getR41_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR41_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR41_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(41);
-	// if (row == null) {
-	// row = sheet.createRow(41);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR42_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR42_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR42_leasing() != null) {
-	// cell2.setCellValue(record.getR42_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR42_overdrafts() != null) {
-	// cell3.setCellValue(record.getR42_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR42_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR42_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(42);
-	// if (row == null) {
-	// row = sheet.createRow(42);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR43_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR43_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR43_leasing() != null) {
-	// cell2.setCellValue(record.getR43_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR43_overdrafts() != null) {
-	// cell3.setCellValue(record.getR43_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR43_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR43_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(43);
-	// if (row == null) {
-	// row = sheet.createRow(43);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR44_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR44_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR44_leasing() != null) {
-	// cell2.setCellValue(record.getR44_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR44_overdrafts() != null) {
-	// cell3.setCellValue(record.getR44_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR44_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR44_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(44);
-	// if (row == null) {
-	// row = sheet.createRow(44);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR45_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR45_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR45_leasing() != null) {
-	// cell2.setCellValue(record.getR45_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR45_overdrafts() != null) {
-	// cell3.setCellValue(record.getR45_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR45_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR45_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(45);
-	// if (row == null) {
-	// row = sheet.createRow(45);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR46_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR46_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR46_leasing() != null) {
-	// cell2.setCellValue(record.getR46_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR46_overdrafts() != null) {
-	// cell3.setCellValue(record.getR46_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR46_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR46_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(46);
-	// if (row == null) {
-	// row = sheet.createRow(46);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR47_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR47_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR47_leasing() != null) {
-	// cell2.setCellValue(record.getR47_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR47_overdrafts() != null) {
-	// cell3.setCellValue(record.getR47_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR47_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR47_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(47);
-	// if (row == null) {
-	// row = sheet.createRow(47);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR48_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR48_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR48_leasing() != null) {
-	// cell2.setCellValue(record.getR48_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR48_overdrafts() != null) {
-	// cell3.setCellValue(record.getR48_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR48_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR48_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(48);
-	// if (row == null) {
-	// row = sheet.createRow(48);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR49_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR49_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR49_leasing() != null) {
-	// cell2.setCellValue(record.getR49_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR49_overdrafts() != null) {
-	// cell3.setCellValue(record.getR49_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR49_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR49_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(49);
-	// if (row == null) {
-	// row = sheet.createRow(49);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR50_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR50_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR50_leasing() != null) {
-	// cell2.setCellValue(record.getR50_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR50_overdrafts() != null) {
-	// cell3.setCellValue(record.getR50_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR50_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR50_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(50);
-	// if (row == null) {
-	// row = sheet.createRow(50);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR51_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR51_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR51_leasing() != null) {
-	// cell2.setCellValue(record.getR51_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR51_overdrafts() != null) {
-	// cell3.setCellValue(record.getR51_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR51_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR51_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(51);
-	// if (row == null) {
-	// row = sheet.createRow(51);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR52_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR52_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR52_leasing() != null) {
-	// cell2.setCellValue(record.getR52_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR52_overdrafts() != null) {
-	// cell3.setCellValue(record.getR52_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR52_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR52_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(52);
-	// if (row == null) {
-	// row = sheet.createRow(52);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR53_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR53_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR53_leasing() != null) {
-	// cell2.setCellValue(record.getR53_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR53_overdrafts() != null) {
-	// cell3.setCellValue(record.getR53_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR53_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR53_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(53);
-	// if (row == null) {
-	// row = sheet.createRow(53);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR54_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR54_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR54_leasing() != null) {
-	// cell2.setCellValue(record.getR54_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR54_overdrafts() != null) {
-	// cell3.setCellValue(record.getR54_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR54_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR54_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(54);
-	// if (row == null) {
-	// row = sheet.createRow(54);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR55_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR55_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR55_leasing() != null) {
-	// cell2.setCellValue(record.getR55_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR55_overdrafts() != null) {
-	// cell3.setCellValue(record.getR55_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR55_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR55_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(55);
-	// if (row == null) {
-	// row = sheet.createRow(55);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR56_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR56_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR56_leasing() != null) {
-	// cell2.setCellValue(record.getR56_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR56_overdrafts() != null) {
-	// cell3.setCellValue(record.getR56_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR56_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR56_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(56);
-	// if (row == null) {
-	// row = sheet.createRow(56);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR57_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR57_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR57_leasing() != null) {
-	// cell2.setCellValue(record.getR57_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR57_overdrafts() != null) {
-	// cell3.setCellValue(record.getR57_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR57_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR57_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(57);
-	// if (row == null) {
-	// row = sheet.createRow(57);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR58_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR58_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR58_leasing() != null) {
-	// cell2.setCellValue(record.getR58_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR58_overdrafts() != null) {
-	// cell3.setCellValue(record.getR58_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR58_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR58_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(58);
-	// if (row == null) {
-	// row = sheet.createRow(58);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR59_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR59_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR59_leasing() != null) {
-	// cell2.setCellValue(record.getR59_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR59_overdrafts() != null) {
-	// cell3.setCellValue(record.getR59_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR59_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR59_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(59);
-	// if (row == null) {
-	// row = sheet.createRow(59);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR60_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR60_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR60_leasing() != null) {
-	// cell2.setCellValue(record.getR60_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR60_overdrafts() != null) {
-	// cell3.setCellValue(record.getR60_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR60_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR60_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(60);
-	// if (row == null) {
-	// row = sheet.createRow(60);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR61_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR61_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR61_leasing() != null) {
-	// cell2.setCellValue(record.getR61_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR61_overdrafts() != null) {
-	// cell3.setCellValue(record.getR61_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR61_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR61_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(61);
-	// if (row == null) {
-	// row = sheet.createRow(61);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR62_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR62_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR62_leasing() != null) {
-	// cell2.setCellValue(record.getR62_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR62_overdrafts() != null) {
-	// cell3.setCellValue(record.getR62_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR62_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR62_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(62);
-	// if (row == null) {
-	// row = sheet.createRow(62);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR63_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR63_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR63_leasing() != null) {
-	// cell2.setCellValue(record.getR63_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR63_overdrafts() != null) {
-	// cell3.setCellValue(record.getR63_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR63_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR63_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	// row = sheet.getRow(63);
-	// if (row == null) {
-	// row = sheet.createRow(63);
-	// }
-	// cell1 = row.createCell(1);
-	// if (record.getR64_factoring_debtors() != null) {
-	// cell1.setCellValue(record.getR64_factoring_debtors().doubleValue());
-	// cell1.setCellStyle(numberStyle);
-	// } else {
-	// cell1.setCellValue("");
-	// cell1.setCellStyle(textStyle);
-	// }
-	//
-	// cell2 = row.createCell(2);
-	// if (record.getR64_leasing() != null) {
-	// cell2.setCellValue(record.getR64_leasing().doubleValue());
-	// cell2.setCellStyle(numberStyle);
-	// } else {
-	// cell2.setCellValue("");
-	// cell2.setCellStyle(textStyle);
-	// }
-	//
-	// cell3 = row.createCell(3);
-	// if (record.getR64_overdrafts() != null) {
-	// cell3.setCellValue(record.getR64_overdrafts().doubleValue());
-	// cell3.setCellStyle(numberStyle);
-	// } else {
-	// cell3.setCellValue("");
-	// cell3.setCellStyle(textStyle);
-	// }
-	//
-	// cell4 = row.createCell(4);
-	// if (record.getR64_other_installment_loans() != null) {
-	// cell4.setCellValue(record.getR64_other_installment_loans().doubleValue());
-	// cell4.setCellStyle(numberStyle);
-	// } else {
-	// cell4.setCellValue("");
-	// cell4.setCellStyle(textStyle);
-	// }
-	//
-	//
-	//
-	// }
-	//
-	// workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
-	// } else {
-	//
-	// }
-	//
-	// // Write the final workbook content to the in-memory stream.
-	// workbook.write(out);
-	//
-	// logger.info("Service: Excel data successfully written to memory buffer ({}
-	// bytes).", out.size());
-	//
-	// return out.toByteArray();
-	// }
-	// }
-
 	public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) {
 		try {
@@ -5126,8 +407,8 @@ public class BRRS_M_LA4_ReportService {
 			balanceStyle.setBorderRight(border);
 
 			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "ROWID", "COLUMNID",
-					"REPORT_DATE" };
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABEL",
+					"REPORT ADDL CRETIRIA", "REPORT_DATE" };
 
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
@@ -5145,8 +426,8 @@ public class BRRS_M_LA4_ReportService {
 
 			// Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<M_LA4_Archival_Detail_Entity> reportData = M_LA4_Archival_Detail_Repo
-					.getdatabydateList(parsedToDate, version);
+			List<M_LA4_Archival_Detail_Entity> reportData = M_LA4_Archival_Detail_Repo.getdatabydateList(parsedToDate,
+					version);
 
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
@@ -5198,104 +479,91 @@ public class BRRS_M_LA4_ReportService {
 		}
 	}
 
+	@Transactional
 	public void updateReport(M_LA4_Summary_Entity2 updatedEntity) {
 
-		System.out.println("➡️ Entered updateReport() for LA4 Summary");
+		System.out.println("Came to services1");
 		System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-		// Fetch existing record
-		M_LA4_Summary_Entity2 existing = M_LA4_Summary_Repo2.findById(updatedEntity.getReportDate())
+		// ENTITY 2
+		M_LA4_Summary_Entity2 existing = M_LA4_Summary_Repo2.findById(updatedEntity.getReportDate()).orElseThrow(
+				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+
+		// ENTITY 1
+		M_LA4_Summary_Entity1 existing1 = M_LA4_Summary_Repo.findById(updatedEntity.getReportDate())
 				.orElseThrow(() -> new RuntimeException(
-						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+						"Record not found in ENTITY1 for REPORT_DATE: " + updatedEntity.getReportDate()));
 
 		try {
+
+			// -----------------------------
+			// UPDATE ENTITY 2
+			// -----------------------------
 			for (int i = 11; i <= 64; i++) {
-				String prefix = "R" + i + "_";
-				String[] fields = { "FACTORING_DEBTORS", "LEASING" };
+
+				String prefix = "R" + i;
+				String[] fields = { "FactoringDebtors", "Leasing" };
 
 				for (String field : fields) {
-					String camelField = Arrays.stream(field.toLowerCase().split("_"))
-							.map(s -> s.substring(0, 1).toUpperCase() + s.substring(1))
-							.collect(Collectors.joining(""));
 
-					String getterName = "get" + prefix.replace("_", "") + camelField;
-					String setterName = "set" + prefix.replace("_", "") + camelField;
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
 
 					try {
+
 						Method getter = M_LA4_Summary_Entity2.class.getMethod(getterName);
 						Method setter = M_LA4_Summary_Entity2.class.getMethod(setterName, getter.getReturnType());
 
 						Object newValue = getter.invoke(updatedEntity);
-						setter.invoke(existing, newValue);
+
+						if (newValue != null) {
+							setter.invoke(existing, newValue);
+						}
 
 					} catch (NoSuchMethodException e) {
-						continue;
+						// ignore
 					}
 				}
 			}
 
-			// Metadata
-			existing.setReportVersion(updatedEntity.getReportVersion());
-			existing.setReportFrequency(updatedEntity.getReportFrequency());
-			existing.setReportCode(updatedEntity.getReportCode());
-			existing.setReportDesc(updatedEntity.getReportDesc());
-			existing.setEntityFlg(updatedEntity.getEntityFlg());
-			existing.setModifyFlg(updatedEntity.getModifyFlg());
-			existing.setDelFlg(updatedEntity.getDelFlg());
+			// -----------------------------
+			// UPDATE ENTITY 1 (TOTAL)
+			// -----------------------------
+			for (int i = 11; i <= 64; i++) {
+
+				String prefix = "R" + i;
+				String[] fields = { "Total" };
+
+				for (String field : fields) {
+
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
+
+					try {
+
+						Method getter = M_LA4_Summary_Entity2.class.getMethod(getterName);
+						Method setter = M_LA4_Summary_Entity1.class.getMethod(setterName, getter.getReturnType());
+
+						Object newValue = getter.invoke(updatedEntity);
+
+						if (newValue != null) {
+							setter.invoke(existing1, newValue);
+						}
+
+					} catch (NoSuchMethodException e) {
+						// ignore
+					}
+				}
+			}
+
+			// SAVE BOTH
+			M_LA4_Summary_Repo2.save(existing);
+			M_LA4_Summary_Repo.save(existing1);
 
 		} catch (Exception e) {
-			throw new RuntimeException("❌ Error while updating LA4 Summary fields", e);
+			throw new RuntimeException("Error while updating report fields", e);
 		}
-
-		// FIRST COMMIT
-		M_LA4_Summary_Repo2.saveAndFlush(existing); // 🔴 IMPORTANT — forces immediate COMMIT
-		System.out.println("✅ LA4 Summary updated and COMMITTED");
-
-		// NOW PROCEDURE CAN SEE UPDATED DATA
-		String oracleDate = new SimpleDateFormat("dd-MM-yyyy")
-				.format(updatedEntity.getReportDate())
-				.toUpperCase();
-
-		String sql = "BEGIN BRRS.BRRS_M_LA4_SUMMARY_PROCEDURE('" + oracleDate + "'); END;";
-		jdbcTemplate.execute(sql);
-
-		System.out.println("Procedure executed for date: " + oracleDate);
 	}
-
-	// public boolean updateProvision(M_LA4_Detail_Entity la4Data) {
-	// try {
-	// System.out.println("Came to LA1 Service");
-	//
-	// // ✅ Must match your entity field name exactly
-	// M_LA4_Detail_Entity existing =
-	// M_LA4_DETAIL_Repo.findByAcctnumber(la4Data.getAcct_number());
-	//
-	// if (existing != null) {
-	//
-	//
-	// existing.setAcct_name(la4Data.getAcct_name());
-	//
-	// // existing.setAcct_name(la1Data.getAcct_name());
-	//
-	// //existing.setSanction_limit(la4Data.get());
-	//
-	// existing.setAcct_balance_in_pula(la4Data.getAcct_balance_in_pula());
-	// M_LA4_DETAIL_Repo.save(existing);
-	//
-	// System.out.println("Updated successfully for ACCT_NO: " +
-	// la4Data.getAcct_number());
-	// return true;
-	// } else {
-	// System.out.println("Record not found for Account No: " +
-	// la4Data.getAcct_number());
-	// return false;
-	// }
-	//
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// return false;
-	// }
-	// }
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -5363,8 +631,8 @@ public class BRRS_M_LA4_ReportService {
 
 			if (provisionStr != null && !provisionStr.isEmpty()) {
 				BigDecimal newProvision = new BigDecimal(provisionStr);
-				if (existing.getAcct_balance_in_pula() == null ||
-						existing.getAcct_balance_in_pula().compareTo(newProvision) != 0) {
+				if (existing.getAcct_balance_in_pula() == null
+						|| existing.getAcct_balance_in_pula().compareTo(newProvision) != 0) {
 					existing.setAcct_balance_in_pula(newProvision);
 					isChanged = true;
 					logger.info("Provision updated to {}", newProvision);
@@ -5406,5 +674,6906 @@ public class BRRS_M_LA4_ReportService {
 					.body("Error updating record: " + e.getMessage());
 		}
 	}
+
+	public List<Object[]> getM_LA4Resub() {
+		List<Object[]> resubList = new ArrayList<>();
+		try {
+			List<M_LA4_Archival_Summary_Entity> latestArchivalList = M_LA4_Archival_Summary_Repo
+					.getdatabydateListWithVersion();
+
+			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+				for (M_LA4_Archival_Summary_Entity entity : latestArchivalList) {
+					resubList.add(new Object[] { entity.getReportDate(), entity.getReportVersion(),
+							entity.getReportResubDate() });
+				}
+				System.out.println("Fetched " + resubList.size() + " record(s)");
+			} else {
+				System.out.println("No archival data found.");
+			}
+
+		} catch (Exception e) {
+			System.err.println("Error fetching M_LA4 Resub data: " + e.getMessage());
+			e.printStackTrace();
+		}
+		return resubList;
+	}
+
+	// Archival View
+	public List<Object[]> getM_LA4Archival() {
+		List<Object[]> archivalList = new ArrayList<>();
+
+		try {
+			List<M_LA4_Archival_Summary_Entity> repoData = M_LA4_Archival_Summary_Repo.getdatabydateListWithVersion();
+
+			if (repoData != null && !repoData.isEmpty()) {
+				for (M_LA4_Archival_Summary_Entity entity : repoData) {
+					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion(),
+							entity.getReportResubDate() };
+					archivalList.add(row);
+				}
+
+				System.out.println("Fetched " + archivalList.size() + " archival records");
+				M_LA4_Archival_Summary_Entity first = repoData.get(0);
+				System.out.println("Latest archival version: " + first.getReportVersion());
+			} else {
+				System.out.println("No archival data found.");
+			}
+
+		} catch (Exception e) {
+			System.err.println("Error fetching M_LA4 Archival data: " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		return archivalList;
+	}
+
+	// Normal format Excel
+
+	public byte[] BRRS_M_LA4Excel(String filename, String reportId, String fromdate, String todate, String currency,
+			String dtltype, String type, String format, BigDecimal version) throws Exception {
+		logger.info("Service: Starting Excel generation process in memory.");
+
+		System.out.println("======= VIEW SCREEN =======");
+		System.out.println("TYPE      : " + type);
+		System.out.println("FORMAT      : " + format);
+		System.out.println("DTLTYPE   : " + dtltype);
+		System.out.println("DATE      : " + dateformat.parse(todate));
+		System.out.println("VERSION   : " + version);
+		System.out.println("==========================");
+
+		// ARCHIVAL check
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+			try {
+				// Redirecting to Archival
+				return getExcelM_LA4ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, format,
+						version);
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
+//		} else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+//			logger.info("Service: Generating RESUB report for version {}", version);
+//
+//			try {
+//				// ✅ Redirecting to Resub Excel
+//				return BRRS_M_LA4ResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type, format,
+//						version);
+//
+//			} catch (ParseException e) {
+//				logger.error("Invalid report date format: {}", fromdate, e);
+//				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+//			}
+		} else {
+
+			if ("email".equalsIgnoreCase(format) && version == null) {
+				logger.info("Got format as Email");
+				logger.info("Service: Generating Email report for version {}", version);
+				return BRRS_M_LA4EmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+			} else {
+
+				// Fetch data
+
+				List<M_LA4_Summary_Entity1> dataList = M_LA4_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+				List<M_LA4_Summary_Entity2> dataList1 = M_LA4_Summary_Repo2.getdatabydateList(dateformat.parse(todate));
+				if (dataList.isEmpty()) {
+					logger.warn("Service: No data found for BRRS_M_LA4 report. Returning empty result.");
+					return new byte[0];
+				}
+
+				String templateDir = env.getProperty("output.exportpathtemp");
+				String templateFileName = filename;
+				System.out.println(filename);
+				Path templatePath = Paths.get(templateDir, templateFileName);
+				System.out.println(templatePath);
+
+				logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+				if (!Files.exists(templatePath)) {
+					// This specific exception will be caught by the controller.
+					throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+				}
+				if (!Files.isReadable(templatePath)) {
+					// A specific exception for permission errors.
+					throw new SecurityException("Template file exists but is not readable (check permissions): "
+							+ templatePath.toAbsolutePath());
+				}
+
+				// This try-with-resources block is perfect. It guarantees all resources are
+				// closed automatically.
+				try (InputStream templateInputStream = Files.newInputStream(templatePath);
+						Workbook workbook = WorkbookFactory.create(templateInputStream);
+						ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+					Sheet sheet = workbook.getSheetAt(0);
+
+					// --- Style Definitions ---
+					CreationHelper createHelper = workbook.getCreationHelper();
+
+					CellStyle dateStyle = workbook.createCellStyle();
+					dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+					dateStyle.setBorderBottom(BorderStyle.THIN);
+					dateStyle.setBorderTop(BorderStyle.THIN);
+					dateStyle.setBorderLeft(BorderStyle.THIN);
+					dateStyle.setBorderRight(BorderStyle.THIN);
+
+					CellStyle textStyle = workbook.createCellStyle();
+					textStyle.setBorderBottom(BorderStyle.THIN);
+					textStyle.setBorderTop(BorderStyle.THIN);
+					textStyle.setBorderLeft(BorderStyle.THIN);
+					textStyle.setBorderRight(BorderStyle.THIN);
+
+					// Create the font
+					Font font = workbook.createFont();
+					font.setFontHeightInPoints((short) 8); // size 8
+					font.setFontName("Arial");
+
+					CellStyle numberStyle = workbook.createCellStyle();
+					// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+					numberStyle.setBorderBottom(BorderStyle.THIN);
+					numberStyle.setBorderTop(BorderStyle.THIN);
+					numberStyle.setBorderLeft(BorderStyle.THIN);
+					numberStyle.setBorderRight(BorderStyle.THIN);
+					numberStyle.setFont(font);
+					// --- End of Style Definitions ---
+//NORMAL
+					int startRow = 11;
+
+					if (!dataList.isEmpty()) {
+						for (int i = 0; i < dataList.size(); i++) {
+							M_LA4_Summary_Entity1 record = dataList.get(i);
+							M_LA4_Summary_Entity2 record1 = dataList1.get(i);
+							System.out.println("rownumber=" + startRow + i);
+							Row row = sheet.getRow(startRow + i);
+							if (row == null) {
+								row = sheet.createRow(startRow + i);
+							}
+							// R12 Col B
+							Cell R12Cell1 = row.createCell(1);
+							if (record1.getR12FactoringDebtors() != null) {
+								R12Cell1.setCellValue(record1.getR12FactoringDebtors().doubleValue());
+								R12Cell1.setCellStyle(numberStyle);
+							} else {
+								R12Cell1.setCellValue("");
+								R12Cell1.setCellStyle(textStyle);
+							}
+
+							// R12 Col C
+							Cell R12Cell2 = row.createCell(2);
+							if (record1.getR12Leasing() != null) {
+								R12Cell2.setCellValue(record1.getR12Leasing().doubleValue());
+								R12Cell2.setCellStyle(numberStyle);
+							} else {
+								R12Cell2.setCellValue("");
+								R12Cell2.setCellStyle(textStyle);
+							}
+							// R12 Col D
+							Cell R12Cell3 = row.createCell(3);
+							if (record.getR12Overdrafts() != null) {
+								R12Cell3.setCellValue(record.getR12Overdrafts().doubleValue());
+								R12Cell3.setCellStyle(numberStyle);
+							} else {
+								R12Cell3.setCellValue("");
+								R12Cell3.setCellStyle(textStyle);
+							}
+
+							// R12 Col E
+							Cell R12Cell4 = row.createCell(4);
+							if (record.getR12OtherInstallmentLoans() != null) {
+								R12Cell4.setCellValue(record.getR12OtherInstallmentLoans().doubleValue());
+								R12Cell4.setCellStyle(numberStyle);
+							} else {
+								R12Cell4.setCellValue("");
+								R12Cell4.setCellStyle(textStyle);
+							}
+							// R13 Col B
+							row = sheet.getRow(12);
+							// R13 Col B
+							Cell R13Cell1 = row.createCell(1);
+							if (record1.getR13FactoringDebtors() != null) {
+								R13Cell1.setCellValue(record1.getR13FactoringDebtors().doubleValue());
+								R13Cell1.setCellStyle(numberStyle);
+							} else {
+								R13Cell1.setCellValue("");
+								R13Cell1.setCellStyle(textStyle);
+							}
+
+							// R13 Col C
+							Cell R13Cell2 = row.createCell(2);
+							if (record1.getR13Leasing() != null) {
+								R13Cell2.setCellValue(record1.getR13Leasing().doubleValue());
+								R13Cell2.setCellStyle(numberStyle);
+							} else {
+								R13Cell2.setCellValue("");
+								R13Cell2.setCellStyle(textStyle);
+							}
+							// R13 Col D
+							Cell R13Cell3 = row.createCell(3);
+							if (record.getR13Overdrafts() != null) {
+								R13Cell3.setCellValue(record.getR13Overdrafts().doubleValue());
+								R13Cell3.setCellStyle(numberStyle);
+							} else {
+								R13Cell3.setCellValue("");
+								R13Cell3.setCellStyle(textStyle);
+							}
+
+							// R13 Col E
+							Cell R13Cell4 = row.createCell(4);
+							if (record.getR13OtherInstallmentLoans() != null) {
+								R13Cell4.setCellValue(record.getR13OtherInstallmentLoans().doubleValue());
+								R13Cell4.setCellStyle(numberStyle);
+							} else {
+								R13Cell4.setCellValue("");
+								R13Cell4.setCellStyle(textStyle);
+							}
+							// R14 Col B
+							row = sheet.getRow(13); // Row index 13 is Excel Row 14
+							// R14 Col B
+							Cell R14Cell1 = row.createCell(1);
+							if (record1.getR14FactoringDebtors() != null) {
+								R14Cell1.setCellValue(record1.getR14FactoringDebtors().doubleValue());
+								R14Cell1.setCellStyle(numberStyle);
+							} else {
+								R14Cell1.setCellValue("");
+								R14Cell1.setCellStyle(textStyle);
+							}
+
+							// R14 Col C
+							Cell R14Cell2 = row.createCell(2);
+							if (record1.getR14Leasing() != null) {
+								R14Cell2.setCellValue(record1.getR14Leasing().doubleValue());
+								R14Cell2.setCellStyle(numberStyle);
+							} else {
+								R14Cell2.setCellValue("");
+								R14Cell2.setCellStyle(textStyle);
+							}
+
+							// R14 Col D
+							Cell R14Cell3 = row.createCell(3);
+							if (record.getR14Overdrafts() != null) {
+								R14Cell3.setCellValue(record.getR14Overdrafts().doubleValue());
+								R14Cell3.setCellStyle(numberStyle);
+							} else {
+								R14Cell3.setCellValue("");
+								R14Cell3.setCellStyle(textStyle);
+							}
+
+							// R14 Col E
+							Cell R14Cell4 = row.createCell(4);
+							if (record.getR14OtherInstallmentLoans() != null) {
+								R14Cell4.setCellValue(record.getR14OtherInstallmentLoans().doubleValue());
+								R14Cell4.setCellStyle(numberStyle);
+							} else {
+								R14Cell4.setCellValue("");
+								R14Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R16 (Row Index 15) ---
+							row = sheet.getRow(15);
+							Cell R16Cell1 = row.createCell(1);
+							if (record1.getR16FactoringDebtors() != null) {
+								R16Cell1.setCellValue(record1.getR16FactoringDebtors().doubleValue());
+								R16Cell1.setCellStyle(numberStyle);
+							} else {
+								R16Cell1.setCellValue("");
+								R16Cell1.setCellStyle(textStyle);
+							}
+							Cell R16Cell2 = row.createCell(2);
+							if (record1.getR16Leasing() != null) {
+								R16Cell2.setCellValue(record1.getR16Leasing().doubleValue());
+								R16Cell2.setCellStyle(numberStyle);
+							} else {
+								R16Cell2.setCellValue("");
+								R16Cell2.setCellStyle(textStyle);
+							}
+							Cell R16Cell3 = row.createCell(3);
+							if (record.getR16Overdrafts() != null) {
+								R16Cell3.setCellValue(record.getR16Overdrafts().doubleValue());
+								R16Cell3.setCellStyle(numberStyle);
+							} else {
+								R16Cell3.setCellValue("");
+								R16Cell3.setCellStyle(textStyle);
+							}
+							Cell R16Cell4 = row.createCell(4);
+							if (record.getR16OtherInstallmentLoans() != null) {
+								R16Cell4.setCellValue(record.getR16OtherInstallmentLoans().doubleValue());
+								R16Cell4.setCellStyle(numberStyle);
+							} else {
+								R16Cell4.setCellValue("");
+								R16Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R17 (Row Index 16) ---
+							row = sheet.getRow(16);
+							Cell R17Cell1 = row.createCell(1);
+							if (record1.getR17FactoringDebtors() != null) {
+								R17Cell1.setCellValue(record1.getR17FactoringDebtors().doubleValue());
+								R17Cell1.setCellStyle(numberStyle);
+							} else {
+								R17Cell1.setCellValue("");
+								R17Cell1.setCellStyle(textStyle);
+							}
+							Cell R17Cell2 = row.createCell(2);
+							if (record1.getR17Leasing() != null) {
+								R17Cell2.setCellValue(record1.getR17Leasing().doubleValue());
+								R17Cell2.setCellStyle(numberStyle);
+							} else {
+								R17Cell2.setCellValue("");
+								R17Cell2.setCellStyle(textStyle);
+							}
+							Cell R17Cell3 = row.createCell(3);
+							if (record.getR17Overdrafts() != null) {
+								R17Cell3.setCellValue(record.getR17Overdrafts().doubleValue());
+								R17Cell3.setCellStyle(numberStyle);
+							} else {
+								R17Cell3.setCellValue("");
+								R17Cell3.setCellStyle(textStyle);
+							}
+							Cell R17Cell4 = row.createCell(4);
+							if (record.getR17OtherInstallmentLoans() != null) {
+								R17Cell4.setCellValue(record.getR17OtherInstallmentLoans().doubleValue());
+								R17Cell4.setCellStyle(numberStyle);
+							} else {
+								R17Cell4.setCellValue("");
+								R17Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R18 (Row Index 17) ---
+							row = sheet.getRow(17);
+							Cell R18Cell1 = row.createCell(1);
+							if (record1.getR18FactoringDebtors() != null) {
+								R18Cell1.setCellValue(record1.getR18FactoringDebtors().doubleValue());
+								R18Cell1.setCellStyle(numberStyle);
+							} else {
+								R18Cell1.setCellValue("");
+								R18Cell1.setCellStyle(textStyle);
+							}
+							Cell R18Cell2 = row.createCell(2);
+							if (record1.getR18Leasing() != null) {
+								R18Cell2.setCellValue(record1.getR18Leasing().doubleValue());
+								R18Cell2.setCellStyle(numberStyle);
+							} else {
+								R18Cell2.setCellValue("");
+								R18Cell2.setCellStyle(textStyle);
+							}
+							Cell R18Cell3 = row.createCell(3);
+							if (record.getR18Overdrafts() != null) {
+								R18Cell3.setCellValue(record.getR18Overdrafts().doubleValue());
+								R18Cell3.setCellStyle(numberStyle);
+							} else {
+								R18Cell3.setCellValue("");
+								R18Cell3.setCellStyle(textStyle);
+							}
+							Cell R18Cell4 = row.createCell(4);
+							if (record.getR18OtherInstallmentLoans() != null) {
+								R18Cell4.setCellValue(record.getR18OtherInstallmentLoans().doubleValue());
+								R18Cell4.setCellStyle(numberStyle);
+							} else {
+								R18Cell4.setCellValue("");
+								R18Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R19 (Row Index 18) ---
+							row = sheet.getRow(18);
+							Cell R19Cell1 = row.createCell(1);
+							if (record1.getR19FactoringDebtors() != null) {
+								R19Cell1.setCellValue(record1.getR19FactoringDebtors().doubleValue());
+								R19Cell1.setCellStyle(numberStyle);
+							} else {
+								R19Cell1.setCellValue("");
+								R19Cell1.setCellStyle(textStyle);
+							}
+							Cell R19Cell2 = row.createCell(2);
+							if (record1.getR19Leasing() != null) {
+								R19Cell2.setCellValue(record1.getR19Leasing().doubleValue());
+								R19Cell2.setCellStyle(numberStyle);
+							} else {
+								R19Cell2.setCellValue("");
+								R19Cell2.setCellStyle(textStyle);
+							}
+							Cell R19Cell3 = row.createCell(3);
+							if (record.getR19Overdrafts() != null) {
+								R19Cell3.setCellValue(record.getR19Overdrafts().doubleValue());
+								R19Cell3.setCellStyle(numberStyle);
+							} else {
+								R19Cell3.setCellValue("");
+								R19Cell3.setCellStyle(textStyle);
+							}
+							Cell R19Cell4 = row.createCell(4);
+							if (record.getR19OtherInstallmentLoans() != null) {
+								R19Cell4.setCellValue(record.getR19OtherInstallmentLoans().doubleValue());
+								R19Cell4.setCellStyle(numberStyle);
+							} else {
+								R19Cell4.setCellValue("");
+								R19Cell4.setCellStyle(textStyle);
+							}
+							// --- R20 (Row Index 19) ---
+							row = sheet.getRow(19);
+							Cell R20Cell1 = row.createCell(1);
+							if (record1.getR20FactoringDebtors() != null) {
+								R20Cell1.setCellValue(record1.getR20FactoringDebtors().doubleValue());
+								R20Cell1.setCellStyle(numberStyle);
+							} else {
+								R20Cell1.setCellValue("");
+								R20Cell1.setCellStyle(textStyle);
+							}
+							Cell R20Cell2 = row.createCell(2);
+							if (record1.getR20Leasing() != null) {
+								R20Cell2.setCellValue(record1.getR20Leasing().doubleValue());
+								R20Cell2.setCellStyle(numberStyle);
+							} else {
+								R20Cell2.setCellValue("");
+								R20Cell2.setCellStyle(textStyle);
+							}
+							Cell R20Cell3 = row.createCell(3);
+							if (record.getR20Overdrafts() != null) {
+								R20Cell3.setCellValue(record.getR20Overdrafts().doubleValue());
+								R20Cell3.setCellStyle(numberStyle);
+							} else {
+								R20Cell3.setCellValue("");
+								R20Cell3.setCellStyle(textStyle);
+							}
+							Cell R20Cell4 = row.createCell(4);
+							if (record.getR20OtherInstallmentLoans() != null) {
+								R20Cell4.setCellValue(record.getR20OtherInstallmentLoans().doubleValue());
+								R20Cell4.setCellStyle(numberStyle);
+							} else {
+								R20Cell4.setCellValue("");
+								R20Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R21 (Row Index 20) ---
+							row = sheet.getRow(20);
+							Cell R21Cell1 = row.createCell(1);
+							if (record1.getR21FactoringDebtors() != null) {
+								R21Cell1.setCellValue(record1.getR21FactoringDebtors().doubleValue());
+								R21Cell1.setCellStyle(numberStyle);
+							} else {
+								R21Cell1.setCellValue("");
+								R21Cell1.setCellStyle(textStyle);
+							}
+							Cell R21Cell2 = row.createCell(2);
+							if (record1.getR21Leasing() != null) {
+								R21Cell2.setCellValue(record1.getR21Leasing().doubleValue());
+								R21Cell2.setCellStyle(numberStyle);
+							} else {
+								R21Cell2.setCellValue("");
+								R21Cell2.setCellStyle(textStyle);
+							}
+							Cell R21Cell3 = row.createCell(3);
+							if (record.getR21Overdrafts() != null) {
+								R21Cell3.setCellValue(record.getR21Overdrafts().doubleValue());
+								R21Cell3.setCellStyle(numberStyle);
+							} else {
+								R21Cell3.setCellValue("");
+								R21Cell3.setCellStyle(textStyle);
+							}
+							Cell R21Cell4 = row.createCell(4);
+							if (record.getR21OtherInstallmentLoans() != null) {
+								R21Cell4.setCellValue(record.getR21OtherInstallmentLoans().doubleValue());
+								R21Cell4.setCellStyle(numberStyle);
+							} else {
+								R21Cell4.setCellValue("");
+								R21Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R22 (Row Index 21) ---
+							row = sheet.getRow(21);
+							Cell R22Cell1 = row.createCell(1);
+							if (record1.getR22FactoringDebtors() != null) {
+								R22Cell1.setCellValue(record1.getR22FactoringDebtors().doubleValue());
+								R22Cell1.setCellStyle(numberStyle);
+							} else {
+								R22Cell1.setCellValue("");
+								R22Cell1.setCellStyle(textStyle);
+							}
+							Cell R22Cell2 = row.createCell(2);
+							if (record1.getR22Leasing() != null) {
+								R22Cell2.setCellValue(record1.getR22Leasing().doubleValue());
+								R22Cell2.setCellStyle(numberStyle);
+							} else {
+								R22Cell2.setCellValue("");
+								R22Cell2.setCellStyle(textStyle);
+							}
+							Cell R22Cell3 = row.createCell(3);
+							if (record.getR22Overdrafts() != null) {
+								R22Cell3.setCellValue(record.getR22Overdrafts().doubleValue());
+								R22Cell3.setCellStyle(numberStyle);
+							} else {
+								R22Cell3.setCellValue("");
+								R22Cell3.setCellStyle(textStyle);
+							}
+							Cell R22Cell4 = row.createCell(4);
+							if (record.getR22OtherInstallmentLoans() != null) {
+								R22Cell4.setCellValue(record.getR22OtherInstallmentLoans().doubleValue());
+								R22Cell4.setCellStyle(numberStyle);
+							} else {
+								R22Cell4.setCellValue("");
+								R22Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R23 (Row Index 22) ---
+							row = sheet.getRow(22);
+							Cell R23Cell1 = row.createCell(1);
+							if (record1.getR23FactoringDebtors() != null) {
+								R23Cell1.setCellValue(record1.getR23FactoringDebtors().doubleValue());
+								R23Cell1.setCellStyle(numberStyle);
+							} else {
+								R23Cell1.setCellValue("");
+								R23Cell1.setCellStyle(textStyle);
+							}
+							Cell R23Cell2 = row.createCell(2);
+							if (record1.getR23Leasing() != null) {
+								R23Cell2.setCellValue(record1.getR23Leasing().doubleValue());
+								R23Cell2.setCellStyle(numberStyle);
+							} else {
+								R23Cell2.setCellValue("");
+								R23Cell2.setCellStyle(textStyle);
+							}
+							Cell R23Cell3 = row.createCell(3);
+							if (record.getR23Overdrafts() != null) {
+								R23Cell3.setCellValue(record.getR23Overdrafts().doubleValue());
+								R23Cell3.setCellStyle(numberStyle);
+							} else {
+								R23Cell3.setCellValue("");
+								R23Cell3.setCellStyle(textStyle);
+							}
+							Cell R23Cell4 = row.createCell(4);
+							if (record.getR23OtherInstallmentLoans() != null) {
+								R23Cell4.setCellValue(record.getR23OtherInstallmentLoans().doubleValue());
+								R23Cell4.setCellStyle(numberStyle);
+							} else {
+								R23Cell4.setCellValue("");
+								R23Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R24 (Row Index 23) ---
+							row = sheet.getRow(23);
+							Cell R24Cell1 = row.createCell(1);
+							if (record1.getR24FactoringDebtors() != null) {
+								R24Cell1.setCellValue(record1.getR24FactoringDebtors().doubleValue());
+								R24Cell1.setCellStyle(numberStyle);
+							} else {
+								R24Cell1.setCellValue("");
+								R24Cell1.setCellStyle(textStyle);
+							}
+							Cell R24Cell2 = row.createCell(2);
+							if (record1.getR24Leasing() != null) {
+								R24Cell2.setCellValue(record1.getR24Leasing().doubleValue());
+								R24Cell2.setCellStyle(numberStyle);
+							} else {
+								R24Cell2.setCellValue("");
+								R24Cell2.setCellStyle(textStyle);
+							}
+							Cell R24Cell3 = row.createCell(3);
+							if (record.getR24Overdrafts() != null) {
+								R24Cell3.setCellValue(record.getR24Overdrafts().doubleValue());
+								R24Cell3.setCellStyle(numberStyle);
+							} else {
+								R24Cell3.setCellValue("");
+								R24Cell3.setCellStyle(textStyle);
+							}
+							Cell R24Cell4 = row.createCell(4);
+							if (record.getR24OtherInstallmentLoans() != null) {
+								R24Cell4.setCellValue(record.getR24OtherInstallmentLoans().doubleValue());
+								R24Cell4.setCellStyle(numberStyle);
+							} else {
+								R24Cell4.setCellValue("");
+								R24Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R25 (Row Index 24) ---
+							row = sheet.getRow(24);
+							Cell R25Cell1 = row.createCell(1);
+							if (record1.getR25FactoringDebtors() != null) {
+								R25Cell1.setCellValue(record1.getR25FactoringDebtors().doubleValue());
+								R25Cell1.setCellStyle(numberStyle);
+							} else {
+								R25Cell1.setCellValue("");
+								R25Cell1.setCellStyle(textStyle);
+							}
+							Cell R25Cell2 = row.createCell(2);
+							if (record1.getR25Leasing() != null) {
+								R25Cell2.setCellValue(record1.getR25Leasing().doubleValue());
+								R25Cell2.setCellStyle(numberStyle);
+							} else {
+								R25Cell2.setCellValue("");
+								R25Cell2.setCellStyle(textStyle);
+							}
+							Cell R25Cell3 = row.createCell(3);
+							if (record.getR25Overdrafts() != null) {
+								R25Cell3.setCellValue(record.getR25Overdrafts().doubleValue());
+								R25Cell3.setCellStyle(numberStyle);
+							} else {
+								R25Cell3.setCellValue("");
+								R25Cell3.setCellStyle(textStyle);
+							}
+							Cell R25Cell4 = row.createCell(4);
+							if (record.getR25OtherInstallmentLoans() != null) {
+								R25Cell4.setCellValue(record.getR25OtherInstallmentLoans().doubleValue());
+								R25Cell4.setCellStyle(numberStyle);
+							} else {
+								R25Cell4.setCellValue("");
+								R25Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R26 (Row Index 25) ---
+							row = sheet.getRow(25);
+							Cell R26Cell1 = row.createCell(1);
+							if (record1.getR26FactoringDebtors() != null) {
+								R26Cell1.setCellValue(record1.getR26FactoringDebtors().doubleValue());
+								R26Cell1.setCellStyle(numberStyle);
+							} else {
+								R26Cell1.setCellValue("");
+								R26Cell1.setCellStyle(textStyle);
+							}
+							Cell R26Cell2 = row.createCell(2);
+							if (record1.getR26Leasing() != null) {
+								R26Cell2.setCellValue(record1.getR26Leasing().doubleValue());
+								R26Cell2.setCellStyle(numberStyle);
+							} else {
+								R26Cell2.setCellValue("");
+								R26Cell2.setCellStyle(textStyle);
+							}
+							Cell R26Cell3 = row.createCell(3);
+							if (record.getR26Overdrafts() != null) {
+								R26Cell3.setCellValue(record.getR26Overdrafts().doubleValue());
+								R26Cell3.setCellStyle(numberStyle);
+							} else {
+								R26Cell3.setCellValue("");
+								R26Cell3.setCellStyle(textStyle);
+							}
+							Cell R26Cell4 = row.createCell(4);
+							if (record.getR26OtherInstallmentLoans() != null) {
+								R26Cell4.setCellValue(record.getR26OtherInstallmentLoans().doubleValue());
+								R26Cell4.setCellStyle(numberStyle);
+							} else {
+								R26Cell4.setCellValue("");
+								R26Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R27 (Row Index 26) ---
+							row = sheet.getRow(26);
+							Cell R27Cell1 = row.createCell(1);
+							if (record1.getR27FactoringDebtors() != null) {
+								R27Cell1.setCellValue(record1.getR27FactoringDebtors().doubleValue());
+								R27Cell1.setCellStyle(numberStyle);
+							} else {
+								R27Cell1.setCellValue("");
+								R27Cell1.setCellStyle(textStyle);
+							}
+							Cell R27Cell2 = row.createCell(2);
+							if (record1.getR27Leasing() != null) {
+								R27Cell2.setCellValue(record1.getR27Leasing().doubleValue());
+								R27Cell2.setCellStyle(numberStyle);
+							} else {
+								R27Cell2.setCellValue("");
+								R27Cell2.setCellStyle(textStyle);
+							}
+							Cell R27Cell3 = row.createCell(3);
+							if (record.getR27Overdrafts() != null) {
+								R27Cell3.setCellValue(record.getR27Overdrafts().doubleValue());
+								R27Cell3.setCellStyle(numberStyle);
+							} else {
+								R27Cell3.setCellValue("");
+								R27Cell3.setCellStyle(textStyle);
+							}
+							Cell R27Cell4 = row.createCell(4);
+							if (record.getR27OtherInstallmentLoans() != null) {
+								R27Cell4.setCellValue(record.getR27OtherInstallmentLoans().doubleValue());
+								R27Cell4.setCellStyle(numberStyle);
+							} else {
+								R27Cell4.setCellValue("");
+								R27Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R28 (Row Index 27) ---
+							row = sheet.getRow(27);
+							Cell R28Cell1 = row.createCell(1);
+							if (record1.getR28FactoringDebtors() != null) {
+								R28Cell1.setCellValue(record1.getR28FactoringDebtors().doubleValue());
+								R28Cell1.setCellStyle(numberStyle);
+							} else {
+								R28Cell1.setCellValue("");
+								R28Cell1.setCellStyle(textStyle);
+							}
+							Cell R28Cell2 = row.createCell(2);
+							if (record1.getR28Leasing() != null) {
+								R28Cell2.setCellValue(record1.getR28Leasing().doubleValue());
+								R28Cell2.setCellStyle(numberStyle);
+							} else {
+								R28Cell2.setCellValue("");
+								R28Cell2.setCellStyle(textStyle);
+							}
+							Cell R28Cell3 = row.createCell(3);
+							if (record.getR28Overdrafts() != null) {
+								R28Cell3.setCellValue(record.getR28Overdrafts().doubleValue());
+								R28Cell3.setCellStyle(numberStyle);
+							} else {
+								R28Cell3.setCellValue("");
+								R28Cell3.setCellStyle(textStyle);
+							}
+							Cell R28Cell4 = row.createCell(4);
+							if (record.getR28OtherInstallmentLoans() != null) {
+								R28Cell4.setCellValue(record.getR28OtherInstallmentLoans().doubleValue());
+								R28Cell4.setCellStyle(numberStyle);
+							} else {
+								R28Cell4.setCellValue("");
+								R28Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R30 (Row Index 29) ---
+							row = sheet.getRow(29);
+							Cell R30Cell1 = row.createCell(1);
+							if (record1.getR30FactoringDebtors() != null) {
+								R30Cell1.setCellValue(record1.getR30FactoringDebtors().doubleValue());
+								R30Cell1.setCellStyle(numberStyle);
+							} else {
+								R30Cell1.setCellValue("");
+								R30Cell1.setCellStyle(textStyle);
+							}
+							Cell R30Cell2 = row.createCell(2);
+							if (record1.getR30Leasing() != null) {
+								R30Cell2.setCellValue(record1.getR30Leasing().doubleValue());
+								R30Cell2.setCellStyle(numberStyle);
+							} else {
+								R30Cell2.setCellValue("");
+								R30Cell2.setCellStyle(textStyle);
+							}
+							Cell R30Cell3 = row.createCell(3);
+							if (record.getR30Overdrafts() != null) {
+								R30Cell3.setCellValue(record.getR30Overdrafts().doubleValue());
+								R30Cell3.setCellStyle(numberStyle);
+							} else {
+								R30Cell3.setCellValue("");
+								R30Cell3.setCellStyle(textStyle);
+							}
+							Cell R30Cell4 = row.createCell(4);
+							if (record.getR30OtherInstallmentLoans() != null) {
+								R30Cell4.setCellValue(record.getR30OtherInstallmentLoans().doubleValue());
+								R30Cell4.setCellStyle(numberStyle);
+							} else {
+								R30Cell4.setCellValue("");
+								R30Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R31 (Row Index 30) ---
+							row = sheet.getRow(30);
+							Cell R31Cell1 = row.createCell(1);
+							if (record1.getR31FactoringDebtors() != null) {
+								R31Cell1.setCellValue(record1.getR31FactoringDebtors().doubleValue());
+								R31Cell1.setCellStyle(numberStyle);
+							} else {
+								R31Cell1.setCellValue("");
+								R31Cell1.setCellStyle(textStyle);
+							}
+							Cell R31Cell2 = row.createCell(2);
+							if (record1.getR31Leasing() != null) {
+								R31Cell2.setCellValue(record1.getR31Leasing().doubleValue());
+								R31Cell2.setCellStyle(numberStyle);
+							} else {
+								R31Cell2.setCellValue("");
+								R31Cell2.setCellStyle(textStyle);
+							}
+							Cell R31Cell3 = row.createCell(3);
+							if (record.getR31Overdrafts() != null) {
+								R31Cell3.setCellValue(record.getR31Overdrafts().doubleValue());
+								R31Cell3.setCellStyle(numberStyle);
+							} else {
+								R31Cell3.setCellValue("");
+								R31Cell3.setCellStyle(textStyle);
+							}
+							Cell R31Cell4 = row.createCell(4);
+							if (record.getR31OtherInstallmentLoans() != null) {
+								R31Cell4.setCellValue(record.getR31OtherInstallmentLoans().doubleValue());
+								R31Cell4.setCellStyle(numberStyle);
+							} else {
+								R31Cell4.setCellValue("");
+								R31Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R32 (Row Index 31) ---
+							row = sheet.getRow(31);
+							Cell R32Cell1 = row.createCell(1);
+							if (record1.getR32FactoringDebtors() != null) {
+								R32Cell1.setCellValue(record1.getR32FactoringDebtors().doubleValue());
+								R32Cell1.setCellStyle(numberStyle);
+							} else {
+								R32Cell1.setCellValue("");
+								R32Cell1.setCellStyle(textStyle);
+							}
+							Cell R32Cell2 = row.createCell(2);
+							if (record1.getR32Leasing() != null) {
+								R32Cell2.setCellValue(record1.getR32Leasing().doubleValue());
+								R32Cell2.setCellStyle(numberStyle);
+							} else {
+								R32Cell2.setCellValue("");
+								R32Cell2.setCellStyle(textStyle);
+							}
+							Cell R32Cell3 = row.createCell(3);
+							if (record.getR32Overdrafts() != null) {
+								R32Cell3.setCellValue(record.getR32Overdrafts().doubleValue());
+								R32Cell3.setCellStyle(numberStyle);
+							} else {
+								R32Cell3.setCellValue("");
+								R32Cell3.setCellStyle(textStyle);
+							}
+							Cell R32Cell4 = row.createCell(4);
+							if (record.getR32OtherInstallmentLoans() != null) {
+								R32Cell4.setCellValue(record.getR32OtherInstallmentLoans().doubleValue());
+								R32Cell4.setCellStyle(numberStyle);
+							} else {
+								R32Cell4.setCellValue("");
+								R32Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R33 (Row Index 32) ---
+							row = sheet.getRow(32);
+							Cell R33Cell1 = row.createCell(1);
+							if (record1.getR33FactoringDebtors() != null) {
+								R33Cell1.setCellValue(record1.getR33FactoringDebtors().doubleValue());
+								R33Cell1.setCellStyle(numberStyle);
+							} else {
+								R33Cell1.setCellValue("");
+								R33Cell1.setCellStyle(textStyle);
+							}
+							Cell R33Cell2 = row.createCell(2);
+							if (record1.getR33Leasing() != null) {
+								R33Cell2.setCellValue(record1.getR33Leasing().doubleValue());
+								R33Cell2.setCellStyle(numberStyle);
+							} else {
+								R33Cell2.setCellValue("");
+								R33Cell2.setCellStyle(textStyle);
+							}
+							Cell R33Cell3 = row.createCell(3);
+							if (record.getR33Overdrafts() != null) {
+								R33Cell3.setCellValue(record.getR33Overdrafts().doubleValue());
+								R33Cell3.setCellStyle(numberStyle);
+							} else {
+								R33Cell3.setCellValue("");
+								R33Cell3.setCellStyle(textStyle);
+							}
+							Cell R33Cell4 = row.createCell(4);
+							if (record.getR33OtherInstallmentLoans() != null) {
+								R33Cell4.setCellValue(record.getR33OtherInstallmentLoans().doubleValue());
+								R33Cell4.setCellStyle(numberStyle);
+							} else {
+								R33Cell4.setCellValue("");
+								R33Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R34 (Row Index 33) ---
+							row = sheet.getRow(33);
+							Cell R34Cell1 = row.createCell(1);
+							if (record1.getR34FactoringDebtors() != null) {
+								R34Cell1.setCellValue(record1.getR34FactoringDebtors().doubleValue());
+								R34Cell1.setCellStyle(numberStyle);
+							} else {
+								R34Cell1.setCellValue("");
+								R34Cell1.setCellStyle(textStyle);
+							}
+							Cell R34Cell2 = row.createCell(2);
+							if (record1.getR34Leasing() != null) {
+								R34Cell2.setCellValue(record1.getR34Leasing().doubleValue());
+								R34Cell2.setCellStyle(numberStyle);
+							} else {
+								R34Cell2.setCellValue("");
+								R34Cell2.setCellStyle(textStyle);
+							}
+							Cell R34Cell3 = row.createCell(3);
+							if (record.getR34Overdrafts() != null) {
+								R34Cell3.setCellValue(record.getR34Overdrafts().doubleValue());
+								R34Cell3.setCellStyle(numberStyle);
+							} else {
+								R34Cell3.setCellValue("");
+								R34Cell3.setCellStyle(textStyle);
+							}
+							Cell R34Cell4 = row.createCell(4);
+							if (record.getR34OtherInstallmentLoans() != null) {
+								R34Cell4.setCellValue(record.getR34OtherInstallmentLoans().doubleValue());
+								R34Cell4.setCellStyle(numberStyle);
+							} else {
+								R34Cell4.setCellValue("");
+								R34Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R35 (Row Index 34) ---
+							row = sheet.getRow(34);
+							Cell R35Cell1 = row.createCell(1);
+							if (record1.getR35FactoringDebtors() != null) {
+								R35Cell1.setCellValue(record1.getR35FactoringDebtors().doubleValue());
+								R35Cell1.setCellStyle(numberStyle);
+							} else {
+								R35Cell1.setCellValue("");
+								R35Cell1.setCellStyle(textStyle);
+							}
+							Cell R35Cell2 = row.createCell(2);
+							if (record1.getR35Leasing() != null) {
+								R35Cell2.setCellValue(record1.getR35Leasing().doubleValue());
+								R35Cell2.setCellStyle(numberStyle);
+							} else {
+								R35Cell2.setCellValue("");
+								R35Cell2.setCellStyle(textStyle);
+							}
+							Cell R35Cell3 = row.createCell(3);
+							if (record.getR35Overdrafts() != null) {
+								R35Cell3.setCellValue(record.getR35Overdrafts().doubleValue());
+								R35Cell3.setCellStyle(numberStyle);
+							} else {
+								R35Cell3.setCellValue("");
+								R35Cell3.setCellStyle(textStyle);
+							}
+							Cell R35Cell4 = row.createCell(4);
+							if (record.getR35OtherInstallmentLoans() != null) {
+								R35Cell4.setCellValue(record.getR35OtherInstallmentLoans().doubleValue());
+								R35Cell4.setCellStyle(numberStyle);
+							} else {
+								R35Cell4.setCellValue("");
+								R35Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R36 (Row Index 35) ---
+							row = sheet.getRow(35);
+							Cell R36Cell1 = row.createCell(1);
+							if (record1.getR36FactoringDebtors() != null) {
+								R36Cell1.setCellValue(record1.getR36FactoringDebtors().doubleValue());
+								R36Cell1.setCellStyle(numberStyle);
+							} else {
+								R36Cell1.setCellValue("");
+								R36Cell1.setCellStyle(textStyle);
+							}
+							Cell R36Cell2 = row.createCell(2);
+							if (record1.getR36Leasing() != null) {
+								R36Cell2.setCellValue(record1.getR36Leasing().doubleValue());
+								R36Cell2.setCellStyle(numberStyle);
+							} else {
+								R36Cell2.setCellValue("");
+								R36Cell2.setCellStyle(textStyle);
+							}
+							Cell R36Cell3 = row.createCell(3);
+							if (record.getR36Overdrafts() != null) {
+								R36Cell3.setCellValue(record.getR36Overdrafts().doubleValue());
+								R36Cell3.setCellStyle(numberStyle);
+							} else {
+								R36Cell3.setCellValue("");
+								R36Cell3.setCellStyle(textStyle);
+							}
+							Cell R36Cell4 = row.createCell(4);
+							if (record.getR36OtherInstallmentLoans() != null) {
+								R36Cell4.setCellValue(record.getR36OtherInstallmentLoans().doubleValue());
+								R36Cell4.setCellStyle(numberStyle);
+							} else {
+								R36Cell4.setCellValue("");
+								R36Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R37 (Row Index 36) ---
+							row = sheet.getRow(36);
+							Cell R37Cell1 = row.createCell(1);
+							if (record1.getR37FactoringDebtors() != null) {
+								R37Cell1.setCellValue(record1.getR37FactoringDebtors().doubleValue());
+								R37Cell1.setCellStyle(numberStyle);
+							} else {
+								R37Cell1.setCellValue("");
+								R37Cell1.setCellStyle(textStyle);
+							}
+							Cell R37Cell2 = row.createCell(2);
+							if (record1.getR37Leasing() != null) {
+								R37Cell2.setCellValue(record1.getR37Leasing().doubleValue());
+								R37Cell2.setCellStyle(numberStyle);
+							} else {
+								R37Cell2.setCellValue("");
+								R37Cell2.setCellStyle(textStyle);
+							}
+							Cell R37Cell3 = row.createCell(3);
+							if (record.getR37Overdrafts() != null) {
+								R37Cell3.setCellValue(record.getR37Overdrafts().doubleValue());
+								R37Cell3.setCellStyle(numberStyle);
+							} else {
+								R37Cell3.setCellValue("");
+								R37Cell3.setCellStyle(textStyle);
+							}
+							Cell R37Cell4 = row.createCell(4);
+							if (record.getR37OtherInstallmentLoans() != null) {
+								R37Cell4.setCellValue(record.getR37OtherInstallmentLoans().doubleValue());
+								R37Cell4.setCellStyle(numberStyle);
+							} else {
+								R37Cell4.setCellValue("");
+								R37Cell4.setCellStyle(textStyle);
+							}
+							// --- R39 (Row Index 38) ---
+							row = sheet.getRow(38);
+							Cell R39Cell1 = row.createCell(1);
+							if (record1.getR39FactoringDebtors() != null) {
+								R39Cell1.setCellValue(record1.getR39FactoringDebtors().doubleValue());
+								R39Cell1.setCellStyle(numberStyle);
+							} else {
+								R39Cell1.setCellValue("");
+								R39Cell1.setCellStyle(textStyle);
+							}
+							Cell R39Cell2 = row.createCell(2);
+							if (record1.getR39Leasing() != null) {
+								R39Cell2.setCellValue(record1.getR39Leasing().doubleValue());
+								R39Cell2.setCellStyle(numberStyle);
+							} else {
+								R39Cell2.setCellValue("");
+								R39Cell2.setCellStyle(textStyle);
+							}
+							Cell R39Cell3 = row.createCell(3);
+							if (record.getR39Overdrafts() != null) {
+								R39Cell3.setCellValue(record.getR39Overdrafts().doubleValue());
+								R39Cell3.setCellStyle(numberStyle);
+							} else {
+								R39Cell3.setCellValue("");
+								R39Cell3.setCellStyle(textStyle);
+							}
+							Cell R39Cell4 = row.createCell(4);
+							if (record.getR39OtherInstallmentLoans() != null) {
+								R39Cell4.setCellValue(record.getR39OtherInstallmentLoans().doubleValue());
+								R39Cell4.setCellStyle(numberStyle);
+							} else {
+								R39Cell4.setCellValue("");
+								R39Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R40 (Row Index 39) ---
+							row = sheet.getRow(39);
+							Cell R40Cell1 = row.createCell(1);
+							if (record1.getR40FactoringDebtors() != null) {
+								R40Cell1.setCellValue(record1.getR40FactoringDebtors().doubleValue());
+								R40Cell1.setCellStyle(numberStyle);
+							} else {
+								R40Cell1.setCellValue("");
+								R40Cell1.setCellStyle(textStyle);
+							}
+							Cell R40Cell2 = row.createCell(2);
+							if (record1.getR40Leasing() != null) {
+								R40Cell2.setCellValue(record1.getR40Leasing().doubleValue());
+								R40Cell2.setCellStyle(numberStyle);
+							} else {
+								R40Cell2.setCellValue("");
+								R40Cell2.setCellStyle(textStyle);
+							}
+							Cell R40Cell3 = row.createCell(3);
+							if (record.getR40Overdrafts() != null) {
+								R40Cell3.setCellValue(record.getR40Overdrafts().doubleValue());
+								R40Cell3.setCellStyle(numberStyle);
+							} else {
+								R40Cell3.setCellValue("");
+								R40Cell3.setCellStyle(textStyle);
+							}
+							Cell R40Cell4 = row.createCell(4);
+							if (record.getR40OtherInstallmentLoans() != null) {
+								R40Cell4.setCellValue(record.getR40OtherInstallmentLoans().doubleValue());
+								R40Cell4.setCellStyle(numberStyle);
+							} else {
+								R40Cell4.setCellValue("");
+								R40Cell4.setCellStyle(textStyle);
+							}
+							// --- R42 (Row Index 41) ---
+							row = sheet.getRow(41);
+							Cell R42Cell1 = row.createCell(1);
+							if (record1.getR42FactoringDebtors() != null) {
+								R42Cell1.setCellValue(record1.getR42FactoringDebtors().doubleValue());
+								R42Cell1.setCellStyle(numberStyle);
+							} else {
+								R42Cell1.setCellValue("");
+								R42Cell1.setCellStyle(textStyle);
+							}
+							Cell R42Cell2 = row.createCell(2);
+							if (record1.getR42Leasing() != null) {
+								R42Cell2.setCellValue(record1.getR42Leasing().doubleValue());
+								R42Cell2.setCellStyle(numberStyle);
+							} else {
+								R42Cell2.setCellValue("");
+								R42Cell2.setCellStyle(textStyle);
+							}
+							Cell R42Cell3 = row.createCell(3);
+							if (record.getR42Overdrafts() != null) {
+								R42Cell3.setCellValue(record.getR42Overdrafts().doubleValue());
+								R42Cell3.setCellStyle(numberStyle);
+							} else {
+								R42Cell3.setCellValue("");
+								R42Cell3.setCellStyle(textStyle);
+							}
+							Cell R42Cell4 = row.createCell(4);
+							if (record.getR42OtherInstallmentLoans() != null) {
+								R42Cell4.setCellValue(record.getR42OtherInstallmentLoans().doubleValue());
+								R42Cell4.setCellStyle(numberStyle);
+							} else {
+								R42Cell4.setCellValue("");
+								R42Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R43 (Row Index 42) ---
+							row = sheet.getRow(42);
+							Cell R43Cell1 = row.createCell(1);
+							if (record1.getR43FactoringDebtors() != null) {
+								R43Cell1.setCellValue(record1.getR43FactoringDebtors().doubleValue());
+								R43Cell1.setCellStyle(numberStyle);
+							} else {
+								R43Cell1.setCellValue("");
+								R43Cell1.setCellStyle(textStyle);
+							}
+							Cell R43Cell2 = row.createCell(2);
+							if (record1.getR43Leasing() != null) {
+								R43Cell2.setCellValue(record1.getR43Leasing().doubleValue());
+								R43Cell2.setCellStyle(numberStyle);
+							} else {
+								R43Cell2.setCellValue("");
+								R43Cell2.setCellStyle(textStyle);
+							}
+							Cell R43Cell3 = row.createCell(3);
+							if (record.getR43Overdrafts() != null) {
+								R43Cell3.setCellValue(record.getR43Overdrafts().doubleValue());
+								R43Cell3.setCellStyle(numberStyle);
+							} else {
+								R43Cell3.setCellValue("");
+								R43Cell3.setCellStyle(textStyle);
+							}
+							Cell R43Cell4 = row.createCell(4);
+							if (record.getR43OtherInstallmentLoans() != null) {
+								R43Cell4.setCellValue(record.getR43OtherInstallmentLoans().doubleValue());
+								R43Cell4.setCellStyle(numberStyle);
+							} else {
+								R43Cell4.setCellValue("");
+								R43Cell4.setCellStyle(textStyle);
+							}
+							// --- R45 (Row Index 44) ---
+							row = sheet.getRow(44);
+							Cell R45Cell1 = row.createCell(1);
+							if (record1.getR45FactoringDebtors() != null) {
+								R45Cell1.setCellValue(record1.getR45FactoringDebtors().doubleValue());
+								R45Cell1.setCellStyle(numberStyle);
+							} else {
+								R45Cell1.setCellValue("");
+								R45Cell1.setCellStyle(textStyle);
+							}
+							Cell R45Cell2 = row.createCell(2);
+							if (record1.getR45Leasing() != null) {
+								R45Cell2.setCellValue(record1.getR45Leasing().doubleValue());
+								R45Cell2.setCellStyle(numberStyle);
+							} else {
+								R45Cell2.setCellValue("");
+								R45Cell2.setCellStyle(textStyle);
+							}
+							Cell R45Cell3 = row.createCell(3);
+							if (record.getR45Overdrafts() != null) {
+								R45Cell3.setCellValue(record.getR45Overdrafts().doubleValue());
+								R45Cell3.setCellStyle(numberStyle);
+							} else {
+								R45Cell3.setCellValue("");
+								R45Cell3.setCellStyle(textStyle);
+							}
+							Cell R45Cell4 = row.createCell(4);
+							if (record.getR45OtherInstallmentLoans() != null) {
+								R45Cell4.setCellValue(record.getR45OtherInstallmentLoans().doubleValue());
+								R45Cell4.setCellStyle(numberStyle);
+							} else {
+								R45Cell4.setCellValue("");
+								R45Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R46 (Row Index 45) ---
+							row = sheet.getRow(45);
+							Cell R46Cell1 = row.createCell(1);
+							if (record1.getR46FactoringDebtors() != null) {
+								R46Cell1.setCellValue(record1.getR46FactoringDebtors().doubleValue());
+								R46Cell1.setCellStyle(numberStyle);
+							} else {
+								R46Cell1.setCellValue("");
+								R46Cell1.setCellStyle(textStyle);
+							}
+							Cell R46Cell2 = row.createCell(2);
+							if (record1.getR46Leasing() != null) {
+								R46Cell2.setCellValue(record1.getR46Leasing().doubleValue());
+								R46Cell2.setCellStyle(numberStyle);
+							} else {
+								R46Cell2.setCellValue("");
+								R46Cell2.setCellStyle(textStyle);
+							}
+							Cell R46Cell3 = row.createCell(3);
+							if (record.getR46Overdrafts() != null) {
+								R46Cell3.setCellValue(record.getR46Overdrafts().doubleValue());
+								R46Cell3.setCellStyle(numberStyle);
+							} else {
+								R46Cell3.setCellValue("");
+								R46Cell3.setCellStyle(textStyle);
+							}
+							Cell R46Cell4 = row.createCell(4);
+							if (record.getR46OtherInstallmentLoans() != null) {
+								R46Cell4.setCellValue(record.getR46OtherInstallmentLoans().doubleValue());
+								R46Cell4.setCellStyle(numberStyle);
+							} else {
+								R46Cell4.setCellValue("");
+								R46Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R47 (Row Index 46) ---
+							row = sheet.getRow(46);
+							Cell R47Cell1 = row.createCell(1);
+							if (record1.getR47FactoringDebtors() != null) {
+								R47Cell1.setCellValue(record1.getR47FactoringDebtors().doubleValue());
+								R47Cell1.setCellStyle(numberStyle);
+							} else {
+								R47Cell1.setCellValue("");
+								R47Cell1.setCellStyle(textStyle);
+							}
+							Cell R47Cell2 = row.createCell(2);
+							if (record1.getR47Leasing() != null) {
+								R47Cell2.setCellValue(record1.getR47Leasing().doubleValue());
+								R47Cell2.setCellStyle(numberStyle);
+							} else {
+								R47Cell2.setCellValue("");
+								R47Cell2.setCellStyle(textStyle);
+							}
+							Cell R47Cell3 = row.createCell(3);
+							if (record.getR47Overdrafts() != null) {
+								R47Cell3.setCellValue(record.getR47Overdrafts().doubleValue());
+								R47Cell3.setCellStyle(numberStyle);
+							} else {
+								R47Cell3.setCellValue("");
+								R47Cell3.setCellStyle(textStyle);
+							}
+							Cell R47Cell4 = row.createCell(4);
+							if (record.getR47OtherInstallmentLoans() != null) {
+								R47Cell4.setCellValue(record.getR47OtherInstallmentLoans().doubleValue());
+								R47Cell4.setCellStyle(numberStyle);
+							} else {
+								R47Cell4.setCellValue("");
+								R47Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R48 (Row Index 47) ---
+							row = sheet.getRow(47);
+							Cell R48Cell1 = row.createCell(1);
+							if (record1.getR48FactoringDebtors() != null) {
+								R48Cell1.setCellValue(record1.getR48FactoringDebtors().doubleValue());
+								R48Cell1.setCellStyle(numberStyle);
+							} else {
+								R48Cell1.setCellValue("");
+								R48Cell1.setCellStyle(textStyle);
+							}
+							Cell R48Cell2 = row.createCell(2);
+							if (record1.getR48Leasing() != null) {
+								R48Cell2.setCellValue(record1.getR48Leasing().doubleValue());
+								R48Cell2.setCellStyle(numberStyle);
+							} else {
+								R48Cell2.setCellValue("");
+								R48Cell2.setCellStyle(textStyle);
+							}
+							Cell R48Cell3 = row.createCell(3);
+							if (record.getR48Overdrafts() != null) {
+								R48Cell3.setCellValue(record.getR48Overdrafts().doubleValue());
+								R48Cell3.setCellStyle(numberStyle);
+							} else {
+								R48Cell3.setCellValue("");
+								R48Cell3.setCellStyle(textStyle);
+							}
+							Cell R48Cell4 = row.createCell(4);
+							if (record.getR48OtherInstallmentLoans() != null) {
+								R48Cell4.setCellValue(record.getR48OtherInstallmentLoans().doubleValue());
+								R48Cell4.setCellStyle(numberStyle);
+							} else {
+								R48Cell4.setCellValue("");
+								R48Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R50 (Row Index 49) ---
+							row = sheet.getRow(49);
+							Cell R50Cell1 = row.createCell(1);
+							if (record1.getR50FactoringDebtors() != null) {
+								R50Cell1.setCellValue(record1.getR50FactoringDebtors().doubleValue());
+								R50Cell1.setCellStyle(numberStyle);
+							} else {
+								R50Cell1.setCellValue("");
+								R50Cell1.setCellStyle(textStyle);
+							}
+							Cell R50Cell2 = row.createCell(2);
+							if (record1.getR50Leasing() != null) {
+								R50Cell2.setCellValue(record1.getR50Leasing().doubleValue());
+								R50Cell2.setCellStyle(numberStyle);
+							} else {
+								R50Cell2.setCellValue("");
+								R50Cell2.setCellStyle(textStyle);
+							}
+							Cell R50Cell3 = row.createCell(3);
+							if (record.getR50Overdrafts() != null) {
+								R50Cell3.setCellValue(record.getR50Overdrafts().doubleValue());
+								R50Cell3.setCellStyle(numberStyle);
+							} else {
+								R50Cell3.setCellValue("");
+								R50Cell3.setCellStyle(textStyle);
+							}
+							Cell R50Cell4 = row.createCell(4);
+							if (record.getR50OtherInstallmentLoans() != null) {
+								R50Cell4.setCellValue(record.getR50OtherInstallmentLoans().doubleValue());
+								R50Cell4.setCellStyle(numberStyle);
+							} else {
+								R50Cell4.setCellValue("");
+								R50Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R51 (Row Index 50) ---
+							row = sheet.getRow(50);
+							Cell R51Cell1 = row.createCell(1);
+							if (record1.getR51FactoringDebtors() != null) {
+								R51Cell1.setCellValue(record1.getR51FactoringDebtors().doubleValue());
+								R51Cell1.setCellStyle(numberStyle);
+							} else {
+								R51Cell1.setCellValue("");
+								R51Cell1.setCellStyle(textStyle);
+							}
+							Cell R51Cell2 = row.createCell(2);
+							if (record1.getR51Leasing() != null) {
+								R51Cell2.setCellValue(record1.getR51Leasing().doubleValue());
+								R51Cell2.setCellStyle(numberStyle);
+							} else {
+								R51Cell2.setCellValue("");
+								R51Cell2.setCellStyle(textStyle);
+							}
+							Cell R51Cell3 = row.createCell(3);
+							if (record.getR51Overdrafts() != null) {
+								R51Cell3.setCellValue(record.getR51Overdrafts().doubleValue());
+								R51Cell3.setCellStyle(numberStyle);
+							} else {
+								R51Cell3.setCellValue("");
+								R51Cell3.setCellStyle(textStyle);
+							}
+							Cell R51Cell4 = row.createCell(4);
+							if (record.getR51OtherInstallmentLoans() != null) {
+								R51Cell4.setCellValue(record.getR51OtherInstallmentLoans().doubleValue());
+								R51Cell4.setCellStyle(numberStyle);
+							} else {
+								R51Cell4.setCellValue("");
+								R51Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R52 (Row Index 51) ---
+							row = sheet.getRow(51);
+							Cell R52Cell1 = row.createCell(1);
+							if (record1.getR52FactoringDebtors() != null) {
+								R52Cell1.setCellValue(record1.getR52FactoringDebtors().doubleValue());
+								R52Cell1.setCellStyle(numberStyle);
+							} else {
+								R52Cell1.setCellValue("");
+								R52Cell1.setCellStyle(textStyle);
+							}
+							Cell R52Cell2 = row.createCell(2);
+							if (record1.getR52Leasing() != null) {
+								R52Cell2.setCellValue(record1.getR52Leasing().doubleValue());
+								R52Cell2.setCellStyle(numberStyle);
+							} else {
+								R52Cell2.setCellValue("");
+								R52Cell2.setCellStyle(textStyle);
+							}
+							Cell R52Cell3 = row.createCell(3);
+							if (record.getR52Overdrafts() != null) {
+								R52Cell3.setCellValue(record.getR52Overdrafts().doubleValue());
+								R52Cell3.setCellStyle(numberStyle);
+							} else {
+								R52Cell3.setCellValue("");
+								R52Cell3.setCellStyle(textStyle);
+							}
+							Cell R52Cell4 = row.createCell(4);
+							if (record.getR52OtherInstallmentLoans() != null) {
+								R52Cell4.setCellValue(record.getR52OtherInstallmentLoans().doubleValue());
+								R52Cell4.setCellStyle(numberStyle);
+							} else {
+								R52Cell4.setCellValue("");
+								R52Cell4.setCellStyle(textStyle);
+							}
+							// --- R54 (Row Index 53) ---
+							row = sheet.getRow(53);
+							Cell R54Cell1 = row.createCell(1);
+							if (record1.getR54FactoringDebtors() != null) {
+								R54Cell1.setCellValue(record1.getR54FactoringDebtors().doubleValue());
+								R54Cell1.setCellStyle(numberStyle);
+							} else {
+								R54Cell1.setCellValue("");
+								R54Cell1.setCellStyle(textStyle);
+							}
+							Cell R54Cell2 = row.createCell(2);
+							if (record1.getR54Leasing() != null) {
+								R54Cell2.setCellValue(record1.getR54Leasing().doubleValue());
+								R54Cell2.setCellStyle(numberStyle);
+							} else {
+								R54Cell2.setCellValue("");
+								R54Cell2.setCellStyle(textStyle);
+							}
+							Cell R54Cell3 = row.createCell(3);
+							if (record.getR54Overdrafts() != null) {
+								R54Cell3.setCellValue(record.getR54Overdrafts().doubleValue());
+								R54Cell3.setCellStyle(numberStyle);
+							} else {
+								R54Cell3.setCellValue("");
+								R54Cell3.setCellStyle(textStyle);
+							}
+							Cell R54Cell4 = row.createCell(4);
+							if (record.getR54OtherInstallmentLoans() != null) {
+								R54Cell4.setCellValue(record.getR54OtherInstallmentLoans().doubleValue());
+								R54Cell4.setCellStyle(numberStyle);
+							} else {
+								R54Cell4.setCellValue("");
+								R54Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R55 (Row Index 54) ---
+							row = sheet.getRow(54);
+							Cell R55Cell1 = row.createCell(1);
+							if (record1.getR55FactoringDebtors() != null) {
+								R55Cell1.setCellValue(record1.getR55FactoringDebtors().doubleValue());
+								R55Cell1.setCellStyle(numberStyle);
+							} else {
+								R55Cell1.setCellValue("");
+								R55Cell1.setCellStyle(textStyle);
+							}
+							Cell R55Cell2 = row.createCell(2);
+							if (record1.getR55Leasing() != null) {
+								R55Cell2.setCellValue(record1.getR55Leasing().doubleValue());
+								R55Cell2.setCellStyle(numberStyle);
+							} else {
+								R55Cell2.setCellValue("");
+								R55Cell2.setCellStyle(textStyle);
+							}
+							Cell R55Cell3 = row.createCell(3);
+							if (record.getR55Overdrafts() != null) {
+								R55Cell3.setCellValue(record.getR55Overdrafts().doubleValue());
+								R55Cell3.setCellStyle(numberStyle);
+							} else {
+								R55Cell3.setCellValue("");
+								R55Cell3.setCellStyle(textStyle);
+							}
+							Cell R55Cell4 = row.createCell(4);
+							if (record.getR55OtherInstallmentLoans() != null) {
+								R55Cell4.setCellValue(record.getR55OtherInstallmentLoans().doubleValue());
+								R55Cell4.setCellStyle(numberStyle);
+							} else {
+								R55Cell4.setCellValue("");
+								R55Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R56 (Row Index 55) ---
+							row = sheet.getRow(55);
+							Cell R56Cell1 = row.createCell(1);
+							if (record1.getR56FactoringDebtors() != null) {
+								R56Cell1.setCellValue(record1.getR56FactoringDebtors().doubleValue());
+								R56Cell1.setCellStyle(numberStyle);
+							} else {
+								R56Cell1.setCellValue("");
+								R56Cell1.setCellStyle(textStyle);
+							}
+							Cell R56Cell2 = row.createCell(2);
+							if (record1.getR56Leasing() != null) {
+								R56Cell2.setCellValue(record1.getR56Leasing().doubleValue());
+								R56Cell2.setCellStyle(numberStyle);
+							} else {
+								R56Cell2.setCellValue("");
+								R56Cell2.setCellStyle(textStyle);
+							}
+							Cell R56Cell3 = row.createCell(3);
+							if (record.getR56Overdrafts() != null) {
+								R56Cell3.setCellValue(record.getR56Overdrafts().doubleValue());
+								R56Cell3.setCellStyle(numberStyle);
+							} else {
+								R56Cell3.setCellValue("");
+								R56Cell3.setCellStyle(textStyle);
+							}
+							Cell R56Cell4 = row.createCell(4);
+							if (record.getR56OtherInstallmentLoans() != null) {
+								R56Cell4.setCellValue(record.getR56OtherInstallmentLoans().doubleValue());
+								R56Cell4.setCellStyle(numberStyle);
+							} else {
+								R56Cell4.setCellValue("");
+								R56Cell4.setCellStyle(textStyle);
+							}
+							// --- R58 (Row Index 57) ---
+							row = sheet.getRow(57);
+							Cell R58Cell1 = row.createCell(1);
+							if (record1.getR58FactoringDebtors() != null) {
+								R58Cell1.setCellValue(record1.getR58FactoringDebtors().doubleValue());
+								R58Cell1.setCellStyle(numberStyle);
+							} else {
+								R58Cell1.setCellValue("");
+								R58Cell1.setCellStyle(textStyle);
+							}
+							Cell R58Cell2 = row.createCell(2);
+							if (record1.getR58Leasing() != null) {
+								R58Cell2.setCellValue(record1.getR58Leasing().doubleValue());
+								R58Cell2.setCellStyle(numberStyle);
+							} else {
+								R58Cell2.setCellValue("");
+								R58Cell2.setCellStyle(textStyle);
+							}
+							Cell R58Cell3 = row.createCell(3);
+							if (record.getR58Overdrafts() != null) {
+								R58Cell3.setCellValue(record.getR58Overdrafts().doubleValue());
+								R58Cell3.setCellStyle(numberStyle);
+							} else {
+								R58Cell3.setCellValue("");
+								R58Cell3.setCellStyle(textStyle);
+							}
+							Cell R58Cell4 = row.createCell(4);
+							if (record.getR58OtherInstallmentLoans() != null) {
+								R58Cell4.setCellValue(record.getR58OtherInstallmentLoans().doubleValue());
+								R58Cell4.setCellStyle(numberStyle);
+							} else {
+								R58Cell4.setCellValue("");
+								R58Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R59 (Row Index 58) ---
+							row = sheet.getRow(58);
+							Cell R59Cell1 = row.createCell(1);
+							if (record1.getR59FactoringDebtors() != null) {
+								R59Cell1.setCellValue(record1.getR59FactoringDebtors().doubleValue());
+								R59Cell1.setCellStyle(numberStyle);
+							} else {
+								R59Cell1.setCellValue("");
+								R59Cell1.setCellStyle(textStyle);
+							}
+							Cell R59Cell2 = row.createCell(2);
+							if (record1.getR59Leasing() != null) {
+								R59Cell2.setCellValue(record1.getR59Leasing().doubleValue());
+								R59Cell2.setCellStyle(numberStyle);
+							} else {
+								R59Cell2.setCellValue("");
+								R59Cell2.setCellStyle(textStyle);
+							}
+							Cell R59Cell3 = row.createCell(3);
+							if (record.getR59Overdrafts() != null) {
+								R59Cell3.setCellValue(record.getR59Overdrafts().doubleValue());
+								R59Cell3.setCellStyle(numberStyle);
+							} else {
+								R59Cell3.setCellValue("");
+								R59Cell3.setCellStyle(textStyle);
+							}
+							Cell R59Cell4 = row.createCell(4);
+							if (record.getR59OtherInstallmentLoans() != null) {
+								R59Cell4.setCellValue(record.getR59OtherInstallmentLoans().doubleValue());
+								R59Cell4.setCellStyle(numberStyle);
+							} else {
+								R59Cell4.setCellValue("");
+								R59Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R60 (Row Index 59) ---
+							row = sheet.getRow(59);
+							Cell R60Cell1 = row.createCell(1);
+							if (record1.getR60FactoringDebtors() != null) {
+								R60Cell1.setCellValue(record1.getR60FactoringDebtors().doubleValue());
+								R60Cell1.setCellStyle(numberStyle);
+							} else {
+								R60Cell1.setCellValue("");
+								R60Cell1.setCellStyle(textStyle);
+							}
+							Cell R60Cell2 = row.createCell(2);
+							if (record1.getR60Leasing() != null) {
+								R60Cell2.setCellValue(record1.getR60Leasing().doubleValue());
+								R60Cell2.setCellStyle(numberStyle);
+							} else {
+								R60Cell2.setCellValue("");
+								R60Cell2.setCellStyle(textStyle);
+							}
+							Cell R60Cell3 = row.createCell(3);
+							if (record.getR60Overdrafts() != null) {
+								R60Cell3.setCellValue(record.getR60Overdrafts().doubleValue());
+								R60Cell3.setCellStyle(numberStyle);
+							} else {
+								R60Cell3.setCellValue("");
+								R60Cell3.setCellStyle(textStyle);
+							}
+							Cell R60Cell4 = row.createCell(4);
+							if (record.getR60OtherInstallmentLoans() != null) {
+								R60Cell4.setCellValue(record.getR60OtherInstallmentLoans().doubleValue());
+								R60Cell4.setCellStyle(numberStyle);
+							} else {
+								R60Cell4.setCellValue("");
+								R60Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R61 (Row Index 60) ---
+							row = sheet.getRow(60);
+							Cell R61Cell1 = row.createCell(1);
+							if (record1.getR61FactoringDebtors() != null) {
+								R61Cell1.setCellValue(record1.getR61FactoringDebtors().doubleValue());
+								R61Cell1.setCellStyle(numberStyle);
+							} else {
+								R61Cell1.setCellValue("");
+								R61Cell1.setCellStyle(textStyle);
+							}
+							Cell R61Cell2 = row.createCell(2);
+							if (record1.getR61Leasing() != null) {
+								R61Cell2.setCellValue(record1.getR61Leasing().doubleValue());
+								R61Cell2.setCellStyle(numberStyle);
+							} else {
+								R61Cell2.setCellValue("");
+								R61Cell2.setCellStyle(textStyle);
+							}
+							Cell R61Cell3 = row.createCell(3);
+							if (record.getR61Overdrafts() != null) {
+								R61Cell3.setCellValue(record.getR61Overdrafts().doubleValue());
+								R61Cell3.setCellStyle(numberStyle);
+							} else {
+								R61Cell3.setCellValue("");
+								R61Cell3.setCellStyle(textStyle);
+							}
+							Cell R61Cell4 = row.createCell(4);
+							if (record.getR61OtherInstallmentLoans() != null) {
+								R61Cell4.setCellValue(record.getR61OtherInstallmentLoans().doubleValue());
+								R61Cell4.setCellStyle(numberStyle);
+							} else {
+								R61Cell4.setCellValue("");
+								R61Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R62 (Row Index 61) ---
+							row = sheet.getRow(61);
+							Cell R62Cell1 = row.createCell(1);
+							if (record1.getR62FactoringDebtors() != null) {
+								R62Cell1.setCellValue(record1.getR62FactoringDebtors().doubleValue());
+								R62Cell1.setCellStyle(numberStyle);
+							} else {
+								R62Cell1.setCellValue("");
+								R62Cell1.setCellStyle(textStyle);
+							}
+							Cell R62Cell2 = row.createCell(2);
+							if (record1.getR62Leasing() != null) {
+								R62Cell2.setCellValue(record1.getR62Leasing().doubleValue());
+								R62Cell2.setCellStyle(numberStyle);
+							} else {
+								R62Cell2.setCellValue("");
+								R62Cell2.setCellStyle(textStyle);
+							}
+							Cell R62Cell3 = row.createCell(3);
+							if (record.getR62Overdrafts() != null) {
+								R62Cell3.setCellValue(record.getR62Overdrafts().doubleValue());
+								R62Cell3.setCellStyle(numberStyle);
+							} else {
+								R62Cell3.setCellValue("");
+								R62Cell3.setCellStyle(textStyle);
+							}
+							Cell R62Cell4 = row.createCell(4);
+							if (record.getR62OtherInstallmentLoans() != null) {
+								R62Cell4.setCellValue(record.getR62OtherInstallmentLoans().doubleValue());
+								R62Cell4.setCellStyle(numberStyle);
+							} else {
+								R62Cell4.setCellValue("");
+								R62Cell4.setCellStyle(textStyle);
+							}
+
+							// --- R63 (Row Index 62) ---
+							row = sheet.getRow(62);
+							Cell R63Cell1 = row.createCell(1);
+							if (record1.getR63FactoringDebtors() != null) {
+								R63Cell1.setCellValue(record1.getR63FactoringDebtors().doubleValue());
+								R63Cell1.setCellStyle(numberStyle);
+							} else {
+								R63Cell1.setCellValue("");
+								R63Cell1.setCellStyle(textStyle);
+							}
+							Cell R63Cell2 = row.createCell(2);
+							if (record1.getR63Leasing() != null) {
+								R63Cell2.setCellValue(record1.getR63Leasing().doubleValue());
+								R63Cell2.setCellStyle(numberStyle);
+							} else {
+								R63Cell2.setCellValue("");
+								R63Cell2.setCellStyle(textStyle);
+							}
+							Cell R63Cell3 = row.createCell(3);
+							if (record.getR63Overdrafts() != null) {
+								R63Cell3.setCellValue(record.getR63Overdrafts().doubleValue());
+								R63Cell3.setCellStyle(numberStyle);
+							} else {
+								R63Cell3.setCellValue("");
+								R63Cell3.setCellStyle(textStyle);
+							}
+							Cell R63Cell4 = row.createCell(4);
+							if (record.getR63OtherInstallmentLoans() != null) {
+								R63Cell4.setCellValue(record.getR63OtherInstallmentLoans().doubleValue());
+								R63Cell4.setCellStyle(numberStyle);
+							} else {
+								R63Cell4.setCellValue("");
+								R63Cell4.setCellStyle(textStyle);
+							}
+						}
+						workbook.setForceFormulaRecalculation(true);
+					} else {
+
+					}
+
+					// Write the final workbook content to the in-memory stream.
+					workbook.write(out);
+
+					logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+					return out.toByteArray();
+				}
+			}
+		}
+	}
+
+	// Normal Email Excel
+	public byte[] BRRS_M_LA4EmailExcel(String filename, String reportId, String fromdate, String todate,
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
+
+		logger.info("Service: Starting Email Excel generation process in memory.");
+
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+			try {
+				// Redirecting to Archival
+				return BRRS_M_LA4EmailArchivalExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
+						version);
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
+//		} else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+//			logger.info("Service: Generating RESUB report for version {}", version);
+//
+//			try {
+//				// ✅ Redirecting to Resub Excel
+//				return BRRS_M_LA4ResubEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
+//						version);
+//
+//			} catch (ParseException e) {
+//				logger.error("Invalid report date format: {}", fromdate, e);
+//				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+//			}
+		} else {
+			List<M_LA4_Summary_Entity1> dataList = M_LA4_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+			List<M_LA4_Summary_Entity2> dataList1 = M_LA4_Summary_Repo2.getdatabydateList(dateformat.parse(todate));
+			if (dataList.isEmpty()) {
+				logger.warn("Service: No data found for BRRS_M_LA4 report. Returning empty result.");
+				return new byte[0];
+			}
+
+			String templateDir = env.getProperty("output.exportpathtemp");
+			String templateFileName = filename;
+			System.out.println(filename);
+			Path templatePath = Paths.get(templateDir, templateFileName);
+			System.out.println(templatePath);
+
+			logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+			if (!Files.exists(templatePath)) {
+				// This specific exception will be caught by the controller.
+				throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+			}
+			if (!Files.isReadable(templatePath)) {
+				// A specific exception for permission errors.
+				throw new SecurityException("Template file exists but is not readable (check permissions): "
+						+ templatePath.toAbsolutePath());
+			}
+
+			// This try-with-resources block is perfect. It guarantees all resources are
+			// closed automatically.
+			try (InputStream templateInputStream = Files.newInputStream(templatePath);
+					Workbook workbook = WorkbookFactory.create(templateInputStream);
+					ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+				Sheet sheet = workbook.getSheetAt(0);
+
+				// --- Style Definitions ---
+				CreationHelper createHelper = workbook.getCreationHelper();
+
+				CellStyle dateStyle = workbook.createCellStyle();
+				dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+				dateStyle.setBorderBottom(BorderStyle.THIN);
+				dateStyle.setBorderTop(BorderStyle.THIN);
+				dateStyle.setBorderLeft(BorderStyle.THIN);
+				dateStyle.setBorderRight(BorderStyle.THIN);
+
+				CellStyle textStyle = workbook.createCellStyle();
+				textStyle.setBorderBottom(BorderStyle.THIN);
+				textStyle.setBorderTop(BorderStyle.THIN);
+				textStyle.setBorderLeft(BorderStyle.THIN);
+				textStyle.setBorderRight(BorderStyle.THIN);
+
+				// Create the font
+				Font font = workbook.createFont();
+				font.setFontHeightInPoints((short) 8); // size 8
+				font.setFontName("Arial");
+
+				CellStyle numberStyle = workbook.createCellStyle();
+				// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+				numberStyle.setBorderBottom(BorderStyle.THIN);
+				numberStyle.setBorderTop(BorderStyle.THIN);
+				numberStyle.setBorderLeft(BorderStyle.THIN);
+				numberStyle.setBorderRight(BorderStyle.THIN);
+				numberStyle.setFont(font);
+				// --- End of Style Definitions ---
+
+				int startRow = 11;
+
+				if (!dataList.isEmpty()) {
+					for (int i = 0; i < dataList.size(); i++) {
+						M_LA4_Summary_Entity1 record = dataList.get(i);
+						M_LA4_Summary_Entity2 record1 = dataList1.get(i);
+						System.out.println("rownumber=" + startRow + i);
+						Row row = sheet.getRow(startRow + i);
+						if (row == null) {
+							row = sheet.createRow(startRow + i);
+						}
+//EMAIL
+
+						// R12 Col B
+						Cell R12Cell1 = row.createCell(1);
+						if (record1.getR12FactoringDebtors() != null) {
+							R12Cell1.setCellValue(record1.getR12FactoringDebtors().doubleValue());
+							R12Cell1.setCellStyle(numberStyle);
+						} else {
+							R12Cell1.setCellValue("");
+							R12Cell1.setCellStyle(textStyle);
+						}
+
+						// R12 Col C
+						Cell R12Cell2 = row.createCell(2);
+						if (record1.getR12Leasing() != null) {
+							R12Cell2.setCellValue(record1.getR12Leasing().doubleValue());
+							R12Cell2.setCellStyle(numberStyle);
+						} else {
+							R12Cell2.setCellValue("");
+							R12Cell2.setCellStyle(textStyle);
+						}
+						// R12 Col D
+						Cell R12Cell3 = row.createCell(3);
+						if (record.getR12Overdrafts() != null) {
+							R12Cell3.setCellValue(record.getR12Overdrafts().doubleValue());
+							R12Cell3.setCellStyle(numberStyle);
+						} else {
+							R12Cell3.setCellValue("");
+							R12Cell3.setCellStyle(textStyle);
+						}
+
+						// R12 Col E
+						Cell R12Cell4 = row.createCell(4);
+						if (record.getR12OtherInstallmentLoans() != null) {
+							R12Cell4.setCellValue(record.getR12OtherInstallmentLoans().doubleValue());
+							R12Cell4.setCellStyle(numberStyle);
+						} else {
+							R12Cell4.setCellValue("");
+							R12Cell4.setCellStyle(textStyle);
+						}
+						// R13 Col B
+						row = sheet.getRow(12);
+						// R13 Col B
+						Cell R13Cell1 = row.createCell(1);
+						if (record1.getR13FactoringDebtors() != null) {
+							R13Cell1.setCellValue(record1.getR13FactoringDebtors().doubleValue());
+							R13Cell1.setCellStyle(numberStyle);
+						} else {
+							R13Cell1.setCellValue("");
+							R13Cell1.setCellStyle(textStyle);
+						}
+
+						// R13 Col C
+						Cell R13Cell2 = row.createCell(2);
+						if (record1.getR13Leasing() != null) {
+							R13Cell2.setCellValue(record1.getR13Leasing().doubleValue());
+							R13Cell2.setCellStyle(numberStyle);
+						} else {
+							R13Cell2.setCellValue("");
+							R13Cell2.setCellStyle(textStyle);
+						}
+						// R13 Col D
+						Cell R13Cell3 = row.createCell(3);
+						if (record.getR13Overdrafts() != null) {
+							R13Cell3.setCellValue(record.getR13Overdrafts().doubleValue());
+							R13Cell3.setCellStyle(numberStyle);
+						} else {
+							R13Cell3.setCellValue("");
+							R13Cell3.setCellStyle(textStyle);
+						}
+
+						// R13 Col E
+						Cell R13Cell4 = row.createCell(4);
+						if (record.getR13OtherInstallmentLoans() != null) {
+							R13Cell4.setCellValue(record.getR13OtherInstallmentLoans().doubleValue());
+							R13Cell4.setCellStyle(numberStyle);
+						} else {
+							R13Cell4.setCellValue("");
+							R13Cell4.setCellStyle(textStyle);
+						}
+						// R14 Col B
+						row = sheet.getRow(13); // Row index 13 is Excel Row 14
+						// R14 Col B
+						Cell R14Cell1 = row.createCell(1);
+						if (record1.getR14FactoringDebtors() != null) {
+							R14Cell1.setCellValue(record1.getR14FactoringDebtors().doubleValue());
+							R14Cell1.setCellStyle(numberStyle);
+						} else {
+							R14Cell1.setCellValue("");
+							R14Cell1.setCellStyle(textStyle);
+						}
+
+						// R14 Col C
+						Cell R14Cell2 = row.createCell(2);
+						if (record1.getR14Leasing() != null) {
+							R14Cell2.setCellValue(record1.getR14Leasing().doubleValue());
+							R14Cell2.setCellStyle(numberStyle);
+						} else {
+							R14Cell2.setCellValue("");
+							R14Cell2.setCellStyle(textStyle);
+						}
+
+						// R14 Col D
+						Cell R14Cell3 = row.createCell(3);
+						if (record.getR14Overdrafts() != null) {
+							R14Cell3.setCellValue(record.getR14Overdrafts().doubleValue());
+							R14Cell3.setCellStyle(numberStyle);
+						} else {
+							R14Cell3.setCellValue("");
+							R14Cell3.setCellStyle(textStyle);
+						}
+
+						// R14 Col E
+						Cell R14Cell4 = row.createCell(4);
+						if (record.getR14OtherInstallmentLoans() != null) {
+							R14Cell4.setCellValue(record.getR14OtherInstallmentLoans().doubleValue());
+							R14Cell4.setCellStyle(numberStyle);
+						} else {
+							R14Cell4.setCellValue("");
+							R14Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R16 (Row Index 15) ---
+						row = sheet.getRow(15);
+						Cell R16Cell1 = row.createCell(1);
+						if (record1.getR16FactoringDebtors() != null) {
+							R16Cell1.setCellValue(record1.getR16FactoringDebtors().doubleValue());
+							R16Cell1.setCellStyle(numberStyle);
+						} else {
+							R16Cell1.setCellValue("");
+							R16Cell1.setCellStyle(textStyle);
+						}
+						Cell R16Cell2 = row.createCell(2);
+						if (record1.getR16Leasing() != null) {
+							R16Cell2.setCellValue(record1.getR16Leasing().doubleValue());
+							R16Cell2.setCellStyle(numberStyle);
+						} else {
+							R16Cell2.setCellValue("");
+							R16Cell2.setCellStyle(textStyle);
+						}
+						Cell R16Cell3 = row.createCell(3);
+						if (record.getR16Overdrafts() != null) {
+							R16Cell3.setCellValue(record.getR16Overdrafts().doubleValue());
+							R16Cell3.setCellStyle(numberStyle);
+						} else {
+							R16Cell3.setCellValue("");
+							R16Cell3.setCellStyle(textStyle);
+						}
+						Cell R16Cell4 = row.createCell(4);
+						if (record.getR16OtherInstallmentLoans() != null) {
+							R16Cell4.setCellValue(record.getR16OtherInstallmentLoans().doubleValue());
+							R16Cell4.setCellStyle(numberStyle);
+						} else {
+							R16Cell4.setCellValue("");
+							R16Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R17 (Row Index 16) ---
+						row = sheet.getRow(16);
+						Cell R17Cell1 = row.createCell(1);
+						if (record1.getR17FactoringDebtors() != null) {
+							R17Cell1.setCellValue(record1.getR17FactoringDebtors().doubleValue());
+							R17Cell1.setCellStyle(numberStyle);
+						} else {
+							R17Cell1.setCellValue("");
+							R17Cell1.setCellStyle(textStyle);
+						}
+						Cell R17Cell2 = row.createCell(2);
+						if (record1.getR17Leasing() != null) {
+							R17Cell2.setCellValue(record1.getR17Leasing().doubleValue());
+							R17Cell2.setCellStyle(numberStyle);
+						} else {
+							R17Cell2.setCellValue("");
+							R17Cell2.setCellStyle(textStyle);
+						}
+						Cell R17Cell3 = row.createCell(3);
+						if (record.getR17Overdrafts() != null) {
+							R17Cell3.setCellValue(record.getR17Overdrafts().doubleValue());
+							R17Cell3.setCellStyle(numberStyle);
+						} else {
+							R17Cell3.setCellValue("");
+							R17Cell3.setCellStyle(textStyle);
+						}
+						Cell R17Cell4 = row.createCell(4);
+						if (record.getR17OtherInstallmentLoans() != null) {
+							R17Cell4.setCellValue(record.getR17OtherInstallmentLoans().doubleValue());
+							R17Cell4.setCellStyle(numberStyle);
+						} else {
+							R17Cell4.setCellValue("");
+							R17Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R18 (Row Index 17) ---
+						row = sheet.getRow(17);
+						Cell R18Cell1 = row.createCell(1);
+						if (record1.getR18FactoringDebtors() != null) {
+							R18Cell1.setCellValue(record1.getR18FactoringDebtors().doubleValue());
+							R18Cell1.setCellStyle(numberStyle);
+						} else {
+							R18Cell1.setCellValue("");
+							R18Cell1.setCellStyle(textStyle);
+						}
+						Cell R18Cell2 = row.createCell(2);
+						if (record1.getR18Leasing() != null) {
+							R18Cell2.setCellValue(record1.getR18Leasing().doubleValue());
+							R18Cell2.setCellStyle(numberStyle);
+						} else {
+							R18Cell2.setCellValue("");
+							R18Cell2.setCellStyle(textStyle);
+						}
+						Cell R18Cell3 = row.createCell(3);
+						if (record.getR18Overdrafts() != null) {
+							R18Cell3.setCellValue(record.getR18Overdrafts().doubleValue());
+							R18Cell3.setCellStyle(numberStyle);
+						} else {
+							R18Cell3.setCellValue("");
+							R18Cell3.setCellStyle(textStyle);
+						}
+						Cell R18Cell4 = row.createCell(4);
+						if (record.getR18OtherInstallmentLoans() != null) {
+							R18Cell4.setCellValue(record.getR18OtherInstallmentLoans().doubleValue());
+							R18Cell4.setCellStyle(numberStyle);
+						} else {
+							R18Cell4.setCellValue("");
+							R18Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R19 (Row Index 18) ---
+						row = sheet.getRow(18);
+						Cell R19Cell1 = row.createCell(1);
+						if (record1.getR19FactoringDebtors() != null) {
+							R19Cell1.setCellValue(record1.getR19FactoringDebtors().doubleValue());
+							R19Cell1.setCellStyle(numberStyle);
+						} else {
+							R19Cell1.setCellValue("");
+							R19Cell1.setCellStyle(textStyle);
+						}
+						Cell R19Cell2 = row.createCell(2);
+						if (record1.getR19Leasing() != null) {
+							R19Cell2.setCellValue(record1.getR19Leasing().doubleValue());
+							R19Cell2.setCellStyle(numberStyle);
+						} else {
+							R19Cell2.setCellValue("");
+							R19Cell2.setCellStyle(textStyle);
+						}
+						Cell R19Cell3 = row.createCell(3);
+						if (record.getR19Overdrafts() != null) {
+							R19Cell3.setCellValue(record.getR19Overdrafts().doubleValue());
+							R19Cell3.setCellStyle(numberStyle);
+						} else {
+							R19Cell3.setCellValue("");
+							R19Cell3.setCellStyle(textStyle);
+						}
+						Cell R19Cell4 = row.createCell(4);
+						if (record.getR19OtherInstallmentLoans() != null) {
+							R19Cell4.setCellValue(record.getR19OtherInstallmentLoans().doubleValue());
+							R19Cell4.setCellStyle(numberStyle);
+						} else {
+							R19Cell4.setCellValue("");
+							R19Cell4.setCellStyle(textStyle);
+						}
+						// --- R20 (Row Index 19) ---
+						row = sheet.getRow(19);
+						Cell R20Cell1 = row.createCell(1);
+						if (record1.getR20FactoringDebtors() != null) {
+							R20Cell1.setCellValue(record1.getR20FactoringDebtors().doubleValue());
+							R20Cell1.setCellStyle(numberStyle);
+						} else {
+							R20Cell1.setCellValue("");
+							R20Cell1.setCellStyle(textStyle);
+						}
+						Cell R20Cell2 = row.createCell(2);
+						if (record1.getR20Leasing() != null) {
+							R20Cell2.setCellValue(record1.getR20Leasing().doubleValue());
+							R20Cell2.setCellStyle(numberStyle);
+						} else {
+							R20Cell2.setCellValue("");
+							R20Cell2.setCellStyle(textStyle);
+						}
+						Cell R20Cell3 = row.createCell(3);
+						if (record.getR20Overdrafts() != null) {
+							R20Cell3.setCellValue(record.getR20Overdrafts().doubleValue());
+							R20Cell3.setCellStyle(numberStyle);
+						} else {
+							R20Cell3.setCellValue("");
+							R20Cell3.setCellStyle(textStyle);
+						}
+						Cell R20Cell4 = row.createCell(4);
+						if (record.getR20OtherInstallmentLoans() != null) {
+							R20Cell4.setCellValue(record.getR20OtherInstallmentLoans().doubleValue());
+							R20Cell4.setCellStyle(numberStyle);
+						} else {
+							R20Cell4.setCellValue("");
+							R20Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R21 (Row Index 20) ---
+						row = sheet.getRow(20);
+						Cell R21Cell1 = row.createCell(1);
+						if (record1.getR21FactoringDebtors() != null) {
+							R21Cell1.setCellValue(record1.getR21FactoringDebtors().doubleValue());
+							R21Cell1.setCellStyle(numberStyle);
+						} else {
+							R21Cell1.setCellValue("");
+							R21Cell1.setCellStyle(textStyle);
+						}
+						Cell R21Cell2 = row.createCell(2);
+						if (record1.getR21Leasing() != null) {
+							R21Cell2.setCellValue(record1.getR21Leasing().doubleValue());
+							R21Cell2.setCellStyle(numberStyle);
+						} else {
+							R21Cell2.setCellValue("");
+							R21Cell2.setCellStyle(textStyle);
+						}
+						Cell R21Cell3 = row.createCell(3);
+						if (record.getR21Overdrafts() != null) {
+							R21Cell3.setCellValue(record.getR21Overdrafts().doubleValue());
+							R21Cell3.setCellStyle(numberStyle);
+						} else {
+							R21Cell3.setCellValue("");
+							R21Cell3.setCellStyle(textStyle);
+						}
+						Cell R21Cell4 = row.createCell(4);
+						if (record.getR21OtherInstallmentLoans() != null) {
+							R21Cell4.setCellValue(record.getR21OtherInstallmentLoans().doubleValue());
+							R21Cell4.setCellStyle(numberStyle);
+						} else {
+							R21Cell4.setCellValue("");
+							R21Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R22 (Row Index 21) ---
+						row = sheet.getRow(21);
+						Cell R22Cell1 = row.createCell(1);
+						if (record1.getR22FactoringDebtors() != null) {
+							R22Cell1.setCellValue(record1.getR22FactoringDebtors().doubleValue());
+							R22Cell1.setCellStyle(numberStyle);
+						} else {
+							R22Cell1.setCellValue("");
+							R22Cell1.setCellStyle(textStyle);
+						}
+						Cell R22Cell2 = row.createCell(2);
+						if (record1.getR22Leasing() != null) {
+							R22Cell2.setCellValue(record1.getR22Leasing().doubleValue());
+							R22Cell2.setCellStyle(numberStyle);
+						} else {
+							R22Cell2.setCellValue("");
+							R22Cell2.setCellStyle(textStyle);
+						}
+						Cell R22Cell3 = row.createCell(3);
+						if (record.getR22Overdrafts() != null) {
+							R22Cell3.setCellValue(record.getR22Overdrafts().doubleValue());
+							R22Cell3.setCellStyle(numberStyle);
+						} else {
+							R22Cell3.setCellValue("");
+							R22Cell3.setCellStyle(textStyle);
+						}
+						Cell R22Cell4 = row.createCell(4);
+						if (record.getR22OtherInstallmentLoans() != null) {
+							R22Cell4.setCellValue(record.getR22OtherInstallmentLoans().doubleValue());
+							R22Cell4.setCellStyle(numberStyle);
+						} else {
+							R22Cell4.setCellValue("");
+							R22Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R23 (Row Index 22) ---
+						row = sheet.getRow(22);
+						Cell R23Cell1 = row.createCell(1);
+						if (record1.getR23FactoringDebtors() != null) {
+							R23Cell1.setCellValue(record1.getR23FactoringDebtors().doubleValue());
+							R23Cell1.setCellStyle(numberStyle);
+						} else {
+							R23Cell1.setCellValue("");
+							R23Cell1.setCellStyle(textStyle);
+						}
+						Cell R23Cell2 = row.createCell(2);
+						if (record1.getR23Leasing() != null) {
+							R23Cell2.setCellValue(record1.getR23Leasing().doubleValue());
+							R23Cell2.setCellStyle(numberStyle);
+						} else {
+							R23Cell2.setCellValue("");
+							R23Cell2.setCellStyle(textStyle);
+						}
+						Cell R23Cell3 = row.createCell(3);
+						if (record.getR23Overdrafts() != null) {
+							R23Cell3.setCellValue(record.getR23Overdrafts().doubleValue());
+							R23Cell3.setCellStyle(numberStyle);
+						} else {
+							R23Cell3.setCellValue("");
+							R23Cell3.setCellStyle(textStyle);
+						}
+						Cell R23Cell4 = row.createCell(4);
+						if (record.getR23OtherInstallmentLoans() != null) {
+							R23Cell4.setCellValue(record.getR23OtherInstallmentLoans().doubleValue());
+							R23Cell4.setCellStyle(numberStyle);
+						} else {
+							R23Cell4.setCellValue("");
+							R23Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R24 (Row Index 23) ---
+						row = sheet.getRow(23);
+						Cell R24Cell1 = row.createCell(1);
+						if (record1.getR24FactoringDebtors() != null) {
+							R24Cell1.setCellValue(record1.getR24FactoringDebtors().doubleValue());
+							R24Cell1.setCellStyle(numberStyle);
+						} else {
+							R24Cell1.setCellValue("");
+							R24Cell1.setCellStyle(textStyle);
+						}
+						Cell R24Cell2 = row.createCell(2);
+						if (record1.getR24Leasing() != null) {
+							R24Cell2.setCellValue(record1.getR24Leasing().doubleValue());
+							R24Cell2.setCellStyle(numberStyle);
+						} else {
+							R24Cell2.setCellValue("");
+							R24Cell2.setCellStyle(textStyle);
+						}
+						Cell R24Cell3 = row.createCell(3);
+						if (record.getR24Overdrafts() != null) {
+							R24Cell3.setCellValue(record.getR24Overdrafts().doubleValue());
+							R24Cell3.setCellStyle(numberStyle);
+						} else {
+							R24Cell3.setCellValue("");
+							R24Cell3.setCellStyle(textStyle);
+						}
+						Cell R24Cell4 = row.createCell(4);
+						if (record.getR24OtherInstallmentLoans() != null) {
+							R24Cell4.setCellValue(record.getR24OtherInstallmentLoans().doubleValue());
+							R24Cell4.setCellStyle(numberStyle);
+						} else {
+							R24Cell4.setCellValue("");
+							R24Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R25 (Row Index 24) ---
+						row = sheet.getRow(24);
+						Cell R25Cell1 = row.createCell(1);
+						if (record1.getR25FactoringDebtors() != null) {
+							R25Cell1.setCellValue(record1.getR25FactoringDebtors().doubleValue());
+							R25Cell1.setCellStyle(numberStyle);
+						} else {
+							R25Cell1.setCellValue("");
+							R25Cell1.setCellStyle(textStyle);
+						}
+						Cell R25Cell2 = row.createCell(2);
+						if (record1.getR25Leasing() != null) {
+							R25Cell2.setCellValue(record1.getR25Leasing().doubleValue());
+							R25Cell2.setCellStyle(numberStyle);
+						} else {
+							R25Cell2.setCellValue("");
+							R25Cell2.setCellStyle(textStyle);
+						}
+						Cell R25Cell3 = row.createCell(3);
+						if (record.getR25Overdrafts() != null) {
+							R25Cell3.setCellValue(record.getR25Overdrafts().doubleValue());
+							R25Cell3.setCellStyle(numberStyle);
+						} else {
+							R25Cell3.setCellValue("");
+							R25Cell3.setCellStyle(textStyle);
+						}
+						Cell R25Cell4 = row.createCell(4);
+						if (record.getR25OtherInstallmentLoans() != null) {
+							R25Cell4.setCellValue(record.getR25OtherInstallmentLoans().doubleValue());
+							R25Cell4.setCellStyle(numberStyle);
+						} else {
+							R25Cell4.setCellValue("");
+							R25Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R26 (Row Index 25) ---
+						row = sheet.getRow(25);
+						Cell R26Cell1 = row.createCell(1);
+						if (record1.getR26FactoringDebtors() != null) {
+							R26Cell1.setCellValue(record1.getR26FactoringDebtors().doubleValue());
+							R26Cell1.setCellStyle(numberStyle);
+						} else {
+							R26Cell1.setCellValue("");
+							R26Cell1.setCellStyle(textStyle);
+						}
+						Cell R26Cell2 = row.createCell(2);
+						if (record1.getR26Leasing() != null) {
+							R26Cell2.setCellValue(record1.getR26Leasing().doubleValue());
+							R26Cell2.setCellStyle(numberStyle);
+						} else {
+							R26Cell2.setCellValue("");
+							R26Cell2.setCellStyle(textStyle);
+						}
+						Cell R26Cell3 = row.createCell(3);
+						if (record.getR26Overdrafts() != null) {
+							R26Cell3.setCellValue(record.getR26Overdrafts().doubleValue());
+							R26Cell3.setCellStyle(numberStyle);
+						} else {
+							R26Cell3.setCellValue("");
+							R26Cell3.setCellStyle(textStyle);
+						}
+						Cell R26Cell4 = row.createCell(4);
+						if (record.getR26OtherInstallmentLoans() != null) {
+							R26Cell4.setCellValue(record.getR26OtherInstallmentLoans().doubleValue());
+							R26Cell4.setCellStyle(numberStyle);
+						} else {
+							R26Cell4.setCellValue("");
+							R26Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R27 (Row Index 26) ---
+						row = sheet.getRow(26);
+						Cell R27Cell1 = row.createCell(1);
+						if (record1.getR27FactoringDebtors() != null) {
+							R27Cell1.setCellValue(record1.getR27FactoringDebtors().doubleValue());
+							R27Cell1.setCellStyle(numberStyle);
+						} else {
+							R27Cell1.setCellValue("");
+							R27Cell1.setCellStyle(textStyle);
+						}
+						Cell R27Cell2 = row.createCell(2);
+						if (record1.getR27Leasing() != null) {
+							R27Cell2.setCellValue(record1.getR27Leasing().doubleValue());
+							R27Cell2.setCellStyle(numberStyle);
+						} else {
+							R27Cell2.setCellValue("");
+							R27Cell2.setCellStyle(textStyle);
+						}
+						Cell R27Cell3 = row.createCell(3);
+						if (record.getR27Overdrafts() != null) {
+							R27Cell3.setCellValue(record.getR27Overdrafts().doubleValue());
+							R27Cell3.setCellStyle(numberStyle);
+						} else {
+							R27Cell3.setCellValue("");
+							R27Cell3.setCellStyle(textStyle);
+						}
+						Cell R27Cell4 = row.createCell(4);
+						if (record.getR27OtherInstallmentLoans() != null) {
+							R27Cell4.setCellValue(record.getR27OtherInstallmentLoans().doubleValue());
+							R27Cell4.setCellStyle(numberStyle);
+						} else {
+							R27Cell4.setCellValue("");
+							R27Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R28 (Row Index 27) ---
+						row = sheet.getRow(27);
+						Cell R28Cell1 = row.createCell(1);
+						if (record1.getR28FactoringDebtors() != null) {
+							R28Cell1.setCellValue(record1.getR28FactoringDebtors().doubleValue());
+							R28Cell1.setCellStyle(numberStyle);
+						} else {
+							R28Cell1.setCellValue("");
+							R28Cell1.setCellStyle(textStyle);
+						}
+						Cell R28Cell2 = row.createCell(2);
+						if (record1.getR28Leasing() != null) {
+							R28Cell2.setCellValue(record1.getR28Leasing().doubleValue());
+							R28Cell2.setCellStyle(numberStyle);
+						} else {
+							R28Cell2.setCellValue("");
+							R28Cell2.setCellStyle(textStyle);
+						}
+						Cell R28Cell3 = row.createCell(3);
+						if (record.getR28Overdrafts() != null) {
+							R28Cell3.setCellValue(record.getR28Overdrafts().doubleValue());
+							R28Cell3.setCellStyle(numberStyle);
+						} else {
+							R28Cell3.setCellValue("");
+							R28Cell3.setCellStyle(textStyle);
+						}
+						Cell R28Cell4 = row.createCell(4);
+						if (record.getR28OtherInstallmentLoans() != null) {
+							R28Cell4.setCellValue(record.getR28OtherInstallmentLoans().doubleValue());
+							R28Cell4.setCellStyle(numberStyle);
+						} else {
+							R28Cell4.setCellValue("");
+							R28Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R30 (Row Index 29) ---
+						row = sheet.getRow(29);
+						Cell R30Cell1 = row.createCell(1);
+						if (record1.getR30FactoringDebtors() != null) {
+							R30Cell1.setCellValue(record1.getR30FactoringDebtors().doubleValue());
+							R30Cell1.setCellStyle(numberStyle);
+						} else {
+							R30Cell1.setCellValue("");
+							R30Cell1.setCellStyle(textStyle);
+						}
+						Cell R30Cell2 = row.createCell(2);
+						if (record1.getR30Leasing() != null) {
+							R30Cell2.setCellValue(record1.getR30Leasing().doubleValue());
+							R30Cell2.setCellStyle(numberStyle);
+						} else {
+							R30Cell2.setCellValue("");
+							R30Cell2.setCellStyle(textStyle);
+						}
+						Cell R30Cell3 = row.createCell(3);
+						if (record.getR30Overdrafts() != null) {
+							R30Cell3.setCellValue(record.getR30Overdrafts().doubleValue());
+							R30Cell3.setCellStyle(numberStyle);
+						} else {
+							R30Cell3.setCellValue("");
+							R30Cell3.setCellStyle(textStyle);
+						}
+						Cell R30Cell4 = row.createCell(4);
+						if (record.getR30OtherInstallmentLoans() != null) {
+							R30Cell4.setCellValue(record.getR30OtherInstallmentLoans().doubleValue());
+							R30Cell4.setCellStyle(numberStyle);
+						} else {
+							R30Cell4.setCellValue("");
+							R30Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R31 (Row Index 30) ---
+						row = sheet.getRow(30);
+						Cell R31Cell1 = row.createCell(1);
+						if (record1.getR31FactoringDebtors() != null) {
+							R31Cell1.setCellValue(record1.getR31FactoringDebtors().doubleValue());
+							R31Cell1.setCellStyle(numberStyle);
+						} else {
+							R31Cell1.setCellValue("");
+							R31Cell1.setCellStyle(textStyle);
+						}
+						Cell R31Cell2 = row.createCell(2);
+						if (record1.getR31Leasing() != null) {
+							R31Cell2.setCellValue(record1.getR31Leasing().doubleValue());
+							R31Cell2.setCellStyle(numberStyle);
+						} else {
+							R31Cell2.setCellValue("");
+							R31Cell2.setCellStyle(textStyle);
+						}
+						Cell R31Cell3 = row.createCell(3);
+						if (record.getR31Overdrafts() != null) {
+							R31Cell3.setCellValue(record.getR31Overdrafts().doubleValue());
+							R31Cell3.setCellStyle(numberStyle);
+						} else {
+							R31Cell3.setCellValue("");
+							R31Cell3.setCellStyle(textStyle);
+						}
+						Cell R31Cell4 = row.createCell(4);
+						if (record.getR31OtherInstallmentLoans() != null) {
+							R31Cell4.setCellValue(record.getR31OtherInstallmentLoans().doubleValue());
+							R31Cell4.setCellStyle(numberStyle);
+						} else {
+							R31Cell4.setCellValue("");
+							R31Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R32 (Row Index 31) ---
+						row = sheet.getRow(31);
+						Cell R32Cell1 = row.createCell(1);
+						if (record1.getR32FactoringDebtors() != null) {
+							R32Cell1.setCellValue(record1.getR32FactoringDebtors().doubleValue());
+							R32Cell1.setCellStyle(numberStyle);
+						} else {
+							R32Cell1.setCellValue("");
+							R32Cell1.setCellStyle(textStyle);
+						}
+						Cell R32Cell2 = row.createCell(2);
+						if (record1.getR32Leasing() != null) {
+							R32Cell2.setCellValue(record1.getR32Leasing().doubleValue());
+							R32Cell2.setCellStyle(numberStyle);
+						} else {
+							R32Cell2.setCellValue("");
+							R32Cell2.setCellStyle(textStyle);
+						}
+						Cell R32Cell3 = row.createCell(3);
+						if (record.getR32Overdrafts() != null) {
+							R32Cell3.setCellValue(record.getR32Overdrafts().doubleValue());
+							R32Cell3.setCellStyle(numberStyle);
+						} else {
+							R32Cell3.setCellValue("");
+							R32Cell3.setCellStyle(textStyle);
+						}
+						Cell R32Cell4 = row.createCell(4);
+						if (record.getR32OtherInstallmentLoans() != null) {
+							R32Cell4.setCellValue(record.getR32OtherInstallmentLoans().doubleValue());
+							R32Cell4.setCellStyle(numberStyle);
+						} else {
+							R32Cell4.setCellValue("");
+							R32Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R33 (Row Index 32) ---
+						row = sheet.getRow(32);
+						Cell R33Cell1 = row.createCell(1);
+						if (record1.getR33FactoringDebtors() != null) {
+							R33Cell1.setCellValue(record1.getR33FactoringDebtors().doubleValue());
+							R33Cell1.setCellStyle(numberStyle);
+						} else {
+							R33Cell1.setCellValue("");
+							R33Cell1.setCellStyle(textStyle);
+						}
+						Cell R33Cell2 = row.createCell(2);
+						if (record1.getR33Leasing() != null) {
+							R33Cell2.setCellValue(record1.getR33Leasing().doubleValue());
+							R33Cell2.setCellStyle(numberStyle);
+						} else {
+							R33Cell2.setCellValue("");
+							R33Cell2.setCellStyle(textStyle);
+						}
+						Cell R33Cell3 = row.createCell(3);
+						if (record.getR33Overdrafts() != null) {
+							R33Cell3.setCellValue(record.getR33Overdrafts().doubleValue());
+							R33Cell3.setCellStyle(numberStyle);
+						} else {
+							R33Cell3.setCellValue("");
+							R33Cell3.setCellStyle(textStyle);
+						}
+						Cell R33Cell4 = row.createCell(4);
+						if (record.getR33OtherInstallmentLoans() != null) {
+							R33Cell4.setCellValue(record.getR33OtherInstallmentLoans().doubleValue());
+							R33Cell4.setCellStyle(numberStyle);
+						} else {
+							R33Cell4.setCellValue("");
+							R33Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R34 (Row Index 33) ---
+						row = sheet.getRow(33);
+						Cell R34Cell1 = row.createCell(1);
+						if (record1.getR34FactoringDebtors() != null) {
+							R34Cell1.setCellValue(record1.getR34FactoringDebtors().doubleValue());
+							R34Cell1.setCellStyle(numberStyle);
+						} else {
+							R34Cell1.setCellValue("");
+							R34Cell1.setCellStyle(textStyle);
+						}
+						Cell R34Cell2 = row.createCell(2);
+						if (record1.getR34Leasing() != null) {
+							R34Cell2.setCellValue(record1.getR34Leasing().doubleValue());
+							R34Cell2.setCellStyle(numberStyle);
+						} else {
+							R34Cell2.setCellValue("");
+							R34Cell2.setCellStyle(textStyle);
+						}
+						Cell R34Cell3 = row.createCell(3);
+						if (record.getR34Overdrafts() != null) {
+							R34Cell3.setCellValue(record.getR34Overdrafts().doubleValue());
+							R34Cell3.setCellStyle(numberStyle);
+						} else {
+							R34Cell3.setCellValue("");
+							R34Cell3.setCellStyle(textStyle);
+						}
+						Cell R34Cell4 = row.createCell(4);
+						if (record.getR34OtherInstallmentLoans() != null) {
+							R34Cell4.setCellValue(record.getR34OtherInstallmentLoans().doubleValue());
+							R34Cell4.setCellStyle(numberStyle);
+						} else {
+							R34Cell4.setCellValue("");
+							R34Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R35 (Row Index 34) ---
+						row = sheet.getRow(34);
+						Cell R35Cell1 = row.createCell(1);
+						if (record1.getR35FactoringDebtors() != null) {
+							R35Cell1.setCellValue(record1.getR35FactoringDebtors().doubleValue());
+							R35Cell1.setCellStyle(numberStyle);
+						} else {
+							R35Cell1.setCellValue("");
+							R35Cell1.setCellStyle(textStyle);
+						}
+						Cell R35Cell2 = row.createCell(2);
+						if (record1.getR35Leasing() != null) {
+							R35Cell2.setCellValue(record1.getR35Leasing().doubleValue());
+							R35Cell2.setCellStyle(numberStyle);
+						} else {
+							R35Cell2.setCellValue("");
+							R35Cell2.setCellStyle(textStyle);
+						}
+						Cell R35Cell3 = row.createCell(3);
+						if (record.getR35Overdrafts() != null) {
+							R35Cell3.setCellValue(record.getR35Overdrafts().doubleValue());
+							R35Cell3.setCellStyle(numberStyle);
+						} else {
+							R35Cell3.setCellValue("");
+							R35Cell3.setCellStyle(textStyle);
+						}
+						Cell R35Cell4 = row.createCell(4);
+						if (record.getR35OtherInstallmentLoans() != null) {
+							R35Cell4.setCellValue(record.getR35OtherInstallmentLoans().doubleValue());
+							R35Cell4.setCellStyle(numberStyle);
+						} else {
+							R35Cell4.setCellValue("");
+							R35Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R36 (Row Index 35) ---
+						row = sheet.getRow(35);
+						Cell R36Cell1 = row.createCell(1);
+						if (record1.getR36FactoringDebtors() != null) {
+							R36Cell1.setCellValue(record1.getR36FactoringDebtors().doubleValue());
+							R36Cell1.setCellStyle(numberStyle);
+						} else {
+							R36Cell1.setCellValue("");
+							R36Cell1.setCellStyle(textStyle);
+						}
+						Cell R36Cell2 = row.createCell(2);
+						if (record1.getR36Leasing() != null) {
+							R36Cell2.setCellValue(record1.getR36Leasing().doubleValue());
+							R36Cell2.setCellStyle(numberStyle);
+						} else {
+							R36Cell2.setCellValue("");
+							R36Cell2.setCellStyle(textStyle);
+						}
+						Cell R36Cell3 = row.createCell(3);
+						if (record.getR36Overdrafts() != null) {
+							R36Cell3.setCellValue(record.getR36Overdrafts().doubleValue());
+							R36Cell3.setCellStyle(numberStyle);
+						} else {
+							R36Cell3.setCellValue("");
+							R36Cell3.setCellStyle(textStyle);
+						}
+						Cell R36Cell4 = row.createCell(4);
+						if (record.getR36OtherInstallmentLoans() != null) {
+							R36Cell4.setCellValue(record.getR36OtherInstallmentLoans().doubleValue());
+							R36Cell4.setCellStyle(numberStyle);
+						} else {
+							R36Cell4.setCellValue("");
+							R36Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R37 (Row Index 36) ---
+						row = sheet.getRow(36);
+						Cell R37Cell1 = row.createCell(1);
+						if (record1.getR37FactoringDebtors() != null) {
+							R37Cell1.setCellValue(record1.getR37FactoringDebtors().doubleValue());
+							R37Cell1.setCellStyle(numberStyle);
+						} else {
+							R37Cell1.setCellValue("");
+							R37Cell1.setCellStyle(textStyle);
+						}
+						Cell R37Cell2 = row.createCell(2);
+						if (record1.getR37Leasing() != null) {
+							R37Cell2.setCellValue(record1.getR37Leasing().doubleValue());
+							R37Cell2.setCellStyle(numberStyle);
+						} else {
+							R37Cell2.setCellValue("");
+							R37Cell2.setCellStyle(textStyle);
+						}
+						Cell R37Cell3 = row.createCell(3);
+						if (record.getR37Overdrafts() != null) {
+							R37Cell3.setCellValue(record.getR37Overdrafts().doubleValue());
+							R37Cell3.setCellStyle(numberStyle);
+						} else {
+							R37Cell3.setCellValue("");
+							R37Cell3.setCellStyle(textStyle);
+						}
+						Cell R37Cell4 = row.createCell(4);
+						if (record.getR37OtherInstallmentLoans() != null) {
+							R37Cell4.setCellValue(record.getR37OtherInstallmentLoans().doubleValue());
+							R37Cell4.setCellStyle(numberStyle);
+						} else {
+							R37Cell4.setCellValue("");
+							R37Cell4.setCellStyle(textStyle);
+						}
+						// --- R39 (Row Index 38) ---
+						row = sheet.getRow(38);
+						Cell R39Cell1 = row.createCell(1);
+						if (record1.getR39FactoringDebtors() != null) {
+							R39Cell1.setCellValue(record1.getR39FactoringDebtors().doubleValue());
+							R39Cell1.setCellStyle(numberStyle);
+						} else {
+							R39Cell1.setCellValue("");
+							R39Cell1.setCellStyle(textStyle);
+						}
+						Cell R39Cell2 = row.createCell(2);
+						if (record1.getR39Leasing() != null) {
+							R39Cell2.setCellValue(record1.getR39Leasing().doubleValue());
+							R39Cell2.setCellStyle(numberStyle);
+						} else {
+							R39Cell2.setCellValue("");
+							R39Cell2.setCellStyle(textStyle);
+						}
+						Cell R39Cell3 = row.createCell(3);
+						if (record.getR39Overdrafts() != null) {
+							R39Cell3.setCellValue(record.getR39Overdrafts().doubleValue());
+							R39Cell3.setCellStyle(numberStyle);
+						} else {
+							R39Cell3.setCellValue("");
+							R39Cell3.setCellStyle(textStyle);
+						}
+						Cell R39Cell4 = row.createCell(4);
+						if (record.getR39OtherInstallmentLoans() != null) {
+							R39Cell4.setCellValue(record.getR39OtherInstallmentLoans().doubleValue());
+							R39Cell4.setCellStyle(numberStyle);
+						} else {
+							R39Cell4.setCellValue("");
+							R39Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R40 (Row Index 39) ---
+						row = sheet.getRow(39);
+						Cell R40Cell1 = row.createCell(1);
+						if (record1.getR40FactoringDebtors() != null) {
+							R40Cell1.setCellValue(record1.getR40FactoringDebtors().doubleValue());
+							R40Cell1.setCellStyle(numberStyle);
+						} else {
+							R40Cell1.setCellValue("");
+							R40Cell1.setCellStyle(textStyle);
+						}
+						Cell R40Cell2 = row.createCell(2);
+						if (record1.getR40Leasing() != null) {
+							R40Cell2.setCellValue(record1.getR40Leasing().doubleValue());
+							R40Cell2.setCellStyle(numberStyle);
+						} else {
+							R40Cell2.setCellValue("");
+							R40Cell2.setCellStyle(textStyle);
+						}
+						Cell R40Cell3 = row.createCell(3);
+						if (record.getR40Overdrafts() != null) {
+							R40Cell3.setCellValue(record.getR40Overdrafts().doubleValue());
+							R40Cell3.setCellStyle(numberStyle);
+						} else {
+							R40Cell3.setCellValue("");
+							R40Cell3.setCellStyle(textStyle);
+						}
+						Cell R40Cell4 = row.createCell(4);
+						if (record.getR40OtherInstallmentLoans() != null) {
+							R40Cell4.setCellValue(record.getR40OtherInstallmentLoans().doubleValue());
+							R40Cell4.setCellStyle(numberStyle);
+						} else {
+							R40Cell4.setCellValue("");
+							R40Cell4.setCellStyle(textStyle);
+						}
+						// --- R42 (Row Index 41) ---
+						row = sheet.getRow(41);
+						Cell R42Cell1 = row.createCell(1);
+						if (record1.getR42FactoringDebtors() != null) {
+							R42Cell1.setCellValue(record1.getR42FactoringDebtors().doubleValue());
+							R42Cell1.setCellStyle(numberStyle);
+						} else {
+							R42Cell1.setCellValue("");
+							R42Cell1.setCellStyle(textStyle);
+						}
+						Cell R42Cell2 = row.createCell(2);
+						if (record1.getR42Leasing() != null) {
+							R42Cell2.setCellValue(record1.getR42Leasing().doubleValue());
+							R42Cell2.setCellStyle(numberStyle);
+						} else {
+							R42Cell2.setCellValue("");
+							R42Cell2.setCellStyle(textStyle);
+						}
+						Cell R42Cell3 = row.createCell(3);
+						if (record.getR42Overdrafts() != null) {
+							R42Cell3.setCellValue(record.getR42Overdrafts().doubleValue());
+							R42Cell3.setCellStyle(numberStyle);
+						} else {
+							R42Cell3.setCellValue("");
+							R42Cell3.setCellStyle(textStyle);
+						}
+						Cell R42Cell4 = row.createCell(4);
+						if (record.getR42OtherInstallmentLoans() != null) {
+							R42Cell4.setCellValue(record.getR42OtherInstallmentLoans().doubleValue());
+							R42Cell4.setCellStyle(numberStyle);
+						} else {
+							R42Cell4.setCellValue("");
+							R42Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R43 (Row Index 42) ---
+						row = sheet.getRow(42);
+						Cell R43Cell1 = row.createCell(1);
+						if (record1.getR43FactoringDebtors() != null) {
+							R43Cell1.setCellValue(record1.getR43FactoringDebtors().doubleValue());
+							R43Cell1.setCellStyle(numberStyle);
+						} else {
+							R43Cell1.setCellValue("");
+							R43Cell1.setCellStyle(textStyle);
+						}
+						Cell R43Cell2 = row.createCell(2);
+						if (record1.getR43Leasing() != null) {
+							R43Cell2.setCellValue(record1.getR43Leasing().doubleValue());
+							R43Cell2.setCellStyle(numberStyle);
+						} else {
+							R43Cell2.setCellValue("");
+							R43Cell2.setCellStyle(textStyle);
+						}
+						Cell R43Cell3 = row.createCell(3);
+						if (record.getR43Overdrafts() != null) {
+							R43Cell3.setCellValue(record.getR43Overdrafts().doubleValue());
+							R43Cell3.setCellStyle(numberStyle);
+						} else {
+							R43Cell3.setCellValue("");
+							R43Cell3.setCellStyle(textStyle);
+						}
+						Cell R43Cell4 = row.createCell(4);
+						if (record.getR43OtherInstallmentLoans() != null) {
+							R43Cell4.setCellValue(record.getR43OtherInstallmentLoans().doubleValue());
+							R43Cell4.setCellStyle(numberStyle);
+						} else {
+							R43Cell4.setCellValue("");
+							R43Cell4.setCellStyle(textStyle);
+						}
+						// --- R45 (Row Index 44) ---
+						row = sheet.getRow(44);
+						Cell R45Cell1 = row.createCell(1);
+						if (record1.getR45FactoringDebtors() != null) {
+							R45Cell1.setCellValue(record1.getR45FactoringDebtors().doubleValue());
+							R45Cell1.setCellStyle(numberStyle);
+						} else {
+							R45Cell1.setCellValue("");
+							R45Cell1.setCellStyle(textStyle);
+						}
+						Cell R45Cell2 = row.createCell(2);
+						if (record1.getR45Leasing() != null) {
+							R45Cell2.setCellValue(record1.getR45Leasing().doubleValue());
+							R45Cell2.setCellStyle(numberStyle);
+						} else {
+							R45Cell2.setCellValue("");
+							R45Cell2.setCellStyle(textStyle);
+						}
+						Cell R45Cell3 = row.createCell(3);
+						if (record.getR45Overdrafts() != null) {
+							R45Cell3.setCellValue(record.getR45Overdrafts().doubleValue());
+							R45Cell3.setCellStyle(numberStyle);
+						} else {
+							R45Cell3.setCellValue("");
+							R45Cell3.setCellStyle(textStyle);
+						}
+						Cell R45Cell4 = row.createCell(4);
+						if (record.getR45OtherInstallmentLoans() != null) {
+							R45Cell4.setCellValue(record.getR45OtherInstallmentLoans().doubleValue());
+							R45Cell4.setCellStyle(numberStyle);
+						} else {
+							R45Cell4.setCellValue("");
+							R45Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R46 (Row Index 45) ---
+						row = sheet.getRow(45);
+						Cell R46Cell1 = row.createCell(1);
+						if (record1.getR46FactoringDebtors() != null) {
+							R46Cell1.setCellValue(record1.getR46FactoringDebtors().doubleValue());
+							R46Cell1.setCellStyle(numberStyle);
+						} else {
+							R46Cell1.setCellValue("");
+							R46Cell1.setCellStyle(textStyle);
+						}
+						Cell R46Cell2 = row.createCell(2);
+						if (record1.getR46Leasing() != null) {
+							R46Cell2.setCellValue(record1.getR46Leasing().doubleValue());
+							R46Cell2.setCellStyle(numberStyle);
+						} else {
+							R46Cell2.setCellValue("");
+							R46Cell2.setCellStyle(textStyle);
+						}
+						Cell R46Cell3 = row.createCell(3);
+						if (record.getR46Overdrafts() != null) {
+							R46Cell3.setCellValue(record.getR46Overdrafts().doubleValue());
+							R46Cell3.setCellStyle(numberStyle);
+						} else {
+							R46Cell3.setCellValue("");
+							R46Cell3.setCellStyle(textStyle);
+						}
+						Cell R46Cell4 = row.createCell(4);
+						if (record.getR46OtherInstallmentLoans() != null) {
+							R46Cell4.setCellValue(record.getR46OtherInstallmentLoans().doubleValue());
+							R46Cell4.setCellStyle(numberStyle);
+						} else {
+							R46Cell4.setCellValue("");
+							R46Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R47 (Row Index 46) ---
+						row = sheet.getRow(46);
+						Cell R47Cell1 = row.createCell(1);
+						if (record1.getR47FactoringDebtors() != null) {
+							R47Cell1.setCellValue(record1.getR47FactoringDebtors().doubleValue());
+							R47Cell1.setCellStyle(numberStyle);
+						} else {
+							R47Cell1.setCellValue("");
+							R47Cell1.setCellStyle(textStyle);
+						}
+						Cell R47Cell2 = row.createCell(2);
+						if (record1.getR47Leasing() != null) {
+							R47Cell2.setCellValue(record1.getR47Leasing().doubleValue());
+							R47Cell2.setCellStyle(numberStyle);
+						} else {
+							R47Cell2.setCellValue("");
+							R47Cell2.setCellStyle(textStyle);
+						}
+						Cell R47Cell3 = row.createCell(3);
+						if (record.getR47Overdrafts() != null) {
+							R47Cell3.setCellValue(record.getR47Overdrafts().doubleValue());
+							R47Cell3.setCellStyle(numberStyle);
+						} else {
+							R47Cell3.setCellValue("");
+							R47Cell3.setCellStyle(textStyle);
+						}
+						Cell R47Cell4 = row.createCell(4);
+						if (record.getR47OtherInstallmentLoans() != null) {
+							R47Cell4.setCellValue(record.getR47OtherInstallmentLoans().doubleValue());
+							R47Cell4.setCellStyle(numberStyle);
+						} else {
+							R47Cell4.setCellValue("");
+							R47Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R48 (Row Index 47) ---
+						row = sheet.getRow(47);
+						Cell R48Cell1 = row.createCell(1);
+						if (record1.getR48FactoringDebtors() != null) {
+							R48Cell1.setCellValue(record1.getR48FactoringDebtors().doubleValue());
+							R48Cell1.setCellStyle(numberStyle);
+						} else {
+							R48Cell1.setCellValue("");
+							R48Cell1.setCellStyle(textStyle);
+						}
+						Cell R48Cell2 = row.createCell(2);
+						if (record1.getR48Leasing() != null) {
+							R48Cell2.setCellValue(record1.getR48Leasing().doubleValue());
+							R48Cell2.setCellStyle(numberStyle);
+						} else {
+							R48Cell2.setCellValue("");
+							R48Cell2.setCellStyle(textStyle);
+						}
+						Cell R48Cell3 = row.createCell(3);
+						if (record.getR48Overdrafts() != null) {
+							R48Cell3.setCellValue(record.getR48Overdrafts().doubleValue());
+							R48Cell3.setCellStyle(numberStyle);
+						} else {
+							R48Cell3.setCellValue("");
+							R48Cell3.setCellStyle(textStyle);
+						}
+						Cell R48Cell4 = row.createCell(4);
+						if (record.getR48OtherInstallmentLoans() != null) {
+							R48Cell4.setCellValue(record.getR48OtherInstallmentLoans().doubleValue());
+							R48Cell4.setCellStyle(numberStyle);
+						} else {
+							R48Cell4.setCellValue("");
+							R48Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R50 (Row Index 49) ---
+						row = sheet.getRow(49);
+						Cell R50Cell1 = row.createCell(1);
+						if (record1.getR50FactoringDebtors() != null) {
+							R50Cell1.setCellValue(record1.getR50FactoringDebtors().doubleValue());
+							R50Cell1.setCellStyle(numberStyle);
+						} else {
+							R50Cell1.setCellValue("");
+							R50Cell1.setCellStyle(textStyle);
+						}
+						Cell R50Cell2 = row.createCell(2);
+						if (record1.getR50Leasing() != null) {
+							R50Cell2.setCellValue(record1.getR50Leasing().doubleValue());
+							R50Cell2.setCellStyle(numberStyle);
+						} else {
+							R50Cell2.setCellValue("");
+							R50Cell2.setCellStyle(textStyle);
+						}
+						Cell R50Cell3 = row.createCell(3);
+						if (record.getR50Overdrafts() != null) {
+							R50Cell3.setCellValue(record.getR50Overdrafts().doubleValue());
+							R50Cell3.setCellStyle(numberStyle);
+						} else {
+							R50Cell3.setCellValue("");
+							R50Cell3.setCellStyle(textStyle);
+						}
+						Cell R50Cell4 = row.createCell(4);
+						if (record.getR50OtherInstallmentLoans() != null) {
+							R50Cell4.setCellValue(record.getR50OtherInstallmentLoans().doubleValue());
+							R50Cell4.setCellStyle(numberStyle);
+						} else {
+							R50Cell4.setCellValue("");
+							R50Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R51 (Row Index 50) ---
+						row = sheet.getRow(50);
+						Cell R51Cell1 = row.createCell(1);
+						if (record1.getR51FactoringDebtors() != null) {
+							R51Cell1.setCellValue(record1.getR51FactoringDebtors().doubleValue());
+							R51Cell1.setCellStyle(numberStyle);
+						} else {
+							R51Cell1.setCellValue("");
+							R51Cell1.setCellStyle(textStyle);
+						}
+						Cell R51Cell2 = row.createCell(2);
+						if (record1.getR51Leasing() != null) {
+							R51Cell2.setCellValue(record1.getR51Leasing().doubleValue());
+							R51Cell2.setCellStyle(numberStyle);
+						} else {
+							R51Cell2.setCellValue("");
+							R51Cell2.setCellStyle(textStyle);
+						}
+						Cell R51Cell3 = row.createCell(3);
+						if (record.getR51Overdrafts() != null) {
+							R51Cell3.setCellValue(record.getR51Overdrafts().doubleValue());
+							R51Cell3.setCellStyle(numberStyle);
+						} else {
+							R51Cell3.setCellValue("");
+							R51Cell3.setCellStyle(textStyle);
+						}
+						Cell R51Cell4 = row.createCell(4);
+						if (record.getR51OtherInstallmentLoans() != null) {
+							R51Cell4.setCellValue(record.getR51OtherInstallmentLoans().doubleValue());
+							R51Cell4.setCellStyle(numberStyle);
+						} else {
+							R51Cell4.setCellValue("");
+							R51Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R52 (Row Index 51) ---
+						row = sheet.getRow(51);
+						Cell R52Cell1 = row.createCell(1);
+						if (record1.getR52FactoringDebtors() != null) {
+							R52Cell1.setCellValue(record1.getR52FactoringDebtors().doubleValue());
+							R52Cell1.setCellStyle(numberStyle);
+						} else {
+							R52Cell1.setCellValue("");
+							R52Cell1.setCellStyle(textStyle);
+						}
+						Cell R52Cell2 = row.createCell(2);
+						if (record1.getR52Leasing() != null) {
+							R52Cell2.setCellValue(record1.getR52Leasing().doubleValue());
+							R52Cell2.setCellStyle(numberStyle);
+						} else {
+							R52Cell2.setCellValue("");
+							R52Cell2.setCellStyle(textStyle);
+						}
+						Cell R52Cell3 = row.createCell(3);
+						if (record.getR52Overdrafts() != null) {
+							R52Cell3.setCellValue(record.getR52Overdrafts().doubleValue());
+							R52Cell3.setCellStyle(numberStyle);
+						} else {
+							R52Cell3.setCellValue("");
+							R52Cell3.setCellStyle(textStyle);
+						}
+						Cell R52Cell4 = row.createCell(4);
+						if (record.getR52OtherInstallmentLoans() != null) {
+							R52Cell4.setCellValue(record.getR52OtherInstallmentLoans().doubleValue());
+							R52Cell4.setCellStyle(numberStyle);
+						} else {
+							R52Cell4.setCellValue("");
+							R52Cell4.setCellStyle(textStyle);
+						}
+						// --- R54 (Row Index 53) ---
+						row = sheet.getRow(53);
+						Cell R54Cell1 = row.createCell(1);
+						if (record1.getR54FactoringDebtors() != null) {
+							R54Cell1.setCellValue(record1.getR54FactoringDebtors().doubleValue());
+							R54Cell1.setCellStyle(numberStyle);
+						} else {
+							R54Cell1.setCellValue("");
+							R54Cell1.setCellStyle(textStyle);
+						}
+						Cell R54Cell2 = row.createCell(2);
+						if (record1.getR54Leasing() != null) {
+							R54Cell2.setCellValue(record1.getR54Leasing().doubleValue());
+							R54Cell2.setCellStyle(numberStyle);
+						} else {
+							R54Cell2.setCellValue("");
+							R54Cell2.setCellStyle(textStyle);
+						}
+						Cell R54Cell3 = row.createCell(3);
+						if (record.getR54Overdrafts() != null) {
+							R54Cell3.setCellValue(record.getR54Overdrafts().doubleValue());
+							R54Cell3.setCellStyle(numberStyle);
+						} else {
+							R54Cell3.setCellValue("");
+							R54Cell3.setCellStyle(textStyle);
+						}
+						Cell R54Cell4 = row.createCell(4);
+						if (record.getR54OtherInstallmentLoans() != null) {
+							R54Cell4.setCellValue(record.getR54OtherInstallmentLoans().doubleValue());
+							R54Cell4.setCellStyle(numberStyle);
+						} else {
+							R54Cell4.setCellValue("");
+							R54Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R55 (Row Index 54) ---
+						row = sheet.getRow(54);
+						Cell R55Cell1 = row.createCell(1);
+						if (record1.getR55FactoringDebtors() != null) {
+							R55Cell1.setCellValue(record1.getR55FactoringDebtors().doubleValue());
+							R55Cell1.setCellStyle(numberStyle);
+						} else {
+							R55Cell1.setCellValue("");
+							R55Cell1.setCellStyle(textStyle);
+						}
+						Cell R55Cell2 = row.createCell(2);
+						if (record1.getR55Leasing() != null) {
+							R55Cell2.setCellValue(record1.getR55Leasing().doubleValue());
+							R55Cell2.setCellStyle(numberStyle);
+						} else {
+							R55Cell2.setCellValue("");
+							R55Cell2.setCellStyle(textStyle);
+						}
+						Cell R55Cell3 = row.createCell(3);
+						if (record.getR55Overdrafts() != null) {
+							R55Cell3.setCellValue(record.getR55Overdrafts().doubleValue());
+							R55Cell3.setCellStyle(numberStyle);
+						} else {
+							R55Cell3.setCellValue("");
+							R55Cell3.setCellStyle(textStyle);
+						}
+						Cell R55Cell4 = row.createCell(4);
+						if (record.getR55OtherInstallmentLoans() != null) {
+							R55Cell4.setCellValue(record.getR55OtherInstallmentLoans().doubleValue());
+							R55Cell4.setCellStyle(numberStyle);
+						} else {
+							R55Cell4.setCellValue("");
+							R55Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R56 (Row Index 55) ---
+						row = sheet.getRow(55);
+						Cell R56Cell1 = row.createCell(1);
+						if (record1.getR56FactoringDebtors() != null) {
+							R56Cell1.setCellValue(record1.getR56FactoringDebtors().doubleValue());
+							R56Cell1.setCellStyle(numberStyle);
+						} else {
+							R56Cell1.setCellValue("");
+							R56Cell1.setCellStyle(textStyle);
+						}
+						Cell R56Cell2 = row.createCell(2);
+						if (record1.getR56Leasing() != null) {
+							R56Cell2.setCellValue(record1.getR56Leasing().doubleValue());
+							R56Cell2.setCellStyle(numberStyle);
+						} else {
+							R56Cell2.setCellValue("");
+							R56Cell2.setCellStyle(textStyle);
+						}
+						Cell R56Cell3 = row.createCell(3);
+						if (record.getR56Overdrafts() != null) {
+							R56Cell3.setCellValue(record.getR56Overdrafts().doubleValue());
+							R56Cell3.setCellStyle(numberStyle);
+						} else {
+							R56Cell3.setCellValue("");
+							R56Cell3.setCellStyle(textStyle);
+						}
+						Cell R56Cell4 = row.createCell(4);
+						if (record.getR56OtherInstallmentLoans() != null) {
+							R56Cell4.setCellValue(record.getR56OtherInstallmentLoans().doubleValue());
+							R56Cell4.setCellStyle(numberStyle);
+						} else {
+							R56Cell4.setCellValue("");
+							R56Cell4.setCellStyle(textStyle);
+						}
+						// --- R58 (Row Index 57) ---
+						row = sheet.getRow(57);
+						Cell R58Cell1 = row.createCell(1);
+						if (record1.getR58FactoringDebtors() != null) {
+							R58Cell1.setCellValue(record1.getR58FactoringDebtors().doubleValue());
+							R58Cell1.setCellStyle(numberStyle);
+						} else {
+							R58Cell1.setCellValue("");
+							R58Cell1.setCellStyle(textStyle);
+						}
+						Cell R58Cell2 = row.createCell(2);
+						if (record1.getR58Leasing() != null) {
+							R58Cell2.setCellValue(record1.getR58Leasing().doubleValue());
+							R58Cell2.setCellStyle(numberStyle);
+						} else {
+							R58Cell2.setCellValue("");
+							R58Cell2.setCellStyle(textStyle);
+						}
+						Cell R58Cell3 = row.createCell(3);
+						if (record.getR58Overdrafts() != null) {
+							R58Cell3.setCellValue(record.getR58Overdrafts().doubleValue());
+							R58Cell3.setCellStyle(numberStyle);
+						} else {
+							R58Cell3.setCellValue("");
+							R58Cell3.setCellStyle(textStyle);
+						}
+						Cell R58Cell4 = row.createCell(4);
+						if (record.getR58OtherInstallmentLoans() != null) {
+							R58Cell4.setCellValue(record.getR58OtherInstallmentLoans().doubleValue());
+							R58Cell4.setCellStyle(numberStyle);
+						} else {
+							R58Cell4.setCellValue("");
+							R58Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R59 (Row Index 58) ---
+						row = sheet.getRow(58);
+						Cell R59Cell1 = row.createCell(1);
+						if (record1.getR59FactoringDebtors() != null) {
+							R59Cell1.setCellValue(record1.getR59FactoringDebtors().doubleValue());
+							R59Cell1.setCellStyle(numberStyle);
+						} else {
+							R59Cell1.setCellValue("");
+							R59Cell1.setCellStyle(textStyle);
+						}
+						Cell R59Cell2 = row.createCell(2);
+						if (record1.getR59Leasing() != null) {
+							R59Cell2.setCellValue(record1.getR59Leasing().doubleValue());
+							R59Cell2.setCellStyle(numberStyle);
+						} else {
+							R59Cell2.setCellValue("");
+							R59Cell2.setCellStyle(textStyle);
+						}
+						Cell R59Cell3 = row.createCell(3);
+						if (record.getR59Overdrafts() != null) {
+							R59Cell3.setCellValue(record.getR59Overdrafts().doubleValue());
+							R59Cell3.setCellStyle(numberStyle);
+						} else {
+							R59Cell3.setCellValue("");
+							R59Cell3.setCellStyle(textStyle);
+						}
+						Cell R59Cell4 = row.createCell(4);
+						if (record.getR59OtherInstallmentLoans() != null) {
+							R59Cell4.setCellValue(record.getR59OtherInstallmentLoans().doubleValue());
+							R59Cell4.setCellStyle(numberStyle);
+						} else {
+							R59Cell4.setCellValue("");
+							R59Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R60 (Row Index 59) ---
+						row = sheet.getRow(59);
+						Cell R60Cell1 = row.createCell(1);
+						if (record1.getR60FactoringDebtors() != null) {
+							R60Cell1.setCellValue(record1.getR60FactoringDebtors().doubleValue());
+							R60Cell1.setCellStyle(numberStyle);
+						} else {
+							R60Cell1.setCellValue("");
+							R60Cell1.setCellStyle(textStyle);
+						}
+						Cell R60Cell2 = row.createCell(2);
+						if (record1.getR60Leasing() != null) {
+							R60Cell2.setCellValue(record1.getR60Leasing().doubleValue());
+							R60Cell2.setCellStyle(numberStyle);
+						} else {
+							R60Cell2.setCellValue("");
+							R60Cell2.setCellStyle(textStyle);
+						}
+						Cell R60Cell3 = row.createCell(3);
+						if (record.getR60Overdrafts() != null) {
+							R60Cell3.setCellValue(record.getR60Overdrafts().doubleValue());
+							R60Cell3.setCellStyle(numberStyle);
+						} else {
+							R60Cell3.setCellValue("");
+							R60Cell3.setCellStyle(textStyle);
+						}
+						Cell R60Cell4 = row.createCell(4);
+						if (record.getR60OtherInstallmentLoans() != null) {
+							R60Cell4.setCellValue(record.getR60OtherInstallmentLoans().doubleValue());
+							R60Cell4.setCellStyle(numberStyle);
+						} else {
+							R60Cell4.setCellValue("");
+							R60Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R61 (Row Index 60) ---
+						row = sheet.getRow(60);
+						Cell R61Cell1 = row.createCell(1);
+						if (record1.getR61FactoringDebtors() != null) {
+							R61Cell1.setCellValue(record1.getR61FactoringDebtors().doubleValue());
+							R61Cell1.setCellStyle(numberStyle);
+						} else {
+							R61Cell1.setCellValue("");
+							R61Cell1.setCellStyle(textStyle);
+						}
+						Cell R61Cell2 = row.createCell(2);
+						if (record1.getR61Leasing() != null) {
+							R61Cell2.setCellValue(record1.getR61Leasing().doubleValue());
+							R61Cell2.setCellStyle(numberStyle);
+						} else {
+							R61Cell2.setCellValue("");
+							R61Cell2.setCellStyle(textStyle);
+						}
+						Cell R61Cell3 = row.createCell(3);
+						if (record.getR61Overdrafts() != null) {
+							R61Cell3.setCellValue(record.getR61Overdrafts().doubleValue());
+							R61Cell3.setCellStyle(numberStyle);
+						} else {
+							R61Cell3.setCellValue("");
+							R61Cell3.setCellStyle(textStyle);
+						}
+						Cell R61Cell4 = row.createCell(4);
+						if (record.getR61OtherInstallmentLoans() != null) {
+							R61Cell4.setCellValue(record.getR61OtherInstallmentLoans().doubleValue());
+							R61Cell4.setCellStyle(numberStyle);
+						} else {
+							R61Cell4.setCellValue("");
+							R61Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R62 (Row Index 61) ---
+						row = sheet.getRow(61);
+						Cell R62Cell1 = row.createCell(1);
+						if (record1.getR62FactoringDebtors() != null) {
+							R62Cell1.setCellValue(record1.getR62FactoringDebtors().doubleValue());
+							R62Cell1.setCellStyle(numberStyle);
+						} else {
+							R62Cell1.setCellValue("");
+							R62Cell1.setCellStyle(textStyle);
+						}
+						Cell R62Cell2 = row.createCell(2);
+						if (record1.getR62Leasing() != null) {
+							R62Cell2.setCellValue(record1.getR62Leasing().doubleValue());
+							R62Cell2.setCellStyle(numberStyle);
+						} else {
+							R62Cell2.setCellValue("");
+							R62Cell2.setCellStyle(textStyle);
+						}
+						Cell R62Cell3 = row.createCell(3);
+						if (record.getR62Overdrafts() != null) {
+							R62Cell3.setCellValue(record.getR62Overdrafts().doubleValue());
+							R62Cell3.setCellStyle(numberStyle);
+						} else {
+							R62Cell3.setCellValue("");
+							R62Cell3.setCellStyle(textStyle);
+						}
+						Cell R62Cell4 = row.createCell(4);
+						if (record.getR62OtherInstallmentLoans() != null) {
+							R62Cell4.setCellValue(record.getR62OtherInstallmentLoans().doubleValue());
+							R62Cell4.setCellStyle(numberStyle);
+						} else {
+							R62Cell4.setCellValue("");
+							R62Cell4.setCellStyle(textStyle);
+						}
+
+						// --- R63 (Row Index 62) ---
+						row = sheet.getRow(62);
+						Cell R63Cell1 = row.createCell(1);
+						if (record1.getR63FactoringDebtors() != null) {
+							R63Cell1.setCellValue(record1.getR63FactoringDebtors().doubleValue());
+							R63Cell1.setCellStyle(numberStyle);
+						} else {
+							R63Cell1.setCellValue("");
+							R63Cell1.setCellStyle(textStyle);
+						}
+						Cell R63Cell2 = row.createCell(2);
+						if (record1.getR63Leasing() != null) {
+							R63Cell2.setCellValue(record1.getR63Leasing().doubleValue());
+							R63Cell2.setCellStyle(numberStyle);
+						} else {
+							R63Cell2.setCellValue("");
+							R63Cell2.setCellStyle(textStyle);
+						}
+						Cell R63Cell3 = row.createCell(3);
+						if (record.getR63Overdrafts() != null) {
+							R63Cell3.setCellValue(record.getR63Overdrafts().doubleValue());
+							R63Cell3.setCellStyle(numberStyle);
+						} else {
+							R63Cell3.setCellValue("");
+							R63Cell3.setCellStyle(textStyle);
+						}
+						Cell R63Cell4 = row.createCell(4);
+						if (record.getR63OtherInstallmentLoans() != null) {
+							R63Cell4.setCellValue(record.getR63OtherInstallmentLoans().doubleValue());
+							R63Cell4.setCellStyle(numberStyle);
+						} else {
+							R63Cell4.setCellValue("");
+							R63Cell4.setCellStyle(textStyle);
+						}
+
+					}
+					workbook.setForceFormulaRecalculation(true);
+				} else {
+
+				}
+
+				// Write the final workbook content to the in-memory stream.
+				workbook.write(out);
+
+				logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+				return out.toByteArray();
+			}
+		}
+	}
+
+	// Archival format excel
+	public byte[] getExcelM_LA4ARCHIVAL(String filename, String reportId, String fromdate, String todate,
+			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
+
+		logger.info("Service: Starting Excel generation process in memory in Archival.");
+
+		if ("email".equalsIgnoreCase(format) && version != null) {
+			try {
+				// Redirecting to Archival
+				return BRRS_M_LA4EmailArchivalExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
+						version);
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
+		}
+
+		List<M_LA4_Archival_Summary_Entity> dataList = M_LA4_Archival_Summary_Repo
+				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<M_LA4_Archival_Summary_Entity2> dataList1 = M_LA4_Archival_Summary_Repo2
+				.getdatabydateListarchival(dateformat.parse(todate), version);
+		if (dataList.isEmpty()) {
+			logger.warn("Service: No data found for M_LA4 report. Returning empty result.");
+			return new byte[0];
+		}
+
+		String templateDir = env.getProperty("output.exportpathtemp");
+		String templateFileName = filename;
+		System.out.println(filename);
+		Path templatePath = Paths.get(templateDir, templateFileName);
+		System.out.println(templatePath);
+
+		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+		if (!Files.exists(templatePath)) {
+// This specific exception will be caught by the controller.
+			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+		}
+		if (!Files.isReadable(templatePath)) {
+// A specific exception for permission errors.
+			throw new SecurityException(
+					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+		}
+
+// This try-with-resources block is perfect. It guarantees all resources are
+// closed automatically.
+		try (InputStream templateInputStream = Files.newInputStream(templatePath);
+				Workbook workbook = WorkbookFactory.create(templateInputStream);
+				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+			Sheet sheet = workbook.getSheetAt(0);
+
+// --- Style Definitions ---
+			CreationHelper createHelper = workbook.getCreationHelper();
+
+			CellStyle dateStyle = workbook.createCellStyle();
+			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+			dateStyle.setBorderBottom(BorderStyle.THIN);
+			dateStyle.setBorderTop(BorderStyle.THIN);
+			dateStyle.setBorderLeft(BorderStyle.THIN);
+			dateStyle.setBorderRight(BorderStyle.THIN);
+
+			CellStyle textStyle = workbook.createCellStyle();
+			textStyle.setBorderBottom(BorderStyle.THIN);
+			textStyle.setBorderTop(BorderStyle.THIN);
+			textStyle.setBorderLeft(BorderStyle.THIN);
+			textStyle.setBorderRight(BorderStyle.THIN);
+
+// Create the font
+			Font font = workbook.createFont();
+			font.setFontHeightInPoints((short) 8); // size 8
+			font.setFontName("Arial");
+
+			CellStyle numberStyle = workbook.createCellStyle();
+// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+			numberStyle.setBorderBottom(BorderStyle.THIN);
+			numberStyle.setBorderTop(BorderStyle.THIN);
+			numberStyle.setBorderLeft(BorderStyle.THIN);
+			numberStyle.setBorderRight(BorderStyle.THIN);
+			numberStyle.setFont(font);
+// --- End of Style Definitions ---
+
+			int startRow = 11;
+
+			if (!dataList.isEmpty()) {
+				for (int i = 0; i < dataList.size(); i++) {
+					M_LA4_Archival_Summary_Entity record = dataList.get(i);
+					M_LA4_Archival_Summary_Entity2 record1 = dataList1.get(i);
+					System.out.println("rownumber=" + startRow + i);
+					Row row = sheet.getRow(startRow + i);
+					if (row == null) {
+						row = sheet.createRow(startRow + i);
+					}
+//NORMAL
+
+					// R12 Col B
+					Cell R12Cell1 = row.createCell(1);
+					if (record1.getR12FactoringDebtors() != null) {
+						R12Cell1.setCellValue(record1.getR12FactoringDebtors().doubleValue());
+						R12Cell1.setCellStyle(numberStyle);
+					} else {
+						R12Cell1.setCellValue("");
+						R12Cell1.setCellStyle(textStyle);
+					}
+
+					// R12 Col C
+					Cell R12Cell2 = row.createCell(2);
+					if (record1.getR12Leasing() != null) {
+						R12Cell2.setCellValue(record1.getR12Leasing().doubleValue());
+						R12Cell2.setCellStyle(numberStyle);
+					} else {
+						R12Cell2.setCellValue("");
+						R12Cell2.setCellStyle(textStyle);
+					}
+					// R12 Col D
+					Cell R12Cell3 = row.createCell(3);
+					if (record.getR12Overdrafts() != null) {
+						R12Cell3.setCellValue(record.getR12Overdrafts().doubleValue());
+						R12Cell3.setCellStyle(numberStyle);
+					} else {
+						R12Cell3.setCellValue("");
+						R12Cell3.setCellStyle(textStyle);
+					}
+
+					// R12 Col E
+					Cell R12Cell4 = row.createCell(4);
+					if (record.getR12OtherInstallmentLoans() != null) {
+						R12Cell4.setCellValue(record.getR12OtherInstallmentLoans().doubleValue());
+						R12Cell4.setCellStyle(numberStyle);
+					} else {
+						R12Cell4.setCellValue("");
+						R12Cell4.setCellStyle(textStyle);
+					}
+					// R13 Col B
+					row = sheet.getRow(12);
+					// R13 Col B
+					Cell R13Cell1 = row.createCell(1);
+					if (record1.getR13FactoringDebtors() != null) {
+						R13Cell1.setCellValue(record1.getR13FactoringDebtors().doubleValue());
+						R13Cell1.setCellStyle(numberStyle);
+					} else {
+						R13Cell1.setCellValue("");
+						R13Cell1.setCellStyle(textStyle);
+					}
+
+					// R13 Col C
+					Cell R13Cell2 = row.createCell(2);
+					if (record1.getR13Leasing() != null) {
+						R13Cell2.setCellValue(record1.getR13Leasing().doubleValue());
+						R13Cell2.setCellStyle(numberStyle);
+					} else {
+						R13Cell2.setCellValue("");
+						R13Cell2.setCellStyle(textStyle);
+					}
+					// R13 Col D
+					Cell R13Cell3 = row.createCell(3);
+					if (record.getR13Overdrafts() != null) {
+						R13Cell3.setCellValue(record.getR13Overdrafts().doubleValue());
+						R13Cell3.setCellStyle(numberStyle);
+					} else {
+						R13Cell3.setCellValue("");
+						R13Cell3.setCellStyle(textStyle);
+					}
+
+					// R13 Col E
+					Cell R13Cell4 = row.createCell(4);
+					if (record.getR13OtherInstallmentLoans() != null) {
+						R13Cell4.setCellValue(record.getR13OtherInstallmentLoans().doubleValue());
+						R13Cell4.setCellStyle(numberStyle);
+					} else {
+						R13Cell4.setCellValue("");
+						R13Cell4.setCellStyle(textStyle);
+					}
+					// R14 Col B
+					row = sheet.getRow(13); // Row index 13 is Excel Row 14
+					// R14 Col B
+					Cell R14Cell1 = row.createCell(1);
+					if (record1.getR14FactoringDebtors() != null) {
+						R14Cell1.setCellValue(record1.getR14FactoringDebtors().doubleValue());
+						R14Cell1.setCellStyle(numberStyle);
+					} else {
+						R14Cell1.setCellValue("");
+						R14Cell1.setCellStyle(textStyle);
+					}
+
+					// R14 Col C
+					Cell R14Cell2 = row.createCell(2);
+					if (record1.getR14Leasing() != null) {
+						R14Cell2.setCellValue(record1.getR14Leasing().doubleValue());
+						R14Cell2.setCellStyle(numberStyle);
+					} else {
+						R14Cell2.setCellValue("");
+						R14Cell2.setCellStyle(textStyle);
+					}
+
+					// R14 Col D
+					Cell R14Cell3 = row.createCell(3);
+					if (record.getR14Overdrafts() != null) {
+						R14Cell3.setCellValue(record.getR14Overdrafts().doubleValue());
+						R14Cell3.setCellStyle(numberStyle);
+					} else {
+						R14Cell3.setCellValue("");
+						R14Cell3.setCellStyle(textStyle);
+					}
+
+					// R14 Col E
+					Cell R14Cell4 = row.createCell(4);
+					if (record.getR14OtherInstallmentLoans() != null) {
+						R14Cell4.setCellValue(record.getR14OtherInstallmentLoans().doubleValue());
+						R14Cell4.setCellStyle(numberStyle);
+					} else {
+						R14Cell4.setCellValue("");
+						R14Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R16 (Row Index 15) ---
+					row = sheet.getRow(15);
+					Cell R16Cell1 = row.createCell(1);
+					if (record1.getR16FactoringDebtors() != null) {
+						R16Cell1.setCellValue(record1.getR16FactoringDebtors().doubleValue());
+						R16Cell1.setCellStyle(numberStyle);
+					} else {
+						R16Cell1.setCellValue("");
+						R16Cell1.setCellStyle(textStyle);
+					}
+					Cell R16Cell2 = row.createCell(2);
+					if (record1.getR16Leasing() != null) {
+						R16Cell2.setCellValue(record1.getR16Leasing().doubleValue());
+						R16Cell2.setCellStyle(numberStyle);
+					} else {
+						R16Cell2.setCellValue("");
+						R16Cell2.setCellStyle(textStyle);
+					}
+					Cell R16Cell3 = row.createCell(3);
+					if (record.getR16Overdrafts() != null) {
+						R16Cell3.setCellValue(record.getR16Overdrafts().doubleValue());
+						R16Cell3.setCellStyle(numberStyle);
+					} else {
+						R16Cell3.setCellValue("");
+						R16Cell3.setCellStyle(textStyle);
+					}
+					Cell R16Cell4 = row.createCell(4);
+					if (record.getR16OtherInstallmentLoans() != null) {
+						R16Cell4.setCellValue(record.getR16OtherInstallmentLoans().doubleValue());
+						R16Cell4.setCellStyle(numberStyle);
+					} else {
+						R16Cell4.setCellValue("");
+						R16Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R17 (Row Index 16) ---
+					row = sheet.getRow(16);
+					Cell R17Cell1 = row.createCell(1);
+					if (record1.getR17FactoringDebtors() != null) {
+						R17Cell1.setCellValue(record1.getR17FactoringDebtors().doubleValue());
+						R17Cell1.setCellStyle(numberStyle);
+					} else {
+						R17Cell1.setCellValue("");
+						R17Cell1.setCellStyle(textStyle);
+					}
+					Cell R17Cell2 = row.createCell(2);
+					if (record1.getR17Leasing() != null) {
+						R17Cell2.setCellValue(record1.getR17Leasing().doubleValue());
+						R17Cell2.setCellStyle(numberStyle);
+					} else {
+						R17Cell2.setCellValue("");
+						R17Cell2.setCellStyle(textStyle);
+					}
+					Cell R17Cell3 = row.createCell(3);
+					if (record.getR17Overdrafts() != null) {
+						R17Cell3.setCellValue(record.getR17Overdrafts().doubleValue());
+						R17Cell3.setCellStyle(numberStyle);
+					} else {
+						R17Cell3.setCellValue("");
+						R17Cell3.setCellStyle(textStyle);
+					}
+					Cell R17Cell4 = row.createCell(4);
+					if (record.getR17OtherInstallmentLoans() != null) {
+						R17Cell4.setCellValue(record.getR17OtherInstallmentLoans().doubleValue());
+						R17Cell4.setCellStyle(numberStyle);
+					} else {
+						R17Cell4.setCellValue("");
+						R17Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R18 (Row Index 17) ---
+					row = sheet.getRow(17);
+					Cell R18Cell1 = row.createCell(1);
+					if (record1.getR18FactoringDebtors() != null) {
+						R18Cell1.setCellValue(record1.getR18FactoringDebtors().doubleValue());
+						R18Cell1.setCellStyle(numberStyle);
+					} else {
+						R18Cell1.setCellValue("");
+						R18Cell1.setCellStyle(textStyle);
+					}
+					Cell R18Cell2 = row.createCell(2);
+					if (record1.getR18Leasing() != null) {
+						R18Cell2.setCellValue(record1.getR18Leasing().doubleValue());
+						R18Cell2.setCellStyle(numberStyle);
+					} else {
+						R18Cell2.setCellValue("");
+						R18Cell2.setCellStyle(textStyle);
+					}
+					Cell R18Cell3 = row.createCell(3);
+					if (record.getR18Overdrafts() != null) {
+						R18Cell3.setCellValue(record.getR18Overdrafts().doubleValue());
+						R18Cell3.setCellStyle(numberStyle);
+					} else {
+						R18Cell3.setCellValue("");
+						R18Cell3.setCellStyle(textStyle);
+					}
+					Cell R18Cell4 = row.createCell(4);
+					if (record.getR18OtherInstallmentLoans() != null) {
+						R18Cell4.setCellValue(record.getR18OtherInstallmentLoans().doubleValue());
+						R18Cell4.setCellStyle(numberStyle);
+					} else {
+						R18Cell4.setCellValue("");
+						R18Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R19 (Row Index 18) ---
+					row = sheet.getRow(18);
+					Cell R19Cell1 = row.createCell(1);
+					if (record1.getR19FactoringDebtors() != null) {
+						R19Cell1.setCellValue(record1.getR19FactoringDebtors().doubleValue());
+						R19Cell1.setCellStyle(numberStyle);
+					} else {
+						R19Cell1.setCellValue("");
+						R19Cell1.setCellStyle(textStyle);
+					}
+					Cell R19Cell2 = row.createCell(2);
+					if (record1.getR19Leasing() != null) {
+						R19Cell2.setCellValue(record1.getR19Leasing().doubleValue());
+						R19Cell2.setCellStyle(numberStyle);
+					} else {
+						R19Cell2.setCellValue("");
+						R19Cell2.setCellStyle(textStyle);
+					}
+					Cell R19Cell3 = row.createCell(3);
+					if (record.getR19Overdrafts() != null) {
+						R19Cell3.setCellValue(record.getR19Overdrafts().doubleValue());
+						R19Cell3.setCellStyle(numberStyle);
+					} else {
+						R19Cell3.setCellValue("");
+						R19Cell3.setCellStyle(textStyle);
+					}
+					Cell R19Cell4 = row.createCell(4);
+					if (record.getR19OtherInstallmentLoans() != null) {
+						R19Cell4.setCellValue(record.getR19OtherInstallmentLoans().doubleValue());
+						R19Cell4.setCellStyle(numberStyle);
+					} else {
+						R19Cell4.setCellValue("");
+						R19Cell4.setCellStyle(textStyle);
+					}
+					// --- R20 (Row Index 19) ---
+					row = sheet.getRow(19);
+					Cell R20Cell1 = row.createCell(1);
+					if (record1.getR20FactoringDebtors() != null) {
+						R20Cell1.setCellValue(record1.getR20FactoringDebtors().doubleValue());
+						R20Cell1.setCellStyle(numberStyle);
+					} else {
+						R20Cell1.setCellValue("");
+						R20Cell1.setCellStyle(textStyle);
+					}
+					Cell R20Cell2 = row.createCell(2);
+					if (record1.getR20Leasing() != null) {
+						R20Cell2.setCellValue(record1.getR20Leasing().doubleValue());
+						R20Cell2.setCellStyle(numberStyle);
+					} else {
+						R20Cell2.setCellValue("");
+						R20Cell2.setCellStyle(textStyle);
+					}
+					Cell R20Cell3 = row.createCell(3);
+					if (record.getR20Overdrafts() != null) {
+						R20Cell3.setCellValue(record.getR20Overdrafts().doubleValue());
+						R20Cell3.setCellStyle(numberStyle);
+					} else {
+						R20Cell3.setCellValue("");
+						R20Cell3.setCellStyle(textStyle);
+					}
+					Cell R20Cell4 = row.createCell(4);
+					if (record.getR20OtherInstallmentLoans() != null) {
+						R20Cell4.setCellValue(record.getR20OtherInstallmentLoans().doubleValue());
+						R20Cell4.setCellStyle(numberStyle);
+					} else {
+						R20Cell4.setCellValue("");
+						R20Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R21 (Row Index 20) ---
+					row = sheet.getRow(20);
+					Cell R21Cell1 = row.createCell(1);
+					if (record1.getR21FactoringDebtors() != null) {
+						R21Cell1.setCellValue(record1.getR21FactoringDebtors().doubleValue());
+						R21Cell1.setCellStyle(numberStyle);
+					} else {
+						R21Cell1.setCellValue("");
+						R21Cell1.setCellStyle(textStyle);
+					}
+					Cell R21Cell2 = row.createCell(2);
+					if (record1.getR21Leasing() != null) {
+						R21Cell2.setCellValue(record1.getR21Leasing().doubleValue());
+						R21Cell2.setCellStyle(numberStyle);
+					} else {
+						R21Cell2.setCellValue("");
+						R21Cell2.setCellStyle(textStyle);
+					}
+					Cell R21Cell3 = row.createCell(3);
+					if (record.getR21Overdrafts() != null) {
+						R21Cell3.setCellValue(record.getR21Overdrafts().doubleValue());
+						R21Cell3.setCellStyle(numberStyle);
+					} else {
+						R21Cell3.setCellValue("");
+						R21Cell3.setCellStyle(textStyle);
+					}
+					Cell R21Cell4 = row.createCell(4);
+					if (record.getR21OtherInstallmentLoans() != null) {
+						R21Cell4.setCellValue(record.getR21OtherInstallmentLoans().doubleValue());
+						R21Cell4.setCellStyle(numberStyle);
+					} else {
+						R21Cell4.setCellValue("");
+						R21Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R22 (Row Index 21) ---
+					row = sheet.getRow(21);
+					Cell R22Cell1 = row.createCell(1);
+					if (record1.getR22FactoringDebtors() != null) {
+						R22Cell1.setCellValue(record1.getR22FactoringDebtors().doubleValue());
+						R22Cell1.setCellStyle(numberStyle);
+					} else {
+						R22Cell1.setCellValue("");
+						R22Cell1.setCellStyle(textStyle);
+					}
+					Cell R22Cell2 = row.createCell(2);
+					if (record1.getR22Leasing() != null) {
+						R22Cell2.setCellValue(record1.getR22Leasing().doubleValue());
+						R22Cell2.setCellStyle(numberStyle);
+					} else {
+						R22Cell2.setCellValue("");
+						R22Cell2.setCellStyle(textStyle);
+					}
+					Cell R22Cell3 = row.createCell(3);
+					if (record.getR22Overdrafts() != null) {
+						R22Cell3.setCellValue(record.getR22Overdrafts().doubleValue());
+						R22Cell3.setCellStyle(numberStyle);
+					} else {
+						R22Cell3.setCellValue("");
+						R22Cell3.setCellStyle(textStyle);
+					}
+					Cell R22Cell4 = row.createCell(4);
+					if (record.getR22OtherInstallmentLoans() != null) {
+						R22Cell4.setCellValue(record.getR22OtherInstallmentLoans().doubleValue());
+						R22Cell4.setCellStyle(numberStyle);
+					} else {
+						R22Cell4.setCellValue("");
+						R22Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R23 (Row Index 22) ---
+					row = sheet.getRow(22);
+					Cell R23Cell1 = row.createCell(1);
+					if (record1.getR23FactoringDebtors() != null) {
+						R23Cell1.setCellValue(record1.getR23FactoringDebtors().doubleValue());
+						R23Cell1.setCellStyle(numberStyle);
+					} else {
+						R23Cell1.setCellValue("");
+						R23Cell1.setCellStyle(textStyle);
+					}
+					Cell R23Cell2 = row.createCell(2);
+					if (record1.getR23Leasing() != null) {
+						R23Cell2.setCellValue(record1.getR23Leasing().doubleValue());
+						R23Cell2.setCellStyle(numberStyle);
+					} else {
+						R23Cell2.setCellValue("");
+						R23Cell2.setCellStyle(textStyle);
+					}
+					Cell R23Cell3 = row.createCell(3);
+					if (record.getR23Overdrafts() != null) {
+						R23Cell3.setCellValue(record.getR23Overdrafts().doubleValue());
+						R23Cell3.setCellStyle(numberStyle);
+					} else {
+						R23Cell3.setCellValue("");
+						R23Cell3.setCellStyle(textStyle);
+					}
+					Cell R23Cell4 = row.createCell(4);
+					if (record.getR23OtherInstallmentLoans() != null) {
+						R23Cell4.setCellValue(record.getR23OtherInstallmentLoans().doubleValue());
+						R23Cell4.setCellStyle(numberStyle);
+					} else {
+						R23Cell4.setCellValue("");
+						R23Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R24 (Row Index 23) ---
+					row = sheet.getRow(23);
+					Cell R24Cell1 = row.createCell(1);
+					if (record1.getR24FactoringDebtors() != null) {
+						R24Cell1.setCellValue(record1.getR24FactoringDebtors().doubleValue());
+						R24Cell1.setCellStyle(numberStyle);
+					} else {
+						R24Cell1.setCellValue("");
+						R24Cell1.setCellStyle(textStyle);
+					}
+					Cell R24Cell2 = row.createCell(2);
+					if (record1.getR24Leasing() != null) {
+						R24Cell2.setCellValue(record1.getR24Leasing().doubleValue());
+						R24Cell2.setCellStyle(numberStyle);
+					} else {
+						R24Cell2.setCellValue("");
+						R24Cell2.setCellStyle(textStyle);
+					}
+					Cell R24Cell3 = row.createCell(3);
+					if (record.getR24Overdrafts() != null) {
+						R24Cell3.setCellValue(record.getR24Overdrafts().doubleValue());
+						R24Cell3.setCellStyle(numberStyle);
+					} else {
+						R24Cell3.setCellValue("");
+						R24Cell3.setCellStyle(textStyle);
+					}
+					Cell R24Cell4 = row.createCell(4);
+					if (record.getR24OtherInstallmentLoans() != null) {
+						R24Cell4.setCellValue(record.getR24OtherInstallmentLoans().doubleValue());
+						R24Cell4.setCellStyle(numberStyle);
+					} else {
+						R24Cell4.setCellValue("");
+						R24Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R25 (Row Index 24) ---
+					row = sheet.getRow(24);
+					Cell R25Cell1 = row.createCell(1);
+					if (record1.getR25FactoringDebtors() != null) {
+						R25Cell1.setCellValue(record1.getR25FactoringDebtors().doubleValue());
+						R25Cell1.setCellStyle(numberStyle);
+					} else {
+						R25Cell1.setCellValue("");
+						R25Cell1.setCellStyle(textStyle);
+					}
+					Cell R25Cell2 = row.createCell(2);
+					if (record1.getR25Leasing() != null) {
+						R25Cell2.setCellValue(record1.getR25Leasing().doubleValue());
+						R25Cell2.setCellStyle(numberStyle);
+					} else {
+						R25Cell2.setCellValue("");
+						R25Cell2.setCellStyle(textStyle);
+					}
+					Cell R25Cell3 = row.createCell(3);
+					if (record.getR25Overdrafts() != null) {
+						R25Cell3.setCellValue(record.getR25Overdrafts().doubleValue());
+						R25Cell3.setCellStyle(numberStyle);
+					} else {
+						R25Cell3.setCellValue("");
+						R25Cell3.setCellStyle(textStyle);
+					}
+					Cell R25Cell4 = row.createCell(4);
+					if (record.getR25OtherInstallmentLoans() != null) {
+						R25Cell4.setCellValue(record.getR25OtherInstallmentLoans().doubleValue());
+						R25Cell4.setCellStyle(numberStyle);
+					} else {
+						R25Cell4.setCellValue("");
+						R25Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R26 (Row Index 25) ---
+					row = sheet.getRow(25);
+					Cell R26Cell1 = row.createCell(1);
+					if (record1.getR26FactoringDebtors() != null) {
+						R26Cell1.setCellValue(record1.getR26FactoringDebtors().doubleValue());
+						R26Cell1.setCellStyle(numberStyle);
+					} else {
+						R26Cell1.setCellValue("");
+						R26Cell1.setCellStyle(textStyle);
+					}
+					Cell R26Cell2 = row.createCell(2);
+					if (record1.getR26Leasing() != null) {
+						R26Cell2.setCellValue(record1.getR26Leasing().doubleValue());
+						R26Cell2.setCellStyle(numberStyle);
+					} else {
+						R26Cell2.setCellValue("");
+						R26Cell2.setCellStyle(textStyle);
+					}
+					Cell R26Cell3 = row.createCell(3);
+					if (record.getR26Overdrafts() != null) {
+						R26Cell3.setCellValue(record.getR26Overdrafts().doubleValue());
+						R26Cell3.setCellStyle(numberStyle);
+					} else {
+						R26Cell3.setCellValue("");
+						R26Cell3.setCellStyle(textStyle);
+					}
+					Cell R26Cell4 = row.createCell(4);
+					if (record.getR26OtherInstallmentLoans() != null) {
+						R26Cell4.setCellValue(record.getR26OtherInstallmentLoans().doubleValue());
+						R26Cell4.setCellStyle(numberStyle);
+					} else {
+						R26Cell4.setCellValue("");
+						R26Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R27 (Row Index 26) ---
+					row = sheet.getRow(26);
+					Cell R27Cell1 = row.createCell(1);
+					if (record1.getR27FactoringDebtors() != null) {
+						R27Cell1.setCellValue(record1.getR27FactoringDebtors().doubleValue());
+						R27Cell1.setCellStyle(numberStyle);
+					} else {
+						R27Cell1.setCellValue("");
+						R27Cell1.setCellStyle(textStyle);
+					}
+					Cell R27Cell2 = row.createCell(2);
+					if (record1.getR27Leasing() != null) {
+						R27Cell2.setCellValue(record1.getR27Leasing().doubleValue());
+						R27Cell2.setCellStyle(numberStyle);
+					} else {
+						R27Cell2.setCellValue("");
+						R27Cell2.setCellStyle(textStyle);
+					}
+					Cell R27Cell3 = row.createCell(3);
+					if (record.getR27Overdrafts() != null) {
+						R27Cell3.setCellValue(record.getR27Overdrafts().doubleValue());
+						R27Cell3.setCellStyle(numberStyle);
+					} else {
+						R27Cell3.setCellValue("");
+						R27Cell3.setCellStyle(textStyle);
+					}
+					Cell R27Cell4 = row.createCell(4);
+					if (record.getR27OtherInstallmentLoans() != null) {
+						R27Cell4.setCellValue(record.getR27OtherInstallmentLoans().doubleValue());
+						R27Cell4.setCellStyle(numberStyle);
+					} else {
+						R27Cell4.setCellValue("");
+						R27Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R28 (Row Index 27) ---
+					row = sheet.getRow(27);
+					Cell R28Cell1 = row.createCell(1);
+					if (record1.getR28FactoringDebtors() != null) {
+						R28Cell1.setCellValue(record1.getR28FactoringDebtors().doubleValue());
+						R28Cell1.setCellStyle(numberStyle);
+					} else {
+						R28Cell1.setCellValue("");
+						R28Cell1.setCellStyle(textStyle);
+					}
+					Cell R28Cell2 = row.createCell(2);
+					if (record1.getR28Leasing() != null) {
+						R28Cell2.setCellValue(record1.getR28Leasing().doubleValue());
+						R28Cell2.setCellStyle(numberStyle);
+					} else {
+						R28Cell2.setCellValue("");
+						R28Cell2.setCellStyle(textStyle);
+					}
+					Cell R28Cell3 = row.createCell(3);
+					if (record.getR28Overdrafts() != null) {
+						R28Cell3.setCellValue(record.getR28Overdrafts().doubleValue());
+						R28Cell3.setCellStyle(numberStyle);
+					} else {
+						R28Cell3.setCellValue("");
+						R28Cell3.setCellStyle(textStyle);
+					}
+					Cell R28Cell4 = row.createCell(4);
+					if (record.getR28OtherInstallmentLoans() != null) {
+						R28Cell4.setCellValue(record.getR28OtherInstallmentLoans().doubleValue());
+						R28Cell4.setCellStyle(numberStyle);
+					} else {
+						R28Cell4.setCellValue("");
+						R28Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R30 (Row Index 29) ---
+					row = sheet.getRow(29);
+					Cell R30Cell1 = row.createCell(1);
+					if (record1.getR30FactoringDebtors() != null) {
+						R30Cell1.setCellValue(record1.getR30FactoringDebtors().doubleValue());
+						R30Cell1.setCellStyle(numberStyle);
+					} else {
+						R30Cell1.setCellValue("");
+						R30Cell1.setCellStyle(textStyle);
+					}
+					Cell R30Cell2 = row.createCell(2);
+					if (record1.getR30Leasing() != null) {
+						R30Cell2.setCellValue(record1.getR30Leasing().doubleValue());
+						R30Cell2.setCellStyle(numberStyle);
+					} else {
+						R30Cell2.setCellValue("");
+						R30Cell2.setCellStyle(textStyle);
+					}
+					Cell R30Cell3 = row.createCell(3);
+					if (record.getR30Overdrafts() != null) {
+						R30Cell3.setCellValue(record.getR30Overdrafts().doubleValue());
+						R30Cell3.setCellStyle(numberStyle);
+					} else {
+						R30Cell3.setCellValue("");
+						R30Cell3.setCellStyle(textStyle);
+					}
+					Cell R30Cell4 = row.createCell(4);
+					if (record.getR30OtherInstallmentLoans() != null) {
+						R30Cell4.setCellValue(record.getR30OtherInstallmentLoans().doubleValue());
+						R30Cell4.setCellStyle(numberStyle);
+					} else {
+						R30Cell4.setCellValue("");
+						R30Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R31 (Row Index 30) ---
+					row = sheet.getRow(30);
+					Cell R31Cell1 = row.createCell(1);
+					if (record1.getR31FactoringDebtors() != null) {
+						R31Cell1.setCellValue(record1.getR31FactoringDebtors().doubleValue());
+						R31Cell1.setCellStyle(numberStyle);
+					} else {
+						R31Cell1.setCellValue("");
+						R31Cell1.setCellStyle(textStyle);
+					}
+					Cell R31Cell2 = row.createCell(2);
+					if (record1.getR31Leasing() != null) {
+						R31Cell2.setCellValue(record1.getR31Leasing().doubleValue());
+						R31Cell2.setCellStyle(numberStyle);
+					} else {
+						R31Cell2.setCellValue("");
+						R31Cell2.setCellStyle(textStyle);
+					}
+					Cell R31Cell3 = row.createCell(3);
+					if (record.getR31Overdrafts() != null) {
+						R31Cell3.setCellValue(record.getR31Overdrafts().doubleValue());
+						R31Cell3.setCellStyle(numberStyle);
+					} else {
+						R31Cell3.setCellValue("");
+						R31Cell3.setCellStyle(textStyle);
+					}
+					Cell R31Cell4 = row.createCell(4);
+					if (record.getR31OtherInstallmentLoans() != null) {
+						R31Cell4.setCellValue(record.getR31OtherInstallmentLoans().doubleValue());
+						R31Cell4.setCellStyle(numberStyle);
+					} else {
+						R31Cell4.setCellValue("");
+						R31Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R32 (Row Index 31) ---
+					row = sheet.getRow(31);
+					Cell R32Cell1 = row.createCell(1);
+					if (record1.getR32FactoringDebtors() != null) {
+						R32Cell1.setCellValue(record1.getR32FactoringDebtors().doubleValue());
+						R32Cell1.setCellStyle(numberStyle);
+					} else {
+						R32Cell1.setCellValue("");
+						R32Cell1.setCellStyle(textStyle);
+					}
+					Cell R32Cell2 = row.createCell(2);
+					if (record1.getR32Leasing() != null) {
+						R32Cell2.setCellValue(record1.getR32Leasing().doubleValue());
+						R32Cell2.setCellStyle(numberStyle);
+					} else {
+						R32Cell2.setCellValue("");
+						R32Cell2.setCellStyle(textStyle);
+					}
+					Cell R32Cell3 = row.createCell(3);
+					if (record.getR32Overdrafts() != null) {
+						R32Cell3.setCellValue(record.getR32Overdrafts().doubleValue());
+						R32Cell3.setCellStyle(numberStyle);
+					} else {
+						R32Cell3.setCellValue("");
+						R32Cell3.setCellStyle(textStyle);
+					}
+					Cell R32Cell4 = row.createCell(4);
+					if (record.getR32OtherInstallmentLoans() != null) {
+						R32Cell4.setCellValue(record.getR32OtherInstallmentLoans().doubleValue());
+						R32Cell4.setCellStyle(numberStyle);
+					} else {
+						R32Cell4.setCellValue("");
+						R32Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R33 (Row Index 32) ---
+					row = sheet.getRow(32);
+					Cell R33Cell1 = row.createCell(1);
+					if (record1.getR33FactoringDebtors() != null) {
+						R33Cell1.setCellValue(record1.getR33FactoringDebtors().doubleValue());
+						R33Cell1.setCellStyle(numberStyle);
+					} else {
+						R33Cell1.setCellValue("");
+						R33Cell1.setCellStyle(textStyle);
+					}
+					Cell R33Cell2 = row.createCell(2);
+					if (record1.getR33Leasing() != null) {
+						R33Cell2.setCellValue(record1.getR33Leasing().doubleValue());
+						R33Cell2.setCellStyle(numberStyle);
+					} else {
+						R33Cell2.setCellValue("");
+						R33Cell2.setCellStyle(textStyle);
+					}
+					Cell R33Cell3 = row.createCell(3);
+					if (record.getR33Overdrafts() != null) {
+						R33Cell3.setCellValue(record.getR33Overdrafts().doubleValue());
+						R33Cell3.setCellStyle(numberStyle);
+					} else {
+						R33Cell3.setCellValue("");
+						R33Cell3.setCellStyle(textStyle);
+					}
+					Cell R33Cell4 = row.createCell(4);
+					if (record.getR33OtherInstallmentLoans() != null) {
+						R33Cell4.setCellValue(record.getR33OtherInstallmentLoans().doubleValue());
+						R33Cell4.setCellStyle(numberStyle);
+					} else {
+						R33Cell4.setCellValue("");
+						R33Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R34 (Row Index 33) ---
+					row = sheet.getRow(33);
+					Cell R34Cell1 = row.createCell(1);
+					if (record1.getR34FactoringDebtors() != null) {
+						R34Cell1.setCellValue(record1.getR34FactoringDebtors().doubleValue());
+						R34Cell1.setCellStyle(numberStyle);
+					} else {
+						R34Cell1.setCellValue("");
+						R34Cell1.setCellStyle(textStyle);
+					}
+					Cell R34Cell2 = row.createCell(2);
+					if (record1.getR34Leasing() != null) {
+						R34Cell2.setCellValue(record1.getR34Leasing().doubleValue());
+						R34Cell2.setCellStyle(numberStyle);
+					} else {
+						R34Cell2.setCellValue("");
+						R34Cell2.setCellStyle(textStyle);
+					}
+					Cell R34Cell3 = row.createCell(3);
+					if (record.getR34Overdrafts() != null) {
+						R34Cell3.setCellValue(record.getR34Overdrafts().doubleValue());
+						R34Cell3.setCellStyle(numberStyle);
+					} else {
+						R34Cell3.setCellValue("");
+						R34Cell3.setCellStyle(textStyle);
+					}
+					Cell R34Cell4 = row.createCell(4);
+					if (record.getR34OtherInstallmentLoans() != null) {
+						R34Cell4.setCellValue(record.getR34OtherInstallmentLoans().doubleValue());
+						R34Cell4.setCellStyle(numberStyle);
+					} else {
+						R34Cell4.setCellValue("");
+						R34Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R35 (Row Index 34) ---
+					row = sheet.getRow(34);
+					Cell R35Cell1 = row.createCell(1);
+					if (record1.getR35FactoringDebtors() != null) {
+						R35Cell1.setCellValue(record1.getR35FactoringDebtors().doubleValue());
+						R35Cell1.setCellStyle(numberStyle);
+					} else {
+						R35Cell1.setCellValue("");
+						R35Cell1.setCellStyle(textStyle);
+					}
+					Cell R35Cell2 = row.createCell(2);
+					if (record1.getR35Leasing() != null) {
+						R35Cell2.setCellValue(record1.getR35Leasing().doubleValue());
+						R35Cell2.setCellStyle(numberStyle);
+					} else {
+						R35Cell2.setCellValue("");
+						R35Cell2.setCellStyle(textStyle);
+					}
+					Cell R35Cell3 = row.createCell(3);
+					if (record.getR35Overdrafts() != null) {
+						R35Cell3.setCellValue(record.getR35Overdrafts().doubleValue());
+						R35Cell3.setCellStyle(numberStyle);
+					} else {
+						R35Cell3.setCellValue("");
+						R35Cell3.setCellStyle(textStyle);
+					}
+					Cell R35Cell4 = row.createCell(4);
+					if (record.getR35OtherInstallmentLoans() != null) {
+						R35Cell4.setCellValue(record.getR35OtherInstallmentLoans().doubleValue());
+						R35Cell4.setCellStyle(numberStyle);
+					} else {
+						R35Cell4.setCellValue("");
+						R35Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R36 (Row Index 35) ---
+					row = sheet.getRow(35);
+					Cell R36Cell1 = row.createCell(1);
+					if (record1.getR36FactoringDebtors() != null) {
+						R36Cell1.setCellValue(record1.getR36FactoringDebtors().doubleValue());
+						R36Cell1.setCellStyle(numberStyle);
+					} else {
+						R36Cell1.setCellValue("");
+						R36Cell1.setCellStyle(textStyle);
+					}
+					Cell R36Cell2 = row.createCell(2);
+					if (record1.getR36Leasing() != null) {
+						R36Cell2.setCellValue(record1.getR36Leasing().doubleValue());
+						R36Cell2.setCellStyle(numberStyle);
+					} else {
+						R36Cell2.setCellValue("");
+						R36Cell2.setCellStyle(textStyle);
+					}
+					Cell R36Cell3 = row.createCell(3);
+					if (record.getR36Overdrafts() != null) {
+						R36Cell3.setCellValue(record.getR36Overdrafts().doubleValue());
+						R36Cell3.setCellStyle(numberStyle);
+					} else {
+						R36Cell3.setCellValue("");
+						R36Cell3.setCellStyle(textStyle);
+					}
+					Cell R36Cell4 = row.createCell(4);
+					if (record.getR36OtherInstallmentLoans() != null) {
+						R36Cell4.setCellValue(record.getR36OtherInstallmentLoans().doubleValue());
+						R36Cell4.setCellStyle(numberStyle);
+					} else {
+						R36Cell4.setCellValue("");
+						R36Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R37 (Row Index 36) ---
+					row = sheet.getRow(36);
+					Cell R37Cell1 = row.createCell(1);
+					if (record1.getR37FactoringDebtors() != null) {
+						R37Cell1.setCellValue(record1.getR37FactoringDebtors().doubleValue());
+						R37Cell1.setCellStyle(numberStyle);
+					} else {
+						R37Cell1.setCellValue("");
+						R37Cell1.setCellStyle(textStyle);
+					}
+					Cell R37Cell2 = row.createCell(2);
+					if (record1.getR37Leasing() != null) {
+						R37Cell2.setCellValue(record1.getR37Leasing().doubleValue());
+						R37Cell2.setCellStyle(numberStyle);
+					} else {
+						R37Cell2.setCellValue("");
+						R37Cell2.setCellStyle(textStyle);
+					}
+					Cell R37Cell3 = row.createCell(3);
+					if (record.getR37Overdrafts() != null) {
+						R37Cell3.setCellValue(record.getR37Overdrafts().doubleValue());
+						R37Cell3.setCellStyle(numberStyle);
+					} else {
+						R37Cell3.setCellValue("");
+						R37Cell3.setCellStyle(textStyle);
+					}
+					Cell R37Cell4 = row.createCell(4);
+					if (record.getR37OtherInstallmentLoans() != null) {
+						R37Cell4.setCellValue(record.getR37OtherInstallmentLoans().doubleValue());
+						R37Cell4.setCellStyle(numberStyle);
+					} else {
+						R37Cell4.setCellValue("");
+						R37Cell4.setCellStyle(textStyle);
+					}
+					// --- R39 (Row Index 38) ---
+					row = sheet.getRow(38);
+					Cell R39Cell1 = row.createCell(1);
+					if (record1.getR39FactoringDebtors() != null) {
+						R39Cell1.setCellValue(record1.getR39FactoringDebtors().doubleValue());
+						R39Cell1.setCellStyle(numberStyle);
+					} else {
+						R39Cell1.setCellValue("");
+						R39Cell1.setCellStyle(textStyle);
+					}
+					Cell R39Cell2 = row.createCell(2);
+					if (record1.getR39Leasing() != null) {
+						R39Cell2.setCellValue(record1.getR39Leasing().doubleValue());
+						R39Cell2.setCellStyle(numberStyle);
+					} else {
+						R39Cell2.setCellValue("");
+						R39Cell2.setCellStyle(textStyle);
+					}
+					Cell R39Cell3 = row.createCell(3);
+					if (record.getR39Overdrafts() != null) {
+						R39Cell3.setCellValue(record.getR39Overdrafts().doubleValue());
+						R39Cell3.setCellStyle(numberStyle);
+					} else {
+						R39Cell3.setCellValue("");
+						R39Cell3.setCellStyle(textStyle);
+					}
+					Cell R39Cell4 = row.createCell(4);
+					if (record.getR39OtherInstallmentLoans() != null) {
+						R39Cell4.setCellValue(record.getR39OtherInstallmentLoans().doubleValue());
+						R39Cell4.setCellStyle(numberStyle);
+					} else {
+						R39Cell4.setCellValue("");
+						R39Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R40 (Row Index 39) ---
+					row = sheet.getRow(39);
+					Cell R40Cell1 = row.createCell(1);
+					if (record1.getR40FactoringDebtors() != null) {
+						R40Cell1.setCellValue(record1.getR40FactoringDebtors().doubleValue());
+						R40Cell1.setCellStyle(numberStyle);
+					} else {
+						R40Cell1.setCellValue("");
+						R40Cell1.setCellStyle(textStyle);
+					}
+					Cell R40Cell2 = row.createCell(2);
+					if (record1.getR40Leasing() != null) {
+						R40Cell2.setCellValue(record1.getR40Leasing().doubleValue());
+						R40Cell2.setCellStyle(numberStyle);
+					} else {
+						R40Cell2.setCellValue("");
+						R40Cell2.setCellStyle(textStyle);
+					}
+					Cell R40Cell3 = row.createCell(3);
+					if (record.getR40Overdrafts() != null) {
+						R40Cell3.setCellValue(record.getR40Overdrafts().doubleValue());
+						R40Cell3.setCellStyle(numberStyle);
+					} else {
+						R40Cell3.setCellValue("");
+						R40Cell3.setCellStyle(textStyle);
+					}
+					Cell R40Cell4 = row.createCell(4);
+					if (record.getR40OtherInstallmentLoans() != null) {
+						R40Cell4.setCellValue(record.getR40OtherInstallmentLoans().doubleValue());
+						R40Cell4.setCellStyle(numberStyle);
+					} else {
+						R40Cell4.setCellValue("");
+						R40Cell4.setCellStyle(textStyle);
+					}
+					// --- R42 (Row Index 41) ---
+					row = sheet.getRow(41);
+					Cell R42Cell1 = row.createCell(1);
+					if (record1.getR42FactoringDebtors() != null) {
+						R42Cell1.setCellValue(record1.getR42FactoringDebtors().doubleValue());
+						R42Cell1.setCellStyle(numberStyle);
+					} else {
+						R42Cell1.setCellValue("");
+						R42Cell1.setCellStyle(textStyle);
+					}
+					Cell R42Cell2 = row.createCell(2);
+					if (record1.getR42Leasing() != null) {
+						R42Cell2.setCellValue(record1.getR42Leasing().doubleValue());
+						R42Cell2.setCellStyle(numberStyle);
+					} else {
+						R42Cell2.setCellValue("");
+						R42Cell2.setCellStyle(textStyle);
+					}
+					Cell R42Cell3 = row.createCell(3);
+					if (record.getR42Overdrafts() != null) {
+						R42Cell3.setCellValue(record.getR42Overdrafts().doubleValue());
+						R42Cell3.setCellStyle(numberStyle);
+					} else {
+						R42Cell3.setCellValue("");
+						R42Cell3.setCellStyle(textStyle);
+					}
+					Cell R42Cell4 = row.createCell(4);
+					if (record.getR42OtherInstallmentLoans() != null) {
+						R42Cell4.setCellValue(record.getR42OtherInstallmentLoans().doubleValue());
+						R42Cell4.setCellStyle(numberStyle);
+					} else {
+						R42Cell4.setCellValue("");
+						R42Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R43 (Row Index 42) ---
+					row = sheet.getRow(42);
+					Cell R43Cell1 = row.createCell(1);
+					if (record1.getR43FactoringDebtors() != null) {
+						R43Cell1.setCellValue(record1.getR43FactoringDebtors().doubleValue());
+						R43Cell1.setCellStyle(numberStyle);
+					} else {
+						R43Cell1.setCellValue("");
+						R43Cell1.setCellStyle(textStyle);
+					}
+					Cell R43Cell2 = row.createCell(2);
+					if (record1.getR43Leasing() != null) {
+						R43Cell2.setCellValue(record1.getR43Leasing().doubleValue());
+						R43Cell2.setCellStyle(numberStyle);
+					} else {
+						R43Cell2.setCellValue("");
+						R43Cell2.setCellStyle(textStyle);
+					}
+					Cell R43Cell3 = row.createCell(3);
+					if (record.getR43Overdrafts() != null) {
+						R43Cell3.setCellValue(record.getR43Overdrafts().doubleValue());
+						R43Cell3.setCellStyle(numberStyle);
+					} else {
+						R43Cell3.setCellValue("");
+						R43Cell3.setCellStyle(textStyle);
+					}
+					Cell R43Cell4 = row.createCell(4);
+					if (record.getR43OtherInstallmentLoans() != null) {
+						R43Cell4.setCellValue(record.getR43OtherInstallmentLoans().doubleValue());
+						R43Cell4.setCellStyle(numberStyle);
+					} else {
+						R43Cell4.setCellValue("");
+						R43Cell4.setCellStyle(textStyle);
+					}
+					// --- R45 (Row Index 44) ---
+					row = sheet.getRow(44);
+					Cell R45Cell1 = row.createCell(1);
+					if (record1.getR45FactoringDebtors() != null) {
+						R45Cell1.setCellValue(record1.getR45FactoringDebtors().doubleValue());
+						R45Cell1.setCellStyle(numberStyle);
+					} else {
+						R45Cell1.setCellValue("");
+						R45Cell1.setCellStyle(textStyle);
+					}
+					Cell R45Cell2 = row.createCell(2);
+					if (record1.getR45Leasing() != null) {
+						R45Cell2.setCellValue(record1.getR45Leasing().doubleValue());
+						R45Cell2.setCellStyle(numberStyle);
+					} else {
+						R45Cell2.setCellValue("");
+						R45Cell2.setCellStyle(textStyle);
+					}
+					Cell R45Cell3 = row.createCell(3);
+					if (record.getR45Overdrafts() != null) {
+						R45Cell3.setCellValue(record.getR45Overdrafts().doubleValue());
+						R45Cell3.setCellStyle(numberStyle);
+					} else {
+						R45Cell3.setCellValue("");
+						R45Cell3.setCellStyle(textStyle);
+					}
+					Cell R45Cell4 = row.createCell(4);
+					if (record.getR45OtherInstallmentLoans() != null) {
+						R45Cell4.setCellValue(record.getR45OtherInstallmentLoans().doubleValue());
+						R45Cell4.setCellStyle(numberStyle);
+					} else {
+						R45Cell4.setCellValue("");
+						R45Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R46 (Row Index 45) ---
+					row = sheet.getRow(45);
+					Cell R46Cell1 = row.createCell(1);
+					if (record1.getR46FactoringDebtors() != null) {
+						R46Cell1.setCellValue(record1.getR46FactoringDebtors().doubleValue());
+						R46Cell1.setCellStyle(numberStyle);
+					} else {
+						R46Cell1.setCellValue("");
+						R46Cell1.setCellStyle(textStyle);
+					}
+					Cell R46Cell2 = row.createCell(2);
+					if (record1.getR46Leasing() != null) {
+						R46Cell2.setCellValue(record1.getR46Leasing().doubleValue());
+						R46Cell2.setCellStyle(numberStyle);
+					} else {
+						R46Cell2.setCellValue("");
+						R46Cell2.setCellStyle(textStyle);
+					}
+					Cell R46Cell3 = row.createCell(3);
+					if (record.getR46Overdrafts() != null) {
+						R46Cell3.setCellValue(record.getR46Overdrafts().doubleValue());
+						R46Cell3.setCellStyle(numberStyle);
+					} else {
+						R46Cell3.setCellValue("");
+						R46Cell3.setCellStyle(textStyle);
+					}
+					Cell R46Cell4 = row.createCell(4);
+					if (record.getR46OtherInstallmentLoans() != null) {
+						R46Cell4.setCellValue(record.getR46OtherInstallmentLoans().doubleValue());
+						R46Cell4.setCellStyle(numberStyle);
+					} else {
+						R46Cell4.setCellValue("");
+						R46Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R47 (Row Index 46) ---
+					row = sheet.getRow(46);
+					Cell R47Cell1 = row.createCell(1);
+					if (record1.getR47FactoringDebtors() != null) {
+						R47Cell1.setCellValue(record1.getR47FactoringDebtors().doubleValue());
+						R47Cell1.setCellStyle(numberStyle);
+					} else {
+						R47Cell1.setCellValue("");
+						R47Cell1.setCellStyle(textStyle);
+					}
+					Cell R47Cell2 = row.createCell(2);
+					if (record1.getR47Leasing() != null) {
+						R47Cell2.setCellValue(record1.getR47Leasing().doubleValue());
+						R47Cell2.setCellStyle(numberStyle);
+					} else {
+						R47Cell2.setCellValue("");
+						R47Cell2.setCellStyle(textStyle);
+					}
+					Cell R47Cell3 = row.createCell(3);
+					if (record.getR47Overdrafts() != null) {
+						R47Cell3.setCellValue(record.getR47Overdrafts().doubleValue());
+						R47Cell3.setCellStyle(numberStyle);
+					} else {
+						R47Cell3.setCellValue("");
+						R47Cell3.setCellStyle(textStyle);
+					}
+					Cell R47Cell4 = row.createCell(4);
+					if (record.getR47OtherInstallmentLoans() != null) {
+						R47Cell4.setCellValue(record.getR47OtherInstallmentLoans().doubleValue());
+						R47Cell4.setCellStyle(numberStyle);
+					} else {
+						R47Cell4.setCellValue("");
+						R47Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R48 (Row Index 47) ---
+					row = sheet.getRow(47);
+					Cell R48Cell1 = row.createCell(1);
+					if (record1.getR48FactoringDebtors() != null) {
+						R48Cell1.setCellValue(record1.getR48FactoringDebtors().doubleValue());
+						R48Cell1.setCellStyle(numberStyle);
+					} else {
+						R48Cell1.setCellValue("");
+						R48Cell1.setCellStyle(textStyle);
+					}
+					Cell R48Cell2 = row.createCell(2);
+					if (record1.getR48Leasing() != null) {
+						R48Cell2.setCellValue(record1.getR48Leasing().doubleValue());
+						R48Cell2.setCellStyle(numberStyle);
+					} else {
+						R48Cell2.setCellValue("");
+						R48Cell2.setCellStyle(textStyle);
+					}
+					Cell R48Cell3 = row.createCell(3);
+					if (record.getR48Overdrafts() != null) {
+						R48Cell3.setCellValue(record.getR48Overdrafts().doubleValue());
+						R48Cell3.setCellStyle(numberStyle);
+					} else {
+						R48Cell3.setCellValue("");
+						R48Cell3.setCellStyle(textStyle);
+					}
+					Cell R48Cell4 = row.createCell(4);
+					if (record.getR48OtherInstallmentLoans() != null) {
+						R48Cell4.setCellValue(record.getR48OtherInstallmentLoans().doubleValue());
+						R48Cell4.setCellStyle(numberStyle);
+					} else {
+						R48Cell4.setCellValue("");
+						R48Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R50 (Row Index 49) ---
+					row = sheet.getRow(49);
+					Cell R50Cell1 = row.createCell(1);
+					if (record1.getR50FactoringDebtors() != null) {
+						R50Cell1.setCellValue(record1.getR50FactoringDebtors().doubleValue());
+						R50Cell1.setCellStyle(numberStyle);
+					} else {
+						R50Cell1.setCellValue("");
+						R50Cell1.setCellStyle(textStyle);
+					}
+					Cell R50Cell2 = row.createCell(2);
+					if (record1.getR50Leasing() != null) {
+						R50Cell2.setCellValue(record1.getR50Leasing().doubleValue());
+						R50Cell2.setCellStyle(numberStyle);
+					} else {
+						R50Cell2.setCellValue("");
+						R50Cell2.setCellStyle(textStyle);
+					}
+					Cell R50Cell3 = row.createCell(3);
+					if (record.getR50Overdrafts() != null) {
+						R50Cell3.setCellValue(record.getR50Overdrafts().doubleValue());
+						R50Cell3.setCellStyle(numberStyle);
+					} else {
+						R50Cell3.setCellValue("");
+						R50Cell3.setCellStyle(textStyle);
+					}
+					Cell R50Cell4 = row.createCell(4);
+					if (record.getR50OtherInstallmentLoans() != null) {
+						R50Cell4.setCellValue(record.getR50OtherInstallmentLoans().doubleValue());
+						R50Cell4.setCellStyle(numberStyle);
+					} else {
+						R50Cell4.setCellValue("");
+						R50Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R51 (Row Index 50) ---
+					row = sheet.getRow(50);
+					Cell R51Cell1 = row.createCell(1);
+					if (record1.getR51FactoringDebtors() != null) {
+						R51Cell1.setCellValue(record1.getR51FactoringDebtors().doubleValue());
+						R51Cell1.setCellStyle(numberStyle);
+					} else {
+						R51Cell1.setCellValue("");
+						R51Cell1.setCellStyle(textStyle);
+					}
+					Cell R51Cell2 = row.createCell(2);
+					if (record1.getR51Leasing() != null) {
+						R51Cell2.setCellValue(record1.getR51Leasing().doubleValue());
+						R51Cell2.setCellStyle(numberStyle);
+					} else {
+						R51Cell2.setCellValue("");
+						R51Cell2.setCellStyle(textStyle);
+					}
+					Cell R51Cell3 = row.createCell(3);
+					if (record.getR51Overdrafts() != null) {
+						R51Cell3.setCellValue(record.getR51Overdrafts().doubleValue());
+						R51Cell3.setCellStyle(numberStyle);
+					} else {
+						R51Cell3.setCellValue("");
+						R51Cell3.setCellStyle(textStyle);
+					}
+					Cell R51Cell4 = row.createCell(4);
+					if (record.getR51OtherInstallmentLoans() != null) {
+						R51Cell4.setCellValue(record.getR51OtherInstallmentLoans().doubleValue());
+						R51Cell4.setCellStyle(numberStyle);
+					} else {
+						R51Cell4.setCellValue("");
+						R51Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R52 (Row Index 51) ---
+					row = sheet.getRow(51);
+					Cell R52Cell1 = row.createCell(1);
+					if (record1.getR52FactoringDebtors() != null) {
+						R52Cell1.setCellValue(record1.getR52FactoringDebtors().doubleValue());
+						R52Cell1.setCellStyle(numberStyle);
+					} else {
+						R52Cell1.setCellValue("");
+						R52Cell1.setCellStyle(textStyle);
+					}
+					Cell R52Cell2 = row.createCell(2);
+					if (record1.getR52Leasing() != null) {
+						R52Cell2.setCellValue(record1.getR52Leasing().doubleValue());
+						R52Cell2.setCellStyle(numberStyle);
+					} else {
+						R52Cell2.setCellValue("");
+						R52Cell2.setCellStyle(textStyle);
+					}
+					Cell R52Cell3 = row.createCell(3);
+					if (record.getR52Overdrafts() != null) {
+						R52Cell3.setCellValue(record.getR52Overdrafts().doubleValue());
+						R52Cell3.setCellStyle(numberStyle);
+					} else {
+						R52Cell3.setCellValue("");
+						R52Cell3.setCellStyle(textStyle);
+					}
+					Cell R52Cell4 = row.createCell(4);
+					if (record.getR52OtherInstallmentLoans() != null) {
+						R52Cell4.setCellValue(record.getR52OtherInstallmentLoans().doubleValue());
+						R52Cell4.setCellStyle(numberStyle);
+					} else {
+						R52Cell4.setCellValue("");
+						R52Cell4.setCellStyle(textStyle);
+					}
+					// --- R54 (Row Index 53) ---
+					row = sheet.getRow(53);
+					Cell R54Cell1 = row.createCell(1);
+					if (record1.getR54FactoringDebtors() != null) {
+						R54Cell1.setCellValue(record1.getR54FactoringDebtors().doubleValue());
+						R54Cell1.setCellStyle(numberStyle);
+					} else {
+						R54Cell1.setCellValue("");
+						R54Cell1.setCellStyle(textStyle);
+					}
+					Cell R54Cell2 = row.createCell(2);
+					if (record1.getR54Leasing() != null) {
+						R54Cell2.setCellValue(record1.getR54Leasing().doubleValue());
+						R54Cell2.setCellStyle(numberStyle);
+					} else {
+						R54Cell2.setCellValue("");
+						R54Cell2.setCellStyle(textStyle);
+					}
+					Cell R54Cell3 = row.createCell(3);
+					if (record.getR54Overdrafts() != null) {
+						R54Cell3.setCellValue(record.getR54Overdrafts().doubleValue());
+						R54Cell3.setCellStyle(numberStyle);
+					} else {
+						R54Cell3.setCellValue("");
+						R54Cell3.setCellStyle(textStyle);
+					}
+					Cell R54Cell4 = row.createCell(4);
+					if (record.getR54OtherInstallmentLoans() != null) {
+						R54Cell4.setCellValue(record.getR54OtherInstallmentLoans().doubleValue());
+						R54Cell4.setCellStyle(numberStyle);
+					} else {
+						R54Cell4.setCellValue("");
+						R54Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R55 (Row Index 54) ---
+					row = sheet.getRow(54);
+					Cell R55Cell1 = row.createCell(1);
+					if (record1.getR55FactoringDebtors() != null) {
+						R55Cell1.setCellValue(record1.getR55FactoringDebtors().doubleValue());
+						R55Cell1.setCellStyle(numberStyle);
+					} else {
+						R55Cell1.setCellValue("");
+						R55Cell1.setCellStyle(textStyle);
+					}
+					Cell R55Cell2 = row.createCell(2);
+					if (record1.getR55Leasing() != null) {
+						R55Cell2.setCellValue(record1.getR55Leasing().doubleValue());
+						R55Cell2.setCellStyle(numberStyle);
+					} else {
+						R55Cell2.setCellValue("");
+						R55Cell2.setCellStyle(textStyle);
+					}
+					Cell R55Cell3 = row.createCell(3);
+					if (record.getR55Overdrafts() != null) {
+						R55Cell3.setCellValue(record.getR55Overdrafts().doubleValue());
+						R55Cell3.setCellStyle(numberStyle);
+					} else {
+						R55Cell3.setCellValue("");
+						R55Cell3.setCellStyle(textStyle);
+					}
+					Cell R55Cell4 = row.createCell(4);
+					if (record.getR55OtherInstallmentLoans() != null) {
+						R55Cell4.setCellValue(record.getR55OtherInstallmentLoans().doubleValue());
+						R55Cell4.setCellStyle(numberStyle);
+					} else {
+						R55Cell4.setCellValue("");
+						R55Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R56 (Row Index 55) ---
+					row = sheet.getRow(55);
+					Cell R56Cell1 = row.createCell(1);
+					if (record1.getR56FactoringDebtors() != null) {
+						R56Cell1.setCellValue(record1.getR56FactoringDebtors().doubleValue());
+						R56Cell1.setCellStyle(numberStyle);
+					} else {
+						R56Cell1.setCellValue("");
+						R56Cell1.setCellStyle(textStyle);
+					}
+					Cell R56Cell2 = row.createCell(2);
+					if (record1.getR56Leasing() != null) {
+						R56Cell2.setCellValue(record1.getR56Leasing().doubleValue());
+						R56Cell2.setCellStyle(numberStyle);
+					} else {
+						R56Cell2.setCellValue("");
+						R56Cell2.setCellStyle(textStyle);
+					}
+					Cell R56Cell3 = row.createCell(3);
+					if (record.getR56Overdrafts() != null) {
+						R56Cell3.setCellValue(record.getR56Overdrafts().doubleValue());
+						R56Cell3.setCellStyle(numberStyle);
+					} else {
+						R56Cell3.setCellValue("");
+						R56Cell3.setCellStyle(textStyle);
+					}
+					Cell R56Cell4 = row.createCell(4);
+					if (record.getR56OtherInstallmentLoans() != null) {
+						R56Cell4.setCellValue(record.getR56OtherInstallmentLoans().doubleValue());
+						R56Cell4.setCellStyle(numberStyle);
+					} else {
+						R56Cell4.setCellValue("");
+						R56Cell4.setCellStyle(textStyle);
+					}
+					// --- R58 (Row Index 57) ---
+					row = sheet.getRow(57);
+					Cell R58Cell1 = row.createCell(1);
+					if (record1.getR58FactoringDebtors() != null) {
+						R58Cell1.setCellValue(record1.getR58FactoringDebtors().doubleValue());
+						R58Cell1.setCellStyle(numberStyle);
+					} else {
+						R58Cell1.setCellValue("");
+						R58Cell1.setCellStyle(textStyle);
+					}
+					Cell R58Cell2 = row.createCell(2);
+					if (record1.getR58Leasing() != null) {
+						R58Cell2.setCellValue(record1.getR58Leasing().doubleValue());
+						R58Cell2.setCellStyle(numberStyle);
+					} else {
+						R58Cell2.setCellValue("");
+						R58Cell2.setCellStyle(textStyle);
+					}
+					Cell R58Cell3 = row.createCell(3);
+					if (record.getR58Overdrafts() != null) {
+						R58Cell3.setCellValue(record.getR58Overdrafts().doubleValue());
+						R58Cell3.setCellStyle(numberStyle);
+					} else {
+						R58Cell3.setCellValue("");
+						R58Cell3.setCellStyle(textStyle);
+					}
+					Cell R58Cell4 = row.createCell(4);
+					if (record.getR58OtherInstallmentLoans() != null) {
+						R58Cell4.setCellValue(record.getR58OtherInstallmentLoans().doubleValue());
+						R58Cell4.setCellStyle(numberStyle);
+					} else {
+						R58Cell4.setCellValue("");
+						R58Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R59 (Row Index 58) ---
+					row = sheet.getRow(58);
+					Cell R59Cell1 = row.createCell(1);
+					if (record1.getR59FactoringDebtors() != null) {
+						R59Cell1.setCellValue(record1.getR59FactoringDebtors().doubleValue());
+						R59Cell1.setCellStyle(numberStyle);
+					} else {
+						R59Cell1.setCellValue("");
+						R59Cell1.setCellStyle(textStyle);
+					}
+					Cell R59Cell2 = row.createCell(2);
+					if (record1.getR59Leasing() != null) {
+						R59Cell2.setCellValue(record1.getR59Leasing().doubleValue());
+						R59Cell2.setCellStyle(numberStyle);
+					} else {
+						R59Cell2.setCellValue("");
+						R59Cell2.setCellStyle(textStyle);
+					}
+					Cell R59Cell3 = row.createCell(3);
+					if (record.getR59Overdrafts() != null) {
+						R59Cell3.setCellValue(record.getR59Overdrafts().doubleValue());
+						R59Cell3.setCellStyle(numberStyle);
+					} else {
+						R59Cell3.setCellValue("");
+						R59Cell3.setCellStyle(textStyle);
+					}
+					Cell R59Cell4 = row.createCell(4);
+					if (record.getR59OtherInstallmentLoans() != null) {
+						R59Cell4.setCellValue(record.getR59OtherInstallmentLoans().doubleValue());
+						R59Cell4.setCellStyle(numberStyle);
+					} else {
+						R59Cell4.setCellValue("");
+						R59Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R60 (Row Index 59) ---
+					row = sheet.getRow(59);
+					Cell R60Cell1 = row.createCell(1);
+					if (record1.getR60FactoringDebtors() != null) {
+						R60Cell1.setCellValue(record1.getR60FactoringDebtors().doubleValue());
+						R60Cell1.setCellStyle(numberStyle);
+					} else {
+						R60Cell1.setCellValue("");
+						R60Cell1.setCellStyle(textStyle);
+					}
+					Cell R60Cell2 = row.createCell(2);
+					if (record1.getR60Leasing() != null) {
+						R60Cell2.setCellValue(record1.getR60Leasing().doubleValue());
+						R60Cell2.setCellStyle(numberStyle);
+					} else {
+						R60Cell2.setCellValue("");
+						R60Cell2.setCellStyle(textStyle);
+					}
+					Cell R60Cell3 = row.createCell(3);
+					if (record.getR60Overdrafts() != null) {
+						R60Cell3.setCellValue(record.getR60Overdrafts().doubleValue());
+						R60Cell3.setCellStyle(numberStyle);
+					} else {
+						R60Cell3.setCellValue("");
+						R60Cell3.setCellStyle(textStyle);
+					}
+					Cell R60Cell4 = row.createCell(4);
+					if (record.getR60OtherInstallmentLoans() != null) {
+						R60Cell4.setCellValue(record.getR60OtherInstallmentLoans().doubleValue());
+						R60Cell4.setCellStyle(numberStyle);
+					} else {
+						R60Cell4.setCellValue("");
+						R60Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R61 (Row Index 60) ---
+					row = sheet.getRow(60);
+					Cell R61Cell1 = row.createCell(1);
+					if (record1.getR61FactoringDebtors() != null) {
+						R61Cell1.setCellValue(record1.getR61FactoringDebtors().doubleValue());
+						R61Cell1.setCellStyle(numberStyle);
+					} else {
+						R61Cell1.setCellValue("");
+						R61Cell1.setCellStyle(textStyle);
+					}
+					Cell R61Cell2 = row.createCell(2);
+					if (record1.getR61Leasing() != null) {
+						R61Cell2.setCellValue(record1.getR61Leasing().doubleValue());
+						R61Cell2.setCellStyle(numberStyle);
+					} else {
+						R61Cell2.setCellValue("");
+						R61Cell2.setCellStyle(textStyle);
+					}
+					Cell R61Cell3 = row.createCell(3);
+					if (record.getR61Overdrafts() != null) {
+						R61Cell3.setCellValue(record.getR61Overdrafts().doubleValue());
+						R61Cell3.setCellStyle(numberStyle);
+					} else {
+						R61Cell3.setCellValue("");
+						R61Cell3.setCellStyle(textStyle);
+					}
+					Cell R61Cell4 = row.createCell(4);
+					if (record.getR61OtherInstallmentLoans() != null) {
+						R61Cell4.setCellValue(record.getR61OtherInstallmentLoans().doubleValue());
+						R61Cell4.setCellStyle(numberStyle);
+					} else {
+						R61Cell4.setCellValue("");
+						R61Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R62 (Row Index 61) ---
+					row = sheet.getRow(61);
+					Cell R62Cell1 = row.createCell(1);
+					if (record1.getR62FactoringDebtors() != null) {
+						R62Cell1.setCellValue(record1.getR62FactoringDebtors().doubleValue());
+						R62Cell1.setCellStyle(numberStyle);
+					} else {
+						R62Cell1.setCellValue("");
+						R62Cell1.setCellStyle(textStyle);
+					}
+					Cell R62Cell2 = row.createCell(2);
+					if (record1.getR62Leasing() != null) {
+						R62Cell2.setCellValue(record1.getR62Leasing().doubleValue());
+						R62Cell2.setCellStyle(numberStyle);
+					} else {
+						R62Cell2.setCellValue("");
+						R62Cell2.setCellStyle(textStyle);
+					}
+					Cell R62Cell3 = row.createCell(3);
+					if (record.getR62Overdrafts() != null) {
+						R62Cell3.setCellValue(record.getR62Overdrafts().doubleValue());
+						R62Cell3.setCellStyle(numberStyle);
+					} else {
+						R62Cell3.setCellValue("");
+						R62Cell3.setCellStyle(textStyle);
+					}
+					Cell R62Cell4 = row.createCell(4);
+					if (record.getR62OtherInstallmentLoans() != null) {
+						R62Cell4.setCellValue(record.getR62OtherInstallmentLoans().doubleValue());
+						R62Cell4.setCellStyle(numberStyle);
+					} else {
+						R62Cell4.setCellValue("");
+						R62Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R63 (Row Index 62) ---
+					row = sheet.getRow(62);
+					Cell R63Cell1 = row.createCell(1);
+					if (record1.getR63FactoringDebtors() != null) {
+						R63Cell1.setCellValue(record1.getR63FactoringDebtors().doubleValue());
+						R63Cell1.setCellStyle(numberStyle);
+					} else {
+						R63Cell1.setCellValue("");
+						R63Cell1.setCellStyle(textStyle);
+					}
+					Cell R63Cell2 = row.createCell(2);
+					if (record1.getR63Leasing() != null) {
+						R63Cell2.setCellValue(record1.getR63Leasing().doubleValue());
+						R63Cell2.setCellStyle(numberStyle);
+					} else {
+						R63Cell2.setCellValue("");
+						R63Cell2.setCellStyle(textStyle);
+					}
+					Cell R63Cell3 = row.createCell(3);
+					if (record.getR63Overdrafts() != null) {
+						R63Cell3.setCellValue(record.getR63Overdrafts().doubleValue());
+						R63Cell3.setCellStyle(numberStyle);
+					} else {
+						R63Cell3.setCellValue("");
+						R63Cell3.setCellStyle(textStyle);
+					}
+					Cell R63Cell4 = row.createCell(4);
+					if (record.getR63OtherInstallmentLoans() != null) {
+						R63Cell4.setCellValue(record.getR63OtherInstallmentLoans().doubleValue());
+						R63Cell4.setCellStyle(numberStyle);
+					} else {
+						R63Cell4.setCellValue("");
+						R63Cell4.setCellStyle(textStyle);
+					}
+
+				}
+
+				workbook.setForceFormulaRecalculation(true);
+			} else {
+
+			}
+
+// Write the final workbook content to the in-memory stream.
+			workbook.write(out);
+
+			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+			return out.toByteArray();
+		}
+
+	}
+
+	// Archival Email Excel
+	public byte[] BRRS_M_LA4EmailArchivalExcel(String filename, String reportId, String fromdate, String todate,
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
+
+		logger.info("Service: Starting Archival Email Excel generation process in memory.");
+
+		List<M_LA4_Archival_Summary_Entity> dataList = M_LA4_Archival_Summary_Repo
+				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<M_LA4_Archival_Summary_Entity2> dataList1 = M_LA4_Archival_Summary_Repo2
+				.getdatabydateListarchival(dateformat.parse(todate), version);
+		if (dataList.isEmpty()) {
+			logger.warn("Service: No data found for BRRS_M_LA4 report. Returning empty result.");
+			return new byte[0];
+		}
+
+		String templateDir = env.getProperty("output.exportpathtemp");
+		String templateFileName = filename;
+		System.out.println(filename);
+		Path templatePath = Paths.get(templateDir, templateFileName);
+		System.out.println(templatePath);
+
+		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+		if (!Files.exists(templatePath)) {
+			// This specific exception will be caught by the controller.
+			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+		}
+		if (!Files.isReadable(templatePath)) {
+			// A specific exception for permission errors.
+			throw new SecurityException(
+					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+		}
+
+		// This try-with-resources block is perfect. It guarantees all resources are
+		// closed automatically.
+		try (InputStream templateInputStream = Files.newInputStream(templatePath);
+				Workbook workbook = WorkbookFactory.create(templateInputStream);
+				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+			Sheet sheet = workbook.getSheetAt(0);
+
+			// --- Style Definitions ---
+			CreationHelper createHelper = workbook.getCreationHelper();
+
+			CellStyle dateStyle = workbook.createCellStyle();
+			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+			dateStyle.setBorderBottom(BorderStyle.THIN);
+			dateStyle.setBorderTop(BorderStyle.THIN);
+			dateStyle.setBorderLeft(BorderStyle.THIN);
+			dateStyle.setBorderRight(BorderStyle.THIN);
+
+			CellStyle textStyle = workbook.createCellStyle();
+			textStyle.setBorderBottom(BorderStyle.THIN);
+			textStyle.setBorderTop(BorderStyle.THIN);
+			textStyle.setBorderLeft(BorderStyle.THIN);
+			textStyle.setBorderRight(BorderStyle.THIN);
+
+			// Create the font
+			Font font = workbook.createFont();
+			font.setFontHeightInPoints((short) 8); // size 8
+			font.setFontName("Arial");
+
+			CellStyle numberStyle = workbook.createCellStyle();
+			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+			numberStyle.setBorderBottom(BorderStyle.THIN);
+			numberStyle.setBorderTop(BorderStyle.THIN);
+			numberStyle.setBorderLeft(BorderStyle.THIN);
+			numberStyle.setBorderRight(BorderStyle.THIN);
+			numberStyle.setFont(font);
+			// --- End of Style Definitions ---
+
+			int startRow = 11;
+
+			if (!dataList.isEmpty()) {
+				for (int i = 0; i < dataList.size(); i++) {
+					M_LA4_Archival_Summary_Entity record = dataList.get(i);
+					M_LA4_Archival_Summary_Entity2 record1 = dataList1.get(i);
+					System.out.println("rownumber=" + startRow + i);
+					Row row = sheet.getRow(startRow + i);
+					if (row == null) {
+						row = sheet.createRow(startRow + i);
+					}
+//EMAIL
+
+					// R12 Col B
+					Cell R12Cell1 = row.createCell(1);
+					if (record1.getR12FactoringDebtors() != null) {
+						R12Cell1.setCellValue(record1.getR12FactoringDebtors().doubleValue());
+						R12Cell1.setCellStyle(numberStyle);
+					} else {
+						R12Cell1.setCellValue("");
+						R12Cell1.setCellStyle(textStyle);
+					}
+
+					// R12 Col C
+					Cell R12Cell2 = row.createCell(2);
+					if (record1.getR12Leasing() != null) {
+						R12Cell2.setCellValue(record1.getR12Leasing().doubleValue());
+						R12Cell2.setCellStyle(numberStyle);
+					} else {
+						R12Cell2.setCellValue("");
+						R12Cell2.setCellStyle(textStyle);
+					}
+					// R12 Col D
+					Cell R12Cell3 = row.createCell(3);
+					if (record.getR12Overdrafts() != null) {
+						R12Cell3.setCellValue(record.getR12Overdrafts().doubleValue());
+						R12Cell3.setCellStyle(numberStyle);
+					} else {
+						R12Cell3.setCellValue("");
+						R12Cell3.setCellStyle(textStyle);
+					}
+
+					// R12 Col E
+					Cell R12Cell4 = row.createCell(4);
+					if (record.getR12OtherInstallmentLoans() != null) {
+						R12Cell4.setCellValue(record.getR12OtherInstallmentLoans().doubleValue());
+						R12Cell4.setCellStyle(numberStyle);
+					} else {
+						R12Cell4.setCellValue("");
+						R12Cell4.setCellStyle(textStyle);
+					}
+					// R13 Col B
+					row = sheet.getRow(12);
+					// R13 Col B
+					Cell R13Cell1 = row.createCell(1);
+					if (record1.getR13FactoringDebtors() != null) {
+						R13Cell1.setCellValue(record1.getR13FactoringDebtors().doubleValue());
+						R13Cell1.setCellStyle(numberStyle);
+					} else {
+						R13Cell1.setCellValue("");
+						R13Cell1.setCellStyle(textStyle);
+					}
+
+					// R13 Col C
+					Cell R13Cell2 = row.createCell(2);
+					if (record1.getR13Leasing() != null) {
+						R13Cell2.setCellValue(record1.getR13Leasing().doubleValue());
+						R13Cell2.setCellStyle(numberStyle);
+					} else {
+						R13Cell2.setCellValue("");
+						R13Cell2.setCellStyle(textStyle);
+					}
+					// R13 Col D
+					Cell R13Cell3 = row.createCell(3);
+					if (record.getR13Overdrafts() != null) {
+						R13Cell3.setCellValue(record.getR13Overdrafts().doubleValue());
+						R13Cell3.setCellStyle(numberStyle);
+					} else {
+						R13Cell3.setCellValue("");
+						R13Cell3.setCellStyle(textStyle);
+					}
+
+					// R13 Col E
+					Cell R13Cell4 = row.createCell(4);
+					if (record.getR13OtherInstallmentLoans() != null) {
+						R13Cell4.setCellValue(record.getR13OtherInstallmentLoans().doubleValue());
+						R13Cell4.setCellStyle(numberStyle);
+					} else {
+						R13Cell4.setCellValue("");
+						R13Cell4.setCellStyle(textStyle);
+					}
+					// R14 Col B
+					row = sheet.getRow(13); // Row index 13 is Excel Row 14
+					// R14 Col B
+					Cell R14Cell1 = row.createCell(1);
+					if (record1.getR14FactoringDebtors() != null) {
+						R14Cell1.setCellValue(record1.getR14FactoringDebtors().doubleValue());
+						R14Cell1.setCellStyle(numberStyle);
+					} else {
+						R14Cell1.setCellValue("");
+						R14Cell1.setCellStyle(textStyle);
+					}
+
+					// R14 Col C
+					Cell R14Cell2 = row.createCell(2);
+					if (record1.getR14Leasing() != null) {
+						R14Cell2.setCellValue(record1.getR14Leasing().doubleValue());
+						R14Cell2.setCellStyle(numberStyle);
+					} else {
+						R14Cell2.setCellValue("");
+						R14Cell2.setCellStyle(textStyle);
+					}
+
+					// R14 Col D
+					Cell R14Cell3 = row.createCell(3);
+					if (record.getR14Overdrafts() != null) {
+						R14Cell3.setCellValue(record.getR14Overdrafts().doubleValue());
+						R14Cell3.setCellStyle(numberStyle);
+					} else {
+						R14Cell3.setCellValue("");
+						R14Cell3.setCellStyle(textStyle);
+					}
+
+					// R14 Col E
+					Cell R14Cell4 = row.createCell(4);
+					if (record.getR14OtherInstallmentLoans() != null) {
+						R14Cell4.setCellValue(record.getR14OtherInstallmentLoans().doubleValue());
+						R14Cell4.setCellStyle(numberStyle);
+					} else {
+						R14Cell4.setCellValue("");
+						R14Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R16 (Row Index 15) ---
+					row = sheet.getRow(15);
+					Cell R16Cell1 = row.createCell(1);
+					if (record1.getR16FactoringDebtors() != null) {
+						R16Cell1.setCellValue(record1.getR16FactoringDebtors().doubleValue());
+						R16Cell1.setCellStyle(numberStyle);
+					} else {
+						R16Cell1.setCellValue("");
+						R16Cell1.setCellStyle(textStyle);
+					}
+					Cell R16Cell2 = row.createCell(2);
+					if (record1.getR16Leasing() != null) {
+						R16Cell2.setCellValue(record1.getR16Leasing().doubleValue());
+						R16Cell2.setCellStyle(numberStyle);
+					} else {
+						R16Cell2.setCellValue("");
+						R16Cell2.setCellStyle(textStyle);
+					}
+					Cell R16Cell3 = row.createCell(3);
+					if (record.getR16Overdrafts() != null) {
+						R16Cell3.setCellValue(record.getR16Overdrafts().doubleValue());
+						R16Cell3.setCellStyle(numberStyle);
+					} else {
+						R16Cell3.setCellValue("");
+						R16Cell3.setCellStyle(textStyle);
+					}
+					Cell R16Cell4 = row.createCell(4);
+					if (record.getR16OtherInstallmentLoans() != null) {
+						R16Cell4.setCellValue(record.getR16OtherInstallmentLoans().doubleValue());
+						R16Cell4.setCellStyle(numberStyle);
+					} else {
+						R16Cell4.setCellValue("");
+						R16Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R17 (Row Index 16) ---
+					row = sheet.getRow(16);
+					Cell R17Cell1 = row.createCell(1);
+					if (record1.getR17FactoringDebtors() != null) {
+						R17Cell1.setCellValue(record1.getR17FactoringDebtors().doubleValue());
+						R17Cell1.setCellStyle(numberStyle);
+					} else {
+						R17Cell1.setCellValue("");
+						R17Cell1.setCellStyle(textStyle);
+					}
+					Cell R17Cell2 = row.createCell(2);
+					if (record1.getR17Leasing() != null) {
+						R17Cell2.setCellValue(record1.getR17Leasing().doubleValue());
+						R17Cell2.setCellStyle(numberStyle);
+					} else {
+						R17Cell2.setCellValue("");
+						R17Cell2.setCellStyle(textStyle);
+					}
+					Cell R17Cell3 = row.createCell(3);
+					if (record.getR17Overdrafts() != null) {
+						R17Cell3.setCellValue(record.getR17Overdrafts().doubleValue());
+						R17Cell3.setCellStyle(numberStyle);
+					} else {
+						R17Cell3.setCellValue("");
+						R17Cell3.setCellStyle(textStyle);
+					}
+					Cell R17Cell4 = row.createCell(4);
+					if (record.getR17OtherInstallmentLoans() != null) {
+						R17Cell4.setCellValue(record.getR17OtherInstallmentLoans().doubleValue());
+						R17Cell4.setCellStyle(numberStyle);
+					} else {
+						R17Cell4.setCellValue("");
+						R17Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R18 (Row Index 17) ---
+					row = sheet.getRow(17);
+					Cell R18Cell1 = row.createCell(1);
+					if (record1.getR18FactoringDebtors() != null) {
+						R18Cell1.setCellValue(record1.getR18FactoringDebtors().doubleValue());
+						R18Cell1.setCellStyle(numberStyle);
+					} else {
+						R18Cell1.setCellValue("");
+						R18Cell1.setCellStyle(textStyle);
+					}
+					Cell R18Cell2 = row.createCell(2);
+					if (record1.getR18Leasing() != null) {
+						R18Cell2.setCellValue(record1.getR18Leasing().doubleValue());
+						R18Cell2.setCellStyle(numberStyle);
+					} else {
+						R18Cell2.setCellValue("");
+						R18Cell2.setCellStyle(textStyle);
+					}
+					Cell R18Cell3 = row.createCell(3);
+					if (record.getR18Overdrafts() != null) {
+						R18Cell3.setCellValue(record.getR18Overdrafts().doubleValue());
+						R18Cell3.setCellStyle(numberStyle);
+					} else {
+						R18Cell3.setCellValue("");
+						R18Cell3.setCellStyle(textStyle);
+					}
+					Cell R18Cell4 = row.createCell(4);
+					if (record.getR18OtherInstallmentLoans() != null) {
+						R18Cell4.setCellValue(record.getR18OtherInstallmentLoans().doubleValue());
+						R18Cell4.setCellStyle(numberStyle);
+					} else {
+						R18Cell4.setCellValue("");
+						R18Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R19 (Row Index 18) ---
+					row = sheet.getRow(18);
+					Cell R19Cell1 = row.createCell(1);
+					if (record1.getR19FactoringDebtors() != null) {
+						R19Cell1.setCellValue(record1.getR19FactoringDebtors().doubleValue());
+						R19Cell1.setCellStyle(numberStyle);
+					} else {
+						R19Cell1.setCellValue("");
+						R19Cell1.setCellStyle(textStyle);
+					}
+					Cell R19Cell2 = row.createCell(2);
+					if (record1.getR19Leasing() != null) {
+						R19Cell2.setCellValue(record1.getR19Leasing().doubleValue());
+						R19Cell2.setCellStyle(numberStyle);
+					} else {
+						R19Cell2.setCellValue("");
+						R19Cell2.setCellStyle(textStyle);
+					}
+					Cell R19Cell3 = row.createCell(3);
+					if (record.getR19Overdrafts() != null) {
+						R19Cell3.setCellValue(record.getR19Overdrafts().doubleValue());
+						R19Cell3.setCellStyle(numberStyle);
+					} else {
+						R19Cell3.setCellValue("");
+						R19Cell3.setCellStyle(textStyle);
+					}
+					Cell R19Cell4 = row.createCell(4);
+					if (record.getR19OtherInstallmentLoans() != null) {
+						R19Cell4.setCellValue(record.getR19OtherInstallmentLoans().doubleValue());
+						R19Cell4.setCellStyle(numberStyle);
+					} else {
+						R19Cell4.setCellValue("");
+						R19Cell4.setCellStyle(textStyle);
+					}
+					// --- R20 (Row Index 19) ---
+					row = sheet.getRow(19);
+					Cell R20Cell1 = row.createCell(1);
+					if (record1.getR20FactoringDebtors() != null) {
+						R20Cell1.setCellValue(record1.getR20FactoringDebtors().doubleValue());
+						R20Cell1.setCellStyle(numberStyle);
+					} else {
+						R20Cell1.setCellValue("");
+						R20Cell1.setCellStyle(textStyle);
+					}
+					Cell R20Cell2 = row.createCell(2);
+					if (record1.getR20Leasing() != null) {
+						R20Cell2.setCellValue(record1.getR20Leasing().doubleValue());
+						R20Cell2.setCellStyle(numberStyle);
+					} else {
+						R20Cell2.setCellValue("");
+						R20Cell2.setCellStyle(textStyle);
+					}
+					Cell R20Cell3 = row.createCell(3);
+					if (record.getR20Overdrafts() != null) {
+						R20Cell3.setCellValue(record.getR20Overdrafts().doubleValue());
+						R20Cell3.setCellStyle(numberStyle);
+					} else {
+						R20Cell3.setCellValue("");
+						R20Cell3.setCellStyle(textStyle);
+					}
+					Cell R20Cell4 = row.createCell(4);
+					if (record.getR20OtherInstallmentLoans() != null) {
+						R20Cell4.setCellValue(record.getR20OtherInstallmentLoans().doubleValue());
+						R20Cell4.setCellStyle(numberStyle);
+					} else {
+						R20Cell4.setCellValue("");
+						R20Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R21 (Row Index 20) ---
+					row = sheet.getRow(20);
+					Cell R21Cell1 = row.createCell(1);
+					if (record1.getR21FactoringDebtors() != null) {
+						R21Cell1.setCellValue(record1.getR21FactoringDebtors().doubleValue());
+						R21Cell1.setCellStyle(numberStyle);
+					} else {
+						R21Cell1.setCellValue("");
+						R21Cell1.setCellStyle(textStyle);
+					}
+					Cell R21Cell2 = row.createCell(2);
+					if (record1.getR21Leasing() != null) {
+						R21Cell2.setCellValue(record1.getR21Leasing().doubleValue());
+						R21Cell2.setCellStyle(numberStyle);
+					} else {
+						R21Cell2.setCellValue("");
+						R21Cell2.setCellStyle(textStyle);
+					}
+					Cell R21Cell3 = row.createCell(3);
+					if (record.getR21Overdrafts() != null) {
+						R21Cell3.setCellValue(record.getR21Overdrafts().doubleValue());
+						R21Cell3.setCellStyle(numberStyle);
+					} else {
+						R21Cell3.setCellValue("");
+						R21Cell3.setCellStyle(textStyle);
+					}
+					Cell R21Cell4 = row.createCell(4);
+					if (record.getR21OtherInstallmentLoans() != null) {
+						R21Cell4.setCellValue(record.getR21OtherInstallmentLoans().doubleValue());
+						R21Cell4.setCellStyle(numberStyle);
+					} else {
+						R21Cell4.setCellValue("");
+						R21Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R22 (Row Index 21) ---
+					row = sheet.getRow(21);
+					Cell R22Cell1 = row.createCell(1);
+					if (record1.getR22FactoringDebtors() != null) {
+						R22Cell1.setCellValue(record1.getR22FactoringDebtors().doubleValue());
+						R22Cell1.setCellStyle(numberStyle);
+					} else {
+						R22Cell1.setCellValue("");
+						R22Cell1.setCellStyle(textStyle);
+					}
+					Cell R22Cell2 = row.createCell(2);
+					if (record1.getR22Leasing() != null) {
+						R22Cell2.setCellValue(record1.getR22Leasing().doubleValue());
+						R22Cell2.setCellStyle(numberStyle);
+					} else {
+						R22Cell2.setCellValue("");
+						R22Cell2.setCellStyle(textStyle);
+					}
+					Cell R22Cell3 = row.createCell(3);
+					if (record.getR22Overdrafts() != null) {
+						R22Cell3.setCellValue(record.getR22Overdrafts().doubleValue());
+						R22Cell3.setCellStyle(numberStyle);
+					} else {
+						R22Cell3.setCellValue("");
+						R22Cell3.setCellStyle(textStyle);
+					}
+					Cell R22Cell4 = row.createCell(4);
+					if (record.getR22OtherInstallmentLoans() != null) {
+						R22Cell4.setCellValue(record.getR22OtherInstallmentLoans().doubleValue());
+						R22Cell4.setCellStyle(numberStyle);
+					} else {
+						R22Cell4.setCellValue("");
+						R22Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R23 (Row Index 22) ---
+					row = sheet.getRow(22);
+					Cell R23Cell1 = row.createCell(1);
+					if (record1.getR23FactoringDebtors() != null) {
+						R23Cell1.setCellValue(record1.getR23FactoringDebtors().doubleValue());
+						R23Cell1.setCellStyle(numberStyle);
+					} else {
+						R23Cell1.setCellValue("");
+						R23Cell1.setCellStyle(textStyle);
+					}
+					Cell R23Cell2 = row.createCell(2);
+					if (record1.getR23Leasing() != null) {
+						R23Cell2.setCellValue(record1.getR23Leasing().doubleValue());
+						R23Cell2.setCellStyle(numberStyle);
+					} else {
+						R23Cell2.setCellValue("");
+						R23Cell2.setCellStyle(textStyle);
+					}
+					Cell R23Cell3 = row.createCell(3);
+					if (record.getR23Overdrafts() != null) {
+						R23Cell3.setCellValue(record.getR23Overdrafts().doubleValue());
+						R23Cell3.setCellStyle(numberStyle);
+					} else {
+						R23Cell3.setCellValue("");
+						R23Cell3.setCellStyle(textStyle);
+					}
+					Cell R23Cell4 = row.createCell(4);
+					if (record.getR23OtherInstallmentLoans() != null) {
+						R23Cell4.setCellValue(record.getR23OtherInstallmentLoans().doubleValue());
+						R23Cell4.setCellStyle(numberStyle);
+					} else {
+						R23Cell4.setCellValue("");
+						R23Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R24 (Row Index 23) ---
+					row = sheet.getRow(23);
+					Cell R24Cell1 = row.createCell(1);
+					if (record1.getR24FactoringDebtors() != null) {
+						R24Cell1.setCellValue(record1.getR24FactoringDebtors().doubleValue());
+						R24Cell1.setCellStyle(numberStyle);
+					} else {
+						R24Cell1.setCellValue("");
+						R24Cell1.setCellStyle(textStyle);
+					}
+					Cell R24Cell2 = row.createCell(2);
+					if (record1.getR24Leasing() != null) {
+						R24Cell2.setCellValue(record1.getR24Leasing().doubleValue());
+						R24Cell2.setCellStyle(numberStyle);
+					} else {
+						R24Cell2.setCellValue("");
+						R24Cell2.setCellStyle(textStyle);
+					}
+					Cell R24Cell3 = row.createCell(3);
+					if (record.getR24Overdrafts() != null) {
+						R24Cell3.setCellValue(record.getR24Overdrafts().doubleValue());
+						R24Cell3.setCellStyle(numberStyle);
+					} else {
+						R24Cell3.setCellValue("");
+						R24Cell3.setCellStyle(textStyle);
+					}
+					Cell R24Cell4 = row.createCell(4);
+					if (record.getR24OtherInstallmentLoans() != null) {
+						R24Cell4.setCellValue(record.getR24OtherInstallmentLoans().doubleValue());
+						R24Cell4.setCellStyle(numberStyle);
+					} else {
+						R24Cell4.setCellValue("");
+						R24Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R25 (Row Index 24) ---
+					row = sheet.getRow(24);
+					Cell R25Cell1 = row.createCell(1);
+					if (record1.getR25FactoringDebtors() != null) {
+						R25Cell1.setCellValue(record1.getR25FactoringDebtors().doubleValue());
+						R25Cell1.setCellStyle(numberStyle);
+					} else {
+						R25Cell1.setCellValue("");
+						R25Cell1.setCellStyle(textStyle);
+					}
+					Cell R25Cell2 = row.createCell(2);
+					if (record1.getR25Leasing() != null) {
+						R25Cell2.setCellValue(record1.getR25Leasing().doubleValue());
+						R25Cell2.setCellStyle(numberStyle);
+					} else {
+						R25Cell2.setCellValue("");
+						R25Cell2.setCellStyle(textStyle);
+					}
+					Cell R25Cell3 = row.createCell(3);
+					if (record.getR25Overdrafts() != null) {
+						R25Cell3.setCellValue(record.getR25Overdrafts().doubleValue());
+						R25Cell3.setCellStyle(numberStyle);
+					} else {
+						R25Cell3.setCellValue("");
+						R25Cell3.setCellStyle(textStyle);
+					}
+					Cell R25Cell4 = row.createCell(4);
+					if (record.getR25OtherInstallmentLoans() != null) {
+						R25Cell4.setCellValue(record.getR25OtherInstallmentLoans().doubleValue());
+						R25Cell4.setCellStyle(numberStyle);
+					} else {
+						R25Cell4.setCellValue("");
+						R25Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R26 (Row Index 25) ---
+					row = sheet.getRow(25);
+					Cell R26Cell1 = row.createCell(1);
+					if (record1.getR26FactoringDebtors() != null) {
+						R26Cell1.setCellValue(record1.getR26FactoringDebtors().doubleValue());
+						R26Cell1.setCellStyle(numberStyle);
+					} else {
+						R26Cell1.setCellValue("");
+						R26Cell1.setCellStyle(textStyle);
+					}
+					Cell R26Cell2 = row.createCell(2);
+					if (record1.getR26Leasing() != null) {
+						R26Cell2.setCellValue(record1.getR26Leasing().doubleValue());
+						R26Cell2.setCellStyle(numberStyle);
+					} else {
+						R26Cell2.setCellValue("");
+						R26Cell2.setCellStyle(textStyle);
+					}
+					Cell R26Cell3 = row.createCell(3);
+					if (record.getR26Overdrafts() != null) {
+						R26Cell3.setCellValue(record.getR26Overdrafts().doubleValue());
+						R26Cell3.setCellStyle(numberStyle);
+					} else {
+						R26Cell3.setCellValue("");
+						R26Cell3.setCellStyle(textStyle);
+					}
+					Cell R26Cell4 = row.createCell(4);
+					if (record.getR26OtherInstallmentLoans() != null) {
+						R26Cell4.setCellValue(record.getR26OtherInstallmentLoans().doubleValue());
+						R26Cell4.setCellStyle(numberStyle);
+					} else {
+						R26Cell4.setCellValue("");
+						R26Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R27 (Row Index 26) ---
+					row = sheet.getRow(26);
+					Cell R27Cell1 = row.createCell(1);
+					if (record1.getR27FactoringDebtors() != null) {
+						R27Cell1.setCellValue(record1.getR27FactoringDebtors().doubleValue());
+						R27Cell1.setCellStyle(numberStyle);
+					} else {
+						R27Cell1.setCellValue("");
+						R27Cell1.setCellStyle(textStyle);
+					}
+					Cell R27Cell2 = row.createCell(2);
+					if (record1.getR27Leasing() != null) {
+						R27Cell2.setCellValue(record1.getR27Leasing().doubleValue());
+						R27Cell2.setCellStyle(numberStyle);
+					} else {
+						R27Cell2.setCellValue("");
+						R27Cell2.setCellStyle(textStyle);
+					}
+					Cell R27Cell3 = row.createCell(3);
+					if (record.getR27Overdrafts() != null) {
+						R27Cell3.setCellValue(record.getR27Overdrafts().doubleValue());
+						R27Cell3.setCellStyle(numberStyle);
+					} else {
+						R27Cell3.setCellValue("");
+						R27Cell3.setCellStyle(textStyle);
+					}
+					Cell R27Cell4 = row.createCell(4);
+					if (record.getR27OtherInstallmentLoans() != null) {
+						R27Cell4.setCellValue(record.getR27OtherInstallmentLoans().doubleValue());
+						R27Cell4.setCellStyle(numberStyle);
+					} else {
+						R27Cell4.setCellValue("");
+						R27Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R28 (Row Index 27) ---
+					row = sheet.getRow(27);
+					Cell R28Cell1 = row.createCell(1);
+					if (record1.getR28FactoringDebtors() != null) {
+						R28Cell1.setCellValue(record1.getR28FactoringDebtors().doubleValue());
+						R28Cell1.setCellStyle(numberStyle);
+					} else {
+						R28Cell1.setCellValue("");
+						R28Cell1.setCellStyle(textStyle);
+					}
+					Cell R28Cell2 = row.createCell(2);
+					if (record1.getR28Leasing() != null) {
+						R28Cell2.setCellValue(record1.getR28Leasing().doubleValue());
+						R28Cell2.setCellStyle(numberStyle);
+					} else {
+						R28Cell2.setCellValue("");
+						R28Cell2.setCellStyle(textStyle);
+					}
+					Cell R28Cell3 = row.createCell(3);
+					if (record.getR28Overdrafts() != null) {
+						R28Cell3.setCellValue(record.getR28Overdrafts().doubleValue());
+						R28Cell3.setCellStyle(numberStyle);
+					} else {
+						R28Cell3.setCellValue("");
+						R28Cell3.setCellStyle(textStyle);
+					}
+					Cell R28Cell4 = row.createCell(4);
+					if (record.getR28OtherInstallmentLoans() != null) {
+						R28Cell4.setCellValue(record.getR28OtherInstallmentLoans().doubleValue());
+						R28Cell4.setCellStyle(numberStyle);
+					} else {
+						R28Cell4.setCellValue("");
+						R28Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R30 (Row Index 29) ---
+					row = sheet.getRow(29);
+					Cell R30Cell1 = row.createCell(1);
+					if (record1.getR30FactoringDebtors() != null) {
+						R30Cell1.setCellValue(record1.getR30FactoringDebtors().doubleValue());
+						R30Cell1.setCellStyle(numberStyle);
+					} else {
+						R30Cell1.setCellValue("");
+						R30Cell1.setCellStyle(textStyle);
+					}
+					Cell R30Cell2 = row.createCell(2);
+					if (record1.getR30Leasing() != null) {
+						R30Cell2.setCellValue(record1.getR30Leasing().doubleValue());
+						R30Cell2.setCellStyle(numberStyle);
+					} else {
+						R30Cell2.setCellValue("");
+						R30Cell2.setCellStyle(textStyle);
+					}
+					Cell R30Cell3 = row.createCell(3);
+					if (record.getR30Overdrafts() != null) {
+						R30Cell3.setCellValue(record.getR30Overdrafts().doubleValue());
+						R30Cell3.setCellStyle(numberStyle);
+					} else {
+						R30Cell3.setCellValue("");
+						R30Cell3.setCellStyle(textStyle);
+					}
+					Cell R30Cell4 = row.createCell(4);
+					if (record.getR30OtherInstallmentLoans() != null) {
+						R30Cell4.setCellValue(record.getR30OtherInstallmentLoans().doubleValue());
+						R30Cell4.setCellStyle(numberStyle);
+					} else {
+						R30Cell4.setCellValue("");
+						R30Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R31 (Row Index 30) ---
+					row = sheet.getRow(30);
+					Cell R31Cell1 = row.createCell(1);
+					if (record1.getR31FactoringDebtors() != null) {
+						R31Cell1.setCellValue(record1.getR31FactoringDebtors().doubleValue());
+						R31Cell1.setCellStyle(numberStyle);
+					} else {
+						R31Cell1.setCellValue("");
+						R31Cell1.setCellStyle(textStyle);
+					}
+					Cell R31Cell2 = row.createCell(2);
+					if (record1.getR31Leasing() != null) {
+						R31Cell2.setCellValue(record1.getR31Leasing().doubleValue());
+						R31Cell2.setCellStyle(numberStyle);
+					} else {
+						R31Cell2.setCellValue("");
+						R31Cell2.setCellStyle(textStyle);
+					}
+					Cell R31Cell3 = row.createCell(3);
+					if (record.getR31Overdrafts() != null) {
+						R31Cell3.setCellValue(record.getR31Overdrafts().doubleValue());
+						R31Cell3.setCellStyle(numberStyle);
+					} else {
+						R31Cell3.setCellValue("");
+						R31Cell3.setCellStyle(textStyle);
+					}
+					Cell R31Cell4 = row.createCell(4);
+					if (record.getR31OtherInstallmentLoans() != null) {
+						R31Cell4.setCellValue(record.getR31OtherInstallmentLoans().doubleValue());
+						R31Cell4.setCellStyle(numberStyle);
+					} else {
+						R31Cell4.setCellValue("");
+						R31Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R32 (Row Index 31) ---
+					row = sheet.getRow(31);
+					Cell R32Cell1 = row.createCell(1);
+					if (record1.getR32FactoringDebtors() != null) {
+						R32Cell1.setCellValue(record1.getR32FactoringDebtors().doubleValue());
+						R32Cell1.setCellStyle(numberStyle);
+					} else {
+						R32Cell1.setCellValue("");
+						R32Cell1.setCellStyle(textStyle);
+					}
+					Cell R32Cell2 = row.createCell(2);
+					if (record1.getR32Leasing() != null) {
+						R32Cell2.setCellValue(record1.getR32Leasing().doubleValue());
+						R32Cell2.setCellStyle(numberStyle);
+					} else {
+						R32Cell2.setCellValue("");
+						R32Cell2.setCellStyle(textStyle);
+					}
+					Cell R32Cell3 = row.createCell(3);
+					if (record.getR32Overdrafts() != null) {
+						R32Cell3.setCellValue(record.getR32Overdrafts().doubleValue());
+						R32Cell3.setCellStyle(numberStyle);
+					} else {
+						R32Cell3.setCellValue("");
+						R32Cell3.setCellStyle(textStyle);
+					}
+					Cell R32Cell4 = row.createCell(4);
+					if (record.getR32OtherInstallmentLoans() != null) {
+						R32Cell4.setCellValue(record.getR32OtherInstallmentLoans().doubleValue());
+						R32Cell4.setCellStyle(numberStyle);
+					} else {
+						R32Cell4.setCellValue("");
+						R32Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R33 (Row Index 32) ---
+					row = sheet.getRow(32);
+					Cell R33Cell1 = row.createCell(1);
+					if (record1.getR33FactoringDebtors() != null) {
+						R33Cell1.setCellValue(record1.getR33FactoringDebtors().doubleValue());
+						R33Cell1.setCellStyle(numberStyle);
+					} else {
+						R33Cell1.setCellValue("");
+						R33Cell1.setCellStyle(textStyle);
+					}
+					Cell R33Cell2 = row.createCell(2);
+					if (record1.getR33Leasing() != null) {
+						R33Cell2.setCellValue(record1.getR33Leasing().doubleValue());
+						R33Cell2.setCellStyle(numberStyle);
+					} else {
+						R33Cell2.setCellValue("");
+						R33Cell2.setCellStyle(textStyle);
+					}
+					Cell R33Cell3 = row.createCell(3);
+					if (record.getR33Overdrafts() != null) {
+						R33Cell3.setCellValue(record.getR33Overdrafts().doubleValue());
+						R33Cell3.setCellStyle(numberStyle);
+					} else {
+						R33Cell3.setCellValue("");
+						R33Cell3.setCellStyle(textStyle);
+					}
+					Cell R33Cell4 = row.createCell(4);
+					if (record.getR33OtherInstallmentLoans() != null) {
+						R33Cell4.setCellValue(record.getR33OtherInstallmentLoans().doubleValue());
+						R33Cell4.setCellStyle(numberStyle);
+					} else {
+						R33Cell4.setCellValue("");
+						R33Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R34 (Row Index 33) ---
+					row = sheet.getRow(33);
+					Cell R34Cell1 = row.createCell(1);
+					if (record1.getR34FactoringDebtors() != null) {
+						R34Cell1.setCellValue(record1.getR34FactoringDebtors().doubleValue());
+						R34Cell1.setCellStyle(numberStyle);
+					} else {
+						R34Cell1.setCellValue("");
+						R34Cell1.setCellStyle(textStyle);
+					}
+					Cell R34Cell2 = row.createCell(2);
+					if (record1.getR34Leasing() != null) {
+						R34Cell2.setCellValue(record1.getR34Leasing().doubleValue());
+						R34Cell2.setCellStyle(numberStyle);
+					} else {
+						R34Cell2.setCellValue("");
+						R34Cell2.setCellStyle(textStyle);
+					}
+					Cell R34Cell3 = row.createCell(3);
+					if (record.getR34Overdrafts() != null) {
+						R34Cell3.setCellValue(record.getR34Overdrafts().doubleValue());
+						R34Cell3.setCellStyle(numberStyle);
+					} else {
+						R34Cell3.setCellValue("");
+						R34Cell3.setCellStyle(textStyle);
+					}
+					Cell R34Cell4 = row.createCell(4);
+					if (record.getR34OtherInstallmentLoans() != null) {
+						R34Cell4.setCellValue(record.getR34OtherInstallmentLoans().doubleValue());
+						R34Cell4.setCellStyle(numberStyle);
+					} else {
+						R34Cell4.setCellValue("");
+						R34Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R35 (Row Index 34) ---
+					row = sheet.getRow(34);
+					Cell R35Cell1 = row.createCell(1);
+					if (record1.getR35FactoringDebtors() != null) {
+						R35Cell1.setCellValue(record1.getR35FactoringDebtors().doubleValue());
+						R35Cell1.setCellStyle(numberStyle);
+					} else {
+						R35Cell1.setCellValue("");
+						R35Cell1.setCellStyle(textStyle);
+					}
+					Cell R35Cell2 = row.createCell(2);
+					if (record1.getR35Leasing() != null) {
+						R35Cell2.setCellValue(record1.getR35Leasing().doubleValue());
+						R35Cell2.setCellStyle(numberStyle);
+					} else {
+						R35Cell2.setCellValue("");
+						R35Cell2.setCellStyle(textStyle);
+					}
+					Cell R35Cell3 = row.createCell(3);
+					if (record.getR35Overdrafts() != null) {
+						R35Cell3.setCellValue(record.getR35Overdrafts().doubleValue());
+						R35Cell3.setCellStyle(numberStyle);
+					} else {
+						R35Cell3.setCellValue("");
+						R35Cell3.setCellStyle(textStyle);
+					}
+					Cell R35Cell4 = row.createCell(4);
+					if (record.getR35OtherInstallmentLoans() != null) {
+						R35Cell4.setCellValue(record.getR35OtherInstallmentLoans().doubleValue());
+						R35Cell4.setCellStyle(numberStyle);
+					} else {
+						R35Cell4.setCellValue("");
+						R35Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R36 (Row Index 35) ---
+					row = sheet.getRow(35);
+					Cell R36Cell1 = row.createCell(1);
+					if (record1.getR36FactoringDebtors() != null) {
+						R36Cell1.setCellValue(record1.getR36FactoringDebtors().doubleValue());
+						R36Cell1.setCellStyle(numberStyle);
+					} else {
+						R36Cell1.setCellValue("");
+						R36Cell1.setCellStyle(textStyle);
+					}
+					Cell R36Cell2 = row.createCell(2);
+					if (record1.getR36Leasing() != null) {
+						R36Cell2.setCellValue(record1.getR36Leasing().doubleValue());
+						R36Cell2.setCellStyle(numberStyle);
+					} else {
+						R36Cell2.setCellValue("");
+						R36Cell2.setCellStyle(textStyle);
+					}
+					Cell R36Cell3 = row.createCell(3);
+					if (record.getR36Overdrafts() != null) {
+						R36Cell3.setCellValue(record.getR36Overdrafts().doubleValue());
+						R36Cell3.setCellStyle(numberStyle);
+					} else {
+						R36Cell3.setCellValue("");
+						R36Cell3.setCellStyle(textStyle);
+					}
+					Cell R36Cell4 = row.createCell(4);
+					if (record.getR36OtherInstallmentLoans() != null) {
+						R36Cell4.setCellValue(record.getR36OtherInstallmentLoans().doubleValue());
+						R36Cell4.setCellStyle(numberStyle);
+					} else {
+						R36Cell4.setCellValue("");
+						R36Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R37 (Row Index 36) ---
+					row = sheet.getRow(36);
+					Cell R37Cell1 = row.createCell(1);
+					if (record1.getR37FactoringDebtors() != null) {
+						R37Cell1.setCellValue(record1.getR37FactoringDebtors().doubleValue());
+						R37Cell1.setCellStyle(numberStyle);
+					} else {
+						R37Cell1.setCellValue("");
+						R37Cell1.setCellStyle(textStyle);
+					}
+					Cell R37Cell2 = row.createCell(2);
+					if (record1.getR37Leasing() != null) {
+						R37Cell2.setCellValue(record1.getR37Leasing().doubleValue());
+						R37Cell2.setCellStyle(numberStyle);
+					} else {
+						R37Cell2.setCellValue("");
+						R37Cell2.setCellStyle(textStyle);
+					}
+					Cell R37Cell3 = row.createCell(3);
+					if (record.getR37Overdrafts() != null) {
+						R37Cell3.setCellValue(record.getR37Overdrafts().doubleValue());
+						R37Cell3.setCellStyle(numberStyle);
+					} else {
+						R37Cell3.setCellValue("");
+						R37Cell3.setCellStyle(textStyle);
+					}
+					Cell R37Cell4 = row.createCell(4);
+					if (record.getR37OtherInstallmentLoans() != null) {
+						R37Cell4.setCellValue(record.getR37OtherInstallmentLoans().doubleValue());
+						R37Cell4.setCellStyle(numberStyle);
+					} else {
+						R37Cell4.setCellValue("");
+						R37Cell4.setCellStyle(textStyle);
+					}
+					// --- R39 (Row Index 38) ---
+					row = sheet.getRow(38);
+					Cell R39Cell1 = row.createCell(1);
+					if (record1.getR39FactoringDebtors() != null) {
+						R39Cell1.setCellValue(record1.getR39FactoringDebtors().doubleValue());
+						R39Cell1.setCellStyle(numberStyle);
+					} else {
+						R39Cell1.setCellValue("");
+						R39Cell1.setCellStyle(textStyle);
+					}
+					Cell R39Cell2 = row.createCell(2);
+					if (record1.getR39Leasing() != null) {
+						R39Cell2.setCellValue(record1.getR39Leasing().doubleValue());
+						R39Cell2.setCellStyle(numberStyle);
+					} else {
+						R39Cell2.setCellValue("");
+						R39Cell2.setCellStyle(textStyle);
+					}
+					Cell R39Cell3 = row.createCell(3);
+					if (record.getR39Overdrafts() != null) {
+						R39Cell3.setCellValue(record.getR39Overdrafts().doubleValue());
+						R39Cell3.setCellStyle(numberStyle);
+					} else {
+						R39Cell3.setCellValue("");
+						R39Cell3.setCellStyle(textStyle);
+					}
+					Cell R39Cell4 = row.createCell(4);
+					if (record.getR39OtherInstallmentLoans() != null) {
+						R39Cell4.setCellValue(record.getR39OtherInstallmentLoans().doubleValue());
+						R39Cell4.setCellStyle(numberStyle);
+					} else {
+						R39Cell4.setCellValue("");
+						R39Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R40 (Row Index 39) ---
+					row = sheet.getRow(39);
+					Cell R40Cell1 = row.createCell(1);
+					if (record1.getR40FactoringDebtors() != null) {
+						R40Cell1.setCellValue(record1.getR40FactoringDebtors().doubleValue());
+						R40Cell1.setCellStyle(numberStyle);
+					} else {
+						R40Cell1.setCellValue("");
+						R40Cell1.setCellStyle(textStyle);
+					}
+					Cell R40Cell2 = row.createCell(2);
+					if (record1.getR40Leasing() != null) {
+						R40Cell2.setCellValue(record1.getR40Leasing().doubleValue());
+						R40Cell2.setCellStyle(numberStyle);
+					} else {
+						R40Cell2.setCellValue("");
+						R40Cell2.setCellStyle(textStyle);
+					}
+					Cell R40Cell3 = row.createCell(3);
+					if (record.getR40Overdrafts() != null) {
+						R40Cell3.setCellValue(record.getR40Overdrafts().doubleValue());
+						R40Cell3.setCellStyle(numberStyle);
+					} else {
+						R40Cell3.setCellValue("");
+						R40Cell3.setCellStyle(textStyle);
+					}
+					Cell R40Cell4 = row.createCell(4);
+					if (record.getR40OtherInstallmentLoans() != null) {
+						R40Cell4.setCellValue(record.getR40OtherInstallmentLoans().doubleValue());
+						R40Cell4.setCellStyle(numberStyle);
+					} else {
+						R40Cell4.setCellValue("");
+						R40Cell4.setCellStyle(textStyle);
+					}
+					// --- R42 (Row Index 41) ---
+					row = sheet.getRow(41);
+					Cell R42Cell1 = row.createCell(1);
+					if (record1.getR42FactoringDebtors() != null) {
+						R42Cell1.setCellValue(record1.getR42FactoringDebtors().doubleValue());
+						R42Cell1.setCellStyle(numberStyle);
+					} else {
+						R42Cell1.setCellValue("");
+						R42Cell1.setCellStyle(textStyle);
+					}
+					Cell R42Cell2 = row.createCell(2);
+					if (record1.getR42Leasing() != null) {
+						R42Cell2.setCellValue(record1.getR42Leasing().doubleValue());
+						R42Cell2.setCellStyle(numberStyle);
+					} else {
+						R42Cell2.setCellValue("");
+						R42Cell2.setCellStyle(textStyle);
+					}
+					Cell R42Cell3 = row.createCell(3);
+					if (record.getR42Overdrafts() != null) {
+						R42Cell3.setCellValue(record.getR42Overdrafts().doubleValue());
+						R42Cell3.setCellStyle(numberStyle);
+					} else {
+						R42Cell3.setCellValue("");
+						R42Cell3.setCellStyle(textStyle);
+					}
+					Cell R42Cell4 = row.createCell(4);
+					if (record.getR42OtherInstallmentLoans() != null) {
+						R42Cell4.setCellValue(record.getR42OtherInstallmentLoans().doubleValue());
+						R42Cell4.setCellStyle(numberStyle);
+					} else {
+						R42Cell4.setCellValue("");
+						R42Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R43 (Row Index 42) ---
+					row = sheet.getRow(42);
+					Cell R43Cell1 = row.createCell(1);
+					if (record1.getR43FactoringDebtors() != null) {
+						R43Cell1.setCellValue(record1.getR43FactoringDebtors().doubleValue());
+						R43Cell1.setCellStyle(numberStyle);
+					} else {
+						R43Cell1.setCellValue("");
+						R43Cell1.setCellStyle(textStyle);
+					}
+					Cell R43Cell2 = row.createCell(2);
+					if (record1.getR43Leasing() != null) {
+						R43Cell2.setCellValue(record1.getR43Leasing().doubleValue());
+						R43Cell2.setCellStyle(numberStyle);
+					} else {
+						R43Cell2.setCellValue("");
+						R43Cell2.setCellStyle(textStyle);
+					}
+					Cell R43Cell3 = row.createCell(3);
+					if (record.getR43Overdrafts() != null) {
+						R43Cell3.setCellValue(record.getR43Overdrafts().doubleValue());
+						R43Cell3.setCellStyle(numberStyle);
+					} else {
+						R43Cell3.setCellValue("");
+						R43Cell3.setCellStyle(textStyle);
+					}
+					Cell R43Cell4 = row.createCell(4);
+					if (record.getR43OtherInstallmentLoans() != null) {
+						R43Cell4.setCellValue(record.getR43OtherInstallmentLoans().doubleValue());
+						R43Cell4.setCellStyle(numberStyle);
+					} else {
+						R43Cell4.setCellValue("");
+						R43Cell4.setCellStyle(textStyle);
+					}
+					// --- R45 (Row Index 44) ---
+					row = sheet.getRow(44);
+					Cell R45Cell1 = row.createCell(1);
+					if (record1.getR45FactoringDebtors() != null) {
+						R45Cell1.setCellValue(record1.getR45FactoringDebtors().doubleValue());
+						R45Cell1.setCellStyle(numberStyle);
+					} else {
+						R45Cell1.setCellValue("");
+						R45Cell1.setCellStyle(textStyle);
+					}
+					Cell R45Cell2 = row.createCell(2);
+					if (record1.getR45Leasing() != null) {
+						R45Cell2.setCellValue(record1.getR45Leasing().doubleValue());
+						R45Cell2.setCellStyle(numberStyle);
+					} else {
+						R45Cell2.setCellValue("");
+						R45Cell2.setCellStyle(textStyle);
+					}
+					Cell R45Cell3 = row.createCell(3);
+					if (record.getR45Overdrafts() != null) {
+						R45Cell3.setCellValue(record.getR45Overdrafts().doubleValue());
+						R45Cell3.setCellStyle(numberStyle);
+					} else {
+						R45Cell3.setCellValue("");
+						R45Cell3.setCellStyle(textStyle);
+					}
+					Cell R45Cell4 = row.createCell(4);
+					if (record.getR45OtherInstallmentLoans() != null) {
+						R45Cell4.setCellValue(record.getR45OtherInstallmentLoans().doubleValue());
+						R45Cell4.setCellStyle(numberStyle);
+					} else {
+						R45Cell4.setCellValue("");
+						R45Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R46 (Row Index 45) ---
+					row = sheet.getRow(45);
+					Cell R46Cell1 = row.createCell(1);
+					if (record1.getR46FactoringDebtors() != null) {
+						R46Cell1.setCellValue(record1.getR46FactoringDebtors().doubleValue());
+						R46Cell1.setCellStyle(numberStyle);
+					} else {
+						R46Cell1.setCellValue("");
+						R46Cell1.setCellStyle(textStyle);
+					}
+					Cell R46Cell2 = row.createCell(2);
+					if (record1.getR46Leasing() != null) {
+						R46Cell2.setCellValue(record1.getR46Leasing().doubleValue());
+						R46Cell2.setCellStyle(numberStyle);
+					} else {
+						R46Cell2.setCellValue("");
+						R46Cell2.setCellStyle(textStyle);
+					}
+					Cell R46Cell3 = row.createCell(3);
+					if (record.getR46Overdrafts() != null) {
+						R46Cell3.setCellValue(record.getR46Overdrafts().doubleValue());
+						R46Cell3.setCellStyle(numberStyle);
+					} else {
+						R46Cell3.setCellValue("");
+						R46Cell3.setCellStyle(textStyle);
+					}
+					Cell R46Cell4 = row.createCell(4);
+					if (record.getR46OtherInstallmentLoans() != null) {
+						R46Cell4.setCellValue(record.getR46OtherInstallmentLoans().doubleValue());
+						R46Cell4.setCellStyle(numberStyle);
+					} else {
+						R46Cell4.setCellValue("");
+						R46Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R48 (Row Index 47) ---
+					row = sheet.getRow(46);
+					Cell R48Cell1 = row.createCell(1);
+					if (record1.getR48FactoringDebtors() != null) {
+						R48Cell1.setCellValue(record1.getR48FactoringDebtors().doubleValue());
+						R48Cell1.setCellStyle(numberStyle);
+					} else {
+						R48Cell1.setCellValue("");
+						R48Cell1.setCellStyle(textStyle);
+					}
+					Cell R48Cell2 = row.createCell(2);
+					if (record1.getR48Leasing() != null) {
+						R48Cell2.setCellValue(record1.getR48Leasing().doubleValue());
+						R48Cell2.setCellStyle(numberStyle);
+					} else {
+						R48Cell2.setCellValue("");
+						R48Cell2.setCellStyle(textStyle);
+					}
+					Cell R48Cell3 = row.createCell(3);
+					if (record.getR48Overdrafts() != null) {
+						R48Cell3.setCellValue(record.getR48Overdrafts().doubleValue());
+						R48Cell3.setCellStyle(numberStyle);
+					} else {
+						R48Cell3.setCellValue("");
+						R48Cell3.setCellStyle(textStyle);
+					}
+					Cell R48Cell4 = row.createCell(4);
+					if (record.getR48OtherInstallmentLoans() != null) {
+						R48Cell4.setCellValue(record.getR48OtherInstallmentLoans().doubleValue());
+						R48Cell4.setCellStyle(numberStyle);
+					} else {
+						R48Cell4.setCellValue("");
+						R48Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R50 (Row Index 49) ---
+					row = sheet.getRow(48);
+					Cell R50Cell1 = row.createCell(1);
+					if (record1.getR50FactoringDebtors() != null) {
+						R50Cell1.setCellValue(record1.getR50FactoringDebtors().doubleValue());
+						R50Cell1.setCellStyle(numberStyle);
+					} else {
+						R50Cell1.setCellValue("");
+						R50Cell1.setCellStyle(textStyle);
+					}
+					Cell R50Cell2 = row.createCell(2);
+					if (record1.getR50Leasing() != null) {
+						R50Cell2.setCellValue(record1.getR50Leasing().doubleValue());
+						R50Cell2.setCellStyle(numberStyle);
+					} else {
+						R50Cell2.setCellValue("");
+						R50Cell2.setCellStyle(textStyle);
+					}
+					Cell R50Cell3 = row.createCell(3);
+					if (record.getR50Overdrafts() != null) {
+						R50Cell3.setCellValue(record.getR50Overdrafts().doubleValue());
+						R50Cell3.setCellStyle(numberStyle);
+					} else {
+						R50Cell3.setCellValue("");
+						R50Cell3.setCellStyle(textStyle);
+					}
+					Cell R50Cell4 = row.createCell(4);
+					if (record.getR50OtherInstallmentLoans() != null) {
+						R50Cell4.setCellValue(record.getR50OtherInstallmentLoans().doubleValue());
+						R50Cell4.setCellStyle(numberStyle);
+					} else {
+						R50Cell4.setCellValue("");
+						R50Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R51 (Row Index 49) ---
+					row = sheet.getRow(50);
+					Cell R51Cell1 = row.createCell(1);
+					if (record1.getR51FactoringDebtors() != null) {
+						R51Cell1.setCellValue(record1.getR51FactoringDebtors().doubleValue());
+						R51Cell1.setCellStyle(numberStyle);
+					} else {
+						R51Cell1.setCellValue("");
+						R51Cell1.setCellStyle(textStyle);
+					}
+					Cell R51Cell2 = row.createCell(2);
+					if (record1.getR51Leasing() != null) {
+						R51Cell2.setCellValue(record1.getR51Leasing().doubleValue());
+						R51Cell2.setCellStyle(numberStyle);
+					} else {
+						R51Cell2.setCellValue("");
+						R51Cell2.setCellStyle(textStyle);
+					}
+					Cell R51Cell3 = row.createCell(3);
+					if (record.getR51Overdrafts() != null) {
+						R51Cell3.setCellValue(record.getR51Overdrafts().doubleValue());
+						R51Cell3.setCellStyle(numberStyle);
+					} else {
+						R51Cell3.setCellValue("");
+						R51Cell3.setCellStyle(textStyle);
+					}
+					Cell R51Cell4 = row.createCell(4);
+					if (record.getR51OtherInstallmentLoans() != null) {
+						R51Cell4.setCellValue(record.getR51OtherInstallmentLoans().doubleValue());
+						R51Cell4.setCellStyle(numberStyle);
+					} else {
+						R51Cell4.setCellValue("");
+						R51Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R52 (Row Index 51) ---
+					row = sheet.getRow(50);
+					Cell R52Cell1 = row.createCell(1);
+					if (record1.getR52FactoringDebtors() != null) {
+						R52Cell1.setCellValue(record1.getR52FactoringDebtors().doubleValue());
+						R52Cell1.setCellStyle(numberStyle);
+					} else {
+						R52Cell1.setCellValue("");
+						R52Cell1.setCellStyle(textStyle);
+					}
+					Cell R52Cell2 = row.createCell(2);
+					if (record1.getR52Leasing() != null) {
+						R52Cell2.setCellValue(record1.getR52Leasing().doubleValue());
+						R52Cell2.setCellStyle(numberStyle);
+					} else {
+						R52Cell2.setCellValue("");
+						R52Cell2.setCellStyle(textStyle);
+					}
+					Cell R52Cell3 = row.createCell(3);
+					if (record.getR52Overdrafts() != null) {
+						R52Cell3.setCellValue(record.getR52Overdrafts().doubleValue());
+						R52Cell3.setCellStyle(numberStyle);
+					} else {
+						R52Cell3.setCellValue("");
+						R52Cell3.setCellStyle(textStyle);
+					}
+					Cell R52Cell4 = row.createCell(4);
+					if (record.getR52OtherInstallmentLoans() != null) {
+						R52Cell4.setCellValue(record.getR52OtherInstallmentLoans().doubleValue());
+						R52Cell4.setCellStyle(numberStyle);
+					} else {
+						R52Cell4.setCellValue("");
+						R52Cell4.setCellStyle(textStyle);
+					}
+					// --- R54 (Row Index 53) ---
+					row = sheet.getRow(52);
+					Cell R54Cell1 = row.createCell(1);
+					if (record1.getR54FactoringDebtors() != null) {
+						R54Cell1.setCellValue(record1.getR54FactoringDebtors().doubleValue());
+						R54Cell1.setCellStyle(numberStyle);
+					} else {
+						R54Cell1.setCellValue("");
+						R54Cell1.setCellStyle(textStyle);
+					}
+					Cell R54Cell2 = row.createCell(2);
+					if (record1.getR54Leasing() != null) {
+						R54Cell2.setCellValue(record1.getR54Leasing().doubleValue());
+						R54Cell2.setCellStyle(numberStyle);
+					} else {
+						R54Cell2.setCellValue("");
+						R54Cell2.setCellStyle(textStyle);
+					}
+					Cell R54Cell3 = row.createCell(3);
+					if (record.getR54Overdrafts() != null) {
+						R54Cell3.setCellValue(record.getR54Overdrafts().doubleValue());
+						R54Cell3.setCellStyle(numberStyle);
+					} else {
+						R54Cell3.setCellValue("");
+						R54Cell3.setCellStyle(textStyle);
+					}
+					Cell R54Cell4 = row.createCell(4);
+					if (record.getR54OtherInstallmentLoans() != null) {
+						R54Cell4.setCellValue(record.getR54OtherInstallmentLoans().doubleValue());
+						R54Cell4.setCellStyle(numberStyle);
+					} else {
+						R54Cell4.setCellValue("");
+						R54Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R55 (Row Index 54) ---
+					row = sheet.getRow(53);
+					Cell R55Cell1 = row.createCell(1);
+					if (record1.getR55FactoringDebtors() != null) {
+						R55Cell1.setCellValue(record1.getR55FactoringDebtors().doubleValue());
+						R55Cell1.setCellStyle(numberStyle);
+					} else {
+						R55Cell1.setCellValue("");
+						R55Cell1.setCellStyle(textStyle);
+					}
+					Cell R55Cell2 = row.createCell(2);
+					if (record1.getR55Leasing() != null) {
+						R55Cell2.setCellValue(record1.getR55Leasing().doubleValue());
+						R55Cell2.setCellStyle(numberStyle);
+					} else {
+						R55Cell2.setCellValue("");
+						R55Cell2.setCellStyle(textStyle);
+					}
+					Cell R55Cell3 = row.createCell(3);
+					if (record.getR55Overdrafts() != null) {
+						R55Cell3.setCellValue(record.getR55Overdrafts().doubleValue());
+						R55Cell3.setCellStyle(numberStyle);
+					} else {
+						R55Cell3.setCellValue("");
+						R55Cell3.setCellStyle(textStyle);
+					}
+					Cell R55Cell4 = row.createCell(4);
+					if (record.getR55OtherInstallmentLoans() != null) {
+						R55Cell4.setCellValue(record.getR55OtherInstallmentLoans().doubleValue());
+						R55Cell4.setCellStyle(numberStyle);
+					} else {
+						R55Cell4.setCellValue("");
+						R55Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R56 (Row Index 55) ---
+					row = sheet.getRow(54);
+					Cell R56Cell1 = row.createCell(1);
+					if (record1.getR56FactoringDebtors() != null) {
+						R56Cell1.setCellValue(record1.getR56FactoringDebtors().doubleValue());
+						R56Cell1.setCellStyle(numberStyle);
+					} else {
+						R56Cell1.setCellValue("");
+						R56Cell1.setCellStyle(textStyle);
+					}
+					Cell R56Cell2 = row.createCell(2);
+					if (record1.getR56Leasing() != null) {
+						R56Cell2.setCellValue(record1.getR56Leasing().doubleValue());
+						R56Cell2.setCellStyle(numberStyle);
+					} else {
+						R56Cell2.setCellValue("");
+						R56Cell2.setCellStyle(textStyle);
+					}
+					Cell R56Cell3 = row.createCell(3);
+					if (record.getR56Overdrafts() != null) {
+						R56Cell3.setCellValue(record.getR56Overdrafts().doubleValue());
+						R56Cell3.setCellStyle(numberStyle);
+					} else {
+						R56Cell3.setCellValue("");
+						R56Cell3.setCellStyle(textStyle);
+					}
+					Cell R56Cell4 = row.createCell(4);
+					if (record.getR56OtherInstallmentLoans() != null) {
+						R56Cell4.setCellValue(record.getR56OtherInstallmentLoans().doubleValue());
+						R56Cell4.setCellStyle(numberStyle);
+					} else {
+						R56Cell4.setCellValue("");
+						R56Cell4.setCellStyle(textStyle);
+					}
+					// --- R58 (Row Index 57) ---
+					row = sheet.getRow(56);
+					Cell R58Cell1 = row.createCell(1);
+					if (record1.getR58FactoringDebtors() != null) {
+						R58Cell1.setCellValue(record1.getR58FactoringDebtors().doubleValue());
+						R58Cell1.setCellStyle(numberStyle);
+					} else {
+						R58Cell1.setCellValue("");
+						R58Cell1.setCellStyle(textStyle);
+					}
+					Cell R58Cell2 = row.createCell(2);
+					if (record1.getR58Leasing() != null) {
+						R58Cell2.setCellValue(record1.getR58Leasing().doubleValue());
+						R58Cell2.setCellStyle(numberStyle);
+					} else {
+						R58Cell2.setCellValue("");
+						R58Cell2.setCellStyle(textStyle);
+					}
+					Cell R58Cell3 = row.createCell(3);
+					if (record.getR58Overdrafts() != null) {
+						R58Cell3.setCellValue(record.getR58Overdrafts().doubleValue());
+						R58Cell3.setCellStyle(numberStyle);
+					} else {
+						R58Cell3.setCellValue("");
+						R58Cell3.setCellStyle(textStyle);
+					}
+					Cell R58Cell4 = row.createCell(4);
+					if (record.getR58OtherInstallmentLoans() != null) {
+						R58Cell4.setCellValue(record.getR58OtherInstallmentLoans().doubleValue());
+						R58Cell4.setCellStyle(numberStyle);
+					} else {
+						R58Cell4.setCellValue("");
+						R58Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R59 (Row Index 58) ---
+					row = sheet.getRow(57);
+					Cell R59Cell1 = row.createCell(1);
+					if (record1.getR59FactoringDebtors() != null) {
+						R59Cell1.setCellValue(record1.getR59FactoringDebtors().doubleValue());
+						R59Cell1.setCellStyle(numberStyle);
+					} else {
+						R59Cell1.setCellValue("");
+						R59Cell1.setCellStyle(textStyle);
+					}
+					Cell R59Cell2 = row.createCell(2);
+					if (record1.getR59Leasing() != null) {
+						R59Cell2.setCellValue(record1.getR59Leasing().doubleValue());
+						R59Cell2.setCellStyle(numberStyle);
+					} else {
+						R59Cell2.setCellValue("");
+						R59Cell2.setCellStyle(textStyle);
+					}
+					Cell R59Cell3 = row.createCell(3);
+					if (record.getR59Overdrafts() != null) {
+						R59Cell3.setCellValue(record.getR59Overdrafts().doubleValue());
+						R59Cell3.setCellStyle(numberStyle);
+					} else {
+						R59Cell3.setCellValue("");
+						R59Cell3.setCellStyle(textStyle);
+					}
+					Cell R59Cell4 = row.createCell(4);
+					if (record.getR59OtherInstallmentLoans() != null) {
+						R59Cell4.setCellValue(record.getR59OtherInstallmentLoans().doubleValue());
+						R59Cell4.setCellStyle(numberStyle);
+					} else {
+						R59Cell4.setCellValue("");
+						R59Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R60 (Row Index 59) ---
+					row = sheet.getRow(58);
+					Cell R60Cell1 = row.createCell(1);
+					if (record1.getR60FactoringDebtors() != null) {
+						R60Cell1.setCellValue(record1.getR60FactoringDebtors().doubleValue());
+						R60Cell1.setCellStyle(numberStyle);
+					} else {
+						R60Cell1.setCellValue("");
+						R60Cell1.setCellStyle(textStyle);
+					}
+					Cell R60Cell2 = row.createCell(2);
+					if (record1.getR60Leasing() != null) {
+						R60Cell2.setCellValue(record1.getR60Leasing().doubleValue());
+						R60Cell2.setCellStyle(numberStyle);
+					} else {
+						R60Cell2.setCellValue("");
+						R60Cell2.setCellStyle(textStyle);
+					}
+					Cell R60Cell3 = row.createCell(3);
+					if (record.getR60Overdrafts() != null) {
+						R60Cell3.setCellValue(record.getR60Overdrafts().doubleValue());
+						R60Cell3.setCellStyle(numberStyle);
+					} else {
+						R60Cell3.setCellValue("");
+						R60Cell3.setCellStyle(textStyle);
+					}
+					Cell R60Cell4 = row.createCell(4);
+					if (record.getR60OtherInstallmentLoans() != null) {
+						R60Cell4.setCellValue(record.getR60OtherInstallmentLoans().doubleValue());
+						R60Cell4.setCellStyle(numberStyle);
+					} else {
+						R60Cell4.setCellValue("");
+						R60Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R61 (Row Index 60) ---
+					row = sheet.getRow(59);
+					Cell R61Cell1 = row.createCell(1);
+					if (record1.getR61FactoringDebtors() != null) {
+						R61Cell1.setCellValue(record1.getR61FactoringDebtors().doubleValue());
+						R61Cell1.setCellStyle(numberStyle);
+					} else {
+						R61Cell1.setCellValue("");
+						R61Cell1.setCellStyle(textStyle);
+					}
+					Cell R61Cell2 = row.createCell(2);
+					if (record1.getR61Leasing() != null) {
+						R61Cell2.setCellValue(record1.getR61Leasing().doubleValue());
+						R61Cell2.setCellStyle(numberStyle);
+					} else {
+						R61Cell2.setCellValue("");
+						R61Cell2.setCellStyle(textStyle);
+					}
+					Cell R61Cell3 = row.createCell(3);
+					if (record.getR61Overdrafts() != null) {
+						R61Cell3.setCellValue(record.getR61Overdrafts().doubleValue());
+						R61Cell3.setCellStyle(numberStyle);
+					} else {
+						R61Cell3.setCellValue("");
+						R61Cell3.setCellStyle(textStyle);
+					}
+					Cell R61Cell4 = row.createCell(4);
+					if (record.getR61OtherInstallmentLoans() != null) {
+						R61Cell4.setCellValue(record.getR61OtherInstallmentLoans().doubleValue());
+						R61Cell4.setCellStyle(numberStyle);
+					} else {
+						R61Cell4.setCellValue("");
+						R61Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R62 (Row Index 61) ---
+					row = sheet.getRow(60);
+					Cell R62Cell1 = row.createCell(1);
+					if (record1.getR62FactoringDebtors() != null) {
+						R62Cell1.setCellValue(record1.getR62FactoringDebtors().doubleValue());
+						R62Cell1.setCellStyle(numberStyle);
+					} else {
+						R62Cell1.setCellValue("");
+						R62Cell1.setCellStyle(textStyle);
+					}
+					Cell R62Cell2 = row.createCell(2);
+					if (record1.getR62Leasing() != null) {
+						R62Cell2.setCellValue(record1.getR62Leasing().doubleValue());
+						R62Cell2.setCellStyle(numberStyle);
+					} else {
+						R62Cell2.setCellValue("");
+						R62Cell2.setCellStyle(textStyle);
+					}
+					Cell R62Cell3 = row.createCell(3);
+					if (record.getR62Overdrafts() != null) {
+						R62Cell3.setCellValue(record.getR62Overdrafts().doubleValue());
+						R62Cell3.setCellStyle(numberStyle);
+					} else {
+						R62Cell3.setCellValue("");
+						R62Cell3.setCellStyle(textStyle);
+					}
+					Cell R62Cell4 = row.createCell(4);
+					if (record.getR62OtherInstallmentLoans() != null) {
+						R62Cell4.setCellValue(record.getR62OtherInstallmentLoans().doubleValue());
+						R62Cell4.setCellStyle(numberStyle);
+					} else {
+						R62Cell4.setCellValue("");
+						R62Cell4.setCellStyle(textStyle);
+					}
+
+					// --- R63 (Row Index 62) ---
+					row = sheet.getRow(61);
+					Cell R63Cell1 = row.createCell(1);
+					if (record1.getR63FactoringDebtors() != null) {
+						R63Cell1.setCellValue(record1.getR63FactoringDebtors().doubleValue());
+						R63Cell1.setCellStyle(numberStyle);
+					} else {
+						R63Cell1.setCellValue("");
+						R63Cell1.setCellStyle(textStyle);
+					}
+					Cell R63Cell2 = row.createCell(2);
+					if (record1.getR63Leasing() != null) {
+						R63Cell2.setCellValue(record1.getR63Leasing().doubleValue());
+						R63Cell2.setCellStyle(numberStyle);
+					} else {
+						R63Cell2.setCellValue("");
+						R63Cell2.setCellStyle(textStyle);
+					}
+					Cell R63Cell3 = row.createCell(3);
+					if (record.getR63Overdrafts() != null) {
+						R63Cell3.setCellValue(record.getR63Overdrafts().doubleValue());
+						R63Cell3.setCellStyle(numberStyle);
+					} else {
+						R63Cell3.setCellValue("");
+						R63Cell3.setCellStyle(textStyle);
+					}
+					Cell R63Cell4 = row.createCell(4);
+					if (record.getR63OtherInstallmentLoans() != null) {
+						R63Cell4.setCellValue(record.getR63OtherInstallmentLoans().doubleValue());
+						R63Cell4.setCellStyle(numberStyle);
+					} else {
+						R63Cell4.setCellValue("");
+						R63Cell4.setCellStyle(textStyle);
+					}
+
+				}
+				workbook.setForceFormulaRecalculation(true);
+			} else {
+
+			}
+
+			// Write the final workbook content to the in-memory stream.
+			workbook.write(out);
+
+			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+			return out.toByteArray();
+		}
+	}
+
+//	// Resub Format excel
+//	public byte[] BRRS_M_LA4ResubExcel(String filename, String reportId, String fromdate, String todate,
+//			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
+//
+//		logger.info("Service: Starting Excel generation process in memory for RESUB (Format) Excel.");
+//
+//		if ("email".equalsIgnoreCase(format) && version != null) {
+//			logger.info("Service: Generating RESUB report for version {}", version);
+//
+//			try {
+//				// ✅ Redirecting to Resub Excel
+//				return BRRS_M_LA4ResubEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
+//						version);
+//
+//			} catch (ParseException e) {
+//				logger.error("Invalid report date format: {}", fromdate, e);
+//				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+//			}
+//		}
+//
+//		List<M_LA4_Resub_Summary_Entity1> dataList = brrs_M_LA4_resub_summary_repo1
+//				.getdatabydateListarchival(dateformat.parse(todate), version);
+//		List<M_LA4_Resub_Summary_Entity2> dataList1 = brrs_M_LA4_resub_summary_repo2
+//				.getdatabydateListarchival(dateformat.parse(todate), version);
+//		if (dataList.isEmpty()) {
+//			logger.warn("Service: No data found for M_LA4 report. Returning empty result.");
+//			return new byte[0];
+//		}
+//
+//		String templateDir = env.getProperty("output.exportpathtemp");
+//		String templateFileName = filename;
+//		System.out.println(filename);
+//		Path templatePath = Paths.get(templateDir, templateFileName);
+//		System.out.println(templatePath);
+//
+//		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+//
+//		if (!Files.exists(templatePath)) {
+//			// This specific exception will be caught by the controller.
+//			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+//		}
+//		if (!Files.isReadable(templatePath)) {
+//			// A specific exception for permission errors.
+//			throw new SecurityException(
+//					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+//		}
+//
+//		// This try-with-resources block is perfect. It guarantees all resources are
+//		// closed automatically.
+//		try (InputStream templateInputStream = Files.newInputStream(templatePath);
+//				Workbook workbook = WorkbookFactory.create(templateInputStream);
+//				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+//
+//			Sheet sheet = workbook.getSheetAt(0);
+//
+//			// --- Style Definitions ---
+//			CreationHelper createHelper = workbook.getCreationHelper();
+//
+//			CellStyle dateStyle = workbook.createCellStyle();
+//			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+//			dateStyle.setBorderBottom(BorderStyle.THIN);
+//			dateStyle.setBorderTop(BorderStyle.THIN);
+//			dateStyle.setBorderLeft(BorderStyle.THIN);
+//			dateStyle.setBorderRight(BorderStyle.THIN);
+//
+//			CellStyle textStyle = workbook.createCellStyle();
+//			textStyle.setBorderBottom(BorderStyle.THIN);
+//			textStyle.setBorderTop(BorderStyle.THIN);
+//			textStyle.setBorderLeft(BorderStyle.THIN);
+//			textStyle.setBorderRight(BorderStyle.THIN);
+//
+//			// Create the font
+//			Font font = workbook.createFont();
+//			font.setFontHeightInPoints((short) 8); // size 8
+//			font.setFontName("Arial");
+//
+//			CellStyle numberStyle = workbook.createCellStyle();
+//			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+//			numberStyle.setBorderBottom(BorderStyle.THIN);
+//			numberStyle.setBorderTop(BorderStyle.THIN);
+//			numberStyle.setBorderLeft(BorderStyle.THIN);
+//			numberStyle.setBorderRight(BorderStyle.THIN);
+//			numberStyle.setFont(font);
+//			// --- End of Style Definitions ---
+//
+//			int startRow = 9;
+//
+//			if (!dataList.isEmpty()) {
+//				for (int i = 0; i < dataList.size(); i++) {
+//
+//					M_LA4_Resub_Summary_Entity1 record = dataList.get(i);
+//					M_LA4_Resub_Summary_Entity2 record1 = dataList1.get(i);
+//					System.out.println("rownumber=" + startRow + i);
+//					System.out.println("rownumber=" + startRow + i);
+//					Row row = sheet.getRow(startRow + i);
+//					if (row == null) {
+//						row = sheet.createRow(startRow + i);
+//					}
+////NORMAL
+//					// R10 Col C
+//
+//
+//
+//
+//				}
+//				workbook.setForceFormulaRecalculation(true);
+//			} else {
+//
+//			}
+//
+//			// Write the final workbook content to the in-memory stream.
+//			workbook.write(out);
+//
+//			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+//
+//			return out.toByteArray();
+//		}
+//
+//	}
+
+//	// Resub Email Excel
+//	public byte[] BRRS_M_LA4ResubEmailExcel(String filename, String reportId, String fromdate, String todate,
+//			String currency, String dtltype, String type, BigDecimal version) throws Exception {
+//
+//		logger.info("Service: Starting Archival Email Excel generation process in memory.");
+//
+//		List<M_LA4_Resub_Summary_Entity1> dataList = brrs_M_LA4_resub_summary_repo1
+//				.getdatabydateListarchival(dateformat.parse(todate), version);
+//	List<M_LA4_Resub_Summary_Entity2> dataList1 = brrs_M_LA4_resub_summary_repo2
+//				.getdatabydateListarchival(dateformat.parse(todate), version);
+//		if (dataList.isEmpty()) {
+//			logger.warn("Service: No data found for BRRS_M_LA4 report. Returning empty result.");
+//			return new byte[0];
+//		}
+//
+//		String templateDir = env.getProperty("output.exportpathtemp");
+//		String templateFileName = filename;
+//		System.out.println(filename);
+//		Path templatePath = Paths.get(templateDir, templateFileName);
+//		System.out.println(templatePath);
+//
+//		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+//
+//		if (!Files.exists(templatePath)) {
+//			// This specific exception will be caught by the controller.
+//			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+//		}
+//		if (!Files.isReadable(templatePath)) {
+//			// A specific exception for permission errors.
+//			throw new SecurityException(
+//					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+//		}
+//
+//		// This try-with-resources block is perfect. It guarantees all resources are
+//		// closed automatically.
+//		try (InputStream templateInputStream = Files.newInputStream(templatePath);
+//				Workbook workbook = WorkbookFactory.create(templateInputStream);
+//				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+//
+//			Sheet sheet = workbook.getSheetAt(0);
+//
+//			// --- Style Definitions ---
+//			CreationHelper createHelper = workbook.getCreationHelper();
+//
+//			CellStyle dateStyle = workbook.createCellStyle();
+//			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+//			dateStyle.setBorderBottom(BorderStyle.THIN);
+//			dateStyle.setBorderTop(BorderStyle.THIN);
+//			dateStyle.setBorderLeft(BorderStyle.THIN);
+//			dateStyle.setBorderRight(BorderStyle.THIN);
+//
+//			CellStyle textStyle = workbook.createCellStyle();
+//			textStyle.setBorderBottom(BorderStyle.THIN);
+//			textStyle.setBorderTop(BorderStyle.THIN);
+//			textStyle.setBorderLeft(BorderStyle.THIN);
+//			textStyle.setBorderRight(BorderStyle.THIN);
+//
+//			// Create the font
+//			Font font = workbook.createFont();
+//			font.setFontHeightInPoints((short) 8); // size 8
+//			font.setFontName("Arial");
+//
+//			CellStyle numberStyle = workbook.createCellStyle();
+//			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+//			numberStyle.setBorderBottom(BorderStyle.THIN);
+//			numberStyle.setBorderTop(BorderStyle.THIN);
+//			numberStyle.setBorderLeft(BorderStyle.THIN);
+//			numberStyle.setBorderRight(BorderStyle.THIN);
+//			numberStyle.setFont(font);
+//			// --- End of Style Definitions ---
+//
+//			int startRow = 9;
+//
+//			if (!dataList.isEmpty()) {
+//				for (int i = 0; i < dataList.size(); i++) {
+//					M_LA4_Resub_Summary_Entity1 record = dataList.get(i);
+//					M_LA4_Resub_Summary_Entity2 record1 = dataList1.get(i);
+//					System.out.println("rownumber=" + startRow + i);
+//					Row row = sheet.getRow(startRow + i);
+//					if (row == null) {
+//						row = sheet.createRow(startRow + i);
+//					}
+////EMAIL
+//// R10 Col E
+//
+//
+//				}
+//				workbook.setForceFormulaRecalculation(true);
+//			} else {
+//
+//			}
+//
+//			// Write the final workbook content to the in-memory stream.
+//			workbook.write(out);
+//
+//			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+//
+//			return out.toByteArray();
+//		}
+//	}
 
 }

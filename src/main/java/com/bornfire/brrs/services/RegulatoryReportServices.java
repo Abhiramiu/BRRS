@@ -886,6 +886,11 @@ public class RegulatoryReportServices {
 			case "M_DEP3": 
 				repsummary = BRRS_M_DEP3_reportservice.getM_DEP3View(reportId, fromdate, todate, currency, dtltype, pageable, type, version);
 				 break;
+				 
+				 
+			case "M_LA4":
+				repsummary = BRRS_M_LA4_reportservice.getM_LA4View(reportId,fromdate, todate, currency, dtltype, pageable, type, version);
+			break;
 
 		/*
 		 * 
@@ -2578,6 +2583,13 @@ public class RegulatoryReportServices {
 			}
 			break;
 
+		 case "M_LA4": 
+			 try {
+				 repfile =BRRS_M_LA4_reportservice.BRRS_M_LA4Excel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, format, version);
+				 } catch (Exception e) { // TODOAuto-generated catch block
+					 e.printStackTrace(); 
+					 } break;
 		case "M_CA6":
 			try {
 				repfile = BRRS_M_CA6_reportservice.getM_CA6Excel(filename, reportId, fromdate, todate, currency,
@@ -4266,14 +4278,11 @@ break;
 			break;
 			
 		case "M_LA4":
-			try {
-				archivalData = BRRS_M_LA4_reportservice.getM_LA4Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> LA4List = BRRS_M_LA4_reportservice.getM_LA4Archival();
+			archivalData.addAll(LA4List);
+			System.out.println("Fetched LA4List archival data: " + LA4List.size());
 			break;
-
+			
 
 //		case "M_CA2":
 //			try {
@@ -7015,7 +7024,16 @@ case "M_CA2":
 				e.printStackTrace();
 			}
 			break;
-
+		case "M_LA4":
+			try {
+				List<Object[]> resubList = BRRS_M_LA4_reportservice.getM_LA4Resub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for M_SFINP1: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_SFINP1: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
 		case "M_RPD":
 			try {
 				List<Object[]> resubList = BRRS_M_RPD_ReportService.getM_RPDResub();

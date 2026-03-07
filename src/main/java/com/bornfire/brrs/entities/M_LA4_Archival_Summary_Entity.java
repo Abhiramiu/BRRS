@@ -5,14 +5,13 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-
-import org.springframework.format.annotation.DateTimeFormat;
 @Entity
 @Table(name = "BRRS_M_LA4_ARCHIVALTABLE_SUMMARY1")
-
+@IdClass(M_LA4_PK.class)
 public class M_LA4_Archival_Summary_Entity {
 	 @Column(name = "R11_ADVANCES_BY_INSTITUTIONAL_SECTOR")
 	    private String r11AdvancesByInstitutionalSector;
@@ -662,11 +661,18 @@ public class M_LA4_Archival_Summary_Entity {
 	    @Column(name = "R64_TOTAL")
 	    private BigDecimal r64Total;
 
-	    @Temporal(TemporalType.DATE)
-		@DateTimeFormat(pattern = "dd/MM/yyyy")
+	    @Id
+		@Temporal(TemporalType.DATE)
+		@Column(name = "REPORT_DATE")
+		private Date reportDate;
+
 		@Id
-		private Date	report_date;
-		private String	report_version;
+		@Column(name = "REPORT_VERSION")
+		private BigDecimal reportVersion;
+
+		@Column(name = "REPORT_RESUBDATE")
+		@Temporal(TemporalType.TIMESTAMP)
+		private Date reportResubDate;
 		private String	report_frequency;
 		private String	report_code;
 		private String	report_desc;
@@ -1969,17 +1975,24 @@ public class M_LA4_Archival_Summary_Entity {
 		public void setR64Total(BigDecimal r64Total) {
 			this.r64Total = r64Total;
 		}
-		public Date getReport_date() {
-			return report_date;
+	
+		public Date getReportDate() {
+			return reportDate;
 		}
-		public void setReport_date(Date report_date) {
-			this.report_date = report_date;
+		public void setReportDate(Date reportDate) {
+			this.reportDate = reportDate;
 		}
-		public String getReport_version() {
-			return report_version;
+		public BigDecimal getReportVersion() {
+			return reportVersion;
 		}
-		public void setReport_version(String report_version) {
-			this.report_version = report_version;
+		public void setReportVersion(BigDecimal reportVersion) {
+			this.reportVersion = reportVersion;
+		}
+		public Date getReportResubDate() {
+			return reportResubDate;
+		}
+		public void setReportResubDate(Date reportResubDate) {
+			this.reportResubDate = reportResubDate;
 		}
 		public String getReport_frequency() {
 			return report_frequency;
