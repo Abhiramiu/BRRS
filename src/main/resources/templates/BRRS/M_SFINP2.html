@@ -2380,8 +2380,8 @@ PURPOSE		: BWRBRREPORT
 										<th>CUST ID</th>
 										<th style="text-align:left;">ACCT NO</th>
 										<th >ACCT NAME</th>
-										<th style="text-align:right;width: 250px;">CREDIT EQUIVALENT</th>
-										<th style="text-align:right !important;">DEBIT EQUIVALENT</th>
+									<!-- 	<th style="text-align:right;width: 250px;">CREDIT EQUIVALENT</th>
+										<th style="text-align:right !important;">DEBIT EQUIVALENT</th> -->
 										<th style="text-align:left;">REPORT LABEL</th>
 										<th style="width: 250px;">REPORT ADDL CRITERIA 1</th>
 										<th>REPORT_DATE</th>
@@ -2402,12 +2402,12 @@ PURPOSE		: BWRBRREPORT
 										<td th:text="${report.custId}"></td>
 										<td   style="text-align:left;" th:text="${report.acctNumber}"></td>
 										<td th:text="${report.acctName}"></td>
-										<td style="text-align:right;"
+										<!-- <td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.acctBalanceInpula,1,'COMMA',0,'POINT')}">
 										</td>
 										<td style="text-align:right!important;"
 											th:text="${#numbers.formatDecimal(report.average,1,'COMMA',0,'POINT')}">
-										</td>
+										</td> -->
 										<td style="text-align:left;" th:text="${report.reportLabel}"></td>
 										<td th:text="${report.reportAddlCriteria_1}"></td>
 										<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
@@ -2456,15 +2456,21 @@ PURPOSE		: BWRBRREPORT
 						</div>
 
 						<div class="col-sm-1"></div>
+						
+						<label class="col-sm-2">Report Label</label>
+						<div class="col-sm-3">
+							<input type="text" th:field="*{reportLabel}" class="form-control form-control-sm"
+								readonly />
+						</div>
 
-						<label class="col-sm-2">Credit Equivalent</label>
+						<!-- <label class="col-sm-2">Credit Equivalent</label>
 						<div class="col-sm-3">
 							<input type="number" step="0.01" th:field="*{acctBalanceInpula}"
 								class="form-control form-control-sm" style="text-align: right;" />
-						</div>
+						</div> -->
 					</div>
 
-					<div class="row formline" style="margin-top: 10px;">
+					<!-- <div class="row formline" style="margin-top: 10px;">
 						<label class="col-sm-2">Report Label</label>
 						<div class="col-sm-3">
 							<input type="text" th:field="*{reportLabel}" class="form-control form-control-sm"
@@ -2480,7 +2486,7 @@ PURPOSE		: BWRBRREPORT
 						</div>
 						
 						
-					</div>
+					</div> -->
 
 					<div class="row formline" style="margin-top: 10px;">
 
