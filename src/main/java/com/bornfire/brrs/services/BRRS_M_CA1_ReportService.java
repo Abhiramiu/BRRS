@@ -607,22 +607,49 @@ public class BRRS_M_CA1_ReportService {
 		}
 	}
 
-	public List<Object> getM_CA1Archival() {
-		List<Object> M_CA1Archivallist = new ArrayList<>();
-		try {
-			M_CA1Archivallist = M_CA1_Archival_Summary_Repo.getM_CA1archival();
-			System.out.println("countser" + M_CA1Archivallist.size());
-		} catch (Exception e) {
-			// Log the exception
-			System.err.println("Error fetching M_CA1 Archival data: " + e.getMessage());
-			e.printStackTrace();
+	// Archival View
+	public List<Object[]> getM_CA1Archival() {
 
-			// Optionally, you can rethrow it or return empty list
-			// throw new RuntimeException("Failed to fetch data", e);
-		}
-		return M_CA1Archivallist;
+	    List<Object[]> archivalList = new ArrayList<>();
+
+	    try {
+
+	        // Fetch data from Repository 1
+	        List<M_CA1_Archival_Summary_Entity> repoData1 =
+	                M_CA1_Archival_Summary_Repo.getdatabydateListWithVersion();
+
+	        if (repoData1 != null && !repoData1.isEmpty()) {
+
+	            for (M_CA1_Archival_Summary_Entity entity : repoData1) {
+
+	                Object[] row = new Object[] {
+	                        entity.getREPORT_DATE(),
+	                        entity.getREPORT_VERSION(),
+	                        entity.getReportResubDate()
+	                };
+
+	                archivalList.add(row);
+	            }
+
+	            System.out.println("Fetched " + archivalList.size() + " archival records from Repo1");
+
+	            M_CA1_Archival_Summary_Entity first = repoData1.get(0);
+	            System.out.println("Latest archival version (Repo1): " + first.getREPORT_VERSION());
+
+	        } else {
+	            System.out.println("No archival data found in Repo1.");
+	        }
+
+	    } catch (Exception e) {
+
+	        System.err.println("Error fetching M_CA1 Archival data: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+
+	    return archivalList;
 	}
-
+	
+	
 	public byte[] getExcelM_CA1ARCHIVAL(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");

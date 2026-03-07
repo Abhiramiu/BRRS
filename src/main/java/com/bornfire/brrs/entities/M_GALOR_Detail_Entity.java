@@ -18,6 +18,9 @@ public class M_GALOR_Detail_Entity {
 	
 	
 	@Id
+	@Column(name = "SNO")
+	private Long sno;
+	
 	 @Column(name = "CUST_ID")
    private String custId;
 
@@ -98,6 +101,14 @@ public class M_GALOR_Detail_Entity {
 
    @Column(name = "DEL_FLG")
    private String delFlg;
+
+   public Long getSno() {
+	return sno;
+   }
+
+   public void setSno(Long sno) {
+	this.sno = sno;
+   }
 
    public String getCustId() {
 	return custId;
@@ -296,7 +307,6 @@ public class M_GALOR_Detail_Entity {
 	// TODO Auto-generated constructor stub
    }
 
-	
-    
+   
 
 }

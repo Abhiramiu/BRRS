@@ -705,64 +705,74 @@ PURPOSE		: BRRS REPORT
 
 
 		function downloadfile(button) {
-			var reportid = button.getAttribute('data-reportid');
-			var asondate = button.getAttribute('data-asondate');
-			var fromdate = button.getAttribute('data-fromdate');
-			var todate = button.getAttribute('data-todate');
-			var currency = button.getAttribute('data-currency');
-			var subreportid = button.getAttribute('data-subreportid');
-			var secid = button.getAttribute('data-secid');
-			var dtltype = button.getAttribute('data-dtltype');
-			var filename = button.getAttribute('data-filename');
-			var type = button.getAttribute('data-type');
-			var version = button.getAttribute('data-version');
+				    var reportid = button.getAttribute('data-reportid');
+				    var asondate = button.getAttribute('data-asondate');
+				    var fromdate = button.getAttribute('data-fromdate');
+				    var todate = button.getAttribute('data-todate');
+				    var currency = button.getAttribute('data-currency');
+				    var subreportid = button.getAttribute('data-subreportid');
+				    var secid = button.getAttribute('data-secid');
+				    var dtltype = button.getAttribute('data-dtltype');
+				    var filename = button.getAttribute('data-filename');
+				    var type = button.getAttribute('data-type');
+					var version = button.getAttribute('data-version');
+					var format = button.getAttribute('data-format');
 
+				    if (format === null) {
+				        format = '';   // treat as null
+				    }
 
-			var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static', keyboard: false});
-			loader.show();
+				    $('#loader').modal('show');
 
-			$.ajax({
-				url: './downloadExcel?reportid=' + reportid +
-					'&fromdate=' + fromdate +
-					'&asondate=' + asondate +
-					'&todate=' + todate +
-					'&currency=' + currency +
-					'&subreportid=' + subreportid +
-					'&secid=' + secid +
-					'&filename=' + filename +
-					'&type=' + type +
-					'&version=' + version,
-				type: 'GET',
-				xhrFields: {
-					responseType: 'blob'
-				},
-				success: function (data) {
-					$('#loader').modal('hide');
+				    $.ajax({
+				        url: './downloadExcel?reportid=' + reportid +
+				            '&fromdate=' + fromdate +
+				            '&asondate=' + asondate +
+				            '&todate=' + todate +
+				            '&currency=' + currency +
+				            '&subreportid=' + subreportid +
+				            '&secid=' + secid +
+				            '&filename=' + filename +
+				            '&type=' + type +
+				            '&version=' + version  +
+							'&format=' + format,
+				        type: 'GET',
+				        xhrFields: { responseType: 'blob' },
 
-					if (data && data.size > 100) {
-						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
-						const url = window.URL.createObjectURL(blob);
-						const a = document.createElement('a');
-						a.style.display = 'none';
-						a.href = url;
-						a.download = filename;
-						document.body.appendChild(a);
-						a.click();
-						window.URL.revokeObjectURL(url);
-						document.body.removeChild(a);
+				        success: function (data) {
+				            if (data && data.size > 100) {
 
-						showResultModal('BRRS', filename + ' downloaded successfully.');
-					} else {
-						showResultModal('Information', 'No data was available to create a download.');
-					}
-				},
-				error: function (jqXHR, textStatus, errorThrown) {
-					$('#loader').modal('hide');
-					console.error("Download failed:", textStatus, errorThrown);
-					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+				                const url = window.URL.createObjectURL(blob);
+				                const a = document.createElement('a');
+
+				                a.style.display = 'none';
+				                a.href = url;
+				                a.download = filename;
+
+				                document.body.appendChild(a);
+				                a.click();
+
+				                window.URL.revokeObjectURL(url);
+				                document.body.removeChild(a);
+
+				                showResultModal('BRRS', filename + ' downloaded successfully.');
+				            } else {
+				                showResultModal('Information', 'No data was available to create a download.');
+				            }
+				        },
+
+				        error: function (jqXHR, textStatus, errorThrown) {
+				            console.error("Download failed:", textStatus, errorThrown);
+				            showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				        },
+
+				        complete: function () {
+				            // 🔥 Always hide loader (success/error/all cases)
+				            $('#loader').modal('hide');
+				        }
+				    });
 				}
-			});
-		}
 
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
@@ -1808,7 +1818,7 @@ PURPOSE		: BRRS REPORT
 
 
 
-<title>BRRS</title>
+<title>M_GALOR</title>
 
 <body>
 	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
@@ -1870,38 +1880,57 @@ PURPOSE		: BRRS REPORT
 
 
 
+									<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+																th:if="${displaymode == 'summary' or  displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+																th:attr="data-reportid=${reportid}, 
+									                     data-asondate=${asondate}, 
+									                     data-fromdate=${fromdate}, 
+									                     data-todate=${todate}, 
+									                     data-currency=${currency},  
+									                     data-dtltype=${dtltype}, 
+									                     data-filename='M_GALOR.xlsx',
+									                     data-type=${type},
+														 data-version=${version != null ? version : ''} " onclick="downloadfile(this);"
+																style="font-family: Arial; font-weight: bold;font-size: 14px;">
+																<i class="fa fa-download"></i> Format
+															</button>
+
+							        <!-- Download – Details -->
+									<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+																onclick="downloadfile(this)"
+																th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}"
+																th:attr="data-reportid=${reportid},
+									            data-asondate=${asondate},
+									            data-fromdate=${fromdate},
+									            data-todate=${todate},
+									            data-currency=${currency}, 
+									            data-dtltype=${dtltype},
+									            data-filename='EMAIL_M_GALOR.xlsx',
+									            data-type=${type},
+									            data-format='email',
+									            data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;font-size: 14px;">
+																<i class="fa fa-download"></i> Email
+
+															</button>
+															
+															<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+																						th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
+																									    data-fromdate=${fromdate},
+																									    data-todate=${todate},
+																										data-currency=${currency},  
+																													data-dtltype=${dtltype}, 
+																									    data-filename='M_GALOR_Detail',
+																										data-type=${type},
+																													data-version=${version}
+																									  ">
+																						<i class="fa fa-download"></i>
+																					</button>
+
+							    </div>
+							</div>
 
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
-                    				 data-asondate=${asondate}, 
-                    				 data-fromdate=${fromdate}, 
-                     				 data-todate=${todate}, 
-                     				 data-currency=${currency},  
-                     				 data-dtltype=${dtltype}, 
-                     				 data-filename='M_GALOR.xlsx',
-					 				 data-type=${type},
-					    			 data-version=${version}" onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
-						</button>
-
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" th:attr="data-reportid=${reportid}, 
-             data-asondate=${asondate}, 
-             data-fromdate=${fromdate}, 
-             data-todate=${todate}, 
-             data-currency=${currency},  
-             data-dtltype=${dtltype}, 
-             data-filename='M_GALOR_Detail',
-             data-type=${type},
-					data-version=${version} " onclick="startReport(this)">
-							<!-- 🛠️ Fix: pass `this` -->
-							<i class="fa fa-download"></i>
-						</button>
-
-					</div>
-				</div>
-
+						
 
 
 				<div th:if="${displaymode == 'summary'}">
@@ -13051,31 +13080,33 @@ PURPOSE		: BRRS REPORT
 									<tbody style="font-family: Arial;">
 										<tr th:each="report, srlno : ${reportdetails}">
 
-											<td>
-												<a data-toggle="tooltip" class="editrec"
-													title="Click to Edit this Record">
-													<i class="fas fa-edit" style="color: black; cursor:pointer;"
-														th:attr="data-acctNo=${report.acctNumber},
-																																													data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
-														onclick="openDetail(this, 'edit')"></i>
+										    <td>
+										        <a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
+										            <i class="fas fa-edit"
+										               style="color: black; cursor:pointer;"
+										               th:attr="data-acctNo=${report.acctNumber},
+										                        data-asondate=${report.reportDate != null ? #dates.format(report.reportDate,'dd-MM-yyyy') : ''},
+										                        data-type=${type}"
+										               onclick="openDetail(this, 'edit')">
+										            </i>
+										        </a>
+										    </td>
 
-												</a>
-											</td>
-											<td th:text="${srlno.index + 1}"></td>
-											<td th:text="${report.custId != null ? report.custId : '-'}"></td>
-											<td th:text="${report.acctNumber != null ? report.acctNumber : '-'}"></td>
-											<td th:text="${report.acctName != null ? report.acctName : '-'}"></td>
+										    <td th:text="${srlno.index + 1}"></td>
+										    <td th:text="${report.custId != null ? report.custId : '-'}"></td>
+										    <td th:text="${report.acctNumber != null ? report.acctNumber : '-'}"></td>
+										    <td th:text="${report.acctName != null ? report.acctName : '-'}"></td>
 
-											<td style="text-align:right;"
-												th:text="${#numbers.formatDecimal(report.acctBalanceInpula,1,'COMMA',0,'POINT')}">
-											</td>
-											<td th:text="${report.reportLable != null ? report.reportLable : '-'}">
-											</td>
-											<td
-												th:text="${report.reportLable != null ? report.reportAddlCriteria_1 : '-'}">
-											</td>
-											<td th:text="${report.reportDate != null 
-																																					? #dates.format(report.reportDate, 'dd-MM-yyyy') : '-'}"></td>
+										    <td style="text-align:right;"
+										        th:text="${#numbers.formatDecimal(report.acctBalanceInpula,1,'COMMA',0,'POINT')}">
+										    </td>
+
+										    <td th:text="${report.reportLable != null ? report.reportLable : '-'}"></td>
+
+										    <td th:text="${report.reportAddlCriteria_1 != null ? report.reportAddlCriteria_1 : '-'}"></td>
+
+										    <td th:text="${report.reportDate != null ? #dates.format(report.reportDate,'dd-MM-yyyy') : '-'}"></td>
+
 										</tr>
 									</tbody>
 								</table>

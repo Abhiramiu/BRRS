@@ -1310,6 +1310,15 @@ public class RegulatoryReportServices {
 
 			break;
 			
+		case "M_GALOR":
+
+			repsummary = BRRS_m_galor_ReportService.getM_GALORView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+
+			break;
+			
+		
+			
 			
 		case "M_PI":
 
@@ -3273,6 +3282,19 @@ break;
 				e.printStackTrace();
 			}
 			break;
+			
+			
+		case "M_GALOR":
+			try {
+
+				repfile = BRRS_m_galor_ReportService.getM_GALORExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, format, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+			
 
 		case "M_LA1_NEW":
 			try {
@@ -4283,17 +4305,20 @@ break;
 			System.out.println("Fetched M_LA3 archival data: " + M_LA3List.size());
 			break;
 			
-		
-		
 		case "M_CA1":
-			try {
-				archivalData = BRRS_M_CA1_reportservice.getM_CA1Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> M_CA1List = BRRS_M_CA1_reportservice.getM_CA1Archival();
+			archivalData.addAll(M_CA1List);
+			System.out.println("Fetched M_CA1 archival data: " + M_CA1List.size());
 			break;
 			
+		case "M_GALOR":
+			List<Object[]> M_GALORList = BRRS_m_galor_ReportService.getM_GALORArchival();
+			archivalData.addAll(M_GALORList);
+			System.out.println("Fetched M_GALOR archival data: " + M_GALORList.size());
+			break;
+			
+		
+		
 		case "M_LA4":
 			List<Object[]> LA4List = BRRS_M_LA4_reportservice.getM_LA4Archival();
 			archivalData.addAll(LA4List);
@@ -4795,14 +4820,7 @@ case "M_CA2":
 			}
 			break;
 
-		case "M_GALOR":
-			try {
-				archivalData = BRRS_m_galor_ReportService.getM_GALORArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		
 
 		/*
 		 * case "M_SRWA_12C": try { archivalData =

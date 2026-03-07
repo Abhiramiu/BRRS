@@ -1,23 +1,25 @@
 package com.bornfire.brrs.entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.math.BigDecimal;
-
 @Entity
 @Table(name = "BRRS_M_GALOR_MANUAL_ARCHIVALTABLE_SUMMARY")
+@IdClass(M_GALOR_PK.class)
 public class M_GALOR_Manual_Archival_Summary_Entity {
 	
-	private String		r22_product;
+
+	private String	r22_product;
 	private BigDecimal	r22_botswana;
 	private BigDecimal	r22_south_africa;
 	private BigDecimal	r22_sadc;
@@ -35,7 +37,7 @@ public class M_GALOR_Manual_Archival_Summary_Entity {
 	private BigDecimal	r22_c15;
 	private BigDecimal	r22_c16;
 	private BigDecimal	r22_total;
-	private String		r23_product;
+	private String	r23_product;
 	private BigDecimal	r23_botswana;
 	private BigDecimal	r23_south_africa;
 	private BigDecimal	r23_sadc;
@@ -53,8 +55,6 @@ public class M_GALOR_Manual_Archival_Summary_Entity {
 	private BigDecimal	r23_c15;
 	private BigDecimal	r23_c16;
 	private BigDecimal	r23_total;
-	
-	private String		r57_product;
 	private BigDecimal	r57_botswana;
 	private BigDecimal	r57_south_africa;
 	private BigDecimal	r57_sadc;
@@ -72,7 +72,7 @@ public class M_GALOR_Manual_Archival_Summary_Entity {
 	private BigDecimal	r57_c15;
 	private BigDecimal	r57_c16;
 	private BigDecimal	r57_total;
-	private String		r58_product;
+	private String	r58_product;
 	private BigDecimal	r58_botswana;
 	private BigDecimal	r58_south_africa;
 	private BigDecimal	r58_sadc;
@@ -90,8 +90,7 @@ public class M_GALOR_Manual_Archival_Summary_Entity {
 	private BigDecimal	r58_c15;
 	private BigDecimal	r58_c16;
 	private BigDecimal	r58_total;
-	
-	private String		r60_product;
+	private String	r60_product;
 	private BigDecimal	r60_botswana;
 	private BigDecimal	r60_south_africa;
 	private BigDecimal	r60_sadc;
@@ -109,7 +108,7 @@ public class M_GALOR_Manual_Archival_Summary_Entity {
 	private BigDecimal	r60_c15;
 	private BigDecimal	r60_c16;
 	private BigDecimal	r60_total;
-	private String		r61_product;
+	private String	r61_product;
 	private BigDecimal	r61_botswana;
 	private BigDecimal	r61_south_africa;
 	private BigDecimal	r61_sadc;
@@ -127,8 +126,7 @@ public class M_GALOR_Manual_Archival_Summary_Entity {
 	private BigDecimal	r61_c15;
 	private BigDecimal	r61_c16;
 	private BigDecimal	r61_total;
-
-	private String		r64_product;
+	private String	r64_product;
 	private BigDecimal	r64_botswana;
 	private BigDecimal	r64_south_africa;
 	private BigDecimal	r64_sadc;
@@ -146,7 +144,7 @@ public class M_GALOR_Manual_Archival_Summary_Entity {
 	private BigDecimal	r64_c15;
 	private BigDecimal	r64_c16;
 	private BigDecimal	r64_total;
-	private String		r65_product;
+	private String	r65_product;
 	private BigDecimal	r65_botswana;
 	private BigDecimal	r65_south_africa;
 	private BigDecimal	r65_sadc;
@@ -164,8 +162,7 @@ public class M_GALOR_Manual_Archival_Summary_Entity {
 	private BigDecimal	r65_c15;
 	private BigDecimal	r65_c16;
 	private BigDecimal	r65_total;
-	
-	private String		r67_product;
+	private String	r67_product;
 	private BigDecimal	r67_botswana;
 	private BigDecimal	r67_south_africa;
 	private BigDecimal	r67_sadc;
@@ -183,7 +180,7 @@ public class M_GALOR_Manual_Archival_Summary_Entity {
 	private BigDecimal	r67_c15;
 	private BigDecimal	r67_c16;
 	private BigDecimal	r67_total;
-	private String		r68_product;
+	private String	r68_product;
 	private BigDecimal	r68_botswana;
 	private BigDecimal	r68_south_africa;
 	private BigDecimal	r68_sadc;
@@ -205,20 +202,25 @@ public class M_GALOR_Manual_Archival_Summary_Entity {
 	private BigDecimal	r112_botswana;
 	private BigDecimal	r113_botswana;
 	private BigDecimal	r114_botswana;
-	
-
-	@Temporal(TemporalType.DATE)
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Column(name = "REPORT_DATE")
+    private Date reportDate;
+	
+	@Id
+	@Column(name = "REPORT_VERSION")
+	private BigDecimal reportVersion;
 
-	private Date	report_date;
-	private String	report_version;
+	@Column(name = "REPORT_RESUBDATE")
+	private Date reportResubDate;
 	private String	report_frequency;
 	private String	report_code;
 	private String	report_desc;
 	private String	entity_flg;
 	private String	modify_flg;
-	private String	 del_flg;
+	private String	del_flg;
+	private String	r57_product;
 	public String getR22_product() {
 		return r22_product;
 	}
@@ -434,12 +436,6 @@ public class M_GALOR_Manual_Archival_Summary_Entity {
 	}
 	public void setR23_total(BigDecimal r23_total) {
 		this.r23_total = r23_total;
-	}
-	public String getR57_product() {
-		return r57_product;
-	}
-	public void setR57_product(String r57_product) {
-		this.r57_product = r57_product;
 	}
 	public BigDecimal getR57_botswana() {
 		return r57_botswana;
@@ -1323,17 +1319,23 @@ public class M_GALOR_Manual_Archival_Summary_Entity {
 	public void setR114_botswana(BigDecimal r114_botswana) {
 		this.r114_botswana = r114_botswana;
 	}
-	public Date getReport_date() {
-		return report_date;
+	public Date getReportDate() {
+		return reportDate;
 	}
-	public void setReport_date(Date report_date) {
-		this.report_date = report_date;
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
 	}
-	public String getReport_version() {
-		return report_version;
+	public BigDecimal getReportVersion() {
+		return reportVersion;
 	}
-	public void setReport_version(String report_version) {
-		this.report_version = report_version;
+	public void setReportVersion(BigDecimal reportVersion) {
+		this.reportVersion = reportVersion;
+	}
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
 	}
 	public String getReport_frequency() {
 		return report_frequency;
@@ -1371,15 +1373,20 @@ public class M_GALOR_Manual_Archival_Summary_Entity {
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
 	}
+	public String getR57_product() {
+		return r57_product;
+	}
+	public void setR57_product(String r57_product) {
+		this.r57_product = r57_product;
+	}
 	public M_GALOR_Manual_Archival_Summary_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
-	
-	
-	
+
+
 	
 
+	
 
 }
