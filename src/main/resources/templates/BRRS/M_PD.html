@@ -492,7 +492,6 @@ label.error {
 			activateTab(selectedTab);
 		};
 
-
 		function downloadfile(button) {
 		    var reportid = button.getAttribute('data-reportid');
 		    var asondate = button.getAttribute('data-asondate');
@@ -503,59 +502,61 @@ label.error {
 		    var secid = button.getAttribute('data-secid');
 		    var dtltype = button.getAttribute('data-dtltype');
 		    var filename = button.getAttribute('data-filename');
-			var type = button.getAttribute('data-type');
-			var version = button.getAttribute('data-version');
+		    var type = button.getAttribute('data-type');
+		    var version = button.getAttribute('data-version');
+		    var format = button.getAttribute('data-format');
+
+		    if (format === null) {
+		        format = '';   // treat as null
+		    }
 
 		    $('#loader').modal('show');
 
 		    $.ajax({
 		        url: './downloadExcel?reportid=' + reportid +
-		            '&fromdate=' + fromdate +
-		            '&asondate=' + asondate +
-		            '&todate=' + todate +
-		            '&currency=' + currency +
-		            '&subreportid=' + subreportid +
-		            '&secid=' + secid +
-		            '&filename=' + filename +
-					'&type=' + type +
-					'&version=' + version,
+		             '&fromdate=' + fromdate +
+		             '&asondate=' + asondate +
+		             '&todate=' + todate +
+		             '&currency=' + currency +
+		             '&subreportid=' + subreportid +
+		             '&secid=' + secid +
+		             '&filename=' + filename +
+		             '&type=' + type +
+		             '&version=' + version +
+		             '&format=' + format,
 		        type: 'GET',
-		        xhrFields: { responseType: 'blob' },
-
+		        xhrFields: {
+		            responseType: 'blob'
+		        },
 		        success: function (data) {
+		            $('#loader').modal('hide');
 		            if (data && data.size > 100) {
 		                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
 		                const url = window.URL.createObjectURL(blob);
 		                const a = document.createElement('a');
-
 		                a.style.display = 'none';
 		                a.href = url;
 		                a.download = filename;
-
 		                document.body.appendChild(a);
 		                a.click();
-
 		                window.URL.revokeObjectURL(url);
 		                document.body.removeChild(a);
-
 		                showResultModal('BRRS', filename + ' downloaded successfully.');
 		            } else {
 		                showResultModal('Information', 'No data was available to create a download.');
 		            }
 		        },
-
-		        error: function (jqXHR, textStatus, errorThrown) {
-		            console.error("Download failed:", textStatus, errorThrown);
-		            showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-		        },
-
-		        complete: function () {
-		            // 🔥 THIS ALWAYS RUNS (success or error or exceptions)
+		        error: function () {
 		            $('#loader').modal('hide');
+		            showResultModal('Error', 'An error occurred while downloading the file.');
 		        }
 		    });
 		}
-
+		
+		function editRecord(){
+			showResultModal('Alert', 'Development in progress');
+			
+		}
 
 		function closemodel() {
 			// Hide the modals
@@ -2346,6 +2347,21 @@ $(document).ready(function () {
 
 	    // Step 1: Calculate totals
 	    calculateR12Totals();
+	    calculateR26Totals();
+	    calculateR35Totals();
+	    calculateR41Totals();
+	    calculateR50Totals();
+	    calculateR54Totals();
+	    calculateR46Totals();
+	    calculateR8Totals();
+	    calculateR38Totals();
+	    calculateR61Totals();
+	    calculateC15ForAllRows();
+	    calculateC16ForAllRows();
+	    calculateC17ForAllRows();
+	    calculateC19ForAllRows();
+	    calculateC20ForAllRows();
+	    calculateC21ForAllRows();
 
 	    // Step 2: Remove commas AND percentage signs
 	    $("#fileupload input[type='text']").each(function () {
@@ -2377,8 +2393,9 @@ $(document).ready(function () {
 	        contentType: false,
 	        success: function () {
 	            $("#resultModalLabel").text("BRRS");
-	            $("#resultModalBody").text("Updated Successfully");
+	            $("#resultModalBody").text("Modified Successfully");
 	            $("#resultModal").modal("show");
+	            
 	        },
 	        error: function (jqXHR) {
 	            console.error("Error:", jqXHR.responseText);
@@ -2657,8 +2674,27 @@ $(document).ready(function () {
                      data-type=${type},
                      data-version=${version}"
             onclick="downloadfile(this);">
-            <i class="fa fa-download"></i>
+            <i class="fa fa-download"></i> Format
         </button>
+        
+        	<button type="button" class="custom-tab-btn "
+							id="custom-tab-btnAdd" onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'resub'}"
+							th:attr="data-reportid=${reportid},
+            data-asondate=${asondate},
+            data-fromdate=${fromdate},
+            data-todate=${todate},
+            data-currency=${currency}, 
+            data-dtltype=${dtltype},
+            data-filename='EMAIL_M_PD.xlsx',
+            data-type=${type},
+            data-format='email',
+            data-version=${version != null ? version : ''}"
+							style="font-family: Arial; font-weight: bold;">
+							<i class="fa fa-download"></i> Email 
+
+						</button>
+						
 
         <!-- Download button - Details -->
         <button type="button" class="custom-tab-btn"
@@ -2673,13 +2709,13 @@ $(document).ready(function () {
                      data-type=${type},
                      data-version=${version}"
             onclick="startReport(this)">
-            <i class="fa fa-download"></i>
+            <i class="fa fa-download"></i> Detail
         </button>
 
     </div>
 </div>
 
-</div>
+
 
 
         <div th:if="${displaymode == 'summary'}">
@@ -3516,7 +3552,7 @@ $(document).ready(function () {
 
 </tr>
 
-                    </tr>
+                  
 
 <!-- ====================== R13 ====================== -->
 <tr>
@@ -10690,18 +10726,18 @@ $(document).ready(function () {
 
             
          </div>
-							
-
-
-						</div>
-						<div style="text-align: center;  background-color: white;  padding:15px;">
+					<div style="text-align: center;  background-color: white;  padding:15px;">
 
 								<button id="submitButton" type="button"
 									class="custom-tab-btn Show_input" form="fileupload"
 									th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
 									style="display: none;">Submit</button>
 							</div>
-						</form>
+						</form>		
+
+
+						</div>
+						
 					</div>
 				</div>
 						</div>
@@ -10724,7 +10760,7 @@ $(document).ready(function () {
 												<th>ACCT NAME</th>
 												<th style="text-align:right;">ACCT BALANCE IN PULA</th>
 												<th style="text-align:right;">PROVISION</th>																			
-												<th style="text-align:left;">REPORT LABLE</th>
+												<th style="text-align:left;">REPORT LABEL</th>
 				  							    <th>REPORT ADDL CRITERIA 1</th>
 				  							    <th>REPORT ADDL CRITERIA 2</th>
 				  							    <th>REPORT ADDL CRITERIA 3</th>
@@ -10749,7 +10785,7 @@ $(document).ready(function () {
 						<td th:text="${report.acctName != null ? report.acctName : '-'}"></td>																			
 						<td style="text-align:right;" th:text="${#numbers.formatDecimal(report.acctBalanceInpula,1,'COMMA',0,'POINT')}"></td>
 						<td style="text-align:right;" th:text="${#numbers.formatDecimal(report.provision,1,'COMMA',0,'POINT')}"></td>													
-						<td style="text-align:left;" th:text="${report.reportLable != null ? report.reportLable : '-'}">
+						<td style="text-align:left;" th:text="${report.reportLabel != null ? report.reportLabel : '-'}">
 						</td>
 							<td th:text="${report.reportAddlCriteria1 != null ? report.reportAddlCriteria1 : '-'}">
 							</td>
@@ -10821,9 +10857,9 @@ $(document).ready(function () {
 			        </div>
 			        <div class="col-sm-1"></div>
 			      
-			        <label class="col-sm-2">Report Lable</label>
+			        <label class="col-sm-2">Report Label</label>
 			        <div class="col-sm-3">
-			          <input type="text" th:field="*{reportLable}" class="form-control form-control-sm" readonly />
+			          <input type="text" th:field="*{reportLabel}" class="form-control form-control-sm" readonly />
 			        </div>
 			        
 			      </div>
@@ -10871,14 +10907,13 @@ $(document).ready(function () {
 							  </div>
 							  
 							</div>
-							
+						</div>	
 
 		</div>
 
 
 
-	</div>
-
+	
 
 
 	<div class="modal fade" id="loader" data-backdrop="static"
@@ -10915,7 +10950,7 @@ $(document).ready(function () {
 					<p id="resultModalBody"></p>
 					<!-- Your custom styled button -->
 					<button type="button" class="custom-tab-btn" onclick="closemodels()"
-						data-dismiss="modal">ok</button>
+						data-dismiss="modal">OK</button>
 				</div>
 			</div>
 		</div>

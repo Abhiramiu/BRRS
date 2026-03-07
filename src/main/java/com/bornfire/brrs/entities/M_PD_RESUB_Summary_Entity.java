@@ -14,11 +14,11 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_PD_ARCHIVALTABLE_SUMMARY")
+@Table(name = "BRRS_M_PD_RESUB_SUMMARYTABLE")
 @IdClass(M_PD_PK.class)
 
 
-public class M_PD_Archival_Summary_Entity {
+public class M_PD_RESUB_Summary_Entity {
 
 
 
@@ -1707,7 +1707,7 @@ public class M_PD_Archival_Summary_Entity {
 	public void setR61_PRODUCT(String r61_PRODUCT) {
 		R61_PRODUCT = r61_PRODUCT;
 	}
-	public M_PD_Archival_Summary_Entity() {
+	public M_PD_RESUB_Summary_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

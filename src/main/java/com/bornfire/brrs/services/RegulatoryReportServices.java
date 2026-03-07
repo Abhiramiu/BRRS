@@ -1217,6 +1217,13 @@ public class RegulatoryReportServices {
 				 
 				 break;
 				 
+			  case "M_PD":
+					 
+					 repsummary = BRRS_M_PD_ReportService.getM_PDview(reportId, fromdate,
+					 todate, currency, dtltype, pageable, type, version);
+					 
+					 break;
+				 
 			case "M_CA2":
 				 
 				 repsummary = BRRS_M_CA2_reportservice.getM_CA2View(reportId, fromdate,
@@ -3889,6 +3896,16 @@ break;
 					e.printStackTrace();
 				}
 				break;
+				
+		 case "M_PD":
+				try {
+					repfile = BRRS_M_PD_ReportService.getM_PDExcel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, format, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 			 
 		 case "Q_ATF":
 		try {
@@ -4859,7 +4876,7 @@ case "M_CA2":
 		case "M_SCI_E":
 			List<Object[]> mscieList =  brrs_m_sci_e_reportservice.getM_SCI_EArchival();
 			archivalData.addAll(mscieList);
-			System.out.println("Fetched Q_ATF archival data: " + mscieList.size());
+			System.out.println("Fetched M_SCI_E archival data: " + mscieList.size());
 			break;
 //
 //		case "M_SCI_E":
@@ -5291,16 +5308,16 @@ case "M_CA2":
 			}
 			break;
 		
-
 		case "M_PD":
-			try {
-				archivalData = BRRS_M_PD_ReportService.getM_PDArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> pdList = BRRS_M_PD_ReportService.getM_PDArchival();
+			archivalData.addAll(pdList);
+			System.out.println("Fetched M_PD archival data: " + pdList.size());
 			break;
-
+		/*
+		 * case "M_PD": try { archivalData = BRRS_M_PD_ReportService.getM_PDArchival();
+		 * } catch (Exception e) { // TODO Auto-generated catch block
+		 * e.printStackTrace(); } break;
+		 */
 	
 		case "M_DEP4":
 			List<Object[]> DEP4List = BRRS_M_DEP4_ReportService.getM_DEP4Archival();
@@ -6856,6 +6873,17 @@ case "M_CA2":
 			}
 			break;
 			
+		case "M_PD":
+			try {
+				List<Object[]> resubList = BRRS_M_PD_ReportService.getM_PDResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for M_PD: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_PD: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+
 			
 		case "Q_ATF":
 			try {

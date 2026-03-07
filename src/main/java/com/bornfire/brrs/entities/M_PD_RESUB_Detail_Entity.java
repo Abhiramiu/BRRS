@@ -1,4 +1,3 @@
-
 package com.bornfire.brrs.entities;
 
 import java.math.BigDecimal;
@@ -12,8 +11,9 @@ import javax.persistence.Table;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_PD_DETAILTABLE")
-public class M_PD_Detail_Entity {
+@Table(name = "BRRS_M_PD_RESUB_DETAILTABLE")
+public class M_PD_RESUB_Detail_Entity {
+	
 
 	   @Column(name = "CUST_ID")
 	   private String custId;
@@ -73,7 +73,7 @@ public class M_PD_Detail_Entity {
 	   private String modifyFlg;
 
 	   @Column(name = "DEL_FLG", length = 1)
-	   private String delFlg;   
+	   private String delFlg;    
 	   
 	   @Column(name = "CCY")
 	   private String ccy;  
@@ -309,14 +309,17 @@ public class M_PD_Detail_Entity {
 		this.pastDue = pastDue;
 	}
 
-	public M_PD_Detail_Entity() {
+	public M_PD_RESUB_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	
-	   
-	   
-		
+  
+ 
+
+
 
 }
+
+
+

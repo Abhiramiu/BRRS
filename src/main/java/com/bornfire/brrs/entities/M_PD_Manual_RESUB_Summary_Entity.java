@@ -14,11 +14,11 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_PD_MANUAL_ARCHIVALTABLE_SUMMARY")
+@Table(name = "BRRS_M_PD_MANUAL_RESUB_SUMMARYTABLE")
 @IdClass(M_PD_PK.class)
 
 
-public class M_PD_Manual_Archival_Summary_Entity {
+public class M_PD_Manual_RESUB_Summary_Entity {
 
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
@@ -6527,7 +6527,7 @@ public BigDecimal getR61_SPECIFIC_PROV_NPL() {
 public void setR61_SPECIFIC_PROV_NPL(BigDecimal r61_SPECIFIC_PROV_NPL) {
 	R61_SPECIFIC_PROV_NPL = r61_SPECIFIC_PROV_NPL;
 }
-public M_PD_Manual_Archival_Summary_Entity() {
+public M_PD_Manual_RESUB_Summary_Entity() {
 	super();
 	// TODO Auto-generated constructor stub
 }

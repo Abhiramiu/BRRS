@@ -90,7 +90,7 @@ public interface BRRS_M_PD_Detail_Repo extends JpaRepository<M_PD_Detail_Entity,
  // In your BRRS_M_PD_Detail_Repo.java file
 
     @Query(value = "SELECT * FROM BRRS_M_PD_DETAILTABLE " +
-            "WHERE REPORT_LABLE = :reportLable " +
+            "WHERE REPORT_LABEL = :reportLabel " +
             "AND ( :reportAddlCriteria1 IS NULL OR :reportAddlCriteria1 = '' OR REPORT_ADDL_CRITERIA_1 = :reportAddlCriteria1 ) " +
             "AND ( :reportAddlCriteria2 IS NULL OR :reportAddlCriteria2 = '' OR REPORT_ADDL_CRITERIA_2 = :reportAddlCriteria2 ) " +
             "AND ( :reportAddlCriteria3 IS NULL OR :reportAddlCriteria3 = '' OR REPORT_ADDL_CRITERIA_3 = :reportAddlCriteria3 ) " +
@@ -98,7 +98,7 @@ public interface BRRS_M_PD_Detail_Repo extends JpaRepository<M_PD_Detail_Entity,
             "AND REPORT_DATE = :reportDate",
             nativeQuery = true)
     List<M_PD_Detail_Entity> GetDataByRowIdAndColumnId(
-            @Param("reportLable") String reportLable,
+            @Param("reportLabel") String reportLabel,
             @Param("reportAddlCriteria1") String reportAddlCriteria1,
             @Param("reportAddlCriteria2") String reportAddlCriteria2,
             @Param("reportAddlCriteria3") String reportAddlCriteria3,
