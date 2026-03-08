@@ -1472,6 +1472,12 @@ public class RegulatoryReportServices {
 
 			break;
 
+		case "M_IRB": 
+			repsummary = brrs_m_irb_reportService.getM_IRBView(reportId,
+				  fromdate, todate, currency, dtltype, pageable, 
+				  type, version); 
+			break;
+			
 		/*
 		 * case "AML":
 		 * 
@@ -1847,9 +1853,11 @@ public class RegulatoryReportServices {
 			repdetail = BRRS_Q_SMME_Loans_Advances_New_ReportService.getBRRS_Q_SMMEcurrentDtl(reportId, fromdate,
 					todate, currency, dtltype, pageable, Filter, type, version);
 			break;
+			
 		case "M_IRB":
 			repdetail = brrs_m_irb_reportService.getM_IRBcurrentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
+			break;
 
 		case "M_SRWA_12A":
 
@@ -2174,6 +2182,16 @@ public class RegulatoryReportServices {
 		case "M_OR1":
 			try {
 				repfile = brrs_m_or1_reportservice.BRRS_M_OR1Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, format, version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_IRB":
+			try {
+				repfile = brrs_m_irb_reportService.BRRS_M_IRBExcel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, format, version);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -4508,15 +4526,12 @@ case "M_CA2":
 			break;
 
 		case "M_IRB":
-			try {
-				archivalData = brrs_m_irb_reportService.getM_IRBArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> MiRBList = brrs_m_irb_reportService.getM_IRBArchival();
+			archivalData.addAll(MiRBList);
+			System.out.println("Fetched M_IRB archival data: " + MiRBList.size());
 			break;
-
-		
+			
+				
 		case "M_LIQ":
 			List<Object[]> MLIQList = BRRS_M_LIQ_reportservice.getM_LIQArchival();
 			archivalData.addAll(MLIQList);

@@ -1,6 +1,7 @@
 package com.bornfire.brrs.controllers;
 
 import java.io.FileNotFoundException;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -75,6 +76,7 @@ import com.bornfire.brrs.services.BRRS_M_GP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_FCA_ReportService;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_NEW_ReportService;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_ReportService;
+import com.bornfire.brrs.services.BRRS_M_IRB_ReportService;
 import com.bornfire.brrs.services.BRRS_M_IS_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA1_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA2_ReportService;
@@ -143,6 +145,9 @@ public class BRRS_ReportsController {
 
 	@Autowired
 	BRRS_M_LA1_ReportService brrs_M_LA1_ReportService;
+
+	@Autowired
+	BRRS_M_IRB_ReportService M_IRB_Service;
 
 	@Autowired
 	BRRS_M_LA3_ReportService brrs_M_LA3_ReportService;
@@ -462,6 +467,28 @@ public class BRRS_ReportsController {
 
 			// call services
 			BRRS_M_LA4_ReportService.updateReport(request1);
+
+			return ResponseEntity.ok("Modified Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+	
+	@RequestMapping(value = "/M_IRBupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateAllReports(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+
+			@ModelAttribute M_IRB_Summary_Entity request1) {
+		try {
+			System.out.println("Came to single MIRB Update controller");
+
+			// set date into all 3 entities
+			request1.setReportDate(asondate);
+			
+			// call services
+			M_IRB_Service.MIRBUpdate(request1);
 
 			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
