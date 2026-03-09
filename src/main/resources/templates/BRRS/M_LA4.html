@@ -873,7 +873,8 @@ PURPOSE		: BWRBRREPORT
 
 		$(document).ready(function () {
 
-			let rows = [12, 13, 14, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 45, 46, 47, 48, 50, 51, 52, 54, 55, 56, 54, 55, 56, 58, 59, 60, 61, 62, 63];
+			let rows = [12, 13, 14, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 
+			40,41, 42, 43,44, 45, 46, 47, 48,49, 50, 51, 52, 53,54, 55, 56, 54, 55, 56,57, 58, 59, 60, 61, 62, 63];
 
 			rows.forEach(function (r) {
 
@@ -1012,285 +1013,315 @@ PURPOSE		: BWRBRREPORT
 			}
 		}
 	</style>
-	<script>
-		$(document).ready(function () {
-
-			// 🟢 Initial calculation
-			calculateAllTotals();
-
-			// Row groups
-			const rows16to28 = [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28];
-			const rows30to37 = [30, 31, 32, 33, 34, 35, 36, 37];
-			const rows39to40 = [39, 40];
-			const rows45to48 = [45, 46, 47, 48];
-			const rows54to56 = [54, 55, 56];
-			const rows59to62 = [59, 60, 61, 62];
-			const row41 = [42, 43, 44, 49, 63];//=F42+F43+F44+F49+F63
-
-			const fields = ["FactoringDebtors", "Leasing", "Overdrafts", "OtherInstallmentLoans", "Total"];
-
-			function attachFields(rows, callback) {
-				rows.forEach(r => {
-					fields.forEach(f => {
-						$("#r" + r + f).on("input", callback);
-					});
-				});
-			}
-
-			attachFields(rows16to28, TotalcalculateR15);
-			attachFields(rows30to37, TotalcalculateR29);
-			attachFields(rows39to40, TotalcalculateR38);
-			attachFields(rows45to48, TotalcalculateR44);
-			attachFields(rows54to56, TotalcalculateR53);
-			attachFields(rows59to62, TotalcalculateR57);
-			attachFields(row41, TotalcalculateR41);
-
-			// Row totals
-			$("#r41FactoringDebtors,#r41Leasing,#r41Overdrafts,#r41OtherInstallmentLoans")
-				.on("input", TotalcalculateRow41t);
-			$("#r44FactoringDebtors,#r44Leasing,#r44Overdrafts,#r44OtherInstallmentLoans")
-				.on("input", TotalcalculateRow44);
-
-			$("#r49FactoringDebtors,#r49Leasing,#r49Overdrafts,#r49OtherInstallmentLoans")
-				.on("input", TotalcalculateRow49);
-
-			$("#r53FactoringDebtors,#r53Leasing,#r53Overdrafts,#r53OtherInstallmentLoans")
-				.on("input", TotalcalculateRow53);
-
-			$("#r57FactoringDebtors,#r57Leasing,#r57Overdrafts,#r57OtherInstallmentLoans")
-				.on("input", TotalcalculateRow57);
-
-
-			// Dependencies
-			$("#r50Total,#r51Total,#r52Total,#r53Total,#r57Total")
-				.on("input", TotalcalculateR49);
-
-			$("#r42Total,#r43Total,#r44Total,#r49Total,#r63Total")
-				.on("input", TotalcalculateR41);
-
-			$("#r12Total,#r13Total,#r14Total,#r15Total,#r29Total,#r38Total")
-				.on("input", TotalcalculateR11);
-
-			$("#r11Total,#r41Total")
-				.on("input", TotalcalculateR64);
-
-		});
-
-
-		// ---------- Utility ----------
-		function getValue(id) {
-			const val = $("#" + id).val();
-			return parseFloat(val?.replace(/,/g, "")) || 0;
-		}
-
-		function setValue(id, value) {
-			$("#" + id).val(value.toLocaleString('en-US', {maximumFractionDigits: 0}));
-		}
-
-
-		// ---------- Initial Calculation ----------
-		function calculateAllTotals() {
-
-			TotalcalculateRow44();
-			TotalcalculateRow41t();
-			TotalcalculateRow49();
-			TotalcalculateRow53();
-			TotalcalculateRow57();
-
-			TotalcalculateR15();
-			TotalcalculateR29();
-			TotalcalculateR38();
-			TotalcalculateR44();
-			TotalcalculateR53();
-			TotalcalculateR57();
-			TotalcalculateR49();
-			TotalcalculateR41();
-			TotalcalculateR11();
-			TotalcalculateR64();
-		}
-
-
-		// ---------- ROW TOTALS ----------
-
-		// R44 = SUM(B44:E44)
-		function TotalcalculateRow44() {
-			const total =
-				getValue("r44FactoringDebtors") +
-				getValue("r44Leasing") +
-				getValue("r44Overdrafts") +
-				getValue("r44OtherInstallmentLoans");
-
-			setValue("r44Total", total);
-			TotalcalculateR41();
-		}
-
-
-		// R49 = SUM(B49:E49)
-		function TotalcalculateRow49() {
-			const total =
-				getValue("r49FactoringDebtors") +
-				getValue("r49Leasing") +
-				getValue("r49Overdrafts") +
-				getValue("r49OtherInstallmentLoans");
-
-			setValue("r49Total", total);
-			TotalcalculateR41();
-		}
-
-
-		// R53 = SUM(B53:E53)
-		function TotalcalculateRow53() {
-			const total =
-				getValue("r53FactoringDebtors") +
-				getValue("r53Leasing") +
-				getValue("r53Overdrafts") +
-				getValue("r53OtherInstallmentLoans");
-
-			setValue("r53Total", total);
-			TotalcalculateR49();
-		}
-
-
-		// R57 = SUM(B57:E57)
-		function TotalcalculateRow57() {
-			const total =
-				getValue("r57FactoringDebtors") +
-				getValue("r57Leasing") +
-				getValue("r57Overdrafts") +
-				getValue("r57OtherInstallmentLoans");
-
-			setValue("r57Total", total);
-			TotalcalculateR49();
-		}
-
-
-
-		// ---------- R15 = SUM(F16:F28) ----------
-		function TotalcalculateR15() {
-			let total = 0;
-			for (let i = 16; i <= 28; i++) {
-				total += getValue("r" + i + "Total");
-			}
-			setValue("r15Total", total);
-			TotalcalculateR11();
-		}
-
-
-		// ---------- R29 = SUM(F30:F37) ----------
-		function TotalcalculateR29() {
-			let total = 0;
-			for (let i = 30; i <= 37; i++) {
-				total += getValue("r" + i + "Total");
-			}
-			setValue("r29Total", total);
-			TotalcalculateR11();
-		}
-
-
-		// ---------- R38 = F39 + F40 ----------
-		function TotalcalculateR38() {
-			const total = getValue("r39Total") + getValue("r40Total");
-			setValue("r38Total", total);
-			TotalcalculateR11();
-		}
-
-
-		// ---------- R44 = SUM(F45:F48) ----------
-		function TotalcalculateR44() {
-			let total = 0;
-			for (let i = 45; i <= 48; i++) {
-				total += getValue("r" + i + "Total");
-			}
-			setValue("r44Total", total);
-			TotalcalculateR41();
-		}
-
-
-		// ---------- R53 = SUM(F54:F56) ----------
-		function TotalcalculateR53() {
-			let total = 0;
-			for (let i = 54; i <= 56; i++) {
-				total += getValue("r" + i + "Total");
-			}
-			setValue("r53Total", total);
-			TotalcalculateR49();
-		}
-
-
-		// ---------- R57 = SUM(F59:F62) ----------
-		function TotalcalculateR57() {
-			let total = 0;
-			for (let i = 59; i <= 62; i++) {
-				total += getValue("r" + i + "Total");
-			}
-			setValue("r57Total", total);
-			TotalcalculateR49();
-		}
-
-
-		// ---------- R49 = F50+F51+F52+F53+F57 ----------
-		function TotalcalculateR49() {
-
-			const total =
-				getValue("r50Total") +
-				getValue("r51Total") +
-				getValue("r52Total") +
-				getValue("r53Total") +
-				getValue("r57Total");
-
-			setValue("r49Total", total);
-			TotalcalculateR41();
-		}
-
-
-		// ---------- R41 = F42+F43+F44+F49+F63 ----------
-		function TotalcalculateR41() {
-
-			const total =
-				getValue("r42Total") +
-				getValue("r43Total") +
-				getValue("r44Total") +
-				getValue("r49Total") +
-				getValue("r63Total");
-
-			setValue("r41Total", total);
-			TotalcalculateR64();
-		}
-
-
-		// ---------- R11 = F12+F13+F14+F15+F29+F38 ----------
-		function TotalcalculateR11() {
-
-			const total =
-				getValue("r12Total") +
-				getValue("r13Total") +
-				getValue("r14Total") +
-				getValue("r15Total") +
-				getValue("r29Total") +
-				getValue("r38Total");
-
-			setValue("r11Total", total);
-			TotalcalculateR64();
-		}
-
-
-		// ---------- R64 = F11 + F41 ----------
-		function TotalcalculateR64() {
-
-			const total =
-				getValue("r11Total") +
-				getValue("r41Total");
-
-			setValue("r64Total", total);
-		}
-
-	</script>
+<script>
+
+$(document).ready(function () {
+
+    // Columns used for row total
+    const fields = [
+        "FactoringDebtors",
+        "Leasing",
+        "Overdrafts",
+        "OtherInstallmentLoans"
+    ];
+
+    // Row groups
+    const rows16to28 = [16,17,18,19,20,21,22,23,24,25,26,27,28];
+    const rows30to37 = [30,31,32,33,34,35,36,37];
+    const rows39to40 = [39,40];
+    const rows45to48 = [45,46,47,48];
+    const rows54to56 = [54,55,56];
+    const rows59to62 = [59,60,61,62];
+
+    // Attach input listeners
+    function attachFields(rows, callback){
+
+        rows.forEach(r => {
+
+            fields.forEach(f => {
+
+                $("#r"+r+f).on("input", function(){
+
+                    calculateRowTotal(r);
+                    callback();
+
+                });
+
+            });
+
+        });
+
+    }
+
+    attachFields(rows16to28, TotalcalculateR15);
+    attachFields(rows30to37, TotalcalculateR29);
+    attachFields(rows39to40, TotalcalculateR38);
+    attachFields(rows45to48, TotalcalculateR44);
+    attachFields(rows54to56, TotalcalculateR53);
+    attachFields(rows59to62, TotalcalculateR57);
+
+    // Dependencies
+    $("#r50Total,#r51Total,#r52Total,#r53Total,#r57Total")
+        .on("input change", TotalcalculateR49);
+
+    $("#r42Total,#r43Total,#r44Total,#r49Total,#r63Total")
+        .on("input change", TotalcalculateR41);
+
+    $("#r12Total,#r13Total,#r14Total,#r15Total,#r29Total,#r38Total")
+        .on("input change", TotalcalculateR11);
+
+    $("#r11Total,#r41Total")
+        .on("input change", TotalcalculateR64);
+
+    // Initial calculations
+    calculateAllTotals();
+
+});
+
+
+// ---------- Utility ----------
+function getValue(id){
+
+    const el = $("#" + id);
+
+    if (el.is("input")) {
+        return parseFloat(el.val()?.replace(/,/g,'')) || 0;
+    }
+
+    return parseFloat(el.text()?.replace(/,/g,'')) || 0;
+
+}
+
+function setValue(id, value) {
+
+    const formatted = value.toLocaleString('en-US', { maximumFractionDigits: 0 });
+    const el = $("#" + id);
+
+    if (el.is("input")) {
+        if (el.val() !== formatted) {
+            el.val(formatted).trigger("input");
+        }
+    } else {
+        if (el.text() !== formatted) {
+            el.text(formatted);
+            el.trigger("input");
+        }
+    }
+
+}
+
+
+// ---------- Row Total ----------
+function calculateRowTotal(row){
+
+    const total =
+        getValue("r"+row+"FactoringDebtors") +
+        getValue("r"+row+"Leasing") +
+        getValue("r"+row+"Overdrafts") +
+        getValue("r"+row+"OtherInstallmentLoans");
+
+    setValue("r"+row+"Total", total);
+
+}
+
+
+function calculateAllTotals(){
+
+    // calculate row totals first
+    for(let i=16;i<=28;i++){
+        calculateRowTotal(i);
+    }
+
+    for(let i=30;i<=37;i++){
+        calculateRowTotal(i);
+    }
+
+    for(let i=39;i<=40;i++){
+        calculateRowTotal(i);
+    }
+
+    for(let i=45;i<=48;i++){
+        calculateRowTotal(i);
+    }
+
+    for(let i=54;i<=56;i++){
+        calculateRowTotal(i);
+    }
+
+    for(let i=59;i<=62;i++){
+        calculateRowTotal(i);
+    }
+
+    // then calculate grouped totals
+    TotalcalculateR15();
+    TotalcalculateR29();
+    TotalcalculateR38();
+    TotalcalculateR44();
+    TotalcalculateR53();
+    TotalcalculateR57();
+    TotalcalculateR49();
+    TotalcalculateR41();
+    TotalcalculateR11();
+    TotalcalculateR64();
+
+}
+
+// ---------- R15 ----------
+function TotalcalculateR15(){
+
+    let total = 0;
+
+    for(let i=16;i<=28;i++){
+        total += getValue("r"+i+"Total");
+    }
+
+    setValue("r15Total",total);
+    TotalcalculateR11();
+
+}
+
+
+// ---------- R29 ----------
+function TotalcalculateR29(){
+
+    let total = 0;
+
+    for(let i=30;i<=37;i++){
+        total += getValue("r"+i+"Total");
+    }
+
+    setValue("r29Total",total);
+    TotalcalculateR11();
+
+}
+
+
+// ---------- R38 ----------
+function TotalcalculateR38(){
+
+    const total =
+        getValue("r39Total") +
+        getValue("r40Total");
+
+    setValue("r38Total",total);
+    TotalcalculateR11();
+
+}
+
+
+// ---------- R44 ----------
+function TotalcalculateR44(){
+
+    let total = 0;
+
+    for(let i=45;i<=48;i++){
+        total += getValue("r"+i+"Total");
+    }
+
+    setValue("r44Total",total);
+    TotalcalculateR41();
+
+}
+
+
+// ---------- R53 ----------
+function TotalcalculateR53(){
+
+    let total = 0;
+
+    for(let i=54;i<=56;i++){
+        total += getValue("r"+i+"Total");
+    }
+
+    setValue("r53Total",total);
+    TotalcalculateR49();
+
+}
+
+
+// ---------- R57 ----------
+function TotalcalculateR57(){
+
+    let total = 0;
+
+    for(let i=59;i<=62;i++){
+        total += getValue("r"+i+"Total");
+    }
+
+    setValue("r57Total",total);
+    TotalcalculateR49();
+
+}
+
+
+// ---------- R49 ----------
+function TotalcalculateR49(){
+
+    const total =
+        getValue("r50Total") +
+        getValue("r51Total") +
+        getValue("r52Total") +
+        getValue("r53Total") +
+        getValue("r57Total");
+
+    setValue("r49Total",total);
+    TotalcalculateR41();
+
+}
+
+
+// ---------- R41 ----------
+function TotalcalculateR41(){
+
+    const total =
+        getValue("r42Total") +
+        getValue("r43Total") +
+        getValue("r44Total") +
+        getValue("r49Total") +
+        getValue("r63Total");
+
+    setValue("r41Total",total);
+    TotalcalculateR64();
+
+}
+
+
+// ---------- R11 ----------
+function TotalcalculateR11(){
+
+    const total =
+        getValue("r12Total") +
+        getValue("r13Total") +
+        getValue("r14Total") +
+        getValue("r15Total") +
+        getValue("r29Total") +
+        getValue("r38Total");
+
+    setValue("r11Total",total);
+    TotalcalculateR64();
+
+}
+
+
+// ---------- R64 ----------
+function TotalcalculateR64(){
+
+    const total =
+        getValue("r11Total") +
+        getValue("r41Total");
+
+    setValue("r64Total",total);
+
+}
+
+</script>
 
 	<script>
 		function fileuploads(btn) {
 			const asondate = btn.getAttribute("data-todate");
 			$('#loader').modal('show');
 			// ✅ Step 1: Calculate totals
+			//Old
 			calculateR15Totals();
 			calculateR29Totals();
 			calculateR38Totals();
@@ -1301,23 +1332,9 @@ PURPOSE		: BWRBRREPORT
 			calculateR41Totals();
 			calculateR11Totals();
 			calculateR64Totals();
+			//New 
 			calculateTotals();
-			TotalcalculateRow44();
-			TotalcalculateRow41t();
-			TotalcalculateRow49();
-			TotalcalculateRow53();
-			TotalcalculateRow57();
-
-			TotalcalculateR15();
-			TotalcalculateR29();
-			TotalcalculateR38();
-			TotalcalculateR44();
-			TotalcalculateR53();
-			TotalcalculateR57();
-			TotalcalculateR49();
-			TotalcalculateR41();
-			TotalcalculateR11();
-			TotalcalculateR64();
+			calculateAllTotals();
 
 			// ✅ Step 2: Remove commas safely
 			$("#fileupload input[type='text']").each(function () {
@@ -1616,12 +1633,12 @@ PURPOSE		: BWRBRREPORT
 												</td>
 
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R12', ColumnId='C4'"
+													th:attr="RowId='R12', ColumnId='C4'"id="r12Overdrafts" name="r12Overdrafts"
 													th:text="${#numbers.formatDecimal(row1.r12Overdrafts,1,'COMMA',0,'POINT')}">
 												</td>
 
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R12', ColumnId='C5'"
+													th:attr="RowId='R12', ColumnId='C5'"id="r12OtherInstallmentLoans" name="r12OtherInstallmentLoans"
 													th:text="${#numbers.formatDecimal(row1.r12OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
 
@@ -1653,11 +1670,11 @@ PURPOSE		: BWRBRREPORT
 												</td>
 
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R13', ColumnId='C4'"
+													th:attr="RowId='R13', ColumnId='C4'"id="r13Overdrafts" name="r13Overdrafts"
 													th:text="${#numbers.formatDecimal(row1.r13Overdrafts,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R13', ColumnId='C5'"
+													th:attr="RowId='R13', ColumnId='C5'"id="r13OtherInstallmentLoans" name="r13OtherInstallmentLoans"
 													th:text="${#numbers.formatDecimal(row1.r13OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right; background-color: rgb(107,122,143); color:white;"
@@ -1688,11 +1705,11 @@ PURPOSE		: BWRBRREPORT
 												</td>
 
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R14', ColumnId='C4'"
+													th:attr="RowId='R14', ColumnId='C4'"id="r14Overdrafts" name="r14Overdrafts"
 													th:text="${#numbers.formatDecimal(row1.r14Overdrafts,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R14', ColumnId='C5'"
+													th:attr="RowId='R14', ColumnId='C5'"id="r14OtherInstallmentLoans" name="r14OtherInstallmentLoans"
 													th:text="${#numbers.formatDecimal(row1.r14OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right; background-color: rgb(107,122,143); color:white;"
@@ -1750,11 +1767,11 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R16', ColumnId='C4'"
+													th:attr="RowId='R16', ColumnId='C4'"id="r16Overdrafts" name="r16Overdrafts"
 													th:text="${#numbers.formatDecimal(row1.r16Overdrafts,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R16', ColumnId='C5'"
+													th:attr="RowId='R16', ColumnId='C5'"id="r16OtherInstallmentLoans" name="r16OtherInstallmentLoans"
 													th:text="${#numbers.formatDecimal(row1.r16OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right; background-color: rgb(107,122,143); color:white;"
@@ -1781,11 +1798,11 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R17', ColumnId='C4'"
+													th:attr="RowId='R17', ColumnId='C4'"id="r17Overdrafts" name="r17Overdrafts"
 													th:text="${#numbers.formatDecimal(row1.r17Overdrafts,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R17', ColumnId='C5'"
+													th:attr="RowId='R17', ColumnId='C5'"id="r17OtherInstallmentLoans" name="r17OtherInstallmentLoans"
 													th:text="${#numbers.formatDecimal(row1.r17OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right; background-color: rgb(107,122,143); color:white;"
@@ -1812,11 +1829,11 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R18', ColumnId='C4'"
+													th:attr="RowId='R18', ColumnId='C4'"id="r18Overdrafts" name="r18Overdrafts"
 													th:text="${#numbers.formatDecimal(row1.r18Overdrafts,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R18', ColumnId='C5'"
+													th:attr="RowId='R18', ColumnId='C5'"id="r18OtherInstallmentLoans" name="r18OtherInstallmentLoans"
 													th:text="${#numbers.formatDecimal(row1.r18OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right; background-color: rgb(107,122,143); color:white;"
@@ -1844,11 +1861,11 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R19', ColumnId='C4'"
+													th:attr="RowId='R19', ColumnId='C4'"id="r19Overdrafts" name="r19Overdrafts"
 													th:text="${#numbers.formatDecimal(row1.r19Overdrafts,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R19', ColumnId='C5'"
+													th:attr="RowId='R19', ColumnId='C5'"id="r19OtherInstallmentLoans" name="r19OtherInstallmentLoans"
 													th:text="${#numbers.formatDecimal(row1.r19OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right; background-color: rgb(107,122,143); color:white;"
@@ -1875,11 +1892,11 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R20', ColumnId='C4'"
+													th:attr="RowId='R20', ColumnId='C4'"id="r20Overdrafts" name="r20Overdrafts"
 													th:text="${#numbers.formatDecimal(row1.r20Overdrafts,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R20', ColumnId='C5'"
+													th:attr="RowId='R20', ColumnId='C5'"id="r20OtherInstallmentLoans" name="r20OtherInstallmentLoans"
 													th:text="${#numbers.formatDecimal(row1.r20OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right; background-color: rgb(107,122,143); color:white;"
@@ -1907,11 +1924,11 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R21', ColumnId='C4'"
+													th:attr="RowId='R21', ColumnId='C4'"id="r21Overdrafts" name="r21Overdrafts"
 													th:text="${#numbers.formatDecimal(row1.r21Overdrafts,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R21', ColumnId='C5'"
+													th:attr="RowId='R21', ColumnId='C5'"id="r21OtherInstallmentLoans" name="r21OtherInstallmentLoans"
 													th:text="${#numbers.formatDecimal(row1.r21OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right; background-color: rgb(107,122,143); color:white;"
@@ -1938,11 +1955,11 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R22', ColumnId='C4'"
+													th:attr="RowId='R22', ColumnId='C4'"id="r22Overdrafts" name="r22Overdrafts"
 													th:text="${#numbers.formatDecimal(row1.r22Overdrafts,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R22', ColumnId='C5'"
+													th:attr="RowId='R22', ColumnId='C5'"id="r22OtherInstallmentLoans" name="r22OtherInstallmentLoans"
 													th:text="${#numbers.formatDecimal(row1.r22OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right; background-color: rgb(107,122,143); color:white;"
@@ -1969,11 +1986,11 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R23', ColumnId='C4'"
+													th:attr="RowId='R23', ColumnId='C4'"	id="r23Overdrafts" name="r23Overdrafts"
 													th:text="${#numbers.formatDecimal(row1.r23Overdrafts,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R23', ColumnId='C5'"
+													th:attr="RowId='R23', ColumnId='C5'"	id="r23OtherInstallmentLoans" name="r23OtherInstallmentLoans"
 													th:text="${#numbers.formatDecimal(row1.r23OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right; background-color: rgb(107,122,143); color:white;"
@@ -2000,11 +2017,11 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R24', ColumnId='C4'"
+													th:attr="RowId='R24', ColumnId='C4'"	id="r24Overdrafts" name="r24Overdrafts"
 													th:text="${#numbers.formatDecimal(row1.r24Overdrafts,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R24', ColumnId='C5'"
+													th:attr="RowId='R24', ColumnId='C5'"	id="r24OtherInstallmentLoans" name="r24OtherInstallmentLoans"
 													th:text="${#numbers.formatDecimal(row1.r24OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right; background-color: rgb(107,122,143); color:white;"
@@ -2031,11 +2048,11 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R25', ColumnId='C4'"
+													th:attr="RowId='R25', ColumnId='C4'"id="r25Overdrafts" name="r25Overdrafts"
 													th:text="${#numbers.formatDecimal(row1.r25Overdrafts,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R25', ColumnId='C5'"
+													th:attr="RowId='R25', ColumnId='C5'"id="r25OtherInstallmentLoans" name="r25OtherInstallmentLoans"
 													th:text="${#numbers.formatDecimal(row1.r25OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right; background-color: rgb(107,122,143); color:white;"
@@ -2062,11 +2079,11 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R26', ColumnId='C4'"
+													th:attr="RowId='R26', ColumnId='C4'"	id="r26Overdrafts" name="r26Overdrafts"
 													th:text="${#numbers.formatDecimal(row1.r26Overdrafts,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R26', ColumnId='C5'"
+													th:attr="RowId='R26', ColumnId='C5'"	id="r26OtherInstallmentLoans" name="r26OtherInstallmentLoans"
 													th:text="${#numbers.formatDecimal(row1.r26OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right; background-color: rgb(107,122,143); color:white;"
@@ -2093,11 +2110,11 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R27', ColumnId='C4'"
+													th:attr="RowId='R27', ColumnId='C4'"id="r27Overdrafts" name="r27Overdrafts"
 													th:text="${#numbers.formatDecimal(row1.r27Overdrafts,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R27', ColumnId='C5'"
+													th:attr="RowId='R27', ColumnId='C5'"id="r27OtherInstallmentLoans" name="r27OtherInstallmentLoans"
 													th:text="${#numbers.formatDecimal(row1.r27OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right; background-color: rgb(107,122,143); color:white;"
@@ -2124,11 +2141,11 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R28', ColumnId='C4'"
+													th:attr="RowId='R28', ColumnId='C4'"	id="r28Overdrafts" name="r28Overdrafts"
 													th:text="${#numbers.formatDecimal(row1.r28Overdrafts,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R28', ColumnId='C5'"
+													th:attr="RowId='R28', ColumnId='C5'"	id="r28OtherInstallmentLoans" name="r28OtherInstallmentLoans"
 													th:text="${#numbers.formatDecimal(row1.r28OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right; background-color: rgb(107,122,143); color:white;"
@@ -2185,11 +2202,11 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R30', ColumnId='C4'"
+													th:attr="RowId='R30', ColumnId='C4'"	id="r30Overdrafts" name="r30Overdrafts"
 													th:text="${#numbers.formatDecimal(row1.r30Overdrafts,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R30', ColumnId='C5'"
+													th:attr="RowId='R30', ColumnId='C5'"	id="r30OtherInstallmentLoans" name="r30OtherInstallmentLoans"
 													th:text="${#numbers.formatDecimal(row1.r30OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right; background-color: rgb(107,122,143); color:white;"
@@ -2216,11 +2233,11 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R31', ColumnId='C4'"
+													th:attr="RowId='R31', ColumnId='C4'"id="r31Overdrafts" name="r31Overdrafts"
 													th:text="${#numbers.formatDecimal(row1.r31Overdrafts,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R31', ColumnId='C5'"
+													th:attr="RowId='R31', ColumnId='C5'"id="r31OtherInstallmentLoans" name="r31OtherInstallmentLoans"
 													th:text="${#numbers.formatDecimal(row1.r31OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right; background-color: rgb(107,122,143); color:white;"
@@ -2247,11 +2264,11 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R32', ColumnId='C4'"
+													th:attr="RowId='R32', ColumnId='C4'"id="r32Overdrafts" name="r32Overdrafts"
 													th:text="${#numbers.formatDecimal(row1.r32Overdrafts,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R32', ColumnId='C5'"
+													th:attr="RowId='R32', ColumnId='C5'"id="r32OtherInstallmentLoans" name="r32OtherInstallmentLoans"
 													th:text="${#numbers.formatDecimal(row1.r32OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right; background-color: rgb(107,122,143); color:white;"
@@ -2278,11 +2295,11 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R33', ColumnId='C4'"
+													th:attr="RowId='R33', ColumnId='C4'"		id="r33Overdrafts" name="r33Overdrafts"
 													th:text="${#numbers.formatDecimal(row1.r33Overdrafts,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R33', ColumnId='C5'"
+													th:attr="RowId='R33', ColumnId='C5'"		id="r33OtherInstallmentLoans" name="r33OtherInstallmentLoans"
 													th:text="${#numbers.formatDecimal(row1.r33OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right; background-color: rgb(107,122,143); color:white;"
@@ -2309,11 +2326,11 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R34', ColumnId='C4'"
+													th:attr="RowId='R34', ColumnId='C4'"		id="r34Overdrafts" name="r34Overdrafts"
 													th:text="${#numbers.formatDecimal(row1.r34Overdrafts,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R34', ColumnId='C5'"
+													th:attr="RowId='R34', ColumnId='C5'"		id="r34OtherInstallmentLoans" name="r34OtherInstallmentLoans"
 													th:text="${#numbers.formatDecimal(row1.r34OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right; background-color: rgb(107,122,143); color:white;"
@@ -2340,11 +2357,11 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R35', ColumnId='C4'"
+													th:attr="RowId='R35', ColumnId='C4'"id="r35Overdrafts" name="r35Overdrafts"
 													th:text="${#numbers.formatDecimal(row1.r35Overdrafts,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R35', ColumnId='C5'"
+													th:attr="RowId='R35', ColumnId='C5'"id="r35OtherInstallmentLoans" name="r35OtherInstallmentLoans"
 													th:text="${#numbers.formatDecimal(row1.r35OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right; background-color: rgb(107,122,143); color:white;"
@@ -2371,11 +2388,11 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R36', ColumnId='C4'"
+													th:attr="RowId='R36', ColumnId='C4'"		id="r36Overdrafts" name="r36Overdrafts"
 													th:text="${#numbers.formatDecimal(row1.r36Overdrafts,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R36', ColumnId='C5'"
+													th:attr="RowId='R36', ColumnId='C5'"		id="r36OtherInstallmentLoans" name="r36OtherInstallmentLoans"
 													th:text="${#numbers.formatDecimal(row1.r36OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right; background-color: rgb(107,122,143); color:white;"
@@ -2402,11 +2419,11 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R37', ColumnId='C4'"
+													th:attr="RowId='R37', ColumnId='C4'"	id="r37Overdrafts" name="r37Overdrafts"
 													th:text="${#numbers.formatDecimal(row1.r37Overdrafts,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right;" onclick="showdetailsbyRowAndColumn(this)"
-													th:attr="RowId='R37', ColumnId='C5'"
+													th:attr="RowId='R37', ColumnId='C5'"	id="r37OtherInstallmentLoans" name="r37OtherInstallmentLoans"
 													th:text="${#numbers.formatDecimal(row1.r37OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right; background-color: rgb(107,122,143); color:white;"
@@ -2432,9 +2449,11 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 												<td style="text-align:right;  background-color: rgb(107,122,143); color:white;"
+												id="r38Overdrafts" name="r38Overdrafts"
 													th:text="${#numbers.formatDecimal(row1.r38Overdrafts,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right;  background-color: rgb(107,122,143); color:white;"
+												id="r38OtherInstallmentLoans" name="r38OtherInstallmentLoans"
 													th:text="${#numbers.formatDecimal(row1.r38OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
 												<td style="text-align:right;  background-color: rgb(107,122,143); color:white;"

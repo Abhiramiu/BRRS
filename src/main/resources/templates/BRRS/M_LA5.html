@@ -413,12 +413,11 @@ PURPOSE		: BRFREPORT
 		}
 
 		function showsummary() {
-			var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static', keyboard: false});
-			loader.show();
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/
-				location.href = Callurl;
+				$('#loader').modal('show');
+				var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/
+					location.href = Callurl;
+			}
 
-		}
 	</script>
 
 	<script>
