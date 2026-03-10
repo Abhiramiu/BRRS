@@ -3,6 +3,7 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -568,11 +569,13 @@ public class M_CALOC_Summary_Entity3 {
 	private BigDecimal	r116_othercurrencies_v;
 	private BigDecimal	r116_othercurrencies_w;
 	
-	@Temporal(TemporalType.DATE)
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
-	private Date	report_date;
-	private String	report_version;
+	@Temporal(TemporalType.DATE)
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+
+	@Column(name = "REPORT_VERSION")
+	private BigDecimal reportVersion;
 	private String	report_frequency;
 	private String	report_code;
 	private String	report_desc;
@@ -3891,17 +3894,18 @@ public class M_CALOC_Summary_Entity3 {
 	public void setR116_othercurrencies_w(BigDecimal r116_othercurrencies_w) {
 		this.r116_othercurrencies_w = r116_othercurrencies_w;
 	}
-	public Date getReport_date() {
-		return report_date;
+
+	public Date getReportDate() {
+		return reportDate;
 	}
-	public void setReport_date(Date report_date) {
-		this.report_date = report_date;
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
 	}
-	public String getReport_version() {
-		return report_version;
+	public BigDecimal getReportVersion() {
+		return reportVersion;
 	}
-	public void setReport_version(String report_version) {
-		this.report_version = report_version;
+	public void setReportVersion(BigDecimal reportVersion) {
+		this.reportVersion = reportVersion;
 	}
 	public String getReport_frequency() {
 		return report_frequency;

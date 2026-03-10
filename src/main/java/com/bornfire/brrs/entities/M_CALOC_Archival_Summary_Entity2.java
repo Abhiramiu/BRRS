@@ -3,16 +3,17 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
 @Entity
 @Table(name = "BRRS_M_CALOC_ARCHIVALTABLE_SUMMARY2")
+@IdClass(M_CALOC_PK.class)
 public class M_CALOC_Archival_Summary_Entity2 {
 	
 	private String	r52_product;
@@ -959,11 +960,18 @@ public class M_CALOC_Archival_Summary_Entity2 {
 	private BigDecimal	r92_othercurrencies_v;
 	private BigDecimal	r92_othercurrencies_w;
 	
-	@Temporal(TemporalType.DATE)
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
-	private Date	report_date;
-	private String	report_version;
+	@Temporal(TemporalType.DATE)
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+
+	@Id
+	@Column(name = "REPORT_VERSION")
+	private BigDecimal reportVersion;
+
+	@Column(name = "REPORT_RESUBDATE")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date reportResubDate;
 	private String	report_frequency;
 	private String	report_code;
 	private String	report_desc;
@@ -6628,17 +6636,24 @@ public class M_CALOC_Archival_Summary_Entity2 {
 	public void setR92_othercurrencies_w(BigDecimal r92_othercurrencies_w) {
 		this.r92_othercurrencies_w = r92_othercurrencies_w;
 	}
-	public Date getReport_date() {
-		return report_date;
+	
+	public Date getReportDate() {
+		return reportDate;
 	}
-	public void setReport_date(Date report_date) {
-		this.report_date = report_date;
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
 	}
-	public String getReport_version() {
-		return report_version;
+	public BigDecimal getReportVersion() {
+		return reportVersion;
 	}
-	public void setReport_version(String report_version) {
-		this.report_version = report_version;
+	public void setReportVersion(BigDecimal reportVersion) {
+		this.reportVersion = reportVersion;
+	}
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
 	}
 	public String getReport_frequency() {
 		return report_frequency;

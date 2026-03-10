@@ -104,8 +104,7 @@ public class BRRS_M_CALOC_ReportService {
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getBRRS_M_CALOCview(String reportId, String fromdate, String todate, String currency,
-			String dtltype,
-			Pageable pageable, String type, String version) {
+			String dtltype, Pageable pageable, String type, BigDecimal version) {
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
 		int pageSize = pageable.getPageSize();
@@ -133,11 +132,6 @@ public class BRRS_M_CALOC_ReportService {
 				T1Master1 = M_CALOC_Archival_Summary_Repo1.getdatabydateListarchival(dateformat.parse(todate), version);
 				T1Master2 = M_CALOC_Archival_Summary_Repo2.getdatabydateListarchival(dateformat.parse(todate), version);
 				T1Master3 = M_CALOC_Archival_Summary_Repo3.getdatabydateListarchival(dateformat.parse(todate), version);
-				System.out.println(
-						todate + " *************" + version + "--" + T1Master1.size() + " " + version.length());
-				System.out.println("SELECT * FROM BRRS_M_CALOC_ARCHIVALTABLE_SUMMARY1 " +
-						"WHERE TRUNC(REPORT_DATE) = TO_DATE('" + "', 'DD-MM-YYYY') " +
-						"AND REPORT_VERSION = '" + version + "'");
 
 			} catch (ParseException e) {
 				e.printStackTrace();
@@ -178,8 +172,7 @@ public class BRRS_M_CALOC_ReportService {
 		return mv;
 	}
 
-	public ModelAndView getM_CALOCcurrentDtl(
-			String reportId, String fromdate, String todate, String currency,
+	public ModelAndView getM_CALOCcurrentDtl(String reportId, String fromdate, String todate, String currency,
 			String dtltype, Pageable pageable, String Filter, String type, String version) {
 
 		int pageSize = pageable != null ? pageable.getPageSize() : 10;
@@ -258,12 +251,13 @@ public class BRRS_M_CALOC_ReportService {
 		return mv;
 	}
 
-	public byte[] getBRRS_M_CALOCExcel(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+	public byte[] getBRRS_M_CALOCExcel(String filename, String reportId, String fromdate, String todate, String currency,
+			String dtltype, String type, String format, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory for type: {}", type);
 
 		if ("ARCHIVAL".equals(type) && version != null) {
-			return getBRRSM_CALOCExcelARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+			return getBRRSM_CALOCExcelARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, format,
+					version);
 		}
 
 		List<M_CALOC_Summary_Entity1> dataList1 = M_CALOC_Summary_Repo1.getdatabydateList(dateformat.parse(todate));
@@ -18552,8 +18546,7 @@ public class BRRS_M_CALOC_ReportService {
 	}
 
 	public byte[] getBRRSM_CALOCDetailExcel(String filename, String fromdate, String todate, String currency,
-			String dtltype,
-			String type, String version) {
+			String dtltype, String type, String version) {
 		try {
 			logger.info("Generating Excel for BRRSM_CALOC Details...");
 			System.out.println("came to Detail download service");
@@ -18676,31 +18669,8 @@ public class BRRS_M_CALOC_ReportService {
 		}
 	}
 
-	public List<Object> getM_CALOCArchival() {
-		List<Object> M_CALOCArchivallist = new ArrayList<>();
-		List<Object> M_CALOCArchivallist1 = new ArrayList<>();
-		List<Object> M_CALOCArchivallist2 = new ArrayList<>();
-		try {
-			M_CALOCArchivallist = M_CALOC_Archival_Summary_Repo1.getM_CALOCarchival();
-			M_CALOCArchivallist1 = M_CALOC_Archival_Summary_Repo2.getM_CALOCarchival();
-			M_CALOCArchivallist2 = M_CALOC_Archival_Summary_Repo3.getM_CALOCarchival();
-
-			System.out.println("countser" + M_CALOCArchivallist.size());
-			System.out.println("countser" + M_CALOCArchivallist1.size());
-			System.out.println("countser" + M_CALOCArchivallist2.size());
-		} catch (Exception e) {
-			// Log the exception
-			System.err.println("Error fetching M_CALOC Archival data: " + e.getMessage());
-			e.printStackTrace();
-
-			// Optionally, you can rethrow it or return empty list
-			// throw new RuntimeException("Failed to fetch data", e);
-		}
-		return M_CALOCArchivallist;
-	}
-
-	public byte[] getBRRSM_CALOCExcelARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+	public byte[] getBRRSM_CALOCExcelARCHIVAL(String filename, String reportId, String fromdate, String todate, String currency,
+			String dtltype, String type, String format, BigDecimal version)throws Exception {
 
 		logger.info("Service: Starting ARCHIVAL Excel generation process.");
 
@@ -37150,15 +37120,13 @@ public class BRRS_M_CALOC_ReportService {
 
 			if (existing == null) {
 				logger.warn("No record found for ACCT_NO: {}", acctNo);
-				return ResponseEntity.status(HttpStatus.NOT_FOUND)
-						.body("Record not found for update.");
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
 			}
 
 			boolean isChanged = false;
 
 			// Update account name
-			if (acctName != null && !acctName.isEmpty() &&
-					!acctName.equals(existing.getAcctName())) {
+			if (acctName != null && !acctName.isEmpty() && !acctName.equals(existing.getAcctName())) {
 
 				existing.setAcctName(acctName);
 				isChanged = true;
@@ -37170,8 +37138,7 @@ public class BRRS_M_CALOC_ReportService {
 
 				BigDecimal newBalance = new BigDecimal(acctBalanceInpula.replace(",", ""));
 
-				if (existing.getBalEquiToBwp() == null ||
-						existing.getBalEquiToBwp().compareTo(newBalance) != 0) {
+				if (existing.getBalEquiToBwp() == null || existing.getBalEquiToBwp().compareTo(newBalance) != 0) {
 
 					existing.setBalEquiToBwp(newBalance);
 					isChanged = true;
@@ -37198,12 +37165,9 @@ public class BRRS_M_CALOC_ReportService {
 				@Override
 				public void afterCommit() {
 					try {
-						logger.info("AFTER COMMIT → Executing BRRS_M_CALOC_SUMMARY_PROCEDURE({})",
-								formattedDate);
+						logger.info("AFTER COMMIT → Executing BRRS_M_CALOC_SUMMARY_PROCEDURE({})", formattedDate);
 
-						jdbcTemplate.update(
-								"BEGIN BRRS_M_CALOC_SUMMARY_PROCEDURE(?); END;",
-								formattedDate);
+						jdbcTemplate.update("BEGIN BRRS_M_CALOC_SUMMARY_PROCEDURE(?); END;", formattedDate);
 
 					} catch (Exception e) {
 						logger.error("Error executing after-commit procedure", e);
@@ -37220,5 +37184,56 @@ public class BRRS_M_CALOC_ReportService {
 		}
 	}
 
+	public List<Object[]> getM_CALOCResub() {
+		List<Object[]> resubList = new ArrayList<>();
+		try {
+			List<M_CALOC_Archival_Summary_Entity1> latestArchivalList = M_CALOC_Archival_Summary_Repo1
+					.getdatabydateListWithVersion();
 
+			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+				for (M_CALOC_Archival_Summary_Entity1 entity : latestArchivalList) {
+					resubList.add(new Object[] { entity.getReportDate(), entity.getReportVersion(),
+							entity.getReportResubDate() });
+				}
+				System.out.println("Fetched " + resubList.size() + " record(s)");
+			} else {
+				System.out.println("No archival data found.");
+			}
+
+		} catch (Exception e) {
+			System.err.println("Error fetching M_CALOC Resub data: " + e.getMessage());
+			e.printStackTrace();
+		}
+		return resubList;
+	}
+
+	// Archival View
+	public List<Object[]> getM_CALOCArchival() {
+		List<Object[]> archivalList = new ArrayList<>();
+
+		try {
+			List<M_CALOC_Archival_Summary_Entity1> repoData = M_CALOC_Archival_Summary_Repo1
+					.getdatabydateListWithVersion();
+
+			if (repoData != null && !repoData.isEmpty()) {
+				for (M_CALOC_Archival_Summary_Entity1 entity : repoData) {
+					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion(),
+							entity.getReportResubDate() };
+					archivalList.add(row);
+				}
+
+				System.out.println("Fetched " + archivalList.size() + " archival records");
+				M_CALOC_Archival_Summary_Entity1 first = repoData.get(0);
+				System.out.println("Latest archival version: " + first.getReportVersion());
+			} else {
+				System.out.println("No archival data found.");
+			}
+
+		} catch (Exception e) {
+			System.err.println("Error fetching M_CALOC Archival data: " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		return archivalList;
+	}
 }

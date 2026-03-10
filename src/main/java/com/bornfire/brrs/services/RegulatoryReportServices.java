@@ -547,6 +547,11 @@ public class RegulatoryReportServices {
 				  fromdate, todate, currency, dtltype, pageable, 
 				  type, version); 
 			break;
+		case "M_CALOC": 
+			repsummary = BRRS_M_CALOC_reportService.getBRRS_M_CALOCview(reportId,
+				  fromdate, todate, currency, dtltype, pageable, 
+				  type, version); 
+			break;
 				 
 			
 				 /*
@@ -2751,6 +2756,16 @@ break;
 					e.printStackTrace();
 				}
 				break;
+				
+				
+		case "M_CALOC":
+			try {
+				repfile = BRRS_M_CALOC_reportService.getBRRS_M_CALOCExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type,format, version);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
 		/*
 		 * case "M_CA4": try { repfile =
 		 * BRRS_M_CA4_reportservice.getBRRS_M_CA4Excel(filename, reportId, fromdate,
@@ -4441,14 +4456,14 @@ case "M_CA2":
 		 * Auto-generated catch block e.printStackTrace(); } break;
 		 */
 
+		
+			
 		case "M_CALOC":
-			try {
-				archivalData = BRRS_M_CALOC_reportService.getM_CALOCArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> CALOCList = BRRS_M_CALOC_reportService.getM_CALOCArchival();
+			archivalData.addAll(CALOCList);
+			System.out.println("Fetched CALOCList archival data: " + CALOCList.size());
 			break;
+
 		case "M_DEP1":
 			try {
 				archivalData = BRRS_M_DEP1_reportservice.getM_DEP1Archival();
@@ -4460,20 +4475,8 @@ case "M_CA2":
 		case "M_FXR":
 			List<Object[]> fxrList = BRRS_M_FXR_reportservice.getM_FXRArchival();
 			archivalData.addAll(fxrList);
-			System.out.println("Fetched M_SRWA_12H archival data: " + fxrList.size());
+			System.out.println("Fetched M_fxr archival data: " + fxrList.size());
 			break;
-
-//		case "M_UNCONS_INVEST":
-//			try {
-//				archivalData = BRRS_M_UNCONS_INVEST_reportservice.getM_UNCONS_INVESTArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
-
-		
-
 
 		case "M_DEP3":
 			List<Object[]> DEP3RESUB = BRRS_M_DEP3_reportservice.getM_DEP3Archival();
@@ -6835,6 +6838,18 @@ case "M_CA2":
 				System.out.println("Resubmission data fetched for M_FAS: " + resubList.size());
 			} catch (Exception e) {
 				System.err.println("Error fetching resubmission data for M_FAS: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+		
+
+		case "M_CALOC":
+			try {
+				List<Object[]> resubList = BRRS_M_CALOC_reportService.getM_CALOCResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for M_CALOC: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_CALOC: " + e.getMessage());
 				e.printStackTrace();
 			}
 			break;
