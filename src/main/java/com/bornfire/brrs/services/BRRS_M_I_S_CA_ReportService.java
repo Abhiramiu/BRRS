@@ -401,14 +401,14 @@ public List<Object[]> getM_I_S_CAResub() {
 			// ACCT BALANCE style (right aligned with 3 decimals)
 			CellStyle balanceStyle = workbook.createCellStyle();
 			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
 			balanceStyle.setBorderTop(border);
 			balanceStyle.setBorderBottom(border);
 			balanceStyle.setBorderLeft(border);
 			balanceStyle.setBorderRight(border);
 
 			// Header row
-			String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT_DATE" };
+			String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT ADDL CRITERIA2","REPORT_DATE" };
 
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
@@ -441,7 +441,7 @@ public List<Object[]> getM_I_S_CAResub() {
 					if (item.getAcctBalanceInpula() != null) {
 						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
 					} else {
-						balanceCell.setCellValue(0.000);
+						balanceCell.setCellValue(0);
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
@@ -449,13 +449,14 @@ public List<Object[]> getM_I_S_CAResub() {
 
 					row.createCell(4).setCellValue(item.getReportLable());
 					row.createCell(5).setCellValue(item.getReportAddlCriteria_1());
-					row.createCell(6)
+					row.createCell(6).setCellValue(item.getReportAddlCriteria_2());
+					row.createCell(7)
 							.setCellValue(item.getReportDate() != null
 									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
 									: "");
 
 					// Apply data style for all other cells
-					for (int j = 0; j < 7; j++) {
+					for (int j = 0; j < 8; j++) {
 						if (j != 3) {
 							row.getCell(j).setCellStyle(dataStyle);
 						}
@@ -527,14 +528,14 @@ public List<Object[]> getM_I_S_CAResub() {
 // ACCT BALANCE style (right aligned with 3 decimals)
 			CellStyle balanceStyle = workbook.createCellStyle();
 			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
 			balanceStyle.setBorderTop(border);
 			balanceStyle.setBorderBottom(border);
 			balanceStyle.setBorderLeft(border);
 			balanceStyle.setBorderRight(border);
 
 // Header row
-			String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE",  "REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT_DATE" };
+			String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE",  "REPORT LABLE", "REPORT ADDL CRITERIA1","REPORT ADDL CRITERIA2", "REPORT_DATE" };
 
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
@@ -569,20 +570,21 @@ public List<Object[]> getM_I_S_CAResub() {
 					if (item.getAcctBalanceInpula() != null) {
 						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
 					} else {
-						balanceCell.setCellValue(0.000);
+						balanceCell.setCellValue(0);
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
 					
 					row.createCell(4).setCellValue(item.getReportLable());
 					row.createCell(5).setCellValue(item.getReportAddlCriteria_1());
-					row.createCell(6)
+					row.createCell(6).setCellValue(item.getReportAddlCriteria_2());
+					row.createCell(7)
 							.setCellValue(item.getReportDate() != null
 									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
 									: "");
 
 // Apply data style for all other cells
-					for (int j = 0; j < 7; j++) {
+					for (int j = 0; j < 8; j++) {
 						if (j != 3) {
 							row.getCell(j).setCellStyle(dataStyle);
 						}
@@ -724,7 +726,7 @@ public List<Object[]> getM_I_S_CAResub() {
 				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(miscaEntity.getReportDate());
 				mv.addObject("asondate", formattedDate);
 			}
-			mv.addObject("msciData", miscaEntity);
+			mv.addObject("miscaData", miscaEntity);
 		}
 
 		mv.addObject("displaymode", "edit");
