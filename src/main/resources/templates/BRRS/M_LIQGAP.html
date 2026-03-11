@@ -75,8 +75,8 @@ PURPOSE		: BRRS_M_CA2REPORT
 	border-color: #0c0c0c;
 }
 
-.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
-	 (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+.btn-primary:not(:disabled ):not(.disabled ).active, 
+.btn-primary:not(:disabled ):not(.disabled ):active, .show>.btn-primary.dropdown-toggle
 	{
 	color: #fff;
 	background-color: #cc000000;
@@ -552,7 +552,7 @@ $(window).on('beforeunload', function() {
 	
 	function showsummary() {
 		$('#loader').modal('show');
-		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/;								
+		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/								
 		location.href = Callurl;
 
 	}
@@ -745,66 +745,80 @@ window.onload = function() {
 
 
 function downloadfile(button) {
-	var reportid = button.getAttribute('data-reportid');
-	var asondate = button.getAttribute('data-asondate');
-	var fromdate = button.getAttribute('data-fromdate');
-	var todate = button.getAttribute('data-todate');
-	var currency = button.getAttribute('data-currency');
-	var subreportid = button.getAttribute('data-subreportid');
-	var secid = button.getAttribute('data-secid');
-	var dtltype = button.getAttribute('data-dtltype');
-	var filename = button.getAttribute('data-filename');
-	var type = button.getAttribute('data-type');
-	var version = button.getAttribute('data-version');
-	
+				    var reportid = button.getAttribute('data-reportid');
+				    var asondate = button.getAttribute('data-asondate');
+				    var fromdate = button.getAttribute('data-fromdate');
+				    var todate = button.getAttribute('data-todate');
+				    var currency = button.getAttribute('data-currency');
+				    var subreportid = button.getAttribute('data-subreportid');
+				    var secid = button.getAttribute('data-secid');
+				    var dtltype = button.getAttribute('data-dtltype');
+				    var filename = button.getAttribute('data-filename');
+				    var type = button.getAttribute('data-type');
+					var version = button.getAttribute('data-version');
+					var format = button.getAttribute('data-format');
 
-	$('#loader').modal('show');
+				    if (format === null) {
+				        format = '';   // treat as null
+				    }
 
-	$.ajax({
-		url: './downloadExcel?reportid=' + reportid +
-			'&fromdate=' + fromdate +
-			'&asondate=' + asondate +
-			'&todate=' + todate +
-			'&currency=' + currency +
-			'&subreportid=' + subreportid +
-			'&secid=' + secid +
-			'&filename=' + filename +
-			'&type=' + type +
-			'&version=' + version,
-		type: 'GET',
-		xhrFields: {
-			responseType: 'blob'
-		},
-		success: function (data) {
-			$('#loader').modal('hide');
+				    $('#loader').modal('show');
 
-			if (data && data.size > 100) {
-				const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
-				const url = window.URL.createObjectURL(blob);
-				const a = document.createElement('a');
-				a.style.display = 'none';
-				a.href = url;
-				a.download = filename;
-				document.body.appendChild(a);
-				a.click();
-				window.URL.revokeObjectURL(url);
-				document.body.removeChild(a);
+				    $.ajax({
+				        url: './downloadExcel?reportid=' + reportid +
+				            '&fromdate=' + fromdate +
+				            '&asondate=' + asondate +
+				            '&todate=' + todate +
+				            '&currency=' + currency +
+				            '&subreportid=' + subreportid +
+				            '&secid=' + secid +
+				            '&filename=' + filename +
+				            '&type=' + type +
+				            '&version=' + version  +
+							'&format=' + format,
+				        type: 'GET',
+				        xhrFields: { responseType: 'blob' },
 
+				        success: function (data) {
+				            if (data && data.size > 100) {
 
-				showResultModal('BRRS', 'M_LIQGAP downloaded successfully.');
-			} else {
-				showResultModal('Information', 'No data was available to create a download.');
-			}
-		},
-		error: function (jqXHR, textStatus, errorThrown) {
-			$('#loader').modal('hide');
-			console.error("Download failed:", textStatus, errorThrown);
-			showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-		}
-	});
-}
+				                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+				                const url = window.URL.createObjectURL(blob);
+				                const a = document.createElement('a');
 
+				                a.style.display = 'none';
+				                a.href = url;
+				                a.download = filename;
 
+				                document.body.appendChild(a);
+				                a.click();
+
+				                window.URL.revokeObjectURL(url);
+				                document.body.removeChild(a);
+
+				                showResultModal('BRRS', filename + ' downloaded successfully.');
+				            } else {
+				                showResultModal('Information', 'No data was available to create a download.');
+				            }
+				        },
+
+				        error: function (jqXHR, textStatus, errorThrown) {
+				            console.error("Download failed:", textStatus, errorThrown);
+				            showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				        },
+
+				        complete: function () {
+				            // 🔥 Always hide loader (success/error/all cases)
+				            $('#loader').modal('hide');
+				        }
+				    });
+				}
+
+				function editRecord() {
+							showResultModal('Alert', 'Development in progress');
+
+						}
+						
 function closemodel(){
 	$('#alert').modal('hide');
 	$('#resultModal').modal('hide');
@@ -1241,27 +1255,42 @@ rowCodes.forEach(code => {
             onclick="downloadfile(this);">
             <i class="fa fa-download"></i>
         </button>
+		<!-- Download – Details -->
+										<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+																	onclick="downloadfile(this)"
+																	th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}"
+																	th:attr="data-reportid=${reportid},
+										            data-asondate=${asondate},
+										            data-fromdate=${fromdate},
+										            data-todate=${todate},
+										            data-currency=${currency}, 
+										            data-dtltype=${dtltype},
+										            data-filename='EMAIL_M_LIQGAP.xlsx',
+										            data-type=${type},
+										            data-format='email',
+										            data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;font-size: 14px;">
+																	<i class="fa fa-download"></i> Email
 
-        <!-- Download button - Details -->
-        <button type="button" class="custom-tab-btn"
-            th:if="${displaymode == 'Details'}"
-            th:attr="data-reportid=${reportid}, 
-                     data-asondate=${asondate}, 
-                     data-fromdate=${fromdate}, 
-                     data-todate=${todate}, 
-                     data-currency=${currency},  
-                     data-dtltype=${dtltype}, 
-                     data-filename='M_LIQGAPDetail',
-                     data-type=${type},
-                     data-version=${version}"
-            onclick="startReport(this)">
-            <i class="fa fa-download"></i>
-        </button>
+																</button>
+																
+																<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+																							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
+																										    data-fromdate=${fromdate},
+																										    data-todate=${todate},
+																											data-currency=${currency},  
+																														data-dtltype=${dtltype}, 
+																										    data-filename='M_LIQGAPDetail',
+																											data-type=${type},
+																														data-version=${version}
+																										  ">
+																							<i class="fa fa-download"></i>
+																						</button>
 
-    </div>
-</div>
+								    </div>
+								</div>
 
-</div>
+ 
+
 
 
 <div th:if="${displaymode == 'summary'}" >
@@ -1756,53 +1785,58 @@ rowCodes.forEach(code => {
 </tr>
 
 <tr>
-    <td style="text-align: left;" 
-        th:attr="reportLable='R21', reportAddlCriteria1='C1'" 
+
+    <td style="text-align: left;"
+        th:attr="reportLable='R21', reportAddlCriteria1='C1'"
         th:text="${report.r21_product}">
     </td>
 
-    <td style="text-align: right;" th:attr="reportLable='R21', reportAddlCriteria1='C2'" 
+    <td style="text-align: right;"
+        th:attr="reportLable='R21', reportAddlCriteria1='C2'"
         onclick="showdetailsbyRowAndColumn(this)"
-        th:text="${report.r21_first_month != null ? #numbers.formatDecimal(report.r21_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+        th:text="${report.r21_first_month != null ? #numbers.formatDecimal(report.r21_first_month,1,'COMMA',0,'POINT') : '0'}">
     </td>
 
-    <td style="text-align: right;" th:attr="reportLable='R21', reportAddlCriteria1='C3'"
+    <td style="text-align: right;"
+        th:attr="reportLable='R21', reportAddlCriteria1='C3'"
         onclick="showdetailsbyRowAndColumn(this)"
-        th:text="${report.r21_third_month != null ? #numbers.formatDecimal(report.r21_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+        th:text="${report.r21_third_month != null ? #numbers.formatDecimal(report.r21_third_month,1,'COMMA',0,'POINT') : '0'}">
     </td>
 
-    <td style="text-align: right;" th:attr="reportLable='R21', reportAddlCriteria1='C4'"
+    <td style="text-align: right;"
+        th:attr="reportLable='R21', reportAddlCriteria1='C4'"
         onclick="showdetailsbyRowAndColumn(this)"
-        th:text="${report.r21_last_month != null ? #numbers.formatDecimal(report.r21_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+        th:text="${report.r21_last_month != null ? #numbers.formatDecimal(report.r21_last_month,1,'COMMA',0,'POINT') : '0'}">
     </td>
 
-    <td style="text-align: right;" th:attr="reportLable='R21', reportAddlCriteria1='C5'"
+    <td style="text-align: right;"
+        th:attr="reportLable='R21', reportAddlCriteria1='C5'"
         onclick="showdetailsbyRowAndColumn(this)"
-        th:text="${report.r21_first_year != null ? #numbers.formatDecimal(report.r21_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+        th:text="${report.r21_first_year != null ? #numbers.formatDecimal(report.r21_first_year,1,'COMMA',0,'POINT') : '0'}">
     </td>
 
-    <td style="text-align: right;" th:attr="reportLable='R21', reportAddlCriteria1='C6'"
+    <td style="text-align: right;"
+        th:attr="reportLable='R21', reportAddlCriteria1='C6'"
         onclick="showdetailsbyRowAndColumn(this)"
-        th:text="${report.r21_fifth_year != null ? #numbers.formatDecimal(report.r21_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+        th:text="${report.r21_fifth_year != null ? #numbers.formatDecimal(report.r21_fifth_year,1,'COMMA',0,'POINT') : '0'}">
     </td>
 
-	<td th:each="report: ${reportsummary1}" id="R21" style="text-align: right; ">
+    <!-- NON INTEREST BEARING COLUMN -->
+    <td style="text-align:right;">
+        <input class="display-input Show_input"
+               type="text"
+               th:value="${rep1 != null && rep1.r21_non_interest_bearing != null 
+                         ? #numbers.formatDecimal(rep1.r21_non_interest_bearing,1,'COMMA',0,'POINT') 
+                         : '0'}"
+               style="background-color:#FFFFFF;width:90%;height:28px;border-color:transparent;text-align:right;"
+               readonly />
+    </td>
 
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r21_non_interest_bearing != null ? #numbers.formatDecimal(report.r21_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r21_non_interest_bearing"
-           name="r21_non_interest_bearing"
-           style="background-color:#FFFFFF; width: 90%; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-      </td>
-
-
-
-	<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+    <td style="background-color: rgb(107,122,143); color:white; text-align:right;"
         th:attr="reportLable='R21', reportAddlCriteria1='C8'"
-        th:text="${report.r21_cumulative_total != null ? #numbers.formatDecimal(report.r21_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+        th:text="${report.r21_cumulative_total != null ? #numbers.formatDecimal(report.r21_cumulative_total,1,'COMMA',0,'POINT') : '0'}">
     </td>
+
 </tr>
 
 <tr>
@@ -2251,19 +2285,16 @@ rowCodes.forEach(code => {
     </td>
 
 
-<td th:each="report: ${reportsummary1}" id="R31" style="text-align: right;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r32_non_interest_bearing != null ?
-                      #numbers.formatDecimal(report.r32_non_interest_bearing, 1, 'COMMA', 0, 'POINT') :
-                      '0'}"
-           id="r32_non_interest_bearing"
-           name="r32_non_interest_bearing"
-           style="background-color:#FFFFFF; width: 90%; height:28px; border-color: transparent; text-align:right;"
-           readonly />
-</td>
-
-
+	<!-- NON INTEREST BEARING COLUMN -->
+	   <td style="text-align:right;">
+	       <input class="display-input Show_input"
+	              type="text"
+	              th:value="${rep1 != null && rep1.r32_non_interest_bearing != null 
+	                        ? #numbers.formatDecimal(rep1.r32_non_interest_bearing,1,'COMMA',0,'POINT') 
+	                        : '0'}"
+	              style="background-color:#FFFFFF;width:90%;height:28px;border-color:transparent;text-align:right;"
+	              readonly />
+	   </td>
 
 
     <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
@@ -2273,108 +2304,80 @@ rowCodes.forEach(code => {
 </tr>
 
 
-<tr>
-    <td style="text-align: left;" 
-        th:attr="reportLable='R33', reportAddlCriteria1='C1'" 
-        th:text="${report.r33_product}">
-    </td>
+<tr th:each="report : ${reportsummary}" th:with="rep1=${#lists.isEmpty(reportsummary1) ? null : reportsummary1[0]}">
 
-    <td style="text-align: right;" th:attr="reportLable='R33', reportAddlCriteria1='C2'" 
-        onclick="showdetailsbyRowAndColumn(this)"
-        th:text="${report.r33_first_month != null ? #numbers.formatDecimal(report.r33_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
-    </td>
-
-	<td th:each="report: ${reportsummary1}" id="R33" style="text-align: right; ">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r33_third_month != null ?
-                      #numbers.formatDecimal(report.r33_third_month, 1, 'COMMA', 0, 'POINT') :
-                      '0'}"
-           id="r33_third_month"
-           name="r33_third_month"
-           style="background-color:#FFFFFF; width: 90%; height:28px; border-color: transparent; text-align:right;"
-           readonly />
+<td style="text-align: left;"
+    th:attr="reportLable='R33', reportAddlCriteria1='C1'"
+    th:text="${report.r33_product}">
 </td>
 
-
-	
-	<td th:each="report: ${reportsummary1}" id="R33" style="text-align: right;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r33_last_month != null ?
-                      #numbers.formatDecimal(report.r33_last_month, 1, 'COMMA', 0, 'POINT') :
-                      '0'}"
-           id="r33_last_month"
-           name="r33_last_month"
-           style="background-color:#FFFFFF;width: 90%; height:28px; border-color: transparent; text-align:right;"
-           readonly />
+<td style="text-align: right;"
+    th:attr="reportLable='R33', reportAddlCriteria1='C2'"
+    onclick="showdetailsbyRowAndColumn(this)"
+    th:text="${report.r33_first_month != null ? #numbers.formatDecimal(report.r33_first_month,1,'COMMA',0,'POINT') : '0'}">
 </td>
 
-	
-	<td th:each="report: ${reportsummary1}" id="R33" style="text-align: right;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r33_first_year != null ?
-                      #numbers.formatDecimal(report.r33_first_year, 1, 'COMMA', 0, 'POINT') :
-                      '0'}"
-           id="r33_first_year"
-           name="r33_first_year"
-           style="background-color:#FFFFFF;width: 90%; height:28px; border-color: transparent; text-align:right;"
-           readonly />
+<td style="text-align:right;">
+<input class="display-input Show_input"
+       type="text"
+       th:value="${rep1 != null && rep1.r33_third_month != null ? #numbers.formatDecimal(rep1.r33_third_month,1,'COMMA',0,'POINT') : '0'}"
+       style="background-color:#FFFFFF;width:90%;height:28px;border-color:transparent;text-align:right;"
+       readonly />
 </td>
 
-	
-	<td th:each="report: ${reportsummary1}" id="R33" style="text-align: right; ">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r33_fifth_year != null ?
-                      #numbers.formatDecimal(report.r33_fifth_year, 1, 'COMMA', 0, 'POINT') :
-                      '0'}"
-           id="r33_fifth_year"
-           name="r33_fifth_year"
-           style="background-color:#FFFFFF;width: 90%; height:28px; border-color: transparent; text-align:right;"
-           readonly />
+<td style="text-align:right;">
+<input class="display-input Show_input"
+       type="text"
+       th:value="${rep1 != null && rep1.r33_last_month != null ? #numbers.formatDecimal(rep1.r33_last_month,1,'COMMA',0,'POINT') : '0'}"
+       style="background-color:#FFFFFF;width:90%;height:28px;border-color:transparent;text-align:right;"
+       readonly />
 </td>
 
-	
-	<td th:each="report: ${reportsummary1}" id="R33" style="text-align: right; ">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r33_non_interest_bearing != null ?
-                      #numbers.formatDecimal(report.r33_non_interest_bearing, 1, 'COMMA', 0, 'POINT') :
-                      '0'}"
-           id="r33_non_interest_bearing"
-           name="r33_non_interest_bearing"
-           style="background-color:#FFFFFF;width: 90%; height:28px; border-color: transparent; text-align:right;"
-           readonly />
+<td style="text-align:right;">
+<input class="display-input Show_input"
+       type="text"
+       th:value="${rep1 != null && rep1.r33_first_year != null ? #numbers.formatDecimal(rep1.r33_first_year,1,'COMMA',0,'POINT') : '0'}"
+       style="background-color:#FFFFFF;width:90%;height:28px;border-color:transparent;text-align:right;"
+       readonly />
 </td>
 
-	
-	<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
-        th:attr="reportLable='R33', reportAddlCriteria1='C8'"
-        th:text="${report.r33_cumulative_total != null ? #numbers.formatDecimal(report.r33_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
-    </td>
+<td style="text-align:right;">
+<input class="display-input Show_input"
+       type="text"
+       th:value="${rep1 != null && rep1.r33_fifth_year != null ? #numbers.formatDecimal(rep1.r33_fifth_year,1,'COMMA',0,'POINT') : '0'}"
+       style="background-color:#FFFFFF;width:90%;height:28px;border-color:transparent;text-align:right;"
+       readonly />
+</td>
+
+<td style="text-align:right;">
+<input class="display-input Show_input"
+       type="text"
+       th:value="${rep1 != null && rep1.r33_non_interest_bearing != null ? #numbers.formatDecimal(rep1.r33_non_interest_bearing,1,'COMMA',0,'POINT') : '0'}"
+       style="background-color:#FFFFFF;width:90%;height:28px;border-color:transparent;text-align:right;"
+       readonly />
+</td>
+
+<td style="background-color: rgb(107,122,143); color:white; text-align:right;"
+    th:attr="reportLable='R33', reportAddlCriteria1='C8'"
+    th:text="${report.r33_cumulative_total != null ? #numbers.formatDecimal(report.r33_cumulative_total,1,'COMMA',0,'POINT') : '0'}">
+</td>
+
 </tr>
 
-
 <tr>
-
  <td style="text-align: left;" 
         th:attr="reportLable='R34', reportAddlCriteria1='C1'" 
         th:text="${report.r34_product}">
     </td>
     
-	<td th:each="report: ${reportsummary1}" id="R34" style="text-align: right;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r34_first_month != null ?
-                      #numbers.formatDecimal(report.r34_first_month, 1, 'COMMA', 0, 'POINT') :
-                      '0'}"
-           id="r34_first_month"
-           name="r34_first_month"
-           style="background-color:#FFFFFF;width: 90%; height:28px; border-color: transparent; text-align:right;"
-           readonly />
-</td>
+	<td style="text-align:right;">
+	<input class="display-input Show_input"
+	       type="text"
+	       th:value="${rep1 != null && rep1.r34_first_month != null ? 
+	                 #numbers.formatDecimal(rep1.r34_first_month,1,'COMMA',0,'POINT') : '0'}"
+	       style="background-color:#FFFFFF;width:90%;height:28px;border-color:transparent;text-align:right;"
+	       readonly />
+	</td>
 
 
 	 <td style="text-align: right;" th:attr="reportLable='R34', reportAddlCriteria1='C3'"
@@ -2414,6 +2417,7 @@ rowCodes.forEach(code => {
         th:text="${report.r35_product}">
     </td>
 
+	
     <td style="text-align: right;" th:attr="reportLable='R35', reportAddlCriteria1='C2'" 
         onclick="showdetailsbyRowAndColumn(this)"
         th:text="${report.r35_first_month != null ? #numbers.formatDecimal(report.r35_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
@@ -3110,7 +3114,7 @@ rowCodes.forEach(code => {
 											<th style="text-align:left;">ACCT NO</th>
 											<th>ACCT NAME</th>
 											<th style="text-align: right;">ACCT BALANCE</th>
-											<th style="text-align: left;">REPORT LABLE</th>
+											<th style="text-align: left;">REPORT LABEL</th>
 											<th>REPORT ADDL CRITERIA 1</th>
 											<th>REPORT DATE</th>
 										</tr>
@@ -3134,7 +3138,7 @@ rowCodes.forEach(code => {
 											<td th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 2)}"
 												style="text-align: right;"></td>
 
-											<td style="text-align: left;" th:text="${report.reportLable}"></td>
+											<td style="text-align: left;" th:text="${report.reportLabel}"></td>
 											<td th:text="${report.reportAddlCriteria1}"></td>
 											<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
 
@@ -3190,9 +3194,9 @@ rowCodes.forEach(code => {
 
 			      <!-- Row 3 -->
 			      <div class="row formline" style="margin-top:10px;">
-			        <label class="col-sm-2">Report Lable</label>
+			        <label class="col-sm-2">Report Label</label>
 			        <div class="col-sm-3">
-			          <input type="text" th:field="*{reportLable}" class="form-control form-control-sm" readonly />
+			          <input type="text" th:field="*{reportLabel}" class="form-control form-control-sm" readonly />
 			        </div>
 
 			        <div class="col-sm-1"></div>

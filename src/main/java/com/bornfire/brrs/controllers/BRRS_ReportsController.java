@@ -683,8 +683,7 @@ public class BRRS_ReportsController {
 			System.out.println("Came to single controller");
 
 			// set date into entities
-			request1.setReport_date(asondate);
-
+			request1.setReportDate(asondate);
 			// call services
 			brrs_m_liqgap_reportservice.updateReport(request1);
 

@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface BRRS_M_LIQGAP_Manual_Summary_Repo extends JpaRepository<M_LIQGAP_Manual_Summary_Entity, Date> {
 
-	@Query(value = "select * from BRRS_M_LIQGAP_MANUAL_SUMMARYTABLE", nativeQuery = true)
+	@Query(value = "select * from BRRS_M_LIQGAP_MANUAL_SUMMARYTABLE where report_date = ?1", nativeQuery = true)
 	List<M_LIQGAP_Manual_Summary_Entity> getdatabydateList(Date rpt_code);
 
 }

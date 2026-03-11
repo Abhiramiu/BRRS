@@ -9,8 +9,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BRRS_M_LIQGAP_Summary_Repo extends JpaRepository<M_LIQGAP_Summary_Entity, Date> {
-	@Query(value = "select * from BRRS_M_LIQGAP_SUMMARYTABLE where report_date = ?1 ", nativeQuery = true)
-	List<M_LIQGAP_Summary_Entity> getdatabydateList(Date rpt_date);
+
+
+@Query(value = "select * from BRRS_M_LIQGAP_SUMMARYTABLE where report_date = ?1 ", nativeQuery = true)
+  List<M_LIQGAP_Summary_Entity> getdatabydateList(Date rpDate);
 
 }
 

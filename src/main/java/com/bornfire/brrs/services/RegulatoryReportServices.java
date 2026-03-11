@@ -1340,6 +1340,13 @@ case "M_I_S_CA":
 
 			break;
 			
+		case "M_LIQGAP":
+
+			repsummary = brrs_m_liqgap_reportservice.getM_LIQGAPView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+
+			break;
+			
 		case "M_CA1":
 
 			repsummary = BRRS_M_CA1_reportservice.getM_CA1View(reportId, fromdate, todate, currency, dtltype,
@@ -2470,6 +2477,16 @@ case "M_I_S_CA":
 			try {
 
 				repfile = BRRS_M_PI_reportservice.getBRRS_M_PIExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, format, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_LIQGAP":
+			try {
+
+				repfile = brrs_m_liqgap_reportservice.getBRRS_M_LIQGAPExcel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, format, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
@@ -4399,16 +4416,14 @@ case "M_CA2":
 	System.out.println("Fetched FASList archival data: " + FASList.size());
 	break;
 	
-		
-
 		case "M_LIQGAP":
-			try {
-				archivalData = brrs_m_liqgap_reportservice.getM_LIQGAPArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> M_LIQGAPList = brrs_m_liqgap_reportservice.getM_LIQGAPArchival();
+			archivalData.addAll(M_LIQGAPList);
+			System.out.println("Fetched M_LIQGAP archival data: " + M_LIQGAPList.size());
 			break;
+			
+
+	
 
 		case "M_MRC":
 			try {
