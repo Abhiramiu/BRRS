@@ -513,31 +513,6 @@ PURPOSE		: BRRSREPORT
 		function closemodel() {
 			$("#resultModal").modal("hide");
 			$('#loader').modal('hide');
-
-			// Check if the success message is showing
-			const message = $("#resultModalBody").text();
-
-			if (message.includes("Resubmission Updated Successfully")) {
-				// ✅ Go back to the previous page
-				window.history.back();
-			} else {
-				// For other messages, just reload the same page
-				setTimeout(() => location.reload(), 300);
-			}
-		}
-		function closemodel() {
-			$("#resultModal").modal("hide");
-			$('#loader').modal('hide');
-
-			// Only reload if not from Details modal
-			if (!isDetailsModal) {
-				setTimeout(function () {
-					location.reload();
-				}, 300);
-			} else {
-				// reset flag for next modal usage
-				isDetailsModal = false;
-			}
 		}
 
 
@@ -750,7 +725,7 @@ PURPOSE		: BRRSREPORT
 							// fallback: just go back if referrer not found
 							window.history.back();
 						}
-					}, 1500);
+					}, 500);
 				},
 				error: function (xhr, status, error) {
 					$('#loader').modal('hide');
@@ -758,14 +733,6 @@ PURPOSE		: BRRSREPORT
 
 					showResultModal('Error', 'Failed to update record. Please try again.');
 
-					// ✅ On error also return to previous page after delay
-					setTimeout(() => {
-						if (previousUrl) {
-							window.location.href = previousUrl;
-						} else {
-							window.history.back();
-						}
-					}, 1500);
 				}
 			});
 		}
@@ -777,7 +744,17 @@ PURPOSE		: BRRSREPORT
 			// Show the modal
 			$('#resultModal').modal('show');
 		}
+		function closemodels() {
+			$('#resultModal').modal('hide');
 
+			setTimeout(function () {
+				if (document.referrer) {
+					window.location.href = document.referrer;
+				} else {
+					window.history.back();
+				}
+			}, 500); // delay in milliseconds
+		}
 		function startReport(button) {
 			const alertMsg = document.getElementById("alertMessage");
 			const filename = button.getAttribute('data-filename');
@@ -1288,7 +1265,7 @@ PURPOSE		: BRRSREPORT
 												<td th:text="${reportsummary.r10_fix_ass}" style="width: 100px;"></td>
 												<td th:text="${reportsummary.r10_cost}" class="left"
 													th:attr="RowId='R10', ColumnId='C2'" id="r10_cost" name="r10_cost"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+													></td>
 												<td th:text="${reportsummary.r10_add}" class="left"
 													th:attr="RowId='R10', ColumnId='C3'" id="r10_add" name="r10_add"
 													></td>
@@ -1308,7 +1285,7 @@ PURPOSE		: BRRSREPORT
 												<td th:text="${reportsummary.r11_fix_ass}"></td>
 												<td th:text="${reportsummary.r11_cost}" class="left"
 													th:attr="RowId='R11', ColumnId='C2'" id="r11_cost" name="r11_cost"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+											></td>
 												<td th:text="${reportsummary.r11_add}" class="left"
 													th:attr="RowId='R11', ColumnId='C3'" id="r11_add" name="r11_add"
 													></td>
@@ -1382,7 +1359,7 @@ PURPOSE		: BRRSREPORT
 												<td th:text="${reportsummary.r13_fix_ass}"></td>
 												<td th:text="${reportsummary.r13_cost}" class="left"
 													th:attr="RowId='R13', ColumnId='C2'" id="r13_cost" name="r13_cost"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+													></td>
 												<td th:text="${reportsummary.r13_add}" class="left"
 													th:attr="RowId='R13', ColumnId='C3'" id="r13_add" name="r13_add"
 													></td>
@@ -1402,7 +1379,7 @@ PURPOSE		: BRRSREPORT
 												<td th:text="${reportsummary.r14_fix_ass}"></td>
 												<td th:text="${reportsummary.r14_cost}" class="left"
 													th:attr="RowId='R14', ColumnId='C2'" id="r14_cost" name="r14_cost"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+													></td>
 												<td th:text="${reportsummary.r14_add}" class="left"
 													th:attr="RowId='R14', ColumnId='C3'" id="r14_add" name="r14_add"
 													></td>
@@ -1422,7 +1399,7 @@ PURPOSE		: BRRSREPORT
 												<td th:text="${reportsummary.r15_fix_ass}"></td>
 												<td th:text="${reportsummary.r15_cost}" class="left"
 													th:attr="RowId='R15', ColumnId='C2'" id="r15_cost" name="r15_cost"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												></td>
 												<td th:text="${reportsummary.r15_add}" class="left"
 													th:attr="RowId='R15', ColumnId='C3'" id="r15_add" name="r15_add"
 													></td>
@@ -1442,7 +1419,7 @@ PURPOSE		: BRRSREPORT
 												<td th:text="${reportsummary.r16_fix_ass}"></td>
 												<td th:text="${reportsummary.r16_cost}" class="left"
 													th:attr="RowId='R16', ColumnId='C2'" id="r16_cost" name="r16_cost"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+													></td>
 												<td th:text="${reportsummary.r16_add}" class="left"
 													th:attr="RowId='R16', ColumnId='C3'" id="r16_add" name="r16_add"
 													></td>
@@ -2019,7 +1996,24 @@ PURPOSE		: BRRSREPORT
 		</div>
 
 
-
+		<div class="modal fade" id="resultModal1">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<!-- Your custom styled header -->
+						<div class="menu-title-header">
+							<div class="modal-title" id="resultModalLabel1" style="text-align: center; color: white;">
+								<!-- Title will be set by JavaScript -->
+							</div>
+						</div>
+						<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+							<p id="resultModalBody1"></p>
+							<!-- Your custom styled button -->
+							<button type="button" class="custom-tab-btn" onclick="closemodels()"
+								data-dismiss="modal">Ok</button>
+						</div>
+					</div>
+				</div>
+			</div>
 		<!-- Custom Cellresult Modal -->
 		<div class="modal fade" id="cellresultModal">
 			<div class="modal-dialog modal-dialog-centered">

@@ -378,6 +378,11 @@ PURPOSE		: BWRBRREPORT
 			width: 110px !important;
 			text-align: right !important;
 		}
+		
+		.table-bordereds td,
+				.table-bordereds th {
+				    border: 1px solid #dfe0e3;
+				}
 	</style>
 
 
@@ -530,7 +535,7 @@ PURPOSE		: BWRBRREPORT
 				success: function (data) {
 					$('#loader').modal('hide');
 					if (data && data.size > 100) {
-						const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
 						const url = window.URL.createObjectURL(blob);
 						const a = document.createElement('a');
 						a.style.display = 'none';
@@ -950,10 +955,10 @@ PURPOSE		: BWRBRREPORT
 					version: button.getAttribute('data-version'),
 					todate: button.getAttribute('data-todate')
 				},
-				xhrFields: { responseType: 'blob' },
+				xhrFields: {responseType: 'blob'},
 				success: function (data) {
 					if (data && data.size > 100) {
-						const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
 						const url = window.URL.createObjectURL(blob);
 
 						const a = document.createElement('a');
@@ -985,7 +990,7 @@ PURPOSE		: BWRBRREPORT
 	</script>
 
 
-<script th:inline="javascript">
+	<script th:inline="javascript">
 		/*<![CDATA[*/
 		const reportId = /*[[${reportid}]]*/ null;
 		/*]]>*/
@@ -1072,13 +1077,13 @@ PURPOSE		: BWRBRREPORT
 				fixedHeader: true, // ✅ You can simply set it to true
 				// ✅ Column width settings
 				columnDefs: [
-					{ width: "60px", targets: 0 },
-					{ width: "100px", targets: 1 },
-					{ width: "250px", targets: 5 },
-					{ width: "250px", targets: 7 },
+					{width: "60px", targets: 0},
+					{width: "100px", targets: 1},
+					{width: "250px", targets: 5},
+					{width: "250px", targets: 7},
 
 					// ⭐ Right align these 5 columns
-					{ className: "dt-right", targets: [3, 4, 5, 7, 8] }
+					{className: "dt-right", targets: [3, 4, 5, 7, 8]}
 				],
 
 				dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
@@ -1126,78 +1131,82 @@ PURPOSE		: BWRBRREPORT
 		};
 
 		function downloadfile(button) {
-			var reportid = button.getAttribute("data-reportid");
-			var asondate = button.getAttribute("data-asondate");
-			var fromdate = button.getAttribute("data-fromdate");
-			var todate = button.getAttribute("data-todate");
-			var currency = button.getAttribute("data-currency");
-			var subreportid = button.getAttribute("data-subreportid");
-			var secid = button.getAttribute("data-secid");
-			var dtltype = button.getAttribute("data-dtltype");
-			var filename = button.getAttribute("data-filename");
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
 			var type = button.getAttribute('data-type');
 			var version = button.getAttribute('data-version');
+			var format = button.getAttribute('data-format');
 
-			$("#loader").modal("show");
+			if (format === null) {
+				format = '';   // treat as null
+			}
+
+			$('#loader').modal('show');
 
 			$.ajax({
-				url:
-					"./downloadExcel?reportid=" +
-					reportid +
-					"&fromdate=" +
-					fromdate +
-					"&asondate=" +
-					asondate +
-					"&todate=" +
-					todate +
-					"&currency=" +
-					currency +
-					"&subreportid=" +
-					subreportid +
-					"&secid=" +
-					secid +
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
 					'&filename=' + filename +
 					'&type=' + type +
-					'&version=' + version,
-
-				type: "GET",
+					'&version=' + version +
+					'&format=' + format,
+				type: 'GET',
 				xhrFields: {
-					responseType: "blob",
+					responseType: 'blob'
 				},
 				success: function (data) {
-					$("#loader").modal("hide");
-
+					$('#loader').modal('hide');
 					if (data && data.size > 100) {
-						const blob = new Blob([data], {
-							type: "application/vnd.ms-excel",
-						});
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
 						const url = window.URL.createObjectURL(blob);
-						const a = document.createElement("a");
-						a.style.display = "none";
+						const a = document.createElement('a');
+						a.style.display = 'none';
 						a.href = url;
 						a.download = filename;
 						document.body.appendChild(a);
 						a.click();
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
-
 						showResultModal('BRRS', filename + ' downloaded successfully.');
 					} else {
-						showResultModal(
-							"Information",
-							"No data was available to create a download."
-						);
+						showResultModal('Information', 'No data was available to create a download.');
 					}
 				},
-				error: function (jqXHR, textStatus, errorThrown) {
-					$("#loader").modal("hide");
-					console.error("Download failed:", textStatus, errorThrown);
-					showResultModal(
-						"Error",
-						"An error occurred while downloading the file. Please try again."
-					);
-				},
+				error: function () {
+					$('#loader').modal('hide');
+					showResultModal('Error', 'An error occurred while downloading the file.');
+				}
 			});
+		}
+
+
+		function closemodel() {
+			// Hide the modals
+			$('#alert').modal('hide');
+			$('#resultModal').modal('hide');
+
+		}
+
+
+		function showResultModal(title, message) {
+			// Set the text for the modal elements
+			$('#resultModalLabel').text(title);
+			$('#resultModalBody').text(message);
+
+			// Show the modal
+			$('#resultModal').modal('show');
 		}
 
 		function editRecord() {
@@ -1217,7 +1226,7 @@ PURPOSE		: BWRBRREPORT
 			$("#resultModal").modal("show");
 		}
 	</script>
-		<script>
+	<script>
 		function opeMCALOCDetail(elem, mode) {
 
 			var type = elem.getAttribute('data-type');
@@ -1233,7 +1242,7 @@ PURPOSE		: BWRBRREPORT
 	</script>
 
 </head>
-<title>BRRS</title>
+<title>M CALOC</title>
 
 <body>
 	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
@@ -1251,7 +1260,7 @@ PURPOSE		: BWRBRREPORT
 						<h5
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
 
-							(24) MONTHLY SCHEDULE: M-CALOC : ASSETS AND <br>LIABILTIES AND OFF-BALANCE SHEET ITEMS BY
+							(24) MONTHLY SCHEDULE: M-CALOC : ASSETS AND <br>LIABILTIES AND OFF-BALANCE SHEET <br> ITEMS BY
 							CURRENCY
 						</h5>
 
@@ -1280,31 +1289,50 @@ PURPOSE		: BWRBRREPORT
 
 
 						<!-- Cancel button (hidden initially) -->
-						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
-							onclick="cancelModify();" style="display: none;">Cancel</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
-                   				 data-asondate=${asondate},
-                   				 data-fromdate=${fromdate},
-                    				 data-todate=${todate},
-                    				 data-currency=${currency}, 
-                    				 data-dtltype=${dtltype},
-                    				 data-filename='M_CALOC.xlsx',
-					 				 data-type=${type},
-					    			 data-version=${version}" onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+							th:attr="data-reportid=${reportid},
+						   					               data-asondate=${asondate},
+						   					               data-fromdate=${fromdate},
+						   					               data-todate=${todate},
+						   					               data-currency=${currency}, 
+						   					               data-dtltype=${dtltype},
+						   					               data-filename='M_CALOC.xlsx',
+						   					               data-type=${type},
+						   					               data-version=${version != null ? version : ''}"
+							style="font-family: Arial;font-weight: bold;">
+							<i class="fa fa-download"></i> Format
 						</button>
 
-						<button th:if="${displaymode == 'Details'}" type="button" class="custom-tab-btn"
-							onclick="startReport(this);" th:attr="
-						    data-fromdate=${fromdate},
-						    data-todate=${todate},
-                            data-type=${type},
-                            data-version=${version},
-						    data-filename='M_CALOC',
-						  "><i class="fa fa-download"></i></button>
+						<button type="button" class="custom-tab-btn" onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail'
+						   						          or displaymode == 'resubSummary' or displaymode == 'resubDetail'}" th:attr="data-reportid=${reportid},
+						   						             data-asondate=${asondate},
+						   						             data-fromdate=${fromdate},
+						   						             data-todate=${todate},
+						   						             data-currency=${currency},
+						   						             data-dtltype='email',
+						   						             data-filename='EMAIL_M_CALOC.xlsx',
+						   						             data-type=${type},
+						   									 data-format='email',
+						   						             data-version=${version != null ? version : ''}">
+							<i class="fa fa-download"></i> Email
+						</button>
 
 
+
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
+						  																								    data-fromdate=${fromdate},
+						  																								    data-todate=${todate},
+						  																									data-currency=${currency},  
+						  																												data-dtltype=${dtltype}, 
+						  																								    data-filename='M_CALOC',
+						  																									data-type=${type},
+						  																												data-version=${version}
+						  																								  ">
+							<i class="fa fa-download"></i> Download
+						</button>
 					</div>
 				</div>
 
@@ -12328,9 +12356,8 @@ PURPOSE		: BWRBRREPORT
 				<div th:if="${displaymode == 'Details'}">
 					<div class="row">
 						<div class="col-sm-12">
-							<div class="table-responsive scrollable-table-container"
-								style="border-right: 1px solid #dee2e6;">
-								<table class="table table-striped table-hover" id="reportdetail">
+							<div class="table-container" style="border-right: 1px solid #dee2e6; ">
+								<table class="table table-striped table-hover table-bordereds " id="reportdetail">
 									<thead class="thead-light">
 										<tr>
 											<th></th>

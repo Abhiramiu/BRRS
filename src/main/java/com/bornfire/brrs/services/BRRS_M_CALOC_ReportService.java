@@ -251,31 +251,65 @@ public class BRRS_M_CALOC_ReportService {
 		return mv;
 	}
 
-	public byte[] getBRRS_M_CALOCExcel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, String format, BigDecimal version) throws Exception {
+	public byte[] getBRRS_M_CALOCExcel(String filename, String reportId, String fromdate, String todate,
+			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
+
 		logger.info("Service: Starting Excel generation process in memory for type: {}", type);
 
-		if ("ARCHIVAL".equals(type) && version != null) {
-			return getBRRSM_CALOCExcelARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, format,
-					version);
+		// ARCHIVAL check
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+			try {
+				return getBRRSM_CALOCExcelARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type,
+						format, version);
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
 		}
 
+		/*
+		 * // RESUB check else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+		 * logger.info("Service: Generating RESUB report for version {}", version);
+		 * 
+		 * try { return BRRS_M_CALOCResubExcel(filename, reportId, fromdate, todate,
+		 * currency, dtltype, type, format, version);
+		 * 
+		 * } catch (ParseException e) { logger.error("Invalid report date format: {}",
+		 * fromdate, e); throw new
+		 * RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)"); } }
+		 */
+
+		// EMAIL FORMAT
+		if ("email".equalsIgnoreCase(format) && version == null) {
+			logger.info("Service: Generating Email report");
+			return BRRS_M_CALOCEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+		}
+
+		// ------------------------------
+		// NORMAL REPORT GENERATION
+		// ------------------------------
+
+		// Fetch data
 		List<M_CALOC_Summary_Entity1> dataList1 = M_CALOC_Summary_Repo1.getdatabydateList(dateformat.parse(todate));
+
 		List<M_CALOC_Summary_Entity2> dataList2 = M_CALOC_Summary_Repo2.getdatabydateList(dateformat.parse(todate));
+
 		List<M_CALOC_Summary_Entity3> dataList3 = M_CALOC_Summary_Repo3.getdatabydateList(dateformat.parse(todate));
 
 		if (dataList1.isEmpty() && dataList2.isEmpty() && dataList3.isEmpty()) {
-			logger.warn("Service: No data found for BRRSM_CALOC report. Returning empty result.");
+			logger.warn("Service: No data found for BRRSM_CALOC report.");
 			return new byte[0];
 		}
 
 		String templateDir = env.getProperty("output.exportpathtemp");
 		Path templatePath = Paths.get(templateDir, filename);
-		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+		logger.info("Loading template from: {}", templatePath.toAbsolutePath());
 
 		if (!Files.exists(templatePath)) {
-			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+			throw new FileNotFoundException("Template file not found: " + templatePath.toAbsolutePath());
 		}
+
 		if (!Files.isReadable(templatePath)) {
 			throw new SecurityException("Template file not readable: " + templatePath.toAbsolutePath());
 		}
@@ -286,7 +320,7 @@ public class BRRS_M_CALOC_ReportService {
 
 			Sheet sheet = workbook.getSheetAt(0);
 
-			// --- Style Definitions ---
+			// Style Definitions
 			CellStyle textStyle = workbook.createCellStyle();
 			textStyle.setBorderBottom(BorderStyle.THIN);
 			textStyle.setBorderTop(BorderStyle.THIN);
@@ -298,13 +332,10 @@ public class BRRS_M_CALOC_ReportService {
 			font.setFontName("Arial");
 
 			CellStyle numberStyle = workbook.createCellStyle();
-			numberStyle.setBorderBottom(BorderStyle.THIN);
-			numberStyle.setBorderTop(BorderStyle.THIN);
-			numberStyle.setBorderLeft(BorderStyle.THIN);
-			numberStyle.setBorderRight(BorderStyle.THIN);
+			numberStyle.cloneStyleFrom(textStyle);
 			numberStyle.setFont(font);
-			// --- End of Style Definitions ---
 
+			// Populate Data
 			if (!dataList1.isEmpty()) {
 				populateEntity1Data(sheet, dataList1.get(0), textStyle, numberStyle);
 			}
@@ -319,9 +350,10 @@ public class BRRS_M_CALOC_ReportService {
 
 			workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
 			workbook.write(out);
-			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-			return out.toByteArray();
 
+			logger.info("Excel generated successfully. Size: {} bytes", out.size());
+
+			return out.toByteArray();
 		}
 	}
 
@@ -17660,14 +17692,14 @@ public class BRRS_M_CALOC_ReportService {
 
 		// Row52
 		// Column B
-		// cell2 = row.createCell(1);
-		// if (record2.getR113_pula() != null) {
-		// cell2.setCellValue(record2.getR113_pula().doubleValue());
-		// cell2.setCellStyle(numberStyle);
-		// } else {
-		// cell2.setCellValue("");
-		// cell2.setCellStyle(textStyle);
-		// }
+		cell2 = row.createCell(1);
+		if (record2.getR113_pula() != null) {
+			cell2.setCellValue(record2.getR113_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
 
 		// Row52
 		// Column C
@@ -17882,14 +17914,14 @@ public class BRRS_M_CALOC_ReportService {
 
 		// Row52
 		// Column B
-		// cell2 = row.createCell(1);
-		// if (record2.getR114_pula() != null) {
-		// cell2.setCellValue(record2.getR114_pula().doubleValue());
-		// cell2.setCellStyle(numberStyle);
-		// } else {
-		// cell2.setCellValue("");
-		// cell2.setCellStyle(textStyle);
-		// }
+		cell2 = row.createCell(1);
+		if (record2.getR114_pula() != null) {
+			cell2.setCellValue(record2.getR114_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
 
 		// Row52
 		// Column C
@@ -18669,10 +18701,21 @@ public class BRRS_M_CALOC_ReportService {
 		}
 	}
 
-	public byte[] getBRRSM_CALOCExcelARCHIVAL(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, String format, BigDecimal version)throws Exception {
+	public byte[] getBRRSM_CALOCExcelARCHIVAL(String filename, String reportId, String fromdate, String todate,
+			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
 
-		logger.info("Service: Starting ARCHIVAL Excel generation process.");
+		logger.info("Service: Starting Excel generation process in memory in Archival.");
+
+//		if ("email".equalsIgnoreCase(format) && version != null) {
+//			try {
+//				// Redirecting to Archival
+//				return BRRS_M_CALOCEmailArchivalExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
+//						version);
+//			} catch (ParseException e) {
+//				logger.error("Invalid report date format: {}", fromdate, e);
+//				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+//			}
+//		}
 
 		List<M_CALOC_Archival_Summary_Entity1> dataList1 = M_CALOC_Archival_Summary_Repo1
 				.getdatabydateListarchival(dateformat.parse(todate), version);
@@ -37235,5 +37278,14934 @@ public class BRRS_M_CALOC_ReportService {
 		}
 
 		return archivalList;
+	}
+
+// Normal Email Excel
+	public byte[] BRRS_M_CALOCEmailExcel(String filename, String reportId, String fromdate, String todate,
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
+
+		logger.info("Service: Starting Email Excel generation process in memory.");
+
+		// ARCHIVAL check
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+			try {
+				return BRRS_M_CALOCEmailArchivalExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
+						version);
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
+		}
+
+		/*
+		 * // RESUB check else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+		 * logger.info("Service: Generating RESUB Email report for version {}",
+		 * version);
+		 * 
+		 * try { return BRRS_M_CALOCResubEmailExcel(filename, reportId, fromdate,
+		 * todate, currency, dtltype, type, version); } catch (ParseException e) {
+		 * logger.error("Invalid report date format: {}", fromdate, e); throw new
+		 * RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)"); } }
+		 */
+
+		// -------------------------
+		// FETCH DATA
+		// -------------------------
+		List<M_CALOC_Summary_Entity1> dataList1 = M_CALOC_Summary_Repo1.getdatabydateList(dateformat.parse(todate));
+
+		List<M_CALOC_Summary_Entity2> dataList2 = M_CALOC_Summary_Repo2.getdatabydateList(dateformat.parse(todate));
+
+		List<M_CALOC_Summary_Entity3> dataList3 = M_CALOC_Summary_Repo3.getdatabydateList(dateformat.parse(todate));
+
+		if (dataList1.isEmpty() && dataList2.isEmpty() && dataList3.isEmpty()) {
+			logger.warn("Service: No data found for BRRSM_CALOC report.");
+			return new byte[0];
+		}
+
+		// -------------------------
+		// TEMPLATE LOAD
+		// -------------------------
+		String templateDir = env.getProperty("output.exportpathtemp");
+		Path templatePath = Paths.get(templateDir, filename);
+
+		logger.info("Loading template from: {}", templatePath.toAbsolutePath());
+
+		if (!Files.exists(templatePath)) {
+			throw new FileNotFoundException("Template file not found: " + templatePath.toAbsolutePath());
+		}
+
+		if (!Files.isReadable(templatePath)) {
+			throw new SecurityException("Template file not readable: " + templatePath.toAbsolutePath());
+		}
+
+		try (InputStream templateInputStream = Files.newInputStream(templatePath);
+				Workbook workbook = WorkbookFactory.create(templateInputStream);
+				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+			Sheet sheet = workbook.getSheetAt(0);
+
+			// -------------------------
+			// STYLE DEFINITIONS
+			// -------------------------
+			CellStyle textStyle = workbook.createCellStyle();
+			textStyle.setBorderBottom(BorderStyle.THIN);
+			textStyle.setBorderTop(BorderStyle.THIN);
+			textStyle.setBorderLeft(BorderStyle.THIN);
+			textStyle.setBorderRight(BorderStyle.THIN);
+
+			Font font = workbook.createFont();
+			font.setFontHeightInPoints((short) 8);
+			font.setFontName("Arial");
+
+			CellStyle numberStyle = workbook.createCellStyle();
+			numberStyle.cloneStyleFrom(textStyle);
+			numberStyle.setFont(font);
+
+			// -------------------------
+			// POPULATE DATA
+			// -------------------------
+			if (!dataList1.isEmpty()) {
+				populateEntity1EmailData(sheet, dataList1.get(0), textStyle, numberStyle);
+			}
+
+			if (!dataList2.isEmpty()) {
+				populateEntity2EmailData(sheet, dataList2.get(0), textStyle, numberStyle);
+			}
+
+			if (!dataList3.isEmpty()) {
+				populateEntity3EmailData(sheet, dataList3.get(0), textStyle, numberStyle);
+			}
+
+			workbook.setForceFormulaRecalculation(true);
+			workbook.write(out);
+
+			logger.info("Email Excel generated successfully ({} bytes).", out.size());
+
+			return out.toByteArray();
+		}
+	}
+
+	private void populateEntity1EmailData(Sheet sheet, M_CALOC_Summary_Entity1 record, CellStyle textStyle,
+			CellStyle numberStyle) {
+		// ROW 11 (Index 9)
+		Row row = sheet.getRow(10) != null ? sheet.getRow(10) : sheet.createRow(10);
+
+		// row11
+		// Column B
+		Cell cell2 = row.createCell(1);
+		if (record.getR11_pula() != null) {
+			cell2.setCellValue(record.getR11_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// row11
+		// Column C
+		Cell cell3 = row.createCell(2);
+		if (record.getR11_usd() != null) {
+			cell3.setCellValue(record.getR11_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// row11
+		// Column D
+		Cell cell4 = row.createCell(3);
+		if (record.getR11_zar() != null) {
+			cell4.setCellValue(record.getR11_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// row11
+		// Column E
+		Cell cell5 = row.createCell(4);
+		if (record.getR11_gbp() != null) {
+			cell5.setCellValue(record.getR11_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// row11
+		// Column F
+
+		Cell cell6 = row.createCell(5);
+		if (record.getR11_euro() != null) {
+			cell6.setCellValue(record.getR11_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// row11
+		// Column G
+
+		Cell cell7 = row.createCell(6);
+		if (record.getR11_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR11_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// row11
+		// Column H
+		Cell cell8 = row.createCell(7);
+		if (record.getR11_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR11_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row11 - Column I
+		Cell cell9 = row.createCell(8);
+		if (record.getR11_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR11_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row13
+		row = sheet.getRow(12);
+
+		// row13
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR13_pula() != null) {
+			cell2.setCellValue(record.getR13_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// row13
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR13_usd() != null) {
+			cell3.setCellValue(record.getR13_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// row13
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR13_zar() != null) {
+			cell4.setCellValue(record.getR13_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// row13
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR13_gbp() != null) {
+			cell5.setCellValue(record.getR13_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// row13
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR13_euro() != null) {
+			cell6.setCellValue(record.getR13_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// row13
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR13_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR13_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// row13
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR13_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR13_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row13 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR13_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR13_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row14
+		row = sheet.getRow(13);
+
+		// row14
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR14_pula() != null) {
+			cell2.setCellValue(record.getR14_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// row14
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR14_usd() != null) {
+			cell3.setCellValue(record.getR14_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// row14
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR14_zar() != null) {
+			cell4.setCellValue(record.getR14_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// row14
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR14_gbp() != null) {
+			cell5.setCellValue(record.getR14_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// row14
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR14_euro() != null) {
+			cell6.setCellValue(record.getR14_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// row14
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR14_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR14_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// row14
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR14_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR14_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row14 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR14_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR14_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row16
+		row = sheet.getRow(15);
+
+		// Row16
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR16_pula() != null) {
+			cell2.setCellValue(record.getR16_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row16
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR16_usd() != null) {
+			cell3.setCellValue(record.getR16_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row16
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR16_zar() != null) {
+			cell4.setCellValue(record.getR16_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row16
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR16_gbp() != null) {
+			cell5.setCellValue(record.getR16_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row16
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR16_euro() != null) {
+			cell6.setCellValue(record.getR16_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row16
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR16_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR16_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row16
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR16_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR16_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row16 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR16_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR16_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row17
+		row = sheet.getRow(16);
+
+		// Row17
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR17_pula() != null) {
+			cell2.setCellValue(record.getR17_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row17
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR17_usd() != null) {
+			cell3.setCellValue(record.getR17_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row17
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR17_zar() != null) {
+			cell4.setCellValue(record.getR17_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row17
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR17_gbp() != null) {
+			cell5.setCellValue(record.getR17_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row17
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR17_euro() != null) {
+			cell6.setCellValue(record.getR17_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row17
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR17_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR17_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row17
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR17_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR17_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row17 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR17_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR17_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row18
+		row = sheet.getRow(17);
+
+		// Row18
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR18_pula() != null) {
+			cell2.setCellValue(record.getR18_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row18
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR18_usd() != null) {
+			cell3.setCellValue(record.getR18_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row18
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR18_zar() != null) {
+			cell4.setCellValue(record.getR18_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row18
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR18_gbp() != null) {
+			cell5.setCellValue(record.getR18_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row18
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR18_euro() != null) {
+			cell6.setCellValue(record.getR18_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row18
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR18_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR18_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row18
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR18_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR18_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row18 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR18_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR18_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row19
+		row = sheet.getRow(18);
+
+		// Row19
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR19_pula() != null) {
+			cell2.setCellValue(record.getR19_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row19
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR19_usd() != null) {
+			cell3.setCellValue(record.getR19_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row19
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR19_zar() != null) {
+			cell4.setCellValue(record.getR19_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row19
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR19_gbp() != null) {
+			cell5.setCellValue(record.getR19_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row19
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR19_euro() != null) {
+			cell6.setCellValue(record.getR19_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row19
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR19_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR19_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row19
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR19_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR19_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row19 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR19_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR19_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row20
+		row = sheet.getRow(19);
+
+		// Row20
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR20_pula() != null) {
+			cell2.setCellValue(record.getR20_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row20
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR20_usd() != null) {
+			cell3.setCellValue(record.getR20_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row20
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR20_zar() != null) {
+			cell4.setCellValue(record.getR20_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row20
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR20_gbp() != null) {
+			cell5.setCellValue(record.getR20_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row20
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR20_euro() != null) {
+			cell6.setCellValue(record.getR20_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row20
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR20_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR20_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row20
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR20_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR20_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row20 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR20_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR20_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row21
+		row = sheet.getRow(20);
+
+		// Row21
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR21_pula() != null) {
+			cell2.setCellValue(record.getR21_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row21
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR21_usd() != null) {
+			cell3.setCellValue(record.getR21_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row21
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR21_zar() != null) {
+			cell4.setCellValue(record.getR21_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row21
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR21_gbp() != null) {
+			cell5.setCellValue(record.getR21_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row21
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR21_euro() != null) {
+			cell6.setCellValue(record.getR21_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row21
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR21_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR21_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row21
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR21_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR21_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row21 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR21_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR21_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row22
+		row = sheet.getRow(21);
+
+		// Row22
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR22_pula() != null) {
+			cell2.setCellValue(record.getR22_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row22
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR22_usd() != null) {
+			cell3.setCellValue(record.getR22_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row22
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR22_zar() != null) {
+			cell4.setCellValue(record.getR22_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row22
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR22_gbp() != null) {
+			cell5.setCellValue(record.getR22_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row22
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR22_euro() != null) {
+			cell6.setCellValue(record.getR22_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row22
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR22_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR22_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row22
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR22_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR22_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row22 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR22_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR22_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row24
+		row = sheet.getRow(23);
+
+		// Row24
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR24_pula() != null) {
+			cell2.setCellValue(record.getR24_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row24
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR24_usd() != null) {
+			cell3.setCellValue(record.getR24_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row24
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR24_zar() != null) {
+			cell4.setCellValue(record.getR24_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row24
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR24_gbp() != null) {
+			cell5.setCellValue(record.getR24_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row24
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR24_euro() != null) {
+			cell6.setCellValue(record.getR24_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row24
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR24_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR24_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row24
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR24_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR24_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row24 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR24_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR24_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row25
+		row = sheet.getRow(24);
+
+		// Row25
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR25_pula() != null) {
+			cell2.setCellValue(record.getR25_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row25
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR25_usd() != null) {
+			cell3.setCellValue(record.getR25_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row25
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR25_zar() != null) {
+			cell4.setCellValue(record.getR25_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row25
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR25_gbp() != null) {
+			cell5.setCellValue(record.getR25_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row25
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR25_euro() != null) {
+			cell6.setCellValue(record.getR25_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row25
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR25_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR25_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row25
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR25_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR25_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row25 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR25_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR25_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row27
+		row = sheet.getRow(26);
+
+		// Row27
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR27_pula() != null) {
+			cell2.setCellValue(record.getR27_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row27
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR27_usd() != null) {
+			cell3.setCellValue(record.getR27_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row27
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR27_zar() != null) {
+			cell4.setCellValue(record.getR27_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row27
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR27_gbp() != null) {
+			cell5.setCellValue(record.getR27_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row27
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR27_euro() != null) {
+			cell6.setCellValue(record.getR27_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row27
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR27_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR27_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row27
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR27_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR27_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row27 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR27_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR27_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row28
+		row = sheet.getRow(27);
+
+		// Row28
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR28_pula() != null) {
+			cell2.setCellValue(record.getR28_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row28
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR28_usd() != null) {
+			cell3.setCellValue(record.getR28_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row28
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR28_zar() != null) {
+			cell4.setCellValue(record.getR28_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row28
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR28_gbp() != null) {
+			cell5.setCellValue(record.getR28_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row28
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR28_euro() != null) {
+			cell6.setCellValue(record.getR28_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row28
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR28_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR28_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row28
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR28_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR28_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row28 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR28_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR28_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row29
+		row = sheet.getRow(28);
+
+		// Row29
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR29_pula() != null) {
+			cell2.setCellValue(record.getR29_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row29
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR29_usd() != null) {
+			cell3.setCellValue(record.getR29_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row29
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR29_zar() != null) {
+			cell4.setCellValue(record.getR29_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row29
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR29_gbp() != null) {
+			cell5.setCellValue(record.getR29_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row29
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR29_euro() != null) {
+			cell6.setCellValue(record.getR29_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row29
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR29_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR29_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row29
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR29_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR29_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row29 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR29_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR29_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row31
+		row = sheet.getRow(30);
+
+		// Row31
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR31_pula() != null) {
+			cell2.setCellValue(record.getR31_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row31
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR31_usd() != null) {
+			cell3.setCellValue(record.getR31_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row31
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR31_zar() != null) {
+			cell4.setCellValue(record.getR31_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row31
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR31_gbp() != null) {
+			cell5.setCellValue(record.getR31_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row31
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR31_euro() != null) {
+			cell6.setCellValue(record.getR31_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row31
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR31_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR31_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row31
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR31_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR31_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row31 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR31_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR31_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row32
+		row = sheet.getRow(31);
+
+		// Row32
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR32_pula() != null) {
+			cell2.setCellValue(record.getR32_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row32
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR32_usd() != null) {
+			cell3.setCellValue(record.getR32_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row32
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR32_zar() != null) {
+			cell4.setCellValue(record.getR32_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row32
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR32_gbp() != null) {
+			cell5.setCellValue(record.getR32_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row32
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR32_euro() != null) {
+			cell6.setCellValue(record.getR32_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row32
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR32_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR32_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row32
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR32_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR32_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row31 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR32_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR32_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row33
+		row = sheet.getRow(32);
+
+		// Row33
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR33_pula() != null) {
+			cell2.setCellValue(record.getR33_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row33
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR33_usd() != null) {
+			cell3.setCellValue(record.getR33_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row33
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR33_zar() != null) {
+			cell4.setCellValue(record.getR33_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row33
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR33_gbp() != null) {
+			cell5.setCellValue(record.getR33_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row33
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR33_euro() != null) {
+			cell6.setCellValue(record.getR33_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row33
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR33_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR33_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row33
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR33_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR33_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR33_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR33_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row34
+		row = sheet.getRow(33);
+
+		// Row34
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR34_pula() != null) {
+			cell2.setCellValue(record.getR34_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row34
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR34_usd() != null) {
+			cell3.setCellValue(record.getR34_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row34
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR34_zar() != null) {
+			cell4.setCellValue(record.getR34_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row34
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR34_gbp() != null) {
+			cell5.setCellValue(record.getR34_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row34
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR34_euro() != null) {
+			cell6.setCellValue(record.getR34_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row34
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR34_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR34_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row34
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR34_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR34_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR34_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR34_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row35
+		row = sheet.getRow(34);
+
+		// Row35
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR35_pula() != null) {
+			cell2.setCellValue(record.getR35_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row35
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR35_usd() != null) {
+			cell3.setCellValue(record.getR35_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row35
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR35_zar() != null) {
+			cell4.setCellValue(record.getR35_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row35
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR35_gbp() != null) {
+			cell5.setCellValue(record.getR35_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row35
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR35_euro() != null) {
+			cell6.setCellValue(record.getR35_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row35
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR35_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR35_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row35
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR35_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR35_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR35_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR35_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row36
+		row = sheet.getRow(35);
+
+		// Row36
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR36_pula() != null) {
+			cell2.setCellValue(record.getR36_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row36
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR36_usd() != null) {
+			cell3.setCellValue(record.getR36_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row36
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR36_zar() != null) {
+			cell4.setCellValue(record.getR36_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row36
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR36_gbp() != null) {
+			cell5.setCellValue(record.getR36_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row36
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR36_euro() != null) {
+			cell6.setCellValue(record.getR36_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row36
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR36_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR36_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row36
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR36_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR36_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR36_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR36_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row37
+		row = sheet.getRow(36);
+
+		// Row37
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR37_pula() != null) {
+			cell2.setCellValue(record.getR37_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row37
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR37_usd() != null) {
+			cell3.setCellValue(record.getR37_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row37
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR37_zar() != null) {
+			cell4.setCellValue(record.getR37_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row37
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR37_gbp() != null) {
+			cell5.setCellValue(record.getR37_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row37
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR37_euro() != null) {
+			cell6.setCellValue(record.getR37_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row37
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR37_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR37_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row37
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR37_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR37_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR37_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR37_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row39
+		row = sheet.getRow(38);
+
+		// Row39
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR39_pula() != null) {
+			cell2.setCellValue(record.getR39_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row39
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR39_usd() != null) {
+			cell3.setCellValue(record.getR39_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row39
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR39_zar() != null) {
+			cell4.setCellValue(record.getR39_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row39
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR39_gbp() != null) {
+			cell5.setCellValue(record.getR39_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row39
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR39_euro() != null) {
+			cell6.setCellValue(record.getR39_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row39
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR39_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR39_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row39
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR39_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR39_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR39_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR39_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row40
+		row = sheet.getRow(39);
+
+		// Row40
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR40_pula() != null) {
+			cell2.setCellValue(record.getR40_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row40
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR40_usd() != null) {
+			cell3.setCellValue(record.getR40_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row40
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR40_zar() != null) {
+			cell4.setCellValue(record.getR40_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row40
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR40_gbp() != null) {
+			cell5.setCellValue(record.getR40_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row40
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR40_euro() != null) {
+			cell6.setCellValue(record.getR40_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row40
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR40_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR40_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row40
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR40_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR40_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR40_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR40_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row41
+		row = sheet.getRow(40);
+
+		// Row41
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR41_pula() != null) {
+			cell2.setCellValue(record.getR41_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row41
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR41_usd() != null) {
+			cell3.setCellValue(record.getR41_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row41
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR41_zar() != null) {
+			cell4.setCellValue(record.getR41_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row41
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR41_gbp() != null) {
+			cell5.setCellValue(record.getR41_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row41
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR41_euro() != null) {
+			cell6.setCellValue(record.getR41_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row41
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR41_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR41_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row41
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR41_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR41_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR41_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR41_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row42
+		row = sheet.getRow(41);
+
+		// Row42
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR42_pula() != null) {
+			cell2.setCellValue(record.getR42_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row42
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR42_usd() != null) {
+			cell3.setCellValue(record.getR42_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row42
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR42_zar() != null) {
+			cell4.setCellValue(record.getR42_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row42
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR42_gbp() != null) {
+			cell5.setCellValue(record.getR42_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row42
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR42_euro() != null) {
+			cell6.setCellValue(record.getR42_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row42
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR42_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR42_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row42
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR42_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR42_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR42_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR42_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row43
+		row = sheet.getRow(42);
+
+		// Row43
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR43_pula() != null) {
+			cell2.setCellValue(record.getR43_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row43
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR43_usd() != null) {
+			cell3.setCellValue(record.getR43_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row43
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR43_zar() != null) {
+			cell4.setCellValue(record.getR43_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row43
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR43_gbp() != null) {
+			cell5.setCellValue(record.getR43_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row43
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR43_euro() != null) {
+			cell6.setCellValue(record.getR43_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row43
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR43_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR43_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row43
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR43_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR43_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR43_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR43_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row44
+		row = sheet.getRow(43);
+
+		// Row44
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR44_pula() != null) {
+			cell2.setCellValue(record.getR44_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row44
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR44_usd() != null) {
+			cell3.setCellValue(record.getR44_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row44
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR44_zar() != null) {
+			cell4.setCellValue(record.getR44_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row44
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR44_gbp() != null) {
+			cell5.setCellValue(record.getR44_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row44
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR44_euro() != null) {
+			cell6.setCellValue(record.getR44_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row44
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR44_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR44_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row44
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR44_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR44_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR44_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR44_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row45
+		row = sheet.getRow(44);
+
+		// Row45
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR45_pula() != null) {
+			cell2.setCellValue(record.getR45_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row45
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR45_usd() != null) {
+			cell3.setCellValue(record.getR45_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row45
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR45_zar() != null) {
+			cell4.setCellValue(record.getR45_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row45
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR45_gbp() != null) {
+			cell5.setCellValue(record.getR45_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row45
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR45_euro() != null) {
+			cell6.setCellValue(record.getR45_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row45
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR45_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR45_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row45
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR45_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR45_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR45_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR45_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row46
+		row = sheet.getRow(45);
+
+		// Row46
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR46_pula() != null) {
+			cell2.setCellValue(record.getR46_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row46
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR46_usd() != null) {
+			cell3.setCellValue(record.getR46_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row46
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR46_zar() != null) {
+			cell4.setCellValue(record.getR46_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row46
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR46_gbp() != null) {
+			cell5.setCellValue(record.getR46_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row46
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR46_euro() != null) {
+			cell6.setCellValue(record.getR46_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row46
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR46_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR46_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row46
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR46_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR46_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR46_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR46_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row47
+		row = sheet.getRow(46);
+
+		// Row47
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR47_pula() != null) {
+			cell2.setCellValue(record.getR47_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row47
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR47_usd() != null) {
+			cell3.setCellValue(record.getR47_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row47
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR47_zar() != null) {
+			cell4.setCellValue(record.getR47_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row47
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR47_gbp() != null) {
+			cell5.setCellValue(record.getR47_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row47
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR47_euro() != null) {
+			cell6.setCellValue(record.getR47_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row47
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR47_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR47_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row47
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR47_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR47_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR47_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR47_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row50
+		row = sheet.getRow(49);
+
+		// Row50
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR50_pula() != null) {
+			cell2.setCellValue(record.getR50_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row50
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR50_usd() != null) {
+			cell3.setCellValue(record.getR50_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row50
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR50_zar() != null) {
+			cell4.setCellValue(record.getR50_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row50
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR50_gbp() != null) {
+			cell5.setCellValue(record.getR50_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row50
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR50_euro() != null) {
+			cell6.setCellValue(record.getR50_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row50
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR50_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR50_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row50
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR50_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR50_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR50_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR50_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row51
+		row = sheet.getRow(50);
+
+		// Row51
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR51_pula() != null) {
+			cell2.setCellValue(record.getR51_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row51
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR51_usd() != null) {
+			cell3.setCellValue(record.getR51_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row51
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR51_zar() != null) {
+			cell4.setCellValue(record.getR51_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row51
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR51_gbp() != null) {
+			cell5.setCellValue(record.getR51_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row51
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR51_euro() != null) {
+			cell6.setCellValue(record.getR51_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row51
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR51_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR51_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row51
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR51_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR51_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR51_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR51_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		/* summary Table 1 completed */
+	}
+
+	private void populateEntity2EmailData(Sheet sheet, M_CALOC_Summary_Entity2 record1, CellStyle textStyle,
+			CellStyle numberStyle) {
+		// ROW 52 (Index 51)
+		Row row = sheet.getRow(51) != null ? sheet.getRow(51) : sheet.createRow(51);
+
+		// Row52
+		// Column B
+		Cell cell2 = row.createCell(1);
+		if (record1.getR52_pula() != null) {
+			cell2.setCellValue(record1.getR52_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		Cell cell3 = row.createCell(2);
+		if (record1.getR52_usd() != null) {
+			cell3.setCellValue(record1.getR52_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		Cell cell4 = row.createCell(3);
+		if (record1.getR52_zar() != null) {
+			cell4.setCellValue(record1.getR52_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		Cell cell5 = row.createCell(4);
+		if (record1.getR52_gbp() != null) {
+			cell5.setCellValue(record1.getR52_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		Cell cell6 = row.createCell(5);
+		if (record1.getR52_euro() != null) {
+			cell6.setCellValue(record1.getR52_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		Cell cell7 = row.createCell(6);
+		if (record1.getR52_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR52_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		Cell cell8 = row.createCell(7);
+		if (record1.getR52_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR52_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		Cell cell9 = row.createCell(8);
+		if (record1.getR52_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR52_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row53
+		row = sheet.getRow(52);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR53_pula() != null) {
+			cell2.setCellValue(record1.getR53_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR53_usd() != null) {
+			cell3.setCellValue(record1.getR53_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR53_zar() != null) {
+			cell4.setCellValue(record1.getR53_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR53_gbp() != null) {
+			cell5.setCellValue(record1.getR53_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR53_euro() != null) {
+			cell6.setCellValue(record1.getR53_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR53_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR53_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR53_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR53_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR53_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR53_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row54
+		row = sheet.getRow(53);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR54_pula() != null) {
+			cell2.setCellValue(record1.getR54_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR54_usd() != null) {
+			cell3.setCellValue(record1.getR54_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR54_zar() != null) {
+			cell4.setCellValue(record1.getR54_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR54_gbp() != null) {
+			cell5.setCellValue(record1.getR54_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR54_euro() != null) {
+			cell6.setCellValue(record1.getR54_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR54_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR54_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR54_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR54_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR54_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR54_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row55
+		row = sheet.getRow(54);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR55_pula() != null) {
+			cell2.setCellValue(record1.getR55_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR55_usd() != null) {
+			cell3.setCellValue(record1.getR55_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR55_zar() != null) {
+			cell4.setCellValue(record1.getR55_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR55_gbp() != null) {
+			cell5.setCellValue(record1.getR55_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR55_euro() != null) {
+			cell6.setCellValue(record1.getR55_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR55_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR55_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR55_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR55_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR55_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR55_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row59
+		row = sheet.getRow(58);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR59_pula() != null) {
+			cell2.setCellValue(record1.getR59_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR59_usd() != null) {
+			cell3.setCellValue(record1.getR59_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR59_zar() != null) {
+			cell4.setCellValue(record1.getR59_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR59_gbp() != null) {
+			cell5.setCellValue(record1.getR59_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR59_euro() != null) {
+			cell6.setCellValue(record1.getR59_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR59_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR59_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR59_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR59_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR59_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR59_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row60
+		row = sheet.getRow(59);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR60_pula() != null) {
+			cell2.setCellValue(record1.getR60_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR60_usd() != null) {
+			cell3.setCellValue(record1.getR60_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR60_zar() != null) {
+			cell4.setCellValue(record1.getR60_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR60_gbp() != null) {
+			cell5.setCellValue(record1.getR60_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR60_euro() != null) {
+			cell6.setCellValue(record1.getR60_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR60_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR60_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR60_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR60_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR60_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR60_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row62
+		row = sheet.getRow(61);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR62_pula() != null) {
+			cell2.setCellValue(record1.getR62_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR62_usd() != null) {
+			cell3.setCellValue(record1.getR62_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR62_zar() != null) {
+			cell4.setCellValue(record1.getR62_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR62_gbp() != null) {
+			cell5.setCellValue(record1.getR62_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR62_euro() != null) {
+			cell6.setCellValue(record1.getR62_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR62_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR62_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR62_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR62_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR62_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR62_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row63
+		row = sheet.getRow(62);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR63_pula() != null) {
+			cell2.setCellValue(record1.getR63_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR63_usd() != null) {
+			cell3.setCellValue(record1.getR63_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR63_zar() != null) {
+			cell4.setCellValue(record1.getR63_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR63_gbp() != null) {
+			cell5.setCellValue(record1.getR63_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR63_euro() != null) {
+			cell6.setCellValue(record1.getR63_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR63_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR63_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR63_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR63_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR63_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR63_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row66
+		row = sheet.getRow(65);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR66_pula() != null) {
+			cell2.setCellValue(record1.getR66_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR66_usd() != null) {
+			cell3.setCellValue(record1.getR66_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR66_zar() != null) {
+			cell4.setCellValue(record1.getR66_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR66_gbp() != null) {
+			cell5.setCellValue(record1.getR66_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR66_euro() != null) {
+			cell6.setCellValue(record1.getR66_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR66_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR66_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR66_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR66_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR66_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR66_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row67
+		row = sheet.getRow(66);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR67_pula() != null) {
+			cell2.setCellValue(record1.getR67_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR67_usd() != null) {
+			cell3.setCellValue(record1.getR67_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR67_zar() != null) {
+			cell4.setCellValue(record1.getR67_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR67_gbp() != null) {
+			cell5.setCellValue(record1.getR67_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR67_euro() != null) {
+			cell6.setCellValue(record1.getR67_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR67_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR67_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR67_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR67_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR67_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR67_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row69
+		row = sheet.getRow(68);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR69_pula() != null) {
+			cell2.setCellValue(record1.getR69_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR69_usd() != null) {
+			cell3.setCellValue(record1.getR69_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR69_zar() != null) {
+			cell4.setCellValue(record1.getR69_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR69_gbp() != null) {
+			cell5.setCellValue(record1.getR69_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR69_euro() != null) {
+			cell6.setCellValue(record1.getR69_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR69_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR69_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR69_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR69_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR69_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR69_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row70
+		row = sheet.getRow(69);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR70_pula() != null) {
+			cell2.setCellValue(record1.getR70_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR70_usd() != null) {
+			cell3.setCellValue(record1.getR70_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR70_zar() != null) {
+			cell4.setCellValue(record1.getR70_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR70_gbp() != null) {
+			cell5.setCellValue(record1.getR70_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR70_euro() != null) {
+			cell6.setCellValue(record1.getR70_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR70_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR70_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR70_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR70_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR70_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR70_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row72
+		row = sheet.getRow(71);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR72_pula() != null) {
+			cell2.setCellValue(record1.getR72_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR72_usd() != null) {
+			cell3.setCellValue(record1.getR72_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR72_zar() != null) {
+			cell4.setCellValue(record1.getR72_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR72_gbp() != null) {
+			cell5.setCellValue(record1.getR72_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR72_euro() != null) {
+			cell6.setCellValue(record1.getR72_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR72_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR72_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR72_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR72_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR72_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR72_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row74
+		row = sheet.getRow(73);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR74_pula() != null) {
+			cell2.setCellValue(record1.getR74_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR74_usd() != null) {
+			cell3.setCellValue(record1.getR74_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR74_zar() != null) {
+			cell4.setCellValue(record1.getR74_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR74_gbp() != null) {
+			cell5.setCellValue(record1.getR74_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR74_euro() != null) {
+			cell6.setCellValue(record1.getR74_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR74_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR74_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR74_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR74_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR74_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR74_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row75
+		row = sheet.getRow(74);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR75_pula() != null) {
+			cell2.setCellValue(record1.getR75_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR75_usd() != null) {
+			cell3.setCellValue(record1.getR75_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR75_zar() != null) {
+			cell4.setCellValue(record1.getR75_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR75_gbp() != null) {
+			cell5.setCellValue(record1.getR75_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR75_euro() != null) {
+			cell6.setCellValue(record1.getR75_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR75_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR75_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR75_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR75_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR75_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR75_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row76
+		row = sheet.getRow(75);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR76_pula() != null) {
+			cell2.setCellValue(record1.getR76_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR76_usd() != null) {
+			cell3.setCellValue(record1.getR76_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR76_zar() != null) {
+			cell4.setCellValue(record1.getR76_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR76_gbp() != null) {
+			cell5.setCellValue(record1.getR76_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR76_euro() != null) {
+			cell6.setCellValue(record1.getR76_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR76_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR76_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR76_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR76_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR76_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR76_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row77
+		row = sheet.getRow(76);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR77_pula() != null) {
+			cell2.setCellValue(record1.getR77_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR77_usd() != null) {
+			cell3.setCellValue(record1.getR77_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR77_zar() != null) {
+			cell4.setCellValue(record1.getR77_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR77_gbp() != null) {
+			cell5.setCellValue(record1.getR77_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR77_euro() != null) {
+			cell6.setCellValue(record1.getR77_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR77_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR77_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR77_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR77_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR77_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR77_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row79
+		row = sheet.getRow(78);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR79_pula() != null) {
+			cell2.setCellValue(record1.getR79_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR79_usd() != null) {
+			cell3.setCellValue(record1.getR79_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR79_zar() != null) {
+			cell4.setCellValue(record1.getR79_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR79_gbp() != null) {
+			cell5.setCellValue(record1.getR79_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR79_euro() != null) {
+			cell6.setCellValue(record1.getR79_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR79_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR79_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR79_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR79_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR79_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR79_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row80
+		row = sheet.getRow(79);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR80_pula() != null) {
+			cell2.setCellValue(record1.getR80_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR80_usd() != null) {
+			cell3.setCellValue(record1.getR80_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR80_zar() != null) {
+			cell4.setCellValue(record1.getR80_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR80_gbp() != null) {
+			cell5.setCellValue(record1.getR80_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR80_euro() != null) {
+			cell6.setCellValue(record1.getR80_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR80_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR80_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR80_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR80_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR80_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR80_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row81
+		row = sheet.getRow(80);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR81_pula() != null) {
+			cell2.setCellValue(record1.getR81_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR81_usd() != null) {
+			cell3.setCellValue(record1.getR81_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR81_zar() != null) {
+			cell4.setCellValue(record1.getR81_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR81_gbp() != null) {
+			cell5.setCellValue(record1.getR81_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR81_euro() != null) {
+			cell6.setCellValue(record1.getR81_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR81_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR81_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR81_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR81_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR81_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR81_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row84
+		row = sheet.getRow(82);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR84_pula() != null) {
+			cell2.setCellValue(record1.getR84_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR84_usd() != null) {
+			cell3.setCellValue(record1.getR84_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR84_zar() != null) {
+			cell4.setCellValue(record1.getR84_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR84_gbp() != null) {
+			cell5.setCellValue(record1.getR84_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR84_euro() != null) {
+			cell6.setCellValue(record1.getR84_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR84_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR84_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR84_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR84_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR84_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR84_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row85
+		row = sheet.getRow(83);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR85_pula() != null) {
+			cell2.setCellValue(record1.getR85_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR85_usd() != null) {
+			cell3.setCellValue(record1.getR85_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR85_zar() != null) {
+			cell4.setCellValue(record1.getR85_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR85_gbp() != null) {
+			cell5.setCellValue(record1.getR85_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR85_euro() != null) {
+			cell6.setCellValue(record1.getR85_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR85_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR85_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR85_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR85_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR85_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR85_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+		// row86
+		row = sheet.getRow(84);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR86_pula() != null) {
+			cell2.setCellValue(record1.getR86_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR86_usd() != null) {
+			cell3.setCellValue(record1.getR86_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR86_zar() != null) {
+			cell4.setCellValue(record1.getR86_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR86_gbp() != null) {
+			cell5.setCellValue(record1.getR86_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR86_euro() != null) {
+			cell6.setCellValue(record1.getR86_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR86_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR86_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR86_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR86_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR86_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR86_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+		// row88
+		row = sheet.getRow(86);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR88_pula() != null) {
+			cell2.setCellValue(record1.getR88_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR88_usd() != null) {
+			cell3.setCellValue(record1.getR88_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR88_zar() != null) {
+			cell4.setCellValue(record1.getR88_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR88_gbp() != null) {
+			cell5.setCellValue(record1.getR88_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR88_euro() != null) {
+			cell6.setCellValue(record1.getR88_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR88_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR88_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR88_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR88_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR88_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR88_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row89
+		row = sheet.getRow(87);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR89_pula() != null) {
+			cell2.setCellValue(record1.getR89_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR89_usd() != null) {
+			cell3.setCellValue(record1.getR89_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR89_zar() != null) {
+			cell4.setCellValue(record1.getR89_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR89_gbp() != null) {
+			cell5.setCellValue(record1.getR89_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR89_euro() != null) {
+			cell6.setCellValue(record1.getR89_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR89_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR89_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR89_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR89_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR89_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR89_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row90
+		row = sheet.getRow(88);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR90_pula() != null) {
+			cell2.setCellValue(record1.getR90_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR90_usd() != null) {
+			cell3.setCellValue(record1.getR90_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR90_zar() != null) {
+			cell4.setCellValue(record1.getR90_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR90_gbp() != null) {
+			cell5.setCellValue(record1.getR90_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR90_euro() != null) {
+			cell6.setCellValue(record1.getR90_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR90_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR90_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR90_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR90_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR90_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR90_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row91
+		row = sheet.getRow(89);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR91_pula() != null) {
+			cell2.setCellValue(record1.getR91_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR91_usd() != null) {
+			cell3.setCellValue(record1.getR91_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR91_zar() != null) {
+			cell4.setCellValue(record1.getR91_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR91_gbp() != null) {
+			cell5.setCellValue(record1.getR91_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR91_euro() != null) {
+			cell6.setCellValue(record1.getR91_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR91_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR91_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR91_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR91_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR91_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR91_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row92
+		row = sheet.getRow(90);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR92_pula() != null) {
+			cell2.setCellValue(record1.getR92_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR92_usd() != null) {
+			cell3.setCellValue(record1.getR92_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR92_zar() != null) {
+			cell4.setCellValue(record1.getR92_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR92_gbp() != null) {
+			cell5.setCellValue(record1.getR92_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR92_euro() != null) {
+			cell6.setCellValue(record1.getR92_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR92_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR92_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR92_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR92_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR92_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR92_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+	}
+
+	private void populateEntity3EmailData(Sheet sheet, M_CALOC_Summary_Entity3 record2, CellStyle textStyle,
+			CellStyle numberStyle) {
+		// ROW 93 (Index 91)
+		Row row = sheet.getRow(91) != null ? sheet.getRow(91) : sheet.createRow(91);
+
+		Cell cell2 = row.createCell(1);
+		if (record2.getR93_pula() != null) {
+			cell2.setCellValue(record2.getR93_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		Cell cell3 = row.createCell(2);
+		if (record2.getR93_usd() != null) {
+			cell3.setCellValue(record2.getR93_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		Cell cell4 = row.createCell(3);
+		if (record2.getR93_zar() != null) {
+			cell4.setCellValue(record2.getR93_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		Cell cell5 = row.createCell(4);
+		if (record2.getR93_gbp() != null) {
+			cell5.setCellValue(record2.getR93_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		Cell cell6 = row.createCell(5);
+		if (record2.getR93_euro() != null) {
+			cell6.setCellValue(record2.getR93_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		Cell cell7 = row.createCell(6);
+		if (record2.getR93_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR93_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		Cell cell8 = row.createCell(7);
+		if (record2.getR93_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR93_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		Cell cell9 = row.createCell(8);
+		if (record2.getR93_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR93_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row94
+		row = sheet.getRow(92);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR94_pula() != null) {
+			cell2.setCellValue(record2.getR94_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR94_usd() != null) {
+			cell3.setCellValue(record2.getR94_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR94_zar() != null) {
+			cell4.setCellValue(record2.getR94_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR94_gbp() != null) {
+			cell5.setCellValue(record2.getR94_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR94_euro() != null) {
+			cell6.setCellValue(record2.getR94_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR94_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR94_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR94_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR94_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR94_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR94_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row95
+		row = sheet.getRow(93);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR95_pula() != null) {
+			cell2.setCellValue(record2.getR95_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR95_usd() != null) {
+			cell3.setCellValue(record2.getR95_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR95_zar() != null) {
+			cell4.setCellValue(record2.getR95_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR95_gbp() != null) {
+			cell5.setCellValue(record2.getR95_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR95_euro() != null) {
+			cell6.setCellValue(record2.getR95_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR95_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR95_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR95_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR95_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR95_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR95_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row97
+		row = sheet.getRow(95);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR97_pula() != null) {
+			cell2.setCellValue(record2.getR97_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR97_usd() != null) {
+			cell3.setCellValue(record2.getR97_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR97_zar() != null) {
+			cell4.setCellValue(record2.getR97_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR97_gbp() != null) {
+			cell5.setCellValue(record2.getR97_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR97_euro() != null) {
+			cell6.setCellValue(record2.getR97_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR97_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR97_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR97_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR97_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR97_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR97_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row98
+		row = sheet.getRow(96);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR98_pula() != null) {
+			cell2.setCellValue(record2.getR98_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR98_usd() != null) {
+			cell3.setCellValue(record2.getR98_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR98_zar() != null) {
+			cell4.setCellValue(record2.getR98_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR98_gbp() != null) {
+			cell5.setCellValue(record2.getR98_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR98_euro() != null) {
+			cell6.setCellValue(record2.getR98_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR98_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR98_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR98_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR98_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR98_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR98_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row99
+		row = sheet.getRow(97);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR99_pula() != null) {
+			cell2.setCellValue(record2.getR99_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR99_usd() != null) {
+			cell3.setCellValue(record2.getR99_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR99_zar() != null) {
+			cell4.setCellValue(record2.getR99_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR99_gbp() != null) {
+			cell5.setCellValue(record2.getR99_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR99_euro() != null) {
+			cell6.setCellValue(record2.getR99_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR99_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR99_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR99_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR99_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR99_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR99_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+		// row101
+		row = sheet.getRow(99);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR101_pula() != null) {
+			cell2.setCellValue(record2.getR101_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR101_usd() != null) {
+			cell3.setCellValue(record2.getR101_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR101_zar() != null) {
+			cell4.setCellValue(record2.getR101_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR101_gbp() != null) {
+			cell5.setCellValue(record2.getR101_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR101_euro() != null) {
+			cell6.setCellValue(record2.getR101_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR101_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR101_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR101_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR101_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR101_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR101_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row103
+		row = sheet.getRow(101);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR103_pula() != null) {
+			cell2.setCellValue(record2.getR103_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR103_usd() != null) {
+			cell3.setCellValue(record2.getR103_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR103_zar() != null) {
+			cell4.setCellValue(record2.getR103_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR103_gbp() != null) {
+			cell5.setCellValue(record2.getR103_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR103_euro() != null) {
+			cell6.setCellValue(record2.getR103_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR103_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR103_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR103_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR103_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR103_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR103_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row104
+		row = sheet.getRow(102);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR104_pula() != null) {
+			cell2.setCellValue(record2.getR104_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR104_usd() != null) {
+			cell3.setCellValue(record2.getR104_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR104_zar() != null) {
+			cell4.setCellValue(record2.getR104_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR104_gbp() != null) {
+			cell5.setCellValue(record2.getR104_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR104_euro() != null) {
+			cell6.setCellValue(record2.getR104_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR104_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR104_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR104_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR104_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR104_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR104_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row106
+		row = sheet.getRow(104);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR106_pula() != null) {
+			cell2.setCellValue(record2.getR106_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR106_usd() != null) {
+			cell3.setCellValue(record2.getR106_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR106_zar() != null) {
+			cell4.setCellValue(record2.getR106_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR106_gbp() != null) {
+			cell5.setCellValue(record2.getR106_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR106_euro() != null) {
+			cell6.setCellValue(record2.getR106_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR106_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR106_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR106_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR106_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR106_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR106_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row107
+		row = sheet.getRow(105);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR107_pula() != null) {
+			cell2.setCellValue(record2.getR107_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR107_usd() != null) {
+			cell3.setCellValue(record2.getR107_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR107_zar() != null) {
+			cell4.setCellValue(record2.getR107_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR107_gbp() != null) {
+			cell5.setCellValue(record2.getR107_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR107_euro() != null) {
+			cell6.setCellValue(record2.getR107_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR107_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR107_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR107_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR107_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR107_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR107_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row108
+		row = sheet.getRow(106);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR108_pula() != null) {
+			cell2.setCellValue(record2.getR108_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR108_usd() != null) {
+			cell3.setCellValue(record2.getR108_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR108_zar() != null) {
+			cell4.setCellValue(record2.getR108_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR108_gbp() != null) {
+			cell5.setCellValue(record2.getR108_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR108_euro() != null) {
+			cell6.setCellValue(record2.getR108_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR108_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR108_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR108_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR108_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR108_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR108_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row109
+		row = sheet.getRow(107);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR109_pula() != null) {
+			cell2.setCellValue(record2.getR109_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR109_usd() != null) {
+			cell3.setCellValue(record2.getR109_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR109_zar() != null) {
+			cell4.setCellValue(record2.getR109_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR109_gbp() != null) {
+			cell5.setCellValue(record2.getR109_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR109_euro() != null) {
+			cell6.setCellValue(record2.getR109_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR109_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR109_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR109_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR109_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR109_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR109_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row111
+		row = sheet.getRow(109);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR111_pula() != null) {
+			cell2.setCellValue(record2.getR111_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR111_usd() != null) {
+			cell3.setCellValue(record2.getR111_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR111_zar() != null) {
+			cell4.setCellValue(record2.getR111_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR111_gbp() != null) {
+			cell5.setCellValue(record2.getR111_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR111_euro() != null) {
+			cell6.setCellValue(record2.getR111_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR111_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR111_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR111_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR111_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR111_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR111_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row112
+		row = sheet.getRow(110);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR112_pula() != null) {
+			cell2.setCellValue(record2.getR112_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR112_usd() != null) {
+			cell3.setCellValue(record2.getR112_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR112_zar() != null) {
+			cell4.setCellValue(record2.getR112_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR112_gbp() != null) {
+			cell5.setCellValue(record2.getR112_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR112_euro() != null) {
+			cell6.setCellValue(record2.getR112_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR112_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR112_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR112_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR112_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR112_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR112_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row113
+		row = sheet.getRow(111);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR113_pula() != null) {
+			cell2.setCellValue(record2.getR113_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR113_usd() != null) {
+			cell3.setCellValue(record2.getR113_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR113_zar() != null) {
+			cell4.setCellValue(record2.getR113_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR113_gbp() != null) {
+			cell5.setCellValue(record2.getR113_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR113_euro() != null) {
+			cell6.setCellValue(record2.getR113_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR113_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR113_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR113_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR113_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR113_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR113_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row114
+		row = sheet.getRow(112);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR114_pula() != null) {
+			cell2.setCellValue(record2.getR114_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR114_usd() != null) {
+			cell3.setCellValue(record2.getR114_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR114_zar() != null) {
+			cell4.setCellValue(record2.getR114_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR114_gbp() != null) {
+			cell5.setCellValue(record2.getR114_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR114_euro() != null) {
+			cell6.setCellValue(record2.getR114_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR114_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR114_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR114_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR114_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR114_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR114_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row115
+		row = sheet.getRow(113);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR115_pula() != null) {
+			cell2.setCellValue(record2.getR115_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR115_usd() != null) {
+			cell3.setCellValue(record2.getR115_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR115_zar() != null) {
+			cell4.setCellValue(record2.getR115_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR115_gbp() != null) {
+			cell5.setCellValue(record2.getR115_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR115_euro() != null) {
+			cell6.setCellValue(record2.getR115_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR115_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR115_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR115_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR115_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR115_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR115_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row116
+		row = sheet.getRow(114);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR116_pula() != null) {
+			cell2.setCellValue(record2.getR116_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR116_usd() != null) {
+			cell3.setCellValue(record2.getR116_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR116_zar() != null) {
+			cell4.setCellValue(record2.getR116_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR116_gbp() != null) {
+			cell5.setCellValue(record2.getR116_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR116_euro() != null) {
+			cell6.setCellValue(record2.getR116_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR116_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR116_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR116_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR116_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR116_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR116_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+	}
+
+	// Archival Email Excel
+	public byte[] BRRS_M_CALOCEmailArchivalExcel(String filename, String reportId, String fromdate, String todate,
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
+
+		logger.info("Service: Starting Archival Email Excel generation process.");
+
+		List<M_CALOC_Archival_Summary_Entity1> dataList1 = M_CALOC_Archival_Summary_Repo1
+				.getdatabydateListarchival(dateformat.parse(todate), version);
+
+		List<M_CALOC_Archival_Summary_Entity2> dataList2 = M_CALOC_Archival_Summary_Repo2
+				.getdatabydateListarchival(dateformat.parse(todate), version);
+
+		List<M_CALOC_Archival_Summary_Entity3> dataList3 = M_CALOC_Archival_Summary_Repo3
+				.getdatabydateListarchival(dateformat.parse(todate), version);
+
+		if (dataList1.isEmpty() && dataList2.isEmpty() && dataList3.isEmpty()) {
+			logger.warn("Service: No data found for BRRSM_CALOC report.");
+			return new byte[0];
+		}
+
+		String templateDir = env.getProperty("output.exportpathtemp");
+		Path templatePath = Paths.get(templateDir, filename);
+
+		logger.info("Loading template from: {}", templatePath.toAbsolutePath());
+
+		if (!Files.exists(templatePath)) {
+			throw new FileNotFoundException("Template file not found: " + templatePath.toAbsolutePath());
+		}
+
+		if (!Files.isReadable(templatePath)) {
+			throw new SecurityException("Template file not readable: " + templatePath.toAbsolutePath());
+		}
+
+		try (InputStream templateInputStream = Files.newInputStream(templatePath);
+				Workbook workbook = WorkbookFactory.create(templateInputStream);
+				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+			Sheet sheet = workbook.getSheetAt(0);
+
+			// ---------------------------------
+			// Style Definitions
+			// ---------------------------------
+			CreationHelper createHelper = workbook.getCreationHelper();
+
+			CellStyle baseStyle = workbook.createCellStyle();
+			baseStyle.setBorderBottom(BorderStyle.THIN);
+			baseStyle.setBorderTop(BorderStyle.THIN);
+			baseStyle.setBorderLeft(BorderStyle.THIN);
+			baseStyle.setBorderRight(BorderStyle.THIN);
+
+			Font font = workbook.createFont();
+			font.setFontHeightInPoints((short) 8);
+			font.setFontName("Arial");
+
+			CellStyle textStyle = workbook.createCellStyle();
+			textStyle.cloneStyleFrom(baseStyle);
+
+			CellStyle numberStyle = workbook.createCellStyle();
+			numberStyle.cloneStyleFrom(baseStyle);
+			numberStyle.setFont(font);
+
+			// ---------------------------------
+			// Populate Data
+			// ---------------------------------
+			if (!dataList1.isEmpty()) {
+				populateEntity1EmailArchivalData(sheet, dataList1.get(0), textStyle, numberStyle);
+			}
+
+			if (!dataList2.isEmpty()) {
+				populateEntity2EmailArchivalData(sheet, dataList2.get(0), textStyle, numberStyle);
+			}
+
+			if (!dataList3.isEmpty()) {
+				populateEntity3EmailArchivalData(sheet, dataList3.get(0), textStyle, numberStyle);
+			}
+
+			// ---------------------------------
+			// Evaluate Formula & Write
+			// ---------------------------------
+			workbook.setForceFormulaRecalculation(true);
+			workbook.write(out);
+
+			logger.info("Archival Email Excel generated successfully ({} bytes).", out.size());
+
+			return out.toByteArray();
+		}
+	}
+
+	private void populateEntity1EmailArchivalData(Sheet sheet, M_CALOC_Archival_Summary_Entity1 record,
+			CellStyle textStyle, CellStyle numberStyle) {
+		// ROW 11 (Index 9)
+		Row row = sheet.getRow(10) != null ? sheet.getRow(10) : sheet.createRow(10);
+
+		// row11
+		// Column B
+		Cell cell2 = row.createCell(1);
+		if (record.getR11_pula() != null) {
+			cell2.setCellValue(record.getR11_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// row11
+		// Column C
+		Cell cell3 = row.createCell(2);
+		if (record.getR11_usd() != null) {
+			cell3.setCellValue(record.getR11_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// row11
+		// Column D
+		Cell cell4 = row.createCell(3);
+		if (record.getR11_zar() != null) {
+			cell4.setCellValue(record.getR11_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// row11
+		// Column E
+		Cell cell5 = row.createCell(4);
+		if (record.getR11_gbp() != null) {
+			cell5.setCellValue(record.getR11_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// row11
+		// Column F
+
+		Cell cell6 = row.createCell(5);
+		if (record.getR11_euro() != null) {
+			cell6.setCellValue(record.getR11_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// row11
+		// Column G
+
+		Cell cell7 = row.createCell(6);
+		if (record.getR11_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR11_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// row11
+		// Column H
+		Cell cell8 = row.createCell(7);
+		if (record.getR11_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR11_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row11 - Column I
+		Cell cell9 = row.createCell(8);
+		if (record.getR11_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR11_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row13
+		row = sheet.getRow(12);
+
+		// row13
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR13_pula() != null) {
+			cell2.setCellValue(record.getR13_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// row13
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR13_usd() != null) {
+			cell3.setCellValue(record.getR13_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// row13
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR13_zar() != null) {
+			cell4.setCellValue(record.getR13_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// row13
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR13_gbp() != null) {
+			cell5.setCellValue(record.getR13_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// row13
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR13_euro() != null) {
+			cell6.setCellValue(record.getR13_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// row13
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR13_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR13_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// row13
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR13_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR13_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row13 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR13_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR13_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row14
+		row = sheet.getRow(13);
+
+		// row14
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR14_pula() != null) {
+			cell2.setCellValue(record.getR14_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// row14
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR14_usd() != null) {
+			cell3.setCellValue(record.getR14_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// row14
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR14_zar() != null) {
+			cell4.setCellValue(record.getR14_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// row14
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR14_gbp() != null) {
+			cell5.setCellValue(record.getR14_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// row14
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR14_euro() != null) {
+			cell6.setCellValue(record.getR14_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// row14
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR14_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR14_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// row14
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR14_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR14_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row14 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR14_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR14_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row16
+		row = sheet.getRow(15);
+
+		// Row16
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR16_pula() != null) {
+			cell2.setCellValue(record.getR16_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row16
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR16_usd() != null) {
+			cell3.setCellValue(record.getR16_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row16
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR16_zar() != null) {
+			cell4.setCellValue(record.getR16_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row16
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR16_gbp() != null) {
+			cell5.setCellValue(record.getR16_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row16
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR16_euro() != null) {
+			cell6.setCellValue(record.getR16_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row16
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR16_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR16_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row16
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR16_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR16_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row16 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR16_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR16_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row17
+		row = sheet.getRow(16);
+
+		// Row17
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR17_pula() != null) {
+			cell2.setCellValue(record.getR17_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row17
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR17_usd() != null) {
+			cell3.setCellValue(record.getR17_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row17
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR17_zar() != null) {
+			cell4.setCellValue(record.getR17_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row17
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR17_gbp() != null) {
+			cell5.setCellValue(record.getR17_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row17
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR17_euro() != null) {
+			cell6.setCellValue(record.getR17_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row17
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR17_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR17_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row17
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR17_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR17_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row17 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR17_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR17_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row18
+		row = sheet.getRow(17);
+
+		// Row18
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR18_pula() != null) {
+			cell2.setCellValue(record.getR18_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row18
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR18_usd() != null) {
+			cell3.setCellValue(record.getR18_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row18
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR18_zar() != null) {
+			cell4.setCellValue(record.getR18_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row18
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR18_gbp() != null) {
+			cell5.setCellValue(record.getR18_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row18
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR18_euro() != null) {
+			cell6.setCellValue(record.getR18_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row18
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR18_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR18_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row18
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR18_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR18_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row18 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR18_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR18_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row19
+		row = sheet.getRow(18);
+
+		// Row19
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR19_pula() != null) {
+			cell2.setCellValue(record.getR19_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row19
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR19_usd() != null) {
+			cell3.setCellValue(record.getR19_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row19
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR19_zar() != null) {
+			cell4.setCellValue(record.getR19_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row19
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR19_gbp() != null) {
+			cell5.setCellValue(record.getR19_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row19
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR19_euro() != null) {
+			cell6.setCellValue(record.getR19_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row19
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR19_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR19_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row19
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR19_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR19_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row19 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR19_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR19_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row20
+		row = sheet.getRow(19);
+
+		// Row20
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR20_pula() != null) {
+			cell2.setCellValue(record.getR20_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row20
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR20_usd() != null) {
+			cell3.setCellValue(record.getR20_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row20
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR20_zar() != null) {
+			cell4.setCellValue(record.getR20_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row20
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR20_gbp() != null) {
+			cell5.setCellValue(record.getR20_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row20
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR20_euro() != null) {
+			cell6.setCellValue(record.getR20_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row20
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR20_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR20_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row20
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR20_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR20_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row20 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR20_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR20_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row21
+		row = sheet.getRow(20);
+
+		// Row21
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR21_pula() != null) {
+			cell2.setCellValue(record.getR21_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row21
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR21_usd() != null) {
+			cell3.setCellValue(record.getR21_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row21
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR21_zar() != null) {
+			cell4.setCellValue(record.getR21_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row21
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR21_gbp() != null) {
+			cell5.setCellValue(record.getR21_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row21
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR21_euro() != null) {
+			cell6.setCellValue(record.getR21_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row21
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR21_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR21_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row21
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR21_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR21_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row21 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR21_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR21_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row22
+		row = sheet.getRow(21);
+
+		// Row22
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR22_pula() != null) {
+			cell2.setCellValue(record.getR22_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row22
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR22_usd() != null) {
+			cell3.setCellValue(record.getR22_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row22
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR22_zar() != null) {
+			cell4.setCellValue(record.getR22_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row22
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR22_gbp() != null) {
+			cell5.setCellValue(record.getR22_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row22
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR22_euro() != null) {
+			cell6.setCellValue(record.getR22_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row22
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR22_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR22_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row22
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR22_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR22_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row22 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR22_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR22_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row24
+		row = sheet.getRow(23);
+
+		// Row24
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR24_pula() != null) {
+			cell2.setCellValue(record.getR24_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row24
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR24_usd() != null) {
+			cell3.setCellValue(record.getR24_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row24
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR24_zar() != null) {
+			cell4.setCellValue(record.getR24_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row24
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR24_gbp() != null) {
+			cell5.setCellValue(record.getR24_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row24
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR24_euro() != null) {
+			cell6.setCellValue(record.getR24_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row24
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR24_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR24_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row24
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR24_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR24_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row24 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR24_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR24_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row25
+		row = sheet.getRow(24);
+
+		// Row25
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR25_pula() != null) {
+			cell2.setCellValue(record.getR25_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row25
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR25_usd() != null) {
+			cell3.setCellValue(record.getR25_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row25
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR25_zar() != null) {
+			cell4.setCellValue(record.getR25_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row25
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR25_gbp() != null) {
+			cell5.setCellValue(record.getR25_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row25
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR25_euro() != null) {
+			cell6.setCellValue(record.getR25_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row25
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR25_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR25_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row25
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR25_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR25_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row25 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR25_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR25_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row27
+		row = sheet.getRow(26);
+
+		// Row27
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR27_pula() != null) {
+			cell2.setCellValue(record.getR27_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row27
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR27_usd() != null) {
+			cell3.setCellValue(record.getR27_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row27
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR27_zar() != null) {
+			cell4.setCellValue(record.getR27_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row27
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR27_gbp() != null) {
+			cell5.setCellValue(record.getR27_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row27
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR27_euro() != null) {
+			cell6.setCellValue(record.getR27_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row27
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR27_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR27_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row27
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR27_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR27_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row27 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR27_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR27_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row28
+		row = sheet.getRow(27);
+
+		// Row28
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR28_pula() != null) {
+			cell2.setCellValue(record.getR28_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row28
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR28_usd() != null) {
+			cell3.setCellValue(record.getR28_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row28
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR28_zar() != null) {
+			cell4.setCellValue(record.getR28_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row28
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR28_gbp() != null) {
+			cell5.setCellValue(record.getR28_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row28
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR28_euro() != null) {
+			cell6.setCellValue(record.getR28_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row28
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR28_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR28_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row28
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR28_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR28_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row28 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR28_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR28_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row29
+		row = sheet.getRow(28);
+
+		// Row29
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR29_pula() != null) {
+			cell2.setCellValue(record.getR29_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row29
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR29_usd() != null) {
+			cell3.setCellValue(record.getR29_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row29
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR29_zar() != null) {
+			cell4.setCellValue(record.getR29_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row29
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR29_gbp() != null) {
+			cell5.setCellValue(record.getR29_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row29
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR29_euro() != null) {
+			cell6.setCellValue(record.getR29_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row29
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR29_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR29_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row29
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR29_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR29_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row29 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR29_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR29_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row31
+		row = sheet.getRow(30);
+
+		// Row31
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR31_pula() != null) {
+			cell2.setCellValue(record.getR31_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row31
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR31_usd() != null) {
+			cell3.setCellValue(record.getR31_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row31
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR31_zar() != null) {
+			cell4.setCellValue(record.getR31_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row31
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR31_gbp() != null) {
+			cell5.setCellValue(record.getR31_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row31
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR31_euro() != null) {
+			cell6.setCellValue(record.getR31_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row31
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR31_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR31_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row31
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR31_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR31_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row31 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR31_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR31_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row32
+		row = sheet.getRow(31);
+
+		// Row32
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR32_pula() != null) {
+			cell2.setCellValue(record.getR32_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row32
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR32_usd() != null) {
+			cell3.setCellValue(record.getR32_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row32
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR32_zar() != null) {
+			cell4.setCellValue(record.getR32_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row32
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR32_gbp() != null) {
+			cell5.setCellValue(record.getR32_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row32
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR32_euro() != null) {
+			cell6.setCellValue(record.getR32_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row32
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR32_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR32_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row32
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR32_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR32_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row31 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR32_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR32_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row33
+		row = sheet.getRow(32);
+
+		// Row33
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR33_pula() != null) {
+			cell2.setCellValue(record.getR33_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row33
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR33_usd() != null) {
+			cell3.setCellValue(record.getR33_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row33
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR33_zar() != null) {
+			cell4.setCellValue(record.getR33_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row33
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR33_gbp() != null) {
+			cell5.setCellValue(record.getR33_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row33
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR33_euro() != null) {
+			cell6.setCellValue(record.getR33_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row33
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR33_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR33_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row33
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR33_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR33_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR33_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR33_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row34
+		row = sheet.getRow(33);
+
+		// Row34
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR34_pula() != null) {
+			cell2.setCellValue(record.getR34_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row34
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR34_usd() != null) {
+			cell3.setCellValue(record.getR34_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row34
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR34_zar() != null) {
+			cell4.setCellValue(record.getR34_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row34
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR34_gbp() != null) {
+			cell5.setCellValue(record.getR34_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row34
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR34_euro() != null) {
+			cell6.setCellValue(record.getR34_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row34
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR34_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR34_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row34
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR34_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR34_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR34_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR34_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row35
+		row = sheet.getRow(34);
+
+		// Row35
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR35_pula() != null) {
+			cell2.setCellValue(record.getR35_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row35
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR35_usd() != null) {
+			cell3.setCellValue(record.getR35_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row35
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR35_zar() != null) {
+			cell4.setCellValue(record.getR35_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row35
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR35_gbp() != null) {
+			cell5.setCellValue(record.getR35_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row35
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR35_euro() != null) {
+			cell6.setCellValue(record.getR35_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row35
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR35_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR35_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row35
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR35_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR35_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR35_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR35_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row36
+		row = sheet.getRow(35);
+
+		// Row36
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR36_pula() != null) {
+			cell2.setCellValue(record.getR36_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row36
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR36_usd() != null) {
+			cell3.setCellValue(record.getR36_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row36
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR36_zar() != null) {
+			cell4.setCellValue(record.getR36_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row36
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR36_gbp() != null) {
+			cell5.setCellValue(record.getR36_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row36
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR36_euro() != null) {
+			cell6.setCellValue(record.getR36_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row36
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR36_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR36_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row36
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR36_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR36_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR36_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR36_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row37
+		row = sheet.getRow(36);
+
+		// Row37
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR37_pula() != null) {
+			cell2.setCellValue(record.getR37_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row37
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR37_usd() != null) {
+			cell3.setCellValue(record.getR37_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row37
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR37_zar() != null) {
+			cell4.setCellValue(record.getR37_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row37
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR37_gbp() != null) {
+			cell5.setCellValue(record.getR37_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row37
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR37_euro() != null) {
+			cell6.setCellValue(record.getR37_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row37
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR37_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR37_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row37
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR37_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR37_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR37_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR37_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row39
+		row = sheet.getRow(38);
+
+		// Row39
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR39_pula() != null) {
+			cell2.setCellValue(record.getR39_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row39
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR39_usd() != null) {
+			cell3.setCellValue(record.getR39_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row39
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR39_zar() != null) {
+			cell4.setCellValue(record.getR39_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row39
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR39_gbp() != null) {
+			cell5.setCellValue(record.getR39_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row39
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR39_euro() != null) {
+			cell6.setCellValue(record.getR39_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row39
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR39_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR39_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row39
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR39_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR39_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR39_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR39_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row40
+		row = sheet.getRow(39);
+
+		// Row40
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR40_pula() != null) {
+			cell2.setCellValue(record.getR40_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row40
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR40_usd() != null) {
+			cell3.setCellValue(record.getR40_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row40
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR40_zar() != null) {
+			cell4.setCellValue(record.getR40_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row40
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR40_gbp() != null) {
+			cell5.setCellValue(record.getR40_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row40
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR40_euro() != null) {
+			cell6.setCellValue(record.getR40_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row40
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR40_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR40_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row40
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR40_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR40_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR40_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR40_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row41
+		row = sheet.getRow(40);
+
+		// Row41
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR41_pula() != null) {
+			cell2.setCellValue(record.getR41_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row41
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR41_usd() != null) {
+			cell3.setCellValue(record.getR41_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row41
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR41_zar() != null) {
+			cell4.setCellValue(record.getR41_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row41
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR41_gbp() != null) {
+			cell5.setCellValue(record.getR41_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row41
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR41_euro() != null) {
+			cell6.setCellValue(record.getR41_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row41
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR41_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR41_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row41
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR41_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR41_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR41_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR41_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row42
+		row = sheet.getRow(41);
+
+		// Row42
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR42_pula() != null) {
+			cell2.setCellValue(record.getR42_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row42
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR42_usd() != null) {
+			cell3.setCellValue(record.getR42_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row42
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR42_zar() != null) {
+			cell4.setCellValue(record.getR42_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row42
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR42_gbp() != null) {
+			cell5.setCellValue(record.getR42_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row42
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR42_euro() != null) {
+			cell6.setCellValue(record.getR42_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row42
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR42_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR42_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row42
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR42_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR42_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR42_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR42_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row43
+		row = sheet.getRow(42);
+
+		// Row43
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR43_pula() != null) {
+			cell2.setCellValue(record.getR43_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row43
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR43_usd() != null) {
+			cell3.setCellValue(record.getR43_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row43
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR43_zar() != null) {
+			cell4.setCellValue(record.getR43_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row43
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR43_gbp() != null) {
+			cell5.setCellValue(record.getR43_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row43
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR43_euro() != null) {
+			cell6.setCellValue(record.getR43_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row43
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR43_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR43_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row43
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR43_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR43_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR43_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR43_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row44
+		row = sheet.getRow(43);
+
+		// Row44
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR44_pula() != null) {
+			cell2.setCellValue(record.getR44_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row44
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR44_usd() != null) {
+			cell3.setCellValue(record.getR44_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row44
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR44_zar() != null) {
+			cell4.setCellValue(record.getR44_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row44
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR44_gbp() != null) {
+			cell5.setCellValue(record.getR44_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row44
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR44_euro() != null) {
+			cell6.setCellValue(record.getR44_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row44
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR44_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR44_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row44
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR44_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR44_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR44_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR44_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row45
+		row = sheet.getRow(44);
+
+		// Row45
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR45_pula() != null) {
+			cell2.setCellValue(record.getR45_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row45
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR45_usd() != null) {
+			cell3.setCellValue(record.getR45_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row45
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR45_zar() != null) {
+			cell4.setCellValue(record.getR45_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row45
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR45_gbp() != null) {
+			cell5.setCellValue(record.getR45_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row45
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR45_euro() != null) {
+			cell6.setCellValue(record.getR45_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row45
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR45_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR45_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row45
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR45_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR45_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR45_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR45_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row46
+		row = sheet.getRow(45);
+
+		// Row46
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR46_pula() != null) {
+			cell2.setCellValue(record.getR46_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row46
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR46_usd() != null) {
+			cell3.setCellValue(record.getR46_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row46
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR46_zar() != null) {
+			cell4.setCellValue(record.getR46_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row46
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR46_gbp() != null) {
+			cell5.setCellValue(record.getR46_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row46
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR46_euro() != null) {
+			cell6.setCellValue(record.getR46_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row46
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR46_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR46_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row46
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR46_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR46_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR46_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR46_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row47
+		row = sheet.getRow(46);
+
+		// Row47
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR47_pula() != null) {
+			cell2.setCellValue(record.getR47_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row47
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR47_usd() != null) {
+			cell3.setCellValue(record.getR47_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row47
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR47_zar() != null) {
+			cell4.setCellValue(record.getR47_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row47
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR47_gbp() != null) {
+			cell5.setCellValue(record.getR47_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row47
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR47_euro() != null) {
+			cell6.setCellValue(record.getR47_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row47
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR47_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR47_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row47
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR47_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR47_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR47_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR47_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row50
+		row = sheet.getRow(49);
+
+		// Row50
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR50_pula() != null) {
+			cell2.setCellValue(record.getR50_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row50
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR50_usd() != null) {
+			cell3.setCellValue(record.getR50_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row50
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR50_zar() != null) {
+			cell4.setCellValue(record.getR50_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row50
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR50_gbp() != null) {
+			cell5.setCellValue(record.getR50_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row50
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR50_euro() != null) {
+			cell6.setCellValue(record.getR50_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row50
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR50_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR50_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row50
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR50_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR50_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR50_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR50_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row51
+		row = sheet.getRow(50);
+
+		// Row51
+		// Column B
+		cell2 = row.createCell(1);
+		if (record.getR51_pula() != null) {
+			cell2.setCellValue(record.getR51_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row51
+		// Column C
+		cell3 = row.createCell(2);
+		if (record.getR51_usd() != null) {
+			cell3.setCellValue(record.getR51_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row51
+		// Column D
+		cell4 = row.createCell(3);
+		if (record.getR51_zar() != null) {
+			cell4.setCellValue(record.getR51_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row51
+		// Column E
+		cell5 = row.createCell(4);
+		if (record.getR51_gbp() != null) {
+			cell5.setCellValue(record.getR51_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row51
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record.getR51_euro() != null) {
+			cell6.setCellValue(record.getR51_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row51
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record.getR51_othercurrencies_inr() != null) {
+			cell7.setCellValue(record.getR51_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row51
+		// Column H
+		cell8 = row.createCell(7);
+		if (record.getR51_othercurrencies_aud() != null) {
+			cell8.setCellValue(record.getR51_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record.getR51_othercurrencies_i() != null) {
+			cell9.setCellValue(record.getR51_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		/* summary Table 1 completed */
+	}
+
+	private void populateEntity2EmailArchivalData(Sheet sheet, M_CALOC_Archival_Summary_Entity2 record1,
+			CellStyle textStyle, CellStyle numberStyle) {
+		// ROW 52 (Index 51)
+		Row row = sheet.getRow(51) != null ? sheet.getRow(51) : sheet.createRow(51);
+
+		// Row52
+		// Column B
+		Cell cell2 = row.createCell(1);
+		if (record1.getR52_pula() != null) {
+			cell2.setCellValue(record1.getR52_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		Cell cell3 = row.createCell(2);
+		if (record1.getR52_usd() != null) {
+			cell3.setCellValue(record1.getR52_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		Cell cell4 = row.createCell(3);
+		if (record1.getR52_zar() != null) {
+			cell4.setCellValue(record1.getR52_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		Cell cell5 = row.createCell(4);
+		if (record1.getR52_gbp() != null) {
+			cell5.setCellValue(record1.getR52_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		Cell cell6 = row.createCell(5);
+		if (record1.getR52_euro() != null) {
+			cell6.setCellValue(record1.getR52_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		Cell cell7 = row.createCell(6);
+		if (record1.getR52_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR52_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		Cell cell8 = row.createCell(7);
+		if (record1.getR52_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR52_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		Cell cell9 = row.createCell(8);
+		if (record1.getR52_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR52_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row53
+		row = sheet.getRow(52);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR53_pula() != null) {
+			cell2.setCellValue(record1.getR53_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR53_usd() != null) {
+			cell3.setCellValue(record1.getR53_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR53_zar() != null) {
+			cell4.setCellValue(record1.getR53_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR53_gbp() != null) {
+			cell5.setCellValue(record1.getR53_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR53_euro() != null) {
+			cell6.setCellValue(record1.getR53_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR53_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR53_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR53_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR53_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR53_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR53_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row54
+		row = sheet.getRow(53);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR54_pula() != null) {
+			cell2.setCellValue(record1.getR54_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR54_usd() != null) {
+			cell3.setCellValue(record1.getR54_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR54_zar() != null) {
+			cell4.setCellValue(record1.getR54_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR54_gbp() != null) {
+			cell5.setCellValue(record1.getR54_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR54_euro() != null) {
+			cell6.setCellValue(record1.getR54_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR54_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR54_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR54_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR54_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR54_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR54_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row55
+		row = sheet.getRow(54);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR55_pula() != null) {
+			cell2.setCellValue(record1.getR55_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR55_usd() != null) {
+			cell3.setCellValue(record1.getR55_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR55_zar() != null) {
+			cell4.setCellValue(record1.getR55_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR55_gbp() != null) {
+			cell5.setCellValue(record1.getR55_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR55_euro() != null) {
+			cell6.setCellValue(record1.getR55_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR55_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR55_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR55_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR55_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR55_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR55_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row59
+		row = sheet.getRow(58);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR59_pula() != null) {
+			cell2.setCellValue(record1.getR59_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR59_usd() != null) {
+			cell3.setCellValue(record1.getR59_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR59_zar() != null) {
+			cell4.setCellValue(record1.getR59_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR59_gbp() != null) {
+			cell5.setCellValue(record1.getR59_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR59_euro() != null) {
+			cell6.setCellValue(record1.getR59_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR59_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR59_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR59_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR59_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR59_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR59_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row60
+		row = sheet.getRow(59);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR60_pula() != null) {
+			cell2.setCellValue(record1.getR60_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR60_usd() != null) {
+			cell3.setCellValue(record1.getR60_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR60_zar() != null) {
+			cell4.setCellValue(record1.getR60_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR60_gbp() != null) {
+			cell5.setCellValue(record1.getR60_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR60_euro() != null) {
+			cell6.setCellValue(record1.getR60_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR60_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR60_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR60_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR60_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR60_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR60_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row62
+		row = sheet.getRow(61);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR62_pula() != null) {
+			cell2.setCellValue(record1.getR62_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR62_usd() != null) {
+			cell3.setCellValue(record1.getR62_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR62_zar() != null) {
+			cell4.setCellValue(record1.getR62_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR62_gbp() != null) {
+			cell5.setCellValue(record1.getR62_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR62_euro() != null) {
+			cell6.setCellValue(record1.getR62_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR62_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR62_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR62_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR62_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR62_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR62_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row63
+		row = sheet.getRow(62);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR63_pula() != null) {
+			cell2.setCellValue(record1.getR63_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR63_usd() != null) {
+			cell3.setCellValue(record1.getR63_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR63_zar() != null) {
+			cell4.setCellValue(record1.getR63_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR63_gbp() != null) {
+			cell5.setCellValue(record1.getR63_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR63_euro() != null) {
+			cell6.setCellValue(record1.getR63_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR63_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR63_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR63_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR63_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR63_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR63_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row66
+		row = sheet.getRow(65);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR66_pula() != null) {
+			cell2.setCellValue(record1.getR66_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR66_usd() != null) {
+			cell3.setCellValue(record1.getR66_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR66_zar() != null) {
+			cell4.setCellValue(record1.getR66_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR66_gbp() != null) {
+			cell5.setCellValue(record1.getR66_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR66_euro() != null) {
+			cell6.setCellValue(record1.getR66_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR66_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR66_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR66_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR66_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR66_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR66_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row67
+		row = sheet.getRow(66);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR67_pula() != null) {
+			cell2.setCellValue(record1.getR67_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR67_usd() != null) {
+			cell3.setCellValue(record1.getR67_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR67_zar() != null) {
+			cell4.setCellValue(record1.getR67_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR67_gbp() != null) {
+			cell5.setCellValue(record1.getR67_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR67_euro() != null) {
+			cell6.setCellValue(record1.getR67_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR67_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR67_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR67_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR67_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR67_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR67_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row69
+		row = sheet.getRow(68);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR69_pula() != null) {
+			cell2.setCellValue(record1.getR69_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR69_usd() != null) {
+			cell3.setCellValue(record1.getR69_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR69_zar() != null) {
+			cell4.setCellValue(record1.getR69_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR69_gbp() != null) {
+			cell5.setCellValue(record1.getR69_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR69_euro() != null) {
+			cell6.setCellValue(record1.getR69_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR69_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR69_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR69_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR69_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR69_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR69_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row70
+		row = sheet.getRow(69);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR70_pula() != null) {
+			cell2.setCellValue(record1.getR70_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR70_usd() != null) {
+			cell3.setCellValue(record1.getR70_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR70_zar() != null) {
+			cell4.setCellValue(record1.getR70_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR70_gbp() != null) {
+			cell5.setCellValue(record1.getR70_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR70_euro() != null) {
+			cell6.setCellValue(record1.getR70_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR70_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR70_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR70_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR70_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR70_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR70_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row72
+		row = sheet.getRow(71);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR72_pula() != null) {
+			cell2.setCellValue(record1.getR72_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR72_usd() != null) {
+			cell3.setCellValue(record1.getR72_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR72_zar() != null) {
+			cell4.setCellValue(record1.getR72_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR72_gbp() != null) {
+			cell5.setCellValue(record1.getR72_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR72_euro() != null) {
+			cell6.setCellValue(record1.getR72_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR72_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR72_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR72_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR72_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR72_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR72_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row74
+		row = sheet.getRow(73);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR74_pula() != null) {
+			cell2.setCellValue(record1.getR74_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR74_usd() != null) {
+			cell3.setCellValue(record1.getR74_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR74_zar() != null) {
+			cell4.setCellValue(record1.getR74_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR74_gbp() != null) {
+			cell5.setCellValue(record1.getR74_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR74_euro() != null) {
+			cell6.setCellValue(record1.getR74_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR74_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR74_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR74_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR74_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR74_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR74_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row75
+		row = sheet.getRow(74);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR75_pula() != null) {
+			cell2.setCellValue(record1.getR75_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR75_usd() != null) {
+			cell3.setCellValue(record1.getR75_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR75_zar() != null) {
+			cell4.setCellValue(record1.getR75_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR75_gbp() != null) {
+			cell5.setCellValue(record1.getR75_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR75_euro() != null) {
+			cell6.setCellValue(record1.getR75_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR75_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR75_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR75_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR75_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR75_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR75_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row76
+		row = sheet.getRow(75);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR76_pula() != null) {
+			cell2.setCellValue(record1.getR76_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR76_usd() != null) {
+			cell3.setCellValue(record1.getR76_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR76_zar() != null) {
+			cell4.setCellValue(record1.getR76_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR76_gbp() != null) {
+			cell5.setCellValue(record1.getR76_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR76_euro() != null) {
+			cell6.setCellValue(record1.getR76_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR76_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR76_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR76_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR76_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR76_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR76_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row77
+		row = sheet.getRow(76);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR77_pula() != null) {
+			cell2.setCellValue(record1.getR77_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR77_usd() != null) {
+			cell3.setCellValue(record1.getR77_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR77_zar() != null) {
+			cell4.setCellValue(record1.getR77_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR77_gbp() != null) {
+			cell5.setCellValue(record1.getR77_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR77_euro() != null) {
+			cell6.setCellValue(record1.getR77_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR77_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR77_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR77_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR77_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR77_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR77_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row79
+		row = sheet.getRow(78);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR79_pula() != null) {
+			cell2.setCellValue(record1.getR79_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR79_usd() != null) {
+			cell3.setCellValue(record1.getR79_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR79_zar() != null) {
+			cell4.setCellValue(record1.getR79_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR79_gbp() != null) {
+			cell5.setCellValue(record1.getR79_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR79_euro() != null) {
+			cell6.setCellValue(record1.getR79_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR79_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR79_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR79_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR79_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR79_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR79_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row80
+		row = sheet.getRow(79);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR80_pula() != null) {
+			cell2.setCellValue(record1.getR80_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR80_usd() != null) {
+			cell3.setCellValue(record1.getR80_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR80_zar() != null) {
+			cell4.setCellValue(record1.getR80_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR80_gbp() != null) {
+			cell5.setCellValue(record1.getR80_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR80_euro() != null) {
+			cell6.setCellValue(record1.getR80_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR80_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR80_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR80_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR80_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR80_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR80_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row81
+		row = sheet.getRow(80);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR81_pula() != null) {
+			cell2.setCellValue(record1.getR81_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR81_usd() != null) {
+			cell3.setCellValue(record1.getR81_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR81_zar() != null) {
+			cell4.setCellValue(record1.getR81_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR81_gbp() != null) {
+			cell5.setCellValue(record1.getR81_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR81_euro() != null) {
+			cell6.setCellValue(record1.getR81_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR81_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR81_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR81_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR81_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR81_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR81_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row84
+		row = sheet.getRow(82);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR84_pula() != null) {
+			cell2.setCellValue(record1.getR84_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR84_usd() != null) {
+			cell3.setCellValue(record1.getR84_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR84_zar() != null) {
+			cell4.setCellValue(record1.getR84_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR84_gbp() != null) {
+			cell5.setCellValue(record1.getR84_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR84_euro() != null) {
+			cell6.setCellValue(record1.getR84_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR84_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR84_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR84_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR84_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR84_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR84_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row85
+		row = sheet.getRow(83);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR85_pula() != null) {
+			cell2.setCellValue(record1.getR85_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR85_usd() != null) {
+			cell3.setCellValue(record1.getR85_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR85_zar() != null) {
+			cell4.setCellValue(record1.getR85_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR85_gbp() != null) {
+			cell5.setCellValue(record1.getR85_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR85_euro() != null) {
+			cell6.setCellValue(record1.getR85_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR85_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR85_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR85_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR85_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR85_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR85_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+		// row86
+		row = sheet.getRow(84);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR86_pula() != null) {
+			cell2.setCellValue(record1.getR86_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR86_usd() != null) {
+			cell3.setCellValue(record1.getR86_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR86_zar() != null) {
+			cell4.setCellValue(record1.getR86_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR86_gbp() != null) {
+			cell5.setCellValue(record1.getR86_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR86_euro() != null) {
+			cell6.setCellValue(record1.getR86_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR86_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR86_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR86_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR86_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR86_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR86_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+		// row88
+		row = sheet.getRow(86);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR88_pula() != null) {
+			cell2.setCellValue(record1.getR88_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR88_usd() != null) {
+			cell3.setCellValue(record1.getR88_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR88_zar() != null) {
+			cell4.setCellValue(record1.getR88_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR88_gbp() != null) {
+			cell5.setCellValue(record1.getR88_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR88_euro() != null) {
+			cell6.setCellValue(record1.getR88_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR88_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR88_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR88_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR88_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR88_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR88_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row89
+		row = sheet.getRow(87);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR89_pula() != null) {
+			cell2.setCellValue(record1.getR89_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR89_usd() != null) {
+			cell3.setCellValue(record1.getR89_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR89_zar() != null) {
+			cell4.setCellValue(record1.getR89_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR89_gbp() != null) {
+			cell5.setCellValue(record1.getR89_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR89_euro() != null) {
+			cell6.setCellValue(record1.getR89_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR89_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR89_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR89_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR89_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR89_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR89_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row90
+		row = sheet.getRow(88);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR90_pula() != null) {
+			cell2.setCellValue(record1.getR90_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR90_usd() != null) {
+			cell3.setCellValue(record1.getR90_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR90_zar() != null) {
+			cell4.setCellValue(record1.getR90_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR90_gbp() != null) {
+			cell5.setCellValue(record1.getR90_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR90_euro() != null) {
+			cell6.setCellValue(record1.getR90_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR90_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR90_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR90_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR90_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR90_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR90_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row91
+		row = sheet.getRow(89);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR91_pula() != null) {
+			cell2.setCellValue(record1.getR91_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR91_usd() != null) {
+			cell3.setCellValue(record1.getR91_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR91_zar() != null) {
+			cell4.setCellValue(record1.getR91_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR91_gbp() != null) {
+			cell5.setCellValue(record1.getR91_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR91_euro() != null) {
+			cell6.setCellValue(record1.getR91_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR91_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR91_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR91_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR91_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR91_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR91_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row92
+		row = sheet.getRow(90);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record1.getR92_pula() != null) {
+			cell2.setCellValue(record1.getR92_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record1.getR92_usd() != null) {
+			cell3.setCellValue(record1.getR92_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record1.getR92_zar() != null) {
+			cell4.setCellValue(record1.getR92_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record1.getR92_gbp() != null) {
+			cell5.setCellValue(record1.getR92_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record1.getR92_euro() != null) {
+			cell6.setCellValue(record1.getR92_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record1.getR92_othercurrencies_inr() != null) {
+			cell7.setCellValue(record1.getR92_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record1.getR92_othercurrencies_aud() != null) {
+			cell8.setCellValue(record1.getR92_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record1.getR92_othercurrencies_i() != null) {
+			cell9.setCellValue(record1.getR92_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+	}
+
+	private void populateEntity3EmailArchivalData(Sheet sheet, M_CALOC_Archival_Summary_Entity3 record2,
+			CellStyle textStyle, CellStyle numberStyle) {
+		// ROW 93 (Index 91)
+		Row row = sheet.getRow(91) != null ? sheet.getRow(91) : sheet.createRow(91);
+
+		Cell cell2 = row.createCell(1);
+		if (record2.getR93_pula() != null) {
+			cell2.setCellValue(record2.getR93_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		Cell cell3 = row.createCell(2);
+		if (record2.getR93_usd() != null) {
+			cell3.setCellValue(record2.getR93_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		Cell cell4 = row.createCell(3);
+		if (record2.getR93_zar() != null) {
+			cell4.setCellValue(record2.getR93_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		Cell cell5 = row.createCell(4);
+		if (record2.getR93_gbp() != null) {
+			cell5.setCellValue(record2.getR93_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		Cell cell6 = row.createCell(5);
+		if (record2.getR93_euro() != null) {
+			cell6.setCellValue(record2.getR93_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		Cell cell7 = row.createCell(6);
+		if (record2.getR93_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR93_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		Cell cell8 = row.createCell(7);
+		if (record2.getR93_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR93_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		Cell cell9 = row.createCell(8);
+		if (record2.getR93_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR93_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row94
+		row = sheet.getRow(92);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR94_pula() != null) {
+			cell2.setCellValue(record2.getR94_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR94_usd() != null) {
+			cell3.setCellValue(record2.getR94_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR94_zar() != null) {
+			cell4.setCellValue(record2.getR94_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR94_gbp() != null) {
+			cell5.setCellValue(record2.getR94_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR94_euro() != null) {
+			cell6.setCellValue(record2.getR94_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR94_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR94_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR94_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR94_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR94_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR94_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row95
+		row = sheet.getRow(93);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR95_pula() != null) {
+			cell2.setCellValue(record2.getR95_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR95_usd() != null) {
+			cell3.setCellValue(record2.getR95_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR95_zar() != null) {
+			cell4.setCellValue(record2.getR95_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR95_gbp() != null) {
+			cell5.setCellValue(record2.getR95_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR95_euro() != null) {
+			cell6.setCellValue(record2.getR95_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR95_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR95_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR95_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR95_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR95_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR95_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row97
+		row = sheet.getRow(95);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR97_pula() != null) {
+			cell2.setCellValue(record2.getR97_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR97_usd() != null) {
+			cell3.setCellValue(record2.getR97_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR97_zar() != null) {
+			cell4.setCellValue(record2.getR97_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR97_gbp() != null) {
+			cell5.setCellValue(record2.getR97_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR97_euro() != null) {
+			cell6.setCellValue(record2.getR97_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR97_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR97_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR97_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR97_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR97_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR97_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row98
+		row = sheet.getRow(96);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR98_pula() != null) {
+			cell2.setCellValue(record2.getR98_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR98_usd() != null) {
+			cell3.setCellValue(record2.getR98_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR98_zar() != null) {
+			cell4.setCellValue(record2.getR98_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR98_gbp() != null) {
+			cell5.setCellValue(record2.getR98_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR98_euro() != null) {
+			cell6.setCellValue(record2.getR98_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR98_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR98_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR98_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR98_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR98_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR98_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row99
+		row = sheet.getRow(97);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR99_pula() != null) {
+			cell2.setCellValue(record2.getR99_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR99_usd() != null) {
+			cell3.setCellValue(record2.getR99_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR99_zar() != null) {
+			cell4.setCellValue(record2.getR99_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR99_gbp() != null) {
+			cell5.setCellValue(record2.getR99_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR99_euro() != null) {
+			cell6.setCellValue(record2.getR99_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR99_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR99_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR99_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR99_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR99_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR99_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+		// row101
+		row = sheet.getRow(99);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR101_pula() != null) {
+			cell2.setCellValue(record2.getR101_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR101_usd() != null) {
+			cell3.setCellValue(record2.getR101_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR101_zar() != null) {
+			cell4.setCellValue(record2.getR101_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR101_gbp() != null) {
+			cell5.setCellValue(record2.getR101_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR101_euro() != null) {
+			cell6.setCellValue(record2.getR101_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR101_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR101_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR101_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR101_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR101_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR101_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row103
+		row = sheet.getRow(101);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR103_pula() != null) {
+			cell2.setCellValue(record2.getR103_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR103_usd() != null) {
+			cell3.setCellValue(record2.getR103_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR103_zar() != null) {
+			cell4.setCellValue(record2.getR103_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR103_gbp() != null) {
+			cell5.setCellValue(record2.getR103_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR103_euro() != null) {
+			cell6.setCellValue(record2.getR103_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR103_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR103_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR103_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR103_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR103_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR103_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row104
+		row = sheet.getRow(102);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR104_pula() != null) {
+			cell2.setCellValue(record2.getR104_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR104_usd() != null) {
+			cell3.setCellValue(record2.getR104_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR104_zar() != null) {
+			cell4.setCellValue(record2.getR104_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR104_gbp() != null) {
+			cell5.setCellValue(record2.getR104_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR104_euro() != null) {
+			cell6.setCellValue(record2.getR104_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR104_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR104_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR104_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR104_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR104_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR104_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row106
+		row = sheet.getRow(104);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR106_pula() != null) {
+			cell2.setCellValue(record2.getR106_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR106_usd() != null) {
+			cell3.setCellValue(record2.getR106_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR106_zar() != null) {
+			cell4.setCellValue(record2.getR106_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR106_gbp() != null) {
+			cell5.setCellValue(record2.getR106_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR106_euro() != null) {
+			cell6.setCellValue(record2.getR106_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR106_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR106_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR106_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR106_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR106_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR106_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row107
+		row = sheet.getRow(105);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR107_pula() != null) {
+			cell2.setCellValue(record2.getR107_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR107_usd() != null) {
+			cell3.setCellValue(record2.getR107_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR107_zar() != null) {
+			cell4.setCellValue(record2.getR107_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR107_gbp() != null) {
+			cell5.setCellValue(record2.getR107_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR107_euro() != null) {
+			cell6.setCellValue(record2.getR107_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR107_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR107_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR107_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR107_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR107_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR107_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row108
+		row = sheet.getRow(106);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR108_pula() != null) {
+			cell2.setCellValue(record2.getR108_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR108_usd() != null) {
+			cell3.setCellValue(record2.getR108_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR108_zar() != null) {
+			cell4.setCellValue(record2.getR108_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR108_gbp() != null) {
+			cell5.setCellValue(record2.getR108_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR108_euro() != null) {
+			cell6.setCellValue(record2.getR108_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR108_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR108_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR108_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR108_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR108_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR108_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row109
+		row = sheet.getRow(107);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR109_pula() != null) {
+			cell2.setCellValue(record2.getR109_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR109_usd() != null) {
+			cell3.setCellValue(record2.getR109_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR109_zar() != null) {
+			cell4.setCellValue(record2.getR109_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR109_gbp() != null) {
+			cell5.setCellValue(record2.getR109_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR109_euro() != null) {
+			cell6.setCellValue(record2.getR109_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR109_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR109_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR109_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR109_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR109_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR109_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row111
+		row = sheet.getRow(109);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR111_pula() != null) {
+			cell2.setCellValue(record2.getR111_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR111_usd() != null) {
+			cell3.setCellValue(record2.getR111_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR111_zar() != null) {
+			cell4.setCellValue(record2.getR111_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR111_gbp() != null) {
+			cell5.setCellValue(record2.getR111_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR111_euro() != null) {
+			cell6.setCellValue(record2.getR111_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR111_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR111_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR111_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR111_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR111_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR111_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row112
+		row = sheet.getRow(110);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR112_pula() != null) {
+			cell2.setCellValue(record2.getR112_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR112_usd() != null) {
+			cell3.setCellValue(record2.getR112_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR112_zar() != null) {
+			cell4.setCellValue(record2.getR112_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR112_gbp() != null) {
+			cell5.setCellValue(record2.getR112_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR112_euro() != null) {
+			cell6.setCellValue(record2.getR112_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR112_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR112_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR112_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR112_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR112_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR112_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row113
+		row = sheet.getRow(111);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR113_pula() != null) {
+			cell2.setCellValue(record2.getR113_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR113_usd() != null) {
+			cell3.setCellValue(record2.getR113_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR113_zar() != null) {
+			cell4.setCellValue(record2.getR113_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR113_gbp() != null) {
+			cell5.setCellValue(record2.getR113_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR113_euro() != null) {
+			cell6.setCellValue(record2.getR113_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR113_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR113_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR113_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR113_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR113_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR113_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row114
+		row = sheet.getRow(112);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR114_pula() != null) {
+			cell2.setCellValue(record2.getR114_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR114_usd() != null) {
+			cell3.setCellValue(record2.getR114_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR114_zar() != null) {
+			cell4.setCellValue(record2.getR114_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR114_gbp() != null) {
+			cell5.setCellValue(record2.getR114_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR114_euro() != null) {
+			cell6.setCellValue(record2.getR114_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR114_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR114_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR114_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR114_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR114_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR114_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row115
+		row = sheet.getRow(113);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR115_pula() != null) {
+			cell2.setCellValue(record2.getR115_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR115_usd() != null) {
+			cell3.setCellValue(record2.getR115_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR115_zar() != null) {
+			cell4.setCellValue(record2.getR115_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR115_gbp() != null) {
+			cell5.setCellValue(record2.getR115_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR115_euro() != null) {
+			cell6.setCellValue(record2.getR115_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR115_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR115_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR115_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR115_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR115_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR115_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
+		// row116
+		row = sheet.getRow(114);
+
+		// Row52
+		// Column B
+		cell2 = row.createCell(1);
+		if (record2.getR116_pula() != null) {
+			cell2.setCellValue(record2.getR116_pula().doubleValue());
+			cell2.setCellStyle(numberStyle);
+		} else {
+			cell2.setCellValue("");
+			cell2.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column C
+		cell3 = row.createCell(2);
+		if (record2.getR116_usd() != null) {
+			cell3.setCellValue(record2.getR116_usd().doubleValue());
+			cell3.setCellStyle(numberStyle);
+		} else {
+			cell3.setCellValue("");
+			cell3.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column D
+		cell4 = row.createCell(3);
+		if (record2.getR116_zar() != null) {
+			cell4.setCellValue(record2.getR116_zar().doubleValue());
+			cell4.setCellStyle(numberStyle);
+		} else {
+			cell4.setCellValue("");
+			cell4.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column E
+		cell5 = row.createCell(4);
+		if (record2.getR116_gbp() != null) {
+			cell5.setCellValue(record2.getR116_gbp().doubleValue());
+			cell5.setCellStyle(numberStyle);
+		} else {
+			cell5.setCellValue("");
+			cell5.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column F
+
+		cell6 = row.createCell(5);
+		if (record2.getR116_euro() != null) {
+			cell6.setCellValue(record2.getR116_euro().doubleValue());
+			cell6.setCellStyle(numberStyle);
+		} else {
+			cell6.setCellValue("");
+			cell6.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column G
+
+		cell7 = row.createCell(6);
+		if (record2.getR116_othercurrencies_inr() != null) {
+			cell7.setCellValue(record2.getR116_othercurrencies_inr().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+
+		// Row52
+		// Column H
+		cell8 = row.createCell(7);
+		if (record2.getR116_othercurrencies_aud() != null) {
+			cell8.setCellValue(record2.getR116_othercurrencies_aud().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+
+		// Row33 - Column I
+		cell9 = row.createCell(8);
+		if (record2.getR116_othercurrencies_i() != null) {
+			cell9.setCellValue(record2.getR116_othercurrencies_i().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+
 	}
 }

@@ -1623,57 +1623,51 @@ PURPOSE		: BRRSREPORT
 	</script>
 
 	<script>
-		function submitUpdate() {
-			const formData = $('#DetailForm').serialize(); // Ensure correct form ID
+function submitUpdate() {
+	const formData = $('#DetailForm').serialize();
 
-			// ✅ Store the previous page URL
-			const previousUrl = document.referrer; // same as going back once in history
+	$('#loader').modal('show');
 
-			// Show loader while processing
-			$('#loader').modal('show');
+	$.ajax({
+		url: `/BRRS/Reports/${reportId}/update`,
+		type: 'POST',
+		data: formData,
+		success: function (response) {
+			$('#loader').modal('hide');
 
-			$.ajax({
-				url: `/BRRS/Reports/${reportId}/update`,
-				type: 'POST',
-				data: formData,
-				success: function (response) {
-					$('#loader').modal('hide');
+			if (response && response.toLowerCase().includes('success')) {
+				showResultModal('BRRS', response);
+			} else {
+				showResultModal('Information', response || 'No data updated.');
+			}
+		},
 
-					// ✅ Handle SUCCESS & NON-SUCCESS (Information)
-					if (response && response.toLowerCase().includes('success')) {
-						showResultModal('BRRS', response);
-					} else {
-						showResultModal('Information', response || 'No data updated.');
-					}
+		error: function (xhr, status, error) {
+			$('#loader').modal('hide');
+			console.error("Update error:", error);
 
-					// Redirect after 1.5 sec
-					setTimeout(() => {
-						if (previousUrl) {
-							window.location.href = previousUrl;
-						} else {
-							window.history.back(); // fallback
-						}
-					}, 1500);
-				},
-
-				error: function (xhr, status, error) {
-					$('#loader').modal('hide');
-					console.error("Update error:", error);
-
-					// ✅ Handle ERROR
-					showResultModal('Error', 'Failed to update record. Please try again.');
-
-					// Redirect back after delay even on error
-					setTimeout(() => {
-						if (previousUrl) {
-							window.location.href = previousUrl;
-						} else {
-							window.history.back();
-						}
-					}, 1500);
-				}
-			});
+			showResultModal('Error', 'Failed to update record. Please try again.');
 		}
+	});
+}
+
+function showResultModal(title, message) {
+	$('#resultModalLabel').text(title);
+	$('#resultModalBody').text(message);
+	$('#resultModal').modal('show');
+}
+
+function closemodels() {
+	$('#resultModal').modal('hide');
+
+	setTimeout(function () {
+		if (document.referrer) {
+			window.location.href = document.referrer;
+		} else {
+			window.history.back();
+		}
+	}, 500); // delay in milliseconds
+}
 	</script>
 
 </head>
@@ -1796,12 +1790,12 @@ PURPOSE		: BRRSREPORT
 											style="position: sticky; top: 0; border: 2px solid black; z-index: 1;">
 											<tr>
 												<th rowspan="2">(39A) FOREIGN CURRENCY ACCOUNTS BY CURRENCY</th>
-												<th style="text-align: right;" colspan="3">Exchange Rates</th>
+												<th style="text-align: center;" colspan="3">Exchange Rates</th>
 												<th style="text-align: right;" rowspan="2">Current</th>
 												<th style="text-align: right;" rowspan="2">Call</th>
 												<th style="text-align: right;" rowspan="2">Savings</th>
-												<th style="text-align: right;" colspan="2">Notice (Days)</th>
-												<th style="text-align: right;" colspan="7">Fixed Deposits (Months)</th>
+												<th style="text-align: center;" colspan="2">Notice (Days)</th>
+												<th style="text-align: center;" colspan="7">Fixed Deposits (Months)</th>
 												<th style="text-align: right;" rowspan="2">Certificates of Deposit</th>
 												<th style="text-align: right;" rowspan="2">Total</th>
 												<th style="text-align: right;" rowspan="2">Pula Equivalent</th>
@@ -2802,7 +2796,7 @@ PURPOSE		: BRRSREPORT
 									<div style="height: 60px;"></div>
 
 									<div
-										style="display: flex; justify-content: flex-start; align-items: center; gap: 888px; margin-bottom: 10px;">
+										style="display: flex; justify-content: flex-start; align-items: center; gap: 754px; margin-bottom: 10px;">
 
 										<h5 style="font-weight: bold; color: black; margin: 0;font-size: medium;">
 											(39 B) PURPOSE OF FOREIGN CURRENCY ACCOUNTS <br>(P'000)
@@ -2830,7 +2824,7 @@ PURPOSE		: BRRSREPORT
 													<th style="font-weight: bold; text-align: right;">Other</th>
 
 													<th class="noborder" colspan="4"
-														style="border: none !important; background: transparent; width: 200px;">
+														style="border: none !important; background: transparent; width: 50px;">
 													</th>
 
 
@@ -2874,7 +2868,7 @@ PURPOSE		: BRRSREPORT
             <td style="border:none;"></td>
             <td style="border:none;"></td> -->
 													<td rowspan="7" colspan="4"
-														style="width: 200px; border: none !important;"></td>
+														style="width: 50px; border: none !important;"></td>
 
 													<!-- 39C -->
 													<td>USD</td>
@@ -3381,7 +3375,7 @@ PURPOSE		: BRRSREPORT
 					<p id="resultModalBody"></p>
 					<!-- Your custom styled button -->
 					<button type="button" class="custom-tab-btn" onclick="closemodels()"
-						data-dismiss="modal">ok</button>
+						data-dismiss="modal">Ok</button>
 				</div>
 			</div>
 		</div>

@@ -594,7 +594,7 @@ public class BRRS_M_FAS_ReportService {
 				if (existing.getCreditEquivalent() == null
 						|| existing.getCreditEquivalent().compareTo(newBalance) != 0) {
 
-					existing.setAcctBalanceInPula(newBalance);
+					existing.setCreditEquivalent(newBalance);
 					isChanged = true;
 					logger.info("Updated acctBalanceInPula → {}", newBalance);
 				}
