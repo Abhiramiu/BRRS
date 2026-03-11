@@ -2150,17 +2150,15 @@ function fileuploads(btn) {
 	    if (type && type.toUpperCase() === 'RESUB') {
 	    	apiUrl = './UpdateM_SEC_ReSub'; // Resubmission endpoint
 	    }
-
-
 	    // ✅ Single AJAX call with type info
 		$.ajax({
 			               url: apiUrl,
 			               type: 'POST',
 			               data: formData,
 			               dataType: 'text',
-
+			               processData: false,     
+			               contentType: false,     
 			               success: function (response) {
-
 			                   $("#resultModalLabel").text("BRRS");
 			                   $("#resultModalBody").text(response);
 			                   $("#resultModal").modal("show");
@@ -2169,7 +2167,6 @@ function fileuploads(btn) {
 			                   $("#resultModal")
 			                       .off("hidden.bs.modal")
 			                       .on("hidden.bs.modal", function () {
-
 			                           if (isResub) {
 
 			                               if (window.previousUrl && window.previousUrl !== "") {

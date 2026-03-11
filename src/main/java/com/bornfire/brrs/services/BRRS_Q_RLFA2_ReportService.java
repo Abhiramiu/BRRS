@@ -2301,8 +2301,8 @@ public class BRRS_Q_RLFA2_ReportService {
 							
 							// Column B2 - Original Amount 
 							 cellB = row.createCell(3);
-							if (record.getR10_orig_amt() != null) {
-								cellB.setCellValue(record.getR10_orig_amt().doubleValue());
+							if (record.getR11_orig_amt() != null) {
+								cellB.setCellValue(record.getR11_orig_amt().doubleValue());
 								cellB.setCellStyle(numberStyle);
 							} else {
 								cellB.setCellValue("");
@@ -2312,8 +2312,8 @@ public class BRRS_Q_RLFA2_ReportService {
 							// row11
 						    // Column C3 - Foreclosure Amount
 							 cellC = row.createCell(4);
-							if (record.getR10_fore_amt() != null) {
-								cellC.setCellValue(record.getR10_fore_amt().doubleValue());
+							if (record.getR11_fore_amt() != null) {
+								cellC.setCellValue(record.getR11_fore_amt().doubleValue());
 								cellC.setCellStyle(numberStyle);
 							} else {
 								cellC.setCellValue("");
@@ -2323,8 +2323,8 @@ public class BRRS_Q_RLFA2_ReportService {
 							// row11
 				            // Column D4 - No. of Accounts
 							 cellE = row.createCell(5);
-							if (record.getR10_no_of_acc() != null) {
-								cellE.setCellValue(record.getR10_no_of_acc().doubleValue());
+							if (record.getR11_no_of_acc() != null) {
+								cellE.setCellValue(record.getR11_no_of_acc().doubleValue());
 								cellE.setCellStyle(numberStyle);
 							} else {
 								cellE.setCellValue("");
@@ -6013,8 +6013,8 @@ public class BRRS_Q_RLFA2_ReportService {
 							
 							// Column B2 - Original Amount 
 							 cellB = row.createCell(3);
-							if (record.getR10_orig_amt() != null) {
-								cellB.setCellValue(record.getR10_orig_amt().doubleValue());
+							if (record.getR11_orig_amt() != null) {
+								cellB.setCellValue(record.getR11_orig_amt().doubleValue());
 								cellB.setCellStyle(numberStyle);
 							} else {
 								cellB.setCellValue("");
@@ -6024,8 +6024,8 @@ public class BRRS_Q_RLFA2_ReportService {
 							// row11
 						    // Column C3 - Foreclosure Amount
 							 cellC = row.createCell(4);
-							if (record.getR10_fore_amt() != null) {
-								cellC.setCellValue(record.getR10_fore_amt().doubleValue());
+							if (record.getR11_fore_amt() != null) {
+								cellC.setCellValue(record.getR11_fore_amt().doubleValue());
 								cellC.setCellStyle(numberStyle);
 							} else {
 								cellC.setCellValue("");
@@ -6035,8 +6035,8 @@ public class BRRS_Q_RLFA2_ReportService {
 							// row11
 				            // Column D4 - No. of Accounts
 							 cellE = row.createCell(5);
-							if (record.getR10_no_of_acc() != null) {
-								cellE.setCellValue(record.getR10_no_of_acc().doubleValue());
+							if (record.getR11_no_of_acc() != null) {
+								cellE.setCellValue(record.getR11_no_of_acc().doubleValue());
 								cellE.setCellStyle(numberStyle);
 							} else {
 								cellE.setCellValue("");
@@ -9729,8 +9729,8 @@ public class BRRS_Q_RLFA2_ReportService {
 							
 							// Column B2 - Original Amount 
 							 cellB = row.createCell(3);
-							if (record.getR10_orig_amt() != null) {
-								cellB.setCellValue(record.getR10_orig_amt().doubleValue());
+							if (record.getR11_orig_amt() != null) {
+								cellB.setCellValue(record.getR11_orig_amt().doubleValue());
 								cellB.setCellStyle(numberStyle);
 							} else {
 								cellB.setCellValue("");
@@ -9740,8 +9740,8 @@ public class BRRS_Q_RLFA2_ReportService {
 							// row11
 						    // Column C3 - Foreclosure Amount
 							 cellC = row.createCell(4);
-							if (record.getR10_fore_amt() != null) {
-								cellC.setCellValue(record.getR10_fore_amt().doubleValue());
+							if (record.getR11_fore_amt() != null) {
+								cellC.setCellValue(record.getR11_fore_amt().doubleValue());
 								cellC.setCellStyle(numberStyle);
 							} else {
 								cellC.setCellValue("");
@@ -9751,8 +9751,8 @@ public class BRRS_Q_RLFA2_ReportService {
 							// row11
 				            // Column D4 - No. of Accounts
 							 cellE = row.createCell(5);
-							if (record.getR10_no_of_acc() != null) {
-								cellE.setCellValue(record.getR10_no_of_acc().doubleValue());
+							if (record.getR11_no_of_acc() != null) {
+								cellE.setCellValue(record.getR11_no_of_acc().doubleValue());
 								cellE.setCellStyle(numberStyle);
 							} else {
 								cellE.setCellValue("");
