@@ -38,8 +38,24 @@ public interface BRRS_M_I_S_CA_Detail_Repo extends JpaRepository<M_I_S_CA_Detail
 		 * GetDataByRowIdAndColumnId(String rowId,String ColumnId,Date reportdate);
 		 */
 		
-		@Query(value = "select * from BRRS_M_I_S_CA_DETAILTABLE where REPORT_LABEL =?1 and REPORT_ADDL_CRITERIA_1=?2 AND REPORT_DATE=?3", nativeQuery = true)
-		List<M_I_S_CA_Detail_Entity> GetDataByRowIdAndColumnId(String reportLabel, String reportAddlCriteria_1, Date reportdate);
+	   @Query(value = "SELECT * FROM BRRS_M_I_S_CA_DETAILTABLE " +
+	            "WHERE REPORT_LABEL = :reportLabel " +
+	            "AND  REPORT_LABEL_1 = :reportLabel1 " +
+	            "AND ( :reportAddlCriteria_1 IS NULL OR :reportAddlCriteria_1 = '' OR REPORT_ADDL_CRITERIA_1 = :reportAddlCriteria_1 ) " +
+	            "AND ( :reportAddlCriteria_2 IS NULL OR :reportAddlCriteria_2 = '' OR REPORT_ADDL_CRITERIA_2 = :reportAddlCriteria_2 ) " +
+	            "AND ( :reportAddlCriteria_3 IS NULL OR :reportAddlCriteria_3 = '' OR REPORT_ADDL_CRITERIA_3 = :reportAddlCriteria_3 ) " +
+	           
+	            "AND REPORT_DATE = :reportDate",
+	        nativeQuery = true)
+	    List<M_I_S_CA_Detail_Entity> GetDataByRowIdAndColumnId(
+	        @Param("reportLabel") String reportLabel,
+	        @Param("reportLabel1") String reportLabel1,
+	        @Param("reportAddlCriteria_1") String reportAddlCriteria_1,
+	        @Param("reportAddlCriteria_2") String reportAddlCriteria_2,
+	        @Param("reportAddlCriteria_3") String reportAddlCriteria_3,
+	       
+	        @Param("reportDate") Date reportDate
+	    );
 		
 		/* M_SCI_E_Detail_Entity findByAcctNumber(String acctNumber); */
 		

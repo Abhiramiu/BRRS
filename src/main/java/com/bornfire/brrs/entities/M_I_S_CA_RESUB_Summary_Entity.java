@@ -19,10 +19,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 
 @Entity
-@Table(name = "BRRS_M_I_S_CA_ARCHIVALTABLE_SUMMARY")
+@Table(name = "BRRS_M_I_S_CA_RESUB_SUMMARYTABLE")
 @IdClass(M_I_S_CA.class)
 
-public class M_I_S_CA_Arcihval_Summary_Entity {
+public class M_I_S_CA_RESUB_Summary_Entity {
 	
 	private String	r10_spec_impairments;
 	private BigDecimal	r10_recoveries;
@@ -2292,7 +2292,7 @@ public class M_I_S_CA_Arcihval_Summary_Entity {
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
 	}
-	public M_I_S_CA_Arcihval_Summary_Entity() {
+	public M_I_S_CA_RESUB_Summary_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

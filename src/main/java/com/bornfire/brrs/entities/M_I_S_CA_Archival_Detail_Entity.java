@@ -17,10 +17,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class M_I_S_CA_Archival_Detail_Entity {
 	
 	
-	@Id
+	
 	 @Column(name = "CUST_ID")
    private String custId;
-
+	  @Id
    @Column(name = "ACCT_NUMBER")
    private String acctNumber;
 
@@ -42,9 +42,13 @@ public class M_I_S_CA_Archival_Detail_Entity {
    
    @Column(name = "REPORT_ADDL_CRITERIA_2")
    private String reportAddlCriteria_2;
-	/*
-	 * @Column(name = "REPORT_ADDL_CRITERIA_3") private String reportAddlCriteria_3;
-	 */
+	
+	  @Column(name = "REPORT_ADDL_CRITERIA_3") 
+	  private String reportAddlCriteria_3;
+	  
+	  @Column(name = "REPORT_LABEL_1")
+	   private String reportLabel_1;
+	 
    
    @Column(name = "REPORT_REMARKS")
    private String reportRemarks;
@@ -164,6 +168,22 @@ public void setReportAddlCriteria_2(String reportAddlCriteria_2) {
 	this.reportAddlCriteria_2 = reportAddlCriteria_2;
 }
 
+public String getReportAddlCriteria_3() {
+	return reportAddlCriteria_3;
+}
+
+public void setReportAddlCriteria_3(String reportAddlCriteria_3) {
+	this.reportAddlCriteria_3 = reportAddlCriteria_3;
+}
+
+public String getReportLabel_1() {
+	return reportLabel_1;
+}
+
+public void setReportLabel1(String reportLabel_1) {
+	this.reportLabel_1 = reportLabel_1;
+}
+
 public String getReportRemarks() {
 	return reportRemarks;
 }
@@ -281,7 +301,9 @@ public M_I_S_CA_Archival_Detail_Entity() {
 	// TODO Auto-generated constructor stub
 }
 
- 
+
+   
+   
     
 
 }

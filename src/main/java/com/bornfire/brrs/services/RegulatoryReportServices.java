@@ -1213,7 +1213,15 @@ public class RegulatoryReportServices {
 			 case "M_SCI_E":
 					
 				 repsummary = brrs_m_sci_e_reportservice.getM_SCI_EView(reportId, fromdate,
-			     todate, currency, dtltype, pageable, type, version); break;	 
+			     todate, currency, dtltype, pageable, type, version); break;	
+			     
+case "M_I_S_CA":
+				 
+				 repsummary = brrs_m_i_s_ca_reportservice.getM_I_S_CAView(reportId, fromdate,
+				 todate, currency, dtltype, pageable, type, version);
+				 
+				 break;
+				 
 					 
 			case "Q_ATF":
 				 
@@ -1892,6 +1900,8 @@ public class RegulatoryReportServices {
 			repdetail = BRRS_M_PD_ReportService.getM_PDcurrentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
 			break;
+			
+			
 
 		case "Q_ATF":
 
@@ -3961,6 +3971,16 @@ break;
 					e.printStackTrace();
 				}
 				break;
+				
+		 case "M_I_S_CA":
+				try {
+					repfile = brrs_m_i_s_ca_reportservice.getM_I_S_CAExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, format, version); 
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 			 
 		 case "Q_ATF":
 		try {
@@ -4924,14 +4944,14 @@ case "M_CA2":
 //			}
 //			break;
 
-		case "M_I_S_CA":
-			try {
-				archivalData = brrs_m_i_s_ca_reportservice.getM_I_S_CAArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+//		case "M_I_S_CA":
+//			try {
+//				archivalData = brrs_m_i_s_ca_reportservice.getM_I_S_CAArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
 
 		case "CAP_RATIO_BUFFER":
 			try {
@@ -5274,6 +5294,13 @@ case "M_CA2":
 			List<Object[]> q_atfList = brrs_q_atf_reportservice.getQ_ATFArchival();
 			archivalData.addAll(q_atfList);
 			System.out.println("Fetched Q_ATF archival data: " + q_atfList.size());
+			break;
+			
+			
+		case "M_I_S_CA":
+			List<Object[]> m_i_s_caList = brrs_m_i_s_ca_reportservice.getM_I_S_CAArchival();
+			archivalData.addAll(m_i_s_caList);
+			System.out.println("Fetched M_I_S_CA archival data: " + m_i_s_caList.size());
 			break;
 
 //		case "M_BOP":
@@ -5686,6 +5713,8 @@ case "M_CA2":
 					version);
 
 		}
+		
+		
 
 		
 		 else if ("Q_ATF_Detail".equals(filename))
@@ -6940,6 +6969,17 @@ case "M_CA2":
 				System.out.println("Resubmission data fetched for Q_ATF: " + resubList.size());
 			} catch (Exception e) {
 				System.err.println("Error fetching resubmission data for Q_ATF: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_I_S_CA":
+			try {
+				List<Object[]> resubList = brrs_m_i_s_ca_reportservice.getM_I_S_CAResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for M_I_S_CA: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_I_S_CA: " + e.getMessage());
 				e.printStackTrace();
 			}
 			break;

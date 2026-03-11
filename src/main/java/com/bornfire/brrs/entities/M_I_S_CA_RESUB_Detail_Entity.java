@@ -12,15 +12,15 @@ import javax.persistence.Table;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_I_S_CA_DETAILTABLE")
+@Table(name = "BRRS_M_I_S_CA_RESUB_DETAILTABLE")
 
-public class M_I_S_CA_Detail_Entity {
+public class M_I_S_CA_RESUB_Detail_Entity {
 	
 	
-
+	
 	 @Column(name = "CUST_ID")
    private String custId;
-		@Id
+	  @Id
    @Column(name = "ACCT_NUMBER")
    private String acctNumber;
 
@@ -47,7 +47,8 @@ public class M_I_S_CA_Detail_Entity {
 	  private String reportAddlCriteria_3;
 	  
 	  @Column(name = "REPORT_LABEL_1")
-	   private String reportLabel1;
+	   private String reportLabel_1;
+	 
    
    @Column(name = "REPORT_REMARKS")
    private String reportRemarks;
@@ -175,12 +176,12 @@ public void setReportAddlCriteria_3(String reportAddlCriteria_3) {
 	this.reportAddlCriteria_3 = reportAddlCriteria_3;
 }
 
-public String getReportLabel1() {
-	return reportLabel1;
+public String getReportLabel_1() {
+	return reportLabel_1;
 }
 
-public void setReportLabel1(String reportLabel1) {
-	this.reportLabel1 = reportLabel1;
+public void setReportLabel1(String reportLabel_1) {
+	this.reportLabel_1 = reportLabel_1;
 }
 
 public String getReportRemarks() {
@@ -295,14 +296,14 @@ public void setDelFlg(String delFlg) {
 	this.delFlg = delFlg;
 }
 
-public M_I_S_CA_Detail_Entity() {
+public M_I_S_CA_RESUB_Detail_Entity() {
 	super();
 	// TODO Auto-generated constructor stub
 }
 
 
    
- 
+   
     
 
 }
