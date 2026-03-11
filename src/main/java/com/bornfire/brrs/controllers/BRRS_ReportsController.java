@@ -4901,12 +4901,13 @@ public class BRRS_ReportsController {
 	public void downloadConsolidatedExcel(@RequestParam(required = false) String asondate,
 			@RequestParam(required = false) String fromdate, @RequestParam(required = false) String todate,
 			@RequestParam(required = false) String currency, @RequestParam(required = false) String type,
+			@RequestParam(value = "format", required = false) String format,
 			@RequestParam(required = false) BigDecimal version, @RequestParam(required = false) String filename,
 			@RequestParam(required = false) String dtltype, HttpServletResponse response)
 			throws IOException, ParseException {
 		System.out.println("SerdownloadConsolidatedExcelvice: Generating report ");
 		byte[] file = regreportServices.getConsolidatedDownloadFile(filename, asondate, fromdate, todate, currency,
-				type, version, dtltype);
+				type, format, version, dtltype);
 		System.out.println("filename..." + filename);
 
 		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");

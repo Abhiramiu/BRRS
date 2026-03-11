@@ -7332,11 +7332,11 @@ case "M_CA2":
 		return resubmissionData;
 	}
 
-	public byte[] getConsolidatedDownloadFile(String filename, String asondate, String fromdate, String todate,
-			String currency, String type, BigDecimal version, String dtltype) throws ParseException {
+		public byte[] getConsolidatedDownloadFile(String filename, String asondate, String fromdate, String todate,
+			String currency, String type, String format, BigDecimal version, String dtltype) throws ParseException {
 
 		// List of all reports you want to include
-		List<String> reportList = Arrays.asList("M_LA1", "M_LA2");
+		List<String> reportList = Arrays.asList("M_IS","M_LIQ");
 		System.out.println(todate);
 
 		SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MMM-dd", Locale.ENGLISH);
@@ -7357,7 +7357,7 @@ case "M_CA2":
 		for (String report : reportList) {
 			try {
 				byte[] fileData = generateReport(report, filename, asondate, fromdate, formattedDate, currency, dtltype,
-						type, version);
+						type, format, version);
 				System.out.println(fileData + "    fileData");
 
 				if (fileData != null) {
@@ -7419,7 +7419,7 @@ case "M_CA2":
 	}
 
 	private byte[] generateReport(String reportName, String filename, String asondate, String fromdate, String todate,
-			String currency, String dtltype, String type, BigDecimal version) {
+			String currency, String dtltype, String type, String format, BigDecimal version) {
 
 		try { // ✅ Convert date formats if needed (example: 30/09/2025 → 30-Sep-2025)
 			SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -7441,36 +7441,45 @@ case "M_CA2":
 			System.out.println("Service: Generating report for " + reportName);
 			System.out.println("Converted Dates: From " + fromdate + " To " + todate + " Ason " + asondate);
 
+			if ("email".equalsIgnoreCase(format) && version == null) {
+				switch (reportName) {
+				
+				case "M_IS":
+					return BRRS_M_IS_reportservice.BRRS_M_ISExcel("EMAILM_IS.xlsx", reportName, fromdate, todate, currency,
+							dtltype, type, format, version);
+				
+				case "M_LIQ":
+					
+					return BRRS_M_LIQ_reportservice.getM_LIQExcel("EMAIL_M_LIQ.xlsx", reportName, fromdate, todate, currency,
+								dtltype, type, format, version);
+				
+				default:
+					System.out.println("Service: Unknown report name: " + reportName);
+					return null;
+				}
+				
+			}
+			else {
 			// ✅ Switch case for all reports
 			switch (reportName) {
-			/*
-			 * case "M_LA4": return BRRS_M_LA4_reportservice.BRRS_M_LA4Excel("M_LA4.xlsx",
-			 * reportName, fromdate, todate, currency, dtltype, type, version);
-			 * 
-			 * case "M_CA4": return
-			 * BRRS_M_CA4_reportservice.getBRRS_M_CA4Excel("M_CA4.xlsx", reportName,
-			 * fromdate, todate, currency, dtltype, type, version);
-			 */
-			case "M_LA1":
-				return BRRS_M_LA1_reportservice.BRRS_M_LA1Excel("M_LA1.xlsx", reportName, fromdate, todate, currency,
-						dtltype, type, version);
-			/*
-			 * case "M_LA2": return BRRS_M_LA2_reportservice.BRRS_M_LA2Excel("M_LA2.xlsx",
-			 * reportName, fromdate, todate, currency, dtltype, type, version);
-			 */
-			/*
-			 * case "SCH_17": return brrs_sch_17_reportservice.getSCH_17Excel("SCH_17.xlsx",
-			 * reportName, fromdate, todate, currency, "DETAIL", type, null);
-			 */
+			
+			case "M_IS":
+				return BRRS_M_IS_reportservice.BRRS_M_ISExcel("M_IS.xlsx", reportName, fromdate, todate, currency,
+						dtltype, type, format, version);
+			
+			case "M_LIQ":
+				
+					return BRRS_M_LIQ_reportservice.getM_LIQExcel("M_LIQ.xlsx", reportName, fromdate, todate, currency,
+							dtltype, type, format, version);
+			
+			
 			default:
 				System.out.println("Service: Unknown report name: " + reportName);
 				return null;
 			}
+			}
 
-			/*
-			 * byte[] excelData = getDownloadFile("", filename, asondate, fromdate, todate,
-			 * currency, "", "", dtltype, "", "", "", type, null);
-			 */
+		
 		} catch (ParseException pe) {
 			System.err.println("Date parse error: " + pe.getMessage());
 			pe.printStackTrace();
@@ -7487,6 +7496,7 @@ case "M_CA2":
 			return null;
 		}
 	}
+		
 
 	private void copySheet(Sheet src, Sheet dest) {
 		if (src == null || dest == null)
@@ -7595,6 +7605,7 @@ case "M_CA2":
 			dest.setColumnWidth(c, src.getColumnWidth(c));
 		}
 	}
+	
 	/*
 	 * public byte[] generateConsolidatedExcel(String asondate, String fromdate,
 	 * String todate, String currency, String type, String version, String dtltype)

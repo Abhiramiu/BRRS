@@ -301,7 +301,8 @@
 	animation: l23 2s infinite;
 }
 
-@keyframes l23 { 50% {
+@
+keyframes l23 { 50% {
 	background-position: center;
 	text-shadow: -10ch 0 0 #000, 0 0 0 #fff, 10ch 0 0 #000
 }
@@ -311,25 +312,37 @@
 background-position
 
 
+
+
 :
+
 
  
 
+
 right
+
+
 
 
 ;
 text-shadow
 
 
+
+
 :
 
+
  
+
 
 -20
 ch
 
+
  
+
 
 0
 0
@@ -338,7 +351,9 @@ ch
 -10
 ch
 
+
  
+
 
 0
 0
@@ -350,11 +365,14 @@ ch
 #000
 
 
+
 			
+
 
 }
 }
-@keyframes slideIn {from { opacity:0;
+@
+keyframes slideIn {from { opacity:0;
 	transform: translateX(100%);
 }
 
@@ -364,7 +382,8 @@ to {
 }
 
 }
-@keyframes fadeOut {to { opacity:0;
+@
+keyframes fadeOut {to { opacity:0;
 	transform: translateX(100%);
 }
 
@@ -397,7 +416,8 @@ to {
 	margin: auto;
 }
 
-@keyframes spin { 0% {
+@
+keyframes spin { 0% {
 	transform: rotate(0deg);
 }
 100%
@@ -405,20 +425,24 @@ to {
 transform
 
 
+
+
 :
 
+
  
+
 
 rotate
 
 
+
+
 (360
 deg
+
+
 );
-
-
-			
-
 }
 }
 </style>
@@ -447,98 +471,181 @@ below Styles is for Report date validation
 }
 </style>
 <script>
+	function submitReport() {
 
-		function back() {
-			window.history.back();
-		}
-		function list() {
-			location.href = 'MCBL?formmode=list';
+		var format = document.getElementById("formatType").value;
+
+		if (format === "format") {
+			downloadfile();
+		} else if (format === "email") {
+			downloademailfile();
 		}
 
-   function downloadfile() {
-    var rawDate = document.getElementById("report_date").value;
-			var reportid = "";
-			var asondate = toDDMMYYYYMMM(rawDate);
-var todate   = toDDMMYYYYMMM(rawDate);
-            alert(asondate);
-			var fromdate = "";
-			 
-			var currency = "";
-			var subreportid = "";
-			var secid = "";
-			var dtltype = "";
+	}
+</script>
+<script>
+	function downloademailfile() {
+		var rawDate = document.getElementById("report_date").value;
+		var reportid = "";
+		var asondate = toDDMMYYYYMMM(rawDate);
+		var todate = toDDMMYYYYMMM(rawDate);
+		alert(asondate);
+		var fromdate = "";
+
+		var currency = "";
+		var subreportid = "";
+		var secid = "";
+		var dtltype = "";
 		var filename = "BRRS_Consolidated_Report";
-			var type = "BRRS";
-			var version = "";
+		var type = "BRRS";
+		var format = "email";
+		var version = "";
+		$('#loader').modal('show');
+		$
+				.ajax({
+					url : './Reports/downloadConsolidatedExcel',
+					type : 'GET',
+					data : {
+						asondate : asondate,
+						todate : todate,
+						type : type,
+						filename : filename,
+						format : format
 
-			$('#loader').modal('show');
-			$.ajax({
-                 url: './Reports/downloadConsolidatedExcel',
-				 type: 'GET',
-        data: {
-            asondate: asondate,
-            todate: todate,
-            type: type,
-            filename: filename
-            
-        },
-				xhrFields: {
-					responseType: 'blob'
-				},
-				success: function (data) {
-					$('#loader').modal('hide');
-					if (data && data.size > 100) {
-						const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
-						const url = window.URL.createObjectURL(blob);
-						const a = document.createElement('a');
-						a.style.display = 'none';
-						a.href = url;
-						a.download = filename+'.xlsx';
-						document.body.appendChild(a);
-						a.click();
-						window.URL.revokeObjectURL(url);
-						document.body.removeChild(a);
-						showResultModal('BRRS', filename + ' downloaded successfully.');
-					} else {
-						showResultModal('Information', 'No data was available to create a download.');
+					},
+					xhrFields : {
+						responseType : 'blob'
+					},
+					success : function(data) {
+						$('#loader').modal('hide');
+						if (data && data.size > 100) {
+							const blob = new Blob([ data ], {
+								type : 'application/vnd.ms-excel'
+							});
+							const url = window.URL.createObjectURL(blob);
+							const a = document.createElement('a');
+							a.style.display = 'none';
+							a.href = url;
+							a.download = filename + '.xlsx';
+							document.body.appendChild(a);
+							a.click();
+							window.URL.revokeObjectURL(url);
+							document.body.removeChild(a);
+							showResultModal('BRRS', filename
+									+ ' downloaded successfully.');
+						} else {
+							showResultModal('Information',
+									'No data was available to create a download.');
+						}
+					},
+					error : function(jqXHR, textStatus, errorThrown) {
+						$('#loader').modal('hide');
+						console.error("Download failed:", textStatus,
+								errorThrown);
+						showResultModal('Error',
+								'An error occurred while downloading the file. Please try again.');
 					}
-				},
-				error: function (jqXHR, textStatus, errorThrown) {
-					$('#loader').modal('hide');
-					console.error("Download failed:", textStatus, errorThrown);
-					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-				}
-			});
-		}
-function toDDMMYYYYMMM(dateStr) {
-    if (!dateStr) return "";
-    let d = dateStr.split("-");   
-    //let month = monthNames[parseInt(d[1],10)-1];
-    //return d[2] + "-" + d[1] + "-" + d[0];
-    let monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    let month = monthNames[parseInt(d[1],10)-1];
-    return d[0] + "-" + month + "-" + d[2];  // 31-Oct-2025
-}
+				});
+	}
+</script>
+<script>
+	function back() {
+		window.history.back();
+	}
+	function list() {
+		location.href = 'MCBL?formmode=list';
+	}
 
+	function downloadfile() {
+		var rawDate = document.getElementById("report_date").value;
+		var reportid = "";
+		var asondate = toDDMMYYYYMMM(rawDate);
+		var todate = toDDMMYYYYMMM(rawDate);
+		alert(asondate);
+		var fromdate = "";
+
+		var currency = "";
+		var subreportid = "";
+		var secid = "";
+		var dtltype = "";
+		var filename = "BRRS_Consolidated_Report";
+		var type = "BRRS";
+		var version = "";
+		$('#loader').modal('show');
+		$
+				.ajax({
+					url : './Reports/downloadConsolidatedExcel',
+					type : 'GET',
+					data : {
+						asondate : asondate,
+						todate : todate,
+						type : type,
+						filename : filename,
+
+					},
+					xhrFields : {
+						responseType : 'blob'
+					},
+					success : function(data) {
+						$('#loader').modal('hide');
+						if (data && data.size > 100) {
+							const blob = new Blob([ data ], {
+								type : 'application/vnd.ms-excel'
+							});
+							const url = window.URL.createObjectURL(blob);
+							const a = document.createElement('a');
+							a.style.display = 'none';
+							a.href = url;
+							a.download = filename + '.xlsx';
+							document.body.appendChild(a);
+							a.click();
+							window.URL.revokeObjectURL(url);
+							document.body.removeChild(a);
+							showResultModal('BRRS', filename
+									+ ' downloaded successfully.');
+						} else {
+							showResultModal('Information',
+									'No data was available to create a download.');
+						}
+					},
+					error : function(jqXHR, textStatus, errorThrown) {
+						$('#loader').modal('hide');
+						console.error("Download failed:", textStatus,
+								errorThrown);
+						showResultModal('Error',
+								'An error occurred while downloading the file. Please try again.');
+					}
+				});
+	}
+	function toDDMMYYYYMMM(dateStr) {
+		if (!dateStr)
+			return "";
+		let d = dateStr.split("-");
+		//let month = monthNames[parseInt(d[1],10)-1];
+		//return d[2] + "-" + d[1] + "-" + d[0];
+		let monthNames = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+				"Aug", "Sep", "Oct", "Nov", "Dec" ];
+		let month = monthNames[parseInt(d[1], 10) - 1];
+		return d[0] + "-" + month + "-" + d[2]; // 31-Oct-2025
+	}
 
 	function showResultModal(title, message) {
-			// Set the text for the modal elements
-			$('#resultModalLabel').text(title);
-			$('#resultModalBody').text(message);
+		// Set the text for the modal elements
+		$('#resultModalLabel').text(title);
+		$('#resultModalBody').text(message);
 
-			// Show the modal
-			$('#resultModal').modal('show');
-		}
+		// Show the modal
+		$('#resultModal').modal('show');
+	}
 
-		function closemodel() {
-			$('#alert').modal('hide');
-			$('#resultModal').modal('hide');
+	function closemodel() {
+		$('#alert').modal('hide');
+		$('#resultModal').modal('hide');
 
-		}	  
-		   
-		</script>
+	}
+</script>
 
-		      
+
 </head>
 
 <title>CONSOLIDATED Excel</title>
@@ -569,65 +676,78 @@ function toDDMMYYYYMMM(dateStr) {
 							</div>
 						</div>
 						<div class="card-body">
-							<!-- Dropdowns -->
-							<div class="row align-items-center formline"
-								style="margin-bottom: 0px;">
-								<!-- Empty space -->
-								<div class="col-sm-auto"></div>
 
-								<!-- File Type -->
-								<label class="col-sm-1"></label>
-								<div class="col-sm-2">
-								</div>
-								<!-- Report Date -->
-								<label class="col-sm-1">Report Date</label>
+							<!-- Row 1 : Report Date -->
+							<div
+								class="row justify-content-center align-items-center formline mb-3">
+								<label class="col-sm-1 text-start">Report Date</label>
 								<div class="col-sm-3">
-									 <input  type="date" id="report_date" name="report_date" 
-											 class="form-control form-control-sm month-end-date-picker" />
-								</div>
-								<div class="col-sm-2">
-									<button type="button" class="custom-tab-btn"
-										style="padding: 5px 20px;" onclick="downloadfile();">Submit</button>
-								</div>
-								</div>
+									<input type="date" id="report_date" name="report_date"
+										class="form-control form-control-sm month-end-date-picker" />
 								</div>
 							</div>
+
+							<!-- Row 2 : Format Dropdown -->
+							<div
+								class="row justify-content-center align-items-center formline mb-3">
+								<label class="col-sm-1 text-start">Format</label>
+								<div class="col-sm-3">
+									<select id="formatType" class="form-control form-control-sm">
+										<option value="">Select</option>
+										<option value="format">Format File</option>
+										<option value="email">Email File</option>
+									</select>
+								</div>
+							</div>
+							<div class="col-sm-3 "></div>
+
+							<!-- Row 3 : Submit Button -->
+							<div
+								class="row justify-content-center align-items-center formline">
+								<div class="col-sm-3 text-center">
+									<button type="button" class="custom-tab-btn"
+										style="padding: 5px 20px;" onclick="submitReport();">Submit</button>
+								</div>
+							</div>
+
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-		<!-- Loader Modal -->
-		<div class="modal fade" id="loader" data-bs-backdrop="static"
-			data-bs-keyboard="false" tabindex="-1">
-			<div class="modal-dialog modal-dialog-centered">
-				<div class="modal-content"
-					style="background: transparent; border: none; box-shadow: none;">
-					<div class="modal-body d-flex justify-content-center">
-						<div class="loader"></div>
-					</div>
+
+	<!-- Loader Modal -->
+	<div class="modal fade" id="loader" data-bs-backdrop="static"
+		data-bs-keyboard="false" tabindex="-1">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content"
+				style="background: transparent; border: none; box-shadow: none;">
+				<div class="modal-body d-flex justify-content-center">
+					<div class="loader"></div>
 				</div>
 			</div>
 		</div>
-        	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+	</div>
+	<!-- Custom Alert/Result Modal (Matches your existing style) -->
 	<div class="modal fade" id="resultModal">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<!-- Your custom styled header -->
 				<div class="menu-title-header">
-					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+					<div class="modal-title" id="resultModalLabel"
+						style="text-align: center; color: white;">
 						<!-- Title will be set by JavaScript -->
 					</div>
 				</div>
-				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
 					<p id="resultModalBody"></p>
 					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-dismiss="modal">OK</button>
+					<button type="button" class="custom-tab-btn" onclick="closemodel()"
+						data-dismiss="modal">OK</button>
 				</div>
 			</div>
 		</div>
 	</div>
-
-
 </html>
