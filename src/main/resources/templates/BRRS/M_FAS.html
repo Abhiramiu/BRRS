@@ -509,13 +509,15 @@ PURPOSE		: BRRSREPORT
 				}
 			});
 		}
-
 		function closemodel() {
-			$("#resultModal").modal("hide");
-			$('#loader').modal('hide');
-		}
+							$("#resultModal").modal("hide");
+							$('#loader').modal('hide');
 
-
+							// Reload the page after a short delay to ensure the modal animation completes smoothly.
+							setTimeout(function () {
+								location.reload();
+							}, 300);
+						}
 	</script>
 
 	<script>
@@ -695,12 +697,8 @@ PURPOSE		: BRRSREPORT
 		}
 
 		function submitFASUpdate() {
-			const formData = $('#FASDetailForm').serialize(); // Ensure correct form ID
+			const formData = $('#FASDetailForm').serialize();
 
-			// ✅ Store the previous page URL
-			const previousUrl = document.referrer; // same as going back once in history
-
-			// Show loader while processing
 			$('#loader').modal('show');
 
 			$.ajax({
@@ -710,42 +708,30 @@ PURPOSE		: BRRSREPORT
 				success: function (response) {
 					$('#loader').modal('hide');
 
-					// Show message via modal
 					if (response && response.toLowerCase().includes('success')) {
-						showResultModal('BRRS', response);
+						showResultModal1('BRRS', response);
 					} else {
-						showResultModal('Information', response || 'No data updated.');
+						showResultModal1('Information', response || 'No data updated.');
 					}
-
-					// ✅ Redirect back to the previous page after short delay
-					setTimeout(() => {
-						if (previousUrl) {
-							window.location.href = previousUrl;
-						} else {
-							// fallback: just go back if referrer not found
-							window.history.back();
-						}
-					}, 500);
 				},
+
 				error: function (xhr, status, error) {
 					$('#loader').modal('hide');
 					console.error("Update error:", error);
 
-					showResultModal('Error', 'Failed to update record. Please try again.');
-
+					showResultModal1('Error', 'Failed to update record. Please try again.');
 				}
 			});
 		}
-		function showResultModal(title, message) {
-			// Set the text for the modal elements
-			$('#resultModalLabel').text(title);
-			$('#resultModalBody').text(message);
 
-			// Show the modal
-			$('#resultModal').modal('show');
+		function showResultModal1(title, message) {
+			$('#resultModalLabel1').text(title);
+			$('#resultModalBody1').text(message);
+			$('#resultModal1').modal('show');
 		}
+
 		function closemodels() {
-			$('#resultModal').modal('hide');
+			$('#resultModal1').modal('hide');
 
 			setTimeout(function () {
 				if (document.referrer) {
