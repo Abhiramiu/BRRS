@@ -208,15 +208,16 @@ public class BRRS_M_I_S_CA_ReportService {
 			
 			
 			// ✅ Split filter string into rowId & columnId
-			if (filter != null && filter.contains(",")) {
-				String[] parts = filter.split(",");
-				if (parts.length >= 2) {
-					reportLable = parts[0];
-					reportLable_1 = parts[1];
-					reportAddlCriteria_1 = parts[2];
-					reportAddlCriteria_2 = parts[3];
-					reportAddlCriteria_3 = parts[4];
-				}
+			if (filter != null && !filter.isEmpty()) {
+				String[] parts = filter.split(",", -1);
+				
+					reportLable = parts.length > 0 ? parts[0] : null;
+					
+					reportAddlCriteria_1 = parts.length > 1 ? parts[1] : null;
+					reportAddlCriteria_2 = parts.length > 2 ? parts[2] : null;
+					reportAddlCriteria_3 = parts.length > 3 ? parts[3] : null;
+					reportLable_1 = parts.length > 4 ? parts[4] : null;
+				
 			}
 
 			System.out.println(type);
@@ -224,8 +225,8 @@ public class BRRS_M_I_S_CA_ReportService {
 				System.out.println(type);
 				// 🔹 Archival branch
 				List<M_I_S_CA_Archival_Detail_Entity> T1Dt1;
-				if (reportLable != null && reportLable_1 != null && reportAddlCriteria_1 != null && reportAddlCriteria_2 != null && reportAddlCriteria_3 != null ) {
-					T1Dt1 = m_i_s_ca_Archival_Detail_Repo.GetDataByRowIdAndColumnId(reportLable,reportLable_1, reportAddlCriteria_1,reportAddlCriteria_2,reportAddlCriteria_3, parsedDate);
+				if (reportLable != null || reportLable_1 != null || reportAddlCriteria_1 != null || reportAddlCriteria_2 != null || reportAddlCriteria_3 != null ) {
+					T1Dt1 = m_i_s_ca_Archival_Detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1,reportAddlCriteria_2,reportAddlCriteria_3, reportLable_1,parsedDate);
 				} else {
 					T1Dt1 = m_i_s_ca_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
 				}
@@ -238,8 +239,8 @@ public class BRRS_M_I_S_CA_ReportService {
 				// 🔹 Current branch
 				List<M_I_S_CA_Detail_Entity> T1Dt1;
 
-				if (reportLable != null && reportLable_1 != null && reportAddlCriteria_1 != null && reportAddlCriteria_2 != null && reportAddlCriteria_3 != null ) {
-					T1Dt1 = brrs_m_i_s_ca_detail_repo.GetDataByRowIdAndColumnId(reportLable,reportLable_1, reportAddlCriteria_1,reportAddlCriteria_2,reportAddlCriteria_3, parsedDate);
+				if (reportLable != null || reportLable_1 != null || reportAddlCriteria_1 != null || reportAddlCriteria_2 != null || reportAddlCriteria_3 != null ) {
+					T1Dt1 = brrs_m_i_s_ca_detail_repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1,reportAddlCriteria_2,reportAddlCriteria_3,reportLable_1, parsedDate);
 				} else {
 					T1Dt1 = brrs_m_i_s_ca_detail_repo.getdatabydateList(parsedDate);
 					totalPages = brrs_m_i_s_ca_detail_repo.getdatacount(parsedDate);
@@ -401,14 +402,14 @@ public List<Object[]> getM_I_S_CAResub() {
 			// ACCT BALANCE style (right aligned with 3 decimals)
 			CellStyle balanceStyle = workbook.createCellStyle();
 			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
 			balanceStyle.setBorderTop(border);
 			balanceStyle.setBorderBottom(border);
 			balanceStyle.setBorderLeft(border);
 			balanceStyle.setBorderRight(border);
 
 			// Header row
-			String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT_DATE" };
+			String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT ADDL CRITERIA2","REPORT_DATE" };
 
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
@@ -441,7 +442,7 @@ public List<Object[]> getM_I_S_CAResub() {
 					if (item.getAcctBalanceInpula() != null) {
 						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
 					} else {
-						balanceCell.setCellValue(0.000);
+						balanceCell.setCellValue(0);
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
@@ -449,13 +450,14 @@ public List<Object[]> getM_I_S_CAResub() {
 
 					row.createCell(4).setCellValue(item.getReportLable());
 					row.createCell(5).setCellValue(item.getReportAddlCriteria_1());
-					row.createCell(6)
+					row.createCell(6).setCellValue(item.getReportAddlCriteria_2());
+					row.createCell(7)
 							.setCellValue(item.getReportDate() != null
 									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
 									: "");
 
 					// Apply data style for all other cells
-					for (int j = 0; j < 7; j++) {
+					for (int j = 0; j < 8; j++) {
 						if (j != 3) {
 							row.getCell(j).setCellStyle(dataStyle);
 						}
@@ -527,14 +529,14 @@ public List<Object[]> getM_I_S_CAResub() {
 // ACCT BALANCE style (right aligned with 3 decimals)
 			CellStyle balanceStyle = workbook.createCellStyle();
 			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
 			balanceStyle.setBorderTop(border);
 			balanceStyle.setBorderBottom(border);
 			balanceStyle.setBorderLeft(border);
 			balanceStyle.setBorderRight(border);
 
 // Header row
-			String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE",  "REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT_DATE" };
+			String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE",  "REPORT LABLE", "REPORT ADDL CRITERIA1","REPORT ADDL CRITERIA2", "REPORT_DATE" };
 
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
@@ -569,20 +571,21 @@ public List<Object[]> getM_I_S_CAResub() {
 					if (item.getAcctBalanceInpula() != null) {
 						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
 					} else {
-						balanceCell.setCellValue(0.000);
+						balanceCell.setCellValue(0);
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
 					
 					row.createCell(4).setCellValue(item.getReportLable());
 					row.createCell(5).setCellValue(item.getReportAddlCriteria_1());
-					row.createCell(6)
+					row.createCell(6).setCellValue(item.getReportAddlCriteria_2());
+					row.createCell(7)
 							.setCellValue(item.getReportDate() != null
 									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
 									: "");
 
 // Apply data style for all other cells
-					for (int j = 0; j < 7; j++) {
+					for (int j = 0; j < 8; j++) {
 						if (j != 3) {
 							row.getCell(j).setCellStyle(dataStyle);
 						}
@@ -724,7 +727,7 @@ public List<Object[]> getM_I_S_CAResub() {
 				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(miscaEntity.getReportDate());
 				mv.addObject("asondate", formattedDate);
 			}
-			mv.addObject("msciData", miscaEntity);
+			mv.addObject("miscaData", miscaEntity);
 		}
 
 		mv.addObject("displaymode", "edit");
