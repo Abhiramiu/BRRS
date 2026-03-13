@@ -48,7 +48,6 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_LA5_Summary_Repo;
-import com.bornfire.brrs.entities.M_LA4_Detail_Entity;
 import com.bornfire.brrs.entities.BRRS_M_LA5_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA5_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA5_Archival_Summary_Repo;

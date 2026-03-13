@@ -552,7 +552,9 @@ public class RegulatoryReportServices {
 				  fromdate, todate, currency, dtltype, pageable, 
 				  type, version); 
 			break;
-				 
+		case "M_MRC":
+			repsummary = BRRS_M_MRC_reportservice.getM_MRCview(reportId,
+				  fromdate, todate, currency, dtltype, pageable, type, version); break; 
 			
 				 /*
 		 * 
@@ -2793,6 +2795,16 @@ break;
 				e.printStackTrace();
 			}
 			break;
+			
+			
+		case "M_MRC": try { repfile =
+				  BRRS_M_MRC_reportservice.BRRS_M_MRCExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type,format, version);
+		} catch (Exception e) { // TODOAuto-generated catch block
+			e.printStackTrace(); 
+			}
+		break;
+	
 		/*
 		 * case "M_CA4": try { repfile =
 		 * BRRS_M_CA4_reportservice.getBRRS_M_CA4Excel(filename, reportId, fromdate,
@@ -4422,17 +4434,21 @@ case "M_CA2":
 			System.out.println("Fetched M_LIQGAP archival data: " + M_LIQGAPList.size());
 			break;
 			
-
+		case "M_MRC":
+			List<Object[]> M_mrcList = BRRS_M_MRC_reportservice.getM_MRCArchival();
+			archivalData.addAll(M_mrcList);
+			System.out.println("Fetched M_mrcList archival data: " + M_mrcList.size());
+			break;
 	
 
-		case "M_MRC":
-			try {
-				archivalData = BRRS_M_MRC_reportservice.getM_MRCArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+//		case "":
+//			try {
+//				archivalData = BRRS_M_MRC_reportservice.getM_MRCArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
 
 		case "M_SP":
 			try {
@@ -6984,6 +7000,17 @@ case "M_CA2":
 				System.out.println("Resubmission data fetched for Q_ATF: " + resubList.size());
 			} catch (Exception e) {
 				System.err.println("Error fetching resubmission data for Q_ATF: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_MRC":
+			try {
+				List<Object[]> resubList = BRRS_M_MRC_reportservice.getM_MRCResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for MRC: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for MRC: " + e.getMessage());
 				e.printStackTrace();
 			}
 			break;

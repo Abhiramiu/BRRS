@@ -3,6 +3,7 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -16,11 +17,13 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 public class M_MRC_Manual_Archival_Summary_Entity {
 	
-	@Temporal(TemporalType.DATE)
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
-	private Date report_date;
-	private String report_version;
+	@Temporal(TemporalType.DATE)
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+
+	@Column(name = "REPORT_VERSION")
+	private BigDecimal reportVersion;
 	private String report_frequency;
 	private String report_code;
 	private String report_desc;
@@ -30,20 +33,22 @@ public class M_MRC_Manual_Archival_Summary_Entity {
 	
 	private BigDecimal R33_TOTAL;
 
-	public Date getReport_date() {
-		return report_date;
+	
+
+	public Date getReportDate() {
+		return reportDate;
 	}
 
-	public void setReport_date(Date report_date) {
-		this.report_date = report_date;
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
 	}
 
-	public String getReport_version() {
-		return report_version;
+	public BigDecimal getReportVersion() {
+		return reportVersion;
 	}
 
-	public void setReport_version(String report_version) {
-		this.report_version = report_version;
+	public void setReportVersion(BigDecimal reportVersion) {
+		this.reportVersion = reportVersion;
 	}
 
 	public String getReport_frequency() {

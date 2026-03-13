@@ -10,11 +10,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "BRRS_M_MRC_SUMMARYTABLE")
-
 public class M_MRC_Summary_Entity {
 	
 	private BigDecimal R9_LINE;
@@ -129,11 +127,13 @@ public class M_MRC_Summary_Entity {
     private String R36_PRODUCT;
     private BigDecimal R36_TOTAL;
     
-    @Temporal(TemporalType.DATE)
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
-	public Date REPORT_DATE;
-    public String REPORT_VERSION;
+	@Temporal(TemporalType.DATE)
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+
+	@Column(name = "REPORT_VERSION")
+	private BigDecimal reportVersion;
     public String REPORT_FREQUENCY;
     public String REPORT_CODE;
     public String REPORT_DESC;
@@ -644,17 +644,17 @@ public class M_MRC_Summary_Entity {
 	public void setR36_TOTAL(BigDecimal r36_TOTAL) {
 		R36_TOTAL = r36_TOTAL;
 	}
-	public Date getREPORT_DATE() {
-		return REPORT_DATE;
+	public Date getReportDate() {
+		return reportDate;
 	}
-	public void setREPORT_DATE(Date rEPORT_DATE) {
-		REPORT_DATE = rEPORT_DATE;
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
 	}
-	public String getREPORT_VERSION() {
-		return REPORT_VERSION;
+	public BigDecimal getReportVersion() {
+		return reportVersion;
 	}
-	public void setREPORT_VERSION(String rEPORT_VERSION) {
-		REPORT_VERSION = rEPORT_VERSION;
+	public void setReportVersion(BigDecimal reportVersion) {
+		this.reportVersion = reportVersion;
 	}
 	public String getREPORT_FREQUENCY() {
 		return REPORT_FREQUENCY;

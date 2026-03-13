@@ -10,83 +10,80 @@ import javax.persistence.Table;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-
-
 @Entity
 @Table(name = "BRRS_M_MRC_ARCHIVALTABLE_DETAIL")
 
 public class M_MRC_Archival_Detail_Entity {
-	
 	@Id
-    @Column(name = "CUST_ID")
-    private String custId;
+	@Column(name = "SNO")
+	private String sno;
 
-    @Column(name = "ACCT_NUMBER")
-    private String acctNumber;
+	@Column(name = "CUST_ID")
+	private String custId;
 
-    @Column(name = "ACCT_NAME")
-    private String acctName;
+	@Column(name = "ACCT_NUMBER")
+	private String acctNumber;
 
-    @Column(name = "DATA_TYPE")
-    private String dataType;
+	@Column(name = "ACCT_NAME")
+	private String acctName;
 
-    @Column(name = "COLUMN_ID")
-    private String columnId;
-    
-    @Column(name = "ROW_ID")
-    private String rowId;
+	@Column(name = "DATA_TYPE")
+	private String dataType;
 
-    @Column(name = "REPORT_REMARKS")
-    private String reportRemarks;
+	@Column(name = "REPORT_LABEL")
+	private String reportLabel;
 
-    @Column(name = "MODIFICATION_REMARKS")
-    private String modificationRemarks;
+	@Column(name = "REPORT_ADDL_CRITERIA_1")
+	private String reportAddlCriteria1;
 
-    @Column(name = "DATA_ENTRY_VERSION")
-    private String dataEntryVersion;
+	@Column(name = "REPORT_REMARKS")
+	private String reportRemarks;
 
-    @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 2)
-    private BigDecimal acctBalanceInpula;
+	@Column(name = "MODIFICATION_REMARKS")
+	private String modificationRemarks;
 
+	@Column(name = "DATA_ENTRY_VERSION")
+	private String dataEntryVersion;
 
-    @Column(name = "REPORT_DATE")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private Date reportDate;
+	@Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 2)
+	private BigDecimal acctBalanceInpula;
 
-    @Column(name = "REPORT_NAME")
-    private String reportName;
+	@Column(name = "REPORT_DATE")
+	@DateTimeFormat(pattern = "dd-MM-yyyy")
+	private Date reportDate;
 
-    @Column(name = "CREATE_USER")
-    private String createUser;
+	@Column(name = "REPORT_NAME")
+	private String reportName;
 
-    @Column(name = "CREATE_TIME")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private Date createTime;
+	@Column(name = "CREATE_USER")
+	private String createUser;
 
-    @Column(name = "MODIFY_USER")
-    private String modifyUser;
+	@Column(name = "CREATE_TIME")
+	@DateTimeFormat(pattern = "dd-MM-yyyy")
+	private Date createTime;
 
+	@Column(name = "MODIFY_USER")
+	private String modifyUser;
 
-    @Column(name = "MODIFY_TIME")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private Date modifyTime;
+	@Column(name = "MODIFY_TIME")
+	@DateTimeFormat(pattern = "dd-MM-yyyy")
+	private Date modifyTime;
 
-    @Column(name = "VERIFY_USER")
-    private String verifyUser;
+	@Column(name = "VERIFY_USER")
+	private String verifyUser;
 
+	@Column(name = "VERIFY_TIME")
+	@DateTimeFormat(pattern = "dd-MM-yyyy")
+	private Date verifyTime;
 
-    @Column(name = "VERIFY_TIME")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private Date verifyTime;
+	@Column(name = "ENTITY_FLG")
+	private char entityFlg;
 
-    @Column(name = "ENTITY_FLG")
-    private char entityFlg;
+	@Column(name = "MODIFY_FLG")
+	private char modifyFlg;
 
-    @Column(name = "MODIFY_FLG")
-    private char modifyFlg;
-
-    @Column(name = "DEL_FLG")
-    private char delFlg;
+	@Column(name = "DEL_FLG")
+	private char delFlg;
 
 	public String getCustId() {
 		return custId;
@@ -120,20 +117,20 @@ public class M_MRC_Archival_Detail_Entity {
 		this.dataType = dataType;
 	}
 
-	public String getColumnId() {
-		return columnId;
+	public String getReportLabel() {
+		return reportLabel;
 	}
 
-	public void setColumnId(String columnId) {
-		this.columnId = columnId;
+	public void setReportLabel(String reportLabel) {
+		this.reportLabel = reportLabel;
 	}
 
-	public String getRowId() {
-		return rowId;
+	public String getReportAddlCriteria1() {
+		return reportAddlCriteria1;
 	}
 
-	public void setRowId(String rowId) {
-		this.rowId = rowId;
+	public void setReportAddlCriteria1(String reportAddlCriteria1) {
+		this.reportAddlCriteria1 = reportAddlCriteria1;
 	}
 
 	public String getReportRemarks() {
@@ -261,12 +258,4 @@ public class M_MRC_Archival_Detail_Entity {
 		// TODO Auto-generated constructor stub
 	}
 
-	
-
-	
-	    
-    
-
-    
- 
 }
