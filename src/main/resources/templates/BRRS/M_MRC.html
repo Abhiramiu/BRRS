@@ -1037,18 +1037,24 @@ PURPOSE		: BRRS_M_CA2REPORT
 	</script>
 
 	<script>
-		function openDetail(elem, mode) {
+	function openDetail(elem, mode) {
 
-			var type = elem.getAttribute('data-type');
+	    const type = elem.getAttribute("data-type");
+	    const acctNo = elem.getAttribute("data-acctNo");
+	    const asondate = elem.getAttribute("data-asondate");
 
-			if (type === "ARCHIVAL") {
-				showResultModal('BRRS', "Archived Data cannot be modified");
-				return;
-			}
-			const acctNo = elem.getAttribute("data-acctNo");
-			const asondate = elem.getAttribute("data-asondate");
-			location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
-		}
+	    if (type === "ARCHIVAL") {
+	        showResultModal('BRRS', "Archived Data cannot be modified");
+	        return;
+	    }
+
+	    if (!acctNo || acctNo === "null") {
+	        showResultModal('BRRS', "Reference Link Value Cannot be Modify");
+	        return;
+	    }
+
+	    location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+	}
 	</script>
 
 	<script>
@@ -1643,7 +1649,7 @@ PURPOSE		: BRRS_M_CA2REPORT
 											<tr>
 												<td style="font-weight:bold;padding-left: 20px; text-align: center; "
 													th:text="${report.R32_LINE}"></td>
-												<td style="font-weight:bold;text-align: left; padding-left: 20px;"
+												<td style="font-weight:bold;text-align: left;"
 													th:text="${report.R32_PRODUCT}"></td>
 												<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;"
 												id="R32_TOTAL"
@@ -1670,7 +1676,7 @@ PURPOSE		: BRRS_M_CA2REPORT
 											<tr>
 												<td style="padding-left: 20px; text-align: center; "
 													th:text="${report.R34_LINE}"></td>
-												<td style="font-weight:bold;text-align: left; padding-left: 20px;"
+												<td style="font-weight:bold;text-align: left; "
 													th:text="${report.R34_PRODUCT}"></td>
 												<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;"
 												id="R34_TOTAL"
@@ -1689,7 +1695,7 @@ PURPOSE		: BRRS_M_CA2REPORT
 											<tr>
 												<td style="font-weight:bold;padding-left: 20px; text-align: center; "
 													th:text="${report.R36_LINE}"></td>
-												<td style="font-weight:bold;text-align: left; padding-left: 20px;"
+												<td style="font-weight:bold;text-align: left; "
 													th:text="${report.R36_PRODUCT}"></td>
 												<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;"
 											
@@ -1740,9 +1746,13 @@ PURPOSE		: BRRS_M_CA2REPORT
 								<tbody style="font-family: Arial;">
 									<tr th:each="report, srlno : ${reportdetails}">
 										<td><a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
-												<i class="fas fa-edit" style="color: black; cursor: pointer;" th:attr="data-acctNo=${report.acctNumber},
-																						data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
-													onclick="openDetail(this, 'edit')"></i>
+											<i class="fas fa-edit"
+											   style="color: black; cursor: pointer;"
+											   th:attr="data-acctNo=${report.acctNumber},
+											            data-asondate=${#dates.format(report.reportDate,'dd-MM-yyyy')},
+											            data-type=${type}"
+											   onclick="openDetail(this, 'edit')">
+											</i>
 
 											</a></td>
 										<td th:text="${srlno.index + 1}"></td>

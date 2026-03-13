@@ -714,21 +714,23 @@ public class BRRS_M_MRC_ReportService {
 	}
 
 	public ModelAndView updateDetailEdit(String acctNo, String formMode) {
-		ModelAndView mv = new ModelAndView("BRRS/M_MRC"); // ✅ match the report name
 
-		if (acctNo != null) {
-			M_MRC_Detail_Entity mrcEntity = M_MRC_Detail_Repo.findByAcctnumber(acctNo);
-			if (mrcEntity != null && mrcEntity.getReportDate() != null) {
-				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(mrcEntity.getReportDate());
-				mv.addObject("asondate", formattedDate);
-				System.out.println(formattedDate);
-			}
-			mv.addObject("Data", mrcEntity);
-		}
+	    ModelAndView mv = new ModelAndView("BRRS/M_MRC");
 
-		mv.addObject("displaymode", "edit");
-		mv.addObject("formmode", formMode != null ? formMode : "edit");
-		return mv;
+	    M_MRC_Detail_Entity mrcEntity;
+
+	    if (acctNo != null) {
+	        mrcEntity = M_MRC_Detail_Repo.findByAcctnumber(acctNo);
+	    } else {
+	        mrcEntity = new M_MRC_Detail_Entity(); // empty object
+	    }
+
+	    mv.addObject("Data", mrcEntity);
+
+	    mv.addObject("displaymode", "edit");
+	    mv.addObject("formmode", formMode != null ? formMode : "edit");
+
+	    return mv;
 	}
 
 	@Transactional
