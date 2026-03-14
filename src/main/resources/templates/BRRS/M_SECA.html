@@ -810,8 +810,11 @@ PURPOSE		: BWRBRREPORT
       			//}
 
       	function showdetails() {
-		    isDetailsModal = true; // mark that this modal is from Details
-			 showResultModal('BRRS',' Details page not available for Manual Report');
+      		$('#loader').modal('show');
+      		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='Details', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+      		var name = /*[[${todate}]]*/ "";
+      		
+      		location.href = Callurl;
 		}
       	function showsummary() {
       		$('#loader').modal('show');
@@ -855,7 +858,9 @@ PURPOSE		: BWRBRREPORT
 			var dtltype = button.getAttribute('data-dtltype');
 			var filename = button.getAttribute('data-filename');
 			var type = button.getAttribute('data-type');
+			var format = button.getAttribute('data-format');
 			var version = button.getAttribute('data-version');
+						
 			$('#loader').modal('show');
 			$.ajax({
 				url: './downloadExcel?reportid=' + reportid +
@@ -867,6 +872,7 @@ PURPOSE		: BWRBRREPORT
 					'&secid=' + secid +
 					'&filename=' + filename +
 					'&type=' + type +
+					'&format=' + format +
 					'&version=' + version,
 				type: 'GET',
 				xhrFields: {
@@ -885,7 +891,15 @@ PURPOSE		: BWRBRREPORT
 						a.click();
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
-						showResultModal('BRRS', 'M_SECA.xlsx downloaded successfully.');
+						if(format === 'email')
+							{
+						      showResultModal('BRRS', 'EMAIL_M_SECA.xlsx downloaded successfully.');
+							}
+						else
+							{
+							  showResultModal('BRRS', 'M_SECA.xlsx downloaded successfully.');
+							}
+						
 					} else {
 						showResultModal('Information', 'No data was available to create a download.');
 					}
@@ -2734,6 +2748,7 @@ function closemodel() {
 
 function fileuploads(btn) {
     var asondate = btn.getAttribute("data-todate");
+    let type = btn.getAttribute("data-type");
     $('#loader').modal('show');
 
     // Pre-calculations
@@ -2804,7 +2819,7 @@ calculateR13Last();
     // ✅ One combined FormData for all entities
     const formData = new FormData();
     formData.append("asondate", asondate);
-
+  
     // --- NEW: append type value (NORMAL, RESUB, ARCHIVAL) ---
     const selectedType = $("#SECAType").val(); // Get from dropdown
     formData.append("type", selectedType);
@@ -2821,10 +2836,23 @@ calculateR13Last();
         });
     }
     console.log("✅ Entity executed successfully");
+    
+    let apiUrl;
+    let successMessage;
+    let redirectUrl;
+    
+    if (type && type.toUpperCase() === 'RESUB') {   	
+        apiUrl = './UpdateM_SECA_ReSub';
+        successMessage = "Resub Modified Successfully.";
+        redirectUrl ='/BRRS/Resubmission?rptcode=M_SECA';   // 🔹 change this to your RESUB page
+    } else {
+        apiUrl = './MSECAupdateAll';
+        successMessage = "Modified Successfully.";
+    }
 
     // ✅ Single AJAX call with type info
     $.ajax({
-        url: './MSECAupdateAll',
+        url: apiUrl,
         type: 'POST',
         data: formData,
         processData: false,
@@ -2832,14 +2860,26 @@ calculateR13Last();
         dataType: 'text',
         success: function (response) {
             $("#resultModalLabel").text("BRRS");
-            $("#resultModalBody").text("Updated successfully.");
+            $("#resultModalBody").text(successMessage);
             $("#resultModal").modal("show");
+            
+            $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
+    	    	if(type && type.toUpperCase() != 'RESUB')
+    	    	{
+    	    	window.location.reload();// reload ONLY when modal is closed
+    	    	}
+    	    	else
+    	    		{
+    	    		 window.location.href = redirectUrl;
+    	    		}
+            });
         },
         error: function (xhr) {
             console.log("Error response:", xhr.responseText);
             $("#resultModalLabel").text("Error");
             $("#resultModalBody").text("Update failed. Check console for details.");
             $("#resultModal").modal("show");
+            window.location.href=redirectUrl ;
         },
         complete: function () {
             $('#loader').modal('hide');
@@ -2849,10 +2889,14 @@ calculateR13Last();
     console.log("✅ AJAX executed successfully");
 }
 </script>
-     
+     <script th:inline="javascript">
+     let data = [[${displaymode}]];
+    
+     console.log(data)
+     </script>
   </head>
 
-  <title>BRRS</title>
+  <title>M-SECA</title>
   <body>
     <div class="container-fluid" style="padding-left: 0px; padding-right: 0px">
       <div class="row">
@@ -2913,7 +2957,7 @@ calculateR13Last();
 <button type="button" class="custom-tab-btn"
         onclick="showmodify(this);"
         title="Click to EDIT Records"
-		th:if="${type != 'ARCHIVAL'}"
+		th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
        th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
         id="addRecord">Modify</button>
 
@@ -2926,7 +2970,7 @@ calculateR13Last();
 
 
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
+							th:if="${displaymode == 'summary' or displaymode == 'Details'}" th:attr="data-reportid=${reportid},
                    				 data-asondate=${asondate},
                    				 data-fromdate=${fromdate},
                     				 data-todate=${todate},
@@ -2935,23 +2979,23 @@ calculateR13Last();
                     				 data-filename='M_SECA.xlsx',
 					 				 data-type=${type},
 					    			 data-version=${version}" onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
+						Format	<i class="fa fa-download"></i>
 						</button>
-						
-						
-						
-
+	
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
+							th:if="${displaymode == 'Details' or displaymode == 'summary'}" onclick="downloadfile(this);" th:attr="
+								   data-reportid=${reportid},
+								    data-asondate=${asondate},
 								    data-fromdate=${fromdate},
 								    data-todate=${todate},
 									data-currency=${currency},  
-												data-dtltype=${dtltype}, 
-								    data-filename='M_SECADetail',
+									data-dtltype=${dtltype}, 
+								    data-filename='EMAIL_M_SECA.xlsx',
 									data-type=${type},
-												data-version=${version}
+									data-format='email',
+									data-version=${version}
 								  ">
-							<i class="fa fa-download"></i>
+						E-Mail	<i class="fa fa-download"></i>
 						</button>
 
 
@@ -2959,7 +3003,32 @@ calculateR13Last();
 					</div>
 					
 				</div>
-          <div th:if="${displaymode == 'summary'}">
+				
+				<h1 th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'Details'}"
+  style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
+				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Archival Summary View - M_SECA</h1>
+				
+				<h1 th:if="${displaymode == 'Details' and type == 'ARCHIVAL' and displaymode != 'summary'}"
+  style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
+				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Archival Detail View - M_SECA</h1>
+
+				<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL' and type != 'RESUB'}"  style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
+				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Summary View - M_SECA </h1>
+			<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL' and type != 'RESUB'}"  style="text-align: left;   font-family: arial; font-weight: bold;  color: white; font-size: 20px; 
+			 background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px; padding-top: 10px; padding-bottom: 10px;  ">Detail View - M_SECA</h1>
+			 
+			 
+	            <h1
+					th:if="${displaymode == 'summary' and type == 'RESUB'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+					Resubmission Summary View - M_SECA</h1>
+
+				<h1
+					th:if="${displaymode == 'Details' and type == 'RESUB'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+					Resubmission Detail View - M_SECA</h1>
+				
+          <div th:if="${displaymode == 'summary' or displaymode == 'Details'}">
             <div class="row">
               <div class="col-sm-12">
               <form action="#" method="POST" id="fileupload">
@@ -5047,23 +5116,23 @@ calculateR13Last();
 	readonly /></td>
 <td th:each="report: ${reportsummary1}" id="R36_BONDS" th:text="${#numbers.formatDecimal(report.R36_BONDS, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R10', reportAddlCriteria1='C3'" 
  style="vertical-align: middle; text-align: right;"></td>
-                <!-- <td style="text-align:right;">
+                <td style="text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R36_BONDS != null ? #numbers.formatDecimal(report.R36_BONDS, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R36_BONDS" name="R36_BONDS"
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td> -->
+	readonly /></td> 
 
-<td th:each="report: ${reportsummary1}" id="R36_BOBC" th:text="${#numbers.formatDecimal(report.R36_BOBC, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R10', reportAddlCriteria1='C3'" 
- style="vertical-align: middle; text-align: right;"></td>
-                <!-- <td style="text-align:right;">
+<!-- <td th:each="report: ${reportsummary1}" id="R36_BOBC" th:text="${#numbers.formatDecimal(report.R36_BOBC, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R10', reportAddlCriteria1='C3'" 
+ style="vertical-align: middle; text-align: right;"></td> -->
+                 <td style="text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R36_BOBC != null ? #numbers.formatDecimal(report.R36_BOBC, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R36_BOBC" name="R36_BOBC"
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td> -->
+	readonly /></td> 
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -7040,15 +7109,15 @@ calculateR13Last();
 
 <tr>
   <td style="padding-left: 0px" th:text="${report.R59_PRODUCT}"></td>
-  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C2'"  th:text="${report.R59_EQUITY}"></td>
-  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C3'"  th:text="${report.R59_BONDS}"></td>
-  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C4'"  th:text="${report.R59_BOBC}"></td>
-  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C5'"  th:text="${report.R59_TRES_BILLS}"></td>
-  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C6'"  th:text="${report.R59_REPURCHASE_AGREE}"></td>
-  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C7'"  th:text="${report.R59_COM_PAPER}"></td>
-  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C8'"  th:text="${report.R59_CERT_OF_DEP}"></td>
-  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C9'"  th:text="${report.R59_PLEDGED_ASSET}"></td>
-  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C10'"  th:text="${report.R59_OTHER}"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='B2'"  th:text="${report.R59_EQUITY}"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='B3'"  th:text="${report.R59_BONDS}"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='B4'"  th:text="${report.R59_BOBC}"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='B5'"  th:text="${report.R59_TRES_BILLS}"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='B6'"  th:text="${report.R59_REPURCHASE_AGREE}"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='B7'"  th:text="${report.R59_COM_PAPER}"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='B8'"  th:text="${report.R59_CERT_OF_DEP}"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='B9'"  th:text="${report.R59_PLEDGED_ASSET}"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='B10'"  th:text="${report.R59_OTHER}"></td>
                           <td id="R59" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
@@ -7072,7 +7141,7 @@ calculateR13Last();
             type="button"
             class="custom-tab-btn Show_input" 
             form="fileupload"
-            th:attr="data-todate=${asondate}" 
+            th:attr="data-todate=${asondate} , data-type = ${type}"
             onclick="fileuploads(this);" 
             style="display: none;">
         Submit
@@ -7083,7 +7152,7 @@ calculateR13Last();
             </div>
           </div>
 
-          <div th:if="${displaymode == 'Details'}">
+          <div th:if="${displaymode == '##'}">
             <div class="row">
               <div class="col-sm-12">
                 <div
@@ -7121,22 +7190,22 @@ calculateR13Last();
                             ></i>
                           </a>
                         </td>
-                        <td th:text="${report.CUST_ID}"></td>
-                        <td th:text="${report.ACCT_NUMBER}"></td>
-                        <td th:text="${report.ACCT_NAME}"></td>
+                        <td th:text="${report.custId}"></td>
+                        <td th:text="${report.acctNumber}"></td>
+                        <td th:text="${report.acctName}"></td>
                         <!---	<td th:text="${report.acctBalanceInpula} "></td> -->
                         <td
-                          th:text="${#numbers.formatDecimal(report.ACCT_BALANCE_IN_PULA, 1, 3)}"
+                          th:text="${#numbers.formatDecimal(report.acctBalanceInPula, 1, 3)}"
                           style="text-align: right"
                         ></td>
-
-                        <td
+<td></td><td></td>
+                       <!--  <td
                           style="text-align: left"
                           th:text="${report.ROW_ID}"
                         ></td>
-                        <td th:text="${report.COLUMN_ID}"></td>
+                        <td th:text="${report.COLUMN_ID}"></td> -->
                         <td
-                          th:text="${#dates.format(report.REPORT_DATE, 'dd-MM-yyyy')}"
+                          th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"
                         ></td>
                       </tr>
                     </tbody>

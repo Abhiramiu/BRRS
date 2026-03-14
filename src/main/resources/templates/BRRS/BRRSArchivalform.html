@@ -304,6 +304,7 @@ $(window).on('beforeunload', function() {
 	}
 	
 	function getReport(a) {
+
 	    // Retrieve data attributes
 	    var todate = a.getAttribute("data-todate");
 	    var asondate = a.getAttribute("data-todate");
@@ -321,9 +322,9 @@ $(window).on('beforeunload', function() {
 	        fromdate,
 	        type
 	    };
-
+	    console.log(typeof type);
 	    // Show modal
-	    $("#confirmModal").modal("show");
+	   $("#confirmModal").modal("show");
 	}
 
 	$(document).ready(function () {
@@ -334,7 +335,7 @@ $(window).on('beforeunload', function() {
 	        $('#loader').modal('show');
 
 	        const d = window.reportActionData;
-
+          alert("Report id = "+d.reportid)
 	        location.href =
 	            "Reports/" + d.reportid +
 	            "?dtltype=report&fromdate=" + d.fromdate +

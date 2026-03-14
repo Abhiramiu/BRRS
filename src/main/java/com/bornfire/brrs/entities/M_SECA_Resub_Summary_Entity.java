@@ -3,8 +3,10 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -12,8 +14,9 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_SECA_MANUAL_SUMMARYTABLE")
-public class M_SECA_Manual_Summary_Entity {
+@Table(name = "BRRS_M_SECA_RESUB_SUMMARY")
+@IdClass(M_SECA_PK.class)
+public class M_SECA_Resub_Summary_Entity {
 
 	private String R13_PRODUCT;
 	private BigDecimal R13_EQUITY;
@@ -270,8 +273,8 @@ public class M_SECA_Manual_Summary_Entity {
 	private BigDecimal R35_TOTAL;
 	private String R36_PRODUCT;
 	private BigDecimal R36_EQUITY;
-//	private BigDecimal R36_BONDS;
-//	private BigDecimal R36_BOBC;
+	private BigDecimal R36_BONDS;
+	private BigDecimal R36_BOBC;
 	private BigDecimal R36_TRES_BILLS;
 	private BigDecimal R36_REPURCHASE_AGREE;
 	private BigDecimal R36_COM_PAPER;
@@ -539,8 +542,17 @@ public class M_SECA_Manual_Summary_Entity {
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     @Id
-    private Date report_date;
-    private String REPORT_VERSION;
+    @Column(name = "REPORT_DATE")
+    private Date reportDate;
+    
+    @Column(name = "REPORT_VERSION")
+    private BigDecimal reportVersion;
+    
+    @Column(name = "REPORT_RESUBDATE")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date reportResubDate;
+    
+    private String REPORT_FREQUENCY;
     private String REPORT_CODE;
     private String REPORT_DESC;
     private String ENTITY_FLG;
@@ -4629,36 +4641,36 @@ public class M_SECA_Manual_Summary_Entity {
 
 
 
-//
-//
-//	public BigDecimal getR36_BONDS() {
-//		return R36_BONDS;
-//	}
-//
-//
-//
-//
-//
-//	public void setR36_BONDS(BigDecimal r36_BONDS) {
-//		R36_BONDS = r36_BONDS;
-//	}
-//
-//
-//
-//
-//
-//	public BigDecimal getR36_BOBC() {
-//		return R36_BOBC;
-//	}
-//
-//
-//
-//
-//
-//	public void setR36_BOBC(BigDecimal r36_BOBC) {
-//		R36_BOBC = r36_BOBC;
-//	}
-//
+
+
+	public BigDecimal getR36_BONDS() {
+		return R36_BONDS;
+	}
+
+
+
+
+
+	public void setR36_BONDS(BigDecimal r36_BONDS) {
+		R36_BONDS = r36_BONDS;
+	}
+
+
+
+
+
+	public BigDecimal getR36_BOBC() {
+		return R36_BOBC;
+	}
+
+
+
+
+
+	public void setR36_BOBC(BigDecimal r36_BOBC) {
+		R36_BOBC = r36_BOBC;
+	}
+
 
 
 
@@ -8820,35 +8832,46 @@ public class M_SECA_Manual_Summary_Entity {
 	}
 
 
-
-
-
-	public Date getReport_date() {
-		return report_date;
+	
+	public Date getReportDate() {
+		return reportDate;
 	}
 
 
 
 
 
-	public void setReport_date(Date report_date) {
-		this.report_date = report_date;
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
 	}
 
 
 
 
 
-	public String getREPORT_VERSION() {
-		return REPORT_VERSION;
+	public Date getReportResubDate() {
+		return reportResubDate;
 	}
 
 
 
 
 
-	public void setREPORT_VERSION(String rEPORT_VERSION) {
-		REPORT_VERSION = rEPORT_VERSION;
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
+	}
+
+
+
+
+
+	public BigDecimal getReportVersion() {
+		return reportVersion;
+	}
+
+
+	public void setReportVersion(BigDecimal reportVersion) {
+		this.reportVersion = reportVersion;
 	}
 
 
@@ -8935,8 +8958,25 @@ public class M_SECA_Manual_Summary_Entity {
 
 
 
-	public M_SECA_Manual_Summary_Entity() {
+	public M_SECA_Resub_Summary_Entity() {
         super();
     }
+
+
+
+
+
+	public String getREPORT_FREQUENCY() {
+		return REPORT_FREQUENCY;
+	}
+
+
+
+
+
+	public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+		REPORT_FREQUENCY = rEPORT_FREQUENCY;
+	}
+
 
 }

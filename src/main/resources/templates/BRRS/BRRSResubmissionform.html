@@ -382,6 +382,7 @@
 	
 	<script th:inline="javascript">
     let data = [[${Resubmitdata}]];
+    console.log(data.length);
     console.log(data);
 </script>
 	
@@ -429,7 +430,7 @@
 								</thead>
 								<tbody style="font-family: Arial;">
 									<tr th:each="ReData : ${Resubmitdata}">
-									    <td class="underline"
+									  <td class="underline"
 									        th:attr="data-rptcode=${rptcode},
 									                 data-todate=${ReData[0] != null ? #dates.format(ReData[0],'dd/MM/yyyy') : ''},
 									                 data-version=${ReData[1]}"
@@ -441,10 +442,10 @@
 									    <td th:text="${ReData[1]}" style="text-align:left;"></td>
 									
 									   <td th:text="${ReData[2] != null ? #dates.format(ReData[2],'dd/MM/yyyy') : ''}"
-									        style="color:#08a6f1;" onclick="getReport(this, event)"></td>
+									        style="color:#08a6f1;" onclick="getReport(this, event)"></td> 
 									       									
-									    <td th:text="${domain}"></td>
-									
+									     <td th:text="${domain}"></td> 
+									    
 									</tr>
 
 
@@ -463,7 +464,7 @@
 	    <td th:text="${domain}"></td>
 	</tr> -->
 									
-									<tr th:each="userProfile : ${resubmissionData}"
+									<!-- <tr th:each="userProfile : ${resubmissionData}"
 										th:attr="data-cust_id=${userProfile.srlNo}"
 										th:id="${userProfile.srlNo}" class="userlist">
 									
@@ -474,7 +475,7 @@
 											th:text="${userProfile.rptCode}"></td>
 										<td th:text="${userProfile.rptDescription}"></td>
 										<td th:text="${userProfile.domainId}"></td>
-									</tr>
+									</tr> -->
 									
 									
 								</tbody>

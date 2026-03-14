@@ -1,18 +1,47 @@
 package com.bornfire.brrs.entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+public interface BRRS_M_SECA_Archival_Detail_Repo extends JpaRepository<M_SECA_Archival_Detail_Entity,M_SECA_PK>
+{
+	// Fetch specific archival data by report date & version
+    @Query(value = "SELECT * FROM BRRS_M_SECA_ARCHIVAL_DETAIL " +
+                   "WHERE REPORT_DATE = ?1 AND REPORT_VERSION =?2 ",
+           nativeQuery = true)
+    List<M_SECA_Archival_Detail_Entity> getdatabydateListarchival(
+            Date reportDate, BigDecimal reportVersion);
 
-public interface BRRS_M_SECA_Archival_Detail_Repo extends JpaRepository<M_SECA_Archival_Detail_Entity, String> {
+    // Fetch latest archival version for given date
+    @Query(value = "SELECT * FROM BRRS_M_SECA_ARCHIVAL_DETAIL " +
+                   "WHERE REPORT_DATE = ?1 AND REPORT_VERSION IS NOT NULL " +
+                   "ORDER BY TO_NUMBER(REPORT_VERSION) DESC " +
+                   "FETCH FIRST 1 ROWS ONLY",
+           nativeQuery = true)
+    Optional<M_SECA_Archival_Detail_Entity> getLatestArchivalVersionByDate(
+            Date reportDate);
 
-	@Query(value = "select * from BRRS_M_SECA_ARCHIVALTABLE_DETAIL where REPORT_DATE=?1 AND DATA_ENTRY_VERSION=?2", nativeQuery = true)
-	List<M_SECA_Archival_Detail_Entity> getdatabydateList(Date reportdate,String DATA_ENTRY_VERSION);
-	
-	@Query(value = "select * from BRRS_M_SECA_ARCHIVALTABLE_DETAIL where REPORT_LABLE =?1 and REPORT_ADDL_CRITERIA_1=?2 AND REPORT_DATE=?3 AND DATA_ENTRY_VERSION=?4", nativeQuery = true)
-	List<M_SECA_Archival_Detail_Entity> GetDataByRowIdAndColumnId(String reportLable,String reportAddlCriteria_1,Date reportdate,String DATA_ENTRY_VERSION);
+    // Fetch by primary key (FIXED incorrect return type)
+    Optional<M_SECA_Archival_Detail_Entity> findByReportDateAndReportVersion(
+            Date reportDate, BigDecimal reportVersion);
+
+    // Get only the latest version (using ASC only if you want smallest version)
+    @Query(value = "SELECT * FROM BRRS_M_SECA_ARCHIVAL_DETAIL " +
+                   "WHERE REPORT_VERSION IS NOT NULL " +
+                   "ORDER BY TO_NUMBER(REPORT_VERSION) ASC " +
+                   "FETCH FIRST 1 ROWS ONLY",
+           nativeQuery = true)
+    List<M_SECA_Archival_Detail_Entity> getdatabydateListWithVersion();
+
+    // Get all versions sorted ASC → 1, 2, 3, ...
+    @Query(value = "SELECT * FROM BRRS_M_SECA_ARCHIVAL_DETAIL " +
+                   "WHERE REPORT_VERSION IS NOT NULL " +
+                   "ORDER BY TO_NUMBER(REPORT_VERSION) ASC",
+           nativeQuery = true)
+    List<M_SECA_Archival_Detail_Entity> getdatabydateListWithVersionAll();
 }
-
