@@ -3575,13 +3575,13 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_SECA_Manual_Summary_Entity request) {
+			@ModelAttribute M_SECA_Summary_Entity request) {
 
 		try {
 			System.out.println("came to single controller");
 
 			// ✅ set the asondate into entity
-			request.setReport_date(asondate);
+			request.setReportDate(asondate);
 
 			// call services
 			BRRS_M_SECA_reportservice.updateReport1(request);
@@ -3593,6 +3593,28 @@ public class BRRS_ReportsController {
 		}
 	}
 
+	@RequestMapping(value = "/UpdateM_SECA_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReportResub(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_SECA_Resub_Summary_Entity request) {
+
+		try {
+			System.out.println("came to single controller");
+
+			// ✅ set the asondate into entity
+			request.setReportDate(asondate);
+
+			// call services
+			BRRS_M_SECA_reportservice.updateReportResub(request);
+
+			return ResponseEntity.ok("Modified Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+	
 	// @RequestMapping(value = "/updateMLA4", method = { RequestMethod.GET,
 	// RequestMethod.POST })
 	// @ResponseBody

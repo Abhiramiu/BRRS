@@ -556,6 +556,9 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_M_MRC_reportservice.getM_MRCview(reportId,
 				  fromdate, todate, currency, dtltype, pageable, type, version); break; 
 			
+		case "M_SECA": repsummary = BRRS_M_SECA_ReportService.getM_SECAview(reportId,
+				  fromdate, todate, currency, dtltype, pageable, type, version); break;		  
+				  
 				 /*
 		 * 
 		 * 
@@ -2804,6 +2807,8 @@ break;
 			e.printStackTrace(); 
 			}
 		break;
+		
+		
 	
 		/*
 		 * case "M_CA4": try { repfile =
@@ -3070,10 +3075,7 @@ break;
 		 * } catch (Exception e) { // TODO Auto-generated catch block
 		 * e.printStackTrace(); } break;
 		 * 
-		 * case "M_SECA": try {
 		 * 
-		 * repfile = BRRS_M_SECA_ReportService.BRRS_M_SECAExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version);
 		 * 
 		 * } catch (Exception e) { // TODO Auto-generated catch block
 		 * e.printStackTrace(); } break; case "M_GP": try {
@@ -3425,7 +3427,16 @@ break;
 					e.printStackTrace();
 				 }
 			break;
-
+			
+		case "M_SECA": try {
+			  
+			  repfile = BRRS_M_SECA_ReportService.BRRS_M_SECAExcel(filename, reportId,
+			  fromdate, todate, currency, dtltype, type,format, version);
+			  
+			  } catch (Exception e) { // TODO Auto-generated catch block
+			  e.printStackTrace(); } break;
+			
+			
 		/*
 		 * case "M_CA4": try { repfile =
 		 * BRRS_M_CA4_reportservice.getBRRS_M_CA4Excel(filename, reportId, fromdate,
@@ -3700,13 +3711,7 @@ break;
 		 * } catch (Exception e) { // TODO Auto-generated catch block
 		 * e.printStackTrace(); } break;
 		 * 
-		 * case "M_SECA": try {
-		 * 
-		 * repfile = BRRS_M_SECA_ReportService.BRRS_M_SECAExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break; case "M_GP": try {
+		 *  case "M_GP": try {
 		 * 
 		 * repfile = BRRS_M_GP_ReportService.getM_GPExcel(filename, reportId, fromdate,
 		 * todate, currency, dtltype, type, version);
@@ -6713,6 +6718,20 @@ case "M_CA2":
 				System.out.println("Resubmission data fetched for M_SRWA_12H: " + resubList.size());
 			} catch (Exception e) {
 				System.err.println("Error fetching resubmission data for M_SRWA_12H: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_SECA" :
+			try
+			{
+				List<Object[]> resubList = BRRS_M_SECA_ReportService.getM_SECAResub();
+				resubmissionData.addAll(resubList);
+			   System.out.println("Resubmission data fetched for M_SECA: " + resubmissionData.size());
+			}
+			catch(Exception e)
+			{
+				System.err.println("Error fetching resubmission data for M_SECA: " + e.getMessage());
 				e.printStackTrace();
 			}
 			break;
