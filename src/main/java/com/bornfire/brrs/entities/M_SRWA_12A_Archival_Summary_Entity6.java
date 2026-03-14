@@ -7,6 +7,7 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -16,7 +17,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "BRRS_M_SRWA_12A_ARCHIVALTABLE_SUMMARY6")
-
+@IdClass(M_SRWA_12A_PK.class)
 
 public class M_SRWA_12A_Archival_Summary_Entity6 {
 	
@@ -1014,10 +1015,14 @@ public class M_SRWA_12A_Archival_Summary_Entity6 {
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
-	
-	
+		
 	private Date	report_date;
+	 @Column(name = "REPORT_VERSION")
+	 @Id
 	private BigDecimal	report_version;
+	@Column(name = "REPORT_RESUBDATE")
+
+    private Date reportResubDate;
 	private String	report_frequency;
 	private String	report_code;
 	private String	report_desc;
@@ -6748,6 +6753,12 @@ public class M_SRWA_12A_Archival_Summary_Entity6 {
 	public void setReport_version(BigDecimal report_version) {
 		this.report_version = report_version;
 	}
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
+	}
 	public String getReport_frequency() {
 		return report_frequency;
 	}
@@ -6790,11 +6801,6 @@ public class M_SRWA_12A_Archival_Summary_Entity6 {
 	}
 	
 	
-	
-
-
-	
-
 	
 
 }

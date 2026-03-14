@@ -35,7 +35,7 @@ public class M_SRWA_12A_Detail_Entity {
    private String reportName;
    
    @Column(name = "REPORT_LABEL")
-   private String reportLable;
+   private String reportLabel;
    
    @Column(name = "REPORT_ADDL_CRITERIA_1")
    private String reportAddlCriteria_1;
@@ -58,9 +58,11 @@ public class M_SRWA_12A_Detail_Entity {
    @Column(name = "DATA_ENTRY_VERSION")
    private String dataEntryVersion;
 
-   @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
+   @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 2)
    private BigDecimal acctBalanceInpula;
 
+   @Column(name = "AVERAGE", precision = 24, scale = 2)
+   private BigDecimal average;
 
    @Column(name = "REPORT_DATE")
    @DateTimeFormat(pattern = "dd-MM-yyyy")
@@ -139,12 +141,12 @@ public void setReportName(String reportName) {
 	this.reportName = reportName;
 }
 
-public String getReportLable() {
-	return reportLable;
+public String getReportLabel() {
+	return reportLabel;
 }
 
-public void setReportLable(String reportLable) {
-	this.reportLable = reportLable;
+public void setReportLabel(String reportLabel) {
+	this.reportLabel = reportLabel;
 }
 
 public String getReportAddlCriteria_1() {
@@ -209,6 +211,14 @@ public BigDecimal getAcctBalanceInpula() {
 
 public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
 	this.acctBalanceInpula = acctBalanceInpula;
+}
+
+public BigDecimal getAverage() {
+	return average;
+}
+
+public void setAverage(BigDecimal average) {
+	this.average = average;
 }
 
 public Date getReportDate() {
@@ -296,10 +306,6 @@ public M_SRWA_12A_Detail_Entity() {
 	// TODO Auto-generated constructor stub
 }
 
-	
-    
 
-	  
-    
 
 }

@@ -35,7 +35,7 @@ public class M_SRWA_12A_Archival_Detail_Entity {
    private String reportName;
    
    @Column(name = "REPORT_LABEL")
-   private String reportLable;
+   private String reportLabel;
    
    @Column(name = "REPORT_ADDL_CRITERIA_1")
    private String reportAddlCriteria_1;
@@ -60,6 +60,9 @@ public class M_SRWA_12A_Archival_Detail_Entity {
 
    @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
    private BigDecimal acctBalanceInpula;
+   
+   @Column(name = "AVERAGE", precision = 24, scale = 3)
+   private BigDecimal average;
 
 
    @Column(name = "REPORT_DATE")
@@ -99,204 +102,212 @@ public class M_SRWA_12A_Archival_Detail_Entity {
    @Column(name = "DEL_FLG")
    private char delFlg;
 
-	public String getCustId() {
-		return custId;
-	}
+public String getCustId() {
+	return custId;
+}
 
-	public void setCustId(String custId) {
-		this.custId = custId;
-	}
+public void setCustId(String custId) {
+	this.custId = custId;
+}
 
-	public String getAcctNumber() {
-		return acctNumber;
-	}
+public String getAcctNumber() {
+	return acctNumber;
+}
 
-	public void setAcctNumber(String acctNumber) {
-		this.acctNumber = acctNumber;
-	}
+public void setAcctNumber(String acctNumber) {
+	this.acctNumber = acctNumber;
+}
 
-	public String getAcctName() {
-		return acctName;
-	}
+public String getAcctName() {
+	return acctName;
+}
 
-	public void setAcctName(String acctName) {
-		this.acctName = acctName;
-	}
+public void setAcctName(String acctName) {
+	this.acctName = acctName;
+}
 
-	public String getDataType() {
-		return dataType;
-	}
+public String getDataType() {
+	return dataType;
+}
 
-	public void setDataType(String dataType) {
-		this.dataType = dataType;
-	}
+public void setDataType(String dataType) {
+	this.dataType = dataType;
+}
 
-	public String getReportName() {
-		return reportName;
-	}
+public String getReportName() {
+	return reportName;
+}
 
-	public void setReportName(String reportName) {
-		this.reportName = reportName;
-	}
+public void setReportName(String reportName) {
+	this.reportName = reportName;
+}
 
-	public String getReportLable() {
-		return reportLable;
-	}
+public String getReportLabel() {
+	return reportLabel;
+}
 
-	public void setReportLable(String reportLable) {
-		this.reportLable = reportLable;
-	}
+public void setReportLabel(String reportLabel) {
+	this.reportLabel = reportLabel;
+}
 
-	public String getReportAddlCriteria_1() {
-		return reportAddlCriteria_1;
-	}
+public String getReportAddlCriteria_1() {
+	return reportAddlCriteria_1;
+}
 
-	public void setReportAddlCriteria_1(String reportAddlCriteria_1) {
-		this.reportAddlCriteria_1 = reportAddlCriteria_1;
-	}
+public void setReportAddlCriteria_1(String reportAddlCriteria_1) {
+	this.reportAddlCriteria_1 = reportAddlCriteria_1;
+}
 
-	public String getReportAddlCriteria_2() {
-		return reportAddlCriteria_2;
-	}
+public String getReportAddlCriteria_2() {
+	return reportAddlCriteria_2;
+}
 
-	public void setReportAddlCriteria_2(String reportAddlCriteria_2) {
-		this.reportAddlCriteria_2 = reportAddlCriteria_2;
-	}
+public void setReportAddlCriteria_2(String reportAddlCriteria_2) {
+	this.reportAddlCriteria_2 = reportAddlCriteria_2;
+}
 
-	public String getReportAddlCriteria_3() {
-		return reportAddlCriteria_3;
-	}
+public String getReportAddlCriteria_3() {
+	return reportAddlCriteria_3;
+}
 
-	public void setReportAddlCriteria_3(String reportAddlCriteria_3) {
-		this.reportAddlCriteria_3 = reportAddlCriteria_3;
-	}
+public void setReportAddlCriteria_3(String reportAddlCriteria_3) {
+	this.reportAddlCriteria_3 = reportAddlCriteria_3;
+}
 
-	public String getReportRemarks() {
-		return reportRemarks;
-	}
+public String getReportRemarks() {
+	return reportRemarks;
+}
 
-	public void setReportRemarks(String reportRemarks) {
-		this.reportRemarks = reportRemarks;
-	}
+public void setReportRemarks(String reportRemarks) {
+	this.reportRemarks = reportRemarks;
+}
 
-	public String getSanctionLimit() {
-		return sanctionLimit;
-	}
+public String getSanctionLimit() {
+	return sanctionLimit;
+}
 
-	public void setSanctionLimit(String sanctionLimit) {
-		this.sanctionLimit = sanctionLimit;
-	}
+public void setSanctionLimit(String sanctionLimit) {
+	this.sanctionLimit = sanctionLimit;
+}
 
-	public String getModificationRemarks() {
-		return modificationRemarks;
-	}
+public String getModificationRemarks() {
+	return modificationRemarks;
+}
 
-	public void setModificationRemarks(String modificationRemarks) {
-		this.modificationRemarks = modificationRemarks;
-	}
+public void setModificationRemarks(String modificationRemarks) {
+	this.modificationRemarks = modificationRemarks;
+}
 
-	public String getDataEntryVersion() {
-		return dataEntryVersion;
-	}
+public String getDataEntryVersion() {
+	return dataEntryVersion;
+}
 
-	public void setDataEntryVersion(String dataEntryVersion) {
-		this.dataEntryVersion = dataEntryVersion;
-	}
+public void setDataEntryVersion(String dataEntryVersion) {
+	this.dataEntryVersion = dataEntryVersion;
+}
 
-	public BigDecimal getAcctBalanceInpula() {
-		return acctBalanceInpula;
-	}
+public BigDecimal getAcctBalanceInpula() {
+	return acctBalanceInpula;
+}
 
-	public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
-		this.acctBalanceInpula = acctBalanceInpula;
-	}
+public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
+	this.acctBalanceInpula = acctBalanceInpula;
+}
 
-	public Date getReportDate() {
-		return reportDate;
-	}
+public BigDecimal getAverage() {
+	return average;
+}
 
-	public void setReportDate(Date reportDate) {
-		this.reportDate = reportDate;
-	}
+public void setAverage(BigDecimal average) {
+	this.average = average;
+}
 
-	public String getCreateUser() {
-		return createUser;
-	}
+public Date getReportDate() {
+	return reportDate;
+}
 
-	public void setCreateUser(String createUser) {
-		this.createUser = createUser;
-	}
+public void setReportDate(Date reportDate) {
+	this.reportDate = reportDate;
+}
 
-	public Date getCreateTime() {
-		return createTime;
-	}
+public String getCreateUser() {
+	return createUser;
+}
 
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
-	}
+public void setCreateUser(String createUser) {
+	this.createUser = createUser;
+}
 
-	public String getModifyUser() {
-		return modifyUser;
-	}
+public Date getCreateTime() {
+	return createTime;
+}
 
-	public void setModifyUser(String modifyUser) {
-		this.modifyUser = modifyUser;
-	}
+public void setCreateTime(Date createTime) {
+	this.createTime = createTime;
+}
 
-	public Date getModifyTime() {
-		return modifyTime;
-	}
+public String getModifyUser() {
+	return modifyUser;
+}
 
-	public void setModifyTime(Date modifyTime) {
-		this.modifyTime = modifyTime;
-	}
+public void setModifyUser(String modifyUser) {
+	this.modifyUser = modifyUser;
+}
 
-	public String getVerifyUser() {
-		return verifyUser;
-	}
+public Date getModifyTime() {
+	return modifyTime;
+}
 
-	public void setVerifyUser(String verifyUser) {
-		this.verifyUser = verifyUser;
-	}
+public void setModifyTime(Date modifyTime) {
+	this.modifyTime = modifyTime;
+}
 
-	public Date getVerifyTime() {
-		return verifyTime;
-	}
+public String getVerifyUser() {
+	return verifyUser;
+}
 
-	public void setVerifyTime(Date verifyTime) {
-		this.verifyTime = verifyTime;
-	}
+public void setVerifyUser(String verifyUser) {
+	this.verifyUser = verifyUser;
+}
 
-	public char getEntityFlg() {
-		return entityFlg;
-	}
+public Date getVerifyTime() {
+	return verifyTime;
+}
 
-	public void setEntityFlg(char entityFlg) {
-		this.entityFlg = entityFlg;
-	}
+public void setVerifyTime(Date verifyTime) {
+	this.verifyTime = verifyTime;
+}
 
-	public char getModifyFlg() {
-		return modifyFlg;
-	}
+public char getEntityFlg() {
+	return entityFlg;
+}
 
-	public void setModifyFlg(char modifyFlg) {
-		this.modifyFlg = modifyFlg;
-	}
+public void setEntityFlg(char entityFlg) {
+	this.entityFlg = entityFlg;
+}
 
-	public char getDelFlg() {
-		return delFlg;
-	}
+public char getModifyFlg() {
+	return modifyFlg;
+}
 
-	public void setDelFlg(char delFlg) {
-		this.delFlg = delFlg;
-	}
-	public M_SRWA_12A_Archival_Detail_Entity() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-    
-    
+public void setModifyFlg(char modifyFlg) {
+	this.modifyFlg = modifyFlg;
+}
 
+public char getDelFlg() {
+	return delFlg;
+}
+
+public void setDelFlg(char delFlg) {
+	this.delFlg = delFlg;
+}
+
+public M_SRWA_12A_Archival_Detail_Entity() {
+	super();
+	// TODO Auto-generated constructor stub
+}
+
+	
 	  
     
 

@@ -7,6 +7,7 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -16,7 +17,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "BRRS_M_SRWA_12A_ARCHIVALTABLE_SUMMARY2")
-
+@IdClass(M_SRWA_12A_PK.class)
 
 public class M_SRWA_12A_Archival_Summary_Entity2 {
 	
@@ -979,7 +980,12 @@ public class M_SRWA_12A_Archival_Summary_Entity2 {
 	@Id
 		
 	private Date	report_date;
+	 @Column(name = "REPORT_VERSION")
+	 @Id
 	private BigDecimal	report_version;
+	@Column(name = "REPORT_RESUBDATE")
+
+    private Date reportResubDate;
 	private String	report_frequency;
 	private String	report_code;
 	private String	report_desc;
@@ -992,7 +998,6 @@ public class M_SRWA_12A_Archival_Summary_Entity2 {
 	public void setR60_exposure_class(String r60_exposure_class) {
 		this.r60_exposure_class = r60_exposure_class;
 	}
-	
 	public BigDecimal getR60_spe_pro_expo() {
 		return r60_spe_pro_expo;
 	}
@@ -1473,7 +1478,6 @@ public class M_SRWA_12A_Archival_Summary_Entity2 {
 	public void setR63_exposure_class(String r63_exposure_class) {
 		this.r63_exposure_class = r63_exposure_class;
 	}
-	
 	public BigDecimal getR63_spe_pro_expo() {
 		return r63_spe_pro_expo;
 	}
@@ -4708,7 +4712,6 @@ public class M_SRWA_12A_Archival_Summary_Entity2 {
 	public void setR87_exposure_class(String r87_exposure_class) {
 		this.r87_exposure_class = r87_exposure_class;
 	}
-	
 	public BigDecimal getR87_spe_pro_expo() {
 		return r87_spe_pro_expo;
 	}
@@ -5513,7 +5516,6 @@ public class M_SRWA_12A_Archival_Summary_Entity2 {
 	public void setR92_exposure_class(String r92_exposure_class) {
 		this.r92_exposure_class = r92_exposure_class;
 	}
-	
 	public BigDecimal getR92_spe_pro_expo() {
 		return r92_spe_pro_expo;
 	}
@@ -5832,7 +5834,6 @@ public class M_SRWA_12A_Archival_Summary_Entity2 {
 	public void setR96_exposure_class(String r96_exposure_class) {
 		this.r96_exposure_class = r96_exposure_class;
 	}
-	
 	public BigDecimal getR96_spe_pro_expo() {
 		return r96_spe_pro_expo;
 	}
@@ -6481,6 +6482,12 @@ public class M_SRWA_12A_Archival_Summary_Entity2 {
 	public void setReport_version(BigDecimal report_version) {
 		this.report_version = report_version;
 	}
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
+	}
 	public String getReport_frequency() {
 		return report_frequency;
 	}
@@ -6522,6 +6529,7 @@ public class M_SRWA_12A_Archival_Summary_Entity2 {
 		// TODO Auto-generated constructor stub
 	}
 
+	
 	
 	
 	

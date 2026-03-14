@@ -2418,8 +2418,8 @@ case "M_I_S_CA":
 		case "M_SRWA_12A":
 			try {
 
-				repfile = brrs_m_srwa_12a_reportservice.getM_SRWA_12AExcel(filename, reportId, fromdate, todate,
-						currency, dtltype, type, version);
+				repfile = brrs_m_srwa_12a_reportservice.getM_SRWA_12AExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, format, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -4871,14 +4871,21 @@ case "M_CA2":
 		 * Auto-generated catch block e.printStackTrace(); } break;
 		 */
 
+//		case "M_SRWA_12A":
+//			try {
+//				archivalData = brrs_m_srwa_12a_reportservice.getM_SRWA_12AArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
+			
 		case "M_SRWA_12A":
-			try {
-				archivalData = brrs_m_srwa_12a_reportservice.getM_SRWA_12AArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			
+			List<Object[]> srwa12aList =  brrs_m_srwa_12a_reportservice.getM_SRWA_12AArchival();
+					archivalData.addAll(srwa12aList);
+					System.out.println("Fetched M_SRWA_12A archival data: " + srwa12aList.size());
+					break;
 
 		case "M_SRWA_12A_New":
 			try {
@@ -6709,6 +6716,19 @@ case "M_CA2":
 				e.printStackTrace();
 			}
 			break;
+			
+		case "M_SRWA_12A":
+			try {
+				List<Object[]> resubList = brrs_m_srwa_12a_reportservice.getM_SRWA_12AResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for M_SRWA_12A: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_SRWA_12A: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+			
+			
 
 		case "Q_STAFF":
 			try {
