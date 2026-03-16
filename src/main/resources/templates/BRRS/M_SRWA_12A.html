@@ -62428,7 +62428,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 										<th>CUST_ID</th>
 										<th>ACCT_NUMBER</th>
 										<th>ACCT_NAME</th>
-									<th style="text-align:right;">MONTHLY_INT</th>
+									
 												<th style="text-align:right;">CREDIT EQUIVALENT</th>
 												<th style="text-align:right;">DEBIT_EQUIVALENT</th>
 										<th>REPORT LABEL</th>
@@ -62464,8 +62464,8 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 										</td> 
  
 
-										<td th:text="${report.reportLable}"></td>
-										<td th:text="${report.reportAddlCriteria_1}"></td>
+										<td th:text="${report.reportLabel}"></td>
+										<td style="text-align:left!important;" th:text="${report.reportAddlCriteria_1}"></td>
 										<td
 											th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
 									</tr>
