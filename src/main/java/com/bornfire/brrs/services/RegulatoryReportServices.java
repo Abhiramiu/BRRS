@@ -4977,6 +4977,14 @@ case "M_CA2":
 			archivalData.addAll(mscieList);
 			System.out.println("Fetched M_SCI_E archival data: " + mscieList.size());
 			break;
+			
+		case "PL_SCHS":
+			List<Object[]> PLList =  BRRS_PL_SCHS_Reportservice.getPL_SCHSArchival();
+			archivalData.addAll(PLList);
+			System.out.println("Fetched PL_SCHS archival data: " + PLList.size());
+			break;
+			
+			
 //
 //		case "M_SCI_E":
 //			try {
@@ -5083,15 +5091,7 @@ case "M_CA2":
 				e.printStackTrace();
 			}
 			break;
-		case "PL_SCHS":
-			try {
-				archivalData = BRRS_PL_SCHS_Reportservice.getPL_SCHSArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-
+		
 		case "CAP_ADEQ":
 			try {
 				archivalData = brrs_cap_adeq_reportservice.getCAP_ADEQArchival();
@@ -7285,6 +7285,17 @@ case "M_CA2":
 				System.out.println("Resubmission data fetched for M_SFINP1: " + resubList.size());
 			} catch (Exception e) {
 				System.err.println("Error fetching resubmission data for M_SFINP1: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+			
+		case "PL_SCHS":
+			try {
+				List<Object[]> resubList = BRRS_PL_SCHS_Reportservice.getPL_SCHSResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for PL_SCHS: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for PL_SCHS: " + e.getMessage());
 				e.printStackTrace();
 			}
 			break;

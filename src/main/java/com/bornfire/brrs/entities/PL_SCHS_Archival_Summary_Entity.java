@@ -3,18 +3,17 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import javax.persistence.Column;
-
 @Entity
 @Table(name = "BRRS_PL_SCHS_ARCHIVALTABLE_SUMMARY")
+@IdClass(PL_SCHS_PK.class)
 public class PL_SCHS_Archival_Summary_Entity {
 
     // ================= R9 =================
@@ -1268,8 +1267,13 @@ public class PL_SCHS_Archival_Summary_Entity {
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date REPORT_DATE;
 
+    @Id
     @Column(name = "REPORT_VERSION")
     private BigDecimal REPORT_VERSION;
+    
+    @Column(name = "REPORT_RESUBDATE")
+    private BigDecimal REPORT_RESUBDATE;
+    
 
     @Column(name = "REPORT_FREQUENCY")
     private String REPORT_FREQUENCY;
@@ -4980,5 +4984,14 @@ public class PL_SCHS_Archival_Summary_Entity {
     public void setR48_bal_sub_diaries(BigDecimal r48_bal_sub_diaries) {
         this.r48_bal_sub_diaries = r48_bal_sub_diaries;
     }
+
+	public BigDecimal getREPORT_RESUBDATE() {
+		return REPORT_RESUBDATE;
+	}
+
+	public void setREPORT_RESUBDATE(BigDecimal rEPORT_RESUBDATE) {
+		REPORT_RESUBDATE = rEPORT_RESUBDATE;
+	}
+    
 
 }

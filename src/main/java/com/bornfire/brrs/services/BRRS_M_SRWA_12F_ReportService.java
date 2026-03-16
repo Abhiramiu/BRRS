@@ -49,7 +49,6 @@ import com.bornfire.brrs.entities.M_SRWA_12F_Detail_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12F_Resub_Detail_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12F_Resub_Summary_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12F_Summary_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12F_Archival_Summary_Entity;
 
 @Component
 @Service

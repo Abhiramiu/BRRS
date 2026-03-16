@@ -61,8 +61,6 @@ import com.bornfire.brrs.entities.BRRS_PL_SCHS_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_PL_SCHS_Manual_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_PL_SCHS_Manual_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_PL_SCHS_Summary_Repo;
-import com.bornfire.brrs.entities.M_FAS_Manual_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_FAS_Manual_Summary_Entity;
 
 @Component
 @Service
@@ -7870,23 +7868,7 @@ public class BRRS_PL_SCHS_ReportService {
             return out.toByteArray();
         }
     }
-    public List<Object> getPL_SCHSArchival() {
-        List<Object> PL_SCHSArchivallist = new ArrayList<>();
-        try {
-            PL_SCHSArchivallist = PL_SCHS_Archival_Summary_Repo.getPL_SCHSarchival();
-
-            System.out.println("countser" + PL_SCHSArchivallist.size());
-
-        } catch (Exception e) {
-            // Log the exception
-            System.err.println("Error fetching PL_SCHSArchivallist Archival data: " + e.getMessage());
-            e.printStackTrace();
-
-            // Optionally, you can rethrow it or return empty list
-            // throw new RuntimeException("Failed to fetch data", e);
-        }
-        return PL_SCHSArchivallist;
-    }
+   
 
     public byte[] getPL_SCHSDetailExcel(String filename, String fromdate, String todate, String currency,
             String dtltype,
@@ -7953,11 +7935,11 @@ public class BRRS_PL_SCHS_ReportService {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(headers[i]);
 
-                if (i == 3) { // ACCT BALANCE
-                    cell.setCellStyle(rightAlignedHeaderStyle);
-                } else {
-                    cell.setCellStyle(headerStyle);
-                }
+                if (i == 3 || i == 4) {
+			        cell.setCellStyle(rightAlignedHeaderStyle);
+			    } else {
+			        cell.setCellStyle(headerStyle);
+			    }
 
                 sheet.setColumnWidth(i, 5000);
             }
@@ -7985,13 +7967,13 @@ public class BRRS_PL_SCHS_ReportService {
                     balanceCell.setCellStyle(balanceStyle);
 
                     // AVERAGE  (right aligned, 3 decimal places)
-                    Cell balanceCell1 = row.createCell(4);
+                   balanceCell = row.createCell(4);
                     if (item.getAverage() != null) {
-                        balanceCell1.setCellValue(item.getAverage().doubleValue());
+                    	balanceCell.setCellValue(item.getAverage().doubleValue());
                     } else {
-                        balanceCell1.setCellValue(0);
+                    	balanceCell.setCellValue(0);
                     }
-                    balanceCell1.setCellStyle(balanceStyle);
+                    balanceCell.setCellStyle(balanceStyle);
 
                     row.createCell(5).setCellValue(item.getReportLabel());
                     row.createCell(6).setCellValue(item.getReportAddlCriteria1());
@@ -8002,9 +7984,9 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // Apply data style for all other cells
                     for (int j = 0; j < 8; j++) {
-                        if (j != 3) {
-                            row.getCell(j).setCellStyle(dataStyle);
-                        }
+					    if (j != 3 && j != 4) {
+					        row.getCell(j).setCellStyle(dataStyle);
+					    }
                     }
                 }
             } else {
@@ -8166,23 +8148,23 @@ public class BRRS_PL_SCHS_ReportService {
     private JdbcTemplate jdbcTemplate;
 
     public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
-        ModelAndView mv = new ModelAndView("BRRS/PL_SCHS");
+	    ModelAndView mv = new ModelAndView("BRRS/PL_SCHS"); // ✅ match the report name
+	    
+	    if (acctNo != null) {
+	        PL_SCHS_Detail_Entity PL_SCHSEntity = brrs_PL_SCHS_detail_repo.findByAcctnumber(acctNo);
+	        if (PL_SCHSEntity != null && PL_SCHSEntity.getREPORT_DATE() != null) {
+	            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(PL_SCHSEntity.getREPORT_DATE());
+	            mv.addObject("asondate", formattedDate);
+	        }
+	        mv.addObject("PL_SCHSData", PL_SCHSEntity);
+	    }
 
-        if (acctNo != null) {
-            PL_SCHS_Detail_Entity PL_SCHSEntity = brrs_PL_SCHS_detail_repo
-                    .findByAcctnumber(acctNo);
-            if (PL_SCHSEntity != null && PL_SCHSEntity.getREPORT_DATE() != null) {
-                String formattedDate = new SimpleDateFormat("dd/MM/yyyy")
-                        .format(PL_SCHSEntity.getREPORT_DATE());
-                mv.addObject("asondate", formattedDate);
-            }
-            mv.addObject("PL_SCHSData", PL_SCHSEntity);
-        }
-
-        mv.addObject("displaymode", "edit");
-        mv.addObject("formmode", formMode != null ? formMode : "edit");
-        return mv;
-    }
+	    mv.addObject("displaymode", "edit");
+	    mv.addObject("formmode", formMode != null ? formMode : "edit");
+	    return mv;
+	}
+	
+	
 
     @Transactional
     public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
@@ -8268,5 +8250,60 @@ public class BRRS_PL_SCHS_ReportService {
                     .body("Error updating record: " + e.getMessage());
         }
     }
+    
+    
+    public List<Object[]> getPL_SCHSResub() {
+		List<Object[]> resubList = new ArrayList<>();
+		try {
+			List<PL_SCHS_Archival_Summary_Entity> latestArchivalList = PL_SCHS_Archival_Summary_Repo
+					.getdatabydateListWithVersion();
+
+			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+				for (PL_SCHS_Archival_Summary_Entity entity : latestArchivalList) {
+					resubList.add(new Object[] { entity.getREPORT_DATE(), entity.getREPORT_VERSION(),
+							entity.getREPORT_RESUBDATE() });
+				}
+				System.out.println("Fetched " + resubList.size() + " record(s)");
+			} else {
+				System.out.println("No archival data found.");
+			}
+
+		} catch (Exception e) {
+			System.err.println("Error fetching PL_SCHS Resub data: " + e.getMessage());
+			e.printStackTrace();
+		}
+		return resubList;
+	}
+
+	// Archival View
+	public List<Object[]> getPL_SCHSArchival() {
+		List<Object[]> archivalList = new ArrayList<>();
+
+		try {
+			List<PL_SCHS_Archival_Summary_Entity> repoData = PL_SCHS_Archival_Summary_Repo
+					.getdatabydateListWithVersion();
+
+			if (repoData != null && !repoData.isEmpty()) {
+				for (PL_SCHS_Archival_Summary_Entity entity : repoData) {
+					Object[] row = new Object[] { entity.getREPORT_DATE(), entity.getREPORT_VERSION(),
+							entity.getREPORT_RESUBDATE() };
+					archivalList.add(row);
+				}
+
+				System.out.println("Fetched " + archivalList.size() + " archival records");
+				PL_SCHS_Archival_Summary_Entity first = repoData.get(0);
+				System.out.println("Latest archival version: " + first.getREPORT_VERSION());
+			} else {
+				System.out.println("No archival data found.");
+			}
+
+		} catch (Exception e) {
+			System.err.println("Error fetching PL_SCHS Archival data: " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		return archivalList;
+	}
+
 
 }

@@ -57,9 +57,6 @@ import com.bornfire.brrs.entities.M_DEP3_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_DEP3_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_DEP3_Detail_Entity;
 import com.bornfire.brrs.entities.M_DEP3_Summary_Entity;
-import com.bornfire.brrs.entities.M_DEP3_Summary_Entity;
-import com.bornfire.brrs.entities.M_DEP3_Manual_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.BRRS_M_DEP3_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_DEP3_Manual_Archival_Summary_Repo;
 
 @Component
