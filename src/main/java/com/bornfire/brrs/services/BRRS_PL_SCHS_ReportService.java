@@ -8173,7 +8173,7 @@ public class BRRS_PL_SCHS_ReportService {
             String acctBalanceInpula = request.getParameter("acctBalanceInpula");
             String average = request.getParameter("average");
             String acctName = request.getParameter("acctName");
-            String reportDateStr = request.getParameter("reportDate");
+            String reportDateStr = request.getParameter("REPORT_DATE");
 
             logger.info("Received update for ACCT_NO: {}", acctNo);
 

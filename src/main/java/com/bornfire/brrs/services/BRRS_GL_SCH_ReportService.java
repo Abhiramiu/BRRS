@@ -116,7 +116,7 @@ public class BRRS_GL_SCH_ReportService {
 
     public ModelAndView getGL_SCHView(String reportId, String fromdate, String todate,
             String currency, String dtltype, Pageable pageable,
-            String type, String version) {
+            String type, BigDecimal version) {
 
         ModelAndView mv = new ModelAndView();
         Session hs = sessionFactory.getCurrentSession();
@@ -267,11 +267,11 @@ public class BRRS_GL_SCH_ReportService {
     }
 
     public byte[] getGL_SCHExcel(String filename, String reportId, String fromdate, String todate, String currency,
-            String dtltype, String type, String version) throws Exception {
+            String dtltype, String type, BigDecimal version) throws Exception {
         logger.info("Service: Starting Excel generation process in memory.");
 
         // ARCHIVAL check
-        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
             logger.info("Service: Generating ARCHIVAL report for version {}", version);
             return getExcelGL_SCHARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
         }
@@ -16303,7 +16303,7 @@ public class BRRS_GL_SCH_ReportService {
     }
 
     public byte[] getExcelGL_SCHARCHIVAL(String filename, String reportId, String fromdate, String todate,
-            String currency, String dtltype, String type, String version) throws Exception {
+            String currency, String dtltype, String type, BigDecimal version) throws Exception {
 
         logger.info("Service: Starting Excel generation process in memory.");
 

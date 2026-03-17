@@ -1,5 +1,6 @@
 package com.bornfire.brrs.entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -14,5 +15,5 @@ public interface BRRS_GL_SCH_Archival_Summary_Repo3 extends JpaRepository<GL_SCH
     List<Object> getGL_SCHarchival();
 
     @Query(value = "select * from BRRS_GL_SCH_ARCHIVALTABLE_SUMMARY3 where REPORT_DATE = ?1 and REPORT_VERSION = ?2", nativeQuery = true)
-    List<GL_SCH_Archival_Summary_Entity3> getdatabydateListarchival(Date report_date, String report_version);
+    List<GL_SCH_Archival_Summary_Entity3> getdatabydateListarchival(Date report_date, BigDecimal report_version);
 }

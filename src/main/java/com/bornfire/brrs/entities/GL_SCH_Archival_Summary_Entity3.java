@@ -1451,7 +1451,7 @@ public class GL_SCH_Archival_Summary_Entity3 {
     private Date REPORT_DATE;
 
     @Column(name = "REPORT_VERSION")
-    private String REPORT_VERSION;
+    private BigDecimal REPORT_VERSION;
 
     @Column(name = "REPORT_FREQUENCY")
     private String REPORT_FREQUENCY;
@@ -5175,11 +5175,11 @@ public class GL_SCH_Archival_Summary_Entity3 {
         REPORT_DATE = rEPORT_DATE;
     }
 
-    public String getREPORT_VERSION() {
+    public BigDecimal getREPORT_VERSION() {
         return REPORT_VERSION;
     }
 
-    public void setREPORT_VERSION(String rEPORT_VERSION) {
+    public void setREPORT_VERSION(BigDecimal rEPORT_VERSION) {
         REPORT_VERSION = rEPORT_VERSION;
     }
 
