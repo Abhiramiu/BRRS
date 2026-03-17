@@ -811,14 +811,14 @@ PURPOSE		: BWRBRREPORT
 
       	function showdetails() {
       		$('#loader').modal('show');
-      		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='Details', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+      		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='Details', fromdate=${fromdate}, todate=${todate}, version=${version} ,type=${type}, asondate=${asondate})}]]*/;
       		var name = /*[[${todate}]]*/ "";
       		
       		location.href = Callurl;
 		}
       	function showsummary() {
       		$('#loader').modal('show');
-      		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+      		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, version=${version} ,type=${type}, asondate=${asondate})}]]*/;
       		location.href = Callurl;
 
       	}
@@ -2762,7 +2762,7 @@ calculateR20Totals();
 calculateR21Totals();
 calculateR22Totals();
 calculateR23Totals();
-calculateR24Totals();
+calculateR24Totals();	
 calculateR25Totals();
 calculateR26Totals();
 calculateR27Totals();
@@ -2827,7 +2827,7 @@ calculateR13Last();
 
     // --- Entity fields (R10-R17) ---
     for (let i = 13; i <= 59; i++) {
-    	["EQUITY", "BONDS", "BOBC", "TRES_BILLS", "REPURCHASE_AGREE", 
+    	["PRODUCT","EQUITY", "BONDS", "BOBC", "TRES_BILLS", "REPURCHASE_AGREE", 
     		"COM_PAPER", "CERT_OF_DEP", "PLEDGED_ASSET", "OTHER", "TOTAL"].forEach(field => {
             const input = $("#R" + i + "_" + field);
             if (input.length) {
@@ -2835,6 +2835,7 @@ calculateR13Last();
             }
         });
     }
+    console.log(formData)
     console.log("✅ Entity executed successfully");
     
     let apiUrl;
@@ -3077,10 +3078,15 @@ calculateR13Last();
                     >
 
                       <tr>
-                        <td
-                          style="padding-left: 0px; font-weight:bold;"
-                          th:text="${report.R13_PRODUCT}"
-                        ></td>
+                 
+             <td id="ROW13" style="font-weight: bold;"><input
+			class="display-input Show_input " type="text"
+			th:value="${report.R13_PRODUCT != null ? report.R13_PRODUCT : 'N/A'}"
+			id="R13_PRODUCT" name="R13_PRODUCT"
+			style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+			readonly /></td>
+
+
 
                         <td id="R13" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
@@ -3165,13 +3171,16 @@ calculateR13Last();
                     
                     
 <!-- R14 -->
-                                            <tr>
-                        <td
-                          style="padding-left: 25px"
-                          th:text="${report.R14_PRODUCT}"
-                        ></td>
+                 <tr>
+		
+<td id="ROW14" style="font-weight: bold;"><input
+    class="display-input Show_input " type="text"
+    th:value="${report.R14_PRODUCT != null ? report.R14_PRODUCT : 'N/A'}"
+    id="R14_PRODUCT" name="R14_PRODUCT"
+    style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+    readonly /></td>
 
-                        <td id="R14" style="text-align:right;">
+	<td id="R14" style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
 	th:value="${report.R14_EQUITY != null ? #numbers.formatDecimal(report.R14_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -3255,10 +3264,12 @@ calculateR13Last();
 
 <!-- R15 -->
                <tr>
-                <td
-                  style="padding-left: 25px"
-                  th:text="${report.R15_PRODUCT}"
-                ></td>
+              <td id="ROW15" style="font-weight: bold;"><input
+    class="display-input Show_input " type="text"
+    th:value="${report.R15_PRODUCT != null ? report.R15_PRODUCT : 'N/A'}"
+    id="R15_PRODUCT" name="R15_PRODUCT"
+    style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+    readonly /></td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -3345,10 +3356,13 @@ calculateR13Last();
 
 <!-- R16 -->
                    <tr>
-                <td
-                  style="padding-left: 25px"
-                  th:text="${report.R16_PRODUCT}"
-                ></td>
+                <td id="ROW16" style="font-weight: bold;"><input
+    class="display-input Show_input " type="text"
+    th:value="${report.R16_PRODUCT != null ? report.R16_PRODUCT : 'N/A'}"
+    id="R16_PRODUCT" name="R16_PRODUCT"
+    style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+    readonly /></td>
+
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -3434,10 +3448,12 @@ calculateR13Last();
 
 <!-- R17 -->
                       <tr>
-                        <td
-                          style="padding-left: 25px"
-                          th:text="${report.R17_PRODUCT}"
-                        ></td>
+                      <td id="ROW17" style="font-weight: bold;"><input
+    class="display-input Show_input " type="text"
+    th:value="${report.R17_PRODUCT != null ? report.R17_PRODUCT : 'N/A'}"
+    id="R17_PRODUCT" name="R17_PRODUCT"
+    style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+    readonly /></td>
 
                         <td id="R17" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
@@ -3522,10 +3538,12 @@ calculateR13Last();
 
 <!-- R18 -->
                  <tr>
-                <td
-                  style="padding-left: 50px"
-                  th:text="${report.R18_PRODUCT}"
-                ></td>
+               <td id="ROW18" style="font-weight: bold;"><input
+    class="display-input Show_input " type="text"
+    th:value="${report.R18_PRODUCT != null ? report.R18_PRODUCT : 'N/A'}"
+    id="R18_PRODUCT" name="R18_PRODUCT"
+    style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+    readonly /></td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -3610,11 +3628,13 @@ calculateR13Last();
 
 <!-- R19 -->
              <tr>
-                <td
-                  style="padding-left: 50px"
-                  th:text="${report.R19_PRODUCT}"
-                ></td>
-
+                <td id="ROW19" style="font-weight: bold;"><input
+    class="display-input Show_input " type="text"
+    th:value="${report.R19_PRODUCT != null ? report.R19_PRODUCT : 'N/A'}"
+    id="R19_PRODUCT" name="R19_PRODUCT"
+    style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+    readonly /></td>
+    
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -3699,10 +3719,12 @@ calculateR13Last();
 
 <!-- Repeat for R20 to R25 -->
                   <tr>
-                <td
-                  style="padding-left: 50px"
-                  th:text="${report.R20_PRODUCT}"
-                ></td>
+                <td id="ROW20" style="font-weight: bold;"><input
+    class="display-input Show_input " type="text"
+    th:value="${report.R20_PRODUCT != null ? report.R20_PRODUCT : 'N/A'}"
+    id="R20_PRODUCT" name="R20_PRODUCT"
+    style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+    readonly /></td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -3788,12 +3810,14 @@ calculateR13Last();
 
 <!-- R21 -->
                 <tr>
-                <td
-                  style="padding-left: 50px"
-                  th:text="${report.R21_PRODUCT}"
-                ></td>
+					<td id="ROW21" style="font-weight: bold;"><input
+						class="display-input Show_input " type="text"
+						th:value="${report.R21_PRODUCT != null ? report.R21_PRODUCT : 'N/A'}"
+						id="R21_PRODUCT" name="R21_PRODUCT"
+						style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+						readonly /></td>
 
-                <td style="text-align:right;">
+												<td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
 	th:value="${report.R21_EQUITY != null ? #numbers.formatDecimal(report.R21_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -3877,10 +3901,14 @@ calculateR13Last();
 
 <!-- R22 -->
               <tr>
-                <td
-                  style="padding-left: 50px"
-                  th:text="${report.R22_PRODUCT}"
-                ></td>
+               <td id="ROW22" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R22_PRODUCT != null ? report.R22_PRODUCT : 'N/A'}"
+        id="R22_PRODUCT" name="R22_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
+
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -3966,11 +3994,13 @@ calculateR13Last();
 
 <!-- R23 -->
 <tr>
-                <td
-                  style="padding-left: 50px"
-                  th:text="${report.R23_PRODUCT}"
-                ></td>
-
+               <td id="ROW23" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R23_PRODUCT != null ? report.R23_PRODUCT : 'N/A'}"
+        id="R23_PRODUCT" name="R23_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -4053,14 +4083,18 @@ calculateR13Last();
               </tr>
 
 
-
+<!-- 24 -->
 
 
 <tr>
-                <td
-                  style="padding-left: 50px"
-                  th:text="${report.R24_PRODUCT}"
-                ></td>
+                <td id="ROW24" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R24_PRODUCT != null ? report.R24_PRODUCT : 'N/A'}"
+        id="R24_PRODUCT" name="R24_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
+
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -4144,10 +4178,14 @@ calculateR13Last();
               </tr>
 
 <tr>
-                <td
-                  style="padding-left: 50px"
-                  th:text="${report.R25_PRODUCT}"
-                ></td>
+               <td id="ROW25" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R25_PRODUCT != null ? report.R25_PRODUCT : 'N/A'}"
+        id="R25_PRODUCT" name="R25_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
+
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -4231,10 +4269,13 @@ calculateR13Last();
               </tr>
 
 <tr>
-                <td
-                  style="padding-left: 50px"
-                  th:text="${report.R26_PRODUCT}"
-                ></td>
+               <td id="ROW26" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R26_PRODUCT != null ? report.R26_PRODUCT : 'N/A'}"
+        id="R26_PRODUCT" name="R26_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -4318,10 +4359,13 @@ calculateR13Last();
               </tr>
 
 <tr>
-                <td
-                  style="padding-left: 50px"
-                  th:text="${report.R27_PRODUCT}"
-                ></td>
+                <td id="ROW27" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R27_PRODUCT != null ? report.R27_PRODUCT : 'N/A'}"
+        id="R27_PRODUCT" name="R27_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -4405,11 +4449,14 @@ calculateR13Last();
               </tr>
 
 <tr>
-                <td
-                  style="padding-left: 50px"
-                  th:text="${report.R28_PRODUCT}"
-                ></td>
-
+               <td id="ROW28" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R28_PRODUCT != null ? report.R28_PRODUCT : 'N/A'}"
+        id="R28_PRODUCT" name="R28_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
+               
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -4492,11 +4539,13 @@ calculateR13Last();
               </tr>
 
 <tr>
-                <td
-                  style="padding-left: 50px"
-                  th:text="${report.R29_PRODUCT}"
-                ></td>
-
+               <td id="ROW29" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R29_PRODUCT != null ? report.R29_PRODUCT : 'N/A'}"
+        id="R29_PRODUCT" name="R29_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -4579,11 +4628,13 @@ calculateR13Last();
               </tr>
 
 <tr>
-                <td
-                  style="padding-left: 50px"
-                  th:text="${report.R30_PRODUCT}"
-                ></td>
-
+                <td id="ROW30" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R30_PRODUCT != null ? report.R30_PRODUCT : 'N/A'}"
+        id="R30_PRODUCT" name="R30_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -4667,11 +4718,13 @@ calculateR13Last();
 
 
 <tr>
-                <td
-                  style="padding-left: 25px"
-                  th:text="${report.R31_PRODUCT}"
-                ></td>
-
+               <td id="ROW31" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R31_PRODUCT != null ? report.R31_PRODUCT : 'N/A'}"
+        id="R31_PRODUCT" name="R31_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -4754,10 +4807,14 @@ calculateR13Last();
               </tr>
 
                       <tr>
-                        <td
-                          style="padding-left: 25px"
-                          th:text="${report.R32_PRODUCT}"
-                        ></td>
+                      <td id="ROW32" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R32_PRODUCT != null ? report.R32_PRODUCT : 'N/A'}"
+        id="R32_PRODUCT" name="R32_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
+
 
                         <td id="R32" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
@@ -4841,11 +4898,13 @@ calculateR13Last();
                       </tr>
 
 <tr>
-                <td
-                  style="padding-left: 50px"
-                  th:text="${report.R33_PRODUCT}"
-                ></td>
-
+                <td id="ROW33" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R33_PRODUCT != null ? report.R33_PRODUCT : 'N/A'}"
+        id="R33_PRODUCT" name="R33_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -4928,10 +4987,13 @@ calculateR13Last();
               </tr>
 
 <tr>
-                <td
-                  style="padding-left: 50px"
-                  th:text="${report.R34_PRODUCT}"
-                ></td>
+               <td id="ROW34" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R34_PRODUCT != null ? report.R34_PRODUCT : 'N/A'}"
+        id="R34_PRODUCT" name="R34_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -5015,10 +5077,13 @@ calculateR13Last();
               </tr>
 
                       <tr>
-                        <td
-                          style="padding-left: 0px; font-weight:bold;"
-                          th:text="${report.R35_PRODUCT}"
-                        ></td>
+                       <td id="ROW35" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R35_PRODUCT != null ? report.R35_PRODUCT : 'N/A'}"
+        id="R35_PRODUCT" name="R35_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
 
                         <td id="R35" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
@@ -5102,11 +5167,13 @@ calculateR13Last();
                       </tr>
 
 <tr>
-                <td
-                  style="padding-left: 25px"
-                  th:text="${report.R36_PRODUCT}"
-                ></td>
-
+                <td id="ROW36" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R36_PRODUCT != null ? report.R36_PRODUCT : 'N/A'}"
+        id="R36_PRODUCT" name="R36_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -5192,10 +5259,13 @@ calculateR13Last();
               </tr>
 
 <tr>
-                <td
-                  style="padding-left: 25px"
-                  th:text="${report.R37_PRODUCT}"
-                ></td>
+               <td id="ROW37" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R37_PRODUCT != null ? report.R37_PRODUCT : 'N/A'}"
+        id="R37_PRODUCT" name="R37_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -5279,10 +5349,13 @@ calculateR13Last();
               </tr>
 
                       <tr>
-                        <td
-                          style="padding-left: 25px"
-                          th:text="${report.R38_PRODUCT}"
-                        ></td>
+                      <td id="ROW38" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R38_PRODUCT != null ? report.R38_PRODUCT : 'N/A'}"
+        id="R38_PRODUCT" name="R38_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
 
                         <td id="R38" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
@@ -5366,10 +5439,13 @@ calculateR13Last();
                       </tr>
 
 <tr>
-                <td
-                  style="padding-left: 50px"
-                  th:text="${report.R39_PRODUCT}"
-                ></td>
+               <td id="ROW39" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R39_PRODUCT != null ? report.R39_PRODUCT : 'N/A'}"
+        id="R39_PRODUCT" name="R39_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -5453,11 +5529,13 @@ calculateR13Last();
               </tr>
 
 <tr>
-                <td
-                  style="padding-left: 50px"
-                  th:text="${report.R40_PRODUCT}"
-                ></td>
-
+               <td id="ROW40" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R40_PRODUCT != null ? report.R40_PRODUCT : 'N/A'}"
+        id="R40_PRODUCT" name="R40_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -5541,10 +5619,13 @@ calculateR13Last();
 
 
 <tr>
-                <td
-                  style="padding-left: 50px"
-                  th:text="${report.R41_PRODUCT}"
-                ></td>
+              <td id="ROW41" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R41_PRODUCT != null ? report.R41_PRODUCT : 'N/A'}"
+        id="R41_PRODUCT" name="R41_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -5628,11 +5709,13 @@ calculateR13Last();
               </tr>
 
 <tr>
-                <td
-                  style="padding-left: 50px"
-                  th:text="${report.R42_PRODUCT}"
-                ></td>
-
+               <td id="ROW42" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R42_PRODUCT != null ? report.R42_PRODUCT : 'N/A'}"
+        id="R42_PRODUCT" name="R42_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -5715,11 +5798,13 @@ calculateR13Last();
               </tr>
 
                       <tr>
-                        <td
-                          style="padding-left: 25px"
-                          th:text="${report.R43_PRODUCT}"
-                        ></td>
-
+                     <td id="ROW43" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R43_PRODUCT != null ? report.R43_PRODUCT : 'N/A'}"
+        id="R43_PRODUCT" name="R43_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
                         <td id="R43" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
@@ -5802,11 +5887,13 @@ calculateR13Last();
                       </tr>
 
 <tr>
-                <td
-                  style="padding-left: 50px"
-                  th:text="${report.R44_PRODUCT}"
-                ></td>
-
+              <td id="ROW44" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R44_PRODUCT != null ? report.R44_PRODUCT : 'N/A'}"
+        id="R44_PRODUCT" name="R44_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -5889,10 +5976,13 @@ calculateR13Last();
               </tr>
 
 <tr>
-                <td
-                  style="padding-left: 50px"
-                  th:text="${report.R45_PRODUCT}"
-                ></td>
+                <td id="ROW45" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R45_PRODUCT != null ? report.R45_PRODUCT : 'N/A'}"
+        id="R45_PRODUCT" name="R45_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -5976,10 +6066,13 @@ calculateR13Last();
               </tr>
 
 <tr>
-                <td
-                  style="padding-left: 50px"
-                  th:text="${report.R46_PRODUCT}"
-                ></td>
+              <td id="ROW46" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R46_PRODUCT != null ? report.R46_PRODUCT : 'N/A'}"
+        id="R46_PRODUCT" name="R46_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -6063,10 +6156,13 @@ calculateR13Last();
               </tr>
 
                       <tr>
-                        <td
-                          style="padding-left: 50px"
-                          th:text="${report.R47_PRODUCT}"
-                        ></td>
+                     <td id="ROW47" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R47_PRODUCT != null ? report.R47_PRODUCT : 'N/A'}"
+        id="R47_PRODUCT" name="R47_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
 
                         <td id="R47" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
@@ -6150,10 +6246,13 @@ calculateR13Last();
                       </tr>
 
 <tr>
-                <td
-                  style="padding-left: 70px"
-                  th:text="${report.R48_PRODUCT}"
-                ></td>
+               <td id="ROW48" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R48_PRODUCT != null ? report.R48_PRODUCT : 'N/A'}"
+        id="R48_PRODUCT" name="R48_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -6237,10 +6336,13 @@ calculateR13Last();
               </tr>
 
 <tr>
-                <td
-                  style="padding-left: 70px"
-                  th:text="${report.R49_PRODUCT}"
-                ></td>
+               <td id="ROW49" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R49_PRODUCT != null ? report.R49_PRODUCT : 'N/A'}"
+        id="R49_PRODUCT" name="R49_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -6324,10 +6426,13 @@ calculateR13Last();
               </tr>
 
 <tr>
-                <td
-                  style="padding-left: 70px"
-                  th:text="${report.R50_PRODUCT}"
-                ></td>
+               <td id="ROW50" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R50_PRODUCT != null ? report.R50_PRODUCT : 'N/A'}"
+        id="R50_PRODUCT" name="R50_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -6412,10 +6517,14 @@ calculateR13Last();
 
 
                       <tr>
-                        <td
-                          style="padding-left: 50px"
-                          th:text="${report.R51_PRODUCT}"
-                        ></td>
+                        <td id="ROW51" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R51_PRODUCT != null ? report.R51_PRODUCT : 'N/A'}"
+        id="R51_PRODUCT" name="R51_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
+
 
                         <td id="R51" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
@@ -6499,11 +6608,13 @@ calculateR13Last();
                       </tr>
 
 <tr>
-                <td
-                  style="padding-left: 70px"
-                  th:text="${report.R52_PRODUCT}"
-                ></td>
-
+                <td id="ROW52" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R52_PRODUCT != null ? report.R52_PRODUCT : 'N/A'}"
+        id="R52_PRODUCT" name="R52_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -6586,11 +6697,13 @@ calculateR13Last();
               </tr>
 
 <tr>
-                <td
-                  style="padding-left: 70px"
-                  th:text="${report.R53_PRODUCT}"
-                ></td>
-
+               <td id="ROW53" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R53_PRODUCT != null ? report.R53_PRODUCT : 'N/A'}"
+        id="R53_PRODUCT" name="R53_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -6673,11 +6786,13 @@ calculateR13Last();
               </tr>
 
 <tr>
-                <td
-                  style="padding-left: 70px"
-                  th:text="${report.R54_PRODUCT}"
-                ></td>
-
+<td id="ROW54" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R54_PRODUCT != null ? report.R54_PRODUCT : 'N/A'}"
+        id="R54_PRODUCT" name="R54_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -6760,10 +6875,13 @@ calculateR13Last();
               </tr>
 
 <tr>
-                <td
-                  style="padding-left: 70px"
-                  th:text="${report.R55_PRODUCT}"
-                ></td>
+                <td id="ROW55" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R55_PRODUCT != null ? report.R55_PRODUCT : 'N/A'}"
+        id="R55_PRODUCT" name="R55_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -6847,11 +6965,13 @@ calculateR13Last();
               </tr>
 
 <tr>
-                <td
-                  style="padding-left: 70px"
-                  th:text="${report.R56_PRODUCT}"
-                ></td>
-
+               <td id="ROW56" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R56_PRODUCT != null ? report.R56_PRODUCT : 'N/A'}"
+        id="R56_PRODUCT" name="R56_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -6934,10 +7054,13 @@ calculateR13Last();
               </tr>
 
 <tr>
-                <td
-                  style="padding-left: 25px"
-                  th:text="${report.R57_PRODUCT}"
-                ></td>
+                <td id="ROW57" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R57_PRODUCT != null ? report.R57_PRODUCT : 'N/A'}"
+        id="R57_PRODUCT" name="R57_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -7021,10 +7144,13 @@ calculateR13Last();
               </tr>
 
                       <tr>
-                        <td
-                          style="padding-left: 0px; font-weight:bold;"
-                          th:text="${report.R58_PRODUCT}"
-                        ></td>
+                       <td id="ROW58" style="font-weight: bold;">
+    <input class="display-input Show_input" type="text"
+        th:value="${report.R58_PRODUCT != null ? report.R58_PRODUCT : 'N/A'}"
+        id="R58_PRODUCT" name="R58_PRODUCT"
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
+        readonly />
+</td>
 
                         <td id="R58" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
@@ -7465,6 +7591,7 @@ calculateR13Last();
       display: inline-block;
       width: auto;
     }
+    
         .scrollable-table-container thead tr:nth-child(1),
 .scrollable-table-container thead tr:nth-child(2),
 .scrollable-table-container thead tr:nth-child(3),
