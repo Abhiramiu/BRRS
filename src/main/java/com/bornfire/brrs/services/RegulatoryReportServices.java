@@ -5441,12 +5441,7 @@ public class RegulatoryReportServices {
 		 */
 
 
-		case "M_DEP4":
-			List<Object[]> DEP4List = BRRS_M_DEP4_ReportService.getM_DEP4Archival();
-			archivalData.addAll(DEP4List);
-			System.out.println("Fetched DEP4 archival data: " + DEP4List.size());
-			break;
-
+		
 
 		case "BDISB2":
 			List<Object[]> bdisb2List = BRRS_BDISB2_ReportService.getBDISB2Archival();
