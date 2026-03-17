@@ -1332,6 +1332,17 @@ public class RegulatoryReportServices {
 
 			break;
 
+			
+		case "M_DEP4":
+
+			repsummary = BRRS_M_DEP4_ReportService.getM_DEP4View(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+
+			break;
+			
+		
+			
+
 		case "M_GALOR":
 
 			repsummary = BRRS_m_galor_ReportService.getM_GALORView(reportId, fromdate, todate, currency, dtltype,
@@ -3359,6 +3370,21 @@ public class RegulatoryReportServices {
 			}
 			break;
 
+			
+		case "M_DEP4":
+			try {
+
+				repfile = BRRS_M_DEP4_ReportService.BRRS_M_DEP4Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, format, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		
+			
+			
+
 		case "M_GALOR":
 			try {
 
@@ -4389,6 +4415,17 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched M_LA3 archival data: " + M_LA3List.size());
 			break;
 
+			
+		case "M_DEP4":
+			List<Object[]> M_DEP4List = BRRS_M_DEP4_ReportService.getM_DEP4Archival();
+			archivalData.addAll(M_DEP4List);
+			System.out.println("Fetched M_DEP4 archival data: " + M_DEP4List.size());
+			break;
+			
+		
+			
+			
+
 		case "M_CA1":
 			List<Object[]> M_CA1List = BRRS_M_CA1_reportservice.getM_CA1Archival();
 			archivalData.addAll(M_CA1List);
@@ -5403,11 +5440,13 @@ public class RegulatoryReportServices {
 		 * e.printStackTrace(); } break;
 		 */
 
+
 		case "M_DEP4":
 			List<Object[]> DEP4List = BRRS_M_DEP4_ReportService.getM_DEP4Archival();
 			archivalData.addAll(DEP4List);
 			System.out.println("Fetched DEP4 archival data: " + DEP4List.size());
 			break;
+
 
 		case "BDISB2":
 			List<Object[]> bdisb2List = BRRS_BDISB2_ReportService.getBDISB2Archival();

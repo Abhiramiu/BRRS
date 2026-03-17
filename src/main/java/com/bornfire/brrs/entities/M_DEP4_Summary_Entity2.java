@@ -15,405 +15,707 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Entity
 @Table(name = "BRRS_M_DEP4_SUMMARYTABLE2")
 public class M_DEP4_Summary_Entity2 {
-	private String R51_PRODUCT;
-	private String R51_INSTITUTIONAL_SELECTOR;
-	private String R51_TYPE_OF_ACCOUNT;
-	private BigDecimal R51_INTREST_RATE;
-	private BigDecimal R51_AMOUNT;
-	private BigDecimal R51_TOTAL_DEPOSIT;
-	private BigDecimal R51_PERCENTAGE_TOTAL_DEPOSIT;
+	private String	r101_customer_name;
+	private String	r101_institutional_sector;
+	private String	r101_type_of_account;
+	private BigDecimal	r101_interest_rate;
+	private BigDecimal	r101_amount;
+	private BigDecimal	r101_total_deposit;
+	private BigDecimal	r101_percentage_total_deposit;
+	private String	r102_customer_name;
+	private String	r102_institutional_sector;
+	private String	r102_type_of_account;
+	private BigDecimal	r102_interest_rate;
+	private BigDecimal	r102_amount;
+	private BigDecimal	r102_total_deposit;
+	private BigDecimal	r102_percentage_total_deposit;
+	private String	r103_customer_name;
+	private String	r103_institutional_sector;
+	private String	r103_type_of_account;
+	private BigDecimal	r103_interest_rate;
+	private BigDecimal	r103_amount;
+	private BigDecimal	r103_total_deposit;
+	private BigDecimal	r103_percentage_total_deposit;
+	private String	r104_customer_name;
+	private String	r104_institutional_sector;
+	private String	r104_type_of_account;
+	private BigDecimal	r104_interest_rate;
+	private BigDecimal	r104_amount;
+	private BigDecimal	r104_total_deposit;
+	private BigDecimal	r104_percentage_total_deposit;
+	private String	r105_customer_name;
+	private String	r105_institutional_sector;
+	private String	r105_type_of_account;
+	private BigDecimal	r105_interest_rate;
+	private BigDecimal	r105_amount;
+	private BigDecimal	r105_total_deposit;
+	private BigDecimal	r105_percentage_total_deposit;
+	private String	r106_customer_name;
+	private String	r106_institutional_sector;
+	private String	r106_type_of_account;
+	private BigDecimal	r106_interest_rate;
+	private BigDecimal	r106_amount;
+	private BigDecimal	r106_total_deposit;
+	private BigDecimal	r106_percentage_total_deposit;
+	private String	r107_customer_name;
+	private String	r107_institutional_sector;
+	private String	r107_type_of_account;
+	private BigDecimal	r107_interest_rate;
+	private BigDecimal	r107_amount;
+	private BigDecimal	r107_total_deposit;
+	private BigDecimal	r107_percentage_total_deposit;
+	private String	r108_customer_name;
+	private String	r108_institutional_sector;
+	private String	r108_type_of_account;
+	private BigDecimal	r108_interest_rate;
+	private BigDecimal	r108_amount;
+	private BigDecimal	r108_total_deposit;
+	private BigDecimal	r108_percentage_total_deposit;
+	private String	r109_customer_name;
+	private String	r109_institutional_sector;
+	private String	r109_type_of_account;
+	private BigDecimal	r109_interest_rate;
+	private BigDecimal	r109_amount;
+	private BigDecimal	r109_total_deposit;
+	private BigDecimal	r109_percentage_total_deposit;
+	private String	r110_customer_name;
+	private String	r110_institutional_sector;
+	private String	r110_type_of_account;
+	private BigDecimal	r110_interest_rate;
+	private BigDecimal	r110_amount;
+	private BigDecimal	r110_total_deposit;
+	private BigDecimal	r110_percentage_total_deposit;
+	private String	r111_customer_name;
+	private String	r111_institutional_sector;
+	private String	r111_type_of_account;
+	private BigDecimal	r111_interest_rate;
+	private BigDecimal	r111_amount;
+	private BigDecimal	r111_total_deposit;
+	private BigDecimal	r111_percentage_total_deposit;
+	private String	r112_customer_name;
+	private String	r112_institutional_sector;
+	private String	r112_type_of_account;
+	private BigDecimal	r112_interest_rate;
+	private BigDecimal	r112_amount;
+	private BigDecimal	r112_total_deposit;
+	private BigDecimal	r112_percentage_total_deposit;
+	private String	r113_customer_name;
+	private String	r113_institutional_sector;
+	private String	r113_type_of_account;
+	private BigDecimal	r113_interest_rate;
+	private BigDecimal	r113_amount;
+	private BigDecimal	r113_total_deposit;
+	private BigDecimal	r113_percentage_total_deposit;
+	private String	r114_customer_name;
+	private String	r114_institutional_sector;
+	private String	r114_type_of_account;
+	private BigDecimal	r114_interest_rate;
+	private BigDecimal	r114_amount;
+	private BigDecimal	r114_total_deposit;
+	private BigDecimal	r114_percentage_total_deposit;
+	private String	r115_customer_name;
+	private String	r115_institutional_sector;
+	private String	r115_type_of_account;
+	private BigDecimal	r115_interest_rate;
+	private BigDecimal	r115_amount;
+	private BigDecimal	r115_total_deposit;
+	private BigDecimal	r115_percentage_total_deposit;
+	private String	r116_customer_name;
+	private String	r116_institutional_sector;
+	private String	r116_type_of_account;
+	private BigDecimal	r116_interest_rate;
+	private BigDecimal	r116_amount;
+	private BigDecimal	r116_total_deposit;
+	private BigDecimal	r116_percentage_total_deposit;
+	private String	r117_customer_name;
+	private String	r117_institutional_sector;
+	private String	r117_type_of_account;
+	private BigDecimal	r117_interest_rate;
+	private BigDecimal	r117_amount;
+	private BigDecimal	r117_total_deposit;
+	private BigDecimal	r117_percentage_total_deposit;
+	private String	r118_customer_name;
+	private String	r118_institutional_sector;
+	private String	r118_type_of_account;
+	private BigDecimal	r118_interest_rate;
+	private BigDecimal	r118_amount;
+	private BigDecimal	r118_total_deposit;
+	private BigDecimal	r118_percentage_total_deposit;
+	private String	r119_customer_name;
+	private String	r119_institutional_sector;
+	private String	r119_type_of_account;
+	private BigDecimal	r119_interest_rate;
+	private BigDecimal	r119_amount;
+	private BigDecimal	r119_total_deposit;
+	private BigDecimal	r119_percentage_total_deposit;
+	private String	r120_customer_name;
+	private String	r120_institutional_sector;
+	private String	r120_type_of_account;
+	private BigDecimal	r120_interest_rate;
+	private BigDecimal	r120_amount;
+	private BigDecimal	r120_total_deposit;
+	private BigDecimal	r120_percentage_total_deposit;
+	private String	r121_customer_name;
+	private String	r121_institutional_sector;
+	private String	r121_type_of_account;
+	private BigDecimal	r121_interest_rate;
+	private BigDecimal	r121_amount;
+	private BigDecimal	r121_total_deposit;
+	private BigDecimal	r121_percentage_total_deposit;
+	private String	r122_customer_name;
+	private String	r122_institutional_sector;
+	private String	r122_type_of_account;
+	private BigDecimal	r122_interest_rate;
+	private BigDecimal	r122_amount;
+	private BigDecimal	r122_total_deposit;
+	private BigDecimal	r122_percentage_total_deposit;
+	private String	r123_customer_name;
+	private String	r123_institutional_sector;
+	private String	r123_type_of_account;
+	private BigDecimal	r123_interest_rate;
+	private BigDecimal	r123_amount;
+	private BigDecimal	r123_total_deposit;
+	private BigDecimal	r123_percentage_total_deposit;
+	private String	r124_customer_name;
+	private String	r124_institutional_sector;
+	private String	r124_type_of_account;
+	private BigDecimal	r124_interest_rate;
+	private BigDecimal	r124_amount;
+	private BigDecimal	r124_total_deposit;
+	private BigDecimal	r124_percentage_total_deposit;
+	private String	r125_customer_name;
+	private String	r125_institutional_sector;
+	private String	r125_type_of_account;
+	private BigDecimal	r125_interest_rate;
+	private BigDecimal	r125_amount;
+	private BigDecimal	r125_total_deposit;
+	private BigDecimal	r125_percentage_total_deposit;
+	private String	r126_customer_name;
+	private String	r126_institutional_sector;
+	private String	r126_type_of_account;
+	private BigDecimal	r126_interest_rate;
+	private BigDecimal	r126_amount;
+	private BigDecimal	r126_total_deposit;
+	private BigDecimal	r126_percentage_total_deposit;
+	private String	r127_customer_name;
+	private String	r127_institutional_sector;
+	private String	r127_type_of_account;
+	private BigDecimal	r127_interest_rate;
+	private BigDecimal	r127_amount;
+	private BigDecimal	r127_total_deposit;
+	private BigDecimal	r127_percentage_total_deposit;
+	private String	r128_customer_name;
+	private String	r128_institutional_sector;
+	private String	r128_type_of_account;
+	private BigDecimal	r128_interest_rate;
+	private BigDecimal	r128_amount;
+	private BigDecimal	r128_total_deposit;
+	private BigDecimal	r128_percentage_total_deposit;
+	private String	r129_customer_name;
+	private String	r129_institutional_sector;
+	private String	r129_type_of_account;
+	private BigDecimal	r129_interest_rate;
+	private BigDecimal	r129_amount;
+	private BigDecimal	r129_total_deposit;
+	private BigDecimal	r129_percentage_total_deposit;
+	private String	r130_customer_name;
+	private String	r130_institutional_sector;
+	private String	r130_type_of_account;
+	private BigDecimal	r130_interest_rate;
+	private BigDecimal	r130_amount;
+	private BigDecimal	r130_total_deposit;
+	private BigDecimal	r130_percentage_total_deposit;
+	private String	r131_customer_name;
+	private String	r131_institutional_sector;
+	private String	r131_type_of_account;
+	private BigDecimal	r131_interest_rate;
+	private BigDecimal	r131_amount;
+	private BigDecimal	r131_total_deposit;
+	private BigDecimal	r131_percentage_total_deposit;
+	private String	r132_customer_name;
+	private String	r132_institutional_sector;
+	private String	r132_type_of_account;
+	private BigDecimal	r132_interest_rate;
+	private BigDecimal	r132_amount;
+	private BigDecimal	r132_total_deposit;
+	private BigDecimal	r132_percentage_total_deposit;
+	private String	r133_customer_name;
+	private String	r133_institutional_sector;
+	private String	r133_type_of_account;
+	private BigDecimal	r133_interest_rate;
+	private BigDecimal	r133_amount;
+	private BigDecimal	r133_total_deposit;
+	private BigDecimal	r133_percentage_total_deposit;
+	private String	r134_customer_name;
+	private String	r134_institutional_sector;
+	private String	r134_type_of_account;
+	private BigDecimal	r134_interest_rate;
+	private BigDecimal	r134_amount;
+	private BigDecimal	r134_total_deposit;
+	private BigDecimal	r134_percentage_total_deposit;
+	private String	r135_customer_name;
+	private String	r135_institutional_sector;
+	private String	r135_type_of_account;
+	private BigDecimal	r135_interest_rate;
+	private BigDecimal	r135_amount;
+	private BigDecimal	r135_total_deposit;
+	private BigDecimal	r135_percentage_total_deposit;
+	private String	r136_customer_name;
+	private String	r136_institutional_sector;
+	private String	r136_type_of_account;
+	private BigDecimal	r136_interest_rate;
+	private BigDecimal	r136_amount;
+	private BigDecimal	r136_total_deposit;
+	private BigDecimal	r136_percentage_total_deposit;
+	private String	r137_customer_name;
+	private String	r137_institutional_sector;
+	private String	r137_type_of_account;
+	private BigDecimal	r137_interest_rate;
+	private BigDecimal	r137_amount;
+	private BigDecimal	r137_total_deposit;
+	private BigDecimal	r137_percentage_total_deposit;
+	private String	r138_customer_name;
+	private String	r138_institutional_sector;
+	private String	r138_type_of_account;
+	private BigDecimal	r138_interest_rate;
+	private BigDecimal	r138_amount;
+	private BigDecimal	r138_total_deposit;
+	private BigDecimal	r138_percentage_total_deposit;
+	private String	r139_customer_name;
+	private String	r139_institutional_sector;
+	private String	r139_type_of_account;
+	private BigDecimal	r139_interest_rate;
+	private BigDecimal	r139_amount;
+	private BigDecimal	r139_total_deposit;
+	private BigDecimal	r139_percentage_total_deposit;
+	private String	r140_customer_name;
+	private String	r140_institutional_sector;
+	private String	r140_type_of_account;
+	private BigDecimal	r140_interest_rate;
+	private BigDecimal	r140_amount;
+	private BigDecimal	r140_total_deposit;
+	private BigDecimal	r140_percentage_total_deposit;
+	private String	r141_customer_name;
+	private String	r141_institutional_sector;
+	private String	r141_type_of_account;
+	private BigDecimal	r141_interest_rate;
+	private BigDecimal	r141_amount;
+	private BigDecimal	r141_total_deposit;
+	private BigDecimal	r141_percentage_total_deposit;
+	private String	r142_customer_name;
+	private String	r142_institutional_sector;
+	private String	r142_type_of_account;
+	private BigDecimal	r142_interest_rate;
+	private BigDecimal	r142_amount;
+	private BigDecimal	r142_total_deposit;
+	private BigDecimal	r142_percentage_total_deposit;
+	private String	r143_customer_name;
+	private String	r143_institutional_sector;
+	private String	r143_type_of_account;
+	private BigDecimal	r143_interest_rate;
+	private BigDecimal	r143_amount;
+	private BigDecimal	r143_total_deposit;
+	private BigDecimal	r143_percentage_total_deposit;
+	private String	r144_customer_name;
+	private String	r144_institutional_sector;
+	private String	r144_type_of_account;
+	private BigDecimal	r144_interest_rate;
+	private BigDecimal	r144_amount;
+	private BigDecimal	r144_total_deposit;
+	private BigDecimal	r144_percentage_total_deposit;
+	private String	r145_customer_name;
+	private String	r145_institutional_sector;
+	private String	r145_type_of_account;
+	private BigDecimal	r145_interest_rate;
+	private BigDecimal	r145_amount;
+	private BigDecimal	r145_total_deposit;
+	private BigDecimal	r145_percentage_total_deposit;
+	private String	r146_customer_name;
+	private String	r146_institutional_sector;
+	private String	r146_type_of_account;
+	private BigDecimal	r146_interest_rate;
+	private BigDecimal	r146_amount;
+	private BigDecimal	r146_total_deposit;
+	private BigDecimal	r146_percentage_total_deposit;
+	private String	r147_customer_name;
+	private String	r147_institutional_sector;
+	private String	r147_type_of_account;
+	private BigDecimal	r147_interest_rate;
+	private BigDecimal	r147_amount;
+	private BigDecimal	r147_total_deposit;
+	private BigDecimal	r147_percentage_total_deposit;
+	private String	r148_customer_name;
+	private String	r148_institutional_sector;
+	private String	r148_type_of_account;
+	private BigDecimal	r148_interest_rate;
+	private BigDecimal	r148_amount;
+	private BigDecimal	r148_total_deposit;
+	private BigDecimal	r148_percentage_total_deposit;
+	private String	r149_customer_name;
+	private String	r149_institutional_sector;
+	private String	r149_type_of_account;
+	private BigDecimal	r149_interest_rate;
+	private BigDecimal	r149_amount;
+	private BigDecimal	r149_total_deposit;
+	private BigDecimal	r149_percentage_total_deposit;
+	private String	r150_customer_name;
+	private String	r150_institutional_sector;
+	private String	r150_type_of_account;
+	private BigDecimal	r150_interest_rate;
+	private BigDecimal	r150_amount;
+	private BigDecimal	r150_total_deposit;
+	private BigDecimal	r150_percentage_total_deposit;
+	private String	r151_customer_name;
+	private String	r151_institutional_sector;
+	private String	r151_type_of_account;
+	private BigDecimal	r151_interest_rate;
+	private BigDecimal	r151_amount;
+	private BigDecimal	r151_total_deposit;
+	private BigDecimal	r151_percentage_total_deposit;
+	private String	r152_customer_name;
+	private String	r152_institutional_sector;
+	private String	r152_type_of_account;
+	private BigDecimal	r152_interest_rate;
+	private BigDecimal	r152_amount;
+	private BigDecimal	r152_total_deposit;
+	private BigDecimal	r152_percentage_total_deposit;
+	private String	r153_customer_name;
+	private String	r153_institutional_sector;
+	private String	r153_type_of_account;
+	private BigDecimal	r153_interest_rate;
+	private BigDecimal	r153_amount;
+	private BigDecimal	r153_total_deposit;
+	private BigDecimal	r153_percentage_total_deposit;
+	private String	r154_customer_name;
+	private String	r154_institutional_sector;
+	private String	r154_type_of_account;
+	private BigDecimal	r154_interest_rate;
+	private BigDecimal	r154_amount;
+	private BigDecimal	r154_total_deposit;
+	private BigDecimal	r154_percentage_total_deposit;
+	private String	r155_customer_name;
+	private String	r155_institutional_sector;
+	private String	r155_type_of_account;
+	private BigDecimal	r155_interest_rate;
+	private BigDecimal	r155_amount;
+	private BigDecimal	r155_total_deposit;
+	private BigDecimal	r155_percentage_total_deposit;
+	private String	r156_customer_name;
+	private String	r156_institutional_sector;
+	private String	r156_type_of_account;
+	private BigDecimal	r156_interest_rate;
+	private BigDecimal	r156_amount;
+	private BigDecimal	r156_total_deposit;
+	private BigDecimal	r156_percentage_total_deposit;
+	private String	r157_customer_name;
+	private String	r157_institutional_sector;
+	private String	r157_type_of_account;
+	private BigDecimal	r157_interest_rate;
+	private BigDecimal	r157_amount;
+	private BigDecimal	r157_total_deposit;
+	private BigDecimal	r157_percentage_total_deposit;
+	private String	r158_customer_name;
+	private String	r158_institutional_sector;
+	private String	r158_type_of_account;
+	private BigDecimal	r158_interest_rate;
+	private BigDecimal	r158_amount;
+	private BigDecimal	r158_total_deposit;
+	private BigDecimal	r158_percentage_total_deposit;
+	private String	r159_customer_name;
+	private String	r159_institutional_sector;
+	private String	r159_type_of_account;
+	private BigDecimal	r159_interest_rate;
+	private BigDecimal	r159_amount;
+	private BigDecimal	r159_total_deposit;
+	private BigDecimal	r159_percentage_total_deposit;
+	private String	r160_customer_name;
+	private String	r160_institutional_sector;
+	private String	r160_type_of_account;
+	private BigDecimal	r160_interest_rate;
+	private BigDecimal	r160_amount;
+	private BigDecimal	r160_total_deposit;
+	private BigDecimal	r160_percentage_total_deposit;
+	private String	r161_customer_name;
+	private String	r161_institutional_sector;
+	private String	r161_type_of_account;
+	private BigDecimal	r161_interest_rate;
+	private BigDecimal	r161_amount;
+	private BigDecimal	r161_total_deposit;
+	private BigDecimal	r161_percentage_total_deposit;
+	private String	r162_customer_name;
+	private String	r162_institutional_sector;
+	private String	r162_type_of_account;
+	private BigDecimal	r162_interest_rate;
+	private BigDecimal	r162_amount;
+	private BigDecimal	r162_total_deposit;
+	private BigDecimal	r162_percentage_total_deposit;
+	private String	r163_customer_name;
+	private String	r163_institutional_sector;
+	private String	r163_type_of_account;
+	private BigDecimal	r163_interest_rate;
+	private BigDecimal	r163_amount;
+	private BigDecimal	r163_total_deposit;
+	private BigDecimal	r163_percentage_total_deposit;
+	private String	r164_customer_name;
+	private String	r164_institutional_sector;
+	private String	r164_type_of_account;
+	private BigDecimal	r164_interest_rate;
+	private BigDecimal	r164_amount;
+	private BigDecimal	r164_total_deposit;
+	private BigDecimal	r164_percentage_total_deposit;
+	private String	r165_customer_name;
+	private String	r165_institutional_sector;
+	private String	r165_type_of_account;
+	private BigDecimal	r165_interest_rate;
+	private BigDecimal	r165_amount;
+	private BigDecimal	r165_total_deposit;
+	private BigDecimal	r165_percentage_total_deposit;
+	private String	r166_customer_name;
+	private String	r166_institutional_sector;
+	private String	r166_type_of_account;
+	private BigDecimal	r166_interest_rate;
+	private BigDecimal	r166_amount;
+	private BigDecimal	r166_total_deposit;
+	private BigDecimal	r166_percentage_total_deposit;
+	private String	r167_customer_name;
+	private String	r167_institutional_sector;
+	private String	r167_type_of_account;
+	private BigDecimal	r167_interest_rate;
+	private BigDecimal	r167_amount;
+	private BigDecimal	r167_total_deposit;
+	private BigDecimal	r167_percentage_total_deposit;
+	private String	r168_customer_name;
+	private String	r168_institutional_sector;
+	private String	r168_type_of_account;
+	private BigDecimal	r168_interest_rate;
+	private BigDecimal	r168_amount;
+	private BigDecimal	r168_total_deposit;
+	private BigDecimal	r168_percentage_total_deposit;
+	private String	r169_customer_name;
+	private String	r169_institutional_sector;
+	private String	r169_type_of_account;
+	private BigDecimal	r169_interest_rate;
+	private BigDecimal	r169_amount;
+	private BigDecimal	r169_total_deposit;
+	private BigDecimal	r169_percentage_total_deposit;
+	private String	r170_customer_name;
+	private String	r170_institutional_sector;
+	private String	r170_type_of_account;
+	private BigDecimal	r170_interest_rate;
+	private BigDecimal	r170_amount;
+	private BigDecimal	r170_total_deposit;
+	private BigDecimal	r170_percentage_total_deposit;
+	private String	r171_customer_name;
+	private String	r171_institutional_sector;
+	private String	r171_type_of_account;
+	private BigDecimal	r171_interest_rate;
+	private BigDecimal	r171_amount;
+	private BigDecimal	r171_total_deposit;
+	private BigDecimal	r171_percentage_total_deposit;
+	private String	r172_customer_name;
+	private String	r172_institutional_sector;
+	private String	r172_type_of_account;
+	private BigDecimal	r172_interest_rate;
+	private BigDecimal	r172_amount;
+	private BigDecimal	r172_total_deposit;
+	private BigDecimal	r172_percentage_total_deposit;
+	private String	r173_customer_name;
+	private String	r173_institutional_sector;
+	private String	r173_type_of_account;
+	private BigDecimal	r173_interest_rate;
+	private BigDecimal	r173_amount;
+	private BigDecimal	r173_total_deposit;
+	private BigDecimal	r173_percentage_total_deposit;
+	private String	r174_customer_name;
+	private String	r174_institutional_sector;
+	private String	r174_type_of_account;
+	private BigDecimal	r174_interest_rate;
+	private BigDecimal	r174_amount;
+	private BigDecimal	r174_total_deposit;
+	private BigDecimal	r174_percentage_total_deposit;
+	private String	r175_customer_name;
+	private String	r175_institutional_sector;
+	private String	r175_type_of_account;
+	private BigDecimal	r175_interest_rate;
+	private BigDecimal	r175_amount;
+	private BigDecimal	r175_total_deposit;
+	private BigDecimal	r175_percentage_total_deposit;
+	private String	r176_customer_name;
+	private String	r176_institutional_sector;
+	private String	r176_type_of_account;
+	private BigDecimal	r176_interest_rate;
+	private BigDecimal	r176_amount;
+	private BigDecimal	r176_total_deposit;
+	private BigDecimal	r176_percentage_total_deposit;
+	private String	r177_customer_name;
+	private String	r177_institutional_sector;
+	private String	r177_type_of_account;
+	private BigDecimal	r177_interest_rate;
+	private BigDecimal	r177_amount;
+	private BigDecimal	r177_total_deposit;
+	private BigDecimal	r177_percentage_total_deposit;
+	private String	r178_customer_name;
+	private String	r178_institutional_sector;
+	private String	r178_type_of_account;
+	private BigDecimal	r178_interest_rate;
+	private BigDecimal	r178_amount;
+	private BigDecimal	r178_total_deposit;
+	private BigDecimal	r178_percentage_total_deposit;
+	private String	r179_customer_name;
+	private String	r179_institutional_sector;
+	private String	r179_type_of_account;
+	private BigDecimal	r179_interest_rate;
+	private BigDecimal	r179_amount;
+	private BigDecimal	r179_total_deposit;
+	private BigDecimal	r179_percentage_total_deposit;
+	private String	r180_customer_name;
+	private String	r180_institutional_sector;
+	private String	r180_type_of_account;
+	private BigDecimal	r180_interest_rate;
+	private BigDecimal	r180_amount;
+	private BigDecimal	r180_total_deposit;
+	private BigDecimal	r180_percentage_total_deposit;
+	private String	r181_customer_name;
+	private String	r181_institutional_sector;
+	private String	r181_type_of_account;
+	private BigDecimal	r181_interest_rate;
+	private BigDecimal	r181_amount;
+	private BigDecimal	r181_total_deposit;
+	private BigDecimal	r181_percentage_total_deposit;
+	private String	r182_customer_name;
+	private String	r182_institutional_sector;
+	private String	r182_type_of_account;
+	private BigDecimal	r182_interest_rate;
+	private BigDecimal	r182_amount;
+	private BigDecimal	r182_total_deposit;
+	private BigDecimal	r182_percentage_total_deposit;
+	private String	r183_customer_name;
+	private String	r183_institutional_sector;
+	private String	r183_type_of_account;
+	private BigDecimal	r183_interest_rate;
+	private BigDecimal	r183_amount;
+	private BigDecimal	r183_total_deposit;
+	private BigDecimal	r183_percentage_total_deposit;
+	private String	r184_customer_name;
+	private String	r184_institutional_sector;
+	private String	r184_type_of_account;
+	private BigDecimal	r184_interest_rate;
+	private BigDecimal	r184_amount;
+	private BigDecimal	r184_total_deposit;
+	private BigDecimal	r184_percentage_total_deposit;
+	private String	r185_customer_name;
+	private String	r185_institutional_sector;
+	private String	r185_type_of_account;
+	private BigDecimal	r185_interest_rate;
+	private BigDecimal	r185_amount;
+	private BigDecimal	r185_total_deposit;
+	private BigDecimal	r185_percentage_total_deposit;
+	private String	r186_customer_name;
+	private String	r186_institutional_sector;
+	private String	r186_type_of_account;
+	private BigDecimal	r186_interest_rate;
+	private BigDecimal	r186_amount;
+	private BigDecimal	r186_total_deposit;
+	private BigDecimal	r186_percentage_total_deposit;
+	private String	r187_customer_name;
+	private String	r187_institutional_sector;
+	private String	r187_type_of_account;
+	private BigDecimal	r187_interest_rate;
+	private BigDecimal	r187_amount;
+	private BigDecimal	r187_total_deposit;
+	private BigDecimal	r187_percentage_total_deposit;
+	private String	r188_customer_name;
+	private String	r188_institutional_sector;
+	private String	r188_type_of_account;
+	private BigDecimal	r188_interest_rate;
+	private BigDecimal	r188_amount;
+	private BigDecimal	r188_total_deposit;
+	private BigDecimal	r188_percentage_total_deposit;
+	private String	r189_customer_name;
+	private String	r189_institutional_sector;
+	private String	r189_type_of_account;
+	private BigDecimal	r189_interest_rate;
+	private BigDecimal	r189_amount;
+	private BigDecimal	r189_total_deposit;
+	private BigDecimal	r189_percentage_total_deposit;
+	private String	r190_customer_name;
+	private String	r190_institutional_sector;
+	private String	r190_type_of_account;
+	private BigDecimal	r190_interest_rate;
+	private BigDecimal	r190_amount;
+	private BigDecimal	r190_total_deposit;
+	private BigDecimal	r190_percentage_total_deposit;
+	private String	r191_customer_name;
+	private String	r191_institutional_sector;
+	private String	r191_type_of_account;
+	private BigDecimal	r191_interest_rate;
+	private BigDecimal	r191_amount;
+	private BigDecimal	r191_total_deposit;
+	private BigDecimal	r191_percentage_total_deposit;
+	private String	r192_customer_name;
+	private String	r192_institutional_sector;
+	private String	r192_type_of_account;
+	private BigDecimal	r192_interest_rate;
+	private BigDecimal	r192_amount;
+	private BigDecimal	r192_total_deposit;
+	private BigDecimal	r192_percentage_total_deposit;
+	private String	r193_customer_name;
+	private String	r193_institutional_sector;
+	private String	r193_type_of_account;
+	private BigDecimal	r193_interest_rate;
+	private BigDecimal	r193_amount;
+	private BigDecimal	r193_total_deposit;
+	private BigDecimal	r193_percentage_total_deposit;
+	private String	r194_customer_name;
+	private String	r194_institutional_sector;
+	private String	r194_type_of_account;
+	private BigDecimal	r194_interest_rate;
+	private BigDecimal	r194_amount;
+	private BigDecimal	r194_total_deposit;
+	private BigDecimal	r194_percentage_total_deposit;
+	private String	r195_customer_name;
+	private String	r195_institutional_sector;
+	private String	r195_type_of_account;
+	private BigDecimal	r195_interest_rate;
+	private BigDecimal	r195_amount;
+	private BigDecimal	r195_total_deposit;
+	private BigDecimal	r195_percentage_total_deposit;
+	private String	r196_customer_name;
+	private String	r196_institutional_sector;
+	private String	r196_type_of_account;
+	private BigDecimal	r196_interest_rate;
+	private BigDecimal	r196_amount;
+	private BigDecimal	r196_total_deposit;
+	private BigDecimal	r196_percentage_total_deposit;
+	private String	r197_customer_name;
+	private String	r197_institutional_sector;
+	private String	r197_type_of_account;
+	private BigDecimal	r197_interest_rate;
+	private BigDecimal	r197_amount;
+	private BigDecimal	r197_total_deposit;
+	private BigDecimal	r197_percentage_total_deposit;
+	private String	r198_customer_name;
+	private String	r198_institutional_sector;
+	private String	r198_type_of_account;
+	private BigDecimal	r198_interest_rate;
+	private BigDecimal	r198_amount;
+	private BigDecimal	r198_total_deposit;
+	private BigDecimal	r198_percentage_total_deposit;
+	private String	r199_customer_name;
+	private String	r199_institutional_sector;
+	private String	r199_type_of_account;
+	private BigDecimal	r199_interest_rate;
+	private BigDecimal	r199_amount;
+	private BigDecimal	r199_total_deposit;
+	private BigDecimal	r199_percentage_total_deposit;
+	private String	r200_customer_name;
+	private String	r200_institutional_sector;
+	private String	r200_type_of_account;
+	private BigDecimal	r200_interest_rate;
+	private BigDecimal	r200_amount;
+	private BigDecimal	r200_total_deposit;
+	private BigDecimal	r200_percentage_total_deposit;
 
-	private String R52_PRODUCT;
-	private String R52_INSTITUTIONAL_SELECTOR;
-	private String R52_TYPE_OF_ACCOUNT;
-	private BigDecimal R52_INTREST_RATE;
-	private BigDecimal R52_AMOUNT;
-	private BigDecimal R52_TOTAL_DEPOSIT;
-	private BigDecimal R52_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R53_PRODUCT;
-	private String R53_INSTITUTIONAL_SELECTOR;
-	private String R53_TYPE_OF_ACCOUNT;
-	private BigDecimal R53_INTREST_RATE;
-	private BigDecimal R53_AMOUNT;
-	private BigDecimal R53_TOTAL_DEPOSIT;
-	private BigDecimal R53_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R54_PRODUCT;
-	private String R54_INSTITUTIONAL_SELECTOR;
-	private String R54_TYPE_OF_ACCOUNT;
-	private BigDecimal R54_INTREST_RATE;
-	private BigDecimal R54_AMOUNT;
-	private BigDecimal R54_TOTAL_DEPOSIT;
-	private BigDecimal R54_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R55_PRODUCT;
-	private String R55_INSTITUTIONAL_SELECTOR;
-	private String R55_TYPE_OF_ACCOUNT;
-	private BigDecimal R55_INTREST_RATE;
-	private BigDecimal R55_AMOUNT;
-	private BigDecimal R55_TOTAL_DEPOSIT;
-	private BigDecimal R55_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R56_PRODUCT;
-	private String R56_INSTITUTIONAL_SELECTOR;
-	private String R56_TYPE_OF_ACCOUNT;
-	private BigDecimal R56_INTREST_RATE;
-	private BigDecimal R56_AMOUNT;
-	private BigDecimal R56_TOTAL_DEPOSIT;
-	private BigDecimal R56_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R57_PRODUCT;
-	private String R57_INSTITUTIONAL_SELECTOR;
-	private String R57_TYPE_OF_ACCOUNT;
-	private BigDecimal R57_INTREST_RATE;
-	private BigDecimal R57_AMOUNT;
-	private BigDecimal R57_TOTAL_DEPOSIT;
-	private BigDecimal R57_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R58_PRODUCT;
-	private String R58_INSTITUTIONAL_SELECTOR;
-	private String R58_TYPE_OF_ACCOUNT;
-	private BigDecimal R58_INTREST_RATE;
-	private BigDecimal R58_AMOUNT;
-	private BigDecimal R58_TOTAL_DEPOSIT;
-	private BigDecimal R58_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R59_PRODUCT;
-	private String R59_INSTITUTIONAL_SELECTOR;
-	private String R59_TYPE_OF_ACCOUNT;
-	private BigDecimal R59_INTREST_RATE;
-	private BigDecimal R59_AMOUNT;
-	private BigDecimal R59_TOTAL_DEPOSIT;
-	private BigDecimal R59_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R60_PRODUCT;
-	private String R60_INSTITUTIONAL_SELECTOR;
-	private String R60_TYPE_OF_ACCOUNT;
-	private BigDecimal R60_INTREST_RATE;
-	private BigDecimal R60_AMOUNT;
-	private BigDecimal R60_TOTAL_DEPOSIT;
-	private BigDecimal R60_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R61_PRODUCT;
-	private String R61_INSTITUTIONAL_SELECTOR;
-	private String R61_TYPE_OF_ACCOUNT;
-	private BigDecimal R61_INTREST_RATE;
-	private BigDecimal R61_AMOUNT;
-	private BigDecimal R61_TOTAL_DEPOSIT;
-	private BigDecimal R61_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R62_PRODUCT;
-	private String R62_INSTITUTIONAL_SELECTOR;
-	private String R62_TYPE_OF_ACCOUNT;
-	private BigDecimal R62_INTREST_RATE;
-	private BigDecimal R62_AMOUNT;
-	private BigDecimal R62_TOTAL_DEPOSIT;
-	private BigDecimal R62_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R63_PRODUCT;
-	private String R63_INSTITUTIONAL_SELECTOR;
-	private String R63_TYPE_OF_ACCOUNT;
-	private BigDecimal R63_INTREST_RATE;
-	private BigDecimal R63_AMOUNT;
-	private BigDecimal R63_TOTAL_DEPOSIT;
-	private BigDecimal R63_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R64_PRODUCT;
-	private String R64_INSTITUTIONAL_SELECTOR;
-	private String R64_TYPE_OF_ACCOUNT;
-	private BigDecimal R64_INTREST_RATE;
-	private BigDecimal R64_AMOUNT;
-	private BigDecimal R64_TOTAL_DEPOSIT;
-	private BigDecimal R64_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R65_PRODUCT;
-	private String R65_INSTITUTIONAL_SELECTOR;
-	private String R65_TYPE_OF_ACCOUNT;
-	private BigDecimal R65_INTREST_RATE;
-	private BigDecimal R65_AMOUNT;
-	private BigDecimal R65_TOTAL_DEPOSIT;
-	private BigDecimal R65_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R66_PRODUCT;
-	private String R66_INSTITUTIONAL_SELECTOR;
-	private String R66_TYPE_OF_ACCOUNT;
-	private BigDecimal R66_INTREST_RATE;
-	private BigDecimal R66_AMOUNT;
-	private BigDecimal R66_TOTAL_DEPOSIT;
-	private BigDecimal R66_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R67_PRODUCT;
-	private String R67_INSTITUTIONAL_SELECTOR;
-	private String R67_TYPE_OF_ACCOUNT;
-	private BigDecimal R67_INTREST_RATE;
-	private BigDecimal R67_AMOUNT;
-	private BigDecimal R67_TOTAL_DEPOSIT;
-	private BigDecimal R67_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R68_PRODUCT;
-	private String R68_INSTITUTIONAL_SELECTOR;
-	private String R68_TYPE_OF_ACCOUNT;
-	private BigDecimal R68_INTREST_RATE;
-	private BigDecimal R68_AMOUNT;
-	private BigDecimal R68_TOTAL_DEPOSIT;
-	private BigDecimal R68_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R69_PRODUCT;
-	private String R69_INSTITUTIONAL_SELECTOR;
-	private String R69_TYPE_OF_ACCOUNT;
-	private BigDecimal R69_INTREST_RATE;
-	private BigDecimal R69_AMOUNT;
-	private BigDecimal R69_TOTAL_DEPOSIT;
-	private BigDecimal R69_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R70_PRODUCT;
-	private String R70_INSTITUTIONAL_SELECTOR;
-	private String R70_TYPE_OF_ACCOUNT;
-	private BigDecimal R70_INTREST_RATE;
-	private BigDecimal R70_AMOUNT;
-	private BigDecimal R70_TOTAL_DEPOSIT;
-	private BigDecimal R70_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R71_PRODUCT;
-	private String R71_INSTITUTIONAL_SELECTOR;
-	private String R71_TYPE_OF_ACCOUNT;
-	private BigDecimal R71_INTREST_RATE;
-	private BigDecimal R71_AMOUNT;
-	private BigDecimal R71_TOTAL_DEPOSIT;
-	private BigDecimal R71_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R72_PRODUCT;
-	private String R72_INSTITUTIONAL_SELECTOR;
-	private String R72_TYPE_OF_ACCOUNT;
-	private BigDecimal R72_INTREST_RATE;
-	private BigDecimal R72_AMOUNT;
-	private BigDecimal R72_TOTAL_DEPOSIT;
-	private BigDecimal R72_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R73_PRODUCT;
-	private String R73_INSTITUTIONAL_SELECTOR;
-	private String R73_TYPE_OF_ACCOUNT;
-	private BigDecimal R73_INTREST_RATE;
-	private BigDecimal R73_AMOUNT;
-	private BigDecimal R73_TOTAL_DEPOSIT;
-	private BigDecimal R73_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R74_PRODUCT;
-	private String R74_INSTITUTIONAL_SELECTOR;
-	private String R74_TYPE_OF_ACCOUNT;
-	private BigDecimal R74_INTREST_RATE;
-	private BigDecimal R74_AMOUNT;
-	private BigDecimal R74_TOTAL_DEPOSIT;
-	private BigDecimal R74_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R75_PRODUCT;
-	private String R75_INSTITUTIONAL_SELECTOR;
-	private String R75_TYPE_OF_ACCOUNT;
-	private BigDecimal R75_INTREST_RATE;
-	private BigDecimal R75_AMOUNT;
-	private BigDecimal R75_TOTAL_DEPOSIT;
-	private BigDecimal R75_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R76_PRODUCT;
-	private String R76_INSTITUTIONAL_SELECTOR;
-	private String R76_TYPE_OF_ACCOUNT;
-	private BigDecimal R76_INTREST_RATE;
-	private BigDecimal R76_AMOUNT;
-	private BigDecimal R76_TOTAL_DEPOSIT;
-	private BigDecimal R76_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R77_PRODUCT;
-	private String R77_INSTITUTIONAL_SELECTOR;
-	private String R77_TYPE_OF_ACCOUNT;
-	private BigDecimal R77_INTREST_RATE;
-	private BigDecimal R77_AMOUNT;
-	private BigDecimal R77_TOTAL_DEPOSIT;
-	private BigDecimal R77_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R78_PRODUCT;
-	private String R78_INSTITUTIONAL_SELECTOR;
-	private String R78_TYPE_OF_ACCOUNT;
-	private BigDecimal R78_INTREST_RATE;
-	private BigDecimal R78_AMOUNT;
-	private BigDecimal R78_TOTAL_DEPOSIT;
-	private BigDecimal R78_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R79_PRODUCT;
-	private String R79_INSTITUTIONAL_SELECTOR;
-	private String R79_TYPE_OF_ACCOUNT;
-	private BigDecimal R79_INTREST_RATE;
-	private BigDecimal R79_AMOUNT;
-	private BigDecimal R79_TOTAL_DEPOSIT;
-	private BigDecimal R79_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R80_PRODUCT;
-	private String R80_INSTITUTIONAL_SELECTOR;
-	private String R80_TYPE_OF_ACCOUNT;
-	private BigDecimal R80_INTREST_RATE;
-	private BigDecimal R80_AMOUNT;
-	private BigDecimal R80_TOTAL_DEPOSIT;
-	private BigDecimal R80_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R81_PRODUCT;
-	private String R81_INSTITUTIONAL_SELECTOR;
-	private String R81_TYPE_OF_ACCOUNT;
-	private BigDecimal R81_INTREST_RATE;
-	private BigDecimal R81_AMOUNT;
-	private BigDecimal R81_TOTAL_DEPOSIT;
-	private BigDecimal R81_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R82_PRODUCT;
-	private String R82_INSTITUTIONAL_SELECTOR;
-	private String R82_TYPE_OF_ACCOUNT;
-	private BigDecimal R82_INTREST_RATE;
-	private BigDecimal R82_AMOUNT;
-	private BigDecimal R82_TOTAL_DEPOSIT;
-	private BigDecimal R82_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R83_PRODUCT;
-	private String R83_INSTITUTIONAL_SELECTOR;
-	private String R83_TYPE_OF_ACCOUNT;
-	private BigDecimal R83_INTREST_RATE;
-	private BigDecimal R83_AMOUNT;
-	private BigDecimal R83_TOTAL_DEPOSIT;
-	private BigDecimal R83_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R84_PRODUCT;
-	private String R84_INSTITUTIONAL_SELECTOR;
-	private String R84_TYPE_OF_ACCOUNT;
-	private BigDecimal R84_INTREST_RATE;
-	private BigDecimal R84_AMOUNT;
-	private BigDecimal R84_TOTAL_DEPOSIT;
-	private BigDecimal R84_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R85_PRODUCT;
-	private String R85_INSTITUTIONAL_SELECTOR;
-	private String R85_TYPE_OF_ACCOUNT;
-	private BigDecimal R85_INTREST_RATE;
-	private BigDecimal R85_AMOUNT;
-	private BigDecimal R85_TOTAL_DEPOSIT;
-	private BigDecimal R85_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R86_PRODUCT;
-	private String R86_INSTITUTIONAL_SELECTOR;
-	private String R86_TYPE_OF_ACCOUNT;
-	private BigDecimal R86_INTREST_RATE;
-	private BigDecimal R86_AMOUNT;
-	private BigDecimal R86_TOTAL_DEPOSIT;
-	private BigDecimal R86_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R87_PRODUCT;
-	private String R87_INSTITUTIONAL_SELECTOR;
-	private String R87_TYPE_OF_ACCOUNT;
-	private BigDecimal R87_INTREST_RATE;
-	private BigDecimal R87_AMOUNT;
-	private BigDecimal R87_TOTAL_DEPOSIT;
-	private BigDecimal R87_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R88_PRODUCT;
-	private String R88_INSTITUTIONAL_SELECTOR;
-	private String R88_TYPE_OF_ACCOUNT;
-	private BigDecimal R88_INTREST_RATE;
-	private BigDecimal R88_AMOUNT;
-	private BigDecimal R88_TOTAL_DEPOSIT;
-	private BigDecimal R88_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R89_PRODUCT;
-	private String R89_INSTITUTIONAL_SELECTOR;
-	private String R89_TYPE_OF_ACCOUNT;
-	private BigDecimal R89_INTREST_RATE;
-	private BigDecimal R89_AMOUNT;
-	private BigDecimal R89_TOTAL_DEPOSIT;
-	private BigDecimal R89_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R90_PRODUCT;
-	private String R90_INSTITUTIONAL_SELECTOR;
-	private String R90_TYPE_OF_ACCOUNT;
-	private BigDecimal R90_INTREST_RATE;
-	private BigDecimal R90_AMOUNT;
-	private BigDecimal R90_TOTAL_DEPOSIT;
-	private BigDecimal R90_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R91_PRODUCT;
-	private String R91_INSTITUTIONAL_SELECTOR;
-	private String R91_TYPE_OF_ACCOUNT;
-	private BigDecimal R91_INTREST_RATE;
-	private BigDecimal R91_AMOUNT;
-	private BigDecimal R91_TOTAL_DEPOSIT;
-	private BigDecimal R91_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R92_PRODUCT;
-	private String R92_INSTITUTIONAL_SELECTOR;
-	private String R92_TYPE_OF_ACCOUNT;
-	private BigDecimal R92_INTREST_RATE;
-	private BigDecimal R92_AMOUNT;
-	private BigDecimal R92_TOTAL_DEPOSIT;
-	private BigDecimal R92_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R93_PRODUCT;
-	private String R93_INSTITUTIONAL_SELECTOR;
-	private String R93_TYPE_OF_ACCOUNT;
-	private BigDecimal R93_INTREST_RATE;
-	private BigDecimal R93_AMOUNT;
-	private BigDecimal R93_TOTAL_DEPOSIT;
-	private BigDecimal R93_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R94_PRODUCT;
-	private String R94_INSTITUTIONAL_SELECTOR;
-	private String R94_TYPE_OF_ACCOUNT;
-	private BigDecimal R94_INTREST_RATE;
-	private BigDecimal R94_AMOUNT;
-	private BigDecimal R94_TOTAL_DEPOSIT;
-	private BigDecimal R94_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R95_PRODUCT;
-	private String R95_INSTITUTIONAL_SELECTOR;
-	private String R95_TYPE_OF_ACCOUNT;
-	private BigDecimal R95_INTREST_RATE;
-	private BigDecimal R95_AMOUNT;
-	private BigDecimal R95_TOTAL_DEPOSIT;
-	private BigDecimal R95_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R96_PRODUCT;
-	private String R96_INSTITUTIONAL_SELECTOR;
-	private String R96_TYPE_OF_ACCOUNT;
-	private BigDecimal R96_INTREST_RATE;
-	private BigDecimal R96_AMOUNT;
-	private BigDecimal R96_TOTAL_DEPOSIT;
-	private BigDecimal R96_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R97_PRODUCT;
-	private String R97_INSTITUTIONAL_SELECTOR;
-	private String R97_TYPE_OF_ACCOUNT;
-	private BigDecimal R97_INTREST_RATE;
-	private BigDecimal R97_AMOUNT;
-	private BigDecimal R97_TOTAL_DEPOSIT;
-	private BigDecimal R97_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R98_PRODUCT;
-	private String R98_INSTITUTIONAL_SELECTOR;
-	private String R98_TYPE_OF_ACCOUNT;
-	private BigDecimal R98_INTREST_RATE;
-	private BigDecimal R98_AMOUNT;
-	private BigDecimal R98_TOTAL_DEPOSIT;
-	private BigDecimal R98_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R99_PRODUCT;
-	private String R99_INSTITUTIONAL_SELECTOR;
-	private String R99_TYPE_OF_ACCOUNT;
-	private BigDecimal R99_INTREST_RATE;
-	private BigDecimal R99_AMOUNT;
-	private BigDecimal R99_TOTAL_DEPOSIT;
-	private BigDecimal R99_PERCENTAGE_TOTAL_DEPOSIT;
-
-	private String R100_PRODUCT;
-	private String R100_INSTITUTIONAL_SELECTOR;
-	private String R100_TYPE_OF_ACCOUNT;
-	private BigDecimal R100_INTREST_RATE;
-	private BigDecimal R100_AMOUNT;
-	private BigDecimal R100_TOTAL_DEPOSIT;
-	private BigDecimal R100_PERCENTAGE_TOTAL_DEPOSIT;
 	
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
@@ -421,2112 +723,4212 @@ public class M_DEP4_Summary_Entity2 {
 	@Column(name = "REPORT_DATE")
 	private Date reportDate;
 	@Column(name = "REPORT_VERSION")
-	private String reportVersion;
+	private BigDecimal reportVersion;
     public String REPORT_FREQUENCY;
     public String REPORT_CODE;
     public String REPORT_DESC;
     public String ENTITY_FLG;
     public String MODIFY_FLG;
     public String DEL_FLG;
-	public String getR51_PRODUCT() {
-		return R51_PRODUCT;
+	public String getR101_customer_name() {
+		return r101_customer_name;
 	}
-	public void setR51_PRODUCT(String r51_PRODUCT) {
-		R51_PRODUCT = r51_PRODUCT;
+	public void setR101_customer_name(String r101_customer_name) {
+		this.r101_customer_name = r101_customer_name;
 	}
-	public String getR51_INSTITUTIONAL_SELECTOR() {
-		return R51_INSTITUTIONAL_SELECTOR;
+	public String getR101_institutional_sector() {
+		return r101_institutional_sector;
 	}
-	public void setR51_INSTITUTIONAL_SELECTOR(String r51_INSTITUTIONAL_SELECTOR) {
-		R51_INSTITUTIONAL_SELECTOR = r51_INSTITUTIONAL_SELECTOR;
+	public void setR101_institutional_sector(String r101_institutional_sector) {
+		this.r101_institutional_sector = r101_institutional_sector;
 	}
-	public String getR51_TYPE_OF_ACCOUNT() {
-		return R51_TYPE_OF_ACCOUNT;
+	public String getR101_type_of_account() {
+		return r101_type_of_account;
 	}
-	public void setR51_TYPE_OF_ACCOUNT(String r51_TYPE_OF_ACCOUNT) {
-		R51_TYPE_OF_ACCOUNT = r51_TYPE_OF_ACCOUNT;
+	public void setR101_type_of_account(String r101_type_of_account) {
+		this.r101_type_of_account = r101_type_of_account;
 	}
-	public BigDecimal getR51_INTREST_RATE() {
-		return R51_INTREST_RATE;
+	public BigDecimal getR101_interest_rate() {
+		return r101_interest_rate;
 	}
-	public void setR51_INTREST_RATE(BigDecimal r51_INTREST_RATE) {
-		R51_INTREST_RATE = r51_INTREST_RATE;
+	public void setR101_interest_rate(BigDecimal r101_interest_rate) {
+		this.r101_interest_rate = r101_interest_rate;
 	}
-	public BigDecimal getR51_AMOUNT() {
-		return R51_AMOUNT;
+	public BigDecimal getR101_amount() {
+		return r101_amount;
 	}
-	public void setR51_AMOUNT(BigDecimal r51_AMOUNT) {
-		R51_AMOUNT = r51_AMOUNT;
+	public void setR101_amount(BigDecimal r101_amount) {
+		this.r101_amount = r101_amount;
 	}
-	public BigDecimal getR51_TOTAL_DEPOSIT() {
-		return R51_TOTAL_DEPOSIT;
+	public BigDecimal getR101_total_deposit() {
+		return r101_total_deposit;
 	}
-	public void setR51_TOTAL_DEPOSIT(BigDecimal r51_TOTAL_DEPOSIT) {
-		R51_TOTAL_DEPOSIT = r51_TOTAL_DEPOSIT;
+	public void setR101_total_deposit(BigDecimal r101_total_deposit) {
+		this.r101_total_deposit = r101_total_deposit;
 	}
-	public BigDecimal getR51_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R51_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR101_percentage_total_deposit() {
+		return r101_percentage_total_deposit;
 	}
-	public void setR51_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r51_PERCENTAGE_TOTAL_DEPOSIT) {
-		R51_PERCENTAGE_TOTAL_DEPOSIT = r51_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR101_percentage_total_deposit(BigDecimal r101_percentage_total_deposit) {
+		this.r101_percentage_total_deposit = r101_percentage_total_deposit;
 	}
-	public String getR52_PRODUCT() {
-		return R52_PRODUCT;
+	public String getR102_customer_name() {
+		return r102_customer_name;
 	}
-	public void setR52_PRODUCT(String r52_PRODUCT) {
-		R52_PRODUCT = r52_PRODUCT;
+	public void setR102_customer_name(String r102_customer_name) {
+		this.r102_customer_name = r102_customer_name;
 	}
-	public String getR52_INSTITUTIONAL_SELECTOR() {
-		return R52_INSTITUTIONAL_SELECTOR;
+	public String getR102_institutional_sector() {
+		return r102_institutional_sector;
 	}
-	public void setR52_INSTITUTIONAL_SELECTOR(String r52_INSTITUTIONAL_SELECTOR) {
-		R52_INSTITUTIONAL_SELECTOR = r52_INSTITUTIONAL_SELECTOR;
+	public void setR102_institutional_sector(String r102_institutional_sector) {
+		this.r102_institutional_sector = r102_institutional_sector;
 	}
-	public String getR52_TYPE_OF_ACCOUNT() {
-		return R52_TYPE_OF_ACCOUNT;
+	public String getR102_type_of_account() {
+		return r102_type_of_account;
 	}
-	public void setR52_TYPE_OF_ACCOUNT(String r52_TYPE_OF_ACCOUNT) {
-		R52_TYPE_OF_ACCOUNT = r52_TYPE_OF_ACCOUNT;
+	public void setR102_type_of_account(String r102_type_of_account) {
+		this.r102_type_of_account = r102_type_of_account;
 	}
-	public BigDecimal getR52_INTREST_RATE() {
-		return R52_INTREST_RATE;
+	public BigDecimal getR102_interest_rate() {
+		return r102_interest_rate;
 	}
-	public void setR52_INTREST_RATE(BigDecimal r52_INTREST_RATE) {
-		R52_INTREST_RATE = r52_INTREST_RATE;
+	public void setR102_interest_rate(BigDecimal r102_interest_rate) {
+		this.r102_interest_rate = r102_interest_rate;
 	}
-	public BigDecimal getR52_AMOUNT() {
-		return R52_AMOUNT;
+	public BigDecimal getR102_amount() {
+		return r102_amount;
 	}
-	public void setR52_AMOUNT(BigDecimal r52_AMOUNT) {
-		R52_AMOUNT = r52_AMOUNT;
+	public void setR102_amount(BigDecimal r102_amount) {
+		this.r102_amount = r102_amount;
 	}
-	public BigDecimal getR52_TOTAL_DEPOSIT() {
-		return R52_TOTAL_DEPOSIT;
+	public BigDecimal getR102_total_deposit() {
+		return r102_total_deposit;
 	}
-	public void setR52_TOTAL_DEPOSIT(BigDecimal r52_TOTAL_DEPOSIT) {
-		R52_TOTAL_DEPOSIT = r52_TOTAL_DEPOSIT;
+	public void setR102_total_deposit(BigDecimal r102_total_deposit) {
+		this.r102_total_deposit = r102_total_deposit;
 	}
-	public BigDecimal getR52_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R52_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR102_percentage_total_deposit() {
+		return r102_percentage_total_deposit;
 	}
-	public void setR52_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r52_PERCENTAGE_TOTAL_DEPOSIT) {
-		R52_PERCENTAGE_TOTAL_DEPOSIT = r52_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR102_percentage_total_deposit(BigDecimal r102_percentage_total_deposit) {
+		this.r102_percentage_total_deposit = r102_percentage_total_deposit;
 	}
-	public String getR53_PRODUCT() {
-		return R53_PRODUCT;
+	public String getR103_customer_name() {
+		return r103_customer_name;
 	}
-	public void setR53_PRODUCT(String r53_PRODUCT) {
-		R53_PRODUCT = r53_PRODUCT;
+	public void setR103_customer_name(String r103_customer_name) {
+		this.r103_customer_name = r103_customer_name;
 	}
-	public String getR53_INSTITUTIONAL_SELECTOR() {
-		return R53_INSTITUTIONAL_SELECTOR;
+	public String getR103_institutional_sector() {
+		return r103_institutional_sector;
 	}
-	public void setR53_INSTITUTIONAL_SELECTOR(String r53_INSTITUTIONAL_SELECTOR) {
-		R53_INSTITUTIONAL_SELECTOR = r53_INSTITUTIONAL_SELECTOR;
+	public void setR103_institutional_sector(String r103_institutional_sector) {
+		this.r103_institutional_sector = r103_institutional_sector;
 	}
-	public String getR53_TYPE_OF_ACCOUNT() {
-		return R53_TYPE_OF_ACCOUNT;
+	public String getR103_type_of_account() {
+		return r103_type_of_account;
 	}
-	public void setR53_TYPE_OF_ACCOUNT(String r53_TYPE_OF_ACCOUNT) {
-		R53_TYPE_OF_ACCOUNT = r53_TYPE_OF_ACCOUNT;
+	public void setR103_type_of_account(String r103_type_of_account) {
+		this.r103_type_of_account = r103_type_of_account;
 	}
-	public BigDecimal getR53_INTREST_RATE() {
-		return R53_INTREST_RATE;
+	public BigDecimal getR103_interest_rate() {
+		return r103_interest_rate;
 	}
-	public void setR53_INTREST_RATE(BigDecimal r53_INTREST_RATE) {
-		R53_INTREST_RATE = r53_INTREST_RATE;
+	public void setR103_interest_rate(BigDecimal r103_interest_rate) {
+		this.r103_interest_rate = r103_interest_rate;
 	}
-	public BigDecimal getR53_AMOUNT() {
-		return R53_AMOUNT;
+	public BigDecimal getR103_amount() {
+		return r103_amount;
 	}
-	public void setR53_AMOUNT(BigDecimal r53_AMOUNT) {
-		R53_AMOUNT = r53_AMOUNT;
+	public void setR103_amount(BigDecimal r103_amount) {
+		this.r103_amount = r103_amount;
 	}
-	public BigDecimal getR53_TOTAL_DEPOSIT() {
-		return R53_TOTAL_DEPOSIT;
+	public BigDecimal getR103_total_deposit() {
+		return r103_total_deposit;
 	}
-	public void setR53_TOTAL_DEPOSIT(BigDecimal r53_TOTAL_DEPOSIT) {
-		R53_TOTAL_DEPOSIT = r53_TOTAL_DEPOSIT;
+	public void setR103_total_deposit(BigDecimal r103_total_deposit) {
+		this.r103_total_deposit = r103_total_deposit;
 	}
-	public BigDecimal getR53_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R53_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR103_percentage_total_deposit() {
+		return r103_percentage_total_deposit;
 	}
-	public void setR53_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r53_PERCENTAGE_TOTAL_DEPOSIT) {
-		R53_PERCENTAGE_TOTAL_DEPOSIT = r53_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR103_percentage_total_deposit(BigDecimal r103_percentage_total_deposit) {
+		this.r103_percentage_total_deposit = r103_percentage_total_deposit;
 	}
-	public String getR54_PRODUCT() {
-		return R54_PRODUCT;
+	public String getR104_customer_name() {
+		return r104_customer_name;
 	}
-	public void setR54_PRODUCT(String r54_PRODUCT) {
-		R54_PRODUCT = r54_PRODUCT;
+	public void setR104_customer_name(String r104_customer_name) {
+		this.r104_customer_name = r104_customer_name;
 	}
-	public String getR54_INSTITUTIONAL_SELECTOR() {
-		return R54_INSTITUTIONAL_SELECTOR;
+	public String getR104_institutional_sector() {
+		return r104_institutional_sector;
 	}
-	public void setR54_INSTITUTIONAL_SELECTOR(String r54_INSTITUTIONAL_SELECTOR) {
-		R54_INSTITUTIONAL_SELECTOR = r54_INSTITUTIONAL_SELECTOR;
+	public void setR104_institutional_sector(String r104_institutional_sector) {
+		this.r104_institutional_sector = r104_institutional_sector;
 	}
-	public String getR54_TYPE_OF_ACCOUNT() {
-		return R54_TYPE_OF_ACCOUNT;
+	public String getR104_type_of_account() {
+		return r104_type_of_account;
 	}
-	public void setR54_TYPE_OF_ACCOUNT(String r54_TYPE_OF_ACCOUNT) {
-		R54_TYPE_OF_ACCOUNT = r54_TYPE_OF_ACCOUNT;
+	public void setR104_type_of_account(String r104_type_of_account) {
+		this.r104_type_of_account = r104_type_of_account;
 	}
-	public BigDecimal getR54_INTREST_RATE() {
-		return R54_INTREST_RATE;
+	public BigDecimal getR104_interest_rate() {
+		return r104_interest_rate;
 	}
-	public void setR54_INTREST_RATE(BigDecimal r54_INTREST_RATE) {
-		R54_INTREST_RATE = r54_INTREST_RATE;
+	public void setR104_interest_rate(BigDecimal r104_interest_rate) {
+		this.r104_interest_rate = r104_interest_rate;
 	}
-	public BigDecimal getR54_AMOUNT() {
-		return R54_AMOUNT;
+	public BigDecimal getR104_amount() {
+		return r104_amount;
 	}
-	public void setR54_AMOUNT(BigDecimal r54_AMOUNT) {
-		R54_AMOUNT = r54_AMOUNT;
+	public void setR104_amount(BigDecimal r104_amount) {
+		this.r104_amount = r104_amount;
 	}
-	public BigDecimal getR54_TOTAL_DEPOSIT() {
-		return R54_TOTAL_DEPOSIT;
+	public BigDecimal getR104_total_deposit() {
+		return r104_total_deposit;
 	}
-	public void setR54_TOTAL_DEPOSIT(BigDecimal r54_TOTAL_DEPOSIT) {
-		R54_TOTAL_DEPOSIT = r54_TOTAL_DEPOSIT;
+	public void setR104_total_deposit(BigDecimal r104_total_deposit) {
+		this.r104_total_deposit = r104_total_deposit;
 	}
-	public BigDecimal getR54_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R54_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR104_percentage_total_deposit() {
+		return r104_percentage_total_deposit;
 	}
-	public void setR54_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r54_PERCENTAGE_TOTAL_DEPOSIT) {
-		R54_PERCENTAGE_TOTAL_DEPOSIT = r54_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR104_percentage_total_deposit(BigDecimal r104_percentage_total_deposit) {
+		this.r104_percentage_total_deposit = r104_percentage_total_deposit;
 	}
-	public String getR55_PRODUCT() {
-		return R55_PRODUCT;
+	public String getR105_customer_name() {
+		return r105_customer_name;
 	}
-	public void setR55_PRODUCT(String r55_PRODUCT) {
-		R55_PRODUCT = r55_PRODUCT;
+	public void setR105_customer_name(String r105_customer_name) {
+		this.r105_customer_name = r105_customer_name;
 	}
-	public String getR55_INSTITUTIONAL_SELECTOR() {
-		return R55_INSTITUTIONAL_SELECTOR;
+	public String getR105_institutional_sector() {
+		return r105_institutional_sector;
 	}
-	public void setR55_INSTITUTIONAL_SELECTOR(String r55_INSTITUTIONAL_SELECTOR) {
-		R55_INSTITUTIONAL_SELECTOR = r55_INSTITUTIONAL_SELECTOR;
+	public void setR105_institutional_sector(String r105_institutional_sector) {
+		this.r105_institutional_sector = r105_institutional_sector;
 	}
-	public String getR55_TYPE_OF_ACCOUNT() {
-		return R55_TYPE_OF_ACCOUNT;
+	public String getR105_type_of_account() {
+		return r105_type_of_account;
 	}
-	public void setR55_TYPE_OF_ACCOUNT(String r55_TYPE_OF_ACCOUNT) {
-		R55_TYPE_OF_ACCOUNT = r55_TYPE_OF_ACCOUNT;
+	public void setR105_type_of_account(String r105_type_of_account) {
+		this.r105_type_of_account = r105_type_of_account;
 	}
-	public BigDecimal getR55_INTREST_RATE() {
-		return R55_INTREST_RATE;
+	public BigDecimal getR105_interest_rate() {
+		return r105_interest_rate;
 	}
-	public void setR55_INTREST_RATE(BigDecimal r55_INTREST_RATE) {
-		R55_INTREST_RATE = r55_INTREST_RATE;
+	public void setR105_interest_rate(BigDecimal r105_interest_rate) {
+		this.r105_interest_rate = r105_interest_rate;
 	}
-	public BigDecimal getR55_AMOUNT() {
-		return R55_AMOUNT;
+	public BigDecimal getR105_amount() {
+		return r105_amount;
 	}
-	public void setR55_AMOUNT(BigDecimal r55_AMOUNT) {
-		R55_AMOUNT = r55_AMOUNT;
+	public void setR105_amount(BigDecimal r105_amount) {
+		this.r105_amount = r105_amount;
 	}
-	public BigDecimal getR55_TOTAL_DEPOSIT() {
-		return R55_TOTAL_DEPOSIT;
+	public BigDecimal getR105_total_deposit() {
+		return r105_total_deposit;
 	}
-	public void setR55_TOTAL_DEPOSIT(BigDecimal r55_TOTAL_DEPOSIT) {
-		R55_TOTAL_DEPOSIT = r55_TOTAL_DEPOSIT;
+	public void setR105_total_deposit(BigDecimal r105_total_deposit) {
+		this.r105_total_deposit = r105_total_deposit;
 	}
-	public BigDecimal getR55_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R55_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR105_percentage_total_deposit() {
+		return r105_percentage_total_deposit;
 	}
-	public void setR55_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r55_PERCENTAGE_TOTAL_DEPOSIT) {
-		R55_PERCENTAGE_TOTAL_DEPOSIT = r55_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR105_percentage_total_deposit(BigDecimal r105_percentage_total_deposit) {
+		this.r105_percentage_total_deposit = r105_percentage_total_deposit;
 	}
-	public String getR56_PRODUCT() {
-		return R56_PRODUCT;
+	public String getR106_customer_name() {
+		return r106_customer_name;
 	}
-	public void setR56_PRODUCT(String r56_PRODUCT) {
-		R56_PRODUCT = r56_PRODUCT;
+	public void setR106_customer_name(String r106_customer_name) {
+		this.r106_customer_name = r106_customer_name;
 	}
-	public String getR56_INSTITUTIONAL_SELECTOR() {
-		return R56_INSTITUTIONAL_SELECTOR;
+	public String getR106_institutional_sector() {
+		return r106_institutional_sector;
 	}
-	public void setR56_INSTITUTIONAL_SELECTOR(String r56_INSTITUTIONAL_SELECTOR) {
-		R56_INSTITUTIONAL_SELECTOR = r56_INSTITUTIONAL_SELECTOR;
+	public void setR106_institutional_sector(String r106_institutional_sector) {
+		this.r106_institutional_sector = r106_institutional_sector;
 	}
-	public String getR56_TYPE_OF_ACCOUNT() {
-		return R56_TYPE_OF_ACCOUNT;
+	public String getR106_type_of_account() {
+		return r106_type_of_account;
 	}
-	public void setR56_TYPE_OF_ACCOUNT(String r56_TYPE_OF_ACCOUNT) {
-		R56_TYPE_OF_ACCOUNT = r56_TYPE_OF_ACCOUNT;
+	public void setR106_type_of_account(String r106_type_of_account) {
+		this.r106_type_of_account = r106_type_of_account;
 	}
-	public BigDecimal getR56_INTREST_RATE() {
-		return R56_INTREST_RATE;
+	public BigDecimal getR106_interest_rate() {
+		return r106_interest_rate;
 	}
-	public void setR56_INTREST_RATE(BigDecimal r56_INTREST_RATE) {
-		R56_INTREST_RATE = r56_INTREST_RATE;
+	public void setR106_interest_rate(BigDecimal r106_interest_rate) {
+		this.r106_interest_rate = r106_interest_rate;
 	}
-	public BigDecimal getR56_AMOUNT() {
-		return R56_AMOUNT;
+	public BigDecimal getR106_amount() {
+		return r106_amount;
 	}
-	public void setR56_AMOUNT(BigDecimal r56_AMOUNT) {
-		R56_AMOUNT = r56_AMOUNT;
+	public void setR106_amount(BigDecimal r106_amount) {
+		this.r106_amount = r106_amount;
 	}
-	public BigDecimal getR56_TOTAL_DEPOSIT() {
-		return R56_TOTAL_DEPOSIT;
+	public BigDecimal getR106_total_deposit() {
+		return r106_total_deposit;
 	}
-	public void setR56_TOTAL_DEPOSIT(BigDecimal r56_TOTAL_DEPOSIT) {
-		R56_TOTAL_DEPOSIT = r56_TOTAL_DEPOSIT;
+	public void setR106_total_deposit(BigDecimal r106_total_deposit) {
+		this.r106_total_deposit = r106_total_deposit;
 	}
-	public BigDecimal getR56_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R56_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR106_percentage_total_deposit() {
+		return r106_percentage_total_deposit;
 	}
-	public void setR56_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r56_PERCENTAGE_TOTAL_DEPOSIT) {
-		R56_PERCENTAGE_TOTAL_DEPOSIT = r56_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR106_percentage_total_deposit(BigDecimal r106_percentage_total_deposit) {
+		this.r106_percentage_total_deposit = r106_percentage_total_deposit;
 	}
-	public String getR57_PRODUCT() {
-		return R57_PRODUCT;
+	public String getR107_customer_name() {
+		return r107_customer_name;
 	}
-	public void setR57_PRODUCT(String r57_PRODUCT) {
-		R57_PRODUCT = r57_PRODUCT;
+	public void setR107_customer_name(String r107_customer_name) {
+		this.r107_customer_name = r107_customer_name;
 	}
-	public String getR57_INSTITUTIONAL_SELECTOR() {
-		return R57_INSTITUTIONAL_SELECTOR;
+	public String getR107_institutional_sector() {
+		return r107_institutional_sector;
 	}
-	public void setR57_INSTITUTIONAL_SELECTOR(String r57_INSTITUTIONAL_SELECTOR) {
-		R57_INSTITUTIONAL_SELECTOR = r57_INSTITUTIONAL_SELECTOR;
+	public void setR107_institutional_sector(String r107_institutional_sector) {
+		this.r107_institutional_sector = r107_institutional_sector;
 	}
-	public String getR57_TYPE_OF_ACCOUNT() {
-		return R57_TYPE_OF_ACCOUNT;
+	public String getR107_type_of_account() {
+		return r107_type_of_account;
 	}
-	public void setR57_TYPE_OF_ACCOUNT(String r57_TYPE_OF_ACCOUNT) {
-		R57_TYPE_OF_ACCOUNT = r57_TYPE_OF_ACCOUNT;
+	public void setR107_type_of_account(String r107_type_of_account) {
+		this.r107_type_of_account = r107_type_of_account;
 	}
-	public BigDecimal getR57_INTREST_RATE() {
-		return R57_INTREST_RATE;
+	public BigDecimal getR107_interest_rate() {
+		return r107_interest_rate;
 	}
-	public void setR57_INTREST_RATE(BigDecimal r57_INTREST_RATE) {
-		R57_INTREST_RATE = r57_INTREST_RATE;
+	public void setR107_interest_rate(BigDecimal r107_interest_rate) {
+		this.r107_interest_rate = r107_interest_rate;
 	}
-	public BigDecimal getR57_AMOUNT() {
-		return R57_AMOUNT;
+	public BigDecimal getR107_amount() {
+		return r107_amount;
 	}
-	public void setR57_AMOUNT(BigDecimal r57_AMOUNT) {
-		R57_AMOUNT = r57_AMOUNT;
+	public void setR107_amount(BigDecimal r107_amount) {
+		this.r107_amount = r107_amount;
 	}
-	public BigDecimal getR57_TOTAL_DEPOSIT() {
-		return R57_TOTAL_DEPOSIT;
+	public BigDecimal getR107_total_deposit() {
+		return r107_total_deposit;
 	}
-	public void setR57_TOTAL_DEPOSIT(BigDecimal r57_TOTAL_DEPOSIT) {
-		R57_TOTAL_DEPOSIT = r57_TOTAL_DEPOSIT;
+	public void setR107_total_deposit(BigDecimal r107_total_deposit) {
+		this.r107_total_deposit = r107_total_deposit;
 	}
-	public BigDecimal getR57_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R57_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR107_percentage_total_deposit() {
+		return r107_percentage_total_deposit;
 	}
-	public void setR57_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r57_PERCENTAGE_TOTAL_DEPOSIT) {
-		R57_PERCENTAGE_TOTAL_DEPOSIT = r57_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR107_percentage_total_deposit(BigDecimal r107_percentage_total_deposit) {
+		this.r107_percentage_total_deposit = r107_percentage_total_deposit;
 	}
-	public String getR58_PRODUCT() {
-		return R58_PRODUCT;
+	public String getR108_customer_name() {
+		return r108_customer_name;
 	}
-	public void setR58_PRODUCT(String r58_PRODUCT) {
-		R58_PRODUCT = r58_PRODUCT;
+	public void setR108_customer_name(String r108_customer_name) {
+		this.r108_customer_name = r108_customer_name;
 	}
-	public String getR58_INSTITUTIONAL_SELECTOR() {
-		return R58_INSTITUTIONAL_SELECTOR;
+	public String getR108_institutional_sector() {
+		return r108_institutional_sector;
 	}
-	public void setR58_INSTITUTIONAL_SELECTOR(String r58_INSTITUTIONAL_SELECTOR) {
-		R58_INSTITUTIONAL_SELECTOR = r58_INSTITUTIONAL_SELECTOR;
+	public void setR108_institutional_sector(String r108_institutional_sector) {
+		this.r108_institutional_sector = r108_institutional_sector;
 	}
-	public String getR58_TYPE_OF_ACCOUNT() {
-		return R58_TYPE_OF_ACCOUNT;
+	public String getR108_type_of_account() {
+		return r108_type_of_account;
 	}
-	public void setR58_TYPE_OF_ACCOUNT(String r58_TYPE_OF_ACCOUNT) {
-		R58_TYPE_OF_ACCOUNT = r58_TYPE_OF_ACCOUNT;
+	public void setR108_type_of_account(String r108_type_of_account) {
+		this.r108_type_of_account = r108_type_of_account;
 	}
-	public BigDecimal getR58_INTREST_RATE() {
-		return R58_INTREST_RATE;
+	public BigDecimal getR108_interest_rate() {
+		return r108_interest_rate;
 	}
-	public void setR58_INTREST_RATE(BigDecimal r58_INTREST_RATE) {
-		R58_INTREST_RATE = r58_INTREST_RATE;
+	public void setR108_interest_rate(BigDecimal r108_interest_rate) {
+		this.r108_interest_rate = r108_interest_rate;
 	}
-	public BigDecimal getR58_AMOUNT() {
-		return R58_AMOUNT;
+	public BigDecimal getR108_amount() {
+		return r108_amount;
 	}
-	public void setR58_AMOUNT(BigDecimal r58_AMOUNT) {
-		R58_AMOUNT = r58_AMOUNT;
+	public void setR108_amount(BigDecimal r108_amount) {
+		this.r108_amount = r108_amount;
 	}
-	public BigDecimal getR58_TOTAL_DEPOSIT() {
-		return R58_TOTAL_DEPOSIT;
+	public BigDecimal getR108_total_deposit() {
+		return r108_total_deposit;
 	}
-	public void setR58_TOTAL_DEPOSIT(BigDecimal r58_TOTAL_DEPOSIT) {
-		R58_TOTAL_DEPOSIT = r58_TOTAL_DEPOSIT;
+	public void setR108_total_deposit(BigDecimal r108_total_deposit) {
+		this.r108_total_deposit = r108_total_deposit;
 	}
-	public BigDecimal getR58_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R58_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR108_percentage_total_deposit() {
+		return r108_percentage_total_deposit;
 	}
-	public void setR58_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r58_PERCENTAGE_TOTAL_DEPOSIT) {
-		R58_PERCENTAGE_TOTAL_DEPOSIT = r58_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR108_percentage_total_deposit(BigDecimal r108_percentage_total_deposit) {
+		this.r108_percentage_total_deposit = r108_percentage_total_deposit;
 	}
-	public String getR59_PRODUCT() {
-		return R59_PRODUCT;
+	public String getR109_customer_name() {
+		return r109_customer_name;
 	}
-	public void setR59_PRODUCT(String r59_PRODUCT) {
-		R59_PRODUCT = r59_PRODUCT;
+	public void setR109_customer_name(String r109_customer_name) {
+		this.r109_customer_name = r109_customer_name;
 	}
-	public String getR59_INSTITUTIONAL_SELECTOR() {
-		return R59_INSTITUTIONAL_SELECTOR;
+	public String getR109_institutional_sector() {
+		return r109_institutional_sector;
 	}
-	public void setR59_INSTITUTIONAL_SELECTOR(String r59_INSTITUTIONAL_SELECTOR) {
-		R59_INSTITUTIONAL_SELECTOR = r59_INSTITUTIONAL_SELECTOR;
+	public void setR109_institutional_sector(String r109_institutional_sector) {
+		this.r109_institutional_sector = r109_institutional_sector;
 	}
-	public String getR59_TYPE_OF_ACCOUNT() {
-		return R59_TYPE_OF_ACCOUNT;
+	public String getR109_type_of_account() {
+		return r109_type_of_account;
 	}
-	public void setR59_TYPE_OF_ACCOUNT(String r59_TYPE_OF_ACCOUNT) {
-		R59_TYPE_OF_ACCOUNT = r59_TYPE_OF_ACCOUNT;
+	public void setR109_type_of_account(String r109_type_of_account) {
+		this.r109_type_of_account = r109_type_of_account;
 	}
-	public BigDecimal getR59_INTREST_RATE() {
-		return R59_INTREST_RATE;
+	public BigDecimal getR109_interest_rate() {
+		return r109_interest_rate;
 	}
-	public void setR59_INTREST_RATE(BigDecimal r59_INTREST_RATE) {
-		R59_INTREST_RATE = r59_INTREST_RATE;
+	public void setR109_interest_rate(BigDecimal r109_interest_rate) {
+		this.r109_interest_rate = r109_interest_rate;
 	}
-	public BigDecimal getR59_AMOUNT() {
-		return R59_AMOUNT;
+	public BigDecimal getR109_amount() {
+		return r109_amount;
 	}
-	public void setR59_AMOUNT(BigDecimal r59_AMOUNT) {
-		R59_AMOUNT = r59_AMOUNT;
+	public void setR109_amount(BigDecimal r109_amount) {
+		this.r109_amount = r109_amount;
 	}
-	public BigDecimal getR59_TOTAL_DEPOSIT() {
-		return R59_TOTAL_DEPOSIT;
+	public BigDecimal getR109_total_deposit() {
+		return r109_total_deposit;
 	}
-	public void setR59_TOTAL_DEPOSIT(BigDecimal r59_TOTAL_DEPOSIT) {
-		R59_TOTAL_DEPOSIT = r59_TOTAL_DEPOSIT;
+	public void setR109_total_deposit(BigDecimal r109_total_deposit) {
+		this.r109_total_deposit = r109_total_deposit;
 	}
-	public BigDecimal getR59_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R59_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR109_percentage_total_deposit() {
+		return r109_percentage_total_deposit;
 	}
-	public void setR59_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r59_PERCENTAGE_TOTAL_DEPOSIT) {
-		R59_PERCENTAGE_TOTAL_DEPOSIT = r59_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR109_percentage_total_deposit(BigDecimal r109_percentage_total_deposit) {
+		this.r109_percentage_total_deposit = r109_percentage_total_deposit;
 	}
-	public String getR60_PRODUCT() {
-		return R60_PRODUCT;
+	public String getR110_customer_name() {
+		return r110_customer_name;
 	}
-	public void setR60_PRODUCT(String r60_PRODUCT) {
-		R60_PRODUCT = r60_PRODUCT;
+	public void setR110_customer_name(String r110_customer_name) {
+		this.r110_customer_name = r110_customer_name;
 	}
-	public String getR60_INSTITUTIONAL_SELECTOR() {
-		return R60_INSTITUTIONAL_SELECTOR;
+	public String getR110_institutional_sector() {
+		return r110_institutional_sector;
 	}
-	public void setR60_INSTITUTIONAL_SELECTOR(String r60_INSTITUTIONAL_SELECTOR) {
-		R60_INSTITUTIONAL_SELECTOR = r60_INSTITUTIONAL_SELECTOR;
+	public void setR110_institutional_sector(String r110_institutional_sector) {
+		this.r110_institutional_sector = r110_institutional_sector;
 	}
-	public String getR60_TYPE_OF_ACCOUNT() {
-		return R60_TYPE_OF_ACCOUNT;
+	public String getR110_type_of_account() {
+		return r110_type_of_account;
 	}
-	public void setR60_TYPE_OF_ACCOUNT(String r60_TYPE_OF_ACCOUNT) {
-		R60_TYPE_OF_ACCOUNT = r60_TYPE_OF_ACCOUNT;
+	public void setR110_type_of_account(String r110_type_of_account) {
+		this.r110_type_of_account = r110_type_of_account;
 	}
-	public BigDecimal getR60_INTREST_RATE() {
-		return R60_INTREST_RATE;
+	public BigDecimal getR110_interest_rate() {
+		return r110_interest_rate;
 	}
-	public void setR60_INTREST_RATE(BigDecimal r60_INTREST_RATE) {
-		R60_INTREST_RATE = r60_INTREST_RATE;
+	public void setR110_interest_rate(BigDecimal r110_interest_rate) {
+		this.r110_interest_rate = r110_interest_rate;
 	}
-	public BigDecimal getR60_AMOUNT() {
-		return R60_AMOUNT;
+	public BigDecimal getR110_amount() {
+		return r110_amount;
 	}
-	public void setR60_AMOUNT(BigDecimal r60_AMOUNT) {
-		R60_AMOUNT = r60_AMOUNT;
+	public void setR110_amount(BigDecimal r110_amount) {
+		this.r110_amount = r110_amount;
 	}
-	public BigDecimal getR60_TOTAL_DEPOSIT() {
-		return R60_TOTAL_DEPOSIT;
+	public BigDecimal getR110_total_deposit() {
+		return r110_total_deposit;
 	}
-	public void setR60_TOTAL_DEPOSIT(BigDecimal r60_TOTAL_DEPOSIT) {
-		R60_TOTAL_DEPOSIT = r60_TOTAL_DEPOSIT;
+	public void setR110_total_deposit(BigDecimal r110_total_deposit) {
+		this.r110_total_deposit = r110_total_deposit;
 	}
-	public BigDecimal getR60_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R60_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR110_percentage_total_deposit() {
+		return r110_percentage_total_deposit;
 	}
-	public void setR60_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r60_PERCENTAGE_TOTAL_DEPOSIT) {
-		R60_PERCENTAGE_TOTAL_DEPOSIT = r60_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR110_percentage_total_deposit(BigDecimal r110_percentage_total_deposit) {
+		this.r110_percentage_total_deposit = r110_percentage_total_deposit;
 	}
-	public String getR61_PRODUCT() {
-		return R61_PRODUCT;
+	public String getR111_customer_name() {
+		return r111_customer_name;
 	}
-	public void setR61_PRODUCT(String r61_PRODUCT) {
-		R61_PRODUCT = r61_PRODUCT;
+	public void setR111_customer_name(String r111_customer_name) {
+		this.r111_customer_name = r111_customer_name;
 	}
-	public String getR61_INSTITUTIONAL_SELECTOR() {
-		return R61_INSTITUTIONAL_SELECTOR;
+	public String getR111_institutional_sector() {
+		return r111_institutional_sector;
 	}
-	public void setR61_INSTITUTIONAL_SELECTOR(String r61_INSTITUTIONAL_SELECTOR) {
-		R61_INSTITUTIONAL_SELECTOR = r61_INSTITUTIONAL_SELECTOR;
+	public void setR111_institutional_sector(String r111_institutional_sector) {
+		this.r111_institutional_sector = r111_institutional_sector;
 	}
-	public String getR61_TYPE_OF_ACCOUNT() {
-		return R61_TYPE_OF_ACCOUNT;
+	public String getR111_type_of_account() {
+		return r111_type_of_account;
 	}
-	public void setR61_TYPE_OF_ACCOUNT(String r61_TYPE_OF_ACCOUNT) {
-		R61_TYPE_OF_ACCOUNT = r61_TYPE_OF_ACCOUNT;
+	public void setR111_type_of_account(String r111_type_of_account) {
+		this.r111_type_of_account = r111_type_of_account;
 	}
-	public BigDecimal getR61_INTREST_RATE() {
-		return R61_INTREST_RATE;
+	public BigDecimal getR111_interest_rate() {
+		return r111_interest_rate;
 	}
-	public void setR61_INTREST_RATE(BigDecimal r61_INTREST_RATE) {
-		R61_INTREST_RATE = r61_INTREST_RATE;
+	public void setR111_interest_rate(BigDecimal r111_interest_rate) {
+		this.r111_interest_rate = r111_interest_rate;
 	}
-	public BigDecimal getR61_AMOUNT() {
-		return R61_AMOUNT;
+	public BigDecimal getR111_amount() {
+		return r111_amount;
 	}
-	public void setR61_AMOUNT(BigDecimal r61_AMOUNT) {
-		R61_AMOUNT = r61_AMOUNT;
+	public void setR111_amount(BigDecimal r111_amount) {
+		this.r111_amount = r111_amount;
 	}
-	public BigDecimal getR61_TOTAL_DEPOSIT() {
-		return R61_TOTAL_DEPOSIT;
+	public BigDecimal getR111_total_deposit() {
+		return r111_total_deposit;
 	}
-	public void setR61_TOTAL_DEPOSIT(BigDecimal r61_TOTAL_DEPOSIT) {
-		R61_TOTAL_DEPOSIT = r61_TOTAL_DEPOSIT;
+	public void setR111_total_deposit(BigDecimal r111_total_deposit) {
+		this.r111_total_deposit = r111_total_deposit;
 	}
-	public BigDecimal getR61_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R61_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR111_percentage_total_deposit() {
+		return r111_percentage_total_deposit;
 	}
-	public void setR61_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r61_PERCENTAGE_TOTAL_DEPOSIT) {
-		R61_PERCENTAGE_TOTAL_DEPOSIT = r61_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR111_percentage_total_deposit(BigDecimal r111_percentage_total_deposit) {
+		this.r111_percentage_total_deposit = r111_percentage_total_deposit;
 	}
-	public String getR62_PRODUCT() {
-		return R62_PRODUCT;
+	public String getR112_customer_name() {
+		return r112_customer_name;
 	}
-	public void setR62_PRODUCT(String r62_PRODUCT) {
-		R62_PRODUCT = r62_PRODUCT;
+	public void setR112_customer_name(String r112_customer_name) {
+		this.r112_customer_name = r112_customer_name;
 	}
-	public String getR62_INSTITUTIONAL_SELECTOR() {
-		return R62_INSTITUTIONAL_SELECTOR;
+	public String getR112_institutional_sector() {
+		return r112_institutional_sector;
 	}
-	public void setR62_INSTITUTIONAL_SELECTOR(String r62_INSTITUTIONAL_SELECTOR) {
-		R62_INSTITUTIONAL_SELECTOR = r62_INSTITUTIONAL_SELECTOR;
+	public void setR112_institutional_sector(String r112_institutional_sector) {
+		this.r112_institutional_sector = r112_institutional_sector;
 	}
-	public String getR62_TYPE_OF_ACCOUNT() {
-		return R62_TYPE_OF_ACCOUNT;
+	public String getR112_type_of_account() {
+		return r112_type_of_account;
 	}
-	public void setR62_TYPE_OF_ACCOUNT(String r62_TYPE_OF_ACCOUNT) {
-		R62_TYPE_OF_ACCOUNT = r62_TYPE_OF_ACCOUNT;
+	public void setR112_type_of_account(String r112_type_of_account) {
+		this.r112_type_of_account = r112_type_of_account;
 	}
-	public BigDecimal getR62_INTREST_RATE() {
-		return R62_INTREST_RATE;
+	public BigDecimal getR112_interest_rate() {
+		return r112_interest_rate;
 	}
-	public void setR62_INTREST_RATE(BigDecimal r62_INTREST_RATE) {
-		R62_INTREST_RATE = r62_INTREST_RATE;
+	public void setR112_interest_rate(BigDecimal r112_interest_rate) {
+		this.r112_interest_rate = r112_interest_rate;
 	}
-	public BigDecimal getR62_AMOUNT() {
-		return R62_AMOUNT;
+	public BigDecimal getR112_amount() {
+		return r112_amount;
 	}
-	public void setR62_AMOUNT(BigDecimal r62_AMOUNT) {
-		R62_AMOUNT = r62_AMOUNT;
+	public void setR112_amount(BigDecimal r112_amount) {
+		this.r112_amount = r112_amount;
 	}
-	public BigDecimal getR62_TOTAL_DEPOSIT() {
-		return R62_TOTAL_DEPOSIT;
+	public BigDecimal getR112_total_deposit() {
+		return r112_total_deposit;
 	}
-	public void setR62_TOTAL_DEPOSIT(BigDecimal r62_TOTAL_DEPOSIT) {
-		R62_TOTAL_DEPOSIT = r62_TOTAL_DEPOSIT;
+	public void setR112_total_deposit(BigDecimal r112_total_deposit) {
+		this.r112_total_deposit = r112_total_deposit;
 	}
-	public BigDecimal getR62_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R62_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR112_percentage_total_deposit() {
+		return r112_percentage_total_deposit;
 	}
-	public void setR62_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r62_PERCENTAGE_TOTAL_DEPOSIT) {
-		R62_PERCENTAGE_TOTAL_DEPOSIT = r62_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR112_percentage_total_deposit(BigDecimal r112_percentage_total_deposit) {
+		this.r112_percentage_total_deposit = r112_percentage_total_deposit;
 	}
-	public String getR63_PRODUCT() {
-		return R63_PRODUCT;
+	public String getR113_customer_name() {
+		return r113_customer_name;
 	}
-	public void setR63_PRODUCT(String r63_PRODUCT) {
-		R63_PRODUCT = r63_PRODUCT;
+	public void setR113_customer_name(String r113_customer_name) {
+		this.r113_customer_name = r113_customer_name;
 	}
-	public String getR63_INSTITUTIONAL_SELECTOR() {
-		return R63_INSTITUTIONAL_SELECTOR;
+	public String getR113_institutional_sector() {
+		return r113_institutional_sector;
 	}
-	public void setR63_INSTITUTIONAL_SELECTOR(String r63_INSTITUTIONAL_SELECTOR) {
-		R63_INSTITUTIONAL_SELECTOR = r63_INSTITUTIONAL_SELECTOR;
+	public void setR113_institutional_sector(String r113_institutional_sector) {
+		this.r113_institutional_sector = r113_institutional_sector;
 	}
-	public String getR63_TYPE_OF_ACCOUNT() {
-		return R63_TYPE_OF_ACCOUNT;
+	public String getR113_type_of_account() {
+		return r113_type_of_account;
 	}
-	public void setR63_TYPE_OF_ACCOUNT(String r63_TYPE_OF_ACCOUNT) {
-		R63_TYPE_OF_ACCOUNT = r63_TYPE_OF_ACCOUNT;
+	public void setR113_type_of_account(String r113_type_of_account) {
+		this.r113_type_of_account = r113_type_of_account;
 	}
-	public BigDecimal getR63_INTREST_RATE() {
-		return R63_INTREST_RATE;
+	public BigDecimal getR113_interest_rate() {
+		return r113_interest_rate;
 	}
-	public void setR63_INTREST_RATE(BigDecimal r63_INTREST_RATE) {
-		R63_INTREST_RATE = r63_INTREST_RATE;
+	public void setR113_interest_rate(BigDecimal r113_interest_rate) {
+		this.r113_interest_rate = r113_interest_rate;
 	}
-	public BigDecimal getR63_AMOUNT() {
-		return R63_AMOUNT;
+	public BigDecimal getR113_amount() {
+		return r113_amount;
 	}
-	public void setR63_AMOUNT(BigDecimal r63_AMOUNT) {
-		R63_AMOUNT = r63_AMOUNT;
+	public void setR113_amount(BigDecimal r113_amount) {
+		this.r113_amount = r113_amount;
 	}
-	public BigDecimal getR63_TOTAL_DEPOSIT() {
-		return R63_TOTAL_DEPOSIT;
+	public BigDecimal getR113_total_deposit() {
+		return r113_total_deposit;
 	}
-	public void setR63_TOTAL_DEPOSIT(BigDecimal r63_TOTAL_DEPOSIT) {
-		R63_TOTAL_DEPOSIT = r63_TOTAL_DEPOSIT;
+	public void setR113_total_deposit(BigDecimal r113_total_deposit) {
+		this.r113_total_deposit = r113_total_deposit;
 	}
-	public BigDecimal getR63_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R63_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR113_percentage_total_deposit() {
+		return r113_percentage_total_deposit;
 	}
-	public void setR63_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r63_PERCENTAGE_TOTAL_DEPOSIT) {
-		R63_PERCENTAGE_TOTAL_DEPOSIT = r63_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR113_percentage_total_deposit(BigDecimal r113_percentage_total_deposit) {
+		this.r113_percentage_total_deposit = r113_percentage_total_deposit;
 	}
-	public String getR64_PRODUCT() {
-		return R64_PRODUCT;
+	public String getR114_customer_name() {
+		return r114_customer_name;
 	}
-	public void setR64_PRODUCT(String r64_PRODUCT) {
-		R64_PRODUCT = r64_PRODUCT;
+	public void setR114_customer_name(String r114_customer_name) {
+		this.r114_customer_name = r114_customer_name;
 	}
-	public String getR64_INSTITUTIONAL_SELECTOR() {
-		return R64_INSTITUTIONAL_SELECTOR;
+	public String getR114_institutional_sector() {
+		return r114_institutional_sector;
 	}
-	public void setR64_INSTITUTIONAL_SELECTOR(String r64_INSTITUTIONAL_SELECTOR) {
-		R64_INSTITUTIONAL_SELECTOR = r64_INSTITUTIONAL_SELECTOR;
+	public void setR114_institutional_sector(String r114_institutional_sector) {
+		this.r114_institutional_sector = r114_institutional_sector;
 	}
-	public String getR64_TYPE_OF_ACCOUNT() {
-		return R64_TYPE_OF_ACCOUNT;
+	public String getR114_type_of_account() {
+		return r114_type_of_account;
 	}
-	public void setR64_TYPE_OF_ACCOUNT(String r64_TYPE_OF_ACCOUNT) {
-		R64_TYPE_OF_ACCOUNT = r64_TYPE_OF_ACCOUNT;
+	public void setR114_type_of_account(String r114_type_of_account) {
+		this.r114_type_of_account = r114_type_of_account;
 	}
-	public BigDecimal getR64_INTREST_RATE() {
-		return R64_INTREST_RATE;
+	public BigDecimal getR114_interest_rate() {
+		return r114_interest_rate;
 	}
-	public void setR64_INTREST_RATE(BigDecimal r64_INTREST_RATE) {
-		R64_INTREST_RATE = r64_INTREST_RATE;
+	public void setR114_interest_rate(BigDecimal r114_interest_rate) {
+		this.r114_interest_rate = r114_interest_rate;
 	}
-	public BigDecimal getR64_AMOUNT() {
-		return R64_AMOUNT;
+	public BigDecimal getR114_amount() {
+		return r114_amount;
 	}
-	public void setR64_AMOUNT(BigDecimal r64_AMOUNT) {
-		R64_AMOUNT = r64_AMOUNT;
+	public void setR114_amount(BigDecimal r114_amount) {
+		this.r114_amount = r114_amount;
 	}
-	public BigDecimal getR64_TOTAL_DEPOSIT() {
-		return R64_TOTAL_DEPOSIT;
+	public BigDecimal getR114_total_deposit() {
+		return r114_total_deposit;
 	}
-	public void setR64_TOTAL_DEPOSIT(BigDecimal r64_TOTAL_DEPOSIT) {
-		R64_TOTAL_DEPOSIT = r64_TOTAL_DEPOSIT;
+	public void setR114_total_deposit(BigDecimal r114_total_deposit) {
+		this.r114_total_deposit = r114_total_deposit;
 	}
-	public BigDecimal getR64_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R64_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR114_percentage_total_deposit() {
+		return r114_percentage_total_deposit;
 	}
-	public void setR64_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r64_PERCENTAGE_TOTAL_DEPOSIT) {
-		R64_PERCENTAGE_TOTAL_DEPOSIT = r64_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR114_percentage_total_deposit(BigDecimal r114_percentage_total_deposit) {
+		this.r114_percentage_total_deposit = r114_percentage_total_deposit;
 	}
-	public String getR65_PRODUCT() {
-		return R65_PRODUCT;
+	public String getR115_customer_name() {
+		return r115_customer_name;
 	}
-	public void setR65_PRODUCT(String r65_PRODUCT) {
-		R65_PRODUCT = r65_PRODUCT;
+	public void setR115_customer_name(String r115_customer_name) {
+		this.r115_customer_name = r115_customer_name;
 	}
-	public String getR65_INSTITUTIONAL_SELECTOR() {
-		return R65_INSTITUTIONAL_SELECTOR;
+	public String getR115_institutional_sector() {
+		return r115_institutional_sector;
 	}
-	public void setR65_INSTITUTIONAL_SELECTOR(String r65_INSTITUTIONAL_SELECTOR) {
-		R65_INSTITUTIONAL_SELECTOR = r65_INSTITUTIONAL_SELECTOR;
+	public void setR115_institutional_sector(String r115_institutional_sector) {
+		this.r115_institutional_sector = r115_institutional_sector;
 	}
-	public String getR65_TYPE_OF_ACCOUNT() {
-		return R65_TYPE_OF_ACCOUNT;
+	public String getR115_type_of_account() {
+		return r115_type_of_account;
 	}
-	public void setR65_TYPE_OF_ACCOUNT(String r65_TYPE_OF_ACCOUNT) {
-		R65_TYPE_OF_ACCOUNT = r65_TYPE_OF_ACCOUNT;
+	public void setR115_type_of_account(String r115_type_of_account) {
+		this.r115_type_of_account = r115_type_of_account;
 	}
-	public BigDecimal getR65_INTREST_RATE() {
-		return R65_INTREST_RATE;
+	public BigDecimal getR115_interest_rate() {
+		return r115_interest_rate;
 	}
-	public void setR65_INTREST_RATE(BigDecimal r65_INTREST_RATE) {
-		R65_INTREST_RATE = r65_INTREST_RATE;
+	public void setR115_interest_rate(BigDecimal r115_interest_rate) {
+		this.r115_interest_rate = r115_interest_rate;
 	}
-	public BigDecimal getR65_AMOUNT() {
-		return R65_AMOUNT;
+	public BigDecimal getR115_amount() {
+		return r115_amount;
 	}
-	public void setR65_AMOUNT(BigDecimal r65_AMOUNT) {
-		R65_AMOUNT = r65_AMOUNT;
+	public void setR115_amount(BigDecimal r115_amount) {
+		this.r115_amount = r115_amount;
 	}
-	public BigDecimal getR65_TOTAL_DEPOSIT() {
-		return R65_TOTAL_DEPOSIT;
+	public BigDecimal getR115_total_deposit() {
+		return r115_total_deposit;
 	}
-	public void setR65_TOTAL_DEPOSIT(BigDecimal r65_TOTAL_DEPOSIT) {
-		R65_TOTAL_DEPOSIT = r65_TOTAL_DEPOSIT;
+	public void setR115_total_deposit(BigDecimal r115_total_deposit) {
+		this.r115_total_deposit = r115_total_deposit;
 	}
-	public BigDecimal getR65_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R65_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR115_percentage_total_deposit() {
+		return r115_percentage_total_deposit;
 	}
-	public void setR65_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r65_PERCENTAGE_TOTAL_DEPOSIT) {
-		R65_PERCENTAGE_TOTAL_DEPOSIT = r65_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR115_percentage_total_deposit(BigDecimal r115_percentage_total_deposit) {
+		this.r115_percentage_total_deposit = r115_percentage_total_deposit;
 	}
-	public String getR66_PRODUCT() {
-		return R66_PRODUCT;
+	public String getR116_customer_name() {
+		return r116_customer_name;
 	}
-	public void setR66_PRODUCT(String r66_PRODUCT) {
-		R66_PRODUCT = r66_PRODUCT;
+	public void setR116_customer_name(String r116_customer_name) {
+		this.r116_customer_name = r116_customer_name;
 	}
-	public String getR66_INSTITUTIONAL_SELECTOR() {
-		return R66_INSTITUTIONAL_SELECTOR;
+	public String getR116_institutional_sector() {
+		return r116_institutional_sector;
 	}
-	public void setR66_INSTITUTIONAL_SELECTOR(String r66_INSTITUTIONAL_SELECTOR) {
-		R66_INSTITUTIONAL_SELECTOR = r66_INSTITUTIONAL_SELECTOR;
+	public void setR116_institutional_sector(String r116_institutional_sector) {
+		this.r116_institutional_sector = r116_institutional_sector;
 	}
-	public String getR66_TYPE_OF_ACCOUNT() {
-		return R66_TYPE_OF_ACCOUNT;
+	public String getR116_type_of_account() {
+		return r116_type_of_account;
 	}
-	public void setR66_TYPE_OF_ACCOUNT(String r66_TYPE_OF_ACCOUNT) {
-		R66_TYPE_OF_ACCOUNT = r66_TYPE_OF_ACCOUNT;
+	public void setR116_type_of_account(String r116_type_of_account) {
+		this.r116_type_of_account = r116_type_of_account;
 	}
-	public BigDecimal getR66_INTREST_RATE() {
-		return R66_INTREST_RATE;
+	public BigDecimal getR116_interest_rate() {
+		return r116_interest_rate;
 	}
-	public void setR66_INTREST_RATE(BigDecimal r66_INTREST_RATE) {
-		R66_INTREST_RATE = r66_INTREST_RATE;
+	public void setR116_interest_rate(BigDecimal r116_interest_rate) {
+		this.r116_interest_rate = r116_interest_rate;
 	}
-	public BigDecimal getR66_AMOUNT() {
-		return R66_AMOUNT;
+	public BigDecimal getR116_amount() {
+		return r116_amount;
 	}
-	public void setR66_AMOUNT(BigDecimal r66_AMOUNT) {
-		R66_AMOUNT = r66_AMOUNT;
+	public void setR116_amount(BigDecimal r116_amount) {
+		this.r116_amount = r116_amount;
 	}
-	public BigDecimal getR66_TOTAL_DEPOSIT() {
-		return R66_TOTAL_DEPOSIT;
+	public BigDecimal getR116_total_deposit() {
+		return r116_total_deposit;
 	}
-	public void setR66_TOTAL_DEPOSIT(BigDecimal r66_TOTAL_DEPOSIT) {
-		R66_TOTAL_DEPOSIT = r66_TOTAL_DEPOSIT;
+	public void setR116_total_deposit(BigDecimal r116_total_deposit) {
+		this.r116_total_deposit = r116_total_deposit;
 	}
-	public BigDecimal getR66_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R66_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR116_percentage_total_deposit() {
+		return r116_percentage_total_deposit;
 	}
-	public void setR66_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r66_PERCENTAGE_TOTAL_DEPOSIT) {
-		R66_PERCENTAGE_TOTAL_DEPOSIT = r66_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR116_percentage_total_deposit(BigDecimal r116_percentage_total_deposit) {
+		this.r116_percentage_total_deposit = r116_percentage_total_deposit;
 	}
-	public String getR67_PRODUCT() {
-		return R67_PRODUCT;
+	public String getR117_customer_name() {
+		return r117_customer_name;
 	}
-	public void setR67_PRODUCT(String r67_PRODUCT) {
-		R67_PRODUCT = r67_PRODUCT;
+	public void setR117_customer_name(String r117_customer_name) {
+		this.r117_customer_name = r117_customer_name;
 	}
-	public String getR67_INSTITUTIONAL_SELECTOR() {
-		return R67_INSTITUTIONAL_SELECTOR;
+	public String getR117_institutional_sector() {
+		return r117_institutional_sector;
 	}
-	public void setR67_INSTITUTIONAL_SELECTOR(String r67_INSTITUTIONAL_SELECTOR) {
-		R67_INSTITUTIONAL_SELECTOR = r67_INSTITUTIONAL_SELECTOR;
+	public void setR117_institutional_sector(String r117_institutional_sector) {
+		this.r117_institutional_sector = r117_institutional_sector;
 	}
-	public String getR67_TYPE_OF_ACCOUNT() {
-		return R67_TYPE_OF_ACCOUNT;
+	public String getR117_type_of_account() {
+		return r117_type_of_account;
 	}
-	public void setR67_TYPE_OF_ACCOUNT(String r67_TYPE_OF_ACCOUNT) {
-		R67_TYPE_OF_ACCOUNT = r67_TYPE_OF_ACCOUNT;
+	public void setR117_type_of_account(String r117_type_of_account) {
+		this.r117_type_of_account = r117_type_of_account;
 	}
-	public BigDecimal getR67_INTREST_RATE() {
-		return R67_INTREST_RATE;
+	public BigDecimal getR117_interest_rate() {
+		return r117_interest_rate;
 	}
-	public void setR67_INTREST_RATE(BigDecimal r67_INTREST_RATE) {
-		R67_INTREST_RATE = r67_INTREST_RATE;
+	public void setR117_interest_rate(BigDecimal r117_interest_rate) {
+		this.r117_interest_rate = r117_interest_rate;
 	}
-	public BigDecimal getR67_AMOUNT() {
-		return R67_AMOUNT;
+	public BigDecimal getR117_amount() {
+		return r117_amount;
 	}
-	public void setR67_AMOUNT(BigDecimal r67_AMOUNT) {
-		R67_AMOUNT = r67_AMOUNT;
+	public void setR117_amount(BigDecimal r117_amount) {
+		this.r117_amount = r117_amount;
 	}
-	public BigDecimal getR67_TOTAL_DEPOSIT() {
-		return R67_TOTAL_DEPOSIT;
+	public BigDecimal getR117_total_deposit() {
+		return r117_total_deposit;
 	}
-	public void setR67_TOTAL_DEPOSIT(BigDecimal r67_TOTAL_DEPOSIT) {
-		R67_TOTAL_DEPOSIT = r67_TOTAL_DEPOSIT;
+	public void setR117_total_deposit(BigDecimal r117_total_deposit) {
+		this.r117_total_deposit = r117_total_deposit;
 	}
-	public BigDecimal getR67_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R67_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR117_percentage_total_deposit() {
+		return r117_percentage_total_deposit;
 	}
-	public void setR67_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r67_PERCENTAGE_TOTAL_DEPOSIT) {
-		R67_PERCENTAGE_TOTAL_DEPOSIT = r67_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR117_percentage_total_deposit(BigDecimal r117_percentage_total_deposit) {
+		this.r117_percentage_total_deposit = r117_percentage_total_deposit;
 	}
-	public String getR68_PRODUCT() {
-		return R68_PRODUCT;
+	public String getR118_customer_name() {
+		return r118_customer_name;
 	}
-	public void setR68_PRODUCT(String r68_PRODUCT) {
-		R68_PRODUCT = r68_PRODUCT;
+	public void setR118_customer_name(String r118_customer_name) {
+		this.r118_customer_name = r118_customer_name;
 	}
-	public String getR68_INSTITUTIONAL_SELECTOR() {
-		return R68_INSTITUTIONAL_SELECTOR;
+	public String getR118_institutional_sector() {
+		return r118_institutional_sector;
 	}
-	public void setR68_INSTITUTIONAL_SELECTOR(String r68_INSTITUTIONAL_SELECTOR) {
-		R68_INSTITUTIONAL_SELECTOR = r68_INSTITUTIONAL_SELECTOR;
+	public void setR118_institutional_sector(String r118_institutional_sector) {
+		this.r118_institutional_sector = r118_institutional_sector;
 	}
-	public String getR68_TYPE_OF_ACCOUNT() {
-		return R68_TYPE_OF_ACCOUNT;
+	public String getR118_type_of_account() {
+		return r118_type_of_account;
 	}
-	public void setR68_TYPE_OF_ACCOUNT(String r68_TYPE_OF_ACCOUNT) {
-		R68_TYPE_OF_ACCOUNT = r68_TYPE_OF_ACCOUNT;
+	public void setR118_type_of_account(String r118_type_of_account) {
+		this.r118_type_of_account = r118_type_of_account;
 	}
-	public BigDecimal getR68_INTREST_RATE() {
-		return R68_INTREST_RATE;
+	public BigDecimal getR118_interest_rate() {
+		return r118_interest_rate;
 	}
-	public void setR68_INTREST_RATE(BigDecimal r68_INTREST_RATE) {
-		R68_INTREST_RATE = r68_INTREST_RATE;
+	public void setR118_interest_rate(BigDecimal r118_interest_rate) {
+		this.r118_interest_rate = r118_interest_rate;
 	}
-	public BigDecimal getR68_AMOUNT() {
-		return R68_AMOUNT;
+	public BigDecimal getR118_amount() {
+		return r118_amount;
 	}
-	public void setR68_AMOUNT(BigDecimal r68_AMOUNT) {
-		R68_AMOUNT = r68_AMOUNT;
+	public void setR118_amount(BigDecimal r118_amount) {
+		this.r118_amount = r118_amount;
 	}
-	public BigDecimal getR68_TOTAL_DEPOSIT() {
-		return R68_TOTAL_DEPOSIT;
+	public BigDecimal getR118_total_deposit() {
+		return r118_total_deposit;
 	}
-	public void setR68_TOTAL_DEPOSIT(BigDecimal r68_TOTAL_DEPOSIT) {
-		R68_TOTAL_DEPOSIT = r68_TOTAL_DEPOSIT;
+	public void setR118_total_deposit(BigDecimal r118_total_deposit) {
+		this.r118_total_deposit = r118_total_deposit;
 	}
-	public BigDecimal getR68_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R68_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR118_percentage_total_deposit() {
+		return r118_percentage_total_deposit;
 	}
-	public void setR68_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r68_PERCENTAGE_TOTAL_DEPOSIT) {
-		R68_PERCENTAGE_TOTAL_DEPOSIT = r68_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR118_percentage_total_deposit(BigDecimal r118_percentage_total_deposit) {
+		this.r118_percentage_total_deposit = r118_percentage_total_deposit;
 	}
-	public String getR69_PRODUCT() {
-		return R69_PRODUCT;
+	public String getR119_customer_name() {
+		return r119_customer_name;
 	}
-	public void setR69_PRODUCT(String r69_PRODUCT) {
-		R69_PRODUCT = r69_PRODUCT;
+	public void setR119_customer_name(String r119_customer_name) {
+		this.r119_customer_name = r119_customer_name;
 	}
-	public String getR69_INSTITUTIONAL_SELECTOR() {
-		return R69_INSTITUTIONAL_SELECTOR;
+	public String getR119_institutional_sector() {
+		return r119_institutional_sector;
 	}
-	public void setR69_INSTITUTIONAL_SELECTOR(String r69_INSTITUTIONAL_SELECTOR) {
-		R69_INSTITUTIONAL_SELECTOR = r69_INSTITUTIONAL_SELECTOR;
+	public void setR119_institutional_sector(String r119_institutional_sector) {
+		this.r119_institutional_sector = r119_institutional_sector;
 	}
-	public String getR69_TYPE_OF_ACCOUNT() {
-		return R69_TYPE_OF_ACCOUNT;
+	public String getR119_type_of_account() {
+		return r119_type_of_account;
 	}
-	public void setR69_TYPE_OF_ACCOUNT(String r69_TYPE_OF_ACCOUNT) {
-		R69_TYPE_OF_ACCOUNT = r69_TYPE_OF_ACCOUNT;
+	public void setR119_type_of_account(String r119_type_of_account) {
+		this.r119_type_of_account = r119_type_of_account;
 	}
-	public BigDecimal getR69_INTREST_RATE() {
-		return R69_INTREST_RATE;
+	public BigDecimal getR119_interest_rate() {
+		return r119_interest_rate;
 	}
-	public void setR69_INTREST_RATE(BigDecimal r69_INTREST_RATE) {
-		R69_INTREST_RATE = r69_INTREST_RATE;
+	public void setR119_interest_rate(BigDecimal r119_interest_rate) {
+		this.r119_interest_rate = r119_interest_rate;
 	}
-	public BigDecimal getR69_AMOUNT() {
-		return R69_AMOUNT;
+	public BigDecimal getR119_amount() {
+		return r119_amount;
 	}
-	public void setR69_AMOUNT(BigDecimal r69_AMOUNT) {
-		R69_AMOUNT = r69_AMOUNT;
+	public void setR119_amount(BigDecimal r119_amount) {
+		this.r119_amount = r119_amount;
 	}
-	public BigDecimal getR69_TOTAL_DEPOSIT() {
-		return R69_TOTAL_DEPOSIT;
+	public BigDecimal getR119_total_deposit() {
+		return r119_total_deposit;
 	}
-	public void setR69_TOTAL_DEPOSIT(BigDecimal r69_TOTAL_DEPOSIT) {
-		R69_TOTAL_DEPOSIT = r69_TOTAL_DEPOSIT;
+	public void setR119_total_deposit(BigDecimal r119_total_deposit) {
+		this.r119_total_deposit = r119_total_deposit;
 	}
-	public BigDecimal getR69_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R69_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR119_percentage_total_deposit() {
+		return r119_percentage_total_deposit;
 	}
-	public void setR69_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r69_PERCENTAGE_TOTAL_DEPOSIT) {
-		R69_PERCENTAGE_TOTAL_DEPOSIT = r69_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR119_percentage_total_deposit(BigDecimal r119_percentage_total_deposit) {
+		this.r119_percentage_total_deposit = r119_percentage_total_deposit;
 	}
-	public String getR70_PRODUCT() {
-		return R70_PRODUCT;
+	public String getR120_customer_name() {
+		return r120_customer_name;
 	}
-	public void setR70_PRODUCT(String r70_PRODUCT) {
-		R70_PRODUCT = r70_PRODUCT;
+	public void setR120_customer_name(String r120_customer_name) {
+		this.r120_customer_name = r120_customer_name;
 	}
-	public String getR70_INSTITUTIONAL_SELECTOR() {
-		return R70_INSTITUTIONAL_SELECTOR;
+	public String getR120_institutional_sector() {
+		return r120_institutional_sector;
 	}
-	public void setR70_INSTITUTIONAL_SELECTOR(String r70_INSTITUTIONAL_SELECTOR) {
-		R70_INSTITUTIONAL_SELECTOR = r70_INSTITUTIONAL_SELECTOR;
+	public void setR120_institutional_sector(String r120_institutional_sector) {
+		this.r120_institutional_sector = r120_institutional_sector;
 	}
-	public String getR70_TYPE_OF_ACCOUNT() {
-		return R70_TYPE_OF_ACCOUNT;
+	public String getR120_type_of_account() {
+		return r120_type_of_account;
 	}
-	public void setR70_TYPE_OF_ACCOUNT(String r70_TYPE_OF_ACCOUNT) {
-		R70_TYPE_OF_ACCOUNT = r70_TYPE_OF_ACCOUNT;
+	public void setR120_type_of_account(String r120_type_of_account) {
+		this.r120_type_of_account = r120_type_of_account;
 	}
-	public BigDecimal getR70_INTREST_RATE() {
-		return R70_INTREST_RATE;
+	public BigDecimal getR120_interest_rate() {
+		return r120_interest_rate;
 	}
-	public void setR70_INTREST_RATE(BigDecimal r70_INTREST_RATE) {
-		R70_INTREST_RATE = r70_INTREST_RATE;
+	public void setR120_interest_rate(BigDecimal r120_interest_rate) {
+		this.r120_interest_rate = r120_interest_rate;
 	}
-	public BigDecimal getR70_AMOUNT() {
-		return R70_AMOUNT;
+	public BigDecimal getR120_amount() {
+		return r120_amount;
 	}
-	public void setR70_AMOUNT(BigDecimal r70_AMOUNT) {
-		R70_AMOUNT = r70_AMOUNT;
+	public void setR120_amount(BigDecimal r120_amount) {
+		this.r120_amount = r120_amount;
 	}
-	public BigDecimal getR70_TOTAL_DEPOSIT() {
-		return R70_TOTAL_DEPOSIT;
+	public BigDecimal getR120_total_deposit() {
+		return r120_total_deposit;
 	}
-	public void setR70_TOTAL_DEPOSIT(BigDecimal r70_TOTAL_DEPOSIT) {
-		R70_TOTAL_DEPOSIT = r70_TOTAL_DEPOSIT;
+	public void setR120_total_deposit(BigDecimal r120_total_deposit) {
+		this.r120_total_deposit = r120_total_deposit;
 	}
-	public BigDecimal getR70_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R70_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR120_percentage_total_deposit() {
+		return r120_percentage_total_deposit;
 	}
-	public void setR70_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r70_PERCENTAGE_TOTAL_DEPOSIT) {
-		R70_PERCENTAGE_TOTAL_DEPOSIT = r70_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR120_percentage_total_deposit(BigDecimal r120_percentage_total_deposit) {
+		this.r120_percentage_total_deposit = r120_percentage_total_deposit;
 	}
-	public String getR71_PRODUCT() {
-		return R71_PRODUCT;
+	public String getR121_customer_name() {
+		return r121_customer_name;
 	}
-	public void setR71_PRODUCT(String r71_PRODUCT) {
-		R71_PRODUCT = r71_PRODUCT;
+	public void setR121_customer_name(String r121_customer_name) {
+		this.r121_customer_name = r121_customer_name;
 	}
-	public String getR71_INSTITUTIONAL_SELECTOR() {
-		return R71_INSTITUTIONAL_SELECTOR;
+	public String getR121_institutional_sector() {
+		return r121_institutional_sector;
 	}
-	public void setR71_INSTITUTIONAL_SELECTOR(String r71_INSTITUTIONAL_SELECTOR) {
-		R71_INSTITUTIONAL_SELECTOR = r71_INSTITUTIONAL_SELECTOR;
+	public void setR121_institutional_sector(String r121_institutional_sector) {
+		this.r121_institutional_sector = r121_institutional_sector;
 	}
-	public String getR71_TYPE_OF_ACCOUNT() {
-		return R71_TYPE_OF_ACCOUNT;
+	public String getR121_type_of_account() {
+		return r121_type_of_account;
 	}
-	public void setR71_TYPE_OF_ACCOUNT(String r71_TYPE_OF_ACCOUNT) {
-		R71_TYPE_OF_ACCOUNT = r71_TYPE_OF_ACCOUNT;
+	public void setR121_type_of_account(String r121_type_of_account) {
+		this.r121_type_of_account = r121_type_of_account;
 	}
-	public BigDecimal getR71_INTREST_RATE() {
-		return R71_INTREST_RATE;
+	public BigDecimal getR121_interest_rate() {
+		return r121_interest_rate;
 	}
-	public void setR71_INTREST_RATE(BigDecimal r71_INTREST_RATE) {
-		R71_INTREST_RATE = r71_INTREST_RATE;
+	public void setR121_interest_rate(BigDecimal r121_interest_rate) {
+		this.r121_interest_rate = r121_interest_rate;
 	}
-	public BigDecimal getR71_AMOUNT() {
-		return R71_AMOUNT;
+	public BigDecimal getR121_amount() {
+		return r121_amount;
 	}
-	public void setR71_AMOUNT(BigDecimal r71_AMOUNT) {
-		R71_AMOUNT = r71_AMOUNT;
+	public void setR121_amount(BigDecimal r121_amount) {
+		this.r121_amount = r121_amount;
 	}
-	public BigDecimal getR71_TOTAL_DEPOSIT() {
-		return R71_TOTAL_DEPOSIT;
+	public BigDecimal getR121_total_deposit() {
+		return r121_total_deposit;
 	}
-	public void setR71_TOTAL_DEPOSIT(BigDecimal r71_TOTAL_DEPOSIT) {
-		R71_TOTAL_DEPOSIT = r71_TOTAL_DEPOSIT;
+	public void setR121_total_deposit(BigDecimal r121_total_deposit) {
+		this.r121_total_deposit = r121_total_deposit;
 	}
-	public BigDecimal getR71_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R71_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR121_percentage_total_deposit() {
+		return r121_percentage_total_deposit;
 	}
-	public void setR71_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r71_PERCENTAGE_TOTAL_DEPOSIT) {
-		R71_PERCENTAGE_TOTAL_DEPOSIT = r71_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR121_percentage_total_deposit(BigDecimal r121_percentage_total_deposit) {
+		this.r121_percentage_total_deposit = r121_percentage_total_deposit;
 	}
-	public String getR72_PRODUCT() {
-		return R72_PRODUCT;
+	public String getR122_customer_name() {
+		return r122_customer_name;
 	}
-	public void setR72_PRODUCT(String r72_PRODUCT) {
-		R72_PRODUCT = r72_PRODUCT;
+	public void setR122_customer_name(String r122_customer_name) {
+		this.r122_customer_name = r122_customer_name;
 	}
-	public String getR72_INSTITUTIONAL_SELECTOR() {
-		return R72_INSTITUTIONAL_SELECTOR;
+	public String getR122_institutional_sector() {
+		return r122_institutional_sector;
 	}
-	public void setR72_INSTITUTIONAL_SELECTOR(String r72_INSTITUTIONAL_SELECTOR) {
-		R72_INSTITUTIONAL_SELECTOR = r72_INSTITUTIONAL_SELECTOR;
+	public void setR122_institutional_sector(String r122_institutional_sector) {
+		this.r122_institutional_sector = r122_institutional_sector;
 	}
-	public String getR72_TYPE_OF_ACCOUNT() {
-		return R72_TYPE_OF_ACCOUNT;
+	public String getR122_type_of_account() {
+		return r122_type_of_account;
 	}
-	public void setR72_TYPE_OF_ACCOUNT(String r72_TYPE_OF_ACCOUNT) {
-		R72_TYPE_OF_ACCOUNT = r72_TYPE_OF_ACCOUNT;
+	public void setR122_type_of_account(String r122_type_of_account) {
+		this.r122_type_of_account = r122_type_of_account;
 	}
-	public BigDecimal getR72_INTREST_RATE() {
-		return R72_INTREST_RATE;
+	public BigDecimal getR122_interest_rate() {
+		return r122_interest_rate;
 	}
-	public void setR72_INTREST_RATE(BigDecimal r72_INTREST_RATE) {
-		R72_INTREST_RATE = r72_INTREST_RATE;
+	public void setR122_interest_rate(BigDecimal r122_interest_rate) {
+		this.r122_interest_rate = r122_interest_rate;
 	}
-	public BigDecimal getR72_AMOUNT() {
-		return R72_AMOUNT;
+	public BigDecimal getR122_amount() {
+		return r122_amount;
 	}
-	public void setR72_AMOUNT(BigDecimal r72_AMOUNT) {
-		R72_AMOUNT = r72_AMOUNT;
+	public void setR122_amount(BigDecimal r122_amount) {
+		this.r122_amount = r122_amount;
 	}
-	public BigDecimal getR72_TOTAL_DEPOSIT() {
-		return R72_TOTAL_DEPOSIT;
+	public BigDecimal getR122_total_deposit() {
+		return r122_total_deposit;
 	}
-	public void setR72_TOTAL_DEPOSIT(BigDecimal r72_TOTAL_DEPOSIT) {
-		R72_TOTAL_DEPOSIT = r72_TOTAL_DEPOSIT;
+	public void setR122_total_deposit(BigDecimal r122_total_deposit) {
+		this.r122_total_deposit = r122_total_deposit;
 	}
-	public BigDecimal getR72_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R72_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR122_percentage_total_deposit() {
+		return r122_percentage_total_deposit;
 	}
-	public void setR72_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r72_PERCENTAGE_TOTAL_DEPOSIT) {
-		R72_PERCENTAGE_TOTAL_DEPOSIT = r72_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR122_percentage_total_deposit(BigDecimal r122_percentage_total_deposit) {
+		this.r122_percentage_total_deposit = r122_percentage_total_deposit;
 	}
-	public String getR73_PRODUCT() {
-		return R73_PRODUCT;
+	public String getR123_customer_name() {
+		return r123_customer_name;
 	}
-	public void setR73_PRODUCT(String r73_PRODUCT) {
-		R73_PRODUCT = r73_PRODUCT;
+	public void setR123_customer_name(String r123_customer_name) {
+		this.r123_customer_name = r123_customer_name;
 	}
-	public String getR73_INSTITUTIONAL_SELECTOR() {
-		return R73_INSTITUTIONAL_SELECTOR;
+	public String getR123_institutional_sector() {
+		return r123_institutional_sector;
 	}
-	public void setR73_INSTITUTIONAL_SELECTOR(String r73_INSTITUTIONAL_SELECTOR) {
-		R73_INSTITUTIONAL_SELECTOR = r73_INSTITUTIONAL_SELECTOR;
+	public void setR123_institutional_sector(String r123_institutional_sector) {
+		this.r123_institutional_sector = r123_institutional_sector;
 	}
-	public String getR73_TYPE_OF_ACCOUNT() {
-		return R73_TYPE_OF_ACCOUNT;
+	public String getR123_type_of_account() {
+		return r123_type_of_account;
 	}
-	public void setR73_TYPE_OF_ACCOUNT(String r73_TYPE_OF_ACCOUNT) {
-		R73_TYPE_OF_ACCOUNT = r73_TYPE_OF_ACCOUNT;
+	public void setR123_type_of_account(String r123_type_of_account) {
+		this.r123_type_of_account = r123_type_of_account;
 	}
-	public BigDecimal getR73_INTREST_RATE() {
-		return R73_INTREST_RATE;
+	public BigDecimal getR123_interest_rate() {
+		return r123_interest_rate;
 	}
-	public void setR73_INTREST_RATE(BigDecimal r73_INTREST_RATE) {
-		R73_INTREST_RATE = r73_INTREST_RATE;
+	public void setR123_interest_rate(BigDecimal r123_interest_rate) {
+		this.r123_interest_rate = r123_interest_rate;
 	}
-	public BigDecimal getR73_AMOUNT() {
-		return R73_AMOUNT;
+	public BigDecimal getR123_amount() {
+		return r123_amount;
 	}
-	public void setR73_AMOUNT(BigDecimal r73_AMOUNT) {
-		R73_AMOUNT = r73_AMOUNT;
+	public void setR123_amount(BigDecimal r123_amount) {
+		this.r123_amount = r123_amount;
 	}
-	public BigDecimal getR73_TOTAL_DEPOSIT() {
-		return R73_TOTAL_DEPOSIT;
+	public BigDecimal getR123_total_deposit() {
+		return r123_total_deposit;
 	}
-	public void setR73_TOTAL_DEPOSIT(BigDecimal r73_TOTAL_DEPOSIT) {
-		R73_TOTAL_DEPOSIT = r73_TOTAL_DEPOSIT;
+	public void setR123_total_deposit(BigDecimal r123_total_deposit) {
+		this.r123_total_deposit = r123_total_deposit;
 	}
-	public BigDecimal getR73_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R73_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR123_percentage_total_deposit() {
+		return r123_percentage_total_deposit;
 	}
-	public void setR73_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r73_PERCENTAGE_TOTAL_DEPOSIT) {
-		R73_PERCENTAGE_TOTAL_DEPOSIT = r73_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR123_percentage_total_deposit(BigDecimal r123_percentage_total_deposit) {
+		this.r123_percentage_total_deposit = r123_percentage_total_deposit;
 	}
-	public String getR74_PRODUCT() {
-		return R74_PRODUCT;
+	public String getR124_customer_name() {
+		return r124_customer_name;
 	}
-	public void setR74_PRODUCT(String r74_PRODUCT) {
-		R74_PRODUCT = r74_PRODUCT;
+	public void setR124_customer_name(String r124_customer_name) {
+		this.r124_customer_name = r124_customer_name;
 	}
-	public String getR74_INSTITUTIONAL_SELECTOR() {
-		return R74_INSTITUTIONAL_SELECTOR;
+	public String getR124_institutional_sector() {
+		return r124_institutional_sector;
 	}
-	public void setR74_INSTITUTIONAL_SELECTOR(String r74_INSTITUTIONAL_SELECTOR) {
-		R74_INSTITUTIONAL_SELECTOR = r74_INSTITUTIONAL_SELECTOR;
+	public void setR124_institutional_sector(String r124_institutional_sector) {
+		this.r124_institutional_sector = r124_institutional_sector;
 	}
-	public String getR74_TYPE_OF_ACCOUNT() {
-		return R74_TYPE_OF_ACCOUNT;
+	public String getR124_type_of_account() {
+		return r124_type_of_account;
 	}
-	public void setR74_TYPE_OF_ACCOUNT(String r74_TYPE_OF_ACCOUNT) {
-		R74_TYPE_OF_ACCOUNT = r74_TYPE_OF_ACCOUNT;
+	public void setR124_type_of_account(String r124_type_of_account) {
+		this.r124_type_of_account = r124_type_of_account;
 	}
-	public BigDecimal getR74_INTREST_RATE() {
-		return R74_INTREST_RATE;
+	public BigDecimal getR124_interest_rate() {
+		return r124_interest_rate;
 	}
-	public void setR74_INTREST_RATE(BigDecimal r74_INTREST_RATE) {
-		R74_INTREST_RATE = r74_INTREST_RATE;
+	public void setR124_interest_rate(BigDecimal r124_interest_rate) {
+		this.r124_interest_rate = r124_interest_rate;
 	}
-	public BigDecimal getR74_AMOUNT() {
-		return R74_AMOUNT;
+	public BigDecimal getR124_amount() {
+		return r124_amount;
 	}
-	public void setR74_AMOUNT(BigDecimal r74_AMOUNT) {
-		R74_AMOUNT = r74_AMOUNT;
+	public void setR124_amount(BigDecimal r124_amount) {
+		this.r124_amount = r124_amount;
 	}
-	public BigDecimal getR74_TOTAL_DEPOSIT() {
-		return R74_TOTAL_DEPOSIT;
+	public BigDecimal getR124_total_deposit() {
+		return r124_total_deposit;
 	}
-	public void setR74_TOTAL_DEPOSIT(BigDecimal r74_TOTAL_DEPOSIT) {
-		R74_TOTAL_DEPOSIT = r74_TOTAL_DEPOSIT;
+	public void setR124_total_deposit(BigDecimal r124_total_deposit) {
+		this.r124_total_deposit = r124_total_deposit;
 	}
-	public BigDecimal getR74_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R74_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR124_percentage_total_deposit() {
+		return r124_percentage_total_deposit;
 	}
-	public void setR74_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r74_PERCENTAGE_TOTAL_DEPOSIT) {
-		R74_PERCENTAGE_TOTAL_DEPOSIT = r74_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR124_percentage_total_deposit(BigDecimal r124_percentage_total_deposit) {
+		this.r124_percentage_total_deposit = r124_percentage_total_deposit;
 	}
-	public String getR75_PRODUCT() {
-		return R75_PRODUCT;
+	public String getR125_customer_name() {
+		return r125_customer_name;
 	}
-	public void setR75_PRODUCT(String r75_PRODUCT) {
-		R75_PRODUCT = r75_PRODUCT;
+	public void setR125_customer_name(String r125_customer_name) {
+		this.r125_customer_name = r125_customer_name;
 	}
-	public String getR75_INSTITUTIONAL_SELECTOR() {
-		return R75_INSTITUTIONAL_SELECTOR;
+	public String getR125_institutional_sector() {
+		return r125_institutional_sector;
 	}
-	public void setR75_INSTITUTIONAL_SELECTOR(String r75_INSTITUTIONAL_SELECTOR) {
-		R75_INSTITUTIONAL_SELECTOR = r75_INSTITUTIONAL_SELECTOR;
+	public void setR125_institutional_sector(String r125_institutional_sector) {
+		this.r125_institutional_sector = r125_institutional_sector;
 	}
-	public String getR75_TYPE_OF_ACCOUNT() {
-		return R75_TYPE_OF_ACCOUNT;
+	public String getR125_type_of_account() {
+		return r125_type_of_account;
 	}
-	public void setR75_TYPE_OF_ACCOUNT(String r75_TYPE_OF_ACCOUNT) {
-		R75_TYPE_OF_ACCOUNT = r75_TYPE_OF_ACCOUNT;
+	public void setR125_type_of_account(String r125_type_of_account) {
+		this.r125_type_of_account = r125_type_of_account;
 	}
-	public BigDecimal getR75_INTREST_RATE() {
-		return R75_INTREST_RATE;
+	public BigDecimal getR125_interest_rate() {
+		return r125_interest_rate;
 	}
-	public void setR75_INTREST_RATE(BigDecimal r75_INTREST_RATE) {
-		R75_INTREST_RATE = r75_INTREST_RATE;
+	public void setR125_interest_rate(BigDecimal r125_interest_rate) {
+		this.r125_interest_rate = r125_interest_rate;
 	}
-	public BigDecimal getR75_AMOUNT() {
-		return R75_AMOUNT;
+	public BigDecimal getR125_amount() {
+		return r125_amount;
 	}
-	public void setR75_AMOUNT(BigDecimal r75_AMOUNT) {
-		R75_AMOUNT = r75_AMOUNT;
+	public void setR125_amount(BigDecimal r125_amount) {
+		this.r125_amount = r125_amount;
 	}
-	public BigDecimal getR75_TOTAL_DEPOSIT() {
-		return R75_TOTAL_DEPOSIT;
+	public BigDecimal getR125_total_deposit() {
+		return r125_total_deposit;
 	}
-	public void setR75_TOTAL_DEPOSIT(BigDecimal r75_TOTAL_DEPOSIT) {
-		R75_TOTAL_DEPOSIT = r75_TOTAL_DEPOSIT;
+	public void setR125_total_deposit(BigDecimal r125_total_deposit) {
+		this.r125_total_deposit = r125_total_deposit;
 	}
-	public BigDecimal getR75_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R75_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR125_percentage_total_deposit() {
+		return r125_percentage_total_deposit;
 	}
-	public void setR75_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r75_PERCENTAGE_TOTAL_DEPOSIT) {
-		R75_PERCENTAGE_TOTAL_DEPOSIT = r75_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR125_percentage_total_deposit(BigDecimal r125_percentage_total_deposit) {
+		this.r125_percentage_total_deposit = r125_percentage_total_deposit;
 	}
-	public String getR76_PRODUCT() {
-		return R76_PRODUCT;
+	public String getR126_customer_name() {
+		return r126_customer_name;
 	}
-	public void setR76_PRODUCT(String r76_PRODUCT) {
-		R76_PRODUCT = r76_PRODUCT;
+	public void setR126_customer_name(String r126_customer_name) {
+		this.r126_customer_name = r126_customer_name;
 	}
-	public String getR76_INSTITUTIONAL_SELECTOR() {
-		return R76_INSTITUTIONAL_SELECTOR;
+	public String getR126_institutional_sector() {
+		return r126_institutional_sector;
 	}
-	public void setR76_INSTITUTIONAL_SELECTOR(String r76_INSTITUTIONAL_SELECTOR) {
-		R76_INSTITUTIONAL_SELECTOR = r76_INSTITUTIONAL_SELECTOR;
+	public void setR126_institutional_sector(String r126_institutional_sector) {
+		this.r126_institutional_sector = r126_institutional_sector;
 	}
-	public String getR76_TYPE_OF_ACCOUNT() {
-		return R76_TYPE_OF_ACCOUNT;
+	public String getR126_type_of_account() {
+		return r126_type_of_account;
 	}
-	public void setR76_TYPE_OF_ACCOUNT(String r76_TYPE_OF_ACCOUNT) {
-		R76_TYPE_OF_ACCOUNT = r76_TYPE_OF_ACCOUNT;
+	public void setR126_type_of_account(String r126_type_of_account) {
+		this.r126_type_of_account = r126_type_of_account;
 	}
-	public BigDecimal getR76_INTREST_RATE() {
-		return R76_INTREST_RATE;
+	public BigDecimal getR126_interest_rate() {
+		return r126_interest_rate;
 	}
-	public void setR76_INTREST_RATE(BigDecimal r76_INTREST_RATE) {
-		R76_INTREST_RATE = r76_INTREST_RATE;
+	public void setR126_interest_rate(BigDecimal r126_interest_rate) {
+		this.r126_interest_rate = r126_interest_rate;
 	}
-	public BigDecimal getR76_AMOUNT() {
-		return R76_AMOUNT;
+	public BigDecimal getR126_amount() {
+		return r126_amount;
 	}
-	public void setR76_AMOUNT(BigDecimal r76_AMOUNT) {
-		R76_AMOUNT = r76_AMOUNT;
+	public void setR126_amount(BigDecimal r126_amount) {
+		this.r126_amount = r126_amount;
 	}
-	public BigDecimal getR76_TOTAL_DEPOSIT() {
-		return R76_TOTAL_DEPOSIT;
+	public BigDecimal getR126_total_deposit() {
+		return r126_total_deposit;
 	}
-	public void setR76_TOTAL_DEPOSIT(BigDecimal r76_TOTAL_DEPOSIT) {
-		R76_TOTAL_DEPOSIT = r76_TOTAL_DEPOSIT;
+	public void setR126_total_deposit(BigDecimal r126_total_deposit) {
+		this.r126_total_deposit = r126_total_deposit;
 	}
-	public BigDecimal getR76_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R76_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR126_percentage_total_deposit() {
+		return r126_percentage_total_deposit;
 	}
-	public void setR76_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r76_PERCENTAGE_TOTAL_DEPOSIT) {
-		R76_PERCENTAGE_TOTAL_DEPOSIT = r76_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR126_percentage_total_deposit(BigDecimal r126_percentage_total_deposit) {
+		this.r126_percentage_total_deposit = r126_percentage_total_deposit;
 	}
-	public String getR77_PRODUCT() {
-		return R77_PRODUCT;
+	public String getR127_customer_name() {
+		return r127_customer_name;
 	}
-	public void setR77_PRODUCT(String r77_PRODUCT) {
-		R77_PRODUCT = r77_PRODUCT;
+	public void setR127_customer_name(String r127_customer_name) {
+		this.r127_customer_name = r127_customer_name;
 	}
-	public String getR77_INSTITUTIONAL_SELECTOR() {
-		return R77_INSTITUTIONAL_SELECTOR;
+	public String getR127_institutional_sector() {
+		return r127_institutional_sector;
 	}
-	public void setR77_INSTITUTIONAL_SELECTOR(String r77_INSTITUTIONAL_SELECTOR) {
-		R77_INSTITUTIONAL_SELECTOR = r77_INSTITUTIONAL_SELECTOR;
+	public void setR127_institutional_sector(String r127_institutional_sector) {
+		this.r127_institutional_sector = r127_institutional_sector;
 	}
-	public String getR77_TYPE_OF_ACCOUNT() {
-		return R77_TYPE_OF_ACCOUNT;
+	public String getR127_type_of_account() {
+		return r127_type_of_account;
 	}
-	public void setR77_TYPE_OF_ACCOUNT(String r77_TYPE_OF_ACCOUNT) {
-		R77_TYPE_OF_ACCOUNT = r77_TYPE_OF_ACCOUNT;
+	public void setR127_type_of_account(String r127_type_of_account) {
+		this.r127_type_of_account = r127_type_of_account;
 	}
-	public BigDecimal getR77_INTREST_RATE() {
-		return R77_INTREST_RATE;
+	public BigDecimal getR127_interest_rate() {
+		return r127_interest_rate;
 	}
-	public void setR77_INTREST_RATE(BigDecimal r77_INTREST_RATE) {
-		R77_INTREST_RATE = r77_INTREST_RATE;
+	public void setR127_interest_rate(BigDecimal r127_interest_rate) {
+		this.r127_interest_rate = r127_interest_rate;
 	}
-	public BigDecimal getR77_AMOUNT() {
-		return R77_AMOUNT;
+	public BigDecimal getR127_amount() {
+		return r127_amount;
 	}
-	public void setR77_AMOUNT(BigDecimal r77_AMOUNT) {
-		R77_AMOUNT = r77_AMOUNT;
+	public void setR127_amount(BigDecimal r127_amount) {
+		this.r127_amount = r127_amount;
 	}
-	public BigDecimal getR77_TOTAL_DEPOSIT() {
-		return R77_TOTAL_DEPOSIT;
+	public BigDecimal getR127_total_deposit() {
+		return r127_total_deposit;
 	}
-	public void setR77_TOTAL_DEPOSIT(BigDecimal r77_TOTAL_DEPOSIT) {
-		R77_TOTAL_DEPOSIT = r77_TOTAL_DEPOSIT;
+	public void setR127_total_deposit(BigDecimal r127_total_deposit) {
+		this.r127_total_deposit = r127_total_deposit;
 	}
-	public BigDecimal getR77_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R77_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR127_percentage_total_deposit() {
+		return r127_percentage_total_deposit;
 	}
-	public void setR77_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r77_PERCENTAGE_TOTAL_DEPOSIT) {
-		R77_PERCENTAGE_TOTAL_DEPOSIT = r77_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR127_percentage_total_deposit(BigDecimal r127_percentage_total_deposit) {
+		this.r127_percentage_total_deposit = r127_percentage_total_deposit;
 	}
-	public String getR78_PRODUCT() {
-		return R78_PRODUCT;
+	public String getR128_customer_name() {
+		return r128_customer_name;
 	}
-	public void setR78_PRODUCT(String r78_PRODUCT) {
-		R78_PRODUCT = r78_PRODUCT;
+	public void setR128_customer_name(String r128_customer_name) {
+		this.r128_customer_name = r128_customer_name;
 	}
-	public String getR78_INSTITUTIONAL_SELECTOR() {
-		return R78_INSTITUTIONAL_SELECTOR;
+	public String getR128_institutional_sector() {
+		return r128_institutional_sector;
 	}
-	public void setR78_INSTITUTIONAL_SELECTOR(String r78_INSTITUTIONAL_SELECTOR) {
-		R78_INSTITUTIONAL_SELECTOR = r78_INSTITUTIONAL_SELECTOR;
+	public void setR128_institutional_sector(String r128_institutional_sector) {
+		this.r128_institutional_sector = r128_institutional_sector;
 	}
-	public String getR78_TYPE_OF_ACCOUNT() {
-		return R78_TYPE_OF_ACCOUNT;
+	public String getR128_type_of_account() {
+		return r128_type_of_account;
 	}
-	public void setR78_TYPE_OF_ACCOUNT(String r78_TYPE_OF_ACCOUNT) {
-		R78_TYPE_OF_ACCOUNT = r78_TYPE_OF_ACCOUNT;
+	public void setR128_type_of_account(String r128_type_of_account) {
+		this.r128_type_of_account = r128_type_of_account;
 	}
-	public BigDecimal getR78_INTREST_RATE() {
-		return R78_INTREST_RATE;
+	public BigDecimal getR128_interest_rate() {
+		return r128_interest_rate;
 	}
-	public void setR78_INTREST_RATE(BigDecimal r78_INTREST_RATE) {
-		R78_INTREST_RATE = r78_INTREST_RATE;
+	public void setR128_interest_rate(BigDecimal r128_interest_rate) {
+		this.r128_interest_rate = r128_interest_rate;
 	}
-	public BigDecimal getR78_AMOUNT() {
-		return R78_AMOUNT;
+	public BigDecimal getR128_amount() {
+		return r128_amount;
 	}
-	public void setR78_AMOUNT(BigDecimal r78_AMOUNT) {
-		R78_AMOUNT = r78_AMOUNT;
+	public void setR128_amount(BigDecimal r128_amount) {
+		this.r128_amount = r128_amount;
 	}
-	public BigDecimal getR78_TOTAL_DEPOSIT() {
-		return R78_TOTAL_DEPOSIT;
+	public BigDecimal getR128_total_deposit() {
+		return r128_total_deposit;
 	}
-	public void setR78_TOTAL_DEPOSIT(BigDecimal r78_TOTAL_DEPOSIT) {
-		R78_TOTAL_DEPOSIT = r78_TOTAL_DEPOSIT;
+	public void setR128_total_deposit(BigDecimal r128_total_deposit) {
+		this.r128_total_deposit = r128_total_deposit;
 	}
-	public BigDecimal getR78_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R78_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR128_percentage_total_deposit() {
+		return r128_percentage_total_deposit;
 	}
-	public void setR78_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r78_PERCENTAGE_TOTAL_DEPOSIT) {
-		R78_PERCENTAGE_TOTAL_DEPOSIT = r78_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR128_percentage_total_deposit(BigDecimal r128_percentage_total_deposit) {
+		this.r128_percentage_total_deposit = r128_percentage_total_deposit;
 	}
-	public String getR79_PRODUCT() {
-		return R79_PRODUCT;
+	public String getR129_customer_name() {
+		return r129_customer_name;
 	}
-	public void setR79_PRODUCT(String r79_PRODUCT) {
-		R79_PRODUCT = r79_PRODUCT;
+	public void setR129_customer_name(String r129_customer_name) {
+		this.r129_customer_name = r129_customer_name;
 	}
-	public String getR79_INSTITUTIONAL_SELECTOR() {
-		return R79_INSTITUTIONAL_SELECTOR;
+	public String getR129_institutional_sector() {
+		return r129_institutional_sector;
 	}
-	public void setR79_INSTITUTIONAL_SELECTOR(String r79_INSTITUTIONAL_SELECTOR) {
-		R79_INSTITUTIONAL_SELECTOR = r79_INSTITUTIONAL_SELECTOR;
+	public void setR129_institutional_sector(String r129_institutional_sector) {
+		this.r129_institutional_sector = r129_institutional_sector;
 	}
-	public String getR79_TYPE_OF_ACCOUNT() {
-		return R79_TYPE_OF_ACCOUNT;
+	public String getR129_type_of_account() {
+		return r129_type_of_account;
 	}
-	public void setR79_TYPE_OF_ACCOUNT(String r79_TYPE_OF_ACCOUNT) {
-		R79_TYPE_OF_ACCOUNT = r79_TYPE_OF_ACCOUNT;
+	public void setR129_type_of_account(String r129_type_of_account) {
+		this.r129_type_of_account = r129_type_of_account;
 	}
-	public BigDecimal getR79_INTREST_RATE() {
-		return R79_INTREST_RATE;
+	public BigDecimal getR129_interest_rate() {
+		return r129_interest_rate;
 	}
-	public void setR79_INTREST_RATE(BigDecimal r79_INTREST_RATE) {
-		R79_INTREST_RATE = r79_INTREST_RATE;
+	public void setR129_interest_rate(BigDecimal r129_interest_rate) {
+		this.r129_interest_rate = r129_interest_rate;
 	}
-	public BigDecimal getR79_AMOUNT() {
-		return R79_AMOUNT;
+	public BigDecimal getR129_amount() {
+		return r129_amount;
 	}
-	public void setR79_AMOUNT(BigDecimal r79_AMOUNT) {
-		R79_AMOUNT = r79_AMOUNT;
+	public void setR129_amount(BigDecimal r129_amount) {
+		this.r129_amount = r129_amount;
 	}
-	public BigDecimal getR79_TOTAL_DEPOSIT() {
-		return R79_TOTAL_DEPOSIT;
+	public BigDecimal getR129_total_deposit() {
+		return r129_total_deposit;
 	}
-	public void setR79_TOTAL_DEPOSIT(BigDecimal r79_TOTAL_DEPOSIT) {
-		R79_TOTAL_DEPOSIT = r79_TOTAL_DEPOSIT;
+	public void setR129_total_deposit(BigDecimal r129_total_deposit) {
+		this.r129_total_deposit = r129_total_deposit;
 	}
-	public BigDecimal getR79_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R79_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR129_percentage_total_deposit() {
+		return r129_percentage_total_deposit;
 	}
-	public void setR79_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r79_PERCENTAGE_TOTAL_DEPOSIT) {
-		R79_PERCENTAGE_TOTAL_DEPOSIT = r79_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR129_percentage_total_deposit(BigDecimal r129_percentage_total_deposit) {
+		this.r129_percentage_total_deposit = r129_percentage_total_deposit;
 	}
-	public String getR80_PRODUCT() {
-		return R80_PRODUCT;
+	public String getR130_customer_name() {
+		return r130_customer_name;
 	}
-	public void setR80_PRODUCT(String r80_PRODUCT) {
-		R80_PRODUCT = r80_PRODUCT;
+	public void setR130_customer_name(String r130_customer_name) {
+		this.r130_customer_name = r130_customer_name;
 	}
-	public String getR80_INSTITUTIONAL_SELECTOR() {
-		return R80_INSTITUTIONAL_SELECTOR;
+	public String getR130_institutional_sector() {
+		return r130_institutional_sector;
 	}
-	public void setR80_INSTITUTIONAL_SELECTOR(String r80_INSTITUTIONAL_SELECTOR) {
-		R80_INSTITUTIONAL_SELECTOR = r80_INSTITUTIONAL_SELECTOR;
+	public void setR130_institutional_sector(String r130_institutional_sector) {
+		this.r130_institutional_sector = r130_institutional_sector;
 	}
-	public String getR80_TYPE_OF_ACCOUNT() {
-		return R80_TYPE_OF_ACCOUNT;
+	public String getR130_type_of_account() {
+		return r130_type_of_account;
 	}
-	public void setR80_TYPE_OF_ACCOUNT(String r80_TYPE_OF_ACCOUNT) {
-		R80_TYPE_OF_ACCOUNT = r80_TYPE_OF_ACCOUNT;
+	public void setR130_type_of_account(String r130_type_of_account) {
+		this.r130_type_of_account = r130_type_of_account;
 	}
-	public BigDecimal getR80_INTREST_RATE() {
-		return R80_INTREST_RATE;
+	public BigDecimal getR130_interest_rate() {
+		return r130_interest_rate;
 	}
-	public void setR80_INTREST_RATE(BigDecimal r80_INTREST_RATE) {
-		R80_INTREST_RATE = r80_INTREST_RATE;
+	public void setR130_interest_rate(BigDecimal r130_interest_rate) {
+		this.r130_interest_rate = r130_interest_rate;
 	}
-	public BigDecimal getR80_AMOUNT() {
-		return R80_AMOUNT;
+	public BigDecimal getR130_amount() {
+		return r130_amount;
 	}
-	public void setR80_AMOUNT(BigDecimal r80_AMOUNT) {
-		R80_AMOUNT = r80_AMOUNT;
+	public void setR130_amount(BigDecimal r130_amount) {
+		this.r130_amount = r130_amount;
 	}
-	public BigDecimal getR80_TOTAL_DEPOSIT() {
-		return R80_TOTAL_DEPOSIT;
+	public BigDecimal getR130_total_deposit() {
+		return r130_total_deposit;
 	}
-	public void setR80_TOTAL_DEPOSIT(BigDecimal r80_TOTAL_DEPOSIT) {
-		R80_TOTAL_DEPOSIT = r80_TOTAL_DEPOSIT;
+	public void setR130_total_deposit(BigDecimal r130_total_deposit) {
+		this.r130_total_deposit = r130_total_deposit;
 	}
-	public BigDecimal getR80_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R80_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR130_percentage_total_deposit() {
+		return r130_percentage_total_deposit;
 	}
-	public void setR80_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r80_PERCENTAGE_TOTAL_DEPOSIT) {
-		R80_PERCENTAGE_TOTAL_DEPOSIT = r80_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR130_percentage_total_deposit(BigDecimal r130_percentage_total_deposit) {
+		this.r130_percentage_total_deposit = r130_percentage_total_deposit;
 	}
-	public String getR81_PRODUCT() {
-		return R81_PRODUCT;
+	public String getR131_customer_name() {
+		return r131_customer_name;
 	}
-	public void setR81_PRODUCT(String r81_PRODUCT) {
-		R81_PRODUCT = r81_PRODUCT;
+	public void setR131_customer_name(String r131_customer_name) {
+		this.r131_customer_name = r131_customer_name;
 	}
-	public String getR81_INSTITUTIONAL_SELECTOR() {
-		return R81_INSTITUTIONAL_SELECTOR;
+	public String getR131_institutional_sector() {
+		return r131_institutional_sector;
 	}
-	public void setR81_INSTITUTIONAL_SELECTOR(String r81_INSTITUTIONAL_SELECTOR) {
-		R81_INSTITUTIONAL_SELECTOR = r81_INSTITUTIONAL_SELECTOR;
+	public void setR131_institutional_sector(String r131_institutional_sector) {
+		this.r131_institutional_sector = r131_institutional_sector;
 	}
-	public String getR81_TYPE_OF_ACCOUNT() {
-		return R81_TYPE_OF_ACCOUNT;
+	public String getR131_type_of_account() {
+		return r131_type_of_account;
 	}
-	public void setR81_TYPE_OF_ACCOUNT(String r81_TYPE_OF_ACCOUNT) {
-		R81_TYPE_OF_ACCOUNT = r81_TYPE_OF_ACCOUNT;
+	public void setR131_type_of_account(String r131_type_of_account) {
+		this.r131_type_of_account = r131_type_of_account;
 	}
-	public BigDecimal getR81_INTREST_RATE() {
-		return R81_INTREST_RATE;
+	public BigDecimal getR131_interest_rate() {
+		return r131_interest_rate;
 	}
-	public void setR81_INTREST_RATE(BigDecimal r81_INTREST_RATE) {
-		R81_INTREST_RATE = r81_INTREST_RATE;
+	public void setR131_interest_rate(BigDecimal r131_interest_rate) {
+		this.r131_interest_rate = r131_interest_rate;
 	}
-	public BigDecimal getR81_AMOUNT() {
-		return R81_AMOUNT;
+	public BigDecimal getR131_amount() {
+		return r131_amount;
 	}
-	public void setR81_AMOUNT(BigDecimal r81_AMOUNT) {
-		R81_AMOUNT = r81_AMOUNT;
+	public void setR131_amount(BigDecimal r131_amount) {
+		this.r131_amount = r131_amount;
 	}
-	public BigDecimal getR81_TOTAL_DEPOSIT() {
-		return R81_TOTAL_DEPOSIT;
+	public BigDecimal getR131_total_deposit() {
+		return r131_total_deposit;
 	}
-	public void setR81_TOTAL_DEPOSIT(BigDecimal r81_TOTAL_DEPOSIT) {
-		R81_TOTAL_DEPOSIT = r81_TOTAL_DEPOSIT;
+	public void setR131_total_deposit(BigDecimal r131_total_deposit) {
+		this.r131_total_deposit = r131_total_deposit;
 	}
-	public BigDecimal getR81_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R81_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR131_percentage_total_deposit() {
+		return r131_percentage_total_deposit;
 	}
-	public void setR81_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r81_PERCENTAGE_TOTAL_DEPOSIT) {
-		R81_PERCENTAGE_TOTAL_DEPOSIT = r81_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR131_percentage_total_deposit(BigDecimal r131_percentage_total_deposit) {
+		this.r131_percentage_total_deposit = r131_percentage_total_deposit;
 	}
-	public String getR82_PRODUCT() {
-		return R82_PRODUCT;
+	public String getR132_customer_name() {
+		return r132_customer_name;
 	}
-	public void setR82_PRODUCT(String r82_PRODUCT) {
-		R82_PRODUCT = r82_PRODUCT;
+	public void setR132_customer_name(String r132_customer_name) {
+		this.r132_customer_name = r132_customer_name;
 	}
-	public String getR82_INSTITUTIONAL_SELECTOR() {
-		return R82_INSTITUTIONAL_SELECTOR;
+	public String getR132_institutional_sector() {
+		return r132_institutional_sector;
 	}
-	public void setR82_INSTITUTIONAL_SELECTOR(String r82_INSTITUTIONAL_SELECTOR) {
-		R82_INSTITUTIONAL_SELECTOR = r82_INSTITUTIONAL_SELECTOR;
+	public void setR132_institutional_sector(String r132_institutional_sector) {
+		this.r132_institutional_sector = r132_institutional_sector;
 	}
-	public String getR82_TYPE_OF_ACCOUNT() {
-		return R82_TYPE_OF_ACCOUNT;
+	public String getR132_type_of_account() {
+		return r132_type_of_account;
 	}
-	public void setR82_TYPE_OF_ACCOUNT(String r82_TYPE_OF_ACCOUNT) {
-		R82_TYPE_OF_ACCOUNT = r82_TYPE_OF_ACCOUNT;
+	public void setR132_type_of_account(String r132_type_of_account) {
+		this.r132_type_of_account = r132_type_of_account;
 	}
-	public BigDecimal getR82_INTREST_RATE() {
-		return R82_INTREST_RATE;
+	public BigDecimal getR132_interest_rate() {
+		return r132_interest_rate;
 	}
-	public void setR82_INTREST_RATE(BigDecimal r82_INTREST_RATE) {
-		R82_INTREST_RATE = r82_INTREST_RATE;
+	public void setR132_interest_rate(BigDecimal r132_interest_rate) {
+		this.r132_interest_rate = r132_interest_rate;
 	}
-	public BigDecimal getR82_AMOUNT() {
-		return R82_AMOUNT;
+	public BigDecimal getR132_amount() {
+		return r132_amount;
 	}
-	public void setR82_AMOUNT(BigDecimal r82_AMOUNT) {
-		R82_AMOUNT = r82_AMOUNT;
+	public void setR132_amount(BigDecimal r132_amount) {
+		this.r132_amount = r132_amount;
 	}
-	public BigDecimal getR82_TOTAL_DEPOSIT() {
-		return R82_TOTAL_DEPOSIT;
+	public BigDecimal getR132_total_deposit() {
+		return r132_total_deposit;
 	}
-	public void setR82_TOTAL_DEPOSIT(BigDecimal r82_TOTAL_DEPOSIT) {
-		R82_TOTAL_DEPOSIT = r82_TOTAL_DEPOSIT;
+	public void setR132_total_deposit(BigDecimal r132_total_deposit) {
+		this.r132_total_deposit = r132_total_deposit;
 	}
-	public BigDecimal getR82_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R82_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR132_percentage_total_deposit() {
+		return r132_percentage_total_deposit;
 	}
-	public void setR82_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r82_PERCENTAGE_TOTAL_DEPOSIT) {
-		R82_PERCENTAGE_TOTAL_DEPOSIT = r82_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR132_percentage_total_deposit(BigDecimal r132_percentage_total_deposit) {
+		this.r132_percentage_total_deposit = r132_percentage_total_deposit;
 	}
-	public String getR83_PRODUCT() {
-		return R83_PRODUCT;
+	public String getR133_customer_name() {
+		return r133_customer_name;
 	}
-	public void setR83_PRODUCT(String r83_PRODUCT) {
-		R83_PRODUCT = r83_PRODUCT;
+	public void setR133_customer_name(String r133_customer_name) {
+		this.r133_customer_name = r133_customer_name;
 	}
-	public String getR83_INSTITUTIONAL_SELECTOR() {
-		return R83_INSTITUTIONAL_SELECTOR;
+	public String getR133_institutional_sector() {
+		return r133_institutional_sector;
 	}
-	public void setR83_INSTITUTIONAL_SELECTOR(String r83_INSTITUTIONAL_SELECTOR) {
-		R83_INSTITUTIONAL_SELECTOR = r83_INSTITUTIONAL_SELECTOR;
+	public void setR133_institutional_sector(String r133_institutional_sector) {
+		this.r133_institutional_sector = r133_institutional_sector;
 	}
-	public String getR83_TYPE_OF_ACCOUNT() {
-		return R83_TYPE_OF_ACCOUNT;
+	public String getR133_type_of_account() {
+		return r133_type_of_account;
 	}
-	public void setR83_TYPE_OF_ACCOUNT(String r83_TYPE_OF_ACCOUNT) {
-		R83_TYPE_OF_ACCOUNT = r83_TYPE_OF_ACCOUNT;
+	public void setR133_type_of_account(String r133_type_of_account) {
+		this.r133_type_of_account = r133_type_of_account;
 	}
-	public BigDecimal getR83_INTREST_RATE() {
-		return R83_INTREST_RATE;
+	public BigDecimal getR133_interest_rate() {
+		return r133_interest_rate;
 	}
-	public void setR83_INTREST_RATE(BigDecimal r83_INTREST_RATE) {
-		R83_INTREST_RATE = r83_INTREST_RATE;
+	public void setR133_interest_rate(BigDecimal r133_interest_rate) {
+		this.r133_interest_rate = r133_interest_rate;
 	}
-	public BigDecimal getR83_AMOUNT() {
-		return R83_AMOUNT;
+	public BigDecimal getR133_amount() {
+		return r133_amount;
 	}
-	public void setR83_AMOUNT(BigDecimal r83_AMOUNT) {
-		R83_AMOUNT = r83_AMOUNT;
+	public void setR133_amount(BigDecimal r133_amount) {
+		this.r133_amount = r133_amount;
 	}
-	public BigDecimal getR83_TOTAL_DEPOSIT() {
-		return R83_TOTAL_DEPOSIT;
+	public BigDecimal getR133_total_deposit() {
+		return r133_total_deposit;
 	}
-	public void setR83_TOTAL_DEPOSIT(BigDecimal r83_TOTAL_DEPOSIT) {
-		R83_TOTAL_DEPOSIT = r83_TOTAL_DEPOSIT;
+	public void setR133_total_deposit(BigDecimal r133_total_deposit) {
+		this.r133_total_deposit = r133_total_deposit;
 	}
-	public BigDecimal getR83_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R83_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR133_percentage_total_deposit() {
+		return r133_percentage_total_deposit;
 	}
-	public void setR83_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r83_PERCENTAGE_TOTAL_DEPOSIT) {
-		R83_PERCENTAGE_TOTAL_DEPOSIT = r83_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR133_percentage_total_deposit(BigDecimal r133_percentage_total_deposit) {
+		this.r133_percentage_total_deposit = r133_percentage_total_deposit;
 	}
-	public String getR84_PRODUCT() {
-		return R84_PRODUCT;
+	public String getR134_customer_name() {
+		return r134_customer_name;
 	}
-	public void setR84_PRODUCT(String r84_PRODUCT) {
-		R84_PRODUCT = r84_PRODUCT;
+	public void setR134_customer_name(String r134_customer_name) {
+		this.r134_customer_name = r134_customer_name;
 	}
-	public String getR84_INSTITUTIONAL_SELECTOR() {
-		return R84_INSTITUTIONAL_SELECTOR;
+	public String getR134_institutional_sector() {
+		return r134_institutional_sector;
 	}
-	public void setR84_INSTITUTIONAL_SELECTOR(String r84_INSTITUTIONAL_SELECTOR) {
-		R84_INSTITUTIONAL_SELECTOR = r84_INSTITUTIONAL_SELECTOR;
+	public void setR134_institutional_sector(String r134_institutional_sector) {
+		this.r134_institutional_sector = r134_institutional_sector;
 	}
-	public String getR84_TYPE_OF_ACCOUNT() {
-		return R84_TYPE_OF_ACCOUNT;
+	public String getR134_type_of_account() {
+		return r134_type_of_account;
 	}
-	public void setR84_TYPE_OF_ACCOUNT(String r84_TYPE_OF_ACCOUNT) {
-		R84_TYPE_OF_ACCOUNT = r84_TYPE_OF_ACCOUNT;
+	public void setR134_type_of_account(String r134_type_of_account) {
+		this.r134_type_of_account = r134_type_of_account;
 	}
-	public BigDecimal getR84_INTREST_RATE() {
-		return R84_INTREST_RATE;
+	public BigDecimal getR134_interest_rate() {
+		return r134_interest_rate;
 	}
-	public void setR84_INTREST_RATE(BigDecimal r84_INTREST_RATE) {
-		R84_INTREST_RATE = r84_INTREST_RATE;
+	public void setR134_interest_rate(BigDecimal r134_interest_rate) {
+		this.r134_interest_rate = r134_interest_rate;
 	}
-	public BigDecimal getR84_AMOUNT() {
-		return R84_AMOUNT;
+	public BigDecimal getR134_amount() {
+		return r134_amount;
 	}
-	public void setR84_AMOUNT(BigDecimal r84_AMOUNT) {
-		R84_AMOUNT = r84_AMOUNT;
+	public void setR134_amount(BigDecimal r134_amount) {
+		this.r134_amount = r134_amount;
 	}
-	public BigDecimal getR84_TOTAL_DEPOSIT() {
-		return R84_TOTAL_DEPOSIT;
+	public BigDecimal getR134_total_deposit() {
+		return r134_total_deposit;
 	}
-	public void setR84_TOTAL_DEPOSIT(BigDecimal r84_TOTAL_DEPOSIT) {
-		R84_TOTAL_DEPOSIT = r84_TOTAL_DEPOSIT;
+	public void setR134_total_deposit(BigDecimal r134_total_deposit) {
+		this.r134_total_deposit = r134_total_deposit;
 	}
-	public BigDecimal getR84_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R84_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR134_percentage_total_deposit() {
+		return r134_percentage_total_deposit;
 	}
-	public void setR84_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r84_PERCENTAGE_TOTAL_DEPOSIT) {
-		R84_PERCENTAGE_TOTAL_DEPOSIT = r84_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR134_percentage_total_deposit(BigDecimal r134_percentage_total_deposit) {
+		this.r134_percentage_total_deposit = r134_percentage_total_deposit;
 	}
-	public String getR85_PRODUCT() {
-		return R85_PRODUCT;
+	public String getR135_customer_name() {
+		return r135_customer_name;
 	}
-	public void setR85_PRODUCT(String r85_PRODUCT) {
-		R85_PRODUCT = r85_PRODUCT;
+	public void setR135_customer_name(String r135_customer_name) {
+		this.r135_customer_name = r135_customer_name;
 	}
-	public String getR85_INSTITUTIONAL_SELECTOR() {
-		return R85_INSTITUTIONAL_SELECTOR;
+	public String getR135_institutional_sector() {
+		return r135_institutional_sector;
 	}
-	public void setR85_INSTITUTIONAL_SELECTOR(String r85_INSTITUTIONAL_SELECTOR) {
-		R85_INSTITUTIONAL_SELECTOR = r85_INSTITUTIONAL_SELECTOR;
+	public void setR135_institutional_sector(String r135_institutional_sector) {
+		this.r135_institutional_sector = r135_institutional_sector;
 	}
-	public String getR85_TYPE_OF_ACCOUNT() {
-		return R85_TYPE_OF_ACCOUNT;
+	public String getR135_type_of_account() {
+		return r135_type_of_account;
 	}
-	public void setR85_TYPE_OF_ACCOUNT(String r85_TYPE_OF_ACCOUNT) {
-		R85_TYPE_OF_ACCOUNT = r85_TYPE_OF_ACCOUNT;
+	public void setR135_type_of_account(String r135_type_of_account) {
+		this.r135_type_of_account = r135_type_of_account;
 	}
-	public BigDecimal getR85_INTREST_RATE() {
-		return R85_INTREST_RATE;
+	public BigDecimal getR135_interest_rate() {
+		return r135_interest_rate;
 	}
-	public void setR85_INTREST_RATE(BigDecimal r85_INTREST_RATE) {
-		R85_INTREST_RATE = r85_INTREST_RATE;
+	public void setR135_interest_rate(BigDecimal r135_interest_rate) {
+		this.r135_interest_rate = r135_interest_rate;
 	}
-	public BigDecimal getR85_AMOUNT() {
-		return R85_AMOUNT;
+	public BigDecimal getR135_amount() {
+		return r135_amount;
 	}
-	public void setR85_AMOUNT(BigDecimal r85_AMOUNT) {
-		R85_AMOUNT = r85_AMOUNT;
+	public void setR135_amount(BigDecimal r135_amount) {
+		this.r135_amount = r135_amount;
 	}
-	public BigDecimal getR85_TOTAL_DEPOSIT() {
-		return R85_TOTAL_DEPOSIT;
+	public BigDecimal getR135_total_deposit() {
+		return r135_total_deposit;
 	}
-	public void setR85_TOTAL_DEPOSIT(BigDecimal r85_TOTAL_DEPOSIT) {
-		R85_TOTAL_DEPOSIT = r85_TOTAL_DEPOSIT;
+	public void setR135_total_deposit(BigDecimal r135_total_deposit) {
+		this.r135_total_deposit = r135_total_deposit;
 	}
-	public BigDecimal getR85_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R85_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR135_percentage_total_deposit() {
+		return r135_percentage_total_deposit;
 	}
-	public void setR85_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r85_PERCENTAGE_TOTAL_DEPOSIT) {
-		R85_PERCENTAGE_TOTAL_DEPOSIT = r85_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR135_percentage_total_deposit(BigDecimal r135_percentage_total_deposit) {
+		this.r135_percentage_total_deposit = r135_percentage_total_deposit;
 	}
-	public String getR86_PRODUCT() {
-		return R86_PRODUCT;
+	public String getR136_customer_name() {
+		return r136_customer_name;
 	}
-	public void setR86_PRODUCT(String r86_PRODUCT) {
-		R86_PRODUCT = r86_PRODUCT;
+	public void setR136_customer_name(String r136_customer_name) {
+		this.r136_customer_name = r136_customer_name;
 	}
-	public String getR86_INSTITUTIONAL_SELECTOR() {
-		return R86_INSTITUTIONAL_SELECTOR;
+	public String getR136_institutional_sector() {
+		return r136_institutional_sector;
 	}
-	public void setR86_INSTITUTIONAL_SELECTOR(String r86_INSTITUTIONAL_SELECTOR) {
-		R86_INSTITUTIONAL_SELECTOR = r86_INSTITUTIONAL_SELECTOR;
+	public void setR136_institutional_sector(String r136_institutional_sector) {
+		this.r136_institutional_sector = r136_institutional_sector;
 	}
-	public String getR86_TYPE_OF_ACCOUNT() {
-		return R86_TYPE_OF_ACCOUNT;
+	public String getR136_type_of_account() {
+		return r136_type_of_account;
 	}
-	public void setR86_TYPE_OF_ACCOUNT(String r86_TYPE_OF_ACCOUNT) {
-		R86_TYPE_OF_ACCOUNT = r86_TYPE_OF_ACCOUNT;
+	public void setR136_type_of_account(String r136_type_of_account) {
+		this.r136_type_of_account = r136_type_of_account;
 	}
-	public BigDecimal getR86_INTREST_RATE() {
-		return R86_INTREST_RATE;
+	public BigDecimal getR136_interest_rate() {
+		return r136_interest_rate;
 	}
-	public void setR86_INTREST_RATE(BigDecimal r86_INTREST_RATE) {
-		R86_INTREST_RATE = r86_INTREST_RATE;
+	public void setR136_interest_rate(BigDecimal r136_interest_rate) {
+		this.r136_interest_rate = r136_interest_rate;
 	}
-	public BigDecimal getR86_AMOUNT() {
-		return R86_AMOUNT;
+	public BigDecimal getR136_amount() {
+		return r136_amount;
 	}
-	public void setR86_AMOUNT(BigDecimal r86_AMOUNT) {
-		R86_AMOUNT = r86_AMOUNT;
+	public void setR136_amount(BigDecimal r136_amount) {
+		this.r136_amount = r136_amount;
 	}
-	public BigDecimal getR86_TOTAL_DEPOSIT() {
-		return R86_TOTAL_DEPOSIT;
+	public BigDecimal getR136_total_deposit() {
+		return r136_total_deposit;
 	}
-	public void setR86_TOTAL_DEPOSIT(BigDecimal r86_TOTAL_DEPOSIT) {
-		R86_TOTAL_DEPOSIT = r86_TOTAL_DEPOSIT;
+	public void setR136_total_deposit(BigDecimal r136_total_deposit) {
+		this.r136_total_deposit = r136_total_deposit;
 	}
-	public BigDecimal getR86_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R86_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR136_percentage_total_deposit() {
+		return r136_percentage_total_deposit;
 	}
-	public void setR86_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r86_PERCENTAGE_TOTAL_DEPOSIT) {
-		R86_PERCENTAGE_TOTAL_DEPOSIT = r86_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR136_percentage_total_deposit(BigDecimal r136_percentage_total_deposit) {
+		this.r136_percentage_total_deposit = r136_percentage_total_deposit;
 	}
-	public String getR87_PRODUCT() {
-		return R87_PRODUCT;
+	public String getR137_customer_name() {
+		return r137_customer_name;
 	}
-	public void setR87_PRODUCT(String r87_PRODUCT) {
-		R87_PRODUCT = r87_PRODUCT;
+	public void setR137_customer_name(String r137_customer_name) {
+		this.r137_customer_name = r137_customer_name;
 	}
-	public String getR87_INSTITUTIONAL_SELECTOR() {
-		return R87_INSTITUTIONAL_SELECTOR;
+	public String getR137_institutional_sector() {
+		return r137_institutional_sector;
 	}
-	public void setR87_INSTITUTIONAL_SELECTOR(String r87_INSTITUTIONAL_SELECTOR) {
-		R87_INSTITUTIONAL_SELECTOR = r87_INSTITUTIONAL_SELECTOR;
+	public void setR137_institutional_sector(String r137_institutional_sector) {
+		this.r137_institutional_sector = r137_institutional_sector;
 	}
-	public String getR87_TYPE_OF_ACCOUNT() {
-		return R87_TYPE_OF_ACCOUNT;
+	public String getR137_type_of_account() {
+		return r137_type_of_account;
 	}
-	public void setR87_TYPE_OF_ACCOUNT(String r87_TYPE_OF_ACCOUNT) {
-		R87_TYPE_OF_ACCOUNT = r87_TYPE_OF_ACCOUNT;
+	public void setR137_type_of_account(String r137_type_of_account) {
+		this.r137_type_of_account = r137_type_of_account;
 	}
-	public BigDecimal getR87_INTREST_RATE() {
-		return R87_INTREST_RATE;
+	public BigDecimal getR137_interest_rate() {
+		return r137_interest_rate;
 	}
-	public void setR87_INTREST_RATE(BigDecimal r87_INTREST_RATE) {
-		R87_INTREST_RATE = r87_INTREST_RATE;
+	public void setR137_interest_rate(BigDecimal r137_interest_rate) {
+		this.r137_interest_rate = r137_interest_rate;
 	}
-	public BigDecimal getR87_AMOUNT() {
-		return R87_AMOUNT;
+	public BigDecimal getR137_amount() {
+		return r137_amount;
 	}
-	public void setR87_AMOUNT(BigDecimal r87_AMOUNT) {
-		R87_AMOUNT = r87_AMOUNT;
+	public void setR137_amount(BigDecimal r137_amount) {
+		this.r137_amount = r137_amount;
 	}
-	public BigDecimal getR87_TOTAL_DEPOSIT() {
-		return R87_TOTAL_DEPOSIT;
+	public BigDecimal getR137_total_deposit() {
+		return r137_total_deposit;
 	}
-	public void setR87_TOTAL_DEPOSIT(BigDecimal r87_TOTAL_DEPOSIT) {
-		R87_TOTAL_DEPOSIT = r87_TOTAL_DEPOSIT;
+	public void setR137_total_deposit(BigDecimal r137_total_deposit) {
+		this.r137_total_deposit = r137_total_deposit;
 	}
-	public BigDecimal getR87_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R87_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR137_percentage_total_deposit() {
+		return r137_percentage_total_deposit;
 	}
-	public void setR87_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r87_PERCENTAGE_TOTAL_DEPOSIT) {
-		R87_PERCENTAGE_TOTAL_DEPOSIT = r87_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR137_percentage_total_deposit(BigDecimal r137_percentage_total_deposit) {
+		this.r137_percentage_total_deposit = r137_percentage_total_deposit;
 	}
-	public String getR88_PRODUCT() {
-		return R88_PRODUCT;
+	public String getR138_customer_name() {
+		return r138_customer_name;
 	}
-	public void setR88_PRODUCT(String r88_PRODUCT) {
-		R88_PRODUCT = r88_PRODUCT;
+	public void setR138_customer_name(String r138_customer_name) {
+		this.r138_customer_name = r138_customer_name;
 	}
-	public String getR88_INSTITUTIONAL_SELECTOR() {
-		return R88_INSTITUTIONAL_SELECTOR;
+	public String getR138_institutional_sector() {
+		return r138_institutional_sector;
 	}
-	public void setR88_INSTITUTIONAL_SELECTOR(String r88_INSTITUTIONAL_SELECTOR) {
-		R88_INSTITUTIONAL_SELECTOR = r88_INSTITUTIONAL_SELECTOR;
+	public void setR138_institutional_sector(String r138_institutional_sector) {
+		this.r138_institutional_sector = r138_institutional_sector;
 	}
-	public String getR88_TYPE_OF_ACCOUNT() {
-		return R88_TYPE_OF_ACCOUNT;
+	public String getR138_type_of_account() {
+		return r138_type_of_account;
 	}
-	public void setR88_TYPE_OF_ACCOUNT(String r88_TYPE_OF_ACCOUNT) {
-		R88_TYPE_OF_ACCOUNT = r88_TYPE_OF_ACCOUNT;
+	public void setR138_type_of_account(String r138_type_of_account) {
+		this.r138_type_of_account = r138_type_of_account;
 	}
-	public BigDecimal getR88_INTREST_RATE() {
-		return R88_INTREST_RATE;
+	public BigDecimal getR138_interest_rate() {
+		return r138_interest_rate;
 	}
-	public void setR88_INTREST_RATE(BigDecimal r88_INTREST_RATE) {
-		R88_INTREST_RATE = r88_INTREST_RATE;
+	public void setR138_interest_rate(BigDecimal r138_interest_rate) {
+		this.r138_interest_rate = r138_interest_rate;
 	}
-	public BigDecimal getR88_AMOUNT() {
-		return R88_AMOUNT;
+	public BigDecimal getR138_amount() {
+		return r138_amount;
 	}
-	public void setR88_AMOUNT(BigDecimal r88_AMOUNT) {
-		R88_AMOUNT = r88_AMOUNT;
+	public void setR138_amount(BigDecimal r138_amount) {
+		this.r138_amount = r138_amount;
 	}
-	public BigDecimal getR88_TOTAL_DEPOSIT() {
-		return R88_TOTAL_DEPOSIT;
+	public BigDecimal getR138_total_deposit() {
+		return r138_total_deposit;
 	}
-	public void setR88_TOTAL_DEPOSIT(BigDecimal r88_TOTAL_DEPOSIT) {
-		R88_TOTAL_DEPOSIT = r88_TOTAL_DEPOSIT;
+	public void setR138_total_deposit(BigDecimal r138_total_deposit) {
+		this.r138_total_deposit = r138_total_deposit;
 	}
-	public BigDecimal getR88_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R88_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR138_percentage_total_deposit() {
+		return r138_percentage_total_deposit;
 	}
-	public void setR88_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r88_PERCENTAGE_TOTAL_DEPOSIT) {
-		R88_PERCENTAGE_TOTAL_DEPOSIT = r88_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR138_percentage_total_deposit(BigDecimal r138_percentage_total_deposit) {
+		this.r138_percentage_total_deposit = r138_percentage_total_deposit;
 	}
-	public String getR89_PRODUCT() {
-		return R89_PRODUCT;
+	public String getR139_customer_name() {
+		return r139_customer_name;
 	}
-	public void setR89_PRODUCT(String r89_PRODUCT) {
-		R89_PRODUCT = r89_PRODUCT;
+	public void setR139_customer_name(String r139_customer_name) {
+		this.r139_customer_name = r139_customer_name;
 	}
-	public String getR89_INSTITUTIONAL_SELECTOR() {
-		return R89_INSTITUTIONAL_SELECTOR;
+	public String getR139_institutional_sector() {
+		return r139_institutional_sector;
 	}
-	public void setR89_INSTITUTIONAL_SELECTOR(String r89_INSTITUTIONAL_SELECTOR) {
-		R89_INSTITUTIONAL_SELECTOR = r89_INSTITUTIONAL_SELECTOR;
+	public void setR139_institutional_sector(String r139_institutional_sector) {
+		this.r139_institutional_sector = r139_institutional_sector;
 	}
-	public String getR89_TYPE_OF_ACCOUNT() {
-		return R89_TYPE_OF_ACCOUNT;
+	public String getR139_type_of_account() {
+		return r139_type_of_account;
 	}
-	public void setR89_TYPE_OF_ACCOUNT(String r89_TYPE_OF_ACCOUNT) {
-		R89_TYPE_OF_ACCOUNT = r89_TYPE_OF_ACCOUNT;
+	public void setR139_type_of_account(String r139_type_of_account) {
+		this.r139_type_of_account = r139_type_of_account;
 	}
-	public BigDecimal getR89_INTREST_RATE() {
-		return R89_INTREST_RATE;
+	public BigDecimal getR139_interest_rate() {
+		return r139_interest_rate;
 	}
-	public void setR89_INTREST_RATE(BigDecimal r89_INTREST_RATE) {
-		R89_INTREST_RATE = r89_INTREST_RATE;
+	public void setR139_interest_rate(BigDecimal r139_interest_rate) {
+		this.r139_interest_rate = r139_interest_rate;
 	}
-	public BigDecimal getR89_AMOUNT() {
-		return R89_AMOUNT;
+	public BigDecimal getR139_amount() {
+		return r139_amount;
 	}
-	public void setR89_AMOUNT(BigDecimal r89_AMOUNT) {
-		R89_AMOUNT = r89_AMOUNT;
+	public void setR139_amount(BigDecimal r139_amount) {
+		this.r139_amount = r139_amount;
 	}
-	public BigDecimal getR89_TOTAL_DEPOSIT() {
-		return R89_TOTAL_DEPOSIT;
+	public BigDecimal getR139_total_deposit() {
+		return r139_total_deposit;
 	}
-	public void setR89_TOTAL_DEPOSIT(BigDecimal r89_TOTAL_DEPOSIT) {
-		R89_TOTAL_DEPOSIT = r89_TOTAL_DEPOSIT;
+	public void setR139_total_deposit(BigDecimal r139_total_deposit) {
+		this.r139_total_deposit = r139_total_deposit;
 	}
-	public BigDecimal getR89_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R89_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR139_percentage_total_deposit() {
+		return r139_percentage_total_deposit;
 	}
-	public void setR89_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r89_PERCENTAGE_TOTAL_DEPOSIT) {
-		R89_PERCENTAGE_TOTAL_DEPOSIT = r89_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR139_percentage_total_deposit(BigDecimal r139_percentage_total_deposit) {
+		this.r139_percentage_total_deposit = r139_percentage_total_deposit;
 	}
-	public String getR90_PRODUCT() {
-		return R90_PRODUCT;
+	public String getR140_customer_name() {
+		return r140_customer_name;
 	}
-	public void setR90_PRODUCT(String r90_PRODUCT) {
-		R90_PRODUCT = r90_PRODUCT;
+	public void setR140_customer_name(String r140_customer_name) {
+		this.r140_customer_name = r140_customer_name;
 	}
-	public String getR90_INSTITUTIONAL_SELECTOR() {
-		return R90_INSTITUTIONAL_SELECTOR;
+	public String getR140_institutional_sector() {
+		return r140_institutional_sector;
 	}
-	public void setR90_INSTITUTIONAL_SELECTOR(String r90_INSTITUTIONAL_SELECTOR) {
-		R90_INSTITUTIONAL_SELECTOR = r90_INSTITUTIONAL_SELECTOR;
+	public void setR140_institutional_sector(String r140_institutional_sector) {
+		this.r140_institutional_sector = r140_institutional_sector;
 	}
-	public String getR90_TYPE_OF_ACCOUNT() {
-		return R90_TYPE_OF_ACCOUNT;
+	public String getR140_type_of_account() {
+		return r140_type_of_account;
 	}
-	public void setR90_TYPE_OF_ACCOUNT(String r90_TYPE_OF_ACCOUNT) {
-		R90_TYPE_OF_ACCOUNT = r90_TYPE_OF_ACCOUNT;
+	public void setR140_type_of_account(String r140_type_of_account) {
+		this.r140_type_of_account = r140_type_of_account;
 	}
-	public BigDecimal getR90_INTREST_RATE() {
-		return R90_INTREST_RATE;
+	public BigDecimal getR140_interest_rate() {
+		return r140_interest_rate;
 	}
-	public void setR90_INTREST_RATE(BigDecimal r90_INTREST_RATE) {
-		R90_INTREST_RATE = r90_INTREST_RATE;
+	public void setR140_interest_rate(BigDecimal r140_interest_rate) {
+		this.r140_interest_rate = r140_interest_rate;
 	}
-	public BigDecimal getR90_AMOUNT() {
-		return R90_AMOUNT;
+	public BigDecimal getR140_amount() {
+		return r140_amount;
 	}
-	public void setR90_AMOUNT(BigDecimal r90_AMOUNT) {
-		R90_AMOUNT = r90_AMOUNT;
+	public void setR140_amount(BigDecimal r140_amount) {
+		this.r140_amount = r140_amount;
 	}
-	public BigDecimal getR90_TOTAL_DEPOSIT() {
-		return R90_TOTAL_DEPOSIT;
+	public BigDecimal getR140_total_deposit() {
+		return r140_total_deposit;
 	}
-	public void setR90_TOTAL_DEPOSIT(BigDecimal r90_TOTAL_DEPOSIT) {
-		R90_TOTAL_DEPOSIT = r90_TOTAL_DEPOSIT;
+	public void setR140_total_deposit(BigDecimal r140_total_deposit) {
+		this.r140_total_deposit = r140_total_deposit;
 	}
-	public BigDecimal getR90_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R90_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR140_percentage_total_deposit() {
+		return r140_percentage_total_deposit;
 	}
-	public void setR90_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r90_PERCENTAGE_TOTAL_DEPOSIT) {
-		R90_PERCENTAGE_TOTAL_DEPOSIT = r90_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR140_percentage_total_deposit(BigDecimal r140_percentage_total_deposit) {
+		this.r140_percentage_total_deposit = r140_percentage_total_deposit;
 	}
-	public String getR91_PRODUCT() {
-		return R91_PRODUCT;
+	public String getR141_customer_name() {
+		return r141_customer_name;
 	}
-	public void setR91_PRODUCT(String r91_PRODUCT) {
-		R91_PRODUCT = r91_PRODUCT;
+	public void setR141_customer_name(String r141_customer_name) {
+		this.r141_customer_name = r141_customer_name;
 	}
-	public String getR91_INSTITUTIONAL_SELECTOR() {
-		return R91_INSTITUTIONAL_SELECTOR;
+	public String getR141_institutional_sector() {
+		return r141_institutional_sector;
 	}
-	public void setR91_INSTITUTIONAL_SELECTOR(String r91_INSTITUTIONAL_SELECTOR) {
-		R91_INSTITUTIONAL_SELECTOR = r91_INSTITUTIONAL_SELECTOR;
+	public void setR141_institutional_sector(String r141_institutional_sector) {
+		this.r141_institutional_sector = r141_institutional_sector;
 	}
-	public String getR91_TYPE_OF_ACCOUNT() {
-		return R91_TYPE_OF_ACCOUNT;
+	public String getR141_type_of_account() {
+		return r141_type_of_account;
 	}
-	public void setR91_TYPE_OF_ACCOUNT(String r91_TYPE_OF_ACCOUNT) {
-		R91_TYPE_OF_ACCOUNT = r91_TYPE_OF_ACCOUNT;
+	public void setR141_type_of_account(String r141_type_of_account) {
+		this.r141_type_of_account = r141_type_of_account;
 	}
-	public BigDecimal getR91_INTREST_RATE() {
-		return R91_INTREST_RATE;
+	public BigDecimal getR141_interest_rate() {
+		return r141_interest_rate;
 	}
-	public void setR91_INTREST_RATE(BigDecimal r91_INTREST_RATE) {
-		R91_INTREST_RATE = r91_INTREST_RATE;
+	public void setR141_interest_rate(BigDecimal r141_interest_rate) {
+		this.r141_interest_rate = r141_interest_rate;
 	}
-	public BigDecimal getR91_AMOUNT() {
-		return R91_AMOUNT;
+	public BigDecimal getR141_amount() {
+		return r141_amount;
 	}
-	public void setR91_AMOUNT(BigDecimal r91_AMOUNT) {
-		R91_AMOUNT = r91_AMOUNT;
+	public void setR141_amount(BigDecimal r141_amount) {
+		this.r141_amount = r141_amount;
 	}
-	public BigDecimal getR91_TOTAL_DEPOSIT() {
-		return R91_TOTAL_DEPOSIT;
+	public BigDecimal getR141_total_deposit() {
+		return r141_total_deposit;
 	}
-	public void setR91_TOTAL_DEPOSIT(BigDecimal r91_TOTAL_DEPOSIT) {
-		R91_TOTAL_DEPOSIT = r91_TOTAL_DEPOSIT;
+	public void setR141_total_deposit(BigDecimal r141_total_deposit) {
+		this.r141_total_deposit = r141_total_deposit;
 	}
-	public BigDecimal getR91_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R91_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR141_percentage_total_deposit() {
+		return r141_percentage_total_deposit;
 	}
-	public void setR91_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r91_PERCENTAGE_TOTAL_DEPOSIT) {
-		R91_PERCENTAGE_TOTAL_DEPOSIT = r91_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR141_percentage_total_deposit(BigDecimal r141_percentage_total_deposit) {
+		this.r141_percentage_total_deposit = r141_percentage_total_deposit;
 	}
-	public String getR92_PRODUCT() {
-		return R92_PRODUCT;
+	public String getR142_customer_name() {
+		return r142_customer_name;
 	}
-	public void setR92_PRODUCT(String r92_PRODUCT) {
-		R92_PRODUCT = r92_PRODUCT;
+	public void setR142_customer_name(String r142_customer_name) {
+		this.r142_customer_name = r142_customer_name;
 	}
-	public String getR92_INSTITUTIONAL_SELECTOR() {
-		return R92_INSTITUTIONAL_SELECTOR;
+	public String getR142_institutional_sector() {
+		return r142_institutional_sector;
 	}
-	public void setR92_INSTITUTIONAL_SELECTOR(String r92_INSTITUTIONAL_SELECTOR) {
-		R92_INSTITUTIONAL_SELECTOR = r92_INSTITUTIONAL_SELECTOR;
+	public void setR142_institutional_sector(String r142_institutional_sector) {
+		this.r142_institutional_sector = r142_institutional_sector;
 	}
-	public String getR92_TYPE_OF_ACCOUNT() {
-		return R92_TYPE_OF_ACCOUNT;
+	public String getR142_type_of_account() {
+		return r142_type_of_account;
 	}
-	public void setR92_TYPE_OF_ACCOUNT(String r92_TYPE_OF_ACCOUNT) {
-		R92_TYPE_OF_ACCOUNT = r92_TYPE_OF_ACCOUNT;
+	public void setR142_type_of_account(String r142_type_of_account) {
+		this.r142_type_of_account = r142_type_of_account;
 	}
-	public BigDecimal getR92_INTREST_RATE() {
-		return R92_INTREST_RATE;
+	public BigDecimal getR142_interest_rate() {
+		return r142_interest_rate;
 	}
-	public void setR92_INTREST_RATE(BigDecimal r92_INTREST_RATE) {
-		R92_INTREST_RATE = r92_INTREST_RATE;
+	public void setR142_interest_rate(BigDecimal r142_interest_rate) {
+		this.r142_interest_rate = r142_interest_rate;
 	}
-	public BigDecimal getR92_AMOUNT() {
-		return R92_AMOUNT;
+	public BigDecimal getR142_amount() {
+		return r142_amount;
 	}
-	public void setR92_AMOUNT(BigDecimal r92_AMOUNT) {
-		R92_AMOUNT = r92_AMOUNT;
+	public void setR142_amount(BigDecimal r142_amount) {
+		this.r142_amount = r142_amount;
 	}
-	public BigDecimal getR92_TOTAL_DEPOSIT() {
-		return R92_TOTAL_DEPOSIT;
+	public BigDecimal getR142_total_deposit() {
+		return r142_total_deposit;
 	}
-	public void setR92_TOTAL_DEPOSIT(BigDecimal r92_TOTAL_DEPOSIT) {
-		R92_TOTAL_DEPOSIT = r92_TOTAL_DEPOSIT;
+	public void setR142_total_deposit(BigDecimal r142_total_deposit) {
+		this.r142_total_deposit = r142_total_deposit;
 	}
-	public BigDecimal getR92_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R92_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR142_percentage_total_deposit() {
+		return r142_percentage_total_deposit;
 	}
-	public void setR92_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r92_PERCENTAGE_TOTAL_DEPOSIT) {
-		R92_PERCENTAGE_TOTAL_DEPOSIT = r92_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR142_percentage_total_deposit(BigDecimal r142_percentage_total_deposit) {
+		this.r142_percentage_total_deposit = r142_percentage_total_deposit;
 	}
-	public String getR93_PRODUCT() {
-		return R93_PRODUCT;
+	public String getR143_customer_name() {
+		return r143_customer_name;
 	}
-	public void setR93_PRODUCT(String r93_PRODUCT) {
-		R93_PRODUCT = r93_PRODUCT;
+	public void setR143_customer_name(String r143_customer_name) {
+		this.r143_customer_name = r143_customer_name;
 	}
-	public String getR93_INSTITUTIONAL_SELECTOR() {
-		return R93_INSTITUTIONAL_SELECTOR;
+	public String getR143_institutional_sector() {
+		return r143_institutional_sector;
 	}
-	public void setR93_INSTITUTIONAL_SELECTOR(String r93_INSTITUTIONAL_SELECTOR) {
-		R93_INSTITUTIONAL_SELECTOR = r93_INSTITUTIONAL_SELECTOR;
+	public void setR143_institutional_sector(String r143_institutional_sector) {
+		this.r143_institutional_sector = r143_institutional_sector;
 	}
-	public String getR93_TYPE_OF_ACCOUNT() {
-		return R93_TYPE_OF_ACCOUNT;
+	public String getR143_type_of_account() {
+		return r143_type_of_account;
 	}
-	public void setR93_TYPE_OF_ACCOUNT(String r93_TYPE_OF_ACCOUNT) {
-		R93_TYPE_OF_ACCOUNT = r93_TYPE_OF_ACCOUNT;
+	public void setR143_type_of_account(String r143_type_of_account) {
+		this.r143_type_of_account = r143_type_of_account;
 	}
-	public BigDecimal getR93_INTREST_RATE() {
-		return R93_INTREST_RATE;
+	public BigDecimal getR143_interest_rate() {
+		return r143_interest_rate;
 	}
-	public void setR93_INTREST_RATE(BigDecimal r93_INTREST_RATE) {
-		R93_INTREST_RATE = r93_INTREST_RATE;
+	public void setR143_interest_rate(BigDecimal r143_interest_rate) {
+		this.r143_interest_rate = r143_interest_rate;
 	}
-	public BigDecimal getR93_AMOUNT() {
-		return R93_AMOUNT;
+	public BigDecimal getR143_amount() {
+		return r143_amount;
 	}
-	public void setR93_AMOUNT(BigDecimal r93_AMOUNT) {
-		R93_AMOUNT = r93_AMOUNT;
+	public void setR143_amount(BigDecimal r143_amount) {
+		this.r143_amount = r143_amount;
 	}
-	public BigDecimal getR93_TOTAL_DEPOSIT() {
-		return R93_TOTAL_DEPOSIT;
+	public BigDecimal getR143_total_deposit() {
+		return r143_total_deposit;
 	}
-	public void setR93_TOTAL_DEPOSIT(BigDecimal r93_TOTAL_DEPOSIT) {
-		R93_TOTAL_DEPOSIT = r93_TOTAL_DEPOSIT;
+	public void setR143_total_deposit(BigDecimal r143_total_deposit) {
+		this.r143_total_deposit = r143_total_deposit;
 	}
-	public BigDecimal getR93_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R93_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR143_percentage_total_deposit() {
+		return r143_percentage_total_deposit;
 	}
-	public void setR93_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r93_PERCENTAGE_TOTAL_DEPOSIT) {
-		R93_PERCENTAGE_TOTAL_DEPOSIT = r93_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR143_percentage_total_deposit(BigDecimal r143_percentage_total_deposit) {
+		this.r143_percentage_total_deposit = r143_percentage_total_deposit;
 	}
-	public String getR94_PRODUCT() {
-		return R94_PRODUCT;
+	public String getR144_customer_name() {
+		return r144_customer_name;
 	}
-	public void setR94_PRODUCT(String r94_PRODUCT) {
-		R94_PRODUCT = r94_PRODUCT;
+	public void setR144_customer_name(String r144_customer_name) {
+		this.r144_customer_name = r144_customer_name;
 	}
-	public String getR94_INSTITUTIONAL_SELECTOR() {
-		return R94_INSTITUTIONAL_SELECTOR;
+	public String getR144_institutional_sector() {
+		return r144_institutional_sector;
 	}
-	public void setR94_INSTITUTIONAL_SELECTOR(String r94_INSTITUTIONAL_SELECTOR) {
-		R94_INSTITUTIONAL_SELECTOR = r94_INSTITUTIONAL_SELECTOR;
+	public void setR144_institutional_sector(String r144_institutional_sector) {
+		this.r144_institutional_sector = r144_institutional_sector;
 	}
-	public String getR94_TYPE_OF_ACCOUNT() {
-		return R94_TYPE_OF_ACCOUNT;
+	public String getR144_type_of_account() {
+		return r144_type_of_account;
 	}
-	public void setR94_TYPE_OF_ACCOUNT(String r94_TYPE_OF_ACCOUNT) {
-		R94_TYPE_OF_ACCOUNT = r94_TYPE_OF_ACCOUNT;
+	public void setR144_type_of_account(String r144_type_of_account) {
+		this.r144_type_of_account = r144_type_of_account;
 	}
-	public BigDecimal getR94_INTREST_RATE() {
-		return R94_INTREST_RATE;
+	public BigDecimal getR144_interest_rate() {
+		return r144_interest_rate;
 	}
-	public void setR94_INTREST_RATE(BigDecimal r94_INTREST_RATE) {
-		R94_INTREST_RATE = r94_INTREST_RATE;
+	public void setR144_interest_rate(BigDecimal r144_interest_rate) {
+		this.r144_interest_rate = r144_interest_rate;
 	}
-	public BigDecimal getR94_AMOUNT() {
-		return R94_AMOUNT;
+	public BigDecimal getR144_amount() {
+		return r144_amount;
 	}
-	public void setR94_AMOUNT(BigDecimal r94_AMOUNT) {
-		R94_AMOUNT = r94_AMOUNT;
+	public void setR144_amount(BigDecimal r144_amount) {
+		this.r144_amount = r144_amount;
 	}
-	public BigDecimal getR94_TOTAL_DEPOSIT() {
-		return R94_TOTAL_DEPOSIT;
+	public BigDecimal getR144_total_deposit() {
+		return r144_total_deposit;
 	}
-	public void setR94_TOTAL_DEPOSIT(BigDecimal r94_TOTAL_DEPOSIT) {
-		R94_TOTAL_DEPOSIT = r94_TOTAL_DEPOSIT;
+	public void setR144_total_deposit(BigDecimal r144_total_deposit) {
+		this.r144_total_deposit = r144_total_deposit;
 	}
-	public BigDecimal getR94_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R94_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR144_percentage_total_deposit() {
+		return r144_percentage_total_deposit;
 	}
-	public void setR94_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r94_PERCENTAGE_TOTAL_DEPOSIT) {
-		R94_PERCENTAGE_TOTAL_DEPOSIT = r94_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR144_percentage_total_deposit(BigDecimal r144_percentage_total_deposit) {
+		this.r144_percentage_total_deposit = r144_percentage_total_deposit;
 	}
-	public String getR95_PRODUCT() {
-		return R95_PRODUCT;
+	public String getR145_customer_name() {
+		return r145_customer_name;
 	}
-	public void setR95_PRODUCT(String r95_PRODUCT) {
-		R95_PRODUCT = r95_PRODUCT;
+	public void setR145_customer_name(String r145_customer_name) {
+		this.r145_customer_name = r145_customer_name;
 	}
-	public String getR95_INSTITUTIONAL_SELECTOR() {
-		return R95_INSTITUTIONAL_SELECTOR;
+	public String getR145_institutional_sector() {
+		return r145_institutional_sector;
 	}
-	public void setR95_INSTITUTIONAL_SELECTOR(String r95_INSTITUTIONAL_SELECTOR) {
-		R95_INSTITUTIONAL_SELECTOR = r95_INSTITUTIONAL_SELECTOR;
+	public void setR145_institutional_sector(String r145_institutional_sector) {
+		this.r145_institutional_sector = r145_institutional_sector;
 	}
-	public String getR95_TYPE_OF_ACCOUNT() {
-		return R95_TYPE_OF_ACCOUNT;
+	public String getR145_type_of_account() {
+		return r145_type_of_account;
 	}
-	public void setR95_TYPE_OF_ACCOUNT(String r95_TYPE_OF_ACCOUNT) {
-		R95_TYPE_OF_ACCOUNT = r95_TYPE_OF_ACCOUNT;
+	public void setR145_type_of_account(String r145_type_of_account) {
+		this.r145_type_of_account = r145_type_of_account;
 	}
-	public BigDecimal getR95_INTREST_RATE() {
-		return R95_INTREST_RATE;
+	public BigDecimal getR145_interest_rate() {
+		return r145_interest_rate;
 	}
-	public void setR95_INTREST_RATE(BigDecimal r95_INTREST_RATE) {
-		R95_INTREST_RATE = r95_INTREST_RATE;
+	public void setR145_interest_rate(BigDecimal r145_interest_rate) {
+		this.r145_interest_rate = r145_interest_rate;
 	}
-	public BigDecimal getR95_AMOUNT() {
-		return R95_AMOUNT;
+	public BigDecimal getR145_amount() {
+		return r145_amount;
 	}
-	public void setR95_AMOUNT(BigDecimal r95_AMOUNT) {
-		R95_AMOUNT = r95_AMOUNT;
+	public void setR145_amount(BigDecimal r145_amount) {
+		this.r145_amount = r145_amount;
 	}
-	public BigDecimal getR95_TOTAL_DEPOSIT() {
-		return R95_TOTAL_DEPOSIT;
+	public BigDecimal getR145_total_deposit() {
+		return r145_total_deposit;
 	}
-	public void setR95_TOTAL_DEPOSIT(BigDecimal r95_TOTAL_DEPOSIT) {
-		R95_TOTAL_DEPOSIT = r95_TOTAL_DEPOSIT;
+	public void setR145_total_deposit(BigDecimal r145_total_deposit) {
+		this.r145_total_deposit = r145_total_deposit;
 	}
-	public BigDecimal getR95_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R95_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR145_percentage_total_deposit() {
+		return r145_percentage_total_deposit;
 	}
-	public void setR95_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r95_PERCENTAGE_TOTAL_DEPOSIT) {
-		R95_PERCENTAGE_TOTAL_DEPOSIT = r95_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR145_percentage_total_deposit(BigDecimal r145_percentage_total_deposit) {
+		this.r145_percentage_total_deposit = r145_percentage_total_deposit;
 	}
-	public String getR96_PRODUCT() {
-		return R96_PRODUCT;
+	public String getR146_customer_name() {
+		return r146_customer_name;
 	}
-	public void setR96_PRODUCT(String r96_PRODUCT) {
-		R96_PRODUCT = r96_PRODUCT;
+	public void setR146_customer_name(String r146_customer_name) {
+		this.r146_customer_name = r146_customer_name;
 	}
-	public String getR96_INSTITUTIONAL_SELECTOR() {
-		return R96_INSTITUTIONAL_SELECTOR;
+	public String getR146_institutional_sector() {
+		return r146_institutional_sector;
 	}
-	public void setR96_INSTITUTIONAL_SELECTOR(String r96_INSTITUTIONAL_SELECTOR) {
-		R96_INSTITUTIONAL_SELECTOR = r96_INSTITUTIONAL_SELECTOR;
+	public void setR146_institutional_sector(String r146_institutional_sector) {
+		this.r146_institutional_sector = r146_institutional_sector;
 	}
-	public String getR96_TYPE_OF_ACCOUNT() {
-		return R96_TYPE_OF_ACCOUNT;
+	public String getR146_type_of_account() {
+		return r146_type_of_account;
 	}
-	public void setR96_TYPE_OF_ACCOUNT(String r96_TYPE_OF_ACCOUNT) {
-		R96_TYPE_OF_ACCOUNT = r96_TYPE_OF_ACCOUNT;
+	public void setR146_type_of_account(String r146_type_of_account) {
+		this.r146_type_of_account = r146_type_of_account;
 	}
-	public BigDecimal getR96_INTREST_RATE() {
-		return R96_INTREST_RATE;
+	public BigDecimal getR146_interest_rate() {
+		return r146_interest_rate;
 	}
-	public void setR96_INTREST_RATE(BigDecimal r96_INTREST_RATE) {
-		R96_INTREST_RATE = r96_INTREST_RATE;
+	public void setR146_interest_rate(BigDecimal r146_interest_rate) {
+		this.r146_interest_rate = r146_interest_rate;
 	}
-	public BigDecimal getR96_AMOUNT() {
-		return R96_AMOUNT;
+	public BigDecimal getR146_amount() {
+		return r146_amount;
 	}
-	public void setR96_AMOUNT(BigDecimal r96_AMOUNT) {
-		R96_AMOUNT = r96_AMOUNT;
+	public void setR146_amount(BigDecimal r146_amount) {
+		this.r146_amount = r146_amount;
 	}
-	public BigDecimal getR96_TOTAL_DEPOSIT() {
-		return R96_TOTAL_DEPOSIT;
+	public BigDecimal getR146_total_deposit() {
+		return r146_total_deposit;
 	}
-	public void setR96_TOTAL_DEPOSIT(BigDecimal r96_TOTAL_DEPOSIT) {
-		R96_TOTAL_DEPOSIT = r96_TOTAL_DEPOSIT;
+	public void setR146_total_deposit(BigDecimal r146_total_deposit) {
+		this.r146_total_deposit = r146_total_deposit;
 	}
-	public BigDecimal getR96_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R96_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR146_percentage_total_deposit() {
+		return r146_percentage_total_deposit;
 	}
-	public void setR96_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r96_PERCENTAGE_TOTAL_DEPOSIT) {
-		R96_PERCENTAGE_TOTAL_DEPOSIT = r96_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR146_percentage_total_deposit(BigDecimal r146_percentage_total_deposit) {
+		this.r146_percentage_total_deposit = r146_percentage_total_deposit;
 	}
-	public String getR97_PRODUCT() {
-		return R97_PRODUCT;
+	public String getR147_customer_name() {
+		return r147_customer_name;
 	}
-	public void setR97_PRODUCT(String r97_PRODUCT) {
-		R97_PRODUCT = r97_PRODUCT;
+	public void setR147_customer_name(String r147_customer_name) {
+		this.r147_customer_name = r147_customer_name;
 	}
-	public String getR97_INSTITUTIONAL_SELECTOR() {
-		return R97_INSTITUTIONAL_SELECTOR;
+	public String getR147_institutional_sector() {
+		return r147_institutional_sector;
 	}
-	public void setR97_INSTITUTIONAL_SELECTOR(String r97_INSTITUTIONAL_SELECTOR) {
-		R97_INSTITUTIONAL_SELECTOR = r97_INSTITUTIONAL_SELECTOR;
+	public void setR147_institutional_sector(String r147_institutional_sector) {
+		this.r147_institutional_sector = r147_institutional_sector;
 	}
-	public String getR97_TYPE_OF_ACCOUNT() {
-		return R97_TYPE_OF_ACCOUNT;
+	public String getR147_type_of_account() {
+		return r147_type_of_account;
 	}
-	public void setR97_TYPE_OF_ACCOUNT(String r97_TYPE_OF_ACCOUNT) {
-		R97_TYPE_OF_ACCOUNT = r97_TYPE_OF_ACCOUNT;
+	public void setR147_type_of_account(String r147_type_of_account) {
+		this.r147_type_of_account = r147_type_of_account;
 	}
-	public BigDecimal getR97_INTREST_RATE() {
-		return R97_INTREST_RATE;
+	public BigDecimal getR147_interest_rate() {
+		return r147_interest_rate;
 	}
-	public void setR97_INTREST_RATE(BigDecimal r97_INTREST_RATE) {
-		R97_INTREST_RATE = r97_INTREST_RATE;
+	public void setR147_interest_rate(BigDecimal r147_interest_rate) {
+		this.r147_interest_rate = r147_interest_rate;
 	}
-	public BigDecimal getR97_AMOUNT() {
-		return R97_AMOUNT;
+	public BigDecimal getR147_amount() {
+		return r147_amount;
 	}
-	public void setR97_AMOUNT(BigDecimal r97_AMOUNT) {
-		R97_AMOUNT = r97_AMOUNT;
+	public void setR147_amount(BigDecimal r147_amount) {
+		this.r147_amount = r147_amount;
 	}
-	public BigDecimal getR97_TOTAL_DEPOSIT() {
-		return R97_TOTAL_DEPOSIT;
+	public BigDecimal getR147_total_deposit() {
+		return r147_total_deposit;
 	}
-	public void setR97_TOTAL_DEPOSIT(BigDecimal r97_TOTAL_DEPOSIT) {
-		R97_TOTAL_DEPOSIT = r97_TOTAL_DEPOSIT;
+	public void setR147_total_deposit(BigDecimal r147_total_deposit) {
+		this.r147_total_deposit = r147_total_deposit;
 	}
-	public BigDecimal getR97_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R97_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR147_percentage_total_deposit() {
+		return r147_percentage_total_deposit;
 	}
-	public void setR97_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r97_PERCENTAGE_TOTAL_DEPOSIT) {
-		R97_PERCENTAGE_TOTAL_DEPOSIT = r97_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR147_percentage_total_deposit(BigDecimal r147_percentage_total_deposit) {
+		this.r147_percentage_total_deposit = r147_percentage_total_deposit;
 	}
-	public String getR98_PRODUCT() {
-		return R98_PRODUCT;
+	public String getR148_customer_name() {
+		return r148_customer_name;
 	}
-	public void setR98_PRODUCT(String r98_PRODUCT) {
-		R98_PRODUCT = r98_PRODUCT;
+	public void setR148_customer_name(String r148_customer_name) {
+		this.r148_customer_name = r148_customer_name;
 	}
-	public String getR98_INSTITUTIONAL_SELECTOR() {
-		return R98_INSTITUTIONAL_SELECTOR;
+	public String getR148_institutional_sector() {
+		return r148_institutional_sector;
 	}
-	public void setR98_INSTITUTIONAL_SELECTOR(String r98_INSTITUTIONAL_SELECTOR) {
-		R98_INSTITUTIONAL_SELECTOR = r98_INSTITUTIONAL_SELECTOR;
+	public void setR148_institutional_sector(String r148_institutional_sector) {
+		this.r148_institutional_sector = r148_institutional_sector;
 	}
-	public String getR98_TYPE_OF_ACCOUNT() {
-		return R98_TYPE_OF_ACCOUNT;
+	public String getR148_type_of_account() {
+		return r148_type_of_account;
 	}
-	public void setR98_TYPE_OF_ACCOUNT(String r98_TYPE_OF_ACCOUNT) {
-		R98_TYPE_OF_ACCOUNT = r98_TYPE_OF_ACCOUNT;
+	public void setR148_type_of_account(String r148_type_of_account) {
+		this.r148_type_of_account = r148_type_of_account;
 	}
-	public BigDecimal getR98_INTREST_RATE() {
-		return R98_INTREST_RATE;
+	public BigDecimal getR148_interest_rate() {
+		return r148_interest_rate;
 	}
-	public void setR98_INTREST_RATE(BigDecimal r98_INTREST_RATE) {
-		R98_INTREST_RATE = r98_INTREST_RATE;
+	public void setR148_interest_rate(BigDecimal r148_interest_rate) {
+		this.r148_interest_rate = r148_interest_rate;
 	}
-	public BigDecimal getR98_AMOUNT() {
-		return R98_AMOUNT;
+	public BigDecimal getR148_amount() {
+		return r148_amount;
 	}
-	public void setR98_AMOUNT(BigDecimal r98_AMOUNT) {
-		R98_AMOUNT = r98_AMOUNT;
+	public void setR148_amount(BigDecimal r148_amount) {
+		this.r148_amount = r148_amount;
 	}
-	public BigDecimal getR98_TOTAL_DEPOSIT() {
-		return R98_TOTAL_DEPOSIT;
+	public BigDecimal getR148_total_deposit() {
+		return r148_total_deposit;
 	}
-	public void setR98_TOTAL_DEPOSIT(BigDecimal r98_TOTAL_DEPOSIT) {
-		R98_TOTAL_DEPOSIT = r98_TOTAL_DEPOSIT;
+	public void setR148_total_deposit(BigDecimal r148_total_deposit) {
+		this.r148_total_deposit = r148_total_deposit;
 	}
-	public BigDecimal getR98_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R98_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR148_percentage_total_deposit() {
+		return r148_percentage_total_deposit;
 	}
-	public void setR98_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r98_PERCENTAGE_TOTAL_DEPOSIT) {
-		R98_PERCENTAGE_TOTAL_DEPOSIT = r98_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR148_percentage_total_deposit(BigDecimal r148_percentage_total_deposit) {
+		this.r148_percentage_total_deposit = r148_percentage_total_deposit;
 	}
-	public String getR99_PRODUCT() {
-		return R99_PRODUCT;
+	public String getR149_customer_name() {
+		return r149_customer_name;
 	}
-	public void setR99_PRODUCT(String r99_PRODUCT) {
-		R99_PRODUCT = r99_PRODUCT;
+	public void setR149_customer_name(String r149_customer_name) {
+		this.r149_customer_name = r149_customer_name;
 	}
-	public String getR99_INSTITUTIONAL_SELECTOR() {
-		return R99_INSTITUTIONAL_SELECTOR;
+	public String getR149_institutional_sector() {
+		return r149_institutional_sector;
 	}
-	public void setR99_INSTITUTIONAL_SELECTOR(String r99_INSTITUTIONAL_SELECTOR) {
-		R99_INSTITUTIONAL_SELECTOR = r99_INSTITUTIONAL_SELECTOR;
+	public void setR149_institutional_sector(String r149_institutional_sector) {
+		this.r149_institutional_sector = r149_institutional_sector;
 	}
-	public String getR99_TYPE_OF_ACCOUNT() {
-		return R99_TYPE_OF_ACCOUNT;
+	public String getR149_type_of_account() {
+		return r149_type_of_account;
 	}
-	public void setR99_TYPE_OF_ACCOUNT(String r99_TYPE_OF_ACCOUNT) {
-		R99_TYPE_OF_ACCOUNT = r99_TYPE_OF_ACCOUNT;
+	public void setR149_type_of_account(String r149_type_of_account) {
+		this.r149_type_of_account = r149_type_of_account;
 	}
-	public BigDecimal getR99_INTREST_RATE() {
-		return R99_INTREST_RATE;
+	public BigDecimal getR149_interest_rate() {
+		return r149_interest_rate;
 	}
-	public void setR99_INTREST_RATE(BigDecimal r99_INTREST_RATE) {
-		R99_INTREST_RATE = r99_INTREST_RATE;
+	public void setR149_interest_rate(BigDecimal r149_interest_rate) {
+		this.r149_interest_rate = r149_interest_rate;
 	}
-	public BigDecimal getR99_AMOUNT() {
-		return R99_AMOUNT;
+	public BigDecimal getR149_amount() {
+		return r149_amount;
 	}
-	public void setR99_AMOUNT(BigDecimal r99_AMOUNT) {
-		R99_AMOUNT = r99_AMOUNT;
+	public void setR149_amount(BigDecimal r149_amount) {
+		this.r149_amount = r149_amount;
 	}
-	public BigDecimal getR99_TOTAL_DEPOSIT() {
-		return R99_TOTAL_DEPOSIT;
+	public BigDecimal getR149_total_deposit() {
+		return r149_total_deposit;
 	}
-	public void setR99_TOTAL_DEPOSIT(BigDecimal r99_TOTAL_DEPOSIT) {
-		R99_TOTAL_DEPOSIT = r99_TOTAL_DEPOSIT;
+	public void setR149_total_deposit(BigDecimal r149_total_deposit) {
+		this.r149_total_deposit = r149_total_deposit;
 	}
-	public BigDecimal getR99_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R99_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR149_percentage_total_deposit() {
+		return r149_percentage_total_deposit;
 	}
-	public void setR99_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r99_PERCENTAGE_TOTAL_DEPOSIT) {
-		R99_PERCENTAGE_TOTAL_DEPOSIT = r99_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR149_percentage_total_deposit(BigDecimal r149_percentage_total_deposit) {
+		this.r149_percentage_total_deposit = r149_percentage_total_deposit;
 	}
-	public String getR100_PRODUCT() {
-		return R100_PRODUCT;
+	public String getR150_customer_name() {
+		return r150_customer_name;
 	}
-	public void setR100_PRODUCT(String r100_PRODUCT) {
-		R100_PRODUCT = r100_PRODUCT;
+	public void setR150_customer_name(String r150_customer_name) {
+		this.r150_customer_name = r150_customer_name;
 	}
-	public String getR100_INSTITUTIONAL_SELECTOR() {
-		return R100_INSTITUTIONAL_SELECTOR;
+	public String getR150_institutional_sector() {
+		return r150_institutional_sector;
 	}
-	public void setR100_INSTITUTIONAL_SELECTOR(String r100_INSTITUTIONAL_SELECTOR) {
-		R100_INSTITUTIONAL_SELECTOR = r100_INSTITUTIONAL_SELECTOR;
+	public void setR150_institutional_sector(String r150_institutional_sector) {
+		this.r150_institutional_sector = r150_institutional_sector;
 	}
-	public String getR100_TYPE_OF_ACCOUNT() {
-		return R100_TYPE_OF_ACCOUNT;
+	public String getR150_type_of_account() {
+		return r150_type_of_account;
 	}
-	public void setR100_TYPE_OF_ACCOUNT(String r100_TYPE_OF_ACCOUNT) {
-		R100_TYPE_OF_ACCOUNT = r100_TYPE_OF_ACCOUNT;
+	public void setR150_type_of_account(String r150_type_of_account) {
+		this.r150_type_of_account = r150_type_of_account;
 	}
-	public BigDecimal getR100_INTREST_RATE() {
-		return R100_INTREST_RATE;
+	public BigDecimal getR150_interest_rate() {
+		return r150_interest_rate;
 	}
-	public void setR100_INTREST_RATE(BigDecimal r100_INTREST_RATE) {
-		R100_INTREST_RATE = r100_INTREST_RATE;
+	public void setR150_interest_rate(BigDecimal r150_interest_rate) {
+		this.r150_interest_rate = r150_interest_rate;
 	}
-	public BigDecimal getR100_AMOUNT() {
-		return R100_AMOUNT;
+	public BigDecimal getR150_amount() {
+		return r150_amount;
 	}
-	public void setR100_AMOUNT(BigDecimal r100_AMOUNT) {
-		R100_AMOUNT = r100_AMOUNT;
+	public void setR150_amount(BigDecimal r150_amount) {
+		this.r150_amount = r150_amount;
 	}
-	public BigDecimal getR100_TOTAL_DEPOSIT() {
-		return R100_TOTAL_DEPOSIT;
+	public BigDecimal getR150_total_deposit() {
+		return r150_total_deposit;
 	}
-	public void setR100_TOTAL_DEPOSIT(BigDecimal r100_TOTAL_DEPOSIT) {
-		R100_TOTAL_DEPOSIT = r100_TOTAL_DEPOSIT;
+	public void setR150_total_deposit(BigDecimal r150_total_deposit) {
+		this.r150_total_deposit = r150_total_deposit;
 	}
-	public BigDecimal getR100_PERCENTAGE_TOTAL_DEPOSIT() {
-		return R100_PERCENTAGE_TOTAL_DEPOSIT;
+	public BigDecimal getR150_percentage_total_deposit() {
+		return r150_percentage_total_deposit;
 	}
-	public void setR100_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r100_PERCENTAGE_TOTAL_DEPOSIT) {
-		R100_PERCENTAGE_TOTAL_DEPOSIT = r100_PERCENTAGE_TOTAL_DEPOSIT;
+	public void setR150_percentage_total_deposit(BigDecimal r150_percentage_total_deposit) {
+		this.r150_percentage_total_deposit = r150_percentage_total_deposit;
+	}
+	public String getR151_customer_name() {
+		return r151_customer_name;
+	}
+	public void setR151_customer_name(String r151_customer_name) {
+		this.r151_customer_name = r151_customer_name;
+	}
+	public String getR151_institutional_sector() {
+		return r151_institutional_sector;
+	}
+	public void setR151_institutional_sector(String r151_institutional_sector) {
+		this.r151_institutional_sector = r151_institutional_sector;
+	}
+	public String getR151_type_of_account() {
+		return r151_type_of_account;
+	}
+	public void setR151_type_of_account(String r151_type_of_account) {
+		this.r151_type_of_account = r151_type_of_account;
+	}
+	public BigDecimal getR151_interest_rate() {
+		return r151_interest_rate;
+	}
+	public void setR151_interest_rate(BigDecimal r151_interest_rate) {
+		this.r151_interest_rate = r151_interest_rate;
+	}
+	public BigDecimal getR151_amount() {
+		return r151_amount;
+	}
+	public void setR151_amount(BigDecimal r151_amount) {
+		this.r151_amount = r151_amount;
+	}
+	public BigDecimal getR151_total_deposit() {
+		return r151_total_deposit;
+	}
+	public void setR151_total_deposit(BigDecimal r151_total_deposit) {
+		this.r151_total_deposit = r151_total_deposit;
+	}
+	public BigDecimal getR151_percentage_total_deposit() {
+		return r151_percentage_total_deposit;
+	}
+	public void setR151_percentage_total_deposit(BigDecimal r151_percentage_total_deposit) {
+		this.r151_percentage_total_deposit = r151_percentage_total_deposit;
+	}
+	public String getR152_customer_name() {
+		return r152_customer_name;
+	}
+	public void setR152_customer_name(String r152_customer_name) {
+		this.r152_customer_name = r152_customer_name;
+	}
+	public String getR152_institutional_sector() {
+		return r152_institutional_sector;
+	}
+	public void setR152_institutional_sector(String r152_institutional_sector) {
+		this.r152_institutional_sector = r152_institutional_sector;
+	}
+	public String getR152_type_of_account() {
+		return r152_type_of_account;
+	}
+	public void setR152_type_of_account(String r152_type_of_account) {
+		this.r152_type_of_account = r152_type_of_account;
+	}
+	public BigDecimal getR152_interest_rate() {
+		return r152_interest_rate;
+	}
+	public void setR152_interest_rate(BigDecimal r152_interest_rate) {
+		this.r152_interest_rate = r152_interest_rate;
+	}
+	public BigDecimal getR152_amount() {
+		return r152_amount;
+	}
+	public void setR152_amount(BigDecimal r152_amount) {
+		this.r152_amount = r152_amount;
+	}
+	public BigDecimal getR152_total_deposit() {
+		return r152_total_deposit;
+	}
+	public void setR152_total_deposit(BigDecimal r152_total_deposit) {
+		this.r152_total_deposit = r152_total_deposit;
+	}
+	public BigDecimal getR152_percentage_total_deposit() {
+		return r152_percentage_total_deposit;
+	}
+	public void setR152_percentage_total_deposit(BigDecimal r152_percentage_total_deposit) {
+		this.r152_percentage_total_deposit = r152_percentage_total_deposit;
+	}
+	public String getR153_customer_name() {
+		return r153_customer_name;
+	}
+	public void setR153_customer_name(String r153_customer_name) {
+		this.r153_customer_name = r153_customer_name;
+	}
+	public String getR153_institutional_sector() {
+		return r153_institutional_sector;
+	}
+	public void setR153_institutional_sector(String r153_institutional_sector) {
+		this.r153_institutional_sector = r153_institutional_sector;
+	}
+	public String getR153_type_of_account() {
+		return r153_type_of_account;
+	}
+	public void setR153_type_of_account(String r153_type_of_account) {
+		this.r153_type_of_account = r153_type_of_account;
+	}
+	public BigDecimal getR153_interest_rate() {
+		return r153_interest_rate;
+	}
+	public void setR153_interest_rate(BigDecimal r153_interest_rate) {
+		this.r153_interest_rate = r153_interest_rate;
+	}
+	public BigDecimal getR153_amount() {
+		return r153_amount;
+	}
+	public void setR153_amount(BigDecimal r153_amount) {
+		this.r153_amount = r153_amount;
+	}
+	public BigDecimal getR153_total_deposit() {
+		return r153_total_deposit;
+	}
+	public void setR153_total_deposit(BigDecimal r153_total_deposit) {
+		this.r153_total_deposit = r153_total_deposit;
+	}
+	public BigDecimal getR153_percentage_total_deposit() {
+		return r153_percentage_total_deposit;
+	}
+	public void setR153_percentage_total_deposit(BigDecimal r153_percentage_total_deposit) {
+		this.r153_percentage_total_deposit = r153_percentage_total_deposit;
+	}
+	public String getR154_customer_name() {
+		return r154_customer_name;
+	}
+	public void setR154_customer_name(String r154_customer_name) {
+		this.r154_customer_name = r154_customer_name;
+	}
+	public String getR154_institutional_sector() {
+		return r154_institutional_sector;
+	}
+	public void setR154_institutional_sector(String r154_institutional_sector) {
+		this.r154_institutional_sector = r154_institutional_sector;
+	}
+	public String getR154_type_of_account() {
+		return r154_type_of_account;
+	}
+	public void setR154_type_of_account(String r154_type_of_account) {
+		this.r154_type_of_account = r154_type_of_account;
+	}
+	public BigDecimal getR154_interest_rate() {
+		return r154_interest_rate;
+	}
+	public void setR154_interest_rate(BigDecimal r154_interest_rate) {
+		this.r154_interest_rate = r154_interest_rate;
+	}
+	public BigDecimal getR154_amount() {
+		return r154_amount;
+	}
+	public void setR154_amount(BigDecimal r154_amount) {
+		this.r154_amount = r154_amount;
+	}
+	public BigDecimal getR154_total_deposit() {
+		return r154_total_deposit;
+	}
+	public void setR154_total_deposit(BigDecimal r154_total_deposit) {
+		this.r154_total_deposit = r154_total_deposit;
+	}
+	public BigDecimal getR154_percentage_total_deposit() {
+		return r154_percentage_total_deposit;
+	}
+	public void setR154_percentage_total_deposit(BigDecimal r154_percentage_total_deposit) {
+		this.r154_percentage_total_deposit = r154_percentage_total_deposit;
+	}
+	public String getR155_customer_name() {
+		return r155_customer_name;
+	}
+	public void setR155_customer_name(String r155_customer_name) {
+		this.r155_customer_name = r155_customer_name;
+	}
+	public String getR155_institutional_sector() {
+		return r155_institutional_sector;
+	}
+	public void setR155_institutional_sector(String r155_institutional_sector) {
+		this.r155_institutional_sector = r155_institutional_sector;
+	}
+	public String getR155_type_of_account() {
+		return r155_type_of_account;
+	}
+	public void setR155_type_of_account(String r155_type_of_account) {
+		this.r155_type_of_account = r155_type_of_account;
+	}
+	public BigDecimal getR155_interest_rate() {
+		return r155_interest_rate;
+	}
+	public void setR155_interest_rate(BigDecimal r155_interest_rate) {
+		this.r155_interest_rate = r155_interest_rate;
+	}
+	public BigDecimal getR155_amount() {
+		return r155_amount;
+	}
+	public void setR155_amount(BigDecimal r155_amount) {
+		this.r155_amount = r155_amount;
+	}
+	public BigDecimal getR155_total_deposit() {
+		return r155_total_deposit;
+	}
+	public void setR155_total_deposit(BigDecimal r155_total_deposit) {
+		this.r155_total_deposit = r155_total_deposit;
+	}
+	public BigDecimal getR155_percentage_total_deposit() {
+		return r155_percentage_total_deposit;
+	}
+	public void setR155_percentage_total_deposit(BigDecimal r155_percentage_total_deposit) {
+		this.r155_percentage_total_deposit = r155_percentage_total_deposit;
+	}
+	public String getR156_customer_name() {
+		return r156_customer_name;
+	}
+	public void setR156_customer_name(String r156_customer_name) {
+		this.r156_customer_name = r156_customer_name;
+	}
+	public String getR156_institutional_sector() {
+		return r156_institutional_sector;
+	}
+	public void setR156_institutional_sector(String r156_institutional_sector) {
+		this.r156_institutional_sector = r156_institutional_sector;
+	}
+	public String getR156_type_of_account() {
+		return r156_type_of_account;
+	}
+	public void setR156_type_of_account(String r156_type_of_account) {
+		this.r156_type_of_account = r156_type_of_account;
+	}
+	public BigDecimal getR156_interest_rate() {
+		return r156_interest_rate;
+	}
+	public void setR156_interest_rate(BigDecimal r156_interest_rate) {
+		this.r156_interest_rate = r156_interest_rate;
+	}
+	public BigDecimal getR156_amount() {
+		return r156_amount;
+	}
+	public void setR156_amount(BigDecimal r156_amount) {
+		this.r156_amount = r156_amount;
+	}
+	public BigDecimal getR156_total_deposit() {
+		return r156_total_deposit;
+	}
+	public void setR156_total_deposit(BigDecimal r156_total_deposit) {
+		this.r156_total_deposit = r156_total_deposit;
+	}
+	public BigDecimal getR156_percentage_total_deposit() {
+		return r156_percentage_total_deposit;
+	}
+	public void setR156_percentage_total_deposit(BigDecimal r156_percentage_total_deposit) {
+		this.r156_percentage_total_deposit = r156_percentage_total_deposit;
+	}
+	public String getR157_customer_name() {
+		return r157_customer_name;
+	}
+	public void setR157_customer_name(String r157_customer_name) {
+		this.r157_customer_name = r157_customer_name;
+	}
+	public String getR157_institutional_sector() {
+		return r157_institutional_sector;
+	}
+	public void setR157_institutional_sector(String r157_institutional_sector) {
+		this.r157_institutional_sector = r157_institutional_sector;
+	}
+	public String getR157_type_of_account() {
+		return r157_type_of_account;
+	}
+	public void setR157_type_of_account(String r157_type_of_account) {
+		this.r157_type_of_account = r157_type_of_account;
+	}
+	public BigDecimal getR157_interest_rate() {
+		return r157_interest_rate;
+	}
+	public void setR157_interest_rate(BigDecimal r157_interest_rate) {
+		this.r157_interest_rate = r157_interest_rate;
+	}
+	public BigDecimal getR157_amount() {
+		return r157_amount;
+	}
+	public void setR157_amount(BigDecimal r157_amount) {
+		this.r157_amount = r157_amount;
+	}
+	public BigDecimal getR157_total_deposit() {
+		return r157_total_deposit;
+	}
+	public void setR157_total_deposit(BigDecimal r157_total_deposit) {
+		this.r157_total_deposit = r157_total_deposit;
+	}
+	public BigDecimal getR157_percentage_total_deposit() {
+		return r157_percentage_total_deposit;
+	}
+	public void setR157_percentage_total_deposit(BigDecimal r157_percentage_total_deposit) {
+		this.r157_percentage_total_deposit = r157_percentage_total_deposit;
+	}
+	public String getR158_customer_name() {
+		return r158_customer_name;
+	}
+	public void setR158_customer_name(String r158_customer_name) {
+		this.r158_customer_name = r158_customer_name;
+	}
+	public String getR158_institutional_sector() {
+		return r158_institutional_sector;
+	}
+	public void setR158_institutional_sector(String r158_institutional_sector) {
+		this.r158_institutional_sector = r158_institutional_sector;
+	}
+	public String getR158_type_of_account() {
+		return r158_type_of_account;
+	}
+	public void setR158_type_of_account(String r158_type_of_account) {
+		this.r158_type_of_account = r158_type_of_account;
+	}
+	public BigDecimal getR158_interest_rate() {
+		return r158_interest_rate;
+	}
+	public void setR158_interest_rate(BigDecimal r158_interest_rate) {
+		this.r158_interest_rate = r158_interest_rate;
+	}
+	public BigDecimal getR158_amount() {
+		return r158_amount;
+	}
+	public void setR158_amount(BigDecimal r158_amount) {
+		this.r158_amount = r158_amount;
+	}
+	public BigDecimal getR158_total_deposit() {
+		return r158_total_deposit;
+	}
+	public void setR158_total_deposit(BigDecimal r158_total_deposit) {
+		this.r158_total_deposit = r158_total_deposit;
+	}
+	public BigDecimal getR158_percentage_total_deposit() {
+		return r158_percentage_total_deposit;
+	}
+	public void setR158_percentage_total_deposit(BigDecimal r158_percentage_total_deposit) {
+		this.r158_percentage_total_deposit = r158_percentage_total_deposit;
+	}
+	public String getR159_customer_name() {
+		return r159_customer_name;
+	}
+	public void setR159_customer_name(String r159_customer_name) {
+		this.r159_customer_name = r159_customer_name;
+	}
+	public String getR159_institutional_sector() {
+		return r159_institutional_sector;
+	}
+	public void setR159_institutional_sector(String r159_institutional_sector) {
+		this.r159_institutional_sector = r159_institutional_sector;
+	}
+	public String getR159_type_of_account() {
+		return r159_type_of_account;
+	}
+	public void setR159_type_of_account(String r159_type_of_account) {
+		this.r159_type_of_account = r159_type_of_account;
+	}
+	public BigDecimal getR159_interest_rate() {
+		return r159_interest_rate;
+	}
+	public void setR159_interest_rate(BigDecimal r159_interest_rate) {
+		this.r159_interest_rate = r159_interest_rate;
+	}
+	public BigDecimal getR159_amount() {
+		return r159_amount;
+	}
+	public void setR159_amount(BigDecimal r159_amount) {
+		this.r159_amount = r159_amount;
+	}
+	public BigDecimal getR159_total_deposit() {
+		return r159_total_deposit;
+	}
+	public void setR159_total_deposit(BigDecimal r159_total_deposit) {
+		this.r159_total_deposit = r159_total_deposit;
+	}
+	public BigDecimal getR159_percentage_total_deposit() {
+		return r159_percentage_total_deposit;
+	}
+	public void setR159_percentage_total_deposit(BigDecimal r159_percentage_total_deposit) {
+		this.r159_percentage_total_deposit = r159_percentage_total_deposit;
+	}
+	public String getR160_customer_name() {
+		return r160_customer_name;
+	}
+	public void setR160_customer_name(String r160_customer_name) {
+		this.r160_customer_name = r160_customer_name;
+	}
+	public String getR160_institutional_sector() {
+		return r160_institutional_sector;
+	}
+	public void setR160_institutional_sector(String r160_institutional_sector) {
+		this.r160_institutional_sector = r160_institutional_sector;
+	}
+	public String getR160_type_of_account() {
+		return r160_type_of_account;
+	}
+	public void setR160_type_of_account(String r160_type_of_account) {
+		this.r160_type_of_account = r160_type_of_account;
+	}
+	public BigDecimal getR160_interest_rate() {
+		return r160_interest_rate;
+	}
+	public void setR160_interest_rate(BigDecimal r160_interest_rate) {
+		this.r160_interest_rate = r160_interest_rate;
+	}
+	public BigDecimal getR160_amount() {
+		return r160_amount;
+	}
+	public void setR160_amount(BigDecimal r160_amount) {
+		this.r160_amount = r160_amount;
+	}
+	public BigDecimal getR160_total_deposit() {
+		return r160_total_deposit;
+	}
+	public void setR160_total_deposit(BigDecimal r160_total_deposit) {
+		this.r160_total_deposit = r160_total_deposit;
+	}
+	public BigDecimal getR160_percentage_total_deposit() {
+		return r160_percentage_total_deposit;
+	}
+	public void setR160_percentage_total_deposit(BigDecimal r160_percentage_total_deposit) {
+		this.r160_percentage_total_deposit = r160_percentage_total_deposit;
+	}
+	public String getR161_customer_name() {
+		return r161_customer_name;
+	}
+	public void setR161_customer_name(String r161_customer_name) {
+		this.r161_customer_name = r161_customer_name;
+	}
+	public String getR161_institutional_sector() {
+		return r161_institutional_sector;
+	}
+	public void setR161_institutional_sector(String r161_institutional_sector) {
+		this.r161_institutional_sector = r161_institutional_sector;
+	}
+	public String getR161_type_of_account() {
+		return r161_type_of_account;
+	}
+	public void setR161_type_of_account(String r161_type_of_account) {
+		this.r161_type_of_account = r161_type_of_account;
+	}
+	public BigDecimal getR161_interest_rate() {
+		return r161_interest_rate;
+	}
+	public void setR161_interest_rate(BigDecimal r161_interest_rate) {
+		this.r161_interest_rate = r161_interest_rate;
+	}
+	public BigDecimal getR161_amount() {
+		return r161_amount;
+	}
+	public void setR161_amount(BigDecimal r161_amount) {
+		this.r161_amount = r161_amount;
+	}
+	public BigDecimal getR161_total_deposit() {
+		return r161_total_deposit;
+	}
+	public void setR161_total_deposit(BigDecimal r161_total_deposit) {
+		this.r161_total_deposit = r161_total_deposit;
+	}
+	public BigDecimal getR161_percentage_total_deposit() {
+		return r161_percentage_total_deposit;
+	}
+	public void setR161_percentage_total_deposit(BigDecimal r161_percentage_total_deposit) {
+		this.r161_percentage_total_deposit = r161_percentage_total_deposit;
+	}
+	public String getR162_customer_name() {
+		return r162_customer_name;
+	}
+	public void setR162_customer_name(String r162_customer_name) {
+		this.r162_customer_name = r162_customer_name;
+	}
+	public String getR162_institutional_sector() {
+		return r162_institutional_sector;
+	}
+	public void setR162_institutional_sector(String r162_institutional_sector) {
+		this.r162_institutional_sector = r162_institutional_sector;
+	}
+	public String getR162_type_of_account() {
+		return r162_type_of_account;
+	}
+	public void setR162_type_of_account(String r162_type_of_account) {
+		this.r162_type_of_account = r162_type_of_account;
+	}
+	public BigDecimal getR162_interest_rate() {
+		return r162_interest_rate;
+	}
+	public void setR162_interest_rate(BigDecimal r162_interest_rate) {
+		this.r162_interest_rate = r162_interest_rate;
+	}
+	public BigDecimal getR162_amount() {
+		return r162_amount;
+	}
+	public void setR162_amount(BigDecimal r162_amount) {
+		this.r162_amount = r162_amount;
+	}
+	public BigDecimal getR162_total_deposit() {
+		return r162_total_deposit;
+	}
+	public void setR162_total_deposit(BigDecimal r162_total_deposit) {
+		this.r162_total_deposit = r162_total_deposit;
+	}
+	public BigDecimal getR162_percentage_total_deposit() {
+		return r162_percentage_total_deposit;
+	}
+	public void setR162_percentage_total_deposit(BigDecimal r162_percentage_total_deposit) {
+		this.r162_percentage_total_deposit = r162_percentage_total_deposit;
+	}
+	public String getR163_customer_name() {
+		return r163_customer_name;
+	}
+	public void setR163_customer_name(String r163_customer_name) {
+		this.r163_customer_name = r163_customer_name;
+	}
+	public String getR163_institutional_sector() {
+		return r163_institutional_sector;
+	}
+	public void setR163_institutional_sector(String r163_institutional_sector) {
+		this.r163_institutional_sector = r163_institutional_sector;
+	}
+	public String getR163_type_of_account() {
+		return r163_type_of_account;
+	}
+	public void setR163_type_of_account(String r163_type_of_account) {
+		this.r163_type_of_account = r163_type_of_account;
+	}
+	public BigDecimal getR163_interest_rate() {
+		return r163_interest_rate;
+	}
+	public void setR163_interest_rate(BigDecimal r163_interest_rate) {
+		this.r163_interest_rate = r163_interest_rate;
+	}
+	public BigDecimal getR163_amount() {
+		return r163_amount;
+	}
+	public void setR163_amount(BigDecimal r163_amount) {
+		this.r163_amount = r163_amount;
+	}
+	public BigDecimal getR163_total_deposit() {
+		return r163_total_deposit;
+	}
+	public void setR163_total_deposit(BigDecimal r163_total_deposit) {
+		this.r163_total_deposit = r163_total_deposit;
+	}
+	public BigDecimal getR163_percentage_total_deposit() {
+		return r163_percentage_total_deposit;
+	}
+	public void setR163_percentage_total_deposit(BigDecimal r163_percentage_total_deposit) {
+		this.r163_percentage_total_deposit = r163_percentage_total_deposit;
+	}
+	public String getR164_customer_name() {
+		return r164_customer_name;
+	}
+	public void setR164_customer_name(String r164_customer_name) {
+		this.r164_customer_name = r164_customer_name;
+	}
+	public String getR164_institutional_sector() {
+		return r164_institutional_sector;
+	}
+	public void setR164_institutional_sector(String r164_institutional_sector) {
+		this.r164_institutional_sector = r164_institutional_sector;
+	}
+	public String getR164_type_of_account() {
+		return r164_type_of_account;
+	}
+	public void setR164_type_of_account(String r164_type_of_account) {
+		this.r164_type_of_account = r164_type_of_account;
+	}
+	public BigDecimal getR164_interest_rate() {
+		return r164_interest_rate;
+	}
+	public void setR164_interest_rate(BigDecimal r164_interest_rate) {
+		this.r164_interest_rate = r164_interest_rate;
+	}
+	public BigDecimal getR164_amount() {
+		return r164_amount;
+	}
+	public void setR164_amount(BigDecimal r164_amount) {
+		this.r164_amount = r164_amount;
+	}
+	public BigDecimal getR164_total_deposit() {
+		return r164_total_deposit;
+	}
+	public void setR164_total_deposit(BigDecimal r164_total_deposit) {
+		this.r164_total_deposit = r164_total_deposit;
+	}
+	public BigDecimal getR164_percentage_total_deposit() {
+		return r164_percentage_total_deposit;
+	}
+	public void setR164_percentage_total_deposit(BigDecimal r164_percentage_total_deposit) {
+		this.r164_percentage_total_deposit = r164_percentage_total_deposit;
+	}
+	public String getR165_customer_name() {
+		return r165_customer_name;
+	}
+	public void setR165_customer_name(String r165_customer_name) {
+		this.r165_customer_name = r165_customer_name;
+	}
+	public String getR165_institutional_sector() {
+		return r165_institutional_sector;
+	}
+	public void setR165_institutional_sector(String r165_institutional_sector) {
+		this.r165_institutional_sector = r165_institutional_sector;
+	}
+	public String getR165_type_of_account() {
+		return r165_type_of_account;
+	}
+	public void setR165_type_of_account(String r165_type_of_account) {
+		this.r165_type_of_account = r165_type_of_account;
+	}
+	public BigDecimal getR165_interest_rate() {
+		return r165_interest_rate;
+	}
+	public void setR165_interest_rate(BigDecimal r165_interest_rate) {
+		this.r165_interest_rate = r165_interest_rate;
+	}
+	public BigDecimal getR165_amount() {
+		return r165_amount;
+	}
+	public void setR165_amount(BigDecimal r165_amount) {
+		this.r165_amount = r165_amount;
+	}
+	public BigDecimal getR165_total_deposit() {
+		return r165_total_deposit;
+	}
+	public void setR165_total_deposit(BigDecimal r165_total_deposit) {
+		this.r165_total_deposit = r165_total_deposit;
+	}
+	public BigDecimal getR165_percentage_total_deposit() {
+		return r165_percentage_total_deposit;
+	}
+	public void setR165_percentage_total_deposit(BigDecimal r165_percentage_total_deposit) {
+		this.r165_percentage_total_deposit = r165_percentage_total_deposit;
+	}
+	public String getR166_customer_name() {
+		return r166_customer_name;
+	}
+	public void setR166_customer_name(String r166_customer_name) {
+		this.r166_customer_name = r166_customer_name;
+	}
+	public String getR166_institutional_sector() {
+		return r166_institutional_sector;
+	}
+	public void setR166_institutional_sector(String r166_institutional_sector) {
+		this.r166_institutional_sector = r166_institutional_sector;
+	}
+	public String getR166_type_of_account() {
+		return r166_type_of_account;
+	}
+	public void setR166_type_of_account(String r166_type_of_account) {
+		this.r166_type_of_account = r166_type_of_account;
+	}
+	public BigDecimal getR166_interest_rate() {
+		return r166_interest_rate;
+	}
+	public void setR166_interest_rate(BigDecimal r166_interest_rate) {
+		this.r166_interest_rate = r166_interest_rate;
+	}
+	public BigDecimal getR166_amount() {
+		return r166_amount;
+	}
+	public void setR166_amount(BigDecimal r166_amount) {
+		this.r166_amount = r166_amount;
+	}
+	public BigDecimal getR166_total_deposit() {
+		return r166_total_deposit;
+	}
+	public void setR166_total_deposit(BigDecimal r166_total_deposit) {
+		this.r166_total_deposit = r166_total_deposit;
+	}
+	public BigDecimal getR166_percentage_total_deposit() {
+		return r166_percentage_total_deposit;
+	}
+	public void setR166_percentage_total_deposit(BigDecimal r166_percentage_total_deposit) {
+		this.r166_percentage_total_deposit = r166_percentage_total_deposit;
+	}
+	public String getR167_customer_name() {
+		return r167_customer_name;
+	}
+	public void setR167_customer_name(String r167_customer_name) {
+		this.r167_customer_name = r167_customer_name;
+	}
+	public String getR167_institutional_sector() {
+		return r167_institutional_sector;
+	}
+	public void setR167_institutional_sector(String r167_institutional_sector) {
+		this.r167_institutional_sector = r167_institutional_sector;
+	}
+	public String getR167_type_of_account() {
+		return r167_type_of_account;
+	}
+	public void setR167_type_of_account(String r167_type_of_account) {
+		this.r167_type_of_account = r167_type_of_account;
+	}
+	public BigDecimal getR167_interest_rate() {
+		return r167_interest_rate;
+	}
+	public void setR167_interest_rate(BigDecimal r167_interest_rate) {
+		this.r167_interest_rate = r167_interest_rate;
+	}
+	public BigDecimal getR167_amount() {
+		return r167_amount;
+	}
+	public void setR167_amount(BigDecimal r167_amount) {
+		this.r167_amount = r167_amount;
+	}
+	public BigDecimal getR167_total_deposit() {
+		return r167_total_deposit;
+	}
+	public void setR167_total_deposit(BigDecimal r167_total_deposit) {
+		this.r167_total_deposit = r167_total_deposit;
+	}
+	public BigDecimal getR167_percentage_total_deposit() {
+		return r167_percentage_total_deposit;
+	}
+	public void setR167_percentage_total_deposit(BigDecimal r167_percentage_total_deposit) {
+		this.r167_percentage_total_deposit = r167_percentage_total_deposit;
+	}
+	public String getR168_customer_name() {
+		return r168_customer_name;
+	}
+	public void setR168_customer_name(String r168_customer_name) {
+		this.r168_customer_name = r168_customer_name;
+	}
+	public String getR168_institutional_sector() {
+		return r168_institutional_sector;
+	}
+	public void setR168_institutional_sector(String r168_institutional_sector) {
+		this.r168_institutional_sector = r168_institutional_sector;
+	}
+	public String getR168_type_of_account() {
+		return r168_type_of_account;
+	}
+	public void setR168_type_of_account(String r168_type_of_account) {
+		this.r168_type_of_account = r168_type_of_account;
+	}
+	public BigDecimal getR168_interest_rate() {
+		return r168_interest_rate;
+	}
+	public void setR168_interest_rate(BigDecimal r168_interest_rate) {
+		this.r168_interest_rate = r168_interest_rate;
+	}
+	public BigDecimal getR168_amount() {
+		return r168_amount;
+	}
+	public void setR168_amount(BigDecimal r168_amount) {
+		this.r168_amount = r168_amount;
+	}
+	public BigDecimal getR168_total_deposit() {
+		return r168_total_deposit;
+	}
+	public void setR168_total_deposit(BigDecimal r168_total_deposit) {
+		this.r168_total_deposit = r168_total_deposit;
+	}
+	public BigDecimal getR168_percentage_total_deposit() {
+		return r168_percentage_total_deposit;
+	}
+	public void setR168_percentage_total_deposit(BigDecimal r168_percentage_total_deposit) {
+		this.r168_percentage_total_deposit = r168_percentage_total_deposit;
+	}
+	public String getR169_customer_name() {
+		return r169_customer_name;
+	}
+	public void setR169_customer_name(String r169_customer_name) {
+		this.r169_customer_name = r169_customer_name;
+	}
+	public String getR169_institutional_sector() {
+		return r169_institutional_sector;
+	}
+	public void setR169_institutional_sector(String r169_institutional_sector) {
+		this.r169_institutional_sector = r169_institutional_sector;
+	}
+	public String getR169_type_of_account() {
+		return r169_type_of_account;
+	}
+	public void setR169_type_of_account(String r169_type_of_account) {
+		this.r169_type_of_account = r169_type_of_account;
+	}
+	public BigDecimal getR169_interest_rate() {
+		return r169_interest_rate;
+	}
+	public void setR169_interest_rate(BigDecimal r169_interest_rate) {
+		this.r169_interest_rate = r169_interest_rate;
+	}
+	public BigDecimal getR169_amount() {
+		return r169_amount;
+	}
+	public void setR169_amount(BigDecimal r169_amount) {
+		this.r169_amount = r169_amount;
+	}
+	public BigDecimal getR169_total_deposit() {
+		return r169_total_deposit;
+	}
+	public void setR169_total_deposit(BigDecimal r169_total_deposit) {
+		this.r169_total_deposit = r169_total_deposit;
+	}
+	public BigDecimal getR169_percentage_total_deposit() {
+		return r169_percentage_total_deposit;
+	}
+	public void setR169_percentage_total_deposit(BigDecimal r169_percentage_total_deposit) {
+		this.r169_percentage_total_deposit = r169_percentage_total_deposit;
+	}
+	public String getR170_customer_name() {
+		return r170_customer_name;
+	}
+	public void setR170_customer_name(String r170_customer_name) {
+		this.r170_customer_name = r170_customer_name;
+	}
+	public String getR170_institutional_sector() {
+		return r170_institutional_sector;
+	}
+	public void setR170_institutional_sector(String r170_institutional_sector) {
+		this.r170_institutional_sector = r170_institutional_sector;
+	}
+	public String getR170_type_of_account() {
+		return r170_type_of_account;
+	}
+	public void setR170_type_of_account(String r170_type_of_account) {
+		this.r170_type_of_account = r170_type_of_account;
+	}
+	public BigDecimal getR170_interest_rate() {
+		return r170_interest_rate;
+	}
+	public void setR170_interest_rate(BigDecimal r170_interest_rate) {
+		this.r170_interest_rate = r170_interest_rate;
+	}
+	public BigDecimal getR170_amount() {
+		return r170_amount;
+	}
+	public void setR170_amount(BigDecimal r170_amount) {
+		this.r170_amount = r170_amount;
+	}
+	public BigDecimal getR170_total_deposit() {
+		return r170_total_deposit;
+	}
+	public void setR170_total_deposit(BigDecimal r170_total_deposit) {
+		this.r170_total_deposit = r170_total_deposit;
+	}
+	public BigDecimal getR170_percentage_total_deposit() {
+		return r170_percentage_total_deposit;
+	}
+	public void setR170_percentage_total_deposit(BigDecimal r170_percentage_total_deposit) {
+		this.r170_percentage_total_deposit = r170_percentage_total_deposit;
+	}
+	public String getR171_customer_name() {
+		return r171_customer_name;
+	}
+	public void setR171_customer_name(String r171_customer_name) {
+		this.r171_customer_name = r171_customer_name;
+	}
+	public String getR171_institutional_sector() {
+		return r171_institutional_sector;
+	}
+	public void setR171_institutional_sector(String r171_institutional_sector) {
+		this.r171_institutional_sector = r171_institutional_sector;
+	}
+	public String getR171_type_of_account() {
+		return r171_type_of_account;
+	}
+	public void setR171_type_of_account(String r171_type_of_account) {
+		this.r171_type_of_account = r171_type_of_account;
+	}
+	public BigDecimal getR171_interest_rate() {
+		return r171_interest_rate;
+	}
+	public void setR171_interest_rate(BigDecimal r171_interest_rate) {
+		this.r171_interest_rate = r171_interest_rate;
+	}
+	public BigDecimal getR171_amount() {
+		return r171_amount;
+	}
+	public void setR171_amount(BigDecimal r171_amount) {
+		this.r171_amount = r171_amount;
+	}
+	public BigDecimal getR171_total_deposit() {
+		return r171_total_deposit;
+	}
+	public void setR171_total_deposit(BigDecimal r171_total_deposit) {
+		this.r171_total_deposit = r171_total_deposit;
+	}
+	public BigDecimal getR171_percentage_total_deposit() {
+		return r171_percentage_total_deposit;
+	}
+	public void setR171_percentage_total_deposit(BigDecimal r171_percentage_total_deposit) {
+		this.r171_percentage_total_deposit = r171_percentage_total_deposit;
+	}
+	public String getR172_customer_name() {
+		return r172_customer_name;
+	}
+	public void setR172_customer_name(String r172_customer_name) {
+		this.r172_customer_name = r172_customer_name;
+	}
+	public String getR172_institutional_sector() {
+		return r172_institutional_sector;
+	}
+	public void setR172_institutional_sector(String r172_institutional_sector) {
+		this.r172_institutional_sector = r172_institutional_sector;
+	}
+	public String getR172_type_of_account() {
+		return r172_type_of_account;
+	}
+	public void setR172_type_of_account(String r172_type_of_account) {
+		this.r172_type_of_account = r172_type_of_account;
+	}
+	public BigDecimal getR172_interest_rate() {
+		return r172_interest_rate;
+	}
+	public void setR172_interest_rate(BigDecimal r172_interest_rate) {
+		this.r172_interest_rate = r172_interest_rate;
+	}
+	public BigDecimal getR172_amount() {
+		return r172_amount;
+	}
+	public void setR172_amount(BigDecimal r172_amount) {
+		this.r172_amount = r172_amount;
+	}
+	public BigDecimal getR172_total_deposit() {
+		return r172_total_deposit;
+	}
+	public void setR172_total_deposit(BigDecimal r172_total_deposit) {
+		this.r172_total_deposit = r172_total_deposit;
+	}
+	public BigDecimal getR172_percentage_total_deposit() {
+		return r172_percentage_total_deposit;
+	}
+	public void setR172_percentage_total_deposit(BigDecimal r172_percentage_total_deposit) {
+		this.r172_percentage_total_deposit = r172_percentage_total_deposit;
+	}
+	public String getR173_customer_name() {
+		return r173_customer_name;
+	}
+	public void setR173_customer_name(String r173_customer_name) {
+		this.r173_customer_name = r173_customer_name;
+	}
+	public String getR173_institutional_sector() {
+		return r173_institutional_sector;
+	}
+	public void setR173_institutional_sector(String r173_institutional_sector) {
+		this.r173_institutional_sector = r173_institutional_sector;
+	}
+	public String getR173_type_of_account() {
+		return r173_type_of_account;
+	}
+	public void setR173_type_of_account(String r173_type_of_account) {
+		this.r173_type_of_account = r173_type_of_account;
+	}
+	public BigDecimal getR173_interest_rate() {
+		return r173_interest_rate;
+	}
+	public void setR173_interest_rate(BigDecimal r173_interest_rate) {
+		this.r173_interest_rate = r173_interest_rate;
+	}
+	public BigDecimal getR173_amount() {
+		return r173_amount;
+	}
+	public void setR173_amount(BigDecimal r173_amount) {
+		this.r173_amount = r173_amount;
+	}
+	public BigDecimal getR173_total_deposit() {
+		return r173_total_deposit;
+	}
+	public void setR173_total_deposit(BigDecimal r173_total_deposit) {
+		this.r173_total_deposit = r173_total_deposit;
+	}
+	public BigDecimal getR173_percentage_total_deposit() {
+		return r173_percentage_total_deposit;
+	}
+	public void setR173_percentage_total_deposit(BigDecimal r173_percentage_total_deposit) {
+		this.r173_percentage_total_deposit = r173_percentage_total_deposit;
+	}
+	public String getR174_customer_name() {
+		return r174_customer_name;
+	}
+	public void setR174_customer_name(String r174_customer_name) {
+		this.r174_customer_name = r174_customer_name;
+	}
+	public String getR174_institutional_sector() {
+		return r174_institutional_sector;
+	}
+	public void setR174_institutional_sector(String r174_institutional_sector) {
+		this.r174_institutional_sector = r174_institutional_sector;
+	}
+	public String getR174_type_of_account() {
+		return r174_type_of_account;
+	}
+	public void setR174_type_of_account(String r174_type_of_account) {
+		this.r174_type_of_account = r174_type_of_account;
+	}
+	public BigDecimal getR174_interest_rate() {
+		return r174_interest_rate;
+	}
+	public void setR174_interest_rate(BigDecimal r174_interest_rate) {
+		this.r174_interest_rate = r174_interest_rate;
+	}
+	public BigDecimal getR174_amount() {
+		return r174_amount;
+	}
+	public void setR174_amount(BigDecimal r174_amount) {
+		this.r174_amount = r174_amount;
+	}
+	public BigDecimal getR174_total_deposit() {
+		return r174_total_deposit;
+	}
+	public void setR174_total_deposit(BigDecimal r174_total_deposit) {
+		this.r174_total_deposit = r174_total_deposit;
+	}
+	public BigDecimal getR174_percentage_total_deposit() {
+		return r174_percentage_total_deposit;
+	}
+	public void setR174_percentage_total_deposit(BigDecimal r174_percentage_total_deposit) {
+		this.r174_percentage_total_deposit = r174_percentage_total_deposit;
+	}
+	public String getR175_customer_name() {
+		return r175_customer_name;
+	}
+	public void setR175_customer_name(String r175_customer_name) {
+		this.r175_customer_name = r175_customer_name;
+	}
+	public String getR175_institutional_sector() {
+		return r175_institutional_sector;
+	}
+	public void setR175_institutional_sector(String r175_institutional_sector) {
+		this.r175_institutional_sector = r175_institutional_sector;
+	}
+	public String getR175_type_of_account() {
+		return r175_type_of_account;
+	}
+	public void setR175_type_of_account(String r175_type_of_account) {
+		this.r175_type_of_account = r175_type_of_account;
+	}
+	public BigDecimal getR175_interest_rate() {
+		return r175_interest_rate;
+	}
+	public void setR175_interest_rate(BigDecimal r175_interest_rate) {
+		this.r175_interest_rate = r175_interest_rate;
+	}
+	public BigDecimal getR175_amount() {
+		return r175_amount;
+	}
+	public void setR175_amount(BigDecimal r175_amount) {
+		this.r175_amount = r175_amount;
+	}
+	public BigDecimal getR175_total_deposit() {
+		return r175_total_deposit;
+	}
+	public void setR175_total_deposit(BigDecimal r175_total_deposit) {
+		this.r175_total_deposit = r175_total_deposit;
+	}
+	public BigDecimal getR175_percentage_total_deposit() {
+		return r175_percentage_total_deposit;
+	}
+	public void setR175_percentage_total_deposit(BigDecimal r175_percentage_total_deposit) {
+		this.r175_percentage_total_deposit = r175_percentage_total_deposit;
+	}
+	public String getR176_customer_name() {
+		return r176_customer_name;
+	}
+	public void setR176_customer_name(String r176_customer_name) {
+		this.r176_customer_name = r176_customer_name;
+	}
+	public String getR176_institutional_sector() {
+		return r176_institutional_sector;
+	}
+	public void setR176_institutional_sector(String r176_institutional_sector) {
+		this.r176_institutional_sector = r176_institutional_sector;
+	}
+	public String getR176_type_of_account() {
+		return r176_type_of_account;
+	}
+	public void setR176_type_of_account(String r176_type_of_account) {
+		this.r176_type_of_account = r176_type_of_account;
+	}
+	public BigDecimal getR176_interest_rate() {
+		return r176_interest_rate;
+	}
+	public void setR176_interest_rate(BigDecimal r176_interest_rate) {
+		this.r176_interest_rate = r176_interest_rate;
+	}
+	public BigDecimal getR176_amount() {
+		return r176_amount;
+	}
+	public void setR176_amount(BigDecimal r176_amount) {
+		this.r176_amount = r176_amount;
+	}
+	public BigDecimal getR176_total_deposit() {
+		return r176_total_deposit;
+	}
+	public void setR176_total_deposit(BigDecimal r176_total_deposit) {
+		this.r176_total_deposit = r176_total_deposit;
+	}
+	public BigDecimal getR176_percentage_total_deposit() {
+		return r176_percentage_total_deposit;
+	}
+	public void setR176_percentage_total_deposit(BigDecimal r176_percentage_total_deposit) {
+		this.r176_percentage_total_deposit = r176_percentage_total_deposit;
+	}
+	public String getR177_customer_name() {
+		return r177_customer_name;
+	}
+	public void setR177_customer_name(String r177_customer_name) {
+		this.r177_customer_name = r177_customer_name;
+	}
+	public String getR177_institutional_sector() {
+		return r177_institutional_sector;
+	}
+	public void setR177_institutional_sector(String r177_institutional_sector) {
+		this.r177_institutional_sector = r177_institutional_sector;
+	}
+	public String getR177_type_of_account() {
+		return r177_type_of_account;
+	}
+	public void setR177_type_of_account(String r177_type_of_account) {
+		this.r177_type_of_account = r177_type_of_account;
+	}
+	public BigDecimal getR177_interest_rate() {
+		return r177_interest_rate;
+	}
+	public void setR177_interest_rate(BigDecimal r177_interest_rate) {
+		this.r177_interest_rate = r177_interest_rate;
+	}
+	public BigDecimal getR177_amount() {
+		return r177_amount;
+	}
+	public void setR177_amount(BigDecimal r177_amount) {
+		this.r177_amount = r177_amount;
+	}
+	public BigDecimal getR177_total_deposit() {
+		return r177_total_deposit;
+	}
+	public void setR177_total_deposit(BigDecimal r177_total_deposit) {
+		this.r177_total_deposit = r177_total_deposit;
+	}
+	public BigDecimal getR177_percentage_total_deposit() {
+		return r177_percentage_total_deposit;
+	}
+	public void setR177_percentage_total_deposit(BigDecimal r177_percentage_total_deposit) {
+		this.r177_percentage_total_deposit = r177_percentage_total_deposit;
+	}
+	public String getR178_customer_name() {
+		return r178_customer_name;
+	}
+	public void setR178_customer_name(String r178_customer_name) {
+		this.r178_customer_name = r178_customer_name;
+	}
+	public String getR178_institutional_sector() {
+		return r178_institutional_sector;
+	}
+	public void setR178_institutional_sector(String r178_institutional_sector) {
+		this.r178_institutional_sector = r178_institutional_sector;
+	}
+	public String getR178_type_of_account() {
+		return r178_type_of_account;
+	}
+	public void setR178_type_of_account(String r178_type_of_account) {
+		this.r178_type_of_account = r178_type_of_account;
+	}
+	public BigDecimal getR178_interest_rate() {
+		return r178_interest_rate;
+	}
+	public void setR178_interest_rate(BigDecimal r178_interest_rate) {
+		this.r178_interest_rate = r178_interest_rate;
+	}
+	public BigDecimal getR178_amount() {
+		return r178_amount;
+	}
+	public void setR178_amount(BigDecimal r178_amount) {
+		this.r178_amount = r178_amount;
+	}
+	public BigDecimal getR178_total_deposit() {
+		return r178_total_deposit;
+	}
+	public void setR178_total_deposit(BigDecimal r178_total_deposit) {
+		this.r178_total_deposit = r178_total_deposit;
+	}
+	public BigDecimal getR178_percentage_total_deposit() {
+		return r178_percentage_total_deposit;
+	}
+	public void setR178_percentage_total_deposit(BigDecimal r178_percentage_total_deposit) {
+		this.r178_percentage_total_deposit = r178_percentage_total_deposit;
+	}
+	public String getR179_customer_name() {
+		return r179_customer_name;
+	}
+	public void setR179_customer_name(String r179_customer_name) {
+		this.r179_customer_name = r179_customer_name;
+	}
+	public String getR179_institutional_sector() {
+		return r179_institutional_sector;
+	}
+	public void setR179_institutional_sector(String r179_institutional_sector) {
+		this.r179_institutional_sector = r179_institutional_sector;
+	}
+	public String getR179_type_of_account() {
+		return r179_type_of_account;
+	}
+	public void setR179_type_of_account(String r179_type_of_account) {
+		this.r179_type_of_account = r179_type_of_account;
+	}
+	public BigDecimal getR179_interest_rate() {
+		return r179_interest_rate;
+	}
+	public void setR179_interest_rate(BigDecimal r179_interest_rate) {
+		this.r179_interest_rate = r179_interest_rate;
+	}
+	public BigDecimal getR179_amount() {
+		return r179_amount;
+	}
+	public void setR179_amount(BigDecimal r179_amount) {
+		this.r179_amount = r179_amount;
+	}
+	public BigDecimal getR179_total_deposit() {
+		return r179_total_deposit;
+	}
+	public void setR179_total_deposit(BigDecimal r179_total_deposit) {
+		this.r179_total_deposit = r179_total_deposit;
+	}
+	public BigDecimal getR179_percentage_total_deposit() {
+		return r179_percentage_total_deposit;
+	}
+	public void setR179_percentage_total_deposit(BigDecimal r179_percentage_total_deposit) {
+		this.r179_percentage_total_deposit = r179_percentage_total_deposit;
+	}
+	public String getR180_customer_name() {
+		return r180_customer_name;
+	}
+	public void setR180_customer_name(String r180_customer_name) {
+		this.r180_customer_name = r180_customer_name;
+	}
+	public String getR180_institutional_sector() {
+		return r180_institutional_sector;
+	}
+	public void setR180_institutional_sector(String r180_institutional_sector) {
+		this.r180_institutional_sector = r180_institutional_sector;
+	}
+	public String getR180_type_of_account() {
+		return r180_type_of_account;
+	}
+	public void setR180_type_of_account(String r180_type_of_account) {
+		this.r180_type_of_account = r180_type_of_account;
+	}
+	public BigDecimal getR180_interest_rate() {
+		return r180_interest_rate;
+	}
+	public void setR180_interest_rate(BigDecimal r180_interest_rate) {
+		this.r180_interest_rate = r180_interest_rate;
+	}
+	public BigDecimal getR180_amount() {
+		return r180_amount;
+	}
+	public void setR180_amount(BigDecimal r180_amount) {
+		this.r180_amount = r180_amount;
+	}
+	public BigDecimal getR180_total_deposit() {
+		return r180_total_deposit;
+	}
+	public void setR180_total_deposit(BigDecimal r180_total_deposit) {
+		this.r180_total_deposit = r180_total_deposit;
+	}
+	public BigDecimal getR180_percentage_total_deposit() {
+		return r180_percentage_total_deposit;
+	}
+	public void setR180_percentage_total_deposit(BigDecimal r180_percentage_total_deposit) {
+		this.r180_percentage_total_deposit = r180_percentage_total_deposit;
+	}
+	public String getR181_customer_name() {
+		return r181_customer_name;
+	}
+	public void setR181_customer_name(String r181_customer_name) {
+		this.r181_customer_name = r181_customer_name;
+	}
+	public String getR181_institutional_sector() {
+		return r181_institutional_sector;
+	}
+	public void setR181_institutional_sector(String r181_institutional_sector) {
+		this.r181_institutional_sector = r181_institutional_sector;
+	}
+	public String getR181_type_of_account() {
+		return r181_type_of_account;
+	}
+	public void setR181_type_of_account(String r181_type_of_account) {
+		this.r181_type_of_account = r181_type_of_account;
+	}
+	public BigDecimal getR181_interest_rate() {
+		return r181_interest_rate;
+	}
+	public void setR181_interest_rate(BigDecimal r181_interest_rate) {
+		this.r181_interest_rate = r181_interest_rate;
+	}
+	public BigDecimal getR181_amount() {
+		return r181_amount;
+	}
+	public void setR181_amount(BigDecimal r181_amount) {
+		this.r181_amount = r181_amount;
+	}
+	public BigDecimal getR181_total_deposit() {
+		return r181_total_deposit;
+	}
+	public void setR181_total_deposit(BigDecimal r181_total_deposit) {
+		this.r181_total_deposit = r181_total_deposit;
+	}
+	public BigDecimal getR181_percentage_total_deposit() {
+		return r181_percentage_total_deposit;
+	}
+	public void setR181_percentage_total_deposit(BigDecimal r181_percentage_total_deposit) {
+		this.r181_percentage_total_deposit = r181_percentage_total_deposit;
+	}
+	public String getR182_customer_name() {
+		return r182_customer_name;
+	}
+	public void setR182_customer_name(String r182_customer_name) {
+		this.r182_customer_name = r182_customer_name;
+	}
+	public String getR182_institutional_sector() {
+		return r182_institutional_sector;
+	}
+	public void setR182_institutional_sector(String r182_institutional_sector) {
+		this.r182_institutional_sector = r182_institutional_sector;
+	}
+	public String getR182_type_of_account() {
+		return r182_type_of_account;
+	}
+	public void setR182_type_of_account(String r182_type_of_account) {
+		this.r182_type_of_account = r182_type_of_account;
+	}
+	public BigDecimal getR182_interest_rate() {
+		return r182_interest_rate;
+	}
+	public void setR182_interest_rate(BigDecimal r182_interest_rate) {
+		this.r182_interest_rate = r182_interest_rate;
+	}
+	public BigDecimal getR182_amount() {
+		return r182_amount;
+	}
+	public void setR182_amount(BigDecimal r182_amount) {
+		this.r182_amount = r182_amount;
+	}
+	public BigDecimal getR182_total_deposit() {
+		return r182_total_deposit;
+	}
+	public void setR182_total_deposit(BigDecimal r182_total_deposit) {
+		this.r182_total_deposit = r182_total_deposit;
+	}
+	public BigDecimal getR182_percentage_total_deposit() {
+		return r182_percentage_total_deposit;
+	}
+	public void setR182_percentage_total_deposit(BigDecimal r182_percentage_total_deposit) {
+		this.r182_percentage_total_deposit = r182_percentage_total_deposit;
+	}
+	public String getR183_customer_name() {
+		return r183_customer_name;
+	}
+	public void setR183_customer_name(String r183_customer_name) {
+		this.r183_customer_name = r183_customer_name;
+	}
+	public String getR183_institutional_sector() {
+		return r183_institutional_sector;
+	}
+	public void setR183_institutional_sector(String r183_institutional_sector) {
+		this.r183_institutional_sector = r183_institutional_sector;
+	}
+	public String getR183_type_of_account() {
+		return r183_type_of_account;
+	}
+	public void setR183_type_of_account(String r183_type_of_account) {
+		this.r183_type_of_account = r183_type_of_account;
+	}
+	public BigDecimal getR183_interest_rate() {
+		return r183_interest_rate;
+	}
+	public void setR183_interest_rate(BigDecimal r183_interest_rate) {
+		this.r183_interest_rate = r183_interest_rate;
+	}
+	public BigDecimal getR183_amount() {
+		return r183_amount;
+	}
+	public void setR183_amount(BigDecimal r183_amount) {
+		this.r183_amount = r183_amount;
+	}
+	public BigDecimal getR183_total_deposit() {
+		return r183_total_deposit;
+	}
+	public void setR183_total_deposit(BigDecimal r183_total_deposit) {
+		this.r183_total_deposit = r183_total_deposit;
+	}
+	public BigDecimal getR183_percentage_total_deposit() {
+		return r183_percentage_total_deposit;
+	}
+	public void setR183_percentage_total_deposit(BigDecimal r183_percentage_total_deposit) {
+		this.r183_percentage_total_deposit = r183_percentage_total_deposit;
+	}
+	public String getR184_customer_name() {
+		return r184_customer_name;
+	}
+	public void setR184_customer_name(String r184_customer_name) {
+		this.r184_customer_name = r184_customer_name;
+	}
+	public String getR184_institutional_sector() {
+		return r184_institutional_sector;
+	}
+	public void setR184_institutional_sector(String r184_institutional_sector) {
+		this.r184_institutional_sector = r184_institutional_sector;
+	}
+	public String getR184_type_of_account() {
+		return r184_type_of_account;
+	}
+	public void setR184_type_of_account(String r184_type_of_account) {
+		this.r184_type_of_account = r184_type_of_account;
+	}
+	public BigDecimal getR184_interest_rate() {
+		return r184_interest_rate;
+	}
+	public void setR184_interest_rate(BigDecimal r184_interest_rate) {
+		this.r184_interest_rate = r184_interest_rate;
+	}
+	public BigDecimal getR184_amount() {
+		return r184_amount;
+	}
+	public void setR184_amount(BigDecimal r184_amount) {
+		this.r184_amount = r184_amount;
+	}
+	public BigDecimal getR184_total_deposit() {
+		return r184_total_deposit;
+	}
+	public void setR184_total_deposit(BigDecimal r184_total_deposit) {
+		this.r184_total_deposit = r184_total_deposit;
+	}
+	public BigDecimal getR184_percentage_total_deposit() {
+		return r184_percentage_total_deposit;
+	}
+	public void setR184_percentage_total_deposit(BigDecimal r184_percentage_total_deposit) {
+		this.r184_percentage_total_deposit = r184_percentage_total_deposit;
+	}
+	public String getR185_customer_name() {
+		return r185_customer_name;
+	}
+	public void setR185_customer_name(String r185_customer_name) {
+		this.r185_customer_name = r185_customer_name;
+	}
+	public String getR185_institutional_sector() {
+		return r185_institutional_sector;
+	}
+	public void setR185_institutional_sector(String r185_institutional_sector) {
+		this.r185_institutional_sector = r185_institutional_sector;
+	}
+	public String getR185_type_of_account() {
+		return r185_type_of_account;
+	}
+	public void setR185_type_of_account(String r185_type_of_account) {
+		this.r185_type_of_account = r185_type_of_account;
+	}
+	public BigDecimal getR185_interest_rate() {
+		return r185_interest_rate;
+	}
+	public void setR185_interest_rate(BigDecimal r185_interest_rate) {
+		this.r185_interest_rate = r185_interest_rate;
+	}
+	public BigDecimal getR185_amount() {
+		return r185_amount;
+	}
+	public void setR185_amount(BigDecimal r185_amount) {
+		this.r185_amount = r185_amount;
+	}
+	public BigDecimal getR185_total_deposit() {
+		return r185_total_deposit;
+	}
+	public void setR185_total_deposit(BigDecimal r185_total_deposit) {
+		this.r185_total_deposit = r185_total_deposit;
+	}
+	public BigDecimal getR185_percentage_total_deposit() {
+		return r185_percentage_total_deposit;
+	}
+	public void setR185_percentage_total_deposit(BigDecimal r185_percentage_total_deposit) {
+		this.r185_percentage_total_deposit = r185_percentage_total_deposit;
+	}
+	public String getR186_customer_name() {
+		return r186_customer_name;
+	}
+	public void setR186_customer_name(String r186_customer_name) {
+		this.r186_customer_name = r186_customer_name;
+	}
+	public String getR186_institutional_sector() {
+		return r186_institutional_sector;
+	}
+	public void setR186_institutional_sector(String r186_institutional_sector) {
+		this.r186_institutional_sector = r186_institutional_sector;
+	}
+	public String getR186_type_of_account() {
+		return r186_type_of_account;
+	}
+	public void setR186_type_of_account(String r186_type_of_account) {
+		this.r186_type_of_account = r186_type_of_account;
+	}
+	public BigDecimal getR186_interest_rate() {
+		return r186_interest_rate;
+	}
+	public void setR186_interest_rate(BigDecimal r186_interest_rate) {
+		this.r186_interest_rate = r186_interest_rate;
+	}
+	public BigDecimal getR186_amount() {
+		return r186_amount;
+	}
+	public void setR186_amount(BigDecimal r186_amount) {
+		this.r186_amount = r186_amount;
+	}
+	public BigDecimal getR186_total_deposit() {
+		return r186_total_deposit;
+	}
+	public void setR186_total_deposit(BigDecimal r186_total_deposit) {
+		this.r186_total_deposit = r186_total_deposit;
+	}
+	public BigDecimal getR186_percentage_total_deposit() {
+		return r186_percentage_total_deposit;
+	}
+	public void setR186_percentage_total_deposit(BigDecimal r186_percentage_total_deposit) {
+		this.r186_percentage_total_deposit = r186_percentage_total_deposit;
+	}
+	public String getR187_customer_name() {
+		return r187_customer_name;
+	}
+	public void setR187_customer_name(String r187_customer_name) {
+		this.r187_customer_name = r187_customer_name;
+	}
+	public String getR187_institutional_sector() {
+		return r187_institutional_sector;
+	}
+	public void setR187_institutional_sector(String r187_institutional_sector) {
+		this.r187_institutional_sector = r187_institutional_sector;
+	}
+	public String getR187_type_of_account() {
+		return r187_type_of_account;
+	}
+	public void setR187_type_of_account(String r187_type_of_account) {
+		this.r187_type_of_account = r187_type_of_account;
+	}
+	public BigDecimal getR187_interest_rate() {
+		return r187_interest_rate;
+	}
+	public void setR187_interest_rate(BigDecimal r187_interest_rate) {
+		this.r187_interest_rate = r187_interest_rate;
+	}
+	public BigDecimal getR187_amount() {
+		return r187_amount;
+	}
+	public void setR187_amount(BigDecimal r187_amount) {
+		this.r187_amount = r187_amount;
+	}
+	public BigDecimal getR187_total_deposit() {
+		return r187_total_deposit;
+	}
+	public void setR187_total_deposit(BigDecimal r187_total_deposit) {
+		this.r187_total_deposit = r187_total_deposit;
+	}
+	public BigDecimal getR187_percentage_total_deposit() {
+		return r187_percentage_total_deposit;
+	}
+	public void setR187_percentage_total_deposit(BigDecimal r187_percentage_total_deposit) {
+		this.r187_percentage_total_deposit = r187_percentage_total_deposit;
+	}
+	public String getR188_customer_name() {
+		return r188_customer_name;
+	}
+	public void setR188_customer_name(String r188_customer_name) {
+		this.r188_customer_name = r188_customer_name;
+	}
+	public String getR188_institutional_sector() {
+		return r188_institutional_sector;
+	}
+	public void setR188_institutional_sector(String r188_institutional_sector) {
+		this.r188_institutional_sector = r188_institutional_sector;
+	}
+	public String getR188_type_of_account() {
+		return r188_type_of_account;
+	}
+	public void setR188_type_of_account(String r188_type_of_account) {
+		this.r188_type_of_account = r188_type_of_account;
+	}
+	public BigDecimal getR188_interest_rate() {
+		return r188_interest_rate;
+	}
+	public void setR188_interest_rate(BigDecimal r188_interest_rate) {
+		this.r188_interest_rate = r188_interest_rate;
+	}
+	public BigDecimal getR188_amount() {
+		return r188_amount;
+	}
+	public void setR188_amount(BigDecimal r188_amount) {
+		this.r188_amount = r188_amount;
+	}
+	public BigDecimal getR188_total_deposit() {
+		return r188_total_deposit;
+	}
+	public void setR188_total_deposit(BigDecimal r188_total_deposit) {
+		this.r188_total_deposit = r188_total_deposit;
+	}
+	public BigDecimal getR188_percentage_total_deposit() {
+		return r188_percentage_total_deposit;
+	}
+	public void setR188_percentage_total_deposit(BigDecimal r188_percentage_total_deposit) {
+		this.r188_percentage_total_deposit = r188_percentage_total_deposit;
+	}
+	public String getR189_customer_name() {
+		return r189_customer_name;
+	}
+	public void setR189_customer_name(String r189_customer_name) {
+		this.r189_customer_name = r189_customer_name;
+	}
+	public String getR189_institutional_sector() {
+		return r189_institutional_sector;
+	}
+	public void setR189_institutional_sector(String r189_institutional_sector) {
+		this.r189_institutional_sector = r189_institutional_sector;
+	}
+	public String getR189_type_of_account() {
+		return r189_type_of_account;
+	}
+	public void setR189_type_of_account(String r189_type_of_account) {
+		this.r189_type_of_account = r189_type_of_account;
+	}
+	public BigDecimal getR189_interest_rate() {
+		return r189_interest_rate;
+	}
+	public void setR189_interest_rate(BigDecimal r189_interest_rate) {
+		this.r189_interest_rate = r189_interest_rate;
+	}
+	public BigDecimal getR189_amount() {
+		return r189_amount;
+	}
+	public void setR189_amount(BigDecimal r189_amount) {
+		this.r189_amount = r189_amount;
+	}
+	public BigDecimal getR189_total_deposit() {
+		return r189_total_deposit;
+	}
+	public void setR189_total_deposit(BigDecimal r189_total_deposit) {
+		this.r189_total_deposit = r189_total_deposit;
+	}
+	public BigDecimal getR189_percentage_total_deposit() {
+		return r189_percentage_total_deposit;
+	}
+	public void setR189_percentage_total_deposit(BigDecimal r189_percentage_total_deposit) {
+		this.r189_percentage_total_deposit = r189_percentage_total_deposit;
+	}
+	public String getR190_customer_name() {
+		return r190_customer_name;
+	}
+	public void setR190_customer_name(String r190_customer_name) {
+		this.r190_customer_name = r190_customer_name;
+	}
+	public String getR190_institutional_sector() {
+		return r190_institutional_sector;
+	}
+	public void setR190_institutional_sector(String r190_institutional_sector) {
+		this.r190_institutional_sector = r190_institutional_sector;
+	}
+	public String getR190_type_of_account() {
+		return r190_type_of_account;
+	}
+	public void setR190_type_of_account(String r190_type_of_account) {
+		this.r190_type_of_account = r190_type_of_account;
+	}
+	public BigDecimal getR190_interest_rate() {
+		return r190_interest_rate;
+	}
+	public void setR190_interest_rate(BigDecimal r190_interest_rate) {
+		this.r190_interest_rate = r190_interest_rate;
+	}
+	public BigDecimal getR190_amount() {
+		return r190_amount;
+	}
+	public void setR190_amount(BigDecimal r190_amount) {
+		this.r190_amount = r190_amount;
+	}
+	public BigDecimal getR190_total_deposit() {
+		return r190_total_deposit;
+	}
+	public void setR190_total_deposit(BigDecimal r190_total_deposit) {
+		this.r190_total_deposit = r190_total_deposit;
+	}
+	public BigDecimal getR190_percentage_total_deposit() {
+		return r190_percentage_total_deposit;
+	}
+	public void setR190_percentage_total_deposit(BigDecimal r190_percentage_total_deposit) {
+		this.r190_percentage_total_deposit = r190_percentage_total_deposit;
+	}
+	public String getR191_customer_name() {
+		return r191_customer_name;
+	}
+	public void setR191_customer_name(String r191_customer_name) {
+		this.r191_customer_name = r191_customer_name;
+	}
+	public String getR191_institutional_sector() {
+		return r191_institutional_sector;
+	}
+	public void setR191_institutional_sector(String r191_institutional_sector) {
+		this.r191_institutional_sector = r191_institutional_sector;
+	}
+	public String getR191_type_of_account() {
+		return r191_type_of_account;
+	}
+	public void setR191_type_of_account(String r191_type_of_account) {
+		this.r191_type_of_account = r191_type_of_account;
+	}
+	public BigDecimal getR191_interest_rate() {
+		return r191_interest_rate;
+	}
+	public void setR191_interest_rate(BigDecimal r191_interest_rate) {
+		this.r191_interest_rate = r191_interest_rate;
+	}
+	public BigDecimal getR191_amount() {
+		return r191_amount;
+	}
+	public void setR191_amount(BigDecimal r191_amount) {
+		this.r191_amount = r191_amount;
+	}
+	public BigDecimal getR191_total_deposit() {
+		return r191_total_deposit;
+	}
+	public void setR191_total_deposit(BigDecimal r191_total_deposit) {
+		this.r191_total_deposit = r191_total_deposit;
+	}
+	public BigDecimal getR191_percentage_total_deposit() {
+		return r191_percentage_total_deposit;
+	}
+	public void setR191_percentage_total_deposit(BigDecimal r191_percentage_total_deposit) {
+		this.r191_percentage_total_deposit = r191_percentage_total_deposit;
+	}
+	public String getR192_customer_name() {
+		return r192_customer_name;
+	}
+	public void setR192_customer_name(String r192_customer_name) {
+		this.r192_customer_name = r192_customer_name;
+	}
+	public String getR192_institutional_sector() {
+		return r192_institutional_sector;
+	}
+	public void setR192_institutional_sector(String r192_institutional_sector) {
+		this.r192_institutional_sector = r192_institutional_sector;
+	}
+	public String getR192_type_of_account() {
+		return r192_type_of_account;
+	}
+	public void setR192_type_of_account(String r192_type_of_account) {
+		this.r192_type_of_account = r192_type_of_account;
+	}
+	public BigDecimal getR192_interest_rate() {
+		return r192_interest_rate;
+	}
+	public void setR192_interest_rate(BigDecimal r192_interest_rate) {
+		this.r192_interest_rate = r192_interest_rate;
+	}
+	public BigDecimal getR192_amount() {
+		return r192_amount;
+	}
+	public void setR192_amount(BigDecimal r192_amount) {
+		this.r192_amount = r192_amount;
+	}
+	public BigDecimal getR192_total_deposit() {
+		return r192_total_deposit;
+	}
+	public void setR192_total_deposit(BigDecimal r192_total_deposit) {
+		this.r192_total_deposit = r192_total_deposit;
+	}
+	public BigDecimal getR192_percentage_total_deposit() {
+		return r192_percentage_total_deposit;
+	}
+	public void setR192_percentage_total_deposit(BigDecimal r192_percentage_total_deposit) {
+		this.r192_percentage_total_deposit = r192_percentage_total_deposit;
+	}
+	public String getR193_customer_name() {
+		return r193_customer_name;
+	}
+	public void setR193_customer_name(String r193_customer_name) {
+		this.r193_customer_name = r193_customer_name;
+	}
+	public String getR193_institutional_sector() {
+		return r193_institutional_sector;
+	}
+	public void setR193_institutional_sector(String r193_institutional_sector) {
+		this.r193_institutional_sector = r193_institutional_sector;
+	}
+	public String getR193_type_of_account() {
+		return r193_type_of_account;
+	}
+	public void setR193_type_of_account(String r193_type_of_account) {
+		this.r193_type_of_account = r193_type_of_account;
+	}
+	public BigDecimal getR193_interest_rate() {
+		return r193_interest_rate;
+	}
+	public void setR193_interest_rate(BigDecimal r193_interest_rate) {
+		this.r193_interest_rate = r193_interest_rate;
+	}
+	public BigDecimal getR193_amount() {
+		return r193_amount;
+	}
+	public void setR193_amount(BigDecimal r193_amount) {
+		this.r193_amount = r193_amount;
+	}
+	public BigDecimal getR193_total_deposit() {
+		return r193_total_deposit;
+	}
+	public void setR193_total_deposit(BigDecimal r193_total_deposit) {
+		this.r193_total_deposit = r193_total_deposit;
+	}
+	public BigDecimal getR193_percentage_total_deposit() {
+		return r193_percentage_total_deposit;
+	}
+	public void setR193_percentage_total_deposit(BigDecimal r193_percentage_total_deposit) {
+		this.r193_percentage_total_deposit = r193_percentage_total_deposit;
+	}
+	public String getR194_customer_name() {
+		return r194_customer_name;
+	}
+	public void setR194_customer_name(String r194_customer_name) {
+		this.r194_customer_name = r194_customer_name;
+	}
+	public String getR194_institutional_sector() {
+		return r194_institutional_sector;
+	}
+	public void setR194_institutional_sector(String r194_institutional_sector) {
+		this.r194_institutional_sector = r194_institutional_sector;
+	}
+	public String getR194_type_of_account() {
+		return r194_type_of_account;
+	}
+	public void setR194_type_of_account(String r194_type_of_account) {
+		this.r194_type_of_account = r194_type_of_account;
+	}
+	public BigDecimal getR194_interest_rate() {
+		return r194_interest_rate;
+	}
+	public void setR194_interest_rate(BigDecimal r194_interest_rate) {
+		this.r194_interest_rate = r194_interest_rate;
+	}
+	public BigDecimal getR194_amount() {
+		return r194_amount;
+	}
+	public void setR194_amount(BigDecimal r194_amount) {
+		this.r194_amount = r194_amount;
+	}
+	public BigDecimal getR194_total_deposit() {
+		return r194_total_deposit;
+	}
+	public void setR194_total_deposit(BigDecimal r194_total_deposit) {
+		this.r194_total_deposit = r194_total_deposit;
+	}
+	public BigDecimal getR194_percentage_total_deposit() {
+		return r194_percentage_total_deposit;
+	}
+	public void setR194_percentage_total_deposit(BigDecimal r194_percentage_total_deposit) {
+		this.r194_percentage_total_deposit = r194_percentage_total_deposit;
+	}
+	public String getR195_customer_name() {
+		return r195_customer_name;
+	}
+	public void setR195_customer_name(String r195_customer_name) {
+		this.r195_customer_name = r195_customer_name;
+	}
+	public String getR195_institutional_sector() {
+		return r195_institutional_sector;
+	}
+	public void setR195_institutional_sector(String r195_institutional_sector) {
+		this.r195_institutional_sector = r195_institutional_sector;
+	}
+	public String getR195_type_of_account() {
+		return r195_type_of_account;
+	}
+	public void setR195_type_of_account(String r195_type_of_account) {
+		this.r195_type_of_account = r195_type_of_account;
+	}
+	public BigDecimal getR195_interest_rate() {
+		return r195_interest_rate;
+	}
+	public void setR195_interest_rate(BigDecimal r195_interest_rate) {
+		this.r195_interest_rate = r195_interest_rate;
+	}
+	public BigDecimal getR195_amount() {
+		return r195_amount;
+	}
+	public void setR195_amount(BigDecimal r195_amount) {
+		this.r195_amount = r195_amount;
+	}
+	public BigDecimal getR195_total_deposit() {
+		return r195_total_deposit;
+	}
+	public void setR195_total_deposit(BigDecimal r195_total_deposit) {
+		this.r195_total_deposit = r195_total_deposit;
+	}
+	public BigDecimal getR195_percentage_total_deposit() {
+		return r195_percentage_total_deposit;
+	}
+	public void setR195_percentage_total_deposit(BigDecimal r195_percentage_total_deposit) {
+		this.r195_percentage_total_deposit = r195_percentage_total_deposit;
+	}
+	public String getR196_customer_name() {
+		return r196_customer_name;
+	}
+	public void setR196_customer_name(String r196_customer_name) {
+		this.r196_customer_name = r196_customer_name;
+	}
+	public String getR196_institutional_sector() {
+		return r196_institutional_sector;
+	}
+	public void setR196_institutional_sector(String r196_institutional_sector) {
+		this.r196_institutional_sector = r196_institutional_sector;
+	}
+	public String getR196_type_of_account() {
+		return r196_type_of_account;
+	}
+	public void setR196_type_of_account(String r196_type_of_account) {
+		this.r196_type_of_account = r196_type_of_account;
+	}
+	public BigDecimal getR196_interest_rate() {
+		return r196_interest_rate;
+	}
+	public void setR196_interest_rate(BigDecimal r196_interest_rate) {
+		this.r196_interest_rate = r196_interest_rate;
+	}
+	public BigDecimal getR196_amount() {
+		return r196_amount;
+	}
+	public void setR196_amount(BigDecimal r196_amount) {
+		this.r196_amount = r196_amount;
+	}
+	public BigDecimal getR196_total_deposit() {
+		return r196_total_deposit;
+	}
+	public void setR196_total_deposit(BigDecimal r196_total_deposit) {
+		this.r196_total_deposit = r196_total_deposit;
+	}
+	public BigDecimal getR196_percentage_total_deposit() {
+		return r196_percentage_total_deposit;
+	}
+	public void setR196_percentage_total_deposit(BigDecimal r196_percentage_total_deposit) {
+		this.r196_percentage_total_deposit = r196_percentage_total_deposit;
+	}
+	public String getR197_customer_name() {
+		return r197_customer_name;
+	}
+	public void setR197_customer_name(String r197_customer_name) {
+		this.r197_customer_name = r197_customer_name;
+	}
+	public String getR197_institutional_sector() {
+		return r197_institutional_sector;
+	}
+	public void setR197_institutional_sector(String r197_institutional_sector) {
+		this.r197_institutional_sector = r197_institutional_sector;
+	}
+	public String getR197_type_of_account() {
+		return r197_type_of_account;
+	}
+	public void setR197_type_of_account(String r197_type_of_account) {
+		this.r197_type_of_account = r197_type_of_account;
+	}
+	public BigDecimal getR197_interest_rate() {
+		return r197_interest_rate;
+	}
+	public void setR197_interest_rate(BigDecimal r197_interest_rate) {
+		this.r197_interest_rate = r197_interest_rate;
+	}
+	public BigDecimal getR197_amount() {
+		return r197_amount;
+	}
+	public void setR197_amount(BigDecimal r197_amount) {
+		this.r197_amount = r197_amount;
+	}
+	public BigDecimal getR197_total_deposit() {
+		return r197_total_deposit;
+	}
+	public void setR197_total_deposit(BigDecimal r197_total_deposit) {
+		this.r197_total_deposit = r197_total_deposit;
+	}
+	public BigDecimal getR197_percentage_total_deposit() {
+		return r197_percentage_total_deposit;
+	}
+	public void setR197_percentage_total_deposit(BigDecimal r197_percentage_total_deposit) {
+		this.r197_percentage_total_deposit = r197_percentage_total_deposit;
+	}
+	public String getR198_customer_name() {
+		return r198_customer_name;
+	}
+	public void setR198_customer_name(String r198_customer_name) {
+		this.r198_customer_name = r198_customer_name;
+	}
+	public String getR198_institutional_sector() {
+		return r198_institutional_sector;
+	}
+	public void setR198_institutional_sector(String r198_institutional_sector) {
+		this.r198_institutional_sector = r198_institutional_sector;
+	}
+	public String getR198_type_of_account() {
+		return r198_type_of_account;
+	}
+	public void setR198_type_of_account(String r198_type_of_account) {
+		this.r198_type_of_account = r198_type_of_account;
+	}
+	public BigDecimal getR198_interest_rate() {
+		return r198_interest_rate;
+	}
+	public void setR198_interest_rate(BigDecimal r198_interest_rate) {
+		this.r198_interest_rate = r198_interest_rate;
+	}
+	public BigDecimal getR198_amount() {
+		return r198_amount;
+	}
+	public void setR198_amount(BigDecimal r198_amount) {
+		this.r198_amount = r198_amount;
+	}
+	public BigDecimal getR198_total_deposit() {
+		return r198_total_deposit;
+	}
+	public void setR198_total_deposit(BigDecimal r198_total_deposit) {
+		this.r198_total_deposit = r198_total_deposit;
+	}
+	public BigDecimal getR198_percentage_total_deposit() {
+		return r198_percentage_total_deposit;
+	}
+	public void setR198_percentage_total_deposit(BigDecimal r198_percentage_total_deposit) {
+		this.r198_percentage_total_deposit = r198_percentage_total_deposit;
+	}
+	public String getR199_customer_name() {
+		return r199_customer_name;
+	}
+	public void setR199_customer_name(String r199_customer_name) {
+		this.r199_customer_name = r199_customer_name;
+	}
+	public String getR199_institutional_sector() {
+		return r199_institutional_sector;
+	}
+	public void setR199_institutional_sector(String r199_institutional_sector) {
+		this.r199_institutional_sector = r199_institutional_sector;
+	}
+	public String getR199_type_of_account() {
+		return r199_type_of_account;
+	}
+	public void setR199_type_of_account(String r199_type_of_account) {
+		this.r199_type_of_account = r199_type_of_account;
+	}
+	public BigDecimal getR199_interest_rate() {
+		return r199_interest_rate;
+	}
+	public void setR199_interest_rate(BigDecimal r199_interest_rate) {
+		this.r199_interest_rate = r199_interest_rate;
+	}
+	public BigDecimal getR199_amount() {
+		return r199_amount;
+	}
+	public void setR199_amount(BigDecimal r199_amount) {
+		this.r199_amount = r199_amount;
+	}
+	public BigDecimal getR199_total_deposit() {
+		return r199_total_deposit;
+	}
+	public void setR199_total_deposit(BigDecimal r199_total_deposit) {
+		this.r199_total_deposit = r199_total_deposit;
+	}
+	public BigDecimal getR199_percentage_total_deposit() {
+		return r199_percentage_total_deposit;
+	}
+	public void setR199_percentage_total_deposit(BigDecimal r199_percentage_total_deposit) {
+		this.r199_percentage_total_deposit = r199_percentage_total_deposit;
+	}
+	public String getR200_customer_name() {
+		return r200_customer_name;
+	}
+	public void setR200_customer_name(String r200_customer_name) {
+		this.r200_customer_name = r200_customer_name;
+	}
+	public String getR200_institutional_sector() {
+		return r200_institutional_sector;
+	}
+	public void setR200_institutional_sector(String r200_institutional_sector) {
+		this.r200_institutional_sector = r200_institutional_sector;
+	}
+	public String getR200_type_of_account() {
+		return r200_type_of_account;
+	}
+	public void setR200_type_of_account(String r200_type_of_account) {
+		this.r200_type_of_account = r200_type_of_account;
+	}
+	public BigDecimal getR200_interest_rate() {
+		return r200_interest_rate;
+	}
+	public void setR200_interest_rate(BigDecimal r200_interest_rate) {
+		this.r200_interest_rate = r200_interest_rate;
+	}
+	public BigDecimal getR200_amount() {
+		return r200_amount;
+	}
+	public void setR200_amount(BigDecimal r200_amount) {
+		this.r200_amount = r200_amount;
+	}
+	public BigDecimal getR200_total_deposit() {
+		return r200_total_deposit;
+	}
+	public void setR200_total_deposit(BigDecimal r200_total_deposit) {
+		this.r200_total_deposit = r200_total_deposit;
+	}
+	public BigDecimal getR200_percentage_total_deposit() {
+		return r200_percentage_total_deposit;
+	}
+	public void setR200_percentage_total_deposit(BigDecimal r200_percentage_total_deposit) {
+		this.r200_percentage_total_deposit = r200_percentage_total_deposit;
 	}
 	public Date getReportDate() {
 		return reportDate;
@@ -2534,10 +4936,10 @@ public class M_DEP4_Summary_Entity2 {
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
 	}
-	public String getReportVersion() {
+	public BigDecimal getReportVersion() {
 		return reportVersion;
 	}
-	public void setReportVersion(String reportVersion) {
+	public void setReportVersion(BigDecimal reportVersion) {
 		this.reportVersion = reportVersion;
 	}
 	public String getREPORT_FREQUENCY() {
@@ -2580,4 +4982,7 @@ public class M_DEP4_Summary_Entity2 {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
+    
+    
 }
