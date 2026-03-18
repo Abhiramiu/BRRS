@@ -1349,112 +1349,107 @@ PURPOSE		: BRRSREPORT
 
 
     <script>
-        function showmodify(btn) {
+		function showmodify(btn) {
 
-            // Rows that are editable
-            const rows = [12, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29, 42, 54, 61];
+		    // Rows that are editable
+		    const rows = [12, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29, 42, 54, 61];
 
-            // Field suffixes that must ALWAYS be readonly
-            const alwaysReadOnlySuffix = [
-                "_operating_expenses",
-                "_intrest_expended",
-                "_other_income",
-                "_intrest_div",
-                "_net_amt"
-            ];
+		    // Field suffixes that must ALWAYS be readonly
+		    const alwaysReadOnlySuffix = [
+		        "_operating_expenses",
+		        "_intrest_expended",
+		        "_other_income",
+		        "_intrest_div",
+		        "_net_amt"
+		    ];
 
-            // ❌ Explicit net_amt fields to skip (enable logic)
-            const skipNetAmtIds = new Set([
-                "r12_net_amt",
-                "r18_net_amt",
-                "r19_net_amt",
-                "r42_net_amt",
-                "r54_net_amt",
-                "r21_net_amt",
-                "r22_net_amt",
-                "r23_net_amt",
-                "r24_net_amt",
-                "r25_net_amt",
-                "r26_net_amt",
-                "r27_net_amt",
-                "r28_net_amt",
-                "r29_net_amt"
+		    // ❌ Explicit net_amt fields to skip (enable logic)
+		    const skipNetAmtIds = new Set([
+		        "r12_net_amt", "r18_net_amt", "r19_net_amt",
+		        "r21_net_amt", "r22_net_amt", "r23_net_amt",
+		        "r24_net_amt", "r25_net_amt", "r26_net_amt",
+		        "r27_net_amt", "r28_net_amt", "r29_net_amt",
+		        "r42_net_amt", "r54_net_amt", "r61_net_amt"
+		    ]);
 
-            ]);
+		    $(".Show_input").each(function () {
+		        const id = this.id;
 
-            $(".Show_input").each(function () {
-                const id = this.id;
+		        const rowMatch = id.match(/^r(\d+)_/);
+		        if (!rowMatch) return;
 
-                const rowMatch = id.match(/^r(\d+)_/);
-                if (!rowMatch) return;
+		        const rowNo = parseInt(rowMatch[1], 10);
 
-                const rowNo = parseInt(rowMatch[1], 10);
+		        // Skip explicit net_amt fields
+		        if (skipNetAmtIds.has(id)) return;
 
-                // Skip r21–r30 net_amt
-                if (id.endsWith("_net_amt") && rowNo >= 21 && rowNo <= 30) return;
+		        // Row not editable
+		        if (!rows.includes(rowNo)) return;
 
-                // Skip explicit net_amt
-                if (skipNetAmtIds.has(id)) return;
+		        // Always readonly suffix
+		        for (let suffix of alwaysReadOnlySuffix) {
+		            if (id.endsWith(suffix)) return;
+		        }
 
-                // Row not editable
-                if (!rows.includes(rowNo)) return;
+		        // ✅ Enable field
+		        $(this).prop("readonly", false).prop("disabled", false);
+		    });
 
-                // Always readonly suffix
-                for (let suffix of alwaysReadOnlySuffix) {
-                    if (id.endsWith(suffix)) return;
-                }
+		    // Fields to gray out
+		    const grayFields = [
+		        "_fig_bal_sheet",
+		        "_fig_bal_sheet_bwp",
+		        "_amt_statement_adj",
+		        "_amt_statement_adj_bwp",
+		        "_net_amt",
+		        "_net_amt_bwp",
+		        "_bal_sub",
+		        "_bal_sub_bwp",
+		        "_bal_sub_diaries",
+		        "_bal_sub_diaries_bwp"
+		    ];
 
-                // ✅ Enable
-                $(this).prop("readonly", false).prop("disabled", false);
-            });
+		    // ✅ APPLY grey color
+		    rows.forEach(row => {
+		        grayFields.forEach(field => {
+		            const selector = `#r${row}${field}`;
+		            if ($(selector).length) {
+		                $(selector).css("background-color", "#d3d3d3");
+		            }
+		        });
+		    });
 
-            // Fields to gray out
-            const grayFields = [
-                "_fig_bal_sheet",
-                "_fig_bal_sheet_bwp",
-                "_amt_statement_adj",
-                "_amt_statement_adj_bwp",
-                "_net_amt",
-                "_net_amt_bwp",
-                "_bal_sub",
-                "_bal_sub_bwp",
-                "_bal_sub_diaries",
-                "_bal_sub_diaries_bwp"
-            ];
+		    // ❌ net_amt fields where grey color must be REMOVED
+		    const removeGreyNetAmtIds = [
+		        "r12_net_amt",
+		        "r18_net_amt",
+		        "r19_net_amt",
+		        "r21_net_amt",
+		        "r22_net_amt",
+		        "r23_net_amt",
+		        "r24_net_amt",
+		        "r25_net_amt",
+		        "r26_net_amt",
+		        "r27_net_amt",
+		        "r28_net_amt",
+		        "r29_net_amt",
+		        "r42_net_amt",
+		        "r54_net_amt",
+		        "r61_net_amt"
+		    ];
 
-            // ✅ APPLY grey color (existing behavior)
-            rows.forEach(row => {
-                grayFields.forEach(field => {
-                    const selector = `#r${row}${field}`;
-                    if ($(selector).length) {
-                        $(selector).css("background-color", "#d3d3d3");
-                    }
-                });
-            });
+		    // ✅ REMOVE grey background ONLY for above fields
+		    removeGreyNetAmtIds.forEach(id => {
+		        const selector = `#${id}`;
+		        if ($(selector).length) {
+		            $(selector).css("background-color", "rgb(107, 122, 143)");
+		        }
+		    });
 
-            // ❌ Rows where grey color must be REMOVED
-            const skipGreyRows = [
-                12, 18, 19,
-                21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-                42, 54, 61
-            ];
-
-            // ✅ REMOVE grey color ONLY for skip rows
-            skipGreyRows.forEach(row => {
-                grayFields.forEach(field => {
-                    const selector = `#r${row}${field}`;
-                    if ($(selector).length) {
-                        $(selector).css("color", "black");
-                    }
-                });
-            });
-
-            // Button toggle
-            $("#submitButton, #cancelRecord").show();
-            $(btn).hide();
-        }
-
-
+		    // Button toggle
+		    $("#submitButton, #cancelRecord").show();
+		    $(btn).hide();
+		}
         // Cancel / Reset function
         function cancelModify() {
             if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
@@ -1879,7 +1874,7 @@ PURPOSE		: BRRSREPORT
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
 
                                             </tr>
-                                            <tr th:each="rs : ${reportsummary1}">
+                                            <tr th:each="rs : ${reportsummary}">
                                                 <td>IV</td>
 
                                                 <td id="ROW12" style="font-weight: bold;padding-left: 20px;">
@@ -2092,7 +2087,7 @@ PURPOSE		: BRRSREPORT
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
-                                            <tr th:each="rs : ${reportsummary1}">
+                                            <tr th:each="rs : ${reportsummary}">
                                                 <td>II</td>
 
                                                 <td id="ROW18" style="font-weight: bold;padding-left: 20px;">
@@ -2182,7 +2177,7 @@ PURPOSE		: BRRSREPORT
                                                         readonly />
                                                 </td>
                                             </tr>
-                                            <tr th:each="rs : ${reportsummary1}">
+                                            <tr th:each="rs : ${reportsummary}">
                                                 <td></td>
 
                                                 <td id="ROW19" style="font-weight: bold;padding-left: 20px;">
@@ -2329,7 +2324,7 @@ PURPOSE		: BRRSREPORT
                                                     th:attr="RowId='R20', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
-                                            <tr th:each="rs : ${reportsummary1}">
+                                            <tr th:each="rs : ${reportsummary}">
                                                 <td></td>
 
                                                 <td id="ROW21" style="font-weight: bold;padding-left: 20px;">
@@ -2419,7 +2414,7 @@ PURPOSE		: BRRSREPORT
                                                         readonly />
                                                 </td>
                                             </tr>
-                                            <tr th:each="rs : ${reportsummary1}">
+                                            <tr th:each="rs : ${reportsummary}">
                                                 <td>IV</td>
 
                                                 <td id="ROW22" style="font-weight: bold;padding-left: 20px;">
@@ -2510,7 +2505,7 @@ PURPOSE		: BRRSREPORT
                                                         readonly />
                                                 </td>
                                             </tr>
-                                            <tr th:each="rs : ${reportsummary1}">
+                                            <tr th:each="rs : ${reportsummary}">
                                                 <td></td>
 
                                                 <td id="ROW23" style="font-weight: bold;padding-left: 20px;">
@@ -2603,7 +2598,7 @@ PURPOSE		: BRRSREPORT
                                             </tr>
 
 
-                                            <tr th:each="rs : ${reportsummary1}">
+                                            <tr th:each="rs : ${reportsummary}">
                                                 <td>V</td>
 
                                                 <td id="ROW24" style="font-weight: bold;padding-left: 20px; ">
@@ -2694,7 +2689,7 @@ PURPOSE		: BRRSREPORT
                                                 </td>
                                             </tr>
 
-                                            <tr th:each="rs : ${reportsummary1}">
+                                            <tr th:each="rs : ${reportsummary}">
                                                 <td></td>
 
                                                 <td id="ROW25" style="font-weight: bold; padding-left: 20px;">
@@ -2785,7 +2780,7 @@ PURPOSE		: BRRSREPORT
                                                         readonly />
                                                 </td>
                                             </tr>
-                                            <tr th:each="rs : ${reportsummary1}">
+                                            <tr th:each="rs : ${reportsummary}">
                                                 <td>VI</td>
                                                 <td id="ROW26" style="font-weight: bold; padding-left: 20px;">
                                                     <input class="display-input Show_input" type="text"
@@ -2879,7 +2874,7 @@ PURPOSE		: BRRSREPORT
 
 
 
-                                            <tr th:each="rs : ${reportsummary1}">
+                                            <tr th:each="rs : ${reportsummary}">
                                                 <td></td>
 
                                                 <td id="ROW27" style="font-weight: bold; padding-left: 20px;">
@@ -2973,7 +2968,7 @@ PURPOSE		: BRRSREPORT
 
 
 
-                                            <tr th:each="rs : ${reportsummary1}">
+                                            <tr th:each="rs : ${reportsummary}">
                                                 <td></td>
 
                                                 <td id="ROW28" style="font-weight: bold; padding-left: 20px;">
@@ -3066,7 +3061,7 @@ PURPOSE		: BRRSREPORT
                                             </tr>
 
 
-                                            <tr th:each="rs : ${reportsummary1}">
+                                            <tr th:each="rs : ${reportsummary}">
                                                 <td></td>
 
                                                 <td id="ROW29" style="font-weight: bold; padding-left: 20px;">
@@ -3436,7 +3431,7 @@ PURPOSE		: BRRSREPORT
                                                     th:attr="RowId='R41', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
-                                            <tr th:each="rs : ${reportsummary1}">
+                                            <tr th:each="rs : ${reportsummary}">
                                                 <td style="width: 10px;">III</td>
 
                                                 <td id="ROW42" style="font-weight: bold; padding-left: 20px;">
@@ -3937,7 +3932,7 @@ PURPOSE		: BRRSREPORT
                                                     th:attr="RowId='R53', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
-                                            <tr th:each="rs : ${reportsummary1}">
+                                            <tr th:each="rs : ${reportsummary}">
                                                 <td style="width: 10px;"></td>
 
                                                 <td id="ROW54" style="font-weight: bold; padding-left: 15px;">
@@ -4364,7 +4359,7 @@ PURPOSE		: BRRSREPORT
                                                     th:attr="RowId='R60', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
-                                            <tr th:each="rs : ${reportsummary1}">
+                                            <tr th:each="rs : ${reportsummary}">
                                                 <td style="width: 10px;">XII</td>
 
                                                 <td id="ROW61" style="font-weight: bold; padding-left: 20px;">
