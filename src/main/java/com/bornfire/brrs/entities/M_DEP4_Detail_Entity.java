@@ -37,7 +37,7 @@ public class M_DEP4_Detail_Entity {
    private String reportName;
    
    @Column(name = "REPORT_LABEL")
-   private String reportLable;
+   private String reportLabel;
    
    @Column(name = "REPORT_ADDL_CRITERIA_1")
    private String reportAddlCriteria_1;
@@ -100,6 +100,13 @@ public class M_DEP4_Detail_Entity {
 
    @Column(name = "DEL_FLG")
    private String delFlg;
+   
+   
+   @Column(name = "TYPE_OF_ACCOUNTS")
+   private String typeofaccounts;
+   
+   @Column(name = "RATE_OF_INTEREST")
+   private BigDecimal rateofinterest;
 
    public Long getSno() {
 	return sno;
@@ -150,11 +157,11 @@ public class M_DEP4_Detail_Entity {
    }
 
    public String getReportLable() {
-	return reportLable;
+	return reportLabel;
    }
 
    public void setReportLable(String reportLable) {
-	this.reportLable = reportLable;
+	this.reportLabel = reportLabel;
    }
 
    public String getReportAddlCriteria_1() {
@@ -301,11 +308,25 @@ public class M_DEP4_Detail_Entity {
 	this.delFlg = delFlg;
    }
 
+   public String getTypeofaccounts() {
+	return typeofaccounts;
+   }
+
+   public void setTypeofaccounts(String typeofaccounts) {
+	this.typeofaccounts = typeofaccounts;
+   }
+
+   public BigDecimal getRateofinterest() {
+	return rateofinterest;
+   }
+
+   public void setRateofinterest(BigDecimal rateofinterest) {
+	this.rateofinterest = rateofinterest;
+   }
+
    public M_DEP4_Detail_Entity() {
 	super();
 	// TODO Auto-generated constructor stub
    }
-
-   
 
 }

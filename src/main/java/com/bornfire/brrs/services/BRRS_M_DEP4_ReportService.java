@@ -19,11 +19,17 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,18 +54,24 @@ import com.bornfire.brrs.entities.BRRS_M_DEP4_Summary_Repo3;
 import com.bornfire.brrs.entities.BRRS_M_DEP4_Summary_Repo4;
 import com.bornfire.brrs.entities.BRRS_M_DEP4_Summary_Repo5;
 import com.bornfire.brrs.entities.BRRS_M_DEP4_Summary_Repo6;
+import com.bornfire.brrs.entities.M_DEP4_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_DEP4_Archival_Summary_Entity1;
 import com.bornfire.brrs.entities.M_DEP4_Archival_Summary_Entity2;
 import com.bornfire.brrs.entities.M_DEP4_Archival_Summary_Entity3;
 import com.bornfire.brrs.entities.M_DEP4_Archival_Summary_Entity4;
 import com.bornfire.brrs.entities.M_DEP4_Archival_Summary_Entity5;
 import com.bornfire.brrs.entities.M_DEP4_Archival_Summary_Entity6;
+import com.bornfire.brrs.entities.M_DEP4_Detail_Entity;
 import com.bornfire.brrs.entities.M_DEP4_Summary_Entity1;
 import com.bornfire.brrs.entities.M_DEP4_Summary_Entity2;
 import com.bornfire.brrs.entities.M_DEP4_Summary_Entity3;
 import com.bornfire.brrs.entities.M_DEP4_Summary_Entity4;
 import com.bornfire.brrs.entities.M_DEP4_Summary_Entity5;
 import com.bornfire.brrs.entities.M_DEP4_Summary_Entity6;
+import com.bornfire.brrs.entities.M_LA3_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.M_LA3_Detail_Entity;
+import com.bornfire.brrs.entities.M_PI_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.M_PI_Detail_Entity;
 
 
 @Component
@@ -170,6 +182,82 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA6_ReportSe
 	}
 
 		
+	public ModelAndView getM_DEP4currentDtl(String reportId, String fromdate, String todate, String currency,
+			  String dtltype, Pageable pageable, String Filter, String type, String version) {
+
+	int pageSize = pageable != null ? pageable.getPageSize() : 10;
+	int currentPage = pageable != null ? pageable.getPageNumber() : 0;
+	int totalPages = 0;
+
+	ModelAndView mv = new ModelAndView();
+//	Session hs = sessionFactory.getCurrentSession();
+
+	try {
+		Date parsedDate = null;
+		if (todate != null && !todate.isEmpty()) {
+			parsedDate = dateformat.parse(todate);
+		}
+
+		String rowId = null;
+		String columnId = null;
+
+		// ✅ Split filter string into rowId & columnId
+		if (Filter != null && Filter.contains(",")) {
+			String[] parts = Filter.split(",");
+			if (parts.length >= 2) {
+				rowId = parts[0];
+				columnId = parts[1];
+			}
+		}
+	
+		if ("ARCHIVAL".equals(type) && version != null) {
+			// 🔹 Archival branch
+			List<M_DEP4_Archival_Detail_Entity> T1Dt1;
+			if (rowId != null && columnId != null) {
+				T1Dt1 = M_DEP4_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
+			} else {
+				T1Dt1 = M_DEP4_Archival_Detail_Repo.getdatabydateList(parsedDate, version);					
+			}
+
+			mv.addObject("reportdetails", T1Dt1);
+			mv.addObject("reportmaster12", T1Dt1);
+			System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+
+		} else {
+			// 🔹 Current branch
+			List<M_DEP4_Detail_Entity> T1Dt1;
+			if (rowId != null && columnId != null) {
+				T1Dt1 = M_DEP4_detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
+			} else {
+				T1Dt1 = M_DEP4_detail_Repo.getdatabydateList(parsedDate);
+				totalPages = M_DEP4_detail_Repo.getdatacount(parsedDate);
+				mv.addObject("pagination", "YES");
+			}
+
+			mv.addObject("reportdetails", T1Dt1);
+			mv.addObject("reportmaster12", T1Dt1);
+			System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+		}
+
+	} catch (ParseException e) {
+		e.printStackTrace();
+		mv.addObject("errorMessage", "Invalid date format: " + todate);
+	} catch (Exception e) {
+		e.printStackTrace();
+		mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
+	}
+
+	// ✅ Common attributes
+	mv.setViewName("BRRS/M_DEP4");
+	mv.addObject("displaymode", "Details");
+	mv.addObject("currentPage", currentPage);
+	System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
+	mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
+	mv.addObject("reportsflag", "reportsflag");
+	mv.addObject("menu", reportId);
+
+	return mv;
+}
 		
 
 
@@ -29558,5 +29646,283 @@ public byte[] getEmail_M_DEP4Excel(String filename, String reportId, String from
 				return out.toByteArray();
 			}
 		}
+			
+			public byte[] BRRS_M_DEP4DetailExcel(String filename, String fromdate, String todate, String currency,
+			        String dtltype, String type, String version) {
+
+			    try {
+			        logger.info("Generating Excel for BRRS_M_DEP4 Details...");
+
+			        if (type.equals("ARCHIVAL") && version != null) {
+			            return getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type, version);
+			        }
+
+			        XSSFWorkbook workbook = new XSSFWorkbook();
+			        XSSFSheet sheet = workbook.createSheet("M_DEP4Detail");
+
+			        BorderStyle border = BorderStyle.THIN;
+
+			        // Header Style
+			        CellStyle headerStyle = workbook.createCellStyle();
+			        Font headerFont = workbook.createFont();
+			        headerFont.setBold(true);
+			        headerFont.setFontHeightInPoints((short) 10);
+			        headerStyle.setFont(headerFont);
+			        headerStyle.setAlignment(HorizontalAlignment.LEFT);
+			        headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+			        headerStyle.setBorderTop(border);
+			        headerStyle.setBorderBottom(border);
+			        headerStyle.setBorderLeft(border);
+			        headerStyle.setBorderRight(border);
+
+			        // Right aligned header
+			        CellStyle rightHeaderStyle = workbook.createCellStyle();
+			        rightHeaderStyle.cloneStyleFrom(headerStyle);
+			        rightHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+			        // Data Style
+			        CellStyle dataStyle = workbook.createCellStyle();
+			        dataStyle.setAlignment(HorizontalAlignment.LEFT);
+			        dataStyle.setBorderTop(border);
+			        dataStyle.setBorderBottom(border);
+			        dataStyle.setBorderLeft(border);
+			        dataStyle.setBorderRight(border);
+
+			        // Balance Style
+			        CellStyle balanceStyle = workbook.createCellStyle();
+			        balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+			        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+			        balanceStyle.setBorderTop(border);
+			        balanceStyle.setBorderBottom(border);
+			        balanceStyle.setBorderLeft(border);
+			        balanceStyle.setBorderRight(border);
+
+			        // Interest Style (FIXED: previously missing)
+			        CellStyle interestStyle = workbook.createCellStyle();
+			        interestStyle.cloneStyleFrom(balanceStyle);
+
+			        // Headers
+			        String[] headers = {
+			                "CUST ID", "ACCT NO", "ACCT NAME", "TYPE OF ACCOUNT",
+			                "INTEREST RATE", "ACCT BALANCE", "REPORT LABEL", "REPORT DATE"
+			        };
+
+			        XSSFRow headerRow = sheet.createRow(0);
+			        for (int i = 0; i < headers.length; i++) {
+			            Cell cell = headerRow.createCell(i);
+			            cell.setCellValue(headers[i]);
+
+			            if (i == 4 || i == 5) { // numeric columns
+			                cell.setCellStyle(rightHeaderStyle);
+			            } else {
+			                cell.setCellStyle(headerStyle);
+			            }
+
+			            sheet.setColumnWidth(i, 5000);
+			        }
+
+			        // Fetch Data
+			        Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+			        List<M_DEP4_Detail_Entity> reportData = M_DEP4_detail_Repo.getdatabydateList(parsedToDate);
+
+			        int rowIndex = 1;
+
+			        if (reportData != null && !reportData.isEmpty()) {
+
+			            for (M_DEP4_Detail_Entity item : reportData) {
+
+			                XSSFRow row = sheet.createRow(rowIndex++);
+
+			                row.createCell(0).setCellValue(item.getCustId());
+			                row.createCell(1).setCellValue(item.getAcctNumber());
+			                row.createCell(2).setCellValue(item.getAcctName());
+			                row.createCell(3).setCellValue(item.getTypeofaccounts());
+
+			                // Interest Rate
+			                Cell intCell = row.createCell(4);
+			                intCell.setCellValue(item.getRateofinterest() != null ? item.getRateofinterest().doubleValue() : 0);
+			                intCell.setCellStyle(interestStyle);
+
+			                // Balance
+			                Cell balCell = row.createCell(5);
+			                balCell.setCellValue(item.getAcctBalanceInpula() != null ? item.getAcctBalanceInpula().doubleValue() : 0);
+			                balCell.setCellStyle(balanceStyle);
+
+			                // REPORT LABEL (FIXED missing column)
+			                row.createCell(6).setCellValue(item.getReportLable());
+
+			                // REPORT DATE
+			                row.createCell(7).setCellValue(
+			                        item.getReportDate() != null
+			                                ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+			                                : ""
+			                );
+
+			                // Apply default style
+			                for (int j = 0; j < 8; j++) {
+			                    if (j != 4 && j != 5) {
+			                        row.getCell(j).setCellStyle(dataStyle);
+			                    }
+			                }
+			            }
+
+			        } else {
+			            logger.info("No data found for BRRS_M_DEP4 — only header written.");
+			        }
+
+			        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			        workbook.write(bos);
+			        workbook.close();
+
+			        logger.info("Excel generation completed with {} row(s).",
+			                reportData != null ? reportData.size() : 0);
+
+			        return bos.toByteArray();
+
+			    } catch (Exception e) {
+			        logger.error("Error generating BRRS_M_DEP4 Excel", e);
+			        return null;
+			    }
+			}
+
+			public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
+			        String dtltype, String type, String version) {
+
+			    try {
+			        logger.info("Generating Excel for BRRS_M_DEP4 ARCHIVAL Details...");
+
+			        XSSFWorkbook workbook = new XSSFWorkbook();
+			        XSSFSheet sheet = workbook.createSheet("MDEP4Detail");
+
+			        BorderStyle border = BorderStyle.THIN;
+
+			        // Header Style
+			        CellStyle headerStyle = workbook.createCellStyle();
+			        Font headerFont = workbook.createFont();
+			        headerFont.setBold(true);
+			        headerFont.setFontHeightInPoints((short) 10);
+			        headerStyle.setFont(headerFont);
+			        headerStyle.setAlignment(HorizontalAlignment.LEFT);
+			        headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+			        headerStyle.setBorderTop(border);
+			        headerStyle.setBorderBottom(border);
+			        headerStyle.setBorderLeft(border);
+			        headerStyle.setBorderRight(border);
+
+			        // Right aligned header
+			        CellStyle rightHeaderStyle = workbook.createCellStyle();
+			        rightHeaderStyle.cloneStyleFrom(headerStyle);
+			        rightHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+			        // Data Style
+			        CellStyle dataStyle = workbook.createCellStyle();
+			        dataStyle.setAlignment(HorizontalAlignment.LEFT);
+			        dataStyle.setBorderTop(border);
+			        dataStyle.setBorderBottom(border);
+			        dataStyle.setBorderLeft(border);
+			        dataStyle.setBorderRight(border);
+
+			        // Balance Style
+			        CellStyle balanceStyle = workbook.createCellStyle();
+			        balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+			        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+			        balanceStyle.setBorderTop(border);
+			        balanceStyle.setBorderBottom(border);
+			        balanceStyle.setBorderLeft(border);
+			        balanceStyle.setBorderRight(border);
+
+			        // Interest Style
+			        CellStyle interestStyle = workbook.createCellStyle();
+			        interestStyle.cloneStyleFrom(balanceStyle);
+
+			        // Headers
+			        String[] headers = {
+			                "CUST ID", "ACCT NO", "ACCT NAME", "TYPE OF ACCOUNT",
+			                "INTEREST RATE", "ACCT BALANCE", "REPORT LABEL", "REPORT DATE"
+			        };
+
+			        XSSFRow headerRow = sheet.createRow(0);
+			        for (int i = 0; i < headers.length; i++) {
+			            Cell cell = headerRow.createCell(i);
+			            cell.setCellValue(headers[i]);
+
+			            if (i == 4 || i == 5) { // numeric columns
+			                cell.setCellStyle(rightHeaderStyle);
+			            } else {
+			                cell.setCellStyle(headerStyle);
+			            }
+
+			            sheet.setColumnWidth(i, 5000);
+			        }
+
+			        // Fetch Data
+			        Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+
+			        List<M_DEP4_Archival_Detail_Entity> reportData =
+			                M_DEP4_Archival_Detail_Repo.getdatabydateList(parsedToDate, version);
+
+			        int rowIndex = 1;
+
+			        if (reportData != null && !reportData.isEmpty()) {
+
+			            for (M_DEP4_Archival_Detail_Entity item : reportData) {
+
+			                XSSFRow row = sheet.createRow(rowIndex++);
+
+			                row.createCell(0).setCellValue(item.getCustId());
+			                row.createCell(1).setCellValue(item.getAcctNumber());
+			                row.createCell(2).setCellValue(item.getAcctName());
+			                row.createCell(3).setCellValue(item.getTypeofaccounts());
+
+			                // Interest Rate
+			                Cell intCell = row.createCell(4);
+			                intCell.setCellValue(item.getRateofinterest() != null
+			                        ? item.getRateofinterest().doubleValue() : 0);
+			                intCell.setCellStyle(interestStyle);
+
+			                // Balance
+			                Cell balCell = row.createCell(5);
+			                balCell.setCellValue(item.getAcctBalanceInpula() != null
+			                        ? item.getAcctBalanceInpula().doubleValue() : 0);
+			                balCell.setCellStyle(balanceStyle);
+
+			                // REPORT LABEL (FIXED)
+			                row.createCell(6).setCellValue(item.getReportLable());
+
+			                // REPORT DATE
+			                row.createCell(7).setCellValue(
+			                        item.getReportDate() != null
+			                                ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+			                                : ""
+			                );
+
+			                // Apply default style
+			                for (int j = 0; j < 8; j++) {
+			                    if (j != 4 && j != 5) {
+			                        row.getCell(j).setCellStyle(dataStyle);
+			                    }
+			                }
+			            }
+
+			        } else {
+			            logger.info("No data found for BRRS_M_DEP4 ARCHIVAL.");
+			        }
+
+			        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			        workbook.write(bos);
+			        workbook.close();
+
+			        logger.info("Excel generation completed with {} row(s).",
+			                reportData != null ? reportData.size() : 0);
+
+			        return bos.toByteArray();
+
+			    } catch (Exception e) {
+			        logger.error("Error generating BRRS_M_DEP4 ARCHIVAL Excel", e);
+			        return new byte[0];
+			    }
+			}
 		
 }

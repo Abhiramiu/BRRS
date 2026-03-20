@@ -100,6 +100,12 @@ public class M_DEP4_Archival_Detail_Entity {
 
    @Column(name = "DEL_FLG")
    private String delFlg;
+   
+   @Column(name = "TYPE_OF_ACCOUNTS")
+   private String typeofaccounts;
+   
+   @Column(name = "RATE_OF_INTEREST")
+   private BigDecimal rateofinterest;
 
    public Long getSno() {
 	return sno;
@@ -301,10 +307,25 @@ public class M_DEP4_Archival_Detail_Entity {
 	this.delFlg = delFlg;
    }
 
+   public String getTypeofaccounts() {
+	return typeofaccounts;
+   }
+
+   public void setTypeofaccounts(String typeofaccounts) {
+	this.typeofaccounts = typeofaccounts;
+   }
+
+   public BigDecimal getRateofinterest() {
+	return rateofinterest;
+   }
+
+   public void setRateofinterest(BigDecimal rateofinterest) {
+	this.rateofinterest = rateofinterest;
+   }
+
    public M_DEP4_Archival_Detail_Entity() {
 	super();
 	// TODO Auto-generated constructor stub
    }
 
 }
-	

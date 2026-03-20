@@ -1833,6 +1833,11 @@ public class RegulatoryReportServices {
 			repdetail = BRRS_M_LA3_reportservice.getM_LA3currentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
 			break;
+			
+		case "M_DEP4":
+			repdetail = BRRS_M_DEP4_ReportService.getM_DEP4currentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter, type, version);
+			break;
 
 		case "M_DEP2":
 			repdetail = BRRS_M_DEP2_reportservice.getM_DEP2currentDtl(reportId, fromdate, todate, currency, dtltype,
@@ -4224,6 +4229,9 @@ public class RegulatoryReportServices {
 		} else if ("M_DEP3Detail".equals(filename)) {
 			return BRRS_M_DEP3_reportservice.getM_DEP3DetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
+		} else if ("M_DEP4Detail".equals(filename)) {
+					return BRRS_M_DEP4_ReportService.BRRS_M_DEP4DetailExcel(filename, fromdate, todate, currency, dtltype, type,
+							version);
 		} else if ("M_IRBDetail".equals(filename)) {
 			return brrs_m_irb_reportService.BRRS_M_IRBDetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
@@ -5657,6 +5665,9 @@ public class RegulatoryReportServices {
 					type, version);
 		} else if (filename.equals("M_LA3Detail")) {
 			fileData = BRRS_M_LA3_reportservice.BRRS_M_LA3DetailExcel(filename, fromdate, todate, currency, dtltype,
+					type, version);
+		} else if (filename.equals("M_DEP4Detail")) {
+			fileData = BRRS_M_DEP4_ReportService.BRRS_M_DEP4DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 		} else if (filename.equals("M_LA5Detail")) {
 			fileData = BRRS_M_LA5_reportservice.BRRS_M_LA5DetailExcel(filename, fromdate, todate, currency, dtltype,
