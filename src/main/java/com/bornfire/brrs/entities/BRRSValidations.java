@@ -15,6 +15,8 @@ public class BRRSValidations {
 	private String pre_status;
 	private String rpt_code;
 	private String remarks2;
+	
+	
 	public String getSrl_no() {
 		return srl_no;
 	}

@@ -55,12 +55,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.AccessAndRoles;
 import com.bornfire.brrs.entities.AccessandRolesRepository;
-import com.bornfire.brrs.entities.BDGF_Entity;
 import com.bornfire.brrs.entities.BDGF_Rep;
-import com.bornfire.brrs.entities.BFDB_Entity;
 import com.bornfire.brrs.entities.BFDB_Rep;
-import com.bornfire.brrs.entities.BLBF_Entity;
 import com.bornfire.brrs.entities.BLBF_Rep;
+import com.bornfire.brrs.entities.BRRSValidations;
 import com.bornfire.brrs.entities.BRRSValidationsRepo;
 import com.bornfire.brrs.entities.BRRS_Report_Mast_Rep;
 import com.bornfire.brrs.entities.BankBranchMaster;
@@ -74,16 +72,17 @@ import com.bornfire.brrs.entities.MCBL_Entity;
 import com.bornfire.brrs.entities.MCBL_Main_Entity;
 import com.bornfire.brrs.entities.MCBL_Main_Rep;
 import com.bornfire.brrs.entities.MCBL_Rep;
-import com.bornfire.brrs.entities.M_PLL_Detail_Entity;
 import com.bornfire.brrs.entities.RRReport;
 import com.bornfire.brrs.entities.RRReportRepo;
 import com.bornfire.brrs.entities.UserProfile;
 import com.bornfire.brrs.entities.UserProfileRep;
+import com.bornfire.brrs.entities.ValidationResponse;
 import com.bornfire.brrs.services.AccessAndRolesServices;
 import com.bornfire.brrs.services.BDGF_Services;
 import com.bornfire.brrs.services.BFDB_Services;
 import com.bornfire.brrs.services.BLBF_Services;
 import com.bornfire.brrs.services.BRRS_SLS_INPUT_SHT_ReportService;
+import com.bornfire.brrs.services.BRRS_Validation_Services;
 import com.bornfire.brrs.services.BankBranchService;
 import com.bornfire.brrs.services.CommonMappingService;
 import com.bornfire.brrs.services.LoginServices;
@@ -170,6 +169,10 @@ public class NavigationController {
 	@Autowired
 	BrrsCommonMappingRepo CommonMappingRepo;
 
+	@Autowired
+	BRRS_Validation_Services BRRSValidationServices;
+	
+	
 	private String pagesize;
 
 	public String getPagesize() {
@@ -415,10 +418,27 @@ public class NavigationController {
 		md.addAttribute("reportlist1", rrReportlist.getReportbyrptcode(rptcode));
 		md.addAttribute("RoleId", roleId);
 
+		md.addAttribute("rpt_date", todate);
+		
 		// md.addAttribute("rpt_date", todate);
 		return "BRRS/BRRSValidations";
 	}
+	
 
+	@RequestMapping(value = "BRRSValidationsChk", method = RequestMethod.POST)
+	@ResponseBody
+	public ValidationResponse brfValidationsChk(@RequestParam("srl_no") String srl_no,
+			@RequestParam("rpt_code") String rpt_code, @RequestParam("report_date") String report_date,
+			@ModelAttribute BRRSValidations brfValidations, Model md, HttpServletRequest rq) throws ParseException {
+		logger.info("rbsValidationsChk:  Controller");
+		ValidationResponse msg = BRRSValidationServices.chkBRFValidations(brfValidations, srl_no, report_date);
+		md.addAttribute("reportsflag", "reportsflag");
+
+		return msg;
+
+	}
+
+	
 	@GetMapping("/checkDomainFlag")
 	@ResponseBody
 	public ResponseEntity<String> checkDomainFlag(@RequestParam String rptcode) {
