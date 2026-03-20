@@ -17104,7 +17104,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 
 											<td th:text="${report.reportLabel}"></td>
-											<td th:text="${report.reportAddlCriteria_1}"></td>
+											<td th:text="${report.reportAddlCriteria1}"></td>
 											<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
 										</tr>
 									</tbody>
@@ -17127,7 +17127,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 
 					<div class="card-body">
-						<form th:object="${gl_schData}" method="post" id="gl_schDetailForm">
+						<form th:object="${GL_SCHData}" method="post" id="gl_schDetailForm">
 							<div class="row formline" style="margin-top: 10px;">
 								<label class="col-sm-2">Customer ID</label>
 								<div class="col-sm-3">
@@ -17171,7 +17171,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 								<label class="col-sm-2">Report Addl Criteria 1</label>
 								<div class="col-sm-3">
-									<input type="text" th:field="*{reportAddlCriteria_1}"
+									<input type="text" th:field="*{reportAddlCriteria1}"
 										class="form-control form-control-sm" readonly />
 								</div>
 							</div>
@@ -17180,7 +17180,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 								<label class="col-sm-2">Report Date</label>
 								<div class="col-sm-3">
 									<input type="date" name="reportDate" class="form-control form-control-sm" readonly
-										th:value="${#dates.format(gl_schData.reportDate, 'yyyy-MM-dd')}" />
+										th:value="${#dates.format(GL_SCHData.reportDate, 'yyyy-MM-dd')}" />
 								</div>
 							</div>
 
@@ -17278,7 +17278,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 	/* Your existing CSS - this is the correct approach */
 	.scrollable-table-container {
 		/* This is the key: it creates the scroll context */
-		max-height: 720px;
+		max-height: 600px;
 		/* Or a suitable height like 80vh for responsive design */
 		overflow-y: auto;
 		border: 1px solid #ccc;
