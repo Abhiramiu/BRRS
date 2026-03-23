@@ -141,7 +141,944 @@ public class BRRS_Validation_Services {
                 brrsValidationsRepo.save(brfValidation);
                 break;   
                 
+			case "7":
+				int LIQcount = brrsValidationsRepo.getCheckSrlNo7(convertDate);
+	               if(LIQcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_LIQ SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_LIQ SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "8":
+				int SCIEcount = brrsValidationsRepo.getCheckSrlNo8(convertDate);
+	               if(SCIEcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_SCI_E SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_SCI_E SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "9":
+				int IScount = brrsValidationsRepo.getCheckSrlNo9(convertDate);
+	               if(IScount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_IS SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_IS SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "10":
+				int CA1count = brrsValidationsRepo.getCheckSrlNo10(convertDate);
+	               if(CA1count > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_CA1 SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_CA1 SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "11":
+				int CA2count = brrsValidationsRepo.getCheckSrlNo11(convertDate);
+	               if(CA2count > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_CA2 SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_CA2 SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "12":
+				int CA3count = brrsValidationsRepo.getCheckSrlNo12(convertDate);
+	               if(CA3count > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_CA3 SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_CA3 SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "13":
+				int CA4count = brrsValidationsRepo.getCheckSrlNo13(convertDate);
+	               if(CA4count > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_CA4 SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_CA4 SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "14":
+				int CA5count = brrsValidationsRepo.getCheckSrlNo14(convertDate);
+	               if(CA5count > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_CA5 SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_CA5 SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "15":
+				int CA6count = brrsValidationsRepo.getCheckSrlNo15(convertDate);
+	               if(CA6count > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_CA6 SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_CA6 SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "16":
+				int CA7count = brrsValidationsRepo.getCheckSrlNo16(convertDate);
+	               if(CA7count > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_CA7 SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_CA7 SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "17":
+				int M12Acount = brrsValidationsRepo.getCheckSrlNo17(convertDate);
+	               if(M12Acount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_SRWA_12A SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_SRWA_12A SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "18":
+				int M12Bcount = brrsValidationsRepo.getCheckSrlNo18(convertDate);
+	               if(M12Bcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_SRWA_12B SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_SRWA_12B SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "19":
+				int M12Ccount = brrsValidationsRepo.getCheckSrlNo19(convertDate);
+	               if(M12Ccount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_SRWA_12C SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_SRWA_12C SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "20":
+				int M12Dcount = brrsValidationsRepo.getCheckSrlNo20(convertDate);
+	               if(M12Dcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_SRWA_12D SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_SRWA_12D SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "21":
+				int M12Ecount = brrsValidationsRepo.getCheckSrlNo21(convertDate);
+	               if(M12Ecount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_SRWA_12E SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_SRWA_12E SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "22":
+				int M12Fcount = brrsValidationsRepo.getCheckSrlNo22(convertDate);
+	               if(M12Fcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_SRWA_12F SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_SRWA_12F SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "23":
+				int M12Gcount = brrsValidationsRepo.getCheckSrlNo23(convertDate);
+	               if(M12Gcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_SRWA_12G SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_SRWA_12G SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "24":
+				int M12Hcount = brrsValidationsRepo.getCheckSrlNo24(convertDate);
+	               if(M12Hcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_SRWA_12H SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_SRWA_12H SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "25":
+				int MOR1count = brrsValidationsRepo.getCheckSrlNo25(convertDate);
+	               if(MOR1count > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_OR1 SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_OR1 SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
                 
+	                
+			case "26":
+				int MOR2count = brrsValidationsRepo.getCheckSrlNo26(convertDate);
+	               if(MOR2count > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_OR2 SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_OR2 SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "27":
+				int M_MRCcount = brrsValidationsRepo.getCheckSrlNo27(convertDate);
+	               if(M_MRCcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_MRC SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_MRC SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "28":
+				int M_SIRcount = brrsValidationsRepo.getCheckSrlNo28(convertDate);
+	               if(M_SIRcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_SIR SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_SIR SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "29":
+				int M_GMIRTcount = brrsValidationsRepo.getCheckSrlNo29(convertDate);
+	               if(M_GMIRTcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_GMIRT SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_GMIRT SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "30":
+				int M_IRBcount = brrsValidationsRepo.getCheckSrlNo30(convertDate);
+	               if(M_IRBcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_IRB SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_IRB SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+	                
+			case "31":
+				int M_EPRcount = brrsValidationsRepo.getCheckSrlNo31(convertDate);
+	               if(M_EPRcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_EPR SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_EPR SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "32":
+				int M_FXRcount = brrsValidationsRepo.getCheckSrlNo32(convertDate);
+	               if(M_FXRcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_FXR SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_FXR SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "33":
+				int M_CRcount = brrsValidationsRepo.getCheckSrlNo33(convertDate);
+	               if(M_CRcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_CR SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_CR SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "34":
+				int M_OPTRcount = brrsValidationsRepo.getCheckSrlNo34(convertDate);
+	               if(M_OPTRcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_OPTR SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_OPTR SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "35":
+				int M_GALORcount = brrsValidationsRepo.getCheckSrlNo35(convertDate);
+	               if(M_GALORcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_GALOR SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_GALOR SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "36":
+				int M_CALOCcount = brrsValidationsRepo.getCheckSrlNo36(convertDate);
+	               if(M_CALOCcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_CALOC SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_CALOC SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "37":
+				int M_LA1count = brrsValidationsRepo.getCheckSrlNo37(convertDate);
+	               if(M_LA1count > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_LA1 SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_LA1 SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "38":
+				int M_LA2count = brrsValidationsRepo.getCheckSrlNo38(convertDate);
+	               if(M_LA2count > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_LA2 SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_LA2 SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+			case "39":
+				int M_LA3count = brrsValidationsRepo.getCheckSrlNo39(convertDate);
+	               if(M_LA3count > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_LA3 SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_LA3 SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "40":
+				int M_LA4count = brrsValidationsRepo.getCheckSrlNo40(convertDate);
+	               if(M_LA4count > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_LA4 SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_LA4 SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "41":
+				int M_LA5count = brrsValidationsRepo.getCheckSrlNo41(convertDate);
+	               if(M_LA5count > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_LA5 SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_LA5 SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "42":
+				int M_PLLcount = brrsValidationsRepo.getCheckSrlNo42(convertDate);
+	               if(M_PLLcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_PLL SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_PLL SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "43":
+				int M_PDcount = brrsValidationsRepo.getCheckSrlNo43(convertDate);
+	               if(M_PDcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_PD SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_PD SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "44":
+				int M_I_S_CAcount = brrsValidationsRepo.getCheckSrlNo44(convertDate);
+	               if(M_I_S_CAcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_I_S_CA SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_I_S_CA SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "45":
+				int M_SPcount = brrsValidationsRepo.getCheckSrlNo45(convertDate);
+	               if(M_SPcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_SP SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_SP SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "46":
+				int M_GPcount = brrsValidationsRepo.getCheckSrlNo46(convertDate);
+	               if(M_GPcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_GP SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_GP SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "47":
+				int M_TBScount = brrsValidationsRepo.getCheckSrlNo47(convertDate);
+	               if(M_TBScount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_TBS SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_TBS SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "48":
+				int M_LIQGAPcount = brrsValidationsRepo.getCheckSrlNo48(convertDate);
+	               if(M_LIQGAPcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_LIQGAP SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_LIQGAP SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "49":
+				int M_NOSVOScount = brrsValidationsRepo.getCheckSrlNo49(convertDate);
+	               if(M_NOSVOScount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_NOSVOS SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_NOSVOS SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+			case "50":
+				int M_AIDPcount = brrsValidationsRepo.getCheckSrlNo50(convertDate);
+	               if(M_AIDPcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_AIDP SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_AIDP SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+			case "51":
+				int M_DEP1count = brrsValidationsRepo.getCheckSrlNo51(convertDate);
+	               if(M_DEP1count > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_DEP1 SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_DEP1 SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "52":
+				int M_DEP2count = brrsValidationsRepo.getCheckSrlNo52(convertDate);
+	               if(M_DEP2count > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_DEP2 SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_DEP2 SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "53":
+				int M_DEP3count = brrsValidationsRepo.getCheckSrlNo53(convertDate);
+	               if(M_DEP3count > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_DEP3 SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_DEP3 SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "54":
+				int M_DEP4count = brrsValidationsRepo.getCheckSrlNo54(convertDate);
+	               if(M_DEP4count > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_DEP4 SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_DEP4 SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "55":
+				int M_OBcount = brrsValidationsRepo.getCheckSrlNo55(convertDate);
+	               if(M_OBcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_OB SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_OB SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "56":
+				int M_BOPcount = brrsValidationsRepo.getCheckSrlNo56(convertDate);
+	               if(M_BOPcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_BOP SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_BOP SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "57":
+				int M_INT_RATEScount = brrsValidationsRepo.getCheckSrlNo57(convertDate);
+	               if(M_INT_RATEScount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_INT_RATES SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_INT_RATES SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "58":
+				int M_INT_RATES_FCAcount = brrsValidationsRepo.getCheckSrlNo58(convertDate);
+	               if(M_INT_RATES_FCAcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_INT_RATES_FCA SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_INT_RATES_FCA SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "59":
+				int M_SECAcount = brrsValidationsRepo.getCheckSrlNo59(convertDate);
+	               if(M_SECAcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_SECA SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_SECA SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "60":
+				int M_SECLcount = brrsValidationsRepo.getCheckSrlNo60(convertDate);
+	               if(M_SECLcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_SECL SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_SECL SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "61":
+				int M_RPDcount = brrsValidationsRepo.getCheckSrlNo61(convertDate);
+	               if(M_RPDcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_RPD SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_RPD SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "62":
+				int M_FAScount = brrsValidationsRepo.getCheckSrlNo62(convertDate);
+	               if(M_FAScount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_FAS SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_FAS SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "63":
+				int M_SECcount = brrsValidationsRepo.getCheckSrlNo63(convertDate);
+	               if(M_SECcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("M_SEC SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("M_SEC SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "64":
+				int UNCONS_INVESTcount = brrsValidationsRepo.getCheckSrlNo64(convertDate);
+	               if(UNCONS_INVESTcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("UNCONS_INVEST SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("UNCONS_INVEST SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "65":
+				int Q_ATFcount = brrsValidationsRepo.getCheckSrlNo65(convertDate);
+	               if(Q_ATFcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("Q_ATF SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("Q_ATF SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "66":
+				int Q_RLFA1count = brrsValidationsRepo.getCheckSrlNo66(convertDate);
+	               if(Q_RLFA1count > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("Q_RLFA1 SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("Q_RLFA1 SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "67":
+				int Q_RLFA2count = brrsValidationsRepo.getCheckSrlNo67(convertDate);
+	               if(Q_RLFA2count > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("Q_RLFA2 SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("Q_RLFA2 SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "68":
+				int Q_SMME_LOANS_ADVANCEScount = brrsValidationsRepo.getCheckSrlNo68(convertDate);
+	               if(Q_SMME_LOANS_ADVANCEScount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("Q_SMME_LOANS_ADVANCES SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("Q_SMME_LOANS_ADVANCES SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "69":
+				int Q_SMME_INTREST_INCOMEcount = brrsValidationsRepo.getCheckSrlNo69(convertDate);
+	               if(Q_SMME_INTREST_INCOMEcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("Q_SMME_INTREST_INCOME SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("Q_SMME_INTREST_INCOME SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "70":
+				int Q_SMME_DEPcount = brrsValidationsRepo.getCheckSrlNo70(convertDate);
+	               if(Q_SMME_DEPcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("Q_SMME_DEP SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("Q_SMME_DEP SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "71":
+				int Q_STAFFcount = brrsValidationsRepo.getCheckSrlNo71(convertDate);
+	               if(Q_STAFFcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("Q_STAFF SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("Q_STAFF SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "72":
+				int Q_LARADVcount = brrsValidationsRepo.getCheckSrlNo72(convertDate);
+	               if(Q_LARADVcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("Q_LARADV SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("Q_LARADV SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+			case "73":
+				int Q_BRANCHNETcount = brrsValidationsRepo.getCheckSrlNo73(convertDate);
+	               if(Q_BRANCHNETcount > 0) {
+	                    brfValidation.setCur_status("Y");
+	                    brfValidation.setRemarks2("Q_BRANCHNET SUMMARY TABLE HAVE VALUES");
+	                    status = "0";
+	                } else {
+	                    brfValidation.setCur_status("N");
+	                    brfValidation.setRemarks2("Q_BRANCHNET SUMMARY TABLE DOES NOT HAVE VALUES");
+	                    status = "2";
+	                }
+	                brrsValidationsRepo.save(brfValidation);
+	                break;
+	                
+	                
 			default:
 				logger.warn("Unhandled srl_no: {}", srl_no);
 				msg.setGenID("0");
