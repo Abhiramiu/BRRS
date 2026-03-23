@@ -7398,15 +7398,15 @@ public class RegulatoryReportServices {
 
 		// List of all reports you want to include
 		List<String> reportList = Arrays.asList("M_PI", "M_SFINP1", "M_SFINP2", "M_LIQ", "M_SCI_E", "M_IS", "M_CA1",
-				"M_CA2", "M_CA3", "M_CA4", "M_CA5", "M_CA6", "M_CA7", "M_SRWA_12A", "M_SRWA_12B", "M_SRWAA_12C",
+				"M_CA2", "M_CA3", "M_CA4", "M_CA5", "M_CA6", "M_CA7", "M_SRWA_12A", "M_SRWA_12B", "M_SRWA_12C",
 				"M_SRWA_12D", "M_SRWA_12E", "M_SRWA_12F", "M_SRWA_12G", "M_SRWA_12H", "M_OR1", "M_OR2", "M_MRC",
 				"M_SIR", "M_GMIRT", "M_IRB", "M_EPR", "M_FXR", "M_CR", "M_OPTR", "M_GALOR", "M_CALOC",
 				"M_LA1","M_LA2","M_LA3","M_LA4","M_LA5",
 				"M_PLL","M_PD","M_I_S_CA","M_SP","M_GP",
 				"M_TBS","M_LIQGAP","M_NOSVOS","M_AIDP",
-				"M_DEP1","M_DEP2","M_DEP3","M_DEP4","M_OB",
+				"M_DEP1","M_DEP2","M_DEP3","M_DEP4","M_OB","M_BOP",
 				"M_INT_RATES","M_INT_RATES_FCA","M_SECA",
-				"M_SECL","M_UNCONS_INVEST","Q_ATF","Q_RLFA1",
+				"M_SECL","M_RPD","M_FAS","M_SEC","M_UNCONS_INVEST","Q_ATF","Q_RLFA1",
 				"Q_RLFA2","Q_SMME","Q_SMME_LA","Q_SMME_DEP",
 				"Q_STAFF","Q_LARADV","Q_BRANCHNET");
 
@@ -7695,6 +7695,10 @@ public class RegulatoryReportServices {
 					return BRRS_M_OB_ReportService.getBRRS_M_OBExcel("EMAIL_M_OB.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, format, version);
 
+					
+				case "M_BOP":
+					return BRRS_M_BOP_ReportService.getM_BOPExcel("EMAIL_M_BOP.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, format, version);
 				case "M_INT_RATES":
 					return brrs_m_int_rates_reportservice.getM_INTRATESExcel("EMAIL_M_INT_RATES.xlsx", reportName,
 							fromdate, todate, currency, dtltype, type, format, version);
@@ -7708,6 +7712,17 @@ public class RegulatoryReportServices {
 							currency, dtltype, type, format, version);
 				case "M_SECL":
 					return brrs_m_secl_reportservice.getM_SECLExcel("EMAIL_M_SECL.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, format, version);
+					
+				case "M_RPD":
+					return BRRS_M_RPD_ReportService.getM_RPDExcel("EMAIL_M_RPD.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, format, version);
+				case "M_FAS":
+					return BRRS_M_FAS_reportservice.getM_FASExcel("EMAIL_M_FAS.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, format, version);
+					
+				case "M_SEC":
+					return brrs_m_sec_reportservice.getM_SECExcel("EMAIL_M_SEC.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, format, version);
 
 				case "M_UNCONS_INVEST":
@@ -7925,6 +7940,10 @@ public class RegulatoryReportServices {
 				case "M_OB":
 					return BRRS_M_OB_ReportService.getBRRS_M_OBExcel("M_OB.xlsx", reportName, fromdate, todate, currency,
 							dtltype, type, format, version);
+					
+				case "M_BOP":
+					return BRRS_M_BOP_ReportService.getM_BOPExcel("M_BOP.xlsx", reportName, fromdate, todate, currency,
+							dtltype, type, format, version);
 
 				case "M_INT_RATES":
 					return brrs_m_int_rates_reportservice.getM_INTRATESExcel("M_INT_RATES.xlsx", reportName,
@@ -7942,6 +7961,18 @@ public class RegulatoryReportServices {
 					return brrs_m_secl_reportservice.getM_SECLExcel("M_SECL.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, format, version);
 
+				case "M_RPD":
+					return BRRS_M_RPD_ReportService.getM_RPDExcel("M_RPD.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, format, version);
+					
+				case "M_FAS":
+					return BRRS_M_FAS_reportservice.getM_FASExcel("M_FAS.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, format, version);
+					
+				case "M_SEC":
+					return brrs_m_sec_reportservice.getM_SECExcel("M_SEC.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, format, version);
+					
 				case "M_UNCONS_INVEST":
 					return BRRS_M_UNCONS_INVEST_reportservice.BRRS_M_UNCONS_INVESTExcel("M_UNCONS_INVEST.xlsx",
 							reportName, fromdate, todate, currency, dtltype, type, format, version);
