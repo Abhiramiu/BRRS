@@ -20,9 +20,7 @@ public interface BRRSValidationsRepo extends JpaRepository<BRRSValidations, Stri
 
 	// Srl_no1
 	// M_SFINP1 summarytable
-	@Query(value = "SELECT " + "(SELECT COUNT(*) FROM BRRS_M_SFINP1_SUMMARYTABLE WHERE REPORT_DATE=?1) + "
-			+ "(SELECT COUNT(*) FROM BRRS_M_SFINP1_SUMMARYTABLE_MANUAL WHERE REPORT_DATE=?1) "
-			+ "FROM dual", nativeQuery = true)
+	@Query(value = "Select count(*) from BRRS_M_SFINP1_SUMMARYTABLE where REPORT_DATE=?1 ", nativeQuery = true)
 	Integer getCheckSrlNo1(String report_date);
 
 	/// M_SFINP1
@@ -418,7 +416,7 @@ public interface BRRSValidationsRepo extends JpaRepository<BRRSValidations, Stri
 
 	// Srl_no66
 	// Q_RLFA1 summarytable
-	@Query(value = "Select count(*) from BRRS_Q_RLFA1_SUMMARYTABLE where REPORT_DATE=?1 ", nativeQuery = true)
+	@Query(value = "Select count(*) from BRRS_Q_RLFA1_SUMMARY_TABLE where REPORT_DATE=?1 ", nativeQuery = true)
 	Integer getCheckSrlNo66(String report_date);
 
 	// Srl_no67
