@@ -232,14 +232,11 @@ public interface BRRSValidationsRepo extends JpaRepository<BRRSValidations, Stri
 
 	// Srl_no36
 	// M_CALOC summarytable
-	@Query(value =
-		    "SELECT " +
-		    "(SELECT COUNT(*) FROM BRRS_M_CALOC_SUMMARYTABLE1 WHERE REPORT_DATE=?1) + " +
-		    "(SELECT COUNT(*) FROM BRRS_M_CALOC_SUMMARYTABLE2 WHERE REPORT_DATE=?1) + " +
-		    "(SELECT COUNT(*) FROM BRRS_M_CALOC_SUMMARYTABLE3 WHERE REPORT_DATE=?1) "+
-		    "FROM dual",
-		    nativeQuery = true)
-		Integer getCheckSrlNo36(String report_date);
+	@Query(value = "SELECT " + "(SELECT COUNT(*) FROM BRRS_M_CALOC_SUMMARYTABLE1 WHERE REPORT_DATE=?1) + "
+			+ "(SELECT COUNT(*) FROM BRRS_M_CALOC_SUMMARYTABLE2 WHERE REPORT_DATE=?1) + "
+			+ "(SELECT COUNT(*) FROM BRRS_M_CALOC_SUMMARYTABLE3 WHERE REPORT_DATE=?1) "
+			+ "FROM dual", nativeQuery = true)
+	Integer getCheckSrlNo36(String report_date);
 
 	// Srl_no37
 	// M_LA1 summarytable
@@ -458,4 +455,224 @@ public interface BRRSValidationsRepo extends JpaRepository<BRRSValidations, Stri
 	// Q_BRANCHNET summarytable
 	@Query(value = "Select count(*) from BRRS_Q_BRANCHNET_SUMMARYTABLE where REPORT_DATE=?1 ", nativeQuery = true)
 	Integer getCheckSrlNo73(String report_date);
+
+	// Srl_no74
+	// M_PI summarytable
+	@Query(value = "Select count(*) from BRRS_M_PI_SUMMARYTABLE where REPORT_DATE=?1 ", nativeQuery = true)
+	Integer getCheckSrlNo74(String report_date);
+
+	/// M_SRWA_12A
+	//// Srl_no75 ( TOTAL ON-BALANCE SHEET AMOUNT IN EXPOSURE CLASS and Total
+	/// ASSETS(MONTH END IN M_SFINP1)
+	@Query(value = "SELECT b.R133_EXPO_CRM, c.R61_MONTH_END "
+			+ "FROM BRRS_M_SRWA_12A_SUMMARYTABLE3 b, BRRS_M_SFINP1_SUMMARYTABLE c "
+			+ "WHERE b.REPORT_DATE = ?1 AND c.REPORT_DATE = ?1 "
+			+ "AND b.R133_EXPO_CRM = c.R61_MONTH_END", nativeQuery = true)
+	List<Object[]> getCheckSrlNo75(String report_date);
+
+	/// M_SFINP1
+	//// Srl_no76 ( TOTAL ON-BALANCE SHEET AMOUNT IN EXPOSURE CLASS and Total
+	/// ASSETS(MONTH END IN M_SFINP1)
+	@Query(value = "SELECT b.R133_EXPO_CRM, c.R61_MONTH_END "
+			+ "FROM BRRS_M_SRWA_12A_SUMMARYTABLE3 b, BRRS_M_SFINP1_SUMMARYTABLE c "
+			+ "WHERE b.REPORT_DATE = ?1 AND c.REPORT_DATE = ?1 "
+			+ "AND b.R133_EXPO_CRM = c.R61_MONTH_END", nativeQuery = true)
+	List<Object[]> getCheckSrlNo76(String report_date);
+
+	/// M_SRWA_12A
+	//// Srl_no77 ( TOTAL OFF-BALANCE SHEET AMOUNT IN PART B : RISK WEIGHTED AMOUNTS
+	/// (OFF BALANCESHEET EXPOSURES) AND BOTSWANA TOTAL IN M_GALOR-III ARE NOT
+	/// EQUAL)
+	@Query(value = "SELECT b.R253_NOM_PRI_AMT, c.R108_BOTSWANA   "
+			+ "FROM BRRS_M_SRWA_12A_SUMMARYTABLE7 b, BRRS_M_GALOR_SUMMARYTABLE2 c "
+			+ "WHERE b.REPORT_DATE = ?1 AND c.REPORT_DATE = ?1 "
+			+ "AND b.R253_NOM_PRI_AMT = c.R108_BOTSWANA  ", nativeQuery = true)
+	List<Object[]> getCheckSrlNo77(String report_date);
+
+	/// M_GALOR
+//// Srl_no78 ( TOTAL OFF-BALANCE SHEET AMOUNT  IN PART B : RISK WEIGHTED AMOUNTS (OFF BALANCESHEET EXPOSURES) AND  BOTSWANA TOTAL IN M_GALOR-III  ARE NOT EQUAL)
+	@Query(value = "SELECT b.R108_BOTSWANA, c.R253_NOM_PRI_AMT   "
+			+ "FROM BRRS_M_GALOR_SUMMARYTABLE2 b, BRRS_M_SRWA_12A_SUMMARYTABLE7 c "
+			+ "WHERE b.REPORT_DATE = ?1 AND c.REPORT_DATE = ?1 "
+			+ "AND b.R108_BOTSWANA = c.R253_NOM_PRI_AMT  ", nativeQuery = true)
+	List<Object[]> getCheckSrlNo78(String report_date);
+
+	/// M_GALOR
+	//// Srl_no79 (TOTAL ASSETS IN M-GALOR AND ASSETS ARE NOT EQUAL)
+	@Query(value = "SELECT b.R10_TOTAL, c.R61_MONTH_END     "
+			+ "FROM BRRS_M_GALOR_SUMMARYTABLE1 b, BRRS_M_SFINP1_SUMMARYTABLE c "
+			+ "WHERE b.REPORT_DATE = ?1 AND c.REPORT_DATE = ?1 "
+			+ "AND b.R10_TOTAL = c.R61_MONTH_END    ", nativeQuery = true)
+	List<Object[]> getCheckSrlNo79(String report_date);
+
+	/// M_SFINP1
+//// Srl_no80 ( TOTAL ASSETS  IN M-GALOR AND  ASSETS ARE NOT EQUAL)
+	@Query(value = "SELECT b.R61_MONTH_END  , c.R10_TOTAL   "
+			+ "FROM BRRS_M_SFINP1_SUMMARYTABLE b, BRRS_M_GALOR_SUMMARYTABLE1 c "
+			+ "WHERE b.REPORT_DATE = ?1 AND c.REPORT_DATE = ?1 "
+			+ "AND b.R61_MONTH_END   = c.R10_TOTAL  ", nativeQuery = true)
+	List<Object[]> getCheckSrlNo80(String report_date);
+
+	/// M_CALOC
+	//// Srl_no81 ( TOTAL ASSETS IN M-CALOC AND ASSETS ARE NOT EQUAL)
+	@Query(value = "SELECT b.R12_OTHERCURRENCIES_W   , c.R61_MONTH_END       "
+			+ "FROM BRRS_M_CALOC_SUMMARYTABLE1  b, BRRS_M_SFINP1_SUMMARYTABLE c "
+			+ "WHERE b.REPORT_DATE = ?1 AND c.REPORT_DATE = ?1 "
+			+ "AND b.R12_OTHERCURRENCIES_W = c.R61_MONTH_END      ", nativeQuery = true)
+	List<Object[]> getCheckSrlNo81(String report_date);
+
+	/// M_SFINP1
+//// Srl_no82 (   TOTAL ASSETS  IN M-CALOC AND  ASSETS ARE NOT EQUAL)
+	@Query(value = "SELECT b.R61_MONTH_END    , c.R12_OTHERCURRENCIES_W      "
+			+ "FROM BRRS_M_SFINP1_SUMMARYTABLE b, BRRS_M_CALOC_SUMMARYTABLE1  c "
+			+ "WHERE b.REPORT_DATE = ?1 AND c.REPORT_DATE = ?1 "
+			+ "AND b.R61_MONTH_END     = c.R12_OTHERCURRENCIES_W  ", nativeQuery = true)
+	List<Object[]> getCheckSrlNo82(String report_date);
+
+	/// M_LA1
+	//// Srl_no83 ( TOTAL OUTSTANDING BALANCE IN M-LA1 AND GROSS LOAN AND ADVANCE IN
+	/// M-SFinP1 ARE NOT EQUAL)
+	@Query(value = "SELECT b.R64_BALANCE_OUTSTANDING      , c.R39_MONTH_END         "
+			+ "FROM BRRS_M_LA1_SUMMARYTABLE  b, BRRS_M_SFINP1_SUMMARYTABLE c "
+			+ "WHERE b.REPORT_DATE = ?1 AND c.REPORT_DATE = ?1 "
+			+ "AND b.R64_BALANCE_OUTSTANDING    = c.R39_MONTH_END        ", nativeQuery = true)
+	List<Object[]> getCheckSrlNo83(String report_date);
+
+	/// M_SFINP1
+//// Srl_no84 (    TOTAL OUTSTANDING BALANCE IN M-LA1 AND  GROSS LOAN AND ADVANCE IN M-SFinP1 ARE NOT EQUAL)
+	@Query(value = "SELECT b.R39_MONTH_END      , c.R64_BALANCE_OUTSTANDING         "
+			+ "FROM BRRS_M_SFINP1_SUMMARYTABLE b, BRRS_M_LA1_SUMMARYTABLE  c "
+			+ "WHERE b.REPORT_DATE = ?1 AND c.REPORT_DATE = ?1 "
+			+ "AND b.R39_MONTH_END       = c.R64_BALANCE_OUTSTANDING     ", nativeQuery = true)
+	List<Object[]> getCheckSrlNo84(String report_date);
+
+	/// _LIQGAP
+	//// Srl_no85 ( TOTAL OUTSTANDING BALANCE IN M-LA1 AND GROSS LOAN AND ADVANCE IN
+	/// M-SFinP1 ARE NOT EQUAL)
+	@Query(value = "SELECT b.R10_CUMULATIVE_TOTAL, c.R61_MONTH_END "
+			+ "FROM BRRS_M_LIQGAP_SUMMARYTABLE  b, BRRS_M_SFINP1_SUMMARYTABLE c "
+			+ "WHERE b.REPORT_DATE = ?1 AND c.REPORT_DATE = ?1 "
+			+ "AND b.R10_CUMULATIVE_TOTAL        = c.R61_MONTH_END", nativeQuery = true)
+	List<Object[]> getCheckSrlNo85(String report_date);
+
+	/// M_SFINP1
+//// Srl_no86 (    TOTAL OUTSTANDING BALANCE IN M-LA1 AND  GROSS LOAN AND ADVANCE IN M-SFinP1 ARE NOT EQUAL)
+	@Query(value = "SELECT b.R61_MONTH_END, c.R10_CUMULATIVE_TOTAL   "
+			+ "FROM BRRS_M_SFINP1_SUMMARYTABLE b, BRRS_M_LIQGAP_SUMMARYTABLE  c "
+			+ "WHERE b.REPORT_DATE = ?1 AND c.REPORT_DATE = ?1 "
+			+ "AND b.R61_MONTH_END         = c.R10_CUMULATIVE_TOTAL         ", nativeQuery = true)
+	List<Object[]> getCheckSrlNo86(String report_date);
+
+	/// _LIQGAP
+//// Srl_no87 (  TOTAL LIABILITIES IN M-LIQGAP  AND  LIABILITIES ARE NOT EQUAL)
+	@Query(value = "SELECT b.R27_CUMULATIVE_TOTAL     , c.R72_MONTH_END   "
+			+ "FROM BRRS_M_LIQGAP_SUMMARYTABLE  b, BRRS_M_SFINP1_SUMMARYTABLE c "
+			+ "WHERE b.REPORT_DATE = ?1 AND c.REPORT_DATE = ?1 "
+			+ "AND b.R27_CUMULATIVE_TOTAL             = c.R72_MONTH_END  ", nativeQuery = true)
+	List<Object[]> getCheckSrlNo87(String report_date);
+
+/// M_SFINP1
+////Srl_no88 (  TOTAL LIABILITIES IN M-LIQGAP  AND  LIABILITIES ARE NOT EQUAL)
+	@Query(value = "SELECT b.R72_MONTH_END  , c.R27_CUMULATIVE_TOTAL        "
+			+ "FROM BRRS_M_SFINP1_SUMMARYTABLE b, BRRS_M_LIQGAP_SUMMARYTABLE  c "
+			+ "WHERE b.REPORT_DATE = ?1 AND c.REPORT_DATE = ?1 "
+			+ "AND b.R72_MONTH_END           = c.R27_CUMULATIVE_TOTAL              ", nativeQuery = true)
+	List<Object[]> getCheckSrlNo88(String report_date);
+
+	/// M_LA3
+//// Srl_no89(  TOTAL LIABILITIES IN M-LIQGAP  AND  LIABILITIES ARE NOT EQUAL)
+	@Query(value = "SELECT b.R16_APPROVED_LIMIT / b.R31_APPROVED_LIMIT, c.R64_APPROVED_LIMIT "
+			+ "FROM BRRS_M_LA3_SUMMARYTABLE1 b, BRRS_M_LA1_SUMMARYTABLE c "
+			+ "WHERE b.REPORT_DATE = ?1 AND c.REPORT_DATE = ?1 "
+			+ "AND b.R16_APPROVED_LIMIT / b.R31_APPROVED_LIMIT <> c.R64_APPROVED_LIMIT", nativeQuery = true)
+	List<Object[]> getCheckSrlNo89(String report_date);
+
+/// M_LA1
+////Srl_no90(  TOTAL LIABILITIES IN M-LIQGAP  AND  LIABILITIES ARE NOT EQUAL)
+	@Query(value = "SELECT b.R64_APPROVED_LIMIT, c.R16_APPROVED_LIMIT / c.R31_APPROVED_LIMIT "
+			+ "FROM BRRS_M_LA1_SUMMARYTABLE b, BRRS_M_LA3_SUMMARYTABLE1 c "
+			+ "WHERE b.REPORT_DATE = ?1 AND c.REPORT_DATE = ?1 "
+			+ "AND b.R64_APPROVED_LIMIT <> (c.R16_APPROVED_LIMIT / c.R31_APPROVED_LIMIT)", nativeQuery = true)
+	List<Object[]> getCheckSrlNo90(String report_date);
+
+/// M_PLL
+////Srl_no91(   TOTAL PROVISION FOR LOANSS IN M-PLL  AND  TOTAL IN M-PD ARE NOT EQUAL)
+	@Query(value = "SELECT b.R64_PROVI_LOAN_LOSS, "
+			+ "(c.R61_180D_ABOVE_PASTDUE + c.R61_NON_ACCRUALS3 + c.R61_SPECIFIC_PROV3) "
+			+ "FROM BRRS_M_PLL_SUMMARYTABLE b, BRRS_M_PD_MANUAL_SUMMARYTABLE c "
+			+ "WHERE b.REPORT_DATE = ?1 AND c.REPORT_DATE = ?1 " + "AND b.R64_PROVI_LOAN_LOSS <> "
+			+ "(c.R61_180D_ABOVE_PASTDUE + c.R61_NON_ACCRUALS3 + c.R61_SPECIFIC_PROV3)", nativeQuery = true)
+	List<Object[]> getCheckSrlNo91(String report_date);
+
+/// M_PD
+////Srl_no92(   TOTAL PROVISION FOR LOANSS IN M-PLL  AND  TOTAL IN M-PD ARE NOT EQUAL)
+	@Query(value = "SELECT " + "(b.R61_180D_ABOVE_PASTDUE + b.R61_NON_ACCRUALS3 + b.R61_SPECIFIC_PROV3), "
+			+ "c.R64_PROVI_LOAN_LOSS " + "FROM BRRS_M_PD_MANUAL_SUMMARYTABLE b, BRRS_M_PLL_SUMMARYTABLE c "
+			+ "WHERE b.REPORT_DATE = ?1 AND c.REPORT_DATE = ?1 "
+			+ "AND (b.R61_180D_ABOVE_PASTDUE + b.R61_NON_ACCRUALS3 + b.R61_SPECIFIC_PROV3) "
+			+ "<> c.R64_PROVI_LOAN_LOSS", nativeQuery = true)
+	List<Object[]> getCheckSrlNo92(String report_date);
+
+/// M_IRB
+//// Srl_no93 (TOTAL FOR STATIC REPRICING GAP IN M-IRB  AND  MONTH END TOTAL ASSETS ARE NOT EQUAL)
+	@Query(value = "SELECT b.R10_TOTAL  , c.R61_MONTH_END   "
+			+ "FROM BRRS_M_IRB_SUMMARYTABLE  b, BRRS_M_SFINP1_SUMMARYTABLE c "
+			+ "WHERE b.REPORT_DATE = ?1 AND c.REPORT_DATE = ?1 "
+			+ "AND b.R10_TOTAL          = c.R61_MONTH_END  ", nativeQuery = true)
+	List<Object[]> getCheckSrlNo93(String report_date);
+
+/// M_SFINP1
+////Srl_no94 (    TOTAL FOR STATIC REPRICING GAP IN M-IRB  AND  MONTH END TOTAL ASSETS ARE NOT EQUAL)
+	@Query(value = "SELECT b.R61_MONTH_END  , c.R10_TOTAL     "
+			+ "FROM BRRS_M_SFINP1_SUMMARYTABLE b, BRRS_M_IRB_SUMMARYTABLE  c "
+			+ "WHERE b.REPORT_DATE = ?1 AND c.REPORT_DATE = ?1 "
+			+ "AND b.R61_MONTH_END           = c.R10_TOTAL           ", nativeQuery = true)
+	List<Object[]> getCheckSrlNo94(String report_date);
+
+/// M_GP
+//// Srl_no95 (TOTAL IN M-GP AND GENERAL RESERVE ARE NOT EQUAL)
+	@Query(value = "SELECT b.R64_TOTAL_GENERAL_PROVISIONS  , c.R77_MONTH_END "
+			+ "FROM BRRS_M_GP_SUMMARYTABLE  b, BRRS_M_SFINP2_SUMMARYTABLE c "
+			+ "WHERE b.REPORT_DATE = ?1 AND c.REPORT_DATE = ?1 "
+			+ "AND b.R64_TOTAL_GENERAL_PROVISIONS = c.R77_MONTH_END ", nativeQuery = true)
+	List<Object[]> getCheckSrlNo95(String report_date);
+
+/// M_SFINP2
+////Srl_no96 (    TOTAL IN M-GP AND GENERAL RESERVE ARE NOT EQUAL)
+	@Query(value = "SELECT b.R77_MONTH_END      , c.R64_TOTAL_GENERAL_PROVISIONS  "
+			+ "FROM BRRS_M_SFINP2_SUMMARYTABLE b, BRRS_M_GP_SUMMARYTABLE  c "
+			+ "WHERE b.REPORT_DATE = ?1 AND c.REPORT_DATE = ?1 "
+			+ "AND b.R77_MONTH_END = c.R64_TOTAL_GENERAL_PROVISIONS", nativeQuery = true)
+	List<Object[]> getCheckSrlNo96(String report_date);
+	/// M_DEP3
+	//// Srl_no100 (	TOTAL OF PULA EQUIVALENT  IN M-DEP3  AND TOTAL OF INSTITUTIONAL FOREIGN CURRENCY DEPOSITS  ARE NOT EQUAL)
+	@Query(value = "SELECT b.R17_PULA_EQUIVALENT  , c.R56_TOTAL "
+			+ "FROM BRRS_M_DEP3_SUMMARYTABLE  b, BRRS_M_DEP2_SUMMARYTABLE c "
+			+ "WHERE b.REPORT_DATE = ?1 AND c.REPORT_DATE = ?1 "
+			+ "AND b.R17_PULA_EQUIVALENT = c.R56_TOTAL ", nativeQuery = true)
+	List<Object[]> getCheckSrlNo100(String report_date);
+
+	/// M_DEP2
+//// Srl_no101 (    	TOTAL OF PULA EQUIVALENT  IN M-DEP3  AND TOTAL OF INSTITUTIONAL FOREIGN CURRENCY DEPOSITS  ARE NOT EQUAL)
+	@Query(value = "SELECT b.R56_TOTAL      , c.R17_PULA_EQUIVALENT  "
+			+ "FROM BRRS_M_DEP2_SUMMARYTABLE b, BRRS_M_DEP3_SUMMARYTABLE  c "
+			+ "WHERE b.REPORT_DATE = ?1 AND c.REPORT_DATE = ?1 "
+			+ "AND b.R56_TOTAL = c.R17_PULA_EQUIVALENT", nativeQuery = true)
+	List<Object[]> getCheckSrlNo101(String report_date);
+	
+	/// M_DEP3
+	//// Srl_no102 (	TOTAL OF ADVANCES BY INSTITUTIONAL SECTOR IN M-LA4  AND GROSS LOAN AND ADVANCE IN M-SFinP1  ARE NOT EQUAL)
+	@Query(value = "SELECT b.R64_TOTAL   , c.R39_MONTH_END "
+			+ "FROM BRRS_M_LA4_SUMMARYTABLE1  b, BRRS_M_SFINP1_SUMMARYTABLE c "
+			+ "WHERE b.REPORT_DATE = ?1 AND c.REPORT_DATE = ?1 "
+			+ "AND b.R64_TOTAL  = c.R39_MONTH_END ", nativeQuery = true)
+	List<Object[]> getCheckSrlNo102(String report_date);
+
+	/// M_DEP2
+//// Srl_no103 (    	TOTAL OF ADVANCES BY INSTITUTIONAL SECTOR IN M-LA4  AND GROSS LOAN AND ADVANCE IN M-SFinP1  ARE NOT EQUAL)
+	@Query(value = "SELECT b.R39_MONTH_END      , c.R64_TOTAL   "
+			+ "FROM BRRS_M_SFINP1_SUMMARYTABLE b, BRRS_M_LA4_SUMMARYTABLE1  c "
+			+ "WHERE b.REPORT_DATE = ?1 AND c.REPORT_DATE = ?1 "
+			+ "AND b.R39_MONTH_END = c.R64_TOTAL ", nativeQuery = true)
+	List<Object[]> getCheckSrlNo103(String report_date);
 }
