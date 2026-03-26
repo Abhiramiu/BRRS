@@ -7566,10 +7566,10 @@ public class RegulatoryReportServices {
 					return brrs_m_srwa_12a_reportservice.getM_SRWA_12AExcel("EMAIL_M_SRWA_12A.xlsx", reportName,
 							fromdate, todate, currency, dtltype, type, format, version);
 				case "M_SRWA_12B":
-					return brrs_m_srwa_12b_reportservice.getM_SRWA_12BExcel("EMAIL_M_SRWA_12B.xlsx", reportName,
+					return brrs_m_srwa_12b_reportservice.getM_SRWA_12BExcel("M_SRWA_12B_EMAIL.xlsx", reportName,
 							fromdate, todate, currency, dtltype, type, version);
 				case "M_SRWA_12C":
-					return BRRS_M_SRWA_12C_reportservice.getBRRS_M_SRWA_12CExcel("EMAIL_M_SRWA_12C.xlsx", reportName,
+					return BRRS_M_SRWA_12C_reportservice.getBRRS_M_SRWA_12CExcel("EMAIL_M_SRWA12c.xlsx", reportName,
 							fromdate, todate, currency, dtltype, type, format, version);
 				case "M_SRWA_12D":
 					return brrs_m_srwa_12d_reportservice.getM_SRWA_12DExcel("EMAIL_M_SRWA_12D.xlsx", reportName,
@@ -7816,10 +7816,10 @@ public class RegulatoryReportServices {
 					return brrs_m_srwa_12b_reportservice.getM_SRWA_12BExcel("M_SRWA_12B.xlsx", reportName, fromdate,
 							todate, currency, dtltype, type, version);
 				case "M_SRWA_12C":
-					return BRRS_M_SRWA_12C_reportservice.getBRRS_M_SRWA_12CExcel("M_SRWA_12C.xlsx", reportName,
+					return BRRS_M_SRWA_12C_reportservice.getBRRS_M_SRWA_12CExcel("M_SRWA12c.xlsx", reportName,
 							fromdate, todate, currency, dtltype, type, format, version);
 				case "M_SRWA_12D":
-					return brrs_m_srwa_12d_reportservice.getM_SRWA_12DExcel("M_SRWA_12D.xlsx", reportName, fromdate,
+					return brrs_m_srwa_12d_reportservice.getM_SRWA_12DExcel("M_SRWA12D.xlsx", reportName, fromdate,
 							todate, currency, dtltype, type, version);
 				case "M_SRWA_12E":
 					return BRRS_M_SRWA_12E_reportservice.BRRS_M_SRWA_12E_LTVExcel("M_SRWA_12E.xlsx", reportName,

@@ -1493,8 +1493,10 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 											<td id="ROW14"
 												style="padding-left: 20px; font-weight: bold;text-align: right;">
 												<input class="display-input Show_input" type="text"
-													th:value="${reportsummary1[0].R14_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R14_MONTH_END, 1,'COMMA', 0, 'POINT') : '0'}"
-													id="R14_MONTH_END" name="R14_MONTH_END"
+													th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R14_MONTH_END != null 
+? #numbers.formatDecimal(reportsummary1[0].R14_MONTH_END, 1,'COMMA', 0, 'POINT') 
+: '0'}"
+id="R14_MONTH_END" name="R14_MONTH_END"
 													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
 											</td>
@@ -1743,7 +1745,9 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 											<td id="ROW34"
 												style="padding-left: 20px; font-weight: bold;text-align: right;">
 												<input class="display-input Show_input" type="text"
-													th:value="${reportsummary1[0].R34_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R34_MONTH_END, 1,'COMMA', 0, 'POINT') : '0'}"
+													th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R34_MONTH_END != null 
+? #numbers.formatDecimal(reportsummary1[0].R34_MONTH_END, 1,'COMMA', 0, 'POINT') 
+: '0'}"
 													id="R34_MONTH_END" name="R34_MONTH_END"
 													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
@@ -1784,7 +1788,9 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 											<td id="ROW37"
 												style="padding-left: 20px; font-weight: bold;text-align: right;">
 												<input class="display-input Show_input" type="text"
-													th:value="${reportsummary1[0].R37_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R37_MONTH_END, 1,'COMMA', 0, 'POINT') : '0'}"
+												th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R37_MONTH_END != null 
+? #numbers.formatDecimal(reportsummary1[0].R37_MONTH_END, 1,'COMMA', 0, 'POINT') 
+: '0'}"
 													id="R37_MONTH_END" name="R37_MONTH_END"
 													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
@@ -1812,6 +1818,9 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 											<td th:text="${report.r39_cross_ref}" style="text-align: left; "></td>
 
 											<td th:text="${#numbers.formatDecimal(report.r39_month_end, 0, 'COMMA', 0, 'POINT')}"
+												th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R39_MONTH_END != null 
+? #numbers.formatDecimal(reportsummary1[0].R39_MONTH_END, 1,'COMMA', 0, 'POINT') 
+: '0'}"
 												th:attr="RowId='R39', ColumnId='C3'" id="r39_month_end"
 												style="text-align: right; background-color: rgb(107, 122, 143);color: white;">
 											</td>
@@ -1862,8 +1871,10 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 											<td th:text="${report.r43_cross_ref}" style="text-align: left; "></td>
 											<td id="ROW43" style=" font-weight: bold;text-align: right;">
 												<input class="display-input Show_input" type="text"
-													th:value="${reportsummary1[0].R43_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R43_MONTH_END, 1,'COMMA', 0, 'POINT') : '0'}"
-													id="R43_MONTH_END" name="R43_MONTH_END"
+													th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R43_MONTH_END != null 
+? #numbers.formatDecimal(reportsummary1[0].R43_MONTH_END, 1,'COMMA', 0, 'POINT') 
+: '0'}"
+id="R43_MONTH_END" name="R43_MONTH_END"
 													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
 											</td>
@@ -1956,8 +1967,10 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 											<td id="ROW50"
 												style="padding-left: 20px; font-weight: bold;text-align: right;">
 												<input class="display-input Show_input" type="text"
-													th:value="${reportsummary1[0].R50_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R50_MONTH_END, 1,'COMMA', 0, 'POINT') : '0'}"
-													id="R50_MONTH_END" name="R50_MONTH_END"
+													th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R50_MONTH_END != null 
+? #numbers.formatDecimal(reportsummary1[0].R50_MONTH_END, 1,'COMMA', 0, 'POINT') 
+: '0'}"
+id="R50_MONTH_END" name="R50_MONTH_END"
 													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
 											</td>
@@ -1972,8 +1985,10 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 											<td id="ROW51"
 												style="padding-left: 20px; font-weight: bold;text-align: right;">
 												<input class="display-input Show_input" type="text"
-													th:value="${reportsummary1[0].R51_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R51_MONTH_END, 1,'COMMA', 0, 'POINT') : '0'}"
-													id="R51_MONTH_END" name="R51_MONTH_END"
+													th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R51_MONTH_END != null 
+? #numbers.formatDecimal(reportsummary1[0].R51_MONTH_END, 1,'COMMA', 0, 'POINT') 
+: '0'}"
+id="R51_MONTH_END" name="R51_MONTH_END"
 													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
 											</td>
@@ -1988,8 +2003,10 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 											<td id="ROW52"
 												style="padding-left: 20px; font-weight: bold;text-align: right;">
 												<input class="display-input Show_input" type="text"
-													th:value="${reportsummary1[0].R52_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R52_MONTH_END, 1,'COMMA', 0, 'POINT') : '0'}"
-													id="R52_MONTH_END" name="R52_MONTH_END"
+													th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R52_MONTH_END != null 
+? #numbers.formatDecimal(reportsummary1[0].R52_MONTH_END, 1,'COMMA', 0, 'POINT') 
+: '0'}"
+id="R52_MONTH_END" name="R52_MONTH_END"
 													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
 											</td>
@@ -2056,8 +2073,10 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 											<td id="ROW57"
 												style="padding-left: 20px; font-weight: bold;text-align: right;">
 												<input class="display-input Show_input" type="text"
-													th:value="${reportsummary1[0].R57_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R57_MONTH_END, 1,'COMMA', 0, 'POINT') : '0'}"
-													id="R57_MONTH_END" name="R57_MONTH_END"
+													th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R57_MONTH_END != null 
+? #numbers.formatDecimal(reportsummary1[0].R57_MONTH_END, 1,'COMMA', 0, 'POINT') 
+: '0'}"
+id="R57_MONTH_END" name="R57_MONTH_END"
 													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
 											</td>
@@ -2084,8 +2103,10 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 											<td id="ROW59"
 												style="padding-left: 20px; font-weight: bold;text-align: right;">
 												<input class="display-input Show_input" type="text"
-													th:value="${reportsummary1[0].R59_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R59_MONTH_END, 1,'COMMA', 0, 'POINT') : '0'}"
-													id="R59_MONTH_END" name="R59_MONTH_END"
+													th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R59_MONTH_END != null 
+? #numbers.formatDecimal(reportsummary1[0].R59_MONTH_END, 1,'COMMA', 0, 'POINT') 
+: '0'}"
+id="R59_MONTH_END" name="R59_MONTH_END"
 													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
 											</td>
