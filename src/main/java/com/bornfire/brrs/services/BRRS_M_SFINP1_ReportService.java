@@ -252,111 +252,46 @@ public class BRRS_M_SFINP1_ReportService {
 
     @Transactional
     public void updateReport(M_SFINP1_Summary_Manual_Entity updatedEntity) {
+		System.out.println("Came to services");
+		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-        System.out.println("Came to services");
-        System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+		M_SFINP1_Summary_Manual_Entity existing = BRRS_M_SFINP1_Summary_Manual_Repo.findById(updatedEntity.getREPORT_DATE())
+				.orElseThrow(() -> new RuntimeException(
+						"Record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
 
-        //  Fetch existing record by date
-        List<M_SFINP1_Summary_Manual_Entity> list =
-                BRRS_M_SFINP1_Summary_Manual_Repo
-                        .getdatabydateList(updatedEntity.getREPORT_DATE());
+		try {
+			// 🔹 Only these rows
+			int[] specialRows = {14, 34, 37, 39, 43, 50, 51, 52, 57, 59 };
 
-        M_SFINP1_Summary_Manual_Entity existing;
+			for (int i : specialRows) {
+				String prefix = "R" + i + "_";
+				String[] fields = { "MONTH_END" };
 
-        if (list.isEmpty()) {
-            System.out.println("No record found. Creating new.");
-            existing = new M_SFINP1_Summary_Manual_Entity();
-            existing.setREPORT_DATE(updatedEntity.getREPORT_DATE());
-        } else {
-            existing = list.get(0);
-        }
+				for (String field : fields) {
+					String getterName = "get" + prefix + field; 
+					String setterName = "set" + prefix + field;
 
-        try {
+					try {
+						Method getter = M_SFINP1_Summary_Manual_Entity.class.getMethod(getterName);
+						Method setter = M_SFINP1_Summary_Manual_Entity.class.getMethod(setterName, getter.getReturnType());
 
-            //  Only update required row numbers
-            int[] rows = {14, 34, 37, 39, 43, 50, 51, 52, 57, 59};
+						Object newValue = getter.invoke(updatedEntity);
+						setter.invoke(existing, newValue);
 
-            for (int row : rows) {
-                String prefix = "R" + row + "_";
+					} catch (NoSuchMethodException e) {
+						// If getter/setter is missing, just skip
+						continue;
+					}
+				}
+			}
 
-                String[] fields = {"MONTH_END"};
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields", e);
+		}
 
-                for (String field : fields) {
-
-                    String getterName = "get" + prefix + field;
-                    String setterName = "set" + prefix + field;
-
-                    try {
-                        Method getter =
-                                M_SFINP1_Summary_Manual_Entity.class
-                                        .getMethod(getterName);
-
-                        Method setter =
-                                M_SFINP1_Summary_Manual_Entity.class
-                                        .getMethod(setterName, getter.getReturnType());
-
-                        Object newValue = getter.invoke(updatedEntity);
-
-                        if (newValue != null) {
-                            setter.invoke(existing, newValue);
-                        }
-
-                    } catch (NoSuchMethodException e) {
-                        // Ignore if method not present
-                        continue;
-                    }
-                }
-            }
-
-            //  Metadata fields
-            existing.setREPORT_VERSION(updatedEntity.getREPORT_VERSION());
-            existing.setREPORT_FREQUENCY(updatedEntity.getREPORT_FREQUENCY());
-            existing.setREPORT_CODE(updatedEntity.getREPORT_CODE());
-            existing.setREPORT_DESC(updatedEntity.getREPORT_DESC());
-            existing.setENTITY_FLG(updatedEntity.getENTITY_FLG());
-            existing.setMODIFY_FLG(updatedEntity.getMODIFY_FLG());
-            existing.setDEL_FLG(updatedEntity.getDEL_FLG());
-
-        } catch (Exception e) {
-            throw new RuntimeException("Error while updating M_SFINP1 Summary fields", e);
-        }
-
-        //  Save manual values (NOT flush)
-        BRRS_M_SFINP1_Summary_Manual_Repo.save(existing);
-
-        System.out.println("Manual values saved successfully.");
-
-        // 🔥 REGISTER PROCEDURE TO RUN ONLY AFTER COMMIT
-        TransactionSynchronizationManager.registerSynchronization(
-                new TransactionSynchronization() {
-
-                    @Override
-                    public void afterCommit() {
-
-                        try {
-                            String oracleDate =
-                                    new SimpleDateFormat("dd-MM-yyyy")
-                                            .format(updatedEntity.getREPORT_DATE())
-                                            .toUpperCase();
-
-                            System.out.println("Running procedure after commit...");
-
-                            jdbcTemplate.update(
-                                    "BEGIN BRRS.BRRS_M_SFINP1_SUMMARY_PROCEDURE(?); END;",
-                                    oracleDate
-                            );
-
-                            System.out.println("Procedure executed for date: " + oracleDate);
-
-                        } catch (Exception e) {
-                            System.err.println("Procedure execution failed: " + e.getMessage());
-                            e.printStackTrace();
-                        }
-                    }
-                }
-        );
-    }
-
+		// 3️⃣ Save updated entity
+		BRRS_M_SFINP1_Summary_Manual_Repo.save(existing);
+	}
 
 	public byte[] getM_SFINP1DetailExcel(String filename, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) {

@@ -1418,61 +1418,213 @@ public class BRRS_Validation_Services {
 				}
 				brrsValidationsRepo.save(brfValidation);
 				break;
+			case "97":
+				List<Object[]> DEP1TOT = brrsValidationsRepo.getCheckSrlNo97(convertDate);
+				if (!DEP1TOT.isEmpty()) {
+					brfValidation.setCur_status("Y");
+					brfValidation
+							.setRemarks2("SUM OF TOTAL  IN M-DEP1 AND M-DEP2 AND TOTAL CUSTOMER DEPOSIT ARE NOT EQUAL");
+					status = "0";
+				} else {
+					brfValidation.setCur_status("N");
+					brfValidation
+							.setRemarks2("SUM OF TOTAL  IN M-DEP1 AND M-DEP2 AND TOTAL CUSTOMER DEPOSIT ARE NOT EQUAL");
+					status = "2";
+				}
+				brrsValidationsRepo.save(brfValidation);
+				break;
+
+			case "98":
+				List<Object[]> DEP2TOT = brrsValidationsRepo.getCheckSrlNo98(convertDate);
+				if (!DEP2TOT.isEmpty()) {
+					brfValidation.setCur_status("Y");
+					brfValidation
+							.setRemarks2("SUM OF TOTAL  IN M-DEP1 AND M-DEP2 AND TOTAL CUSTOMER DEPOSIT ARE NOT EQUAL");
+					status = "0";
+				} else {
+					brfValidation.setCur_status("N");
+					brfValidation
+							.setRemarks2("SUM OF TOTAL  IN M-DEP1 AND M-DEP2 AND TOTAL CUSTOMER DEPOSIT ARE NOT EQUAL");
+					status = "2";
+				}
+				brrsValidationsRepo.save(brfValidation);
+				break;
+
+			case "99":
+				List<Object[]> SFIP2TOTAL = brrsValidationsRepo.getCheckSrlNo99(convertDate);
+				if (!SFIP2TOTAL.isEmpty()) {
+					brfValidation.setCur_status("Y");
+					brfValidation
+							.setRemarks2("SUM OF TOTAL  IN M-DEP1 AND M-DEP2 AND TOTAL CUSTOMER DEPOSIT ARE NOT EQUAL");
+					status = "0";
+				} else {
+					brfValidation.setCur_status("N");
+					brfValidation
+							.setRemarks2("SUM OF TOTAL  IN M-DEP1 AND M-DEP2 AND TOTAL CUSTOMER DEPOSIT ARE NOT EQUAL");
+					status = "2";
+				}
+				brrsValidationsRepo.save(brfValidation);
+				break;
 			case "100":
-				 List<Object[]> TOTDEP3  = brrsValidationsRepo.getCheckSrlNo100(convertDate);
-	                if (!TOTDEP3.isEmpty()) {
-	                    brfValidation.setCur_status("Y");
-	                    brfValidation.setRemarks2( "	TOTAL OF PULA EQUIVALENT  IN M-DEP3  AND TOTAL OF INSTITUTIONAL FOREIGN CURRENCY DEPOSITS  ARE NOT EQUAL");
-	                    status = "0";
-	                } else {
-	                    brfValidation.setCur_status("N");
-	                    brfValidation.setRemarks2( "	TOTAL OF PULA EQUIVALENT  IN M-DEP3  AND TOTAL OF INSTITUTIONAL FOREIGN CURRENCY DEPOSITS  ARE NOT EQUAL");
-	                    status = "2";
-	                }
-	                brrsValidationsRepo.save(brfValidation);
-	                break;
-	                
+				List<Object[]> TOTDEP3 = brrsValidationsRepo.getCheckSrlNo100(convertDate);
+				if (!TOTDEP3.isEmpty()) {
+					brfValidation.setCur_status("Y");
+					brfValidation.setRemarks2(
+							"	TOTAL OF PULA EQUIVALENT  IN M-DEP3  AND TOTAL OF INSTITUTIONAL FOREIGN CURRENCY DEPOSITS  ARE NOT EQUAL");
+					status = "0";
+				} else {
+					brfValidation.setCur_status("N");
+					brfValidation.setRemarks2(
+							"	TOTAL OF PULA EQUIVALENT  IN M-DEP3  AND TOTAL OF INSTITUTIONAL FOREIGN CURRENCY DEPOSITS  ARE NOT EQUAL");
+					status = "2";
+				}
+				brrsValidationsRepo.save(brfValidation);
+				break;
+
 			case "101":
-				 List<Object[]> TOTDEP2 = brrsValidationsRepo.getCheckSrlNo101(convertDate);
-	                if (!TOTDEP2.isEmpty()) {
-	                    brfValidation.setCur_status("Y");
-	                    brfValidation.setRemarks2( "	TOTAL OF PULA EQUIVALENT  IN M-DEP3  AND TOTAL OF INSTITUTIONAL FOREIGN CURRENCY DEPOSITS  ARE NOT EQUAL");
-	                    status = "0";
-	                } else {
-	                    brfValidation.setCur_status("N");
-	                    brfValidation.setRemarks2( "	TOTAL OF PULA EQUIVALENT  IN M-DEP3  AND TOTAL OF INSTITUTIONAL FOREIGN CURRENCY DEPOSITS  ARE NOT EQUAL");
-	                    status = "2";
-	                }
-	                brrsValidationsRepo.save(brfValidation);
-	                break;
-	                
+				List<Object[]> TOTDEP2 = brrsValidationsRepo.getCheckSrlNo101(convertDate);
+				if (!TOTDEP2.isEmpty()) {
+					brfValidation.setCur_status("Y");
+					brfValidation.setRemarks2(
+							"	TOTAL OF PULA EQUIVALENT  IN M-DEP3  AND TOTAL OF INSTITUTIONAL FOREIGN CURRENCY DEPOSITS  ARE NOT EQUAL");
+					status = "0";
+				} else {
+					brfValidation.setCur_status("N");
+					brfValidation.setRemarks2(
+							"	TOTAL OF PULA EQUIVALENT  IN M-DEP3  AND TOTAL OF INSTITUTIONAL FOREIGN CURRENCY DEPOSITS  ARE NOT EQUAL");
+					status = "2";
+				}
+				brrsValidationsRepo.save(brfValidation);
+				break;
+
 			case "102":
-				 List<Object[]> TOTLA4  = brrsValidationsRepo.getCheckSrlNo102(convertDate);
-	                if (!TOTLA4.isEmpty()) {
-	                    brfValidation.setCur_status("Y");
-	                    brfValidation.setRemarks2( "	TOTAL OF ADVANCES BY INSTITUTIONAL SECTOR IN M-LA4  AND GROSS LOAN AND ADVANCE IN M-SFinP1  ARE NOT EQUAL");
-	                    status = "0";
-	                } else {
-	                    brfValidation.setCur_status("N");
-	                    brfValidation.setRemarks2( "	TOTAL OF ADVANCES BY INSTITUTIONAL SECTOR IN M-LA4  AND GROSS LOAN AND ADVANCE IN M-SFinP1  ARE NOT EQUAL");
-	                    status = "2";
-	                }
-	                brrsValidationsRepo.save(brfValidation);
-	                break;
-	                
+				List<Object[]> TOTLA4 = brrsValidationsRepo.getCheckSrlNo102(convertDate);
+				if (!TOTLA4.isEmpty()) {
+					brfValidation.setCur_status("Y");
+					brfValidation.setRemarks2(
+							"	TOTAL OF ADVANCES BY INSTITUTIONAL SECTOR IN M-LA4  AND GROSS LOAN AND ADVANCE IN M-SFinP1  ARE NOT EQUAL");
+					status = "0";
+				} else {
+					brfValidation.setCur_status("N");
+					brfValidation.setRemarks2(
+							"	TOTAL OF ADVANCES BY INSTITUTIONAL SECTOR IN M-LA4  AND GROSS LOAN AND ADVANCE IN M-SFinP1  ARE NOT EQUAL");
+					status = "2";
+				}
+				brrsValidationsRepo.save(brfValidation);
+				break;
+
 			case "103":
-				 List<Object[]> TOTSF1LA4 = brrsValidationsRepo.getCheckSrlNo103(convertDate);
-	                if (!TOTSF1LA4.isEmpty()) {
-	                    brfValidation.setCur_status("Y");
-	                    brfValidation.setRemarks2( "	TOTAL OF ADVANCES BY INSTITUTIONAL SECTOR IN M-LA4  AND GROSS LOAN AND ADVANCE IN M-SFinP1  ARE NOT EQUAL");
-	                    status = "0";
-	                } else {
-	                    brfValidation.setCur_status("N");
-	                    brfValidation.setRemarks2( "	TOTAL OF ADVANCES BY INSTITUTIONAL SECTOR IN M-LA4  AND GROSS LOAN AND ADVANCE IN M-SFinP1  ARE NOT EQUAL");
-	                    status = "2";
-	                }
-	                brrsValidationsRepo.save(brfValidation);
-	                break;
+				List<Object[]> TOTSF1LA4 = brrsValidationsRepo.getCheckSrlNo103(convertDate);
+				if (!TOTSF1LA4.isEmpty()) {
+					brfValidation.setCur_status("Y");
+					brfValidation.setRemarks2(
+							"	TOTAL OF ADVANCES BY INSTITUTIONAL SECTOR IN M-LA4  AND GROSS LOAN AND ADVANCE IN M-SFinP1  ARE NOT EQUAL");
+					status = "0";
+				} else {
+					brfValidation.setCur_status("N");
+					brfValidation.setRemarks2(
+							"	TOTAL OF ADVANCES BY INSTITUTIONAL SECTOR IN M-LA4  AND GROSS LOAN AND ADVANCE IN M-SFinP1  ARE NOT EQUAL");
+					status = "2";
+				}
+				brrsValidationsRepo.save(brfValidation);
+				break;
+
+			case "104":
+				List<Object[]> OR1TOT = brrsValidationsRepo.getCheckSrlNo104(convertDate);
+				if (!OR1TOT.isEmpty()) {
+					brfValidation.setCur_status("Y");
+					brfValidation.setRemarks2(
+							"	FIGURE OF M12 OF GROSS INCOME IN M-0R1 AND TOTAL OF MONTH FIGURE ARE NOT EQUAL");
+					status = "0";
+				} else {
+					brfValidation.setCur_status("N");
+					brfValidation.setRemarks2(
+							"	FIGURE OF M12 OF GROSS INCOME IN M-0R1 AND TOTAL OF MONTH FIGURE ARE NOT EQUAL");
+					status = "2";
+				}
+				brrsValidationsRepo.save(brfValidation);
+				break;
+
+			case "105":
+				List<Object[]> SCIETOT = brrsValidationsRepo.getCheckSrlNo105(convertDate);
+				if (!SCIETOT.isEmpty()) {
+					brfValidation.setCur_status("Y");
+					brfValidation.setRemarks2(
+							"	FIGURE OF M12 OF GROSS INCOME IN M-0R1 AND TOTAL OF MONTH FIGURE ARE NOT EQUAL");
+					status = "0";
+				} else {
+					brfValidation.setCur_status("N");
+					brfValidation.setRemarks2(
+							"	FIGURE OF M12 OF GROSS INCOME IN M-0R1 AND TOTAL OF MONTH FIGURE ARE NOT EQUAL");
+					status = "2";
+				}
+				brrsValidationsRepo.save(brfValidation);
+				break;
+
+			case "106":
+				List<Object[]> GALORTOT = brrsValidationsRepo.getCheckSrlNo106(convertDate);
+				if (!GALORTOT.isEmpty()) {
+					brfValidation.setCur_status("Y");
+					brfValidation.setRemarks2(
+							"	 TOTAL LIABILITIES IN M-GALOR AND MONTH END BALANCES OF TOTAL LIABILITIES ARE NOT EQUAL");
+					status = "0";
+				} else {
+					brfValidation.setCur_status("N");
+					brfValidation.setRemarks2(
+							"	 TOTAL LIABILITIES IN M-GALOR AND MONTH END BALANCES OF TOTAL LIABILITIES ARE NOT EQUAL");
+					status = "2";
+				}
+				brrsValidationsRepo.save(brfValidation);
+				break;
+
+			case "107":
+				List<Object[]> SFIP2ATOT = brrsValidationsRepo.getCheckSrlNo107(convertDate);
+				if (!SFIP2ATOT.isEmpty()) {
+					brfValidation.setCur_status("Y");
+					brfValidation.setRemarks2(
+							"	 TOTAL LIABILITIES IN M-GALOR AND MONTH END BALANCES OF TOTAL LIABILITIES ARE NOT EQUAL");
+					status = "0";
+				} else {
+					brfValidation.setCur_status("N");
+					brfValidation.setRemarks2(
+							"	 TOTAL LIABILITIES IN M-GALOR AND MONTH END BALANCES OF TOTAL LIABILITIES ARE NOT EQUAL");
+					status = "2";
+				}
+				brrsValidationsRepo.save(brfValidation);
+				break;
+
+			case "108":
+				List<Object[]> CALOCTOT = brrsValidationsRepo.getCheckSrlNo108(convertDate);
+				if (!CALOCTOT.isEmpty()) {
+					brfValidation.setCur_status("Y");
+					brfValidation.setRemarks2(
+							"	 TOTAL LIABILITIES UNDER TOTAL IN M-CALOC  AND MONTH END BALANCES OF TOTAL LIABILITIES ARE NOT EQUAL");
+					status = "0";
+				} else {
+					brfValidation.setCur_status("N");
+					brfValidation.setRemarks2(
+							"	 TOTAL LIABILITIES UNDER TOTAL IN M-CALOC  AND MONTH END BALANCES OF TOTAL LIABILITIES ARE NOT EQUAL");
+					status = "2";
+				}
+				brrsValidationsRepo.save(brfValidation);
+				break;
+
+			case "109":
+				List<Object[]> TOTALSFP2 = brrsValidationsRepo.getCheckSrlNo109(convertDate);
+				if (!TOTALSFP2.isEmpty()) {
+					brfValidation.setCur_status("Y");
+					brfValidation.setRemarks2(
+							"	 TOTAL LIABILITIES UNDER TOTAL IN M-CALOC  AND MONTH END BALANCES OF TOTAL LIABILITIES ARE NOT EQUAL");
+					status = "0";
+				} else {
+					brfValidation.setCur_status("N");
+					brfValidation.setRemarks2(
+							"	 TOTAL LIABILITIES UNDER TOTAL IN M-CALOC  AND MONTH END BALANCES OF TOTAL LIABILITIES ARE NOT EQUAL");
+					status = "2";
+				}
+				brrsValidationsRepo.save(brfValidation);
+				break;
+
 			default:
 				logger.warn("Unhandled srl_no: {}", srl_no);
 				msg.setGenID("0");
