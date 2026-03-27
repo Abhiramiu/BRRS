@@ -86,11 +86,11 @@ public class BRRS_PL_SCHS_ReportService {
 	@Autowired
 	BRRS_PL_SCHS_Archival_Detail_Repo PL_SCHS_Archival_Detail_Repo;
 
-	@Autowired
-	BRRS_PL_SCHS_Manual_Summary_Repo PL_SCHS_Manual_Summary_Repo;
+//	@Autowired
+//	BRRS_PL_SCHS_Manual_Summary_Repo PL_SCHS_Manual_Summary_Repo;
 
-	@Autowired
-	BRRS_PL_SCHS_Manual_Archival_Summary_Repo PL_SCHS_Manual_Archival_Summary_Repo;
+//	@Autowired
+//	BRRS_PL_SCHS_Manual_Archival_Summary_Repo PL_SCHS_Manual_Archival_Summary_Repo;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
@@ -268,8 +268,8 @@ public class BRRS_PL_SCHS_ReportService {
 		}
 
 		List<PL_SCHS_Summary_Entity> dataList = PL_SCHS_summary_repo.getdatabydateList(dateformat.parse(todate));
-		List<PL_SCHS_Manual_Summary_Entity> dataList1 = PL_SCHS_Manual_Summary_Repo
-				.getdatabydateList(dateformat.parse(todate));
+//		List<PL_SCHS_Manual_Summary_Entity> dataList1 = PL_SCHS_Manual_Summary_Repo
+//				.getdatabydateList(dateformat.parse(todate));
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for brrs2.4 report. Returning empty result.");
@@ -4059,8 +4059,8 @@ public class BRRS_PL_SCHS_ReportService {
 
 		List<PL_SCHS_Archival_Summary_Entity> dataList = PL_SCHS_Archival_Summary_Repo
 				.getdatabydateListarchival(dateformat.parse(todate), version);
-		List<PL_SCHS_Manual_Archival_Summary_Entity> dataList1 = PL_SCHS_Manual_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+//		List<PL_SCHS_Manual_Archival_Summary_Entity> dataList1 = PL_SCHS_Manual_Archival_Summary_Repo
+//				.getdatabydateListarchival(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for PL_SCHS report. Returning empty result.");

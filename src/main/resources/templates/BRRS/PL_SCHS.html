@@ -1823,55 +1823,84 @@ PURPOSE		: BRRSREPORT
                                                 <td th:text="${reportsummary.r11_intrest_div}"
                                                     style="padding-left: 20px;"></td>
 
-                                                <td th:text="${reportsummary.r11_fig_bal_sheet}" id="r11_fig_bal_sheet"
-                                                    name="r11_fig_bal_sheet" style="text-align:right;width:390px"
-                                                    class="r11_fig_bal_sheet" th:attr="RowId='R11', ColumnId='C2'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.r11_fig_bal_sheet_bwp}"
-                                                    id="r11_fig_bal_sheet_bwp" name="r11_fig_bal_sheet_bwp"
-                                                    class="r11_fig_bal_sheet_bwp" style="text-align:right;width:390px"
-                                                    th:attr="RowId='R11', ColumnId='C2'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.r11_amt_statement_adj}"
-                                                    class="r11_amt_statement_adj" id="r11_amt_statement_adj"
-                                                    name="r11_amt_statement_adj" style="text-align:right;width:390px"
-                                                    th:attr="RowId='R11', ColumnId='C2'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.r11_amt_statement_adj_bwp}"
-                                                    class="r11_amt_statement_adj_bwp" id="r11_amt_statement_adj_bwp"
-                                                    name="r11_amt_statement_adj_bwp"
-                                                    style="text-align:right;width:390px"
-                                                    th:attr="RowId='R11', ColumnId='C2'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.r11_net_amt}" id="r11_net_amt"
-                                                    name="r11_net_amt" class="r11_net_amt"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
-                                                </td>
-                                                <td th:text="${reportsummary.r11_net_amt_bwp}" id="r11_net_amt_bwp"
-                                                    name="r11_net_amt_bwp" class="r11_net_amt_bwp"
-                                                    style="text-align:right;width:390px"
-                                                    th:attr="RowId='R11', ColumnId='C2'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.r11_bal_sub}" id="r11_bal_sub"
-                                                    name="r11_bal_sub" class="r11_bal_sub"
-                                                    style="text-align:right;width:390px"
-                                                    th:attr="RowId='R11', ColumnId='C2'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.r11_bal_sub_bwp}" id="r11_bal_sub_bwp"
-                                                    name="r11_bal_sub_bwp" class="r11_bal_sub_bwp"
-                                                    style="text-align:right;width:390px"
-                                                    th:attr="RowId='R11', ColumnId='C2'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.r11_bal_sub_diaries}"
-                                                    id="r11_bal_sub_diaries" name="r11_bal_sub_diaries"
-                                                    class="r11_bal_sub_diaries" style="text-align:right;width:390px"
-                                                    th:attr="RowId='R11', ColumnId='C2'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.r11_bal_sub_diaries_bwp}"
-                                                    id="r11_bal_sub_diaries_bwp" name="r11_bal_sub_diaries_bwp"
-                                                    class="r11_bal_sub_diaries_bwp" style="text-align:right;width:390px"
-                                                    th:attr="RowId='R11', ColumnId='C2'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
+													<td th:text="${#numbers.formatDecimal(reportsummary.r11_fig_bal_sheet, 0, 'COMMA', 0, 'POINT')}"
+													    id="r11_fig_bal_sheet"
+													    name="r11_fig_bal_sheet"
+													    style="text-align:right;width:390px"
+													    class="r11_fig_bal_sheet"
+													    th:attr="RowId='R11', ColumnId='C2'"
+													    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+													<td th:text="${#numbers.formatDecimal(reportsummary.r11_fig_bal_sheet_bwp, 0, 'COMMA', 0, 'POINT')}"
+													    id="r11_fig_bal_sheet_bwp"
+													    name="r11_fig_bal_sheet_bwp"
+													    class="r11_fig_bal_sheet_bwp"
+													    style="text-align:right;width:390px"
+													    th:attr="RowId='R11', ColumnId='C2'"
+													    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+													<td th:text="${#numbers.formatDecimal(reportsummary.r11_amt_statement_adj, 0, 'COMMA', 0, 'POINT')}"
+													    class="r11_amt_statement_adj"
+													    id="r11_amt_statement_adj"
+													    name="r11_amt_statement_adj"
+													    style="text-align:right;width:390px"
+													    th:attr="RowId='R11', ColumnId='C2'"
+													    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+													<td th:text="${#numbers.formatDecimal(reportsummary.r11_amt_statement_adj_bwp, 0, 'COMMA', 0, 'POINT')}"
+													    class="r11_amt_statement_adj_bwp"
+													    id="r11_amt_statement_adj_bwp"
+													    name="r11_amt_statement_adj_bwp"
+													    style="text-align:right;width:390px"
+													    th:attr="RowId='R11', ColumnId='C2'"
+													    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+													<td th:text="${#numbers.formatDecimal(reportsummary.r11_net_amt, 0, 'COMMA', 0, 'POINT')}"
+													    id="r11_net_amt"
+													    name="r11_net_amt"
+													    class="r11_net_amt"
+													    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
+													</td>
+
+													<td th:text="${#numbers.formatDecimal(reportsummary.r11_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
+													    id="r11_net_amt_bwp"
+													    name="r11_net_amt_bwp"
+													    class="r11_net_amt_bwp"
+													    style="text-align:right;width:390px"
+													    th:attr="RowId='R11', ColumnId='C2'"
+													    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+													<td th:text="${#numbers.formatDecimal(reportsummary.r11_bal_sub, 0, 'COMMA', 0, 'POINT')}"
+													    id="r11_bal_sub"
+													    name="r11_bal_sub"
+													    class="r11_bal_sub"
+													    style="text-align:right;width:390px"
+													    th:attr="RowId='R11', ColumnId='C2'"
+													    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+													<td th:text="${#numbers.formatDecimal(reportsummary.r11_bal_sub_bwp, 0, 'COMMA', 0, 'POINT')}"
+													    id="r11_bal_sub_bwp"
+													    name="r11_bal_sub_bwp"
+													    class="r11_bal_sub_bwp"
+													    style="text-align:right;width:390px"
+													    th:attr="RowId='R11', ColumnId='C2'"
+													    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+													<td th:text="${#numbers.formatDecimal(reportsummary.r11_bal_sub_diaries, 0, 'COMMA', 0, 'POINT')}"
+													    id="r11_bal_sub_diaries"
+													    name="r11_bal_sub_diaries"
+													    class="r11_bal_sub_diaries"
+													    style="text-align:right;width:390px"
+													    th:attr="RowId='R11', ColumnId='C2'"
+													    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+													<td th:text="${#numbers.formatDecimal(reportsummary.r11_bal_sub_diaries_bwp, 0, 'COMMA', 0, 'POINT')}"
+													    id="r11_bal_sub_diaries_bwp"
+													    name="r11_bal_sub_diaries_bwp"
+													    class="r11_bal_sub_diaries_bwp"
+													    style="text-align:right;width:390px"
+													    th:attr="RowId='R11', ColumnId='C2'"
+													    onclick="showdetailsbyRowAndColumn(this)"></td>
 
                                             </tr>
                                             <tr th:each="rs : ${reportsummary}">
@@ -1971,7 +2000,7 @@ PURPOSE		: BRRSREPORT
                                                 <td th:text="${reportsummary.r13_intrest_div}"
                                                     style="padding-left: 20px;font-weight:bold"></td>
                                                 <td id="r13_fig_bal_sheet" name="r13_fig_bal_sheet"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    style="text-align:right;width:390px;"
                                                     class="r13_fig_bal_sheet" th:attr="RowId='R13', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r13_fig_bal_sheet_bwp, 0, 'COMMA', 0, 'POINT')}"
@@ -1982,7 +2011,7 @@ PURPOSE		: BRRSREPORT
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td class="r13_amt_statement_adj" id="r13_amt_statement_adj"
                                                     name="r13_amt_statement_adj"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    style="text-align:right;width:390px;"
                                                     th:attr="RowId='R13', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r13_amt_statement_adj_bwp, 0, 'COMMA', 0, 'POINT')}"
@@ -2000,7 +2029,7 @@ PURPOSE		: BRRSREPORT
                                                     th:attr="RowId='R13', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td id="r13_bal_sub" name="r13_bal_sub" class="r13_bal_sub"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    style="text-align:right;width:390px;"
                                                     th:attr="RowId='R13', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r13_bal_sub_bwp, 0, 'COMMA', 0, 'POINT')}"
@@ -2010,7 +2039,7 @@ PURPOSE		: BRRSREPORT
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td id="r13_bal_sub_diaries" name="r13_bal_sub_diaries"
                                                     class="r13_bal_sub_diaries"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    style="text-align:right;width:390px;"
                                                     th:attr="RowId='R13', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r13_bal_sub_diaries_bwp, 0, 'COMMA', 0, 'POINT')}"
@@ -3217,7 +3246,7 @@ PURPOSE		: BRRSREPORT
                                                     style="padding-left: 20px;font-weight: bold;"></td>
 
                                                 <td id="r31_fig_bal_sheet" name="r31_fig_bal_sheet"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    style="text-align:right;width:390px;"
                                                     class="r31_fig_bal_sheet" th:attr="RowId='R31', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r31_fig_bal_sheet_bwp, 0, 'COMMA', 0, 'POINT')}"
@@ -3228,7 +3257,7 @@ PURPOSE		: BRRSREPORT
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td class="r31_amt_statement_adj" id="r31_amt_statement_adj"
                                                     name="r31_amt_statement_adj"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    style="text-align:right;width:390px;"
                                                     th:attr="RowId='R31', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r31_amt_statement_adj_bwp, 0, 'COMMA', 0, 'POINT')}"
@@ -3246,7 +3275,7 @@ PURPOSE		: BRRSREPORT
                                                     th:attr="RowId='R31', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td id="r31_bal_sub" name="r31_bal_sub" class="r31_bal_sub"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    style="text-align:right;width:390px;"
                                                     th:attr="RowId='R31', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td id="r31_bal_sub_bwp" name="r31_bal_sub_bwp" class="r31_bal_sub_bwp"
@@ -3255,7 +3284,7 @@ PURPOSE		: BRRSREPORT
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td id="r31_bal_sub_diaries" name="r31_bal_sub_diaries"
                                                     class="r31_bal_sub_diaries"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    style="text-align:right;width:390px;"
                                                     th:attr="RowId='R31', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td id="r31_bal_sub_diaries_bwp" name="r31_bal_sub_diaries_bwp"
@@ -3528,7 +3557,7 @@ PURPOSE		: BRRSREPORT
                                                     style="padding-left: 20px;font-weight: bold;"></td>
 
                                                 <td id="r43_fig_bal_sheet" name="r43_fig_bal_sheet"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    style="text-align:right;width:390px;"
                                                     class="r43_fig_bal_sheet" th:attr="RowId='R43', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r43_fig_bal_sheet_bwp, 0, 'COMMA', 0, 'POINT')}"
@@ -3539,7 +3568,7 @@ PURPOSE		: BRRSREPORT
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td class="r43_amt_statement_adj" id="r43_amt_statement_adj"
                                                     name="r43_amt_statement_adj"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    style="text-align:right;width:390px;"
                                                     th:attr="RowId='R43', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r43_amt_statement_adj_bwp, 0, 'COMMA', 0, 'POINT')}"
@@ -3557,7 +3586,7 @@ PURPOSE		: BRRSREPORT
                                                     th:attr="RowId='R43', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td id="r43_bal_sub" name="r43_bal_sub" class="r43_bal_sub"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    style="text-align:right;width:390px;"
                                                     th:attr="RowId='R43', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r43_bal_sub_bwp, 0, 'COMMA', 0, 'POINT')}"
@@ -3567,7 +3596,7 @@ PURPOSE		: BRRSREPORT
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td id="r43_bal_sub_diaries" name="r43_bal_sub_diaries"
                                                     class="r43_bal_sub_diaries"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    style="text-align:right;width:390px;"
                                                     th:attr="RowId='R43', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r43_bal_sub_diaries_bwp, 0, 'COMMA', 0, 'POINT')}"
@@ -4513,7 +4542,7 @@ PURPOSE		: BRRSREPORT
                                                     style="padding-left: 20px;font-weight: bold;"></td>
 
                                                 <td id="r63_fig_bal_sheet" name="r63_fig_bal_sheet"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    style="text-align:right;width:390px;"
                                                     class="r63_fig_bal_sheet" th:attr="RowId='R63', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r63_fig_bal_sheet_bwp, 0, 'COMMA', 0, 'POINT')}"
@@ -4524,7 +4553,7 @@ PURPOSE		: BRRSREPORT
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td class="r63_amt_statement_adj" id="r63_amt_statement_adj"
                                                     name="r63_amt_statement_adj"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    style="text-align:right;width:390px;"
                                                     th:attr="RowId='R63', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r63_amt_statement_adj_bwp, 0, 'COMMA', 0, 'POINT')}"
@@ -4542,7 +4571,7 @@ PURPOSE		: BRRSREPORT
                                                     th:attr="RowId='R63', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td id="r63_bal_sub" name="r63_bal_sub" class="r63_bal_sub"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    style="text-align:right;width:390px;"
                                                     th:attr="RowId='R63', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r63_bal_sub_bwp, 0, 'COMMA', 0, 'POINT')}"
@@ -4552,7 +4581,7 @@ PURPOSE		: BRRSREPORT
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td id="r63_bal_sub_diaries" name="r63_bal_sub_diaries"
                                                     class="r63_bal_sub_diaries"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    style="text-align:right;width:390px;"
                                                     th:attr="RowId='R63', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r63_bal_sub_diaries_bwp, 0, 'COMMA', 0, 'POINT')}"
