@@ -28,6 +28,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -58,7 +59,6 @@ import com.bornfire.brrs.entities.BRRS_GL_SCH_Manual_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_GL_SCH_Summary_Repo1;
 import com.bornfire.brrs.entities.BRRS_GL_SCH_Summary_Repo2;
 import com.bornfire.brrs.entities.BRRS_GL_SCH_Summary_Repo3;
-import com.bornfire.brrs.entities.FORMAT_II_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.GL_SCH_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.GL_SCH_Archival_Summary_Entity1;
 import com.bornfire.brrs.entities.GL_SCH_Archival_Summary_Entity2;
@@ -16456,8 +16456,8 @@ public class BRRS_GL_SCH_ReportService {
                 return ARCHIVALreport;
             }
 
-            XSSFWorkbook workbook = new XSSFWorkbook();
-            XSSFSheet sheet = workbook.createSheet("GL_SCHDetails");
+            SXSSFWorkbook workbook = new SXSSFWorkbook(100);
+            Sheet sheet = workbook.createSheet("GL_SCHDetails");
 
             // Common border style
             BorderStyle border = BorderStyle.THIN;
@@ -16502,7 +16502,7 @@ public class BRRS_GL_SCH_ReportService {
             String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT LABLE",
                     "REPORT ADDL CRITERIA1", "REPORT_DATE" };
 
-            XSSFRow headerRow = sheet.createRow(0);
+            XSSFRow headerRow = (XSSFRow) sheet.createRow(0);
             for (int i = 0; i < headers.length; i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(headers[i]);
@@ -16524,7 +16524,7 @@ public class BRRS_GL_SCH_ReportService {
             if (reportData != null && !reportData.isEmpty()) {
                 int rowIndex = 1;
                 for (GL_SCH_Detail_Entity item : reportData) {
-                    XSSFRow row = sheet.createRow(rowIndex++);
+                    XSSFRow row = (XSSFRow) sheet.createRow(rowIndex++);
 
                     row.createCell(0).setCellValue(item.getCustId());
                     row.createCell(1).setCellValue(item.getAcctNumber());
@@ -16560,7 +16560,7 @@ public class BRRS_GL_SCH_ReportService {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             workbook.write(bos);
             workbook.close();
-
+            workbook.dispose();
             logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
             return bos.toByteArray();
 
@@ -16725,6 +16725,7 @@ public class BRRS_GL_SCH_ReportService {
         try {
             String acctNo = request.getParameter("acctNumber");
             String acctBalanceInpula = request.getParameter("acctBalanceInpula");
+            String average = request.getParameter("average");
             String acctName = request.getParameter("acctName");
             String reportDateStr = request.getParameter("reportDate");
 
@@ -16755,7 +16756,14 @@ public class BRRS_GL_SCH_ReportService {
                     logger.info("Balance updated to {}", newacctBalanceInpula);
                 }
             }
-
+            if (average != null && !average.isEmpty()) {
+				BigDecimal newaverage = new BigDecimal(average);
+				if (existing.getAverage() == null || existing.getAverage().compareTo(newaverage) != 0) {
+					existing.setAverage(newaverage);
+					isChanged = true;
+					logger.info("Balance updated to {}", newaverage);
+				}
+			}
             if (isChanged) {
                 brrs_GL_SCH_detail_repo.save(existing);
                 logger.info("Record updated successfully for account {}", acctNo);
