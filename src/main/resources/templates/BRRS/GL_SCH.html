@@ -446,7 +446,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 		}
 
 		function showsummary() {
-			var loader = new bootstrap.Modal(document.getElementById('loader'), { backdrop: 'static', keyboard: false });
+			var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static', keyboard: false});
 			loader.show();
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/
 				location.href = Callurl;
@@ -471,9 +471,9 @@ PURPOSE		: BRRS GL_SCH REPORT
 				fixedHeader: true, // ✅ You can simply set it to true
 				// ✅ Column width settings
 				columnDefs: [
-					{ width: "60px", targets: 0 },   // Edit icon column
-					{ width: "150px", targets: 1 },  // S No column
-					{ width: "300px", targets: 7 }    // S No column
+					{width: "60px", targets: 0},   // Edit icon column
+					{width: "150px", targets: 1},  // S No column
+					{width: "300px", targets: 7}    // S No column
 				],
 
 				dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
@@ -644,7 +644,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 			var version = button.getAttribute('data-version');
 
 
-			var loader = new bootstrap.Modal(document.getElementById('loader'), { backdrop: 'static', keyboard: false });
+			var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static', keyboard: false});
 			loader.show();
 
 			$.ajax({
@@ -666,7 +666,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 					$('#loader').modal('hide');
 
 					if (data && data.size > 100) {
-						const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
 						const url = window.URL.createObjectURL(blob);
 						const a = document.createElement('a');
 						a.style.display = 'none';
@@ -798,11 +798,11 @@ PURPOSE		: BRRS GL_SCH REPORT
 			$.ajax({
 				url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId + '&filename=' + filename,
 				type: 'GET',
-				xhrFields: { responseType: 'blob' },
+				xhrFields: {responseType: 'blob'},
 
 				success: function (data) {
 					if (data && data.size > 100) {
-						const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
 						const url = window.URL.createObjectURL(blob);
 
 						const a = document.createElement('a');
@@ -7347,8 +7347,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 												<td style="font-weight: bold;width:10px">II</td>
 												<td style="text-align: left; "><input type="text"
 														class="display-input Show_input" id="R103_PRODUCT"
-														name="R103_PRODUCT"
-														th:value="' Interoffice Adjustments(Net)'"
+														name="R103_PRODUCT" th:value="' Interoffice Adjustments(Net)'"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: left;"
 														readonly /></td>
 
@@ -11840,8 +11839,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px">A</td>
-												<td style="text-align: left; "
-													th:text="${report?.R181_PRODUCT ?: ''}"></td>
+												<td style="text-align: left; " th:text="${report?.R181_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R181_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -11917,8 +11916,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
-													th:text="${report?.R182_PRODUCT ?: ''}"></td>
+												<td style="text-align: left;" th:text="${report?.R182_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R182_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -11994,8 +11993,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; "
-													th:text="${report?.R183_PRODUCT ?: ''}"></td>
+												<td style="text-align: left; " th:text="${report?.R183_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R183_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -12225,8 +12224,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px">B</td>
-												<td style="text-align: left; "
-													th:text="${report?.R186_PRODUCT ?: ''}"></td>
+												<td style="text-align: left; " th:text="${report?.R186_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R186_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -12302,8 +12301,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
-													th:text="${report?.R187_PRODUCT ?: ''}"></td>
+												<td style="text-align: left;" th:text="${report?.R187_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R187_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -12379,8 +12378,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
-													th:text="${report?.R188_PRODUCT ?: ''}"></td>
+												<td style="text-align: left;" th:text="${report?.R188_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R188_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -12611,9 +12610,9 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px">C</td>
-												
-												<td style="text-align: left;"
-													th:text="${report?.R191_PRODUCT ?: ''}"></td>
+
+												<td style="text-align: left;" th:text="${report?.R191_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R191_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -12689,8 +12688,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
-													th:text="${report?.R192_PRODUCT ?: ''}"></td>
+												<td style="text-align: left;" th:text="${report?.R192_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R192_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -12766,8 +12765,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
-													th:text="${report?.R193_PRODUCT ?: ''}"></td>
+												<td style="text-align: left;" th:text="${report?.R193_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R193_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -12843,8 +12842,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; "
-													th:text="${report?.R194_PRODUCT ?: ''}"></td>
+												<td style="text-align: left; " th:text="${report?.R194_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R194_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -12920,8 +12919,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
-													th:text="${report?.R195_PRODUCT ?: ''}"></td>
+												<td style="text-align: left;" th:text="${report?.R195_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R195_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -12997,8 +12996,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; "
-													th:text="${report?.R196_PRODUCT ?: ''}"></td>
+												<td style="text-align: left; " th:text="${report?.R196_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R196_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -13074,8 +13073,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; "
-													th:text="${report?.R197_PRODUCT ?: ''}"></td>
+												<td style="text-align: left; " th:text="${report?.R197_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R197_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -13151,8 +13150,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; "
-													th:text="${report?.R198_PRODUCT ?: ''}"></td>
+												<td style="text-align: left; " th:text="${report?.R198_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R198_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -13670,8 +13669,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; "
-													th:text="${report?.R210_PRODUCT ?: ''}"></td>
+												<td style="text-align: left; " th:text="${report?.R210_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R210_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -13747,8 +13746,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; "
-													th:text="${report?.R211_PRODUCT ?: ''}"></td>
+												<td style="text-align: left; " th:text="${report?.R211_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R211_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -13901,8 +13900,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
-													th:text="${report?.R213_PRODUCT ?: ''}"></td>
+												<td style="text-align: left;" th:text="${report?.R213_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R213_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -14055,8 +14054,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; "
-													th:text="${report?.R215_PRODUCT ?: ''}"></td>
+												<td style="text-align: left; " th:text="${report?.R215_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R215_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -14286,8 +14285,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
-													th:text="${report?.R218_PRODUCT ?: ''}"></td>
+												<td style="text-align: left;" th:text="${report?.R218_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R218_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -14363,8 +14362,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; "
-													th:text="${report?.R219_PRODUCT ?: ''}"></td>
+												<td style="text-align: left; " th:text="${report?.R219_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R219_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -14440,8 +14439,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
-													th:text="${report?.R220_PRODUCT ?: ''}"></td>
+												<td style="text-align: left;" th:text="${report?.R220_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R220_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -14517,8 +14516,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
-													th:text="${report?.R221_PRODUCT ?: ''}"></td>
+												<td style="text-align: left;" th:text="${report?.R221_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R221_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -14594,8 +14593,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
-													th:text="${report?.R222_PRODUCT ?: ''}"></td>
+												<td style="text-align: left;" th:text="${report?.R222_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R222_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -14671,8 +14670,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
-													th:text="${report?.R223_PRODUCT ?: ''}"></td>
+												<td style="text-align: left;" th:text="${report?.R223_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R223_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -14747,7 +14746,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">II  A</td>
+												<td style="font-weight: bold;width:10px">II A</td>
 												<td style="text-align: left; font-weight: bold;"
 													th:text="${report?.R224_PRODUCT ?: ''}"></td>
 
@@ -14825,8 +14824,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
-													th:text="${report?.R225_PRODUCT ?: ''}"></td>
+												<td style="text-align: left;" th:text="${report?.R225_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R225_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -14902,8 +14901,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
-													th:text="${report?.R226_PRODUCT ?: ''}"></td>
+												<td style="text-align: left;" th:text="${report?.R226_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R226_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -15056,8 +15055,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
-													th:text="${report?.R228_PRODUCT ?: ''}"></td>
+												<td style="text-align: left;" th:text="${report?.R228_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R228_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -15210,8 +15209,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; "
-													th:text="${report?.R230_PRODUCT ?: ''}"></td>
+												<td style="text-align: left; " th:text="${report?.R230_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R230_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -15575,8 +15574,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 												<td style="font-weight: bold;width:10px">I</td>
 												<td style="text-align: left; "><input type="text"
 														class="display-input Show_input" id="R241_PRODUCT"
-														name="R241_PRODUCT"
-														th:value="' Inter-Office Adjustments (Net)'"
+														name="R241_PRODUCT" th:value="' Inter-Office Adjustments (Net)'"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: left;"
 														readonly /></td>
 
@@ -15686,8 +15684,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px">II</td>
-												<td style="text-align: left; "
-													th:text="${report?.R242_PRODUCT ?: ''}"></td>
+												<td style="text-align: left; " th:text="${report?.R242_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R242_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -15875,8 +15873,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px">IV</td>
-												<td style="text-align: left; "
-													th:text="${report?.R244_PRODUCT ?: ''}"></td>
+												<td style="text-align: left; " th:text="${report?.R244_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R244_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -16064,8 +16062,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px">VI</td>
-												<td style="text-align: left; "
-													th:text="${report?.R246_PRODUCT ?: ''}"></td>
+												<td style="text-align: left; " th:text="${report?.R246_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R246_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -16141,8 +16139,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px">VII</td>
-												<td style="text-align: left; "
-													th:text="${report?.R247_PRODUCT ?: ''}"></td>
+												<td style="text-align: left; " th:text="${report?.R247_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R247_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -16349,8 +16347,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px">I</td>
-												<td style="text-align: left; "
-													th:text="${report?.R252_PRODUCT ?: ''}"></td>
+												<td style="text-align: left; " th:text="${report?.R252_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R252_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -16426,8 +16424,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px">II</td>
-												<td style="text-align: left; "
-													th:text="${report?.R253_PRODUCT ?: ''}"></td>
+												<td style="text-align: left; " th:text="${report?.R253_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R253_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -16503,8 +16501,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px">III</td>
-												<td style="text-align: left; "
-													th:text="${report?.R254_PRODUCT ?: ''}"></td>
+												<td style="text-align: left; " th:text="${report?.R254_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R254_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -16580,8 +16578,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px">IV</td>
-												<td style="text-align: left;"
-													th:text="${report?.R255_PRODUCT ?: ''}"></td>
+												<td style="text-align: left;" th:text="${report?.R255_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R255_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -16657,8 +16655,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; "
-													th:text="${report?.R256_PRODUCT ?: ''}"></td>
+												<td style="text-align: left; " th:text="${report?.R256_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R256_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -16734,8 +16732,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; "
-													th:text="${report?.R257_PRODUCT ?: ''}"></td>
+												<td style="text-align: left; " th:text="${report?.R257_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R257_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -16811,8 +16809,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px">V</td>
-												<td style="text-align: left"
-													th:text="${report?.R258_PRODUCT ?: ''}"></td>
+												<td style="text-align: left" th:text="${report?.R258_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R258_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -16888,8 +16886,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px">VI</td>
-												<td style="text-align: left; "
-													th:text="${report?.R259_PRODUCT ?: ''}"></td>
+												<td style="text-align: left; " th:text="${report?.R259_PRODUCT ?: ''}">
+												</td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R259_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -17103,8 +17101,20 @@ PURPOSE		: BRRS GL_SCH REPORT
 											</td>
 
 
-											<td th:text="${report.reportLabel}"></td>
-											<td th:text="${report.reportAddlCriteria1}"></td>
+											<td>
+											    <span th:if="${report.reportLabel}" th:text="${report.reportLabel}"></span>
+											    <span th:if="${report.reportLabel2}" th:text="', ' + ${report.reportLabel2}"></span>
+											    <span th:if="${report.reportLabel3}" th:text="', ' + ${report.reportLabel3}"></span>
+											    <span th:if="${report.reportLabel4}" th:text="', ' + ${report.reportLabel4}"></span>
+											    <span th:if="${report.reportLabel6}" th:text="', ' + ${report.reportLabel6}"></span>
+											</td>
+											<td>
+											    <span th:if="${report.reportAddlCriteria1}" th:text="${report.reportAddlCriteria1}"></span>
+											    <span th:if="${report.reportAddlCriteria2}" th:text="', ' + ${report.reportAddlCriteria2}"></span>
+											    <span th:if="${report.reportAddlCriteria3}" th:text="', ' + ${report.reportAddlCriteria3}"></span>
+											    <span th:if="${report.reportAddlCriteria4}" th:text="', ' + ${report.reportAddlCriteria4}"></span>
+											    <span th:if="${report.reportAddlCriteria6}" th:text="', ' + ${report.reportAddlCriteria6}"></span>
+											</td>
 											<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
 										</tr>
 									</tbody>
