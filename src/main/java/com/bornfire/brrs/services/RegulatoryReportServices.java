@@ -2217,6 +2217,16 @@ public class RegulatoryReportServices {
 				// TODO Auto-generated catch block e.printStackTrace();
 			}
 			break;
+			
+		case "M_TOP_100_BORROWER":
+			try {
+				System.out.println("came to Regulatory service");
+				repfile = BRRS_M_TOP_100_BORROWER_reportservice.getM_TOP_100_BORROWERExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block e.printStackTrace();
+			}
+			break;
 
 		case "M_OR1":
 			try {

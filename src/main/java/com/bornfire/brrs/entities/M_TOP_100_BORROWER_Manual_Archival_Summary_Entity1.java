@@ -3,7 +3,6 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -17,116 +16,116 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class M_TOP_100_BORROWER_Manual_Archival_Summary_Entity1 {
 
 	
-	private String R03_GROUP_CODE;
-    private String R03_GROUP_NAME;
-    private Double R03_CRM;
-    private Double R03_NFBLT;
-    private Double R03_NFBOS;
-    private Double R03_CRM_2;
-    private Double R03_NFB;
-    private String R03_BOND;
-    private String R03_CP;
-    private String R03_EQULITY;
-    private String R03_FOREX;
-    private String R03_OTHERS;
-    private String R03_INT_BANK;
-    private String R03_DERIVATIVE;
+	private String R3_GROUP_CODE;
+    private String R3_GROUP_NAME;
+    private Double R3_CRM;
+    private Double R3_NFBLT;
+    private Double R3_NFBOS;
+    private Double R3_CRM_2;
+    private Double R3_NFB;
+    private String R3_BOND;
+    private String R3_CP;
+    private String R3_EQULITY;
+    private String R3_FOREX;
+    private String R3_OTHERS;
+    private String R3_INT_BANK;
+    private String R3_DERIVATIVE;
 
-    // R04 Group
-    private String R04_GROUP_CODE;
-    private String R04_GROUP_NAME;
-    private Double R04_CRM;
-    private Double R04_NFBLT;
-    private Double R04_NFBOS;
-    private Double R04_CRM_2;
-    private Double R04_NFB;
-    private String R04_BOND;
-    private String R04_CP;
-    private String R04_EQULITY;
-    private String R04_FOREX;
-    private String R04_OTHERS;
-    private String R04_INT_BANK;
-    private String R04_DERIVATIVE;
+    // R4 Group
+    private String R4_GROUP_CODE;
+    private String R4_GROUP_NAME;
+    private Double R4_CRM;
+    private Double R4_NFBLT;
+    private Double R4_NFBOS;
+    private Double R4_CRM_2;
+    private Double R4_NFB;
+    private String R4_BOND;
+    private String R4_CP;
+    private String R4_EQULITY;
+    private String R4_FOREX;
+    private String R4_OTHERS;
+    private String R4_INT_BANK;
+    private String R4_DERIVATIVE;
 
-    // R05 Group
-    private String R05_GROUP_CODE;
-    private String R05_GROUP_NAME;
-    private Double R05_CRM;
-    private Double R05_NFBLT;
-    private Double R05_NFBOS;
-    private Double R05_CRM_2;
-    private Double R05_NFB;
-    private String R05_BOND;
-    private String R05_CP;
-    private String R05_EQULITY;
-    private String R05_FOREX;
-    private String R05_OTHERS;
-    private String R05_INT_BANK;
-    private String R05_DERIVATIVE;
+    // R5 Group
+    private String R5_GROUP_CODE;
+    private String R5_GROUP_NAME;
+    private Double R5_CRM;
+    private Double R5_NFBLT;
+    private Double R5_NFBOS;
+    private Double R5_CRM_2;
+    private Double R5_NFB;
+    private String R5_BOND;
+    private String R5_CP;
+    private String R5_EQULITY;
+    private String R5_FOREX;
+    private String R5_OTHERS;
+    private String R5_INT_BANK;
+    private String R5_DERIVATIVE;
 
-    // R06 Group
-    private String R06_GROUP_CODE;
-    private String R06_GROUP_NAME;
-    private Double R06_CRM;
-    private Double R06_NFBLT;
-    private Double R06_NFBOS;
-    private Double R06_CRM_2;
-    private Double R06_NFB;
-    private String R06_BOND;
-    private String R06_CP;
-    private String R06_EQULITY;
-    private String R06_FOREX;
-    private String R06_OTHERS;
-    private String R06_INT_BANK;
-    private String R06_DERIVATIVE;
+    // R6 Group
+    private String R6_GROUP_CODE;
+    private String R6_GROUP_NAME;
+    private Double R6_CRM;
+    private Double R6_NFBLT;
+    private Double R6_NFBOS;
+    private Double R6_CRM_2;
+    private Double R6_NFB;
+    private String R6_BOND;
+    private String R6_CP;
+    private String R6_EQULITY;
+    private String R6_FOREX;
+    private String R6_OTHERS;
+    private String R6_INT_BANK;
+    private String R6_DERIVATIVE;
 
-    // R07 Group
-    private String R07_GROUP_CODE;
-    private String R07_GROUP_NAME;
-    private Double R07_CRM;
-    private Double R07_NFBLT;
-    private Double R07_NFBOS;
-    private Double R07_CRM_2;
-    private Double R07_NFB;
-    private String R07_BOND;
-    private String R07_CP;
-    private String R07_EQULITY;
-    private String R07_FOREX;
-    private String R07_OTHERS;
-    private String R07_INT_BANK;
-    private String R07_DERIVATIVE;
+    // R7 Group
+    private String R7_GROUP_CODE;
+    private String R7_GROUP_NAME;
+    private Double R7_CRM;
+    private Double R7_NFBLT;
+    private Double R7_NFBOS;
+    private Double R7_CRM_2;
+    private Double R7_NFB;
+    private String R7_BOND;
+    private String R7_CP;
+    private String R7_EQULITY;
+    private String R7_FOREX;
+    private String R7_OTHERS;
+    private String R7_INT_BANK;
+    private String R7_DERIVATIVE;
 
-    // R08 Group
-    private String R08_GROUP_CODE;
-    private String R08_GROUP_NAME;
-    private Double R08_CRM;
-    private Double R08_NFBLT;
-    private Double R08_NFBOS;
-    private Double R08_CRM_2;
-    private Double R08_NFB;
-    private String R08_BOND;
-    private String R08_CP;
-    private String R08_EQULITY;
-    private String R08_FOREX;
-    private String R08_OTHERS;
-    private String R08_INT_BANK;
-    private String R08_DERIVATIVE;
+    // R8 Group
+    private String R8_GROUP_CODE;
+    private String R8_GROUP_NAME;
+    private Double R8_CRM;
+    private Double R8_NFBLT;
+    private Double R8_NFBOS;
+    private Double R8_CRM_2;
+    private Double R8_NFB;
+    private String R8_BOND;
+    private String R8_CP;
+    private String R8_EQULITY;
+    private String R8_FOREX;
+    private String R8_OTHERS;
+    private String R8_INT_BANK;
+    private String R8_DERIVATIVE;
 
-    // R09 Group
-    private String R09_GROUP_CODE;
-    private String R09_GROUP_NAME;
-    private Double R09_CRM;
-    private Double R09_NFBLT;
-    private Double R09_NFBOS;
-    private Double R09_CRM_2;
-    private Double R09_NFB;
-    private String R09_BOND;
-    private String R09_CP;
-    private String R09_EQULITY;
-    private String R09_FOREX;
-    private String R09_OTHERS;
-    private String R09_INT_BANK;
-    private String R09_DERIVATIVE;
+    // R9 Group
+    private String R9_GROUP_CODE;
+    private String R9_GROUP_NAME;
+    private Double R9_CRM;
+    private Double R9_NFBLT;
+    private Double R9_NFBOS;
+    private Double R9_CRM_2;
+    private Double R9_NFB;
+    private String R9_BOND;
+    private String R9_CP;
+    private String R9_EQULITY;
+    private String R9_FOREX;
+    private String R9_OTHERS;
+    private String R9_INT_BANK;
+    private String R9_DERIVATIVE;
 
     // R10 Group
     private String R10_GROUP_CODE;
@@ -1115,593 +1114,593 @@ public class M_TOP_100_BORROWER_Manual_Archival_Summary_Entity1 {
     private String entity_flg;
     private String modify_flg;
     private String del_flg;
-	public String getR03_GROUP_CODE() {
-		return R03_GROUP_CODE;
+	public String getR3_GROUP_CODE() {
+		return R3_GROUP_CODE;
 	}
-	public void setR03_GROUP_CODE(String r03_GROUP_CODE) {
-		R03_GROUP_CODE = r03_GROUP_CODE;
+	public void setR3_GROUP_CODE(String R3_GROUP_CODE) {
+		R3_GROUP_CODE = R3_GROUP_CODE;
 	}
-	public String getR03_GROUP_NAME() {
-		return R03_GROUP_NAME;
+	public String getR3_GROUP_NAME() {
+		return R3_GROUP_NAME;
 	}
-	public void setR03_GROUP_NAME(String r03_GROUP_NAME) {
-		R03_GROUP_NAME = r03_GROUP_NAME;
+	public void setR3_GROUP_NAME(String R3_GROUP_NAME) {
+		R3_GROUP_NAME = R3_GROUP_NAME;
 	}
-	public Double getR03_CRM() {
-		return R03_CRM;
+	public Double getR3_CRM() {
+		return R3_CRM;
 	}
-	public void setR03_CRM(Double r03_CRM) {
-		R03_CRM = r03_CRM;
+	public void setR3_CRM(Double R3_CRM) {
+		R3_CRM = R3_CRM;
 	}
-	public Double getR03_NFBLT() {
-		return R03_NFBLT;
+	public Double getR3_NFBLT() {
+		return R3_NFBLT;
 	}
-	public void setR03_NFBLT(Double r03_NFBLT) {
-		R03_NFBLT = r03_NFBLT;
+	public void setR3_NFBLT(Double R3_NFBLT) {
+		R3_NFBLT = R3_NFBLT;
 	}
-	public Double getR03_NFBOS() {
-		return R03_NFBOS;
+	public Double getR3_NFBOS() {
+		return R3_NFBOS;
 	}
-	public void setR03_NFBOS(Double r03_NFBOS) {
-		R03_NFBOS = r03_NFBOS;
+	public void setR3_NFBOS(Double R3_NFBOS) {
+		R3_NFBOS = R3_NFBOS;
 	}
-	public Double getR03_CRM_2() {
-		return R03_CRM_2;
+	public Double getR3_CRM_2() {
+		return R3_CRM_2;
 	}
-	public void setR03_CRM_2(Double r03_CRM_2) {
-		R03_CRM_2 = r03_CRM_2;
+	public void setR3_CRM_2(Double R3_CRM_2) {
+		R3_CRM_2 = R3_CRM_2;
 	}
-	public Double getR03_NFB() {
-		return R03_NFB;
+	public Double getR3_NFB() {
+		return R3_NFB;
 	}
-	public void setR03_NFB(Double r03_NFB) {
-		R03_NFB = r03_NFB;
+	public void setR3_NFB(Double R3_NFB) {
+		R3_NFB = R3_NFB;
 	}
-	public String getR03_BOND() {
-		return R03_BOND;
+	public String getR3_BOND() {
+		return R3_BOND;
 	}
-	public void setR03_BOND(String r03_BOND) {
-		R03_BOND = r03_BOND;
+	public void setR3_BOND(String R3_BOND) {
+		R3_BOND = R3_BOND;
 	}
-	public String getR03_CP() {
-		return R03_CP;
+	public String getR3_CP() {
+		return R3_CP;
 	}
-	public void setR03_CP(String r03_CP) {
-		R03_CP = r03_CP;
+	public void setR3_CP(String R3_CP) {
+		R3_CP = R3_CP;
 	}
-	public String getR03_EQULITY() {
-		return R03_EQULITY;
+	public String getR3_EQULITY() {
+		return R3_EQULITY;
 	}
-	public void setR03_EQULITY(String r03_EQULITY) {
-		R03_EQULITY = r03_EQULITY;
+	public void setR3_EQULITY(String R3_EQULITY) {
+		R3_EQULITY = R3_EQULITY;
 	}
-	public String getR03_FOREX() {
-		return R03_FOREX;
+	public String getR3_FOREX() {
+		return R3_FOREX;
 	}
-	public void setR03_FOREX(String r03_FOREX) {
-		R03_FOREX = r03_FOREX;
+	public void setR3_FOREX(String R3_FOREX) {
+		R3_FOREX = R3_FOREX;
 	}
-	public String getR03_OTHERS() {
-		return R03_OTHERS;
+	public String getR3_OTHERS() {
+		return R3_OTHERS;
 	}
-	public void setR03_OTHERS(String r03_OTHERS) {
-		R03_OTHERS = r03_OTHERS;
+	public void setR3_OTHERS(String R3_OTHERS) {
+		R3_OTHERS = R3_OTHERS;
 	}
-	public String getR03_INT_BANK() {
-		return R03_INT_BANK;
+	public String getR3_INT_BANK() {
+		return R3_INT_BANK;
 	}
-	public void setR03_INT_BANK(String r03_INT_BANK) {
-		R03_INT_BANK = r03_INT_BANK;
+	public void setR3_INT_BANK(String R3_INT_BANK) {
+		R3_INT_BANK = R3_INT_BANK;
 	}
-	public String getR03_DERIVATIVE() {
-		return R03_DERIVATIVE;
+	public String getR3_DERIVATIVE() {
+		return R3_DERIVATIVE;
 	}
-	public void setR03_DERIVATIVE(String r03_DERIVATIVE) {
-		R03_DERIVATIVE = r03_DERIVATIVE;
+	public void setR3_DERIVATIVE(String R3_DERIVATIVE) {
+		R3_DERIVATIVE = R3_DERIVATIVE;
 	}
-	public String getR04_GROUP_CODE() {
-		return R04_GROUP_CODE;
+	public String getR4_GROUP_CODE() {
+		return R4_GROUP_CODE;
 	}
-	public void setR04_GROUP_CODE(String r04_GROUP_CODE) {
-		R04_GROUP_CODE = r04_GROUP_CODE;
+	public void setR4_GROUP_CODE(String R4_GROUP_CODE) {
+		R4_GROUP_CODE = R4_GROUP_CODE;
 	}
-	public String getR04_GROUP_NAME() {
-		return R04_GROUP_NAME;
+	public String getR4_GROUP_NAME() {
+		return R4_GROUP_NAME;
 	}
-	public void setR04_GROUP_NAME(String r04_GROUP_NAME) {
-		R04_GROUP_NAME = r04_GROUP_NAME;
+	public void setR4_GROUP_NAME(String R4_GROUP_NAME) {
+		R4_GROUP_NAME = R4_GROUP_NAME;
 	}
-	public Double getR04_CRM() {
-		return R04_CRM;
+	public Double getR4_CRM() {
+		return R4_CRM;
 	}
-	public void setR04_CRM(Double r04_CRM) {
-		R04_CRM = r04_CRM;
+	public void setR4_CRM(Double R4_CRM) {
+		R4_CRM = R4_CRM;
 	}
-	public Double getR04_NFBLT() {
-		return R04_NFBLT;
+	public Double getR4_NFBLT() {
+		return R4_NFBLT;
 	}
-	public void setR04_NFBLT(Double r04_NFBLT) {
-		R04_NFBLT = r04_NFBLT;
+	public void setR4_NFBLT(Double R4_NFBLT) {
+		R4_NFBLT = R4_NFBLT;
 	}
-	public Double getR04_NFBOS() {
-		return R04_NFBOS;
+	public Double getR4_NFBOS() {
+		return R4_NFBOS;
 	}
-	public void setR04_NFBOS(Double r04_NFBOS) {
-		R04_NFBOS = r04_NFBOS;
+	public void setR4_NFBOS(Double R4_NFBOS) {
+		R4_NFBOS = R4_NFBOS;
 	}
-	public Double getR04_CRM_2() {
-		return R04_CRM_2;
+	public Double getR4_CRM_2() {
+		return R4_CRM_2;
 	}
-	public void setR04_CRM_2(Double r04_CRM_2) {
-		R04_CRM_2 = r04_CRM_2;
+	public void setR4_CRM_2(Double R4_CRM_2) {
+		R4_CRM_2 = R4_CRM_2;
 	}
-	public Double getR04_NFB() {
-		return R04_NFB;
+	public Double getR4_NFB() {
+		return R4_NFB;
 	}
-	public void setR04_NFB(Double r04_NFB) {
-		R04_NFB = r04_NFB;
+	public void setR4_NFB(Double R4_NFB) {
+		R4_NFB = R4_NFB;
 	}
-	public String getR04_BOND() {
-		return R04_BOND;
+	public String getR4_BOND() {
+		return R4_BOND;
 	}
-	public void setR04_BOND(String r04_BOND) {
-		R04_BOND = r04_BOND;
+	public void setR4_BOND(String R4_BOND) {
+		R4_BOND = R4_BOND;
 	}
-	public String getR04_CP() {
-		return R04_CP;
+	public String getR4_CP() {
+		return R4_CP;
 	}
-	public void setR04_CP(String r04_CP) {
-		R04_CP = r04_CP;
+	public void setR4_CP(String R4_CP) {
+		R4_CP = R4_CP;
 	}
-	public String getR04_EQULITY() {
-		return R04_EQULITY;
+	public String getR4_EQULITY() {
+		return R4_EQULITY;
 	}
-	public void setR04_EQULITY(String r04_EQULITY) {
-		R04_EQULITY = r04_EQULITY;
+	public void setR4_EQULITY(String R4_EQULITY) {
+		R4_EQULITY = R4_EQULITY;
 	}
-	public String getR04_FOREX() {
-		return R04_FOREX;
+	public String getR4_FOREX() {
+		return R4_FOREX;
 	}
-	public void setR04_FOREX(String r04_FOREX) {
-		R04_FOREX = r04_FOREX;
+	public void setR4_FOREX(String R4_FOREX) {
+		R4_FOREX = R4_FOREX;
 	}
-	public String getR04_OTHERS() {
-		return R04_OTHERS;
+	public String getR4_OTHERS() {
+		return R4_OTHERS;
 	}
-	public void setR04_OTHERS(String r04_OTHERS) {
-		R04_OTHERS = r04_OTHERS;
+	public void setR4_OTHERS(String R4_OTHERS) {
+		R4_OTHERS = R4_OTHERS;
 	}
-	public String getR04_INT_BANK() {
-		return R04_INT_BANK;
+	public String getR4_INT_BANK() {
+		return R4_INT_BANK;
 	}
-	public void setR04_INT_BANK(String r04_INT_BANK) {
-		R04_INT_BANK = r04_INT_BANK;
+	public void setR4_INT_BANK(String R4_INT_BANK) {
+		R4_INT_BANK = R4_INT_BANK;
 	}
-	public String getR04_DERIVATIVE() {
-		return R04_DERIVATIVE;
+	public String getR4_DERIVATIVE() {
+		return R4_DERIVATIVE;
 	}
-	public void setR04_DERIVATIVE(String r04_DERIVATIVE) {
-		R04_DERIVATIVE = r04_DERIVATIVE;
+	public void setR4_DERIVATIVE(String R4_DERIVATIVE) {
+		R4_DERIVATIVE = R4_DERIVATIVE;
 	}
-	public String getR05_GROUP_CODE() {
-		return R05_GROUP_CODE;
+	public String getR5_GROUP_CODE() {
+		return R5_GROUP_CODE;
 	}
-	public void setR05_GROUP_CODE(String r05_GROUP_CODE) {
-		R05_GROUP_CODE = r05_GROUP_CODE;
+	public void setR5_GROUP_CODE(String R5_GROUP_CODE) {
+		R5_GROUP_CODE = R5_GROUP_CODE;
 	}
-	public String getR05_GROUP_NAME() {
-		return R05_GROUP_NAME;
+	public String getR5_GROUP_NAME() {
+		return R5_GROUP_NAME;
 	}
-	public void setR05_GROUP_NAME(String r05_GROUP_NAME) {
-		R05_GROUP_NAME = r05_GROUP_NAME;
+	public void setR5_GROUP_NAME(String R5_GROUP_NAME) {
+		R5_GROUP_NAME = R5_GROUP_NAME;
 	}
-	public Double getR05_CRM() {
-		return R05_CRM;
+	public Double getR5_CRM() {
+		return R5_CRM;
 	}
-	public void setR05_CRM(Double r05_CRM) {
-		R05_CRM = r05_CRM;
+	public void setR5_CRM(Double R5_CRM) {
+		R5_CRM = R5_CRM;
 	}
-	public Double getR05_NFBLT() {
-		return R05_NFBLT;
+	public Double getR5_NFBLT() {
+		return R5_NFBLT;
 	}
-	public void setR05_NFBLT(Double r05_NFBLT) {
-		R05_NFBLT = r05_NFBLT;
+	public void setR5_NFBLT(Double R5_NFBLT) {
+		R5_NFBLT = R5_NFBLT;
 	}
-	public Double getR05_NFBOS() {
-		return R05_NFBOS;
+	public Double getR5_NFBOS() {
+		return R5_NFBOS;
 	}
-	public void setR05_NFBOS(Double r05_NFBOS) {
-		R05_NFBOS = r05_NFBOS;
+	public void setR5_NFBOS(Double R5_NFBOS) {
+		R5_NFBOS = R5_NFBOS;
 	}
-	public Double getR05_CRM_2() {
-		return R05_CRM_2;
+	public Double getR5_CRM_2() {
+		return R5_CRM_2;
 	}
-	public void setR05_CRM_2(Double r05_CRM_2) {
-		R05_CRM_2 = r05_CRM_2;
+	public void setR5_CRM_2(Double R5_CRM_2) {
+		R5_CRM_2 = R5_CRM_2;
 	}
-	public Double getR05_NFB() {
-		return R05_NFB;
+	public Double getR5_NFB() {
+		return R5_NFB;
 	}
-	public void setR05_NFB(Double r05_NFB) {
-		R05_NFB = r05_NFB;
+	public void setR5_NFB(Double R5_NFB) {
+		R5_NFB = R5_NFB;
 	}
-	public String getR05_BOND() {
-		return R05_BOND;
+	public String getR5_BOND() {
+		return R5_BOND;
 	}
-	public void setR05_BOND(String r05_BOND) {
-		R05_BOND = r05_BOND;
+	public void setR5_BOND(String R5_BOND) {
+		R5_BOND = R5_BOND;
 	}
-	public String getR05_CP() {
-		return R05_CP;
+	public String getR5_CP() {
+		return R5_CP;
 	}
-	public void setR05_CP(String r05_CP) {
-		R05_CP = r05_CP;
+	public void setR5_CP(String R5_CP) {
+		R5_CP = R5_CP;
 	}
-	public String getR05_EQULITY() {
-		return R05_EQULITY;
+	public String getR5_EQULITY() {
+		return R5_EQULITY;
 	}
-	public void setR05_EQULITY(String r05_EQULITY) {
-		R05_EQULITY = r05_EQULITY;
+	public void setR5_EQULITY(String R5_EQULITY) {
+		R5_EQULITY = R5_EQULITY;
 	}
-	public String getR05_FOREX() {
-		return R05_FOREX;
+	public String getR5_FOREX() {
+		return R5_FOREX;
 	}
-	public void setR05_FOREX(String r05_FOREX) {
-		R05_FOREX = r05_FOREX;
+	public void setR5_FOREX(String R5_FOREX) {
+		R5_FOREX = R5_FOREX;
 	}
-	public String getR05_OTHERS() {
-		return R05_OTHERS;
+	public String getR5_OTHERS() {
+		return R5_OTHERS;
 	}
-	public void setR05_OTHERS(String r05_OTHERS) {
-		R05_OTHERS = r05_OTHERS;
+	public void setR5_OTHERS(String R5_OTHERS) {
+		R5_OTHERS = R5_OTHERS;
 	}
-	public String getR05_INT_BANK() {
-		return R05_INT_BANK;
+	public String getR5_INT_BANK() {
+		return R5_INT_BANK;
 	}
-	public void setR05_INT_BANK(String r05_INT_BANK) {
-		R05_INT_BANK = r05_INT_BANK;
+	public void setR5_INT_BANK(String R5_INT_BANK) {
+		R5_INT_BANK = R5_INT_BANK;
 	}
-	public String getR05_DERIVATIVE() {
-		return R05_DERIVATIVE;
+	public String getR5_DERIVATIVE() {
+		return R5_DERIVATIVE;
 	}
-	public void setR05_DERIVATIVE(String r05_DERIVATIVE) {
-		R05_DERIVATIVE = r05_DERIVATIVE;
+	public void setR5_DERIVATIVE(String R5_DERIVATIVE) {
+		R5_DERIVATIVE = R5_DERIVATIVE;
 	}
-	public String getR06_GROUP_CODE() {
-		return R06_GROUP_CODE;
+	public String getR6_GROUP_CODE() {
+		return R6_GROUP_CODE;
 	}
-	public void setR06_GROUP_CODE(String r06_GROUP_CODE) {
-		R06_GROUP_CODE = r06_GROUP_CODE;
+	public void setR6_GROUP_CODE(String R6_GROUP_CODE) {
+		R6_GROUP_CODE = R6_GROUP_CODE;
 	}
-	public String getR06_GROUP_NAME() {
-		return R06_GROUP_NAME;
+	public String getR6_GROUP_NAME() {
+		return R6_GROUP_NAME;
 	}
-	public void setR06_GROUP_NAME(String r06_GROUP_NAME) {
-		R06_GROUP_NAME = r06_GROUP_NAME;
+	public void setR6_GROUP_NAME(String R6_GROUP_NAME) {
+		R6_GROUP_NAME = R6_GROUP_NAME;
 	}
-	public Double getR06_CRM() {
-		return R06_CRM;
+	public Double getR6_CRM() {
+		return R6_CRM;
 	}
-	public void setR06_CRM(Double r06_CRM) {
-		R06_CRM = r06_CRM;
+	public void setR6_CRM(Double R6_CRM) {
+		R6_CRM = R6_CRM;
 	}
-	public Double getR06_NFBLT() {
-		return R06_NFBLT;
+	public Double getR6_NFBLT() {
+		return R6_NFBLT;
 	}
-	public void setR06_NFBLT(Double r06_NFBLT) {
-		R06_NFBLT = r06_NFBLT;
+	public void setR6_NFBLT(Double R6_NFBLT) {
+		R6_NFBLT = R6_NFBLT;
 	}
-	public Double getR06_NFBOS() {
-		return R06_NFBOS;
+	public Double getR6_NFBOS() {
+		return R6_NFBOS;
 	}
-	public void setR06_NFBOS(Double r06_NFBOS) {
-		R06_NFBOS = r06_NFBOS;
+	public void setR6_NFBOS(Double R6_NFBOS) {
+		R6_NFBOS = R6_NFBOS;
 	}
-	public Double getR06_CRM_2() {
-		return R06_CRM_2;
+	public Double getR6_CRM_2() {
+		return R6_CRM_2;
 	}
-	public void setR06_CRM_2(Double r06_CRM_2) {
-		R06_CRM_2 = r06_CRM_2;
+	public void setR6_CRM_2(Double R6_CRM_2) {
+		R6_CRM_2 = R6_CRM_2;
 	}
-	public Double getR06_NFB() {
-		return R06_NFB;
+	public Double getR6_NFB() {
+		return R6_NFB;
 	}
-	public void setR06_NFB(Double r06_NFB) {
-		R06_NFB = r06_NFB;
+	public void setR6_NFB(Double R6_NFB) {
+		R6_NFB = R6_NFB;
 	}
-	public String getR06_BOND() {
-		return R06_BOND;
+	public String getR6_BOND() {
+		return R6_BOND;
 	}
-	public void setR06_BOND(String r06_BOND) {
-		R06_BOND = r06_BOND;
+	public void setR6_BOND(String R6_BOND) {
+		R6_BOND = R6_BOND;
 	}
-	public String getR06_CP() {
-		return R06_CP;
+	public String getR6_CP() {
+		return R6_CP;
 	}
-	public void setR06_CP(String r06_CP) {
-		R06_CP = r06_CP;
+	public void setR6_CP(String R6_CP) {
+		R6_CP = R6_CP;
 	}
-	public String getR06_EQULITY() {
-		return R06_EQULITY;
+	public String getR6_EQULITY() {
+		return R6_EQULITY;
 	}
-	public void setR06_EQULITY(String r06_EQULITY) {
-		R06_EQULITY = r06_EQULITY;
+	public void setR6_EQULITY(String R6_EQULITY) {
+		R6_EQULITY = R6_EQULITY;
 	}
-	public String getR06_FOREX() {
-		return R06_FOREX;
+	public String getR6_FOREX() {
+		return R6_FOREX;
 	}
-	public void setR06_FOREX(String r06_FOREX) {
-		R06_FOREX = r06_FOREX;
+	public void setR6_FOREX(String R6_FOREX) {
+		R6_FOREX = R6_FOREX;
 	}
-	public String getR06_OTHERS() {
-		return R06_OTHERS;
+	public String getR6_OTHERS() {
+		return R6_OTHERS;
 	}
-	public void setR06_OTHERS(String r06_OTHERS) {
-		R06_OTHERS = r06_OTHERS;
+	public void setR6_OTHERS(String R6_OTHERS) {
+		R6_OTHERS = R6_OTHERS;
 	}
-	public String getR06_INT_BANK() {
-		return R06_INT_BANK;
+	public String getR6_INT_BANK() {
+		return R6_INT_BANK;
 	}
-	public void setR06_INT_BANK(String r06_INT_BANK) {
-		R06_INT_BANK = r06_INT_BANK;
+	public void setR6_INT_BANK(String R6_INT_BANK) {
+		R6_INT_BANK = R6_INT_BANK;
 	}
-	public String getR06_DERIVATIVE() {
-		return R06_DERIVATIVE;
+	public String getR6_DERIVATIVE() {
+		return R6_DERIVATIVE;
 	}
-	public void setR06_DERIVATIVE(String r06_DERIVATIVE) {
-		R06_DERIVATIVE = r06_DERIVATIVE;
+	public void setR6_DERIVATIVE(String R6_DERIVATIVE) {
+		R6_DERIVATIVE = R6_DERIVATIVE;
 	}
-	public String getR07_GROUP_CODE() {
-		return R07_GROUP_CODE;
+	public String getR7_GROUP_CODE() {
+		return R7_GROUP_CODE;
 	}
-	public void setR07_GROUP_CODE(String r07_GROUP_CODE) {
-		R07_GROUP_CODE = r07_GROUP_CODE;
+	public void setR7_GROUP_CODE(String R7_GROUP_CODE) {
+		R7_GROUP_CODE = R7_GROUP_CODE;
 	}
-	public String getR07_GROUP_NAME() {
-		return R07_GROUP_NAME;
+	public String getR7_GROUP_NAME() {
+		return R7_GROUP_NAME;
 	}
-	public void setR07_GROUP_NAME(String r07_GROUP_NAME) {
-		R07_GROUP_NAME = r07_GROUP_NAME;
+	public void setR7_GROUP_NAME(String R7_GROUP_NAME) {
+		R7_GROUP_NAME = R7_GROUP_NAME;
 	}
-	public Double getR07_CRM() {
-		return R07_CRM;
+	public Double getR7_CRM() {
+		return R7_CRM;
 	}
-	public void setR07_CRM(Double r07_CRM) {
-		R07_CRM = r07_CRM;
+	public void setR7_CRM(Double R7_CRM) {
+		R7_CRM = R7_CRM;
 	}
-	public Double getR07_NFBLT() {
-		return R07_NFBLT;
+	public Double getR7_NFBLT() {
+		return R7_NFBLT;
 	}
-	public void setR07_NFBLT(Double r07_NFBLT) {
-		R07_NFBLT = r07_NFBLT;
+	public void setR7_NFBLT(Double R7_NFBLT) {
+		R7_NFBLT = R7_NFBLT;
 	}
-	public Double getR07_NFBOS() {
-		return R07_NFBOS;
+	public Double getR7_NFBOS() {
+		return R7_NFBOS;
 	}
-	public void setR07_NFBOS(Double r07_NFBOS) {
-		R07_NFBOS = r07_NFBOS;
+	public void setR7_NFBOS(Double R7_NFBOS) {
+		R7_NFBOS = R7_NFBOS;
 	}
-	public Double getR07_CRM_2() {
-		return R07_CRM_2;
+	public Double getR7_CRM_2() {
+		return R7_CRM_2;
 	}
-	public void setR07_CRM_2(Double r07_CRM_2) {
-		R07_CRM_2 = r07_CRM_2;
+	public void setR7_CRM_2(Double R7_CRM_2) {
+		R7_CRM_2 = R7_CRM_2;
 	}
-	public Double getR07_NFB() {
-		return R07_NFB;
+	public Double getR7_NFB() {
+		return R7_NFB;
 	}
-	public void setR07_NFB(Double r07_NFB) {
-		R07_NFB = r07_NFB;
+	public void setR7_NFB(Double R7_NFB) {
+		R7_NFB = R7_NFB;
 	}
-	public String getR07_BOND() {
-		return R07_BOND;
+	public String getR7_BOND() {
+		return R7_BOND;
 	}
-	public void setR07_BOND(String r07_BOND) {
-		R07_BOND = r07_BOND;
+	public void setR7_BOND(String R7_BOND) {
+		R7_BOND = R7_BOND;
 	}
-	public String getR07_CP() {
-		return R07_CP;
+	public String getR7_CP() {
+		return R7_CP;
 	}
-	public void setR07_CP(String r07_CP) {
-		R07_CP = r07_CP;
+	public void setR7_CP(String R7_CP) {
+		R7_CP = R7_CP;
 	}
-	public String getR07_EQULITY() {
-		return R07_EQULITY;
+	public String getR7_EQULITY() {
+		return R7_EQULITY;
 	}
-	public void setR07_EQULITY(String r07_EQULITY) {
-		R07_EQULITY = r07_EQULITY;
+	public void setR7_EQULITY(String R7_EQULITY) {
+		R7_EQULITY = R7_EQULITY;
 	}
-	public String getR07_FOREX() {
-		return R07_FOREX;
+	public String getR7_FOREX() {
+		return R7_FOREX;
 	}
-	public void setR07_FOREX(String r07_FOREX) {
-		R07_FOREX = r07_FOREX;
+	public void setR7_FOREX(String R7_FOREX) {
+		R7_FOREX = R7_FOREX;
 	}
-	public String getR07_OTHERS() {
-		return R07_OTHERS;
+	public String getR7_OTHERS() {
+		return R7_OTHERS;
 	}
-	public void setR07_OTHERS(String r07_OTHERS) {
-		R07_OTHERS = r07_OTHERS;
+	public void setR7_OTHERS(String R7_OTHERS) {
+		R7_OTHERS = R7_OTHERS;
 	}
-	public String getR07_INT_BANK() {
-		return R07_INT_BANK;
+	public String getR7_INT_BANK() {
+		return R7_INT_BANK;
 	}
-	public void setR07_INT_BANK(String r07_INT_BANK) {
-		R07_INT_BANK = r07_INT_BANK;
+	public void setR7_INT_BANK(String R7_INT_BANK) {
+		R7_INT_BANK = R7_INT_BANK;
 	}
-	public String getR07_DERIVATIVE() {
-		return R07_DERIVATIVE;
+	public String getR7_DERIVATIVE() {
+		return R7_DERIVATIVE;
 	}
-	public void setR07_DERIVATIVE(String r07_DERIVATIVE) {
-		R07_DERIVATIVE = r07_DERIVATIVE;
+	public void setR7_DERIVATIVE(String R7_DERIVATIVE) {
+		R7_DERIVATIVE = R7_DERIVATIVE;
 	}
-	public String getR08_GROUP_CODE() {
-		return R08_GROUP_CODE;
+	public String getR8_GROUP_CODE() {
+		return R8_GROUP_CODE;
 	}
-	public void setR08_GROUP_CODE(String r08_GROUP_CODE) {
-		R08_GROUP_CODE = r08_GROUP_CODE;
+	public void setR8_GROUP_CODE(String R8_GROUP_CODE) {
+		R8_GROUP_CODE = R8_GROUP_CODE;
 	}
-	public String getR08_GROUP_NAME() {
-		return R08_GROUP_NAME;
+	public String getR8_GROUP_NAME() {
+		return R8_GROUP_NAME;
 	}
-	public void setR08_GROUP_NAME(String r08_GROUP_NAME) {
-		R08_GROUP_NAME = r08_GROUP_NAME;
+	public void setR8_GROUP_NAME(String R8_GROUP_NAME) {
+		R8_GROUP_NAME = R8_GROUP_NAME;
 	}
-	public Double getR08_CRM() {
-		return R08_CRM;
+	public Double getR8_CRM() {
+		return R8_CRM;
 	}
-	public void setR08_CRM(Double r08_CRM) {
-		R08_CRM = r08_CRM;
+	public void setR8_CRM(Double R8_CRM) {
+		R8_CRM = R8_CRM;
 	}
-	public Double getR08_NFBLT() {
-		return R08_NFBLT;
+	public Double getR8_NFBLT() {
+		return R8_NFBLT;
 	}
-	public void setR08_NFBLT(Double r08_NFBLT) {
-		R08_NFBLT = r08_NFBLT;
+	public void setR8_NFBLT(Double R8_NFBLT) {
+		R8_NFBLT = R8_NFBLT;
 	}
-	public Double getR08_NFBOS() {
-		return R08_NFBOS;
+	public Double getR8_NFBOS() {
+		return R8_NFBOS;
 	}
-	public void setR08_NFBOS(Double r08_NFBOS) {
-		R08_NFBOS = r08_NFBOS;
+	public void setR8_NFBOS(Double R8_NFBOS) {
+		R8_NFBOS = R8_NFBOS;
 	}
-	public Double getR08_CRM_2() {
-		return R08_CRM_2;
+	public Double getR8_CRM_2() {
+		return R8_CRM_2;
 	}
-	public void setR08_CRM_2(Double r08_CRM_2) {
-		R08_CRM_2 = r08_CRM_2;
+	public void setR8_CRM_2(Double R8_CRM_2) {
+		R8_CRM_2 = R8_CRM_2;
 	}
-	public Double getR08_NFB() {
-		return R08_NFB;
+	public Double getR8_NFB() {
+		return R8_NFB;
 	}
-	public void setR08_NFB(Double r08_NFB) {
-		R08_NFB = r08_NFB;
+	public void setR8_NFB(Double R8_NFB) {
+		R8_NFB = R8_NFB;
 	}
-	public String getR08_BOND() {
-		return R08_BOND;
+	public String getR8_BOND() {
+		return R8_BOND;
 	}
-	public void setR08_BOND(String r08_BOND) {
-		R08_BOND = r08_BOND;
+	public void setR8_BOND(String R8_BOND) {
+		R8_BOND = R8_BOND;
 	}
-	public String getR08_CP() {
-		return R08_CP;
+	public String getR8_CP() {
+		return R8_CP;
 	}
-	public void setR08_CP(String r08_CP) {
-		R08_CP = r08_CP;
+	public void setR8_CP(String R8_CP) {
+		R8_CP = R8_CP;
 	}
-	public String getR08_EQULITY() {
-		return R08_EQULITY;
+	public String getR8_EQULITY() {
+		return R8_EQULITY;
 	}
-	public void setR08_EQULITY(String r08_EQULITY) {
-		R08_EQULITY = r08_EQULITY;
+	public void setR8_EQULITY(String R8_EQULITY) {
+		R8_EQULITY = R8_EQULITY;
 	}
-	public String getR08_FOREX() {
-		return R08_FOREX;
+	public String getR8_FOREX() {
+		return R8_FOREX;
 	}
-	public void setR08_FOREX(String r08_FOREX) {
-		R08_FOREX = r08_FOREX;
+	public void setR8_FOREX(String R8_FOREX) {
+		R8_FOREX = R8_FOREX;
 	}
-	public String getR08_OTHERS() {
-		return R08_OTHERS;
+	public String getR8_OTHERS() {
+		return R8_OTHERS;
 	}
-	public void setR08_OTHERS(String r08_OTHERS) {
-		R08_OTHERS = r08_OTHERS;
+	public void setR8_OTHERS(String R8_OTHERS) {
+		R8_OTHERS = R8_OTHERS;
 	}
-	public String getR08_INT_BANK() {
-		return R08_INT_BANK;
+	public String getR8_INT_BANK() {
+		return R8_INT_BANK;
 	}
-	public void setR08_INT_BANK(String r08_INT_BANK) {
-		R08_INT_BANK = r08_INT_BANK;
+	public void setR8_INT_BANK(String R8_INT_BANK) {
+		R8_INT_BANK = R8_INT_BANK;
 	}
-	public String getR08_DERIVATIVE() {
-		return R08_DERIVATIVE;
+	public String getR8_DERIVATIVE() {
+		return R8_DERIVATIVE;
 	}
-	public void setR08_DERIVATIVE(String r08_DERIVATIVE) {
-		R08_DERIVATIVE = r08_DERIVATIVE;
+	public void setR8_DERIVATIVE(String R8_DERIVATIVE) {
+		R8_DERIVATIVE = R8_DERIVATIVE;
 	}
-	public String getR09_GROUP_CODE() {
-		return R09_GROUP_CODE;
+	public String getR9_GROUP_CODE() {
+		return R9_GROUP_CODE;
 	}
-	public void setR09_GROUP_CODE(String r09_GROUP_CODE) {
-		R09_GROUP_CODE = r09_GROUP_CODE;
+	public void setR9_GROUP_CODE(String R9_GROUP_CODE) {
+		R9_GROUP_CODE = R9_GROUP_CODE;
 	}
-	public String getR09_GROUP_NAME() {
-		return R09_GROUP_NAME;
+	public String getR9_GROUP_NAME() {
+		return R9_GROUP_NAME;
 	}
-	public void setR09_GROUP_NAME(String r09_GROUP_NAME) {
-		R09_GROUP_NAME = r09_GROUP_NAME;
+	public void setR9_GROUP_NAME(String R9_GROUP_NAME) {
+		R9_GROUP_NAME = R9_GROUP_NAME;
 	}
-	public Double getR09_CRM() {
-		return R09_CRM;
+	public Double getR9_CRM() {
+		return R9_CRM;
 	}
-	public void setR09_CRM(Double r09_CRM) {
-		R09_CRM = r09_CRM;
+	public void setR9_CRM(Double R9_CRM) {
+		R9_CRM = R9_CRM;
 	}
-	public Double getR09_NFBLT() {
-		return R09_NFBLT;
+	public Double getR9_NFBLT() {
+		return R9_NFBLT;
 	}
-	public void setR09_NFBLT(Double r09_NFBLT) {
-		R09_NFBLT = r09_NFBLT;
+	public void setR9_NFBLT(Double R9_NFBLT) {
+		R9_NFBLT = R9_NFBLT;
 	}
-	public Double getR09_NFBOS() {
-		return R09_NFBOS;
+	public Double getR9_NFBOS() {
+		return R9_NFBOS;
 	}
-	public void setR09_NFBOS(Double r09_NFBOS) {
-		R09_NFBOS = r09_NFBOS;
+	public void setR9_NFBOS(Double R9_NFBOS) {
+		R9_NFBOS = R9_NFBOS;
 	}
-	public Double getR09_CRM_2() {
-		return R09_CRM_2;
+	public Double getR9_CRM_2() {
+		return R9_CRM_2;
 	}
-	public void setR09_CRM_2(Double r09_CRM_2) {
-		R09_CRM_2 = r09_CRM_2;
+	public void setR9_CRM_2(Double R9_CRM_2) {
+		R9_CRM_2 = R9_CRM_2;
 	}
-	public Double getR09_NFB() {
-		return R09_NFB;
+	public Double getR9_NFB() {
+		return R9_NFB;
 	}
-	public void setR09_NFB(Double r09_NFB) {
-		R09_NFB = r09_NFB;
+	public void setR9_NFB(Double R9_NFB) {
+		R9_NFB = R9_NFB;
 	}
-	public String getR09_BOND() {
-		return R09_BOND;
+	public String getR9_BOND() {
+		return R9_BOND;
 	}
-	public void setR09_BOND(String r09_BOND) {
-		R09_BOND = r09_BOND;
+	public void setR9_BOND(String R9_BOND) {
+		R9_BOND = R9_BOND;
 	}
-	public String getR09_CP() {
-		return R09_CP;
+	public String getR9_CP() {
+		return R9_CP;
 	}
-	public void setR09_CP(String r09_CP) {
-		R09_CP = r09_CP;
+	public void setR9_CP(String R9_CP) {
+		R9_CP = R9_CP;
 	}
-	public String getR09_EQULITY() {
-		return R09_EQULITY;
+	public String getR9_EQULITY() {
+		return R9_EQULITY;
 	}
-	public void setR09_EQULITY(String r09_EQULITY) {
-		R09_EQULITY = r09_EQULITY;
+	public void setR9_EQULITY(String R9_EQULITY) {
+		R9_EQULITY = R9_EQULITY;
 	}
-	public String getR09_FOREX() {
-		return R09_FOREX;
+	public String getR9_FOREX() {
+		return R9_FOREX;
 	}
-	public void setR09_FOREX(String r09_FOREX) {
-		R09_FOREX = r09_FOREX;
+	public void setR9_FOREX(String R9_FOREX) {
+		R9_FOREX = R9_FOREX;
 	}
-	public String getR09_OTHERS() {
-		return R09_OTHERS;
+	public String getR9_OTHERS() {
+		return R9_OTHERS;
 	}
-	public void setR09_OTHERS(String r09_OTHERS) {
-		R09_OTHERS = r09_OTHERS;
+	public void setR9_OTHERS(String R9_OTHERS) {
+		R9_OTHERS = R9_OTHERS;
 	}
-	public String getR09_INT_BANK() {
-		return R09_INT_BANK;
+	public String getR9_INT_BANK() {
+		return R9_INT_BANK;
 	}
-	public void setR09_INT_BANK(String r09_INT_BANK) {
-		R09_INT_BANK = r09_INT_BANK;
+	public void setR9_INT_BANK(String R9_INT_BANK) {
+		R9_INT_BANK = R9_INT_BANK;
 	}
-	public String getR09_DERIVATIVE() {
-		return R09_DERIVATIVE;
+	public String getR9_DERIVATIVE() {
+		return R9_DERIVATIVE;
 	}
-	public void setR09_DERIVATIVE(String r09_DERIVATIVE) {
-		R09_DERIVATIVE = r09_DERIVATIVE;
+	public void setR9_DERIVATIVE(String R9_DERIVATIVE) {
+		R9_DERIVATIVE = R9_DERIVATIVE;
 	}
 	public String getR10_GROUP_CODE() {
 		return R10_GROUP_CODE;

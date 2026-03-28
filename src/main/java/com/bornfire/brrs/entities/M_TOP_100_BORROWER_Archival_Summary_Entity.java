@@ -3,7 +3,6 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -16,82 +15,82 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 public class M_TOP_100_BORROWER_Archival_Summary_Entity {
 	
-	// --- R03 Record (Borrower 1) ---
-    private String R03_S_NO;
-    private String R03_PAN_NUM;
-    private String R03_NAME_OF_BORROWER;
-    private BigDecimal R03_FBLIMIT;
-    private BigDecimal R03_FBOS;
-    private BigDecimal R03_FB_EXPOSURE;
-    private BigDecimal R03_TOTAL;
-    private String R03_IRAC;
-    private String R03_CR_RATING;
+	// --- R3 Record (Borrower 1) ---
+    private String R3_S_NO;
+    private String R3_PAN_NUM;
+    private String R3_NAME_OF_BORROWER;
+    private BigDecimal R3_FBLIMIT;
+    private BigDecimal R3_FBOS;
+    private BigDecimal R3_FB_EXPOSURE;
+    private BigDecimal R3_TOTAL;
+    private String R3_IRAC;
+    private String R3_CR_RATING;
 
-    // --- R04 Record (Borrower 2) ---
-    private String R04_S_NO;
-    private String R04_PAN_NUM;
-    private String R04_NAME_OF_BORROWER;
-    private BigDecimal R04_FBLIMIT;
-    private BigDecimal R04_FBOS;
-    private BigDecimal R04_FB_EXPOSURE;
-    private BigDecimal R04_TOTAL;
-    private String R04_IRAC;
-    private String R04_CR_RATING;
+    // --- R4 Record (Borrower 2) ---
+    private String R4_S_NO;
+    private String R4_PAN_NUM;
+    private String R4_NAME_OF_BORROWER;
+    private BigDecimal R4_FBLIMIT;
+    private BigDecimal R4_FBOS;
+    private BigDecimal R4_FB_EXPOSURE;
+    private BigDecimal R4_TOTAL;
+    private String R4_IRAC;
+    private String R4_CR_RATING;
 
-    // --- R05 Record (Borrower 3) ---
-    private String R05_S_NO;
-    private String R05_PAN_NUM;
-    private String R05_NAME_OF_BORROWER;
-    private BigDecimal R05_FBLIMIT;
-    private BigDecimal R05_FBOS;
-    private BigDecimal R05_FB_EXPOSURE;
-    private BigDecimal R05_TOTAL;
-    private String R05_IRAC;
-    private String R05_CR_RATING;
+    // --- R5 Record (Borrower 3) ---
+    private String R5_S_NO;
+    private String R5_PAN_NUM;
+    private String R5_NAME_OF_BORROWER;
+    private BigDecimal R5_FBLIMIT;
+    private BigDecimal R5_FBOS;
+    private BigDecimal R5_FB_EXPOSURE;
+    private BigDecimal R5_TOTAL;
+    private String R5_IRAC;
+    private String R5_CR_RATING;
 
-    // --- R06 Record (Borrower 4) ---
-    private String R06_S_NO;
-    private String R06_PAN_NUM;
-    private String R06_NAME_OF_BORROWER;
-    private BigDecimal R06_FBLIMIT;
-    private BigDecimal R06_FBOS;
-    private BigDecimal R06_FB_EXPOSURE;
-    private BigDecimal R06_TOTAL;
-    private String R06_IRAC;
-    private String R06_CR_RATING;
+    // --- R6 Record (Borrower 4) ---
+    private String R6_S_NO;
+    private String R6_PAN_NUM;
+    private String R6_NAME_OF_BORROWER;
+    private BigDecimal R6_FBLIMIT;
+    private BigDecimal R6_FBOS;
+    private BigDecimal R6_FB_EXPOSURE;
+    private BigDecimal R6_TOTAL;
+    private String R6_IRAC;
+    private String R6_CR_RATING;
 
-    // --- R07 Record (Borrower 5) ---
-    private String R07_S_NO;
-    private String R07_PAN_NUM;
-    private String R07_NAME_OF_BORROWER;
-    private BigDecimal R07_FBLIMIT;
-    private BigDecimal R07_FBOS;
-    private BigDecimal R07_FB_EXPOSURE;
-    private BigDecimal R07_TOTAL;
-    private String R07_IRAC;
-    private String R07_CR_RATING;
+    // --- R7 Record (Borrower 5) ---
+    private String R7_S_NO;
+    private String R7_PAN_NUM;
+    private String R7_NAME_OF_BORROWER;
+    private BigDecimal R7_FBLIMIT;
+    private BigDecimal R7_FBOS;
+    private BigDecimal R7_FB_EXPOSURE;
+    private BigDecimal R7_TOTAL;
+    private String R7_IRAC;
+    private String R7_CR_RATING;
 
-    // --- R08 Record (Borrower 6) ---
-    private String R08_S_NO;
-    private String R08_PAN_NUM;
-    private String R08_NAME_OF_BORROWER;
-    private BigDecimal R08_FBLIMIT;
-    private BigDecimal R08_FBOS;
-    private BigDecimal R08_FB_EXPOSURE;
-    private BigDecimal R08_TOTAL;
-    private String R08_IRAC;
-    private String R08_CR_RATING;
+    // --- R8 Record (Borrower 6) ---
+    private String R8_S_NO;
+    private String R8_PAN_NUM;
+    private String R8_NAME_OF_BORROWER;
+    private BigDecimal R8_FBLIMIT;
+    private BigDecimal R8_FBOS;
+    private BigDecimal R8_FB_EXPOSURE;
+    private BigDecimal R8_TOTAL;
+    private String R8_IRAC;
+    private String R8_CR_RATING;
 
-    // --- R09 Record (Borrower 7) ---
-    private String R09_S_NO;
-    private String R09_PAN_NUM;
-    private String R09_NAME_OF_BORROWER;
-    private BigDecimal R09_FBLIMIT;
-    private BigDecimal R09_FBOS;
-    private BigDecimal R09_FB_EXPOSURE;
-    private BigDecimal R09_TOTAL;
-    private String R09_IRAC;
-    private String R09_CR_RATING;
+    // --- R9 Record (Borrower 7) ---
+    private String R9_S_NO;
+    private String R9_PAN_NUM;
+    private String R9_NAME_OF_BORROWER;
+    private BigDecimal R9_FBLIMIT;
+    private BigDecimal R9_FBOS;
+    private BigDecimal R9_FB_EXPOSURE;
+    private BigDecimal R9_TOTAL;
+    private String R9_IRAC;
+    private String R9_CR_RATING;
 
     // --- R10 Record (Borrower 8) ---
     private String R10_S_NO;
@@ -1127,383 +1126,383 @@ public class M_TOP_100_BORROWER_Archival_Summary_Entity {
     private String entity_flg;
     private String modify_flg;
     private String del_flg;
-	public String getR03_S_NO() {
-		return R03_S_NO;
+	public String getR3_S_NO() {
+		return R3_S_NO;
 	}
-	public void setR03_S_NO(String r03_S_NO) {
-		R03_S_NO = r03_S_NO;
+	public void setR3_S_NO(String R3_S_NO) {
+		R3_S_NO = R3_S_NO;
 	}
-	public String getR03_PAN_NUM() {
-		return R03_PAN_NUM;
+	public String getR3_PAN_NUM() {
+		return R3_PAN_NUM;
 	}
-	public void setR03_PAN_NUM(String r03_PAN_NUM) {
-		R03_PAN_NUM = r03_PAN_NUM;
+	public void setR3_PAN_NUM(String R3_PAN_NUM) {
+		R3_PAN_NUM = R3_PAN_NUM;
 	}
-	public String getR03_NAME_OF_BORROWER() {
-		return R03_NAME_OF_BORROWER;
+	public String getR3_NAME_OF_BORROWER() {
+		return R3_NAME_OF_BORROWER;
 	}
-	public void setR03_NAME_OF_BORROWER(String r03_NAME_OF_BORROWER) {
-		R03_NAME_OF_BORROWER = r03_NAME_OF_BORROWER;
+	public void setR3_NAME_OF_BORROWER(String R3_NAME_OF_BORROWER) {
+		R3_NAME_OF_BORROWER = R3_NAME_OF_BORROWER;
 	}
-	public BigDecimal getR03_FBLIMIT() {
-		return R03_FBLIMIT;
+	public BigDecimal getR3_FBLIMIT() {
+		return R3_FBLIMIT;
 	}
-	public void setR03_FBLIMIT(BigDecimal r03_FBLIMIT) {
-		R03_FBLIMIT = r03_FBLIMIT;
+	public void setR3_FBLIMIT(BigDecimal R3_FBLIMIT) {
+		R3_FBLIMIT = R3_FBLIMIT;
 	}
-	public BigDecimal getR03_FBOS() {
-		return R03_FBOS;
+	public BigDecimal getR3_FBOS() {
+		return R3_FBOS;
 	}
-	public void setR03_FBOS(BigDecimal r03_FBOS) {
-		R03_FBOS = r03_FBOS;
+	public void setR3_FBOS(BigDecimal R3_FBOS) {
+		R3_FBOS = R3_FBOS;
 	}
-	public BigDecimal getR03_FB_EXPOSURE() {
-		return R03_FB_EXPOSURE;
+	public BigDecimal getR3_FB_EXPOSURE() {
+		return R3_FB_EXPOSURE;
 	}
-	public void setR03_FB_EXPOSURE(BigDecimal r03_FB_EXPOSURE) {
-		R03_FB_EXPOSURE = r03_FB_EXPOSURE;
+	public void setR3_FB_EXPOSURE(BigDecimal R3_FB_EXPOSURE) {
+		R3_FB_EXPOSURE = R3_FB_EXPOSURE;
 	}
-	public BigDecimal getR03_TOTAL() {
-		return R03_TOTAL;
+	public BigDecimal getR3_TOTAL() {
+		return R3_TOTAL;
 	}
-	public void setR03_TOTAL(BigDecimal r03_TOTAL) {
-		R03_TOTAL = r03_TOTAL;
+	public void setR3_TOTAL(BigDecimal R3_TOTAL) {
+		R3_TOTAL = R3_TOTAL;
 	}
-	public String getR03_IRAC() {
-		return R03_IRAC;
+	public String getR3_IRAC() {
+		return R3_IRAC;
 	}
-	public void setR03_IRAC(String r03_IRAC) {
-		R03_IRAC = r03_IRAC;
+	public void setR3_IRAC(String R3_IRAC) {
+		R3_IRAC = R3_IRAC;
 	}
-	public String getR03_CR_RATING() {
-		return R03_CR_RATING;
+	public String getR3_CR_RATING() {
+		return R3_CR_RATING;
 	}
-	public void setR03_CR_RATING(String r03_CR_RATING) {
-		R03_CR_RATING = r03_CR_RATING;
+	public void setR3_CR_RATING(String R3_CR_RATING) {
+		R3_CR_RATING = R3_CR_RATING;
 	}
-	public String getR04_S_NO() {
-		return R04_S_NO;
+	public String getR4_S_NO() {
+		return R4_S_NO;
 	}
-	public void setR04_S_NO(String r04_S_NO) {
-		R04_S_NO = r04_S_NO;
+	public void setR4_S_NO(String R4_S_NO) {
+		R4_S_NO = R4_S_NO;
 	}
-	public String getR04_PAN_NUM() {
-		return R04_PAN_NUM;
+	public String getR4_PAN_NUM() {
+		return R4_PAN_NUM;
 	}
-	public void setR04_PAN_NUM(String r04_PAN_NUM) {
-		R04_PAN_NUM = r04_PAN_NUM;
+	public void setR4_PAN_NUM(String R4_PAN_NUM) {
+		R4_PAN_NUM = R4_PAN_NUM;
 	}
-	public String getR04_NAME_OF_BORROWER() {
-		return R04_NAME_OF_BORROWER;
+	public String getR4_NAME_OF_BORROWER() {
+		return R4_NAME_OF_BORROWER;
 	}
-	public void setR04_NAME_OF_BORROWER(String r04_NAME_OF_BORROWER) {
-		R04_NAME_OF_BORROWER = r04_NAME_OF_BORROWER;
+	public void setR4_NAME_OF_BORROWER(String R4_NAME_OF_BORROWER) {
+		R4_NAME_OF_BORROWER = R4_NAME_OF_BORROWER;
 	}
-	public BigDecimal getR04_FBLIMIT() {
-		return R04_FBLIMIT;
+	public BigDecimal getR4_FBLIMIT() {
+		return R4_FBLIMIT;
 	}
-	public void setR04_FBLIMIT(BigDecimal r04_FBLIMIT) {
-		R04_FBLIMIT = r04_FBLIMIT;
+	public void setR4_FBLIMIT(BigDecimal R4_FBLIMIT) {
+		R4_FBLIMIT = R4_FBLIMIT;
 	}
-	public BigDecimal getR04_FBOS() {
-		return R04_FBOS;
+	public BigDecimal getR4_FBOS() {
+		return R4_FBOS;
 	}
-	public void setR04_FBOS(BigDecimal r04_FBOS) {
-		R04_FBOS = r04_FBOS;
+	public void setR4_FBOS(BigDecimal R4_FBOS) {
+		R4_FBOS = R4_FBOS;
 	}
-	public BigDecimal getR04_FB_EXPOSURE() {
-		return R04_FB_EXPOSURE;
+	public BigDecimal getR4_FB_EXPOSURE() {
+		return R4_FB_EXPOSURE;
 	}
-	public void setR04_FB_EXPOSURE(BigDecimal r04_FB_EXPOSURE) {
-		R04_FB_EXPOSURE = r04_FB_EXPOSURE;
+	public void setR4_FB_EXPOSURE(BigDecimal R4_FB_EXPOSURE) {
+		R4_FB_EXPOSURE = R4_FB_EXPOSURE;
 	}
-	public BigDecimal getR04_TOTAL() {
-		return R04_TOTAL;
+	public BigDecimal getR4_TOTAL() {
+		return R4_TOTAL;
 	}
-	public void setR04_TOTAL(BigDecimal r04_TOTAL) {
-		R04_TOTAL = r04_TOTAL;
+	public void setR4_TOTAL(BigDecimal R4_TOTAL) {
+		R4_TOTAL = R4_TOTAL;
 	}
-	public String getR04_IRAC() {
-		return R04_IRAC;
+	public String getR4_IRAC() {
+		return R4_IRAC;
 	}
-	public void setR04_IRAC(String r04_IRAC) {
-		R04_IRAC = r04_IRAC;
+	public void setR4_IRAC(String R4_IRAC) {
+		R4_IRAC = R4_IRAC;
 	}
-	public String getR04_CR_RATING() {
-		return R04_CR_RATING;
+	public String getR4_CR_RATING() {
+		return R4_CR_RATING;
 	}
-	public void setR04_CR_RATING(String r04_CR_RATING) {
-		R04_CR_RATING = r04_CR_RATING;
+	public void setR4_CR_RATING(String R4_CR_RATING) {
+		R4_CR_RATING = R4_CR_RATING;
 	}
-	public String getR05_S_NO() {
-		return R05_S_NO;
+	public String getR5_S_NO() {
+		return R5_S_NO;
 	}
-	public void setR05_S_NO(String r05_S_NO) {
-		R05_S_NO = r05_S_NO;
+	public void setR5_S_NO(String R5_S_NO) {
+		R5_S_NO = R5_S_NO;
 	}
-	public String getR05_PAN_NUM() {
-		return R05_PAN_NUM;
+	public String getR5_PAN_NUM() {
+		return R5_PAN_NUM;
 	}
-	public void setR05_PAN_NUM(String r05_PAN_NUM) {
-		R05_PAN_NUM = r05_PAN_NUM;
+	public void setR5_PAN_NUM(String R5_PAN_NUM) {
+		R5_PAN_NUM = R5_PAN_NUM;
 	}
-	public String getR05_NAME_OF_BORROWER() {
-		return R05_NAME_OF_BORROWER;
+	public String getR5_NAME_OF_BORROWER() {
+		return R5_NAME_OF_BORROWER;
 	}
-	public void setR05_NAME_OF_BORROWER(String r05_NAME_OF_BORROWER) {
-		R05_NAME_OF_BORROWER = r05_NAME_OF_BORROWER;
+	public void setR5_NAME_OF_BORROWER(String R5_NAME_OF_BORROWER) {
+		R5_NAME_OF_BORROWER = R5_NAME_OF_BORROWER;
 	}
-	public BigDecimal getR05_FBLIMIT() {
-		return R05_FBLIMIT;
+	public BigDecimal getR5_FBLIMIT() {
+		return R5_FBLIMIT;
 	}
-	public void setR05_FBLIMIT(BigDecimal r05_FBLIMIT) {
-		R05_FBLIMIT = r05_FBLIMIT;
+	public void setR5_FBLIMIT(BigDecimal R5_FBLIMIT) {
+		R5_FBLIMIT = R5_FBLIMIT;
 	}
-	public BigDecimal getR05_FBOS() {
-		return R05_FBOS;
+	public BigDecimal getR5_FBOS() {
+		return R5_FBOS;
 	}
-	public void setR05_FBOS(BigDecimal r05_FBOS) {
-		R05_FBOS = r05_FBOS;
+	public void setR5_FBOS(BigDecimal R5_FBOS) {
+		R5_FBOS = R5_FBOS;
 	}
-	public BigDecimal getR05_FB_EXPOSURE() {
-		return R05_FB_EXPOSURE;
+	public BigDecimal getR5_FB_EXPOSURE() {
+		return R5_FB_EXPOSURE;
 	}
-	public void setR05_FB_EXPOSURE(BigDecimal r05_FB_EXPOSURE) {
-		R05_FB_EXPOSURE = r05_FB_EXPOSURE;
+	public void setR5_FB_EXPOSURE(BigDecimal R5_FB_EXPOSURE) {
+		R5_FB_EXPOSURE = R5_FB_EXPOSURE;
 	}
-	public BigDecimal getR05_TOTAL() {
-		return R05_TOTAL;
+	public BigDecimal getR5_TOTAL() {
+		return R5_TOTAL;
 	}
-	public void setR05_TOTAL(BigDecimal r05_TOTAL) {
-		R05_TOTAL = r05_TOTAL;
+	public void setR5_TOTAL(BigDecimal R5_TOTAL) {
+		R5_TOTAL = R5_TOTAL;
 	}
-	public String getR05_IRAC() {
-		return R05_IRAC;
+	public String getR5_IRAC() {
+		return R5_IRAC;
 	}
-	public void setR05_IRAC(String r05_IRAC) {
-		R05_IRAC = r05_IRAC;
+	public void setR5_IRAC(String R5_IRAC) {
+		R5_IRAC = R5_IRAC;
 	}
-	public String getR05_CR_RATING() {
-		return R05_CR_RATING;
+	public String getR5_CR_RATING() {
+		return R5_CR_RATING;
 	}
-	public void setR05_CR_RATING(String r05_CR_RATING) {
-		R05_CR_RATING = r05_CR_RATING;
+	public void setR5_CR_RATING(String R5_CR_RATING) {
+		R5_CR_RATING = R5_CR_RATING;
 	}
-	public String getR06_S_NO() {
-		return R06_S_NO;
+	public String getR6_S_NO() {
+		return R6_S_NO;
 	}
-	public void setR06_S_NO(String r06_S_NO) {
-		R06_S_NO = r06_S_NO;
+	public void setR6_S_NO(String R6_S_NO) {
+		R6_S_NO = R6_S_NO;
 	}
-	public String getR06_PAN_NUM() {
-		return R06_PAN_NUM;
+	public String getR6_PAN_NUM() {
+		return R6_PAN_NUM;
 	}
-	public void setR06_PAN_NUM(String r06_PAN_NUM) {
-		R06_PAN_NUM = r06_PAN_NUM;
+	public void setR6_PAN_NUM(String R6_PAN_NUM) {
+		R6_PAN_NUM = R6_PAN_NUM;
 	}
-	public String getR06_NAME_OF_BORROWER() {
-		return R06_NAME_OF_BORROWER;
+	public String getR6_NAME_OF_BORROWER() {
+		return R6_NAME_OF_BORROWER;
 	}
-	public void setR06_NAME_OF_BORROWER(String r06_NAME_OF_BORROWER) {
-		R06_NAME_OF_BORROWER = r06_NAME_OF_BORROWER;
+	public void setR6_NAME_OF_BORROWER(String R6_NAME_OF_BORROWER) {
+		R6_NAME_OF_BORROWER = R6_NAME_OF_BORROWER;
 	}
-	public BigDecimal getR06_FBLIMIT() {
-		return R06_FBLIMIT;
+	public BigDecimal getR6_FBLIMIT() {
+		return R6_FBLIMIT;
 	}
-	public void setR06_FBLIMIT(BigDecimal r06_FBLIMIT) {
-		R06_FBLIMIT = r06_FBLIMIT;
+	public void setR6_FBLIMIT(BigDecimal R6_FBLIMIT) {
+		R6_FBLIMIT = R6_FBLIMIT;
 	}
-	public BigDecimal getR06_FBOS() {
-		return R06_FBOS;
+	public BigDecimal getR6_FBOS() {
+		return R6_FBOS;
 	}
-	public void setR06_FBOS(BigDecimal r06_FBOS) {
-		R06_FBOS = r06_FBOS;
+	public void setR6_FBOS(BigDecimal R6_FBOS) {
+		R6_FBOS = R6_FBOS;
 	}
-	public BigDecimal getR06_FB_EXPOSURE() {
-		return R06_FB_EXPOSURE;
+	public BigDecimal getR6_FB_EXPOSURE() {
+		return R6_FB_EXPOSURE;
 	}
-	public void setR06_FB_EXPOSURE(BigDecimal r06_FB_EXPOSURE) {
-		R06_FB_EXPOSURE = r06_FB_EXPOSURE;
+	public void setR6_FB_EXPOSURE(BigDecimal R6_FB_EXPOSURE) {
+		R6_FB_EXPOSURE = R6_FB_EXPOSURE;
 	}
-	public BigDecimal getR06_TOTAL() {
-		return R06_TOTAL;
+	public BigDecimal getR6_TOTAL() {
+		return R6_TOTAL;
 	}
-	public void setR06_TOTAL(BigDecimal r06_TOTAL) {
-		R06_TOTAL = r06_TOTAL;
+	public void setR6_TOTAL(BigDecimal R6_TOTAL) {
+		R6_TOTAL = R6_TOTAL;
 	}
-	public String getR06_IRAC() {
-		return R06_IRAC;
+	public String getR6_IRAC() {
+		return R6_IRAC;
 	}
-	public void setR06_IRAC(String r06_IRAC) {
-		R06_IRAC = r06_IRAC;
+	public void setR6_IRAC(String R6_IRAC) {
+		R6_IRAC = R6_IRAC;
 	}
-	public String getR06_CR_RATING() {
-		return R06_CR_RATING;
+	public String getR6_CR_RATING() {
+		return R6_CR_RATING;
 	}
-	public void setR06_CR_RATING(String r06_CR_RATING) {
-		R06_CR_RATING = r06_CR_RATING;
+	public void setR6_CR_RATING(String R6_CR_RATING) {
+		R6_CR_RATING = R6_CR_RATING;
 	}
-	public String getR07_S_NO() {
-		return R07_S_NO;
+	public String getR7_S_NO() {
+		return R7_S_NO;
 	}
-	public void setR07_S_NO(String r07_S_NO) {
-		R07_S_NO = r07_S_NO;
+	public void setR7_S_NO(String R7_S_NO) {
+		R7_S_NO = R7_S_NO;
 	}
-	public String getR07_PAN_NUM() {
-		return R07_PAN_NUM;
+	public String getR7_PAN_NUM() {
+		return R7_PAN_NUM;
 	}
-	public void setR07_PAN_NUM(String r07_PAN_NUM) {
-		R07_PAN_NUM = r07_PAN_NUM;
+	public void setR7_PAN_NUM(String R7_PAN_NUM) {
+		R7_PAN_NUM = R7_PAN_NUM;
 	}
-	public String getR07_NAME_OF_BORROWER() {
-		return R07_NAME_OF_BORROWER;
+	public String getR7_NAME_OF_BORROWER() {
+		return R7_NAME_OF_BORROWER;
 	}
-	public void setR07_NAME_OF_BORROWER(String r07_NAME_OF_BORROWER) {
-		R07_NAME_OF_BORROWER = r07_NAME_OF_BORROWER;
+	public void setR7_NAME_OF_BORROWER(String R7_NAME_OF_BORROWER) {
+		R7_NAME_OF_BORROWER = R7_NAME_OF_BORROWER;
 	}
-	public BigDecimal getR07_FBLIMIT() {
-		return R07_FBLIMIT;
+	public BigDecimal getR7_FBLIMIT() {
+		return R7_FBLIMIT;
 	}
-	public void setR07_FBLIMIT(BigDecimal r07_FBLIMIT) {
-		R07_FBLIMIT = r07_FBLIMIT;
+	public void setR7_FBLIMIT(BigDecimal R7_FBLIMIT) {
+		R7_FBLIMIT = R7_FBLIMIT;
 	}
-	public BigDecimal getR07_FBOS() {
-		return R07_FBOS;
+	public BigDecimal getR7_FBOS() {
+		return R7_FBOS;
 	}
-	public void setR07_FBOS(BigDecimal r07_FBOS) {
-		R07_FBOS = r07_FBOS;
+	public void setR7_FBOS(BigDecimal R7_FBOS) {
+		R7_FBOS = R7_FBOS;
 	}
-	public BigDecimal getR07_FB_EXPOSURE() {
-		return R07_FB_EXPOSURE;
+	public BigDecimal getR7_FB_EXPOSURE() {
+		return R7_FB_EXPOSURE;
 	}
-	public void setR07_FB_EXPOSURE(BigDecimal r07_FB_EXPOSURE) {
-		R07_FB_EXPOSURE = r07_FB_EXPOSURE;
+	public void setR7_FB_EXPOSURE(BigDecimal R7_FB_EXPOSURE) {
+		R7_FB_EXPOSURE = R7_FB_EXPOSURE;
 	}
-	public BigDecimal getR07_TOTAL() {
-		return R07_TOTAL;
+	public BigDecimal getR7_TOTAL() {
+		return R7_TOTAL;
 	}
-	public void setR07_TOTAL(BigDecimal r07_TOTAL) {
-		R07_TOTAL = r07_TOTAL;
+	public void setR7_TOTAL(BigDecimal R7_TOTAL) {
+		R7_TOTAL = R7_TOTAL;
 	}
-	public String getR07_IRAC() {
-		return R07_IRAC;
+	public String getR7_IRAC() {
+		return R7_IRAC;
 	}
-	public void setR07_IRAC(String r07_IRAC) {
-		R07_IRAC = r07_IRAC;
+	public void setR7_IRAC(String R7_IRAC) {
+		R7_IRAC = R7_IRAC;
 	}
-	public String getR07_CR_RATING() {
-		return R07_CR_RATING;
+	public String getR7_CR_RATING() {
+		return R7_CR_RATING;
 	}
-	public void setR07_CR_RATING(String r07_CR_RATING) {
-		R07_CR_RATING = r07_CR_RATING;
+	public void setR7_CR_RATING(String R7_CR_RATING) {
+		R7_CR_RATING = R7_CR_RATING;
 	}
-	public String getR08_S_NO() {
-		return R08_S_NO;
+	public String getR8_S_NO() {
+		return R8_S_NO;
 	}
-	public void setR08_S_NO(String r08_S_NO) {
-		R08_S_NO = r08_S_NO;
+	public void setR8_S_NO(String R8_S_NO) {
+		R8_S_NO = R8_S_NO;
 	}
-	public String getR08_PAN_NUM() {
-		return R08_PAN_NUM;
+	public String getR8_PAN_NUM() {
+		return R8_PAN_NUM;
 	}
-	public void setR08_PAN_NUM(String r08_PAN_NUM) {
-		R08_PAN_NUM = r08_PAN_NUM;
+	public void setR8_PAN_NUM(String R8_PAN_NUM) {
+		R8_PAN_NUM = R8_PAN_NUM;
 	}
-	public String getR08_NAME_OF_BORROWER() {
-		return R08_NAME_OF_BORROWER;
+	public String getR8_NAME_OF_BORROWER() {
+		return R8_NAME_OF_BORROWER;
 	}
-	public void setR08_NAME_OF_BORROWER(String r08_NAME_OF_BORROWER) {
-		R08_NAME_OF_BORROWER = r08_NAME_OF_BORROWER;
+	public void setR8_NAME_OF_BORROWER(String R8_NAME_OF_BORROWER) {
+		R8_NAME_OF_BORROWER = R8_NAME_OF_BORROWER;
 	}
-	public BigDecimal getR08_FBLIMIT() {
-		return R08_FBLIMIT;
+	public BigDecimal getR8_FBLIMIT() {
+		return R8_FBLIMIT;
 	}
-	public void setR08_FBLIMIT(BigDecimal r08_FBLIMIT) {
-		R08_FBLIMIT = r08_FBLIMIT;
+	public void setR8_FBLIMIT(BigDecimal R8_FBLIMIT) {
+		R8_FBLIMIT = R8_FBLIMIT;
 	}
-	public BigDecimal getR08_FBOS() {
-		return R08_FBOS;
+	public BigDecimal getR8_FBOS() {
+		return R8_FBOS;
 	}
-	public void setR08_FBOS(BigDecimal r08_FBOS) {
-		R08_FBOS = r08_FBOS;
+	public void setR8_FBOS(BigDecimal R8_FBOS) {
+		R8_FBOS = R8_FBOS;
 	}
-	public BigDecimal getR08_FB_EXPOSURE() {
-		return R08_FB_EXPOSURE;
+	public BigDecimal getR8_FB_EXPOSURE() {
+		return R8_FB_EXPOSURE;
 	}
-	public void setR08_FB_EXPOSURE(BigDecimal r08_FB_EXPOSURE) {
-		R08_FB_EXPOSURE = r08_FB_EXPOSURE;
+	public void setR8_FB_EXPOSURE(BigDecimal R8_FB_EXPOSURE) {
+		R8_FB_EXPOSURE = R8_FB_EXPOSURE;
 	}
-	public BigDecimal getR08_TOTAL() {
-		return R08_TOTAL;
+	public BigDecimal getR8_TOTAL() {
+		return R8_TOTAL;
 	}
-	public void setR08_TOTAL(BigDecimal r08_TOTAL) {
-		R08_TOTAL = r08_TOTAL;
+	public void setR8_TOTAL(BigDecimal R8_TOTAL) {
+		R8_TOTAL = R8_TOTAL;
 	}
-	public String getR08_IRAC() {
-		return R08_IRAC;
+	public String getR8_IRAC() {
+		return R8_IRAC;
 	}
-	public void setR08_IRAC(String r08_IRAC) {
-		R08_IRAC = r08_IRAC;
+	public void setR8_IRAC(String R8_IRAC) {
+		R8_IRAC = R8_IRAC;
 	}
-	public String getR08_CR_RATING() {
-		return R08_CR_RATING;
+	public String getR8_CR_RATING() {
+		return R8_CR_RATING;
 	}
-	public void setR08_CR_RATING(String r08_CR_RATING) {
-		R08_CR_RATING = r08_CR_RATING;
+	public void setR8_CR_RATING(String R8_CR_RATING) {
+		R8_CR_RATING = R8_CR_RATING;
 	}
-	public String getR09_S_NO() {
-		return R09_S_NO;
+	public String getR9_S_NO() {
+		return R9_S_NO;
 	}
-	public void setR09_S_NO(String r09_S_NO) {
-		R09_S_NO = r09_S_NO;
+	public void setR9_S_NO(String R9_S_NO) {
+		R9_S_NO = R9_S_NO;
 	}
-	public String getR09_PAN_NUM() {
-		return R09_PAN_NUM;
+	public String getR9_PAN_NUM() {
+		return R9_PAN_NUM;
 	}
-	public void setR09_PAN_NUM(String r09_PAN_NUM) {
-		R09_PAN_NUM = r09_PAN_NUM;
+	public void setR9_PAN_NUM(String R9_PAN_NUM) {
+		R9_PAN_NUM = R9_PAN_NUM;
 	}
-	public String getR09_NAME_OF_BORROWER() {
-		return R09_NAME_OF_BORROWER;
+	public String getR9_NAME_OF_BORROWER() {
+		return R9_NAME_OF_BORROWER;
 	}
-	public void setR09_NAME_OF_BORROWER(String r09_NAME_OF_BORROWER) {
-		R09_NAME_OF_BORROWER = r09_NAME_OF_BORROWER;
+	public void setR9_NAME_OF_BORROWER(String R9_NAME_OF_BORROWER) {
+		R9_NAME_OF_BORROWER = R9_NAME_OF_BORROWER;
 	}
-	public BigDecimal getR09_FBLIMIT() {
-		return R09_FBLIMIT;
+	public BigDecimal getR9_FBLIMIT() {
+		return R9_FBLIMIT;
 	}
-	public void setR09_FBLIMIT(BigDecimal r09_FBLIMIT) {
-		R09_FBLIMIT = r09_FBLIMIT;
+	public void setR9_FBLIMIT(BigDecimal R9_FBLIMIT) {
+		R9_FBLIMIT = R9_FBLIMIT;
 	}
-	public BigDecimal getR09_FBOS() {
-		return R09_FBOS;
+	public BigDecimal getR9_FBOS() {
+		return R9_FBOS;
 	}
-	public void setR09_FBOS(BigDecimal r09_FBOS) {
-		R09_FBOS = r09_FBOS;
+	public void setR9_FBOS(BigDecimal R9_FBOS) {
+		R9_FBOS = R9_FBOS;
 	}
-	public BigDecimal getR09_FB_EXPOSURE() {
-		return R09_FB_EXPOSURE;
+	public BigDecimal getR9_FB_EXPOSURE() {
+		return R9_FB_EXPOSURE;
 	}
-	public void setR09_FB_EXPOSURE(BigDecimal r09_FB_EXPOSURE) {
-		R09_FB_EXPOSURE = r09_FB_EXPOSURE;
+	public void setR9_FB_EXPOSURE(BigDecimal R9_FB_EXPOSURE) {
+		R9_FB_EXPOSURE = R9_FB_EXPOSURE;
 	}
-	public BigDecimal getR09_TOTAL() {
-		return R09_TOTAL;
+	public BigDecimal getR9_TOTAL() {
+		return R9_TOTAL;
 	}
-	public void setR09_TOTAL(BigDecimal r09_TOTAL) {
-		R09_TOTAL = r09_TOTAL;
+	public void setR9_TOTAL(BigDecimal R9_TOTAL) {
+		R9_TOTAL = R9_TOTAL;
 	}
-	public String getR09_IRAC() {
-		return R09_IRAC;
+	public String getR9_IRAC() {
+		return R9_IRAC;
 	}
-	public void setR09_IRAC(String r09_IRAC) {
-		R09_IRAC = r09_IRAC;
+	public void setR9_IRAC(String R9_IRAC) {
+		R9_IRAC = R9_IRAC;
 	}
-	public String getR09_CR_RATING() {
-		return R09_CR_RATING;
+	public String getR9_CR_RATING() {
+		return R9_CR_RATING;
 	}
-	public void setR09_CR_RATING(String r09_CR_RATING) {
-		R09_CR_RATING = r09_CR_RATING;
+	public void setR9_CR_RATING(String R9_CR_RATING) {
+		R9_CR_RATING = R9_CR_RATING;
 	}
 	public String getR10_S_NO() {
 		return R10_S_NO;

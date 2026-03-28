@@ -261,90 +261,92 @@ public class BRRS_M_TOP_100_BORROWER_ReportService {
 
 
 
+	public byte[] getM_TOP_100_BORROWERExcel(String filename, String reportId, String fromdate,
+	        String todate, String currency, String dtltype, String type, BigDecimal version) throws Exception {
 
-	public byte[] getM_TOP_100_BORROWERExcel(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, BigDecimal version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.");
+	    logger.info("Service: Starting Excel generation process in memory.");
 
-		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
-			logger.info("Service: Generating ARCHIVAL report for version {}", version);
-			return getExcelM_TOP_100_BORROWERARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type,
-					version);
-		}
+	    // ✅ ARCHIVAL check
+	    if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+	        logger.info("Service: Generating ARCHIVAL report for version {}", version);
+	        return getExcelM_TOP_100_BORROWERARCHIVAL(filename, reportId, fromdate, todate,
+	                currency, dtltype, type, version);
+	    }
 
-		// Fetch data
-		logger.info("report date: {}", todate);
-		List<M_TOP_100_BORROWER_Summary_Entity> dataList = BRRS_M_TOP_100_BORROWER_Summary_Repo
-				.getdatabydateList(dateformat.parse(todate));
-		List<M_TOP_100_BORROWER_Manual_Summary_Entity1> dataList1 = BRRS_M_TOP_100_BORROWER_Manual_Summary_Repo1
-				.getdatabydateList(dateformat.parse(todate));
-		List<M_TOP_100_BORROWER_Manual_Summary_Entity2> dataList2 = BRRS_M_TOP_100_BORROWER_Manual_Summary_Repo2
-				.getdatabydateList(dateformat.parse(todate));
+	    // ✅ Fetch data
+	    Date reportDate = dateformat.parse(todate);
+	    logger.info("Report date: {}", reportDate);
 
-		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for M_TOP_100_BORROWER report. Returning empty result.");
-			return new byte[0];
-		}
+	    List<M_TOP_100_BORROWER_Summary_Entity> dataList =
+	            BRRS_M_TOP_100_BORROWER_Summary_Repo.getdatabydateList(reportDate);
 
-		String templateDir = env.getProperty("output.exportpathtemp");
-		Path templatePath = Paths.get(templateDir, filename);
-		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+	    List<M_TOP_100_BORROWER_Manual_Summary_Entity1> dataList1 =
+	            BRRS_M_TOP_100_BORROWER_Manual_Summary_Repo1.getdatabydateList(reportDate);
 
-		if (!Files.exists(templatePath)) {
-			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
-		}
+	    List<M_TOP_100_BORROWER_Manual_Summary_Entity2> dataList2 =
+	            BRRS_M_TOP_100_BORROWER_Manual_Summary_Repo2.getdatabydateList(reportDate);
 
-		try (InputStream templateInputStream = Files.newInputStream(templatePath);
-				Workbook workbook = WorkbookFactory.create(templateInputStream);
-				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+	    if (dataList == null || dataList.isEmpty()) {
+	        logger.warn("No data found for report.");
+	        return new byte[0];
+	    }
 
-			Sheet sheet = workbook.getSheetAt(0);
+	    // ✅ Safe fetch first record (since report is date-based)
+	    M_TOP_100_BORROWER_Summary_Entity record = dataList.get(0);
 
-			// --- Style Definitions (Optional, usually template handles this, but creating
-			// logic to avoid nulls) ---
-			CreationHelper createHelper = workbook.getCreationHelper();
-			// ... (Your existing style definitions can stay here if needed for new rows)
-			// ...
+	    M_TOP_100_BORROWER_Manual_Summary_Entity1 record1 =
+	            (dataList1 != null && !dataList1.isEmpty())
+	                    ? dataList1.get(0)
+	                    : new M_TOP_100_BORROWER_Manual_Summary_Entity1();
 
-			// Start processing data
-			if (!dataList.isEmpty()) {
-				// Assuming 1:1 mapping between the lists.
-				// Note: The original code implies one massive entity holding all 100 rows.
-				// We assume dataList.size() is usually 1 for a specific report date.
+	    M_TOP_100_BORROWER_Manual_Summary_Entity2 record2 =
+	            (dataList2 != null && !dataList2.isEmpty())
+	                    ? dataList2.get(0)
+	                    : new M_TOP_100_BORROWER_Manual_Summary_Entity2();
 
-				for (int i = 0; i < dataList.size(); i++) {
-					M_TOP_100_BORROWER_Summary_Entity record = dataList.get(i);
-					M_TOP_100_BORROWER_Manual_Summary_Entity1 record1 = (dataList1.size() > i) ? dataList1.get(i)
-							: new M_TOP_100_BORROWER_Manual_Summary_Entity1();
-					M_TOP_100_BORROWER_Manual_Summary_Entity2 record2 = (dataList2.size() > i) ? dataList2.get(i)
-							: new M_TOP_100_BORROWER_Manual_Summary_Entity2();
+	    // ✅ Load template
+	    String templateDir = env.getProperty("output.exportpathtemp");
+	    Path templatePath = Paths.get(templateDir, filename);
 
-					// The loop runs from R03 to R102
-					// R03 corresponds to Row index 2 (in 0-based index) based on your original code
-					// logic:
-					// "int startRow = 2;" then "row = sheet.createRow(startRow + i)"
-					// However, in the huge block, you hardcoded sheet.getRow(3) for R04, etc.
-					// We will map R3 -> row 2, R4 -> row 3, etc.
+	    logger.info("Loading template from: {}", templatePath.toAbsolutePath());
 
-					int excelStartRowIndex = 2; // Corresponds to R03
-					int startR = 3;
-					int endR = 102;
+	    if (!Files.exists(templatePath)) {
+	        throw new FileNotFoundException("Template file not found at: " + templatePath);
+	    }
 
-					for (int r = startR; r <= endR; r++) {
-						int currentRowIndex = excelStartRowIndex + (r - startR);
+	    try (InputStream is = Files.newInputStream(templatePath);
+	         Workbook workbook = WorkbookFactory.create(is);
+	         ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-						// Call helper method to write one specific borrower row
-						writeSingleBorrowerRow(sheet, currentRowIndex, r, record, record1, record2);
-					}
-				}
-			}
+	        Sheet sheet = workbook.getSheetAt(0);
 
-			workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
-			workbook.write(out);
-			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-			return out.toByteArray();
-		}
+	        // ✅ Excel row mapping
+	        int excelStartRowIndex = 2; // R3 starts at row index 2
+	        int startR = 3;
+	        int endR = 102;
+
+	        for (int r = startR; r <= endR; r++) {
+
+	            int rowIndex = excelStartRowIndex + (r - startR);
+
+	            Row row = sheet.getRow(rowIndex);
+	            if (row == null) {
+	                row = sheet.createRow(rowIndex);
+	            }
+
+	            // ✅ Write each borrower row
+	            writeSingleBorrowerRow(sheet, rowIndex, r, record, record1, record2);
+	        }
+
+	        // ✅ Evaluate formulas
+	        workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+
+	        workbook.write(out);
+
+	        logger.info("Excel generated successfully. Size: {} bytes", out.size());
+
+	        return out.toByteArray();
+	    }
 	}
 
 	/**
@@ -361,7 +363,7 @@ public class BRRS_M_TOP_100_BORROWER_ReportService {
 		}
 
 		// Construct the prefix, e.g., "R03", "R10", "R100"
-		String prefix = "R" + (rNumber < 10 ? "0" + rNumber : rNumber);
+		String prefix = "R" + rNumber;
 
 		// Determine which manual entity to use.
 		// Entity1 has R03 to R70. Entity2 has R71 to R102.
@@ -558,24 +560,24 @@ public class BRRS_M_TOP_100_BORROWER_ReportService {
 				for (M_TOP_100_BORROWER_Detail_Entity item : reportData) {
 					XSSFRow row = sheet.createRow(rowIndex++);
 
-					row.createCell(0).setCellValue(item.getCustId());
-					row.createCell(1).setCellValue(item.getAcctNumber());
-					row.createCell(2).setCellValue(item.getAcctName());
+					row.createCell(0).setCellValue(item.getCust_id());
+					row.createCell(1).setCellValue(item.getAcct_number());
+					row.createCell(2).setCellValue(item.getAcct_name());
 
 // ACCT BALANCE (right aligned, 3 decimal places)
 					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInPula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
+					if (item.getAcct_balance_in_pula() != null) {
+						balanceCell.setCellValue(item.getAcct_balance_in_pula().doubleValue());
 					} else {
 						balanceCell.setCellValue(0);
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
-					row.createCell(4).setCellValue(item.getReportLable());
-					row.createCell(5).setCellValue(item.getReportAddlCriteria1());
+					row.createCell(4).setCellValue(item.getReport_lable());
+					row.createCell(5).setCellValue(item.getReport_addl_criteria_1());
 					row.createCell(6)
-							.setCellValue(item.getReportDate() != null
-									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+							.setCellValue(item.getReport_date() != null
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReport_date())
 									: "");
 
 					// Apply data style for all other cells
@@ -718,7 +720,7 @@ public class BRRS_M_TOP_100_BORROWER_ReportService {
 		}
 
 // Construct the prefix, e.g., "R03", "R10", "R100"
-		String prefix = "R" + (rNumber < 10 ? "0" + rNumber : rNumber);
+		String prefix = "R" + rNumber;
 
 // Determine which manual entity to use.
 // Entity1 has R03 to R70. Entity2 has R71 to R102.
@@ -974,8 +976,8 @@ public class BRRS_M_TOP_100_BORROWER_ReportService {
 		System.out.println("Hello");
 		if (acctNo != null) {
 			M_TOP_100_BORROWER_Detail_Entity la1Entity = BRRS_M_TOP_100_BORROWER_Detail_Repo.findByAcctnumber(acctNo);
-			if (la1Entity != null && la1Entity.getReportDate() != null) {
-				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReportDate());
+			if (la1Entity != null && la1Entity.getReport_date() != null) {
+				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReport_date());
 				mv.addObject("asondate", formattedDate);
 			}
 			mv.addObject("Data", la1Entity);
@@ -991,8 +993,8 @@ public class BRRS_M_TOP_100_BORROWER_ReportService {
 
 		if (acctNo != null) {
 			M_TOP_100_BORROWER_Detail_Entity la1Entity = BRRS_M_TOP_100_BORROWER_Detail_Repo.findByAcctnumber(acctNo);
-			if (la1Entity != null && la1Entity.getReportDate() != null) {
-				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReportDate());
+			if (la1Entity != null && la1Entity.getReport_date() != null) {
+				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReport_date());
 				mv.addObject("asondate", formattedDate);
 				System.out.println(formattedDate);
 			}
@@ -1023,8 +1025,8 @@ public class BRRS_M_TOP_100_BORROWER_ReportService {
 			boolean isChanged = false;
 
 			if (acctName != null && !acctName.isEmpty()) {
-				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
-					existing.setAcctName(acctName);
+				if (existing.getAcct_name() == null || !existing.getAcct_name().equals(acctName)) {
+					existing.setAcct_name(acctName);
 					isChanged = true;
 					logger.info("Account name updated to {}", acctName);
 				}
@@ -1032,9 +1034,9 @@ public class BRRS_M_TOP_100_BORROWER_ReportService {
 
 			if (provisionStr != null && !provisionStr.isEmpty()) {
 				BigDecimal newProvision = new BigDecimal(provisionStr);
-				if (existing.getAcctBalanceInPula() == null
-						|| existing.getAcctBalanceInPula().compareTo(newProvision) != 0) {
-					existing.setAcctBalanceInPula(newProvision);
+				if (existing.getAcct_balance_in_pula() == null
+						|| existing.getAcct_balance_in_pula().compareTo(newProvision) != 0) {
+					existing.setAcct_balance_in_pula(newProvision);
 					isChanged = true;
 					logger.info("Balance updated to {}", newProvision);
 				}
@@ -1077,104 +1079,163 @@ public class BRRS_M_TOP_100_BORROWER_ReportService {
 		}
 	}
 	
-	public void updateReport(M_TOP_100_BORROWER_Manual_Summary_Entity1 updatedEntity) {
-	    System.out.println("Came to services1");
-	    System.out.println("Report Date: " + updatedEntity.getReport_date());
+	public void updateReport(M_TOP_100_BORROWER_Manual_Summary_Entity1 request) {
 
-	    M_TOP_100_BORROWER_Manual_Summary_Entity1 existing = BRRS_M_TOP_100_BORROWER_Manual_Summary_Repo1.findById(updatedEntity.getReport_date())
-	    		
-	            .orElseThrow(() -> new RuntimeException(
-	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+	    System.out.println("Came to services");
+
+	    M_TOP_100_BORROWER_Manual_Summary_Entity1 existing =
+	            BRRS_M_TOP_100_BORROWER_Manual_Summary_Repo1
+	                    .findById(request.getReport_date())
+	                    .orElseThrow(() -> new RuntimeException(
+	                            "Record not found for REPORT_DATE: " + request.getReport_date()));
 
 	    try {
-	        // 1️⃣ Loop from R11 to R15 and copy fields
-	    	for (int i = 3; i <= 70; i++) {
-	    	    String prefix = "R" + String.format("%02d", i) + "_";
-	            
-	            String[] fields = {  "GROUP_CODE", "GROUP_NAME", "CRM",
-	                                "NFBLT","NFBOS","CRM_2","NFB","BOND","CP","EQULITY","FOREX","OTHERS","INT_BANK","DERIVATIVE"};
 
-	            for (String field : fields) {
-	                String getterName = "get" + prefix + field;
-	                String setterName = "set" + prefix + field;
+	        String[] fields = {
+	                "GROUP_CODE", "GROUP_NAME", "CRM",
+	                "NFBLT","NFBOS","CRM_2","NFB","BOND","CP",
+	                "EQULITY","FOREX","OTHERS","INT_BANK","DERIVATIVE"
+	        };
 
-	                try {
-	                    Method getter = M_TOP_100_BORROWER_Manual_Summary_Entity1.class.getMethod(getterName);
-	                    Method setter = M_TOP_100_BORROWER_Manual_Summary_Entity1.class.getMethod(setterName, getter.getReturnType());
-
-	                    Object newValue = getter.invoke(updatedEntity);
-	                    setter.invoke(existing, newValue);
-	                    
-
-	                } catch (NoSuchMethodException e) {
-	                    // Skip missing fields
-	                    continue;
-	                }
-	            }
+	        // ✅ Loop R3 → R70
+	        for (int i = 3; i <= 70; i++) {
+	            copyFieldsEntity1(request, existing, i, fields);
 	        }
-	    
-
-	        // ✅ Save after all updates
-	        BRRS_M_TOP_100_BORROWER_Manual_Summary_Repo1.save(existing);
-	        System.out.println("✅ M_TOP_100_BORROWER Summary updated and COMMITTED");
-
-		    // NOW PROCEDURE CAN SEE UPDATED DATA
-		    String oracleDate = new SimpleDateFormat("dd-MM-yyyy")
-		            .format(updatedEntity.getReport_date())
-		            .toUpperCase();
-
-		    String sql = "BEGIN BRRS.BRRS_M_TOP_100_BORROWER_SUMMARY_PROCEDURE('" + oracleDate + "'); END;";
-		    jdbcTemplate.execute(sql);
-
-		    System.out.println("Procedure executed for date: " + oracleDate);
 
 	    } catch (Exception e) {
 	        throw new RuntimeException("Error while updating report fields", e);
+	    }
+
+	    // ✅ Save
+	    BRRS_M_TOP_100_BORROWER_Manual_Summary_Repo1.save(existing);
+
+	    System.out.println("✅ Summary1 updated successfully");
+
+	    // ✅ Call Procedure
+	    String oracleDate = new SimpleDateFormat("dd-MM-yyyy")
+	            .format(request.getReport_date())
+	            .toUpperCase();
+
+	    String sql = "BEGIN BRRS.BRRS_M_TOP_100_BORROWER_SUMMARY_PROCEDURE('" + oracleDate + "'); END;";
+	    jdbcTemplate.execute(sql);
+
+	    System.out.println("Procedure executed for date: " + oracleDate);
+	}
+
+	public void updateReport1(M_TOP_100_BORROWER_Manual_Summary_Entity2 request) {
+
+	    System.out.println("Came to services");
+
+	    M_TOP_100_BORROWER_Manual_Summary_Entity2 existing =
+	            BRRS_M_TOP_100_BORROWER_Manual_Summary_Repo2
+	                    .findById(request.getReport_date())
+	                    .orElseThrow(() -> new RuntimeException(
+	                            "Record not found for REPORT_DATE: " + request.getReport_date()));
+
+	    try {
+
+	        String[] fields = {
+	                "GROUP_CODE", "GROUP_NAME", "CRM",
+	                "NFBLT","NFBOS","CRM_2","NFB","BOND","CP",
+	                "EQULITY","FOREX","OTHERS","INT_BANK","DERIVATIVE"
+	        };
+
+	        // ✅ Loop R71 → R102
+	        for (int i = 71; i <= 102; i++) {
+	            copyFieldsEntity2(request, existing, i, fields);
+	        }
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating report fields", e);
+	    }
+
+	    // ✅ Save
+	    BRRS_M_TOP_100_BORROWER_Manual_Summary_Repo2.save(existing);
+
+	    System.out.println("✅ Summary2 updated successfully");
+	}
+	
+	private void copyFieldsEntity1(
+	        M_TOP_100_BORROWER_Manual_Summary_Entity1 source,
+	        M_TOP_100_BORROWER_Manual_Summary_Entity1 target,
+	        int row,
+	        String[] fields) {
+
+	    String prefix = "R" + row;
+
+	    for (String field : fields) {
+
+	        String camelField = toCamelCase(field);
+
+	        String getterName = "get" + prefix + camelField;
+	        String setterName = "set" + prefix + camelField;
+
+	        try {
+	            Method getter = M_TOP_100_BORROWER_Manual_Summary_Entity1.class
+	                    .getMethod(getterName);
+
+	            Method setter = M_TOP_100_BORROWER_Manual_Summary_Entity1.class
+	                    .getMethod(setterName, getter.getReturnType());
+
+	            Object newValue = getter.invoke(source);
+
+	            if (newValue != null) {
+	                setter.invoke(target, newValue);
+	            }
+
+	        } catch (NoSuchMethodException e) {
+	            System.out.println("Missing: " + getterName);
+	        } catch (Exception e) {
+	            throw new RuntimeException("Error copying " + getterName, e);
+	        }
 	    }
 	}
 	
-	public void updateReport1(M_TOP_100_BORROWER_Manual_Summary_Entity2 updatedEntity) {
-	    System.out.println("Came to services1");
-	    System.out.println("Report Date: " + updatedEntity.getReport_date());
+	private void copyFieldsEntity2(
+	        M_TOP_100_BORROWER_Manual_Summary_Entity2 source,
+	        M_TOP_100_BORROWER_Manual_Summary_Entity2 target,
+	        int row,
+	        String[] fields) {
 
-	    M_TOP_100_BORROWER_Manual_Summary_Entity2 existing = BRRS_M_TOP_100_BORROWER_Manual_Summary_Repo2.findById(updatedEntity.getReport_date())
-	    		
-	            .orElseThrow(() -> new RuntimeException(
-	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+	    String prefix = "R" + row;
 
-	    try {
-	        // 1️⃣ Loop from R11 to R15 and copy fields
-	        for (int i = 71; i <= 102; i++) {
-	            String prefix = "R" + i + "_";
-	            
-	            String[] fields = {  "GROUP_CODE", "GROUP_NAME", "CRM",
-	                                "NFBLT","NFBOS","CRM_2","NFB","BOND","CP","EQULITY","FOREX","OTHERS","INT_BANK","DERIVATIVE"};
+	    for (String field : fields) {
 
-	            for (String field : fields) {
-	                String getterName = "get" + prefix + field;
-	                String setterName = "set" + prefix + field;
+	        String camelField = toCamelCase(field);
 
-	                try {
-	                    Method getter = M_TOP_100_BORROWER_Manual_Summary_Entity2.class.getMethod(getterName);
-	                    Method setter = M_TOP_100_BORROWER_Manual_Summary_Entity2.class.getMethod(setterName, getter.getReturnType());
+	        String getterName = "get" + prefix + camelField;
+	        String setterName = "set" + prefix + camelField;
 
-	                    Object newValue = getter.invoke(updatedEntity);
-	                    setter.invoke(existing, newValue);
-	                    
+	        try {
+	            Method getter = M_TOP_100_BORROWER_Manual_Summary_Entity2.class
+	                    .getMethod(getterName);
 
-	                } catch (NoSuchMethodException e) {
-	                    // Skip missing fields
-	                    continue;
-	                }
+	            Method setter = M_TOP_100_BORROWER_Manual_Summary_Entity2.class
+	                    .getMethod(setterName, getter.getReturnType());
+
+	            Object newValue = getter.invoke(source);
+
+	            if (newValue != null) {
+	                setter.invoke(target, newValue);
 	            }
-	        }
-	        
-	        // ✅ Save after all updates
-	        BRRS_M_TOP_100_BORROWER_Manual_Summary_Repo2.save(existing);
 
-	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
+	        } catch (NoSuchMethodException e) {
+	            System.out.println("Missing: " + getterName);
+	        } catch (Exception e) {
+	            throw new RuntimeException("Error copying " + getterName, e);
+	        }
 	    }
 	}
+	
+	private String toCamelCase(String text) {
+	    String[] parts = text.toLowerCase().split("_");
+	    StringBuilder camelCase = new StringBuilder();
 
+	    for (String part : parts) {
+	        camelCase.append(part.substring(0, 1).toUpperCase())
+	                 .append(part.substring(1));
+	    }
+
+	    return camelCase.toString();
+	}
 }
