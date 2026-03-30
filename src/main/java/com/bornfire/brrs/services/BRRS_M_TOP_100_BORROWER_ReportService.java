@@ -1078,164 +1078,187 @@ public class BRRS_M_TOP_100_BORROWER_ReportService {
 					.body("Error updating record: " + e.getMessage());
 		}
 	}
-	
-	public void updateReport(M_TOP_100_BORROWER_Manual_Summary_Entity1 request) {
 
-	    System.out.println("Came to services");
 
-	    M_TOP_100_BORROWER_Manual_Summary_Entity1 existing =
-	            BRRS_M_TOP_100_BORROWER_Manual_Summary_Repo1
-	                    .findById(request.getReport_date())
-	                    .orElseThrow(() -> new RuntimeException(
-	                            "Record not found for REPORT_DATE: " + request.getReport_date()));
+	// ================= UPDATE REPORT =================
+    @Transactional
+    public void updateReport(M_TOP_100_BORROWER_Manual_Summary_Entity1 request) {
 
-	    try {
+        System.out.println("Came to Service - Entity1");
 
-	        String[] fields = {
-	                "GROUP_CODE", "GROUP_NAME", "CRM",
-	                "NFBLT","NFBOS","CRM_2","NFB","BOND","CP",
-	                "EQULITY","FOREX","OTHERS","INT_BANK","DERIVATIVE"
-	        };
+        // 🔍 Fetch existing record
+        M_TOP_100_BORROWER_Manual_Summary_Entity1 existing =
+        		BRRS_M_TOP_100_BORROWER_Manual_Summary_Repo1.findById(request.getReport_date())
+                        .orElseThrow(() -> new RuntimeException(
+                                "Record not found for REPORT_DATE: " + request.getReport_date()));
 
-	        // ✅ Loop R3 → R70
-	        for (int i = 3; i <= 70; i++) {
-	            copyFieldsEntity1(request, existing, i, fields);
-	        }
+        try {
+            String[] fields = {
+                    "GROUP_CODE", "GROUP_NAME", "CRM",
+                    "NFBLT", "NFBOS", "CRM_2", "NFB", "BOND", "CP",
+                    "EQULITY", "FOREX", "OTHERS", "INT_BANK", "DERIVATIVE"
+            };
 
-	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
+            // 🔁 Loop from R3 to R70
+            for (int i = 3; i <= 70; i++) {
+                copyFieldsEntity1(request, existing, i, fields);
+            }
 
-	    // ✅ Save
-	    BRRS_M_TOP_100_BORROWER_Manual_Summary_Repo1.save(existing);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while updating Entity1", e);
+        }
 
-	    System.out.println("✅ Summary1 updated successfully");
+        // ✅ Save updated entity
+        existing = BRRS_M_TOP_100_BORROWER_Manual_Summary_Repo1.save(existing);
 
-	    // ✅ Call Procedure
-	    String oracleDate = new SimpleDateFormat("dd-MM-yyyy")
-	            .format(request.getReport_date())
-	            .toUpperCase();
+        System.out.println("✅ Summary1 updated successfully");
 
-	    String sql = "BEGIN BRRS.BRRS_M_TOP_100_BORROWER_SUMMARY_PROCEDURE('" + oracleDate + "'); END;";
-	    jdbcTemplate.execute(sql);
+        // ================= PROCEDURE CALL =================
+        // ⚠️ If DB not updating, COMMENT THIS BLOCK and test
+        try {
+            String oracleDate = new SimpleDateFormat("dd-MM-yyyy")
+                    .format(request.getReport_date())
+                    .toUpperCase();
 
-	    System.out.println("Procedure executed for date: " + oracleDate);
-	}
+            String sql = "BEGIN BRRS.BRRS_M_TOP_100_BORROWER_SUMMARY_PROCEDURE('" 
+                         + oracleDate + "'); END;";
 
-	public void updateReport1(M_TOP_100_BORROWER_Manual_Summary_Entity2 request) {
+            jdbcTemplate.execute(sql);
 
-	    System.out.println("Came to services");
+            System.out.println("Procedure executed for date: " + oracleDate);
 
-	    M_TOP_100_BORROWER_Manual_Summary_Entity2 existing =
-	            BRRS_M_TOP_100_BORROWER_Manual_Summary_Repo2
-	                    .findById(request.getReport_date())
-	                    .orElseThrow(() -> new RuntimeException(
-	                            "Record not found for REPORT_DATE: " + request.getReport_date()));
+        } catch (Exception e) {
+            System.out.println("⚠ Procedure execution failed: " + e.getMessage());
+        }
+    }
 
-	    try {
+    // ================= COPY FIELDS =================
+    private void copyFieldsEntity1(
+            M_TOP_100_BORROWER_Manual_Summary_Entity1 source,
+            M_TOP_100_BORROWER_Manual_Summary_Entity1 target,
+            int row,
+            String[] fields) {
 
-	        String[] fields = {
-	                "GROUP_CODE", "GROUP_NAME", "CRM",
-	                "NFBLT","NFBOS","CRM_2","NFB","BOND","CP",
-	                "EQULITY","FOREX","OTHERS","INT_BANK","DERIVATIVE"
-	        };
+        String prefix = "R" + row + "_";
 
-	        // ✅ Loop R71 → R102
-	        for (int i = 71; i <= 102; i++) {
-	            copyFieldsEntity2(request, existing, i, fields);
-	        }
+        for (String field : fields) {
 
-	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
+            String camelField = toCamelCase(field);
 
-	    // ✅ Save
-	    BRRS_M_TOP_100_BORROWER_Manual_Summary_Repo2.save(existing);
+            String getterName = "get" + prefix + camelField;
+            String setterName = "set" + prefix + camelField;
 
-	    System.out.println("✅ Summary2 updated successfully");
-	}
-	
-	private void copyFieldsEntity1(
-	        M_TOP_100_BORROWER_Manual_Summary_Entity1 source,
-	        M_TOP_100_BORROWER_Manual_Summary_Entity1 target,
-	        int row,
-	        String[] fields) {
+            try {
+                Method getter = M_TOP_100_BORROWER_Manual_Summary_Entity1.class
+                        .getMethod(getterName);
 
-	    String prefix = "R" + row;
+                Method setter = M_TOP_100_BORROWER_Manual_Summary_Entity1.class
+                        .getMethod(setterName, getter.getReturnType());
 
-	    for (String field : fields) {
+                Object newValue = getter.invoke(source);
 
-	        String camelField = toCamelCase(field);
+                // 🔍 DEBUG LOG (VERY IMPORTANT)
+                System.out.println(getterName + " = " + newValue);
 
-	        String getterName = "get" + prefix + camelField;
-	        String setterName = "set" + prefix + camelField;
+                // ✅ Always set (even null)
+                setter.invoke(target, newValue);
 
-	        try {
-	            Method getter = M_TOP_100_BORROWER_Manual_Summary_Entity1.class
-	                    .getMethod(getterName);
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException("❌ Missing Method: " + getterName, e);
+            } catch (Exception e) {
+                throw new RuntimeException("Error copying " + getterName, e);
+            }
+        }
+    }
 
-	            Method setter = M_TOP_100_BORROWER_Manual_Summary_Entity1.class
-	                    .getMethod(setterName, getter.getReturnType());
+    
 
-	            Object newValue = getter.invoke(source);
+    // ================= UPDATE REPORT 1 =================
+    @Transactional
+    public void updateReport1(M_TOP_100_BORROWER_Manual_Summary_Entity2 request) {
 
-	            if (newValue != null) {
-	                setter.invoke(target, newValue);
-	            }
+        System.out.println("Came to Service - Entity2");
 
-	        } catch (NoSuchMethodException e) {
-	            System.out.println("Missing: " + getterName);
-	        } catch (Exception e) {
-	            throw new RuntimeException("Error copying " + getterName, e);
-	        }
-	    }
-	}
-	
-	private void copyFieldsEntity2(
-	        M_TOP_100_BORROWER_Manual_Summary_Entity2 source,
-	        M_TOP_100_BORROWER_Manual_Summary_Entity2 target,
-	        int row,
-	        String[] fields) {
+        // 🔍 Fetch existing record
+        M_TOP_100_BORROWER_Manual_Summary_Entity2 existing =
+        		BRRS_M_TOP_100_BORROWER_Manual_Summary_Repo2.findById(request.getReport_date())
+                        .orElseThrow(() -> new RuntimeException(
+                                "Record not found for REPORT_DATE: " + request.getReport_date()));
 
-	    String prefix = "R" + row;
+        try {
+            String[] fields = {
+                    "GROUP_CODE", "GROUP_NAME", "CRM",
+                    "NFBLT", "NFBOS", "CRM_2", "NFB", "BOND", "CP",
+                    "EQULITY", "FOREX", "OTHERS", "INT_BANK", "DERIVATIVE"
+            };
 
-	    for (String field : fields) {
+            // 🔁 Loop R71 → R102
+            for (int i = 71; i <= 102; i++) {
+                copyFieldsEntity2(request, existing, i, fields);
+            }
 
-	        String camelField = toCamelCase(field);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while updating Entity2", e);
+        }
 
-	        String getterName = "get" + prefix + camelField;
-	        String setterName = "set" + prefix + camelField;
+        // ✅ Save updated entity
+        existing = BRRS_M_TOP_100_BORROWER_Manual_Summary_Repo2.save(existing);
 
-	        try {
-	            Method getter = M_TOP_100_BORROWER_Manual_Summary_Entity2.class
-	                    .getMethod(getterName);
+        System.out.println("✅ Summary2 updated successfully");
+    }
 
-	            Method setter = M_TOP_100_BORROWER_Manual_Summary_Entity2.class
-	                    .getMethod(setterName, getter.getReturnType());
+    // ================= COPY FIELDS =================
+    private void copyFieldsEntity2(
+            M_TOP_100_BORROWER_Manual_Summary_Entity2 source,
+            M_TOP_100_BORROWER_Manual_Summary_Entity2 target,
+            int row,
+            String[] fields) {
 
-	            Object newValue = getter.invoke(source);
+        // ✅ FIXED PREFIX (IMPORTANT)
+        String prefix = "R" + row + "_";
 
-	            if (newValue != null) {
-	                setter.invoke(target, newValue);
-	            }
+        for (String field : fields) {
 
-	        } catch (NoSuchMethodException e) {
-	            System.out.println("Missing: " + getterName);
-	        } catch (Exception e) {
-	            throw new RuntimeException("Error copying " + getterName, e);
-	        }
-	    }
-	}
-	
-	private String toCamelCase(String text) {
-	    String[] parts = text.toLowerCase().split("_");
-	    StringBuilder camelCase = new StringBuilder();
+            String camelField = toCamelCase(field);
 
-	    for (String part : parts) {
-	        camelCase.append(part.substring(0, 1).toUpperCase())
-	                 .append(part.substring(1));
-	    }
+            String getterName = "get" + prefix + camelField;
+            String setterName = "set" + prefix + camelField;
 
-	    return camelCase.toString();
-	}
+            try {
+                Method getter = M_TOP_100_BORROWER_Manual_Summary_Entity2.class
+                        .getMethod(getterName);
+
+                Method setter = M_TOP_100_BORROWER_Manual_Summary_Entity2.class
+                        .getMethod(setterName, getter.getReturnType());
+
+                Object newValue = getter.invoke(source);
+
+                // 🔍 Debug log (VERY IMPORTANT)
+                System.out.println(getterName + " = " + newValue);
+
+                // ✅ Always update (even null)
+                setter.invoke(target, newValue);
+
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException("❌ Missing Method: " + getterName, e);
+            } catch (Exception e) {
+                throw new RuntimeException("Error copying " + getterName, e);
+            }
+        }
+    }
+
+    // ================= CAMEL CASE =================
+    private String toCamelCase(String text) {
+
+        String[] parts = text.toLowerCase().split("_");
+        StringBuilder camelCase = new StringBuilder();
+
+        for (String part : parts) {
+            camelCase.append(part.substring(0, 1).toUpperCase())
+                     .append(part.substring(1));
+        }
+
+        return camelCase.toString();
+    }
 }
+
