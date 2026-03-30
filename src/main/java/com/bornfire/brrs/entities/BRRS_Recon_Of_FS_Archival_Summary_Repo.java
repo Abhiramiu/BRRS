@@ -2,6 +2,7 @@
 
 package com.bornfire.brrs.entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +16,6 @@ public interface BRRS_Recon_Of_FS_Archival_Summary_Repo extends JpaRepository<Re
     @Query(value = "select REPORT_DATE, REPORT_VERSION from BRRS_RECON_OF_FS_ARCHIVALTABLE_SUMMARY order by REPORT_VERSION", nativeQuery = true)
     List<Object> getRecon_Of_FSarchival();
 @Query(value = "select * from BRRS_RECON_OF_FS_ARCHIVALTABLE_SUMMARY where REPORT_DATE = to_date(?1,'dd-MM-yyyy') and REPORT_VERSION = ?2", nativeQuery = true)
-    List<Recon_Of_FS_Achival_Summary_Entity> getdatabydateListarchival(String report_date, Object version);
+    List<Recon_Of_FS_Achival_Summary_Entity> getdatabydateListarchival(String report_date, BigDecimal version);
 
 }

@@ -1,5 +1,6 @@
 package com.bornfire.brrs.entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -14,5 +15,5 @@ public interface BRRS_Market_Risk_Archival_Summary_Repo extends JpaRepository<Ma
     List<Object> getMarket_Riskarchival();
 
     @Query(value = "select * from BRRS_MARKET_RISK_ARCHIVALTABLE_SUMMARY where REPORT_DATE = ?1 and REPORT_VERSION = ?2", nativeQuery = true)
-    List<Market_Risk_Archival_Summary_Entity> getdatabydateListarchival(Date report_date, String report_version);
+    List<Market_Risk_Archival_Summary_Entity> getdatabydateListarchival(Date report_date, BigDecimal report_version);
 }

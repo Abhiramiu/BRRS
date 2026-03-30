@@ -49,19 +49,17 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_Expanded_Regu_BS_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_Expanded_Regu_BS_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_DEP3_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_Expanded_Regu_BS_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_Expanded_Regu_BS_Summary_Repo;
 import com.bornfire.brrs.entities.Expanded_Regu_BS_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.Expanded_Regu_BS_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.Expanded_Regu_BS_Detail_Entity;
 import com.bornfire.brrs.entities.Expanded_Regu_BS_Summary_Entity;
-import com.bornfire.brrs.entities.Recon_Of_FS_Achival_Summary_Entity;
 
 @Component
 @Service
 
-public class BRRS_Expanded_Regu_BS_ReportService<BBRS_Expanded_Regu_BS_Detail_Repo> {
+public class BRRS_Expanded_Regu_BS_ReportService {
     private static final Logger logger = LoggerFactory.getLogger(BRRS_Expanded_Regu_BS_ReportService.class);
 
     @Autowired

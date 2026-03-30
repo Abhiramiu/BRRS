@@ -17103,6 +17103,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<td>
 											    <span th:if="${report.reportLabel}" th:text="${report.reportLabel}"></span>
+												<span th:if="${report.reportLabel1}" th:text="', ' + ${report.reportLabel1}"></span>
 											    <span th:if="${report.reportLabel2}" th:text="', ' + ${report.reportLabel2}"></span>
 											    <span th:if="${report.reportLabel3}" th:text="', ' + ${report.reportLabel3}"></span>
 											    <span th:if="${report.reportLabel4}" th:text="', ' + ${report.reportLabel4}"></span>

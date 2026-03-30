@@ -1196,7 +1196,7 @@ function cancelModify() {
 									</thead>
 
 
-									<tbody th:each="report1: ${reportsummary1}"
+									<tbody th:each="report: ${reportsummary}"
 										style="font-family: Arial;">
 
 										
@@ -1702,7 +1702,7 @@ function cancelModify() {
 <!-- R48 -->
 <tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">36</td>
-    <td rowspan="2" style="text-align: left;" th:text="${report?.r48_product ?: ''}"></td>
+    <td rowspan="2" style="text-align: left;width: 200px;" th:text="${report?.r48_product ?: ''}"></td>
     <td  rowspan="2" style="text-align: right; padding-right:10px;"
         th:text="${report?.r48_amount != null 
               ? #numbers.formatDecimal(report.r48_amount, 1, 'COMMA', 0, 'POINT') 
@@ -1999,7 +1999,7 @@ function cancelModify() {
     <td style="text-align: left; font-weight:bold;" th:text="${report?.r73_product ?: ''}"></td>
    <td id="ROW73" style="padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-            th:value="${report1.r73_amount != null ? #numbers.formatDecimal(report1.r73_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
+            th:value="${report.r73_amount != null ? #numbers.formatDecimal(report.r73_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
             id="r73_amount" name="r73_amount"
             style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
             readonly />

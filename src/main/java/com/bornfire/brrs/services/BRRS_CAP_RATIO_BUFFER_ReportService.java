@@ -107,7 +107,7 @@ public class BRRS_CAP_RATIO_BUFFER_ReportService {
 
 	
 	public ModelAndView getCAP_RATIO_BUFFERView(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, String version) {
+			Pageable pageable, String type, BigDecimal version) {
 
 		ModelAndView mv = new ModelAndView();
 		
@@ -115,7 +115,7 @@ public class BRRS_CAP_RATIO_BUFFER_ReportService {
 		System.out.println("testing");
 		System.out.println(version);
 
-		if ("ARCHIVAL".equals(type) && version != null && !version.isEmpty()) {
+		if ("ARCHIVAL".equals(type) && version != null) {
 
 		    System.out.println("ARCHIVAL MODE");
 		    System.out.println("version = " + version);
@@ -257,11 +257,11 @@ public class BRRS_CAP_RATIO_BUFFER_ReportService {
 	
 
 	public byte[] getCAP_RATIO_BUFFERExcel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) throws Exception {
+			String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 
 		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null ) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getExcelCAP_RATIO_BUFFERARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
@@ -673,7 +673,7 @@ public class BRRS_CAP_RATIO_BUFFER_ReportService {
 
 	
 	public byte[] getExcelCAP_RATIO_BUFFERARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 
 		logger.info("Service: Starting Excel generation process in memory.");
 

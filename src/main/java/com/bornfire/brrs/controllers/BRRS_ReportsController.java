@@ -1000,7 +1000,7 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity request) {
+			@ModelAttribute BASEL_III_COM_EQUITY_DISC_Summary_Entity request) {
 		try {
 			System.out.println("came to single controller");
 
@@ -1009,7 +1009,7 @@ public class BRRS_ReportsController {
 			// call services
 			b_III_cetd_ReportService.updateReport(request);
 
-			return ResponseEntity.ok(" Updated Successfully");
+			return ResponseEntity.ok(" Modified Successfully");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());

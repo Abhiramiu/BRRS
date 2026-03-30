@@ -83,14 +83,14 @@ public class BRRS_Market_Risk_ReportService {
 
     public ModelAndView getMarket_RiskView(String reportId, String fromdate, String todate, String currency,
             String dtltype,
-            Pageable pageable, String type, String version) {
+            Pageable pageable, String type, BigDecimal version) {
 
         ModelAndView mv = new ModelAndView();
 
         System.out.println("testing");
         System.out.println(version);
 
-        if ("ARCHIVAL".equals(type) && version != null && !version.isEmpty()) {
+        if ("ARCHIVAL".equals(type) && version != null ) {
 
             System.out.println("ARCHIVAL MODE");
             System.out.println("version = " + version);
@@ -224,11 +224,11 @@ public class BRRS_Market_Risk_ReportService {
 
     public byte[] getMarket_RiskExcel(String filename, String reportId, String fromdate, String todate,
             String currency,
-            String dtltype, String type, String version) throws Exception {
+            String dtltype, String type, BigDecimal version) throws Exception {
         logger.info("Service: Starting Excel generation process in memory.");
 
         // ARCHIVAL check
-        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
             logger.info("Service: Generating ARCHIVAL report for version {}", version);
             return getExcelMarket_RiskARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type,
                     version);
@@ -450,7 +450,7 @@ public class BRRS_Market_Risk_ReportService {
     }
 
     public byte[] getExcelMarket_RiskARCHIVAL(String filename, String reportId, String fromdate, String todate,
-            String currency, String dtltype, String type, String version) throws Exception {
+            String currency, String dtltype, String type, BigDecimal version) throws Exception {
 
         logger.info("Service: Starting Excel generation process in memory.");
 

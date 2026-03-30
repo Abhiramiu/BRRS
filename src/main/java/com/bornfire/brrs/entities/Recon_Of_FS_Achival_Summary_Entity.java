@@ -269,7 +269,7 @@ public class Recon_Of_FS_Achival_Summary_Entity {
      * =========================
      */
     @Column(name = "REPORT_VERSION")
-    private String REPORT_VERSION;
+    private BigDecimal REPORT_VERSION;
     @Column(name = "REPORT_FREQUENCY")
     private String REPORT_FREQUENCY;
     @Column(name = "REPORT_CODE")
@@ -1084,11 +1084,11 @@ public class Recon_Of_FS_Achival_Summary_Entity {
         R41_UNDER_REG_SOC = r41_UNDER_REG_SOC;
     }
 
-    public String getREPORT_VERSION() {
+    public BigDecimal getREPORT_VERSION() {
         return REPORT_VERSION;
     }
 
-    public void setREPORT_VERSION(String rEPORT_VERSION) {
+    public void setREPORT_VERSION(BigDecimal rEPORT_VERSION) {
         REPORT_VERSION = rEPORT_VERSION;
     }
 

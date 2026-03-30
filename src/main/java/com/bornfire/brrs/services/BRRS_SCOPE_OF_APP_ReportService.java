@@ -85,14 +85,14 @@ public class BRRS_SCOPE_OF_APP_ReportService {
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getSCOPE_OF_APPView(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, String version) {
+			String dtltype, Pageable pageable, String type, BigDecimal version) {
 
 		ModelAndView mv = new ModelAndView();
 
 		System.out.println("testing");
 		System.out.println(version);
 
-		if ("ARCHIVAL".equals(type) && version != null && !version.isEmpty()) {
+		if ("ARCHIVAL".equals(type) && version != null ) {
 
 			System.out.println("ARCHIVAL MODE");
 			System.out.println("version = " + version);
@@ -224,11 +224,11 @@ public class BRRS_SCOPE_OF_APP_ReportService {
 	}
 
 	public byte[] getSCOPE_OF_APPExcel(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 
 		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null ) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getExcelSCOPE_OF_APPARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
@@ -348,7 +348,7 @@ public class BRRS_SCOPE_OF_APP_ReportService {
 	}
 
 	public byte[] getExcelSCOPE_OF_APPARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 
 		logger.info("Service: Starting Excel generation process in memory.");
 

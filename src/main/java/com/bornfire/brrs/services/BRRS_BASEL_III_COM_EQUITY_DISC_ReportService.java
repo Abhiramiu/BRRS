@@ -51,10 +51,8 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BASEL_III_COM_EQUITY_DISC_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.BASEL_III_COM_EQUITY_DISC_Archival_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.BASEL_III_COM_EQUITY_DISC_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.BASEL_III_COM_EQUITY_DISC_Detail_Entity;
-import com.bornfire.brrs.entities.BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.BASEL_III_COM_EQUITY_DISC_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_BASEL_III_COM_EQUITY_DISC_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_BASEL_III_COM_EQUITY_DISC_Archival_Summary_Repo;
@@ -62,7 +60,6 @@ import com.bornfire.brrs.entities.BRRS_BASEL_III_COM_EQUITY_DISC_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_BASEL_III_COM_EQUITY_DISC_Manual_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_BASEL_III_COM_EQUITY_DISC_Manual_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_BASEL_III_COM_EQUITY_DISC_Summary_Repo;
-import com.bornfire.brrs.entities.M_SCI_E_Manual_Summary_Entity;
 
 @Component
 @Service
@@ -121,13 +118,13 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 		    System.out.println("version = " + version);
 
 		    List<BASEL_III_COM_EQUITY_DISC_Archival_Summary_Entity> T1Master = new ArrayList<>();
-		    List<BASEL_III_COM_EQUITY_DISC_Archival_Manual_Summary_Entity> T2Master = new ArrayList<>();
-		 
+//		    List<BASEL_III_COM_EQUITY_DISC_Archival_Manual_Summary_Entity> T2Master = new ArrayList<>();
+//		 
 		    try {
 		        Date dt = dateformat.parse(todate);
 
 		        T1Master = B_III_CETD_Archival_Summary_Repo.getdatabydateListarchival(dt, version);
-		        T2Master = B_III_CETD_Manual_Archival_Summary_Repo.getdatabydateListarchival(dt, version);
+//		        T2Master = B_III_CETD_Manual_Archival_Summary_Repo.getdatabydateListarchival(dt, version);
 
 		        System.out.println("T1Master size = " + T1Master.size());
 		      
@@ -137,18 +134,18 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 		    }
 
 		    mv.addObject("reportsummary", T1Master);
-		    mv.addObject("reportsummary1", T2Master);
+//		    mv.addObject("reportsummary1", T2Master);
 		 
 		} else {
 
 			List<BASEL_III_COM_EQUITY_DISC_Summary_Entity> T1Master = new ArrayList<BASEL_III_COM_EQUITY_DISC_Summary_Entity>();
-			List<BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity> T2Master = new ArrayList<BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity>();
-		
+//			List<BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity> T2Master = new ArrayList<BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity>();
+//		
 			try {
 				Date d1 = dateformat.parse(todate);
 				
 				T1Master = B_III_CETD_summary_repo.getdatabydateList(dateformat.parse(todate));
-				T2Master = B_III_CETD_Manual_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+//				T2Master = B_III_CETD_Manual_Summary_Repo.getdatabydateList(dateformat.parse(todate));
 			
 				System.out.println("T1Master size " + T1Master.size());
 				mv.addObject("report_date", dateformat.format(d1));
@@ -157,7 +154,7 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 				e.printStackTrace();
 			}
 			mv.addObject("reportsummary", T1Master);
-			  mv.addObject("reportsummary1", T2Master);
+//			  mv.addObject("reportsummary1", T2Master);
 		}
 
 	
@@ -275,7 +272,7 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 		// Fetch data
 
 		List<BASEL_III_COM_EQUITY_DISC_Summary_Entity> dataList = B_III_CETD_summary_repo.getdatabydateList(dateformat.parse(todate));
-		List<BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity> dataList1 = B_III_CETD_Manual_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+//		List<BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity> dataList1 = B_III_CETD_Manual_Summary_Repo.getdatabydateList(dateformat.parse(todate));
 	
 
 		if (dataList.isEmpty()) {
@@ -344,7 +341,7 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
 					BASEL_III_COM_EQUITY_DISC_Summary_Entity record = dataList.get(i);
-					BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity record1 = dataList1.get(i);
+//					BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity record1 = dataList1.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
@@ -733,7 +730,7 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 					row = sheet.getRow(72);
 					cellC = row.getCell(4);
 					if (cellC == null) cellC = row.createCell(4);
-					cellC.setCellValue(record1.getR73_amount() != null ? record1.getR73_amount().doubleValue() : 0);
+					cellC.setCellValue(record.getR73_amount() != null ? record.getR73_amount().doubleValue() : 0);
 
 				
 
@@ -774,8 +771,8 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 		List<BASEL_III_COM_EQUITY_DISC_Archival_Summary_Entity> dataList = B_III_CETD_Archival_Summary_Repo
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 		
-		List<BASEL_III_COM_EQUITY_DISC_Archival_Manual_Summary_Entity> dataList1 = B_III_CETD_Manual_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+//		List<BASEL_III_COM_EQUITY_DISC_Archival_Manual_Summary_Entity> dataList1 = B_III_CETD_Manual_Archival_Summary_Repo
+//				.getdatabydateListarchival(dateformat.parse(todate), version);
 	
 
 		
@@ -846,7 +843,7 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
 					BASEL_III_COM_EQUITY_DISC_Archival_Summary_Entity record = dataList.get(i);
-					BASEL_III_COM_EQUITY_DISC_Archival_Manual_Summary_Entity record1 = dataList1.get(i);
+//					BASEL_III_COM_EQUITY_DISC_Archival_Manual_Summary_Entity record1 = dataList1.get(i);
 				
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
@@ -1236,7 +1233,7 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 					row = sheet.getRow(72);
 					cellC = row.getCell(4);
 					if (cellC == null) cellC = row.createCell(4);
-					cellC.setCellValue(record1.getR73_amount() != null ? record1.getR73_amount().doubleValue() : 0);
+					cellC.setCellValue(record.getR73_amount() != null ? record.getR73_amount().doubleValue() : 0);
 
 				
 
@@ -1261,78 +1258,39 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 	}
 	
 	
-	public void updateReport(BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity updatedEntity) {
-	    System.out.println("Came to services");
-	    System.out.println("Report Date: " + updatedEntity.getReport_date());
+	public void updateReport(BASEL_III_COM_EQUITY_DISC_Summary_Entity updatedEntity) {
 
-	    //  Use your query to fetch by date
-	    List<BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity> list = B_III_CETD_Manual_Summary_Repo
-	        .getdatabydateList(updatedEntity.getReport_date());
+		BASEL_III_COM_EQUITY_DISC_Summary_Entity existing = B_III_CETD_summary_repo.findById(updatedEntity.getReport_date()).orElseThrow(
+				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
-	    BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity existing;
-	    if (list.isEmpty()) {
-	        // Record not found — optionally create it
-	        System.out.println("No record found for REPORT_DATE: " + updatedEntity.getReport_date());
-	        existing = new BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity();
-	        existing.setReport_date(updatedEntity.getReport_date());
-	    } else {
-	        existing = list.get(0);
-	    }
+		int[] rows = {73 };
 
-	    try {
-	        //  Only for specific row numbers
-	        int[] rows = {73};
+		String[] fields = { "amount"};
 
-	        for (int row : rows) {
-	            String prefix = "R" + row + "_";
+		try {
+			for (int i : rows) {
+				for (String field : fields) {
 
-	            // Fields to update
-	            String[] fields = {"amount"};
+					String getterName = "getR" + i + "_" + field;
+					String setterName = "setR" + i + "_" + field;
 
-	            for (String field : fields) {
-	                String getterName = "get" + prefix + field; // e.g. getR45_amount
-	                String setterName = "set" + prefix + field; // e.g. setR45_amount
+					try {
+						Method getter = BASEL_III_COM_EQUITY_DISC_Summary_Entity.class.getMethod(getterName);
+						Method setter = BASEL_III_COM_EQUITY_DISC_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
-	                try {
-	                    Method getter = BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity.class.getMethod(getterName);
-	                    Method setter = BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+						Object newValue = getter.invoke(updatedEntity);
+						setter.invoke(existing, newValue);
 
-	                    Object newValue = getter.invoke(updatedEntity);
-	                    setter.invoke(existing, newValue);
+					} catch (NoSuchMethodException e) {
+						// Field not applicable for this row → skip safely
+					}
+				}
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields", e);
+		}
 
-	                } catch (NoSuchMethodException e) {
-	                    // Skip missing fields gracefully
-	                    continue;
-	                }
-	            }
-	        }
-
-	        // Metadata
-	        existing.setReport_version(updatedEntity.getReport_version());
-	        existing.setReport_frequency(updatedEntity.getReport_frequency());
-	        existing.setReport_code(updatedEntity.getReport_code());
-	        existing.setReport_desc(updatedEntity.getReport_desc());
-	        existing.setEntity_flg(updatedEntity.getEntity_flg());
-	        existing.setModify_flg(updatedEntity.getModify_flg());
-	        existing.setDel_flg(updatedEntity.getDel_flg());
-
-	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating BASEL_III_COM_EQUITY_DISC Summary fields", e);
-	    }
-
-	    //  FIRST COMMIT — forces immediate commit
-	    B_III_CETD_Manual_Summary_Repo.saveAndFlush(existing);
-	    System.out.println("BASEL_III_COM_EQUITY_DISC Summary updated and COMMITTED");
-
-	    //  Execute procedure with updated data
-	    String oracleDate = new SimpleDateFormat("dd-MM-yyyy")
-	            .format(updatedEntity.getReport_date())
-	            .toUpperCase();
-
-	    String sql = "BEGIN BRRS.BRRS_BASEL_III_COM_EQUITY_DISC_SUMMARY_PROCEDURE ('" + oracleDate + "'); END;";
-	    jdbcTemplate.execute(sql);
-
-	    System.out.println("Procedure executed for date: " + oracleDate);
+		B_III_CETD_summary_repo.save(existing);
 	}
 	
 
@@ -1350,7 +1308,7 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 		List<Object> B_III_CETDArchivallist = new ArrayList<>();
 		try {
 			B_III_CETDArchivallist = B_III_CETD_Archival_Summary_Repo.getB_III_CETDarchival();
-			B_III_CETDArchivallist = B_III_CETD_Manual_Archival_Summary_Repo.getB_III_CETDarchival();
+//			B_III_CETDArchivallist = B_III_CETD_Manual_Archival_Summary_Repo.getB_III_CETDarchival();
 		
 			System.out.println("countser" + B_III_CETDArchivallist.size());
 			
