@@ -1327,6 +1327,13 @@ public class RegulatoryReportServices {
 					type, version);
 
 			break;
+			
+		case "M_P_L":
+
+			repsummary = BRRS_M_P_L_ReportService.getM_P_LView(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version);
+
+			break;	
 
 		case "M_DEP4":
 
@@ -1707,10 +1714,7 @@ public class RegulatoryReportServices {
 		 * 
 		 * break;
 		 * 
-		 * case "M_P_L": repsummary = BRRS_M_P_L_ReportService.getM_P_LView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
+		
 		 * 
 		 * case "GL_SCH":
 		 * 
@@ -3496,6 +3500,20 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		case "M_P_L": 
+			try {
+
+				repfile = BRRS_M_P_L_ReportService.getM_P_LExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, format, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+			
+			
+			
 
 		case "M_DEP4":
 			try {
@@ -4088,11 +4106,7 @@ public class RegulatoryReportServices {
 		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
 		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
 		 * 
-		 * case "M_P_L": try { repfile =
-		 * BRRS_M_P_L_ReportService.getM_P_LExcel(filename, reportId, fromdate, todate,
-		 * currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 */
+		
 
 		/*
 		 * case "GL_SCH": try {
@@ -4540,6 +4554,8 @@ public class RegulatoryReportServices {
 			archivalData.addAll(M_LA3List);
 			System.out.println("Fetched M_LA3 archival data: " + M_LA3List.size());
 			break;
+			
+		 
 
 		case "M_DEP4":
 			List<Object[]> M_DEP4List = BRRS_M_DEP4_ReportService.getM_DEP4Archival();

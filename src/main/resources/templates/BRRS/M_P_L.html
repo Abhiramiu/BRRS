@@ -74,8 +74,9 @@ PURPOSE  : BRRSREPORT
  border-color: #0c0c0c;
 }
 
-.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
-  (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+.btn-primary:not(:disabled ):not(.disabled ).active, 
+.btn-primary:not(:disabled):not(.disabled ):active, 
+.show>.btn-primary.dropdown-toggle
  {
  color: #fff;
  background-color: #cc000000;
@@ -1163,10 +1164,10 @@ function cancelModify() {
 
            <th></th>
            <th style="text-align: center;">Sch.No</th>
-           <th style="text-align: center;">Net Amount</th>
-           <th style="text-align: center;">Balances with BOB and
+           <th style="text-align: center;width:300px;">Net Amount</th>
+           <th style="text-align: center;width:400px;">Balances with BOB and
             other Subsidiaries as per books of the subsidiary</th>
-           <th style="text-align: center;">Balances as per
+           <th style="text-align: center;width:400px;">Balances as per
             statement of A/c. of BOB branches / other subsidiaries</th>
 
           </tr>
@@ -1749,10 +1750,7 @@ div.dataTables_wrapper div.dataTables_info {
 /* #reports th {
     width: inherit !important;
     background-color: #D8D8D8; /* set header color */
-    
-}
- */
- */  
+ 
 </style>
 
 </html>
