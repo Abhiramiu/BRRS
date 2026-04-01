@@ -11,7 +11,7 @@ import javax.persistence.Table;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_GL_SCH_SUMMARYTABLE2", schema = "BRRS")
+@Table(name = "BRRS_GL_SCH_SUMMARYTABLE2")
 
 public class GL_SCH_Summary_Entity2 {
     /* ================= R113 ================= */

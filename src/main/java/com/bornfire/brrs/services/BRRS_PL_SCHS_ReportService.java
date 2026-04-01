@@ -52,14 +52,10 @@ import org.springframework.web.servlet.ModelAndView;
 import com.bornfire.brrs.entities.PL_SCHS_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.PL_SCHS_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.PL_SCHS_Detail_Entity;
-import com.bornfire.brrs.entities.PL_SCHS_Manual_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.PL_SCHS_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.PL_SCHS_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_PL_SCHS_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_PL_SCHS_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_PL_SCHS_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_PL_SCHS_Manual_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_PL_SCHS_Manual_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_PL_SCHS_Summary_Repo;
 
 @Component
