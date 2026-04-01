@@ -504,8 +504,8 @@ PURPOSE		: BWRBRREPORT
 			// ✅ List of IDs that should ALWAYS remain readonly
 			var readonlyIds = [
 				"R19_UNSECURED_PORTION_NPL", "R19_PERFORMING_EXPOSURE", "R19_NON_PERFORMING", "R19_SPECIFIC_PROV",
-				"R13_UNSECURED_PORTION_NPL", "R14_UNSECURED_PORTION_NPL", "R15_UNSECURED_PORTION_NPL", "R16_UNSECURED_PORTION_NPL",
-				"R17_UNSECURED_PORTION_NPL", "R18_UNSECURED_PORTION_NPL", "R13_PRODUCT", "R14_PRODUCT", "R15_PRODUCT", "R16_PRODUCT",
+				"R13_UNSECURED_PORTION_NPL", "R14_UNSECURED_PORTION_NPL", "R15_UNSECURED_PORTION_NPL",
+				"R17_UNSECURED_PORTION_NPL", "R18_UNSECURED_PORTION_NPL", "R13_PRODUCT", "R14_PRODUCT", "R15_PRODUCT",
 				"R17_PRODUCT", "R18_PRODUCT", "R19_PRODUCT", "R13_TOTAL", "R19_TOTAL"
 			];
 			//"R33_INTEREST_RATE", "R34_INTEREST_RATE", "RR35_INTEREST_RATE35_STAFF_LOANS", "R36_INTEREST_RATE", "R37_INTEREST_RATE", "R38_INTEREST_RATE",
@@ -519,12 +519,17 @@ PURPOSE		: BWRBRREPORT
 
 			for (let i = 13; i <= 18; i++) {
 
-				let fields = [
-					"_PERFORMING_EXPOSURE",
-					"_NON_PERFORMING",
-					"_SPECIFIC_PROV",
-					"_TOTAL"
-				];
+			    if (i === 16) continue; // skip 16
+
+			    let fields = [
+			        "_PERFORMING_EXPOSURE",
+			        "_NON_PERFORMING",
+			        "_SPECIFIC_PROV",
+			        "_TOTAL"
+			    ];
+
+			    // your logic here
+			
 
 				fields.forEach(field => {
 
@@ -706,14 +711,16 @@ PURPOSE		: BWRBRREPORT
 			----------------------------- */
 			for (let i = 13; i <= 19; i++) {
 
-				$("#R" + i + "_PERFORMING_EXPOSURE, " +
-					"#R" + i + "_NON_PERFORMING, " +
-					"#R" + i + "_SPECIFIC_PROV, " +
-					"#R" + i + "_UNSECURED_PORTION_NPL,"
-					+ "#R" + i + "_TOTAL")
-					.on("input", function () {
-						calculateAll();
-					});
+			    if (i === 16) continue; // skip R16
+
+			    $("#R" + i + "_PERFORMING_EXPOSURE, " +
+			      "#R" + i + "_NON_PERFORMING, " +
+			      "#R" + i + "_SPECIFIC_PROV, " +
+			      "#R" + i + "_UNSECURED_PORTION_NPL, " +
+			      "#R" + i + "_TOTAL")
+			    .on("input", function () {
+			        calculateAll();
+			    });
 			}
 
 		});
@@ -1162,38 +1169,20 @@ PURPOSE		: BWRBRREPORT
 														style="background-color: #FFFFFF; width: 290px; height: 28px; border-color: transparent; text-align: center;"
 														readonly />
 												</td>
+												
+												<td style="text-align: right; font-weight: normal;"
+													th:text="${#numbers.formatDecimal(report.R16_PERFORMING_EXPOSURE,1,'COMMA',0,'POINT')}"></td>
 
-												<td id="ROW16" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R16_PERFORMING_EXPOSURE != null ? #numbers.formatDecimal(report.R16_PERFORMING_EXPOSURE, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R16_PERFORMING_EXPOSURE" name="R16_PERFORMING_EXPOSURE"
-														style="background-color: #FFFFFF; width: 290px; height: 28px; border-color: transparent; text-align: right;"
-														readonly />
-												</td>
+												<td style="text-align: right; font-weight: normal;"
+													th:text="${#numbers.formatDecimal(report.R16_NON_PERFORMING,1,'COMMA',0,'POINT')}"></td>
+								
+												<td style="text-align: right; font-weight: normal;"
+													th:text="${#numbers.formatDecimal(report.R16_SPECIFIC_PROV,1,'COMMA',0,'POINT')}"></td>																		
+												
+												<td style="text-align: right; font-weight: normal;"
+													th:text="${#numbers.formatDecimal(report.R16_UNSECURED_PORTION_NPL,1,'COMMA',0,'POINT')}"></td>		
+												
 
-												<td id="ROW16" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R16_NON_PERFORMING != null ? #numbers.formatDecimal(report.R16_NON_PERFORMING, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R16_NON_PERFORMING" name="R16_NON_PERFORMING"
-														style="background-color: #FFFFFF; width: 290px; height: 28px; border-color: transparent; text-align: right;"
-														readonly />
-												</td>
-
-												<td id="ROW16" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R16_SPECIFIC_PROV != null ? #numbers.formatDecimal(report.R16_SPECIFIC_PROV, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R16_SPECIFIC_PROV" name="R16_SPECIFIC_PROV"
-														style="background-color: #FFFFFF; width: 290px; height: 28px; border-color: transparent; text-align: right;"
-														readonly />
-												</td>
-
-												<td id="ROW16"
-													style="background-color: rgb(107, 122, 143);font-weight: bold;color: white;padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														id="R16_UNSECURED_PORTION_NPL" name="R16_UNSECURED_PORTION_NPL"
-														style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 290px; height: 28px; border-color: transparent; text-align: right;"
-														readonly />
-												</td>
 												<td id="ROW16" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R16_TOTAL != null ? #numbers.formatDecimal(report.R16_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
