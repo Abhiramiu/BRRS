@@ -4555,7 +4555,13 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched M_LA3 archival data: " + M_LA3List.size());
 			break;
 			
-		 
+		case "M_P_L":
+			List<Object[]> M_P_LList = BRRS_M_P_L_ReportService.getM_P_LArchival();
+			archivalData.addAll(M_P_LList);
+			System.out.println("Fetched M_P_L archival data: " + M_P_LList.size());
+			break;
+			
+	
 
 		case "M_DEP4":
 			List<Object[]> M_DEP4List = BRRS_M_DEP4_ReportService.getM_DEP4Archival();
@@ -5700,14 +5706,7 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "M_P_L":
-			try {
-				archivalData = BRRS_M_P_L_ReportService.getM_P_LArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		
 
 		case "GL_SCH":
 			try {

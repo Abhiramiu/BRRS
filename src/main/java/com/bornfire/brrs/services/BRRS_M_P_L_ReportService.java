@@ -819,23 +819,46 @@ return out.toByteArray();
 }
 }
 
-	public List<Object> getM_P_LArchival() {
-		List<Object> M_P_LArchivallist = new ArrayList<>();
-		try {
-			M_P_LArchivallist = BRRS_M_P_L_Archival_Summary_Repo.getM_P_Larchival();
-//			M_P_LArchivallist = BRRS_M_P_L_Manual_Archival_Summary_Repo.getM_P_Larchival();
-			System.out.println("countser" + M_P_LArchivallist.size());
-		} catch (Exception e) {
-			// Log the exception
-			System.err.println("Error fetching M_P_L Archival data: " + e.getMessage());
-			e.printStackTrace();
+	public List<Object[]> getM_P_LArchival() {
 
-			// Optionally, you can rethrow it or return empty list
-			// throw new RuntimeException("Failed to fetch data", e);
-		}
-		return M_P_LArchivallist;
+	    List<Object[]> archivalList = new ArrayList<>();
+
+	    try {
+
+	        // Fetch data from single repository
+	        List<M_P_L_Archival_Summary_Entity> repoData =
+	        		BRRS_M_P_L_Archival_Summary_Repo.getdatabydateListWithVersion();
+
+	        if (repoData != null && !repoData.isEmpty()) {
+
+	            for (M_P_L_Archival_Summary_Entity entity : repoData) {
+
+	                Object[] row = new Object[] {
+	                        entity.getReportDate(),
+	                        entity.getReportVersion(),
+	                        entity.getReportResubDate()
+	                };
+
+	                archivalList.add(row);
+	            }
+
+	            System.out.println("Fetched " + archivalList.size() + " archival records");
+
+	            M_P_L_Archival_Summary_Entity first = repoData.get(0);
+	            System.out.println("Latest archival version: " + first.getReportVersion());
+
+	        } else {
+	            System.out.println("No archival data found.");
+	        }
+
+	    } catch (Exception e) {
+
+	        System.err.println("Error fetching M_P_L Archival data: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+
+	    return archivalList;
 	}
-	
 	
 	public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
 			 String dtltype, String type, String version) {
