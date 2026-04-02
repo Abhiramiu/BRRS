@@ -1490,16 +1490,13 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 										<tr>
 											<td style="padding-left: 30px;" th:text="${report.r14_product}"></td>
 											<td th:text="${report.r14_cross_ref}" style="text-align: left; "></td>
-											<td id="ROW14"
-												style="padding-left: 20px; font-weight: bold;text-align: right;">
-												<input class="display-input Show_input" type="text"
-													th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R14_MONTH_END != null 
-? #numbers.formatDecimal(reportsummary1[0].R14_MONTH_END, 1,'COMMA', 0, 'POINT') 
-: '0'}"
-id="R14_MONTH_END" name="R14_MONTH_END"
-													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-													readonly />
-											</td>
+											<td 
+												style="padding-left: 20px; text-align: right;"
+										
+													th:text="${#numbers.formatDecimal(report.r14_month_end, 0, 'COMMA', 0, 'POINT')}" 
+id="R14_month_end" name="R14_month_end"></td>
+													
+											
 											<td th:text="${#numbers.formatDecimal(report.r14_average, 0, 'COMMA', 0, 'POINT')}"
 												lick="showdetailsbyRowAndColumn(this)" style="text-align: right; ">
 											</td>
