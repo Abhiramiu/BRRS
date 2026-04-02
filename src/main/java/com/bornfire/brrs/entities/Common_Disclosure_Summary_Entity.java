@@ -11,7 +11,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "BRRS_COMMON_DISCLOSURE_SUMMARYTABLE", schema = "BRRS")
+@Table(name = "BRRS_COMMON_DISCLOSURE_SUMMARYTABLE")
 public class Common_Disclosure_Summary_Entity {
 
     @Id

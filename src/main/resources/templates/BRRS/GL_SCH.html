@@ -1118,8 +1118,50 @@ PURPOSE		: BRRS GL_SCH REPORT
 				getCellValue("#R245_AMT_ADJ_BWP2");
 
 			setCellValue("#R245_NET_AMT_BWP2", r245_net_amt_bwp2);
+			
+			//------------------ R66_FIG_BAL_BWP2 ------------------
+			let R66_FIG_BAL_BWP2 =
+			    getCellValue("#R37_FIG_BAL_BWP2") +
+			    getCellValue("#R41_FIG_BAL_BWP2") +
+			    getCellValue("#R45_FIG_BAL_BWP2") +
+			    getCellValue("#R49_FIG_BAL_BWP2") +
+			    getCellValue("#R53_FIG_BAL_BWP2") +
+			    getCellValue("#R57_FIG_BAL_BWP2") +
+			    getCellValue("#R61_FIG_BAL_BWP2") +
+			    getCellValue("#R65_FIG_BAL_BWP2");
 
+			setCellValue("#R66_FIG_BAL_BWP2", R66_FIG_BAL_BWP2);
 
+			
+			//------------------ R66_AMT_ADJ_BWP2 ------------------
+			let R66_AMT_ADJ_BWP2 =
+			    getCellValue("#R37_AMT_ADJ_BWP2") +
+			    getCellValue("#R41_AMT_ADJ_BWP2") +
+			    getCellValue("#R45_AMT_ADJ_BWP2") +
+			    getCellValue("#R49_AMT_ADJ_BWP2") +
+			    getCellValue("#R53_AMT_ADJ_BWP2") +
+			    getCellValue("#R57_AMT_ADJ_BWP2") +
+			    getCellValue("#R61_AMT_ADJ_BWP2") +
+			    getCellValue("#R65_AMT_ADJ_BWP2");
+
+			setCellValue("#R66_AMT_ADJ_BWP2", R66_AMT_ADJ_BWP2);
+
+			
+			//------------------ R66_NET_AMT_BWP2 ------------------
+			let R66_NET_AMT_BWP2 =
+			    getCellValue("#R37_NET_AMT_BWP2") +
+			    getCellValue("#R41_NET_AMT_BWP2") +
+			    getCellValue("#R45_NET_AMT_BWP2") +
+			    getCellValue("#R49_NET_AMT_BWP2") +
+			    getCellValue("#R53_NET_AMT_BWP2") +
+			    getCellValue("#R57_NET_AMT_BWP2") +
+			    getCellValue("#R61_NET_AMT_BWP2") +
+			    getCellValue("#R65_NET_AMT_BWP2");
+
+			setCellValue("#R66_NET_AMT_BWP2", R66_NET_AMT_BWP2);
+			
+			
+			
 		}
 
 		//--------------------------------------
@@ -1165,8 +1207,24 @@ PURPOSE		: BRRS GL_SCH REPORT
 				calculateTotals();
 			});
 
-
-
+			// R66 dependent fields
+			$("#R37_FIG_BAL_BWP2, #R41_FIG_BAL_BWP2, #R45_FIG_BAL_BWP2, #R49_FIG_BAL_BWP2, #R53_FIG_BAL_BWP2, #R57_FIG_BAL_BWP2, #R61_FIG_BAL_BWP2, #R65_FIG_BAL_BWP2")
+			.on("input change keyup", function () {
+			    calculateTotals();
+			});
+			// R66 AMT_ADJ dependent fields
+			$("#R37_AMT_ADJ_BWP2, #R41_AMT_ADJ_BWP2, #R45_AMT_ADJ_BWP2, #R49_AMT_ADJ_BWP2, #R53_AMT_ADJ_BWP2, #R57_AMT_ADJ_BWP2, #R61_AMT_ADJ_BWP2, #R65_AMT_ADJ_BWP2")
+			.on("input change keyup", function () {
+			    calculateTotals();
+			});
+			
+			// R66 NET dependent fields
+			$("#R37_NET_AMT_BWP2, #R41_NET_AMT_BWP2, #R45_NET_AMT_BWP2, #R49_NET_AMT_BWP2, #R53_NET_AMT_BWP2, #R57_NET_AMT_BWP2, #R61_NET_AMT_BWP2, #R65_NET_AMT_BWP2")
+			.on("input change keyup", function () {
+			    calculateTotals();
+			});
+			
+			
 		});
 	</script>
 
@@ -1246,7 +1304,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 					dataType: 'text',
 					success: function () {
 						$("#resultModalLabel").text("BRRS");
-						$("#resultModalBody").text(" Updated Successfully.");
+						$("#resultModalBody").text(" Modified  Successfully.");
 						$("#resultModal").modal("show");
 					},
 					error: function (jqXHR) {
@@ -1356,7 +1414,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
 						    data-fromdate=${fromdate},
 						    data-todate=${todate},
-						    data-filename='GL_SCH',
+						    data-filename='GL_SCHDetail',
 						 data-type=${type},
 					data-version=${version}  ">
 							<i class="fa fa-download"></i>

@@ -1222,7 +1222,7 @@ PURPOSE		: BRRSREPORT
                             th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
 						    data-fromdate=${fromdate},
 						    data-todate=${todate},
-						    data-filename='COMMON_DISCLOSURE',
+						    data-filename='COMMON_DISCLOSUREDetail',
                 data-type=${type},
 		            data-version=${version}
 						  ">
@@ -1251,7 +1251,7 @@ PURPOSE		: BRRSREPORT
 
                                                 <th></th>
                                                 <th style="width: 20px;"></th>
-                                                <th style="font-weight: normal;">Component of regulatory capital
+                                                <th style="font-weight: normal;text-align: right;">Component of regulatory capital
                                                     reported by bank</th>
                                                 <th style="font-weight: normal;">Source based on Reference
                                                     numbers/letters of the balance sheet under
@@ -1321,7 +1321,7 @@ PURPOSE		: BRRSREPORT
                                                     style="padding-left: 20px;font-weight: bold;background-color: #D8D8D8;">
                                                 </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.R12_COMPONENT_OF_REGU, 0, 'COMMA', 0, 'POINT')}"
-                                                    style="text-align:right;font-weight: bold;"></td>
+                                                    style="text-align:right;font-weight: bold;background-color: rgb(107, 122, 143);color: white;"></td>
                                                 <td th:text="${reportsummary.R12_SOURCE_REF}"></td>
                                             </tr>
 
@@ -1376,16 +1376,16 @@ PURPOSE		: BRRSREPORT
                             <thead class="thead-light">
                                 <tr>
                                     <th></th>
-                                    <th>S No</th>
-                                    <th>CUST_ID</th>
-                                    <th>ACCT_NUMBER</th>
-                                    <th>ACCT_NAME</th>
+                                    <th style="text-align:left">S No</thstyle="text-align:left">
+                                    <th style="text-align:left">CUST_ID</th>
+                                    <th style="text-align:left">ACCT_NUMBER</th>
+                                    <th style="text-align:left">ACCT_NAME</th>
                                     <th style="text-align:right;">ACCT_BALANCE_IN_PULA</th>
                                     <th style="text-align:right;">AVERAGE</th>
-                                    <th>REPORT LABEL</th>
-                                    <th>REPORT ADDL CRITERIA1</th>
+                                    <th style="text-align:left">REPORT LABEL</th>
+                                    <th style="text-align:left">REPORT ADDL CRITERIA1</th>
                                     
-                                    <th>REPORT_DATE</th>
+                                    <th style="text-align:left">REPORT_DATE</th>
                                 </tr>
 
                             </thead>
@@ -1402,19 +1402,19 @@ PURPOSE		: BRRSREPORT
                                     </td>
 
 
-                                    <td th:text="${srlno.index + 1}"></td>
-                                    <td th:text="${report.custId}"></td>
-                                    <td th:text="${report.acctNumber}"></td>
-                                    <td th:text="${report.acctName}"></td>
+                                    <td th:text="${srlno.index + 1}"style="text-align:left"></td>
+                                    <td th:text="${report.custId}"style="text-align:left"></td>
+                                    <td th:text="${report.acctNumber}"style="text-align:left"></td>
+                                    <td th:text="${report.acctName}"style="text-align:left"></td>
                                     <td style="text-align:right;"
                                         th:text="${#numbers.formatDecimal(report.acctBalanceInpula == null ? 0 : report.acctBalanceInpula, 1, 'COMMA', 0, 'POINT')}">
                                     </td>
                                     <td style="text-align:right" th:text="${report.average != null ?
       #numbers.formatDecimal(report.average, 1, 'COMMA', 0, 'POINT') : '0'}">
                                     </td>
-                                    <td th:text="${report.reportLabel}"></td>
-                                    <td th:text="${report.reportAddlCriteria1}"></td>
-                                    <td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
+                                    <td th:text="${report.reportLabel}"style="text-align:left"></td>
+                                    <td th:text="${report.reportAddlCriteria1}"style="text-align:left"></td>
+                                    <td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"style="text-align:left"></td>
                                 </tr>
                             </tbody>
                         </table>

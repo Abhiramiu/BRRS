@@ -5228,12 +5228,9 @@ public class RegulatoryReportServices {
 			}
 			break;
 		case "COMMON_DISCLOSURE":
-			try {
-				archivalData = BRRS_Common_Disclosure_Reportservice.getCommon_DisclosureArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> Common_DisclosureList = BRRS_Common_Disclosure_Reportservice.getCommon_DisclosureArchival();
+			archivalData.addAll(Common_DisclosureList);
+			System.out.println("Fetched Common_Disclosure archival data: " + Common_DisclosureList.size());
 			break;
 
 		case "Market_Risk":
@@ -5852,7 +5849,7 @@ public class RegulatoryReportServices {
 		} else if (filename.equals("M_SPDetail")) {
 			fileData = BRRS_M_SP_reportservice.getM_SPDetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
-		} else if ("M_CALOC".equals(filename)) {
+		} else if ("M_CALOCDetail".equals(filename)) {
 
 			fileData = BRRS_M_CALOC_reportService.getBRRSM_CALOCDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
@@ -5869,7 +5866,7 @@ public class RegulatoryReportServices {
 		} else if ("M_FASDetail".equals(filename)) {
 			fileData = BRRS_M_FAS_reportservice.BRRS_M_FASDetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
-		} else if ("M_SRWA_12A".equals(filename)) {
+		} else if ("M_SRWA_12ADetail".equals(filename)) {
 
 			fileData = brrs_m_srwa_12a_reportservice.getM_SRWA_12ADetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
@@ -5955,7 +5952,7 @@ public class RegulatoryReportServices {
 		} else if (filename.equals("EXPANDED_REGU_BS")) {
 			fileData = BRRS_Expanded_Regu_BS_ReportService.BRRS_Expanded_Regu_BSDetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
-		} else if (filename.equals("COMMON_DISCLOSURE")) {
+		} else if (filename.equals("COMMON_DISCLOSUREDetail")) {
 			fileData = BRRS_Common_Disclosure_Reportservice.getCommon_DisclosureDetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
 		} else if (filename.equals("Market_Risk")) {
@@ -5964,7 +5961,7 @@ public class RegulatoryReportServices {
 		} else if (filename.equals("Main_Features")) {
 			fileData = BRRS_Main_Features_Reportservice.getMain_FeaturesDetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
-		} else if (filename.equals("PL_SCHS")) {
+		} else if (filename.equals("PL_SCHSDetail")) {
 			fileData = BRRS_PL_SCHS_Reportservice.getPL_SCHSDetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 		}
@@ -6075,7 +6072,7 @@ public class RegulatoryReportServices {
 					version);
 		}
 
-		else if ("GL_SCH".equals(filename)) {
+		else if ("GL_SCHDetail".equals(filename)) {
 
 			fileData = brrs_gl_sch_reportservice.getGL_SCHDetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);

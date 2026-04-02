@@ -16,5 +16,8 @@ public interface BRRS_Common_Disclosure_Archival_Summary_Repo extends JpaReposit
 
             @Query(value = "SELECT * FROM BRRS_COMMON_DISCLOSURE_ARCHIVALTABLE_SUMMARY " + "WHERE REPORT_DATE = ?1 AND REPORT_VERSION = ?2 ",nativeQuery = true)
     List<Common_Disclosure_Archival_Summary_Entity> getdatabydateListarchival(Date reportDate, BigDecimal reportVersion);
+    
+    @Query(value = "SELECT * FROM BRRS_COMMON_DISCLOSURE_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC", nativeQuery = true)
+    List<Common_Disclosure_Archival_Summary_Entity> getdatabydateListWithVersion();
 
 }

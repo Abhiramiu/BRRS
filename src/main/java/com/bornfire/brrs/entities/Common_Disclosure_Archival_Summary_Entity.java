@@ -111,8 +111,20 @@ public class Common_Disclosure_Archival_Summary_Entity {
 
     @Column(name = "DEL_FLG", length = 1)
     private String DEL_FLG;
+    
+    
+   private Date REPORT_RESUBDATE;
 
-    public Date getREPORT_DATE() {
+   
+    public Date getREPORT_RESUBDATE() {
+	return REPORT_RESUBDATE;
+}
+
+   public void setREPORT_RESUBDATE(Date rEPORT_RESUBDATE) {
+	REPORT_RESUBDATE = rEPORT_RESUBDATE;
+   }
+
+	public Date getREPORT_DATE() {
         return REPORT_DATE;
     }
 

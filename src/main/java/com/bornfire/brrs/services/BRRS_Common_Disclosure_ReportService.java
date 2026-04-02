@@ -623,23 +623,34 @@ public class BRRS_Common_Disclosure_ReportService {
 
     }
 
-    public List<Object> getCommon_DisclosureArchival() {
-        List<Object> Common_DisclosureArchivallist = new ArrayList<>();
-        try {
-            Common_DisclosureArchivallist = Common_Disclosure_Archival_Summary_Repo.getCommon_Disclosurearchival();
+    public List<Object[]> getCommon_DisclosureArchival() {
+		List<Object[]> archivalList = new ArrayList<>();
 
-            System.out.println("countser" + Common_DisclosureArchivallist.size());
+		try {
+			List<Common_Disclosure_Archival_Summary_Entity> repoData = Common_Disclosure_Archival_Summary_Repo
+					.getdatabydateListWithVersion();
 
-        } catch (Exception e) {
-            // Log the exception
-            System.err.println("Error fetching Common_DisclosureArchivallist Archival data: " + e.getMessage());
-            e.printStackTrace();
+			if (repoData != null && !repoData.isEmpty()) {
+				for (Common_Disclosure_Archival_Summary_Entity entity : repoData) {
+					Object[] row = new Object[] { entity.getREPORT_DATE(), entity.getREPORT_VERSION(),
+							entity.getREPORT_RESUBDATE() };
+					archivalList.add(row);
+				}
 
-            // Optionally, you can rethrow it or return empty list
-            // throw new RuntimeException("Failed to fetch data", e);
-        }
-        return Common_DisclosureArchivallist;
-    }
+				System.out.println("Fetched " + archivalList.size() + " archival records");
+				Common_Disclosure_Archival_Summary_Entity first = repoData.get(0);
+				System.out.println("Latest archival version: " + first.getREPORT_VERSION());
+			} else {
+				System.out.println("No archival data found.");
+			}
+
+		} catch (Exception e) {
+			System.err.println("Error fetching Common_Disclosure Archival data: " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		return archivalList;
+	}
 
     public byte[] getCommon_DisclosureDetailExcel(String filename, String fromdate, String todate, String currency,
             String dtltype,
@@ -656,7 +667,7 @@ public class BRRS_Common_Disclosure_ReportService {
             }
 
             XSSFWorkbook workbook = new XSSFWorkbook();
-            XSSFSheet sheet = workbook.createSheet("Common_DisclosureDetails");
+            XSSFSheet sheet = workbook.createSheet("Common_DisclosureDetailsDetail");
 
             // Common border style
             BorderStyle border = BorderStyle.THIN;
@@ -706,7 +717,7 @@ public class BRRS_Common_Disclosure_ReportService {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(headers[i]);
 
-                if (i == 3) { // ACCT BALANCE
+                if (i == 3 || i == 4) {
                     cell.setCellStyle(rightAlignedHeaderStyle);
                 } else {
                     cell.setCellStyle(headerStyle);
@@ -756,7 +767,7 @@ public class BRRS_Common_Disclosure_ReportService {
 
                     // Apply data style for all other cells
                     for (int j = 0; j < 8; j++) {
-                        if (j != 3) {
+                    	if (j != 3 && j != 4) {
                             row.getCell(j).setCellStyle(dataStyle);
                         }
                     }
