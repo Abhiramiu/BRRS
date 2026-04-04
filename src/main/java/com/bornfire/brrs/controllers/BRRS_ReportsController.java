@@ -49,6 +49,7 @@ import com.bornfire.brrs.services.BRRS_BASEL_III_COM_EQUITY_DISC_ReportService;
 import com.bornfire.brrs.services.BRRS_BDISB1_ReportService;
 import com.bornfire.brrs.services.BRRS_BDISB2_ReportService;
 import com.bornfire.brrs.services.BRRS_BDISB3_ReportService;
+import com.bornfire.brrs.services.BRRS_CAP_RATIO_BUFFER_ReportService;
 import com.bornfire.brrs.services.BRRS_FORMAT_II_ReportService;
 import com.bornfire.brrs.services.BRRS_GL_SCH_ReportService;
 import com.bornfire.brrs.services.BRRS_MDISB1_ReportService;
@@ -970,6 +971,36 @@ public class BRRS_ReportsController {
 		}
 	}
 
+	
+	@Autowired
+	BRRS_CAP_RATIO_BUFFER_ReportService cap_ratio_buffer_reportservice;
+
+	@RequestMapping(value = "/CAP_RATIO_BUFFERupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReport(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute CAP_RATIO_BUFFER_Summary_Entity request) {
+		try {
+			System.out.println("came to CAP_RATIO_BUFFER controller");
+
+			// ✅ set the asondate into entity
+			request.setReport_date(asondate);
+			// call services
+			cap_ratio_buffer_reportservice.updateReport(request);
+
+			return ResponseEntity.ok("Modified Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+
+	
+	
+	
+	
+	
+	
 	@Autowired
 	BRRS_M_SFINP2_ReportService brrs_M_SFINP2_reportservice;
 

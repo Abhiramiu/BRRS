@@ -399,6 +399,9 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_Q_STAFF_Report_Service BRRS_Q_STAFF_report_service;
+	
+	@Autowired
+	BRRS_FORMAT_III_ReportService BRRS_FORMAT_III_ReportService;
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -1501,7 +1504,13 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_Q_STAFF_report_service.getQ_STAFFView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
-
+			
+			
+		case "FORMMAT_III":
+			repsummary = BRRS_FORMAT_III_ReportService.getFORMAT_IIIView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
+			
 		case "PL_SCHS":
 			repsummary = BRRS_PL_SCHS_Reportservice.getPL_SCHSView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
@@ -2040,6 +2049,12 @@ public class RegulatoryReportServices {
 			repdetail = BRRS_PL_SCHS_Reportservice.getPL_SCHScurrentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
 			break;
+			
+		case "FORMAT_III":
+			repdetail = BRRS_FORMAT_III_ReportService.getFORMAT_IIIcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter, type, version);
+			break;
+			
 		case "FSI":
 
 			repdetail = BRRS_FSI_ReportService.getFSIcurrentDtl(reportId, fromdate, todate, currency, dtltype, pageable,
@@ -4245,6 +4260,16 @@ public class RegulatoryReportServices {
 			}
 			break;
 
+			
+		case "FORMAT_III":
+			try {
+				repfile = BRRS_FORMAT_III_ReportService.getFORMAT_IIIExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, type,  version);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
+
 		case "Q_BRANCHNET":
 			try {
 				repfile = BRRS_Q_BRANCHNET_reportservice.BRRS_Q_BRANCHNETExcel(filename, reportId, fromdate, todate,
@@ -5742,6 +5767,12 @@ public class RegulatoryReportServices {
 			archivalData.addAll(QSList);
 			System.out.println("Fetched Q_STAFF archival data: " + QSList.size());
 			break;
+			
+		case "FORMAT_III":
+			List<Object[]> FORMATIIIList = BRRS_FORMAT_III_ReportService.getFORMAT_IIIArchival();
+			archivalData.addAll(FORMATIIIList);
+			System.out.println("Fetched FORMATIIIList archival data: " + FORMATIIIList.size());
+			break;
 
 		case "M_SRWA_12D":
 			try {
@@ -5965,7 +5996,10 @@ public class RegulatoryReportServices {
 			fileData = BRRS_PL_SCHS_Reportservice.getPL_SCHSDetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 		}
-
+		else if (filename.equals("FORMAT_IIIDetail")) {
+			fileData = BRRS_FORMAT_III_ReportService.getFORMAT_IIIDetailExcel(filename, fromdate, todate, currency, dtltype,
+					type, version);
+		}
 		else if ("B_III_CETD".equals(filename)) {
 
 			fileData = b_III_cetd_ReportService.getB_III_CETDDetailExcel(filename, fromdate, todate, currency, dtltype,
@@ -6427,6 +6461,10 @@ public class RegulatoryReportServices {
 				modelAndView = BRRS_PL_SCHS_Reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 						request.getParameter("formmode"));
 				break;
+			case "FORMAT_III":
+				modelAndView = BRRS_FORMAT_III_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
+						request.getParameter("formmode"));
+				break;
 			case "B_III_CETD":
 				modelAndView = b_III_cetd_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 						request.getParameter("formmode"));
@@ -6792,6 +6830,9 @@ public class RegulatoryReportServices {
 				break;
 
 			case "PL_SCHS":
+				response = BRRS_PL_SCHS_Reportservice.updateDetailEdit(request);
+				break;
+			case "FORMAT_III":
 				response = BRRS_PL_SCHS_Reportservice.updateDetailEdit(request);
 				break;
 

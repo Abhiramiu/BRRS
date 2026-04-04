@@ -903,7 +903,15 @@ function showmodify(btn) {
     
     
     
+  let targetRows = [2, 3, 4, 11, 12, 13];
+  let fieldName = "cap_ratio_buff_amt";
 
+  targetRows.forEach(row => {
+      let selector = `#r${row}_${fieldName}`;
+      if ($(selector).length) {
+          $(selector).css("background-color", "#d3d3d3");
+      }
+  });
 
 
 
@@ -957,7 +965,7 @@ function cancelModify() {
 
 
 
-<!-- <script>
+ <script>
 	
 
 	// This function is for closing the modal after an action is complete.
@@ -1009,7 +1017,7 @@ function cancelModify() {
 
 	        // ✅ Step 5: AJAX submission
 	        $.ajax({
-	            url: './M_SCI_EupdateAll',
+	            url: './CAP_RATIO_BUFFERupdateAll',
 	            type: 'POST',
 	            data: formData,
 	            processData: false,
@@ -1017,7 +1025,7 @@ function cancelModify() {
 	            dataType: 'text',
 	            success: function () {
 	                $("#resultModalLabel").text("BRRS");
-	                $("#resultModalBody").text(" Updated Successfully.");
+	                $("#resultModalBody").text(" Modified Successfully.");
 	                $("#resultModal").modal("show");
 	            },
 	            error: function (jqXHR) {
@@ -1046,7 +1054,7 @@ function cancelModify() {
 
 	</script>
 
- -->
+ 
 
 
 
@@ -1068,7 +1076,7 @@ function cancelModify() {
 
 
 
-<title>BRRS</title>
+<title>CAP_RATIO_BUFFERS</title>
 <body>
 	<div class="container-fluid"
 		style="padding-left: 0px; padding-right: 0px;">
@@ -1123,16 +1131,15 @@ function cancelModify() {
 							
 							
 								<!-- Modify button -->
-					<!-- 	<button type="button" class="custom-tab-btn"
+				 	<button type="button" class="custom-tab-btn"
 							onclick="showmodify(this);" title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button> -->
+							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button> 
 
 						<!-- Cancel button (hidden initially) -->
-					<!-- 	<button type="button" class="custom-tab-btn"
+					 	<button type="button" class="custom-tab-btn"
 							title="Cancel editing" id="cancelRecord"
-							onclick="cancelModify();" style="display: none;">Cancel</button> -->
-							
+							onclick="cancelModify();" style="display: none;">Cancel</button>							
 							
 							
 							
@@ -1208,16 +1215,19 @@ function cancelModify() {
 												></td>
 
 										
-
+												<td style='padding-left: 40px; font-weight: bold;text-align: right;' >
+												    <input class='display-input Show_input ' type='text' th:value='${report.r2_cap_ratio_buff_amt != null ? #numbers.formatDecimal(report.r2_cap_ratio_buff_amt, 1, "COMMA",0, "POINT") : "0"}' id='r2_cap_ratio_buff_amt'
+												           name='r2_cap_ratio_buff_amt' style='background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+												</td>
 										
 												
-													<td style="text-align: right; padding-right:10px; "  
+												<!--	<td style="text-align: right; padding-right:10px; "  
 												
 												 th:text="${report?.r2_cap_ratio_buff_amt != null 
               ? #numbers.formatDecimal(report.r2_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
               : ''}"
 												th:attr="RowId='R2', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+												onclick="showdetailsbyRowAndColumn(this)"></td>-->
 
 
 										</tr>
@@ -1236,14 +1246,19 @@ function cancelModify() {
 
 										
 
-										
+				
+		<td style='padding-left: 40px; font-weight: bold;text-align: right;' >
+	 <input class='display-input Show_input ' type='text' th:value='${report.r3_cap_ratio_buff_amt != null ? #numbers.formatDecimal(report.r3_cap_ratio_buff_amt, 1, "COMMA",0, "POINT") : "0"}' id='r3_cap_ratio_buff_amt'
+	 name='r3_cap_ratio_buff_amt' style='background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+		</td>
+																												
 												
-													<td style="text-align: right; padding-right:10px; "  
+													<!--<td style="text-align: right; padding-right:10px; "  
 												 th:text="${report?.r3_cap_ratio_buff_amt != null 
               ? #numbers.formatDecimal(report.r3_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
               : ''}"
 												th:attr="RowId='R3', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+												onclick="showdetailsbyRowAndColumn(this)"></td>-->
 
 
 										</tr>
@@ -1260,16 +1275,20 @@ function cancelModify() {
 												></td>
 
 										
-
+												<td style='padding-left: 40px; font-weight: bold;text-align: right;' >
+																								    <input class='display-input Show_input ' type='text' th:value='${report.r4_cap_ratio_buff_amt != null ? #numbers.formatDecimal(report.r4_cap_ratio_buff_amt, 1, "COMMA",0, "POINT") : "0"}' id='r4_cap_ratio_buff_amt'
+																								           name='r4_cap_ratio_buff_amt' style='background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+																								</td>
+																						
 										
 												
-													<td style="text-align: right; padding-right:10px;  width:200px"  
+													<!--<td style="text-align: right; padding-right:10px;  width:200px"  
 												 th:text="${report?.r4_cap_ratio_buff_amt != null 
               ? #numbers.formatDecimal(report.r4_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
               : ''}"
 												th:attr="RowId='R4', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
-
+-->
 
 										</tr>
 
@@ -1408,15 +1427,19 @@ function cancelModify() {
 												></td>
 
 										
-
+												<td style='padding-left: 40px; font-weight: bold;text-align: right;' >
+																								    <input class='display-input Show_input ' type='text' th:value='${report.r11_cap_ratio_buff_amt != null ? #numbers.formatDecimal(report.r11_cap_ratio_buff_amt, 1, "COMMA",0, "POINT") : "0"}' id='r11_cap_ratio_buff_amt'
+																								           name='r11_cap_ratio_buff_amt' style='background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+																								</td>
+																						
 										
 												
-													<td style="text-align: right; padding-right:10px; "  
+													<!--<td style="text-align: right; padding-right:10px; "  
 												 th:text="${report?.r11_cap_ratio_buff_amt != null 
               ? #numbers.formatDecimal(report.r11_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
               : ''}"
 												th:attr="RowId='R11', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+												onclick="showdetailsbyRowAndColumn(this)"></td>-->
 
 
 										</tr>
@@ -1433,9 +1456,13 @@ function cancelModify() {
 
 										
 
-										
+												<td style='padding-left: 40px; font-weight: bold;text-align: right;' >
+																								    <input class='display-input Show_input ' type='text' th:value='${report.r12_cap_ratio_buff_amt != null ? #numbers.formatDecimal(report.r12_cap_ratio_buff_amt, 1, "COMMA",0, "POINT") : "0"}' id='r12_cap_ratio_buff_amt'
+																								           name='r12_cap_ratio_buff_amt' style='background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+																								</td>
+																								
 												
-													<td style="text-align: right; padding-right:10px; "  
+											<!--		<td style="text-align: right; padding-right:10px; "  
 												 th:text="${report?.r12_cap_ratio_buff_amt != null 
               ? #numbers.formatDecimal(report.r12_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
               : ''}"
@@ -1444,7 +1471,7 @@ function cancelModify() {
 
 
 										</tr>
-
+-->
 
  <tr >
 
@@ -1457,16 +1484,20 @@ function cancelModify() {
 												th:text="${report?.r13_cap_ratio_buff ?: ''}"
 												></td>
 
-										
+												<td style='padding-left: 40px; font-weight: bold;text-align: right;' >
+																								    <input class='display-input Show_input ' type='text' th:value='${report.r13_cap_ratio_buff_amt != null ? #numbers.formatDecimal(report.r13_cap_ratio_buff_amt, 1, "COMMA",0, "POINT") : "0"}' id='r13_cap_ratio_buff_amt'
+																								           name='r13_cap_ratio_buff_amt' style='background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+																								</td>
+																									
 
 										
 												
-													<td style="text-align: right; padding-right:10px; "  
+												<!--	<td style="text-align: right; padding-right:10px; "  
 												 th:text="${report?.r13_cap_ratio_buff_amt != null 
               ? #numbers.formatDecimal(report.r13_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
               : ''}"
 												th:attr="RowId='R13', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+												onclick="showdetailsbyRowAndColumn(this)"></td>-->
 
 
 										</tr>

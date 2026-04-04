@@ -54,18 +54,12 @@ import com.bornfire.brrs.entities.BRRS_CAP_RATIO_BUFFER_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_CAP_RATIO_BUFFER_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_CAP_RATIO_BUFFER_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_CAP_RATIO_BUFFER_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_SCI_E_Detail_Repo;
+
 import com.bornfire.brrs.entities.CAP_RATIO_BUFFER_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.CAP_RATIO_BUFFER_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.CAP_RATIO_BUFFER_Detail_Entity;
 import com.bornfire.brrs.entities.CAP_RATIO_BUFFER_Summary_Entity;
-import com.bornfire.brrs.entities.M_I_S_CA_Detail_Entity;
-import com.bornfire.brrs.entities.M_SCI_E_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_SCI_E_Archival_Manual_Summary_Entity;
-import com.bornfire.brrs.entities.M_SCI_E_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_SCI_E_Detail_Entity;
-import com.bornfire.brrs.entities.M_SCI_E_Manual_Summary_Entity;
-import com.bornfire.brrs.entities.M_SCI_E_Summary_Entity;
+
 
 @Component
 @Service
@@ -1473,7 +1467,53 @@ public class BRRS_CAP_RATIO_BUFFER_ReportService {
 	}
 	
 	
-	
+	public void updateReport(CAP_RATIO_BUFFER_Summary_Entity updatedEntity) {
+
+	    System.out.println("Came to CAP RATIO BUFFER service");
+	    System.out.println("Report Date: " + updatedEntity.getReport_date());
+
+	    CAP_RATIO_BUFFER_Summary_Entity existing =
+	            cap_ratio_buffer_summary_repo.findById(updatedEntity.getReport_date())
+	            .orElseThrow(() ->
+	                    new RuntimeException("Record not found for REPORT_DATE: "
+	                            + updatedEntity.getReport_date()));
+
+	    try {
+
+	        // ✅ Target Rows
+	        int[] targetRows = {2, 3, 4, 11, 12, 13};
+
+	        for (int i : targetRows) {
+
+	            String field = "cap_ratio_buff_amt";
+
+	            String getterName = "getR" + i + "_" + field;
+	            String setterName = "setR" + i + "_" + field;
+
+	            try {
+	                Method getter = CAP_RATIO_BUFFER_Summary_Entity.class.getMethod(getterName);
+
+	                Method setter = CAP_RATIO_BUFFER_Summary_Entity.class.getMethod(
+	                        setterName,
+	                        getter.getReturnType()
+	                );
+
+	                Object newValue = getter.invoke(updatedEntity);
+	                setter.invoke(existing, newValue);
+
+	            } catch (NoSuchMethodException e) {
+	                // Skip if method not present
+	                continue;
+	            }
+	        }
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating CAP RATIO BUFFER fields", e);
+	    }
+
+	    // ✅ Save
+	    cap_ratio_buffer_summary_repo.save(existing);
+	}
 	
 
 }
