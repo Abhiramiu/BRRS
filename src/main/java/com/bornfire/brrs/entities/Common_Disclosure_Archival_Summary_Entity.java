@@ -6,12 +6,14 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "BRRS_COMMON_DISCLOSURE_ARCHIVAL_SUMMARYTABLE")
+@Table(name = "BRRS_COMMON_DISCLOSURE_ARCHIVALTABLE_SUMMARY")
+@IdClass(Common_Disclosure_PK.class)
 public class Common_Disclosure_Archival_Summary_Entity {
 
     @Id
@@ -90,7 +92,7 @@ public class Common_Disclosure_Archival_Summary_Entity {
 
     @Column(name = "R14_SOURCE_REF", length = 100)
     private String R14_SOURCE_REF;
-
+    @Id
     @Column(name = "REPORT_VERSION", length = 100)
     private BigDecimal REPORT_VERSION;
 

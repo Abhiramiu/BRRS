@@ -539,7 +539,7 @@ public class BRRS_FORMAT_III_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 8;
+			int startRow = 12;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {

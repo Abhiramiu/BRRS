@@ -402,6 +402,9 @@ public class RegulatoryReportServices {
 	
 	@Autowired
 	BRRS_FORMAT_III_ReportService BRRS_FORMAT_III_ReportService;
+	
+	@Autowired
+	BRRS_CASH_FLOW_ReportService BRRS_CASH_FLOW_ReportService;
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -908,6 +911,17 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_M_LA4_reportservice.getM_LA4View(reportId, fromdate, todate, currency, dtltype, pageable,
 					type, version);
 			break;
+			
+			
+			
+			
+			
+			
+		case "TIER_1_2_CFS": 
+			repsummary =
+				BRRS_TIER_1_2_CFS_ReportService.getTIER_1_2_CFSView(reportId, fromdate,
+				 todate, currency, dtltype, pageable, type, version);
+				 break;
 
 		/*
 		 * 
@@ -1510,7 +1524,10 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_FORMAT_III_ReportService.getFORMAT_IIIView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
-			
+		case "CASH_FLOW":
+			repsummary = BRRS_CASH_FLOW_ReportService.getCASH_FLOWView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
 		case "PL_SCHS":
 			repsummary = BRRS_PL_SCHS_Reportservice.getPL_SCHSView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
@@ -1571,6 +1588,10 @@ public class RegulatoryReportServices {
 			repsummary = brrs_SCOPE_OF_APP_reportservice.getSCOPE_OF_APPView(reportId, fromdate, todate, currency,
 					dtltype, pageable, type, version);
 			break;
+			
+		case "RWA": repsummary = BRRS_RWA_ReportService.getRWAView(reportId,
+				fromdate, todate, currency, dtltype, pageable, type, version);
+				break;
 		/*
 		 * case "AML":
 		 * 
@@ -1584,10 +1605,7 @@ public class RegulatoryReportServices {
 		 * 
 		 * break;
 		 * 
-		 * case "RWA": repsummary = BRRS_RWA_ReportService.getRWAView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version);
 		 * 
-		 * break;
 		 * 
 		 * case "CPR_STRUCT_LIQ": repsummary =
 		 * BRRS_CPR_STRUCT_LIQ_ReportService.getCPR_STRUCT_LIQView(reportId, fromdate,
@@ -1717,11 +1735,7 @@ public class RegulatoryReportServices {
 		 * 
 		 * break;
 		 * 
-		 * case "TIER_1_2_CFS": repsummary =
-		 * BRRS_TIER_1_2_CFS_ReportService.getTIER_1_2_CFSView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version);
 		 * 
-		 * break;
 		 * 
 		
 		 * 
@@ -2052,6 +2066,11 @@ public class RegulatoryReportServices {
 			
 		case "FORMAT_III":
 			repdetail = BRRS_FORMAT_III_ReportService.getFORMAT_IIIcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter, type, version);
+			break;
+			
+		case "CASH_FLOW":
+			repdetail = BRRS_CASH_FLOW_ReportService.getCASH_FLOWcurrentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
 			break;
 			
@@ -2973,6 +2992,23 @@ public class RegulatoryReportServices {
 			}
 
 			break;
+			
+		case "TIER_1_2_CFS": 
+			try { 
+				repfile = BRRS_TIER_1_2_CFS_ReportService.getTIER_1_2_CFSExcel(filename, reportId,
+		 fromdate, todate, currency, dtltype, type, version);
+				} 
+			catch (Exception e) { // TODO Auto-generated catch block 
+				e.printStackTrace(); 
+				break;
+			}
+		
+		case "RWA":
+			try { repfile = BRRS_RWA_ReportService.getRWAExcel(filename,
+				  reportId, fromdate, todate, currency, dtltype, type, version);
+				  
+				 } catch (Exception e) { // TODO Auto-generated catch block
+				  e.printStackTrace(); } break;
 		/*
 		 * case "M_CA4": try { repfile =
 		 * BRRS_M_CA4_reportservice.getBRRS_M_CA4Excel(filename, reportId, fromdate,
@@ -3462,10 +3498,7 @@ public class RegulatoryReportServices {
 		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
 		 * break;
 		 * 
-		 * case "TIER_1_2_CFS": try { repfile =
-		 * BRRS_TIER_1_2_CFS_ReportService.getTIER_1_2_CFSExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
+		 * 
 		 * 
 		 * case "M_P_L": try { repfile =
 		 * BRRS_M_P_L_ReportService.getM_P_LExcel(filename, reportId, fromdate, todate,
@@ -4006,11 +4039,7 @@ public class RegulatoryReportServices {
 		 * } catch (Exception e) { // TODO Auto-generated catch block
 		 * e.printStackTrace(); } break;
 		 * 
-		 * case "RWA": try { repfile = BRRS_RWA_ReportService.getRWAExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version);
 		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
 		 * 
 		 * case "CPR_STRUCT_LIQ": try { repfile =
 		 * BRRS_CPR_STRUCT_LIQ_ReportService.getCPR_STRUCT_LIQExcel(filename, reportId,
@@ -4264,6 +4293,15 @@ public class RegulatoryReportServices {
 		case "FORMAT_III":
 			try {
 				repfile = BRRS_FORMAT_III_ReportService.getFORMAT_IIIExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, type,  version);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
+			
+		case "CASH_FLOW":
+			try {
+				repfile = BRRS_CASH_FLOW_ReportService.getCASH_FLOWExcel(filename, reportId, fromdate, todate,
 						currency, dtltype, type,  version);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -5774,6 +5812,13 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched FORMATIIIList archival data: " + FORMATIIIList.size());
 			break;
 
+		case "CASH_FLOW":
+			List<Object[]> CASH_FLOWList = BRRS_CASH_FLOW_ReportService.getCASH_FLOWArchival();
+			archivalData.addAll(CASH_FLOWList);
+			System.out.println("Fetched CASH_FLOW archival data: " + CASH_FLOWList.size());
+			break;
+
+			
 		case "M_SRWA_12D":
 			try {
 				archivalData = brrs_m_srwa_12d_reportservice.getSRWA_12DArchival1();
@@ -5998,6 +6043,10 @@ public class RegulatoryReportServices {
 		}
 		else if (filename.equals("FORMAT_IIIDetail")) {
 			fileData = BRRS_FORMAT_III_ReportService.getFORMAT_IIIDetailExcel(filename, fromdate, todate, currency, dtltype,
+					type, version);
+		}
+		else if (filename.equals("CASH_FLOWDetail")) {
+			fileData = BRRS_CASH_FLOW_ReportService.getCASH_FLOWDetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 		}
 		else if ("B_III_CETD".equals(filename)) {
@@ -6465,6 +6514,10 @@ public class RegulatoryReportServices {
 				modelAndView = BRRS_FORMAT_III_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 						request.getParameter("formmode"));
 				break;
+			case "CASH_FLOW":
+				modelAndView = BRRS_CASH_FLOW_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
+						request.getParameter("formmode"));
+				break;
 			case "B_III_CETD":
 				modelAndView = b_III_cetd_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 						request.getParameter("formmode"));
@@ -6834,6 +6887,10 @@ public class RegulatoryReportServices {
 				break;
 			case "FORMAT_III":
 				response = BRRS_FORMAT_III_ReportService.updateDetailEdit(request);
+				break;
+				
+			case "CASH_FLOW":
+				response = BRRS_CASH_FLOW_ReportService.updateDetailEdit(request);
 				break;
 
 			case "NSFR":

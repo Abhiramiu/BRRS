@@ -110,7 +110,7 @@ public class BRRS_RWA_ReportService {
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getRWAView(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type,  String version) {
+			Pageable pageable, String type,  BigDecimal version) {
 		ModelAndView mv = new ModelAndView();
 //		Session hs = sessionFactory.getCurrentSession();
 //		int pageSize = pageable.getPageSize();
@@ -380,7 +380,7 @@ return new byte[0];
 }
 
 	public byte[] getRWAExcel(String filename, String reportId, String fromdate, String todate, String currency,
-			 String dtltype, String type, String version) throws Exception {
+			 String dtltype, String type, BigDecimal version) throws Exception {
 logger.info("Service: Starting Excel generation process in memory.");
 logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, version);
 
@@ -388,12 +388,12 @@ logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, 
 Date reportDate = dateformat.parse(todate);
 
 //ARCHIVAL check
-if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+if ("ARCHIVAL".equalsIgnoreCase(type) && version != null ) {
 logger.info("Service: Generating ARCHIVAL report for version {}", version);
 return getExcelRWAARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 }
 //RESUB check
-else if ("RESUB".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+else if ("RESUB".equalsIgnoreCase(type) && version != null ) {
 logger.info("Service: Generating RESUB report for version {}", version);
 
 
@@ -3397,7 +3397,7 @@ return new byte[0];
 }
 
 	public byte[] getExcelRWAARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		if (type.equals("ARCHIVAL") & version != null) {
 
