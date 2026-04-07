@@ -5210,6 +5210,19 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched PL_SCHS archival data: " + PLList.size());
 			break;
 
+			
+			
+		 case "B_III_CETD":
+				List<Object[]> b_iii_cetdlist = b_III_cetd_ReportService.getB_III_CETDArchival();
+				archivalData.addAll(b_iii_cetdlist);
+				System.out.println("Fetched M_I_S_CA archival data: " + b_iii_cetdlist.size());
+				break;
+				
+			case "CAP_RATIO_BUFFER":
+				List<Object[]> crbList = brrs_cap_ratio_buffer_reportservice.getCAP_RATIO_BUFFERArchival();
+				archivalData.addAll(crbList);
+				System.out.println("Fetched M_I_S_CA archival data: " + crbList.size());
+				break;
 //
 //		case "M_SCI_E":
 //			try {
@@ -5229,23 +5242,23 @@ public class RegulatoryReportServices {
 //			}
 //			break;
 
-		case "CAP_RATIO_BUFFER":
-			try {
-				archivalData = brrs_cap_ratio_buffer_reportservice.getCAP_RATIO_BUFFERArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-
-		case "B_III_CETD":
-			try {
-				archivalData = b_III_cetd_ReportService.getB_III_CETDArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+//		case "CAP_RATIO_BUFFER":
+//			try {
+//				archivalData = brrs_cap_ratio_buffer_reportservice.getCAP_RATIO_BUFFERArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
+//
+//		case "B_III_CETD":
+//			try {
+//				archivalData = b_III_cetd_ReportService.getB_III_CETDArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
 
 		case "OPER_RISK_DIS":
 			try {
@@ -6049,7 +6062,7 @@ public class RegulatoryReportServices {
 			fileData = BRRS_CASH_FLOW_ReportService.getCASH_FLOWDetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 		}
-		else if ("B_III_CETD".equals(filename)) {
+		else if ("B_III_CETD_DETAIL".equals(filename)) {
 
 			fileData = b_III_cetd_ReportService.getB_III_CETDDetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);

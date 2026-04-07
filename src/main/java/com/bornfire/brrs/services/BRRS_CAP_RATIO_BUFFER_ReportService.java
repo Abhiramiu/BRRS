@@ -1082,34 +1082,58 @@ public class BRRS_CAP_RATIO_BUFFER_ReportService {
 	}
 	
 	
+	//Archival View
+	public List<Object[]> getCAP_RATIO_BUFFERArchival() {
+		List<Object[]> archivalList = new ArrayList<>();
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	public List<Object> getCAP_RATIO_BUFFERArchival() {
-		List<Object> CAP_RATIO_BUFFERArchivallist = new ArrayList<>();
 		try {
-			CAP_RATIO_BUFFERArchivallist = cap_ratio_buffer_Archival_Summary_Repo.getCAP_RATIO_BUFFERarchival();
-		
-			System.out.println("countser" + CAP_RATIO_BUFFERArchivallist.size());
-			
-		} catch (Exception e) {
-			// Log the exception
-			System.err.println("Error fetching CAP_RATIO_BUFFERArchivallist Archival data: " + e.getMessage());
-			e.printStackTrace();
+			List<CAP_RATIO_BUFFER_Archival_Summary_Entity> repoData = cap_ratio_buffer_Archival_Summary_Repo
+					.getdatabydateListWithVersion();
 
-			// Optionally, you can rethrow it or return empty list
-			// throw new RuntimeException("Failed to fetch data", e);
+			if (repoData != null && !repoData.isEmpty()) {
+				for (CAP_RATIO_BUFFER_Archival_Summary_Entity entity : repoData) {
+					Object[] row = new Object[] {
+							entity.getReport_date(), 
+							entity.getReport_version(), 
+							 entity.getReportResubDate()
+					};
+					archivalList.add(row);
+				}
+
+				System.out.println("Fetched " + archivalList.size() + " archival records");
+				CAP_RATIO_BUFFER_Archival_Summary_Entity first = repoData.get(0);
+				System.out.println("Latest archival version: " + first.getReport_version());
+			} else {
+				System.out.println("No archival data found.");
+			}
+
+		} catch (Exception e) {
+			System.err.println("Error fetching  CAP_RATIO_BUFFER  Archival data: " + e.getMessage());
+			e.printStackTrace();
 		}
-		return CAP_RATIO_BUFFERArchivallist;
+
+		return archivalList;
 	}
+
+	
+	
+//	public List<Object> getCAP_RATIO_BUFFERArchival() {
+//		List<Object> CAP_RATIO_BUFFERArchivallist = new ArrayList<>();
+//		try {
+//			CAP_RATIO_BUFFERArchivallist = cap_ratio_buffer_Archival_Summary_Repo.getCAP_RATIO_BUFFERarchival();
+//		
+//			System.out.println("countser" + CAP_RATIO_BUFFERArchivallist.size());
+//			
+//		} catch (Exception e) {
+//			// Log the exception
+//			System.err.println("Error fetching CAP_RATIO_BUFFERArchivallist Archival data: " + e.getMessage());
+//			e.printStackTrace();
+//
+//			// Optionally, you can rethrow it or return empty list
+//			// throw new RuntimeException("Failed to fetch data", e);
+//		}
+//		return CAP_RATIO_BUFFERArchivallist;
+//	}
 	
 	
 	

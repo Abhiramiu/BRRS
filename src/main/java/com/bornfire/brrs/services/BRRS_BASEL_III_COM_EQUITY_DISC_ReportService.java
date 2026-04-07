@@ -60,6 +60,7 @@ import com.bornfire.brrs.entities.BRRS_BASEL_III_COM_EQUITY_DISC_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_BASEL_III_COM_EQUITY_DISC_Manual_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_BASEL_III_COM_EQUITY_DISC_Manual_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_BASEL_III_COM_EQUITY_DISC_Summary_Repo;
+import com.bornfire.brrs.entities.M_I_S_CA_Arcihval_Summary_Entity;
 
 @Component
 @Service
@@ -1294,34 +1295,66 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 	}
 	
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	public List<Object> getB_III_CETDArchival() {
-		List<Object> B_III_CETDArchivallist = new ArrayList<>();
-		try {
-			B_III_CETDArchivallist = B_III_CETD_Archival_Summary_Repo.getB_III_CETDarchival();
-//			B_III_CETDArchivallist = B_III_CETD_Manual_Archival_Summary_Repo.getB_III_CETDarchival();
-		
-			System.out.println("countser" + B_III_CETDArchivallist.size());
-			
-		} catch (Exception e) {
-			// Log the exception
-			System.err.println("Error fetching B_III_CETDArchivallist Archival data: " + e.getMessage());
-			e.printStackTrace();
+	//Archival View
+	public List<Object[]> getB_III_CETDArchival() {
+		List<Object[]> archivalList = new ArrayList<>();
 
-			// Optionally, you can rethrow it or return empty list
-			// throw new RuntimeException("Failed to fetch data", e);
+		try {
+			List<BASEL_III_COM_EQUITY_DISC_Archival_Summary_Entity> repoData = B_III_CETD_Archival_Summary_Repo
+					.getdatabydateListWithVersion();
+
+			if (repoData != null && !repoData.isEmpty()) {
+				for (BASEL_III_COM_EQUITY_DISC_Archival_Summary_Entity entity : repoData) {
+					Object[] row = new Object[] {
+							entity.getReport_date(), 
+							entity.getReport_version(), 
+							 entity.getReportResubDate()
+					};
+					archivalList.add(row);
+				}
+
+				System.out.println("Fetched " + archivalList.size() + " archival records");
+				BASEL_III_COM_EQUITY_DISC_Archival_Summary_Entity first = repoData.get(0);
+				System.out.println("Latest archival version: " + first.getReport_version());
+			} else {
+				System.out.println("No archival data found.");
+			}
+
+		} catch (Exception e) {
+			System.err.println("Error fetching  B_III_CETD  Archival data: " + e.getMessage());
+			e.printStackTrace();
 		}
-		return B_III_CETDArchivallist;
+
+		return archivalList;
 	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+//	public List<Object> getB_III_CETDArchival() {
+//		List<Object> B_III_CETDArchivallist = new ArrayList<>();
+//		try {
+//			B_III_CETDArchivallist = B_III_CETD_Archival_Summary_Repo.getB_III_CETDarchival();
+////			B_III_CETDArchivallist = B_III_CETD_Manual_Archival_Summary_Repo.getB_III_CETDarchival();
+//		
+//			System.out.println("countser" + B_III_CETDArchivallist.size());
+//			
+//		} catch (Exception e) {
+//			// Log the exception
+//			System.err.println("Error fetching B_III_CETDArchivallist Archival data: " + e.getMessage());
+//			e.printStackTrace();
+//
+//			// Optionally, you can rethrow it or return empty list
+//			// throw new RuntimeException("Failed to fetch data", e);
+//		}
+//		return B_III_CETDArchivallist;
+//	}
 	
 	
 	
@@ -1380,17 +1413,17 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 			balanceStyle.setBorderRight(border);
 
 			// Header row
-			String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT_DATE" };
+			String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "AVERAGE","REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT_DATE" };
 
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
 				Cell cell = headerRow.createCell(i);
 				cell.setCellValue(headers[i]);
 
-				if (i == 3) { // ACCT BALANCE
-					cell.setCellStyle(rightAlignedHeaderStyle);
+				if (i == 3 || i == 4 ) {  // MONTHLY_INT (3) and CREDIT_EQUIVALENT (4) nd DEBIT_EQUIVALENT(5)
+				    cell.setCellStyle(rightAlignedHeaderStyle);
 				} else {
-					cell.setCellStyle(headerStyle);
+				    cell.setCellStyle(headerStyle);
 				}
 
 				sheet.setColumnWidth(i, 5000);
@@ -1416,19 +1449,26 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 						balanceCell.setCellValue(0);
 					}
 					balanceCell.setCellStyle(balanceStyle);
-
+					// AVERAGE
+					 balanceCell = row.createCell(4);
+					if (item.getAverage() != null) {
+						balanceCell.setCellValue(item.getAverage().doubleValue());
+					} else {
+						balanceCell.setCellValue(0);
+					}
+					balanceCell.setCellStyle(balanceStyle);
 					
 
-					row.createCell(4).setCellValue(item.getReportLabel());
-					row.createCell(5).setCellValue(item.getReportAddlCriteria_1());
-					row.createCell(6)
+					row.createCell(5).setCellValue(item.getReportLabel());
+					row.createCell(6).setCellValue(item.getReportAddlCriteria_1());
+					row.createCell(7)
 							.setCellValue(item.getReportDate() != null
 									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
 									: "");
 
 					// Apply data style for all other cells
-					for (int j = 0; j < 7; j++) {
-						if (j != 3) {
+					for (int j = 0; j < 8; j++) {
+						 if (j != 3 && j != 4 ) {
 							row.getCell(j).setCellStyle(dataStyle);
 						}
 					}
@@ -1508,17 +1548,17 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 			balanceStyle.setBorderRight(border);
 
 // Header row
-			String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE",  "REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT_DATE" };
+			String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "AVERAGE", "REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT_DATE" };
 
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
 				Cell cell = headerRow.createCell(i);
 				cell.setCellValue(headers[i]);
 
-				if (i == 3) { // ACCT BALANCE
-					cell.setCellStyle(rightAlignedHeaderStyle);
+				if (i == 3 || i == 4 ) {  // MONTHLY_INT (3) and CREDIT_EQUIVALENT (4) nd DEBIT_EQUIVALENT(5)
+				    cell.setCellStyle(rightAlignedHeaderStyle);
 				} else {
-					cell.setCellStyle(headerStyle);
+				    cell.setCellStyle(headerStyle);
 				}
 
 				sheet.setColumnWidth(i, 5000);
@@ -1547,17 +1587,24 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
-					
-					row.createCell(4).setCellValue(item.getReportLabel());
-					row.createCell(5).setCellValue(item.getReportAddlCriteria_1());
-					row.createCell(6)
+					// AVERAGE
+					 balanceCell = row.createCell(4);
+					if (item.getAverage() != null) {
+						balanceCell.setCellValue(item.getAverage().doubleValue());
+					} else {
+						balanceCell.setCellValue(0);
+					}
+					balanceCell.setCellStyle(balanceStyle);
+					row.createCell(5).setCellValue(item.getReportLabel());
+					row.createCell(6).setCellValue(item.getReportAddlCriteria_1());
+					row.createCell(7)
 							.setCellValue(item.getReportDate() != null
 									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
 									: "");
 
 // Apply data style for all other cells
-					for (int j = 0; j < 7; j++) {
-						if (j != 3) {
+					for (int j = 0; j < 8; j++) {
+						 if (j != 3 && j != 4 ) {
 							row.getCell(j).setCellStyle(dataStyle);
 						}
 					}

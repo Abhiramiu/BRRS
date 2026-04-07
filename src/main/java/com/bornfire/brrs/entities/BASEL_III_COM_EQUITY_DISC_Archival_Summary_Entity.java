@@ -4,8 +4,10 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -18,7 +20,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "BRRS_BASEL_III_COM_EQUITY_DISC_ARCHIVALTABLE_SUMMARY")
-
+@IdClass(B_III_CED_PK.class)
 
 public class BASEL_III_COM_EQUITY_DISC_Archival_Summary_Entity {
 	
@@ -160,10 +162,14 @@ public class BASEL_III_COM_EQUITY_DISC_Archival_Summary_Entity {
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
-	
-	
+		
 	private Date	report_date;
+	 @Column(name = "REPORT_VERSION")
+	 @Id
 	private BigDecimal	report_version;
+	@Column(name = "REPORT_RESUBDATE")
+
+    private Date reportResubDate;
 	private String	report_frequency;
 	private String	report_code;
 	private String	report_desc;
@@ -926,6 +932,12 @@ public class BASEL_III_COM_EQUITY_DISC_Archival_Summary_Entity {
 	public void setReport_version(BigDecimal report_version) {
 		this.report_version = report_version;
 	}
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
+	}
 	public String getReport_frequency() {
 		return report_frequency;
 	}
@@ -966,11 +978,6 @@ public class BASEL_III_COM_EQUITY_DISC_Archival_Summary_Entity {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
-	
-	
-	
-	
 	
 	
 	
