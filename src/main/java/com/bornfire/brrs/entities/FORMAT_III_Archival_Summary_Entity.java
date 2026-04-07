@@ -6,10 +6,12 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "BRRS_FORMAT_II_ARCHIVALTABLE_SUMMARY")
+@IdClass(FORMAT_III_PK.class)
 public class FORMAT_III_Archival_Summary_Entity {
 
 	@Column(name = "R13_BRIEF_BANK")
@@ -87,6 +89,7 @@ public class FORMAT_III_Archival_Summary_Entity {
 	@Id
 	@Column(name = "REPORT_DATE")
 	private Date reportDate;
+	@Id
 	@Column(name = "REPORT_VERSION")
 	private BigDecimal reportVersion;
 

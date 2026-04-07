@@ -1,4 +1,5 @@
 package com.bornfire.brrs.entities;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -6,38 +7,50 @@ import java.util.Objects;
 
 public class FORMAT_III_PK implements Serializable {
 
-    private Date REPORT_DATE;
-    private BigDecimal REPORT_VERSION;
+    private static final long serialVersionUID = 1L;
 
-    // default constructor
+    private Date reportDate;
+    private BigDecimal reportVersion;
+
+    // Default constructor
     public FORMAT_III_PK() {}
 
-    // parameterized constructor
-    public FORMAT_III_PK(Date REPORT_DATE, BigDecimal REPORT_VERSION) {
-        this.REPORT_DATE = REPORT_DATE;
-        this.REPORT_VERSION = REPORT_VERSION;
+    // Parameterized constructor
+    public FORMAT_III_PK(Date reportDate, BigDecimal reportVersion) {
+        this.reportDate = reportDate;
+        this.reportVersion = reportVersion;
     }
 
-    // equals and hashCode
+    // Getters & Setters
+    public Date getReportDate() {
+        return reportDate;
+    }
+
+    public void setReportDate(Date reportDate) {
+        this.reportDate = reportDate;
+    }
+
+    public BigDecimal getReportVersion() {
+        return reportVersion;
+    }
+
+    public void setReportVersion(BigDecimal reportVersion) {
+        this.reportVersion = reportVersion;
+    }
+
+    // equals()
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof FORMAT_III_PK)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         FORMAT_III_PK that = (FORMAT_III_PK) o;
-        return Objects.equals(REPORT_DATE, that.REPORT_DATE) &&
-               Objects.equals(REPORT_VERSION, that.REPORT_VERSION);
+        return Objects.equals(reportDate, that.reportDate) &&
+               Objects.equals(reportVersion, that.reportVersion);
     }
 
+    // hashCode()
     @Override
     public int hashCode() {
-        return Objects.hash(REPORT_DATE, REPORT_VERSION);
+        return Objects.hash(reportDate, reportVersion);
     }
-
-    // getters & setters
-    public Date getREPORT_DATE() { return REPORT_DATE; }
-    public void setREPORT_DATE(Date REPORT_DATE) { this.REPORT_DATE = REPORT_DATE; }
-
-    public BigDecimal getREPORT_VERSION() { return REPORT_VERSION; }
-    public void setREPORT_VERSION(BigDecimal REPORT_VERSION) { this.REPORT_VERSION = REPORT_VERSION; }
 }
-

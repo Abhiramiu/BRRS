@@ -81,11 +81,10 @@ public class BRRS_FORMAT_III_ReportService {
 	@Autowired
 	BRRS_FORMAT_III_Archival_Detail_Repo FORMAT_III_Archival_Detail_Repo;
 
-
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getFORMAT_IIIView(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, BigDecimal version) {
+	public ModelAndView getFORMAT_IIIView(String reportId, String fromdate, String todate, String currency,
+			String dtltype, Pageable pageable, String type, BigDecimal version) {
 
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
@@ -127,8 +126,9 @@ public class BRRS_FORMAT_III_ReportService {
 
 	public void updateReport(FORMAT_III_Summary_Entity updatedEntity) {
 
-		FORMAT_III_Summary_Entity existing = FORMAT_III_summary_repo.findById(updatedEntity.getReportDate()).orElseThrow(
-				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+		FORMAT_III_Summary_Entity existing = FORMAT_III_summary_repo.findById(updatedEntity.getReportDate())
+				.orElseThrow(() -> new RuntimeException(
+						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
 
 		int[] rows = { 12, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29, 42, 54, 61 };
 
@@ -212,7 +212,8 @@ public class BRRS_FORMAT_III_ReportService {
 				List<FORMAT_III_Detail_Entity> T1Dt1;
 
 				if (reportLabel != null && reportAddlCriteria1 != null) {
-					T1Dt1 = FORMAT_III_detail_repo.GetDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1, parsedDate);
+					T1Dt1 = FORMAT_III_detail_repo.GetDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1,
+							parsedDate);
 				} else {
 					T1Dt1 = FORMAT_III_detail_repo.getdatabydateList(parsedDate);
 					totalPages = FORMAT_III_detail_repo.getdatacount(parsedDate);
@@ -244,7 +245,7 @@ public class BRRS_FORMAT_III_ReportService {
 	}
 
 	public byte[] getFORMAT_IIIExcel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type,  BigDecimal version) throws Exception {
+			String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		System.out.println(type);
 		System.out.println(version);
@@ -376,10 +377,9 @@ public class BRRS_FORMAT_III_ReportService {
 						R13Cell4.setCellValue("");
 						R13Cell4.setCellStyle(textStyle);
 					}
-					
-					
+
 					row = sheet.getRow(13);
-				Cell R14Cell1 = row.createCell(4);
+					Cell R14Cell1 = row.createCell(4);
 					if (record.getR14_eff_increase() != null) {
 						R14Cell1.setCellValue(record.getR14_eff_increase().doubleValue());
 						R14Cell1.setCellStyle(numberStyle);
@@ -416,7 +416,44 @@ public class BRRS_FORMAT_III_ReportService {
 						R14Cell4.setCellValue("");
 						R14Cell4.setCellStyle(textStyle);
 					}
-				
+					row = sheet.getRow(14);
+					Cell R15Cell1 = row.createCell(4);
+					if (record.getR15_eff_increase() != null) {
+						R15Cell1.setCellValue(record.getR15_eff_increase().doubleValue());
+						R15Cell1.setCellStyle(numberStyle);
+					} else {
+						R15Cell1.setCellValue("");
+						R15Cell1.setCellStyle(textStyle);
+					}
+
+					// R15 Col E
+					Cell R15Cell2 = row.createCell(5);
+					if (record.getR15_eff_decrease() != null) {
+						R15Cell2.setCellValue(record.getR15_eff_decrease().doubleValue());
+						R15Cell2.setCellStyle(numberStyle);
+					} else {
+						R15Cell2.setCellValue("");
+						R15Cell2.setCellStyle(textStyle);
+					}
+
+					// R15 Col F
+					Cell R15Cell3 = row.createCell(7);
+					if (record.getR15_bal_increase() != null) {
+						R15Cell3.setCellValue(record.getR15_bal_increase().doubleValue());
+						R15Cell3.setCellStyle(numberStyle);
+					} else {
+						R15Cell3.setCellValue("");
+						R15Cell3.setCellStyle(textStyle);
+					}
+					// R15 Col G
+					Cell R15Cell4 = row.createCell(8);
+					if (record.getR15_bal_decrease() != null) {
+						R15Cell4.setCellValue(record.getR15_bal_decrease().doubleValue());
+						R15Cell4.setCellStyle(numberStyle);
+					} else {
+						R15Cell4.setCellValue("");
+						R15Cell4.setCellStyle(textStyle);
+					}
 				}
 				workbook.setForceFormulaRecalculation(true);
 			} else {
@@ -550,10 +587,9 @@ public class BRRS_FORMAT_III_ReportService {
 						R13Cell4.setCellValue("");
 						R13Cell4.setCellStyle(textStyle);
 					}
-					
-					
+
 					row = sheet.getRow(13);
-				Cell R14Cell1 = row.createCell(4);
+					Cell R14Cell1 = row.createCell(4);
 					if (record.getR14_eff_increase() != null) {
 						R14Cell1.setCellValue(record.getR14_eff_increase().doubleValue());
 						R14Cell1.setCellStyle(numberStyle);
@@ -589,6 +625,44 @@ public class BRRS_FORMAT_III_ReportService {
 					} else {
 						R14Cell4.setCellValue("");
 						R14Cell4.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(14);
+					Cell R15Cell1 = row.createCell(4);
+					if (record.getR15_eff_increase() != null) {
+						R15Cell1.setCellValue(record.getR15_eff_increase().doubleValue());
+						R15Cell1.setCellStyle(numberStyle);
+					} else {
+						R15Cell1.setCellValue("");
+						R15Cell1.setCellStyle(textStyle);
+					}
+
+					// R15 Col E
+					Cell R15Cell2 = row.createCell(5);
+					if (record.getR15_eff_decrease() != null) {
+						R15Cell2.setCellValue(record.getR15_eff_decrease().doubleValue());
+						R15Cell2.setCellStyle(numberStyle);
+					} else {
+						R15Cell2.setCellValue("");
+						R15Cell2.setCellStyle(textStyle);
+					}
+
+					// R15 Col F
+					Cell R15Cell3 = row.createCell(7);
+					if (record.getR15_bal_increase() != null) {
+						R15Cell3.setCellValue(record.getR15_bal_increase().doubleValue());
+						R15Cell3.setCellStyle(numberStyle);
+					} else {
+						R15Cell3.setCellValue("");
+						R15Cell3.setCellStyle(textStyle);
+					}
+					// R15 Col G
+					Cell R15Cell4 = row.createCell(8);
+					if (record.getR15_bal_decrease() != null) {
+						R15Cell4.setCellValue(record.getR15_bal_decrease().doubleValue());
+						R15Cell4.setCellStyle(numberStyle);
+					} else {
+						R15Cell4.setCellValue("");
+						R15Cell4.setCellStyle(textStyle);
 					}
 				}
 				workbook.setForceFormulaRecalculation(true);
@@ -828,7 +902,7 @@ public class BRRS_FORMAT_III_ReportService {
 					balanceCell.setCellStyle(balanceStyle);
 
 					// AVERAGE (right aligned, 3 decimal places)
-					 balanceCell = row.createCell(4);
+					balanceCell = row.createCell(4);
 					if (item.getAverage() != null) {
 						balanceCell.setCellValue(item.getAverage().doubleValue());
 					} else {
@@ -898,7 +972,7 @@ public class BRRS_FORMAT_III_ReportService {
 			String acctBalanceInpula = request.getParameter("acctBalanceInpula");
 			String average = request.getParameter("average");
 			String acctName = request.getParameter("acctName");
-			String reportDateStr = request.getParameter("reportDate");
+			String reportDateStr = request.getParameter("REPORT_DATE");
 
 			logger.info("Received update for ACCT_NO: {}", acctNo);
 

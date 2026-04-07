@@ -1506,7 +1506,7 @@ public class RegulatoryReportServices {
 			break;
 			
 			
-		case "FORMMAT_III":
+		case "FORMAT_III":
 			repsummary = BRRS_FORMAT_III_ReportService.getFORMAT_IIIView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
@@ -6833,7 +6833,7 @@ public class RegulatoryReportServices {
 				response = BRRS_PL_SCHS_Reportservice.updateDetailEdit(request);
 				break;
 			case "FORMAT_III":
-				response = BRRS_PL_SCHS_Reportservice.updateDetailEdit(request);
+				response = BRRS_FORMAT_III_ReportService.updateDetailEdit(request);
 				break;
 
 			case "NSFR":
