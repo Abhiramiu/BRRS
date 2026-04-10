@@ -1222,7 +1222,10 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 									<table
 										class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
 										id="reports">
-										<thead class="thead-light">
+										<thead class="thead-light" 
+										style="top: 0; position: sticky; border: 2px solid black; background-color: #b3b6b9; z-index: 1;">
+										
+										
 											<tr style="background-color: #b3b6b9">
 												<th colspan="9"
 													style="text-align: center; background-color: #D8D8D8;  padding-left: 60px; font-weight:bold;  color: #000000;">
@@ -1234,7 +1237,7 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 
 											</tr>
 
-											<tr style="background-color: #b3b6b9">
+											<tr style="background-color: #b3b6b9" class="sticky-header-table table table-bordered table-cell table-sm table-condensed">
 
 
 												<th
@@ -1255,7 +1258,7 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 											</tr>
 
 
-											<tr style="background-color: #b3b6b9">
+											<tr style="background-color: #b3b6b9" class="sticky-header-table table table-bordered table-cell table-sm table-condensed">
 
 
 												<th
@@ -1286,53 +1289,53 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 											</tr>
 
 
-											<tr style="background-color: #b3b6b9">
+											<tr style="background-color: #b3b6b9; position: sticky;" class="sticky-header-table table table-bordered table-cell table-sm table-condensed">
 
 												<th
-													style="text-align: center; background-color: #D8D8D8;  padding: 10px; font-weight:bold; width:200px;  color: #000000;">
+													style="text-align: right; background-color: #D8D8D8;  padding: 10px; font-weight:bold; width:200px;  color: #000000; position: sticky;">
 												</th>
 
 												<th
-													style="text-align: center; background-color: #D8D8D8;  padding: 10px; font-weight:bold; width:200px;  color: #000000;">
+													style="text-align: right; background-color: #D8D8D8;  padding: 10px; font-weight:bold; width:200px;  color: #000000; position: sticky;">
 													LC
 												</th>
 
 												<th
-													style="text-align: center; background-color: #D8D8D8;  padding: 10px; font-weight:bold; width:200px;  color: #000000;">
+													style="text-align: right; background-color: #D8D8D8;  padding: 10px; font-weight:bold; width:200px;  color: #000000; position: sticky;">
 													INRs
 												</th>
 
 
 												<th
-													style="text-align: center; background-color: #D8D8D8;  padding: 10px; font-weight:bold; width:200px;  color: #000000;">
+													style="text-align: right; background-color: #D8D8D8;  padding: 10px; font-weight:bold; width:200px;  color: #000000; position: sticky;">
 													LC
 												</th>
 
 
 												<th
-													style="text-align: center; background-color: #D8D8D8;  padding: 10px; font-weight:bold; width:200px;  color: #000000;">
+													style="text-align: right; background-color: #D8D8D8;  padding: 10px; font-weight:bold; width:200px;  color: #000000; position: sticky;">
 													INRs
 												</th>
 
 												<th
-													style="text-align: center; background-color: #D8D8D8;  padding: 10px; font-weight:bold; width:200px;  color: #000000;">
+													style="text-align: right; background-color: #D8D8D8;  padding: 10px; font-weight:bold; width:200px;  color: #000000; position: sticky;">
 													LC
 												</th>
 
 												<th
-													style="text-align: center; background-color: #D8D8D8;  padding: 10px; font-weight:bold; width:200px;  color: #000000;">
+													style="text-align: right; background-color: #D8D8D8;  padding: 10px; font-weight:bold; width:200px;  color: #000000; position: sticky;">
 													INRs
 												</th>
 
 
 												<th
-													style="text-align: center; background-color: #D8D8D8;  padding: 10px; font-weight:bold; width:200px;  color: #000000;">
+													style="text-align: right; background-color: #D8D8D8;  padding: 10px; font-weight:bold; width:200px;  color: #000000; position: sticky;">
 													LC
 												</th>
 
 
 												<th
-													style="text-align: center; background-color: #D8D8D8;  padding: 10px; font-weight:bold; width:200px;  color: #000000;">
+													style="text-align: right; background-color: #D8D8D8;  padding: 10px; font-weight:bold; width:200px;  color: #000000; position: sticky;">
 													INRs
 												</th>
 
@@ -1344,14 +1347,14 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 										</thead>
 
 
-										<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
+										<tbody th:each="report: ${reportsummary}" style="font-family: Arial;" >
 
 
 
 											<tr>
 
 											    <!-- R11 A -->
-											    <td style="text-align: left;" th:text="${report?.r11_product ?: ''}"></td>
+											    <td style="text-align: left; font-weight:bold;" th:text="${report?.r11_product ?: ''}"></td>
 
 											    <!-- R11 B -->
 											    <td id="r11_31_asse_lc" style="text-align: right; padding-right:10px;"
@@ -1423,7 +1426,7 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 											<tr>
 
 											    <!-- R12 A -->
-											    <td style="text-align: left;" th:text="${report?.r12_product ?: ''}"></td>
+											    <td style="text-align: left; font-weight:bold;" th:text="${report?.r12_product ?: ''}"></td>
 
 											    <!-- R12 B -->
 											    <td id="r12_31_asse_lc" style="text-align: right; padding-right:10px;"
@@ -1494,7 +1497,7 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 											<tr>
 
 											    <!-- R13 A -->
-											    <td style="text-align: left;" th:text="${report?.r13_product ?: ''}"></td>
+											    <td style="text-align: left; font-weight:bold;" th:text="${report?.r13_product ?: ''}"></td>
 
 											    <!-- R13 B -->
 											    <td id="r13_31_asse_lc" style="text-align: right; padding-right:10px;"
@@ -1566,7 +1569,7 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 											<tr>
 
 											    <!-- R14 A -->
-											    <td style="text-align: left;" th:text="${report?.r14_product ?: ''}"></td>
+											    <td style="text-align: left; font-weight:bold;" th:text="${report?.r14_product ?: ''}"></td>
 
 											    <!-- R14 B -->
 											    <td id="r14_31_asse_lc" style="text-align: right; padding-right:10px;"
@@ -1637,7 +1640,7 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 											<tr>
 
 											    <!-- R15 A -->
-											    <td style="text-align: left;" th:text="${report?.r15_product ?: ''}"></td>
+											    <td style="text-align: left; font-weight:bold;" th:text="${report?.r15_product ?: ''}"></td>
 
 											    <!-- R15 B -->
 											    <td id="r15_31_asse_lc" style="text-align: right; padding-right:10px;"
@@ -1708,7 +1711,7 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 											<tr>
 
 											    <!-- R16 A -->
-											    <td style="text-align: left;" th:text="${report?.r16_product ?: ''}"></td>
+											    <td style="text-align: left; font-weight:bold;" th:text="${report?.r16_product ?: ''}"></td>
 
 											    <!-- R16 B -->
 											    <td id="r16_31_asse_lc" style="text-align: right; padding-right:10px;"
@@ -1781,7 +1784,7 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 											<tr>
 
 											    <!-- R17 A -->
-											    <td style="text-align: left;" th:text="${report?.r17_product ?: ''}"></td>
+											    <td style="text-align: left; font-weight:bold;" th:text="${report?.r17_product ?: ''}"></td>
 
 											    <!-- R17 B -->
 											    <td id="r17_31_asse_lc" style="text-align: right; padding-right:10px;"
@@ -1852,7 +1855,7 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 											<tr>
 
 											    <!-- R18 A -->
-											    <td style="text-align: left;" th:text="${report?.r18_product ?: ''}"></td>
+											    <td style="text-align: left; font-weight:bold;" th:text="${report?.r18_product ?: ''}"></td>
 
 											    <!-- R18 B -->
 											    <td id="r18_31_asse_lc" style="text-align: right; padding-right:10px;"
@@ -1924,7 +1927,7 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 											<tr>
 
 											    <!-- R19 A -->
-											    <td style="text-align: left;" th:text="${report?.r19_product ?: ''}"></td>
+											    <td style="text-align: left; font-weight:bold;" th:text="${report?.r19_product ?: ''}"></td>
 
 											    <!-- R19 B -->
 											    <td id="r19_31_asse_lc" style="text-align: right; padding-right:10px;"
@@ -1995,7 +1998,7 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 											<tr>
 
 											    <!-- R20 A -->
-											    <td style="text-align: left;" th:text="${report?.r20_product ?: ''}"></td>
+											    <td style="text-align: left; font-weight:bold;" th:text="${report?.r20_product ?: ''}"></td>
 
 											    <!-- R20 B -->
 											    <td id="r20_31_asse_lc" style="text-align: right; padding-right:10px;"
@@ -2066,7 +2069,7 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 											<tr>
 
 											    <!-- R21 A -->
-											    <td style="text-align: left;" th:text="${report?.r21_product ?: ''}"></td>
+											    <td style="text-align: left; font-weight:bold;" th:text="${report?.r21_product ?: ''}"></td>
 
 											    <!-- R21 B -->
 											    <td id="r21_31_asse_lc" style="text-align: right; padding-right:10px;"
@@ -2138,7 +2141,7 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 											<tr>
 
 											    <!-- R22 A -->
-											    <td style="text-align: left;" th:text="${report?.r22_product ?: ''}"></td>
+											    <td style="text-align: left; font-weight:bold;" th:text="${report?.r22_product ?: ''}"></td>
 
 											    <!-- R22 B -->
 											    <td id="r22_31_asse_lc" style="text-align: right; padding-right:10px;"
@@ -2209,7 +2212,7 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 											<tr>
 
 											    <!-- R23 A -->
-											    <td style="text-align: left;" th:text="${report?.r23_product ?: ''}"></td>
+											    <td style="text-align: left; font-weight:bold;" th:text="${report?.r23_product ?: ''}"></td>
 
 											    <!-- R23 B -->
 											    <td id="r23_31_asse_lc" style="text-align: right; padding-right:10px;"
@@ -2244,7 +2247,7 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 											        onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											    <!-- R23 F -->
-											    <td id="r23_30_asse_lc" style="text-align: right; padding-right:10px;"
+											    <td id="r23_30_asse_lc" style="text-align: right; padding-right:10px;" class="green-cell" 
 											        th:text="${report?.r23_30_asse_lc != null 
 											        ? #numbers.formatDecimal(report.r23_30_asse_lc, 1, 'COMMA', 0, 'POINT') 
 											        : ''}"
@@ -2252,7 +2255,7 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 											        onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											    <!-- R23 G -->
-											    <td id="r23_30_asse_inr" style="text-align: right; padding-right:10px;"
+											    <td id="r23_30_asse_inr" style="text-align: right; padding-right:10px;" class="green-cell" 
 											        th:text="${report?.r23_30_asse_inr != null 
 											        ? #numbers.formatDecimal(report.r23_30_asse_inr, 1, 'COMMA', 0, 'POINT') 
 											        : ''}"
@@ -2280,7 +2283,7 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 											<tr>
 
 											    <!-- R24 A -->
-											    <td style="text-align: left;" th:text="${report?.r24_product ?: ''}"></td>
+											    <td style="text-align: left; font-weight:bold;" th:text="${report?.r24_product ?: ''}"></td>
 
 											    <!-- R24 B -->
 											    <td id="r24_31_asse_lc" style="text-align: right; padding-right:10px;"
@@ -2352,7 +2355,7 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 											<tr>
 
 											    <!-- R25 A -->
-											    <td style="text-align: left;" th:text="${report?.r25_product ?: ''}"></td>
+											    <td style="text-align: left; font-weight:bold;" th:text="${report?.r25_product ?: ''}"></td>
 
 											    <!-- R25 B -->
 											    <td id="r25_31_asse_lc" style="text-align: right; padding-right:10px;"

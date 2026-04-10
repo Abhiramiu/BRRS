@@ -1918,10 +1918,19 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 
 
 						<!-- Modify button -->
-						<button type="button" class="custom-tab-btn"
+						<!--<button type="button" class="custom-tab-btn"
 							onclick="showmodify(this);" title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button>
+							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button>-->
+							
+							<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+														title="Click to EDIT Records" th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
+														th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
+														id="addRecord">
+														Modify
+													</button>
+							
+							
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn"
@@ -62527,7 +62536,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 						<div class="row formline" style="margin-top: 10px;">
 							<label class="col-sm-2">Report Label</label>
 							<div class="col-sm-3">
-								<input type="text" th:field="*{reportLable}"
+								<input type="text" th:field="*{reportLabel}"
 									class="form-control form-control-sm" readonly />
 							</div>
 

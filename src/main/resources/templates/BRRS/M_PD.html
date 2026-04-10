@@ -382,7 +382,7 @@ label.error {
 
 			</style>
 
-
+			
 
 
 	<script th:inline="javascript">
@@ -558,13 +558,13 @@ label.error {
 			
 		}
 
-		function closemodel() {
+	/*	function closemodel() {
 			// Hide the modals
 			$('#alert').modal('hide');
 			$('#resultModal').modal('hide');
 
 		}
-
+*/
 
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
@@ -2322,11 +2322,18 @@ $(document).ready(function () {
 </script>
 
 <script>
+				let isDetailPageUpdate = false;
+				let previousUrl = document.referrer;
+				
+				let isSummaryPage = false;
+				</script>
+
+<script>
 	
 
 	// This function is for closing the modal after an action is complete.
 	// It hides the result and loader modals and reloads the page.
-	function closemodels() {
+	/*function closemodels() {
 	    $("#resultModal").modal("hide");
 	    $('#loader').modal('hide');
 
@@ -2335,8 +2342,31 @@ $(document).ready(function () {
 		        location.reload();
 		    }, 300);
 	}
+*/
 
-	
+function closemodels() {
+	    $("#resultModal").modal("hide");
+	    $('#loader').modal('hide');
+	    $('#alert').modal('hide');
+
+	    // ✅ Detail page (already working)
+	    if (isDetailPageUpdate) {
+	        setTimeout(function () {
+	            if (previousUrl) {
+	                window.location.href = previousUrl;
+	            } else {
+	                window.history.back();
+	            }
+	        }, 300);
+	    }
+
+	    // ✅ Summary page (NEW)
+	    else if (isSummaryPage) {
+	        setTimeout(function () {
+	            location.reload();   // 🔥 reload same page
+	        }, 300);
+	    }
+	}
 
 	
 </script>	
@@ -2392,6 +2422,7 @@ $(document).ready(function () {
 	        processData: false,
 	        contentType: false,
 	        success: function () {
+				isSummaryPage = true;
 	            $("#resultModalLabel").text("BRRS");
 	            $("#resultModalBody").text("Modified Successfully");
 	            $("#resultModal").modal("show");
@@ -2409,6 +2440,8 @@ $(document).ready(function () {
 	    });
 	}
 
+	
+	
 	</script>
 	
 			<script th:inline="javascript">
@@ -2550,6 +2583,7 @@ $(document).ready(function () {
 
                 // ✅ Handle SUCCESS & NON-SUCCESS (Information)
                 if (response && response.toLowerCase().includes('success')) {
+					isDetailPageUpdate = true;
                 	showResultModal('BRRS', response);
                 } else {
                 	showResultModal('Information', response || 'No data updated.');
