@@ -395,26 +395,7 @@ PURPOSE		: BRRSREPORT
             Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
                 location.href = Callurl;
             console.log(Callurl);
-            /*  $.ajax({
-               type: 'get',
-               url: Callurl,
-               beforeSend: function () {
-                 $('#loader').modal('show'); // 🔄 Show loader
-               },
-               success: function (data) {
-                 $('.content').html(data);
-                 //$("#detailsbtn").addClass("active");
-                 //tablepagination();
-               },
-               complete: function () {
-                 $('#loader').modal('hide');
-               },
-               error: function () {
-                    $('#loader').modal('hide');
-                 alert("Something went wrongss. Please try again.");
-                
-               }
-             }); */
+           
         }
 
         function showsummary() {
@@ -789,35 +770,7 @@ PURPOSE		: BRRSREPORT
     </script>
 
     <script>
-        // function calculateR12() {
-        //     $("tr").each(function () {
-
-        //         let A = parseFloat(
-        //             $(this).find(".r12_fig_bal_sheet").val()?.replace(/,/g, "")
-        //         ) || 0;
-
-        //         let B = parseFloat(
-        //             $(this).find(".r12_amt_statement_adj").val()?.replace(/,/g, "")
-        //         ) || 0;
-
-        //         let total = A + B;
-
-        //         $(this).find(".r12_net_amt")
-        //             .val(total.toLocaleString('en-US'));
-        //     });
-        // }
-
-        // $(document).ready(function () {
-        //     // calculate on load
-        //     calculateR12();
-
-        //     // calculate on change
-        //     $(document).on(
-        //         "input",
-        //         ".r12_fig_bal_sheet, .r12_amt_statement_adj",
-        //         calculateR12
-        //     );
-        // });
+  
 
         function calculateRows(rows) {
             $("tr").each(function () {
@@ -914,15 +867,6 @@ PURPOSE		: BRRSREPORT
             }
         }
 
-        //--------------------------------------
-        // CALCULATE TOTALS (D13)=SUM(D9:D12)
-        //--------------------------------------
-        //--------------------------------------
-        // CALCULATE D13 (fig_bal_sheet total)
-        //--------------------------------------
-        //--------------------------------------
-        // GET / SET CELL VALUE
-        //--------------------------------------
         function getCellValue(selector) {
             let el = $(selector);
             if (!el.length) return 0;
@@ -1121,29 +1065,6 @@ PURPOSE		: BRRSREPORT
         }
 
 
-
-        //  function calculateTotalsG63() {
-        //     const values = [
-        //         { selector: "#r48_amt_statement_adj", sign: 1 },
-        //         { selector: "#r49_amt_statement_adj", sign: 1 },
-        //         { selector: "#r50_amt_statement_adj", sign: 1 },
-        //         { selector: "#r51_amt_statement_adj", sign: 1 },
-        //         { selector: "#r52_amt_statement_adj", sign: 1 },
-        //         { selector: "#r53_amt_statement_adj", sign: 1 },
-        //         { selector: "#r54_amt_statement_adj", sign: 1 },
-        //         { selector: "#r55_amt_statement_adj", sign: 1 },
-        //         { selector: "#r56_amt_statement_adj", sign: 1 },
-        //         { selector: "#r57_amt_statement_adj", sign: 1 },
-        //         { selector: "#r58_amt_statement_adj", sign: 1 },
-        //         { selector: "#r59_amt_statement_adj", sign: 1 },
-        //         { selector: "#r60_amt_statement_adj", sign: 1 },
-        //         { selector: "#r61_amt_statement_adj", sign: 1 },
-        //         { selector: "#r62_amt_statement_adj", sign: 1 },
-        //     ];
-
-        //     let total = values.reduce((sum, item) => sum + getCellValue(item.selector) * item.sign, 0);
-        //     setCellValue("#r63_amt_statement_adj_bwp", total);
-        // }
         function calculateTotalsK63() {
             const rows = ["#r62_bal_sub_bwp"];
             let total = rows.reduce((sum, sel) => sum + getCellValue(sel), 0);
@@ -3967,7 +3888,7 @@ PURPOSE		: BRRSREPORT
                                                 <td id="ROW54" style="font-weight: bold;">
                                                     <input class="display-input Show_input" type="text"
                                                         id="r54_other_income" name="r54_other_income"
-                                                        th:value="'(b)Depreciation on Banks Property  Leased Assets'"
+                                                        th:value="'b)Depreciation on Banks Property  Leased Assets'"
                                                         style="background-color:#FFFFFF;width:750px;height:23px;border-color:transparent;text-align:left;"
                                                         readonly />
                                                 </td>
