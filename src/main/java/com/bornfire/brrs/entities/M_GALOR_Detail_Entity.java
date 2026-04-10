@@ -25,7 +25,7 @@ public class M_GALOR_Detail_Entity {
    private String custId;
 
    @Column(name = "ACCT_NUMBER")
-   private String acctNumber;
+   private String acct_number;
 
    @Column(name = "ACCT_NAME")
    private String acctName;
@@ -119,11 +119,11 @@ public class M_GALOR_Detail_Entity {
    }
 
    public String getAcctNumber() {
-	return acctNumber;
+	return acct_number;
    }
 
    public void setAcctNumber(String acctNumber) {
-	this.acctNumber = acctNumber;
+	this.acct_number = acctNumber;
    }
 
    public String getAcctName() {

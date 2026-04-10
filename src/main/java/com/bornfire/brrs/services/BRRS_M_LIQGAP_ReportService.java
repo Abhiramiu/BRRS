@@ -235,75 +235,86 @@ public class BRRS_M_LIQGAP_ReportService {
 }
 
 
-	public void updateReport(  M_LIQGAP_Manual_Summary_Entity request) {
+	@Transactional
+	public void updateReport(M_LIQGAP_Manual_Summary_Entity request) {
 
-	    System.out.println("Came to services1");
+	    System.out.println("Entered updateReport service");
 	    System.out.println("Report Date: " + request.getReportDate());
 
+	    List<M_LIQGAP_Manual_Summary_Entity> list =
+	            BRRS_M_LIQGAP_Manual_Summary_Repo.getdatabydateList(request.getReportDate());
 
-	    M_LIQGAP_Manual_Summary_Entity existing = BRRS_M_LIQGAP_Manual_Summary_Repo.findById(request.getReportDate())
-	            .orElseThrow(() -> new RuntimeException(
-	                    "Record not found for REPORT_DATE: " + request.getReportDate()));
+	    if (list.isEmpty()) {
+	        throw new RuntimeException(
+	                "Record not found for REPORT_DATE: " + request.getReportDate());
+	    }
+
+	    M_LIQGAP_Manual_Summary_Entity existing = list.get(0);
 
 	    try {
 
-	        String[] fields = {
-	                "non_interest_bearing",
-	                "first_month",
-	                "third_month",
-	                "last_month",
-	                "first_year",
-	                "fifth_year"
-	        };
-
-	        // Rows to update
 	        int[] rows = {21, 32, 33, 34};
 
 	        for (int row : rows) {
-	            copyFields(request, existing, row, fields);
+
+	            String prefix = "r" + row + "_";
+
+	            // ✅ FIX: Row-wise fields (based on your entity)
+	            String[] fields;
+
+	            if (row == 21 || row == 32) {
+	                fields = new String[] { "non_interest_bearing" };
+	            } 
+	            else if (row == 33) {
+	                fields = new String[] {
+	                        "non_interest_bearing",
+	                        "third_month",
+	                        "last_month",
+	                        "first_year",
+	                        "fifth_year"
+	                };
+	            } 
+	            else if (row == 34) {
+	                fields = new String[] { "first_month" };
+	            } 
+	            else {
+	                continue;
+	            }
+
+	            for (String field : fields) {
+
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
+
+	                try {
+
+	                    Method getter = M_LIQGAP_Manual_Summary_Entity.class
+	                            .getMethod(getterName);
+
+	                    Method setter = M_LIQGAP_Manual_Summary_Entity.class
+	                            .getMethod(setterName, getter.getReturnType());
+
+	                    Object newValue = getter.invoke(request);
+
+	                    System.out.println("Updating: " + prefix + field + " = " + newValue);
+
+	                    setter.invoke(existing, newValue);
+
+	                } catch (NoSuchMethodException e) {
+	                    System.out.println("Field NOT FOUND: " + prefix + field);
+	                }
+	            }
 	        }
 
 	    } catch (Exception e) {
 	        throw new RuntimeException("Error while updating LIQGAP report fields", e);
 	    }
 
-	    // Save updated record
-	    BRRS_M_LIQGAP_Manual_Summary_Repo.save(existing);
+	    BRRS_M_LIQGAP_Manual_Summary_Repo.saveAndFlush(existing);
+
+	    System.out.println("LIQGAP report updated successfully.");
 	}
-
-
-	/**
-	 * Helper method to copy fields dynamically
-	 */
-	private void copyFields(M_LIQGAP_Manual_Summary_Entity source,
-	                        M_LIQGAP_Manual_Summary_Entity target,
-	                        int row,
-	                        String[] fields) {
-
-	    String prefix = "r" + row + "_";
-
-	    for (String field : fields) {
-
-	        String getterName = "get" + prefix + field;
-	        String setterName = "set" + prefix + field;
-
-	        try {
-
-	            Method getter = M_LIQGAP_Manual_Summary_Entity.class.getMethod(getterName);
-	            Method setter = M_LIQGAP_Manual_Summary_Entity.class.getMethod(
-	                    setterName, getter.getReturnType());
-
-	            Object newValue = getter.invoke(source);
-	            setter.invoke(target, newValue);
-
-	        } catch (NoSuchMethodException e) {
-	            continue;
-	        } catch (Exception e) {
-	            throw new RuntimeException("Error copying field " + prefix + field, e);
-	        }
-	    }
-	}
-
+	
 	
 	public byte[] getBRRS_M_LIQGAPExcel(String filename, String reportId, String fromdate, String todate, String currency,
 	        String dtltype, String type, String format, BigDecimal version) throws Exception {

@@ -31153,7 +31153,7 @@ public class BRRS_M_GALOR_ReportService {
 		ModelAndView mv = new ModelAndView("BRRS/M_GALOR"); // ✅ match the report name
 		System.out.println("Hello");
 		if (acctNo != null) {
-			M_GALOR_Detail_Entity galorEntity = m_galor_detail_Repo.findByAcctNumber(acctNo);
+			M_GALOR_Detail_Entity galorEntity = m_galor_detail_Repo.findByAcctnumber(acctNo);
 			if (galorEntity != null && galorEntity.getReportDate() != null) {
 				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(galorEntity.getReportDate());
 				mv.addObject("asondate", formattedDate);
@@ -31170,7 +31170,7 @@ public class BRRS_M_GALOR_ReportService {
 		ModelAndView mv = new ModelAndView("BRRS/M_GALOR"); // ✅ match the report name
 
 		if (acctNo != null) {
-			M_GALOR_Detail_Entity galorEntity = m_galor_detail_Repo.findByAcctNumber(acctNo);
+			M_GALOR_Detail_Entity galorEntity = m_galor_detail_Repo.findByAcctnumber(acctNo);
 			if (galorEntity != null && galorEntity.getReportDate() != null) {
 				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(galorEntity.getReportDate());
 				mv.addObject("asondate", formattedDate);
@@ -31194,7 +31194,7 @@ public class BRRS_M_GALOR_ReportService {
 
 			logger.info("Received update for ACCT_NO: {}", acctNo);
 
-			M_GALOR_Detail_Entity existing = m_galor_detail_Repo.findByAcctNumber(acctNo);
+			M_GALOR_Detail_Entity existing = m_galor_detail_Repo.findByAcctnumber(acctNo);
 			if (existing == null) {
 				logger.warn("No record found for ACCT_NO: {}", acctNo);
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");

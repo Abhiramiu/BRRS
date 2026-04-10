@@ -13081,15 +13081,14 @@ PURPOSE		: BRRS REPORT
 										<tr th:each="report, srlno : ${reportdetails}">
 
 										    <td>
-										        <a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
-										            <i class="fas fa-edit"
-										               style="color: black; cursor:pointer;"
-										               th:attr="data-acctNo=${report.acctNumber},
-										                        data-asondate=${report.reportDate != null ? #dates.format(report.reportDate,'dd-MM-yyyy') : ''},
-										                        data-type=${type}"
-										               onclick="openDetail(this, 'edit')">
-										            </i>
-										        </a>
+												<a data-toggle="tooltip" class="editrec"
+												title="Click to Edit this Record">
+												<i class="fas fa-edit"
+												   th:attr="data-acctNo=${report.acctNumber},
+												            data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')}"
+												   onclick="openDetail(this, 'edit')">
+												</i>
+                                              </a>
 										    </td>
 
 										    <td th:text="${srlno.index + 1}"></td>
