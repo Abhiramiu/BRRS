@@ -464,10 +464,10 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 		}
 
 		function showsummary() {
-				$('#loader').modal('show');
-				var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/
-					location.href = Callurl;
-			}
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/
+				location.href = Callurl;
+		}
 
 
 	</script>
@@ -1490,13 +1490,11 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 										<tr>
 											<td style="padding-left: 30px;" th:text="${report.r14_product}"></td>
 											<td th:text="${report.r14_cross_ref}" style="text-align: left; "></td>
-											<td 
-												style="padding-left: 20px; text-align: right;"
-										
-													th:text="${#numbers.formatDecimal(report.r14_month_end, 0, 'COMMA', 0, 'POINT')}" 
-id="R14_month_end" name="R14_month_end"></td>
-													
-											
+											<td style="padding-left: 20px; text-align: right;"
+												th:text="${#numbers.formatDecimal(report.r14_month_end, 0, 'COMMA', 0, 'POINT')}"
+												id="R14_month_end" name="R14_month_end"></td>
+
+
 											<td th:text="${#numbers.formatDecimal(report.r14_average, 0, 'COMMA', 0, 'POINT')}"
 												lick="showdetailsbyRowAndColumn(this)" style="text-align: right; ">
 											</td>
@@ -1741,12 +1739,9 @@ id="R14_month_end" name="R14_month_end"></td>
 
 											<td id="ROW34"
 												style="padding-left: 20px; font-weight: bold;text-align: right;">
-												<input class="display-input Show_input" type="text"
-													th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R34_MONTH_END != null 
+												<input class="display-input Show_input" type="text" th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R34_MONTH_END != null 
 ? #numbers.formatDecimal(reportsummary1[0].R34_MONTH_END, 1,'COMMA', 0, 'POINT') 
-: '0'}"
-													id="R34_MONTH_END" name="R34_MONTH_END"
-													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+: '0'}" id="R34_MONTH_END" name="R34_MONTH_END" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
 											</td>
 											<td th:text="${#numbers.formatDecimal(report.r34_average, 0, 'COMMA', 0, 'POINT')}"
@@ -1784,12 +1779,9 @@ id="R14_month_end" name="R14_month_end"></td>
 											<td th:text="${report.r37_cross_ref}" style="text-align:left; "></td>
 											<td id="ROW37"
 												style="padding-left: 20px; font-weight: bold;text-align: right;">
-												<input class="display-input Show_input" type="text"
-												th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R37_MONTH_END != null 
+												<input class="display-input Show_input" type="text" th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R37_MONTH_END != null 
 ? #numbers.formatDecimal(reportsummary1[0].R37_MONTH_END, 1,'COMMA', 0, 'POINT') 
-: '0'}"
-													id="R37_MONTH_END" name="R37_MONTH_END"
-													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+: '0'}" id="R37_MONTH_END" name="R37_MONTH_END" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
 											</td>
 											<td th:text="${#numbers.formatDecimal(report.r37_average, 0, 'COMMA', 0, 'POINT')}"
@@ -1817,8 +1809,7 @@ id="R14_month_end" name="R14_month_end"></td>
 											<td th:text="${#numbers.formatDecimal(report.r39_month_end, 0, 'COMMA', 0, 'POINT')}"
 												th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R39_MONTH_END != null 
 ? #numbers.formatDecimal(reportsummary1[0].R39_MONTH_END, 1,'COMMA', 0, 'POINT') 
-: '0'}"
-												th:attr="RowId='R39', ColumnId='C3'" id="r39_month_end"
+: '0'}" th:attr="RowId='R39', ColumnId='C3'" id="r39_month_end"
 												style="text-align: right; background-color: rgb(107, 122, 143);color: white;">
 											</td>
 											<td th:text="${#numbers.formatDecimal(report.r39_average, 0, 'COMMA', 0, 'POINT')}"
@@ -1867,12 +1858,9 @@ id="R14_month_end" name="R14_month_end"></td>
 											<td style="padding-left: 30px;" th:text="${report.r43_product}"></td>
 											<td th:text="${report.r43_cross_ref}" style="text-align: left; "></td>
 											<td id="ROW43" style=" font-weight: bold;text-align: right;">
-												<input class="display-input Show_input" type="text"
-													th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R43_MONTH_END != null 
+												<input class="display-input Show_input" type="text" th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R43_MONTH_END != null 
 ? #numbers.formatDecimal(reportsummary1[0].R43_MONTH_END, 1,'COMMA', 0, 'POINT') 
-: '0'}"
-id="R43_MONTH_END" name="R43_MONTH_END"
-													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+: '0'}" id="R43_MONTH_END" name="R43_MONTH_END" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
 											</td>
 											<td th:text="${#numbers.formatDecimal(report.r43_average, 0, 'COMMA', 0, 'POINT')}"
@@ -1963,12 +1951,9 @@ id="R43_MONTH_END" name="R43_MONTH_END"
 											<td th:text="${report.r50_cross_ref}" style="text-align: left; "></td>
 											<td id="ROW50"
 												style="padding-left: 20px; font-weight: bold;text-align: right;">
-												<input class="display-input Show_input" type="text"
-													th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R50_MONTH_END != null 
+												<input class="display-input Show_input" type="text" th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R50_MONTH_END != null 
 ? #numbers.formatDecimal(reportsummary1[0].R50_MONTH_END, 1,'COMMA', 0, 'POINT') 
-: '0'}"
-id="R50_MONTH_END" name="R50_MONTH_END"
-													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+: '0'}" id="R50_MONTH_END" name="R50_MONTH_END" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
 											</td>
 											<td th:text="${#numbers.formatDecimal(report.r50_average, 0, 'COMMA', 0, 'POINT')}"
@@ -1981,12 +1966,9 @@ id="R50_MONTH_END" name="R50_MONTH_END"
 											<td th:text="${report.r51_cross_ref}" style="text-align: left; "></td>
 											<td id="ROW51"
 												style="padding-left: 20px; font-weight: bold;text-align: right;">
-												<input class="display-input Show_input" type="text"
-													th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R51_MONTH_END != null 
+												<input class="display-input Show_input" type="text" th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R51_MONTH_END != null 
 ? #numbers.formatDecimal(reportsummary1[0].R51_MONTH_END, 1,'COMMA', 0, 'POINT') 
-: '0'}"
-id="R51_MONTH_END" name="R51_MONTH_END"
-													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+: '0'}" id="R51_MONTH_END" name="R51_MONTH_END" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
 											</td>
 											<td th:text="${#numbers.formatDecimal(report.r51_average, 0, 'COMMA', 0, 'POINT')}"
@@ -1999,12 +1981,9 @@ id="R51_MONTH_END" name="R51_MONTH_END"
 											<td th:text="${report.r52_cross_ref}" style="text-align: left; "></td>
 											<td id="ROW52"
 												style="padding-left: 20px; font-weight: bold;text-align: right;">
-												<input class="display-input Show_input" type="text"
-													th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R52_MONTH_END != null 
+												<input class="display-input Show_input" type="text" th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R52_MONTH_END != null 
 ? #numbers.formatDecimal(reportsummary1[0].R52_MONTH_END, 1,'COMMA', 0, 'POINT') 
-: '0'}"
-id="R52_MONTH_END" name="R52_MONTH_END"
-													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+: '0'}" id="R52_MONTH_END" name="R52_MONTH_END" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
 											</td>
 											<td th:text="${#numbers.formatDecimal(report.r52_average, 0, 'COMMA', 0, 'POINT')}"
@@ -2069,12 +2048,9 @@ id="R52_MONTH_END" name="R52_MONTH_END"
 											<td th:text="${report.r57_cross_ref}" style="text-align: left; "></td>
 											<td id="ROW57"
 												style="padding-left: 20px; font-weight: bold;text-align: right;">
-												<input class="display-input Show_input" type="text"
-													th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R57_MONTH_END != null 
+												<input class="display-input Show_input" type="text" th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R57_MONTH_END != null 
 ? #numbers.formatDecimal(reportsummary1[0].R57_MONTH_END, 1,'COMMA', 0, 'POINT') 
-: '0'}"
-id="R57_MONTH_END" name="R57_MONTH_END"
-													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+: '0'}" id="R57_MONTH_END" name="R57_MONTH_END" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
 											</td>
 											<td th:text="${#numbers.formatDecimal(report.r57_average, 0, 'COMMA', 0, 'POINT')}"
@@ -2099,12 +2075,9 @@ id="R57_MONTH_END" name="R57_MONTH_END"
 											<td th:text="${report.r59_cross_ref}" style="text-align: left; "></td>
 											<td id="ROW59"
 												style="padding-left: 20px; font-weight: bold;text-align: right;">
-												<input class="display-input Show_input" type="text"
-													th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R59_MONTH_END != null 
+												<input class="display-input Show_input" type="text" th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R59_MONTH_END != null 
 ? #numbers.formatDecimal(reportsummary1[0].R59_MONTH_END, 1,'COMMA', 0, 'POINT') 
-: '0'}"
-id="R59_MONTH_END" name="R59_MONTH_END"
-													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+: '0'}" id="R59_MONTH_END" name="R59_MONTH_END" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
 											</td>
 											<td th:text="${#numbers.formatDecimal(report.r59_average, 0, 'COMMA', 0, 'POINT')}"
@@ -2172,8 +2145,8 @@ id="R59_MONTH_END" name="R59_MONTH_END"
 										<th>CUST ID</th>
 										<th>ACCT NO</th>
 										<th>ACCT NAME</th>
-												<th style="text-align:right;width: 250px;">CREDIT EQUIVALENT</th>
-										<th style="text-align:right !important;">DEBIT EQUIVALENT</th>
+										<th style="text-align:right;width: 250px;">ACCT BALANCE IN PULA</th>
+										<!--	<th style="text-align:right !important;">DEBIT EQUIVALENT</th>-->
 										<th>REPORT LABEL</th>
 										<th style="width: 250px;">REPORT ADDL CRITERIA 1</th>
 										<th>REPORT_DATE</th>
@@ -2194,9 +2167,9 @@ id="R59_MONTH_END" name="R59_MONTH_END"
 										<td th:text="${report.custId}"></td>
 										<td th:text="${report.acctNumber}"></td>
 										<td th:text="${report.acctName}"></td>
-										<td style="text-align:right;"
+										<!--<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.acctBalanceInPula,1,'COMMA',0,'POINT')}">
-										</td>
+										</td>-->
 										<td style="text-align:right!important;"
 											th:text="${#numbers.formatDecimal(report.average,1,'COMMA',0,'POINT')}">
 										</td>
@@ -2244,42 +2217,37 @@ id="R59_MONTH_END" name="R59_MONTH_END"
 						</div>
 
 						<div class="col-sm-1"></div>
-						<label class="col-sm-2">Report Label</label>
+
+
+						<label class="col-sm-2">Acct Balance In Pula</label>
+
 						<div class="col-sm-3">
-							<input type="text" th:field="*{rowId}" class="form-control form-control-sm" readonly />
+							<input type="number" step="0.01" th:field="*{average}" class="form-control form-control-sm"
+								style="text-align: right;" />
 						</div>
 					</div>
 
 					<div class="row formline" style="margin-top:10px;">
+
+						<label class="col-sm-2">Report Label</label>
+						<div class="col-sm-3">
+							<input type="text" th:field="*{rowId}" class="form-control form-control-sm" readonly />
+						</div>
+						<div class="col-sm-1"></div>
 						<label class="col-sm-2">Report Addl Criteria 1</label>
 						<div class="col-sm-3">
 							<input type="text" th:field="*{columnId}" class="form-control form-control-sm" readonly />
 						</div>
+					</div>
 
-						<div class="col-sm-1"></div>
-
+					<div class="row formline" style="margin-top:10px;">
 						<label class="col-sm-2">Report Date</label>
 						<div class="col-sm-3">
 							<input type="date" name="reportDate" class="form-control form-control-sm" readonly
 								th:value="${#dates.format(Data.reportDate, 'yyyy-MM-dd')}" />
 						</div>
-
 					</div>
-
-			<!--		<div class="col-sm-1"></div>
-					<label class="col-sm-2">Debit Equivalent</label>
-											
-											<div class="col-sm-3">
-												<input type="number" step="0.01" th:field="*{average}"
-													class="form-control form-control-sm" style="text-align: right;" />
-											</div>
-											
-											<label class="col-sm-2">Credit Equivalent</label>
-																<div class="col-sm-3">
-																	<input type="number" step="0.01" th:field="*{acctBalanceInPula}"
-																		class="form-control form-control-sm" style="text-align: right;" />
-																</div> -->
-
+-->
 					<!-- Update Button -->
 					<div style="text-align:center; margin-top:20px;">
 						<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
