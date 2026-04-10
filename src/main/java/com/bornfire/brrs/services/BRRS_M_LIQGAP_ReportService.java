@@ -235,7 +235,7 @@ public class BRRS_M_LIQGAP_ReportService {
 }
 
 
-	public void updateReport(M_LIQGAP_Manual_Summary_Entity request) {
+	public void updateReport(  M_LIQGAP_Manual_Summary_Entity request) {
 
 	    System.out.println("Came to services1");
 	    System.out.println("Report Date: " + request.getReportDate());
@@ -280,7 +280,7 @@ public class BRRS_M_LIQGAP_ReportService {
 	                        int row,
 	                        String[] fields) {
 
-	    String prefix = "R" + row + "_";
+	    String prefix = "r" + row + "_";
 
 	    for (String field : fields) {
 
