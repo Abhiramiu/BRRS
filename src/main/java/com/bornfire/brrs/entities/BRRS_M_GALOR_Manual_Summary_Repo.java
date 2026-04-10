@@ -9,9 +9,14 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BRRS_M_GALOR_Manual_Summary_Repo extends JpaRepository<M_GALOR_Manual_Summary_Entity , Date> {
+	/*
+	 * @Query(value = "select * from BRRS_M_GALOR_MANUAL_SUMMARYTABLE ", nativeQuery
+	 * = true) List<M_GALOR_Manual_Summary_Entity> getdatabydateList(Date
+	 * reportdate);
+	 */
 
-	@Query(value = "select * from BRRS_M_GALOR_MANUAL_SUMMARYTABLE ", nativeQuery = true)
-	List<M_GALOR_Manual_Summary_Entity> getdatabydateList(Date reportdate);
-
+	  @Query(value = "SELECT * FROM BRRS_M_GALOR_MANUAL_SUMMARYTABLE e WHERE TRUNC(e.REPORT_DATE) = TRUNC(:reportdate)", 
+	           nativeQuery = true)
+	    List<M_GALOR_Manual_Summary_Entity> getdatabydateList(Date reportdate);
 
 }

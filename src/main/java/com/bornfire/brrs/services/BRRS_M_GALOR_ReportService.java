@@ -31081,67 +31081,67 @@ public class BRRS_M_GALOR_ReportService {
 	@Transactional
 	public void updateReport(M_GALOR_Manual_Summary_Entity updatedEntity) {
 
-		System.out.println("Entered updateReport service");
-		System.out.println("Report Date: " + updatedEntity.getReport_date());
+	    System.out.println("Entered updateReport service");
+	    System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-		// Fetch existing record
-		M_GALOR_Manual_Summary_Entity existing = m_galor_Manual_Summary_Repo.findById(updatedEntity.getReport_date())
-				.orElseThrow(() -> new RuntimeException(
-						"Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+	    // ✅ Fetch existing record using corrected query
+	    List<M_GALOR_Manual_Summary_Entity> list =
+	            m_galor_Manual_Summary_Repo.getdatabydateList(updatedEntity.getReport_date());
 
-		try {
+	    if (list.isEmpty()) {
+	        throw new RuntimeException(
+	                "Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
+	    }
 
-			// Required rows
-			int[] specialRows = { 22, 23, 57, 58, 60, 61, 64, 65, 67, 68, 111, 112, 113, 114 };
+	    M_GALOR_Manual_Summary_Entity existing = list.get(0);
 
-			// Full column fields
-			String[] fullFields = { "product", "botswana", "south_africa", "sadc", "usa", "uk", "europe", "india",
-					"sydney", "uganda", "c10", "c11", "c12", "c13", "c14", "c15", "c16", "total" };
+	    try {
 
-			for (int row : specialRows) {
+	        int[] specialRows = { 22, 23, 57, 58, 60, 61, 64, 65, 67, 68, 111, 112, 113, 114 };
 
-				String prefix = "R" + row + "_";
+	        String[] fullFields = { "product", "botswana", "south_africa", "sadc", "usa", "uk",
+	                "europe", "india", "sydney", "uganda",
+	                "c10", "c11", "c12", "c13", "c14", "c15", "c16", "total" };
 
-				// Rows 111–114 only update botswana
-				String[] activeFields = (row >= 111 && row <= 114) ? new String[] { "botswana" } : fullFields;
+	        for (int row : specialRows) {
 
-				for (String field : activeFields) {
+	            String prefix = "R" + row + "_";
 
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	            String[] activeFields = (row >= 111 && row <= 114)
+	                    ? new String[] { "botswana" }
+	                    : fullFields;
 
-					try {
+	            for (String field : activeFields) {
 
-						Method getter = M_GALOR_Manual_Summary_Entity.class.getMethod(getterName);
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
 
-						Method setter = M_GALOR_Manual_Summary_Entity.class.getMethod(setterName,
-								getter.getReturnType());
+	                try {
 
-						Object newValue = getter.invoke(updatedEntity);
+	                    Method getter = M_GALOR_Manual_Summary_Entity.class.getMethod(getterName);
+	                    Method setter = M_GALOR_Manual_Summary_Entity.class
+	                            .getMethod(setterName, getter.getReturnType());
 
-						// Debug print to verify value
-						System.out.println("Updating field: " + prefix + field + " = " + newValue);
+	                    Object newValue = getter.invoke(updatedEntity);
 
-						setter.invoke(existing, newValue);
+	                    System.out.println("Updating field: " + prefix + field + " = " + newValue);
 
-					} catch (NoSuchMethodException e) {
-						// If field does not exist, skip
-						System.out.println("Skipping missing field: " + prefix + field);
-						continue;
-					}
-				}
-			}
+	                    setter.invoke(existing, newValue);
 
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating GALOR report fields", e);
-		}
+	                } catch (NoSuchMethodException e) {
+	                    System.out.println("Skipping missing field: " + prefix + field);
+	                }
+	            }
+	        }
 
-		// Save and force database update
-		m_galor_Manual_Summary_Repo.saveAndFlush(existing);
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating GALOR report fields", e);
+	    }
 
-		System.out.println("GALOR report updated successfully.");
+	    m_galor_Manual_Summary_Repo.saveAndFlush(existing);
+
+	    System.out.println("GALOR report updated successfully.");
 	}
-
 	/**
 	 * Helper method to copy fields for a given row prefix (Rxx).
 	 */
@@ -50372,6 +50372,6 @@ public class BRRS_M_GALOR_ReportService {
 			cellB.setCellValue("");
 			cellB.setCellStyle(textStyle);
 		}
-
+   
 	}
 }
