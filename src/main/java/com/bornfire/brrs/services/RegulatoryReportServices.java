@@ -405,6 +405,10 @@ public class RegulatoryReportServices {
 	
 	@Autowired
 	BRRS_CASH_FLOW_ReportService BRRS_CASH_FLOW_ReportService;
+	
+	@Autowired
+	BRRS_DEFERRED_TAX_ReportService BRRS_DEFERRED_TAX_ReportService;
+	
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -1306,6 +1310,11 @@ public class RegulatoryReportServices {
 					pageable, type, version);
 
 			break;
+			
+		case "DTAX":
+			repsummary = BRRS_DEFERRED_TAX_ReportService.getDTAXView(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version);
+			break;
 
 		case "M_EPR":
 
@@ -2136,6 +2145,12 @@ public class RegulatoryReportServices {
 			repdetail = b_III_cetd_ReportService.getB_III_CETDcurrentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
 			break;
+			
+		case "DTAX":
+
+			repdetail = BRRS_DEFERRED_TAX_ReportService.getDTAXcurrentDtl(reportId, fromdate, todate, currency,
+					dtltype, pageable, Filter, type, version);
+			break;
 
 		case "OPER_RISK_DIS":
 
@@ -2674,6 +2689,19 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+			
+		case "DTAX":
+			try {
+
+				repfile = BRRS_DEFERRED_TAX_ReportService.getDTAXExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type,  version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+			
 
 		case "COMMON_DISCLOSURE":
 			try {
@@ -5218,6 +5246,12 @@ public class RegulatoryReportServices {
 				System.out.println("Fetched M_I_S_CA archival data: " + b_iii_cetdlist.size());
 				break;
 				
+		 case "DTAX":
+				List<Object[]> dtaxList = BRRS_DEFERRED_TAX_ReportService.getDTAXArchival();
+				archivalData.addAll(dtaxList);
+				System.out.println("Fetched M_SFINP1 archival data: " + dtaxList.size());
+				break;
+				
 			case "CAP_RATIO_BUFFER":
 				List<Object[]> crbList = brrs_cap_ratio_buffer_reportservice.getCAP_RATIO_BUFFERArchival();
 				archivalData.addAll(crbList);
@@ -6067,6 +6101,14 @@ public class RegulatoryReportServices {
 			fileData = b_III_cetd_ReportService.getB_III_CETDDetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 		}
+		
+		else if ("DTAX_Detail".equals(filename))
+
+		{
+			logger.info("Getting Inside DTAX_Detail");
+			fileData = BRRS_DEFERRED_TAX_ReportService.getDTAXDetailExcel(filename, fromdate, todate, currency, dtltype, type,
+					version);
+		}
 
 		else if ("OPER_RISK_DIS".equals(filename)) {
 
@@ -6535,6 +6577,12 @@ public class RegulatoryReportServices {
 				modelAndView = b_III_cetd_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 						request.getParameter("formmode"));
 				break;
+				
+			case "DTAX":
+				modelAndView = BRRS_DEFERRED_TAX_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
+						request.getParameter("formmode"));
+				break;
+				
 
 			case "OPER_RISK_DIS":
 				modelAndView = brrs_OPER_RISK_DIS_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
@@ -6845,6 +6893,10 @@ public class RegulatoryReportServices {
 
 			case "B_III_CETD":
 				response = b_III_cetd_ReportService.updateDetailEdit(request);
+				break;
+				
+			case "DTAX":
+				response = BRRS_DEFERRED_TAX_ReportService.updateDetailEdit(request);
 				break;
 
 			case "OPER_RISK_DIS":

@@ -1791,13 +1791,13 @@ PURPOSE		: BRRSREPORT
 												<td th:text="${#numbers.formatDecimal(reportsummary.r15_eff_increase, 0, 'COMMA', 0, 'POINT')}"
 													id="r15_eff_increase" name="r15_eff_increase"
 													style="text-align:right;width:390px;padding-right: 8px;"
-													class="r15_eff_increase" th:attr="RowId='R15', ColumnId='C2'"
+													class="r15_eff_increase" th:attr="RowId='R15', ColumnId='C5'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r15_eff_decrease, 0, 'COMMA', 0, 'POINT')}"
 													id="r15_eff_decrease" name="r15_eff_decrease"
 													class="r15_eff_decrease"
 													style="text-align:right;width:390px;padding-right: 8px;"
-													th:attr="RowId='R15', ColumnId='C2'"
+													th:attr="RowId='R15', ColumnId='C6'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 
 												<td th:text="${reportsummary.r15_bal_name}" style="min-width: 200px; white-space: normal; word-break: break-word;text-align: left;">
@@ -1807,13 +1807,13 @@ PURPOSE		: BRRSREPORT
 													class="r15_bal_increase" id="r15_bal_increase"
 													name="r15_bal_increase"
 													style="text-align:right;width:390px;padding-right: 8px;"
-													th:attr="RowId='R15', ColumnId='C2'"
+													th:attr="RowId='R15', ColumnId='C8'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r15_bal_decrease, 0, 'COMMA', 0, 'POINT')}"
 													class="r15_bal_decrease" id="r15_bal_decrease"
 													name="r15_bal_decrease"
 													style="text-align:right;width:390px;padding-right: 8px;"
-													th:attr="RowId='R15', ColumnId='C2'"
+													th:attr="RowId='R15', ColumnId='C9'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 
 
