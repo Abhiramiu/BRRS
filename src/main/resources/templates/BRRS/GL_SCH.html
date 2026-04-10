@@ -996,246 +996,602 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 	<script>
 
-		//--------------------------------------
-		// COMMON VALUE GETTER
-		//--------------------------------------
-		function getCellValue(selector) {
-			let el = $(selector);
-			if (!el.length) return 0;
+			//--------------------------------------
+			// COMMON VALUE GETTER
+			//--------------------------------------
+			function getCellValue(selector) {
+				let el = $(selector);
+				if (!el.length) return 0;
 
-			let val = el.is("input") ? el.val() : el.text();
-			return parseFloat((val || "0").replace(/,/g, "")) || 0;
-		}
-
-		//--------------------------------------
-		// COMMON VALUE SETTER (US FORMAT)
-		//--------------------------------------
-		function setCellValue(selector, value) {
-			let el = $(selector);
-			if (!el.length) return;
-
-			const formatted = Number(value).toLocaleString("en-US", {
-				minimumFractionDigits: 0,
-				maximumFractionDigits: 0
-			});
-
-			if (el.is("input")) {
-				el.val(formatted);
-			} else {
-				el.text(formatted);
+				let val = el.is("input") ? el.val() : el.text();
+				return parseFloat((val || "0").replace(/,/g, "")) || 0;
 			}
-		}
 
-		/* ================= CALCULATION FUNCTION ================= */
-		function calculateTotals() {
+			//--------------------------------------
+			// COMMON VALUE SETTER (US FORMAT)
+			//--------------------------------------
+			function setCellValue(selector, value) {
+				let el = $(selector);
+				if (!el.length) return;
 
-			/* ------------------ R61 CALCULATION ------------------ */
-			let g61 = getCellValue("#R59_FIG_BAL_BWP1") +
-				getCellValue("#R60_FIG_BAL_BWP1") -
-				getCellValue("#R61_FIG_BAL_BWP1");
-			setCellValue("#R61_FIG_BAL_BWP2", g61);
-
-			let r61_amt_adj_bwp2 = getCellValue("#R59_AMT_ADJ_BWP1") +
-				getCellValue("#R60_AMT_ADJ_BWP1") -
-				getCellValue("#R61_AMT_ADJ_BWP1");
-			setCellValue("#R61_AMT_ADJ_BWP2", r61_amt_adj_bwp2);
-
-			let r61_net_bwp1 = getCellValue("#R61_FIG_BAL_BWP1") +
-				getCellValue("#R61_AMT_ADJ_BWP1");
-			setCellValue("#R61_NET_AMT_BWP1", r61_net_bwp1);
-
-			let r61_net_bwp2 = getCellValue("#R59_NET_AMT_BWP1") +
-				getCellValue("#R60_NET_AMT_BWP1") -
-				getCellValue("#R61_NET_AMT_BWP1");
-			setCellValue("#R61_NET_AMT_BWP2", r61_net_bwp2);
-
-			let r61_bal_sub_bwp2 = getCellValue("#R59_BAL_SUB_BWP1") +
-				getCellValue("#R60_BAL_SUB_BWP1") -
-				getCellValue("#R61_BAL_SUB_BWP1");
-			setCellValue("#R61_BAL_SUB_BWP2", r61_bal_sub_bwp2);
-
-			let r61_bal_act_sub_bwp2 = getCellValue("#R59_BAL_ACT_SUB_BWP1") +
-				getCellValue("#R60_BAL_ACT_SUB_BWP1") +
-				getCellValue("#R61_BAL_ACT_SUB_BWP1");
-			setCellValue("#R61_BAL_ACT_SUB_BWP2", r61_bal_act_sub_bwp2);
-
-			/* ------------------ R103 CALCULATION ------------------ */
-			let r103_net_bwp2 = getCellValue("#R103_FIG_BAL_BWP2") -
-				getCellValue("#R103_AMT_ADJ_BWP2");
-			setCellValue("#R103_NET_AMT_BWP2", r103_net_bwp2);
-
-			/* ------------------ R130 CALCULATION ------------------ */
-			let r130_fig_bal_bwp2 = getCellValue("#R129_FIG_BAL_BWP1") +
-				getCellValue("#R130_FIG_BAL_BWP1");
-			setCellValue("#R130_FIG_BAL_BWP2", r130_fig_bal_bwp2);
-
-			let r130_amt_adj_bwp2 = getCellValue("#R129_AMT_ADJ_BWP1") +
-				getCellValue("#R130_AMT_ADJ_BWP1");
-			setCellValue("#R130_AMT_ADJ_BWP2", r130_amt_adj_bwp2);
-
-			let r130_net_bwp1 = getCellValue("#R130_FIG_BAL_BWP1") +
-				getCellValue("#R130_AMT_ADJ_BWP1");
-			setCellValue("#R130_NET_AMT_BWP1", r130_net_bwp1);
-
-			let r130_net_bwp2 = getCellValue("#R129_NET_AMT_BWP1") +
-				getCellValue("#R130_NET_AMT_BWP1");
-			setCellValue("#R130_NET_AMT_BWP2", r130_net_bwp2);
-
-			// ✅ NEW CALCULATION: R130_BAL_SUB_BWP2
-			let r130_bal_sub_bwp2 = getCellValue("#R129_BAL_SUB_BWP1") +
-				getCellValue("#R130_BAL_SUB_BWP1");
-			setCellValue("#R130_BAL_SUB_BWP2", r130_bal_sub_bwp2);
-
-			// ------------------ R130_BAL_ACT_SUB_BWP2 ------------------
-			// R130_BAL_ACT_SUB_BWP2 = R129_BAL_ACT_SUB_BWP1 + R130_BAL_ACT_SUB_BWP1
-			let r130_bal_act_sub_bwp2 =
-				getCellValue("#R129_BAL_ACT_SUB_BWP1") +
-				getCellValue("#R130_BAL_ACT_SUB_BWP1");
-
-			setCellValue("#R130_BAL_ACT_SUB_BWP2", r130_bal_act_sub_bwp2);
-
-			//------------------ R139_NET_AMT_BWP1 ------------------
-			//R139_NET_AMT_BWP1 = R139_FIG_BAL_BWP1 + R139_AMT_ADJ_BWP1
-			let r139_net_amt_bwp1 =
-				getCellValue("#R139_FIG_BAL_BWP1") -
-				getCellValue("#R139_AMT_ADJ_BWP1");
-
-			setCellValue("#R139_NET_AMT_BWP1", r139_net_amt_bwp1);
-
-			//------------------ R241_NET_AMT_BWP2 ------------------
-			//R241_NET_AMT_BWP2 = R241_FIG_BAL_BWP2 - R241_AMT_ADJ_BWP2
-			let r241_net_amt_bwp2 =
-				getCellValue("#R241_FIG_BAL_BWP2") -
-				getCellValue("#R241_AMT_ADJ_BWP2");
-
-			setCellValue("#R241_NET_AMT_BWP2", r241_net_amt_bwp2);
-
-
-			//------------------ R243_NET_AMT_BWP2 ------------------
-			//R243_NET_AMT_BWP2 = R243_FIG_BAL_BWP2 - R243_AMT_ADJ_BWP2
-			let r243_net_amt_bwp2 =
-				getCellValue("#R243_FIG_BAL_BWP2") -
-				getCellValue("#R243_AMT_ADJ_BWP2");
-
-			setCellValue("#R243_NET_AMT_BWP2", r243_net_amt_bwp2);
-
-			//------------------ R245_NET_AMT_BWP2 ------------------
-			//R245_NET_AMT_BWP2 = R245_FIG_BAL_BWP2 - R245_AMT_ADJ_BWP2
-			let r245_net_amt_bwp2 =
-				getCellValue("#R245_FIG_BAL_BWP2") -
-				getCellValue("#R245_AMT_ADJ_BWP2");
-
-			setCellValue("#R245_NET_AMT_BWP2", r245_net_amt_bwp2);
-
-			//------------------ R66_FIG_BAL_BWP2 ------------------
-			let R66_FIG_BAL_BWP2 =
-				getCellValue("#R37_FIG_BAL_BWP2") +
-				getCellValue("#R41_FIG_BAL_BWP2") +
-				getCellValue("#R45_FIG_BAL_BWP2") +
-				getCellValue("#R49_FIG_BAL_BWP2") +
-				getCellValue("#R53_FIG_BAL_BWP2") +
-				getCellValue("#R57_FIG_BAL_BWP2") +
-				getCellValue("#R61_FIG_BAL_BWP2") +
-				getCellValue("#R65_FIG_BAL_BWP2");
-
-			setCellValue("#R66_FIG_BAL_BWP2", R66_FIG_BAL_BWP2);
-
-
-			//------------------ R66_AMT_ADJ_BWP2 ------------------
-			let R66_AMT_ADJ_BWP2 =
-				getCellValue("#R37_AMT_ADJ_BWP2") +
-				getCellValue("#R41_AMT_ADJ_BWP2") +
-				getCellValue("#R45_AMT_ADJ_BWP2") +
-				getCellValue("#R49_AMT_ADJ_BWP2") +
-				getCellValue("#R53_AMT_ADJ_BWP2") +
-				getCellValue("#R57_AMT_ADJ_BWP2") +
-				getCellValue("#R61_AMT_ADJ_BWP2") +
-				getCellValue("#R65_AMT_ADJ_BWP2");
-
-			setCellValue("#R66_AMT_ADJ_BWP2", R66_AMT_ADJ_BWP2);
-
-
-			//------------------ R66_NET_AMT_BWP2 ------------------
-			let R66_NET_AMT_BWP2 =
-				getCellValue("#R37_NET_AMT_BWP2") +
-				getCellValue("#R41_NET_AMT_BWP2") +
-				getCellValue("#R45_NET_AMT_BWP2") +
-				getCellValue("#R49_NET_AMT_BWP2") +
-				getCellValue("#R53_NET_AMT_BWP2") +
-				getCellValue("#R57_NET_AMT_BWP2") +
-				getCellValue("#R61_NET_AMT_BWP2") +
-				getCellValue("#R65_NET_AMT_BWP2");
-
-			setCellValue("#R66_NET_AMT_BWP2", R66_NET_AMT_BWP2);
-
-
-
-		}
-
-		//--------------------------------------
-		// EVENT LISTENERS
-		//--------------------------------------
-		$(document).ready(function () {
-
-			// Initial calculation on page load
-			calculateTotals();
-
-			// R61 manual fields
-			$("#R61_FIG_BAL_BWP1, #R61_AMT_ADJ_BWP1, #R61_BAL_SUB_BWP1, #R61_BAL_ACT_SUB_BWP1").on("input change keyup", function () {
-				calculateTotals();
-			});
-
-			// R103 manual fields
-			$("#R103_FIG_BAL_BWP2, #R103_AMT_ADJ_BWP2").on("input change keyup", function () {
-				calculateTotals();
-			});
-
-			// R130 manual fields
-			$("#R130_FIG_BAL_BWP1, #R130_AMT_ADJ_BWP1, #R130_BAL_SUB_BWP1").on("input change keyup", function () {
-				calculateTotals();
-			});
-
-			$("#R130_BAL_ACT_SUB_BWP1").on("input change keyup", function () {
-				calculateTotals();
-			});
-
-			$("#R139_FIG_BAL_BWP1, #R139_AMT_ADJ_BWP1").on("input change keyup", function () {
-				calculateTotals();
-			});
-
-			$("#R241_FIG_BAL_BWP2, #R241_AMT_ADJ_BWP2").on("input change keyup", function () {
-				calculateTotals();
-			});
-			$("#R243_FIG_BAL_BWP2, #R243_AMT_ADJ_BWP2").on("input change keyup", function () {
-				calculateTotals();
-			});
-
-
-			$("#R245_FIG_BAL_BWP2, #R245_AMT_ADJ_BWP2").on("input change keyup", function () {
-				calculateTotals();
-			});
-
-			// R66 dependent fields
-			$("#R37_FIG_BAL_BWP2, #R41_FIG_BAL_BWP2, #R45_FIG_BAL_BWP2, #R49_FIG_BAL_BWP2, #R53_FIG_BAL_BWP2, #R57_FIG_BAL_BWP2, #R61_FIG_BAL_BWP2, #R65_FIG_BAL_BWP2")
-				.on("input change keyup", function () {
-					calculateTotals();
-				});
-			// R66 AMT_ADJ dependent fields
-			$("#R37_AMT_ADJ_BWP2, #R41_AMT_ADJ_BWP2, #R45_AMT_ADJ_BWP2, #R49_AMT_ADJ_BWP2, #R53_AMT_ADJ_BWP2, #R57_AMT_ADJ_BWP2, #R61_AMT_ADJ_BWP2, #R65_AMT_ADJ_BWP2")
-				.on("input change keyup", function () {
-					calculateTotals();
+				const formatted = Number(value).toLocaleString("en-US", {
+					minimumFractionDigits: 0,
+					maximumFractionDigits: 0
 				});
 
-			// R66 NET dependent fields
-			$("#R37_NET_AMT_BWP2, #R41_NET_AMT_BWP2, #R45_NET_AMT_BWP2, #R49_NET_AMT_BWP2, #R53_NET_AMT_BWP2, #R57_NET_AMT_BWP2, #R61_NET_AMT_BWP2, #R65_NET_AMT_BWP2")
-				.on("input change keyup", function () {
+				if (el.is("input")) {
+					el.val(formatted);
+				} else {
+					el.text(formatted);
+				}
+			}
+
+			/* ================= CALCULATION FUNCTION ================= */
+			function calculateTotals() {
+
+				/* ------------------ R61 CALCULATION ------------------ */
+				let g61 = getCellValue("#R59_FIG_BAL_BWP1") +
+					getCellValue("#R60_FIG_BAL_BWP1") -
+					getCellValue("#R61_FIG_BAL_BWP1");
+				setCellValue("#R61_FIG_BAL_BWP2", g61);
+
+				let r61_amt_adj_bwp2 = getCellValue("#R59_AMT_ADJ_BWP1") +
+					getCellValue("#R60_AMT_ADJ_BWP1") -
+					getCellValue("#R61_AMT_ADJ_BWP1");
+				setCellValue("#R61_AMT_ADJ_BWP2", r61_amt_adj_bwp2);
+
+				let r61_net_bwp1 = getCellValue("#R61_FIG_BAL_BWP1") +
+					getCellValue("#R61_AMT_ADJ_BWP1");
+				setCellValue("#R61_NET_AMT_BWP1", r61_net_bwp1);
+
+				let r61_net_bwp2 = getCellValue("#R59_NET_AMT_BWP1") +
+					getCellValue("#R60_NET_AMT_BWP1") -
+					getCellValue("#R61_NET_AMT_BWP1");
+				setCellValue("#R61_NET_AMT_BWP2", r61_net_bwp2);
+
+				let r61_bal_sub_bwp2 = getCellValue("#R59_BAL_SUB_BWP1") +
+					getCellValue("#R60_BAL_SUB_BWP1") -
+					getCellValue("#R61_BAL_SUB_BWP1");
+				setCellValue("#R61_BAL_SUB_BWP2", r61_bal_sub_bwp2);
+
+				let r61_bal_act_sub_bwp2 = getCellValue("#R59_BAL_ACT_SUB_BWP1") +
+					getCellValue("#R60_BAL_ACT_SUB_BWP1") +
+					getCellValue("#R61_BAL_ACT_SUB_BWP1");
+				setCellValue("#R61_BAL_ACT_SUB_BWP2", r61_bal_act_sub_bwp2);
+
+				/* ------------------ R103 CALCULATION ------------------ */
+				let r103_net_bwp2 = getCellValue("#R103_FIG_BAL_BWP2") -
+					getCellValue("#R103_AMT_ADJ_BWP2");
+				setCellValue("#R103_NET_AMT_BWP2", r103_net_bwp2);
+
+				/* ------------------ R130 CALCULATION ------------------ */
+				let r130_fig_bal_bwp2 = getCellValue("#R129_FIG_BAL_BWP1") +
+					getCellValue("#R130_FIG_BAL_BWP1");
+				setCellValue("#R130_FIG_BAL_BWP2", r130_fig_bal_bwp2);
+
+				let r130_amt_adj_bwp2 = getCellValue("#R129_AMT_ADJ_BWP1") +
+					getCellValue("#R130_AMT_ADJ_BWP1");
+				setCellValue("#R130_AMT_ADJ_BWP2", r130_amt_adj_bwp2);
+
+				let r130_net_bwp1 = getCellValue("#R130_FIG_BAL_BWP1") +
+					getCellValue("#R130_AMT_ADJ_BWP1");
+				setCellValue("#R130_NET_AMT_BWP1", r130_net_bwp1);
+
+				let r130_net_bwp2 = getCellValue("#R129_NET_AMT_BWP1") +
+					getCellValue("#R130_NET_AMT_BWP1");
+				setCellValue("#R130_NET_AMT_BWP2", r130_net_bwp2);
+
+				// ✅ NEW CALCULATION: R130_BAL_SUB_BWP2
+				let r130_bal_sub_bwp2 = getCellValue("#R129_BAL_SUB_BWP1") +
+					getCellValue("#R130_BAL_SUB_BWP1");
+				setCellValue("#R130_BAL_SUB_BWP2", r130_bal_sub_bwp2);
+
+				// ------------------ R130_BAL_ACT_SUB_BWP2 ------------------
+				// R130_BAL_ACT_SUB_BWP2 = R129_BAL_ACT_SUB_BWP1 + R130_BAL_ACT_SUB_BWP1
+				let r130_bal_act_sub_bwp2 =
+					getCellValue("#R129_BAL_ACT_SUB_BWP1") +
+					getCellValue("#R130_BAL_ACT_SUB_BWP1");
+
+				setCellValue("#R130_BAL_ACT_SUB_BWP2", r130_bal_act_sub_bwp2);
+
+				//------------------ R139_NET_AMT_BWP1 ------------------
+				//R139_NET_AMT_BWP1 = R139_FIG_BAL_BWP1 + R139_AMT_ADJ_BWP1
+				let r139_net_amt_bwp1 =
+					getCellValue("#R139_FIG_BAL_BWP1") -
+					getCellValue("#R139_AMT_ADJ_BWP1");
+
+				setCellValue("#R139_NET_AMT_BWP1", r139_net_amt_bwp1);
+
+				//------------------ R241_NET_AMT_BWP2 ------------------
+				//R241_NET_AMT_BWP2 = R241_FIG_BAL_BWP2 - R241_AMT_ADJ_BWP2
+				let r241_net_amt_bwp2 =
+					getCellValue("#R241_FIG_BAL_BWP2") -
+					getCellValue("#R241_AMT_ADJ_BWP2");
+
+				setCellValue("#R241_NET_AMT_BWP2", r241_net_amt_bwp2);
+
+
+				//------------------ R243_NET_AMT_BWP2 ------------------
+				//R243_NET_AMT_BWP2 = R243_FIG_BAL_BWP2 - R243_AMT_ADJ_BWP2
+				let r243_net_amt_bwp2 =
+					getCellValue("#R243_FIG_BAL_BWP2") -
+					getCellValue("#R243_AMT_ADJ_BWP2");
+
+				setCellValue("#R243_NET_AMT_BWP2", r243_net_amt_bwp2);
+
+				//------------------ R245_NET_AMT_BWP2 ------------------
+				//R245_NET_AMT_BWP2 = R245_FIG_BAL_BWP2 - R245_AMT_ADJ_BWP2
+				let r245_net_amt_bwp2 =
+					getCellValue("#R245_FIG_BAL_BWP2") -
+					getCellValue("#R245_AMT_ADJ_BWP2");
+
+				setCellValue("#R245_NET_AMT_BWP2", r245_net_amt_bwp2);
+				
+				//------------------ R66_FIG_BAL_BWP2 ------------------
+				let R66_FIG_BAL_BWP2 =
+				    getCellValue("#R37_FIG_BAL_BWP2") +
+				    getCellValue("#R41_FIG_BAL_BWP2") +
+				    getCellValue("#R45_FIG_BAL_BWP2") +
+				    getCellValue("#R49_FIG_BAL_BWP2") +
+				    getCellValue("#R53_FIG_BAL_BWP2") +
+				    getCellValue("#R57_FIG_BAL_BWP2") +
+				    getCellValue("#R61_FIG_BAL_BWP2") +
+				    getCellValue("#R65_FIG_BAL_BWP2");
+
+				setCellValue("#R66_FIG_BAL_BWP2", R66_FIG_BAL_BWP2);
+
+				
+				//------------------ R66_AMT_ADJ_BWP2 ------------------
+				let R66_AMT_ADJ_BWP2 =
+				    getCellValue("#R37_AMT_ADJ_BWP2") +
+				    getCellValue("#R41_AMT_ADJ_BWP2") +
+				    getCellValue("#R45_AMT_ADJ_BWP2") +
+				    getCellValue("#R49_AMT_ADJ_BWP2") +
+				    getCellValue("#R53_AMT_ADJ_BWP2") +
+				    getCellValue("#R57_AMT_ADJ_BWP2") +
+				    getCellValue("#R61_AMT_ADJ_BWP2") +
+				    getCellValue("#R65_AMT_ADJ_BWP2");
+
+				setCellValue("#R66_AMT_ADJ_BWP2", R66_AMT_ADJ_BWP2);
+
+				
+				//------------------ R66_NET_AMT_BWP2 ------------------
+				let R66_NET_AMT_BWP2 =
+				    getCellValue("#R37_NET_AMT_BWP2") +
+				    getCellValue("#R41_NET_AMT_BWP2") +
+				    getCellValue("#R45_NET_AMT_BWP2") +
+				    getCellValue("#R49_NET_AMT_BWP2") +
+				    getCellValue("#R53_NET_AMT_BWP2") +
+				    getCellValue("#R57_NET_AMT_BWP2") +
+				    getCellValue("#R61_NET_AMT_BWP2") +
+				    getCellValue("#R65_NET_AMT_BWP2");
+
+				setCellValue("#R66_NET_AMT_BWP2", R66_NET_AMT_BWP2);
+				
+				//------------------ R66_BAL_SUB_BWP2 ------------------
+				let R66_BAL_SUB_BWP2 =
+				    getCellValue("#R37_BAL_SUB_BWP2") +
+				    getCellValue("#R41_BAL_SUB_BWP2") +
+				    getCellValue("#R45_BAL_SUB_BWP2") +
+				    getCellValue("#R49_BAL_SUB_BWP2") +
+				    getCellValue("#R53_BAL_SUB_BWP2") +
+				    getCellValue("#R57_BAL_SUB_BWP2") +
+				    getCellValue("#R61_BAL_SUB_BWP2") +
+				    getCellValue("#R65_BAL_SUB_BWP2");
+
+				setCellValue("#R66_BAL_SUB_BWP2", R66_BAL_SUB_BWP2);
+				
+				//------------------ R66_BAL_ACT_SUB_BWP2 ------------------
+				let R66_BAL_ACT_SUB_BWP2 =
+				    getCellValue("#R37_BAL_ACT_SUB_BWP2") +
+				    getCellValue("#R41_BAL_ACT_SUB_BWP2") +
+				    getCellValue("#R45_BAL_ACT_SUB_BWP2") +
+				    getCellValue("#R49_BAL_ACT_SUB_BWP2") +
+				    getCellValue("#R53_BAL_ACT_SUB_BWP2") +
+				    getCellValue("#R57_BAL_ACT_SUB_BWP2") +
+				    getCellValue("#R61_BAL_ACT_SUB_BWP2") +
+				    getCellValue("#R65_BAL_ACT_SUB_BWP2");
+
+				setCellValue("#R66_BAL_ACT_SUB_BWP2", R66_BAL_ACT_SUB_BWP2);
+				
+				
+				//------------------ R108_FIG_BAL_BWP2 ------------------
+				let R108_FIG_BAL_BWP2 =
+				    getCellValue("#R102_FIG_BAL_BWP2") +
+				    getCellValue("#R103_FIG_BAL_BWP2") +
+				    getCellValue("#R104_FIG_BAL_BWP2") +
+				    getCellValue("#R105_FIG_BAL_BWP2") +
+				    getCellValue("#R106_FIG_BAL_BWP2") +
+				    getCellValue("#R107_FIG_BAL_BWP2");
+
+				setCellValue("#R108_FIG_BAL_BWP2", R108_FIG_BAL_BWP2);
+				
+				// R108_AMT_ADJ_BWP2
+				let R108_AMT_ADJ_BWP2 =
+				    getCellValue("#R102_AMT_ADJ_BWP2") +
+				    getCellValue("#R103_AMT_ADJ_BWP2") +
+				    getCellValue("#R104_AMT_ADJ_BWP2") +
+				    getCellValue("#R105_AMT_ADJ_BWP2") +
+				    getCellValue("#R106_AMT_ADJ_BWP2") +
+				    getCellValue("#R107_AMT_ADJ_BWP2");
+
+				setCellValue("#R108_AMT_ADJ_BWP2", R108_AMT_ADJ_BWP2);
+
+				// R108_NET_AMT_BWP2
+				let R108_NET_AMT_BWP2 =
+				    getCellValue("#R102_NET_AMT_BWP2") +
+				    getCellValue("#R103_NET_AMT_BWP2") +
+				    getCellValue("#R104_NET_AMT_BWP2") +
+				    getCellValue("#R105_NET_AMT_BWP2") +
+				    getCellValue("#R106_NET_AMT_BWP2") +
+				    getCellValue("#R107_NET_AMT_BWP2");
+
+				setCellValue("#R108_NET_AMT_BWP2", R108_NET_AMT_BWP2);
+
+				// R108_BAL_SUB_BWP2
+				let R108_BAL_SUB_BWP2 =
+				    getCellValue("#R102_BAL_SUB_BWP2") +
+				    getCellValue("#R103_BAL_SUB_BWP2") +
+				    getCellValue("#R104_BAL_SUB_BWP2") +
+				    getCellValue("#R105_BAL_SUB_BWP2") +
+				    getCellValue("#R106_BAL_SUB_BWP2") +
+				    getCellValue("#R107_BAL_SUB_BWP2");
+
+				setCellValue("#R108_BAL_SUB_BWP2", R108_BAL_SUB_BWP2);
+
+				// R108_BAL_ACT_SUB_BWP2
+				let R108_BAL_ACT_SUB_BWP2 =
+				    getCellValue("#R102_BAL_ACT_SUB_BWP2") +
+				    getCellValue("#R103_BAL_ACT_SUB_BWP2") +
+				    getCellValue("#R104_BAL_ACT_SUB_BWP2") +
+				    getCellValue("#R105_BAL_ACT_SUB_BWP2") +
+				    getCellValue("#R106_BAL_ACT_SUB_BWP2") +
+				    getCellValue("#R107_BAL_ACT_SUB_BWP2");
+
+				setCellValue("#R108_BAL_ACT_SUB_BWP2", R108_BAL_ACT_SUB_BWP2);
+				
+				//------------------ R141_FIG_BAL_BWP2 ------------------
+				let R141_FIG_BAL_BWP2 =
+				    getCellValue("#R138_FIG_BAL_BWP1") +
+				    getCellValue("#R139_FIG_BAL_BWP1") +
+				    getCellValue("#R140_FIG_BAL_BWP1");
+
+				setCellValue("#R141_FIG_BAL_BWP2", R141_FIG_BAL_BWP2);
+				
+				//------------------ R141_AMT_ADJ_BWP2 ------------------
+				let R141_AMT_ADJ_BWP2 =
+				    getCellValue("#R138_AMT_ADJ_BWP1") +
+				    getCellValue("#R139_AMT_ADJ_BWP1") +
+				    getCellValue("#R140_AMT_ADJ_BWP1");
+
+				setCellValue("#R141_AMT_ADJ_BWP2", R141_AMT_ADJ_BWP2);
+				
+				
+				//------------------ R141_NET_AMT_BWP2 ------------------
+				let R141_NET_AMT_BWP2 =
+				    getCellValue("#R138_NET_AMT_BWP1") +
+				    getCellValue("#R139_NET_AMT_BWP1") +
+				    getCellValue("#R140_NET_AMT_BWP1");
+
+				setCellValue("#R141_NET_AMT_BWP2", R141_NET_AMT_BWP2);
+				
+				
+				
+				//------------------ R141_BAL_SUB_BWP2 ------------------
+				let R141_BAL_SUB_BWP2 =
+				    getCellValue("#R138_BAL_SUB_BWP2") +
+				    getCellValue("#R139_BAL_SUB_BWP2");
+
+				setCellValue("#R141_BAL_SUB_BWP2", R141_BAL_SUB_BWP2);
+				
+				
+				//------------------ R141_BAL_ACT_SUB_BWP2 ------------------
+				let R141_BAL_ACT_SUB_BWP2 =
+				    getCellValue("#R138_BAL_ACT_SUB_BWP2") +
+				    getCellValue("#R139_BAL_ACT_SUB_BWP2");
+
+				setCellValue("#R141_BAL_ACT_SUB_BWP2", R141_BAL_ACT_SUB_BWP2);
+				
+				
+				//------------------ R142_FIG_BAL_BWP2 ------------------
+				let R142_FIG_BAL_BWP2 =
+				    getCellValue("#R135_FIG_BAL_BWP2") +
+				    getCellValue("#R141_FIG_BAL_BWP2");
+
+				setCellValue("#R142_FIG_BAL_BWP2", R142_FIG_BAL_BWP2);
+				
+				
+				//------------------ R142_AMT_ADJ_BWP2 ------------------
+				let R142_AMT_ADJ_BWP2 =
+				    getCellValue("#R135_AMT_ADJ_BWP2") +
+				    getCellValue("#R141_AMT_ADJ_BWP2");
+
+				setCellValue("#R142_AMT_ADJ_BWP2", R142_AMT_ADJ_BWP2);
+				
+				
+				//------------------ R142_NET_AMT_BWP1 ------------------
+				let R142_NET_AMT_BWP1 =
+				    getCellValue("#R138_NET_AMT_BWP1") +
+				    getCellValue("#R139_NET_AMT_BWP1");
+
+				setCellValue("#R142_NET_AMT_BWP1", R142_NET_AMT_BWP1);
+				
+				
+				//------------------ R142_NET_AMT_BWP2 ------------------
+				let R142_NET_AMT_BWP2 =
+				    getCellValue("#R135_NET_AMT_BWP2") +
+				    getCellValue("#R141_NET_AMT_BWP2");
+
+				setCellValue("#R142_NET_AMT_BWP2", R142_NET_AMT_BWP2);
+				
+				
+				//------------------ R142_BAL_SUB_BWP2 ------------------
+				let R142_BAL_SUB_BWP2 =
+				    getCellValue("#R135_BAL_SUB_BWP2") +
+				    getCellValue("#R141_BAL_SUB_BWP2");
+
+				setCellValue("#R142_BAL_SUB_BWP2", R142_BAL_SUB_BWP2);
+				
+				//------------------ R142_BAL_ACT_SUB_BWP2 ------------------
+				let R142_BAL_ACT_SUB_BWP2 =
+				    getCellValue("#R135_BAL_ACT_SUB_BWP2") +
+				    getCellValue("#R141_BAL_ACT_SUB_BWP2");
+
+				setCellValue("#R142_BAL_ACT_SUB_BWP2", R142_BAL_ACT_SUB_BWP2);
+				
+				
+				//------------------ R248_FIG_BAL_BWP2 ------------------
+				// R248 = SUM(R241 to R247)
+
+				let R248_FIG_BAL_BWP2 =
+				    getCellValue("#R241_FIG_BAL_BWP2") +
+				    getCellValue("#R242_FIG_BAL_BWP2") +
+				    getCellValue("#R243_FIG_BAL_BWP2") +
+				    getCellValue("#R244_FIG_BAL_BWP2") +
+				    getCellValue("#R245_FIG_BAL_BWP2") +
+				    getCellValue("#R246_FIG_BAL_BWP2") +
+				    getCellValue("#R247_FIG_BAL_BWP2");
+
+				setCellValue("#R248_FIG_BAL_BWP2", R248_FIG_BAL_BWP2);
+				
+				
+				//------------------ R248_AMT_ADJ_BWP2 ------------------
+				// R248 = SUM(R241 to R247)
+
+				let R248_AMT_ADJ_BWP2 =
+				    getCellValue("#R241_AMT_ADJ_BWP2") +
+				    getCellValue("#R242_AMT_ADJ_BWP2") +
+				    getCellValue("#R243_AMT_ADJ_BWP2") +
+				    getCellValue("#R244_AMT_ADJ_BWP2") +
+				    getCellValue("#R245_AMT_ADJ_BWP2") +
+				    getCellValue("#R246_AMT_ADJ_BWP2") +
+				    getCellValue("#R247_AMT_ADJ_BWP2");
+
+				setCellValue("#R248_AMT_ADJ_BWP2", R248_AMT_ADJ_BWP2);
+				
+				
+				//------------------ R248_NET_AMT_BWP2 ------------------
+				// R248 = SUM(R241 to R247)
+
+				let R248_NET_AMT_BWP2 =
+				    getCellValue("#R241_NET_AMT_BWP2") +
+				    getCellValue("#R242_NET_AMT_BWP2") +
+				    getCellValue("#R243_NET_AMT_BWP2") +
+				    getCellValue("#R244_NET_AMT_BWP2") +
+				    getCellValue("#R245_NET_AMT_BWP2") +
+				    getCellValue("#R246_NET_AMT_BWP2") +
+				    getCellValue("#R247_NET_AMT_BWP2");
+
+				setCellValue("#R248_NET_AMT_BWP2", R248_NET_AMT_BWP2);
+				
+				
+				//------------------ R248_BAL_SUB_BWP2 ------------------
+				// R248 = SUM(R241 to R247)
+
+				let V_R248_BAL_SUB_BWP2 =
+				    getCellValue("#R241_BAL_SUB_BWP2") +
+				    getCellValue("#R242_BAL_SUB_BWP2") +
+				    getCellValue("#R243_BAL_SUB_BWP2") +
+				    getCellValue("#R244_BAL_SUB_BWP2") +
+				    getCellValue("#R245_BAL_SUB_BWP2") +
+				    getCellValue("#R246_BAL_SUB_BWP2") +
+				    getCellValue("#R247_BAL_SUB_BWP2");
+
+				setCellValue("#R248_BAL_SUB_BWP2", V_R248_BAL_SUB_BWP2);
+				
+				
+				//------------------ R248_BAL_ACT_SUB_BWP2 ------------------
+				// R248 = SUM(R241 to R247)
+
+				let V_R248_BAL_ACT_SUB_BWP2 =
+				    getCellValue("#R241_BAL_ACT_SUB_BWP2") +
+				    getCellValue("#R242_BAL_ACT_SUB_BWP2") +
+				    getCellValue("#R243_BAL_ACT_SUB_BWP2") +
+				    getCellValue("#R244_BAL_ACT_SUB_BWP2") +
+				    getCellValue("#R245_BAL_ACT_SUB_BWP2") +
+				    getCellValue("#R246_BAL_ACT_SUB_BWP2") +
+				    getCellValue("#R247_BAL_ACT_SUB_BWP2");
+
+				setCellValue("#R248_BAL_ACT_SUB_BWP2", V_R248_BAL_ACT_SUB_BWP2);
+				
+			}
+
+			//--------------------------------------
+			// EVENT LISTENERS
+			//--------------------------------------
+			$(document).ready(function () {
+
+				// Initial calculation on page load
+				calculateTotals();
+
+				// R61 manual fields
+				$("#R61_FIG_BAL_BWP1, #R61_AMT_ADJ_BWP1, #R61_BAL_SUB_BWP1, #R61_BAL_ACT_SUB_BWP1").on("input change keyup", function () {
+					calculateTotals();
+				});
+
+				// R103 manual fields
+				$("#R103_FIG_BAL_BWP2, #R103_AMT_ADJ_BWP2").on("input change keyup", function () {
+					calculateTotals();
+				});
+
+				// R130 manual fields
+				$("#R130_FIG_BAL_BWP1, #R130_AMT_ADJ_BWP1, #R130_BAL_SUB_BWP1").on("input change keyup", function () {
+					calculateTotals();
+				});
+
+				$("#R130_BAL_ACT_SUB_BWP1").on("input change keyup", function () {
+					calculateTotals();
+				});
+
+				$("#R139_FIG_BAL_BWP1, #R139_AMT_ADJ_BWP1").on("input change keyup", function () {
+					calculateTotals();
+				});
+
+				$("#R241_FIG_BAL_BWP2, #R241_AMT_ADJ_BWP2").on("input change keyup", function () {
+					calculateTotals();
+				});
+				$("#R243_FIG_BAL_BWP2, #R243_AMT_ADJ_BWP2").on("input change keyup", function () {
 					calculateTotals();
 				});
 
 
-		});
-	</script>
+				$("#R245_FIG_BAL_BWP2, #R245_AMT_ADJ_BWP2").on("input change keyup", function () {
+					calculateTotals();
+				});
 
+				// R66 dependent fields
+				$("#R37_FIG_BAL_BWP2, #R41_FIG_BAL_BWP2, #R45_FIG_BAL_BWP2, #R49_FIG_BAL_BWP2, #R53_FIG_BAL_BWP2, #R57_FIG_BAL_BWP2, #R61_FIG_BAL_BWP2, #R65_FIG_BAL_BWP2")
+				.on("input change keyup", function () {
+				    calculateTotals();
+				});
+				// R66 AMT_ADJ dependent fields
+				$("#R37_AMT_ADJ_BWP2, #R41_AMT_ADJ_BWP2, #R45_AMT_ADJ_BWP2, #R49_AMT_ADJ_BWP2, #R53_AMT_ADJ_BWP2, #R57_AMT_ADJ_BWP2, #R61_AMT_ADJ_BWP2, #R65_AMT_ADJ_BWP2")
+				.on("input change keyup", function () {
+				    calculateTotals();
+				});
+				
+				// R66 NET dependent fields
+				$("#R37_NET_AMT_BWP2, #R41_NET_AMT_BWP2, #R45_NET_AMT_BWP2, #R49_NET_AMT_BWP2, #R53_NET_AMT_BWP2, #R57_NET_AMT_BWP2, #R61_NET_AMT_BWP2, #R65_NET_AMT_BWP2")
+				.on("input change keyup", function () {
+				    calculateTotals();
+				});
+				
+				// R66 BAL_SUB dependent fields
+				$("#R37_BAL_SUB_BWP2, #R41_BAL_SUB_BWP2, #R45_BAL_SUB_BWP2, #R49_BAL_SUB_BWP2, #R53_BAL_SUB_BWP2, #R57_BAL_SUB_BWP2, #R61_BAL_SUB_BWP2, #R65_BAL_SUB_BWP2")
+				.on("input change keyup", function () {
+				    calculateTotals();
+				});
+				
+				// R66 BAL_ACT_SUB dependent fields
+				$("#R37_BAL_ACT_SUB_BWP2, #R41_BAL_ACT_SUB_BWP2, #R45_BAL_ACT_SUB_BWP2, #R49_BAL_ACT_SUB_BWP2, #R53_BAL_ACT_SUB_BWP2, #R57_BAL_ACT_SUB_BWP2, #R61_BAL_ACT_SUB_BWP2, #R65_BAL_ACT_SUB_BWP2")
+				.on("input change keyup", function () {
+				    calculateTotals();
+				});
+				
+				$("#R102_FIG_BAL_BWP2, #R103_FIG_BAL_BWP2, #R104_FIG_BAL_BWP2, #R105_FIG_BAL_BWP2, #R106_FIG_BAL_BWP2, #R107_FIG_BAL_BWP2")
+				.on("input change keyup", function () {
+				    calculateTotals();
+				});
+				
+				
+				$("#R102_AMT_ADJ_BWP2, #R103_AMT_ADJ_BWP2, #R104_AMT_ADJ_BWP2, #R105_AMT_ADJ_BWP2, #R106_AMT_ADJ_BWP2, #R107_AMT_ADJ_BWP2")
+				.on("input change keyup", function () {
+				    calculateTotals();
+				});
+
+				$("#R102_NET_AMT_BWP2, #R103_NET_AMT_BWP2, #R104_NET_AMT_BWP2, #R105_NET_AMT_BWP2, #R106_NET_AMT_BWP2, #R107_NET_AMT_BWP2")
+				.on("input change keyup", function () {
+				    calculateTotals();
+				});
+
+				$("#R102_BAL_SUB_BWP2, #R103_BAL_SUB_BWP2, #R104_BAL_SUB_BWP2, #R105_BAL_SUB_BWP2, #R106_BAL_SUB_BWP2, #R107_BAL_SUB_BWP2")
+				.on("input change keyup", function () {
+				    calculateTotals();
+				});
+
+				$("#R102_BAL_ACT_SUB_BWP2, #R103_BAL_ACT_SUB_BWP2, #R104_BAL_ACT_SUB_BWP2, #R105_BAL_ACT_SUB_BWP2, #R106_BAL_ACT_SUB_BWP2, #R107_BAL_ACT_SUB_BWP2")
+				.on("input change keyup", function () {
+				    calculateTotals();
+				});
+				
+				$("#R138_FIG_BAL_BWP1, #R139_FIG_BAL_BWP1, #R140_FIG_BAL_BWP1")
+				.on("input change keyup", function () {
+				    calculateTotals();
+				});
+				
+				$("#R138_AMT_ADJ_BWP1, #R139_AMT_ADJ_BWP1, #R140_AMT_ADJ_BWP1").on("input change keyup", function () {
+				    calculateTotals();
+				});
+
+				$("#R138_NET_AMT_BWP1, #R139_NET_AMT_BWP1, #R140_NET_AMT_BWP1").on("input change keyup", function () {
+				    calculateTotals();
+				});
+
+				$("#R138_BAL_SUB_BWP2, #R139_BAL_SUB_BWP2").on("input change keyup", function () {
+				    calculateTotals();
+				});
+
+				$("#R138_BAL_ACT_SUB_BWP2, #R139_BAL_ACT_SUB_BWP2").on("input change keyup", function () {
+				    calculateTotals();
+				});
+				
+				$("#R135_FIG_BAL_BWP2, #R141_FIG_BAL_BWP2").on("input change keyup", function () {
+				    calculateTotals();
+				});
+
+				$("#R135_AMT_ADJ_BWP2, #R141_AMT_ADJ_BWP2").on("input change keyup", function () {
+				    calculateTotals();
+				});
+
+				$("#R138_NET_AMT_BWP1, #R139_NET_AMT_BWP1").on("input change keyup", function () {
+				    calculateTotals();
+				});
+
+				$("#R135_NET_AMT_BWP2, #R141_NET_AMT_BWP2").on("input change keyup", function () {
+				    calculateTotals();
+				});
+
+				$("#R135_BAL_SUB_BWP2, #R141_BAL_SUB_BWP2").on("input change keyup", function () {
+				    calculateTotals();
+				});
+
+				$("#R135_BAL_ACT_SUB_BWP2, #R141_BAL_ACT_SUB_BWP2").on("input change keyup", function () {
+				    calculateTotals();
+				});
+				
+				// R248 dependent fields
+				$("#R241_FIG_BAL_BWP2, #R242_FIG_BAL_BWP2, #R243_FIG_BAL_BWP2, #R244_FIG_BAL_BWP2, #R245_FIG_BAL_BWP2, #R246_FIG_BAL_BWP2, #R247_FIG_BAL_BWP2")
+				.on("input change keyup", function () {
+				    calculateTotals();
+				});
+				
+				// R248 AMT dependent fields
+				$("#R241_AMT_ADJ_BWP2, #R242_AMT_ADJ_BWP2, #R243_AMT_ADJ_BWP2, #R244_AMT_ADJ_BWP2, #R245_AMT_ADJ_BWP2, #R246_AMT_ADJ_BWP2, #R247_AMT_ADJ_BWP2")
+				.on("input change keyup", function () {
+				    calculateTotals();
+				});
+				
+				
+				// R248 NET dependent fields
+				$("#R241_NET_AMT_BWP2, #R242_NET_AMT_BWP2, #R243_NET_AMT_BWP2, #R244_NET_AMT_BWP2, #R245_NET_AMT_BWP2, #R246_NET_AMT_BWP2, #R247_NET_AMT_BWP2")
+				.on("input change keyup", function () {
+				    calculateTotals();
+				});
+				
+				// R248 BAL_SUB dependent fields
+				$("#R241_BAL_SUB_BWP2, #R242_BAL_SUB_BWP2, #R243_BAL_SUB_BWP2, #R244_BAL_SUB_BWP2, #R245_BAL_SUB_BWP2, #R246_BAL_SUB_BWP2, #R247_BAL_SUB_BWP2")
+				.on("input change keyup", function () {
+				    calculateTotals();
+				});
+				
+				
+				// R248 BAL_ACT_SUB dependent fields
+				$("#R241_BAL_ACT_SUB_BWP2, #R242_BAL_ACT_SUB_BWP2, #R243_BAL_ACT_SUB_BWP2, #R244_BAL_ACT_SUB_BWP2, #R245_BAL_ACT_SUB_BWP2, #R246_BAL_ACT_SUB_BWP2, #R247_BAL_ACT_SUB_BWP2")
+				.on("input change keyup", function () {
+				    calculateTotals();
+				});
+			});
+		</script>
 
 
 
