@@ -322,33 +322,33 @@ PURPOSE		: BRFREPORT
 		});
 
 
-		$(document).ready(function() {
-			Maker_Checker_Function(); 
+		$(document).ready(function () {
+			Maker_Checker_Function();
 		});
 
 		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
 		function Maker_Checker_Function() {
 			$.ajax({
-				url: "/BRRS/getUserRole",    
+				url: "/BRRS/getUserRole",
 				type: "GET",
-				success: function(roleId) {
+				success: function (roleId) {
 					// console.log("User Role ID:", roleId);
-				
+
 					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
 					}
 
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-								const button = document.getElementById("custom-tab-btnAdd");
-								if (button) button.style.display = "none";
-							}
+						const button = document.getElementById("custom-tab-btnAdd");
+						if (button) button.style.display = "none";
+					}
 
 				},
-				error: function(err) {
+				error: function (err) {
 					console.error("Error fetching role:", err);
-		     }
-		    });
+				}
+			});
 		}
 
 		function home() {
@@ -363,35 +363,38 @@ PURPOSE		: BRFREPORT
 		}
 
 		//to fetch summary from the database - called from the summary button
+		//function showdetails() {
+
+		//var Callurl;
+		//$('#loader').modal('show');
+		//Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype})}]]*/
+		//location.href = Callurl;
+		//console.log(Callurl);
+		/*  $.ajax({
+			 type: 'get',
+			 url: Callurl,
+			 beforeSend: function () {
+				 $('#loader').modal('show'); // 🔄 Show loader
+			 },
+			 success: function (data) {
+				 $('.content').html(data);
+				 //$("#detailsbtn").addClass("active");
+				 //tablepagination();
+			 },
+			 complete: function () {
+				 $('#loader').modal('hide'); 
+			 },
+			 error: function () {
+				   $('#loader').modal('hide');
+				 alert("Something went wrongss. Please try again.");
+			   
+			 }
+		 }); */
+		//}
 		function showdetails() {
-
-			var Callurl;
-			$('#loader').modal('show');
-			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype})}]]*/
-				location.href = Callurl;
-			console.log(Callurl);
-			/*  $.ajax({
-				 type: 'get',
-				 url: Callurl,
-				 beforeSend: function () {
-					 $('#loader').modal('show'); // 🔄 Show loader
-				 },
-				 success: function (data) {
-					 $('.content').html(data);
-					 //$("#detailsbtn").addClass("active");
-					 //tablepagination();
-				 },
-				 complete: function () {
-					 $('#loader').modal('hide'); 
-				 },
-				 error: function () {
-					   $('#loader').modal('hide');
-					 alert("Something went wrongss. Please try again.");
-				   
-				 }
-			 }); */
+			isDetailsModal = true; // mark that this modal is from Details
+			showResultModal('BRRS', 'Interlinking Values Not Available Detail Page');
 		}
-
 		function showsummary() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
@@ -439,7 +442,7 @@ PURPOSE		: BRFREPORT
 			var dtltype = button.getAttribute('data-dtltype');
 			var filename = button.getAttribute('data-filename');
 			var type = button.getAttribute('data-type');
-			   var version = button.getAttribute('data-version');
+			var version = button.getAttribute('data-version');
 			$('#loader').modal('show');
 
 			$.ajax({
@@ -450,7 +453,7 @@ PURPOSE		: BRFREPORT
 					'&currency=' + currency +
 					'&subreportid=' + subreportid +
 					'&secid=' + secid +
-					'&filename=' + filename+
+					'&filename=' + filename +
 					'&type=' + type +
 					'&version=' + version,
 				type: 'GET',
@@ -660,177 +663,176 @@ PURPOSE		: BRFREPORT
 
 
 	<style>
-			.left-arrow-circle {
-				background-color: white;
-				color: #007bff;
-				border-radius: 50%;
-				padding: 8px;
-				margin-right: 10px;
-				cursor: pointer;
+		.left-arrow-circle {
+			background-color: white;
+			color: #007bff;
+			border-radius: 50%;
+			padding: 8px;
+			margin-right: 10px;
+			cursor: pointer;
+		}
+
+		/* 🚌 Bus display style box */
+		/* 🚌 Bus display style box */
+		.boards {
+			transform: translateY(6px);
+			background-color: rgb(107, 122, 143);
+			color: white;
+			padding: 5px 80px;
+			border-radius: 8px;
+			overflow: hidden;
+			white-space: nowrap;
+			flex: 1;
+			/* ✅ makes it take available space dynamically */
+			min-width: 200px;
+			box-shadow: 0 0 10px rgb(107, 122, 143);
+			position: relative;
+		}
+
+		/* ✨ Scrolling animation */
+		.scrolling-text {
+			display: inline-block;
+			font-family: "Courier New", monospace;
+			font-weight: bold;
+			letter-spacing: 1px;
+			animation: scroll-left 10s linear infinite;
+		}
+
+		/* Animation keyframes */
+		@keyframes scroll-left {
+			0% {
+				transform: translateX(100%);
 			}
 
-			/* 🚌 Bus display style box */
-			/* 🚌 Bus display style box */
-						.boards {
-							transform: translateY(6px);
-						  background-color: rgb(107, 122, 143);
-						  color: white;
-						  padding: 5px 80px;
-						  border-radius: 8px;
-						  overflow: hidden;
-						  white-space: nowrap;
-						  flex: 1; /* ✅ makes it take available space dynamically */
-						  min-width: 200px;
-						  box-shadow: 0 0 10px rgb(107, 122, 143);
-						  position: relative;
-						}
-
-			/* ✨ Scrolling animation */
-			.scrolling-text {
-				display: inline-block;
-				font-family: "Courier New", monospace;
-				font-weight: bold;
-				letter-spacing: 1px;
-				animation: scroll-left 10s linear infinite;
+			100% {
+				transform: translateX(-100%);
 			}
-
-			/* Animation keyframes */
-			@keyframes scroll-left {
-				0% {
-					transform: translateX(100%);
-				}
-
-				100% {
-					transform: translateX(-100%);
-				}
-			}
-		</style>
+		}
+	</style>
 
 
 
 
-		<style>
-			/* Keep the header fixed and aligned */
-			.dataTables_scrollHeadInner,
-			.dataTables_scrollBody table {
-				width: 100% !important;
-			}
+	<style>
+		/* Keep the header fixed and aligned */
+		.dataTables_scrollHeadInner,
+		.dataTables_scrollBody table {
+			width: 100% !important;
+		}
 
-			/* Prevent thead shrinking at zoom */
-			.dataTables_scrollHeadInner table {
-				width: 100% !important;
-				min-width: 100% !important;
-			}
+		/* Prevent thead shrinking at zoom */
+		.dataTables_scrollHeadInner table {
+			width: 100% !important;
+			min-width: 100% !important;
+		}
 
-			#reportdetails {
-				width: 100% !important;
-				table-layout: fixed !important;
-			}
+		#reportdetails {
+			width: 100% !important;
+			table-layout: fixed !important;
+		}
 
-			#reportdetails th,
-			#reportdetails td {
-				white-space: nowrap;
-			}
+		#reportdetails th,
+		#reportdetails td {
+			white-space: nowrap;
+		}
 
-			table.dataTable th.dt-type-numeric,
-			table.dataTable th.dt-type-date,
-			table.dataTable td.dt-type-numeric,
-			table.dataTable td.dt-type-date {
-				text-align: left !important;
-			}
+		table.dataTable th.dt-type-numeric,
+		table.dataTable th.dt-type-date,
+		table.dataTable td.dt-type-numeric,
+		table.dataTable td.dt-type-date {
+			text-align: left !important;
+		}
 
-			table.dataTable th.dt-type-numeric:nth-child(6) {
-				text-align: right !important;
-			}
+		table.dataTable th.dt-type-numeric:nth-child(6) {
+			text-align: right !important;
+		}
 
-			/* ✅ Right-align both header and data (6th column = ACCT BALANCE) */
-			#reportdetails th.dt-type-numeric:nth-child(6),
-			#reportdetails td:nth-child(6),
-			.dataTables_scrollHeadInner table th:nth-child(6) {
-				text-align: right !important;
-				padding-right: 10px !important;
-			}
-		</style>
-		<style>
-			#reportdetails,
-			#reportdetails th,
-			#reportdetails td {
-				
-			}
+		/* ✅ Right-align both header and data (6th column = ACCT BALANCE) */
+		#reportdetails th.dt-type-numeric:nth-child(6),
+		#reportdetails td:nth-child(6),
+		.dataTables_scrollHeadInner table th:nth-child(6) {
+			text-align: right !important;
+			padding-right: 10px !important;
+		}
+	</style>
+	<style>
+		#reportdetails,
+		#reportdetails th,
+		#reportdetails td {}
 
-			#reportdetails {
-				border-collapse: collapse;
-			}
-		</style>
-		<script th:inline="javascript">
-					  $(document).ready(function () {
-					    var table = $('#reportdetails').DataTable({
-					      scrollY: "550px",
-					      scrollX: true,
-					      scrollCollapse: true,
-					      autoWidth: false,
-					      paging: true,
-					      searching: true,
-					      lengthChange: false,
-					      ordering: true,
-					      pageLength: 100,
-					      fixedHeader: true, // ✅ You can simply set it to true
-						  // ✅ Column width settings
-						   columnDefs: [
-						     { width: "60px", targets: 0 },   // Edit icon column
-						     { width: "150px", targets: 1 }  ,  // S No column
-							 { width: "300px", targets: 7 }    // S No column
-						   ],
+		#reportdetails {
+			border-collapse: collapse;
+		}
+	</style>
+	<script th:inline="javascript">
+		$(document).ready(function () {
+			var table = $('#reportdetails').DataTable({
+				scrollY: "550px",
+				scrollX: true,
+				scrollCollapse: true,
+				autoWidth: false,
+				paging: true,
+				searching: true,
+				lengthChange: false,
+				ordering: true,
+				pageLength: 100,
+				fixedHeader: true, // ✅ You can simply set it to true
+				// ✅ Column width settings
+				columnDefs: [
+					{width: "60px", targets: 0},   // Edit icon column
+					{width: "150px", targets: 1},  // S No column
+					{width: "300px", targets: 7}    // S No column
+				],
 
-					      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
-					    });
+				dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+			});
 
-					    // ✅ Fix alignment on resize / zoom
-					    $(window).on('resize', function () {
-					      table.columns.adjust().draw(false);
-					    });
+			// ✅ Fix alignment on resize / zoom
+			$(window).on('resize', function () {
+				table.columns.adjust().draw(false);
+			});
 
-					    // ✅ Fix initial misalignment if loaded at non-100% zoom
-					    setTimeout(function () {
-					      table.columns.adjust().draw(false);
-					    }, 500);
-					  });
-					</script>
+			// ✅ Fix initial misalignment if loaded at non-100% zoom
+			setTimeout(function () {
+				table.columns.adjust().draw(false);
+			}, 500);
+		});
+	</script>
 
-		<script th:inline="javascript">
-			/*<![CDATA[*/
-			const reportId = /*[[${reportid}]]*/ null;
-			/*]]>*/
-		</script>
-		
-		
-		
-	</head>
-	<title>M_CA1</title>
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		const reportId = /*[[${reportid}]]*/ null;
+		/*]]>*/
+	</script>
 
-	<body>
-		<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
-			<div class="row">
-				<div th:insert="HeaderMenu :: header"></div>
-				<div class="card">
-					<div class="card-header"
-						style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
-						<div style="display: flex; align-items: center;" onclick="back();">
-							<!-- ⬅️ Left circular arrow -->
-							<div class="left-arrow-circle">
-								<i class="fa fa-arrow-left"></i>
-							</div>
-							<!-- Title -->
-							<h5
-								style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin-right: 10px; margin: 0 10px;">
-								M-CA1: CAPITAL ADEQUACY FRAMEWORK</h5>
+
+
+</head>
+<title>M_CA1</title>
+
+<body>
+	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
+		<div class="row">
+			<div th:insert="HeaderMenu :: header"></div>
+			<div class="card">
+				<div class="card-header"
+					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
+					<div style="display: flex; align-items: center;" onclick="back();">
+						<!-- ⬅️ Left circular arrow -->
+						<div class="left-arrow-circle">
+							<i class="fa fa-arrow-left"></i>
 						</div>
-						<!-- Moving bus-board text -->
-							<div class="boards">
-								<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT </p>
-							</div>
-							<!-- Title -->
-							
+						<!-- Title -->
+						<h5
+							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin-right: 10px; margin: 0 10px;">
+							M-CA1: CAPITAL ADEQUACY FRAMEWORK</h5>
+					</div>
+					<!-- Moving bus-board text -->
+					<div class="boards">
+						<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT </p>
+					</div>
+					<!-- Title -->
+
 
 
 					<div class="custom-tab-btn-group nav-buttons"
@@ -846,10 +848,10 @@ PURPOSE		: BRFREPORT
 							th:if="${displaymode == 'Details'}">Summary</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'}">Details</button>
-						
-								<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-														th:if="${displaymode == 'summary' or  displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
-														th:attr="data-reportid=${reportid}, 
+
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'summary' or  displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+							th:attr="data-reportid=${reportid}, 
 											                     data-asondate=${asondate}, 
 											                     data-fromdate=${fromdate}, 
 											                     data-todate=${todate}, 
@@ -858,15 +860,15 @@ PURPOSE		: BRFREPORT
 											                     data-filename='M_CA1.xlsx',
 											                     data-type=${type},
 																 data-version=${version != null ? version : ''} " onclick="downloadfile(this);"
-														style="font-family: Arial; font-weight: bold;font-size: 14px;">
-														<i class="fa fa-download"></i> Format
-													</button>
+							style="font-family: Arial; font-weight: bold;font-size: 14px;">
+							<i class="fa fa-download"></i> Format
+						</button>
 
-													<!-- Download – EMAIL -->
-													<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-														onclick="downloadfile(this)"
-														th:if="${displaymode == 'summary' or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
-														th:attr="data-reportid=${reportid},
+						<!-- Download – EMAIL -->
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+							th:attr="data-reportid=${reportid},
 											            data-asondate=${asondate},
 											            data-fromdate=${fromdate},
 											            data-todate=${todate},
@@ -876,13 +878,13 @@ PURPOSE		: BRFREPORT
 											            data-type=${type},
 											            data-format='email',
 											            data-version=${version != null ? version : ''}"
-														style="font-family: Arial; font-weight: bold;font-size: 14px;">
-														<i class="fa fa-download"></i> Email
+							style="font-family: Arial; font-weight: bold;font-size: 14px;">
+							<i class="fa fa-download"></i> Email
 
-													</button>
+						</button>
 
-													<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-														th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
 																											    data-fromdate=${fromdate},
 																											    data-todate=${todate},
 																												data-currency=${currency},  
@@ -891,15 +893,15 @@ PURPOSE		: BRFREPORT
 																												data-type=${type},
 																															data-version=${version}
 																											  ">
-														<i class="fa fa-download"></i>
-													</button>
+							<i class="fa fa-download"></i>
+						</button>
 
 
 
 
-												</div>
+					</div>
 
-											</div>
+				</div>
 
 
 

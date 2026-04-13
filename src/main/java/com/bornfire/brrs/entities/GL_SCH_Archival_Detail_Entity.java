@@ -10,246 +10,367 @@ import javax.persistence.Id;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_GL_SCH_DETAILTABLE")
+@Table(name = "BRRS_GL_SCH_ARCHIVALTABLE_DETAIL")
 public class GL_SCH_Archival_Detail_Entity {
 
-    @Column(name = "CUST_ID")
-    private String custId;
-    @Id
-    @Column(name = "ACCT_NUMBER")
-    private String acctNumber;
+	@Column(name = "CUST_ID")
+	private String custId;
+	@Id
+	@Column(name = "ACCT_NUMBER")
+	private String acctNumber;
 
-    @Column(name = "ACCT_NAME")
-    private String acctName;
+	@Column(name = "ACCT_NAME")
+	private String acctName;
 
-    @Column(name = "DATA_TYPE")
-    private String dataType;
+	@Column(name = "DATA_TYPE")
+	private String dataType;
 
-    @Column(name = "REPORT_NAME")
-    private String reportName;
+	@Column(name = "REPORT_NAME")
+	private String reportName;
 
-    @Column(name = "REPORT_LABEL")
-    private String reportLabel;
+	@Column(name = "REPORT_LABEL")
+	private String reportLabel;
 
-    @Column(name = "REPORT_ADDL_CRITERIA_1")
-    private String reportAddlCriteria1;
+	@Column(name = "REPORT_LABEL_1")
+	private String reportLabel1;
 
-    @Column(name = "REPORT_REMARKS")
-    private String reportRemarks;
+	@Column(name = "REPORT_LABEL_2")
+	private String reportLabel2;
 
-    @Column(name = "MODIFICATION_REMARKS")
-    private String modificationRemarks;
+	@Column(name = "REPORT_LABEL_3")
+	private String reportLabel3;
 
-    @Column(name = "DATA_ENTRY_VERSION")
-    private String dataEntryVersion;
+	@Column(name = "REPORT_LABEL_4")
+	private String reportLabel4;
 
-    @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
-    private BigDecimal acctBalanceInpula;
+	@Column(name = "REPORT_LABEL_6")
+	private String reportLabel6;
 
-    @Column(name = "REPORT_DATE")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private Date reportDate;
+	@Column(name = "REPORT_ADDL_CRITERIA_1")
+	private String reportAddlCriteria1;
 
-    @Column(name = "CREATE_USER")
-    private String createUser;
+	@Column(name = "REPORT_ADDL_CRITERIA_2")
+	private String reportAddlCriteria2;
 
-    @Column(name = "CREATE_TIME")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private Date createTime;
+	@Column(name = "REPORT_ADDL_CRITERIA_3")
+	private String reportAddlCriteria3;
 
-    @Column(name = "MODIFY_USER")
-    private String modifyUser;
+	@Column(name = "REPORT_ADDL_CRITERIA_4")
+	private String reportAddlCriteria4;
 
-    @Column(name = "MODIFY_TIME")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private Date modifyTime;
+	@Column(name = "REPORT_ADDL_CRITERIA_5")
+	private String reportAddlCriteria5;
 
-    @Column(name = "VERIFY_USER")
-    private String verifyUser;
+	@Column(name = "REPORT_ADDL_CRITERIA_6")
+	private String reportAddlCriteria6;
 
-    @Column(name = "VERIFY_TIME")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private Date verifyTime;
+	@Column(name = "REPORT_REMARKS")
+	private String reportRemarks;
 
-    @Column(name = "ENTITY_FLG")
-    private char entityFlg;
+	@Column(name = "MODIFICATION_REMARKS")
+	private String modificationRemarks;
 
-    @Column(name = "MODIFY_FLG")
-    private char modifyFlg;
+	@Column(name = "DATA_ENTRY_VERSION")
+	private String dataEntryVersion;
 
-    @Column(name = "DEL_FLG")
-    private char delFlg;
+	@Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
+	private BigDecimal acctBalanceInpula;
 
-    public String getCustId() {
-        return custId;
-    }
+	@Column(name = "AVERAGE", precision = 24, scale = 3)
+	private BigDecimal average;
 
-    public void setCustId(String custId) {
-        this.custId = custId;
-    }
+	@Column(name = "REPORT_DATE")
+	@DateTimeFormat(pattern = "dd-MM-yyyy")
+	private Date reportDate;
 
-    public String getAcctNumber() {
-        return acctNumber;
-    }
+	@Column(name = "CREATE_USER")
+	private String createUser;
 
-    public void setAcctNumber(String acctNumber) {
-        this.acctNumber = acctNumber;
-    }
+	@Column(name = "CREATE_TIME")
+	@DateTimeFormat(pattern = "dd-MM-yyyy")
+	private Date createTime;
 
-    public String getAcctName() {
-        return acctName;
-    }
+	@Column(name = "MODIFY_USER")
+	private String modifyUser;
 
-    public void setAcctName(String acctName) {
-        this.acctName = acctName;
-    }
+	@Column(name = "MODIFY_TIME")
+	@DateTimeFormat(pattern = "dd-MM-yyyy")
+	private Date modifyTime;
 
-    public String getDataType() {
-        return dataType;
-    }
+	@Column(name = "VERIFY_USER")
+	private String verifyUser;
 
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
-    }
+	@Column(name = "VERIFY_TIME")
+	@DateTimeFormat(pattern = "dd-MM-yyyy")
+	private Date verifyTime;
 
-    public String getReportName() {
-        return reportName;
-    }
+	@Column(name = "ENTITY_FLG")
+	private char entityFlg;
 
-    public void setReportName(String reportName) {
-        this.reportName = reportName;
-    }
+	@Column(name = "MODIFY_FLG")
+	private char modifyFlg;
 
-    public String getReportLabel() {
-        return reportLabel;
-    }
+	@Column(name = "DEL_FLG")
+	private char delFlg;
 
-    public void setReportLabel(String reportLabel) {
-        this.reportLabel = reportLabel;
-    }
+	public String getCustId() {
+		return custId;
+	}
 
-    public String getReportAddlCriteria1() {
-        return reportAddlCriteria1;
-    }
+	public void setCustId(String custId) {
+		this.custId = custId;
+	}
 
-    public void setReportAddlCriteria1(String reportAddlCriteria1) {
-        this.reportAddlCriteria1 = reportAddlCriteria1;
-    }
+	public String getAcctNumber() {
+		return acctNumber;
+	}
 
-    public String getReportRemarks() {
-        return reportRemarks;
-    }
+	public void setAcctNumber(String acctNumber) {
+		this.acctNumber = acctNumber;
+	}
 
-    public void setReportRemarks(String reportRemarks) {
-        this.reportRemarks = reportRemarks;
-    }
+	public String getAcctName() {
+		return acctName;
+	}
 
-    public String getModificationRemarks() {
-        return modificationRemarks;
-    }
+	public void setAcctName(String acctName) {
+		this.acctName = acctName;
+	}
 
-    public void setModificationRemarks(String modificationRemarks) {
-        this.modificationRemarks = modificationRemarks;
-    }
+	public String getDataType() {
+		return dataType;
+	}
 
-    public String getDataEntryVersion() {
-        return dataEntryVersion;
-    }
+	public void setDataType(String dataType) {
+		this.dataType = dataType;
+	}
 
-    public void setDataEntryVersion(String dataEntryVersion) {
-        this.dataEntryVersion = dataEntryVersion;
-    }
+	public String getReportName() {
+		return reportName;
+	}
 
-    public BigDecimal getAcctBalanceInpula() {
-        return acctBalanceInpula;
-    }
+	public void setReportName(String reportName) {
+		this.reportName = reportName;
+	}
 
-    public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
-        this.acctBalanceInpula = acctBalanceInpula;
-    }
+	public String getReportLabel() {
+		return reportLabel;
+	}
 
-    public Date getReportDate() {
-        return reportDate;
-    }
+	public void setReportLabel(String reportLabel) {
+		this.reportLabel = reportLabel;
+	}
 
-    public void setReportDate(Date reportDate) {
-        this.reportDate = reportDate;
-    }
+	public String getReportAddlCriteria1() {
+		return reportAddlCriteria1;
+	}
 
-    public String getCreateUser() {
-        return createUser;
-    }
+	public void setReportAddlCriteria1(String reportAddlCriteria1) {
+		this.reportAddlCriteria1 = reportAddlCriteria1;
+	}
 
-    public void setCreateUser(String createUser) {
-        this.createUser = createUser;
-    }
+	public String getReportRemarks() {
+		return reportRemarks;
+	}
 
-    public Date getCreateTime() {
-        return createTime;
-    }
+	public void setReportRemarks(String reportRemarks) {
+		this.reportRemarks = reportRemarks;
+	}
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
+	public String getModificationRemarks() {
+		return modificationRemarks;
+	}
 
-    public String getModifyUser() {
-        return modifyUser;
-    }
+	public void setModificationRemarks(String modificationRemarks) {
+		this.modificationRemarks = modificationRemarks;
+	}
 
-    public void setModifyUser(String modifyUser) {
-        this.modifyUser = modifyUser;
-    }
+	public String getDataEntryVersion() {
+		return dataEntryVersion;
+	}
 
-    public Date getModifyTime() {
-        return modifyTime;
-    }
+	public void setDataEntryVersion(String dataEntryVersion) {
+		this.dataEntryVersion = dataEntryVersion;
+	}
 
-    public void setModifyTime(Date modifyTime) {
-        this.modifyTime = modifyTime;
-    }
+	public BigDecimal getAcctBalanceInpula() {
+		return acctBalanceInpula;
+	}
 
-    public String getVerifyUser() {
-        return verifyUser;
-    }
+	public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
+		this.acctBalanceInpula = acctBalanceInpula;
+	}
 
-    public void setVerifyUser(String verifyUser) {
-        this.verifyUser = verifyUser;
-    }
+	public Date getReportDate() {
+		return reportDate;
+	}
 
-    public Date getVerifyTime() {
-        return verifyTime;
-    }
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
+	}
 
-    public void setVerifyTime(Date verifyTime) {
-        this.verifyTime = verifyTime;
-    }
+	public String getCreateUser() {
+		return createUser;
+	}
 
-    public char getEntityFlg() {
-        return entityFlg;
-    }
+	public void setCreateUser(String createUser) {
+		this.createUser = createUser;
+	}
 
-    public void setEntityFlg(char entityFlg) {
-        this.entityFlg = entityFlg;
-    }
+	public Date getCreateTime() {
+		return createTime;
+	}
 
-    public char getModifyFlg() {
-        return modifyFlg;
-    }
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
 
-    public void setModifyFlg(char modifyFlg) {
-        this.modifyFlg = modifyFlg;
-    }
+	public String getModifyUser() {
+		return modifyUser;
+	}
 
-    public char getDelFlg() {
-        return delFlg;
-    }
+	public void setModifyUser(String modifyUser) {
+		this.modifyUser = modifyUser;
+	}
 
-    public void setDelFlg(char delFlg) {
-        this.delFlg = delFlg;
-    }
+	public Date getModifyTime() {
+		return modifyTime;
+	}
 
-    public GL_SCH_Archival_Detail_Entity() {
-        super();
-    }
+	public void setModifyTime(Date modifyTime) {
+		this.modifyTime = modifyTime;
+	}
+
+	public String getVerifyUser() {
+		return verifyUser;
+	}
+
+	public void setVerifyUser(String verifyUser) {
+		this.verifyUser = verifyUser;
+	}
+
+	public Date getVerifyTime() {
+		return verifyTime;
+	}
+
+	public void setVerifyTime(Date verifyTime) {
+		this.verifyTime = verifyTime;
+	}
+
+	public char getEntityFlg() {
+		return entityFlg;
+	}
+
+	public void setEntityFlg(char entityFlg) {
+		this.entityFlg = entityFlg;
+	}
+
+	public char getModifyFlg() {
+		return modifyFlg;
+	}
+
+	public void setModifyFlg(char modifyFlg) {
+		this.modifyFlg = modifyFlg;
+	}
+
+	public char getDelFlg() {
+		return delFlg;
+	}
+
+	public void setDelFlg(char delFlg) {
+		this.delFlg = delFlg;
+	}
+
+	public GL_SCH_Archival_Detail_Entity() {
+		super();
+	}
+
+	public String getReportLabel2() {
+		return reportLabel2;
+	}
+
+	public void setReportLabel2(String reportLabel2) {
+		this.reportLabel2 = reportLabel2;
+	}
+
+	public String getReportLabel3() {
+		return reportLabel3;
+	}
+
+	public void setReportLabel3(String reportLabel3) {
+		this.reportLabel3 = reportLabel3;
+	}
+
+	public String getReportLabel4() {
+		return reportLabel4;
+	}
+
+	public void setReportLabel4(String reportLabel4) {
+		this.reportLabel4 = reportLabel4;
+	}
+
+	public String getReportLabel6() {
+		return reportLabel6;
+	}
+
+	public void setReportLabel6(String reportLabel6) {
+		this.reportLabel6 = reportLabel6;
+	}
+
+	public String getReportAddlCriteria2() {
+		return reportAddlCriteria2;
+	}
+
+	public void setReportAddlCriteria2(String reportAddlCriteria2) {
+		this.reportAddlCriteria2 = reportAddlCriteria2;
+	}
+
+	public String getReportAddlCriteria3() {
+		return reportAddlCriteria3;
+	}
+
+	public void setReportAddlCriteria3(String reportAddlCriteria3) {
+		this.reportAddlCriteria3 = reportAddlCriteria3;
+	}
+
+	public String getReportAddlCriteria4() {
+		return reportAddlCriteria4;
+	}
+
+	public void setReportAddlCriteria4(String reportAddlCriteria4) {
+		this.reportAddlCriteria4 = reportAddlCriteria4;
+	}
+
+	public String getReportAddlCriteria5() {
+		return reportAddlCriteria5;
+	}
+
+	public void setReportAddlCriteria5(String reportAddlCriteria5) {
+		this.reportAddlCriteria5 = reportAddlCriteria5;
+	}
+
+	public String getReportAddlCriteria6() {
+		return reportAddlCriteria6;
+	}
+
+	public void setReportAddlCriteria6(String reportAddlCriteria6) {
+		this.reportAddlCriteria6 = reportAddlCriteria6;
+	}
+
+	public String getReportLabel1() {
+		return reportLabel1;
+	}
+
+	public void setReportLabel1(String reportLabel1) {
+		this.reportLabel1 = reportLabel1;
+	}
+
+	public BigDecimal getAverage() {
+		return average;
+	}
+
+	public void setAverage(BigDecimal average) {
+		this.average = average;
+	}
 
 }
