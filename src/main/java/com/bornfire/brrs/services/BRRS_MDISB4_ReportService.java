@@ -85,56 +85,50 @@ public class BRRS_MDISB4_ReportService {
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 	
-	public ModelAndView getMDISB4View(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, String version) {
-		ModelAndView mv = new ModelAndView();
-		Session hs = sessionFactory.getCurrentSession();
-		int pageSize = pageable.getPageSize();
-		int currentPage = pageable.getPageNumber();
-		int startItem = currentPage * pageSize;
+	public ModelAndView getMDISB4View(String reportId, String fromdate, String todate,
+	        String currency, String dtltype, Pageable pageable,
+	        String type, BigDecimal version) {
 
-		System.out.println("testing");
-		System.out.println(version);
+	    ModelAndView mv = new ModelAndView();
 
-		if (type.equals("ARCHIVAL") & version != null) {
-			System.out.println(type);
-			List<MDISB4_Archival_Summary_Entity> T1Master = new ArrayList<MDISB4_Archival_Summary_Entity>();
-			System.out.println(version);
-			try {
-				Date d1 = dateformat.parse(todate);
+	    System.out.println("Loading MDISB4 View...");
+	    System.out.println("Version: " + version);
 
-			
-				T1Master = BRRS_MDISB4_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate),
-						version);
+	    try {
+	        Date toDateParsed = dateformat.parse(todate);
 
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
+	        if ("ARCHIVAL".equals(type) && version != null) {
 
-			mv.addObject("reportsummary", T1Master);
-		} else {
+	            System.out.println("ARCHIVAL MODE");
 
-			List<MDISB4_Summary_Entity> T1Master = new ArrayList<MDISB4_Summary_Entity>();
-			try {
-				Date d1 = dateformat.parse(todate);
-			
-				T1Master = BRRS_MDISB4_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+	            List<MDISB4_Archival_Summary_Entity> data =
+	                    BRRS_MDISB4_Archival_Summary_Repo
+	                    .getdatabydateListarchival(toDateParsed, version);
 
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-			mv.addObject("reportsummary", T1Master);
-		}
+	            mv.addObject("reportsummary", data);
 
-		mv.setViewName("BRRS/MDISB4");
+	        } else {
 
-	
-		mv.addObject("displaymode", "summary");
-		System.out.println("scv" + mv.getViewName());
+	            System.out.println("CURRENT MODE");
 
-		return mv;
+	            List<MDISB4_Summary_Entity> data =
+	                    BRRS_MDISB4_Summary_Repo
+	                    .getdatabydateList(toDateParsed);
+
+	            mv.addObject("reportsummary", data);
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    // ✅ IMPORTANT: MUST MATCH HTML LOCATION
+	    mv.setViewName("BRRS/MDISB4");
+
+	    mv.addObject("displaymode", "summary");
+
+	    return mv;
 	}
-	
 	
 	public ModelAndView getMDISB4currentDtl(String reportId, String fromdate, String todate, String currency,
             String dtltype, Pageable pageable, String filter, String type, String version) {
@@ -222,11 +216,11 @@ public class BRRS_MDISB4_ReportService {
 
 	
 	public byte[] getMDISB4Excel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) throws Exception {
+			String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 
 		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getExcelMDISB4ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
@@ -912,7 +906,7 @@ public class BRRS_MDISB4_ReportService {
 	
 	
 	public byte[] getExcelMDISB4ARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		if (type.equals("ARCHIVAL") & version != null) {
 

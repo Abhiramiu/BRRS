@@ -87,7 +87,7 @@ public class MDISB4_Archival_Summary_Entity {
 	private Date reportDate;
     
 	@Column(name = "REPORT_VERSION")
-	private String reportVersion;
+	private BigDecimal reportVersion;
 	
     private String REPORT_FREQUENCY;
     private String REPORT_CODE;
@@ -398,10 +398,10 @@ public class MDISB4_Archival_Summary_Entity {
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
 	}
-	public String getReportVersion() {
+	public BigDecimal getReportVersion() {
 		return reportVersion;
 	}
-	public void setReportVersion(String reportVersion) {
+	public void setReportVersion(BigDecimal reportVersion) {
 		this.reportVersion = reportVersion;
 	}
 	public String getREPORT_FREQUENCY() {

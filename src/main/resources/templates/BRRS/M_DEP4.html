@@ -406,6 +406,75 @@ PURPOSE		: BRRSREPORT
 
 		}
 	</script>
+	
+	<script>
+
+			// This function is for closing the modal after an action is complete.
+			// It hides the result and loader modals and reloads the page.
+			function closemodels() {
+		    $("#resultModal").modal("hide");
+		    $('#loader').modal('hide');
+
+			// Reload the page after a short delay to ensure the modal animation completes smoothly.
+			    setTimeout(function () {
+			        location.reload();
+			    }, 300);
+		}
+
+			function fileuploads(btn) {
+				const asondate = btn.getAttribute("data-todate");
+				$('#loader').modal('show');
+
+				// ✅ Step 1: Calculate totals
+				
+
+				// ✅ Step 2: Remove commas from visible inputs only
+				$("#fileupload input[type='text']").each(function () {
+					$(this).val($(this).val().replace(/,/g, ''));
+				});
+				// ✅ Step 3: Validate form
+				if (!$("#fileupload").valid()) {
+					$('#loader').modal('hide');
+					return;
+				}
+
+				// ✅ Step 4: Build FormData object including hidden inputs
+				const formData = new FormData();
+				formData.append("asondate", asondate);
+
+				$('#fileupload').find(':input[name]').each(function () {
+					const name = $(this).attr('name');
+					formData.append(name, $(this).val());
+				});
+
+				// ✅ Step 5: Send Ajax request
+				$.ajax({
+					url: './M_DEP4_updateAll',
+					type: 'POST',
+					data: formData,
+					processData: false,
+					contentType: false,
+					dataType: 'text',
+					success: function () {
+						$("#resultModalLabel").text("BRRS");
+						$("#resultModalBody").text("Updated successfully.");
+						$("#resultModal").modal("show");
+					},
+					error: function (jqXHR) {
+						console.error("Error response:", jqXHR.responseText);
+						$("#resultModalLabel").text("Error");
+						$("#resultModalBody").text("Update failed. Check console for details.");
+						$("#resultModal").modal("show");
+					},
+					complete: function () {
+						$('#loader').modal('hide');
+					}
+				});
+			}
+
+
+		</script>
+		
 
 	<script>
 
@@ -436,7 +505,6 @@ PURPOSE		: BRRSREPORT
 
 
 		function downloadfile(button) {
-
 					var reportid = button.getAttribute('data-reportid');
 					var asondate = button.getAttribute('data-asondate');
 					var fromdate = button.getAttribute('data-fromdate');
@@ -446,71 +514,45 @@ PURPOSE		: BRRSREPORT
 					var secid = button.getAttribute('data-secid');
 					var dtltype = button.getAttribute('data-dtltype');
 					var filename = button.getAttribute('data-filename');
-					var type = button.getAttribute('data-type');
-					var version = button.getAttribute('data-version');
-
-					// Show loader modal (Bootstrap 5)
-					var loader = new bootstrap.Modal(
-						document.getElementById('loader'),
-						{backdrop: 'static', keyboard: false}
-					);
-					loader.show();
-
-					var url = './downloadExcel?reportid=' + reportid +
-						'&fromdate=' + fromdate +
-						'&asondate=' + asondate +
-						'&todate=' + todate +
-						'&currency=' + currency +
-						'&subreportid=' + subreportid +
-						'&secid=' + secid +
-						'&filename=' + filename +
-						'&type=' + type;
-
-					// ✅ ONLY append version if valid
-					if (version && version.trim() !== '') {
-						url += '&version=' + version;
-					}
-
+					$('#loader').modal('show');
 					$.ajax({
-						url: url,
+						url: './downloadExcel?reportid=' + reportid +
+							'&fromdate=' + fromdate +
+							'&asondate=' + asondate +
+							'&todate=' + todate +
+							'&currency=' + currency +
+							'&subreportid=' + subreportid +
+							'&secid=' + secid +
+							'&filename=' + filename,
 						type: 'GET',
-						xhrFields: {responseType: 'blob'},
-
+						xhrFields: {
+							responseType: 'blob'
+						},
 						success: function (data) {
-
+							$('#loader').modal('hide');
 							if (data && data.size > 100) {
 								const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
 								const url = window.URL.createObjectURL(blob);
 								const a = document.createElement('a');
-
 								a.style.display = 'none';
 								a.href = url;
 								a.download = filename;
-
 								document.body.appendChild(a);
 								a.click();
-
 								window.URL.revokeObjectURL(url);
 								document.body.removeChild(a);
-
 								showResultModal('BRRS', filename + ' downloaded successfully.');
 							} else {
 								showResultModal('Information', 'No data was available to create a download.');
 							}
 						},
-
 						error: function (jqXHR, textStatus, errorThrown) {
+							$('#loader').modal('hide');
 							console.error("Download failed:", textStatus, errorThrown);
 							showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-						},
-
-						complete: function () {
-							// Hide loader ALWAYS (success, error, timeout, exception)
-							loader.hide();
 						}
 					});
 				}
-
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
 
@@ -7599,7 +7641,7 @@ PURPOSE		: BRRSREPORT
 
 											</div>
 
-											<!-- M_DEP3 Detail Form Screen -->
+											<!-- M_DEP4 Detail Form Screen -->
 											<div th:if="${formmode == 'edit'}" class="card">
 												<div class="card-body">
 													<form th:object="${Data}" method="post" id="DetailForm">
