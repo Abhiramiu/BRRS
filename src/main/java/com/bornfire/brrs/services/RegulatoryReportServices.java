@@ -1617,6 +1617,12 @@ public class RegulatoryReportServices {
 		case "RWA": repsummary = BRRS_RWA_ReportService.getRWAView(reportId,
 				fromdate, todate, currency, dtltype, pageable, type, version);
 				break;
+				
+		case "AS_11":
+			  repsummary = BRRS_AS_11_Reportservice.getAS_11View(reportId, fromdate,
+			  todate, currency, dtltype, pageable, type, version);
+			  
+			  break;
 		/*
 		 * case "AML":
 		 * 
@@ -4430,6 +4436,15 @@ break;
 						dtltype, type, format, version);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "AS_11":
+			try {
+				repfile = BRRS_AS_11_Reportservice.getAS_11Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			break;

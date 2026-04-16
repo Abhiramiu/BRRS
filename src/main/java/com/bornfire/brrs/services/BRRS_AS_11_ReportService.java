@@ -3,7 +3,6 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -48,17 +47,6 @@ import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_AS_11_Archival_Summary_Repo1;
-import com.bornfire.brrs.entities.BRRS_AS_11_Archival_Summary_Repo2;
-import com.bornfire.brrs.entities.BRRS_AS_11_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_AS_11_Manual_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_AS_11_Manual_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_AS_11_Summary_Repo1;
-import com.bornfire.brrs.entities.BRRS_AS_11_Summary_Repo2;
-import com.bornfire.brrs.entities.AS_11_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.AS_11_Detail_Entity;
-import com.bornfire.brrs.entities.AS_11_Manual_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.AS_11_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.AS_11_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.AS_11_Archival_Summary_Entity1;
 import com.bornfire.brrs.entities.AS_11_Archival_Summary_Entity2;
@@ -66,6 +54,11 @@ import com.bornfire.brrs.entities.AS_11_Detail_Entity;
 import com.bornfire.brrs.entities.AS_11_Summary_Entity1;
 import com.bornfire.brrs.entities.AS_11_Summary_Entity2;
 import com.bornfire.brrs.entities.BRRS_AS_11_Archival_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_AS_11_Archival_Summary_Repo1;
+import com.bornfire.brrs.entities.BRRS_AS_11_Archival_Summary_Repo2;
+import com.bornfire.brrs.entities.BRRS_AS_11_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_AS_11_Summary_Repo1;
+import com.bornfire.brrs.entities.BRRS_AS_11_Summary_Repo2;
 
 @Component
 @Service
@@ -97,17 +90,12 @@ public class BRRS_AS_11_ReportService {
     @Autowired
     BRRS_AS_11_Archival_Detail_Repo AS_11_Archival_Detail_Repo;
 
-    @Autowired
-    BRRS_AS_11_Manual_Summary_Repo AS_11_Manual_summary_repo;
-
-    @Autowired
-    BRRS_AS_11_Manual_Archival_Summary_Repo AS_11_Manual_Archival_Summary_Repo;
 
     SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
     public ModelAndView getAS_11View(String reportId, String fromdate, String todate,
             String currency, String dtltype, Pageable pageable,
-            String type, String version) {
+            String type, BigDecimal version) {
 
         ModelAndView mv = new ModelAndView();
         Session hs = sessionFactory.getCurrentSession();
@@ -125,16 +113,12 @@ public class BRRS_AS_11_ReportService {
                         .getdatabydateListarchival(d1, version);
                 List<AS_11_Archival_Summary_Entity2> T2Master = AS_11_Archival_Summary_Repo2
                         .getdatabydateListarchival(d1, version);
-                List<AS_11_Manual_Archival_Summary_Entity> T3Master = AS_11_Manual_Archival_Summary_Repo
-                        .getdatabydateListarchival(d1, version);
 
                 mv.addObject("reportsummary", T1Master);
                 mv.addObject("reportsummary1", T2Master);
-                mv.addObject("reportsummary2", T3Master);
 
                 System.out.println("T1Master Size " + T1Master.size());
                 System.out.println("T2Master Size " + T2Master.size());
-                System.out.println("T3Master Size " + T3Master.size());
 
             }
 
@@ -144,16 +128,12 @@ public class BRRS_AS_11_ReportService {
                         .getdatabydateList(dateformat.parse(todate));
                 List<AS_11_Summary_Entity2> T2Master = AS_11_summary_repo2
                         .getdatabydateList(dateformat.parse(todate));
-                List<AS_11_Manual_Summary_Entity> T3Master = AS_11_Manual_summary_repo
-                        .getdatabydateList(dateformat.parse(todate));
 
                 mv.addObject("reportsummary", T1Master);
                 mv.addObject("reportsummary1", T2Master);
-                mv.addObject("reportsummary2", T3Master);
 
                 System.out.println("T1Master Size " + T1Master.size());
                 System.out.println("T2Master Size " + T2Master.size());
-                System.out.println("T3Master Size " + T3Master.size());
             }
 
         } catch (ParseException e) {
@@ -251,14 +231,14 @@ public class BRRS_AS_11_ReportService {
 
     public byte[] getAS_11Excel(String filename, String reportId, String fromdate, String todate,
             String currency,
-            String dtltype, String type, String version) throws Exception {
+            String dtltype, String type, BigDecimal version) throws Exception {
         logger.info("Service: Starting Excel generation process in memory.");
         System.out.println(type);
         System.out.println(version);
         Date reportDate = dateformat.parse(todate);
 
         // ARCHIVAL check
-        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
             logger.info("Service: Generating ARCHIVAL report for version {}", version);
             return getExcelAS_11ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 
@@ -267,8 +247,6 @@ public class BRRS_AS_11_ReportService {
         List<AS_11_Summary_Entity1> dataList = AS_11_summary_repo1
                 .getdatabydateList(dateformat.parse(todate));
         List<AS_11_Summary_Entity2> dataList1 = AS_11_summary_repo2
-                .getdatabydateList(dateformat.parse(todate));
-        List<AS_11_Manual_Summary_Entity> dataList2 = AS_11_Manual_summary_repo
                 .getdatabydateList(dateformat.parse(todate));
 
         if (dataList.isEmpty()) {
@@ -345,7 +323,6 @@ public class BRRS_AS_11_ReportService {
 
                     AS_11_Summary_Entity1 record = dataList.get(i);
                     AS_11_Summary_Entity2 record1 = dataList1.get(i);
-                    AS_11_Manual_Summary_Entity record2 = dataList2.get(i);
                     System.out.println("rownumber=" + startRow + i);
                     Row row = sheet.getRow(startRow + i);
                     if (row == null) {
@@ -378,7 +355,7 @@ public class BRRS_AS_11_ReportService {
     }
 
     public byte[] getExcelAS_11ARCHIVAL(String filename, String reportId, String fromdate, String todate,
-            String currency, String dtltype, String type, String version) throws Exception {
+            String currency, String dtltype, String type, BigDecimal version) throws Exception {
 
         logger.info("Service: Starting Excel generation process in memory.");
 
@@ -389,8 +366,6 @@ public class BRRS_AS_11_ReportService {
         List<AS_11_Archival_Summary_Entity1> dataList = AS_11_Archival_Summary_Repo1
                 .getdatabydateListarchival(dateformat.parse(todate), version);
         List<AS_11_Archival_Summary_Entity2> dataList1 = AS_11_Archival_Summary_Repo2
-                .getdatabydateListarchival(dateformat.parse(todate), version);
-        List<AS_11_Manual_Archival_Summary_Entity> dataList2 = AS_11_Manual_Archival_Summary_Repo
                 .getdatabydateListarchival(dateformat.parse(todate), version);
 
         if (dataList.isEmpty()) {
@@ -460,7 +435,6 @@ public class BRRS_AS_11_ReportService {
                 for (int i = 0; i < dataList.size(); i++) {
                     AS_11_Archival_Summary_Entity1 record = dataList.get(i);
                     AS_11_Archival_Summary_Entity2 record1 = dataList1.get(i);
-                    AS_11_Manual_Archival_Summary_Entity record2 = dataList2.get(i);
 
                     System.out.println("rownumber=" + startRow + i);
                     Row row = sheet.getRow(startRow + i);
@@ -752,7 +726,6 @@ public class BRRS_AS_11_ReportService {
         try {
             AS_11Archivallist = AS_11_Archival_Summary_Repo1.getAS_11archival();
             AS_11Archivallist = AS_11_Archival_Summary_Repo2.getAS_11archival();
-            AS_11Archivallist = AS_11_Manual_Archival_Summary_Repo.getAS_11archival();
 
             System.out.println("countser" + AS_11Archivallist.size());
 
