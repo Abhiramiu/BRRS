@@ -409,6 +409,10 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_DEFERRED_TAX_ReportService BRRS_DEFERRED_TAX_ReportService;
 	
+	
+	@Autowired
+	BRRS_OFF_BS_ITEMS_ReportService  BRRS_OFF_BS_ITEMS_ReportService;
+	
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -1315,6 +1319,11 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_DEFERRED_TAX_ReportService.getDTAXView(reportId, fromdate, todate, currency, dtltype, pageable,
 					type, version);
 			break;
+			
+		case "OFF_BS_ITEMS":
+			repsummary = BRRS_OFF_BS_ITEMS_ReportService.getOFF_BS_ITEMSView(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version);
+			break;
 
 		case "M_EPR":
 
@@ -2164,6 +2173,13 @@ public class RegulatoryReportServices {
 			repdetail = brrs_OPER_RISK_DIS_reportservice.getOPER_RISK_DIScurrentDtl(reportId, fromdate, todate,
 					currency, dtltype, pageable, Filter, type, version);
 			break;
+			
+		case "OFF_BS_ITEMS":
+
+repdetail = BRRS_OFF_BS_ITEMS_ReportService.getOFF_BS_ITEMScurrentDtl(reportId, fromdate, todate, currency,
+	dtltype, pageable, Filter, type, version);
+break;
+
 
 		case "CREDIT_RISK":
 
@@ -2717,7 +2733,15 @@ public class RegulatoryReportServices {
 			}
 			break;
 			
-			
+		case "OFF_BS_ITEMS":
+			try {
+
+				repfile = BRRS_OFF_BS_ITEMS_ReportService.getOFF_BS_ITEMSExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type,  version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
 		case "COMMON_DISCLOSURE":
 			try {
@@ -5268,6 +5292,12 @@ public class RegulatoryReportServices {
 				System.out.println("Fetched M_SFINP1 archival data: " + dtaxList.size());
 				break;
 				
+		 case "OFF_BS_ITEMS":
+				List<Object[]> offbsList = BRRS_OFF_BS_ITEMS_ReportService.getOFF_BS_ITEMSArchival();
+				archivalData.addAll(offbsList);
+				System.out.println("Fetched M_SFINP1 archival data: " + offbsList.size());
+				break;
+				
 			case "CAP_RATIO_BUFFER":
 				List<Object[]> crbList = brrs_cap_ratio_buffer_reportservice.getCAP_RATIO_BUFFERArchival();
 				archivalData.addAll(crbList);
@@ -6125,6 +6155,14 @@ public class RegulatoryReportServices {
 			fileData = BRRS_DEFERRED_TAX_ReportService.getDTAXDetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
 		}
+		
+		else if ("OFF_BS_ITEMS_Detail".equals(filename))
+
+		{
+			logger.info("Getting Inside OFF_BS_ITEMS_Detail");
+			fileData = BRRS_OFF_BS_ITEMS_ReportService.getOFF_BS_ITEMSDetailExcel(filename, fromdate, todate, currency, dtltype, type,
+					version);
+		}
 
 		else if ("OPER_RISK_DIS".equals(filename)) {
 
@@ -6603,6 +6641,11 @@ public class RegulatoryReportServices {
 				modelAndView = BRRS_DEFERRED_TAX_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 						request.getParameter("formmode"));
 				break;
+			
+			case "OFF_BS_ITEMS":
+				modelAndView = BRRS_OFF_BS_ITEMS_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
+						request.getParameter("formmode"));
+				break;
 				
 
 			case "OPER_RISK_DIS":
@@ -6922,6 +6965,10 @@ public class RegulatoryReportServices {
 				
 			case "DTAX":
 				response = BRRS_DEFERRED_TAX_ReportService.updateDetailEdit(request);
+				break;
+				
+			case "OFF_BS_ITEMS":
+				response = BRRS_OFF_BS_ITEMS_ReportService.updateDetailEdit(request);
 				break;
 
 			case "OPER_RISK_DIS":
