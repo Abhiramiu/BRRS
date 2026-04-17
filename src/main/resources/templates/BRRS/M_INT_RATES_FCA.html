@@ -59,13 +59,13 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 			border-color: #0c0c0c;
 		}
 
-		 .btn-primary:not (:disabled):not (.disabled).active,
+		.btn-primary:not (:disabled):not (.disabled).active,
 		.btn-primary:not (:disabled):not (.disabled):active,
 		.show>.btn-primary.dropdown-toggle {
 			color: #fff;
 			background-color: #cc0000;
 			border-color: #161617;
-		} 
+		}
 
 		#finusertb {
 			width: 460px;
@@ -196,175 +196,176 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 		}
 
 
-/* When input or select is focused or has a value, move the label up */
-.form-control:focus ~.form-legend, .form-control:not (:placeholder-shown
-	 )~.form-legend {
-	top: -8px;
-	font-size: 1rem;
-	color: #007bff;
-}
+		/* When input or select is focused or has a value, move the label up */
+		.form-control:focus~.form-legend,
+		.form-control:not (:placeholder-shown)~.form-legend {
+			top: -8px;
+			font-size: 1rem;
+			color: #007bff;
+		}
 
-/* Hover effect when the input/select is focused */
-.form-control:focus:hover ~.form-legend {
-	color: #0056b3;
-	/* Darker shade of blue on hover */
-}
+		/* Hover effect when the input/select is focused */
+		.form-control:focus:hover~.form-legend {
+			color: #0056b3;
+			/* Darker shade of blue on hover */
+		}
 
-/* Ensure the label returns to the normal color after focus or hover is removed */
-.form-control:not (:focus )~.form-legend {
-	color: #aaa;
-	/* Normal label color */
-}
-
-
-/* 🚌 Bus display style box */
-.boards {
-	transform: translateY(6px);
-	background-color: rgb(107, 122, 143);
-	color: white;
-	padding: 5px 5px;
-	border-radius: 8px;
-	overflow: hidden;
-	white-space: nowrap;
-	flex: 1; /* ✅ makes it take available space dynamically */
-	min-width: 200px;
-	box-shadow: 0 0 10px rgb(107, 122, 143);
-	position: relative;
-}
-
-/* ✨ Scrolling animation */
-.scrolling-text {
-	display: inline-block;
-	font-family: "Courier New", monospace;
-	font-weight: bold;
-	letter-spacing: 1px;
-	animation: scroll-left 10s linear infinite;
-}
-
-@keyframes scroll-left {
-  0% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(-100%);
-  }
-}
+		/* Ensure the label returns to the normal color after focus or hover is removed */
+		.form-control:not (:focus)~.form-legend {
+			color: #aaa;
+			/* Normal label color */
+		}
 
 
-</style>
-<style>
-/* Red border for invalid inputs */
-input.error, select.error {
-	border: 2px solid red !important;
-}
+		/* 🚌 Bus display style box */
+		.boards {
+			transform: translateY(6px);
+			background-color: rgb(107, 122, 143);
+			color: white;
+			padding: 5px 5px;
+			border-radius: 8px;
+			overflow: hidden;
+			white-space: nowrap;
+			flex: 1;
+			/* ✅ makes it take available space dynamically */
+			min-width: 200px;
+			box-shadow: 0 0 10px rgb(107, 122, 143);
+			position: relative;
+		}
 
-/* Error message style */
-label.error {
-	color: red;
-	font-size: 0.85em;
-	margin-top: 5px;
-	display: block;
-}
+		/* ✨ Scrolling animation */
+		.scrolling-text {
+			display: inline-block;
+			font-family: "Courier New", monospace;
+			font-weight: bold;
+			letter-spacing: 1px;
+			animation: scroll-left 10s linear infinite;
+		}
 
-.underline {
-	text-decoration: underline;
-	color: #08a6f1;
-	cursor: pointer;
-}
+		@keyframes scroll-left {
+			0% {
+				transform: translateX(100%);
+			}
 
-.left-arrow-circle {
-	width: 35px;
-	height: 35px;
-	border-radius: 50%;
-	background-color: white;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	margin-right: 10px;
-	transition: background-color 0.3s, transform 0.2s;
-}
+			100% {
+				transform: translateX(-100%);
+			}
+		}
+	</style>
+	<style>
+		/* Red border for invalid inputs */
+		input.error,
+		select.error {
+			border: 2px solid red !important;
+		}
 
-.left-arrow-circle i {
-	color: rgb(107, 122, 143);
-}
+		/* Error message style */
+		label.error {
+			color: red;
+			font-size: 0.85em;
+			margin-top: 5px;
+			display: block;
+		}
 
-.left-arrow-circle:hover {
-	background-color: rgb(107, 122, 143);
-	cursor: pointer;
-	transform: scale(1.05);
-	border: 2px solid white;
-}
+		.underline {
+			text-decoration: underline;
+			color: #08a6f1;
+			cursor: pointer;
+		}
 
-.left-arrow-circle:hover i {
-	color: white;
-}
+		.left-arrow-circle {
+			width: 35px;
+			height: 35px;
+			border-radius: 50%;
+			background-color: white;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 10px;
+			transition: background-color 0.3s, transform 0.2s;
+		}
 
-.white-text span {
-	color: white !important;
-}
+		.left-arrow-circle i {
+			color: rgb(107, 122, 143);
+		}
 
-.table-cell tbody td:hover {
-	background-color: #f0f0f0;
-	/* Hover color for cell */
-	cursor: pointer;
-	/* Optional: pointer cursor */
-}
+		.left-arrow-circle:hover {
+			background-color: rgb(107, 122, 143);
+			cursor: pointer;
+			transform: scale(1.05);
+			border: 2px solid white;
+		}
 
-/* .table-bordered td, .table-bordered th {
+		.left-arrow-circle:hover i {
+			color: white;
+		}
+
+		.white-text span {
+			color: white !important;
+		}
+
+		.table-cell tbody td:hover {
+			background-color: #f0f0f0;
+			/* Hover color for cell */
+			cursor: pointer;
+			/* Optional: pointer cursor */
+		}
+
+		/* .table-bordered td, .table-bordered th {
 	border: 1px solid #000 !important;
 } */
-</style>
- <style>
-  #reports,
-  #reports th,
-  #reports td {
-   border: 1px solid black !important;
-  }
+	</style>
+	<style>
+		#reports,
+		#reports th,
+		#reports td {
+			border: 1px solid black !important;
+		}
 
-  #reports {
-   border-collapse: collapse;
-  }
- </style>
-
-
-<script>
-    // Capture referrer ONCE when page loads
-    var previousUrl = document.referrer;
-    
-    
-    let isResubmissionUpdate = false;
-</script>
+		#reports {
+			border-collapse: collapse;
+		}
+	</style>
 
 
-<script th:inline="javascript">
+	<script>
+		// Capture referrer ONCE when page loads
+		var previousUrl = document.referrer;
 
-    $(document).ready(function() {
-			Maker_Checker_Function(); 
+
+		let isResubmissionUpdate = false;
+	</script>
+
+
+	<script th:inline="javascript">
+
+		$(document).ready(function () {
+			Maker_Checker_Function();
 		});
 
 		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
 		function Maker_Checker_Function() {
 			$.ajax({
-				url: "/BRRS/getUserRole",    
+				url: "/BRRS/getUserRole",
 				type: "GET",
-				success: function(roleId) {
+				success: function (roleId) {
 					// console.log("User Role ID:", roleId);
-				
+
 					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
 					}
 
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-								const button = document.getElementById("custom-tab-btnAdd");
-								if (button) button.style.display = "none";
-							}
+						const button = document.getElementById("custom-tab-btnAdd");
+						if (button) button.style.display = "none";
+					}
 
 				},
-				error: function(err) {
+				error: function (err) {
 					console.error("Error fetching role:", err);
-		     }
-		    });
+				}
+			});
 		}
 		let isDetailsModal = false;
 		$(document).ready(function () {
@@ -391,8 +392,8 @@ label.error {
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-			 $('#loader').modal('show');
-			    var Callurl = /*[[@{'/Reports/' + ${reportid}(
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid}(
 			        dtltype='detail',
 			        fromdate=${fromdate},
 			        todate=${todate},
@@ -400,12 +401,12 @@ label.error {
 			        asondate=${asondate},
 			        version=${version}
 			    )}]]*/;
-			    location.href = Callurl;
+			location.href = Callurl;
 
-}
+		}
 
 
-function showsummary() {
+		function showsummary() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/;
 			location.href = Callurl;
@@ -431,64 +432,64 @@ function showsummary() {
 			activateTab(selectedTab);
 		};
 		function downloadfile(button) {
-		    var reportid = button.getAttribute('data-reportid');
-		    var asondate = button.getAttribute('data-asondate');
-		    var fromdate = button.getAttribute('data-fromdate');
-		    var todate = button.getAttribute('data-todate');
-		    var currency = button.getAttribute('data-currency');
-		    var subreportid = button.getAttribute('data-subreportid');
-		    var secid = button.getAttribute('data-secid');
-		    var dtltype = button.getAttribute('data-dtltype');
-		    var filename = button.getAttribute('data-filename');
-		    var type = button.getAttribute('data-type');
-		    var version = button.getAttribute('data-version');
-		    var format = button.getAttribute('data-format');
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+			var format = button.getAttribute('data-format');
 
-		    if (format === null) {
-		        format = '';   // treat as null
-		    }
+			if (format === null) {
+				format = '';   // treat as null
+			}
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    $.ajax({
-		        url: './downloadExcel?reportid=' + reportid +
-		             '&fromdate=' + fromdate +
-		             '&asondate=' + asondate +
-		             '&todate=' + todate +
-		             '&currency=' + currency +
-		             '&subreportid=' + subreportid +
-		             '&secid=' + secid +
-		             '&filename=' + filename +
-		             '&type=' + type +
-		             '&version=' + version +
-		             '&format=' + format,
-		        type: 'GET',
-		        xhrFields: {
-		            responseType: 'blob'
-		        },
-		        success: function (data) {
-		            $('#loader').modal('hide');
-		            if (data && data.size > 100) {
-		                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
-		                const url = window.URL.createObjectURL(blob);
-		                const a = document.createElement('a');
-		                a.style.display = 'none';
-		                a.href = url;
-		                a.download = filename;
-		                document.body.appendChild(a);
-		                a.click();
-		                window.URL.revokeObjectURL(url);
-		                document.body.removeChild(a);
-		                showResultModal('BRRS', filename + ' downloaded successfully.');
-		            } else {
-		                showResultModal('Information', 'No data was available to create a download.');
-		            }
-		        },
-		        error: function () {
-		            $('#loader').modal('hide');
-		            showResultModal('Error', 'An error occurred while downloading the file.');
-		        }
-		    });
+			$.ajax({
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version +
+					'&format=' + format,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function () {
+					$('#loader').modal('hide');
+					showResultModal('Error', 'An error occurred while downloading the file.');
+				}
+			});
 		}
 
 		function editRecord() {
@@ -503,255 +504,255 @@ function showsummary() {
 			// Show the modal
 			$('#resultModal').modal('show');
 		}
-		
-		  function startReport(button) {
-			   const alertMsg = document.getElementById("alertMessage");
-			   const filename = button.getAttribute('data-filename');
-			   const fromdate = button.getAttribute('data-fromdate');
-			   const todate = button.getAttribute('data-todate');
-			   const currency = button.getAttribute('data-currency');
-			   const dtltype = button.getAttribute('data-dtltype');
-			   const type = button.getAttribute('data-type');
-			   const version = button.getAttribute('data-version');
-			   const sessionfilename = sessionStorage.getItem("filename");
 
-			   if (sessionfilename == filename) {
-			    alertMsg.innerHTML = 'Download request already Processing...';
-			    showAlert();
-			    return;
-			   }
+		function startReport(button) {
+			const alertMsg = document.getElementById("alertMessage");
+			const filename = button.getAttribute('data-filename');
+			const fromdate = button.getAttribute('data-fromdate');
+			const todate = button.getAttribute('data-todate');
+			const currency = button.getAttribute('data-currency');
+			const dtltype = button.getAttribute('data-dtltype');
+			const type = button.getAttribute('data-type');
+			const version = button.getAttribute('data-version');
+			const sessionfilename = sessionStorage.getItem("filename");
 
-			   alertMsg.innerHTML = 'Download request Processing...';
-			   showAlert();
+			if (sessionfilename == filename) {
+				alertMsg.innerHTML = 'Download request already Processing...';
+				showAlert();
+				return;
+			}
 
-			   const baseUrl = '/BRRS/Reports/startreport';
-			   const downloadUrl = baseUrl +
-			    '?filename=' + encodeURIComponent(filename) +
-			    '&fromdate=' + encodeURIComponent(fromdate) +
-			    '&todate=' + encodeURIComponent(todate) +
-			    '&currency=' + encodeURIComponent(currency) +
-			    '&dtltype=' + encodeURIComponent(dtltype) +
-			    '&type=' + encodeURIComponent(type) +
-			    '&version=' + encodeURIComponent(version);
-			   fetch(downloadUrl)  // ✅ no invalid characters now
-			    .then(res => res.text())
-			    .then(jobId => {
+			alertMsg.innerHTML = 'Download request Processing...';
+			showAlert();
 
-			     alertMsg.innerHTML = 'Download request received...' + jobId;
-			     showAlert();
-			     sessionStorage.setItem("jobId", jobId);
-			     sessionStorage.setItem("filename", filename);
-			     checkReport(jobId);
-			    });
-			  }
+			const baseUrl = '/BRRS/Reports/startreport';
+			const downloadUrl = baseUrl +
+				'?filename=' + encodeURIComponent(filename) +
+				'&fromdate=' + encodeURIComponent(fromdate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&currency=' + encodeURIComponent(currency) +
+				'&dtltype=' + encodeURIComponent(dtltype) +
+				'&type=' + encodeURIComponent(type) +
+				'&version=' + encodeURIComponent(version);
+			fetch(downloadUrl)  // ✅ no invalid characters now
+				.then(res => res.text())
+				.then(jobId => {
 
-			  function checkReport(jobId) {
-			   const alertMsg = document.getElementById("alertMessage");
-			   fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
-			    .then(res => res.text())
-			    .then(status => {
-			     if (status === "READY") {
-			      alertMsg.innerHTML = 'Report is ready! Downloaded';
-			      showAlert();
-			      const filename = sessionStorage.getItem("filename");
-			      downloadDetailfile(jobId, filename  + ".xlsx")
-			      sessionStorage.removeItem("jobId");
-			      sessionStorage.removeItem("filename");
+					alertMsg.innerHTML = 'Download request received...' + jobId;
+					showAlert();
+					sessionStorage.setItem("jobId", jobId);
+					sessionStorage.setItem("filename", filename);
+					checkReport(jobId);
+				});
+		}
 
-			     } else if (status === "PROCESSING") {
-			      alertMsg.innerHTML = 'Download Is Processing…';
-			      showAlert();
-			      setTimeout(() => checkReport(jobId), 5000);
-			     }
-			     else if (status === "ERROR") {
-			      alertMsg.innerHTML = 'No data was available to create a download.';
-			      showAlert();
-			      sessionStorage.removeItem("jobId");
-			      sessionStorage.removeItem("filename");
-			     }
-			    });
-			  }
+		function checkReport(jobId) {
+			const alertMsg = document.getElementById("alertMessage");
+			fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+				.then(res => res.text())
+				.then(status => {
+					if (status === "READY") {
+						alertMsg.innerHTML = 'Report is ready! Downloaded';
+						showAlert();
+						const filename = sessionStorage.getItem("filename");
+						downloadDetailfile(jobId, filename + ".xlsx")
+						sessionStorage.removeItem("jobId");
+						sessionStorage.removeItem("filename");
+
+					} else if (status === "PROCESSING") {
+						alertMsg.innerHTML = 'Download Is Processing…';
+						showAlert();
+						setTimeout(() => checkReport(jobId), 5000);
+					}
+					else if (status === "ERROR") {
+						alertMsg.innerHTML = 'No data was available to create a download.';
+						showAlert();
+						sessionStorage.removeItem("jobId");
+						sessionStorage.removeItem("filename");
+					}
+				});
+		}
 
 
 
-			  function downloadDetailfile(jobId, filename) {
+		function downloadDetailfile(jobId, filename) {
 
-			   //$('#loader').modal('show');
+			//$('#loader').modal('show');
 
-			   $.ajax({
-			    url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId +
-			     '&filename=' + filename,
-			    type: 'GET',
-			    xhrFields: {
-			     responseType: 'blob'
-			    },
-			    success: function (data) {
-			     $('#loader').modal('hide');
+			$.ajax({
+				url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId +
+					'&filename=' + filename,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
 
-			     if (data && data.size > 100) {
-			      const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
-			      const url = window.URL.createObjectURL(blob);
-			      const a = document.createElement('a');
-			      a.style.display = 'none';
-			      a.href = url;
-			      a.download = filename;
-			      document.body.appendChild(a);
-			      a.click();
-			      window.URL.revokeObjectURL(url);
-			      document.body.removeChild(a);
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
 
-			      showResultModal('BRRS', filename + '.xls downloaded successfully.');
-			     } else {
-			      showResultModal('Information', 'No data was available to create a download.');
-			     }
-			    },
-			    error: function (jqXHR, textStatus, errorThrown) {
-			     $('#loader').modal('hide');
-			     console.error("Download failed:", textStatus, errorThrown);
-			     showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-			    }
-			   });
-			  }
+						showResultModal('BRRS', filename + '.xls downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
 	</script>
-	
-	
+
+
 	<script>
-	
-	function showmodify(btn) {
-	    // 🔹 IDs of formula/total cells that must always stay readonly
-	     $(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
-	    const readonlyIds = [
-	    	"R10_TOTAL","R11_TOTAL","R12_TOTAL","R13_TOTAL","R14_TOTAL","R15_TOTAL",
-	    	"R15_CURRENT",
-	        "R15_CALL",
-	        "R15_SAVINGS",
-	        "R15_NOTICE_0_31_DAYS",
-	        "R15_NOTICE_32_88_DAYS",
-	        "R15_91_DEPOSIT_DAY",
-	        "R15_FD_1_6_MONTHS",
-	        "R15_FD_7_12_MONTHS",
-	        "R15_FD_13_18_MONTHS",
-	        "R15_FD_19_24_MONTHS",
-	        "R15_FD_OVER_24_MONTHS"
-	    ];
 
-	    // 🔹 Enable editing for all inputs except formula ones
-	    $(".show_input, .display-input").each(function () {
-	        if (!readonlyIds.includes(this.id)) {
-	            $(this).removeAttr("readonly")
-	                   .removeAttr("disabled")
-	                   .css({"background-color": "#d3d3d3"}); // light yellow for editable
-	        } 
-	    });
+		function showmodify(btn) {
+			// 🔹 IDs of formula/total cells that must always stay readonly
+			$(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
+			const readonlyIds = [
+				"R10_TOTAL", "R11_TOTAL", "R12_TOTAL", "R13_TOTAL", "R14_TOTAL", "R15_TOTAL",
+				"R15_CURRENT",
+				"R15_CALL",
+				"R15_SAVINGS",
+				"R15_NOTICE_0_31_DAYS",
+				"R15_NOTICE_32_88_DAYS",
+				"R15_91_DEPOSIT_DAY",
+				"R15_FD_1_6_MONTHS",
+				"R15_FD_7_12_MONTHS",
+				"R15_FD_13_18_MONTHS",
+				"R15_FD_19_24_MONTHS",
+				"R15_FD_OVER_24_MONTHS"
+			];
 
-	
-	
-    
-    // Toggle buttons
-    $("#submitButton").show();
-    
-    // Show Cancel button only when Modify is clicked
-    $("#cancelRecord").show();
-    
-    // Optionally hide the clicked Modify button
-    $(btn).hide();
-}
-
-//Cancel / Reset function
-function cancelModify() {
-    if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-        // ✅ Only when user clicks YES
-        location.reload();
-        
-        $(".Show_input").attr("readonly", true).attr("disabled", true);
-
-       
-
-        $("#submitButton, #btnBack_edit").hide();
-        $("#btnBack").show();
-
-        // Hide Cancel button again
-        $("#cancelRecord").hide();
-
-        // Show all Modify buttons
-        $("#addRecord").show();
-    }
-    // ❌ If user clicks CANCEL, nothing happens
-}
+			// 🔹 Enable editing for all inputs except formula ones
+			$(".show_input, .display-input").each(function () {
+				if (!readonlyIds.includes(this.id)) {
+					$(this).removeAttr("readonly")
+						.removeAttr("disabled")
+						.css({"background-color": "#d3d3d3"}); // light yellow for editable
+				}
+			});
 
 
-	
+
+
+			// Toggle buttons
+			$("#submitButton").show();
+
+			// Show Cancel button only when Modify is clicked
+			$("#cancelRecord").show();
+
+			// Optionally hide the clicked Modify button
+			$(btn).hide();
+		}
+
+		//Cancel / Reset function
+		function cancelModify() {
+			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+				// ✅ Only when user clicks YES
+				location.reload();
+
+				$(".Show_input").attr("readonly", true).attr("disabled", true);
+
+
+
+				$("#submitButton, #btnBack_edit").hide();
+				$("#btnBack").show();
+
+				// Hide Cancel button again
+				$("#cancelRecord").hide();
+
+				// Show all Modify buttons
+				$("#addRecord").show();
+			}
+			// ❌ If user clicks CANCEL, nothing happens
+		}
+
+
+
 
 	</script>
 
 
-<script>
-function parseVal(selector) {
-    return parseFloat($(selector).val()?.replace(/,/g, "")) || 0;
-}
+	<script>
+		function parseVal(selector) {
+			return parseFloat($(selector).val()?.replace(/,/g, "")) || 0;
+		}
 
-function calculateAllTotals() {
+		function calculateAllTotals() {
 
-    let FIELDS = [
-        "CURRENT",
-        "CALL",
-        "SAVINGS",
-        "NOTICE_0_31_DAYS",
-        "NOTICE_32_88_DAYS",
-        "91_DEPOSIT_DAY",
-        "FD_1_6_MONTHS",
-        "FD_7_12_MONTHS",
-        "FD_13_18_MONTHS",
-        "FD_19_24_MONTHS",
-        "FD_OVER_24_MONTHS"
-    ];
+			let FIELDS = [
+				"CURRENT",
+				"CALL",
+				"SAVINGS",
+				"NOTICE_0_31_DAYS",
+				"NOTICE_32_88_DAYS",
+				"91_DEPOSIT_DAY",
+				"FD_1_6_MONTHS",
+				"FD_7_12_MONTHS",
+				"FD_13_18_MONTHS",
+				"FD_19_24_MONTHS",
+				"FD_OVER_24_MONTHS"
+			];
 
-    let ROW_START = 10;
-    let ROW_END   = 14;
-    let TOTAL_ROW = 15;
+			let ROW_START = 10;
+			let ROW_END = 14;
+			let TOTAL_ROW = 15;
 
-    let R15_TOTAL = 0;
+			let R15_TOTAL = 0;
 
-    // ---------- COLUMN TOTALS (R15_*) ----------
-    FIELDS.forEach(function (FIELD) {
+			// ---------- COLUMN TOTALS (R15_*) ----------
+			FIELDS.forEach(function (FIELD) {
 
-        let COL_SUM = 0;
+				let COL_SUM = 0;
 
-        for (let i = ROW_START; i <= ROW_END; i++) {
-            let VAL = parseVal(`#R${i}_${FIELD}`);
-            COL_SUM += VAL;
-        }
+				for (let i = ROW_START; i <= ROW_END; i++) {
+					let VAL = parseVal(`#R${i}_${FIELD}`);
+					COL_SUM += VAL;
+				}
 
-        // SET R15 COLUMN VALUE
-        $(`#R${TOTAL_ROW}_${FIELD}`).val(COL_SUM.toLocaleString('en-US'));
+				// SET R15 COLUMN VALUE
+				$(`#R${TOTAL_ROW}_${FIELD}`).val(COL_SUM.toLocaleString('en-US'));
 
-        R15_TOTAL += COL_SUM;
-    });
+				R15_TOTAL += COL_SUM;
+			});
 
-    // ---------- ROW TOTALS (R10–R14) ----------
-    for (let i = ROW_START; i <= ROW_END; i++) {
+			// ---------- ROW TOTALS (R10–R14) ----------
+			for (let i = ROW_START; i <= ROW_END; i++) {
 
-        let ROW_SUM = 0;
+				let ROW_SUM = 0;
 
-        FIELDS.forEach(function (FIELD) {
-            ROW_SUM += parseVal(`#R${i}_${FIELD}`);
-        });
+				FIELDS.forEach(function (FIELD) {
+					ROW_SUM += parseVal(`#R${i}_${FIELD}`);
+				});
 
-        $(`#R${i}_TOTAL`).val(ROW_SUM.toLocaleString('en-US'));
-    }
+				$(`#R${i}_TOTAL`).val(ROW_SUM.toLocaleString('en-US'));
+			}
 
-    // ---------- GRAND TOTAL ----------
-    $("#R15_TOTAL").val(R15_TOTAL.toLocaleString('en-US'));
-}
+			// ---------- GRAND TOTAL ----------
+			$("#R15_TOTAL").val(R15_TOTAL.toLocaleString('en-US'));
+		}
 
-// INITIALIZE + AUTO RECALC
-$(document).ready(function () {
-    calculateAllTotals();
+		// INITIALIZE + AUTO RECALC
+		$(document).ready(function () {
+			calculateAllTotals();
 
-    let selectors = [];
-    for (let i = 10; i <= 14; i++) {
-        selectors.push(
-            `#R${i}_CURRENT,
+			let selectors = [];
+			for (let i = 10; i <= 14; i++) {
+				selectors.push(
+					`#R${i}_CURRENT,
              #R${i}_CALL,
              #R${i}_SAVINGS,
              #R${i}_NOTICE_0_31_DAYS,
@@ -762,12 +763,12 @@ $(document).ready(function () {
              #R${i}_FD_13_18_MONTHS,
              #R${i}_FD_19_24_MONTHS,
              #R${i}_FD_OVER_24_MONTHS`
-        );
-    }
+				);
+			}
 
-    $(selectors.join(",")).on("input", calculateAllTotals);
-});
-</script>
+			$(selectors.join(",")).on("input", calculateAllTotals);
+		});
+	</script>
 
 
 
@@ -783,10 +784,10 @@ $(document).ready(function () {
 		function closemodel() {
 			$("#resultModal").modal("hide");
 			$('#loader').modal('hide');
-			
+
 			if (isResubmissionUpdate) {
-		        return;
-		    }
+				return;
+			}
 
 			// Only reload if not from Details modal
 			if (!isDetailsModal) {
@@ -800,122 +801,122 @@ $(document).ready(function () {
 		}
 
 		function fileuploads(btn) {
-		    var asondate = btn.getAttribute("data-todate");
-		    const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
-		    
-		    // ✅ Mark RESUB once
-		    isResubmissionUpdate = (type && type.toUpperCase() === 'RESUB');
-		    
-		    $('#loader').modal('show');
+			var asondate = btn.getAttribute("data-todate");
+			const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
 
-		    // Pre-calculations
-		     calculateAllTotals();
-		    console.log("✅ Calculations executed successfully");
+			// ✅ Mark RESUB once
+			isResubmissionUpdate = (type && type.toUpperCase() === 'RESUB');
 
-		    // Remove commas from numeric inputs
-		    $("#fileupload input[type='text']").each(function () {
-		        var val = $(this).val();
-		        if (val && val.includes(",")) {
-		            $(this).val(val.replace(/,/g, ''));
-		        }
-		    });
+			$('#loader').modal('show');
 
-		    if (!$("#fileupload").valid()) {
-		        $('#loader').modal('hide');
-		        return;
-		    }
+			// Pre-calculations
+			calculateAllTotals();
+			console.log("✅ Calculations executed successfully");
 
-		    // ✅ One combined FormData for all entities
-		    const formData = new FormData();
-		    formData.append("asondate", asondate);
-		    formData.append("type", type);
+			// Remove commas from numeric inputs
+			$("#fileupload input[type='text']").each(function () {
+				var val = $(this).val();
+				if (val && val.includes(",")) {
+					$(this).val(val.replace(/,/g, ''));
+				}
+			});
 
-		  
-		 // Append only named inputs
-		    $('#fileupload').find(':input[name]').each(function () {
-		        formData.append(this.id, this.value);
-		        
-		    });
-		    console.log("✅ Entity executed successfully");    
+			if (!$("#fileupload").valid()) {
+				$('#loader').modal('hide');
+				return;
+			}
+
+			// ✅ One combined FormData for all entities
+			const formData = new FormData();
+			formData.append("asondate", asondate);
+			formData.append("type", type);
 
 
-		    
+			// Append only named inputs
+			$('#fileupload').find(':input[name]').each(function () {
+				formData.append(this.id, this.value);
+
+			});
+			console.log("✅ Entity executed successfully");
+
+
+
 			//Select API endpoint dynamically
 			let apiUrl = './INTRATESFCAupdateAll'; // normal update
 			if (type && type.toUpperCase() === 'RESUB') {
 				apiUrl = './UpdateM_INT_RATES_FCA_ReSub'; // Resubmission endpoint
 			}
 
-		    // ✅ Single AJAX call with type info
-		 	    $.ajax({
-			        url: apiUrl,
-			        type: 'POST',
-			        data: formData,
-			        processData: false,
-			        contentType: false,
-			        dataType: 'text',
-			        success: function (response) {
-			            $("#resultModalLabel").text("BRRS");
-			            $("#resultModalBody").text(response);
-			            $("#resultModal").modal("show");
+			// ✅ Single AJAX call with type info
+			$.ajax({
+				url: apiUrl,
+				type: 'POST',
+				data: formData,
+				processData: false,
+				contentType: false,
+				dataType: 'text',
+				success: function (response) {
+					$("#resultModalLabel").text("BRRS");
+					$("#resultModalBody").text(response);
+					$("#resultModal").modal("show");
 
-					    //  Wait for user to close the modal manually
-					     $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
-					    	 if (isResubmissionUpdate) {
-					    		 window.location.href = previousUrl
-					    		 ? previousUrl 
-					    				 : "/BRRS/Resubmission?rptcode=M_INT_RATES_FCA";
-					    	 } // reload ONLY when modal is closed
-					    });
-					},
-			        error: function (jqXHR) {
-			            console.log("Error response:", jqXHR.responseText);
-			            $("#resultModalLabel").text("Error");
-			            $("#resultModalBody").text("Update failed. Check console for details.");
-			            $("#resultModal").modal("show");
-			        },
-			        complete: function () {
-			            $('#loader').modal('hide');
-			        }
-			    });
+					//  Wait for user to close the modal manually
+					$("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
+						if (isResubmissionUpdate) {
+							window.location.href = previousUrl
+								? previousUrl
+								: "/BRRS/Resubmission?rptcode=M_INT_RATES_FCA";
+						} // reload ONLY when modal is closed
+					});
+				},
+				error: function (jqXHR) {
+					console.log("Error response:", jqXHR.responseText);
+					$("#resultModalLabel").text("Error");
+					$("#resultModalBody").text("Update failed. Check console for details.");
+					$("#resultModal").modal("show");
+				},
+				complete: function () {
+					$('#loader').modal('hide');
+				}
+			});
 
-		    console.log("✅ AJAX executed successfully");
+			console.log("✅ AJAX executed successfully");
 		}    
-		</script>
- 
- <script th:inline="javascript">
-      $(document).ready(function () {
-        var table = $('#reportdetails').DataTable({
-        	scrollY: "500px",
-          scrollX: true,
-          scrollCollapse: true,
-          autoWidth: false,
-          paging: true,
-          searching: true,
-          lengthChange: false,
-          ordering: true,
-          pageLength: 100,
-          fixedHeader: true, // ✅ You can simply set it to true
-       // ✅ Column width settings
-        columnDefs: [
-          { width: "100px", targets: 1 }  ,  // Cust ID column
-       ],
+	</script>
 
-          dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
-        });
+	<script th:inline="javascript">
+		$(document).ready(function () {
+			var table = $('#reportdetails').DataTable({
+				scrollY: "500px",
+				scrollX: true,
+				scrollCollapse: true,
+				autoWidth: false,
+				paging: true,
+				searching: true,
+				lengthChange: false,
+				ordering: true,
+				pageLength: 100,
+				fixedHeader: true, // ✅ You can simply set it to true
+				// ✅ Column width settings
+				columnDefs: [
+					{width: "100px", targets: 1},  // Cust ID column
+				],
 
-        // ✅ Fix alignment on resize / zoom
-        $(window).on('resize', function () {
-          table.columns.adjust().draw(false);
-        });
+				dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+			});
 
-        // ✅ Fix initial misalignment if loaded at non-100% zoom
-        setTimeout(function () {
-          table.columns.adjust().draw(false);
-        }, 500);
-      });
-    </script>
-    </head>
+			// ✅ Fix alignment on resize / zoom
+			$(window).on('resize', function () {
+				table.columns.adjust().draw(false);
+			});
+
+			// ✅ Fix initial misalignment if loaded at non-100% zoom
+			setTimeout(function () {
+				table.columns.adjust().draw(false);
+			}, 500);
+		});
+	</script>
+</head>
 <title>INT_RATES_FCA</title>
 
 <body>
@@ -933,14 +934,15 @@ $(document).ready(function () {
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin-right: 10px; margin: 0 10px;">
-							(44) MONTHLY SCHEDULE: M-RATESFCA: 
-							<br>INTEREST RATES ON FOREIGN CURRENCY 
-							<br>DENOMINATED ACCOUNTS </h5>
+							(44) MONTHLY SCHEDULE: M-RATESFCA:
+							<br>INTEREST RATES ON FOREIGN CURRENCY
+							<br>DENOMINATED ACCOUNTS
+						</h5>
 					</div>
 					<!-- Moving bus-board text -->
-						<div class="boards">
-							<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT </p>
-						</div>
+					<div class="boards">
+						<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT </p>
+					</div>
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
@@ -949,28 +951,26 @@ $(document).ready(function () {
 							Date:<span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
 						</span>
 						<!-- Buttons -->
-     <button type="button" class="custom-tab-btn"
-							id="custom-tab-btnDetails" onclick="showdetails()"
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails()"
 							th:if="${dtltype ne 'detail'}">Details</button>
 
 						<!-- SUMMARY button (show when dtltype = 'detail') -->
-						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnSummary" onclick="showsummary()"
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary()"
 							th:if="${dtltype eq 'detail'}">Summary</button>
 
-      <!-- Modify button -->
-     <button type="button" class="custom-tab-btn"
-							onclick="showmodify(this);" title="Click to EDIT Records"
+						<!-- Modify button -->
+						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+							title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
-							th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}"
-							id="addRecord">Modify</button>
+							th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}" id="addRecord">Modify</button>
 
-      <!-- Cancel button (hidden initially) -->
-      <button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord" onclick="cancelModify();"
-       style="display: none;">Cancel</button>
+						<!-- Cancel button (hidden initially) -->
+						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();" style="display: none;">Cancel</button>
 
-<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub'}"
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub'}"
 							th:attr="data-reportid=${reportid},
                    data-asondate=${asondate},
                    data-fromdate=${fromdate},
@@ -982,11 +982,10 @@ $(document).ready(function () {
                    data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
 							<i class="fa fa-download"></i> Format
 						</button>
-						
+
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							 onclick="downloadfile(this)" 
-								th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub'}"
-							
+							onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub'}"
 							th:attr="data-reportid=${reportid},
             data-asondate=${asondate},
             data-fromdate=${fromdate},
@@ -997,91 +996,115 @@ $(document).ready(function () {
             data-type=${type},
             data-format='email',
             data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
-								<i class="fa fa-download"></i> Email 
-							
+							<i class="fa fa-download"></i> Email
+
 						</button>
 
 
-     
+
 
 
 					</div>
-					
-				</div>
-				
-<h1 th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'detail'}"
-  style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
-				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Archival Summary View - M_INTRATES_FCA</h1>
-				
-				<h1 th:if="${displaymode == 'detail' and type == 'ARCHIVAL' and displaymode != 'summary'}"
-  style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
-				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Archival Detail View - M_INTRATES_FCA </h1>
 
-				<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}"  style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
-				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Summary View - M_INTRATES_FCA </h1>
-			<h1 th:if="${displaymode == 'detail' and type != 'ARCHIVAL'}"  style="text-align: left;   font-family: arial; font-weight: bold;  color: white; font-size: 20px; 
-			 background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px; padding-top: 10px; padding-bottom: 10px;  ">Detail View - M_INTRATES_FCA  </h1>
-				<h1
-					th:if="${displaymode == 'resub' and type == 'RESUB' and dtltype ne 'detail' }"
+				</div>
+
+				<h1 th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'detail'}"
+					style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
+				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; ">Archival Summary View - M_INTRATES_FCA</h1>
+
+				<h1 th:if="${displaymode == 'detail' and type == 'ARCHIVAL' and displaymode != 'summary'}"
+					style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
+				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; ">Archival Detail View - M_INTRATES_FCA </h1>
+
+				<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}"
+					style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
+				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; ">Summary View - M_INTRATES_FCA </h1>
+				<h1 th:if="${displaymode == 'detail' and type != 'ARCHIVAL'}"
+					style="text-align: left;   font-family: arial; font-weight: bold;  color: white; font-size: 20px; 
+			 background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px; padding-top: 10px; padding-bottom: 10px;  ">Detail View - M_INTRATES_FCA </h1>
+				<h1 th:if="${displaymode == 'resub' and type == 'RESUB' and dtltype ne 'detail' }"
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
 					Resubmission Summary View - M_INT_RATES_FCA</h1>
 
-				<h1
-					th:if="${displaymode == 'resub' and type == 'RESUB' and dtltype ne 'report' }"
+				<h1 th:if="${displaymode == 'resub' and type == 'RESUB' and dtltype ne 'report' }"
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
 					Resubmission Detail View - M_INT_RATES_FCA</h1>
-					
-						<div th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub'}">
+
+				<div th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub'}">
 
 					<div class="row">
 						<div class="col-sm-12">
-						<form action="#" method="POST" id="fileupload">
-						<input type="hidden" name="asondate" id="asondate" th:value="${asondate}" />
-							<div class="table-wrapper table-responsive scrollable-table-container"
-								style="border-right: 1px solid #dee2e6; ">
-								<table
-									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
-									id="reports">
-									<thead class="thead-light">
-									<tr>
-										
-										
-										
-        <th style="background-color: #D8D8D8;text-align: left; font-weight: bold;" rowspan="2">Currency</th>
-        <th style="background-color: #D8D8D8;text-align: right; font-weight: bold;" rowspan="2">Current
-</th>
-        <th style="background-color: #D8D8D8;text-align: right; font-weight: bold;" rowspan="2">Call
-</th>
-        <th style="background-color: #D8D8D8;text-align: right; font-weight: bold;" rowspan="2">Savings
+							<form action="#" method="POST" id="fileupload">
+								<input type="hidden" name="asondate" id="asondate" th:value="${asondate}" />
+								<div class="table-wrapper table-responsive scrollable-table-container"
+									style="border-right: 1px solid #dee2e6; ">
+									<table
+										class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+										id="reports">
+										<thead class="thead-light">
+											<tr>
 
-</th>
 
-        <th style="background-color: #D8D8D8;text-align: center; font-weight: bold;" colspan="2">Notice (Days) 	
-</th>
 
-        <th style="background-color: #D8D8D8;text-align: right; font-weight: bold;" rowspan="2">91 Day deposit
+												<th style="background-color: #D8D8D8;text-align: left; font-weight: bold;"
+													rowspan="2">Currency</th>
+												<th style="background-color: #D8D8D8;text-align: right; font-weight: bold;"
+													rowspan="2">Current
+												</th>
+												<th style="background-color: #D8D8D8;text-align: right; font-weight: bold;"
+													rowspan="2">Call
+												</th>
+												<th style="background-color: #D8D8D8;text-align: right; font-weight: bold;"
+													rowspan="2">Savings
 
-</th>
+												</th>
 
-        <th style="background-color: #D8D8D8;text-align: center; font-weight: bold;"  colspan="5">Fixed Deposits (Months)				
-</th>
+												<th style="background-color: #D8D8D8;text-align: center; font-weight: bold;"
+													colspan="2">Notice (Days)
+												</th>
 
-        <th style="background-color: #D8D8D8;text-align: right; font-weight: bold;" rowspan="1"></th>
-    </tr>
+												<th style="background-color: #D8D8D8;text-align: right; font-weight: bold;"
+													rowspan="2">91 Day deposit
 
-    <tr>
-        <th style="background-color: #D8D8D8;text-align: right; font-weight: bold;">0-31</th>
-        <th style="background-color: #D8D8D8;text-align: right; font-weight: bold;">32-88</th>
+												</th>
 
-        <th style="background-color: #D8D8D8;text-align: right; font-weight: bold;">1-6</th>
-        <th style="background-color: #D8D8D8;text-align: right; font-weight: bold;">7-12</th>
-        <th style="background-color: #D8D8D8;text-align: right; font-weight: bold;">13-18</th>
-        <th style="background-color: #D8D8D8;text-align: right; font-weight: bold;">19-24</th>
-        <th style="background-color: #D8D8D8;text-align: right; font-weight: bold;">Over 24  </th>
-        <th style="background-color: #D8D8D8; text-align: right; font-weight: bold;">Total</th>
-    </tr>
-										
-								<!--	</tr>
+												<th style="background-color: #D8D8D8;text-align: center; font-weight: bold;"
+													colspan="5">Fixed Deposits (Months)
+												</th>
+
+												<th style="background-color: #D8D8D8;text-align: right; font-weight: bold;"
+													rowspan="1"></th>
+											</tr>
+
+											<tr>
+												<th
+													style="background-color: #D8D8D8;text-align: right; font-weight: bold;">
+													0-31</th>
+												<th
+													style="background-color: #D8D8D8;text-align: right; font-weight: bold;">
+													32-88</th>
+
+												<th
+													style="background-color: #D8D8D8;text-align: right; font-weight: bold;">
+													1-6</th>
+												<th
+													style="background-color: #D8D8D8;text-align: right; font-weight: bold;">
+													7-12</th>
+												<th
+													style="background-color: #D8D8D8;text-align: right; font-weight: bold;">
+													13-18</th>
+												<th
+													style="background-color: #D8D8D8;text-align: right; font-weight: bold;">
+													19-24</th>
+												<th
+													style="background-color: #D8D8D8;text-align: right; font-weight: bold;">
+													Over 24 </th>
+												<th
+													style="background-color: #D8D8D8; text-align: right; font-weight: bold;">
+													Total</th>
+											</tr>
+
+											<!--	</tr>
 									<tr style="background-color: #b3b6b9">
 										<th style="text-align: center; background-color: #b3b6b9"></th>
 										<th style="text-align: center; background-color: #b3b6b9">C0010</th>
@@ -1089,559 +1112,762 @@ $(document).ready(function () {
 										<th style="text-align: center; background-color: #b3b6b9">C0030</th>
 									</tr> -->
 
-								</thead>
+										</thead>
 
 
-					<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
-					
-
-<tr>
-    <td id="ROW10" style="font-weight: bold;">USD</td>
-    <td id="ROW10" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-            th:value="${report.R10_CURRENT != null ? #numbers.formatDecimal(report.R10_CURRENT, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R10_CURRENT" name="R10_C1_CURRENT"
-               style="background-color: #FFFFFF; height: 28px;  border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW10" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R10_CALL != null ? #numbers.formatDecimal(report.R10_CALL, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R10_CALL" name="R10_C2_CALL"
-               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW10" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R10_SAVINGS != null ? #numbers.formatDecimal(report.R10_SAVINGS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R10_SAVINGS" name="R10_C3_SAVINGS"
-               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW10" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R10_NOTICE_0_31_DAYS != null ? #numbers.formatDecimal(report.R10_NOTICE_0_31_DAYS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R10_NOTICE_0_31_DAYS" name="R10_C4_NOTICE_0_31_DAYS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW10" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R10_NOTICE_32_88_DAYS != null ? #numbers.formatDecimal(report.R10_NOTICE_32_88_DAYS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R10_NOTICE_32_88_DAYS" name="R10_C5_NOTICE_32_88_DAYS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW10" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R10_91_DEPOSIT_DAY != null ? #numbers.formatDecimal(report.R10_91_DEPOSIT_DAY, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R10_91_DEPOSIT_DAY" name="R10_C6_91_DEPOSIT_DAY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW10" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R10_FD_1_6_MONTHS != null ? #numbers.formatDecimal(report.R10_FD_1_6_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R10_FD_1_6_MONTHS" name="R10_C7_FD_1_6_MONTHS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW10" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R10_FD_7_12_MONTHS != null ? #numbers.formatDecimal(report.R10_FD_7_12_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R10_FD_7_12_MONTHS" name="R10_C8_FD_7_12_MONTHS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW10" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R10_FD_13_18_MONTHS != null ? #numbers.formatDecimal(report.R10_FD_13_18_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R10_FD_13_18_MONTHS" name="R10_C9_FD_13_18_MONTHS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW10" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R10_FD_19_24_MONTHS != null ? #numbers.formatDecimal(report.R10_FD_19_24_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R10_FD_19_24_MONTHS" name="R10_C10_FD_19_24_MONTHS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW10" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R10_FD_OVER_24_MONTHS != null ? #numbers.formatDecimal(report.R10_FD_OVER_24_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R10_FD_OVER_24_MONTHS" name="R10_C11_FD_OVER_24_MONTHS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R10_TOTAL != null ? #numbers.formatDecimal(report.R10_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R10_TOTAL" name="R10_C12_TOTAL"
-               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-</tr>
+										<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
 
 
-
-<tr>
-    <td id="ROW11" style="font-weight: bold;">ZAR
-</td>
-    <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R11_CURRENT != null ? #numbers.formatDecimal(report.R11_CURRENT, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R11_CURRENT" name="R11_C1_CURRENT"
-               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R11_CALL != null ? #numbers.formatDecimal(report.R11_CALL, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R11_CALL" name="R11_C2_CALL"
-               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R11_SAVINGS != null ? #numbers.formatDecimal(report.R11_SAVINGS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R11_SAVINGS" name="R11_C3_SAVINGS"
-               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R11_NOTICE_0_31_DAYS != null ? #numbers.formatDecimal(report.R11_NOTICE_0_31_DAYS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R11_NOTICE_0_31_DAYS" name="R11_C4_NOTICE_0_31_DAYS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R11_NOTICE_32_88_DAYS != null ? #numbers.formatDecimal(report.R11_NOTICE_32_88_DAYS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R11_NOTICE_32_88_DAYS" name="R11_C5_NOTICE_32_88_DAYS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R11_91_DEPOSIT_DAY != null ? #numbers.formatDecimal(report.R11_91_DEPOSIT_DAY, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R11_91_DEPOSIT_DAY" name="R11_C6_91_DEPOSIT_DAY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R11_FD_1_6_MONTHS != null ? #numbers.formatDecimal(report.R11_FD_1_6_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R11_FD_1_6_MONTHS" name="R11_C7_FD_1_6_MONTHS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R11_FD_7_12_MONTHS != null ? #numbers.formatDecimal(report.R11_FD_7_12_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R11_FD_7_12_MONTHS" name="R11_C8_FD_7_12_MONTHS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R11_FD_13_18_MONTHS != null ? #numbers.formatDecimal(report.R11_FD_13_18_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R11_FD_13_18_MONTHS" name="R11_C9_FD_13_18_MONTHS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R11_FD_19_24_MONTHS != null ? #numbers.formatDecimal(report.R11_FD_19_24_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R11_FD_19_24_MONTHS" name="R11_C10_FD_19_24_MONTHS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R11_FD_OVER_24_MONTHS != null ? #numbers.formatDecimal(report.R11_FD_OVER_24_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R11_FD_OVER_24_MONTHS" name="R11_C11_FD_OVER_24_MONTHS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW11" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R11_TOTAL != null ? #numbers.formatDecimal(report.R11_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R11_TOTAL" name="R11_C12_TOTAL"
-               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-</tr>
+											<tr>
+												<td id="ROW10" style="font-weight: bold;">USD</td>
+												<td id="ROW10"
+													style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+													<input class="display-input Show_input" type="text"
+														  th:value="${report.R10_CURRENT ?: '0'}"
+														id="R10_CURRENT" name="R10_C1_CURRENT"
+														style="background-color: #FFFFFF; height: 28px;  border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW10"
+													style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+													<input class="display-input Show_input" type="text"
+														 th:value="${report.R10_CALL ?: '0'}"
+														id="R10_CALL" name="R10_C2_CALL"
+														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW10"
+													style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+													<input class="display-input Show_input" type="text"
+													 th:value="${report.R10_SAVINGS ?: '0'}"
+														id="R10_SAVINGS" name="R10_C3_SAVINGS"
+														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW10"
+													style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+													<input class="display-input Show_input" type="text"
+														 th:value="${report.R10_NOTICE_0_31_DAYS ?: '0'}"
+														id="R10_NOTICE_0_31_DAYS" name="R10_C4_NOTICE_0_31_DAYS"
+														style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW10"
+													style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+													<input class="display-input Show_input" type="text"
+													 th:value="${report.R10_NOTICE_32_88_DAYS ?: '0'}"
+														id="R10_NOTICE_32_88_DAYS" name="R10_C5_NOTICE_32_88_DAYS"
+														style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW10"
+													style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R10_91_DEPOSIT_DAY ?: '0'}"
+														id="R10_91_DEPOSIT_DAY" name="R10_C6_91_DEPOSIT_DAY"
+														style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW10"
+													style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R10_FD_1_6_MONTHS ?: '0'}"
+														id="R10_FD_1_6_MONTHS" name="R10_C7_FD_1_6_MONTHS"
+														style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW10"
+													style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R10_FD_7_12_MONTHS ?: '0'}"
+														id="R10_FD_7_12_MONTHS" name="R10_C8_FD_7_12_MONTHS"
+														style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW10"
+													style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R10_FD_13_18_MONTHS ?: '0'}"
+														id="R10_FD_13_18_MONTHS" name="R10_C9_FD_13_18_MONTHS"
+														style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW10"
+													style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R10_FD_19_24_MONTHS ?: '0'}"
+														id="R10_FD_19_24_MONTHS" name="R10_C10_FD_19_24_MONTHS"
+														style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW10"
+													style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R10_FD_OVER_24_MONTHS ?: '0'}"
+														id="R10_FD_OVER_24_MONTHS" name="R10_C11_FD_OVER_24_MONTHS"
+														style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW10"
+													style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R10_TOTAL ?: '0'}"
+														id="R10_TOTAL" name="R10_C12_TOTAL"
+														style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
 
 
 
-<tr>
-    <td id="ROW12" style="font-weight: bold;">GBP
-</td>
-    <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R12_CURRENT != null ? #numbers.formatDecimal(report.R12_CURRENT, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R12_CURRENT" name="R12_C1_CURRENT"
-               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R12_CALL != null ? #numbers.formatDecimal(report.R12_CALL, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R12_CALL" name="R12_C2_CALL"
-               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R12_SAVINGS != null ? #numbers.formatDecimal(report.R12_SAVINGS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R12_SAVINGS" name="R12_C3_SAVINGS"
-               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R12_NOTICE_0_31_DAYS != null ? #numbers.formatDecimal(report.R12_NOTICE_0_31_DAYS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R12_NOTICE_0_31_DAYS" name="R12_C4_NOTICE_0_31_DAYS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R12_NOTICE_32_88_DAYS != null ? #numbers.formatDecimal(report.R12_NOTICE_32_88_DAYS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R12_NOTICE_32_88_DAYS" name="R12_C5_NOTICE_32_88_DAYS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R12_91_DEPOSIT_DAY != null ? #numbers.formatDecimal(report.R12_91_DEPOSIT_DAY, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R12_91_DEPOSIT_DAY" name="R12_C6_91_DEPOSIT_DAY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R12_FD_1_6_MONTHS != null ? #numbers.formatDecimal(report.R12_FD_1_6_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R12_FD_1_6_MONTHS" name="R12_C7_FD_1_6_MONTHS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R12_FD_7_12_MONTHS != null ? #numbers.formatDecimal(report.R12_FD_7_12_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R12_FD_7_12_MONTHS" name="R12_C8_FD_7_12_MONTHS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R12_FD_13_18_MONTHS != null ? #numbers.formatDecimal(report.R12_FD_13_18_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R12_FD_13_18_MONTHS" name="R12_C9_FD_13_18_MONTHS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R12_FD_19_24_MONTHS != null ? #numbers.formatDecimal(report.R12_FD_19_24_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R12_FD_19_24_MONTHS" name="R12_C10_FD_19_24_MONTHS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R12_FD_OVER_24_MONTHS != null ? #numbers.formatDecimal(report.R12_FD_OVER_24_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R12_FD_OVER_24_MONTHS" name="R12_C11_FD_OVER_24_MONTHS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW12" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R12_TOTAL != null ? #numbers.formatDecimal(report.R12_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R12_TOTAL" name="R12_C12_TOTAL"
-               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-</tr>
+											<tr>
+												<td id="ROW11" style="font-weight: bold;">ZAR
+												</td>
+												<td id="ROW11"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R11_CURRENT ?: '0'}"
+												           id="R11_CURRENT" name="R11_C1_CURRENT"
+												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW11"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R11_CALL ?: '0'}"
+												           id="R11_CALL" name="R11_C2_CALL"
+												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW11"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R11_SAVINGS ?: '0'}"
+												           id="R11_SAVINGS" name="R11_C3_SAVINGS"
+												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW11"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R11_NOTICE_0_31_DAYS ?: '0'}"
+												           id="R11_NOTICE_0_31_DAYS" name="R11_C4_NOTICE_0_31_DAYS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW11"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R11_NOTICE_32_88_DAYS ?: '0'}"
+												           id="R11_NOTICE_32_88_DAYS" name="R11_C5_NOTICE_32_88_DAYS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW11"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R11_91_DEPOSIT_DAY ?: '0'}"
+												           id="R11_91_DEPOSIT_DAY" name="R11_C6_91_DEPOSIT_DAY"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW11"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R11_FD_1_6_MONTHS ?: '0'}"
+												           id="R11_FD_1_6_MONTHS" name="R11_C7_FD_1_6_MONTHS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW11"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R11_FD_7_12_MONTHS ?: '0'}"
+												           id="R11_FD_7_12_MONTHS" name="R11_C8_FD_7_12_MONTHS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW11"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R11_FD_13_18_MONTHS ?: '0'}"
+												           id="R11_FD_13_18_MONTHS" name="R11_C9_FD_13_18_MONTHS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW11"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R11_FD_19_24_MONTHS ?: '0'}"
+												           id="R11_FD_19_24_MONTHS" name="R11_C10_FD_19_24_MONTHS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW11"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R11_FD_OVER_24_MONTHS ?: '0'}"
+												           id="R11_FD_OVER_24_MONTHS" name="R11_C11_FD_OVER_24_MONTHS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW11"
+												    style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R11_TOTAL ?: '0'}"
+												           id="R11_TOTAL" name="R11_C12_TOTAL"
+												           style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+											</tr>
 
 
 
-<tr>
-    <td id="ROW13" style="font-weight: bold;">EURO
-</td>
-    <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R13_CURRENT != null ? #numbers.formatDecimal(report.R13_CURRENT, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R13_CURRENT" name="R13_C1_CURRENT"
-               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R13_CALL != null ? #numbers.formatDecimal(report.R13_CALL, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R13_CALL" name="R13_C2_CALL"
-               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R13_SAVINGS != null ? #numbers.formatDecimal(report.R13_SAVINGS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R13_SAVINGS" name="R13_C3_SAVINGS"
-               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R13_NOTICE_0_31_DAYS != null ? #numbers.formatDecimal(report.R13_NOTICE_0_31_DAYS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R13_NOTICE_0_31_DAYS" name="R13_C4_NOTICE_0_31_DAYS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R13_NOTICE_32_88_DAYS != null ? #numbers.formatDecimal(report.R13_NOTICE_32_88_DAYS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R13_NOTICE_32_88_DAYS" name="R13_C5_NOTICE_32_88_DAYS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R13_91_DEPOSIT_DAY != null ? #numbers.formatDecimal(report.R13_91_DEPOSIT_DAY, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R13_91_DEPOSIT_DAY" name="R13_C6_91_DEPOSIT_DAY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R13_FD_1_6_MONTHS != null ? #numbers.formatDecimal(report.R13_FD_1_6_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R13_FD_1_6_MONTHS" name="R13_C7_FD_1_6_MONTHS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R13_FD_7_12_MONTHS != null ? #numbers.formatDecimal(report.R13_FD_7_12_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R13_FD_7_12_MONTHS" name="R13_C8_FD_7_12_MONTHS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R13_FD_13_18_MONTHS != null ? #numbers.formatDecimal(report.R13_FD_13_18_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R13_FD_13_18_MONTHS" name="R13_C9_FD_13_18_MONTHS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R13_FD_19_24_MONTHS != null ? #numbers.formatDecimal(report.R13_FD_19_24_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R13_FD_19_24_MONTHS" name="R13_C10_FD_19_24_MONTHS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R13_FD_OVER_24_MONTHS != null ? #numbers.formatDecimal(report.R13_FD_OVER_24_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R13_FD_OVER_24_MONTHS" name="R13_C11_FD_OVER_24_MONTHS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW13" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R13_TOTAL != null ? #numbers.formatDecimal(report.R13_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R13_TOTAL" name="R13_C12_TOTAL"
-               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-</tr>
+											<tr>
+												<td id="ROW12" style="font-weight: bold;">GBP
+												</td>
+												<td id="ROW12"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R12_CURRENT ?: '0'}"
+												           id="R12_CURRENT" name="R12_C1_CURRENT"
+												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW12"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R12_CALL ?: '0'}"
+												           id="R12_CALL" name="R12_C2_CALL"
+												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW12"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R12_SAVINGS ?: '0'}"
+												           id="R12_SAVINGS" name="R12_C3_SAVINGS"
+												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW12"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R12_NOTICE_0_31_DAYS ?: '0'}"
+												           id="R12_NOTICE_0_31_DAYS" name="R12_C4_NOTICE_0_31_DAYS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW12"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R12_NOTICE_32_88_DAYS ?: '0'}"
+												           id="R12_NOTICE_32_88_DAYS" name="R12_C5_NOTICE_32_88_DAYS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW12"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R12_91_DEPOSIT_DAY ?: '0'}"
+												           id="R12_91_DEPOSIT_DAY" name="R12_C6_91_DEPOSIT_DAY"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW12"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R12_FD_1_6_MONTHS ?: '0'}"
+												           id="R12_FD_1_6_MONTHS" name="R12_C7_FD_1_6_MONTHS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW12"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R12_FD_7_12_MONTHS ?: '0'}"
+												           id="R12_FD_7_12_MONTHS" name="R12_C8_FD_7_12_MONTHS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW12"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R12_FD_13_18_MONTHS ?: '0'}"
+												           id="R12_FD_13_18_MONTHS" name="R12_C9_FD_13_18_MONTHS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW12"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R12_FD_19_24_MONTHS ?: '0'}"
+												           id="R12_FD_19_24_MONTHS" name="R12_C10_FD_19_24_MONTHS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW12"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R12_FD_OVER_24_MONTHS ?: '0'}"
+												           id="R12_FD_OVER_24_MONTHS" name="R12_C11_FD_OVER_24_MONTHS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW12"
+												    style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R12_TOTAL ?: '0'}"
+												           id="R12_TOTAL" name="R12_C12_TOTAL"
+												           style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+											</tr>
 
 
 
-<tr>
-    <td id="ROW14" style="font-weight: bold;">Other*
-</td>
-    <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R14_CURRENT != null ? #numbers.formatDecimal(report.R14_CURRENT, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R14_CURRENT" name="R14_C1_CURRENT"
-               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R14_CALL != null ? #numbers.formatDecimal(report.R14_CALL, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R14_CALL" name="R14_C2_CALL"
-               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R14_SAVINGS != null ? #numbers.formatDecimal(report.R14_SAVINGS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R14_SAVINGS" name="R14_C3_SAVINGS"
-               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R14_NOTICE_0_31_DAYS != null ? #numbers.formatDecimal(report.R14_NOTICE_0_31_DAYS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R14_NOTICE_0_31_DAYS" name="R14_C4_NOTICE_0_31_DAYS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R14_NOTICE_32_88_DAYS != null ? #numbers.formatDecimal(report.R14_NOTICE_32_88_DAYS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R14_NOTICE_32_88_DAYS" name="R14_C5_NOTICE_32_88_DAYS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R14_91_DEPOSIT_DAY != null ? #numbers.formatDecimal(report.R14_91_DEPOSIT_DAY, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R14_91_DEPOSIT_DAY" name="R14_C6_91_DEPOSIT_DAY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R14_FD_1_6_MONTHS != null ? #numbers.formatDecimal(report.R14_FD_1_6_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R14_FD_1_6_MONTHS" name="R14_C7_FD_1_6_MONTHS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R14_FD_7_12_MONTHS != null ? #numbers.formatDecimal(report.R14_FD_7_12_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R14_FD_7_12_MONTHS" name="R14_C8_FD_7_12_MONTHS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R14_FD_13_18_MONTHS != null ? #numbers.formatDecimal(report.R14_FD_13_18_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R14_FD_13_18_MONTHS" name="R14_C9_FD_13_18_MONTHS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R14_FD_19_24_MONTHS != null ? #numbers.formatDecimal(report.R14_FD_19_24_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R14_FD_19_24_MONTHS" name="R14_C10_FD_19_24_MONTHS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R14_FD_OVER_24_MONTHS != null ? #numbers.formatDecimal(report.R14_FD_OVER_24_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R14_FD_OVER_24_MONTHS" name="R14_C11_FD_OVER_24_MONTHS"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW14" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R14_TOTAL != null ? #numbers.formatDecimal(report.R14_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R14_TOTAL" name="R14_C12_TOTAL"
-               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-</tr>
+											<tr>
+												<td id="ROW13" style="font-weight: bold;">EURO
+												</td>
+												<td id="ROW13"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R13_CURRENT ?: '0'}"
+												           id="R13_CURRENT" name="R13_C1_CURRENT"
+												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW13"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R13_CALL ?: '0'}"
+												           id="R13_CALL" name="R13_C2_CALL"
+												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW13"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R13_SAVINGS ?: '0'}"
+												           id="R13_SAVINGS" name="R13_C3_SAVINGS"
+												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW13"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R13_NOTICE_0_31_DAYS ?: '0'}"
+												           id="R13_NOTICE_0_31_DAYS" name="R13_C4_NOTICE_0_31_DAYS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW13"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R13_NOTICE_32_88_DAYS ?: '0'}"
+												           id="R13_NOTICE_32_88_DAYS" name="R13_C5_NOTICE_32_88_DAYS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW13"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R13_91_DEPOSIT_DAY ?: '0'}"
+												           id="R13_91_DEPOSIT_DAY" name="R13_C6_91_DEPOSIT_DAY"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW13"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R13_FD_1_6_MONTHS ?: '0'}"
+												           id="R13_FD_1_6_MONTHS" name="R13_C7_FD_1_6_MONTHS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW13"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R13_FD_7_12_MONTHS ?: '0'}"
+												           id="R13_FD_7_12_MONTHS" name="R13_C8_FD_7_12_MONTHS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW13"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R13_FD_13_18_MONTHS ?: '0'}"
+												           id="R13_FD_13_18_MONTHS" name="R13_C9_FD_13_18_MONTHS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW13"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R13_FD_19_24_MONTHS ?: '0'}"
+												           id="R13_FD_19_24_MONTHS" name="R13_C10_FD_19_24_MONTHS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW13"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R13_FD_OVER_24_MONTHS ?: '0'}"
+												           id="R13_FD_OVER_24_MONTHS" name="R13_C11_FD_OVER_24_MONTHS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW13"
+												    style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R13_TOTAL ?: '0'}"
+												           id="R13_TOTAL" name="R13_C12_TOTAL"
+												           style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+											</tr>
 
 
 
-<tr>
-    <td id="ROW15" style="font-weight: bold;">TOTAL
-</td>
-    <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R15_CURRENT != null ? #numbers.formatDecimal(report.R15_CURRENT, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R15_CURRENT" name="R15_C1_CURRENT"
-               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R15_CALL != null ? #numbers.formatDecimal(report.R15_CALL, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R15_CALL" name="R15_C2_CALL"
-               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R15_SAVINGS != null ? #numbers.formatDecimal(report.R15_SAVINGS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R15_SAVINGS" name="R15_C3_SAVINGS"
-               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R15_NOTICE_0_31_DAYS != null ? #numbers.formatDecimal(report.R15_NOTICE_0_31_DAYS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R15_NOTICE_0_31_DAYS" name="R15_C4_NOTICE_0_31_DAYS"
-               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R15_NOTICE_32_88_DAYS != null ? #numbers.formatDecimal(report.R15_NOTICE_32_88_DAYS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R15_NOTICE_32_88_DAYS" name="R15_C5_NOTICE_32_88_DAYS"
-               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R15_91_DEPOSIT_DAY != null ? #numbers.formatDecimal(report.R15_91_DEPOSIT_DAY, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R15_91_DEPOSIT_DAY" name="R15_C6_91_DEPOSIT_DAY"
-               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R15_FD_1_6_MONTHS != null ? #numbers.formatDecimal(report.R15_FD_1_6_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R15_FD_1_6_MONTHS" name="R15_C7_FD_1_6_MONTHS"
-               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R15_FD_7_12_MONTHS != null ? #numbers.formatDecimal(report.R15_FD_7_12_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R15_FD_7_12_MONTHS" name="R15_C8_FD_7_12_MONTHS"
-               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R15_FD_13_18_MONTHS != null ? #numbers.formatDecimal(report.R15_FD_13_18_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R15_FD_13_18_MONTHS" name="R15_C9_FD_13_18_MONTHS"
-               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R15_FD_19_24_MONTHS != null ? #numbers.formatDecimal(report.R15_FD_19_24_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R15_FD_19_24_MONTHS" name="R15_C10_FD_19_24_MONTHS"
-               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R15_FD_OVER_24_MONTHS != null ? #numbers.formatDecimal(report.R15_FD_OVER_24_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R15_FD_OVER_24_MONTHS" name="R15_C11_FD_OVER_24_MONTHS"
-               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-    <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-               th:value="${report.R15_TOTAL != null ? #numbers.formatDecimal(report.R15_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R15_TOTAL" name="R15_C12_TOTAL"
-               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
-    </td>
-</tr>
+											<tr>
+												<td id="ROW14" style="font-weight: bold;">Other*
+												</td>
+												<td id="ROW14"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R14_CURRENT ?: '0'}"
+												           id="R14_CURRENT" name="R14_C1_CURRENT"
+												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
 
- </tbody>
-         </table>
+												<td id="ROW14"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R14_CALL ?: '0'}"
+												           id="R14_CALL" name="R14_C2_CALL"
+												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
 
+												<td id="ROW14"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R14_SAVINGS ?: '0'}"
+												           id="R14_SAVINGS" name="R14_C3_SAVINGS"
+												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
 
+												<td id="ROW14"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R14_NOTICE_0_31_DAYS ?: '0'}"
+												           id="R14_NOTICE_0_31_DAYS" name="R14_C4_NOTICE_0_31_DAYS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
 
+												<td id="ROW14"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R14_NOTICE_32_88_DAYS ?: '0'}"
+												           id="R14_NOTICE_32_88_DAYS" name="R14_C5_NOTICE_32_88_DAYS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
 
-        </div>
-        <div style="text-align: center; margin-top: 10px;">
+												<td id="ROW14"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R14_91_DEPOSIT_DAY ?: '0'}"
+												           id="R14_91_DEPOSIT_DAY" name="R14_C6_91_DEPOSIT_DAY"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
 
-         <button id="submitButton" type="button" class="custom-tab-btn Show_input" form="fileupload"
-          th:attr="data-todate=${asondate}, data-type=${type}" onclick="fileuploads(this);" style="display: none;">
-          Submit</button>
-        </div>
-       </form>
-      </div>
-     </div>
-    </div>
+												<td id="ROW14"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R14_FD_1_6_MONTHS ?: '0'}"
+												           id="R14_FD_1_6_MONTHS" name="R14_C7_FD_1_6_MONTHS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
 
-    
-   </div>
-  </div>
- </div>
- <!-- Custom Cellresult Modal -->
- <div class="modal fade" id="cellresultModal">
-  <div class="modal-dialog modal-dialog-centered">
-   <div class="modal-content">
+												<td id="ROW14"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R14_FD_7_12_MONTHS ?: '0'}"
+												           id="R14_FD_7_12_MONTHS" name="R14_C8_FD_7_12_MONTHS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
 
-    <!-- Custom header -->
-    <div class="menu-title-header" style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
-     <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">Do you want to
-      open the report?</div>
-    </div>
+												<td id="ROW14"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R14_FD_13_18_MONTHS ?: '0'}"
+												           id="R14_FD_13_18_MONTHS" name="R14_C9_FD_13_18_MONTHS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
 
-    <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-     <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
-      style="margin-right: 10px; border: 2px solid #6c7a91; background: white; color: black; border-radius: 20px; padding: 5px 15px;">
-      Cancel</button>
-     <button type="button" class="custom-tab-btn yes-btn"
-      style="background: #6c7a91; color: white; border: none; border-radius: 20px; padding: 5px 20px;">Yes</button>
-    </div>
-   </div>
-  </div>
- </div>
+												<td id="ROW14"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R14_FD_19_24_MONTHS ?: '0'}"
+												           id="R14_FD_19_24_MONTHS" name="R14_C10_FD_19_24_MONTHS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW14"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R14_FD_OVER_24_MONTHS ?: '0'}"
+												           id="R14_FD_OVER_24_MONTHS" name="R14_C11_FD_OVER_24_MONTHS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW14"
+												    style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R14_TOTAL ?: '0'}"
+												           id="R14_TOTAL" name="R14_C12_TOTAL"
+												           style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+											</tr>
 
 
- <div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-   <div class="modal-content" style="background: transparent;">
-    <div class="modal-body" style="text-align: center">
-     <div>
-      <img th:src=@{/images/loader.gif} id="bfirelogo"
-       style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
-       alt="Bornfire">
-     </div>
-    </div>
-   </div>
-  </div>
- </div>
- <!-- Custom Alert/Result Modal (Matches your existing style) -->
- <div class="modal fade" id="resultModal">
-  <div class="modal-dialog modal-dialog-centered">
-   <div class="modal-content">
-    <!-- Your custom styled header -->
-    <div class="menu-title-header">
-     <div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
-      <!-- Title will be set by JavaScript -->
-     </div>
-    </div>
-    <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-     <p id="resultModalBody"></p>
-     <!-- Your custom styled button -->
-     <button type="button" class="custom-tab-btn" onclick="closemodel()" data-bs-dismiss="modal">OK</button>
-    </div>
-   </div>
-  </div>
- </div>
+
+											<tr>
+												<td id="ROW15" style="font-weight: bold;">TOTAL
+												</td>
+												<td id="ROW15"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R15_CURRENT ?: '0'}"
+												           id="R15_CURRENT" name="R15_C1_CURRENT"
+												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW15"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R15_CALL ?: '0'}"
+												           id="R15_CALL" name="R15_C2_CALL"
+												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW15"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R15_SAVINGS ?: '0'}"
+												           id="R15_SAVINGS" name="R15_C3_SAVINGS"
+												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW15"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R15_NOTICE_0_31_DAYS ?: '0'}"
+												           id="R15_NOTICE_0_31_DAYS" name="R15_C4_NOTICE_0_31_DAYS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW15"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R15_NOTICE_32_88_DAYS ?: '0'}"
+												           id="R15_NOTICE_32_88_DAYS" name="R15_C5_NOTICE_32_88_DAYS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW15"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R15_91_DEPOSIT_DAY ?: '0'}"
+												           id="R15_91_DEPOSIT_DAY" name="R15_C6_91_DEPOSIT_DAY"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW15"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R15_FD_1_6_MONTHS ?: '0'}"
+												           id="R15_FD_1_6_MONTHS" name="R15_C7_FD_1_6_MONTHS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW15"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R15_FD_7_12_MONTHS ?: '0'}"
+												           id="R15_FD_7_12_MONTHS" name="R15_C8_FD_7_12_MONTHS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW15"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R15_FD_13_18_MONTHS ?: '0'}"
+												           id="R15_FD_13_18_MONTHS" name="R15_C9_FD_13_18_MONTHS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW15"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R15_FD_19_24_MONTHS ?: '0'}"
+												           id="R15_FD_19_24_MONTHS" name="R15_C10_FD_19_24_MONTHS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW15"
+												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R15_FD_OVER_24_MONTHS ?: '0'}"
+												           id="R15_FD_OVER_24_MONTHS" name="R15_C11_FD_OVER_24_MONTHS"
+												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+
+												<td id="ROW15"
+												    style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
+												    <input class="display-input Show_input" type="text"
+												           th:value="${report.R15_TOTAL ?: '0'}"
+												           id="R15_TOTAL" name="R15_C12_TOTAL"
+												           style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+												           readonly />
+												</td>
+											</tr>
+
+										</tbody>
+									</table>
+
+
+
+
+								</div>
+								<div style="text-align: center; margin-top: 10px;">
+
+									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+										form="fileupload" th:attr="data-todate=${asondate}, data-type=${type}"
+										onclick="fileuploads(this);" style="display: none;">
+										Submit</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+
+
+			</div>
+		</div>
+	</div>
+	<!-- Custom Cellresult Modal -->
+	<div class="modal fade" id="cellresultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+
+				<!-- Custom header -->
+				<div class="menu-title-header"
+					style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
+					<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">Do you
+						want to
+						open the report?</div>
+				</div>
+
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
+						style="margin-right: 10px; border: 2px solid #6c7a91; background: white; color: black; border-radius: 20px; padding: 5px 15px;">
+						Cancel</button>
+					<button type="button" class="custom-tab-btn yes-btn"
+						style="background: #6c7a91; color: white; border: none; border-radius: 20px; padding: 5px 20px;">Yes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content" style="background: transparent;">
+				<div class="modal-body" style="text-align: center">
+					<div>
+						<img th:src=@{/images/loader.gif} id="bfirelogo"
+							style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+							alt="Bornfire">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodel()"
+						data-bs-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 </body>
 
@@ -1671,147 +1897,150 @@ $(document).ready(function () {
 </style>
  -->
 <style>
-/* Your existing CSS - this is the correct approach */
-.scrollable-table-container {
-	/* This is the key: it creates the scroll context */
-	max-height: 590px;
-	/* Or a suitable height like 80vh for responsive design */
-	overflow-y: auto;
-	border: 1px solid #ccc;
-}
+	/* Your existing CSS - this is the correct approach */
+	.scrollable-table-container {
+		/* This is the key: it creates the scroll context */
+		max-height: 590px;
+		/* Or a suitable height like 80vh for responsive design */
+		overflow-y: auto;
+		border: 1px solid #ccc;
+	}
 
-/* Your existing sticky header CSS, targeting the tr elements within the thead */
-.scrollable-table-container thead tr:nth-child(1) {
-	position: sticky;
-	top: 0;
-	background-color: #b3b6b9;
-	z-index: 5;
-}
+	/* Your existing sticky header CSS, targeting the tr elements within the thead */
+	.scrollable-table-container thead tr:nth-child(1) {
+		position: sticky;
+		top: 0;
+		background-color: #b3b6b9;
+		z-index: 5;
+	}
 
-.scrollable-table-container thead tr:nth-child(2) {
-	position: sticky;
-	top: 36px;
-	/* adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 4;
-}
+	.scrollable-table-container thead tr:nth-child(2) {
+		position: sticky;
+		top: 36px;
+		/* adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 4;
+	}
 
-.scrollable-table-container thead tr:nth-child(3) {
-	position: sticky;
-	top: 72px;
-	/* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 3;
-}
+	.scrollable-table-container thead tr:nth-child(3) {
+		position: sticky;
+		top: 72px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 3;
+	}
 
-.scrollable-table-container thead tr:nth-child(4) {
-	position: sticky;
-	top: 100px;
-	/* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 2;
-}
+	.scrollable-table-container thead tr:nth-child(4) {
+		position: sticky;
+		top: 100px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 2;
+	}
 
-.scrollable-table-container thead tr:nth-child(5) {
-	position: sticky;
-	top: 135px;
-	/* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 1;
-}
+	.scrollable-table-container thead tr:nth-child(5) {
+		position: sticky;
+		top: 135px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 1;
+	}
 </style>
 <style>
-.inner {
-	max-height: 600px;
-	/* Adjust height as needed */
-	overflow: auto;
-	border: 1px solid #dee2e6;
-}
+	.inner {
+		max-height: 600px;
+		/* Adjust height as needed */
+		overflow: auto;
+		border: 1px solid #dee2e6;
+	}
 
-/* Sticky thead */
-#reports thead th {
-	position: sticky;
-	top: 0;
-	background-color: #D8D8D8; /* light gray header */
-	/* Match Bootstrap thead-light */
-	z-index: 2;
-}
+	/* Sticky thead */
+	#reports thead th {
+		position: sticky;
+		top: 0;
+		background-color: #D8D8D8;
+		/* light gray header */
+		/* Match Bootstrap thead-light */
+		z-index: 2;
+	}
 
-div.dataTables_wrapper div.dataTables_paginate {
-	text-align: right !important;
-	float: right !important;
-	width: auto;
-	margin-top: 10px;
-}
+	div.dataTables_wrapper div.dataTables_paginate {
+		text-align: right !important;
+		float: right !important;
+		width: auto;
+		margin-top: 10px;
+	}
 
-/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
-div.dataTables_wrapper div.dataTables_info {
-	float: left !important;
-	margin-top: 10px;
-}
+	/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+	div.dataTables_wrapper div.dataTables_info {
+		float: left !important;
+		margin-top: 10px;
+	}
 
-.pagination {
-	margin: 0;
-}
+	.pagination {
+		margin: 0;
+	}
 
-.page-item.active .page-link {
-	background-color: #386276;
-	border-color: #386276;
-}
+	.page-item.active .page-link {
+		background-color: #386276;
+		border-color: #386276;
+	}
 
-.page-link {
-	color: #386276;
-}
+	.page-link {
+		color: #386276;
+	}
 
-.page-link:hover {
-	color: #2a4a5c;
-}
+	.page-link:hover {
+		color: #2a4a5c;
+	}
 
-.form-select {
-	display: inline-block;
-	width: auto;
-}
+	.form-select {
+		display: inline-block;
+		width: auto;
+	}
 
-.scrollable-table-container thead tr:nth-child(1),
+	.scrollable-table-container thead tr:nth-child(1),
 	.scrollable-table-container thead tr:nth-child(2),
 	.scrollable-table-container thead tr:nth-child(3),
 	.scrollable-table-container thead tr:nth-child(4),
 	.scrollable-table-container thead tr:nth-child(5) {
-	background-color: #D8D8D8; /* set header color */
-}
-/* 1. Force table to obey colgroup */
-#reports {
-    table-layout: fixed !important;
-}
+		background-color: #D8D8D8;
+		/* set header color */
+	}
 
-/* 2. Make header cells follow colgroup width */
-#reports th {
-    width: inherit !important;
-}
+	/* 1. Force table to obey colgroup */
+	#reports {
+		table-layout: fixed !important;
+	}
 
-/* 3. Prevent empty headers from collapsing */
-#reports th:empty::after {
-    content: "\00A0";
-}
+	/* 2. Make header cells follow colgroup width */
+	#reports th {
+		width: inherit !important;
+	}
 
-.display-input {
-    width: 100%;
-    box-sizing: border-box;
-    height: 28px;
-    border: none;
-    background: transparent;
-    text-align: right;
-    padding-right: 5px;
-    white-space: nowrap;
-}
+	/* 3. Prevent empty headers from collapsing */
+	#reports th:empty::after {
+		content: "\00A0";
+	}
 
-/*#reports th:empty {
+	.display-input {
+		width: 100%;
+		box-sizing: border-box;
+		height: 28px;
+		border: none;
+		background: transparent;
+		text-align: right;
+		padding-right: 5px;
+		white-space: nowrap;
+	}
+
+	/*#reports th:empty {
     border: none !important;
     background-color: transparent !important;
     color: transparent !important;
 }*/
 
-/*  #reportdetails {
+	/*  #reportdetails {
        width: 100% !important;
        table-layout: fixed !important;
      }
@@ -1933,4 +2162,5 @@ div.dataTables_wrapper div.dataTables_info {
   width: auto;
  }
 </style> -->
-</html>					
+
+</html>

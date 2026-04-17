@@ -560,8 +560,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		Cell cell1 = row.createCell(1);
 						if (record.getR11_NOMINAL_INTEREST_RATE() != null) {
-							cell1.setCellValue(record.getR11_NOMINAL_INTEREST_RATE().doubleValue());
-							cell1.setCellStyle(numberStyle);
+							cell1.setCellValue(record.getR11_NOMINAL_INTEREST_RATE());
+							cell1.setCellStyle(textStyle);
 						} else {
 							cell1.setCellValue("");
 							cell1.setCellStyle(textStyle);
@@ -569,8 +569,8 @@ public class BRRS_M_INT_RATES_ReportService {
 						
 						Cell cell2 = row.createCell(2);
 						if (record.getR11_AVG_EFFECTIVE_RATE() != null) {
-							cell2.setCellValue(record.getR11_AVG_EFFECTIVE_RATE().doubleValue());
-							cell2.setCellStyle(numberStyle);
+							cell2.setCellValue(record.getR11_AVG_EFFECTIVE_RATE());
+							cell2.setCellStyle(textStyle);
 						} else {
 							cell2.setCellValue("");
 							cell2.setCellStyle(textStyle);
@@ -593,8 +593,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR12_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR12_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR12_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -602,8 +602,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR12_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR12_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR12_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -627,8 +627,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR13_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR13_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR13_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -636,8 +636,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR13_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR13_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR13_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -661,8 +661,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR14_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR14_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR14_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -670,8 +670,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR14_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR14_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR14_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -695,8 +695,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR15_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR15_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR15_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -704,8 +704,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR15_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR15_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR15_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -729,8 +729,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR16_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR16_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR16_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -738,8 +738,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR16_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR16_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR16_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -763,8 +763,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR17_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR17_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR17_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -772,8 +772,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR17_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR17_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR17_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -797,8 +797,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR18_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR18_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR18_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -806,8 +806,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR18_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR18_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR18_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -831,8 +831,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR19_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR19_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR19_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -840,8 +840,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR19_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR19_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR19_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -865,8 +865,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR20_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR20_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR20_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -874,8 +874,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR20_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR20_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR20_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -899,8 +899,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR21_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR21_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR21_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -908,8 +908,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR21_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR21_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR21_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -933,8 +933,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR22_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR22_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR22_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -942,8 +942,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR22_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR22_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR22_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -967,8 +967,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR23_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR23_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR23_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -976,8 +976,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR23_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR23_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR23_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -1000,8 +1000,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR25_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR25_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR25_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -1009,8 +1009,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR25_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR25_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR25_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -1034,8 +1034,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR26_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR26_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR26_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -1043,8 +1043,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR26_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR26_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR26_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -1068,8 +1068,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR27_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR27_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR27_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -1077,8 +1077,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR27_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR27_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR27_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -1102,8 +1102,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR28_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR28_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR28_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -1111,8 +1111,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR28_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR28_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR28_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -1136,8 +1136,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR29_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR29_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR29_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -1145,8 +1145,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR29_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR29_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR29_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -1170,8 +1170,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR30_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR30_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR30_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -1179,8 +1179,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR30_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR30_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR30_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -1204,8 +1204,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR31_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR31_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR31_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -1213,8 +1213,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR31_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR31_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR31_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -1238,8 +1238,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR32_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR32_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR32_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -1247,8 +1247,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR32_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR32_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR32_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -1272,8 +1272,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR33_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR33_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR33_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -1281,8 +1281,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR33_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR33_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR33_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -1306,8 +1306,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR34_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR34_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR34_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -1315,8 +1315,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR34_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR34_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR34_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -1340,8 +1340,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR35_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR35_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR35_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -1349,8 +1349,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR35_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR35_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR35_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -1374,8 +1374,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR36_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR36_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR36_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -1383,8 +1383,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR36_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR36_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR36_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -1408,8 +1408,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR37_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR37_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR37_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -1417,8 +1417,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR37_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR37_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR37_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -1442,8 +1442,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR38_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR38_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR38_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -1451,8 +1451,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR38_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR38_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR38_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -1476,8 +1476,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR39_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR39_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR39_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -1485,8 +1485,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR39_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR39_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR39_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -1510,8 +1510,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR40_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR40_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR40_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -1519,8 +1519,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR40_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR40_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR40_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -1544,8 +1544,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR41_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR41_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR41_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -1553,8 +1553,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR41_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR41_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR41_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -1692,8 +1692,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							Cell cell1 = row.createCell(1);
 			if (record.getR11_NOMINAL_INTEREST_RATE() != null) {
-				cell1.setCellValue(record.getR11_NOMINAL_INTEREST_RATE().doubleValue());
-				cell1.setCellStyle(numberStyle);
+				cell1.setCellValue(record.getR11_NOMINAL_INTEREST_RATE());
+				cell1.setCellStyle(textStyle);
 			} else {
 				cell1.setCellValue("");
 				cell1.setCellStyle(textStyle);
@@ -1701,8 +1701,8 @@ public class BRRS_M_INT_RATES_ReportService {
 			
 			Cell cell2 = row.createCell(2);
 			if (record.getR11_AVG_EFFECTIVE_RATE() != null) {
-				cell2.setCellValue(record.getR11_AVG_EFFECTIVE_RATE().doubleValue());
-				cell2.setCellStyle(numberStyle);
+				cell2.setCellValue(record.getR11_AVG_EFFECTIVE_RATE());
+				cell2.setCellStyle(textStyle);
 			} else {
 				cell2.setCellValue("");
 				cell2.setCellStyle(textStyle);
@@ -1717,8 +1717,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR12_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR12_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR12_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -1726,8 +1726,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR12_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR12_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR12_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -1744,8 +1744,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR13_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR13_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR13_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -1753,8 +1753,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR13_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR13_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR13_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -1770,8 +1770,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR14_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR14_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR14_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -1779,8 +1779,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR14_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR14_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR14_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -1795,8 +1795,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR15_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR15_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR15_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -1804,8 +1804,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR15_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR15_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR15_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -1821,8 +1821,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR16_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR16_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR16_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -1830,8 +1830,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR16_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR16_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR16_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -1847,8 +1847,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR17_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR17_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR17_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -1856,8 +1856,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR17_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR17_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR17_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -1874,8 +1874,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR18_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR18_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR18_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -1883,8 +1883,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR18_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR18_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR18_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -1901,8 +1901,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR19_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR19_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR19_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -1910,8 +1910,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR19_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR19_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR19_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -1928,8 +1928,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR20_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR20_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR20_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -1937,8 +1937,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR20_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR20_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR20_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -1953,8 +1953,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR21_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR21_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR21_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -1962,8 +1962,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR21_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR21_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR21_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -1980,8 +1980,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR22_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR22_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR22_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -1989,8 +1989,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR22_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR22_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR22_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -2006,8 +2006,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR23_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR23_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR23_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -2015,8 +2015,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR23_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR23_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR23_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -2031,8 +2031,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR31_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR31_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR31_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -2040,8 +2040,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR31_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR31_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR31_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -2058,8 +2058,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR32_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR32_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR32_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -2067,8 +2067,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR32_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR32_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR32_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -2085,8 +2085,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR33_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR33_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR33_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -2094,8 +2094,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR33_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR33_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR33_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -2112,8 +2112,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR34_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR34_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR34_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -2121,8 +2121,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR34_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR34_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR34_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -2138,8 +2138,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR35_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR35_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR35_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -2147,8 +2147,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR35_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR35_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR35_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -2164,8 +2164,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR36_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR36_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR36_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -2173,8 +2173,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR36_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR36_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR36_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -2191,8 +2191,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR37_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR37_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR37_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -2200,8 +2200,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR37_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR37_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR37_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -2217,8 +2217,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR38_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR38_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR38_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -2226,8 +2226,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR38_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR38_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR38_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -2244,8 +2244,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR39_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR39_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR39_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -2253,8 +2253,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR39_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR39_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR39_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -2271,8 +2271,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR40_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR40_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR40_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -2280,8 +2280,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR40_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR40_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR40_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -2297,8 +2297,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR41_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR41_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR41_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -2306,8 +2306,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR41_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR41_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR41_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -2428,8 +2428,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		Cell cell1 = row.createCell(1);
 							if (record.getR11_NOMINAL_INTEREST_RATE() != null) {
-								cell1.setCellValue(record.getR11_NOMINAL_INTEREST_RATE().doubleValue());
-								cell1.setCellStyle(numberStyle);
+								cell1.setCellValue(record.getR11_NOMINAL_INTEREST_RATE());
+								cell1.setCellStyle(textStyle);
 							} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
@@ -2437,8 +2437,8 @@ public class BRRS_M_INT_RATES_ReportService {
 							
 							Cell cell2 = row.createCell(2);
 							if (record.getR11_AVG_EFFECTIVE_RATE() != null) {
-								cell2.setCellValue(record.getR11_AVG_EFFECTIVE_RATE().doubleValue());
-								cell2.setCellStyle(numberStyle);
+								cell2.setCellValue(record.getR11_AVG_EFFECTIVE_RATE());
+								cell2.setCellStyle(textStyle);
 							} else {
 								cell2.setCellValue("");
 								cell2.setCellStyle(textStyle);
@@ -2461,8 +2461,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR12_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR12_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR12_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -2470,8 +2470,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR12_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR12_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR12_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -2495,8 +2495,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR13_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR13_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR13_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -2504,8 +2504,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR13_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR13_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR13_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -2529,8 +2529,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR14_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR14_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR14_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -2538,8 +2538,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR14_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR14_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR14_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -2563,8 +2563,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR15_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR15_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR15_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -2572,8 +2572,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR15_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR15_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR15_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -2597,8 +2597,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR16_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR16_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR16_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -2606,8 +2606,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR16_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR16_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR16_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -2631,8 +2631,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR17_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR17_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR17_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -2640,8 +2640,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR17_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR17_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR17_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -2665,8 +2665,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR18_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR18_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR18_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -2674,8 +2674,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR18_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR18_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR18_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -2699,8 +2699,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR19_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR19_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR19_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -2708,8 +2708,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR19_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR19_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR19_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -2733,8 +2733,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR20_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR20_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR20_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -2742,8 +2742,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR20_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR20_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR20_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -2767,8 +2767,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR21_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR21_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR21_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -2776,8 +2776,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR21_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR21_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR21_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -2801,8 +2801,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR22_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR22_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR22_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -2810,8 +2810,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR22_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR22_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR22_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -2835,8 +2835,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR23_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR23_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR23_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -2844,8 +2844,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR23_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR23_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR23_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -2883,8 +2883,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR25_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR25_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR25_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -2892,8 +2892,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR25_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR25_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR25_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -2917,8 +2917,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR26_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR26_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR26_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -2926,8 +2926,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR26_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR26_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR26_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -2951,8 +2951,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR27_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR27_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR27_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -2960,8 +2960,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR27_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR27_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR27_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -2985,8 +2985,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR28_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR28_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR28_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -2994,8 +2994,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR28_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR28_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR28_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -3019,8 +3019,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR29_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR29_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR29_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -3028,8 +3028,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR29_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR29_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR29_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -3053,8 +3053,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR30_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR30_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR30_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -3062,8 +3062,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR30_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR30_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR30_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -3087,8 +3087,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR31_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR31_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR31_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -3096,8 +3096,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR31_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR31_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR31_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -3121,8 +3121,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR32_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR32_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR32_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -3130,8 +3130,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR32_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR32_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR32_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -3155,8 +3155,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR33_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR33_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR33_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -3164,8 +3164,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR33_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR33_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR33_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -3189,8 +3189,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR34_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR34_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR34_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -3198,8 +3198,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR34_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR34_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR34_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -3223,8 +3223,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR35_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR35_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR35_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -3232,8 +3232,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR35_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR35_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR35_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -3257,8 +3257,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR36_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR36_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR36_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -3266,8 +3266,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR36_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR36_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR36_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -3291,8 +3291,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR37_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR37_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR37_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -3300,8 +3300,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR37_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR37_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR37_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -3325,8 +3325,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR38_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR38_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR38_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -3334,8 +3334,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR38_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR38_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR38_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -3359,8 +3359,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR39_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR39_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR39_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -3368,8 +3368,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR39_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR39_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR39_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -3393,8 +3393,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR40_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR40_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR40_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -3402,8 +3402,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR40_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR40_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR40_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -3427,8 +3427,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR41_NOMINAL_INTEREST_RATE() != null) {
-							    cell1.setCellValue(record.getR41_NOMINAL_INTEREST_RATE().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR41_NOMINAL_INTEREST_RATE());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -3436,8 +3436,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR41_AVG_EFFECTIVE_RATE() != null) {
-							    cell2.setCellValue(record.getR41_AVG_EFFECTIVE_RATE().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR41_AVG_EFFECTIVE_RATE());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -3552,8 +3552,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 	Cell cell1 = row.createCell(1);
 			if (record.getR11_NOMINAL_INTEREST_RATE() != null) {
-				cell1.setCellValue(record.getR11_NOMINAL_INTEREST_RATE().doubleValue());
-				cell1.setCellStyle(numberStyle);
+				cell1.setCellValue(record.getR11_NOMINAL_INTEREST_RATE());
+				cell1.setCellStyle(textStyle);
 			} else {
 				cell1.setCellValue("");
 				cell1.setCellStyle(textStyle);
@@ -3561,8 +3561,8 @@ public class BRRS_M_INT_RATES_ReportService {
 			
 			Cell cell2 = row.createCell(2);
 			if (record.getR11_AVG_EFFECTIVE_RATE() != null) {
-				cell2.setCellValue(record.getR11_AVG_EFFECTIVE_RATE().doubleValue());
-				cell2.setCellStyle(numberStyle);
+				cell2.setCellValue(record.getR11_AVG_EFFECTIVE_RATE());
+				cell2.setCellStyle(textStyle);
 			} else {
 				cell2.setCellValue("");
 				cell2.setCellStyle(textStyle);
@@ -3577,8 +3577,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR12_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR12_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR12_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -3586,8 +3586,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR12_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR12_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR12_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -3604,8 +3604,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR13_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR13_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR13_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -3613,8 +3613,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR13_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR13_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR13_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -3630,8 +3630,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR14_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR14_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR14_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -3639,8 +3639,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR14_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR14_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR14_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -3655,8 +3655,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR15_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR15_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR15_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -3664,8 +3664,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR15_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR15_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR15_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -3681,8 +3681,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR16_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR16_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR16_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -3690,8 +3690,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR16_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR16_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR16_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -3707,8 +3707,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR17_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR17_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR17_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -3716,8 +3716,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR17_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR17_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR17_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -3734,8 +3734,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR18_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR18_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR18_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -3743,8 +3743,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR18_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR18_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR18_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -3761,8 +3761,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR19_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR19_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR19_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -3770,8 +3770,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR19_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR19_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR19_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -3788,8 +3788,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR20_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR20_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR20_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -3797,8 +3797,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR20_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR20_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR20_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -3813,8 +3813,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR21_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR21_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR21_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -3822,8 +3822,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR21_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR21_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR21_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -3840,8 +3840,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR22_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR22_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR22_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -3849,8 +3849,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR22_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR22_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR22_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -3866,8 +3866,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR23_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR23_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR23_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -3875,8 +3875,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR23_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR23_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR23_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -3891,8 +3891,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR31_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR31_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR31_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -3900,8 +3900,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR31_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR31_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR31_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -3918,8 +3918,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR32_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR32_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR32_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -3927,8 +3927,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR32_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR32_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR32_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -3945,8 +3945,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR33_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR33_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR33_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -3954,8 +3954,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR33_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR33_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR33_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -3972,8 +3972,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR34_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR34_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR34_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -3981,8 +3981,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR34_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR34_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR34_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -3998,8 +3998,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR35_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR35_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR35_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -4007,8 +4007,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR35_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR35_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR35_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -4024,8 +4024,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR36_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR36_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR36_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -4033,8 +4033,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR36_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR36_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR36_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -4051,8 +4051,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR37_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR37_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR37_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -4060,8 +4060,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR37_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR37_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR37_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -4077,8 +4077,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR38_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR38_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR38_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -4086,8 +4086,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR38_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR38_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR38_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -4104,8 +4104,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR39_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR39_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR39_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -4113,8 +4113,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR39_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR39_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR39_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -4131,8 +4131,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR40_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR40_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR40_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -4140,8 +4140,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR40_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR40_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR40_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -4157,8 +4157,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell1 = row.createCell(1);
 			if (record.getR41_NOMINAL_INTEREST_RATE() != null) {
-			    cell1.setCellValue(record.getR41_NOMINAL_INTEREST_RATE().doubleValue());
-			    cell1.setCellStyle(numberStyle);
+			    cell1.setCellValue(record.getR41_NOMINAL_INTEREST_RATE());
+			    cell1.setCellStyle(textStyle);
 			} else {
 			    cell1.setCellValue("");
 			    cell1.setCellStyle(textStyle);
@@ -4166,8 +4166,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 			cell2 = row.createCell(2);
 			if (record.getR41_AVG_EFFECTIVE_RATE() != null) {
-			    cell2.setCellValue(record.getR41_AVG_EFFECTIVE_RATE().doubleValue());
-			    cell2.setCellStyle(numberStyle);
+			    cell2.setCellValue(record.getR41_AVG_EFFECTIVE_RATE());
+			    cell2.setCellStyle(textStyle);
 			} else {
 			    cell2.setCellValue("");
 			    cell2.setCellStyle(textStyle);
@@ -4286,8 +4286,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						Cell cell1 = row.createCell(1);
 						if (record.getR11_NOMINAL_INTEREST_RATE() != null) {
-							cell1.setCellValue(record.getR11_NOMINAL_INTEREST_RATE().doubleValue());
-							cell1.setCellStyle(numberStyle);
+							cell1.setCellValue(record.getR11_NOMINAL_INTEREST_RATE());
+							cell1.setCellStyle(textStyle);
 						} else {
 							cell1.setCellValue("");
 							cell1.setCellStyle(textStyle);
@@ -4295,8 +4295,8 @@ public class BRRS_M_INT_RATES_ReportService {
 						
 						Cell cell2 = row.createCell(2);
 						if (record.getR11_AVG_EFFECTIVE_RATE() != null) {
-							cell2.setCellValue(record.getR11_AVG_EFFECTIVE_RATE().doubleValue());
-							cell2.setCellStyle(numberStyle);
+							cell2.setCellValue(record.getR11_AVG_EFFECTIVE_RATE());
+							cell2.setCellStyle(textStyle);
 						} else {
 							cell2.setCellValue("");
 							cell2.setCellStyle(textStyle);
@@ -4319,8 +4319,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR12_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR12_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR12_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -4328,8 +4328,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR12_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR12_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR12_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -4353,8 +4353,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR13_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR13_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR13_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -4362,8 +4362,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR13_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR13_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR13_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -4387,8 +4387,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR14_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR14_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR14_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -4396,8 +4396,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR14_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR14_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR14_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -4421,8 +4421,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR15_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR15_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR15_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -4430,8 +4430,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR15_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR15_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR15_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -4455,8 +4455,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR16_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR16_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR16_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -4464,8 +4464,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR16_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR16_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR16_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -4489,8 +4489,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR17_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR17_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR17_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -4498,8 +4498,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR17_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR17_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR17_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -4523,8 +4523,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR18_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR18_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR18_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -4532,8 +4532,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR18_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR18_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR18_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -4557,8 +4557,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR19_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR19_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR19_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -4566,8 +4566,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR19_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR19_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR19_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -4591,8 +4591,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR20_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR20_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR20_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -4600,8 +4600,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR20_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR20_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR20_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -4625,8 +4625,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR21_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR21_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR21_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -4634,8 +4634,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR21_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR21_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR21_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -4659,8 +4659,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR22_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR22_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR22_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -4668,8 +4668,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR22_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR22_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR22_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -4693,8 +4693,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR23_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR23_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR23_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -4702,8 +4702,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR23_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR23_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR23_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -4741,8 +4741,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR25_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR25_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR25_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -4750,8 +4750,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR25_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR25_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR25_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -4775,8 +4775,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR26_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR26_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR26_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -4784,8 +4784,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR26_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR26_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR26_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -4809,8 +4809,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR27_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR27_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR27_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -4818,8 +4818,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR27_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR27_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR27_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -4843,8 +4843,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR28_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR28_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR28_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -4852,8 +4852,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR28_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR28_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR28_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -4877,8 +4877,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR29_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR29_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR29_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -4886,8 +4886,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR29_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR29_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR29_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -4911,8 +4911,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR30_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR30_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR30_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -4920,8 +4920,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR30_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR30_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR30_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -4945,8 +4945,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR31_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR31_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR31_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -4954,8 +4954,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR31_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR31_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR31_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -4979,8 +4979,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR32_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR32_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR32_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -4988,8 +4988,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR32_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR32_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR32_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -5013,8 +5013,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR33_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR33_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR33_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -5022,8 +5022,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR33_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR33_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR33_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -5047,8 +5047,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR34_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR34_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR34_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -5056,8 +5056,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR34_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR34_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR34_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -5081,8 +5081,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR35_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR35_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR35_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -5090,8 +5090,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR35_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR35_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR35_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -5115,8 +5115,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR36_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR36_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR36_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -5124,8 +5124,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR36_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR36_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR36_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -5149,8 +5149,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR37_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR37_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR37_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -5158,8 +5158,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR37_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR37_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR37_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -5183,8 +5183,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR38_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR38_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR38_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -5192,8 +5192,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR38_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR38_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR38_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -5217,8 +5217,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR39_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR39_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR39_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -5226,8 +5226,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR39_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR39_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR39_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -5251,8 +5251,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR40_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR40_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR40_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -5260,8 +5260,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR40_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR40_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR40_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -5285,8 +5285,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR41_NOMINAL_INTEREST_RATE() != null) {
-						    cell1.setCellValue(record.getR41_NOMINAL_INTEREST_RATE().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR41_NOMINAL_INTEREST_RATE());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -5294,8 +5294,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR41_AVG_EFFECTIVE_RATE() != null) {
-						    cell2.setCellValue(record.getR41_AVG_EFFECTIVE_RATE().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR41_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -5411,8 +5411,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		Cell cell1 = row.createCell(1);
 		if (record.getR11_NOMINAL_INTEREST_RATE() != null) {
-			cell1.setCellValue(record.getR11_NOMINAL_INTEREST_RATE().doubleValue());
-			cell1.setCellStyle(numberStyle);
+			cell1.setCellValue(record.getR11_NOMINAL_INTEREST_RATE());
+			cell1.setCellStyle(textStyle);
 		} else {
 			cell1.setCellValue("");
 			cell1.setCellStyle(textStyle);
@@ -5420,8 +5420,8 @@ public class BRRS_M_INT_RATES_ReportService {
 		
 		Cell cell2 = row.createCell(2);
 		if (record.getR11_AVG_EFFECTIVE_RATE() != null) {
-			cell2.setCellValue(record.getR11_AVG_EFFECTIVE_RATE().doubleValue());
-			cell2.setCellStyle(numberStyle);
+			cell2.setCellValue(record.getR11_AVG_EFFECTIVE_RATE());
+			cell2.setCellStyle(textStyle);
 		} else {
 			cell2.setCellValue("");
 			cell2.setCellStyle(textStyle);
@@ -5436,8 +5436,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell1 = row.createCell(1);
 		if (record.getR12_NOMINAL_INTEREST_RATE() != null) {
-		    cell1.setCellValue(record.getR12_NOMINAL_INTEREST_RATE().doubleValue());
-		    cell1.setCellStyle(numberStyle);
+		    cell1.setCellValue(record.getR12_NOMINAL_INTEREST_RATE());
+		    cell1.setCellStyle(textStyle);
 		} else {
 		    cell1.setCellValue("");
 		    cell1.setCellStyle(textStyle);
@@ -5445,8 +5445,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell2 = row.createCell(2);
 		if (record.getR12_AVG_EFFECTIVE_RATE() != null) {
-		    cell2.setCellValue(record.getR12_AVG_EFFECTIVE_RATE().doubleValue());
-		    cell2.setCellStyle(numberStyle);
+		    cell2.setCellValue(record.getR12_AVG_EFFECTIVE_RATE());
+		    cell2.setCellStyle(textStyle);
 		} else {
 		    cell2.setCellValue("");
 		    cell2.setCellStyle(textStyle);
@@ -5463,8 +5463,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell1 = row.createCell(1);
 		if (record.getR13_NOMINAL_INTEREST_RATE() != null) {
-		    cell1.setCellValue(record.getR13_NOMINAL_INTEREST_RATE().doubleValue());
-		    cell1.setCellStyle(numberStyle);
+		    cell1.setCellValue(record.getR13_NOMINAL_INTEREST_RATE());
+		    cell1.setCellStyle(textStyle);
 		} else {
 		    cell1.setCellValue("");
 		    cell1.setCellStyle(textStyle);
@@ -5472,8 +5472,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell2 = row.createCell(2);
 		if (record.getR13_AVG_EFFECTIVE_RATE() != null) {
-		    cell2.setCellValue(record.getR13_AVG_EFFECTIVE_RATE().doubleValue());
-		    cell2.setCellStyle(numberStyle);
+		    cell2.setCellValue(record.getR13_AVG_EFFECTIVE_RATE());
+		    cell2.setCellStyle(textStyle);
 		} else {
 		    cell2.setCellValue("");
 		    cell2.setCellStyle(textStyle);
@@ -5489,8 +5489,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell1 = row.createCell(1);
 		if (record.getR14_NOMINAL_INTEREST_RATE() != null) {
-		    cell1.setCellValue(record.getR14_NOMINAL_INTEREST_RATE().doubleValue());
-		    cell1.setCellStyle(numberStyle);
+		    cell1.setCellValue(record.getR14_NOMINAL_INTEREST_RATE());
+		    cell1.setCellStyle(textStyle);
 		} else {
 		    cell1.setCellValue("");
 		    cell1.setCellStyle(textStyle);
@@ -5498,8 +5498,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell2 = row.createCell(2);
 		if (record.getR14_AVG_EFFECTIVE_RATE() != null) {
-		    cell2.setCellValue(record.getR14_AVG_EFFECTIVE_RATE().doubleValue());
-		    cell2.setCellStyle(numberStyle);
+		    cell2.setCellValue(record.getR14_AVG_EFFECTIVE_RATE());
+		    cell2.setCellStyle(textStyle);
 		} else {
 		    cell2.setCellValue("");
 		    cell2.setCellStyle(textStyle);
@@ -5514,8 +5514,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell1 = row.createCell(1);
 		if (record.getR15_NOMINAL_INTEREST_RATE() != null) {
-		    cell1.setCellValue(record.getR15_NOMINAL_INTEREST_RATE().doubleValue());
-		    cell1.setCellStyle(numberStyle);
+		    cell1.setCellValue(record.getR15_NOMINAL_INTEREST_RATE());
+		    cell1.setCellStyle(textStyle);
 		} else {
 		    cell1.setCellValue("");
 		    cell1.setCellStyle(textStyle);
@@ -5523,8 +5523,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell2 = row.createCell(2);
 		if (record.getR15_AVG_EFFECTIVE_RATE() != null) {
-		    cell2.setCellValue(record.getR15_AVG_EFFECTIVE_RATE().doubleValue());
-		    cell2.setCellStyle(numberStyle);
+		    cell2.setCellValue(record.getR15_AVG_EFFECTIVE_RATE());
+		    cell2.setCellStyle(textStyle);
 		} else {
 		    cell2.setCellValue("");
 		    cell2.setCellStyle(textStyle);
@@ -5540,8 +5540,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell1 = row.createCell(1);
 		if (record.getR16_NOMINAL_INTEREST_RATE() != null) {
-		    cell1.setCellValue(record.getR16_NOMINAL_INTEREST_RATE().doubleValue());
-		    cell1.setCellStyle(numberStyle);
+		    cell1.setCellValue(record.getR16_NOMINAL_INTEREST_RATE());
+		    cell1.setCellStyle(textStyle);
 		} else {
 		    cell1.setCellValue("");
 		    cell1.setCellStyle(textStyle);
@@ -5549,8 +5549,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell2 = row.createCell(2);
 		if (record.getR16_AVG_EFFECTIVE_RATE() != null) {
-		    cell2.setCellValue(record.getR16_AVG_EFFECTIVE_RATE().doubleValue());
-		    cell2.setCellStyle(numberStyle);
+		    cell2.setCellValue(record.getR16_AVG_EFFECTIVE_RATE());
+		    cell2.setCellStyle(textStyle);
 		} else {
 		    cell2.setCellValue("");
 		    cell2.setCellStyle(textStyle);
@@ -5566,8 +5566,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell1 = row.createCell(1);
 		if (record.getR17_NOMINAL_INTEREST_RATE() != null) {
-		    cell1.setCellValue(record.getR17_NOMINAL_INTEREST_RATE().doubleValue());
-		    cell1.setCellStyle(numberStyle);
+		    cell1.setCellValue(record.getR17_NOMINAL_INTEREST_RATE());
+		    cell1.setCellStyle(textStyle);
 		} else {
 		    cell1.setCellValue("");
 		    cell1.setCellStyle(textStyle);
@@ -5575,8 +5575,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell2 = row.createCell(2);
 		if (record.getR17_AVG_EFFECTIVE_RATE() != null) {
-		    cell2.setCellValue(record.getR17_AVG_EFFECTIVE_RATE().doubleValue());
-		    cell2.setCellStyle(numberStyle);
+		    cell2.setCellValue(record.getR17_AVG_EFFECTIVE_RATE());
+		    cell2.setCellStyle(textStyle);
 		} else {
 		    cell2.setCellValue("");
 		    cell2.setCellStyle(textStyle);
@@ -5593,8 +5593,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell1 = row.createCell(1);
 		if (record.getR18_NOMINAL_INTEREST_RATE() != null) {
-		    cell1.setCellValue(record.getR18_NOMINAL_INTEREST_RATE().doubleValue());
-		    cell1.setCellStyle(numberStyle);
+		    cell1.setCellValue(record.getR18_NOMINAL_INTEREST_RATE());
+		    cell1.setCellStyle(textStyle);
 		} else {
 		    cell1.setCellValue("");
 		    cell1.setCellStyle(textStyle);
@@ -5602,8 +5602,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell2 = row.createCell(2);
 		if (record.getR18_AVG_EFFECTIVE_RATE() != null) {
-		    cell2.setCellValue(record.getR18_AVG_EFFECTIVE_RATE().doubleValue());
-		    cell2.setCellStyle(numberStyle);
+		    cell2.setCellValue(record.getR18_AVG_EFFECTIVE_RATE());
+		    cell2.setCellStyle(textStyle);
 		} else {
 		    cell2.setCellValue("");
 		    cell2.setCellStyle(textStyle);
@@ -5620,8 +5620,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell1 = row.createCell(1);
 		if (record.getR19_NOMINAL_INTEREST_RATE() != null) {
-		    cell1.setCellValue(record.getR19_NOMINAL_INTEREST_RATE().doubleValue());
-		    cell1.setCellStyle(numberStyle);
+		    cell1.setCellValue(record.getR19_NOMINAL_INTEREST_RATE());
+		    cell1.setCellStyle(textStyle);
 		} else {
 		    cell1.setCellValue("");
 		    cell1.setCellStyle(textStyle);
@@ -5629,8 +5629,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell2 = row.createCell(2);
 		if (record.getR19_AVG_EFFECTIVE_RATE() != null) {
-		    cell2.setCellValue(record.getR19_AVG_EFFECTIVE_RATE().doubleValue());
-		    cell2.setCellStyle(numberStyle);
+		    cell2.setCellValue(record.getR19_AVG_EFFECTIVE_RATE());
+		    cell2.setCellStyle(textStyle);
 		} else {
 		    cell2.setCellValue("");
 		    cell2.setCellStyle(textStyle);
@@ -5647,8 +5647,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell1 = row.createCell(1);
 		if (record.getR20_NOMINAL_INTEREST_RATE() != null) {
-		    cell1.setCellValue(record.getR20_NOMINAL_INTEREST_RATE().doubleValue());
-		    cell1.setCellStyle(numberStyle);
+		    cell1.setCellValue(record.getR20_NOMINAL_INTEREST_RATE());
+		    cell1.setCellStyle(textStyle);
 		} else {
 		    cell1.setCellValue("");
 		    cell1.setCellStyle(textStyle);
@@ -5656,8 +5656,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell2 = row.createCell(2);
 		if (record.getR20_AVG_EFFECTIVE_RATE() != null) {
-		    cell2.setCellValue(record.getR20_AVG_EFFECTIVE_RATE().doubleValue());
-		    cell2.setCellStyle(numberStyle);
+		    cell2.setCellValue(record.getR20_AVG_EFFECTIVE_RATE());
+		    cell2.setCellStyle(textStyle);
 		} else {
 		    cell2.setCellValue("");
 		    cell2.setCellStyle(textStyle);
@@ -5672,8 +5672,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell1 = row.createCell(1);
 		if (record.getR21_NOMINAL_INTEREST_RATE() != null) {
-		    cell1.setCellValue(record.getR21_NOMINAL_INTEREST_RATE().doubleValue());
-		    cell1.setCellStyle(numberStyle);
+		    cell1.setCellValue(record.getR21_NOMINAL_INTEREST_RATE());
+		    cell1.setCellStyle(textStyle);
 		} else {
 		    cell1.setCellValue("");
 		    cell1.setCellStyle(textStyle);
@@ -5681,8 +5681,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell2 = row.createCell(2);
 		if (record.getR21_AVG_EFFECTIVE_RATE() != null) {
-		    cell2.setCellValue(record.getR21_AVG_EFFECTIVE_RATE().doubleValue());
-		    cell2.setCellStyle(numberStyle);
+		    cell2.setCellValue(record.getR21_AVG_EFFECTIVE_RATE());
+		    cell2.setCellStyle(textStyle);
 		} else {
 		    cell2.setCellValue("");
 		    cell2.setCellStyle(textStyle);
@@ -5699,8 +5699,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell1 = row.createCell(1);
 		if (record.getR22_NOMINAL_INTEREST_RATE() != null) {
-		    cell1.setCellValue(record.getR22_NOMINAL_INTEREST_RATE().doubleValue());
-		    cell1.setCellStyle(numberStyle);
+		    cell1.setCellValue(record.getR22_NOMINAL_INTEREST_RATE());
+		    cell1.setCellStyle(textStyle);
 		} else {
 		    cell1.setCellValue("");
 		    cell1.setCellStyle(textStyle);
@@ -5708,8 +5708,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell2 = row.createCell(2);
 		if (record.getR22_AVG_EFFECTIVE_RATE() != null) {
-		    cell2.setCellValue(record.getR22_AVG_EFFECTIVE_RATE().doubleValue());
-		    cell2.setCellStyle(numberStyle);
+		    cell2.setCellValue(record.getR22_AVG_EFFECTIVE_RATE());
+		    cell2.setCellStyle(textStyle);
 		} else {
 		    cell2.setCellValue("");
 		    cell2.setCellStyle(textStyle);
@@ -5725,8 +5725,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell1 = row.createCell(1);
 		if (record.getR23_NOMINAL_INTEREST_RATE() != null) {
-		    cell1.setCellValue(record.getR23_NOMINAL_INTEREST_RATE().doubleValue());
-		    cell1.setCellStyle(numberStyle);
+		    cell1.setCellValue(record.getR23_NOMINAL_INTEREST_RATE());
+		    cell1.setCellStyle(textStyle);
 		} else {
 		    cell1.setCellValue("");
 		    cell1.setCellStyle(textStyle);
@@ -5734,8 +5734,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell2 = row.createCell(2);
 		if (record.getR23_AVG_EFFECTIVE_RATE() != null) {
-		    cell2.setCellValue(record.getR23_AVG_EFFECTIVE_RATE().doubleValue());
-		    cell2.setCellStyle(numberStyle);
+		    cell2.setCellValue(record.getR23_AVG_EFFECTIVE_RATE());
+		    cell2.setCellStyle(textStyle);
 		} else {
 		    cell2.setCellValue("");
 		    cell2.setCellStyle(textStyle);
@@ -5750,8 +5750,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell1 = row.createCell(1);
 		if (record.getR31_NOMINAL_INTEREST_RATE() != null) {
-		    cell1.setCellValue(record.getR31_NOMINAL_INTEREST_RATE().doubleValue());
-		    cell1.setCellStyle(numberStyle);
+		    cell1.setCellValue(record.getR31_NOMINAL_INTEREST_RATE());
+		    cell1.setCellStyle(textStyle);
 		} else {
 		    cell1.setCellValue("");
 		    cell1.setCellStyle(textStyle);
@@ -5759,8 +5759,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell2 = row.createCell(2);
 		if (record.getR31_AVG_EFFECTIVE_RATE() != null) {
-		    cell2.setCellValue(record.getR31_AVG_EFFECTIVE_RATE().doubleValue());
-		    cell2.setCellStyle(numberStyle);
+		    cell2.setCellValue(record.getR31_AVG_EFFECTIVE_RATE());
+		    cell2.setCellStyle(textStyle);
 		} else {
 		    cell2.setCellValue("");
 		    cell2.setCellStyle(textStyle);
@@ -5777,8 +5777,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell1 = row.createCell(1);
 		if (record.getR32_NOMINAL_INTEREST_RATE() != null) {
-		    cell1.setCellValue(record.getR32_NOMINAL_INTEREST_RATE().doubleValue());
-		    cell1.setCellStyle(numberStyle);
+		    cell1.setCellValue(record.getR32_NOMINAL_INTEREST_RATE());
+		    cell1.setCellStyle(textStyle);
 		} else {
 		    cell1.setCellValue("");
 		    cell1.setCellStyle(textStyle);
@@ -5786,8 +5786,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell2 = row.createCell(2);
 		if (record.getR32_AVG_EFFECTIVE_RATE() != null) {
-		    cell2.setCellValue(record.getR32_AVG_EFFECTIVE_RATE().doubleValue());
-		    cell2.setCellStyle(numberStyle);
+		    cell2.setCellValue(record.getR32_AVG_EFFECTIVE_RATE());
+		    cell2.setCellStyle(textStyle);
 		} else {
 		    cell2.setCellValue("");
 		    cell2.setCellStyle(textStyle);
@@ -5804,8 +5804,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell1 = row.createCell(1);
 		if (record.getR33_NOMINAL_INTEREST_RATE() != null) {
-		    cell1.setCellValue(record.getR33_NOMINAL_INTEREST_RATE().doubleValue());
-		    cell1.setCellStyle(numberStyle);
+		    cell1.setCellValue(record.getR33_NOMINAL_INTEREST_RATE());
+		    cell1.setCellStyle(textStyle);
 		} else {
 		    cell1.setCellValue("");
 		    cell1.setCellStyle(textStyle);
@@ -5813,8 +5813,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell2 = row.createCell(2);
 		if (record.getR33_AVG_EFFECTIVE_RATE() != null) {
-		    cell2.setCellValue(record.getR33_AVG_EFFECTIVE_RATE().doubleValue());
-		    cell2.setCellStyle(numberStyle);
+		    cell2.setCellValue(record.getR33_AVG_EFFECTIVE_RATE());
+		    cell2.setCellStyle(textStyle);
 		} else {
 		    cell2.setCellValue("");
 		    cell2.setCellStyle(textStyle);
@@ -5831,8 +5831,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell1 = row.createCell(1);
 		if (record.getR34_NOMINAL_INTEREST_RATE() != null) {
-		    cell1.setCellValue(record.getR34_NOMINAL_INTEREST_RATE().doubleValue());
-		    cell1.setCellStyle(numberStyle);
+		    cell1.setCellValue(record.getR34_NOMINAL_INTEREST_RATE());
+		    cell1.setCellStyle(textStyle);
 		} else {
 		    cell1.setCellValue("");
 		    cell1.setCellStyle(textStyle);
@@ -5840,8 +5840,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell2 = row.createCell(2);
 		if (record.getR34_AVG_EFFECTIVE_RATE() != null) {
-		    cell2.setCellValue(record.getR34_AVG_EFFECTIVE_RATE().doubleValue());
-		    cell2.setCellStyle(numberStyle);
+		    cell2.setCellValue(record.getR34_AVG_EFFECTIVE_RATE());
+		    cell2.setCellStyle(textStyle);
 		} else {
 		    cell2.setCellValue("");
 		    cell2.setCellStyle(textStyle);
@@ -5857,8 +5857,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell1 = row.createCell(1);
 		if (record.getR35_NOMINAL_INTEREST_RATE() != null) {
-		    cell1.setCellValue(record.getR35_NOMINAL_INTEREST_RATE().doubleValue());
-		    cell1.setCellStyle(numberStyle);
+		    cell1.setCellValue(record.getR35_NOMINAL_INTEREST_RATE());
+		    cell1.setCellStyle(textStyle);
 		} else {
 		    cell1.setCellValue("");
 		    cell1.setCellStyle(textStyle);
@@ -5866,8 +5866,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell2 = row.createCell(2);
 		if (record.getR35_AVG_EFFECTIVE_RATE() != null) {
-		    cell2.setCellValue(record.getR35_AVG_EFFECTIVE_RATE().doubleValue());
-		    cell2.setCellStyle(numberStyle);
+		    cell2.setCellValue(record.getR35_AVG_EFFECTIVE_RATE());
+		    cell2.setCellStyle(textStyle);
 		} else {
 		    cell2.setCellValue("");
 		    cell2.setCellStyle(textStyle);
@@ -5883,8 +5883,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell1 = row.createCell(1);
 		if (record.getR36_NOMINAL_INTEREST_RATE() != null) {
-		    cell1.setCellValue(record.getR36_NOMINAL_INTEREST_RATE().doubleValue());
-		    cell1.setCellStyle(numberStyle);
+		    cell1.setCellValue(record.getR36_NOMINAL_INTEREST_RATE());
+		    cell1.setCellStyle(textStyle);
 		} else {
 		    cell1.setCellValue("");
 		    cell1.setCellStyle(textStyle);
@@ -5892,8 +5892,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell2 = row.createCell(2);
 		if (record.getR36_AVG_EFFECTIVE_RATE() != null) {
-		    cell2.setCellValue(record.getR36_AVG_EFFECTIVE_RATE().doubleValue());
-		    cell2.setCellStyle(numberStyle);
+		    cell2.setCellValue(record.getR36_AVG_EFFECTIVE_RATE());
+		    cell2.setCellStyle(textStyle);
 		} else {
 		    cell2.setCellValue("");
 		    cell2.setCellStyle(textStyle);
@@ -5906,8 +5906,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell1 = row.createCell(1);
 		if (record.getR37_NOMINAL_INTEREST_RATE() != null) {
-		    cell1.setCellValue(record.getR37_NOMINAL_INTEREST_RATE().doubleValue());
-		    cell1.setCellStyle(numberStyle);
+		    cell1.setCellValue(record.getR37_NOMINAL_INTEREST_RATE());
+		    cell1.setCellStyle(textStyle);
 		} else {
 		    cell1.setCellValue("");
 		    cell1.setCellStyle(textStyle);
@@ -5915,8 +5915,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell2 = row.createCell(2);
 		if (record.getR37_AVG_EFFECTIVE_RATE() != null) {
-		    cell2.setCellValue(record.getR37_AVG_EFFECTIVE_RATE().doubleValue());
-		    cell2.setCellStyle(numberStyle);
+		    cell2.setCellValue(record.getR37_AVG_EFFECTIVE_RATE());
+		    cell2.setCellStyle(textStyle);
 		} else {
 		    cell2.setCellValue("");
 		    cell2.setCellStyle(textStyle);
@@ -5932,8 +5932,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell1 = row.createCell(1);
 		if (record.getR38_NOMINAL_INTEREST_RATE() != null) {
-		    cell1.setCellValue(record.getR38_NOMINAL_INTEREST_RATE().doubleValue());
-		    cell1.setCellStyle(numberStyle);
+		    cell1.setCellValue(record.getR38_NOMINAL_INTEREST_RATE());
+		    cell1.setCellStyle(textStyle);
 		} else {
 		    cell1.setCellValue("");
 		    cell1.setCellStyle(textStyle);
@@ -5941,8 +5941,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell2 = row.createCell(2);
 		if (record.getR38_AVG_EFFECTIVE_RATE() != null) {
-		    cell2.setCellValue(record.getR38_AVG_EFFECTIVE_RATE().doubleValue());
-		    cell2.setCellStyle(numberStyle);
+		    cell2.setCellValue(record.getR38_AVG_EFFECTIVE_RATE());
+		    cell2.setCellStyle(textStyle);
 		} else {
 		    cell2.setCellValue("");
 		    cell2.setCellStyle(textStyle);
@@ -5959,8 +5959,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell1 = row.createCell(1);
 		if (record.getR39_NOMINAL_INTEREST_RATE() != null) {
-		    cell1.setCellValue(record.getR39_NOMINAL_INTEREST_RATE().doubleValue());
-		    cell1.setCellStyle(numberStyle);
+		    cell1.setCellValue(record.getR39_NOMINAL_INTEREST_RATE());
+		    cell1.setCellStyle(textStyle);
 		} else {
 		    cell1.setCellValue("");
 		    cell1.setCellStyle(textStyle);
@@ -5968,8 +5968,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell2 = row.createCell(2);
 		if (record.getR39_AVG_EFFECTIVE_RATE() != null) {
-		    cell2.setCellValue(record.getR39_AVG_EFFECTIVE_RATE().doubleValue());
-		    cell2.setCellStyle(numberStyle);
+		    cell2.setCellValue(record.getR39_AVG_EFFECTIVE_RATE());
+		    cell2.setCellStyle(textStyle);
 		} else {
 		    cell2.setCellValue("");
 		    cell2.setCellStyle(textStyle);
@@ -5986,8 +5986,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell1 = row.createCell(1);
 		if (record.getR40_NOMINAL_INTEREST_RATE() != null) {
-		    cell1.setCellValue(record.getR40_NOMINAL_INTEREST_RATE().doubleValue());
-		    cell1.setCellStyle(numberStyle);
+		    cell1.setCellValue(record.getR40_NOMINAL_INTEREST_RATE());
+		    cell1.setCellStyle(textStyle);
 		} else {
 		    cell1.setCellValue("");
 		    cell1.setCellStyle(textStyle);
@@ -5995,8 +5995,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell2 = row.createCell(2);
 		if (record.getR40_AVG_EFFECTIVE_RATE() != null) {
-		    cell2.setCellValue(record.getR40_AVG_EFFECTIVE_RATE().doubleValue());
-		    cell2.setCellStyle(numberStyle);
+		    cell2.setCellValue(record.getR40_AVG_EFFECTIVE_RATE());
+		    cell2.setCellStyle(textStyle);
 		} else {
 		    cell2.setCellValue("");
 		    cell2.setCellStyle(textStyle);
@@ -6012,8 +6012,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell1 = row.createCell(1);
 		if (record.getR41_NOMINAL_INTEREST_RATE() != null) {
-		    cell1.setCellValue(record.getR41_NOMINAL_INTEREST_RATE().doubleValue());
-		    cell1.setCellStyle(numberStyle);
+		    cell1.setCellValue(record.getR41_NOMINAL_INTEREST_RATE());
+		    cell1.setCellStyle(textStyle);
 		} else {
 		    cell1.setCellValue("");
 		    cell1.setCellStyle(textStyle);
@@ -6021,8 +6021,8 @@ public class BRRS_M_INT_RATES_ReportService {
 
 		cell2 = row.createCell(2);
 		if (record.getR41_AVG_EFFECTIVE_RATE() != null) {
-		    cell2.setCellValue(record.getR41_AVG_EFFECTIVE_RATE().doubleValue());
-		    cell2.setCellStyle(numberStyle);
+		    cell2.setCellValue(record.getR41_AVG_EFFECTIVE_RATE());
+		    cell2.setCellStyle(textStyle);
 		} else {
 		    cell2.setCellValue("");
 		    cell2.setCellStyle(textStyle);

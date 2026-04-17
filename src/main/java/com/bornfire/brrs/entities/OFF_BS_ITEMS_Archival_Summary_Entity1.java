@@ -683,7 +683,7 @@ public class OFF_BS_ITEMS_Archival_Summary_Entity1 {
 	private BigDecimal	r113_rw_obligant;
 	private BigDecimal	r113_rav;
 	private String	r114_product;
-	private BigDecimal	r114_client_grp;
+	private String	r114_client_grp;
 	private BigDecimal	r114_total_book_expo;
 	private BigDecimal	r114_margin_pro;
 	private BigDecimal	r114_book_expo;
@@ -692,7 +692,7 @@ public class OFF_BS_ITEMS_Archival_Summary_Entity1 {
 	private BigDecimal	r114_rw_obligant;
 	private BigDecimal	r114_rav;
 	private String	r115_product;
-	private BigDecimal	r115_client_grp;
+	private String	r115_client_grp;
 	private BigDecimal	r115_total_book_expo;
 	private BigDecimal	r115_margin_pro;
 	private BigDecimal	r115_book_expo;
@@ -4865,10 +4865,10 @@ public class OFF_BS_ITEMS_Archival_Summary_Entity1 {
 	public void setR114_product(String r114_product) {
 		this.r114_product = r114_product;
 	}
-	public BigDecimal getR114_client_grp() {
+	public String getR114_client_grp() {
 		return r114_client_grp;
 	}
-	public void setR114_client_grp(BigDecimal r114_client_grp) {
+	public void setR114_client_grp(String r114_client_grp) {
 		this.r114_client_grp = r114_client_grp;
 	}
 	public BigDecimal getR114_total_book_expo() {
@@ -4919,10 +4919,10 @@ public class OFF_BS_ITEMS_Archival_Summary_Entity1 {
 	public void setR115_product(String r115_product) {
 		this.r115_product = r115_product;
 	}
-	public BigDecimal getR115_client_grp() {
+	public String getR115_client_grp() {
 		return r115_client_grp;
 	}
-	public void setR115_client_grp(BigDecimal r115_client_grp) {
+	public void setR115_client_grp(String r115_client_grp) {
 		this.r115_client_grp = r115_client_grp;
 	}
 	public BigDecimal getR115_total_book_expo() {

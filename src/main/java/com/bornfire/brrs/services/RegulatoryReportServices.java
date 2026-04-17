@@ -5298,25 +5298,25 @@ break;
 		 case "B_III_CETD":
 				List<Object[]> b_iii_cetdlist = b_III_cetd_ReportService.getB_III_CETDArchival();
 				archivalData.addAll(b_iii_cetdlist);
-				System.out.println("Fetched M_I_S_CA archival data: " + b_iii_cetdlist.size());
+				System.out.println("Fetched B_III_CETD archival data: " + b_iii_cetdlist.size());
 				break;
 				
 		 case "DTAX":
 				List<Object[]> dtaxList = BRRS_DEFERRED_TAX_ReportService.getDTAXArchival();
 				archivalData.addAll(dtaxList);
-				System.out.println("Fetched M_SFINP1 archival data: " + dtaxList.size());
+				System.out.println("Fetched DTAX archival data: " + dtaxList.size());
 				break;
 				
 		 case "OFF_BS_ITEMS":
 				List<Object[]> offbsList = BRRS_OFF_BS_ITEMS_ReportService.getOFF_BS_ITEMSArchival();
 				archivalData.addAll(offbsList);
-				System.out.println("Fetched M_SFINP1 archival data: " + offbsList.size());
+				System.out.println("Fetched OFF_BS_ITEMS archival data: " + offbsList.size());
 				break;
 				
 			case "CAP_RATIO_BUFFER":
 				List<Object[]> crbList = brrs_cap_ratio_buffer_reportservice.getCAP_RATIO_BUFFERArchival();
 				archivalData.addAll(crbList);
-				System.out.println("Fetched M_I_S_CA archival data: " + crbList.size());
+				System.out.println("Fetched CAP_RATIO_BUFFER archival data: " + crbList.size());
 				break;
 //
 //		case "M_SCI_E":

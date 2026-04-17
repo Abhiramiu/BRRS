@@ -1240,7 +1240,7 @@ function fileuploads(btn) {
     <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R11_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R11_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+               th:value="${report.R11_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R11_NOMINAL_INTEREST_RATE"
                name="R11_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1250,7 +1250,7 @@ function fileuploads(btn) {
     <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R11_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R11_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+             th:value="${report.R11_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R11_AVG_EFFECTIVE_RATE"
                name="R11_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF;width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1277,7 +1277,7 @@ function fileuploads(btn) {
     <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R12_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R12_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+              th:value="${report.R12_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R12_NOMINAL_INTEREST_RATE"
                name="R12_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF;width: 400px;  height: 28px; border-color: transparent; text-align: right;"
@@ -1287,7 +1287,7 @@ function fileuploads(btn) {
     <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R12_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R12_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+              th:value="${report.R12_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R12_AVG_EFFECTIVE_RATE"
                name="R12_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF;width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1314,7 +1314,7 @@ function fileuploads(btn) {
     <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R13_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R13_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+               th:value="${report.R13_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R13_NOMINAL_INTEREST_RATE"
                name="R13_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF;width: 400px;  height: 28px; border-color: transparent; text-align: right;"
@@ -1324,7 +1324,7 @@ function fileuploads(btn) {
     <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R13_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R13_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+              th:value="${report.R13_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R13_AVG_EFFECTIVE_RATE"
                name="R13_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF;width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1351,7 +1351,7 @@ function fileuploads(btn) {
     <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R14_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R14_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+			   th:value="${report.R14_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R14_NOMINAL_INTEREST_RATE"
                name="R14_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF;width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1361,7 +1361,7 @@ function fileuploads(btn) {
     <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R14_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R14_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+             th:value="${report.R14_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R14_AVG_EFFECTIVE_RATE"
                name="R14_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF;width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1388,7 +1388,7 @@ function fileuploads(btn) {
     <td id="ROW15" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R15_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R15_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+             th:value="${report.R15_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R15_NOMINAL_INTEREST_RATE"
                name="R15_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1398,7 +1398,7 @@ function fileuploads(btn) {
     <td id="ROW15" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R15_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R15_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+              th:value="${report.R15_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R15_AVG_EFFECTIVE_RATE"
                name="R15_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1425,7 +1425,7 @@ function fileuploads(btn) {
     <td id="ROW16" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R16_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R16_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+              th:value="${report.R16_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R16_NOMINAL_INTEREST_RATE"
                name="R16_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1435,7 +1435,7 @@ function fileuploads(btn) {
     <td id="ROW16" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R16_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R16_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+               th:value="${report.R16_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R16_AVG_EFFECTIVE_RATE"
                name="R16_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF;width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1462,7 +1462,7 @@ function fileuploads(btn) {
     <td id="ROW17" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R17_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R17_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+             th:value="${report.R17_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R17_NOMINAL_INTEREST_RATE"
                name="R17_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1472,7 +1472,7 @@ function fileuploads(btn) {
     <td id="ROW17" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R17_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R17_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+             th:value="${report.R17_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R17_AVG_EFFECTIVE_RATE"
                name="R17_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1499,7 +1499,7 @@ function fileuploads(btn) {
     <td id="ROW18" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R18_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R18_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+             th:value="${report.R18_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R18_NOMINAL_INTEREST_RATE"
                name="R18_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF;width: 400px;  height: 28px; border-color: transparent; text-align: right;"
@@ -1509,7 +1509,7 @@ function fileuploads(btn) {
     <td id="ROW18" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R18_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R18_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+               th:value="${report.R18_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R18_AVG_EFFECTIVE_RATE"
                name="R18_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF;width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1536,7 +1536,7 @@ function fileuploads(btn) {
     <td id="ROW19" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R19_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R19_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+             th:value="${report.R19_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R19_NOMINAL_INTEREST_RATE"
                name="R19_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1546,7 +1546,7 @@ function fileuploads(btn) {
     <td id="ROW19" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R19_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R19_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+               th:value="${report.R19_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R19_AVG_EFFECTIVE_RATE"
                name="R19_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF;width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1573,7 +1573,7 @@ function fileuploads(btn) {
     <td id="ROW20" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R20_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R20_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+               th:value="${report.R20_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R20_NOMINAL_INTEREST_RATE"
                name="R20_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1583,7 +1583,7 @@ function fileuploads(btn) {
     <td id="ROW20" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R20_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R20_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+              th:value="${report.R20_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R20_AVG_EFFECTIVE_RATE"
                name="R20_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1610,7 +1610,7 @@ function fileuploads(btn) {
     <td id="ROW21" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R21_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R21_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+             th:value="${report.R21_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R21_NOMINAL_INTEREST_RATE"
                name="R21_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF;  width: 400px;  height: 28px; border-color: transparent; text-align: right;"
@@ -1620,7 +1620,7 @@ function fileuploads(btn) {
     <td id="ROW21" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R21_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R21_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+              th:value="${report.R21_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R21_AVG_EFFECTIVE_RATE"
                name="R21_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1647,7 +1647,7 @@ function fileuploads(btn) {
     <td id="ROW22" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R22_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R22_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+             th:value="${report.R22_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R22_NOMINAL_INTEREST_RATE"
                name="R22_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF; width: 400px;  height: 28px; border-color: transparent; text-align: right;"
@@ -1657,7 +1657,7 @@ function fileuploads(btn) {
     <td id="ROW22" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R22_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R22_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+               th:value="${report.R22_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R22_AVG_EFFECTIVE_RATE"
                name="R22_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1684,7 +1684,7 @@ function fileuploads(btn) {
     <td id="ROW23" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R23_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R23_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+              th:value="${report.R23_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R23_NOMINAL_INTEREST_RATE"
                name="R23_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1694,7 +1694,7 @@ function fileuploads(btn) {
     <td id="ROW23" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R23_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R23_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+              th:value="${report.R23_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R23_AVG_EFFECTIVE_RATE"
                name="R23_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1759,7 +1759,7 @@ function fileuploads(btn) {
     <td id="ROW25" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R25_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R25_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+             th:value="${report.R25_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R25_NOMINAL_INTEREST_RATE"
                name="R25_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1769,7 +1769,7 @@ function fileuploads(btn) {
     <td id="ROW25" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R25_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R25_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+              th:value="${report.R25_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R25_AVG_EFFECTIVE_RATE"
                name="R25_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1796,7 +1796,7 @@ function fileuploads(btn) {
     <td id="ROW26" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R26_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R26_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+               th:value="${report.R26_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R26_NOMINAL_INTEREST_RATE"
                name="R26_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1806,7 +1806,7 @@ function fileuploads(btn) {
     <td id="ROW26" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R26_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R26_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+            th:value="${report.R26_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R26_AVG_EFFECTIVE_RATE"
                name="R26_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1833,7 +1833,7 @@ function fileuploads(btn) {
     <td id="ROW27" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R27_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R27_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+             th:value="${report.R27_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R27_NOMINAL_INTEREST_RATE"
                name="R27_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF;  width: 400px;  height: 28px; border-color: transparent; text-align: right;"
@@ -1843,7 +1843,7 @@ function fileuploads(btn) {
     <td id="ROW27" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R27_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R27_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+             th:value="${report.R27_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R27_AVG_EFFECTIVE_RATE"
                name="R27_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1870,7 +1870,7 @@ function fileuploads(btn) {
     <td id="ROW28" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R28_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R28_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+             th:value="${report.R28_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R28_NOMINAL_INTEREST_RATE"
                name="R28_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1880,7 +1880,7 @@ function fileuploads(btn) {
     <td id="ROW28" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R28_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R28_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+              th:value="${report.R28_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R28_AVG_EFFECTIVE_RATE"
                name="R28_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1907,7 +1907,7 @@ function fileuploads(btn) {
     <td id="ROW29" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R29_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R29_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+              th:value="${report.R29_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R29_NOMINAL_INTEREST_RATE"
                name="R29_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1917,7 +1917,7 @@ function fileuploads(btn) {
     <td id="ROW29" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R29_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R29_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+               th:value="${report.R29_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R29_AVG_EFFECTIVE_RATE"
                name="R29_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1944,7 +1944,7 @@ function fileuploads(btn) {
     <td id="ROW30" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R30_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R30_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+              th:value="${report.R30_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R30_NOMINAL_INTEREST_RATE"
                name="R30_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF; width: 400px;  height: 28px; border-color: transparent; text-align: right;"
@@ -1954,7 +1954,7 @@ function fileuploads(btn) {
     <td id="ROW30" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R30_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R30_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+             th:value="${report.R30_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R30_AVG_EFFECTIVE_RATE"
                name="R30_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1981,7 +1981,7 @@ function fileuploads(btn) {
     <td id="ROW31" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R31_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R31_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+              th:value="${report.R31_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R31_NOMINAL_INTEREST_RATE"
                name="R31_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -1991,7 +1991,7 @@ function fileuploads(btn) {
     <td id="ROW31" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R31_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R31_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+               th:value="${report.R31_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R31_AVG_EFFECTIVE_RATE"
                name="R31_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -2018,7 +2018,7 @@ function fileuploads(btn) {
     <td id="ROW32" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R32_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R32_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+             th:value="${report.R32_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R32_NOMINAL_INTEREST_RATE"
                name="R32_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF; width: 400px;  height: 28px; border-color: transparent; text-align: right;"
@@ -2028,7 +2028,7 @@ function fileuploads(btn) {
     <td id="ROW32" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R32_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R32_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+             th:value="${report.R32_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R32_AVG_EFFECTIVE_RATE"
                name="R32_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -2055,7 +2055,7 @@ function fileuploads(btn) {
     <td id="ROW33" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R33_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R33_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+             th:value="${report.R33_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R33_NOMINAL_INTEREST_RATE"
                name="R33_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -2065,7 +2065,7 @@ function fileuploads(btn) {
     <td id="ROW33" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R33_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R33_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+              th:value="${report.R33_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R33_AVG_EFFECTIVE_RATE"
                name="R33_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -2092,7 +2092,7 @@ function fileuploads(btn) {
     <td id="ROW34" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R34_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R34_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+             th:value="${report.R34_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R34_NOMINAL_INTEREST_RATE"
                name="R34_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -2102,7 +2102,7 @@ function fileuploads(btn) {
     <td id="ROW34" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R34_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R34_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+              th:value="${report.R34_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R34_AVG_EFFECTIVE_RATE"
                name="R34_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -2129,7 +2129,7 @@ function fileuploads(btn) {
     <td id="ROW35" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R35_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R35_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+              th:value="${report.R35_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R35_NOMINAL_INTEREST_RATE"
                name="R35_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -2139,7 +2139,7 @@ function fileuploads(btn) {
     <td id="ROW35" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R35_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R35_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+              th:value="${report.R35_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R35_AVG_EFFECTIVE_RATE"
                name="R35_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -2166,7 +2166,7 @@ function fileuploads(btn) {
     <td id="ROW36" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R36_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R36_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+               th:value="${report.R36_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R36_NOMINAL_INTEREST_RATE"
                name="R36_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -2176,7 +2176,7 @@ function fileuploads(btn) {
     <td id="ROW36" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R36_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R36_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+              th:value="${report.R36_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R36_AVG_EFFECTIVE_RATE"
                name="R36_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -2203,7 +2203,7 @@ function fileuploads(btn) {
     <td id="ROW37" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R37_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R37_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+               th:value="${report.R37_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R37_NOMINAL_INTEREST_RATE"
                name="R37_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF; width: 400px;  height: 28px; border-color: transparent; text-align: right;"
@@ -2213,7 +2213,7 @@ function fileuploads(btn) {
     <td id="ROW37" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R37_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R37_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+              th:value="${report.R37_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R37_AVG_EFFECTIVE_RATE"
                name="R37_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -2240,7 +2240,7 @@ function fileuploads(btn) {
     <td id="ROW38" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R38_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R38_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+              th:value="${report.R38_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R38_NOMINAL_INTEREST_RATE"
                name="R38_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -2250,7 +2250,7 @@ function fileuploads(btn) {
     <td id="ROW38" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R38_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R38_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+             th:value="${report.R38_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R38_AVG_EFFECTIVE_RATE"
                name="R38_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -2277,7 +2277,7 @@ function fileuploads(btn) {
     <td id="ROW39" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R39_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R39_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+               th:value="${report.R39_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R39_NOMINAL_INTEREST_RATE"
                name="R39_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF; width: 400px;  height: 28px; border-color: transparent; text-align: right;"
@@ -2287,7 +2287,7 @@ function fileuploads(btn) {
     <td id="ROW39" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R39_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R39_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+              th:value="${report.R39_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R39_AVG_EFFECTIVE_RATE"
                name="R39_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -2314,7 +2314,7 @@ function fileuploads(btn) {
     <td id="ROW40" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R40_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R40_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+               th:value="${report.R40_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R40_NOMINAL_INTEREST_RATE"
                name="R40_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -2324,7 +2324,7 @@ function fileuploads(btn) {
     <td id="ROW40" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R40_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R40_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+               th:value="${report.R40_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R40_AVG_EFFECTIVE_RATE"
                name="R40_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -2351,7 +2351,7 @@ function fileuploads(btn) {
     <td id="ROW41" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R41_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R41_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+             th:value="${report.R41_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R41_NOMINAL_INTEREST_RATE"
                name="R41_C2_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF; width: 400px;  height: 28px; border-color: transparent; text-align: right;"
@@ -2361,7 +2361,7 @@ function fileuploads(btn) {
     <td id="ROW41" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R41_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R41_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+            th:value="${report.R41_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R41_AVG_EFFECTIVE_RATE"
                name="R41_C3_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -2388,7 +2388,7 @@ function fileuploads(btn) {
     <td id="ROW42" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.R42_NOMINAL_INTEREST_RATE != null ? #numbers.formatDecimal(report.R42_NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT') : ''}"
+              th:value="${report.R42_NOMINAL_INTEREST_RATE ?: '0'}"
                id="R42_NOMINAL_INTEREST_RATE"
                name="R42_C1_NOMINAL_INTEREST_RATE"
                style="background-color: #FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -2398,7 +2398,7 @@ function fileuploads(btn) {
     <td id="ROW42" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.R42_AVG_EFFECTIVE_RATE != null ? #numbers.formatDecimal(report.R42_AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT') : ''}"
+             th:value="${report.R42_AVG_EFFECTIVE_RATE ?: '0'}"
                id="R42_AVG_EFFECTIVE_RATE"
                name="R42_C2_AVG_EFFECTIVE_RATE"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"

@@ -574,8 +574,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 			Cell cell1 = row.createCell(1);
 							if (record.getR10_CURRENT() != null) {
-								cell1.setCellValue(record.getR10_CURRENT().doubleValue());
-								cell1.setCellStyle(numberStyle);
+								cell1.setCellValue(record.getR10_CURRENT());
+								cell1.setCellStyle(textStyle);
 							} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
@@ -583,8 +583,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell2 = row.createCell(2);
 							if (record.getR10_CALL() != null) {
-								cell2.setCellValue(record.getR10_CALL().doubleValue());
-								cell2.setCellStyle(numberStyle);
+								cell2.setCellValue(record.getR10_CALL());
+								cell2.setCellStyle(textStyle);
 							} else {
 								cell2.setCellValue("");
 								cell2.setCellStyle(textStyle);
@@ -592,8 +592,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell3 = row.createCell(3);
 							if (record.getR10_SAVINGS() != null) {
-								cell3.setCellValue(record.getR10_SAVINGS().doubleValue());
-								cell3.setCellStyle(numberStyle);
+								cell3.setCellValue(record.getR10_SAVINGS());
+								cell3.setCellStyle(textStyle);
 							} else {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
@@ -601,8 +601,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell4 = row.createCell(4);
 							if (record.getR10_NOTICE_0_31_DAYS() != null) {
-								cell4.setCellValue(record.getR10_NOTICE_0_31_DAYS().doubleValue());
-								cell4.setCellStyle(numberStyle);
+								cell4.setCellValue(record.getR10_NOTICE_0_31_DAYS());
+								cell4.setCellStyle(textStyle);
 							} else {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
@@ -610,8 +610,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell5 = row.createCell(5);
 							if (record.getR10_NOTICE_32_88_DAYS() != null) {
-								cell5.setCellValue(record.getR10_NOTICE_32_88_DAYS().doubleValue());
-								cell5.setCellStyle(numberStyle);
+								cell5.setCellValue(record.getR10_NOTICE_32_88_DAYS());
+								cell5.setCellStyle(textStyle);
 							} else {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
@@ -619,8 +619,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell6 = row.createCell(6);
 							if (record.getR10_91_DEPOSIT_DAY() != null) {
-								cell6.setCellValue(record.getR10_91_DEPOSIT_DAY().doubleValue());
-								cell6.setCellStyle(numberStyle);
+								cell6.setCellValue(record.getR10_91_DEPOSIT_DAY());
+								cell6.setCellStyle(textStyle);
 							} else {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
@@ -628,8 +628,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell7 = row.createCell(7);
 							if (record.getR10_FD_1_6_MONTHS() != null) {
-								cell7.setCellValue(record.getR10_FD_1_6_MONTHS().doubleValue());
-								cell7.setCellStyle(numberStyle);
+								cell7.setCellValue(record.getR10_FD_1_6_MONTHS());
+								cell7.setCellStyle(textStyle);
 							} else {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
@@ -637,8 +637,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell8 = row.createCell(8);
 							if (record.getR10_FD_7_12_MONTHS() != null) {
-								cell8.setCellValue(record.getR10_FD_7_12_MONTHS().doubleValue());
-								cell8.setCellStyle(numberStyle);
+								cell8.setCellValue(record.getR10_FD_7_12_MONTHS());
+								cell8.setCellStyle(textStyle);
 							} else {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
@@ -646,8 +646,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell9 = row.createCell(9);
 							if (record.getR10_FD_13_18_MONTHS() != null) {
-								cell9.setCellValue(record.getR10_FD_13_18_MONTHS().doubleValue());
-								cell9.setCellStyle(numberStyle);
+								cell9.setCellValue(record.getR10_FD_13_18_MONTHS());
+								cell9.setCellStyle(textStyle);
 							} else {
 								cell9.setCellValue("");
 								cell9.setCellStyle(textStyle);
@@ -655,8 +655,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell10 = row.createCell(10);
 							if (record.getR10_FD_19_24_MONTHS() != null) {
-								cell10.setCellValue(record.getR10_FD_19_24_MONTHS().doubleValue());
-								cell10.setCellStyle(numberStyle);
+								cell10.setCellValue(record.getR10_FD_19_24_MONTHS());
+								cell10.setCellStyle(textStyle);
 							} else {
 								cell10.setCellValue("");
 								cell10.setCellStyle(textStyle);
@@ -664,8 +664,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell11 = row.createCell(11);
 							if (record.getR10_FD_OVER_24_MONTHS() != null) {
-								cell11.setCellValue(record.getR10_FD_OVER_24_MONTHS().doubleValue());
-								cell11.setCellStyle(numberStyle);
+								cell11.setCellValue(record.getR10_FD_OVER_24_MONTHS());
+								cell11.setCellStyle(textStyle);
 							} else {
 								cell11.setCellValue("");
 								cell11.setCellStyle(textStyle);
@@ -673,8 +673,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 							
 							Cell cell12 = row.createCell(12);
 							if (record.getR10_TOTAL() != null) {
-								cell12.setCellValue(record.getR10_TOTAL().doubleValue());
-								cell12.setCellStyle(numberStyle);
+								cell12.setCellValue(record.getR10_TOTAL());
+								cell12.setCellStyle(textStyle);
 							} else {
 								cell12.setCellValue("");
 								cell12.setCellStyle(textStyle);
@@ -688,8 +688,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR11_CURRENT() != null) {
-								cell1.setCellValue(record.getR11_CURRENT().doubleValue());
-								cell1.setCellStyle(numberStyle);
+								cell1.setCellValue(record.getR11_CURRENT());
+								cell1.setCellStyle(textStyle);
 							} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
@@ -697,8 +697,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR11_CALL() != null) {
-								cell2.setCellValue(record.getR11_CALL().doubleValue());
-								cell2.setCellStyle(numberStyle);
+								cell2.setCellValue(record.getR11_CALL());
+								cell2.setCellStyle(textStyle);
 							} else {
 								cell2.setCellValue("");
 								cell2.setCellStyle(textStyle);
@@ -706,8 +706,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell3 = row.createCell(3);
 							if (record.getR11_SAVINGS() != null) {
-								cell3.setCellValue(record.getR11_SAVINGS().doubleValue());
-								cell3.setCellStyle(numberStyle);
+								cell3.setCellValue(record.getR11_SAVINGS());
+								cell3.setCellStyle(textStyle);
 							} else {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
@@ -715,8 +715,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell4 = row.createCell(4);
 							if (record.getR11_NOTICE_0_31_DAYS() != null) {
-								cell4.setCellValue(record.getR11_NOTICE_0_31_DAYS().doubleValue());
-								cell4.setCellStyle(numberStyle);
+								cell4.setCellValue(record.getR11_NOTICE_0_31_DAYS());
+								cell4.setCellStyle(textStyle);
 							} else {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
@@ -724,8 +724,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell5 = row.createCell(5);
 							if (record.getR11_NOTICE_32_88_DAYS() != null) {
-								cell5.setCellValue(record.getR11_NOTICE_32_88_DAYS().doubleValue());
-								cell5.setCellStyle(numberStyle);
+								cell5.setCellValue(record.getR11_NOTICE_32_88_DAYS());
+								cell5.setCellStyle(textStyle);
 							} else {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
@@ -733,8 +733,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell6 = row.createCell(6);
 							if (record.getR11_91_DEPOSIT_DAY() != null) {
-								cell6.setCellValue(record.getR11_91_DEPOSIT_DAY().doubleValue());
-								cell6.setCellStyle(numberStyle);
+								cell6.setCellValue(record.getR11_91_DEPOSIT_DAY());
+								cell6.setCellStyle(textStyle);
 							} else {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
@@ -742,8 +742,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell7 = row.createCell(7);
 							if (record.getR11_FD_1_6_MONTHS() != null) {
-								cell7.setCellValue(record.getR11_FD_1_6_MONTHS().doubleValue());
-								cell7.setCellStyle(numberStyle);
+								cell7.setCellValue(record.getR11_FD_1_6_MONTHS());
+								cell7.setCellStyle(textStyle);
 							} else {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
@@ -751,8 +751,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell8 = row.createCell(8);
 							if (record.getR11_FD_7_12_MONTHS() != null) {
-								cell8.setCellValue(record.getR11_FD_7_12_MONTHS().doubleValue());
-								cell8.setCellStyle(numberStyle);
+								cell8.setCellValue(record.getR11_FD_7_12_MONTHS());
+								cell8.setCellStyle(textStyle);
 							} else {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
@@ -760,8 +760,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell9 = row.createCell(9);
 							if (record.getR11_FD_13_18_MONTHS() != null) {
-								cell9.setCellValue(record.getR11_FD_13_18_MONTHS().doubleValue());
-								cell9.setCellStyle(numberStyle);
+								cell9.setCellValue(record.getR11_FD_13_18_MONTHS());
+								cell9.setCellStyle(textStyle);
 							} else {
 								cell9.setCellValue("");
 								cell9.setCellStyle(textStyle);
@@ -769,8 +769,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell10 = row.createCell(10);
 							if (record.getR11_FD_19_24_MONTHS() != null) {
-								cell10.setCellValue(record.getR11_FD_19_24_MONTHS().doubleValue());
-								cell10.setCellStyle(numberStyle);
+								cell10.setCellValue(record.getR11_FD_19_24_MONTHS());
+								cell10.setCellStyle(textStyle);
 							} else {
 								cell10.setCellValue("");
 								cell10.setCellStyle(textStyle);
@@ -778,16 +778,16 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell11 = row.createCell(11);
 							if (record.getR11_FD_OVER_24_MONTHS() != null) {
-								cell11.setCellValue(record.getR11_FD_OVER_24_MONTHS().doubleValue());
-								cell11.setCellStyle(numberStyle);
+								cell11.setCellValue(record.getR11_FD_OVER_24_MONTHS());
+								cell11.setCellStyle(textStyle);
 							} else {
 								cell11.setCellValue("");
 								cell11.setCellStyle(textStyle);
 							}
 							cell12 = row.createCell(12);
 							if (record.getR11_TOTAL() != null) {
-								cell12.setCellValue(record.getR11_TOTAL().doubleValue());
-								cell12.setCellStyle(numberStyle);
+								cell12.setCellValue(record.getR11_TOTAL());
+								cell12.setCellStyle(textStyle);
 							} else {
 								cell12.setCellValue("");
 								cell12.setCellStyle(textStyle);
@@ -802,8 +802,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR12_CURRENT() != null) {
-								cell1.setCellValue(record.getR12_CURRENT().doubleValue());
-								cell1.setCellStyle(numberStyle);
+								cell1.setCellValue(record.getR12_CURRENT());
+								cell1.setCellStyle(textStyle);
 							} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
@@ -811,8 +811,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR12_CALL() != null) {
-								cell2.setCellValue(record.getR12_CALL().doubleValue());
-								cell2.setCellStyle(numberStyle);
+								cell2.setCellValue(record.getR12_CALL());
+								cell2.setCellStyle(textStyle);
 							} else {
 								cell2.setCellValue("");
 								cell2.setCellStyle(textStyle);
@@ -820,8 +820,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell3 = row.createCell(3);
 							if (record.getR12_SAVINGS() != null) {
-								cell3.setCellValue(record.getR12_SAVINGS().doubleValue());
-								cell3.setCellStyle(numberStyle);
+								cell3.setCellValue(record.getR12_SAVINGS());
+								cell3.setCellStyle(textStyle);
 							} else {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
@@ -829,8 +829,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell4 = row.createCell(4);
 							if (record.getR12_NOTICE_0_31_DAYS() != null) {
-								cell4.setCellValue(record.getR12_NOTICE_0_31_DAYS().doubleValue());
-								cell4.setCellStyle(numberStyle);
+								cell4.setCellValue(record.getR12_NOTICE_0_31_DAYS());
+								cell4.setCellStyle(textStyle);
 							} else {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
@@ -838,8 +838,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell5 = row.createCell(5);
 							if (record.getR12_NOTICE_32_88_DAYS() != null) {
-								cell5.setCellValue(record.getR12_NOTICE_32_88_DAYS().doubleValue());
-								cell5.setCellStyle(numberStyle);
+								cell5.setCellValue(record.getR12_NOTICE_32_88_DAYS());
+								cell5.setCellStyle(textStyle);
 							} else {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
@@ -847,8 +847,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell6 = row.createCell(6);
 							if (record.getR12_91_DEPOSIT_DAY() != null) {
-								cell6.setCellValue(record.getR12_91_DEPOSIT_DAY().doubleValue());
-								cell6.setCellStyle(numberStyle);
+								cell6.setCellValue(record.getR12_91_DEPOSIT_DAY());
+								cell6.setCellStyle(textStyle);
 							} else {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
@@ -856,8 +856,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell7 = row.createCell(7);
 							if (record.getR12_FD_1_6_MONTHS() != null) {
-								cell7.setCellValue(record.getR12_FD_1_6_MONTHS().doubleValue());
-								cell7.setCellStyle(numberStyle);
+								cell7.setCellValue(record.getR12_FD_1_6_MONTHS());
+								cell7.setCellStyle(textStyle);
 							} else {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
@@ -865,8 +865,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell8 = row.createCell(8);
 							if (record.getR12_FD_7_12_MONTHS() != null) {
-								cell8.setCellValue(record.getR12_FD_7_12_MONTHS().doubleValue());
-								cell8.setCellStyle(numberStyle);
+								cell8.setCellValue(record.getR12_FD_7_12_MONTHS());
+								cell8.setCellStyle(textStyle);
 							} else {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
@@ -874,8 +874,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell9 = row.createCell(9);
 							if (record.getR12_FD_13_18_MONTHS() != null) {
-								cell9.setCellValue(record.getR12_FD_13_18_MONTHS().doubleValue());
-								cell9.setCellStyle(numberStyle);
+								cell9.setCellValue(record.getR12_FD_13_18_MONTHS());
+								cell9.setCellStyle(textStyle);
 							} else {
 								cell9.setCellValue("");
 								cell9.setCellStyle(textStyle);
@@ -883,8 +883,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell10 = row.createCell(10);
 							if (record.getR12_FD_19_24_MONTHS() != null) {
-								cell10.setCellValue(record.getR12_FD_19_24_MONTHS().doubleValue());
-								cell10.setCellStyle(numberStyle);
+								cell10.setCellValue(record.getR12_FD_19_24_MONTHS());
+								cell10.setCellStyle(textStyle);
 							} else {
 								cell10.setCellValue("");
 								cell10.setCellStyle(textStyle);
@@ -892,16 +892,16 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell11 = row.createCell(11);
 							if (record.getR12_FD_OVER_24_MONTHS() != null) {
-								cell11.setCellValue(record.getR12_FD_OVER_24_MONTHS().doubleValue());
-								cell11.setCellStyle(numberStyle);
+								cell11.setCellValue(record.getR12_FD_OVER_24_MONTHS());
+								cell11.setCellStyle(textStyle);
 							} else {
 								cell11.setCellValue("");
 								cell11.setCellStyle(textStyle);
 							}
 							cell12 = row.createCell(12);
 							if (record.getR12_TOTAL() != null) {
-								cell12.setCellValue(record.getR12_TOTAL().doubleValue());
-								cell12.setCellStyle(numberStyle);
+								cell12.setCellValue(record.getR12_TOTAL());
+								cell12.setCellStyle(textStyle);
 							} else {
 								cell12.setCellValue("");
 								cell12.setCellStyle(textStyle);
@@ -916,8 +916,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR13_CURRENT() != null) {
-								cell1.setCellValue(record.getR13_CURRENT().doubleValue());
-								cell1.setCellStyle(numberStyle);
+								cell1.setCellValue(record.getR13_CURRENT());
+								cell1.setCellStyle(textStyle);
 							} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
@@ -925,8 +925,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR13_CALL() != null) {
-								cell2.setCellValue(record.getR13_CALL().doubleValue());
-								cell2.setCellStyle(numberStyle);
+								cell2.setCellValue(record.getR13_CALL());
+								cell2.setCellStyle(textStyle);
 							} else {
 								cell2.setCellValue("");
 								cell2.setCellStyle(textStyle);
@@ -934,8 +934,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell3 = row.createCell(3);
 							if (record.getR13_SAVINGS() != null) {
-								cell3.setCellValue(record.getR13_SAVINGS().doubleValue());
-								cell3.setCellStyle(numberStyle);
+								cell3.setCellValue(record.getR13_SAVINGS());
+								cell3.setCellStyle(textStyle);
 							} else {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
@@ -943,8 +943,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell4 = row.createCell(4);
 							if (record.getR13_NOTICE_0_31_DAYS() != null) {
-								cell4.setCellValue(record.getR13_NOTICE_0_31_DAYS().doubleValue());
-								cell4.setCellStyle(numberStyle);
+								cell4.setCellValue(record.getR13_NOTICE_0_31_DAYS());
+								cell4.setCellStyle(textStyle);
 							} else {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
@@ -952,8 +952,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell5 = row.createCell(5);
 							if (record.getR13_NOTICE_32_88_DAYS() != null) {
-								cell5.setCellValue(record.getR13_NOTICE_32_88_DAYS().doubleValue());
-								cell5.setCellStyle(numberStyle);
+								cell5.setCellValue(record.getR13_NOTICE_32_88_DAYS());
+								cell5.setCellStyle(textStyle);
 							} else {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
@@ -961,8 +961,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell6 = row.createCell(6);
 							if (record.getR13_91_DEPOSIT_DAY() != null) {
-								cell6.setCellValue(record.getR13_91_DEPOSIT_DAY().doubleValue());
-								cell6.setCellStyle(numberStyle);
+								cell6.setCellValue(record.getR13_91_DEPOSIT_DAY());
+								cell6.setCellStyle(textStyle);
 							} else {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
@@ -970,8 +970,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell7 = row.createCell(7);
 							if (record.getR13_FD_1_6_MONTHS() != null) {
-								cell7.setCellValue(record.getR13_FD_1_6_MONTHS().doubleValue());
-								cell7.setCellStyle(numberStyle);
+								cell7.setCellValue(record.getR13_FD_1_6_MONTHS());
+								cell7.setCellStyle(textStyle);
 							} else {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
@@ -979,8 +979,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell8 = row.createCell(8);
 							if (record.getR13_FD_7_12_MONTHS() != null) {
-								cell8.setCellValue(record.getR13_FD_7_12_MONTHS().doubleValue());
-								cell8.setCellStyle(numberStyle);
+								cell8.setCellValue(record.getR13_FD_7_12_MONTHS());
+								cell8.setCellStyle(textStyle);
 							} else {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
@@ -988,8 +988,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell9 = row.createCell(9);
 							if (record.getR13_FD_13_18_MONTHS() != null) {
-								cell9.setCellValue(record.getR13_FD_13_18_MONTHS().doubleValue());
-								cell9.setCellStyle(numberStyle);
+								cell9.setCellValue(record.getR13_FD_13_18_MONTHS());
+								cell9.setCellStyle(textStyle);
 							} else {
 								cell9.setCellValue("");
 								cell9.setCellStyle(textStyle);
@@ -997,8 +997,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell10 = row.createCell(10);
 							if (record.getR13_FD_19_24_MONTHS() != null) {
-								cell10.setCellValue(record.getR13_FD_19_24_MONTHS().doubleValue());
-								cell10.setCellStyle(numberStyle);
+								cell10.setCellValue(record.getR13_FD_19_24_MONTHS());
+								cell10.setCellStyle(textStyle);
 							} else {
 								cell10.setCellValue("");
 								cell10.setCellStyle(textStyle);
@@ -1006,16 +1006,16 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell11 = row.createCell(11);
 							if (record.getR13_FD_OVER_24_MONTHS() != null) {
-								cell11.setCellValue(record.getR13_FD_OVER_24_MONTHS().doubleValue());
-								cell11.setCellStyle(numberStyle);
+								cell11.setCellValue(record.getR13_FD_OVER_24_MONTHS());
+								cell11.setCellStyle(textStyle);
 							} else {
 								cell11.setCellValue("");
 								cell11.setCellStyle(textStyle);
 							}
 							cell12 = row.createCell(12);
 							if (record.getR13_TOTAL() != null) {
-								cell12.setCellValue(record.getR13_TOTAL().doubleValue());
-								cell12.setCellStyle(numberStyle);
+								cell12.setCellValue(record.getR13_TOTAL());
+								cell12.setCellStyle(textStyle);
 							} else {
 								cell12.setCellValue("");
 								cell12.setCellStyle(textStyle);
@@ -1030,8 +1030,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR14_CURRENT() != null) {
-								cell1.setCellValue(record.getR14_CURRENT().doubleValue());
-								cell1.setCellStyle(numberStyle);
+								cell1.setCellValue(record.getR14_CURRENT());
+								cell1.setCellStyle(textStyle);
 							} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
@@ -1039,8 +1039,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR14_CALL() != null) {
-								cell2.setCellValue(record.getR14_CALL().doubleValue());
-								cell2.setCellStyle(numberStyle);
+								cell2.setCellValue(record.getR14_CALL());
+								cell2.setCellStyle(textStyle);
 							} else {
 								cell2.setCellValue("");
 								cell2.setCellStyle(textStyle);
@@ -1048,8 +1048,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell3 = row.createCell(3);
 							if (record.getR14_SAVINGS() != null) {
-								cell3.setCellValue(record.getR14_SAVINGS().doubleValue());
-								cell3.setCellStyle(numberStyle);
+								cell3.setCellValue(record.getR14_SAVINGS());
+								cell3.setCellStyle(textStyle);
 							} else {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
@@ -1057,8 +1057,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell4 = row.createCell(4);
 							if (record.getR14_NOTICE_0_31_DAYS() != null) {
-								cell4.setCellValue(record.getR14_NOTICE_0_31_DAYS().doubleValue());
-								cell4.setCellStyle(numberStyle);
+								cell4.setCellValue(record.getR14_NOTICE_0_31_DAYS());
+								cell4.setCellStyle(textStyle);
 							} else {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
@@ -1066,8 +1066,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell5 = row.createCell(5);
 							if (record.getR14_NOTICE_32_88_DAYS() != null) {
-								cell5.setCellValue(record.getR14_NOTICE_32_88_DAYS().doubleValue());
-								cell5.setCellStyle(numberStyle);
+								cell5.setCellValue(record.getR14_NOTICE_32_88_DAYS());
+								cell5.setCellStyle(textStyle);
 							} else {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
@@ -1075,8 +1075,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell6 = row.createCell(6);
 							if (record.getR14_91_DEPOSIT_DAY() != null) {
-								cell6.setCellValue(record.getR14_91_DEPOSIT_DAY().doubleValue());
-								cell6.setCellStyle(numberStyle);
+								cell6.setCellValue(record.getR14_91_DEPOSIT_DAY());
+								cell6.setCellStyle(textStyle);
 							} else {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
@@ -1084,8 +1084,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell7 = row.createCell(7);
 							if (record.getR14_FD_1_6_MONTHS() != null) {
-								cell7.setCellValue(record.getR14_FD_1_6_MONTHS().doubleValue());
-								cell7.setCellStyle(numberStyle);
+								cell7.setCellValue(record.getR14_FD_1_6_MONTHS());
+								cell7.setCellStyle(textStyle);
 							} else {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
@@ -1093,8 +1093,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell8 = row.createCell(8);
 							if (record.getR14_FD_7_12_MONTHS() != null) {
-								cell8.setCellValue(record.getR14_FD_7_12_MONTHS().doubleValue());
-								cell8.setCellStyle(numberStyle);
+								cell8.setCellValue(record.getR14_FD_7_12_MONTHS());
+								cell8.setCellStyle(textStyle);
 							} else {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
@@ -1102,8 +1102,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell9 = row.createCell(9);
 							if (record.getR14_FD_13_18_MONTHS() != null) {
-								cell9.setCellValue(record.getR14_FD_13_18_MONTHS().doubleValue());
-								cell9.setCellStyle(numberStyle);
+								cell9.setCellValue(record.getR14_FD_13_18_MONTHS());
+								cell9.setCellStyle(textStyle);
 							} else {
 								cell9.setCellValue("");
 								cell9.setCellStyle(textStyle);
@@ -1111,8 +1111,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell10 = row.createCell(10);
 							if (record.getR14_FD_19_24_MONTHS() != null) {
-								cell10.setCellValue(record.getR14_FD_19_24_MONTHS().doubleValue());
-								cell10.setCellStyle(numberStyle);
+								cell10.setCellValue(record.getR14_FD_19_24_MONTHS());
+								cell10.setCellStyle(textStyle);
 							} else {
 								cell10.setCellValue("");
 								cell10.setCellStyle(textStyle);
@@ -1120,16 +1120,16 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell11 = row.createCell(11);
 							if (record.getR14_FD_OVER_24_MONTHS() != null) {
-								cell11.setCellValue(record.getR14_FD_OVER_24_MONTHS().doubleValue());
-								cell11.setCellStyle(numberStyle);
+								cell11.setCellValue(record.getR14_FD_OVER_24_MONTHS());
+								cell11.setCellStyle(textStyle);
 							} else {
 								cell11.setCellValue("");
 								cell11.setCellStyle(textStyle);
 							}
 							cell12 = row.createCell(12);
 							if (record.getR14_TOTAL() != null) {
-								cell12.setCellValue(record.getR14_TOTAL().doubleValue());
-								cell12.setCellStyle(numberStyle);
+								cell12.setCellValue(record.getR14_TOTAL());
+								cell12.setCellStyle(textStyle);
 							} else {
 								cell12.setCellValue("");
 								cell12.setCellStyle(textStyle);
@@ -1143,110 +1143,110 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR15_CURRENT() != null) {
-							    cell1.setCellValue(record.getR15_CURRENT().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR15_CURRENT());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellStyle(textStyle);
 							}
 
 							cell2 = row.createCell(2);
 							if (record.getR15_CALL() != null) {
-							    cell2.setCellValue(record.getR15_CALL().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR15_CALL());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellStyle(textStyle);
 							}
 
 							cell3 = row.createCell(3);
 							if (record.getR15_SAVINGS() != null) {
-							    cell3.setCellValue(record.getR15_SAVINGS().doubleValue());
-							    cell3.setCellStyle(numberStyle);
+							    cell3.setCellValue(record.getR15_SAVINGS());
+							    cell3.setCellStyle(textStyle);
 							} else {
 							    cell3.setCellValue("");
-							    cell3.setCellStyle(numberStyle);
+							    cell3.setCellStyle(textStyle);
 							}
 
 							cell4 = row.createCell(4);
 							if (record.getR15_NOTICE_0_31_DAYS() != null) {
-							    cell4.setCellValue(record.getR15_NOTICE_0_31_DAYS().doubleValue());
-							    cell4.setCellStyle(numberStyle);
+							    cell4.setCellValue(record.getR15_NOTICE_0_31_DAYS());
+							    cell4.setCellStyle(textStyle);
 							} else {
 							    cell4.setCellValue("");
-							    cell4.setCellStyle(numberStyle);
+							    cell4.setCellStyle(textStyle);
 							}
 
 							cell5 = row.createCell(5);
 							if (record.getR15_NOTICE_32_88_DAYS() != null) {
-							    cell5.setCellValue(record.getR15_NOTICE_32_88_DAYS().doubleValue());
-							    cell5.setCellStyle(numberStyle);
+							    cell5.setCellValue(record.getR15_NOTICE_32_88_DAYS());
+							    cell5.setCellStyle(textStyle);
 							} else {
 							    cell5.setCellValue("");
-							    cell5.setCellStyle(numberStyle);
+							    cell5.setCellStyle(textStyle);
 							}
 
 							cell6 = row.createCell(6);
 							if (record.getR15_91_DEPOSIT_DAY() != null) {
-							    cell6.setCellValue(record.getR15_91_DEPOSIT_DAY().doubleValue());
-							    cell6.setCellStyle(numberStyle);
+							    cell6.setCellValue(record.getR15_91_DEPOSIT_DAY());
+							    cell6.setCellStyle(textStyle);
 							} else {
 							    cell6.setCellValue("");
-							    cell6.setCellStyle(numberStyle);
+							    cell6.setCellStyle(textStyle);
 							}
 
 							cell7 = row.createCell(7);
 							if (record.getR15_FD_1_6_MONTHS() != null) {
-							    cell7.setCellValue(record.getR15_FD_1_6_MONTHS().doubleValue());
-							    cell7.setCellStyle(numberStyle);
+							    cell7.setCellValue(record.getR15_FD_1_6_MONTHS());
+							    cell7.setCellStyle(textStyle);
 							} else {
 							    cell7.setCellValue("");
-							    cell7.setCellStyle(numberStyle);
+							    cell7.setCellStyle(textStyle);
 							}
 
 							cell8 = row.createCell(8);
 							if (record.getR15_FD_7_12_MONTHS() != null) {
-							    cell8.setCellValue(record.getR15_FD_7_12_MONTHS().doubleValue());
-							    cell8.setCellStyle(numberStyle);
+							    cell8.setCellValue(record.getR15_FD_7_12_MONTHS());
+							    cell8.setCellStyle(textStyle);
 							} else {
 							    cell8.setCellValue("");
-							    cell8.setCellStyle(numberStyle);
+							    cell8.setCellStyle(textStyle);
 							}
 
 							cell9 = row.createCell(9);
 							if (record.getR15_FD_13_18_MONTHS() != null) {
-							    cell9.setCellValue(record.getR15_FD_13_18_MONTHS().doubleValue());
-							    cell9.setCellStyle(numberStyle);
+							    cell9.setCellValue(record.getR15_FD_13_18_MONTHS());
+							    cell9.setCellStyle(textStyle);
 							} else {
 							    cell9.setCellValue("");
-							    cell9.setCellStyle(numberStyle);
+							    cell9.setCellStyle(textStyle);
 							}
 
 							cell10 = row.createCell(10);
 							if (record.getR15_FD_19_24_MONTHS() != null) {
-							    cell10.setCellValue(record.getR15_FD_19_24_MONTHS().doubleValue());
-							    cell10.setCellStyle(numberStyle);
+							    cell10.setCellValue(record.getR15_FD_19_24_MONTHS());
+							    cell10.setCellStyle(textStyle);
 							} else {
 							    cell10.setCellValue("");
-							    cell10.setCellStyle(numberStyle);
+							    cell10.setCellStyle(textStyle);
 							}
 
 							cell11 = row.createCell(11);
 							if (record.getR15_FD_OVER_24_MONTHS() != null) {
-							    cell11.setCellValue(record.getR15_FD_OVER_24_MONTHS().doubleValue());
-							    cell11.setCellStyle(numberStyle);
+							    cell11.setCellValue(record.getR15_FD_OVER_24_MONTHS());
+							    cell11.setCellStyle(textStyle);
 							} else {
 							    cell11.setCellValue("");
-							    cell11.setCellStyle(numberStyle);
+							    cell11.setCellStyle(textStyle);
 							}
 
 							cell12 = row.createCell(12);
 							if (record.getR15_TOTAL() != null) {
-							    cell12.setCellValue(record.getR15_TOTAL().doubleValue());
-							    cell12.setCellStyle(numberStyle);
+							    cell12.setCellValue(record.getR15_TOTAL());
+							    cell12.setCellStyle(textStyle);
 							} else {
 							    cell12.setCellValue("");
-							    cell12.setCellStyle(numberStyle);
+							    cell12.setCellStyle(textStyle);
 							}
 
 
@@ -1370,8 +1370,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 		Cell cell1 = row.createCell(1);
 							if (record.getR10_CURRENT() != null) {
-								cell1.setCellValue(record.getR10_CURRENT().doubleValue());
-								cell1.setCellStyle(numberStyle);
+								cell1.setCellValue(record.getR10_CURRENT());
+								cell1.setCellStyle(textStyle);
 							} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
@@ -1379,8 +1379,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell2 = row.createCell(2);
 							if (record.getR10_CALL() != null) {
-								cell2.setCellValue(record.getR10_CALL().doubleValue());
-								cell2.setCellStyle(numberStyle);
+								cell2.setCellValue(record.getR10_CALL());
+								cell2.setCellStyle(textStyle);
 							} else {
 								cell2.setCellValue("");
 								cell2.setCellStyle(textStyle);
@@ -1388,8 +1388,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell3 = row.createCell(3);
 							if (record.getR10_SAVINGS() != null) {
-								cell3.setCellValue(record.getR10_SAVINGS().doubleValue());
-								cell3.setCellStyle(numberStyle);
+								cell3.setCellValue(record.getR10_SAVINGS());
+								cell3.setCellStyle(textStyle);
 							} else {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
@@ -1397,8 +1397,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell4 = row.createCell(4);
 							if (record.getR10_NOTICE_0_31_DAYS() != null) {
-								cell4.setCellValue(record.getR10_NOTICE_0_31_DAYS().doubleValue());
-								cell4.setCellStyle(numberStyle);
+								cell4.setCellValue(record.getR10_NOTICE_0_31_DAYS());
+								cell4.setCellStyle(textStyle);
 							} else {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
@@ -1406,8 +1406,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell5 = row.createCell(5);
 							if (record.getR10_NOTICE_32_88_DAYS() != null) {
-								cell5.setCellValue(record.getR10_NOTICE_32_88_DAYS().doubleValue());
-								cell5.setCellStyle(numberStyle);
+								cell5.setCellValue(record.getR10_NOTICE_32_88_DAYS());
+								cell5.setCellStyle(textStyle);
 							} else {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
@@ -1415,8 +1415,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell6 = row.createCell(6);
 							if (record.getR10_91_DEPOSIT_DAY() != null) {
-								cell6.setCellValue(record.getR10_91_DEPOSIT_DAY().doubleValue());
-								cell6.setCellStyle(numberStyle);
+								cell6.setCellValue(record.getR10_91_DEPOSIT_DAY());
+								cell6.setCellStyle(textStyle);
 							} else {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
@@ -1424,8 +1424,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell7 = row.createCell(7);
 							if (record.getR10_FD_1_6_MONTHS() != null) {
-								cell7.setCellValue(record.getR10_FD_1_6_MONTHS().doubleValue());
-								cell7.setCellStyle(numberStyle);
+								cell7.setCellValue(record.getR10_FD_1_6_MONTHS());
+								cell7.setCellStyle(textStyle);
 							} else {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
@@ -1433,8 +1433,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell8 = row.createCell(8);
 							if (record.getR10_FD_7_12_MONTHS() != null) {
-								cell8.setCellValue(record.getR10_FD_7_12_MONTHS().doubleValue());
-								cell8.setCellStyle(numberStyle);
+								cell8.setCellValue(record.getR10_FD_7_12_MONTHS());
+								cell8.setCellStyle(textStyle);
 							} else {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
@@ -1442,8 +1442,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell9 = row.createCell(9);
 							if (record.getR10_FD_13_18_MONTHS() != null) {
-								cell9.setCellValue(record.getR10_FD_13_18_MONTHS().doubleValue());
-								cell9.setCellStyle(numberStyle);
+								cell9.setCellValue(record.getR10_FD_13_18_MONTHS());
+								cell9.setCellStyle(textStyle);
 							} else {
 								cell9.setCellValue("");
 								cell9.setCellStyle(textStyle);
@@ -1451,8 +1451,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell10 = row.createCell(10);
 							if (record.getR10_FD_19_24_MONTHS() != null) {
-								cell10.setCellValue(record.getR10_FD_19_24_MONTHS().doubleValue());
-								cell10.setCellStyle(numberStyle);
+								cell10.setCellValue(record.getR10_FD_19_24_MONTHS());
+								cell10.setCellStyle(textStyle);
 							} else {
 								cell10.setCellValue("");
 								cell10.setCellStyle(textStyle);
@@ -1460,8 +1460,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell11 = row.createCell(11);
 							if (record.getR10_FD_OVER_24_MONTHS() != null) {
-								cell11.setCellValue(record.getR10_FD_OVER_24_MONTHS().doubleValue());
-								cell11.setCellStyle(numberStyle);
+								cell11.setCellValue(record.getR10_FD_OVER_24_MONTHS());
+								cell11.setCellStyle(textStyle);
 							} else {
 								cell11.setCellValue("");
 								cell11.setCellStyle(textStyle);
@@ -1469,8 +1469,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 							
 							Cell cell12 = row.createCell(12);
 							if (record.getR10_TOTAL() != null) {
-								cell12.setCellValue(record.getR10_TOTAL().doubleValue());
-								cell12.setCellStyle(numberStyle);
+								cell12.setCellValue(record.getR10_TOTAL());
+								cell12.setCellStyle(textStyle);
 							} else {
 								cell12.setCellValue("");
 								cell12.setCellStyle(textStyle);
@@ -1484,8 +1484,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR11_CURRENT() != null) {
-								cell1.setCellValue(record.getR11_CURRENT().doubleValue());
-								cell1.setCellStyle(numberStyle);
+								cell1.setCellValue(record.getR11_CURRENT());
+								cell1.setCellStyle(textStyle);
 							} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
@@ -1493,8 +1493,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR11_CALL() != null) {
-								cell2.setCellValue(record.getR11_CALL().doubleValue());
-								cell2.setCellStyle(numberStyle);
+								cell2.setCellValue(record.getR11_CALL());
+								cell2.setCellStyle(textStyle);
 							} else {
 								cell2.setCellValue("");
 								cell2.setCellStyle(textStyle);
@@ -1502,8 +1502,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell3 = row.createCell(3);
 							if (record.getR11_SAVINGS() != null) {
-								cell3.setCellValue(record.getR11_SAVINGS().doubleValue());
-								cell3.setCellStyle(numberStyle);
+								cell3.setCellValue(record.getR11_SAVINGS());
+								cell3.setCellStyle(textStyle);
 							} else {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
@@ -1511,8 +1511,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell4 = row.createCell(4);
 							if (record.getR11_NOTICE_0_31_DAYS() != null) {
-								cell4.setCellValue(record.getR11_NOTICE_0_31_DAYS().doubleValue());
-								cell4.setCellStyle(numberStyle);
+								cell4.setCellValue(record.getR11_NOTICE_0_31_DAYS());
+								cell4.setCellStyle(textStyle);
 							} else {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
@@ -1520,8 +1520,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell5 = row.createCell(5);
 							if (record.getR11_NOTICE_32_88_DAYS() != null) {
-								cell5.setCellValue(record.getR11_NOTICE_32_88_DAYS().doubleValue());
-								cell5.setCellStyle(numberStyle);
+								cell5.setCellValue(record.getR11_NOTICE_32_88_DAYS());
+								cell5.setCellStyle(textStyle);
 							} else {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
@@ -1529,8 +1529,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell6 = row.createCell(6);
 							if (record.getR11_91_DEPOSIT_DAY() != null) {
-								cell6.setCellValue(record.getR11_91_DEPOSIT_DAY().doubleValue());
-								cell6.setCellStyle(numberStyle);
+								cell6.setCellValue(record.getR11_91_DEPOSIT_DAY());
+								cell6.setCellStyle(textStyle);
 							} else {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
@@ -1538,8 +1538,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell7 = row.createCell(7);
 							if (record.getR11_FD_1_6_MONTHS() != null) {
-								cell7.setCellValue(record.getR11_FD_1_6_MONTHS().doubleValue());
-								cell7.setCellStyle(numberStyle);
+								cell7.setCellValue(record.getR11_FD_1_6_MONTHS());
+								cell7.setCellStyle(textStyle);
 							} else {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
@@ -1547,8 +1547,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell8 = row.createCell(8);
 							if (record.getR11_FD_7_12_MONTHS() != null) {
-								cell8.setCellValue(record.getR11_FD_7_12_MONTHS().doubleValue());
-								cell8.setCellStyle(numberStyle);
+								cell8.setCellValue(record.getR11_FD_7_12_MONTHS());
+								cell8.setCellStyle(textStyle);
 							} else {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
@@ -1556,8 +1556,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell9 = row.createCell(9);
 							if (record.getR11_FD_13_18_MONTHS() != null) {
-								cell9.setCellValue(record.getR11_FD_13_18_MONTHS().doubleValue());
-								cell9.setCellStyle(numberStyle);
+								cell9.setCellValue(record.getR11_FD_13_18_MONTHS());
+								cell9.setCellStyle(textStyle);
 							} else {
 								cell9.setCellValue("");
 								cell9.setCellStyle(textStyle);
@@ -1565,8 +1565,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell10 = row.createCell(10);
 							if (record.getR11_FD_19_24_MONTHS() != null) {
-								cell10.setCellValue(record.getR11_FD_19_24_MONTHS().doubleValue());
-								cell10.setCellStyle(numberStyle);
+								cell10.setCellValue(record.getR11_FD_19_24_MONTHS());
+								cell10.setCellStyle(textStyle);
 							} else {
 								cell10.setCellValue("");
 								cell10.setCellStyle(textStyle);
@@ -1574,8 +1574,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell11 = row.createCell(11);
 							if (record.getR11_FD_OVER_24_MONTHS() != null) {
-								cell11.setCellValue(record.getR11_FD_OVER_24_MONTHS().doubleValue());
-								cell11.setCellStyle(numberStyle);
+								cell11.setCellValue(record.getR11_FD_OVER_24_MONTHS());
+								cell11.setCellStyle(textStyle);
 							} else {
 								cell11.setCellValue("");
 								cell11.setCellStyle(textStyle);
@@ -1583,8 +1583,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 							
 							cell12 = row.createCell(12);
 							if (record.getR11_TOTAL() != null) {
-								cell12.setCellValue(record.getR11_TOTAL().doubleValue());
-								cell12.setCellStyle(numberStyle);
+								cell12.setCellValue(record.getR11_TOTAL());
+								cell12.setCellStyle(textStyle);
 							} else {
 								cell12.setCellValue("");
 								cell12.setCellStyle(textStyle);
@@ -1598,8 +1598,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR12_CURRENT() != null) {
-								cell1.setCellValue(record.getR12_CURRENT().doubleValue());
-								cell1.setCellStyle(numberStyle);
+								cell1.setCellValue(record.getR12_CURRENT());
+								cell1.setCellStyle(textStyle);
 							} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
@@ -1607,8 +1607,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR12_CALL() != null) {
-								cell2.setCellValue(record.getR12_CALL().doubleValue());
-								cell2.setCellStyle(numberStyle);
+								cell2.setCellValue(record.getR12_CALL());
+								cell2.setCellStyle(textStyle);
 							} else {
 								cell2.setCellValue("");
 								cell2.setCellStyle(textStyle);
@@ -1616,8 +1616,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell3 = row.createCell(3);
 							if (record.getR12_SAVINGS() != null) {
-								cell3.setCellValue(record.getR12_SAVINGS().doubleValue());
-								cell3.setCellStyle(numberStyle);
+								cell3.setCellValue(record.getR12_SAVINGS());
+								cell3.setCellStyle(textStyle);
 							} else {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
@@ -1625,8 +1625,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell4 = row.createCell(4);
 							if (record.getR12_NOTICE_0_31_DAYS() != null) {
-								cell4.setCellValue(record.getR12_NOTICE_0_31_DAYS().doubleValue());
-								cell4.setCellStyle(numberStyle);
+								cell4.setCellValue(record.getR12_NOTICE_0_31_DAYS());
+								cell4.setCellStyle(textStyle);
 							} else {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
@@ -1634,8 +1634,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell5 = row.createCell(5);
 							if (record.getR12_NOTICE_32_88_DAYS() != null) {
-								cell5.setCellValue(record.getR12_NOTICE_32_88_DAYS().doubleValue());
-								cell5.setCellStyle(numberStyle);
+								cell5.setCellValue(record.getR12_NOTICE_32_88_DAYS());
+								cell5.setCellStyle(textStyle);
 							} else {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
@@ -1643,8 +1643,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell6 = row.createCell(6);
 							if (record.getR12_91_DEPOSIT_DAY() != null) {
-								cell6.setCellValue(record.getR12_91_DEPOSIT_DAY().doubleValue());
-								cell6.setCellStyle(numberStyle);
+								cell6.setCellValue(record.getR12_91_DEPOSIT_DAY());
+								cell6.setCellStyle(textStyle);
 							} else {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
@@ -1652,8 +1652,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell7 = row.createCell(7);
 							if (record.getR12_FD_1_6_MONTHS() != null) {
-								cell7.setCellValue(record.getR12_FD_1_6_MONTHS().doubleValue());
-								cell7.setCellStyle(numberStyle);
+								cell7.setCellValue(record.getR12_FD_1_6_MONTHS());
+								cell7.setCellStyle(textStyle);
 							} else {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
@@ -1661,8 +1661,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell8 = row.createCell(8);
 							if (record.getR12_FD_7_12_MONTHS() != null) {
-								cell8.setCellValue(record.getR12_FD_7_12_MONTHS().doubleValue());
-								cell8.setCellStyle(numberStyle);
+								cell8.setCellValue(record.getR12_FD_7_12_MONTHS());
+								cell8.setCellStyle(textStyle);
 							} else {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
@@ -1670,8 +1670,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell9 = row.createCell(9);
 							if (record.getR12_FD_13_18_MONTHS() != null) {
-								cell9.setCellValue(record.getR12_FD_13_18_MONTHS().doubleValue());
-								cell9.setCellStyle(numberStyle);
+								cell9.setCellValue(record.getR12_FD_13_18_MONTHS());
+								cell9.setCellStyle(textStyle);
 							} else {
 								cell9.setCellValue("");
 								cell9.setCellStyle(textStyle);
@@ -1679,8 +1679,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell10 = row.createCell(10);
 							if (record.getR12_FD_19_24_MONTHS() != null) {
-								cell10.setCellValue(record.getR12_FD_19_24_MONTHS().doubleValue());
-								cell10.setCellStyle(numberStyle);
+								cell10.setCellValue(record.getR12_FD_19_24_MONTHS());
+								cell10.setCellStyle(textStyle);
 							} else {
 								cell10.setCellValue("");
 								cell10.setCellStyle(textStyle);
@@ -1688,8 +1688,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell11 = row.createCell(11);
 							if (record.getR12_FD_OVER_24_MONTHS() != null) {
-								cell11.setCellValue(record.getR12_FD_OVER_24_MONTHS().doubleValue());
-								cell11.setCellStyle(numberStyle);
+								cell11.setCellValue(record.getR12_FD_OVER_24_MONTHS());
+								cell11.setCellStyle(textStyle);
 							} else {
 								cell11.setCellValue("");
 								cell11.setCellStyle(textStyle);
@@ -1697,8 +1697,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 							
 							cell12 = row.createCell(12);
 							if (record.getR12_TOTAL() != null) {
-								cell12.setCellValue(record.getR12_TOTAL().doubleValue());
-								cell12.setCellStyle(numberStyle);
+								cell12.setCellValue(record.getR12_TOTAL());
+								cell12.setCellStyle(textStyle);
 							} else {
 								cell12.setCellValue("");
 								cell12.setCellStyle(textStyle);
@@ -1712,8 +1712,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR13_CURRENT() != null) {
-								cell1.setCellValue(record.getR13_CURRENT().doubleValue());
-								cell1.setCellStyle(numberStyle);
+								cell1.setCellValue(record.getR13_CURRENT());
+								cell1.setCellStyle(textStyle);
 							} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
@@ -1721,8 +1721,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR13_CALL() != null) {
-								cell2.setCellValue(record.getR13_CALL().doubleValue());
-								cell2.setCellStyle(numberStyle);
+								cell2.setCellValue(record.getR13_CALL());
+								cell2.setCellStyle(textStyle);
 							} else {
 								cell2.setCellValue("");
 								cell2.setCellStyle(textStyle);
@@ -1730,8 +1730,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell3 = row.createCell(3);
 							if (record.getR13_SAVINGS() != null) {
-								cell3.setCellValue(record.getR13_SAVINGS().doubleValue());
-								cell3.setCellStyle(numberStyle);
+								cell3.setCellValue(record.getR13_SAVINGS());
+								cell3.setCellStyle(textStyle);
 							} else {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
@@ -1739,8 +1739,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell4 = row.createCell(4);
 							if (record.getR13_NOTICE_0_31_DAYS() != null) {
-								cell4.setCellValue(record.getR13_NOTICE_0_31_DAYS().doubleValue());
-								cell4.setCellStyle(numberStyle);
+								cell4.setCellValue(record.getR13_NOTICE_0_31_DAYS());
+								cell4.setCellStyle(textStyle);
 							} else {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
@@ -1748,8 +1748,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell5 = row.createCell(5);
 							if (record.getR13_NOTICE_32_88_DAYS() != null) {
-								cell5.setCellValue(record.getR13_NOTICE_32_88_DAYS().doubleValue());
-								cell5.setCellStyle(numberStyle);
+								cell5.setCellValue(record.getR13_NOTICE_32_88_DAYS());
+								cell5.setCellStyle(textStyle);
 							} else {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
@@ -1757,8 +1757,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell6 = row.createCell(6);
 							if (record.getR13_91_DEPOSIT_DAY() != null) {
-								cell6.setCellValue(record.getR13_91_DEPOSIT_DAY().doubleValue());
-								cell6.setCellStyle(numberStyle);
+								cell6.setCellValue(record.getR13_91_DEPOSIT_DAY());
+								cell6.setCellStyle(textStyle);
 							} else {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
@@ -1766,8 +1766,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell7 = row.createCell(7);
 							if (record.getR13_FD_1_6_MONTHS() != null) {
-								cell7.setCellValue(record.getR13_FD_1_6_MONTHS().doubleValue());
-								cell7.setCellStyle(numberStyle);
+								cell7.setCellValue(record.getR13_FD_1_6_MONTHS());
+								cell7.setCellStyle(textStyle);
 							} else {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
@@ -1775,8 +1775,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell8 = row.createCell(8);
 							if (record.getR13_FD_7_12_MONTHS() != null) {
-								cell8.setCellValue(record.getR13_FD_7_12_MONTHS().doubleValue());
-								cell8.setCellStyle(numberStyle);
+								cell8.setCellValue(record.getR13_FD_7_12_MONTHS());
+								cell8.setCellStyle(textStyle);
 							} else {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
@@ -1784,8 +1784,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell9 = row.createCell(9);
 							if (record.getR13_FD_13_18_MONTHS() != null) {
-								cell9.setCellValue(record.getR13_FD_13_18_MONTHS().doubleValue());
-								cell9.setCellStyle(numberStyle);
+								cell9.setCellValue(record.getR13_FD_13_18_MONTHS());
+								cell9.setCellStyle(textStyle);
 							} else {
 								cell9.setCellValue("");
 								cell9.setCellStyle(textStyle);
@@ -1793,8 +1793,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell10 = row.createCell(10);
 							if (record.getR13_FD_19_24_MONTHS() != null) {
-								cell10.setCellValue(record.getR13_FD_19_24_MONTHS().doubleValue());
-								cell10.setCellStyle(numberStyle);
+								cell10.setCellValue(record.getR13_FD_19_24_MONTHS());
+								cell10.setCellStyle(textStyle);
 							} else {
 								cell10.setCellValue("");
 								cell10.setCellStyle(textStyle);
@@ -1802,8 +1802,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell11 = row.createCell(11);
 							if (record.getR13_FD_OVER_24_MONTHS() != null) {
-								cell11.setCellValue(record.getR13_FD_OVER_24_MONTHS().doubleValue());
-								cell11.setCellStyle(numberStyle);
+								cell11.setCellValue(record.getR13_FD_OVER_24_MONTHS());
+								cell11.setCellStyle(textStyle);
 							} else {
 								cell11.setCellValue("");
 								cell11.setCellStyle(textStyle);
@@ -1811,8 +1811,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 							
 						 cell12 = row.createCell(12);
 							if (record.getR13_TOTAL() != null) {
-								cell12.setCellValue(record.getR13_TOTAL().doubleValue());
-								cell12.setCellStyle(numberStyle);
+								cell12.setCellValue(record.getR13_TOTAL());
+								cell12.setCellStyle(textStyle);
 							} else {
 								cell12.setCellValue("");
 								cell12.setCellStyle(textStyle);
@@ -1826,8 +1826,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR14_CURRENT() != null) {
-								cell1.setCellValue(record.getR14_CURRENT().doubleValue());
-								cell1.setCellStyle(numberStyle);
+								cell1.setCellValue(record.getR14_CURRENT());
+								cell1.setCellStyle(textStyle);
 							} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
@@ -1835,8 +1835,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR14_CALL() != null) {
-								cell2.setCellValue(record.getR14_CALL().doubleValue());
-								cell2.setCellStyle(numberStyle);
+								cell2.setCellValue(record.getR14_CALL());
+								cell2.setCellStyle(textStyle);
 							} else {
 								cell2.setCellValue("");
 								cell2.setCellStyle(textStyle);
@@ -1844,8 +1844,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell3 = row.createCell(3);
 							if (record.getR14_SAVINGS() != null) {
-								cell3.setCellValue(record.getR14_SAVINGS().doubleValue());
-								cell3.setCellStyle(numberStyle);
+								cell3.setCellValue(record.getR14_SAVINGS());
+								cell3.setCellStyle(textStyle);
 							} else {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
@@ -1853,8 +1853,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell4 = row.createCell(4);
 							if (record.getR14_NOTICE_0_31_DAYS() != null) {
-								cell4.setCellValue(record.getR14_NOTICE_0_31_DAYS().doubleValue());
-								cell4.setCellStyle(numberStyle);
+								cell4.setCellValue(record.getR14_NOTICE_0_31_DAYS());
+								cell4.setCellStyle(textStyle);
 							} else {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
@@ -1862,8 +1862,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell5 = row.createCell(5);
 							if (record.getR14_NOTICE_32_88_DAYS() != null) {
-								cell5.setCellValue(record.getR14_NOTICE_32_88_DAYS().doubleValue());
-								cell5.setCellStyle(numberStyle);
+								cell5.setCellValue(record.getR14_NOTICE_32_88_DAYS());
+								cell5.setCellStyle(textStyle);
 							} else {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
@@ -1871,8 +1871,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell6 = row.createCell(6);
 							if (record.getR14_91_DEPOSIT_DAY() != null) {
-								cell6.setCellValue(record.getR14_91_DEPOSIT_DAY().doubleValue());
-								cell6.setCellStyle(numberStyle);
+								cell6.setCellValue(record.getR14_91_DEPOSIT_DAY());
+								cell6.setCellStyle(textStyle);
 							} else {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
@@ -1880,8 +1880,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell7 = row.createCell(7);
 							if (record.getR14_FD_1_6_MONTHS() != null) {
-								cell7.setCellValue(record.getR14_FD_1_6_MONTHS().doubleValue());
-								cell7.setCellStyle(numberStyle);
+								cell7.setCellValue(record.getR14_FD_1_6_MONTHS());
+								cell7.setCellStyle(textStyle);
 							} else {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
@@ -1889,8 +1889,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell8 = row.createCell(8);
 							if (record.getR14_FD_7_12_MONTHS() != null) {
-								cell8.setCellValue(record.getR14_FD_7_12_MONTHS().doubleValue());
-								cell8.setCellStyle(numberStyle);
+								cell8.setCellValue(record.getR14_FD_7_12_MONTHS());
+								cell8.setCellStyle(textStyle);
 							} else {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
@@ -1898,8 +1898,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell9 = row.createCell(9);
 							if (record.getR14_FD_13_18_MONTHS() != null) {
-								cell9.setCellValue(record.getR14_FD_13_18_MONTHS().doubleValue());
-								cell9.setCellStyle(numberStyle);
+								cell9.setCellValue(record.getR14_FD_13_18_MONTHS());
+								cell9.setCellStyle(textStyle);
 							} else {
 								cell9.setCellValue("");
 								cell9.setCellStyle(textStyle);
@@ -1907,8 +1907,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell10 = row.createCell(10);
 							if (record.getR14_FD_19_24_MONTHS() != null) {
-								cell10.setCellValue(record.getR14_FD_19_24_MONTHS().doubleValue());
-								cell10.setCellStyle(numberStyle);
+								cell10.setCellValue(record.getR14_FD_19_24_MONTHS());
+								cell10.setCellStyle(textStyle);
 							} else {
 								cell10.setCellValue("");
 								cell10.setCellStyle(textStyle);
@@ -1916,8 +1916,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell11 = row.createCell(11);
 							if (record.getR14_FD_OVER_24_MONTHS() != null) {
-								cell11.setCellValue(record.getR14_FD_OVER_24_MONTHS().doubleValue());
-								cell11.setCellStyle(numberStyle);
+								cell11.setCellValue(record.getR14_FD_OVER_24_MONTHS());
+								cell11.setCellStyle(textStyle);
 							} else {
 								cell11.setCellValue("");
 								cell11.setCellStyle(textStyle);
@@ -1925,8 +1925,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 							
 						 cell12 = row.createCell(12);
 							if (record.getR14_TOTAL() != null) {
-								cell12.setCellValue(record.getR14_TOTAL().doubleValue());
-								cell12.setCellStyle(numberStyle);
+								cell12.setCellValue(record.getR14_TOTAL());
+								cell12.setCellStyle(textStyle);
 							} else {
 								cell12.setCellValue("");
 								cell12.setCellStyle(textStyle);
@@ -1941,8 +1941,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR15_CURRENT() != null) {
-							    cell1.setCellValue(record.getR15_CURRENT().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR15_CURRENT());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -1950,8 +1950,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR15_CALL() != null) {
-							    cell2.setCellValue(record.getR15_CALL().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR15_CALL());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -1959,8 +1959,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell3 = row.createCell(3);
 							if (record.getR15_SAVINGS() != null) {
-							    cell3.setCellValue(record.getR15_SAVINGS().doubleValue());
-							    cell3.setCellStyle(numberStyle);
+							    cell3.setCellValue(record.getR15_SAVINGS());
+							    cell3.setCellStyle(textStyle);
 							} else {
 							    cell3.setCellValue("");
 							    cell3.setCellStyle(textStyle);
@@ -1968,8 +1968,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell4 = row.createCell(4);
 							if (record.getR15_NOTICE_0_31_DAYS() != null) {
-							    cell4.setCellValue(record.getR15_NOTICE_0_31_DAYS().doubleValue());
-							    cell4.setCellStyle(numberStyle);
+							    cell4.setCellValue(record.getR15_NOTICE_0_31_DAYS());
+							    cell4.setCellStyle(textStyle);
 							} else {
 							    cell4.setCellValue("");
 							    cell4.setCellStyle(textStyle);
@@ -1977,8 +1977,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell5 = row.createCell(5);
 							if (record.getR15_NOTICE_32_88_DAYS() != null) {
-							    cell5.setCellValue(record.getR15_NOTICE_32_88_DAYS().doubleValue());
-							    cell5.setCellStyle(numberStyle);
+							    cell5.setCellValue(record.getR15_NOTICE_32_88_DAYS());
+							    cell5.setCellStyle(textStyle);
 							} else {
 							    cell5.setCellValue("");
 							    cell5.setCellStyle(textStyle);
@@ -1986,8 +1986,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell6 = row.createCell(6);
 							if (record.getR15_91_DEPOSIT_DAY() != null) {
-							    cell6.setCellValue(record.getR15_91_DEPOSIT_DAY().doubleValue());
-							    cell6.setCellStyle(numberStyle);
+							    cell6.setCellValue(record.getR15_91_DEPOSIT_DAY());
+							    cell6.setCellStyle(textStyle);
 							} else {
 							    cell6.setCellValue("");
 							    cell6.setCellStyle(textStyle);
@@ -1995,8 +1995,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell7 = row.createCell(7);
 							if (record.getR15_FD_1_6_MONTHS() != null) {
-							    cell7.setCellValue(record.getR15_FD_1_6_MONTHS().doubleValue());
-							    cell7.setCellStyle(numberStyle);
+							    cell7.setCellValue(record.getR15_FD_1_6_MONTHS());
+							    cell7.setCellStyle(textStyle);
 							} else {
 							    cell7.setCellValue("");
 							    cell7.setCellStyle(textStyle);
@@ -2004,8 +2004,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell8 = row.createCell(8);
 							if (record.getR15_FD_7_12_MONTHS() != null) {
-							    cell8.setCellValue(record.getR15_FD_7_12_MONTHS().doubleValue());
-							    cell8.setCellStyle(numberStyle);
+							    cell8.setCellValue(record.getR15_FD_7_12_MONTHS());
+							    cell8.setCellStyle(textStyle);
 							} else {
 							    cell8.setCellValue("");
 							    cell8.setCellStyle(textStyle);
@@ -2013,8 +2013,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell9 = row.createCell(9);
 							if (record.getR15_FD_13_18_MONTHS() != null) {
-							    cell9.setCellValue(record.getR15_FD_13_18_MONTHS().doubleValue());
-							    cell9.setCellStyle(numberStyle);
+							    cell9.setCellValue(record.getR15_FD_13_18_MONTHS());
+							    cell9.setCellStyle(textStyle);
 							} else {
 							    cell9.setCellValue("");
 							    cell9.setCellStyle(textStyle);
@@ -2022,8 +2022,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell10 = row.createCell(10);
 							if (record.getR15_FD_19_24_MONTHS() != null) {
-							    cell10.setCellValue(record.getR15_FD_19_24_MONTHS().doubleValue());
-							    cell10.setCellStyle(numberStyle);
+							    cell10.setCellValue(record.getR15_FD_19_24_MONTHS());
+							    cell10.setCellStyle(textStyle);
 							} else {
 							    cell10.setCellValue("");
 							    cell10.setCellStyle(textStyle);
@@ -2031,8 +2031,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell11 = row.createCell(11);
 							if (record.getR15_FD_OVER_24_MONTHS() != null) {
-							    cell11.setCellValue(record.getR15_FD_OVER_24_MONTHS().doubleValue());
-							    cell11.setCellStyle(numberStyle);
+							    cell11.setCellValue(record.getR15_FD_OVER_24_MONTHS());
+							    cell11.setCellStyle(textStyle);
 							} else {
 							    cell11.setCellValue("");
 							    cell11.setCellStyle(textStyle);
@@ -2040,8 +2040,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell12 = row.createCell(12);
 							if (record.getR15_TOTAL() != null) {
-							    cell12.setCellValue(record.getR15_TOTAL().doubleValue());
-							    cell12.setCellStyle(numberStyle);
+							    cell12.setCellValue(record.getR15_TOTAL());
+							    cell12.setCellStyle(textStyle);
 							} else {
 							    cell12.setCellValue("");
 							    cell12.setCellStyle(textStyle);
@@ -2159,8 +2159,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 			Cell cell1 = row.createCell(1);
 							if (record.getR10_CURRENT() != null) {
-								cell1.setCellValue(record.getR10_CURRENT().doubleValue());
-								cell1.setCellStyle(numberStyle);
+								cell1.setCellValue(record.getR10_CURRENT());
+								cell1.setCellStyle(textStyle);
 							} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
@@ -2168,8 +2168,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell2 = row.createCell(2);
 							if (record.getR10_CALL() != null) {
-								cell2.setCellValue(record.getR10_CALL().doubleValue());
-								cell2.setCellStyle(numberStyle);
+								cell2.setCellValue(record.getR10_CALL());
+								cell2.setCellStyle(textStyle);
 							} else {
 								cell2.setCellValue("");
 								cell2.setCellStyle(textStyle);
@@ -2177,8 +2177,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell3 = row.createCell(3);
 							if (record.getR10_SAVINGS() != null) {
-								cell3.setCellValue(record.getR10_SAVINGS().doubleValue());
-								cell3.setCellStyle(numberStyle);
+								cell3.setCellValue(record.getR10_SAVINGS());
+								cell3.setCellStyle(textStyle);
 							} else {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
@@ -2186,8 +2186,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell4 = row.createCell(4);
 							if (record.getR10_NOTICE_0_31_DAYS() != null) {
-								cell4.setCellValue(record.getR10_NOTICE_0_31_DAYS().doubleValue());
-								cell4.setCellStyle(numberStyle);
+								cell4.setCellValue(record.getR10_NOTICE_0_31_DAYS());
+								cell4.setCellStyle(textStyle);
 							} else {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
@@ -2195,8 +2195,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell5 = row.createCell(5);
 							if (record.getR10_NOTICE_32_88_DAYS() != null) {
-								cell5.setCellValue(record.getR10_NOTICE_32_88_DAYS().doubleValue());
-								cell5.setCellStyle(numberStyle);
+								cell5.setCellValue(record.getR10_NOTICE_32_88_DAYS());
+								cell5.setCellStyle(textStyle);
 							} else {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
@@ -2204,8 +2204,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell6 = row.createCell(6);
 							if (record.getR10_91_DEPOSIT_DAY() != null) {
-								cell6.setCellValue(record.getR10_91_DEPOSIT_DAY().doubleValue());
-								cell6.setCellStyle(numberStyle);
+								cell6.setCellValue(record.getR10_91_DEPOSIT_DAY());
+								cell6.setCellStyle(textStyle);
 							} else {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
@@ -2213,8 +2213,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell7 = row.createCell(7);
 							if (record.getR10_FD_1_6_MONTHS() != null) {
-								cell7.setCellValue(record.getR10_FD_1_6_MONTHS().doubleValue());
-								cell7.setCellStyle(numberStyle);
+								cell7.setCellValue(record.getR10_FD_1_6_MONTHS());
+								cell7.setCellStyle(textStyle);
 							} else {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
@@ -2222,8 +2222,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell8 = row.createCell(8);
 							if (record.getR10_FD_7_12_MONTHS() != null) {
-								cell8.setCellValue(record.getR10_FD_7_12_MONTHS().doubleValue());
-								cell8.setCellStyle(numberStyle);
+								cell8.setCellValue(record.getR10_FD_7_12_MONTHS());
+								cell8.setCellStyle(textStyle);
 							} else {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
@@ -2231,8 +2231,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell9 = row.createCell(9);
 							if (record.getR10_FD_13_18_MONTHS() != null) {
-								cell9.setCellValue(record.getR10_FD_13_18_MONTHS().doubleValue());
-								cell9.setCellStyle(numberStyle);
+								cell9.setCellValue(record.getR10_FD_13_18_MONTHS());
+								cell9.setCellStyle(textStyle);
 							} else {
 								cell9.setCellValue("");
 								cell9.setCellStyle(textStyle);
@@ -2240,8 +2240,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell10 = row.createCell(10);
 							if (record.getR10_FD_19_24_MONTHS() != null) {
-								cell10.setCellValue(record.getR10_FD_19_24_MONTHS().doubleValue());
-								cell10.setCellStyle(numberStyle);
+								cell10.setCellValue(record.getR10_FD_19_24_MONTHS());
+								cell10.setCellStyle(textStyle);
 							} else {
 								cell10.setCellValue("");
 								cell10.setCellStyle(textStyle);
@@ -2249,8 +2249,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell11 = row.createCell(11);
 							if (record.getR10_FD_OVER_24_MONTHS() != null) {
-								cell11.setCellValue(record.getR10_FD_OVER_24_MONTHS().doubleValue());
-								cell11.setCellStyle(numberStyle);
+								cell11.setCellValue(record.getR10_FD_OVER_24_MONTHS());
+								cell11.setCellStyle(textStyle);
 							} else {
 								cell11.setCellValue("");
 								cell11.setCellStyle(textStyle);
@@ -2258,8 +2258,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 							
 							Cell cell12 = row.createCell(12);
 							if (record.getR10_TOTAL() != null) {
-								cell12.setCellValue(record.getR10_TOTAL().doubleValue());
-								cell12.setCellStyle(numberStyle);
+								cell12.setCellValue(record.getR10_TOTAL());
+								cell12.setCellStyle(textStyle);
 							} else {
 								cell12.setCellValue("");
 								cell12.setCellStyle(textStyle);
@@ -2273,8 +2273,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR11_CURRENT() != null) {
-								cell1.setCellValue(record.getR11_CURRENT().doubleValue());
-								cell1.setCellStyle(numberStyle);
+								cell1.setCellValue(record.getR11_CURRENT());
+								cell1.setCellStyle(textStyle);
 							} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
@@ -2282,8 +2282,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR11_CALL() != null) {
-								cell2.setCellValue(record.getR11_CALL().doubleValue());
-								cell2.setCellStyle(numberStyle);
+								cell2.setCellValue(record.getR11_CALL());
+								cell2.setCellStyle(textStyle);
 							} else {
 								cell2.setCellValue("");
 								cell2.setCellStyle(textStyle);
@@ -2291,8 +2291,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell3 = row.createCell(3);
 							if (record.getR11_SAVINGS() != null) {
-								cell3.setCellValue(record.getR11_SAVINGS().doubleValue());
-								cell3.setCellStyle(numberStyle);
+								cell3.setCellValue(record.getR11_SAVINGS());
+								cell3.setCellStyle(textStyle);
 							} else {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
@@ -2300,8 +2300,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell4 = row.createCell(4);
 							if (record.getR11_NOTICE_0_31_DAYS() != null) {
-								cell4.setCellValue(record.getR11_NOTICE_0_31_DAYS().doubleValue());
-								cell4.setCellStyle(numberStyle);
+								cell4.setCellValue(record.getR11_NOTICE_0_31_DAYS());
+								cell4.setCellStyle(textStyle);
 							} else {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
@@ -2309,8 +2309,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell5 = row.createCell(5);
 							if (record.getR11_NOTICE_32_88_DAYS() != null) {
-								cell5.setCellValue(record.getR11_NOTICE_32_88_DAYS().doubleValue());
-								cell5.setCellStyle(numberStyle);
+								cell5.setCellValue(record.getR11_NOTICE_32_88_DAYS());
+								cell5.setCellStyle(textStyle);
 							} else {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
@@ -2318,8 +2318,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell6 = row.createCell(6);
 							if (record.getR11_91_DEPOSIT_DAY() != null) {
-								cell6.setCellValue(record.getR11_91_DEPOSIT_DAY().doubleValue());
-								cell6.setCellStyle(numberStyle);
+								cell6.setCellValue(record.getR11_91_DEPOSIT_DAY());
+								cell6.setCellStyle(textStyle);
 							} else {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
@@ -2327,8 +2327,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell7 = row.createCell(7);
 							if (record.getR11_FD_1_6_MONTHS() != null) {
-								cell7.setCellValue(record.getR11_FD_1_6_MONTHS().doubleValue());
-								cell7.setCellStyle(numberStyle);
+								cell7.setCellValue(record.getR11_FD_1_6_MONTHS());
+								cell7.setCellStyle(textStyle);
 							} else {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
@@ -2336,8 +2336,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell8 = row.createCell(8);
 							if (record.getR11_FD_7_12_MONTHS() != null) {
-								cell8.setCellValue(record.getR11_FD_7_12_MONTHS().doubleValue());
-								cell8.setCellStyle(numberStyle);
+								cell8.setCellValue(record.getR11_FD_7_12_MONTHS());
+								cell8.setCellStyle(textStyle);
 							} else {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
@@ -2345,8 +2345,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell9 = row.createCell(9);
 							if (record.getR11_FD_13_18_MONTHS() != null) {
-								cell9.setCellValue(record.getR11_FD_13_18_MONTHS().doubleValue());
-								cell9.setCellStyle(numberStyle);
+								cell9.setCellValue(record.getR11_FD_13_18_MONTHS());
+								cell9.setCellStyle(textStyle);
 							} else {
 								cell9.setCellValue("");
 								cell9.setCellStyle(textStyle);
@@ -2354,8 +2354,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell10 = row.createCell(10);
 							if (record.getR11_FD_19_24_MONTHS() != null) {
-								cell10.setCellValue(record.getR11_FD_19_24_MONTHS().doubleValue());
-								cell10.setCellStyle(numberStyle);
+								cell10.setCellValue(record.getR11_FD_19_24_MONTHS());
+								cell10.setCellStyle(textStyle);
 							} else {
 								cell10.setCellValue("");
 								cell10.setCellStyle(textStyle);
@@ -2363,16 +2363,16 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell11 = row.createCell(11);
 							if (record.getR11_FD_OVER_24_MONTHS() != null) {
-								cell11.setCellValue(record.getR11_FD_OVER_24_MONTHS().doubleValue());
-								cell11.setCellStyle(numberStyle);
+								cell11.setCellValue(record.getR11_FD_OVER_24_MONTHS());
+								cell11.setCellStyle(textStyle);
 							} else {
 								cell11.setCellValue("");
 								cell11.setCellStyle(textStyle);
 							}
 							cell12 = row.createCell(12);
 							if (record.getR11_TOTAL() != null) {
-								cell12.setCellValue(record.getR11_TOTAL().doubleValue());
-								cell12.setCellStyle(numberStyle);
+								cell12.setCellValue(record.getR11_TOTAL());
+								cell12.setCellStyle(textStyle);
 							} else {
 								cell12.setCellValue("");
 								cell12.setCellStyle(textStyle);
@@ -2387,8 +2387,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR12_CURRENT() != null) {
-								cell1.setCellValue(record.getR12_CURRENT().doubleValue());
-								cell1.setCellStyle(numberStyle);
+								cell1.setCellValue(record.getR12_CURRENT());
+								cell1.setCellStyle(textStyle);
 							} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
@@ -2396,8 +2396,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR12_CALL() != null) {
-								cell2.setCellValue(record.getR12_CALL().doubleValue());
-								cell2.setCellStyle(numberStyle);
+								cell2.setCellValue(record.getR12_CALL());
+								cell2.setCellStyle(textStyle);
 							} else {
 								cell2.setCellValue("");
 								cell2.setCellStyle(textStyle);
@@ -2405,8 +2405,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell3 = row.createCell(3);
 							if (record.getR12_SAVINGS() != null) {
-								cell3.setCellValue(record.getR12_SAVINGS().doubleValue());
-								cell3.setCellStyle(numberStyle);
+								cell3.setCellValue(record.getR12_SAVINGS());
+								cell3.setCellStyle(textStyle);
 							} else {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
@@ -2414,8 +2414,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell4 = row.createCell(4);
 							if (record.getR12_NOTICE_0_31_DAYS() != null) {
-								cell4.setCellValue(record.getR12_NOTICE_0_31_DAYS().doubleValue());
-								cell4.setCellStyle(numberStyle);
+								cell4.setCellValue(record.getR12_NOTICE_0_31_DAYS());
+								cell4.setCellStyle(textStyle);
 							} else {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
@@ -2423,8 +2423,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell5 = row.createCell(5);
 							if (record.getR12_NOTICE_32_88_DAYS() != null) {
-								cell5.setCellValue(record.getR12_NOTICE_32_88_DAYS().doubleValue());
-								cell5.setCellStyle(numberStyle);
+								cell5.setCellValue(record.getR12_NOTICE_32_88_DAYS());
+								cell5.setCellStyle(textStyle);
 							} else {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
@@ -2432,8 +2432,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell6 = row.createCell(6);
 							if (record.getR12_91_DEPOSIT_DAY() != null) {
-								cell6.setCellValue(record.getR12_91_DEPOSIT_DAY().doubleValue());
-								cell6.setCellStyle(numberStyle);
+								cell6.setCellValue(record.getR12_91_DEPOSIT_DAY());
+								cell6.setCellStyle(textStyle);
 							} else {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
@@ -2441,8 +2441,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell7 = row.createCell(7);
 							if (record.getR12_FD_1_6_MONTHS() != null) {
-								cell7.setCellValue(record.getR12_FD_1_6_MONTHS().doubleValue());
-								cell7.setCellStyle(numberStyle);
+								cell7.setCellValue(record.getR12_FD_1_6_MONTHS());
+								cell7.setCellStyle(textStyle);
 							} else {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
@@ -2450,8 +2450,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell8 = row.createCell(8);
 							if (record.getR12_FD_7_12_MONTHS() != null) {
-								cell8.setCellValue(record.getR12_FD_7_12_MONTHS().doubleValue());
-								cell8.setCellStyle(numberStyle);
+								cell8.setCellValue(record.getR12_FD_7_12_MONTHS());
+								cell8.setCellStyle(textStyle);
 							} else {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
@@ -2459,8 +2459,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell9 = row.createCell(9);
 							if (record.getR12_FD_13_18_MONTHS() != null) {
-								cell9.setCellValue(record.getR12_FD_13_18_MONTHS().doubleValue());
-								cell9.setCellStyle(numberStyle);
+								cell9.setCellValue(record.getR12_FD_13_18_MONTHS());
+								cell9.setCellStyle(textStyle);
 							} else {
 								cell9.setCellValue("");
 								cell9.setCellStyle(textStyle);
@@ -2468,8 +2468,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell10 = row.createCell(10);
 							if (record.getR12_FD_19_24_MONTHS() != null) {
-								cell10.setCellValue(record.getR12_FD_19_24_MONTHS().doubleValue());
-								cell10.setCellStyle(numberStyle);
+								cell10.setCellValue(record.getR12_FD_19_24_MONTHS());
+								cell10.setCellStyle(textStyle);
 							} else {
 								cell10.setCellValue("");
 								cell10.setCellStyle(textStyle);
@@ -2477,16 +2477,16 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell11 = row.createCell(11);
 							if (record.getR12_FD_OVER_24_MONTHS() != null) {
-								cell11.setCellValue(record.getR12_FD_OVER_24_MONTHS().doubleValue());
-								cell11.setCellStyle(numberStyle);
+								cell11.setCellValue(record.getR12_FD_OVER_24_MONTHS());
+								cell11.setCellStyle(textStyle);
 							} else {
 								cell11.setCellValue("");
 								cell11.setCellStyle(textStyle);
 							}
 							cell12 = row.createCell(12);
 							if (record.getR12_TOTAL() != null) {
-								cell12.setCellValue(record.getR12_TOTAL().doubleValue());
-								cell12.setCellStyle(numberStyle);
+								cell12.setCellValue(record.getR12_TOTAL());
+								cell12.setCellStyle(textStyle);
 							} else {
 								cell12.setCellValue("");
 								cell12.setCellStyle(textStyle);
@@ -2501,8 +2501,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR13_CURRENT() != null) {
-								cell1.setCellValue(record.getR13_CURRENT().doubleValue());
-								cell1.setCellStyle(numberStyle);
+								cell1.setCellValue(record.getR13_CURRENT());
+								cell1.setCellStyle(textStyle);
 							} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
@@ -2510,8 +2510,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR13_CALL() != null) {
-								cell2.setCellValue(record.getR13_CALL().doubleValue());
-								cell2.setCellStyle(numberStyle);
+								cell2.setCellValue(record.getR13_CALL());
+								cell2.setCellStyle(textStyle);
 							} else {
 								cell2.setCellValue("");
 								cell2.setCellStyle(textStyle);
@@ -2519,8 +2519,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell3 = row.createCell(3);
 							if (record.getR13_SAVINGS() != null) {
-								cell3.setCellValue(record.getR13_SAVINGS().doubleValue());
-								cell3.setCellStyle(numberStyle);
+								cell3.setCellValue(record.getR13_SAVINGS());
+								cell3.setCellStyle(textStyle);
 							} else {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
@@ -2528,8 +2528,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell4 = row.createCell(4);
 							if (record.getR13_NOTICE_0_31_DAYS() != null) {
-								cell4.setCellValue(record.getR13_NOTICE_0_31_DAYS().doubleValue());
-								cell4.setCellStyle(numberStyle);
+								cell4.setCellValue(record.getR13_NOTICE_0_31_DAYS());
+								cell4.setCellStyle(textStyle);
 							} else {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
@@ -2537,8 +2537,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell5 = row.createCell(5);
 							if (record.getR13_NOTICE_32_88_DAYS() != null) {
-								cell5.setCellValue(record.getR13_NOTICE_32_88_DAYS().doubleValue());
-								cell5.setCellStyle(numberStyle);
+								cell5.setCellValue(record.getR13_NOTICE_32_88_DAYS());
+								cell5.setCellStyle(textStyle);
 							} else {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
@@ -2546,8 +2546,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell6 = row.createCell(6);
 							if (record.getR13_91_DEPOSIT_DAY() != null) {
-								cell6.setCellValue(record.getR13_91_DEPOSIT_DAY().doubleValue());
-								cell6.setCellStyle(numberStyle);
+								cell6.setCellValue(record.getR13_91_DEPOSIT_DAY());
+								cell6.setCellStyle(textStyle);
 							} else {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
@@ -2555,8 +2555,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell7 = row.createCell(7);
 							if (record.getR13_FD_1_6_MONTHS() != null) {
-								cell7.setCellValue(record.getR13_FD_1_6_MONTHS().doubleValue());
-								cell7.setCellStyle(numberStyle);
+								cell7.setCellValue(record.getR13_FD_1_6_MONTHS());
+								cell7.setCellStyle(textStyle);
 							} else {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
@@ -2564,8 +2564,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell8 = row.createCell(8);
 							if (record.getR13_FD_7_12_MONTHS() != null) {
-								cell8.setCellValue(record.getR13_FD_7_12_MONTHS().doubleValue());
-								cell8.setCellStyle(numberStyle);
+								cell8.setCellValue(record.getR13_FD_7_12_MONTHS());
+								cell8.setCellStyle(textStyle);
 							} else {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
@@ -2573,8 +2573,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell9 = row.createCell(9);
 							if (record.getR13_FD_13_18_MONTHS() != null) {
-								cell9.setCellValue(record.getR13_FD_13_18_MONTHS().doubleValue());
-								cell9.setCellStyle(numberStyle);
+								cell9.setCellValue(record.getR13_FD_13_18_MONTHS());
+								cell9.setCellStyle(textStyle);
 							} else {
 								cell9.setCellValue("");
 								cell9.setCellStyle(textStyle);
@@ -2582,8 +2582,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell10 = row.createCell(10);
 							if (record.getR13_FD_19_24_MONTHS() != null) {
-								cell10.setCellValue(record.getR13_FD_19_24_MONTHS().doubleValue());
-								cell10.setCellStyle(numberStyle);
+								cell10.setCellValue(record.getR13_FD_19_24_MONTHS());
+								cell10.setCellStyle(textStyle);
 							} else {
 								cell10.setCellValue("");
 								cell10.setCellStyle(textStyle);
@@ -2591,16 +2591,16 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell11 = row.createCell(11);
 							if (record.getR13_FD_OVER_24_MONTHS() != null) {
-								cell11.setCellValue(record.getR13_FD_OVER_24_MONTHS().doubleValue());
-								cell11.setCellStyle(numberStyle);
+								cell11.setCellValue(record.getR13_FD_OVER_24_MONTHS());
+								cell11.setCellStyle(textStyle);
 							} else {
 								cell11.setCellValue("");
 								cell11.setCellStyle(textStyle);
 							}
 							cell12 = row.createCell(12);
 							if (record.getR13_TOTAL() != null) {
-								cell12.setCellValue(record.getR13_TOTAL().doubleValue());
-								cell12.setCellStyle(numberStyle);
+								cell12.setCellValue(record.getR13_TOTAL());
+								cell12.setCellStyle(textStyle);
 							} else {
 								cell12.setCellValue("");
 								cell12.setCellStyle(textStyle);
@@ -2615,8 +2615,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR14_CURRENT() != null) {
-								cell1.setCellValue(record.getR14_CURRENT().doubleValue());
-								cell1.setCellStyle(numberStyle);
+								cell1.setCellValue(record.getR14_CURRENT());
+								cell1.setCellStyle(textStyle);
 							} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
@@ -2624,8 +2624,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR14_CALL() != null) {
-								cell2.setCellValue(record.getR14_CALL().doubleValue());
-								cell2.setCellStyle(numberStyle);
+								cell2.setCellValue(record.getR14_CALL());
+								cell2.setCellStyle(textStyle);
 							} else {
 								cell2.setCellValue("");
 								cell2.setCellStyle(textStyle);
@@ -2633,8 +2633,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell3 = row.createCell(3);
 							if (record.getR14_SAVINGS() != null) {
-								cell3.setCellValue(record.getR14_SAVINGS().doubleValue());
-								cell3.setCellStyle(numberStyle);
+								cell3.setCellValue(record.getR14_SAVINGS());
+								cell3.setCellStyle(textStyle);
 							} else {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
@@ -2642,8 +2642,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell4 = row.createCell(4);
 							if (record.getR14_NOTICE_0_31_DAYS() != null) {
-								cell4.setCellValue(record.getR14_NOTICE_0_31_DAYS().doubleValue());
-								cell4.setCellStyle(numberStyle);
+								cell4.setCellValue(record.getR14_NOTICE_0_31_DAYS());
+								cell4.setCellStyle(textStyle);
 							} else {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
@@ -2651,8 +2651,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell5 = row.createCell(5);
 							if (record.getR14_NOTICE_32_88_DAYS() != null) {
-								cell5.setCellValue(record.getR14_NOTICE_32_88_DAYS().doubleValue());
-								cell5.setCellStyle(numberStyle);
+								cell5.setCellValue(record.getR14_NOTICE_32_88_DAYS());
+								cell5.setCellStyle(textStyle);
 							} else {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
@@ -2660,8 +2660,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell6 = row.createCell(6);
 							if (record.getR14_91_DEPOSIT_DAY() != null) {
-								cell6.setCellValue(record.getR14_91_DEPOSIT_DAY().doubleValue());
-								cell6.setCellStyle(numberStyle);
+								cell6.setCellValue(record.getR14_91_DEPOSIT_DAY());
+								cell6.setCellStyle(textStyle);
 							} else {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
@@ -2669,8 +2669,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell7 = row.createCell(7);
 							if (record.getR14_FD_1_6_MONTHS() != null) {
-								cell7.setCellValue(record.getR14_FD_1_6_MONTHS().doubleValue());
-								cell7.setCellStyle(numberStyle);
+								cell7.setCellValue(record.getR14_FD_1_6_MONTHS());
+								cell7.setCellStyle(textStyle);
 							} else {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
@@ -2678,8 +2678,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell8 = row.createCell(8);
 							if (record.getR14_FD_7_12_MONTHS() != null) {
-								cell8.setCellValue(record.getR14_FD_7_12_MONTHS().doubleValue());
-								cell8.setCellStyle(numberStyle);
+								cell8.setCellValue(record.getR14_FD_7_12_MONTHS());
+								cell8.setCellStyle(textStyle);
 							} else {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
@@ -2687,8 +2687,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell9 = row.createCell(9);
 							if (record.getR14_FD_13_18_MONTHS() != null) {
-								cell9.setCellValue(record.getR14_FD_13_18_MONTHS().doubleValue());
-								cell9.setCellStyle(numberStyle);
+								cell9.setCellValue(record.getR14_FD_13_18_MONTHS());
+								cell9.setCellStyle(textStyle);
 							} else {
 								cell9.setCellValue("");
 								cell9.setCellStyle(textStyle);
@@ -2696,8 +2696,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell10 = row.createCell(10);
 							if (record.getR14_FD_19_24_MONTHS() != null) {
-								cell10.setCellValue(record.getR14_FD_19_24_MONTHS().doubleValue());
-								cell10.setCellStyle(numberStyle);
+								cell10.setCellValue(record.getR14_FD_19_24_MONTHS());
+								cell10.setCellStyle(textStyle);
 							} else {
 								cell10.setCellValue("");
 								cell10.setCellStyle(textStyle);
@@ -2705,16 +2705,16 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell11 = row.createCell(11);
 							if (record.getR14_FD_OVER_24_MONTHS() != null) {
-								cell11.setCellValue(record.getR14_FD_OVER_24_MONTHS().doubleValue());
-								cell11.setCellStyle(numberStyle);
+								cell11.setCellValue(record.getR14_FD_OVER_24_MONTHS());
+								cell11.setCellStyle(textStyle);
 							} else {
 								cell11.setCellValue("");
 								cell11.setCellStyle(textStyle);
 							}
 							cell12 = row.createCell(12);
 							if (record.getR14_TOTAL() != null) {
-								cell12.setCellValue(record.getR14_TOTAL().doubleValue());
-								cell12.setCellStyle(numberStyle);
+								cell12.setCellValue(record.getR14_TOTAL());
+								cell12.setCellStyle(textStyle);
 							} else {
 								cell12.setCellValue("");
 								cell12.setCellStyle(textStyle);
@@ -2728,110 +2728,110 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR15_CURRENT() != null) {
-							    cell1.setCellValue(record.getR15_CURRENT().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR15_CURRENT());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellStyle(textStyle);
 							}
 
 							cell2 = row.createCell(2);
 							if (record.getR15_CALL() != null) {
-							    cell2.setCellValue(record.getR15_CALL().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR15_CALL());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellStyle(textStyle);
 							}
 
 							cell3 = row.createCell(3);
 							if (record.getR15_SAVINGS() != null) {
-							    cell3.setCellValue(record.getR15_SAVINGS().doubleValue());
-							    cell3.setCellStyle(numberStyle);
+							    cell3.setCellValue(record.getR15_SAVINGS());
+							    cell3.setCellStyle(textStyle);
 							} else {
 							    cell3.setCellValue("");
-							    cell3.setCellStyle(numberStyle);
+							    cell3.setCellStyle(textStyle);
 							}
 
 							cell4 = row.createCell(4);
 							if (record.getR15_NOTICE_0_31_DAYS() != null) {
-							    cell4.setCellValue(record.getR15_NOTICE_0_31_DAYS().doubleValue());
-							    cell4.setCellStyle(numberStyle);
+							    cell4.setCellValue(record.getR15_NOTICE_0_31_DAYS());
+							    cell4.setCellStyle(textStyle);
 							} else {
 							    cell4.setCellValue("");
-							    cell4.setCellStyle(numberStyle);
+							    cell4.setCellStyle(textStyle);
 							}
 
 							cell5 = row.createCell(5);
 							if (record.getR15_NOTICE_32_88_DAYS() != null) {
-							    cell5.setCellValue(record.getR15_NOTICE_32_88_DAYS().doubleValue());
-							    cell5.setCellStyle(numberStyle);
+							    cell5.setCellValue(record.getR15_NOTICE_32_88_DAYS());
+							    cell5.setCellStyle(textStyle);
 							} else {
 							    cell5.setCellValue("");
-							    cell5.setCellStyle(numberStyle);
+							    cell5.setCellStyle(textStyle);
 							}
 
 							cell6 = row.createCell(6);
 							if (record.getR15_91_DEPOSIT_DAY() != null) {
-							    cell6.setCellValue(record.getR15_91_DEPOSIT_DAY().doubleValue());
-							    cell6.setCellStyle(numberStyle);
+							    cell6.setCellValue(record.getR15_91_DEPOSIT_DAY());
+							    cell6.setCellStyle(textStyle);
 							} else {
 							    cell6.setCellValue("");
-							    cell6.setCellStyle(numberStyle);
+							    cell6.setCellStyle(textStyle);
 							}
 
 							cell7 = row.createCell(7);
 							if (record.getR15_FD_1_6_MONTHS() != null) {
-							    cell7.setCellValue(record.getR15_FD_1_6_MONTHS().doubleValue());
-							    cell7.setCellStyle(numberStyle);
+							    cell7.setCellValue(record.getR15_FD_1_6_MONTHS());
+							    cell7.setCellStyle(textStyle);
 							} else {
 							    cell7.setCellValue("");
-							    cell7.setCellStyle(numberStyle);
+							    cell7.setCellStyle(textStyle);
 							}
 
 							cell8 = row.createCell(8);
 							if (record.getR15_FD_7_12_MONTHS() != null) {
-							    cell8.setCellValue(record.getR15_FD_7_12_MONTHS().doubleValue());
-							    cell8.setCellStyle(numberStyle);
+							    cell8.setCellValue(record.getR15_FD_7_12_MONTHS());
+							    cell8.setCellStyle(textStyle);
 							} else {
 							    cell8.setCellValue("");
-							    cell8.setCellStyle(numberStyle);
+							    cell8.setCellStyle(textStyle);
 							}
 
 							cell9 = row.createCell(9);
 							if (record.getR15_FD_13_18_MONTHS() != null) {
-							    cell9.setCellValue(record.getR15_FD_13_18_MONTHS().doubleValue());
-							    cell9.setCellStyle(numberStyle);
+							    cell9.setCellValue(record.getR15_FD_13_18_MONTHS());
+							    cell9.setCellStyle(textStyle);
 							} else {
 							    cell9.setCellValue("");
-							    cell9.setCellStyle(numberStyle);
+							    cell9.setCellStyle(textStyle);
 							}
 
 							cell10 = row.createCell(10);
 							if (record.getR15_FD_19_24_MONTHS() != null) {
-							    cell10.setCellValue(record.getR15_FD_19_24_MONTHS().doubleValue());
-							    cell10.setCellStyle(numberStyle);
+							    cell10.setCellValue(record.getR15_FD_19_24_MONTHS());
+							    cell10.setCellStyle(textStyle);
 							} else {
 							    cell10.setCellValue("");
-							    cell10.setCellStyle(numberStyle);
+							    cell10.setCellStyle(textStyle);
 							}
 
 							cell11 = row.createCell(11);
 							if (record.getR15_FD_OVER_24_MONTHS() != null) {
-							    cell11.setCellValue(record.getR15_FD_OVER_24_MONTHS().doubleValue());
-							    cell11.setCellStyle(numberStyle);
+							    cell11.setCellValue(record.getR15_FD_OVER_24_MONTHS());
+							    cell11.setCellStyle(textStyle);
 							} else {
 							    cell11.setCellValue("");
-							    cell11.setCellStyle(numberStyle);
+							    cell11.setCellStyle(textStyle);
 							}
 
 							cell12 = row.createCell(12);
 							if (record.getR15_TOTAL() != null) {
-							    cell12.setCellValue(record.getR15_TOTAL().doubleValue());
-							    cell12.setCellStyle(numberStyle);
+							    cell12.setCellValue(record.getR15_TOTAL());
+							    cell12.setCellStyle(textStyle);
 							} else {
 							    cell12.setCellValue("");
-							    cell12.setCellStyle(numberStyle);
+							    cell12.setCellStyle(textStyle);
 							}
 
 
@@ -2940,8 +2940,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 									Cell cell1 = row.createCell(1);
 						if (record.getR10_CURRENT() != null) {
-							cell1.setCellValue(record.getR10_CURRENT().doubleValue());
-							cell1.setCellStyle(numberStyle);
+							cell1.setCellValue(record.getR10_CURRENT());
+							cell1.setCellStyle(textStyle);
 						} else {
 							cell1.setCellValue("");
 							cell1.setCellStyle(textStyle);
@@ -2949,8 +2949,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell2 = row.createCell(2);
 						if (record.getR10_CALL() != null) {
-							cell2.setCellValue(record.getR10_CALL().doubleValue());
-							cell2.setCellStyle(numberStyle);
+							cell2.setCellValue(record.getR10_CALL());
+							cell2.setCellStyle(textStyle);
 						} else {
 							cell2.setCellValue("");
 							cell2.setCellStyle(textStyle);
@@ -2958,8 +2958,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell3 = row.createCell(3);
 						if (record.getR10_SAVINGS() != null) {
-							cell3.setCellValue(record.getR10_SAVINGS().doubleValue());
-							cell3.setCellStyle(numberStyle);
+							cell3.setCellValue(record.getR10_SAVINGS());
+							cell3.setCellStyle(textStyle);
 						} else {
 							cell3.setCellValue("");
 							cell3.setCellStyle(textStyle);
@@ -2967,8 +2967,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell4 = row.createCell(4);
 						if (record.getR10_NOTICE_0_31_DAYS() != null) {
-							cell4.setCellValue(record.getR10_NOTICE_0_31_DAYS().doubleValue());
-							cell4.setCellStyle(numberStyle);
+							cell4.setCellValue(record.getR10_NOTICE_0_31_DAYS());
+							cell4.setCellStyle(textStyle);
 						} else {
 							cell4.setCellValue("");
 							cell4.setCellStyle(textStyle);
@@ -2976,8 +2976,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell5 = row.createCell(5);
 						if (record.getR10_NOTICE_32_88_DAYS() != null) {
-							cell5.setCellValue(record.getR10_NOTICE_32_88_DAYS().doubleValue());
-							cell5.setCellStyle(numberStyle);
+							cell5.setCellValue(record.getR10_NOTICE_32_88_DAYS());
+							cell5.setCellStyle(textStyle);
 						} else {
 							cell5.setCellValue("");
 							cell5.setCellStyle(textStyle);
@@ -2985,8 +2985,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell6 = row.createCell(6);
 						if (record.getR10_91_DEPOSIT_DAY() != null) {
-							cell6.setCellValue(record.getR10_91_DEPOSIT_DAY().doubleValue());
-							cell6.setCellStyle(numberStyle);
+							cell6.setCellValue(record.getR10_91_DEPOSIT_DAY());
+							cell6.setCellStyle(textStyle);
 						} else {
 							cell6.setCellValue("");
 							cell6.setCellStyle(textStyle);
@@ -2994,8 +2994,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell7 = row.createCell(7);
 						if (record.getR10_FD_1_6_MONTHS() != null) {
-							cell7.setCellValue(record.getR10_FD_1_6_MONTHS().doubleValue());
-							cell7.setCellStyle(numberStyle);
+							cell7.setCellValue(record.getR10_FD_1_6_MONTHS());
+							cell7.setCellStyle(textStyle);
 						} else {
 							cell7.setCellValue("");
 							cell7.setCellStyle(textStyle);
@@ -3003,8 +3003,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell8 = row.createCell(8);
 						if (record.getR10_FD_7_12_MONTHS() != null) {
-							cell8.setCellValue(record.getR10_FD_7_12_MONTHS().doubleValue());
-							cell8.setCellStyle(numberStyle);
+							cell8.setCellValue(record.getR10_FD_7_12_MONTHS());
+							cell8.setCellStyle(textStyle);
 						} else {
 							cell8.setCellValue("");
 							cell8.setCellStyle(textStyle);
@@ -3012,8 +3012,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell9 = row.createCell(9);
 						if (record.getR10_FD_13_18_MONTHS() != null) {
-							cell9.setCellValue(record.getR10_FD_13_18_MONTHS().doubleValue());
-							cell9.setCellStyle(numberStyle);
+							cell9.setCellValue(record.getR10_FD_13_18_MONTHS());
+							cell9.setCellStyle(textStyle);
 						} else {
 							cell9.setCellValue("");
 							cell9.setCellStyle(textStyle);
@@ -3021,8 +3021,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell10 = row.createCell(10);
 						if (record.getR10_FD_19_24_MONTHS() != null) {
-							cell10.setCellValue(record.getR10_FD_19_24_MONTHS().doubleValue());
-							cell10.setCellStyle(numberStyle);
+							cell10.setCellValue(record.getR10_FD_19_24_MONTHS());
+							cell10.setCellStyle(textStyle);
 						} else {
 							cell10.setCellValue("");
 							cell10.setCellStyle(textStyle);
@@ -3030,8 +3030,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell11 = row.createCell(11);
 						if (record.getR10_FD_OVER_24_MONTHS() != null) {
-							cell11.setCellValue(record.getR10_FD_OVER_24_MONTHS().doubleValue());
-							cell11.setCellStyle(numberStyle);
+							cell11.setCellValue(record.getR10_FD_OVER_24_MONTHS());
+							cell11.setCellStyle(textStyle);
 						} else {
 							cell11.setCellValue("");
 							cell11.setCellStyle(textStyle);
@@ -3039,8 +3039,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 						
 						Cell cell12 = row.createCell(12);
 						if (record.getR10_TOTAL() != null) {
-							cell12.setCellValue(record.getR10_TOTAL().doubleValue());
-							cell12.setCellStyle(numberStyle);
+							cell12.setCellValue(record.getR10_TOTAL());
+							cell12.setCellStyle(textStyle);
 						} else {
 							cell12.setCellValue("");
 							cell12.setCellStyle(textStyle);
@@ -3054,8 +3054,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR11_CURRENT() != null) {
-							cell1.setCellValue(record.getR11_CURRENT().doubleValue());
-							cell1.setCellStyle(numberStyle);
+							cell1.setCellValue(record.getR11_CURRENT());
+							cell1.setCellStyle(textStyle);
 						} else {
 							cell1.setCellValue("");
 							cell1.setCellStyle(textStyle);
@@ -3063,8 +3063,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR11_CALL() != null) {
-							cell2.setCellValue(record.getR11_CALL().doubleValue());
-							cell2.setCellStyle(numberStyle);
+							cell2.setCellValue(record.getR11_CALL());
+							cell2.setCellStyle(textStyle);
 						} else {
 							cell2.setCellValue("");
 							cell2.setCellStyle(textStyle);
@@ -3072,8 +3072,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell3 = row.createCell(3);
 						if (record.getR11_SAVINGS() != null) {
-							cell3.setCellValue(record.getR11_SAVINGS().doubleValue());
-							cell3.setCellStyle(numberStyle);
+							cell3.setCellValue(record.getR11_SAVINGS());
+							cell3.setCellStyle(textStyle);
 						} else {
 							cell3.setCellValue("");
 							cell3.setCellStyle(textStyle);
@@ -3081,8 +3081,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell4 = row.createCell(4);
 						if (record.getR11_NOTICE_0_31_DAYS() != null) {
-							cell4.setCellValue(record.getR11_NOTICE_0_31_DAYS().doubleValue());
-							cell4.setCellStyle(numberStyle);
+							cell4.setCellValue(record.getR11_NOTICE_0_31_DAYS());
+							cell4.setCellStyle(textStyle);
 						} else {
 							cell4.setCellValue("");
 							cell4.setCellStyle(textStyle);
@@ -3090,8 +3090,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell5 = row.createCell(5);
 						if (record.getR11_NOTICE_32_88_DAYS() != null) {
-							cell5.setCellValue(record.getR11_NOTICE_32_88_DAYS().doubleValue());
-							cell5.setCellStyle(numberStyle);
+							cell5.setCellValue(record.getR11_NOTICE_32_88_DAYS());
+							cell5.setCellStyle(textStyle);
 						} else {
 							cell5.setCellValue("");
 							cell5.setCellStyle(textStyle);
@@ -3099,8 +3099,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell6 = row.createCell(6);
 						if (record.getR11_91_DEPOSIT_DAY() != null) {
-							cell6.setCellValue(record.getR11_91_DEPOSIT_DAY().doubleValue());
-							cell6.setCellStyle(numberStyle);
+							cell6.setCellValue(record.getR11_91_DEPOSIT_DAY());
+							cell6.setCellStyle(textStyle);
 						} else {
 							cell6.setCellValue("");
 							cell6.setCellStyle(textStyle);
@@ -3108,8 +3108,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell7 = row.createCell(7);
 						if (record.getR11_FD_1_6_MONTHS() != null) {
-							cell7.setCellValue(record.getR11_FD_1_6_MONTHS().doubleValue());
-							cell7.setCellStyle(numberStyle);
+							cell7.setCellValue(record.getR11_FD_1_6_MONTHS());
+							cell7.setCellStyle(textStyle);
 						} else {
 							cell7.setCellValue("");
 							cell7.setCellStyle(textStyle);
@@ -3117,8 +3117,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell8 = row.createCell(8);
 						if (record.getR11_FD_7_12_MONTHS() != null) {
-							cell8.setCellValue(record.getR11_FD_7_12_MONTHS().doubleValue());
-							cell8.setCellStyle(numberStyle);
+							cell8.setCellValue(record.getR11_FD_7_12_MONTHS());
+							cell8.setCellStyle(textStyle);
 						} else {
 							cell8.setCellValue("");
 							cell8.setCellStyle(textStyle);
@@ -3126,8 +3126,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell9 = row.createCell(9);
 						if (record.getR11_FD_13_18_MONTHS() != null) {
-							cell9.setCellValue(record.getR11_FD_13_18_MONTHS().doubleValue());
-							cell9.setCellStyle(numberStyle);
+							cell9.setCellValue(record.getR11_FD_13_18_MONTHS());
+							cell9.setCellStyle(textStyle);
 						} else {
 							cell9.setCellValue("");
 							cell9.setCellStyle(textStyle);
@@ -3135,8 +3135,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell10 = row.createCell(10);
 						if (record.getR11_FD_19_24_MONTHS() != null) {
-							cell10.setCellValue(record.getR11_FD_19_24_MONTHS().doubleValue());
-							cell10.setCellStyle(numberStyle);
+							cell10.setCellValue(record.getR11_FD_19_24_MONTHS());
+							cell10.setCellStyle(textStyle);
 						} else {
 							cell10.setCellValue("");
 							cell10.setCellStyle(textStyle);
@@ -3144,16 +3144,16 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell11 = row.createCell(11);
 						if (record.getR11_FD_OVER_24_MONTHS() != null) {
-							cell11.setCellValue(record.getR11_FD_OVER_24_MONTHS().doubleValue());
-							cell11.setCellStyle(numberStyle);
+							cell11.setCellValue(record.getR11_FD_OVER_24_MONTHS());
+							cell11.setCellStyle(textStyle);
 						} else {
 							cell11.setCellValue("");
 							cell11.setCellStyle(textStyle);
 						}
 						cell12 = row.createCell(12);
 						if (record.getR11_TOTAL() != null) {
-							cell12.setCellValue(record.getR11_TOTAL().doubleValue());
-							cell12.setCellStyle(numberStyle);
+							cell12.setCellValue(record.getR11_TOTAL());
+							cell12.setCellStyle(textStyle);
 						} else {
 							cell12.setCellValue("");
 							cell12.setCellStyle(textStyle);
@@ -3168,8 +3168,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR12_CURRENT() != null) {
-							cell1.setCellValue(record.getR12_CURRENT().doubleValue());
-							cell1.setCellStyle(numberStyle);
+							cell1.setCellValue(record.getR12_CURRENT());
+							cell1.setCellStyle(textStyle);
 						} else {
 							cell1.setCellValue("");
 							cell1.setCellStyle(textStyle);
@@ -3177,8 +3177,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR12_CALL() != null) {
-							cell2.setCellValue(record.getR12_CALL().doubleValue());
-							cell2.setCellStyle(numberStyle);
+							cell2.setCellValue(record.getR12_CALL());
+							cell2.setCellStyle(textStyle);
 						} else {
 							cell2.setCellValue("");
 							cell2.setCellStyle(textStyle);
@@ -3186,8 +3186,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell3 = row.createCell(3);
 						if (record.getR12_SAVINGS() != null) {
-							cell3.setCellValue(record.getR12_SAVINGS().doubleValue());
-							cell3.setCellStyle(numberStyle);
+							cell3.setCellValue(record.getR12_SAVINGS());
+							cell3.setCellStyle(textStyle);
 						} else {
 							cell3.setCellValue("");
 							cell3.setCellStyle(textStyle);
@@ -3195,8 +3195,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell4 = row.createCell(4);
 						if (record.getR12_NOTICE_0_31_DAYS() != null) {
-							cell4.setCellValue(record.getR12_NOTICE_0_31_DAYS().doubleValue());
-							cell4.setCellStyle(numberStyle);
+							cell4.setCellValue(record.getR12_NOTICE_0_31_DAYS());
+							cell4.setCellStyle(textStyle);
 						} else {
 							cell4.setCellValue("");
 							cell4.setCellStyle(textStyle);
@@ -3204,8 +3204,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell5 = row.createCell(5);
 						if (record.getR12_NOTICE_32_88_DAYS() != null) {
-							cell5.setCellValue(record.getR12_NOTICE_32_88_DAYS().doubleValue());
-							cell5.setCellStyle(numberStyle);
+							cell5.setCellValue(record.getR12_NOTICE_32_88_DAYS());
+							cell5.setCellStyle(textStyle);
 						} else {
 							cell5.setCellValue("");
 							cell5.setCellStyle(textStyle);
@@ -3213,8 +3213,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell6 = row.createCell(6);
 						if (record.getR12_91_DEPOSIT_DAY() != null) {
-							cell6.setCellValue(record.getR12_91_DEPOSIT_DAY().doubleValue());
-							cell6.setCellStyle(numberStyle);
+							cell6.setCellValue(record.getR12_91_DEPOSIT_DAY());
+							cell6.setCellStyle(textStyle);
 						} else {
 							cell6.setCellValue("");
 							cell6.setCellStyle(textStyle);
@@ -3222,8 +3222,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell7 = row.createCell(7);
 						if (record.getR12_FD_1_6_MONTHS() != null) {
-							cell7.setCellValue(record.getR12_FD_1_6_MONTHS().doubleValue());
-							cell7.setCellStyle(numberStyle);
+							cell7.setCellValue(record.getR12_FD_1_6_MONTHS());
+							cell7.setCellStyle(textStyle);
 						} else {
 							cell7.setCellValue("");
 							cell7.setCellStyle(textStyle);
@@ -3231,8 +3231,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell8 = row.createCell(8);
 						if (record.getR12_FD_7_12_MONTHS() != null) {
-							cell8.setCellValue(record.getR12_FD_7_12_MONTHS().doubleValue());
-							cell8.setCellStyle(numberStyle);
+							cell8.setCellValue(record.getR12_FD_7_12_MONTHS());
+							cell8.setCellStyle(textStyle);
 						} else {
 							cell8.setCellValue("");
 							cell8.setCellStyle(textStyle);
@@ -3240,8 +3240,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell9 = row.createCell(9);
 						if (record.getR12_FD_13_18_MONTHS() != null) {
-							cell9.setCellValue(record.getR12_FD_13_18_MONTHS().doubleValue());
-							cell9.setCellStyle(numberStyle);
+							cell9.setCellValue(record.getR12_FD_13_18_MONTHS());
+							cell9.setCellStyle(textStyle);
 						} else {
 							cell9.setCellValue("");
 							cell9.setCellStyle(textStyle);
@@ -3249,8 +3249,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell10 = row.createCell(10);
 						if (record.getR12_FD_19_24_MONTHS() != null) {
-							cell10.setCellValue(record.getR12_FD_19_24_MONTHS().doubleValue());
-							cell10.setCellStyle(numberStyle);
+							cell10.setCellValue(record.getR12_FD_19_24_MONTHS());
+							cell10.setCellStyle(textStyle);
 						} else {
 							cell10.setCellValue("");
 							cell10.setCellStyle(textStyle);
@@ -3258,16 +3258,16 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell11 = row.createCell(11);
 						if (record.getR12_FD_OVER_24_MONTHS() != null) {
-							cell11.setCellValue(record.getR12_FD_OVER_24_MONTHS().doubleValue());
-							cell11.setCellStyle(numberStyle);
+							cell11.setCellValue(record.getR12_FD_OVER_24_MONTHS());
+							cell11.setCellStyle(textStyle);
 						} else {
 							cell11.setCellValue("");
 							cell11.setCellStyle(textStyle);
 						}
 						cell12 = row.createCell(12);
 						if (record.getR12_TOTAL() != null) {
-							cell12.setCellValue(record.getR12_TOTAL().doubleValue());
-							cell12.setCellStyle(numberStyle);
+							cell12.setCellValue(record.getR12_TOTAL());
+							cell12.setCellStyle(textStyle);
 						} else {
 							cell12.setCellValue("");
 							cell12.setCellStyle(textStyle);
@@ -3282,8 +3282,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR13_CURRENT() != null) {
-							cell1.setCellValue(record.getR13_CURRENT().doubleValue());
-							cell1.setCellStyle(numberStyle);
+							cell1.setCellValue(record.getR13_CURRENT());
+							cell1.setCellStyle(textStyle);
 						} else {
 							cell1.setCellValue("");
 							cell1.setCellStyle(textStyle);
@@ -3291,8 +3291,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR13_CALL() != null) {
-							cell2.setCellValue(record.getR13_CALL().doubleValue());
-							cell2.setCellStyle(numberStyle);
+							cell2.setCellValue(record.getR13_CALL());
+							cell2.setCellStyle(textStyle);
 						} else {
 							cell2.setCellValue("");
 							cell2.setCellStyle(textStyle);
@@ -3300,8 +3300,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell3 = row.createCell(3);
 						if (record.getR13_SAVINGS() != null) {
-							cell3.setCellValue(record.getR13_SAVINGS().doubleValue());
-							cell3.setCellStyle(numberStyle);
+							cell3.setCellValue(record.getR13_SAVINGS());
+							cell3.setCellStyle(textStyle);
 						} else {
 							cell3.setCellValue("");
 							cell3.setCellStyle(textStyle);
@@ -3309,8 +3309,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell4 = row.createCell(4);
 						if (record.getR13_NOTICE_0_31_DAYS() != null) {
-							cell4.setCellValue(record.getR13_NOTICE_0_31_DAYS().doubleValue());
-							cell4.setCellStyle(numberStyle);
+							cell4.setCellValue(record.getR13_NOTICE_0_31_DAYS());
+							cell4.setCellStyle(textStyle);
 						} else {
 							cell4.setCellValue("");
 							cell4.setCellStyle(textStyle);
@@ -3318,8 +3318,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell5 = row.createCell(5);
 						if (record.getR13_NOTICE_32_88_DAYS() != null) {
-							cell5.setCellValue(record.getR13_NOTICE_32_88_DAYS().doubleValue());
-							cell5.setCellStyle(numberStyle);
+							cell5.setCellValue(record.getR13_NOTICE_32_88_DAYS());
+							cell5.setCellStyle(textStyle);
 						} else {
 							cell5.setCellValue("");
 							cell5.setCellStyle(textStyle);
@@ -3327,8 +3327,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell6 = row.createCell(6);
 						if (record.getR13_91_DEPOSIT_DAY() != null) {
-							cell6.setCellValue(record.getR13_91_DEPOSIT_DAY().doubleValue());
-							cell6.setCellStyle(numberStyle);
+							cell6.setCellValue(record.getR13_91_DEPOSIT_DAY());
+							cell6.setCellStyle(textStyle);
 						} else {
 							cell6.setCellValue("");
 							cell6.setCellStyle(textStyle);
@@ -3336,8 +3336,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell7 = row.createCell(7);
 						if (record.getR13_FD_1_6_MONTHS() != null) {
-							cell7.setCellValue(record.getR13_FD_1_6_MONTHS().doubleValue());
-							cell7.setCellStyle(numberStyle);
+							cell7.setCellValue(record.getR13_FD_1_6_MONTHS());
+							cell7.setCellStyle(textStyle);
 						} else {
 							cell7.setCellValue("");
 							cell7.setCellStyle(textStyle);
@@ -3345,8 +3345,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell8 = row.createCell(8);
 						if (record.getR13_FD_7_12_MONTHS() != null) {
-							cell8.setCellValue(record.getR13_FD_7_12_MONTHS().doubleValue());
-							cell8.setCellStyle(numberStyle);
+							cell8.setCellValue(record.getR13_FD_7_12_MONTHS());
+							cell8.setCellStyle(textStyle);
 						} else {
 							cell8.setCellValue("");
 							cell8.setCellStyle(textStyle);
@@ -3354,8 +3354,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell9 = row.createCell(9);
 						if (record.getR13_FD_13_18_MONTHS() != null) {
-							cell9.setCellValue(record.getR13_FD_13_18_MONTHS().doubleValue());
-							cell9.setCellStyle(numberStyle);
+							cell9.setCellValue(record.getR13_FD_13_18_MONTHS());
+							cell9.setCellStyle(textStyle);
 						} else {
 							cell9.setCellValue("");
 							cell9.setCellStyle(textStyle);
@@ -3363,8 +3363,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell10 = row.createCell(10);
 						if (record.getR13_FD_19_24_MONTHS() != null) {
-							cell10.setCellValue(record.getR13_FD_19_24_MONTHS().doubleValue());
-							cell10.setCellStyle(numberStyle);
+							cell10.setCellValue(record.getR13_FD_19_24_MONTHS());
+							cell10.setCellStyle(textStyle);
 						} else {
 							cell10.setCellValue("");
 							cell10.setCellStyle(textStyle);
@@ -3372,16 +3372,16 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell11 = row.createCell(11);
 						if (record.getR13_FD_OVER_24_MONTHS() != null) {
-							cell11.setCellValue(record.getR13_FD_OVER_24_MONTHS().doubleValue());
-							cell11.setCellStyle(numberStyle);
+							cell11.setCellValue(record.getR13_FD_OVER_24_MONTHS());
+							cell11.setCellStyle(textStyle);
 						} else {
 							cell11.setCellValue("");
 							cell11.setCellStyle(textStyle);
 						}
 						cell12 = row.createCell(12);
 						if (record.getR13_TOTAL() != null) {
-							cell12.setCellValue(record.getR13_TOTAL().doubleValue());
-							cell12.setCellStyle(numberStyle);
+							cell12.setCellValue(record.getR13_TOTAL());
+							cell12.setCellStyle(textStyle);
 						} else {
 							cell12.setCellValue("");
 							cell12.setCellStyle(textStyle);
@@ -3396,8 +3396,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR14_CURRENT() != null) {
-							cell1.setCellValue(record.getR14_CURRENT().doubleValue());
-							cell1.setCellStyle(numberStyle);
+							cell1.setCellValue(record.getR14_CURRENT());
+							cell1.setCellStyle(textStyle);
 						} else {
 							cell1.setCellValue("");
 							cell1.setCellStyle(textStyle);
@@ -3405,8 +3405,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR14_CALL() != null) {
-							cell2.setCellValue(record.getR14_CALL().doubleValue());
-							cell2.setCellStyle(numberStyle);
+							cell2.setCellValue(record.getR14_CALL());
+							cell2.setCellStyle(textStyle);
 						} else {
 							cell2.setCellValue("");
 							cell2.setCellStyle(textStyle);
@@ -3414,8 +3414,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell3 = row.createCell(3);
 						if (record.getR14_SAVINGS() != null) {
-							cell3.setCellValue(record.getR14_SAVINGS().doubleValue());
-							cell3.setCellStyle(numberStyle);
+							cell3.setCellValue(record.getR14_SAVINGS());
+							cell3.setCellStyle(textStyle);
 						} else {
 							cell3.setCellValue("");
 							cell3.setCellStyle(textStyle);
@@ -3423,8 +3423,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell4 = row.createCell(4);
 						if (record.getR14_NOTICE_0_31_DAYS() != null) {
-							cell4.setCellValue(record.getR14_NOTICE_0_31_DAYS().doubleValue());
-							cell4.setCellStyle(numberStyle);
+							cell4.setCellValue(record.getR14_NOTICE_0_31_DAYS());
+							cell4.setCellStyle(textStyle);
 						} else {
 							cell4.setCellValue("");
 							cell4.setCellStyle(textStyle);
@@ -3432,8 +3432,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell5 = row.createCell(5);
 						if (record.getR14_NOTICE_32_88_DAYS() != null) {
-							cell5.setCellValue(record.getR14_NOTICE_32_88_DAYS().doubleValue());
-							cell5.setCellStyle(numberStyle);
+							cell5.setCellValue(record.getR14_NOTICE_32_88_DAYS());
+							cell5.setCellStyle(textStyle);
 						} else {
 							cell5.setCellValue("");
 							cell5.setCellStyle(textStyle);
@@ -3441,8 +3441,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell6 = row.createCell(6);
 						if (record.getR14_91_DEPOSIT_DAY() != null) {
-							cell6.setCellValue(record.getR14_91_DEPOSIT_DAY().doubleValue());
-							cell6.setCellStyle(numberStyle);
+							cell6.setCellValue(record.getR14_91_DEPOSIT_DAY());
+							cell6.setCellStyle(textStyle);
 						} else {
 							cell6.setCellValue("");
 							cell6.setCellStyle(textStyle);
@@ -3450,8 +3450,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell7 = row.createCell(7);
 						if (record.getR14_FD_1_6_MONTHS() != null) {
-							cell7.setCellValue(record.getR14_FD_1_6_MONTHS().doubleValue());
-							cell7.setCellStyle(numberStyle);
+							cell7.setCellValue(record.getR14_FD_1_6_MONTHS());
+							cell7.setCellStyle(textStyle);
 						} else {
 							cell7.setCellValue("");
 							cell7.setCellStyle(textStyle);
@@ -3459,8 +3459,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell8 = row.createCell(8);
 						if (record.getR14_FD_7_12_MONTHS() != null) {
-							cell8.setCellValue(record.getR14_FD_7_12_MONTHS().doubleValue());
-							cell8.setCellStyle(numberStyle);
+							cell8.setCellValue(record.getR14_FD_7_12_MONTHS());
+							cell8.setCellStyle(textStyle);
 						} else {
 							cell8.setCellValue("");
 							cell8.setCellStyle(textStyle);
@@ -3468,8 +3468,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell9 = row.createCell(9);
 						if (record.getR14_FD_13_18_MONTHS() != null) {
-							cell9.setCellValue(record.getR14_FD_13_18_MONTHS().doubleValue());
-							cell9.setCellStyle(numberStyle);
+							cell9.setCellValue(record.getR14_FD_13_18_MONTHS());
+							cell9.setCellStyle(textStyle);
 						} else {
 							cell9.setCellValue("");
 							cell9.setCellStyle(textStyle);
@@ -3477,8 +3477,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell10 = row.createCell(10);
 						if (record.getR14_FD_19_24_MONTHS() != null) {
-							cell10.setCellValue(record.getR14_FD_19_24_MONTHS().doubleValue());
-							cell10.setCellStyle(numberStyle);
+							cell10.setCellValue(record.getR14_FD_19_24_MONTHS());
+							cell10.setCellStyle(textStyle);
 						} else {
 							cell10.setCellValue("");
 							cell10.setCellStyle(textStyle);
@@ -3486,16 +3486,16 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell11 = row.createCell(11);
 						if (record.getR14_FD_OVER_24_MONTHS() != null) {
-							cell11.setCellValue(record.getR14_FD_OVER_24_MONTHS().doubleValue());
-							cell11.setCellStyle(numberStyle);
+							cell11.setCellValue(record.getR14_FD_OVER_24_MONTHS());
+							cell11.setCellStyle(textStyle);
 						} else {
 							cell11.setCellValue("");
 							cell11.setCellStyle(textStyle);
 						}
 						cell12 = row.createCell(12);
 						if (record.getR14_TOTAL() != null) {
-							cell12.setCellValue(record.getR14_TOTAL().doubleValue());
-							cell12.setCellStyle(numberStyle);
+							cell12.setCellValue(record.getR14_TOTAL());
+							cell12.setCellStyle(textStyle);
 						} else {
 							cell12.setCellValue("");
 							cell12.setCellStyle(textStyle);
@@ -3509,110 +3509,110 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR15_CURRENT() != null) {
-						    cell1.setCellValue(record.getR15_CURRENT().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR15_CURRENT());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellStyle(textStyle);
 						}
 
 						cell2 = row.createCell(2);
 						if (record.getR15_CALL() != null) {
-						    cell2.setCellValue(record.getR15_CALL().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR15_CALL());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellStyle(textStyle);
 						}
 
 						cell3 = row.createCell(3);
 						if (record.getR15_SAVINGS() != null) {
-						    cell3.setCellValue(record.getR15_SAVINGS().doubleValue());
-						    cell3.setCellStyle(numberStyle);
+						    cell3.setCellValue(record.getR15_SAVINGS());
+						    cell3.setCellStyle(textStyle);
 						} else {
 						    cell3.setCellValue("");
-						    cell3.setCellStyle(numberStyle);
+						    cell3.setCellStyle(textStyle);
 						}
 
 						cell4 = row.createCell(4);
 						if (record.getR15_NOTICE_0_31_DAYS() != null) {
-						    cell4.setCellValue(record.getR15_NOTICE_0_31_DAYS().doubleValue());
-						    cell4.setCellStyle(numberStyle);
+						    cell4.setCellValue(record.getR15_NOTICE_0_31_DAYS());
+						    cell4.setCellStyle(textStyle);
 						} else {
 						    cell4.setCellValue("");
-						    cell4.setCellStyle(numberStyle);
+						    cell4.setCellStyle(textStyle);
 						}
 
 						cell5 = row.createCell(5);
 						if (record.getR15_NOTICE_32_88_DAYS() != null) {
-						    cell5.setCellValue(record.getR15_NOTICE_32_88_DAYS().doubleValue());
-						    cell5.setCellStyle(numberStyle);
+						    cell5.setCellValue(record.getR15_NOTICE_32_88_DAYS());
+						    cell5.setCellStyle(textStyle);
 						} else {
 						    cell5.setCellValue("");
-						    cell5.setCellStyle(numberStyle);
+						    cell5.setCellStyle(textStyle);
 						}
 
 						cell6 = row.createCell(6);
 						if (record.getR15_91_DEPOSIT_DAY() != null) {
-						    cell6.setCellValue(record.getR15_91_DEPOSIT_DAY().doubleValue());
-						    cell6.setCellStyle(numberStyle);
+						    cell6.setCellValue(record.getR15_91_DEPOSIT_DAY());
+						    cell6.setCellStyle(textStyle);
 						} else {
 						    cell6.setCellValue("");
-						    cell6.setCellStyle(numberStyle);
+						    cell6.setCellStyle(textStyle);
 						}
 
 						cell7 = row.createCell(7);
 						if (record.getR15_FD_1_6_MONTHS() != null) {
-						    cell7.setCellValue(record.getR15_FD_1_6_MONTHS().doubleValue());
-						    cell7.setCellStyle(numberStyle);
+						    cell7.setCellValue(record.getR15_FD_1_6_MONTHS());
+						    cell7.setCellStyle(textStyle);
 						} else {
 						    cell7.setCellValue("");
-						    cell7.setCellStyle(numberStyle);
+						    cell7.setCellStyle(textStyle);
 						}
 
 						cell8 = row.createCell(8);
 						if (record.getR15_FD_7_12_MONTHS() != null) {
-						    cell8.setCellValue(record.getR15_FD_7_12_MONTHS().doubleValue());
-						    cell8.setCellStyle(numberStyle);
+						    cell8.setCellValue(record.getR15_FD_7_12_MONTHS());
+						    cell8.setCellStyle(textStyle);
 						} else {
 						    cell8.setCellValue("");
-						    cell8.setCellStyle(numberStyle);
+						    cell8.setCellStyle(textStyle);
 						}
 
 						cell9 = row.createCell(9);
 						if (record.getR15_FD_13_18_MONTHS() != null) {
-						    cell9.setCellValue(record.getR15_FD_13_18_MONTHS().doubleValue());
-						    cell9.setCellStyle(numberStyle);
+						    cell9.setCellValue(record.getR15_FD_13_18_MONTHS());
+						    cell9.setCellStyle(textStyle);
 						} else {
 						    cell9.setCellValue("");
-						    cell9.setCellStyle(numberStyle);
+						    cell9.setCellStyle(textStyle);
 						}
 
 						cell10 = row.createCell(10);
 						if (record.getR15_FD_19_24_MONTHS() != null) {
-						    cell10.setCellValue(record.getR15_FD_19_24_MONTHS().doubleValue());
-						    cell10.setCellStyle(numberStyle);
+						    cell10.setCellValue(record.getR15_FD_19_24_MONTHS());
+						    cell10.setCellStyle(textStyle);
 						} else {
 						    cell10.setCellValue("");
-						    cell10.setCellStyle(numberStyle);
+						    cell10.setCellStyle(textStyle);
 						}
 
 						cell11 = row.createCell(11);
 						if (record.getR15_FD_OVER_24_MONTHS() != null) {
-						    cell11.setCellValue(record.getR15_FD_OVER_24_MONTHS().doubleValue());
-						    cell11.setCellStyle(numberStyle);
+						    cell11.setCellValue(record.getR15_FD_OVER_24_MONTHS());
+						    cell11.setCellStyle(textStyle);
 						} else {
 						    cell11.setCellValue("");
-						    cell11.setCellStyle(numberStyle);
+						    cell11.setCellStyle(textStyle);
 						}
 
 						cell12 = row.createCell(12);
 						if (record.getR15_TOTAL() != null) {
-						    cell12.setCellValue(record.getR15_TOTAL().doubleValue());
-						    cell12.setCellStyle(numberStyle);
+						    cell12.setCellValue(record.getR15_TOTAL());
+						    cell12.setCellStyle(textStyle);
 						} else {
 						    cell12.setCellValue("");
-						    cell12.setCellStyle(numberStyle);
+						    cell12.setCellStyle(textStyle);
 						}
 
 						}
@@ -3716,8 +3716,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 			
 								Cell cell1 = row.createCell(1);
 							if (record.getR10_CURRENT() != null) {
-								cell1.setCellValue(record.getR10_CURRENT().doubleValue());
-								cell1.setCellStyle(numberStyle);
+								cell1.setCellValue(record.getR10_CURRENT());
+								cell1.setCellStyle(textStyle);
 							} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
@@ -3725,8 +3725,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell2 = row.createCell(2);
 							if (record.getR10_CALL() != null) {
-								cell2.setCellValue(record.getR10_CALL().doubleValue());
-								cell2.setCellStyle(numberStyle);
+								cell2.setCellValue(record.getR10_CALL());
+								cell2.setCellStyle(textStyle);
 							} else {
 								cell2.setCellValue("");
 								cell2.setCellStyle(textStyle);
@@ -3734,8 +3734,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell3 = row.createCell(3);
 							if (record.getR10_SAVINGS() != null) {
-								cell3.setCellValue(record.getR10_SAVINGS().doubleValue());
-								cell3.setCellStyle(numberStyle);
+								cell3.setCellValue(record.getR10_SAVINGS());
+								cell3.setCellStyle(textStyle);
 							} else {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
@@ -3743,8 +3743,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell4 = row.createCell(4);
 							if (record.getR10_NOTICE_0_31_DAYS() != null) {
-								cell4.setCellValue(record.getR10_NOTICE_0_31_DAYS().doubleValue());
-								cell4.setCellStyle(numberStyle);
+								cell4.setCellValue(record.getR10_NOTICE_0_31_DAYS());
+								cell4.setCellStyle(textStyle);
 							} else {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
@@ -3752,8 +3752,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell5 = row.createCell(5);
 							if (record.getR10_NOTICE_32_88_DAYS() != null) {
-								cell5.setCellValue(record.getR10_NOTICE_32_88_DAYS().doubleValue());
-								cell5.setCellStyle(numberStyle);
+								cell5.setCellValue(record.getR10_NOTICE_32_88_DAYS());
+								cell5.setCellStyle(textStyle);
 							} else {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
@@ -3761,8 +3761,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell6 = row.createCell(6);
 							if (record.getR10_91_DEPOSIT_DAY() != null) {
-								cell6.setCellValue(record.getR10_91_DEPOSIT_DAY().doubleValue());
-								cell6.setCellStyle(numberStyle);
+								cell6.setCellValue(record.getR10_91_DEPOSIT_DAY());
+								cell6.setCellStyle(textStyle);
 							} else {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
@@ -3770,8 +3770,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell7 = row.createCell(7);
 							if (record.getR10_FD_1_6_MONTHS() != null) {
-								cell7.setCellValue(record.getR10_FD_1_6_MONTHS().doubleValue());
-								cell7.setCellStyle(numberStyle);
+								cell7.setCellValue(record.getR10_FD_1_6_MONTHS());
+								cell7.setCellStyle(textStyle);
 							} else {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
@@ -3779,8 +3779,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell8 = row.createCell(8);
 							if (record.getR10_FD_7_12_MONTHS() != null) {
-								cell8.setCellValue(record.getR10_FD_7_12_MONTHS().doubleValue());
-								cell8.setCellStyle(numberStyle);
+								cell8.setCellValue(record.getR10_FD_7_12_MONTHS());
+								cell8.setCellStyle(textStyle);
 							} else {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
@@ -3788,8 +3788,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell9 = row.createCell(9);
 							if (record.getR10_FD_13_18_MONTHS() != null) {
-								cell9.setCellValue(record.getR10_FD_13_18_MONTHS().doubleValue());
-								cell9.setCellStyle(numberStyle);
+								cell9.setCellValue(record.getR10_FD_13_18_MONTHS());
+								cell9.setCellStyle(textStyle);
 							} else {
 								cell9.setCellValue("");
 								cell9.setCellStyle(textStyle);
@@ -3797,8 +3797,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell10 = row.createCell(10);
 							if (record.getR10_FD_19_24_MONTHS() != null) {
-								cell10.setCellValue(record.getR10_FD_19_24_MONTHS().doubleValue());
-								cell10.setCellStyle(numberStyle);
+								cell10.setCellValue(record.getR10_FD_19_24_MONTHS());
+								cell10.setCellStyle(textStyle);
 							} else {
 								cell10.setCellValue("");
 								cell10.setCellStyle(textStyle);
@@ -3806,8 +3806,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							Cell cell11 = row.createCell(11);
 							if (record.getR10_FD_OVER_24_MONTHS() != null) {
-								cell11.setCellValue(record.getR10_FD_OVER_24_MONTHS().doubleValue());
-								cell11.setCellStyle(numberStyle);
+								cell11.setCellValue(record.getR10_FD_OVER_24_MONTHS());
+								cell11.setCellStyle(textStyle);
 							} else {
 								cell11.setCellValue("");
 								cell11.setCellStyle(textStyle);
@@ -3815,8 +3815,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 							
 							Cell cell12 = row.createCell(12);
 							if (record.getR10_TOTAL() != null) {
-								cell12.setCellValue(record.getR10_TOTAL().doubleValue());
-								cell12.setCellStyle(numberStyle);
+								cell12.setCellValue(record.getR10_TOTAL());
+								cell12.setCellStyle(textStyle);
 							} else {
 								cell12.setCellValue("");
 								cell12.setCellStyle(textStyle);
@@ -3830,8 +3830,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR11_CURRENT() != null) {
-								cell1.setCellValue(record.getR11_CURRENT().doubleValue());
-								cell1.setCellStyle(numberStyle);
+								cell1.setCellValue(record.getR11_CURRENT());
+								cell1.setCellStyle(textStyle);
 							} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
@@ -3839,8 +3839,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR11_CALL() != null) {
-								cell2.setCellValue(record.getR11_CALL().doubleValue());
-								cell2.setCellStyle(numberStyle);
+								cell2.setCellValue(record.getR11_CALL());
+								cell2.setCellStyle(textStyle);
 							} else {
 								cell2.setCellValue("");
 								cell2.setCellStyle(textStyle);
@@ -3848,8 +3848,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell3 = row.createCell(3);
 							if (record.getR11_SAVINGS() != null) {
-								cell3.setCellValue(record.getR11_SAVINGS().doubleValue());
-								cell3.setCellStyle(numberStyle);
+								cell3.setCellValue(record.getR11_SAVINGS());
+								cell3.setCellStyle(textStyle);
 							} else {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
@@ -3857,8 +3857,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell4 = row.createCell(4);
 							if (record.getR11_NOTICE_0_31_DAYS() != null) {
-								cell4.setCellValue(record.getR11_NOTICE_0_31_DAYS().doubleValue());
-								cell4.setCellStyle(numberStyle);
+								cell4.setCellValue(record.getR11_NOTICE_0_31_DAYS());
+								cell4.setCellStyle(textStyle);
 							} else {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
@@ -3866,8 +3866,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell5 = row.createCell(5);
 							if (record.getR11_NOTICE_32_88_DAYS() != null) {
-								cell5.setCellValue(record.getR11_NOTICE_32_88_DAYS().doubleValue());
-								cell5.setCellStyle(numberStyle);
+								cell5.setCellValue(record.getR11_NOTICE_32_88_DAYS());
+								cell5.setCellStyle(textStyle);
 							} else {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
@@ -3875,8 +3875,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell6 = row.createCell(6);
 							if (record.getR11_91_DEPOSIT_DAY() != null) {
-								cell6.setCellValue(record.getR11_91_DEPOSIT_DAY().doubleValue());
-								cell6.setCellStyle(numberStyle);
+								cell6.setCellValue(record.getR11_91_DEPOSIT_DAY());
+								cell6.setCellStyle(textStyle);
 							} else {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
@@ -3884,8 +3884,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell7 = row.createCell(7);
 							if (record.getR11_FD_1_6_MONTHS() != null) {
-								cell7.setCellValue(record.getR11_FD_1_6_MONTHS().doubleValue());
-								cell7.setCellStyle(numberStyle);
+								cell7.setCellValue(record.getR11_FD_1_6_MONTHS());
+								cell7.setCellStyle(textStyle);
 							} else {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
@@ -3893,8 +3893,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell8 = row.createCell(8);
 							if (record.getR11_FD_7_12_MONTHS() != null) {
-								cell8.setCellValue(record.getR11_FD_7_12_MONTHS().doubleValue());
-								cell8.setCellStyle(numberStyle);
+								cell8.setCellValue(record.getR11_FD_7_12_MONTHS());
+								cell8.setCellStyle(textStyle);
 							} else {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
@@ -3902,8 +3902,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell9 = row.createCell(9);
 							if (record.getR11_FD_13_18_MONTHS() != null) {
-								cell9.setCellValue(record.getR11_FD_13_18_MONTHS().doubleValue());
-								cell9.setCellStyle(numberStyle);
+								cell9.setCellValue(record.getR11_FD_13_18_MONTHS());
+								cell9.setCellStyle(textStyle);
 							} else {
 								cell9.setCellValue("");
 								cell9.setCellStyle(textStyle);
@@ -3911,8 +3911,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell10 = row.createCell(10);
 							if (record.getR11_FD_19_24_MONTHS() != null) {
-								cell10.setCellValue(record.getR11_FD_19_24_MONTHS().doubleValue());
-								cell10.setCellStyle(numberStyle);
+								cell10.setCellValue(record.getR11_FD_19_24_MONTHS());
+								cell10.setCellStyle(textStyle);
 							} else {
 								cell10.setCellValue("");
 								cell10.setCellStyle(textStyle);
@@ -3920,8 +3920,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell11 = row.createCell(11);
 							if (record.getR11_FD_OVER_24_MONTHS() != null) {
-								cell11.setCellValue(record.getR11_FD_OVER_24_MONTHS().doubleValue());
-								cell11.setCellStyle(numberStyle);
+								cell11.setCellValue(record.getR11_FD_OVER_24_MONTHS());
+								cell11.setCellStyle(textStyle);
 							} else {
 								cell11.setCellValue("");
 								cell11.setCellStyle(textStyle);
@@ -3929,8 +3929,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 							
 							cell12 = row.createCell(12);
 							if (record.getR11_TOTAL() != null) {
-								cell12.setCellValue(record.getR11_TOTAL().doubleValue());
-								cell12.setCellStyle(numberStyle);
+								cell12.setCellValue(record.getR11_TOTAL());
+								cell12.setCellStyle(textStyle);
 							} else {
 								cell12.setCellValue("");
 								cell12.setCellStyle(textStyle);
@@ -3944,8 +3944,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR12_CURRENT() != null) {
-								cell1.setCellValue(record.getR12_CURRENT().doubleValue());
-								cell1.setCellStyle(numberStyle);
+								cell1.setCellValue(record.getR12_CURRENT());
+								cell1.setCellStyle(textStyle);
 							} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
@@ -3953,8 +3953,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR12_CALL() != null) {
-								cell2.setCellValue(record.getR12_CALL().doubleValue());
-								cell2.setCellStyle(numberStyle);
+								cell2.setCellValue(record.getR12_CALL());
+								cell2.setCellStyle(textStyle);
 							} else {
 								cell2.setCellValue("");
 								cell2.setCellStyle(textStyle);
@@ -3962,8 +3962,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell3 = row.createCell(3);
 							if (record.getR12_SAVINGS() != null) {
-								cell3.setCellValue(record.getR12_SAVINGS().doubleValue());
-								cell3.setCellStyle(numberStyle);
+								cell3.setCellValue(record.getR12_SAVINGS());
+								cell3.setCellStyle(textStyle);
 							} else {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
@@ -3971,8 +3971,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell4 = row.createCell(4);
 							if (record.getR12_NOTICE_0_31_DAYS() != null) {
-								cell4.setCellValue(record.getR12_NOTICE_0_31_DAYS().doubleValue());
-								cell4.setCellStyle(numberStyle);
+								cell4.setCellValue(record.getR12_NOTICE_0_31_DAYS());
+								cell4.setCellStyle(textStyle);
 							} else {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
@@ -3980,8 +3980,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell5 = row.createCell(5);
 							if (record.getR12_NOTICE_32_88_DAYS() != null) {
-								cell5.setCellValue(record.getR12_NOTICE_32_88_DAYS().doubleValue());
-								cell5.setCellStyle(numberStyle);
+								cell5.setCellValue(record.getR12_NOTICE_32_88_DAYS());
+								cell5.setCellStyle(textStyle);
 							} else {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
@@ -3989,8 +3989,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell6 = row.createCell(6);
 							if (record.getR12_91_DEPOSIT_DAY() != null) {
-								cell6.setCellValue(record.getR12_91_DEPOSIT_DAY().doubleValue());
-								cell6.setCellStyle(numberStyle);
+								cell6.setCellValue(record.getR12_91_DEPOSIT_DAY());
+								cell6.setCellStyle(textStyle);
 							} else {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
@@ -3998,8 +3998,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell7 = row.createCell(7);
 							if (record.getR12_FD_1_6_MONTHS() != null) {
-								cell7.setCellValue(record.getR12_FD_1_6_MONTHS().doubleValue());
-								cell7.setCellStyle(numberStyle);
+								cell7.setCellValue(record.getR12_FD_1_6_MONTHS());
+								cell7.setCellStyle(textStyle);
 							} else {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
@@ -4007,8 +4007,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell8 = row.createCell(8);
 							if (record.getR12_FD_7_12_MONTHS() != null) {
-								cell8.setCellValue(record.getR12_FD_7_12_MONTHS().doubleValue());
-								cell8.setCellStyle(numberStyle);
+								cell8.setCellValue(record.getR12_FD_7_12_MONTHS());
+								cell8.setCellStyle(textStyle);
 							} else {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
@@ -4016,8 +4016,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell9 = row.createCell(9);
 							if (record.getR12_FD_13_18_MONTHS() != null) {
-								cell9.setCellValue(record.getR12_FD_13_18_MONTHS().doubleValue());
-								cell9.setCellStyle(numberStyle);
+								cell9.setCellValue(record.getR12_FD_13_18_MONTHS());
+								cell9.setCellStyle(textStyle);
 							} else {
 								cell9.setCellValue("");
 								cell9.setCellStyle(textStyle);
@@ -4025,8 +4025,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell10 = row.createCell(10);
 							if (record.getR12_FD_19_24_MONTHS() != null) {
-								cell10.setCellValue(record.getR12_FD_19_24_MONTHS().doubleValue());
-								cell10.setCellStyle(numberStyle);
+								cell10.setCellValue(record.getR12_FD_19_24_MONTHS());
+								cell10.setCellStyle(textStyle);
 							} else {
 								cell10.setCellValue("");
 								cell10.setCellStyle(textStyle);
@@ -4034,8 +4034,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell11 = row.createCell(11);
 							if (record.getR12_FD_OVER_24_MONTHS() != null) {
-								cell11.setCellValue(record.getR12_FD_OVER_24_MONTHS().doubleValue());
-								cell11.setCellStyle(numberStyle);
+								cell11.setCellValue(record.getR12_FD_OVER_24_MONTHS());
+								cell11.setCellStyle(textStyle);
 							} else {
 								cell11.setCellValue("");
 								cell11.setCellStyle(textStyle);
@@ -4043,8 +4043,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 							
 							cell12 = row.createCell(12);
 							if (record.getR12_TOTAL() != null) {
-								cell12.setCellValue(record.getR12_TOTAL().doubleValue());
-								cell12.setCellStyle(numberStyle);
+								cell12.setCellValue(record.getR12_TOTAL());
+								cell12.setCellStyle(textStyle);
 							} else {
 								cell12.setCellValue("");
 								cell12.setCellStyle(textStyle);
@@ -4058,8 +4058,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR13_CURRENT() != null) {
-								cell1.setCellValue(record.getR13_CURRENT().doubleValue());
-								cell1.setCellStyle(numberStyle);
+								cell1.setCellValue(record.getR13_CURRENT());
+								cell1.setCellStyle(textStyle);
 							} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
@@ -4067,8 +4067,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR13_CALL() != null) {
-								cell2.setCellValue(record.getR13_CALL().doubleValue());
-								cell2.setCellStyle(numberStyle);
+								cell2.setCellValue(record.getR13_CALL());
+								cell2.setCellStyle(textStyle);
 							} else {
 								cell2.setCellValue("");
 								cell2.setCellStyle(textStyle);
@@ -4076,8 +4076,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell3 = row.createCell(3);
 							if (record.getR13_SAVINGS() != null) {
-								cell3.setCellValue(record.getR13_SAVINGS().doubleValue());
-								cell3.setCellStyle(numberStyle);
+								cell3.setCellValue(record.getR13_SAVINGS());
+								cell3.setCellStyle(textStyle);
 							} else {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
@@ -4085,8 +4085,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell4 = row.createCell(4);
 							if (record.getR13_NOTICE_0_31_DAYS() != null) {
-								cell4.setCellValue(record.getR13_NOTICE_0_31_DAYS().doubleValue());
-								cell4.setCellStyle(numberStyle);
+								cell4.setCellValue(record.getR13_NOTICE_0_31_DAYS());
+								cell4.setCellStyle(textStyle);
 							} else {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
@@ -4094,8 +4094,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell5 = row.createCell(5);
 							if (record.getR13_NOTICE_32_88_DAYS() != null) {
-								cell5.setCellValue(record.getR13_NOTICE_32_88_DAYS().doubleValue());
-								cell5.setCellStyle(numberStyle);
+								cell5.setCellValue(record.getR13_NOTICE_32_88_DAYS());
+								cell5.setCellStyle(textStyle);
 							} else {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
@@ -4103,8 +4103,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell6 = row.createCell(6);
 							if (record.getR13_91_DEPOSIT_DAY() != null) {
-								cell6.setCellValue(record.getR13_91_DEPOSIT_DAY().doubleValue());
-								cell6.setCellStyle(numberStyle);
+								cell6.setCellValue(record.getR13_91_DEPOSIT_DAY());
+								cell6.setCellStyle(textStyle);
 							} else {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
@@ -4112,8 +4112,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell7 = row.createCell(7);
 							if (record.getR13_FD_1_6_MONTHS() != null) {
-								cell7.setCellValue(record.getR13_FD_1_6_MONTHS().doubleValue());
-								cell7.setCellStyle(numberStyle);
+								cell7.setCellValue(record.getR13_FD_1_6_MONTHS());
+								cell7.setCellStyle(textStyle);
 							} else {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
@@ -4121,8 +4121,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell8 = row.createCell(8);
 							if (record.getR13_FD_7_12_MONTHS() != null) {
-								cell8.setCellValue(record.getR13_FD_7_12_MONTHS().doubleValue());
-								cell8.setCellStyle(numberStyle);
+								cell8.setCellValue(record.getR13_FD_7_12_MONTHS());
+								cell8.setCellStyle(textStyle);
 							} else {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
@@ -4130,8 +4130,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell9 = row.createCell(9);
 							if (record.getR13_FD_13_18_MONTHS() != null) {
-								cell9.setCellValue(record.getR13_FD_13_18_MONTHS().doubleValue());
-								cell9.setCellStyle(numberStyle);
+								cell9.setCellValue(record.getR13_FD_13_18_MONTHS());
+								cell9.setCellStyle(textStyle);
 							} else {
 								cell9.setCellValue("");
 								cell9.setCellStyle(textStyle);
@@ -4139,8 +4139,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell10 = row.createCell(10);
 							if (record.getR13_FD_19_24_MONTHS() != null) {
-								cell10.setCellValue(record.getR13_FD_19_24_MONTHS().doubleValue());
-								cell10.setCellStyle(numberStyle);
+								cell10.setCellValue(record.getR13_FD_19_24_MONTHS());
+								cell10.setCellStyle(textStyle);
 							} else {
 								cell10.setCellValue("");
 								cell10.setCellStyle(textStyle);
@@ -4148,8 +4148,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell11 = row.createCell(11);
 							if (record.getR13_FD_OVER_24_MONTHS() != null) {
-								cell11.setCellValue(record.getR13_FD_OVER_24_MONTHS().doubleValue());
-								cell11.setCellStyle(numberStyle);
+								cell11.setCellValue(record.getR13_FD_OVER_24_MONTHS());
+								cell11.setCellStyle(textStyle);
 							} else {
 								cell11.setCellValue("");
 								cell11.setCellStyle(textStyle);
@@ -4157,8 +4157,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 							
 						 cell12 = row.createCell(12);
 							if (record.getR13_TOTAL() != null) {
-								cell12.setCellValue(record.getR13_TOTAL().doubleValue());
-								cell12.setCellStyle(numberStyle);
+								cell12.setCellValue(record.getR13_TOTAL());
+								cell12.setCellStyle(textStyle);
 							} else {
 								cell12.setCellValue("");
 								cell12.setCellStyle(textStyle);
@@ -4172,8 +4172,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR14_CURRENT() != null) {
-								cell1.setCellValue(record.getR14_CURRENT().doubleValue());
-								cell1.setCellStyle(numberStyle);
+								cell1.setCellValue(record.getR14_CURRENT());
+								cell1.setCellStyle(textStyle);
 							} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
@@ -4181,8 +4181,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR14_CALL() != null) {
-								cell2.setCellValue(record.getR14_CALL().doubleValue());
-								cell2.setCellStyle(numberStyle);
+								cell2.setCellValue(record.getR14_CALL());
+								cell2.setCellStyle(textStyle);
 							} else {
 								cell2.setCellValue("");
 								cell2.setCellStyle(textStyle);
@@ -4190,8 +4190,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell3 = row.createCell(3);
 							if (record.getR14_SAVINGS() != null) {
-								cell3.setCellValue(record.getR14_SAVINGS().doubleValue());
-								cell3.setCellStyle(numberStyle);
+								cell3.setCellValue(record.getR14_SAVINGS());
+								cell3.setCellStyle(textStyle);
 							} else {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
@@ -4199,8 +4199,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell4 = row.createCell(4);
 							if (record.getR14_NOTICE_0_31_DAYS() != null) {
-								cell4.setCellValue(record.getR14_NOTICE_0_31_DAYS().doubleValue());
-								cell4.setCellStyle(numberStyle);
+								cell4.setCellValue(record.getR14_NOTICE_0_31_DAYS());
+								cell4.setCellStyle(textStyle);
 							} else {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
@@ -4208,8 +4208,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell5 = row.createCell(5);
 							if (record.getR14_NOTICE_32_88_DAYS() != null) {
-								cell5.setCellValue(record.getR14_NOTICE_32_88_DAYS().doubleValue());
-								cell5.setCellStyle(numberStyle);
+								cell5.setCellValue(record.getR14_NOTICE_32_88_DAYS());
+								cell5.setCellStyle(textStyle);
 							} else {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
@@ -4217,8 +4217,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell6 = row.createCell(6);
 							if (record.getR14_91_DEPOSIT_DAY() != null) {
-								cell6.setCellValue(record.getR14_91_DEPOSIT_DAY().doubleValue());
-								cell6.setCellStyle(numberStyle);
+								cell6.setCellValue(record.getR14_91_DEPOSIT_DAY());
+								cell6.setCellStyle(textStyle);
 							} else {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
@@ -4226,8 +4226,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell7 = row.createCell(7);
 							if (record.getR14_FD_1_6_MONTHS() != null) {
-								cell7.setCellValue(record.getR14_FD_1_6_MONTHS().doubleValue());
-								cell7.setCellStyle(numberStyle);
+								cell7.setCellValue(record.getR14_FD_1_6_MONTHS());
+								cell7.setCellStyle(textStyle);
 							} else {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
@@ -4235,8 +4235,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell8 = row.createCell(8);
 							if (record.getR14_FD_7_12_MONTHS() != null) {
-								cell8.setCellValue(record.getR14_FD_7_12_MONTHS().doubleValue());
-								cell8.setCellStyle(numberStyle);
+								cell8.setCellValue(record.getR14_FD_7_12_MONTHS());
+								cell8.setCellStyle(textStyle);
 							} else {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
@@ -4244,8 +4244,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell9 = row.createCell(9);
 							if (record.getR14_FD_13_18_MONTHS() != null) {
-								cell9.setCellValue(record.getR14_FD_13_18_MONTHS().doubleValue());
-								cell9.setCellStyle(numberStyle);
+								cell9.setCellValue(record.getR14_FD_13_18_MONTHS());
+								cell9.setCellStyle(textStyle);
 							} else {
 								cell9.setCellValue("");
 								cell9.setCellStyle(textStyle);
@@ -4253,8 +4253,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell10 = row.createCell(10);
 							if (record.getR14_FD_19_24_MONTHS() != null) {
-								cell10.setCellValue(record.getR14_FD_19_24_MONTHS().doubleValue());
-								cell10.setCellStyle(numberStyle);
+								cell10.setCellValue(record.getR14_FD_19_24_MONTHS());
+								cell10.setCellStyle(textStyle);
 							} else {
 								cell10.setCellValue("");
 								cell10.setCellStyle(textStyle);
@@ -4262,8 +4262,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell11 = row.createCell(11);
 							if (record.getR14_FD_OVER_24_MONTHS() != null) {
-								cell11.setCellValue(record.getR14_FD_OVER_24_MONTHS().doubleValue());
-								cell11.setCellStyle(numberStyle);
+								cell11.setCellValue(record.getR14_FD_OVER_24_MONTHS());
+								cell11.setCellStyle(textStyle);
 							} else {
 								cell11.setCellValue("");
 								cell11.setCellStyle(textStyle);
@@ -4271,8 +4271,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 							
 						 cell12 = row.createCell(12);
 							if (record.getR14_TOTAL() != null) {
-								cell12.setCellValue(record.getR14_TOTAL().doubleValue());
-								cell12.setCellStyle(numberStyle);
+								cell12.setCellValue(record.getR14_TOTAL());
+								cell12.setCellStyle(textStyle);
 							} else {
 								cell12.setCellValue("");
 								cell12.setCellStyle(textStyle);
@@ -4287,8 +4287,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell1 = row.createCell(1);
 							if (record.getR15_CURRENT() != null) {
-							    cell1.setCellValue(record.getR15_CURRENT().doubleValue());
-							    cell1.setCellStyle(numberStyle);
+							    cell1.setCellValue(record.getR15_CURRENT());
+							    cell1.setCellStyle(textStyle);
 							} else {
 							    cell1.setCellValue("");
 							    cell1.setCellStyle(textStyle);
@@ -4296,8 +4296,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell2 = row.createCell(2);
 							if (record.getR15_CALL() != null) {
-							    cell2.setCellValue(record.getR15_CALL().doubleValue());
-							    cell2.setCellStyle(numberStyle);
+							    cell2.setCellValue(record.getR15_CALL());
+							    cell2.setCellStyle(textStyle);
 							} else {
 							    cell2.setCellValue("");
 							    cell2.setCellStyle(textStyle);
@@ -4305,8 +4305,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell3 = row.createCell(3);
 							if (record.getR15_SAVINGS() != null) {
-							    cell3.setCellValue(record.getR15_SAVINGS().doubleValue());
-							    cell3.setCellStyle(numberStyle);
+							    cell3.setCellValue(record.getR15_SAVINGS());
+							    cell3.setCellStyle(textStyle);
 							} else {
 							    cell3.setCellValue("");
 							    cell3.setCellStyle(textStyle);
@@ -4314,8 +4314,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell4 = row.createCell(4);
 							if (record.getR15_NOTICE_0_31_DAYS() != null) {
-							    cell4.setCellValue(record.getR15_NOTICE_0_31_DAYS().doubleValue());
-							    cell4.setCellStyle(numberStyle);
+							    cell4.setCellValue(record.getR15_NOTICE_0_31_DAYS());
+							    cell4.setCellStyle(textStyle);
 							} else {
 							    cell4.setCellValue("");
 							    cell4.setCellStyle(textStyle);
@@ -4323,8 +4323,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell5 = row.createCell(5);
 							if (record.getR15_NOTICE_32_88_DAYS() != null) {
-							    cell5.setCellValue(record.getR15_NOTICE_32_88_DAYS().doubleValue());
-							    cell5.setCellStyle(numberStyle);
+							    cell5.setCellValue(record.getR15_NOTICE_32_88_DAYS());
+							    cell5.setCellStyle(textStyle);
 							} else {
 							    cell5.setCellValue("");
 							    cell5.setCellStyle(textStyle);
@@ -4332,8 +4332,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell6 = row.createCell(6);
 							if (record.getR15_91_DEPOSIT_DAY() != null) {
-							    cell6.setCellValue(record.getR15_91_DEPOSIT_DAY().doubleValue());
-							    cell6.setCellStyle(numberStyle);
+							    cell6.setCellValue(record.getR15_91_DEPOSIT_DAY());
+							    cell6.setCellStyle(textStyle);
 							} else {
 							    cell6.setCellValue("");
 							    cell6.setCellStyle(textStyle);
@@ -4341,8 +4341,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell7 = row.createCell(7);
 							if (record.getR15_FD_1_6_MONTHS() != null) {
-							    cell7.setCellValue(record.getR15_FD_1_6_MONTHS().doubleValue());
-							    cell7.setCellStyle(numberStyle);
+							    cell7.setCellValue(record.getR15_FD_1_6_MONTHS());
+							    cell7.setCellStyle(textStyle);
 							} else {
 							    cell7.setCellValue("");
 							    cell7.setCellStyle(textStyle);
@@ -4350,8 +4350,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell8 = row.createCell(8);
 							if (record.getR15_FD_7_12_MONTHS() != null) {
-							    cell8.setCellValue(record.getR15_FD_7_12_MONTHS().doubleValue());
-							    cell8.setCellStyle(numberStyle);
+							    cell8.setCellValue(record.getR15_FD_7_12_MONTHS());
+							    cell8.setCellStyle(textStyle);
 							} else {
 							    cell8.setCellValue("");
 							    cell8.setCellStyle(textStyle);
@@ -4359,8 +4359,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell9 = row.createCell(9);
 							if (record.getR15_FD_13_18_MONTHS() != null) {
-							    cell9.setCellValue(record.getR15_FD_13_18_MONTHS().doubleValue());
-							    cell9.setCellStyle(numberStyle);
+							    cell9.setCellValue(record.getR15_FD_13_18_MONTHS());
+							    cell9.setCellStyle(textStyle);
 							} else {
 							    cell9.setCellValue("");
 							    cell9.setCellStyle(textStyle);
@@ -4368,8 +4368,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell10 = row.createCell(10);
 							if (record.getR15_FD_19_24_MONTHS() != null) {
-							    cell10.setCellValue(record.getR15_FD_19_24_MONTHS().doubleValue());
-							    cell10.setCellStyle(numberStyle);
+							    cell10.setCellValue(record.getR15_FD_19_24_MONTHS());
+							    cell10.setCellStyle(textStyle);
 							} else {
 							    cell10.setCellValue("");
 							    cell10.setCellStyle(textStyle);
@@ -4377,8 +4377,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell11 = row.createCell(11);
 							if (record.getR15_FD_OVER_24_MONTHS() != null) {
-							    cell11.setCellValue(record.getR15_FD_OVER_24_MONTHS().doubleValue());
-							    cell11.setCellStyle(numberStyle);
+							    cell11.setCellValue(record.getR15_FD_OVER_24_MONTHS());
+							    cell11.setCellStyle(textStyle);
 							} else {
 							    cell11.setCellValue("");
 							    cell11.setCellStyle(textStyle);
@@ -4386,8 +4386,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 							cell12 = row.createCell(12);
 							if (record.getR15_TOTAL() != null) {
-							    cell12.setCellValue(record.getR15_TOTAL().doubleValue());
-							    cell12.setCellStyle(numberStyle);
+							    cell12.setCellValue(record.getR15_TOTAL());
+							    cell12.setCellStyle(textStyle);
 							} else {
 							    cell12.setCellValue("");
 							    cell12.setCellStyle(textStyle);
@@ -4506,8 +4506,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 										Cell cell1 = row.createCell(1);
 						if (record.getR10_CURRENT() != null) {
-							cell1.setCellValue(record.getR10_CURRENT().doubleValue());
-							cell1.setCellStyle(numberStyle);
+							cell1.setCellValue(record.getR10_CURRENT());
+							cell1.setCellStyle(textStyle);
 						} else {
 							cell1.setCellValue("");
 							cell1.setCellStyle(textStyle);
@@ -4515,8 +4515,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell2 = row.createCell(2);
 						if (record.getR10_CALL() != null) {
-							cell2.setCellValue(record.getR10_CALL().doubleValue());
-							cell2.setCellStyle(numberStyle);
+							cell2.setCellValue(record.getR10_CALL());
+							cell2.setCellStyle(textStyle);
 						} else {
 							cell2.setCellValue("");
 							cell2.setCellStyle(textStyle);
@@ -4524,8 +4524,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell3 = row.createCell(3);
 						if (record.getR10_SAVINGS() != null) {
-							cell3.setCellValue(record.getR10_SAVINGS().doubleValue());
-							cell3.setCellStyle(numberStyle);
+							cell3.setCellValue(record.getR10_SAVINGS());
+							cell3.setCellStyle(textStyle);
 						} else {
 							cell3.setCellValue("");
 							cell3.setCellStyle(textStyle);
@@ -4533,8 +4533,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell4 = row.createCell(4);
 						if (record.getR10_NOTICE_0_31_DAYS() != null) {
-							cell4.setCellValue(record.getR10_NOTICE_0_31_DAYS().doubleValue());
-							cell4.setCellStyle(numberStyle);
+							cell4.setCellValue(record.getR10_NOTICE_0_31_DAYS());
+							cell4.setCellStyle(textStyle);
 						} else {
 							cell4.setCellValue("");
 							cell4.setCellStyle(textStyle);
@@ -4542,8 +4542,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell5 = row.createCell(5);
 						if (record.getR10_NOTICE_32_88_DAYS() != null) {
-							cell5.setCellValue(record.getR10_NOTICE_32_88_DAYS().doubleValue());
-							cell5.setCellStyle(numberStyle);
+							cell5.setCellValue(record.getR10_NOTICE_32_88_DAYS());
+							cell5.setCellStyle(textStyle);
 						} else {
 							cell5.setCellValue("");
 							cell5.setCellStyle(textStyle);
@@ -4551,8 +4551,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell6 = row.createCell(6);
 						if (record.getR10_91_DEPOSIT_DAY() != null) {
-							cell6.setCellValue(record.getR10_91_DEPOSIT_DAY().doubleValue());
-							cell6.setCellStyle(numberStyle);
+							cell6.setCellValue(record.getR10_91_DEPOSIT_DAY());
+							cell6.setCellStyle(textStyle);
 						} else {
 							cell6.setCellValue("");
 							cell6.setCellStyle(textStyle);
@@ -4560,8 +4560,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell7 = row.createCell(7);
 						if (record.getR10_FD_1_6_MONTHS() != null) {
-							cell7.setCellValue(record.getR10_FD_1_6_MONTHS().doubleValue());
-							cell7.setCellStyle(numberStyle);
+							cell7.setCellValue(record.getR10_FD_1_6_MONTHS());
+							cell7.setCellStyle(textStyle);
 						} else {
 							cell7.setCellValue("");
 							cell7.setCellStyle(textStyle);
@@ -4569,8 +4569,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell8 = row.createCell(8);
 						if (record.getR10_FD_7_12_MONTHS() != null) {
-							cell8.setCellValue(record.getR10_FD_7_12_MONTHS().doubleValue());
-							cell8.setCellStyle(numberStyle);
+							cell8.setCellValue(record.getR10_FD_7_12_MONTHS());
+							cell8.setCellStyle(textStyle);
 						} else {
 							cell8.setCellValue("");
 							cell8.setCellStyle(textStyle);
@@ -4578,8 +4578,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell9 = row.createCell(9);
 						if (record.getR10_FD_13_18_MONTHS() != null) {
-							cell9.setCellValue(record.getR10_FD_13_18_MONTHS().doubleValue());
-							cell9.setCellStyle(numberStyle);
+							cell9.setCellValue(record.getR10_FD_13_18_MONTHS());
+							cell9.setCellStyle(textStyle);
 						} else {
 							cell9.setCellValue("");
 							cell9.setCellStyle(textStyle);
@@ -4587,8 +4587,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell10 = row.createCell(10);
 						if (record.getR10_FD_19_24_MONTHS() != null) {
-							cell10.setCellValue(record.getR10_FD_19_24_MONTHS().doubleValue());
-							cell10.setCellStyle(numberStyle);
+							cell10.setCellValue(record.getR10_FD_19_24_MONTHS());
+							cell10.setCellStyle(textStyle);
 						} else {
 							cell10.setCellValue("");
 							cell10.setCellStyle(textStyle);
@@ -4596,8 +4596,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell11 = row.createCell(11);
 						if (record.getR10_FD_OVER_24_MONTHS() != null) {
-							cell11.setCellValue(record.getR10_FD_OVER_24_MONTHS().doubleValue());
-							cell11.setCellStyle(numberStyle);
+							cell11.setCellValue(record.getR10_FD_OVER_24_MONTHS());
+							cell11.setCellStyle(textStyle);
 						} else {
 							cell11.setCellValue("");
 							cell11.setCellStyle(textStyle);
@@ -4605,8 +4605,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 						
 						Cell cell12 = row.createCell(12);
 						if (record.getR10_TOTAL() != null) {
-							cell12.setCellValue(record.getR10_TOTAL().doubleValue());
-							cell12.setCellStyle(numberStyle);
+							cell12.setCellValue(record.getR10_TOTAL());
+							cell12.setCellStyle(textStyle);
 						} else {
 							cell12.setCellValue("");
 							cell12.setCellStyle(textStyle);
@@ -4620,8 +4620,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR11_CURRENT() != null) {
-							cell1.setCellValue(record.getR11_CURRENT().doubleValue());
-							cell1.setCellStyle(numberStyle);
+							cell1.setCellValue(record.getR11_CURRENT());
+							cell1.setCellStyle(textStyle);
 						} else {
 							cell1.setCellValue("");
 							cell1.setCellStyle(textStyle);
@@ -4629,8 +4629,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR11_CALL() != null) {
-							cell2.setCellValue(record.getR11_CALL().doubleValue());
-							cell2.setCellStyle(numberStyle);
+							cell2.setCellValue(record.getR11_CALL());
+							cell2.setCellStyle(textStyle);
 						} else {
 							cell2.setCellValue("");
 							cell2.setCellStyle(textStyle);
@@ -4638,8 +4638,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell3 = row.createCell(3);
 						if (record.getR11_SAVINGS() != null) {
-							cell3.setCellValue(record.getR11_SAVINGS().doubleValue());
-							cell3.setCellStyle(numberStyle);
+							cell3.setCellValue(record.getR11_SAVINGS());
+							cell3.setCellStyle(textStyle);
 						} else {
 							cell3.setCellValue("");
 							cell3.setCellStyle(textStyle);
@@ -4647,8 +4647,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell4 = row.createCell(4);
 						if (record.getR11_NOTICE_0_31_DAYS() != null) {
-							cell4.setCellValue(record.getR11_NOTICE_0_31_DAYS().doubleValue());
-							cell4.setCellStyle(numberStyle);
+							cell4.setCellValue(record.getR11_NOTICE_0_31_DAYS());
+							cell4.setCellStyle(textStyle);
 						} else {
 							cell4.setCellValue("");
 							cell4.setCellStyle(textStyle);
@@ -4656,8 +4656,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell5 = row.createCell(5);
 						if (record.getR11_NOTICE_32_88_DAYS() != null) {
-							cell5.setCellValue(record.getR11_NOTICE_32_88_DAYS().doubleValue());
-							cell5.setCellStyle(numberStyle);
+							cell5.setCellValue(record.getR11_NOTICE_32_88_DAYS());
+							cell5.setCellStyle(textStyle);
 						} else {
 							cell5.setCellValue("");
 							cell5.setCellStyle(textStyle);
@@ -4665,8 +4665,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell6 = row.createCell(6);
 						if (record.getR11_91_DEPOSIT_DAY() != null) {
-							cell6.setCellValue(record.getR11_91_DEPOSIT_DAY().doubleValue());
-							cell6.setCellStyle(numberStyle);
+							cell6.setCellValue(record.getR11_91_DEPOSIT_DAY());
+							cell6.setCellStyle(textStyle);
 						} else {
 							cell6.setCellValue("");
 							cell6.setCellStyle(textStyle);
@@ -4674,8 +4674,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell7 = row.createCell(7);
 						if (record.getR11_FD_1_6_MONTHS() != null) {
-							cell7.setCellValue(record.getR11_FD_1_6_MONTHS().doubleValue());
-							cell7.setCellStyle(numberStyle);
+							cell7.setCellValue(record.getR11_FD_1_6_MONTHS());
+							cell7.setCellStyle(textStyle);
 						} else {
 							cell7.setCellValue("");
 							cell7.setCellStyle(textStyle);
@@ -4683,8 +4683,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell8 = row.createCell(8);
 						if (record.getR11_FD_7_12_MONTHS() != null) {
-							cell8.setCellValue(record.getR11_FD_7_12_MONTHS().doubleValue());
-							cell8.setCellStyle(numberStyle);
+							cell8.setCellValue(record.getR11_FD_7_12_MONTHS());
+							cell8.setCellStyle(textStyle);
 						} else {
 							cell8.setCellValue("");
 							cell8.setCellStyle(textStyle);
@@ -4692,8 +4692,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell9 = row.createCell(9);
 						if (record.getR11_FD_13_18_MONTHS() != null) {
-							cell9.setCellValue(record.getR11_FD_13_18_MONTHS().doubleValue());
-							cell9.setCellStyle(numberStyle);
+							cell9.setCellValue(record.getR11_FD_13_18_MONTHS());
+							cell9.setCellStyle(textStyle);
 						} else {
 							cell9.setCellValue("");
 							cell9.setCellStyle(textStyle);
@@ -4701,8 +4701,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell10 = row.createCell(10);
 						if (record.getR11_FD_19_24_MONTHS() != null) {
-							cell10.setCellValue(record.getR11_FD_19_24_MONTHS().doubleValue());
-							cell10.setCellStyle(numberStyle);
+							cell10.setCellValue(record.getR11_FD_19_24_MONTHS());
+							cell10.setCellStyle(textStyle);
 						} else {
 							cell10.setCellValue("");
 							cell10.setCellStyle(textStyle);
@@ -4710,16 +4710,16 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell11 = row.createCell(11);
 						if (record.getR11_FD_OVER_24_MONTHS() != null) {
-							cell11.setCellValue(record.getR11_FD_OVER_24_MONTHS().doubleValue());
-							cell11.setCellStyle(numberStyle);
+							cell11.setCellValue(record.getR11_FD_OVER_24_MONTHS());
+							cell11.setCellStyle(textStyle);
 						} else {
 							cell11.setCellValue("");
 							cell11.setCellStyle(textStyle);
 						}
 						cell12 = row.createCell(12);
 						if (record.getR11_TOTAL() != null) {
-							cell12.setCellValue(record.getR11_TOTAL().doubleValue());
-							cell12.setCellStyle(numberStyle);
+							cell12.setCellValue(record.getR11_TOTAL());
+							cell12.setCellStyle(textStyle);
 						} else {
 							cell12.setCellValue("");
 							cell12.setCellStyle(textStyle);
@@ -4734,8 +4734,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR12_CURRENT() != null) {
-							cell1.setCellValue(record.getR12_CURRENT().doubleValue());
-							cell1.setCellStyle(numberStyle);
+							cell1.setCellValue(record.getR12_CURRENT());
+							cell1.setCellStyle(textStyle);
 						} else {
 							cell1.setCellValue("");
 							cell1.setCellStyle(textStyle);
@@ -4743,8 +4743,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR12_CALL() != null) {
-							cell2.setCellValue(record.getR12_CALL().doubleValue());
-							cell2.setCellStyle(numberStyle);
+							cell2.setCellValue(record.getR12_CALL());
+							cell2.setCellStyle(textStyle);
 						} else {
 							cell2.setCellValue("");
 							cell2.setCellStyle(textStyle);
@@ -4752,8 +4752,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell3 = row.createCell(3);
 						if (record.getR12_SAVINGS() != null) {
-							cell3.setCellValue(record.getR12_SAVINGS().doubleValue());
-							cell3.setCellStyle(numberStyle);
+							cell3.setCellValue(record.getR12_SAVINGS());
+							cell3.setCellStyle(textStyle);
 						} else {
 							cell3.setCellValue("");
 							cell3.setCellStyle(textStyle);
@@ -4761,8 +4761,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell4 = row.createCell(4);
 						if (record.getR12_NOTICE_0_31_DAYS() != null) {
-							cell4.setCellValue(record.getR12_NOTICE_0_31_DAYS().doubleValue());
-							cell4.setCellStyle(numberStyle);
+							cell4.setCellValue(record.getR12_NOTICE_0_31_DAYS());
+							cell4.setCellStyle(textStyle);
 						} else {
 							cell4.setCellValue("");
 							cell4.setCellStyle(textStyle);
@@ -4770,8 +4770,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell5 = row.createCell(5);
 						if (record.getR12_NOTICE_32_88_DAYS() != null) {
-							cell5.setCellValue(record.getR12_NOTICE_32_88_DAYS().doubleValue());
-							cell5.setCellStyle(numberStyle);
+							cell5.setCellValue(record.getR12_NOTICE_32_88_DAYS());
+							cell5.setCellStyle(textStyle);
 						} else {
 							cell5.setCellValue("");
 							cell5.setCellStyle(textStyle);
@@ -4779,8 +4779,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell6 = row.createCell(6);
 						if (record.getR12_91_DEPOSIT_DAY() != null) {
-							cell6.setCellValue(record.getR12_91_DEPOSIT_DAY().doubleValue());
-							cell6.setCellStyle(numberStyle);
+							cell6.setCellValue(record.getR12_91_DEPOSIT_DAY());
+							cell6.setCellStyle(textStyle);
 						} else {
 							cell6.setCellValue("");
 							cell6.setCellStyle(textStyle);
@@ -4788,8 +4788,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell7 = row.createCell(7);
 						if (record.getR12_FD_1_6_MONTHS() != null) {
-							cell7.setCellValue(record.getR12_FD_1_6_MONTHS().doubleValue());
-							cell7.setCellStyle(numberStyle);
+							cell7.setCellValue(record.getR12_FD_1_6_MONTHS());
+							cell7.setCellStyle(textStyle);
 						} else {
 							cell7.setCellValue("");
 							cell7.setCellStyle(textStyle);
@@ -4797,8 +4797,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell8 = row.createCell(8);
 						if (record.getR12_FD_7_12_MONTHS() != null) {
-							cell8.setCellValue(record.getR12_FD_7_12_MONTHS().doubleValue());
-							cell8.setCellStyle(numberStyle);
+							cell8.setCellValue(record.getR12_FD_7_12_MONTHS());
+							cell8.setCellStyle(textStyle);
 						} else {
 							cell8.setCellValue("");
 							cell8.setCellStyle(textStyle);
@@ -4806,8 +4806,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell9 = row.createCell(9);
 						if (record.getR12_FD_13_18_MONTHS() != null) {
-							cell9.setCellValue(record.getR12_FD_13_18_MONTHS().doubleValue());
-							cell9.setCellStyle(numberStyle);
+							cell9.setCellValue(record.getR12_FD_13_18_MONTHS());
+							cell9.setCellStyle(textStyle);
 						} else {
 							cell9.setCellValue("");
 							cell9.setCellStyle(textStyle);
@@ -4815,8 +4815,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell10 = row.createCell(10);
 						if (record.getR12_FD_19_24_MONTHS() != null) {
-							cell10.setCellValue(record.getR12_FD_19_24_MONTHS().doubleValue());
-							cell10.setCellStyle(numberStyle);
+							cell10.setCellValue(record.getR12_FD_19_24_MONTHS());
+							cell10.setCellStyle(textStyle);
 						} else {
 							cell10.setCellValue("");
 							cell10.setCellStyle(textStyle);
@@ -4824,16 +4824,16 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell11 = row.createCell(11);
 						if (record.getR12_FD_OVER_24_MONTHS() != null) {
-							cell11.setCellValue(record.getR12_FD_OVER_24_MONTHS().doubleValue());
-							cell11.setCellStyle(numberStyle);
+							cell11.setCellValue(record.getR12_FD_OVER_24_MONTHS());
+							cell11.setCellStyle(textStyle);
 						} else {
 							cell11.setCellValue("");
 							cell11.setCellStyle(textStyle);
 						}
 						cell12 = row.createCell(12);
 						if (record.getR12_TOTAL() != null) {
-							cell12.setCellValue(record.getR12_TOTAL().doubleValue());
-							cell12.setCellStyle(numberStyle);
+							cell12.setCellValue(record.getR12_TOTAL());
+							cell12.setCellStyle(textStyle);
 						} else {
 							cell12.setCellValue("");
 							cell12.setCellStyle(textStyle);
@@ -4848,8 +4848,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR13_CURRENT() != null) {
-							cell1.setCellValue(record.getR13_CURRENT().doubleValue());
-							cell1.setCellStyle(numberStyle);
+							cell1.setCellValue(record.getR13_CURRENT());
+							cell1.setCellStyle(textStyle);
 						} else {
 							cell1.setCellValue("");
 							cell1.setCellStyle(textStyle);
@@ -4857,8 +4857,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR13_CALL() != null) {
-							cell2.setCellValue(record.getR13_CALL().doubleValue());
-							cell2.setCellStyle(numberStyle);
+							cell2.setCellValue(record.getR13_CALL());
+							cell2.setCellStyle(textStyle);
 						} else {
 							cell2.setCellValue("");
 							cell2.setCellStyle(textStyle);
@@ -4866,8 +4866,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell3 = row.createCell(3);
 						if (record.getR13_SAVINGS() != null) {
-							cell3.setCellValue(record.getR13_SAVINGS().doubleValue());
-							cell3.setCellStyle(numberStyle);
+							cell3.setCellValue(record.getR13_SAVINGS());
+							cell3.setCellStyle(textStyle);
 						} else {
 							cell3.setCellValue("");
 							cell3.setCellStyle(textStyle);
@@ -4875,8 +4875,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell4 = row.createCell(4);
 						if (record.getR13_NOTICE_0_31_DAYS() != null) {
-							cell4.setCellValue(record.getR13_NOTICE_0_31_DAYS().doubleValue());
-							cell4.setCellStyle(numberStyle);
+							cell4.setCellValue(record.getR13_NOTICE_0_31_DAYS());
+							cell4.setCellStyle(textStyle);
 						} else {
 							cell4.setCellValue("");
 							cell4.setCellStyle(textStyle);
@@ -4884,8 +4884,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell5 = row.createCell(5);
 						if (record.getR13_NOTICE_32_88_DAYS() != null) {
-							cell5.setCellValue(record.getR13_NOTICE_32_88_DAYS().doubleValue());
-							cell5.setCellStyle(numberStyle);
+							cell5.setCellValue(record.getR13_NOTICE_32_88_DAYS());
+							cell5.setCellStyle(textStyle);
 						} else {
 							cell5.setCellValue("");
 							cell5.setCellStyle(textStyle);
@@ -4893,8 +4893,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell6 = row.createCell(6);
 						if (record.getR13_91_DEPOSIT_DAY() != null) {
-							cell6.setCellValue(record.getR13_91_DEPOSIT_DAY().doubleValue());
-							cell6.setCellStyle(numberStyle);
+							cell6.setCellValue(record.getR13_91_DEPOSIT_DAY());
+							cell6.setCellStyle(textStyle);
 						} else {
 							cell6.setCellValue("");
 							cell6.setCellStyle(textStyle);
@@ -4902,8 +4902,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell7 = row.createCell(7);
 						if (record.getR13_FD_1_6_MONTHS() != null) {
-							cell7.setCellValue(record.getR13_FD_1_6_MONTHS().doubleValue());
-							cell7.setCellStyle(numberStyle);
+							cell7.setCellValue(record.getR13_FD_1_6_MONTHS());
+							cell7.setCellStyle(textStyle);
 						} else {
 							cell7.setCellValue("");
 							cell7.setCellStyle(textStyle);
@@ -4911,8 +4911,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell8 = row.createCell(8);
 						if (record.getR13_FD_7_12_MONTHS() != null) {
-							cell8.setCellValue(record.getR13_FD_7_12_MONTHS().doubleValue());
-							cell8.setCellStyle(numberStyle);
+							cell8.setCellValue(record.getR13_FD_7_12_MONTHS());
+							cell8.setCellStyle(textStyle);
 						} else {
 							cell8.setCellValue("");
 							cell8.setCellStyle(textStyle);
@@ -4920,8 +4920,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell9 = row.createCell(9);
 						if (record.getR13_FD_13_18_MONTHS() != null) {
-							cell9.setCellValue(record.getR13_FD_13_18_MONTHS().doubleValue());
-							cell9.setCellStyle(numberStyle);
+							cell9.setCellValue(record.getR13_FD_13_18_MONTHS());
+							cell9.setCellStyle(textStyle);
 						} else {
 							cell9.setCellValue("");
 							cell9.setCellStyle(textStyle);
@@ -4929,8 +4929,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell10 = row.createCell(10);
 						if (record.getR13_FD_19_24_MONTHS() != null) {
-							cell10.setCellValue(record.getR13_FD_19_24_MONTHS().doubleValue());
-							cell10.setCellStyle(numberStyle);
+							cell10.setCellValue(record.getR13_FD_19_24_MONTHS());
+							cell10.setCellStyle(textStyle);
 						} else {
 							cell10.setCellValue("");
 							cell10.setCellStyle(textStyle);
@@ -4938,16 +4938,16 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell11 = row.createCell(11);
 						if (record.getR13_FD_OVER_24_MONTHS() != null) {
-							cell11.setCellValue(record.getR13_FD_OVER_24_MONTHS().doubleValue());
-							cell11.setCellStyle(numberStyle);
+							cell11.setCellValue(record.getR13_FD_OVER_24_MONTHS());
+							cell11.setCellStyle(textStyle);
 						} else {
 							cell11.setCellValue("");
 							cell11.setCellStyle(textStyle);
 						}
 						cell12 = row.createCell(12);
 						if (record.getR13_TOTAL() != null) {
-							cell12.setCellValue(record.getR13_TOTAL().doubleValue());
-							cell12.setCellStyle(numberStyle);
+							cell12.setCellValue(record.getR13_TOTAL());
+							cell12.setCellStyle(textStyle);
 						} else {
 							cell12.setCellValue("");
 							cell12.setCellStyle(textStyle);
@@ -4962,8 +4962,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR14_CURRENT() != null) {
-							cell1.setCellValue(record.getR14_CURRENT().doubleValue());
-							cell1.setCellStyle(numberStyle);
+							cell1.setCellValue(record.getR14_CURRENT());
+							cell1.setCellStyle(textStyle);
 						} else {
 							cell1.setCellValue("");
 							cell1.setCellStyle(textStyle);
@@ -4971,8 +4971,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR14_CALL() != null) {
-							cell2.setCellValue(record.getR14_CALL().doubleValue());
-							cell2.setCellStyle(numberStyle);
+							cell2.setCellValue(record.getR14_CALL());
+							cell2.setCellStyle(textStyle);
 						} else {
 							cell2.setCellValue("");
 							cell2.setCellStyle(textStyle);
@@ -4980,8 +4980,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell3 = row.createCell(3);
 						if (record.getR14_SAVINGS() != null) {
-							cell3.setCellValue(record.getR14_SAVINGS().doubleValue());
-							cell3.setCellStyle(numberStyle);
+							cell3.setCellValue(record.getR14_SAVINGS());
+							cell3.setCellStyle(textStyle);
 						} else {
 							cell3.setCellValue("");
 							cell3.setCellStyle(textStyle);
@@ -4989,8 +4989,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell4 = row.createCell(4);
 						if (record.getR14_NOTICE_0_31_DAYS() != null) {
-							cell4.setCellValue(record.getR14_NOTICE_0_31_DAYS().doubleValue());
-							cell4.setCellStyle(numberStyle);
+							cell4.setCellValue(record.getR14_NOTICE_0_31_DAYS());
+							cell4.setCellStyle(textStyle);
 						} else {
 							cell4.setCellValue("");
 							cell4.setCellStyle(textStyle);
@@ -4998,8 +4998,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell5 = row.createCell(5);
 						if (record.getR14_NOTICE_32_88_DAYS() != null) {
-							cell5.setCellValue(record.getR14_NOTICE_32_88_DAYS().doubleValue());
-							cell5.setCellStyle(numberStyle);
+							cell5.setCellValue(record.getR14_NOTICE_32_88_DAYS());
+							cell5.setCellStyle(textStyle);
 						} else {
 							cell5.setCellValue("");
 							cell5.setCellStyle(textStyle);
@@ -5007,8 +5007,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell6 = row.createCell(6);
 						if (record.getR14_91_DEPOSIT_DAY() != null) {
-							cell6.setCellValue(record.getR14_91_DEPOSIT_DAY().doubleValue());
-							cell6.setCellStyle(numberStyle);
+							cell6.setCellValue(record.getR14_91_DEPOSIT_DAY());
+							cell6.setCellStyle(textStyle);
 						} else {
 							cell6.setCellValue("");
 							cell6.setCellStyle(textStyle);
@@ -5016,8 +5016,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell7 = row.createCell(7);
 						if (record.getR14_FD_1_6_MONTHS() != null) {
-							cell7.setCellValue(record.getR14_FD_1_6_MONTHS().doubleValue());
-							cell7.setCellStyle(numberStyle);
+							cell7.setCellValue(record.getR14_FD_1_6_MONTHS());
+							cell7.setCellStyle(textStyle);
 						} else {
 							cell7.setCellValue("");
 							cell7.setCellStyle(textStyle);
@@ -5025,8 +5025,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell8 = row.createCell(8);
 						if (record.getR14_FD_7_12_MONTHS() != null) {
-							cell8.setCellValue(record.getR14_FD_7_12_MONTHS().doubleValue());
-							cell8.setCellStyle(numberStyle);
+							cell8.setCellValue(record.getR14_FD_7_12_MONTHS());
+							cell8.setCellStyle(textStyle);
 						} else {
 							cell8.setCellValue("");
 							cell8.setCellStyle(textStyle);
@@ -5034,8 +5034,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell9 = row.createCell(9);
 						if (record.getR14_FD_13_18_MONTHS() != null) {
-							cell9.setCellValue(record.getR14_FD_13_18_MONTHS().doubleValue());
-							cell9.setCellStyle(numberStyle);
+							cell9.setCellValue(record.getR14_FD_13_18_MONTHS());
+							cell9.setCellStyle(textStyle);
 						} else {
 							cell9.setCellValue("");
 							cell9.setCellStyle(textStyle);
@@ -5043,8 +5043,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell10 = row.createCell(10);
 						if (record.getR14_FD_19_24_MONTHS() != null) {
-							cell10.setCellValue(record.getR14_FD_19_24_MONTHS().doubleValue());
-							cell10.setCellStyle(numberStyle);
+							cell10.setCellValue(record.getR14_FD_19_24_MONTHS());
+							cell10.setCellStyle(textStyle);
 						} else {
 							cell10.setCellValue("");
 							cell10.setCellStyle(textStyle);
@@ -5052,16 +5052,16 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell11 = row.createCell(11);
 						if (record.getR14_FD_OVER_24_MONTHS() != null) {
-							cell11.setCellValue(record.getR14_FD_OVER_24_MONTHS().doubleValue());
-							cell11.setCellStyle(numberStyle);
+							cell11.setCellValue(record.getR14_FD_OVER_24_MONTHS());
+							cell11.setCellStyle(textStyle);
 						} else {
 							cell11.setCellValue("");
 							cell11.setCellStyle(textStyle);
 						}
 						cell12 = row.createCell(12);
 						if (record.getR14_TOTAL() != null) {
-							cell12.setCellValue(record.getR14_TOTAL().doubleValue());
-							cell12.setCellStyle(numberStyle);
+							cell12.setCellValue(record.getR14_TOTAL());
+							cell12.setCellStyle(textStyle);
 						} else {
 							cell12.setCellValue("");
 							cell12.setCellStyle(textStyle);
@@ -5075,110 +5075,110 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR15_CURRENT() != null) {
-						    cell1.setCellValue(record.getR15_CURRENT().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR15_CURRENT());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellStyle(textStyle);
 						}
 
 						cell2 = row.createCell(2);
 						if (record.getR15_CALL() != null) {
-						    cell2.setCellValue(record.getR15_CALL().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR15_CALL());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellStyle(textStyle);
 						}
 
 						cell3 = row.createCell(3);
 						if (record.getR15_SAVINGS() != null) {
-						    cell3.setCellValue(record.getR15_SAVINGS().doubleValue());
-						    cell3.setCellStyle(numberStyle);
+						    cell3.setCellValue(record.getR15_SAVINGS());
+						    cell3.setCellStyle(textStyle);
 						} else {
 						    cell3.setCellValue("");
-						    cell3.setCellStyle(numberStyle);
+						    cell3.setCellStyle(textStyle);
 						}
 
 						cell4 = row.createCell(4);
 						if (record.getR15_NOTICE_0_31_DAYS() != null) {
-						    cell4.setCellValue(record.getR15_NOTICE_0_31_DAYS().doubleValue());
-						    cell4.setCellStyle(numberStyle);
+						    cell4.setCellValue(record.getR15_NOTICE_0_31_DAYS());
+						    cell4.setCellStyle(textStyle);
 						} else {
 						    cell4.setCellValue("");
-						    cell4.setCellStyle(numberStyle);
+						    cell4.setCellStyle(textStyle);
 						}
 
 						cell5 = row.createCell(5);
 						if (record.getR15_NOTICE_32_88_DAYS() != null) {
-						    cell5.setCellValue(record.getR15_NOTICE_32_88_DAYS().doubleValue());
-						    cell5.setCellStyle(numberStyle);
+						    cell5.setCellValue(record.getR15_NOTICE_32_88_DAYS());
+						    cell5.setCellStyle(textStyle);
 						} else {
 						    cell5.setCellValue("");
-						    cell5.setCellStyle(numberStyle);
+						    cell5.setCellStyle(textStyle);
 						}
 
 						cell6 = row.createCell(6);
 						if (record.getR15_91_DEPOSIT_DAY() != null) {
-						    cell6.setCellValue(record.getR15_91_DEPOSIT_DAY().doubleValue());
-						    cell6.setCellStyle(numberStyle);
+						    cell6.setCellValue(record.getR15_91_DEPOSIT_DAY());
+						    cell6.setCellStyle(textStyle);
 						} else {
 						    cell6.setCellValue("");
-						    cell6.setCellStyle(numberStyle);
+						    cell6.setCellStyle(textStyle);
 						}
 
 						cell7 = row.createCell(7);
 						if (record.getR15_FD_1_6_MONTHS() != null) {
-						    cell7.setCellValue(record.getR15_FD_1_6_MONTHS().doubleValue());
-						    cell7.setCellStyle(numberStyle);
+						    cell7.setCellValue(record.getR15_FD_1_6_MONTHS());
+						    cell7.setCellStyle(textStyle);
 						} else {
 						    cell7.setCellValue("");
-						    cell7.setCellStyle(numberStyle);
+						    cell7.setCellStyle(textStyle);
 						}
 
 						cell8 = row.createCell(8);
 						if (record.getR15_FD_7_12_MONTHS() != null) {
-						    cell8.setCellValue(record.getR15_FD_7_12_MONTHS().doubleValue());
-						    cell8.setCellStyle(numberStyle);
+						    cell8.setCellValue(record.getR15_FD_7_12_MONTHS());
+						    cell8.setCellStyle(textStyle);
 						} else {
 						    cell8.setCellValue("");
-						    cell8.setCellStyle(numberStyle);
+						    cell8.setCellStyle(textStyle);
 						}
 
 						cell9 = row.createCell(9);
 						if (record.getR15_FD_13_18_MONTHS() != null) {
-						    cell9.setCellValue(record.getR15_FD_13_18_MONTHS().doubleValue());
-						    cell9.setCellStyle(numberStyle);
+						    cell9.setCellValue(record.getR15_FD_13_18_MONTHS());
+						    cell9.setCellStyle(textStyle);
 						} else {
 						    cell9.setCellValue("");
-						    cell9.setCellStyle(numberStyle);
+						    cell9.setCellStyle(textStyle);
 						}
 
 						cell10 = row.createCell(10);
 						if (record.getR15_FD_19_24_MONTHS() != null) {
-						    cell10.setCellValue(record.getR15_FD_19_24_MONTHS().doubleValue());
-						    cell10.setCellStyle(numberStyle);
+						    cell10.setCellValue(record.getR15_FD_19_24_MONTHS());
+						    cell10.setCellStyle(textStyle);
 						} else {
 						    cell10.setCellValue("");
-						    cell10.setCellStyle(numberStyle);
+						    cell10.setCellStyle(textStyle);
 						}
 
 						cell11 = row.createCell(11);
 						if (record.getR15_FD_OVER_24_MONTHS() != null) {
-						    cell11.setCellValue(record.getR15_FD_OVER_24_MONTHS().doubleValue());
-						    cell11.setCellStyle(numberStyle);
+						    cell11.setCellValue(record.getR15_FD_OVER_24_MONTHS());
+						    cell11.setCellStyle(textStyle);
 						} else {
 						    cell11.setCellValue("");
-						    cell11.setCellStyle(numberStyle);
+						    cell11.setCellStyle(textStyle);
 						}
 
 						cell12 = row.createCell(12);
 						if (record.getR15_TOTAL() != null) {
-						    cell12.setCellValue(record.getR15_TOTAL().doubleValue());
-						    cell12.setCellStyle(numberStyle);
+						    cell12.setCellValue(record.getR15_TOTAL());
+						    cell12.setCellStyle(textStyle);
 						} else {
 						    cell12.setCellValue("");
-						    cell12.setCellStyle(numberStyle);
+						    cell12.setCellStyle(textStyle);
 						}
 
 						}
@@ -5280,8 +5280,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 			Cell cell1 = row.createCell(1);
 						if (record.getR10_CURRENT() != null) {
-							cell1.setCellValue(record.getR10_CURRENT().doubleValue());
-							cell1.setCellStyle(numberStyle);
+							cell1.setCellValue(record.getR10_CURRENT());
+							cell1.setCellStyle(textStyle);
 						} else {
 							cell1.setCellValue("");
 							cell1.setCellStyle(textStyle);
@@ -5289,8 +5289,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell2 = row.createCell(2);
 						if (record.getR10_CALL() != null) {
-							cell2.setCellValue(record.getR10_CALL().doubleValue());
-							cell2.setCellStyle(numberStyle);
+							cell2.setCellValue(record.getR10_CALL());
+							cell2.setCellStyle(textStyle);
 						} else {
 							cell2.setCellValue("");
 							cell2.setCellStyle(textStyle);
@@ -5298,8 +5298,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell3 = row.createCell(3);
 						if (record.getR10_SAVINGS() != null) {
-							cell3.setCellValue(record.getR10_SAVINGS().doubleValue());
-							cell3.setCellStyle(numberStyle);
+							cell3.setCellValue(record.getR10_SAVINGS());
+							cell3.setCellStyle(textStyle);
 						} else {
 							cell3.setCellValue("");
 							cell3.setCellStyle(textStyle);
@@ -5307,8 +5307,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell4 = row.createCell(4);
 						if (record.getR10_NOTICE_0_31_DAYS() != null) {
-							cell4.setCellValue(record.getR10_NOTICE_0_31_DAYS().doubleValue());
-							cell4.setCellStyle(numberStyle);
+							cell4.setCellValue(record.getR10_NOTICE_0_31_DAYS());
+							cell4.setCellStyle(textStyle);
 						} else {
 							cell4.setCellValue("");
 							cell4.setCellStyle(textStyle);
@@ -5316,8 +5316,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell5 = row.createCell(5);
 						if (record.getR10_NOTICE_32_88_DAYS() != null) {
-							cell5.setCellValue(record.getR10_NOTICE_32_88_DAYS().doubleValue());
-							cell5.setCellStyle(numberStyle);
+							cell5.setCellValue(record.getR10_NOTICE_32_88_DAYS());
+							cell5.setCellStyle(textStyle);
 						} else {
 							cell5.setCellValue("");
 							cell5.setCellStyle(textStyle);
@@ -5325,8 +5325,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell6 = row.createCell(6);
 						if (record.getR10_91_DEPOSIT_DAY() != null) {
-							cell6.setCellValue(record.getR10_91_DEPOSIT_DAY().doubleValue());
-							cell6.setCellStyle(numberStyle);
+							cell6.setCellValue(record.getR10_91_DEPOSIT_DAY());
+							cell6.setCellStyle(textStyle);
 						} else {
 							cell6.setCellValue("");
 							cell6.setCellStyle(textStyle);
@@ -5334,8 +5334,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell7 = row.createCell(7);
 						if (record.getR10_FD_1_6_MONTHS() != null) {
-							cell7.setCellValue(record.getR10_FD_1_6_MONTHS().doubleValue());
-							cell7.setCellStyle(numberStyle);
+							cell7.setCellValue(record.getR10_FD_1_6_MONTHS());
+							cell7.setCellStyle(textStyle);
 						} else {
 							cell7.setCellValue("");
 							cell7.setCellStyle(textStyle);
@@ -5343,8 +5343,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell8 = row.createCell(8);
 						if (record.getR10_FD_7_12_MONTHS() != null) {
-							cell8.setCellValue(record.getR10_FD_7_12_MONTHS().doubleValue());
-							cell8.setCellStyle(numberStyle);
+							cell8.setCellValue(record.getR10_FD_7_12_MONTHS());
+							cell8.setCellStyle(textStyle);
 						} else {
 							cell8.setCellValue("");
 							cell8.setCellStyle(textStyle);
@@ -5352,8 +5352,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell9 = row.createCell(9);
 						if (record.getR10_FD_13_18_MONTHS() != null) {
-							cell9.setCellValue(record.getR10_FD_13_18_MONTHS().doubleValue());
-							cell9.setCellStyle(numberStyle);
+							cell9.setCellValue(record.getR10_FD_13_18_MONTHS());
+							cell9.setCellStyle(textStyle);
 						} else {
 							cell9.setCellValue("");
 							cell9.setCellStyle(textStyle);
@@ -5361,8 +5361,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell10 = row.createCell(10);
 						if (record.getR10_FD_19_24_MONTHS() != null) {
-							cell10.setCellValue(record.getR10_FD_19_24_MONTHS().doubleValue());
-							cell10.setCellStyle(numberStyle);
+							cell10.setCellValue(record.getR10_FD_19_24_MONTHS());
+							cell10.setCellStyle(textStyle);
 						} else {
 							cell10.setCellValue("");
 							cell10.setCellStyle(textStyle);
@@ -5370,8 +5370,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						Cell cell11 = row.createCell(11);
 						if (record.getR10_FD_OVER_24_MONTHS() != null) {
-							cell11.setCellValue(record.getR10_FD_OVER_24_MONTHS().doubleValue());
-							cell11.setCellStyle(numberStyle);
+							cell11.setCellValue(record.getR10_FD_OVER_24_MONTHS());
+							cell11.setCellStyle(textStyle);
 						} else {
 							cell11.setCellValue("");
 							cell11.setCellStyle(textStyle);
@@ -5379,8 +5379,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 						
 						Cell cell12 = row.createCell(12);
 						if (record.getR10_TOTAL() != null) {
-							cell12.setCellValue(record.getR10_TOTAL().doubleValue());
-							cell12.setCellStyle(numberStyle);
+							cell12.setCellValue(record.getR10_TOTAL());
+							cell12.setCellStyle(textStyle);
 						} else {
 							cell12.setCellValue("");
 							cell12.setCellStyle(textStyle);
@@ -5394,8 +5394,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR11_CURRENT() != null) {
-							cell1.setCellValue(record.getR11_CURRENT().doubleValue());
-							cell1.setCellStyle(numberStyle);
+							cell1.setCellValue(record.getR11_CURRENT());
+							cell1.setCellStyle(textStyle);
 						} else {
 							cell1.setCellValue("");
 							cell1.setCellStyle(textStyle);
@@ -5403,8 +5403,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR11_CALL() != null) {
-							cell2.setCellValue(record.getR11_CALL().doubleValue());
-							cell2.setCellStyle(numberStyle);
+							cell2.setCellValue(record.getR11_CALL());
+							cell2.setCellStyle(textStyle);
 						} else {
 							cell2.setCellValue("");
 							cell2.setCellStyle(textStyle);
@@ -5412,8 +5412,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell3 = row.createCell(3);
 						if (record.getR11_SAVINGS() != null) {
-							cell3.setCellValue(record.getR11_SAVINGS().doubleValue());
-							cell3.setCellStyle(numberStyle);
+							cell3.setCellValue(record.getR11_SAVINGS());
+							cell3.setCellStyle(textStyle);
 						} else {
 							cell3.setCellValue("");
 							cell3.setCellStyle(textStyle);
@@ -5421,8 +5421,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell4 = row.createCell(4);
 						if (record.getR11_NOTICE_0_31_DAYS() != null) {
-							cell4.setCellValue(record.getR11_NOTICE_0_31_DAYS().doubleValue());
-							cell4.setCellStyle(numberStyle);
+							cell4.setCellValue(record.getR11_NOTICE_0_31_DAYS());
+							cell4.setCellStyle(textStyle);
 						} else {
 							cell4.setCellValue("");
 							cell4.setCellStyle(textStyle);
@@ -5430,8 +5430,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell5 = row.createCell(5);
 						if (record.getR11_NOTICE_32_88_DAYS() != null) {
-							cell5.setCellValue(record.getR11_NOTICE_32_88_DAYS().doubleValue());
-							cell5.setCellStyle(numberStyle);
+							cell5.setCellValue(record.getR11_NOTICE_32_88_DAYS());
+							cell5.setCellStyle(textStyle);
 						} else {
 							cell5.setCellValue("");
 							cell5.setCellStyle(textStyle);
@@ -5439,8 +5439,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell6 = row.createCell(6);
 						if (record.getR11_91_DEPOSIT_DAY() != null) {
-							cell6.setCellValue(record.getR11_91_DEPOSIT_DAY().doubleValue());
-							cell6.setCellStyle(numberStyle);
+							cell6.setCellValue(record.getR11_91_DEPOSIT_DAY());
+							cell6.setCellStyle(textStyle);
 						} else {
 							cell6.setCellValue("");
 							cell6.setCellStyle(textStyle);
@@ -5448,8 +5448,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell7 = row.createCell(7);
 						if (record.getR11_FD_1_6_MONTHS() != null) {
-							cell7.setCellValue(record.getR11_FD_1_6_MONTHS().doubleValue());
-							cell7.setCellStyle(numberStyle);
+							cell7.setCellValue(record.getR11_FD_1_6_MONTHS());
+							cell7.setCellStyle(textStyle);
 						} else {
 							cell7.setCellValue("");
 							cell7.setCellStyle(textStyle);
@@ -5457,8 +5457,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell8 = row.createCell(8);
 						if (record.getR11_FD_7_12_MONTHS() != null) {
-							cell8.setCellValue(record.getR11_FD_7_12_MONTHS().doubleValue());
-							cell8.setCellStyle(numberStyle);
+							cell8.setCellValue(record.getR11_FD_7_12_MONTHS());
+							cell8.setCellStyle(textStyle);
 						} else {
 							cell8.setCellValue("");
 							cell8.setCellStyle(textStyle);
@@ -5466,8 +5466,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell9 = row.createCell(9);
 						if (record.getR11_FD_13_18_MONTHS() != null) {
-							cell9.setCellValue(record.getR11_FD_13_18_MONTHS().doubleValue());
-							cell9.setCellStyle(numberStyle);
+							cell9.setCellValue(record.getR11_FD_13_18_MONTHS());
+							cell9.setCellStyle(textStyle);
 						} else {
 							cell9.setCellValue("");
 							cell9.setCellStyle(textStyle);
@@ -5475,8 +5475,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell10 = row.createCell(10);
 						if (record.getR11_FD_19_24_MONTHS() != null) {
-							cell10.setCellValue(record.getR11_FD_19_24_MONTHS().doubleValue());
-							cell10.setCellStyle(numberStyle);
+							cell10.setCellValue(record.getR11_FD_19_24_MONTHS());
+							cell10.setCellStyle(textStyle);
 						} else {
 							cell10.setCellValue("");
 							cell10.setCellStyle(textStyle);
@@ -5484,8 +5484,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell11 = row.createCell(11);
 						if (record.getR11_FD_OVER_24_MONTHS() != null) {
-							cell11.setCellValue(record.getR11_FD_OVER_24_MONTHS().doubleValue());
-							cell11.setCellStyle(numberStyle);
+							cell11.setCellValue(record.getR11_FD_OVER_24_MONTHS());
+							cell11.setCellStyle(textStyle);
 						} else {
 							cell11.setCellValue("");
 							cell11.setCellStyle(textStyle);
@@ -5493,8 +5493,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 						
 						cell12 = row.createCell(12);
 						if (record.getR11_TOTAL() != null) {
-							cell12.setCellValue(record.getR11_TOTAL().doubleValue());
-							cell12.setCellStyle(numberStyle);
+							cell12.setCellValue(record.getR11_TOTAL());
+							cell12.setCellStyle(textStyle);
 						} else {
 							cell12.setCellValue("");
 							cell12.setCellStyle(textStyle);
@@ -5508,8 +5508,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR12_CURRENT() != null) {
-							cell1.setCellValue(record.getR12_CURRENT().doubleValue());
-							cell1.setCellStyle(numberStyle);
+							cell1.setCellValue(record.getR12_CURRENT());
+							cell1.setCellStyle(textStyle);
 						} else {
 							cell1.setCellValue("");
 							cell1.setCellStyle(textStyle);
@@ -5517,8 +5517,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR12_CALL() != null) {
-							cell2.setCellValue(record.getR12_CALL().doubleValue());
-							cell2.setCellStyle(numberStyle);
+							cell2.setCellValue(record.getR12_CALL());
+							cell2.setCellStyle(textStyle);
 						} else {
 							cell2.setCellValue("");
 							cell2.setCellStyle(textStyle);
@@ -5526,8 +5526,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell3 = row.createCell(3);
 						if (record.getR12_SAVINGS() != null) {
-							cell3.setCellValue(record.getR12_SAVINGS().doubleValue());
-							cell3.setCellStyle(numberStyle);
+							cell3.setCellValue(record.getR12_SAVINGS());
+							cell3.setCellStyle(textStyle);
 						} else {
 							cell3.setCellValue("");
 							cell3.setCellStyle(textStyle);
@@ -5535,8 +5535,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell4 = row.createCell(4);
 						if (record.getR12_NOTICE_0_31_DAYS() != null) {
-							cell4.setCellValue(record.getR12_NOTICE_0_31_DAYS().doubleValue());
-							cell4.setCellStyle(numberStyle);
+							cell4.setCellValue(record.getR12_NOTICE_0_31_DAYS());
+							cell4.setCellStyle(textStyle);
 						} else {
 							cell4.setCellValue("");
 							cell4.setCellStyle(textStyle);
@@ -5544,8 +5544,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell5 = row.createCell(5);
 						if (record.getR12_NOTICE_32_88_DAYS() != null) {
-							cell5.setCellValue(record.getR12_NOTICE_32_88_DAYS().doubleValue());
-							cell5.setCellStyle(numberStyle);
+							cell5.setCellValue(record.getR12_NOTICE_32_88_DAYS());
+							cell5.setCellStyle(textStyle);
 						} else {
 							cell5.setCellValue("");
 							cell5.setCellStyle(textStyle);
@@ -5553,8 +5553,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell6 = row.createCell(6);
 						if (record.getR12_91_DEPOSIT_DAY() != null) {
-							cell6.setCellValue(record.getR12_91_DEPOSIT_DAY().doubleValue());
-							cell6.setCellStyle(numberStyle);
+							cell6.setCellValue(record.getR12_91_DEPOSIT_DAY());
+							cell6.setCellStyle(textStyle);
 						} else {
 							cell6.setCellValue("");
 							cell6.setCellStyle(textStyle);
@@ -5562,8 +5562,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell7 = row.createCell(7);
 						if (record.getR12_FD_1_6_MONTHS() != null) {
-							cell7.setCellValue(record.getR12_FD_1_6_MONTHS().doubleValue());
-							cell7.setCellStyle(numberStyle);
+							cell7.setCellValue(record.getR12_FD_1_6_MONTHS());
+							cell7.setCellStyle(textStyle);
 						} else {
 							cell7.setCellValue("");
 							cell7.setCellStyle(textStyle);
@@ -5571,8 +5571,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell8 = row.createCell(8);
 						if (record.getR12_FD_7_12_MONTHS() != null) {
-							cell8.setCellValue(record.getR12_FD_7_12_MONTHS().doubleValue());
-							cell8.setCellStyle(numberStyle);
+							cell8.setCellValue(record.getR12_FD_7_12_MONTHS());
+							cell8.setCellStyle(textStyle);
 						} else {
 							cell8.setCellValue("");
 							cell8.setCellStyle(textStyle);
@@ -5580,8 +5580,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell9 = row.createCell(9);
 						if (record.getR12_FD_13_18_MONTHS() != null) {
-							cell9.setCellValue(record.getR12_FD_13_18_MONTHS().doubleValue());
-							cell9.setCellStyle(numberStyle);
+							cell9.setCellValue(record.getR12_FD_13_18_MONTHS());
+							cell9.setCellStyle(textStyle);
 						} else {
 							cell9.setCellValue("");
 							cell9.setCellStyle(textStyle);
@@ -5589,8 +5589,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell10 = row.createCell(10);
 						if (record.getR12_FD_19_24_MONTHS() != null) {
-							cell10.setCellValue(record.getR12_FD_19_24_MONTHS().doubleValue());
-							cell10.setCellStyle(numberStyle);
+							cell10.setCellValue(record.getR12_FD_19_24_MONTHS());
+							cell10.setCellStyle(textStyle);
 						} else {
 							cell10.setCellValue("");
 							cell10.setCellStyle(textStyle);
@@ -5598,8 +5598,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell11 = row.createCell(11);
 						if (record.getR12_FD_OVER_24_MONTHS() != null) {
-							cell11.setCellValue(record.getR12_FD_OVER_24_MONTHS().doubleValue());
-							cell11.setCellStyle(numberStyle);
+							cell11.setCellValue(record.getR12_FD_OVER_24_MONTHS());
+							cell11.setCellStyle(textStyle);
 						} else {
 							cell11.setCellValue("");
 							cell11.setCellStyle(textStyle);
@@ -5607,8 +5607,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 						
 						cell12 = row.createCell(12);
 						if (record.getR12_TOTAL() != null) {
-							cell12.setCellValue(record.getR12_TOTAL().doubleValue());
-							cell12.setCellStyle(numberStyle);
+							cell12.setCellValue(record.getR12_TOTAL());
+							cell12.setCellStyle(textStyle);
 						} else {
 							cell12.setCellValue("");
 							cell12.setCellStyle(textStyle);
@@ -5622,8 +5622,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR13_CURRENT() != null) {
-							cell1.setCellValue(record.getR13_CURRENT().doubleValue());
-							cell1.setCellStyle(numberStyle);
+							cell1.setCellValue(record.getR13_CURRENT());
+							cell1.setCellStyle(textStyle);
 						} else {
 							cell1.setCellValue("");
 							cell1.setCellStyle(textStyle);
@@ -5631,8 +5631,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR13_CALL() != null) {
-							cell2.setCellValue(record.getR13_CALL().doubleValue());
-							cell2.setCellStyle(numberStyle);
+							cell2.setCellValue(record.getR13_CALL());
+							cell2.setCellStyle(textStyle);
 						} else {
 							cell2.setCellValue("");
 							cell2.setCellStyle(textStyle);
@@ -5640,8 +5640,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell3 = row.createCell(3);
 						if (record.getR13_SAVINGS() != null) {
-							cell3.setCellValue(record.getR13_SAVINGS().doubleValue());
-							cell3.setCellStyle(numberStyle);
+							cell3.setCellValue(record.getR13_SAVINGS());
+							cell3.setCellStyle(textStyle);
 						} else {
 							cell3.setCellValue("");
 							cell3.setCellStyle(textStyle);
@@ -5649,8 +5649,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell4 = row.createCell(4);
 						if (record.getR13_NOTICE_0_31_DAYS() != null) {
-							cell4.setCellValue(record.getR13_NOTICE_0_31_DAYS().doubleValue());
-							cell4.setCellStyle(numberStyle);
+							cell4.setCellValue(record.getR13_NOTICE_0_31_DAYS());
+							cell4.setCellStyle(textStyle);
 						} else {
 							cell4.setCellValue("");
 							cell4.setCellStyle(textStyle);
@@ -5658,8 +5658,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell5 = row.createCell(5);
 						if (record.getR13_NOTICE_32_88_DAYS() != null) {
-							cell5.setCellValue(record.getR13_NOTICE_32_88_DAYS().doubleValue());
-							cell5.setCellStyle(numberStyle);
+							cell5.setCellValue(record.getR13_NOTICE_32_88_DAYS());
+							cell5.setCellStyle(textStyle);
 						} else {
 							cell5.setCellValue("");
 							cell5.setCellStyle(textStyle);
@@ -5667,8 +5667,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell6 = row.createCell(6);
 						if (record.getR13_91_DEPOSIT_DAY() != null) {
-							cell6.setCellValue(record.getR13_91_DEPOSIT_DAY().doubleValue());
-							cell6.setCellStyle(numberStyle);
+							cell6.setCellValue(record.getR13_91_DEPOSIT_DAY());
+							cell6.setCellStyle(textStyle);
 						} else {
 							cell6.setCellValue("");
 							cell6.setCellStyle(textStyle);
@@ -5676,8 +5676,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell7 = row.createCell(7);
 						if (record.getR13_FD_1_6_MONTHS() != null) {
-							cell7.setCellValue(record.getR13_FD_1_6_MONTHS().doubleValue());
-							cell7.setCellStyle(numberStyle);
+							cell7.setCellValue(record.getR13_FD_1_6_MONTHS());
+							cell7.setCellStyle(textStyle);
 						} else {
 							cell7.setCellValue("");
 							cell7.setCellStyle(textStyle);
@@ -5685,8 +5685,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell8 = row.createCell(8);
 						if (record.getR13_FD_7_12_MONTHS() != null) {
-							cell8.setCellValue(record.getR13_FD_7_12_MONTHS().doubleValue());
-							cell8.setCellStyle(numberStyle);
+							cell8.setCellValue(record.getR13_FD_7_12_MONTHS());
+							cell8.setCellStyle(textStyle);
 						} else {
 							cell8.setCellValue("");
 							cell8.setCellStyle(textStyle);
@@ -5694,8 +5694,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell9 = row.createCell(9);
 						if (record.getR13_FD_13_18_MONTHS() != null) {
-							cell9.setCellValue(record.getR13_FD_13_18_MONTHS().doubleValue());
-							cell9.setCellStyle(numberStyle);
+							cell9.setCellValue(record.getR13_FD_13_18_MONTHS());
+							cell9.setCellStyle(textStyle);
 						} else {
 							cell9.setCellValue("");
 							cell9.setCellStyle(textStyle);
@@ -5703,8 +5703,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell10 = row.createCell(10);
 						if (record.getR13_FD_19_24_MONTHS() != null) {
-							cell10.setCellValue(record.getR13_FD_19_24_MONTHS().doubleValue());
-							cell10.setCellStyle(numberStyle);
+							cell10.setCellValue(record.getR13_FD_19_24_MONTHS());
+							cell10.setCellStyle(textStyle);
 						} else {
 							cell10.setCellValue("");
 							cell10.setCellStyle(textStyle);
@@ -5712,8 +5712,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell11 = row.createCell(11);
 						if (record.getR13_FD_OVER_24_MONTHS() != null) {
-							cell11.setCellValue(record.getR13_FD_OVER_24_MONTHS().doubleValue());
-							cell11.setCellStyle(numberStyle);
+							cell11.setCellValue(record.getR13_FD_OVER_24_MONTHS());
+							cell11.setCellStyle(textStyle);
 						} else {
 							cell11.setCellValue("");
 							cell11.setCellStyle(textStyle);
@@ -5721,8 +5721,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 						
 					 cell12 = row.createCell(12);
 						if (record.getR13_TOTAL() != null) {
-							cell12.setCellValue(record.getR13_TOTAL().doubleValue());
-							cell12.setCellStyle(numberStyle);
+							cell12.setCellValue(record.getR13_TOTAL());
+							cell12.setCellStyle(textStyle);
 						} else {
 							cell12.setCellValue("");
 							cell12.setCellStyle(textStyle);
@@ -5736,8 +5736,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR14_CURRENT() != null) {
-							cell1.setCellValue(record.getR14_CURRENT().doubleValue());
-							cell1.setCellStyle(numberStyle);
+							cell1.setCellValue(record.getR14_CURRENT());
+							cell1.setCellStyle(textStyle);
 						} else {
 							cell1.setCellValue("");
 							cell1.setCellStyle(textStyle);
@@ -5745,8 +5745,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR14_CALL() != null) {
-							cell2.setCellValue(record.getR14_CALL().doubleValue());
-							cell2.setCellStyle(numberStyle);
+							cell2.setCellValue(record.getR14_CALL());
+							cell2.setCellStyle(textStyle);
 						} else {
 							cell2.setCellValue("");
 							cell2.setCellStyle(textStyle);
@@ -5754,8 +5754,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell3 = row.createCell(3);
 						if (record.getR14_SAVINGS() != null) {
-							cell3.setCellValue(record.getR14_SAVINGS().doubleValue());
-							cell3.setCellStyle(numberStyle);
+							cell3.setCellValue(record.getR14_SAVINGS());
+							cell3.setCellStyle(textStyle);
 						} else {
 							cell3.setCellValue("");
 							cell3.setCellStyle(textStyle);
@@ -5763,8 +5763,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell4 = row.createCell(4);
 						if (record.getR14_NOTICE_0_31_DAYS() != null) {
-							cell4.setCellValue(record.getR14_NOTICE_0_31_DAYS().doubleValue());
-							cell4.setCellStyle(numberStyle);
+							cell4.setCellValue(record.getR14_NOTICE_0_31_DAYS());
+							cell4.setCellStyle(textStyle);
 						} else {
 							cell4.setCellValue("");
 							cell4.setCellStyle(textStyle);
@@ -5772,8 +5772,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell5 = row.createCell(5);
 						if (record.getR14_NOTICE_32_88_DAYS() != null) {
-							cell5.setCellValue(record.getR14_NOTICE_32_88_DAYS().doubleValue());
-							cell5.setCellStyle(numberStyle);
+							cell5.setCellValue(record.getR14_NOTICE_32_88_DAYS());
+							cell5.setCellStyle(textStyle);
 						} else {
 							cell5.setCellValue("");
 							cell5.setCellStyle(textStyle);
@@ -5781,8 +5781,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell6 = row.createCell(6);
 						if (record.getR14_91_DEPOSIT_DAY() != null) {
-							cell6.setCellValue(record.getR14_91_DEPOSIT_DAY().doubleValue());
-							cell6.setCellStyle(numberStyle);
+							cell6.setCellValue(record.getR14_91_DEPOSIT_DAY());
+							cell6.setCellStyle(textStyle);
 						} else {
 							cell6.setCellValue("");
 							cell6.setCellStyle(textStyle);
@@ -5790,8 +5790,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell7 = row.createCell(7);
 						if (record.getR14_FD_1_6_MONTHS() != null) {
-							cell7.setCellValue(record.getR14_FD_1_6_MONTHS().doubleValue());
-							cell7.setCellStyle(numberStyle);
+							cell7.setCellValue(record.getR14_FD_1_6_MONTHS());
+							cell7.setCellStyle(textStyle);
 						} else {
 							cell7.setCellValue("");
 							cell7.setCellStyle(textStyle);
@@ -5799,8 +5799,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell8 = row.createCell(8);
 						if (record.getR14_FD_7_12_MONTHS() != null) {
-							cell8.setCellValue(record.getR14_FD_7_12_MONTHS().doubleValue());
-							cell8.setCellStyle(numberStyle);
+							cell8.setCellValue(record.getR14_FD_7_12_MONTHS());
+							cell8.setCellStyle(textStyle);
 						} else {
 							cell8.setCellValue("");
 							cell8.setCellStyle(textStyle);
@@ -5808,8 +5808,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell9 = row.createCell(9);
 						if (record.getR14_FD_13_18_MONTHS() != null) {
-							cell9.setCellValue(record.getR14_FD_13_18_MONTHS().doubleValue());
-							cell9.setCellStyle(numberStyle);
+							cell9.setCellValue(record.getR14_FD_13_18_MONTHS());
+							cell9.setCellStyle(textStyle);
 						} else {
 							cell9.setCellValue("");
 							cell9.setCellStyle(textStyle);
@@ -5817,8 +5817,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell10 = row.createCell(10);
 						if (record.getR14_FD_19_24_MONTHS() != null) {
-							cell10.setCellValue(record.getR14_FD_19_24_MONTHS().doubleValue());
-							cell10.setCellStyle(numberStyle);
+							cell10.setCellValue(record.getR14_FD_19_24_MONTHS());
+							cell10.setCellStyle(textStyle);
 						} else {
 							cell10.setCellValue("");
 							cell10.setCellStyle(textStyle);
@@ -5826,8 +5826,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell11 = row.createCell(11);
 						if (record.getR14_FD_OVER_24_MONTHS() != null) {
-							cell11.setCellValue(record.getR14_FD_OVER_24_MONTHS().doubleValue());
-							cell11.setCellStyle(numberStyle);
+							cell11.setCellValue(record.getR14_FD_OVER_24_MONTHS());
+							cell11.setCellStyle(textStyle);
 						} else {
 							cell11.setCellValue("");
 							cell11.setCellStyle(textStyle);
@@ -5835,8 +5835,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 						
 					 cell12 = row.createCell(12);
 						if (record.getR14_TOTAL() != null) {
-							cell12.setCellValue(record.getR14_TOTAL().doubleValue());
-							cell12.setCellStyle(numberStyle);
+							cell12.setCellValue(record.getR14_TOTAL());
+							cell12.setCellStyle(textStyle);
 						} else {
 							cell12.setCellValue("");
 							cell12.setCellStyle(textStyle);
@@ -5851,8 +5851,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell1 = row.createCell(1);
 						if (record.getR15_CURRENT() != null) {
-						    cell1.setCellValue(record.getR15_CURRENT().doubleValue());
-						    cell1.setCellStyle(numberStyle);
+						    cell1.setCellValue(record.getR15_CURRENT());
+						    cell1.setCellStyle(textStyle);
 						} else {
 						    cell1.setCellValue("");
 						    cell1.setCellStyle(textStyle);
@@ -5860,8 +5860,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell2 = row.createCell(2);
 						if (record.getR15_CALL() != null) {
-						    cell2.setCellValue(record.getR15_CALL().doubleValue());
-						    cell2.setCellStyle(numberStyle);
+						    cell2.setCellValue(record.getR15_CALL());
+						    cell2.setCellStyle(textStyle);
 						} else {
 						    cell2.setCellValue("");
 						    cell2.setCellStyle(textStyle);
@@ -5869,8 +5869,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell3 = row.createCell(3);
 						if (record.getR15_SAVINGS() != null) {
-						    cell3.setCellValue(record.getR15_SAVINGS().doubleValue());
-						    cell3.setCellStyle(numberStyle);
+						    cell3.setCellValue(record.getR15_SAVINGS());
+						    cell3.setCellStyle(textStyle);
 						} else {
 						    cell3.setCellValue("");
 						    cell3.setCellStyle(textStyle);
@@ -5878,8 +5878,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell4 = row.createCell(4);
 						if (record.getR15_NOTICE_0_31_DAYS() != null) {
-						    cell4.setCellValue(record.getR15_NOTICE_0_31_DAYS().doubleValue());
-						    cell4.setCellStyle(numberStyle);
+						    cell4.setCellValue(record.getR15_NOTICE_0_31_DAYS());
+						    cell4.setCellStyle(textStyle);
 						} else {
 						    cell4.setCellValue("");
 						    cell4.setCellStyle(textStyle);
@@ -5887,8 +5887,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell5 = row.createCell(5);
 						if (record.getR15_NOTICE_32_88_DAYS() != null) {
-						    cell5.setCellValue(record.getR15_NOTICE_32_88_DAYS().doubleValue());
-						    cell5.setCellStyle(numberStyle);
+						    cell5.setCellValue(record.getR15_NOTICE_32_88_DAYS());
+						    cell5.setCellStyle(textStyle);
 						} else {
 						    cell5.setCellValue("");
 						    cell5.setCellStyle(textStyle);
@@ -5896,8 +5896,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell6 = row.createCell(6);
 						if (record.getR15_91_DEPOSIT_DAY() != null) {
-						    cell6.setCellValue(record.getR15_91_DEPOSIT_DAY().doubleValue());
-						    cell6.setCellStyle(numberStyle);
+						    cell6.setCellValue(record.getR15_91_DEPOSIT_DAY());
+						    cell6.setCellStyle(textStyle);
 						} else {
 						    cell6.setCellValue("");
 						    cell6.setCellStyle(textStyle);
@@ -5905,8 +5905,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell7 = row.createCell(7);
 						if (record.getR15_FD_1_6_MONTHS() != null) {
-						    cell7.setCellValue(record.getR15_FD_1_6_MONTHS().doubleValue());
-						    cell7.setCellStyle(numberStyle);
+						    cell7.setCellValue(record.getR15_FD_1_6_MONTHS());
+						    cell7.setCellStyle(textStyle);
 						} else {
 						    cell7.setCellValue("");
 						    cell7.setCellStyle(textStyle);
@@ -5914,8 +5914,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell8 = row.createCell(8);
 						if (record.getR15_FD_7_12_MONTHS() != null) {
-						    cell8.setCellValue(record.getR15_FD_7_12_MONTHS().doubleValue());
-						    cell8.setCellStyle(numberStyle);
+						    cell8.setCellValue(record.getR15_FD_7_12_MONTHS());
+						    cell8.setCellStyle(textStyle);
 						} else {
 						    cell8.setCellValue("");
 						    cell8.setCellStyle(textStyle);
@@ -5923,8 +5923,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell9 = row.createCell(9);
 						if (record.getR15_FD_13_18_MONTHS() != null) {
-						    cell9.setCellValue(record.getR15_FD_13_18_MONTHS().doubleValue());
-						    cell9.setCellStyle(numberStyle);
+						    cell9.setCellValue(record.getR15_FD_13_18_MONTHS());
+						    cell9.setCellStyle(textStyle);
 						} else {
 						    cell9.setCellValue("");
 						    cell9.setCellStyle(textStyle);
@@ -5932,8 +5932,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell10 = row.createCell(10);
 						if (record.getR15_FD_19_24_MONTHS() != null) {
-						    cell10.setCellValue(record.getR15_FD_19_24_MONTHS().doubleValue());
-						    cell10.setCellStyle(numberStyle);
+						    cell10.setCellValue(record.getR15_FD_19_24_MONTHS());
+						    cell10.setCellStyle(textStyle);
 						} else {
 						    cell10.setCellValue("");
 						    cell10.setCellStyle(textStyle);
@@ -5941,8 +5941,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell11 = row.createCell(11);
 						if (record.getR15_FD_OVER_24_MONTHS() != null) {
-						    cell11.setCellValue(record.getR15_FD_OVER_24_MONTHS().doubleValue());
-						    cell11.setCellStyle(numberStyle);
+						    cell11.setCellValue(record.getR15_FD_OVER_24_MONTHS());
+						    cell11.setCellStyle(textStyle);
 						} else {
 						    cell11.setCellValue("");
 						    cell11.setCellStyle(textStyle);
@@ -5950,8 +5950,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						cell12 = row.createCell(12);
 						if (record.getR15_TOTAL() != null) {
-						    cell12.setCellValue(record.getR15_TOTAL().doubleValue());
-						    cell12.setCellStyle(numberStyle);
+						    cell12.setCellValue(record.getR15_TOTAL());
+						    cell12.setCellStyle(textStyle);
 						} else {
 						    cell12.setCellValue("");
 						    cell12.setCellStyle(textStyle);
