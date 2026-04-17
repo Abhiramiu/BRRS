@@ -1469,7 +1469,7 @@ public class RegulatoryReportServices {
 			
 		case "MDISB5":
 
-			repsummary = BRRS_MDISB5_ReportService.getMDISB5View(reportId, fromdate, todate, currency, dtltype,
+			repsummary = BRRS_MDISB5_ReportService.getBRRS_MDISB5View(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
 			
@@ -2288,11 +2288,7 @@ break;
 					pageable, Filter, type, version);
 			break;
 
-		case "MDISB5":
-
-			repdetail = BRRS_MDISB5_ReportService.getMDISB5currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
+		
 
 		case "M_P_L":
 
@@ -2716,6 +2712,17 @@ break;
 				e.printStackTrace();
 			}
 			break;
+			
+		/*
+		 * case "MDISB5": try {
+		 * 
+		 * repfile = BRRS_MDISB5_ReportService.getMDISB5Excel(filename, reportId,
+		 * fromdate, todate, currency, dtltype, type, format, version); } catch
+		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
+		 * break;
+		 */
+			
+			
 
 		case "B_III_CETD":
 			try {
@@ -4657,10 +4664,11 @@ break;
 					dtltype, type, version);
 		}
 
-		else if ("MDISB5Detail".equals(filename)) {
-			return BRRS_MDISB5_ReportService.getMDISB5DetailExcel(filename, fromdate, todate, currency, dtltype, type,
-					version);
-		}
+		/*
+		 * else if ("MDISB5Detail".equals(filename)) { return
+		 * BRRS_MDISB5_ReportService.getMDISB5DetailExcel(filename, fromdate, todate,
+		 * currency, dtltype, type, version); }
+		 */
 
 		return new byte[0];
 	}
@@ -4701,6 +4709,14 @@ break;
 			System.out.println("Fetched M_LA3 archival data: " + M_LA3List.size());
 			break;
 			
+		case "MDISB4":
+			List<Object[]> MDISB4List = BRRS_MDISB4_ReportService.getMDISB4Archival();
+			archivalData.addAll(MDISB4List);
+			System.out.println("Fetched MDISB4 archival data: " + MDISB4List.size());
+			break;
+			
+			
+		
 		case "M_P_L":
 			List<Object[]> M_P_LList = BRRS_M_P_L_ReportService.getM_P_LArchival();
 			archivalData.addAll(M_P_LList);
@@ -4938,14 +4954,7 @@ break;
 			}
 			break;
 
-		case "MDISB4":
-			try {
-				archivalData = BRRS_MDISB4_ReportService.getMDISB4Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		
 
 		// case "M_LARADV":
 		// try {
@@ -5625,6 +5634,12 @@ break;
 			archivalData.addAll(ca5List);
 			System.out.println("Fetched M_CA6 archival data: " + ca5List.size());
 			break;
+			
+		case "MDISB5":
+			List<Object[]> MDISB5List = BRRS_MDISB5_ReportService.getBRRS_MDISB5Archival();
+			archivalData.addAll(MDISB5List);
+			System.out.println("Fetched MDISB5 archival data: " + MDISB5List.size());
+			break;
 
 		case "BDISB1":
 			List<Object[]> bdisb1List = brrs_bdisb1_reportservice.getBDISB1Archival();
@@ -5724,11 +5739,7 @@ break;
 			System.out.println("Fetched M_SIR archival data: " + RPDList.size());
 			break;
 
-		case "MDISB5":
-			List<Object[]> MDISB5List = BRRS_MDISB5_ReportService.getMDISB5Archival();
-			archivalData.addAll(MDISB5List);
-			System.out.println("Fetched TBS archival data: " + MDISB5List.size());
-			break;
+		
 
 		case "M_NOSVOS":
 			try {
@@ -6353,11 +6364,12 @@ break;
 		// dtltype, type, version);
 		// }
 
-		else if ("MDISB5Detail".equals(filename)) {
-
-			fileData = BRRS_MDISB5_ReportService.getMDISB5DetailExcel(filename, fromdate, todate, currency, dtltype,
-					type, version);
-		}
+		/*
+		 * else if ("MDISB5Detail".equals(filename)) {
+		 * 
+		 * fileData = BRRS_MDISB5_ReportService.getMDISB5DetailExcel(filename, fromdate,
+		 * todate, currency, dtltype, type, version); }
+		 */
 
 		if (fileData == null) {
 			// logger.warn("Excel generation failed or no data for jobId: {}", jobId);
@@ -7221,16 +7233,15 @@ break;
 			}
 			break;
 
-		case "MDISB5":
-			try {
-				List<Object[]> resubList = BRRS_MDISB5_ReportService.getMDISB5Resub();
-				resubmissionData.addAll(resubList);
-				System.out.println("Resubmission data fetched for MDISB5: " + resubList.size());
-			} catch (Exception e) {
-				System.err.println("Error fetching resubmission data for MDISB5: " + e.getMessage());
-				e.printStackTrace();
-			}
-			break;
+		/*
+		 * case "MDISB5": try { List<Object[]> resubList =
+		 * BRRS_MDISB5_ReportService.getMDISB5Resub();
+		 * resubmissionData.addAll(resubList);
+		 * System.out.println("Resubmission data fetched for MDISB5: " +
+		 * resubList.size()); } catch (Exception e) {
+		 * System.err.println("Error fetching resubmission data for MDISB5: " +
+		 * e.getMessage()); e.printStackTrace(); } break;
+		 */
 
 		case "M_IS":
 			try {
@@ -7500,6 +7511,17 @@ break;
 		case "M_CA5":
 			try {
 				List<Object[]> resubList = BRRS_M_CA5_reportservice.getM_CA5Resub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for CA5: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for CA5: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+			
+		case "MDISB5":
+			try {
+				List<Object[]> resubList = BRRS_MDISB5_ReportService.getBRRS_MDISB5Resub();
 				resubmissionData.addAll(resubList);
 				System.out.println("Resubmission data fetched for CA5: " + resubList.size());
 			} catch (Exception e) {

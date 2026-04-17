@@ -56,6 +56,10 @@ import com.bornfire.brrs.entities.MDISB4_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.MDISB4_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.MDISB4_Detail_Entity;
 import com.bornfire.brrs.entities.MDISB4_Summary_Entity;
+import com.bornfire.brrs.entities.M_LA3_Archival_Summary_Entity1;
+import com.bornfire.brrs.entities.M_LA3_Archival_Summary_Entity2;
+import com.bornfire.brrs.entities.M_LA3_Summary_Entity1;
+import com.bornfire.brrs.entities.M_LA3_Summary_Entity2;
 
 @Component
 @Service
@@ -94,40 +98,43 @@ public class BRRS_MDISB4_ReportService {
 	    System.out.println("Loading MDISB4 View...");
 	    System.out.println("Version: " + version);
 
-	    try {
-	        Date toDateParsed = dateformat.parse(todate);
+	   
+	        if (type.equals("ARCHIVAL") & version != null) {
+				List<MDISB4_Archival_Summary_Entity> T1Master = new ArrayList<MDISB4_Archival_Summary_Entity>();
+				try {
+					Date d1 = dateformat.parse(todate);
 
-	        if ("ARCHIVAL".equals(type) && version != null) {
+					T1Master = BRRS_MDISB4_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate), version);
+					} catch (ParseException e) {
+					e.printStackTrace();
+				}
 
-	            System.out.println("ARCHIVAL MODE");
+				mv.addObject("reportsummary", T1Master);
+			
+			} else {
+				List<MDISB4_Summary_Entity> T1Master = new ArrayList<MDISB4_Summary_Entity>();
+				
+				try {
+					Date d1 = dateformat.parse(todate);
 
-	            List<MDISB4_Archival_Summary_Entity> data =
-	                    BRRS_MDISB4_Archival_Summary_Repo
-	                    .getdatabydateListarchival(toDateParsed, version);
-
-	            mv.addObject("reportsummary", data);
-
-	        } else {
-
-	            System.out.println("CURRENT MODE");
-
-	            List<MDISB4_Summary_Entity> data =
-	                    BRRS_MDISB4_Summary_Repo
-	                    .getdatabydateList(toDateParsed);
-
-	            mv.addObject("reportsummary", data);
-	        }
-
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-
+					T1Master = BRRS_MDISB4_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+					
+					System.out.println("MDISB4");
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				mv.addObject("reportsummary", T1Master);
+				
+			}
+	        
+	       
 	    // ✅ IMPORTANT: MUST MATCH HTML LOCATION
 	    mv.setViewName("BRRS/MDISB4");
 
 	    mv.addObject("displaymode", "summary");
 
-	    return mv;
+	    System.out.println("scv" + mv.getViewName());
+		return mv;
 	}
 	
 	public ModelAndView getMDISB4currentDtl(String reportId, String fromdate, String todate, String currency,
@@ -889,20 +896,46 @@ public class BRRS_MDISB4_ReportService {
 		}
 	}
 
-	public List<Object> getMDISB4Archival() {
-		List<Object> MDISB4Archivallist = new ArrayList<>();
-		try {
-			MDISB4Archivallist = BRRS_MDISB4_Archival_Summary_Repo.getMDISB4archival();
-			System.out.println("countser" + MDISB4Archivallist.size());
-		} catch (Exception e) {
-			// Log the exception
-			System.err.println("Error fetching MDISB4 Archival data: " + e.getMessage());
-			e.printStackTrace();
+	public List<Object[]> getMDISB4Archival() {
 
-		}
-		return MDISB4Archivallist;
+	    List<Object[]> archivalList = new ArrayList<>();
+
+	    try {
+
+	        // ✅ Use your existing autowired variable (NOT static call)
+	        List<MDISB4_Archival_Summary_Entity> repoData =
+	                BRRS_MDISB4_Archival_Summary_Repo.getdatabydateListWithVersion();
+
+	        if (repoData != null && !repoData.isEmpty()) {
+
+	            for (MDISB4_Archival_Summary_Entity entity : repoData) {
+
+	                Object[] row = new Object[] {
+	                        entity.getReportDate(),
+	                        entity.getReportVersion(),
+	                        entity.getReportResubDate()
+	                };
+
+	                archivalList.add(row);
+	            }
+
+	            System.out.println("Fetched " + archivalList.size() + " archival records from MDISB4");
+
+	            MDISB4_Archival_Summary_Entity first = repoData.get(0);
+	            System.out.println("Latest archival version: " + first.getReportVersion());
+
+	        } else {
+	            System.out.println("No archival data found in MDISB4.");
+	        }
+
+	    } catch (Exception e) {
+
+	        System.err.println("Error fetching MDISB4 Archival data: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+
+	    return archivalList;
 	}
-	
 	
 	
 	public byte[] getExcelMDISB4ARCHIVAL(String filename, String reportId, String fromdate, String todate,

@@ -1,3 +1,4 @@
+
 package com.bornfire.brrs.entities;
 
 import java.math.BigDecimal;
@@ -15,10 +16,10 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_MDISB5_ARCHIVALTABLE_SUMMARY1")
-@IdClass(MDISB5_Archival_Summary1_PK.class)
+@Table(name = "BRRS_MDISB5_RESUB_SUMMARYTABLE1")
+@IdClass(MDISB5_PK.class)
 
-public class MDISB5_Archival_Summary_Entity1 {
+public class MDISB5_RESUB_Summary_Entity1 {
 	
 	private String R5_NAME_OF_SHAREHOLDER;
     private BigDecimal R5_PERCENTAGE_SHAREHOLDING;
@@ -522,7 +523,7 @@ public class MDISB5_Archival_Summary_Entity1 {
 	
 	
 
-	public MDISB5_Archival_Summary_Entity1() {
+	public MDISB5_RESUB_Summary_Entity1() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

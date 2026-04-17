@@ -6,6 +6,7 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -14,7 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "BRRS_MDISB4_ARCHIVALTABLE_SUMMARY")
-
+@IdClass(MDISB4_PK.class)
 public class MDISB4_Archival_Summary_Entity {
 	
 	
@@ -86,18 +87,19 @@ public class MDISB4_Archival_Summary_Entity {
     @Column(name = "REPORT_DATE")
 	private Date reportDate;
     
+    @Id
 	@Column(name = "REPORT_VERSION")
 	private BigDecimal reportVersion;
 	
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
+	 @Column(name = "REPORT_RESUBDATE")
+	    private Date reportResubDate;
     private String REPORT_FREQUENCY;
     private String REPORT_CODE;
     private String REPORT_DESC;
     private String ENTITY_FLG;
     private String MODIFY_FLG;
     private String DELETE_FLG;
-    
-    
-    
 	public String getR6_EXCLUSIONS() {
 		return R6_EXCLUSIONS;
 	}
@@ -404,6 +406,12 @@ public class MDISB4_Archival_Summary_Entity {
 	public void setReportVersion(BigDecimal reportVersion) {
 		this.reportVersion = reportVersion;
 	}
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
+	}
 	public String getREPORT_FREQUENCY() {
 		return REPORT_FREQUENCY;
 	}
@@ -440,16 +448,11 @@ public class MDISB4_Archival_Summary_Entity {
 	public void setDELETE_FLG(String dELETE_FLG) {
 		DELETE_FLG = dELETE_FLG;
 	}
-	
-	
-	
-	
-	
 	public MDISB4_Archival_Summary_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
     
     
-
 }
+	

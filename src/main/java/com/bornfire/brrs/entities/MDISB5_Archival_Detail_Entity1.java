@@ -15,10 +15,10 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_MDISB5_ARCHIVALTABLE_SUMMARY1")
-@IdClass(MDISB5_Archival_Summary1_PK.class)
+@Table(name = "BRRS_MDISB5_ARCHIVALTABLE_DETAIL1")
+@IdClass(MDISB5_PK.class)
 
-public class MDISB5_Archival_Summary_Entity1 {
+public class MDISB5_Archival_Detail_Entity1 {
 	
 	private String R5_NAME_OF_SHAREHOLDER;
     private BigDecimal R5_PERCENTAGE_SHAREHOLDING;
@@ -80,7 +80,7 @@ public class MDISB5_Archival_Summary_Entity1 {
     @Id
     @Column(name = "REPORT_DATE")
 	private Date reportDate;
-    @Id
+    
 	@Column(name = "REPORT_VERSION")
 	private BigDecimal reportVersion;
    
@@ -522,7 +522,7 @@ public class MDISB5_Archival_Summary_Entity1 {
 	
 	
 
-	public MDISB5_Archival_Summary_Entity1() {
+	public MDISB5_Archival_Detail_Entity1() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

@@ -1722,64 +1722,135 @@ public class BRRS_ReportsController {
 		}
 	}
 
+	/*
+	 * @Autowired private BRRS_MDISB5_ReportService BRRS_MDISB5_ReportService;
+	 * 
+	 * @PostMapping("/MDISB5updateAll")
+	 * 
+	 * @ResponseBody public ResponseEntity<String> updateMDISB5AllReports(
+	 * 
+	 * @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	 * 
+	 * @RequestParam Map<String, String> allParams) {
+	 * 
+	 * try { System.out.println("Came to MDISB5 Detail Update Controller");
+	 * 
+	 * BRRS_MDISB5_ReportService.updateDetailFromForm(asondate, allParams);
+	 * 
+	 * return ResponseEntity.ok("Modified Successfully.");
+	 * 
+	 * } catch (Exception e) { e.printStackTrace(); return
+	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
+	 * body("Update Failed: " + e.getMessage()); } }
+	 */
+
 	@Autowired
-	private BRRS_MDISB5_ReportService BRRS_MDISB5_ReportService;
+	private BRRS_MDISB5_ReportService MDISB5reportService;
 
-	@PostMapping("/MDISB5updateAll")
+	@RequestMapping(value = "/MDISB5updateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public ResponseEntity<String> updateMDISB5AllReports(
-			@RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@RequestParam Map<String, String> allParams) {
+	public ResponseEntity<String> updateAllReports(
+	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @ModelAttribute MDISB5_Summary_Entity1 request1,
+	        @ModelAttribute MDISB5_Summary_Entity2 request2,
+	        @ModelAttribute MDISB5_Summary_Entity3 request3) {
 
-		try {
-			System.out.println("Came to MDISB5 Detail Update Controller");
+	    try {
 
-			BRRS_MDISB5_ReportService.updateDetailFromForm(asondate, allParams);
+	        System.out.println("Controller Hit");
 
-			return ResponseEntity.ok("Modified Successfully.");
+	        // Set date
+	        if (asondate != null) {
+	            request1.setReportDate(asondate);
+	            request2.setReportDate(asondate);
+	            request3.setReportDate(asondate);
+	        }
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
+	        // Debug incoming data
+	        System.out.println("Request1: " + request1);
+	        System.out.println("Request2: " + request2);
+	        System.out.println("Request3: " + request3);
+
+	        // Call services
+	        MDISB5reportService.updateReport(request1);
+	        MDISB5reportService.updateReport2(request2);
+	        MDISB5reportService.updateReport3(request3);
+
+	        return ResponseEntity.ok("Modified Successfully.");
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Update Failed: " + e.getMessage());
+	    }
 	}
 
 	@RequestMapping(value = "/UpdateMDISB5_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-			@ModelAttribute MDISB5_Summary_Entity1 entity1, @ModelAttribute MDISB5_Summary_Entity2 entity2,
-			@ModelAttribute MDISB5_Summary_Entity3 entity3,
-
-			HttpServletRequest req) {
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate, // ✅ ISO format
+			@RequestParam(required = false) String type, @ModelAttribute MDISB5_RESUB_Summary_Entity1 request1,
+			@ModelAttribute MDISB5_RESUB_Summary_Entity2 request2, @ModelAttribute MDISB5_RESUB_Summary_Entity3 request3, HttpServletRequest req) {
 
 		try {
 			System.out.println("Came to MDISB5 Resub Controller");
 
 			if (asondate != null) {
-
-				entity1.setReportDate(asondate);
-				entity2.setReportDate(asondate);
-				entity3.setReportDate(asondate);
-
+				request1.setReportDate(asondate);
+				request2.setReportDate(asondate);
+				request3.setReportDate(asondate);
 				System.out.println("Set Report Date: " + asondate);
-
-			} else {
-				System.out.println("Using entity dates: " + entity1.getReportDate());
 			}
 
-			// Call service → creates versioned archival copies
-			BRRS_MDISB5_ReportService.updateReportReSub(entity1, entity2, entity3);
-
+			// Call service
+			MDISB5reportService.updateResubReport(request1, request2,request3 );
 			return ResponseEntity.ok("Resubmission Updated Successfully");
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Resubmission Update Failed: " + e.getMessage());
+					.body("MDISB5 Resubmission Update Failed: " + e.getMessage());
 		}
 	}
+	
+	/*
+	 * @RequestMapping(value = "/UpdateMDISB5_ReSub", method = { RequestMethod.GET,
+	 * RequestMethod.POST })
+	 * 
+	 * @ResponseBody public ResponseEntity<String> updateReportReSub(
+	 * 
+	 * @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date
+	 * asondate,
+	 * 
+	 * @ModelAttribute MDISB5_Summary_Entity1 entity1, @ModelAttribute
+	 * MDISB5_Summary_Entity2 entity2,
+	 * 
+	 * @ModelAttribute MDISB5_Summary_Entity3 entity3,
+	 * 
+	 * HttpServletRequest req) {
+	 * 
+	 * try { System.out.println("Came to MDISB5 Resub Controller");
+	 * 
+	 * if (asondate != null) {
+	 * 
+	 * entity1.setReportDate(asondate); entity2.setReportDate(asondate);
+	 * entity3.setReportDate(asondate);
+	 * 
+	 * System.out.println("Set Report Date: " + asondate);
+	 * 
+	 * } else { System.out.println("Using entity dates: " +
+	 * entity1.getReportDate()); }
+	 * 
+	 * // Call service → creates versioned archival copies
+	 * BRRS_MDISB5_ReportService.updateReportReSub(entity1, entity2, entity3);
+	 * 
+	 * return ResponseEntity.ok("Resubmission Updated Successfully");
+	 * 
+	 * } catch (Exception e) { e.printStackTrace(); return
+	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	 * .body("Resubmission Update Failed: " + e.getMessage()); } }
+	 */
 
 	/*
 	 * 
