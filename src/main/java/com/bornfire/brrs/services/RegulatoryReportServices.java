@@ -413,6 +413,9 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_OFF_BS_ITEMS_ReportService  BRRS_OFF_BS_ITEMS_ReportService;
 	
+	@Autowired
+	BRRS_SCH_17_New_Service  BRRS_SCH_17_New_Service;
+	
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -1511,6 +1514,12 @@ public class RegulatoryReportServices {
 
 		case "SCH_17":
 			repsummary = brrs_sch_17_reportservice.getSCH_17View(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+
+			break;
+			
+		case "SCH_17_New":
+			repsummary = BRRS_SCH_17_New_Service.getSCH_17_NewView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 
 			break;
