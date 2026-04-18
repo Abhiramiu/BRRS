@@ -2207,6 +2207,12 @@ break;
 			repdetail = brrs_sch_17_reportservice.getSCH_17currentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
 			break;
+			
+		case "SCH_17_New":
+
+			repdetail = BRRS_SCH_17_New_Service.getSCH_17_NewcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter, type, version);
+			break;
 
 		case "FORMAT_II":
 
@@ -2338,6 +2344,17 @@ break;
 			try {
 				System.out.println("came to Regulatory service");
 				repfile = brrs_sch_17_reportservice.getSCH_17Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block e.printStackTrace();
+			}
+			break;
+			
+			
+		case "SCH_17_New":
+			try {
+				System.out.println("came to Regulatory service");
+				repfile = BRRS_SCH_17_New_Service.getSCH_17_NewExcel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, version);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block e.printStackTrace();
@@ -5466,6 +5483,13 @@ break;
 				e.printStackTrace();
 			}
 			break;
+			
+		case "SCH_17_New":
+			List<Object[]> sch17List = BRRS_SCH_17_New_Service.getSCH_17_newArchival();
+			archivalData.addAll(sch17List);
+			System.out.println("Fetched SCH_17_New archival data: " + sch17List.size());
+			break;
+
 
 		case "FORMAT_II":
 			try {
@@ -6238,6 +6262,13 @@ break;
 			fileData = brrs_sch_17_reportservice.getSCH_17DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 		}
+		
+		else if ("SCH_17Detailnew".equals(filename)) {
+
+			fileData = BRRS_SCH_17_New_Service.getSCH_17_NewDetailExcel(filename, fromdate, todate, currency, dtltype,
+					type, version);
+		}
+
 
 		else if ("FORMAT_II".equals(filename)) {
 
@@ -6703,6 +6734,12 @@ break;
 				modelAndView = brrs_sch_17_reportservice.getViewOrEditPage(request.getParameter("SNO"),
 						request.getParameter("formmode"));
 				break;
+				
+
+			case "SCH_17_New":
+				modelAndView = BRRS_SCH_17_New_Service.getViewOrEditPage(request.getParameter("SNO"),
+						request.getParameter("formmode"));
+				break;
 
 			case "FORMAT_II":
 				modelAndView = brrs_format_II_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
@@ -7021,6 +7058,11 @@ break;
 
 			case "SCH_17":
 				response = brrs_sch_17_reportservice.updateDetailEdit(request);
+				break;
+				
+				
+			case "SCH_17_New":
+				response = BRRS_SCH_17_New_Service.updateDetailEdit(request);
 				break;
 
 			case "FORMAT_II":

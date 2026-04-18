@@ -1199,45 +1199,74 @@ function cancelModify() {
 */
 
 function fileuploads(btn) {
+	    const asondate = btn.getAttribute("data-todate");
+	    const type = btn.getAttribute("data-type");
 
-    const asondate = btn.getAttribute("data-todate");
+	    // Show loader
+	    $('#loader').modal('show');
 
-    $('#loader').modal('show');
+	    try {
+	        // ✅ Step 1: Calculate totals
+	      
+	       calculateTotals();
+	    
+	        // ✅ Step 2: Remove commas from all text inputs
+	        $("#fileupload input[type='text']").each(function () {
+	            $(this).val($(this).val().replace(/,/g, ''));
+	        });
 
-    // Remove commas before submit
-    $("#fileupload input[type='text']").each(function () {
-        $(this).val($(this).val().replace(/,/g, ''));
-    });
+	        // ✅ Step 3: Validate form
+	        if (!$("#fileupload").valid()) {
+	            $('#loader').modal('hide');
+	            return;
+	        }
 
-    const formData = new FormData();
-    formData.append("asondate", asondate);
+	        // ✅ Step 4: Build FormData
+	        const formData = new FormData();
+	        formData.append("asondate", asondate);
+	        formData.append("type", type);
 
-    // append only inputs with name
-    $('#fileupload').find(':input[name]').each(function () {
-        formData.append(this.name, this.value);
-    });
+	        $('#fileupload').find(':input').each(function () {
+	            const name = $(this).attr('id');
+	            if (name) {
+	                formData.append(name, $(this).val());
+	            }
+	        });
 
-    $.ajax({
-        url: './SCH_17updateAll',
-        type: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: function (response) {
-            $("#resultModalLabel").text("BRRS");
-            $("#resultModalBody").text(response);
-            $("#resultModal").modal("show");
-        },
-        error: function (jqXHR) {
-            $("#resultModalLabel").text("Error");
-            $("#resultModalBody").text(jqXHR.responseText);
-            $("#resultModal").modal("show");
-        },
-        complete: function () {
-            $('#loader').modal('hide');
-        }
-    });
-}
+	        // ✅ Step 5: AJAX submission
+	        $.ajax({
+	            url: './SCH_17_Newupdate',
+	            type: 'POST',
+	            data: formData,
+	            processData: false,
+	            contentType: false,
+	            dataType: 'text',
+	            success: function () {
+	                $("#resultModalLabel").text("BRRS");
+	                $("#resultModalBody").text(" Updated Successfully.");
+	                $("#resultModal").modal("show");
+	            },
+	            error: function (jqXHR) {
+	                console.error("Error response:", jqXHR.responseText);
+	                $("#resultModalLabel").text("Error");
+	                $("#resultModalBody").text("Update failed. Check console for details.");
+	                $("#resultModal").modal("show");
+	            },
+	            complete: function () {
+	                $('#loader').modal('hide');
+	            }
+	        });
+
+	    } catch (error) {
+	        console.error("Error in fileuploads function:", error);
+	        $('#loader').modal('hide');
+	        $("#resultModalLabel").text("Error");
+	        $("#resultModalBody").text("Unexpected error occurred. Check console.");
+	        $("#resultModal").modal("show");
+	    }
+	}
+
+
 
 
 
@@ -1332,7 +1361,7 @@ function fileuploads(btn) {
             data-todate=${todate},
             data-currency=${currency},
             data-dtltype=${dtltype},
-            data-filename='SCH_17.xlsx',
+            data-filename='SCH_17_New.xlsx',
             data-type=${type},
             data-version=${version != null ? version : ''}
         "
@@ -1346,7 +1375,7 @@ function fileuploads(btn) {
 							th:attr="
 						    data-fromdate=${fromdate},
 						    data-todate=${todate},
-						    data-filename='SCH_17Detail',
+						    data-filename='SCH_17Detailnew',
 						 data-type=${type},
 					data-version=${version}  ">
 							<i class="fa fa-download"></i>
@@ -1842,12 +1871,12 @@ function fileuploads(btn) {
 				</div>
 
 
-				<!-- sch_17Data -->
+				<!-- sch_17_newData -->
 				<div th:if="${formmode == 'edit'}" class="card">
 
 
 					<div class="card-body">
-						<form th:object="${sch_17Data}" method="post"
+						<form th:object="${sch_17_newData}" method="post"
 							id="sch_17DetailForm">
 							<div class="row formline" style="margin-top: 10px;">
 								<label class="col-sm-2">Customer ID</label>
@@ -1904,7 +1933,7 @@ function fileuploads(btn) {
 								<div class="col-sm-3">
 									<input type="date" name="reportDate"
 										class="form-control form-control-sm" readonly
-										th:value="${#dates.format(sch_17Data.reportDate, 'yyyy-MM-dd')}" />
+										th:value="${#dates.format(sch_17_newData.reportDate, 'yyyy-MM-dd')}" />
 								</div>
 
 								<div class="col-sm-1"></div>
