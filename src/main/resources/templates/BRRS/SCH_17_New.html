@@ -95,54 +95,49 @@ PURPOSE		: BRRS SCH  REPORT
 
 <style>
 .left-arrow-circle {
-	background-color: white;
-	color: #007bff;
-	border-radius: 50%;
-	padding: 8px;
-	margin-right: 10px;
-	cursor: pointer;
-}
+			background-color: white;
+			color: #007bff;
+			border-radius: 50%;
+			padding: 8px;
+			margin-right: 10px;
+			cursor: pointer;
+		}
 
-/* 🚌 Bus display style box */
-.boards {
-	transform: translateY(6px);
-	background-color: rgb(107, 122, 143);
-	color: white;
-	padding: 5px 5px;
-	border-radius: 8px;
-	overflow: hidden;
-	white-space: nowrap;
-	flex: 1; /* ✅ makes it take available space dynamically */
-	min-width: 200px;
-	box-shadow: 0 0 10px rgb(107, 122, 143);
-	position: relative;
-}
+		/* 🚌 Bus display style box */
+		/* 🚌 Bus display style box */
+					.boards {
+						transform: translateY(6px);
+					  background-color: rgb(107, 122, 143);
+					  color: white;
+					  padding: 5px 80px;
+					  border-radius: 8px;
+					  overflow: hidden;
+					  white-space: nowrap;
+					  flex: 1; /* ✅ makes it take available space dynamically */
+					  min-width: 200px;
+					  box-shadow: 0 0 10px rgb(107, 122, 143);
+					  position: relative;
+					}
 
-/* ✨ Scrolling animation */
-.scrolling-text {
-	display: inline-block;
-	font-family: "Courier New", monospace;
-	font-weight: bold;
-	letter-spacing: 1px;
-	animation: scroll-left 10s linear infinite;
-}
+		/* ✨ Scrolling animation */
+		.scrolling-text {
+			display: inline-block;
+			font-family: "Courier New", monospace;
+			font-weight: bold;
+			letter-spacing: 1px;
+			animation: scroll-left 10s linear infinite;
+		}
 
-/* Animation keyframes */
-@
-keyframes scroll-left { 0% {
-	transform: translateX(100%);
-}
-100%
-{
-transform
-:
- 
-translateX
-(-100%);
+		/* Animation keyframes */
+		@keyframes scroll-left {
+			0% {
+				transform: translateX(100%);
+			}
 
-			
-}
-}
+			100% {
+				transform: translateX(-100%);
+			}
+		}
 </style>
 
 
@@ -1243,7 +1238,7 @@ function fileuploads(btn) {
 	            dataType: 'text',
 	            success: function () {
 	                $("#resultModalLabel").text("BRRS");
-	                $("#resultModalBody").text(" Updated Successfully.");
+	                $("#resultModalBody").text(" Modified Successfully.");
 	                $("#resultModal").modal("show");
 	            },
 	            error: function (jqXHR) {
