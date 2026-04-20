@@ -404,6 +404,9 @@ public class RegulatoryReportServices {
 	BRRS_FORMAT_III_ReportService BRRS_FORMAT_III_ReportService;
 	
 	@Autowired
+	BRRS_FORMAT_I_ReportService brrs_format_I_reportservice;
+	
+	@Autowired
 	BRRS_CASH_FLOW_ReportService BRRS_CASH_FLOW_ReportService;
 	
 	@Autowired
@@ -1558,6 +1561,12 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_FORMAT_III_ReportService.getFORMAT_IIIView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
+			
+		case "FORMAT_I":
+			repsummary = brrs_format_I_reportservice.getFORMAT_IView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
+			
 		case "CASH_FLOW":
 			repsummary = BRRS_CASH_FLOW_ReportService.getCASH_FLOWView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
@@ -2109,6 +2118,11 @@ public class RegulatoryReportServices {
 					pageable, Filter, type, version);
 			break;
 			
+		case "FORMAT_I":
+			repdetail = brrs_format_I_reportservice.getFORMAT_IcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter, type, version);
+			break;
+			
 		case "CASH_FLOW":
 			repdetail = BRRS_CASH_FLOW_ReportService.getCASH_FLOWcurrentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
@@ -2214,11 +2228,12 @@ break;
 					pageable, Filter, type, version);
 			break;
 
-		case "FORMAT_II":
-
-			repdetail = brrs_format_II_reportservice.getFORMAT_IIcurrentDtl(reportId, fromdate, todate, currency,
-					dtltype, pageable, Filter, type, version);
-			break;
+		/*
+		 * case "FORMAT_II":
+		 * 
+		 * repdetail = brrs_format_II_reportservice.getFORMAT_IIcurrentDtl(reportId,
+		 * fromdate, todate, currency, dtltype, pageable, Filter, type, version); break;
+		 */
 
 		case "MDISB1":
 
@@ -4406,6 +4421,15 @@ break;
 			}
 			break;
 			
+		case "FORMAT_I":
+			try {
+				repfile = brrs_format_I_reportservice.getFORMAT_IExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, type,  version);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
+			
 		case "CASH_FLOW":
 			try {
 				repfile = BRRS_CASH_FLOW_ReportService.getCASH_FLOWExcel(filename, reportId, fromdate, todate,
@@ -5499,6 +5523,15 @@ break;
 				e.printStackTrace();
 			}
 			break;
+			
+		case "FORMAT_I":
+			try {
+				archivalData = brrs_format_I_reportservice.getFORMAT_IArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
 //		case "M_GP":
 //			try {
@@ -5964,6 +5997,9 @@ break;
 			System.out.println("Fetched FORMATIIIList archival data: " + FORMATIIIList.size());
 			break;
 
+		
+
+			
 		case "CASH_FLOW":
 			List<Object[]> CASH_FLOWList = BRRS_CASH_FLOW_ReportService.getCASH_FLOWArchival();
 			archivalData.addAll(CASH_FLOWList);
@@ -6273,6 +6309,11 @@ break;
 		else if ("FORMAT_II".equals(filename)) {
 
 			fileData = brrs_format_II_reportservice.getFORMAT_IIDetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		}
+		else if ("FORMAT_I".equals(filename)) {
+
+			fileData = brrs_format_I_reportservice.getFORMAT_IDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
 
@@ -6745,6 +6786,11 @@ break;
 				modelAndView = brrs_format_II_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 						request.getParameter("formmode"));
 				break;
+				
+			case "FORMAT_I":
+				modelAndView = brrs_format_I_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+						request.getParameter("formmode"));
+				break;
 
 			case "FSI":
 				modelAndView = BRRS_FSI_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
@@ -7067,6 +7113,10 @@ break;
 
 			case "FORMAT_II":
 				response = brrs_format_II_reportservice.updateDetailEdit(request);
+				break;
+				
+			case "FORMAT_I":
+				response = brrs_format_I_reportservice.updateDetailEdit(request);
 				break;
 
 			case "FSI":
