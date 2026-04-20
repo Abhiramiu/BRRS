@@ -45,6 +45,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.bornfire.brrs.dto.ReportLineItemDTO;
 import com.bornfire.brrs.entities.*;
 import com.bornfire.brrs.services.BRRS_ADISB1_ReportService;
+import com.bornfire.brrs.services.BRRS_AS_11_ReportService;
 import com.bornfire.brrs.services.BRRS_BASEL_III_COM_EQUITY_DISC_ReportService;
 import com.bornfire.brrs.services.BRRS_BDISB1_ReportService;
 import com.bornfire.brrs.services.BRRS_BDISB2_ReportService;
@@ -5233,5 +5234,28 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
+	@Autowired
+	BRRS_AS_11_ReportService BRRS_AS_11_ReportService;
 
+	@RequestMapping(value = "/AS_11updateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReport(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute AS_11_Summary_Entity1 request) {
+
+		try {
+			System.out.println("came to single controller");
+
+			// ✅ set the asondate into entity
+			request.setReport_date(asondate);
+
+			// call services
+			BRRS_AS_11_ReportService.updateReport(request);
+
+			return ResponseEntity.ok("Modified Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
 }
