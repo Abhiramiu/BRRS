@@ -17062,25 +17062,34 @@ public class BRRS_GL_SCH_ReportService {
 
 	}
 
-	public List<Object> getGL_SCHArchival() {
-		List<Object> GL_SCHArchivallist = new ArrayList<>();
-		try {
-			GL_SCHArchivallist = GL_SCH_Archival_Summary_Repo1.getGL_SCHarchival();
-			GL_SCHArchivallist = GL_SCH_Archival_Summary_Repo2.getGL_SCHarchival();
-			GL_SCHArchivallist = GL_SCH_Archival_Summary_Repo3.getGL_SCHarchival();
-			GL_SCHArchivallist = GL_SCH_Manual_Archival_Summary_Repo.getGL_SCHarchival();
+	// Archival View
+	public List<Object[]> getGL_SCHArchival() {
+		List<Object[]> archivalList = new ArrayList<>();
 
-			System.out.println("countser" + GL_SCHArchivallist.size());
+		try {
+			List<GL_SCH_Archival_Summary_Entity1> repoData = GL_SCH_Archival_Summary_Repo1
+					.getdatabydateListWithVersion();
+
+			if (repoData != null && !repoData.isEmpty()) {
+				for (GL_SCH_Archival_Summary_Entity1 entity : repoData) {
+					Object[] row = new Object[] { entity.getREPORT_DATE(), entity.getREPORT_VERSION(),
+							entity.getREPORT_RESUBDATE() };
+					archivalList.add(row);
+				}
+
+				System.out.println("Fetched " + archivalList.size() + " archival records");
+				GL_SCH_Archival_Summary_Entity1 first = repoData.get(0);
+				System.out.println("Latest archival version: " + first.getREPORT_VERSION());
+			} else {
+				System.out.println("No archival data found.");
+			}
 
 		} catch (Exception e) {
-			// Log the exception
-			System.err.println("Error fetching GL_SCHArchivallist Archival data: " + e.getMessage());
+			System.err.println("Error fetching PL_SCHS Archival data: " + e.getMessage());
 			e.printStackTrace();
-
-			// Optionally, you can rethrow it or return empty list
-			// throw new RuntimeException("Failed to fetch data", e);
 		}
-		return GL_SCHArchivallist;
+
+		return archivalList;
 	}
 
 	private void setBorder(CellStyle style, BorderStyle border) {

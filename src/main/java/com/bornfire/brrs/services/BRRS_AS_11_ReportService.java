@@ -768,13 +768,16 @@ public class BRRS_AS_11_ReportService {
 					}
 					row = sheet.getRow(21);
 					Cell R22Cell1 = row.createCell(3);
+
 					if (record.getR22_qua_i_qar() != null) {
 						R22Cell1.setCellValue(record.getR22_qua_i_qar().doubleValue());
-						R22Cell1.setCellStyle(numberStyle);
 					} else {
-						R22Cell1.setCellValue("");
-						R22Cell1.setCellStyle(textStyle);
+						// ✅ Default 0
+						R22Cell1.setCellValue(0);
 					}
+
+					// Always apply number style
+					R22Cell1.setCellStyle(numberStyle);
 					row = sheet.getRow(22);
 					Cell R23Cell = row.createCell(2);
 					if (record.getR23_qua_i_lc() != null) {
@@ -7514,7 +7517,14 @@ public class BRRS_AS_11_ReportService {
 						R83Cell11.setCellValue("");
 						R83Cell11.setCellStyle(textStyle);
 					}
-
+					Cell R83Cell12 = row.createCell(14);
+					if (record.getR83_cumm_inr() != null) {
+						R83Cell12.setCellValue(record.getR83_cumm_inr().doubleValue());
+						R83Cell12.setCellStyle(numberStyle);
+					} else {
+						R83Cell12.setCellValue("");
+						R83Cell12.setCellStyle(textStyle);
+					}
 					row = sheet.getRow(83);
 // R84 Col C
 					Cell R84Cell = row.createCell(2);
@@ -7635,7 +7645,14 @@ public class BRRS_AS_11_ReportService {
 						R84Cell11.setCellValue("");
 						R84Cell11.setCellStyle(textStyle);
 					}
-
+					Cell R84Cell12 = row.createCell(14);
+					if (record1.getR84_cumm_inr() != null) {
+						R84Cell12.setCellValue(record1.getR84_cumm_inr().doubleValue());
+						R84Cell12.setCellStyle(numberStyle);
+					} else {
+						R84Cell12.setCellValue("");
+						R84Cell12.setCellStyle(textStyle);
+					}
 					row = sheet.getRow(85);
 // R86 Col C
 					Cell R86Cell = row.createCell(2);
@@ -7756,7 +7773,14 @@ public class BRRS_AS_11_ReportService {
 						R86Cell11.setCellValue("");
 						R86Cell11.setCellStyle(textStyle);
 					}
-
+					Cell R86Cell12 = row.createCell(14);
+					if (record1.getR86_cumm_inr() != null) {
+						R86Cell12.setCellValue(record1.getR86_cumm_inr().doubleValue());
+						R86Cell12.setCellStyle(numberStyle);
+					} else {
+						R86Cell12.setCellValue("");
+						R86Cell12.setCellStyle(textStyle);
+					}
 					row = sheet.getRow(86);
 // R87 Col C
 					Cell R87Cell = row.createCell(2);
@@ -7877,7 +7901,14 @@ public class BRRS_AS_11_ReportService {
 						R87Cell11.setCellValue("");
 						R87Cell11.setCellStyle(textStyle);
 					}
-
+					Cell R87Cell12 = row.createCell(14);
+					if (record1.getR87_cumm_inr() != null) {
+						R87Cell12.setCellValue(record1.getR87_cumm_inr().doubleValue());
+						R87Cell12.setCellStyle(numberStyle);
+					} else {
+						R87Cell12.setCellValue("");
+						R87Cell12.setCellStyle(textStyle);
+					}
 					row = sheet.getRow(87);
 // R88 Col C
 					Cell R88Cell = row.createCell(2);
@@ -8536,24 +8567,35 @@ public class BRRS_AS_11_ReportService {
 		}
 	}
 
-	public List<Object> getAS_11Archival() {
-		List<Object> AS_11Archivallist = new ArrayList<>();
-		try {
-			AS_11Archivallist = AS_11_Archival_Summary_Repo1.getAS_11archival();
-			AS_11Archivallist = AS_11_Archival_Summary_Repo2.getAS_11archival();
+	// Archival View
+		public List<Object[]> getAS_11Archival() {
+			List<Object[]> archivalList = new ArrayList<>();
 
-			System.out.println("countser" + AS_11Archivallist.size());
+			try {
+				List<AS_11_Archival_Summary_Entity1> repoData = AS_11_Archival_Summary_Repo1
+						.getdatabydateListWithVersion();
 
-		} catch (Exception e) {
-			// Log the exception
-			System.err.println("Error fetching AS_11Archivallist Archival data: " + e.getMessage());
-			e.printStackTrace();
+				if (repoData != null && !repoData.isEmpty()) {
+					for (AS_11_Archival_Summary_Entity1 entity : repoData) {
+						Object[] row = new Object[] { entity.getReport_date(), entity.getReport_version(),
+								entity.getREPORT_RESUBDATE() };
+						archivalList.add(row);
+					}
 
-			// Optionally, you can rethrow it or return empty list
-			// throw new RuntimeException("Failed to fetch data", e);
+					System.out.println("Fetched " + archivalList.size() + " archival records");
+					AS_11_Archival_Summary_Entity1 first = repoData.get(0);
+					System.out.println("Latest archival version: " + first.getReport_version());
+				} else {
+					System.out.println("No archival data found.");
+				}
+
+			} catch (Exception e) {
+				System.err.println("Error fetching PL_SCHS Archival data: " + e.getMessage());
+				e.printStackTrace();
+			}
+
+			return archivalList;
 		}
-		return AS_11Archivallist;
-	}
 
 	@Autowired
 	BRRS_AS_11_Detail_Repo brrs_AS_11_detail_repo;
@@ -8658,41 +8700,88 @@ public class BRRS_AS_11_ReportService {
 		}
 	}
 
+//	public void updateReport(AS_11_Summary_Entity1 updatedEntity) {
+//
+//		AS_11_Summary_Entity1 existing = AS_11_summary_repo1.findById(updatedEntity.getReport_date()).orElseThrow(
+//				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+//
+//		int[] rows = { 21, 22, 27, 28, 30, 31, 32, 33, 34, 35, 36, 37, 38, 40, 46,47, 57, 64, 66, 72, 73, 74, 77,
+//				78, 79, 80, 81, 82, 85, 90, 91 };
+//
+//		String[] fields = { "qua_i_lc", "qua_i_qar", "qua_i_inr", "qua_ii_lc", "qua_ii_qar", "qua_ii_inr", "qua_iii_lc",
+//				"qua_iii_qar", "qua_iii_inr", "qua_iv_lc", "qua_iv_qar", "qua_iv_inr", "cumm_inr", "cumm_bwp" };
+//
+//		try {
+//			for (int i : rows) {
+//				for (String field : fields) {
+//
+//					String getterName = "getR" + i + "_" + field;
+//					String setterName = "setR" + i + "_" + field;
+//
+//					try {
+//						Method getter = AS_11_Summary_Entity1.class.getMethod(getterName);
+//						Method setter = AS_11_Summary_Entity1.class.getMethod(setterName, getter.getReturnType());
+//
+//						Object newValue = getter.invoke(updatedEntity);
+//						setter.invoke(existing, newValue);
+//
+//					} catch (NoSuchMethodException e) {
+//						// Field not applicable for this row → skip safely
+//					}
+//				}
+//			}
+//		} catch (Exception e) {
+//			throw new RuntimeException("Error while updating report fields", e);
+//		}
+//
+//		AS_11_summary_repo1.save(existing);
+//	}
 	public void updateReport(AS_11_Summary_Entity1 updatedEntity) {
 
-		AS_11_Summary_Entity1 existing = AS_11_summary_repo1.findById(updatedEntity.getReport_date()).orElseThrow(
-				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+	    AS_11_Summary_Entity1 existing = AS_11_summary_repo1
+	            .findById(updatedEntity.getReport_date())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
-		int[] rows = { 21, 22, 27, 28, 30, 31, 32, 33, 34, 35, 36, 37, 38, 40, 46,47, 57, 64, 66, 72, 73, 74, 75, 76, 77,
-				78, 79, 80, 81, 82, 85, 90, 91 };
+	    int[] rows = { 21, 22, 27, 28, 30, 31, 32, 33, 34, 35, 36, 37, 38,
+	                   40, 46, 47, 57, 64, 66, 72, 73, 74,76, 77, 78, 79, 80,
+	                   81, 82, 85, 90, 91 };
 
-		String[] fields = { "qua_i_lc", "qua_i_qar", "qua_i_inr", "qua_ii_lc", "qua_ii_qar", "qua_ii_inr", "qua_iii_lc",
-				"qua_iii_qar", "qua_iii_inr", "qua_iv_lc", "qua_iv_qar", "qua_iv_inr", "cumm_inr", "cumm_bwp" };
+	    String[] fields = {
+	            "qua_i_lc", "qua_i_qar", "qua_i_inr",
+	            "qua_ii_lc", "qua_ii_qar", "qua_ii_inr",
+	            "qua_iii_lc", "qua_iii_qar", "qua_iii_inr",
+	            "qua_iv_lc", "qua_iv_qar", "qua_iv_inr",
+	            "cumm_inr", "cumm_bwp"
+	    };
 
-		try {
-			for (int i : rows) {
-				for (String field : fields) {
+	    try {
+	        for (int i : rows) {
+	            for (String field : fields) {
 
-					String getterName = "getR" + i + "_" + field;
-					String setterName = "setR" + i + "_" + field;
+	                String getterName = "getR" + i + "_" + field;
+	                String setterName = "setR" + i + "_" + field;
 
-					try {
-						Method getter = AS_11_Summary_Entity1.class.getMethod(getterName);
-						Method setter = AS_11_Summary_Entity1.class.getMethod(setterName, getter.getReturnType());
+	                try {
+	                    Method getter = AS_11_Summary_Entity1.class.getMethod(getterName);
+	                    Method setter = AS_11_Summary_Entity1.class.getMethod(setterName, getter.getReturnType());
 
-						Object newValue = getter.invoke(updatedEntity);
-						setter.invoke(existing, newValue);
+	                    Object newValue = getter.invoke(updatedEntity);
 
-					} catch (NoSuchMethodException e) {
-						// Field not applicable for this row → skip safely
-					}
-				}
-			}
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
-		}
+	                    // ✅ IMPORTANT FIX
+	                    if (newValue != null) {
+	                        setter.invoke(existing, newValue);
+	                    }
 
-		AS_11_summary_repo1.save(existing);
+	                } catch (NoSuchMethodException e) {
+	                    // skip
+	                }
+	            }
+	        }
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating report fields", e);
+	    }
+
+	    AS_11_summary_repo1.save(existing);
 	}
-
 }

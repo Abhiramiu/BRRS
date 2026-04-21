@@ -5954,20 +5954,15 @@ break;
 		
 
 		case "GL_SCH":
-			try {
-				archivalData = brrs_gl_sch_reportservice.getGL_SCHArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> GLList = brrs_gl_sch_reportservice.getGL_SCHArchival();
+			archivalData.addAll(GLList);
+			System.out.println("Fetched GL_SCHS archival data: " + GLList.size());
 			break;
+			
 		case "AS_11":
-			try {
-				archivalData = BRRS_AS_11_Reportservice.getAS_11Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> AS11List = BRRS_AS_11_Reportservice.getAS_11Archival();
+			archivalData.addAll(AS11List);
+			System.out.println("Fetched AS_11 archival data: " + AS11List.size());
 			break;
 		case "BORR_UFCE":
 			try {
@@ -6376,7 +6371,7 @@ break;
 			fileData = brrs_gl_sch_reportservice.getGL_SCHDetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 
-		} else if ("AS_11".equals(filename)) {
+		} else if ("AS_11Detail".equals(filename)) {
 
 			fileData = BRRS_AS_11_Reportservice.getAS_11DetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);

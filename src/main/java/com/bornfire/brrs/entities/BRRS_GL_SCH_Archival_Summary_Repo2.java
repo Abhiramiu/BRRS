@@ -16,4 +16,7 @@ public interface BRRS_GL_SCH_Archival_Summary_Repo2 extends JpaRepository<GL_SCH
 
     @Query(value = "select * from BRRS_GL_SCH_ARCHIVALTABLE_SUMMARY2 where REPORT_DATE = ?1 and REPORT_VERSION = ?2", nativeQuery = true)
     List<GL_SCH_Archival_Summary_Entity2> getdatabydateListarchival(Date report_date, BigDecimal report_version);
+    
+    @Query(value = "SELECT * FROM BRRS_GL_SCH_ARCHIVALTABLE_SUMMARY2 WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC", nativeQuery = true)
+    List<GL_SCH_Archival_Summary_Entity2> getdatabydateListWithVersion();
 }

@@ -2,6 +2,8 @@ package com.bornfire.brrs.entities;
 
 import java.math.BigDecimal;
 import java.util.Date;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -159,7 +161,9 @@ public class AS_11_Archival_Summary_Entity2 {
     private String entity_flg;
     private String modify_flg;
     private String del_flg;
-
+    @Column(name = "REPORT_RESUBDATE")
+    private BigDecimal REPORT_RESUBDATE;
+    
     public String getR84_product() {
         return r84_product;
     }
@@ -1184,7 +1188,15 @@ public class AS_11_Archival_Summary_Entity2 {
         this.del_flg = del_flg;
     }
 
-    public AS_11_Archival_Summary_Entity2() {
+    public BigDecimal getREPORT_RESUBDATE() {
+		return REPORT_RESUBDATE;
+	}
+
+	public void setREPORT_RESUBDATE(BigDecimal rEPORT_RESUBDATE) {
+		REPORT_RESUBDATE = rEPORT_RESUBDATE;
+	}
+
+	public AS_11_Archival_Summary_Entity2() {
         super();
     }
 

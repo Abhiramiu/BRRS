@@ -762,6 +762,13 @@ PURPOSE		: BRRSREPORT
 				"_qua_iv_lc", "_qua_iv_qar", "_qua_iv_inr"
 			];
 
+			const noColorFields = [
+				"r21_qua_i_inr",
+				"r77_qua_i_inr",
+				"r78_qua_i_inr",
+				"r80_qua_i_inr"
+			];
+
 			rows.forEach(i => {
 
 				// 🔴 PRODUCT COLUMN
@@ -771,7 +778,6 @@ PURPOSE		: BRRSREPORT
 					productEl.prop("readonly", true);
 					productEl.prop("disabled", true);
 
-					// White background + BLACK text
 					productEl[0].style.setProperty("background-color", "#FFFFFF", "important");
 					productEl[0].style.setProperty("color", "#000000", "important");
 				}
@@ -779,14 +785,22 @@ PURPOSE		: BRRSREPORT
 				// 🟢 OTHER FIELDS
 				fields.forEach(field => {
 
-					let el = $(`#r${i}${field}`);
+					let id = `r${i}${field}`;
+					let el = $(`#${id}`);
 
 					if (el.length) {
 						el.prop("readonly", false);
 						el.prop("disabled", false);
 
-						// Gray background
-						el[0].style.setProperty("background-color", "#d3d3d3", "important");
+						if (noColorFields.includes(id)) {
+							// ✅ Special color
+							el[0].style.setProperty("background-color", "rgb(107, 122, 143)", "important");
+							el[0].style.setProperty("color", "#FFFFFF", "important");
+						} else {
+							// Default editable
+							el[0].style.setProperty("background-color", "#d3d3d3", "important");
+							el[0].style.setProperty("color", "#000000", "important");
+						}
 					}
 				});
 			});
@@ -795,7 +809,6 @@ PURPOSE		: BRRSREPORT
 			$("#cancelRecord").show();
 			$(btn).hide();
 		}
-
 
 		function closemodels() {
 			$("#resultModal").modal("hide");
@@ -827,21 +840,21 @@ PURPOSE		: BRRSREPORT
 			// ❌ If user clicks CANCEL, nothing happens
 		}
 	</script>
-	<script>
+	<script>  
 
-		function getCellValue(selector) {
-			let el = $(selector);
-			if (!el.length) return 0;
+		function getCellValue(selector) {  
+			let el = $(selector);  
+			if (!el.length) return 0;  
 
-			let val = el.is("input") ? el.val() : el.text();
-			return parseFloat((val || "0").replace(/,/g, "")) || 0;
-		}
+			let val = el.is("input") ? el.val() : el.text();  
+			return parseFloat((val || "0").replace(/,/g, "")) || 0;  
+		}  
 
 		function setCellValue(selector, value) {
 		    let el = $(selector);
 		    if (!el.length) return;
 
-		    const formatted = Number(value).toLocaleString("en-US", {
+		    const formatted = Number(value || 0).toLocaleString("en-US", {
 		        minimumFractionDigits: 0,
 		        maximumFractionDigits: 0
 		    });
@@ -849,469 +862,556 @@ PURPOSE		: BRRSREPORT
 		    if (el.is("input")) {
 		        el.val(formatted);
 		    } else {
-		        // display span
 		        el.text(formatted);
 
-		        // ALSO update hidden input
-		        let hidden = $(`#${selector.replace('#','')}_display`).prev('input');
+		        // ✅ find hidden input by SAME ID
+		        let hidden = $(`#${selector.replace('#', '')}_hidden`);
+
 		        if (hidden.length) {
-		            hidden.val(value); // raw value for DB
+		            hidden.val(value); // raw value
 		        }
 		    }
 		}
 
-		function sumFields(selectors) {
-			return selectors.reduce((sum, sel) => sum + getCellValue(sel), 0);
-		}
+		function sumFields(selectors) {  
+			return selectors.reduce((sum, sel) => sum + getCellValue(sel), 0);  
+		}  
 
-		//--------------------------------------
-		// GENERIC ROW
-		//--------------------------------------
-		function calculateRow(prefix) {
+		//--------------------------------------  
+		// GENERIC ROW  
+		//--------------------------------------  
+		function calculateRow(prefix) {  
 
-			let cumm_inr = sumFields([
-				`#${prefix}_qua_i_inr`,
-				`#${prefix}_qua_ii_inr`,
-				`#${prefix}_qua_iii_inr`,
-				`#${prefix}_qua_iv_inr`
-			]);
+			const specialBwpRows = [  
+				"r28",  
+				"r30", "r31", "r32", "r33", "r34",  
+				"r35", "r36", "r37", "r38"  
+			];  
 
-			let cumm_bwp = sumFields([
-				`#${prefix}_qua_i_lc`,
-				`#${prefix}_qua_ii_lc`,
-				`#${prefix}_qua_iii_lc`,
-				`#${prefix}_qua_iv_lc`
-			]);
+			let cumm_inr = sumFields([  
+				`#${prefix}_qua_i_inr`,  
+				`#${prefix}_qua_ii_inr`,  
+				`#${prefix}_qua_iii_inr`,  
+				`#${prefix}_qua_iv_inr`  
+			]);  
 
-			setCellValue(`#${prefix}_cumm_inr`, cumm_inr);
-			setCellValue(`#${prefix}_cumm_bwp`, cumm_bwp);
-		}
+			let cumm_bwp;  
 
-		//--------------------------------------
-		// SPECIAL ROW (R57, R64)
-		//--------------------------------------
-		function calculateRowSpecial(prefix) {
+			// ✅ IMPORTANT CONDITION  
+			if (specialBwpRows.includes(prefix)) {  
+				cumm_bwp = getCellValue(`#${prefix}_qua_i_lc`);  
+			} else {  
+				cumm_bwp = sumFields([  
+					`#${prefix}_qua_i_lc`,  
+					`#${prefix}_qua_ii_lc`,  
+					`#${prefix}_qua_iii_lc`,  
+					`#${prefix}_qua_iv_lc`  
+				]);  
+			}  
 
-			let cumm_inr =
-				getCellValue(`#${prefix}_qua_i_inr`) +
-				getCellValue(`#${prefix}_qua_ii_inr`) +
-				getCellValue(`#${prefix}_qua_iii_inr`) +
-				getCellValue(`#${prefix}_qua_iv_inr`);
+			setCellValue(`#${prefix}_cumm_inr`, cumm_inr);  
+			setCellValue(`#${prefix}_cumm_bwp`, cumm_bwp);  
+		}  
+		function calculateSpecialBWP() {  
 
-			let cumm_bwp = getCellValue(`#${prefix}_qua_i_lc`);
+			const specialRows = [  
+				"r28",  
+				"r30", "r31", "r32", "r33", "r34",  
+				"r35", "r36", "r37", "r38"  
+			];  
 
-			setCellValue(`#${prefix}_cumm_inr`, cumm_inr);
-			setCellValue(`#${prefix}_cumm_bwp`, cumm_bwp);
-		}
+			specialRows.forEach(r => {  
 
-		//--------------------------------------
-		// PARTIAL ROW (R80, R81)
-		//--------------------------------------
-		function calculateRowPartial(prefix) {
+				// ✅ NORMAL INR calculation (same as calculateRow)  
+				let cumm_inr =  
+					getCellValue(`#${r}_qua_i_inr`) +  
+					getCellValue(`#${r}_qua_ii_inr`) +  
+					getCellValue(`#${r}_qua_iii_inr`) +  
+					getCellValue(`#${r}_qua_iv_inr`);  
 
-			let cumm_inr =
-				getCellValue(`#${prefix}_qua_i_inr`) +
-				getCellValue(`#${prefix}_qua_iii_inr`);
+				// ✅ SPECIAL BWP (ONLY qua_i_lc)  
+				let cumm_bwp = getCellValue(`#${r}_qua_i_lc`);  
 
-			let cumm_bwp = getCellValue(`#${prefix}_qua_i_lc`);
+				setCellValue(`#${r}_cumm_inr`, cumm_inr);  
+				setCellValue(`#${r}_cumm_bwp`, cumm_bwp);  
+			});  
+		}  
 
-			setCellValue(`#${prefix}_cumm_inr`, cumm_inr);
-			setCellValue(`#${prefix}_cumm_bwp`, cumm_bwp);
-		}
+		//--------------------------------------  
+		// SPECIAL ROW (R57, R64)  
+		//--------------------------------------  
+		function calculateRowSpecial(prefix) {  
 
-		//--------------------------------------
-		// R22
-		//--------------------------------------
-		function calculateR22() {
-		    const rows = ["r18", "r19", "r20", "r21"];
+			let cumm_inr =  
+				getCellValue(`#${prefix}_qua_i_inr`) +  
+				getCellValue(`#${prefix}_qua_ii_inr`) +  
+				getCellValue(`#${prefix}_qua_iii_inr`) +  
+				getCellValue(`#${prefix}_qua_iv_inr`);  
 
-		    ["i", "ii", "iii", "iv"].forEach(q => {
+			let cumm_bwp = getCellValue(`#${prefix}_qua_i_lc`);  
 
-		        // LC
-		        setCellValue(`#r22_qua_${q}_lc`,
-		            sumFields(rows.map(r => `#${r}_qua_${q}_lc`))
-		        );
+			setCellValue(`#${prefix}_cumm_inr`, cumm_inr);  
+			setCellValue(`#${prefix}_cumm_bwp`, cumm_bwp);  
+		}  
 
-		        // QAR
-		        if (q === "i") {
-		            // ✅ ALWAYS ZERO
-		            setCellValue("#r22_qua_i_qar", 0);
-		        } else {
-		            setCellValue(`#r22_qua_${q}_qar`,
-		                sumFields(rows.map(r => `#${r}_qua_${q}_qar`))
-		            );
-		        }
+		//--------------------------------------  
+		// PARTIAL ROW (R80, R81)  
+		//--------------------------------------  
+		function calculateRowPartial(prefix) {  
 
-		        // INR
-		        setCellValue(`#r22_qua_${q}_inr`,
-		            sumFields(rows.map(r => `#${r}_qua_${q}_inr`))
-		        );
-		    });
+			let cumm_inr =  
+				getCellValue(`#${prefix}_qua_i_inr`) +  
+				getCellValue(`#${prefix}_qua_iii_inr`);  
 
-		    // CUMM
-		    setCellValue("#r22_cumm_inr",
-		        sumFields(rows.map(r => `#${r}_cumm_inr`))
-		    );
+			let cumm_bwp = getCellValue(`#${prefix}_qua_i_lc`);  
 
-		    setCellValue("#r22_cumm_bwp",
-		        sumFields(rows.map(r => `#${r}_qua_i_lc`)) +
-		        sumFields(rows.map(r => `#${r}_qua_ii_lc`)) +
-		        sumFields(rows.map(r => `#${r}_qua_iii_lc`)) +
-		        sumFields(rows.map(r => `#${r}_qua_iv_lc`)
-		    ));
-		}
+			setCellValue(`#${prefix}_cumm_inr`, cumm_inr);  
+			setCellValue(`#${prefix}_cumm_bwp`, cumm_bwp);  
+		}  
 
-		//--------------------------------------
-		// R47
-		//--------------------------------------
-		function calculateR47() {
-			const rows = ["r44", "r45", "r46"];
+		//--------------------------------------  
+		// R22  
+		//--------------------------------------  
+		function calculateR22() {  
+			const rows = ["r18", "r19", "r20", "r21"];  
 
-			["i", "ii", "iii", "iv"].forEach(q => {
-				setCellValue(`#r47_qua_${q}_lc`, sumFields(rows.map(r => `#${r}_qua_${q}_lc`)));
-				setCellValue(`#r47_qua_${q}_qar`, sumFields(rows.map(r => `#${r}_qua_${q}_qar`)));
-				setCellValue(`#r47_qua_${q}_inr`, sumFields(rows.map(r => `#${r}_qua_${q}_inr`)));
-			});
+			["i", "ii", "iii", "iv"].forEach(q => {  
 
-			setCellValue("#r47_cumm_inr", sumFields(rows.map(r => `#${r}_cumm_inr`)));
-			setCellValue("#r47_cumm_bwp",
-				getCellValue("#r47_qua_i_lc") +
-				getCellValue("#r47_qua_ii_lc") +
-				getCellValue("#r47_qua_iii_lc") +
-				getCellValue("#r47_qua_iv_lc")
-			);
-		}
+				// LC  
+				setCellValue(`#r22_qua_${q}_lc`,  
+					sumFields(rows.map(r => `#${r}_qua_${q}_lc`))  
+				);  
 
-		//--------------------------------------
-		// R66
-		//--------------------------------------
-		function calculateR66() {
+				// QAR  
+				if (q === "i") {  
+					// ✅ ALWAYS EMPTY  
+					$("#r22_qua_i_qar").val("0");  
+				} else {  
+					setCellValue(`#r22_qua_${q}_qar`,  
+						sumFields(rows.map(r => `#${r}_qua_${q}_qar`))  
+					);  
+				}  
 
-			const rows = ["r52", "r53", "r54", "r55", "r56", "r57", "r58",
-				"r59", "r60", "r61", "r62", "r63", "r64", "r65"];
+				// INR  
+				setCellValue(`#r22_qua_${q}_inr`,  
+					sumFields(rows.map(r => `#${r}_qua_${q}_inr`)  
+					));  
+			});  
 
-			["i", "ii", "iii", "iv"].forEach(q => {
-				setCellValue(`#r66_qua_${q}_lc`, sumFields(rows.map(r => `#${r}_qua_${q}_lc`)));
-				setCellValue(`#r66_qua_${q}_qar`, sumFields(rows.map(r => `#${r}_qua_${q}_qar`)));
-				setCellValue(`#r66_qua_${q}_inr`, sumFields(rows.map(r => `#${r}_qua_${q}_inr`)));
-			});
+			// CUMM  
+			setCellValue("#r22_cumm_inr",  
+				sumFields(rows.map(r => `#${r}_cumm_inr`))  
+			);  
 
-			setCellValue("#r66_cumm_inr", sumFields(rows.map(r => `#${r}_cumm_inr`)));
+			setCellValue("#r22_cumm_bwp",  
+				sumFields(rows.map(r => `#${r}_qua_i_lc`)) +  
+				sumFields(rows.map(r => `#${r}_qua_ii_lc`)) +  
+				sumFields(rows.map(r => `#${r}_qua_iii_lc`)) +  
+				sumFields(rows.map(r => `#${r}_qua_iv_lc`))  
+			);  
+		}  
 
-			setCellValue("#r66_cumm_bwp",
-				getCellValue("#r66_qua_i_lc") +
-				getCellValue("#r66_qua_ii_lc") +
-				getCellValue("#r66_qua_iii_lc") +
-				getCellValue("#r66_qua_iv_lc")
-			);
-		}
+		//--------------------------------------  
+		// R47  
+		//--------------------------------------  
+		function calculateR47() {  
+			const rows = ["r44", "r45", "r46"];  
 
-		//--------------------------------------
-		// R79
-		//--------------------------------------
-		function calculateR79() {
+			["i", "ii", "iii", "iv"].forEach(q => {  
+				setCellValue(`#r47_qua_${q}_lc`, sumFields(rows.map(r => `#${r}_qua_${q}_lc`)));  
+				setCellValue(`#r47_qua_${q}_qar`, sumFields(rows.map(r => `#${r}_qua_${q}_qar`)));  
+				setCellValue(`#r47_qua_${q}_inr`, sumFields(rows.map(r => `#${r}_qua_${q}_inr`)));  
+			});  
 
-			const rows = ["r71", "r72", "r73", "r74", "r75", "r76", "r77", "r78"];
+			setCellValue("#r47_cumm_inr", sumFields(rows.map(r => `#${r}_cumm_inr`)));  
+			setCellValue("#r47_cumm_bwp",  
+				getCellValue("#r47_qua_i_lc") +  
+				getCellValue("#r47_qua_ii_lc") +  
+				getCellValue("#r47_qua_iii_lc") +  
+				getCellValue("#r47_qua_iv_lc")  
+			);  
+		}  
 
-			["i", "ii", "iii", "iv"].forEach(q => {
-				setCellValue(`#r79_qua_${q}_lc`, sumFields(rows.map(r => `#${r}_qua_${q}_lc`)));
-				setCellValue(`#r79_qua_${q}_qar`, sumFields(rows.map(r => `#${r}_qua_${q}_qar`)));
-				setCellValue(`#r79_qua_${q}_inr`, sumFields(rows.map(r => `#${r}_qua_${q}_inr`)));
-			});
+		//--------------------------------------  
+		// R66  
+		//--------------------------------------  
+		function calculateR66() {  
 
-			setCellValue("#r79_cumm_inr", sumFields(rows.map(r => `#${r}_cumm_inr`)));
+			const rows = ["r52", "r53", "r54", "r55", "r56", "r57", "r58",  
+				"r59", "r60", "r61", "r62", "r63", "r64", "r65"];  
 
-			setCellValue("#r79_cumm_bwp",
-				getCellValue("#r79_qua_i_lc") +
-				getCellValue("#r79_qua_ii_lc") +
-				getCellValue("#r79_qua_iii_lc") +
-				getCellValue("#r79_qua_iv_lc")
-			);
-		}
+			["i", "ii", "iii", "iv"].forEach(q => {  
+				setCellValue(`#r66_qua_${q}_lc`, sumFields(rows.map(r => `#${r}_qua_${q}_lc`)));  
+				setCellValue(`#r66_qua_${q}_qar`, sumFields(rows.map(r => `#${r}_qua_${q}_qar`)));  
+				setCellValue(`#r66_qua_${q}_inr`, sumFields(rows.map(r => `#${r}_qua_${q}_inr`)));  
+			});  
 
-		//--------------------------------------
-		// R40 (WITH +/- LOGIC)
-		//--------------------------------------
-		function calculateR40() {
+			setCellValue("#r66_cumm_inr", sumFields(rows.map(r => `#${r}_cumm_inr`)));  
 
-			const rows = ["r26", "r27", "r28", "r29", "r30", "r31", "r32",
-				"r33", "r34", "r35", "r36", "r37", "r38", "r39"];
+			setCellValue("#r66_cumm_bwp",  
+				getCellValue("#r66_qua_i_lc") +  
+				getCellValue("#r66_qua_ii_lc") +  
+				getCellValue("#r66_qua_iii_lc") +  
+				getCellValue("#r66_qua_iv_lc")  
+			);  
+		}  
 
-			["i", "ii", "iii", "iv"].forEach(q => {
-				setCellValue(`#r40_qua_${q}_lc`, sumFields(rows.map(r => `#${r}_qua_${q}_lc`)));
-				setCellValue(`#r40_qua_${q}_qar`, sumFields(rows.map(r => `#${r}_qua_${q}_qar`)));
-				setCellValue(`#r40_qua_${q}_inr`, sumFields(rows.map(r => `#${r}_qua_${q}_inr`)));
-			});
+		//--------------------------------------  
+		// R79  
+		//--------------------------------------  
+		function calculateR79() {  
 
-			// Special +/- logic
-			let cumm_inr =
-				getCellValue("#r26_cumm_inr") +
-				getCellValue("#r27_cumm_inr") -
-				getCellValue("#r28_cumm_inr") +
-				getCellValue("#r29_cumm_inr") -
-				getCellValue("#r30_cumm_inr") +
-				getCellValue("#r31_cumm_inr") -
-				getCellValue("#r32_cumm_inr") +
-				getCellValue("#r33_cumm_inr") -
-				getCellValue("#r34_cumm_inr") +
-				getCellValue("#r35_cumm_inr") +
-				getCellValue("#r36_cumm_inr") +
-				getCellValue("#r37_cumm_inr") +
-				getCellValue("#r38_cumm_inr") +
-				getCellValue("#r39_cumm_inr");
+			const rows = ["r71", "r72", "r73", "r74", "r75", "r76", "r77", "r78"];  
 
-			setCellValue("#r40_cumm_inr", cumm_inr);
+			["i", "ii", "iii", "iv"].forEach(q => {  
+				setCellValue(`#r79_qua_${q}_lc`, sumFields(rows.map(r => `#${r}_qua_${q}_lc`)));  
+				setCellValue(`#r79_qua_${q}_qar`, sumFields(rows.map(r => `#${r}_qua_${q}_qar`)));  
+				setCellValue(`#r79_qua_${q}_inr`, sumFields(rows.map(r => `#${r}_qua_${q}_inr`)));  
+			});  
 
-			setCellValue("#r40_cumm_bwp",
-				getCellValue("#r40_qua_i_lc") +
-				getCellValue("#r40_qua_ii_lc") +
-				getCellValue("#r40_qua_iii_lc") +
-				getCellValue("#r40_qua_iv_lc")
-			);
-		}
-		function calculateR82() {
+			setCellValue("#r79_cumm_inr", sumFields(rows.map(r => `#${r}_cumm_inr`)));  
 
-			// QUARTERS
-			setCellValue("#r82_qua_i_lc", getCellValue("#r79_qua_i_lc"));
-			setCellValue("#r82_qua_i_qar", getCellValue("#r79_qua_i_qar"));
-			setCellValue("#r82_qua_i_inr",
-				getCellValue("#r79_qua_i_inr") -
-				getCellValue("#r80_qua_i_inr") -
-				getCellValue("#r81_qua_i_inr")
-			);
+			setCellValue("#r79_cumm_bwp",  
+				getCellValue("#r79_qua_i_lc") +  
+				getCellValue("#r79_qua_ii_lc") +  
+				getCellValue("#r79_qua_iii_lc") +  
+				getCellValue("#r79_qua_iv_lc")  
+			);  
+		}  
 
-			setCellValue("#r82_qua_ii_lc", getCellValue("#r79_qua_ii_lc"));
-			setCellValue("#r82_qua_ii_qar", getCellValue("#r79_qua_ii_qar"));
-			setCellValue("#r82_qua_ii_inr", getCellValue("#r79_qua_ii_inr"));
+		//--------------------------------------  
+		// R40 (WITH +/- LOGIC)  
+		//--------------------------------------  
+		function calculateR40() {  
 
-			setCellValue("#r82_qua_iii_lc", getCellValue("#r79_qua_iii_lc"));
-			setCellValue("#r82_qua_iii_qar", getCellValue("#r79_qua_iii_qar"));
-			setCellValue("#r82_qua_iii_inr", getCellValue("#r79_qua_iii_inr"));
+			const rows = ["r26", "r27", "r28", "r29", "r30", "r31", "r32",  
+				"r33", "r34", "r35", "r36", "r37", "r38", "r39"];  
 
-			setCellValue("#r82_qua_iv_lc", getCellValue("#r79_qua_iv_lc"));
-			setCellValue("#r82_qua_iv_qar", getCellValue("#r79_qua_iv_qar"));
-			setCellValue("#r82_qua_iv_inr", getCellValue("#r79_qua_iv_inr"));
+			["i", "ii", "iii", "iv"].forEach(q => {  
+				setCellValue(`#r40_qua_${q}_lc`, sumFields(rows.map(r => `#${r}_qua_${q}_lc`)));  
+				setCellValue(`#r40_qua_${q}_qar`, sumFields(rows.map(r => `#${r}_qua_${q}_qar`)));  
+				setCellValue(`#r40_qua_${q}_inr`, sumFields(rows.map(r => `#${r}_qua_${q}_inr`)));  
+			});  
 
-			// CUMM
-			setCellValue("#r82_cumm_inr",
-				getCellValue("#r79_cumm_inr") -
-				getCellValue("#r80_cumm_inr") -
-				getCellValue("#r81_cumm_inr")
-			);
+			// Special +/- logic  
+			let cumm_inr =  
+				getCellValue("#r26_cumm_inr") +  
+				getCellValue("#r27_cumm_inr") -  
+				getCellValue("#r28_cumm_inr") +  
+				getCellValue("#r29_cumm_inr") -  
+				getCellValue("#r30_cumm_inr") +  
+				getCellValue("#r31_cumm_inr") -  
+				getCellValue("#r32_cumm_inr") +  
+				getCellValue("#r33_cumm_inr") -  
+				getCellValue("#r34_cumm_inr") +  
+				getCellValue("#r35_cumm_inr") +  
+				getCellValue("#r36_cumm_inr") +  
+				getCellValue("#r37_cumm_inr") +  
+				getCellValue("#r38_cumm_inr") +  
+				getCellValue("#r39_cumm_inr");  
 
-			setCellValue("#r82_cumm_bwp",
-				getCellValue("#r82_qua_i_lc") +
-				getCellValue("#r82_qua_ii_lc") +
-				getCellValue("#r82_qua_iii_lc") +
-				getCellValue("#r82_qua_iv_lc")
-			);
-		}
-		function calculateR90() {
+			setCellValue("#r40_cumm_inr", cumm_inr);  
 
-			setCellValue("#r90_qua_i_lc", getCellValue("#r85_qua_i_lc"));
-			setCellValue("#r90_qua_i_inr", getCellValue("#r85_qua_i_inr"));
+			setCellValue("#r40_cumm_bwp",  
+				getCellValue("#r40_qua_i_lc") +  
+				getCellValue("#r40_qua_ii_lc") +  
+				getCellValue("#r40_qua_iii_lc") +  
+				getCellValue("#r40_qua_iv_lc")  
+			);  
+		}  
+		function calculateR82() {  
 
-			setCellValue("#r90_qua_ii_lc", getCellValue("#r85_qua_ii_lc"));
-			setCellValue("#r90_qua_ii_inr", getCellValue("#r85_qua_ii_inr"));
+			// QUARTERS  
+			setCellValue("#r82_qua_i_lc", getCellValue("#r79_qua_i_lc"));  
+			setCellValue("#r82_qua_i_qar", getCellValue("#r79_qua_i_qar"));  
+			setCellValue("#r82_qua_i_inr",  
+				getCellValue("#r79_qua_i_inr") -  
+				getCellValue("#r80_qua_i_inr") -  
+				getCellValue("#r81_qua_i_inr")  
+			);  
 
-			// CUMM
-			setCellValue("#r90_cumm_inr", getCellValue("#r85_cumm_inr"));
+			setCellValue("#r82_qua_ii_lc", getCellValue("#r79_qua_ii_lc"));  
+			setCellValue("#r82_qua_ii_qar", getCellValue("#r79_qua_ii_qar"));  
+			setCellValue("#r82_qua_ii_inr", getCellValue("#r79_qua_ii_inr"));  
 
-			setCellValue("#r90_cumm_bwp",
-				getCellValue("#r90_qua_i_lc") +
-				getCellValue("#r90_qua_ii_lc") +
-				getCellValue("#r90_qua_iii_lc") +
-				getCellValue("#r90_qua_iv_lc")
-			);
-		}
-		function calculateR91() {
+			setCellValue("#r82_qua_iii_lc", getCellValue("#r79_qua_iii_lc"));  
+			setCellValue("#r82_qua_iii_qar", getCellValue("#r79_qua_iii_qar"));  
+			setCellValue("#r82_qua_iii_inr", getCellValue("#r79_qua_iii_inr"));  
 
-			// COPY FROM R90
-			["i", "ii", "iii", "iv"].forEach(q => {
-				setCellValue(`#r91_qua_${q}_lc`, getCellValue(`#r90_qua_${q}_lc`));
-				setCellValue(`#r91_qua_${q}_qar`, getCellValue(`#r90_qua_${q}_qar`));
-				setCellValue(`#r91_qua_${q}_inr`, getCellValue(`#r90_qua_${q}_inr`));
-			});
+			setCellValue("#r82_qua_iv_lc", getCellValue("#r79_qua_iv_lc"));  
+			setCellValue("#r82_qua_iv_qar", getCellValue("#r79_qua_iv_qar"));  
+			setCellValue("#r82_qua_iv_inr", getCellValue("#r79_qua_iv_inr"));  
 
-			// CUMM
-			setCellValue("#r91_cumm_inr",
-				getCellValue("#r88_cumm_inr") +
-				getCellValue("#r89_cumm_inr") +
-				getCellValue("#r90_cumm_inr")
-			);
+			// CUMM  
+			setCellValue("#r82_cumm_inr",  
+				getCellValue("#r79_cumm_inr") -  
+				getCellValue("#r80_cumm_inr") -  
+				getCellValue("#r81_cumm_inr")  
+			);  
 
-			setCellValue("#r91_cumm_bwp",
-				getCellValue("#r91_qua_i_lc") +
-				getCellValue("#r91_qua_ii_lc") +
-				getCellValue("#r91_qua_iii_lc") +
-				getCellValue("#r91_qua_iv_lc")
-			);
-		}
-		function calculateR85() {
+			setCellValue("#r82_cumm_bwp",  
+				getCellValue("#r82_qua_i_lc") +  
+				getCellValue("#r82_qua_ii_lc") +  
+				getCellValue("#r82_qua_iii_lc") +  
+				getCellValue("#r82_qua_iv_lc")  
+			);  
+		}  
+		function calculateR90() {  
 
-		    ["i", "ii", "iii", "iv"].forEach(q => {
+			setCellValue("#r90_qua_i_lc", getCellValue("#r85_qua_i_lc"));  
+			setCellValue("#r90_qua_i_inr", getCellValue("#r85_qua_i_inr"));  
 
-		        setCellValue(`#r85_qua_${q}_lc`,
-		            getCellValue(`#r22_qua_${q}_lc`) +
-		            getCellValue(`#r40_qua_${q}_lc`) -
-		            getCellValue(`#r47_qua_${q}_lc`) -
-		            getCellValue(`#r66_qua_${q}_lc`) -
-		            getCellValue(`#r82_qua_${q}_lc`)
-		        );
+			setCellValue("#r90_qua_ii_lc", getCellValue("#r85_qua_ii_lc"));  
+			setCellValue("#r90_qua_ii_inr", getCellValue("#r85_qua_ii_inr"));  
 
-		        setCellValue(`#r85_qua_${q}_qar`,
-		            getCellValue(`#r22_qua_${q}_qar`) +
-		            getCellValue(`#r40_qua_${q}_qar`) -
-		            getCellValue(`#r47_qua_${q}_qar`) -
-		            getCellValue(`#r66_qua_${q}_qar`) -
-		            getCellValue(`#r82_qua_${q}_qar`)
-		        );
+			// CUMM  
+			setCellValue("#r90_cumm_inr", getCellValue("#r85_cumm_inr"));  
 
-		        setCellValue(`#r85_qua_${q}_inr`,
-		            getCellValue(`#r22_qua_${q}_inr`) +
-		            getCellValue(`#r40_qua_${q}_inr`) -
-		            getCellValue(`#r47_qua_${q}_inr`) -
-		            getCellValue(`#r66_qua_${q}_inr`) -
-		            getCellValue(`#r82_qua_${q}_inr`)
-		        );
-		    });
+			setCellValue("#r90_cumm_bwp",  
+				getCellValue("#r90_qua_i_lc") +  
+				getCellValue("#r90_qua_ii_lc") +  
+				getCellValue("#r90_qua_iii_lc") +  
+				getCellValue("#r90_qua_iv_lc")  
+			);  
+		}  
+		function calculateR91() {  
 
-		    // ✅ CUMM INR
-		    setCellValue("#r85_cumm_inr",
-		        getCellValue("#r22_cumm_inr") +
-		        getCellValue("#r40_cumm_inr") -
-		        getCellValue("#r47_cumm_inr") -
-		        getCellValue("#r66_cumm_inr") -
-		        getCellValue("#r82_cumm_inr")
-		    );
+			// COPY FROM R90  
+			["i", "ii", "iii", "iv"].forEach(q => {  
+				setCellValue(`#r91_qua_${q}_lc`, getCellValue(`#r90_qua_${q}_lc`));  
+				setCellValue(`#r91_qua_${q}_qar`, getCellValue(`#r90_qua_${q}_qar`));  
+				setCellValue(`#r91_qua_${q}_inr`, getCellValue(`#r90_qua_${q}_inr`));  
+			});  
 
-		    // ✅ CUMM BWP (sum of LC quarters)
-		    setCellValue("#r85_cumm_bwp",
-		        getCellValue("#r85_qua_i_lc") +
-		        getCellValue("#r85_qua_ii_lc") +
-		        getCellValue("#r85_qua_iii_lc") +
-		        getCellValue("#r85_qua_iv_lc")
-		    );
-		}
-		//--------------------------------------
-		// READY
-		//--------------------------------------
-		// ✅ GLOBAL FUNCTION (IMPORTANT FIX)
-		function runAll() {
+			// CUMM  
+			setCellValue("#r91_cumm_inr",  
+				getCellValue("#r88_cumm_inr") +  
+				getCellValue("#r89_cumm_inr") +  
+				getCellValue("#r90_cumm_inr")  
+			);  
 
-			const normalRows = [
-				"r18", "r19", "r20", "r21",
-				"r27", "r28",
-				"r30", "r31", "r32", "r33", "r34", "r35", "r36", "r37", "r38",
-				"r46",
-				"r52", "r53", "r54", "r55", "r56", "r58", "r59", "r60",
-				"r61", "r62", "r63", "r65",
-				"r71", "r72", "r73", "r74", "r75", "r76", "r77", "r78"
-			];
+			setCellValue("#r91_cumm_bwp",  
+				getCellValue("#r91_qua_i_lc") +  
+				getCellValue("#r91_qua_ii_lc") +  
+				getCellValue("#r91_qua_iii_lc") +  
+				getCellValue("#r91_qua_iv_lc")  
+			);  
+		}  
+		function calculateR85() {  
 
-			const specialRows = ["r57", "r64"];
-			const partialRows = ["r80", "r81"];
+			["i", "ii", "iii", "iv"].forEach(q => {  
 
-			normalRows.forEach(r => calculateRow(r));
-			specialRows.forEach(r => calculateRowSpecial(r));
-			partialRows.forEach(r => calculateRowPartial(r));
+				setCellValue(`#r85_qua_${q}_lc`,  
+					getCellValue(`#r22_qua_${q}_lc`) +  
+					getCellValue(`#r40_qua_${q}_lc`) -  
+					getCellValue(`#r47_qua_${q}_lc`) -  
+					getCellValue(`#r66_qua_${q}_lc`) -  
+					getCellValue(`#r82_qua_${q}_lc`)  
+				);  
 
-			calculateR22();
-			calculateR40();
-			calculateR47();
-			calculateR66();
-			calculateR79();
-			calculateR82();
+				setCellValue(`#r85_qua_${q}_qar`,  
+					getCellValue(`#r22_qua_${q}_qar`) +  
+					getCellValue(`#r40_qua_${q}_qar`) -  
+					getCellValue(`#r47_qua_${q}_qar`) -  
+					getCellValue(`#r66_qua_${q}_qar`) -  
+					getCellValue(`#r82_qua_${q}_qar`)  
+				);  
+
+				setCellValue(`#r85_qua_${q}_inr`,  
+					getCellValue(`#r22_qua_${q}_inr`) +  
+					getCellValue(`#r40_qua_${q}_inr`) -  
+					getCellValue(`#r47_qua_${q}_inr`) -  
+					getCellValue(`#r66_qua_${q}_inr`) -  
+					getCellValue(`#r82_qua_${q}_inr`)  
+				);  
+			});  
+
+			// ✅ CUMM INR  
+			setCellValue("#r85_cumm_inr",  
+				getCellValue("#r22_cumm_inr") +  
+				getCellValue("#r40_cumm_inr") -  
+				getCellValue("#r47_cumm_inr") -  
+				getCellValue("#r66_cumm_inr") -  
+				getCellValue("#r82_cumm_inr")  
+			);  
+
+			// ✅ CUMM BWP (sum of LC quarters)  
+			setCellValue("#r85_cumm_bwp",  
+				getCellValue("#r85_qua_i_lc") +  
+				getCellValue("#r85_qua_ii_lc") +  
+				getCellValue("#r85_qua_iii_lc") +  
+				getCellValue("#r85_qua_iv_lc")  
+			);  
+		}  
+		function calculateR21() {  
+
+			let lc = getCellValue("#r21_qua_i_lc");  
+
+			let inr = lc + 6.2934;  
+
+			setCellValue("#r21_qua_i_inr", inr);  
+		}  
+		function calculateR77() {  
+
+			let lc = getCellValue("#r77_qua_i_lc");  
+
+			let inr = lc + 6.2934;  
+
+			setCellValue("#r77_qua_i_inr", inr);  
+		}  
+		function calculateR78() {  
+
+			let firstValue = 11544;  
+			let secondValue = 11483;  
+
+			let result = firstValue - secondValue;  
+
+			setCellValue("#r78_qua_i_inr", result);  // ✅ correct  
+		}  
+
+		function calculateR80() {  
+
+			let lc = getCellValue("#r80_qua_i_lc");  
+
+			let inr = lc + 6.2934;  
+
+			setCellValue("#r80_qua_i_inr", inr);  
+		}  
+		//--------------------------------------  
+		// READY  
+		//--------------------------------------  
+		// ✅ GLOBAL FUNCTION (IMPORTANT FIX)  
+		function runAll() {  
+
+			const normalRows = [  
+				"r18", "r19", "r20", "r21",  
+				"r27",   
+				"r46",  
+				"r52", "r53", "r54", "r55", "r56", "r58", "r59", "r60",  
+				"r61", "r62", "r63", "r65",  
+				"r71", "r72", "r73", "r74", "r75", "r76", "r77", "r78"  
+			];  
+
+			const specialRows = ["r57", "r64"];  
+			const partialRows = ["r80", "r81"];  
+
+			normalRows.forEach(r => calculateRow(r)); // normal  
+
+			calculateSpecialBWP(); // override special rows  
+			specialRows.forEach(r => calculateRowSpecial(r));  
+			partialRows.forEach(r => calculateRowPartial(r));  
+			calculateR21();  
+			calculateR22();  
+			calculateR40();  
+			calculateR47();  
+			calculateR66();  
+			calculateR77();  
+			calculateR78();  
+			calculateR79();  
+			calculateR80();  
+			calculateR82();  
 			calculateR85();  
-			calculateR90();
-			calculateR91();
-		}
-		$(document).ready(function () {
+			calculateR90();  
+			calculateR91();  
+		  
+			  
+			  
+		}  
+		$(document).ready(function () {  
 
-			// Initial load
-			runAll();
+			// Initial load  
+			runAll();  
 
-			// Auto calculation on input
-			$("[id^='r']").on("input", function () {
-				runAll();
-			});
+			// Auto calculation on input  
+			$("[id^='r']").on("input", function () {  
+				runAll();  
+			});  
 
-		});
+		});  
 
 
-	</script>
-	<script>
-
+	</script>  
+	<script>  
 		function fileuploads(btn) {
 
-			const asondate = btn.getAttribute("data-todate");
-			const type = btn.getAttribute("data-type");
+		    const asondate = btn.getAttribute("data-todate");
+		    const type = btn.getAttribute("data-type");
 
-			$('#loader').modal('show');
+		    $('#loader').modal('show');
 
-			try {
+		    try {
 
-				// ✅ STEP 1: REMOVE commas first
-				$("#fileupload input[type='text']").each(function () {
-					let val = $(this).val();
-					if (val) {
-						$(this).val(val.replace(/,/g, ''));
-					}
-				});
+		        // ✅ STEP 1: remove commas
+		        $("#fileupload input[type='text']").each(function () {
+		            let val = $(this).val();
+		            if (val) {
+		                $(this).val(val.replace(/,/g, ''));
+		            }
+		        });
 
-				// ✅ STEP 2: RUN calculations
-				runAll();
+		        // ✅ STEP 2: run calculations
+		        runAll();
 
-				// ✅ STEP 3: VALIDATE
-				if (!$("#fileupload").valid()) {
-					$('#loader').modal('hide');
-					return;
-				}
+		        // ✅ STEP 3: validation
+		        if (!$("#fileupload").valid()) {
+		            $('#loader').modal('hide');
+		            return;
+		        }
 
-				// ✅ STEP 4: BUILD FORM DATA
-				const formData = new FormData();
-				formData.append("asondate", asondate);
-				formData.append("type", type);
+		        // ✅ STEP 4: CREATE FIRST
+		        const formData = new FormData();
 
-				$('#fileupload').find(':input').each(function () {
-					const name = $(this).attr('name');
-					if (name) {
-						formData.append(name, $(this).val());
-					}
-				});
+		        formData.append("asondate", asondate);
+		        formData.append("type", type);
 
-				// ✅ STEP 5: AJAX
-				$.ajax({
-					url: './AS_11updateAll',
-					type: 'POST',
-					data: formData,
-					processData: false,
-					contentType: false,
-					dataType: 'text',
-					success: function () {
-						$("#resultModalLabel").text("BRRS");
-						$("#resultModalBody").text("Modified Successfully.");
-						$("#resultModal").modal("show");
-					},
-					error: function (jqXHR) {
-						console.error("Error:", jqXHR.responseText);
-						$("#resultModalLabel").text("Error");
-						$("#resultModalBody").text("Update failed.");
-						$("#resultModal").modal("show");
-					},
-					complete: function () {
-						$('#loader').modal('hide');
-					}
-				});
+		        // ✅ STEP 5: INPUT VALUES
+		        $('#fileupload').find(':input').each(function () {
+		            const id = $(this).attr('id');
+		            if (id) {
+		                formData.append(id, $(this).val());
+		            }
+		        });
 
-			} catch (error) {
-				console.error("Error in fileuploads:", error);
-				$('#loader').modal('hide');
-			}
+		        // ✅ STEP 6: TD VALUES (AFTER formData created)
+		        $('#fileupload td[id]').each(function () {
+		            const id = $(this).attr('id');
+		            let value = $(this).text().replace(/,/g, '').trim();
+
+		            if (id && value !== "") {
+		                formData.append(id, value);
+		            }
+		        });
+
+		        // ✅ STEP 7: AJAX
+		        $.ajax({
+		            url: './AS_11updateAll',
+		            type: 'POST',
+		            data: formData,
+		            processData: false,
+		            contentType: false,
+		            dataType: 'text',
+		            success: function () {
+		                $("#resultModalLabel").text("BRRS");
+		                $("#resultModalBody").text("Modified Successfully.");
+		                $("#resultModal").modal("show");
+		            },
+		            error: function (jqXHR) {
+		                console.error("Error:", jqXHR.responseText);
+		                $("#resultModalLabel").text("Error");
+		                $("#resultModalBody").text("Update failed.");
+		                $("#resultModal").modal("show");
+		            },
+		            complete: function () {
+		                $('#loader').modal('hide');
+		            }
+		        });
+
+		    } catch (error) {
+		        console.error("Error in fileuploads:", error);
+		        $('#loader').modal('hide');
+		    }
 		}
 	</script>
-
-
 
 	<style>
 		table {
@@ -1479,7 +1579,7 @@ PURPOSE		: BRRSREPORT
 							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
 						    data-fromdate=${fromdate},
 						    data-todate=${todate},
-						    data-filename='AS_11',
+						    data-filename='AS_11Detail',
                 data-type=${type},
 		            data-version=${version}
 						  ">
@@ -1630,10 +1730,12 @@ PURPOSE		: BRRSREPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r18_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r18_cumm_inr" name="r18_cumm_inr" class="r18_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r18_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r18_cumm_bwp" name="r18_cumm_bwp" class="r18_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r19_product}" colspan="2"
@@ -1641,69 +1743,71 @@ PURPOSE		: BRRSREPORT
 												<td th:text="${#numbers.formatDecimal(reportsummary.r19_qua_i_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r19_qua_i_lc" name="r19_qua_i_lc"
 													style="text-align:right;width:390px;padding-right:8px"
-													class="r19_qua_i_lc" th:attr="RowId='r19', ColumnId='C4'"
+													class="r19_qua_i_lc" th:attr="RowId='R19', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r19_qua_i_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r19_qua_i_qar" name="r19_qua_i_qar" class="r19_qua_i_qar"
 													style="text-align:right;width:390px;padding-right:8px"
-													th:attr="RowId='r19', ColumnId='C4'"
+													th:attr="RowId='R19', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r19_qua_i_inr, 0, 'COMMA', 0, 'POINT')}"
 													class="r19_qua_i_inr" id="r19_qua_i_inr" name="r19_qua_i_inr"
 													style="text-align:right;width:390px;padding-right:8px"
-													th:attr="RowId='r19', ColumnId='C4'"
+													th:attr="RowId='R19', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r19_qua_ii_lc, 0, 'COMMA', 0, 'POINT')}"
 													class="r19_qua_ii_lc" id="r19_qua_ii_lc" name="r19_qua_ii_lc"
 													style="text-align:right;width:390px;padding-right:8px"
-													th:attr="RowId='r19', ColumnId='C4'"
+													th:attr="RowId='R19', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r19_qua_ii_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r19_qua_ii_qar" name="r19_qua_ii_qar" class="r19_qua_ii_qar"
-													th:attr="RowId='r19', ColumnId='C4'"
+													th:attr="RowId='R19', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													style="text-align:right;width:390px;padding-right:8px"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r19_qua_ii_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r19_qua_ii_inr" name="r19_qua_ii_inr" class="r19_qua_ii_inr"
 													style="text-align:right;width:390px;padding-right:8px"
-													th:attr="RowId='r19', ColumnId='C4'"
+													th:attr="RowId='R19', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r19_qua_iii_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r19_qua_iii_lc" name="r19_qua_iii_lc" class="r19_qua_iii_lc"
 													style="text-align:right;width:390px;padding-right:8px"
-													th:attr="RowId='r19', ColumnId='C4'"
+													th:attr="RowId='R19', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r19_qua_iii_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r19_qua_iii_qar" name="r19_qua_iii_qar" class="r19_qua_iii_qar"
 													style="text-align:right;width:390px;padding-right:8px"
-													th:attr="RowId='r19', ColumnId='C4'"
+													th:attr="RowId='R19', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r19_qua_iii_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r19_qua_iii_inr" name="r19_qua_iii_inr" class="r19_qua_iii_inr"
 													style="text-align:right;width:390px;padding-right:8px"
-													th:attr="RowId='r19', ColumnId='C4'"
+													th:attr="RowId='R19', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r19_qua_iv_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r19_qua_iv_lc" name="r19_qua_iv_lc" class="r19_qua_iv_lc"
 													style="text-align:right;width:390px;padding-right:8px"
-													th:attr="RowId='r19', ColumnId='C4'"
+													th:attr="RowId='R19', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r19_qua_iv_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r19_qua_iv_qar" name="r19_qua_iv_qar" class="r19_qua_iv_qar"
 													style="text-align:right;width:390px;padding-right:8px"
-													th:attr="RowId='r19', ColumnId='C4'"
+													th:attr="RowId='R19', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r19_qua_iv_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r19_qua_iv_inr" name="r19_qua_iv_inr" class="r19_qua_iv_inr"
 													style="text-align:right;width:390px;padding-right:8px"
-													th:attr="RowId='r19', ColumnId='C4'"
+													th:attr="RowId='R19', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r19_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r19_cumm_inr" name="r19_cumm_inr" class="r19_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r19_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r19_cumm_bwp" name="r19_cumm_bwp" class="r19_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r20_product}" colspan="2"
@@ -1711,69 +1815,71 @@ PURPOSE		: BRRSREPORT
 												<td th:text="${#numbers.formatDecimal(reportsummary.r20_qua_i_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r20_qua_i_lc" name="r20_qua_i_lc"
 													style="text-align:right;width:390px;padding-right:8px"
-													class="r20_qua_i_lc" th:attr="RowId='r20', ColumnId='C4'"
+													class="r20_qua_i_lc" th:attr="RowId='R20', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r20_qua_i_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r20_qua_i_qar" name="r20_qua_i_qar" class="r20_qua_i_qar"
 													style="text-align:right;width:390px;padding-right:8px"
-													th:attr="RowId='r20', ColumnId='C4'"
+													th:attr="RowId='R20', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r20_qua_i_inr, 0, 'COMMA', 0, 'POINT')}"
 													class="r20_qua_i_inr" id="r20_qua_i_inr" name="r20_qua_i_inr"
 													style="text-align:right;width:390px;padding-right:8px"
-													th:attr="RowId='r20', ColumnId='C4'"
+													th:attr="RowId='R20', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r20_qua_ii_lc, 0, 'COMMA', 0, 'POINT')}"
 													class="r20_qua_ii_lc" id="r20_qua_ii_lc" name="r20_qua_ii_lc"
 													style="text-align:right;width:390px;padding-right:8px"
-													th:attr="RowId='r20', ColumnId='C4'"
+													th:attr="RowId='R20', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r20_qua_ii_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r20_qua_ii_qar" name="r20_qua_ii_qar" class="r20_qua_ii_qar"
-													th:attr="RowId='r20', ColumnId='C4'"
+													th:attr="RowId='R20', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													style="text-align:right;width:390px;padding-right:8px"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r20_qua_ii_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r20_qua_ii_inr" name="r20_qua_ii_inr" class="r20_qua_ii_inr"
 													style="text-align:right;width:390px;padding-right:8px"
-													th:attr="RowId='r20', ColumnId='C4'"
+													th:attr="RowId='R20', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r20_qua_iii_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r20_qua_iii_lc" name="r20_qua_iii_lc" class="r20_qua_iii_lc"
 													style="text-align:right;width:390px;padding-right:8px"
-													th:attr="RowId='r20', ColumnId='C4'"
+													th:attr="RowId='R20', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r20_qua_iii_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r20_qua_iii_qar" name="r20_qua_iii_qar" class="r20_qua_iii_qar"
 													style="text-align:right;width:390px;padding-right:8px"
-													th:attr="RowId='r20', ColumnId='C4'"
+													th:attr="RowId='R20', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r20_qua_iii_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r20_qua_iii_inr" name="r20_qua_iii_inr" class="r20_qua_iii_inr"
 													style="text-align:right;width:390px;padding-right:8px"
-													th:attr="RowId='r20', ColumnId='C4'"
+													th:attr="RowId='R20', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r20_qua_iv_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r20_qua_iv_lc" name="r20_qua_iv_lc" class="r20_qua_iv_lc"
 													style="text-align:right;width:390px;padding-right:8px"
-													th:attr="RowId='r20', ColumnId='C4'"
+													th:attr="RowId='R20', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r20_qua_iv_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r20_qua_iv_qar" name="r20_qua_iv_qar" class="r20_qua_iv_qar"
 													style="text-align:right;width:390px;padding-right:8px"
-													th:attr="RowId='r20', ColumnId='C4'"
+													th:attr="RowId='R20', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r20_qua_iv_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r20_qua_iv_inr" name="r20_qua_iv_inr" class="r20_qua_iv_inr"
 													style="text-align:right;width:390px;padding-right:8px"
-													th:attr="RowId='r20', ColumnId='C4'"
+													th:attr="RowId='R20', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r20_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r20_cumm_inr" name="r20_cumm_inr" class="r20_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r20_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r20_cumm_bwp" name="r20_cumm_bwp" class="r20_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 
@@ -1799,13 +1905,10 @@ PURPOSE		: BRRSREPORT
 														style="background-color:#FFFFFF;width:160px;height:25px;border-color:transparent;text-align:right;" />
 												</td>
 
-												<td td style="font-weight: bold; padding-left: 62px;">
-													<input type="text" class="display-input Show_input r21_qua_i_inr"
-														th:value="${reportsummary.r21_qua_i_inr != null ? #numbers.formatDecimal(reportsummary.r21_qua_i_inr,0,'COMMA',0,'POINT') : '0'}"
-														id="r21_qua_i_inr" name="r21_qua_i_inr" readonly
-														style="background-color:#FFFFFF;width:160px;height:25px;border-color:transparent;text-align:right;" />
+												<td th:text="${#numbers.formatDecimal(reportsummary.r21_qua_i_inr, 0, 'COMMA', 0, 'POINT')}"
+													class="r21_qua_i_inr" id="r21_qua_i_inr" name="r21_qua_i_inr"
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
 												</td>
-
 												<td td style="font-weight: bold; padding-left: 62px;">
 													<input type="text" class="display-input Show_input r21_qua_ii_lc"
 														th:value="${reportsummary.r21_qua_ii_lc != null ? #numbers.formatDecimal(reportsummary.r21_qua_ii_lc,0,'COMMA',0,'POINT') : '0'}"
@@ -1824,7 +1927,7 @@ PURPOSE		: BRRSREPORT
 													<input type="text" class="display-input Show_input r21_qua_ii_inr"
 														th:value="${reportsummary.r21_qua_ii_inr != null ? #numbers.formatDecimal(reportsummary.r21_qua_ii_inr,0,'COMMA',0,'POINT') : '0'}"
 														id="r21_qua_ii_inr" name="r21_qua_ii_inr" readonly
-														style="background-color:#FFFFFF;width:160px;height:25px;border-color:transparent;text-align:right;" />
+														style="width:160px;height:25px;border-color:transparent;text-align:right;" />
 												</td>
 
 												<td td style="font-weight: bold; padding-left: 62px;">
@@ -1871,57 +1974,73 @@ PURPOSE		: BRRSREPORT
 
 												<td th:text="${#numbers.formatDecimal(reportsummary.r21_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r21_cumm_inr" name="r21_cumm_inr" class="r21_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r21_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r21_cumm_bwp" name="r21_cumm_bwp" class="r21_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r22_product}" colspan="2"
 													style="padding-left:12px;font-weight: bold;"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r22_qua_i_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r22_qua_i_lc" name="r22_qua_i_lc"
-													style="text-align:right;width:390px;padding-right:8px"
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px"
 													class="r22_qua_i_lc"></td>
-												<td th:text="${#numbers.formatDecimal(reportsummary.r22_qua_i_qar, 0, 'COMMA', 0, 'POINT')}"
-													id="r22_qua_i_qar" name="r22_qua_i_qar" class="r22_qua_i_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+												<td id="r22_qua_i_qar" name="r22_qua_i_qar" class="r22_qua_i_qar"
+													th:text="${reportsummary.r22_qua_i_qar != null 
+													        ? #numbers.formatDecimal(reportsummary.r22_qua_i_qar, 0, 'COMMA', 0, 'POINT') 
+													        : '0'}" style="text-align:right;width:390px;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r22_qua_i_inr, 0, 'COMMA', 0, 'POINT')}"
 													class="r22_qua_i_inr" id="r22_qua_i_inr" name="r22_qua_i_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r22_qua_ii_lc, 0, 'COMMA', 0, 'POINT')}"
 													class="r22_qua_ii_lc" id="r22_qua_ii_lc" name="r22_qua_ii_lc"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r22_qua_ii_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r22_qua_ii_qar" name="r22_qua_ii_qar" class="r22_qua_ii_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r22_qua_ii_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r22_qua_ii_inr" name="r22_qua_ii_inr" class="r22_qua_ii_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r22_qua_iii_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r22_qua_iii_lc" name="r22_qua_iii_lc" class="r22_qua_iii_lc"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r22_qua_iii_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r22_qua_iii_qar" name="r22_qua_iii_qar" class="r22_qua_iii_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r22_qua_iii_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r22_qua_iii_inr" name="r22_qua_iii_inr" class="r22_qua_iii_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r22_qua_iv_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r22_qua_iv_lc" name="r22_qua_iv_lc" class="r22_qua_iv_lc"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r22_qua_iv_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r22_qua_iv_qar" name="r22_qua_iv_qar" class="r22_qua_iv_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r22_qua_iv_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r22_qua_iv_inr" name="r22_qua_iv_inr" class="r22_qua_iv_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r22_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r22_cumm_inr" name="r22_cumm_inr" class="r22_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r22_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r22_cumm_bwp" name="r22_cumm_bwp" class="r22_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r23_product}" colspan="2"
@@ -1991,7 +2110,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align:right;width:390px;padding-right:8px"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r23_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r23_cumm_bwp" name="r23_cumm_bwp" class="r23_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r24_product}" colspan="2"
@@ -2061,7 +2181,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align:right;width:390px;padding-right:8px"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r24_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r24_cumm_bwp" name="r24_cumm_bwp" class="r24_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r25_product}" colspan="2"
@@ -2131,7 +2252,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align:right;width:390px;padding-right:8px"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r25_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r25_cumm_bwp" name="r25_cumm_bwp" class="r25_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r26_product}" colspan="2"
@@ -2198,10 +2320,12 @@ PURPOSE		: BRRSREPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r26_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r26_cumm_inr" name="r26_cumm_inr" class="r26_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r26_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r26_cumm_bwp" name="r26_cumm_bwp" class="r26_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 
@@ -2300,10 +2424,12 @@ PURPOSE		: BRRSREPORT
 
 												<td th:text="${#numbers.formatDecimal(reportsummary.r27_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r27_cumm_inr" name="r27_cumm_inr" class="r27_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r27_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r27_cumm_bwp" name="r27_cumm_bwp" class="r27_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;background-color: rgb(107, 122, 143);color: white;width:390px;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 
@@ -2402,10 +2528,12 @@ PURPOSE		: BRRSREPORT
 
 												<td th:text="${#numbers.formatDecimal(reportsummary.r28_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r28_cumm_inr" name="r28_cumm_inr" class="r28_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r28_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r28_cumm_bwp" name="r28_cumm_bwp" class="r28_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r29_product}" colspan="2"
@@ -2472,10 +2600,12 @@ PURPOSE		: BRRSREPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r29_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r29_cumm_inr" name="r29_cumm_inr" class="r29_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r29_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r29_cumm_bwp" name="r29_cumm_bwp" class="r29_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 
@@ -2574,10 +2704,12 @@ PURPOSE		: BRRSREPORT
 
 												<td th:text="${#numbers.formatDecimal(reportsummary.r30_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r30_cumm_inr" name="r30_cumm_inr" class="r30_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r30_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r30_cumm_bwp" name="r30_cumm_bwp" class="r30_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 
@@ -2675,10 +2807,12 @@ PURPOSE		: BRRSREPORT
 
 												<td th:text="${#numbers.formatDecimal(reportsummary.r31_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r31_cumm_inr" name="r31_cumm_inr" class="r31_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r31_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r31_cumm_bwp" name="r31_cumm_bwp" class="r31_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 
@@ -2777,10 +2911,12 @@ PURPOSE		: BRRSREPORT
 
 												<td th:text="${#numbers.formatDecimal(reportsummary.r32_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r32_cumm_inr" name="r32_cumm_inr" class="r32_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r32_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r32_cumm_bwp" name="r32_cumm_bwp" class="r32_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 
@@ -2879,10 +3015,12 @@ PURPOSE		: BRRSREPORT
 
 												<td th:text="${#numbers.formatDecimal(reportsummary.r33_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r33_cumm_inr" name="r33_cumm_inr" class="r33_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r33_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r33_cumm_bwp" name="r33_cumm_bwp" class="r33_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 
@@ -2981,10 +3119,12 @@ PURPOSE		: BRRSREPORT
 
 												<td th:text="${#numbers.formatDecimal(reportsummary.r34_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r34_cumm_inr" name="r34_cumm_inr" class="r34_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r34_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r34_cumm_bwp" name="r34_cumm_bwp" class="r34_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 
@@ -3082,10 +3222,12 @@ PURPOSE		: BRRSREPORT
 
 												<td th:text="${#numbers.formatDecimal(reportsummary.r35_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r35_cumm_inr" name="r35_cumm_inr" class="r35_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r35_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r35_cumm_bwp" name="r35_cumm_bwp" class="r35_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 
@@ -3183,10 +3325,12 @@ PURPOSE		: BRRSREPORT
 
 												<td th:text="${#numbers.formatDecimal(reportsummary.r36_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r36_cumm_inr" name="r36_cumm_inr" class="r36_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r36_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r36_cumm_bwp" name="r36_cumm_bwp" class="r36_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 
@@ -3284,10 +3428,12 @@ PURPOSE		: BRRSREPORT
 
 												<td th:text="${#numbers.formatDecimal(reportsummary.r37_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r37_cumm_inr" name="r37_cumm_inr" class="r37_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r37_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r37_cumm_bwp" name="r37_cumm_bwp" class="r37_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 
@@ -3386,10 +3532,12 @@ PURPOSE		: BRRSREPORT
 
 												<td th:text="${#numbers.formatDecimal(reportsummary.r38_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r38_cumm_inr" name="r38_cumm_inr" class="r38_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r38_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r38_cumm_bwp" name="r38_cumm_bwp" class="r38_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r39_product}" colspan="2"
@@ -3456,57 +3604,72 @@ PURPOSE		: BRRSREPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r39_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r39_cumm_inr" name="r39_cumm_inr" class="r39_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r39_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r39_cumm_bwp" name="r39_cumm_bwp" class="r39_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r40_product}" colspan="2"
 													style="padding-left:12px;font-weight: bold;"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r40_qua_i_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r40_qua_i_lc" name="r40_qua_i_lc"
-													style="text-align:right;width:390px;padding-right:8px"
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px"
 													class="r40_qua_i_lc"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r40_qua_i_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r40_qua_i_qar" name="r40_qua_i_qar" class="r40_qua_i_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r40_qua_i_inr, 0, 'COMMA', 0, 'POINT')}"
 													class="r40_qua_i_inr" id="r40_qua_i_inr" name="r40_qua_i_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r40_qua_ii_lc, 0, 'COMMA', 0, 'POINT')}"
 													class="r40_qua_ii_lc" id="r40_qua_ii_lc" name="r40_qua_ii_lc"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r40_qua_ii_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r40_qua_ii_qar" name="r40_qua_ii_qar" class="r40_qua_ii_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r40_qua_ii_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r40_qua_ii_inr" name="r40_qua_ii_inr" class="r40_qua_ii_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r40_qua_iii_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r40_qua_iii_lc" name="r40_qua_iii_lc" class="r40_qua_iii_lc"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r40_qua_iii_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r40_qua_iii_qar" name="r40_qua_iii_qar" class="r40_qua_iii_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r40_qua_iii_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r40_qua_iii_inr" name="r40_qua_iii_inr" class="r40_qua_iii_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r40_qua_iv_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r40_qua_iv_lc" name="r40_qua_iv_lc" class="r40_qua_iv_lc"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r40_qua_iv_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r40_qua_iv_qar" name="r40_qua_iv_qar" class="r40_qua_iv_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r40_qua_iv_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r40_qua_iv_inr" name="r40_qua_iv_inr" class="r40_qua_iv_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r40_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r40_cumm_inr" name="r40_cumm_inr" class="r40_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r40_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r40_cumm_bwp" name="r40_cumm_bwp" class="r40_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r41_product}" colspan="2"
@@ -3574,7 +3737,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align:right;width:390px;padding-right:8px"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r41_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r41_cumm_bwp" name="r41_cumm_bwp" class="r41_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r42_product}" colspan="2"
@@ -3642,7 +3806,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align:right;width:390px;padding-right:8px"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r42_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r42_cumm_bwp" name="r42_cumm_bwp" class="r42_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r43_product}" colspan="2"
@@ -3710,7 +3875,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align:right;width:390px;padding-right:8px"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r43_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r43_cumm_bwp" name="r43_cumm_bwp" class="r43_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r44_product}" colspan="2"
@@ -3777,10 +3943,12 @@ PURPOSE		: BRRSREPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r44_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r44_cumm_inr" name="r44_cumm_inr" class="r44_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r44_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r44_cumm_bwp" name="r44_cumm_bwp" class="r44_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r45_product}" colspan="2"
@@ -3847,10 +4015,12 @@ PURPOSE		: BRRSREPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r45_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r45_cumm_inr" name="r45_cumm_inr" class="r45_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r45_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r45_cumm_bwp" name="r45_cumm_bwp" class="r45_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 
@@ -3948,57 +4118,72 @@ PURPOSE		: BRRSREPORT
 
 												<td th:text="${#numbers.formatDecimal(reportsummary.r46_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r46_cumm_inr" name="r46_cumm_inr" class="r46_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r46_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r46_cumm_bwp" name="r46_cumm_bwp" class="r46_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r47_product}" colspan="2"
 													style="padding-left:12px;font-weight: bold;"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r47_qua_i_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r47_qua_i_lc" name="r47_qua_i_lc"
-													style="text-align:right;width:390px;padding-right:8px"
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px"
 													class="r47_qua_i_lc"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r47_qua_i_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r47_qua_i_qar" name="r47_qua_i_qar" class="r47_qua_i_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r47_qua_i_inr, 0, 'COMMA', 0, 'POINT')}"
 													class="r47_qua_i_inr" id="r47_qua_i_inr" name="r47_qua_i_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r47_qua_ii_lc, 0, 'COMMA', 0, 'POINT')}"
 													class="r47_qua_ii_lc" id="r47_qua_ii_lc" name="r47_qua_ii_lc"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r47_qua_ii_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r47_qua_ii_qar" name="r47_qua_ii_qar" class="r47_qua_ii_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r47_qua_ii_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r47_qua_ii_inr" name="r47_qua_ii_inr" class="r47_qua_ii_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r47_qua_iii_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r47_qua_iii_lc" name="r47_qua_iii_lc" class="r47_qua_iii_lc"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r47_qua_iii_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r47_qua_iii_qar" name="r47_qua_iii_qar" class="r47_qua_iii_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r47_qua_iii_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r47_qua_iii_inr" name="r47_qua_iii_inr" class="r47_qua_iii_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r47_qua_iv_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r47_qua_iv_lc" name="r47_qua_iv_lc" class="r47_qua_iv_lc"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r47_qua_iv_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r47_qua_iv_qar" name="r47_qua_iv_qar" class="r47_qua_iv_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r47_qua_iv_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r47_qua_iv_inr" name="r47_qua_iv_inr" class="r47_qua_iv_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r47_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r47_cumm_inr" name="r47_cumm_inr" class="r47_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r47_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r47_cumm_bwp" name="r47_cumm_bwp" class="r47_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r48_product}" colspan="2"
@@ -4066,7 +4251,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align:right;width:390px;padding-right:8px"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r48_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r48_cumm_bwp" name="r48_cumm_bwp" class="r48_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r49_product}" colspan="2"
@@ -4134,7 +4320,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align:right;width:390px;padding-right:8px"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r49_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r49_cumm_bwp" name="r49_cumm_bwp" class="r49_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r50_product}" colspan="2"
@@ -4202,7 +4389,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align:right;width:390px;padding-right:8px"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r50_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r50_cumm_bwp" name="r50_cumm_bwp" class="r50_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 
 											<tr>
@@ -4271,7 +4459,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align:right;width:390px;padding-right:8px"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r51_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r51_cumm_bwp" name="r51_cumm_bwp" class="r51_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r52_product}" colspan="2"
@@ -4338,10 +4527,12 @@ PURPOSE		: BRRSREPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r52_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r52_cumm_inr" name="r52_cumm_inr" class="r52_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r52_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r52_cumm_bwp" name="r52_cumm_bwp" class="r52_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r53_product}" colspan="2"
@@ -4408,10 +4599,12 @@ PURPOSE		: BRRSREPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r53_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r53_cumm_inr" name="r53_cumm_inr" class="r53_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r53_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r53_cumm_bwp" name="r53_cumm_bwp" class="r53_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r54_product}" colspan="2"
@@ -4478,10 +4671,12 @@ PURPOSE		: BRRSREPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r54_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r54_cumm_inr" name="r54_cumm_inr" class="r54_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r54_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r54_cumm_bwp" name="r54_cumm_bwp" class="r54_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r55_product}" colspan="2"
@@ -4548,10 +4743,12 @@ PURPOSE		: BRRSREPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r55_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r55_cumm_inr" name="r55_cumm_inr" class="r55_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r55_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r55_cumm_bwp" name="r55_cumm_bwp" class="r55_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r56_product}" colspan="2"
@@ -4618,10 +4815,12 @@ PURPOSE		: BRRSREPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r56_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r56_cumm_inr" name="r56_cumm_inr" class="r56_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r56_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r56_cumm_bwp" name="r56_cumm_bwp" class="r56_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 
@@ -4720,10 +4919,12 @@ PURPOSE		: BRRSREPORT
 
 												<td th:text="${#numbers.formatDecimal(reportsummary.r57_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r57_cumm_inr" name="r57_cumm_inr" class="r57_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r57_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r57_cumm_bwp" name="r57_cumm_bwp" class="r57_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r58_product}" colspan="2"
@@ -4790,10 +4991,12 @@ PURPOSE		: BRRSREPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r58_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r58_cumm_inr" name="r58_cumm_inr" class="r58_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r58_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r58_cumm_bwp" name="r58_cumm_bwp" class="r58_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r59_product}" colspan="2"
@@ -4860,10 +5063,12 @@ PURPOSE		: BRRSREPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r59_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r59_cumm_inr" name="r59_cumm_inr" class="r59_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r59_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r59_cumm_bwp" name="r59_cumm_bwp" class="r59_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r60_product}" colspan="2"
@@ -4930,10 +5135,12 @@ PURPOSE		: BRRSREPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r60_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r60_cumm_inr" name="r60_cumm_inr" class="r60_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r60_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r60_cumm_bwp" name="r60_cumm_bwp" class="r60_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r61_product}" colspan="2"
@@ -5000,10 +5207,12 @@ PURPOSE		: BRRSREPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r61_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r61_cumm_inr" name="r61_cumm_inr" class="r61_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r61_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r61_cumm_bwp" name="r61_cumm_bwp" class="r61_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r62_product}" colspan="2"
@@ -5070,10 +5279,12 @@ PURPOSE		: BRRSREPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r62_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r62_cumm_inr" name="r62_cumm_inr" class="r62_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r62_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r62_cumm_bwp" name="r62_cumm_bwp" class="r62_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r63_product}" colspan="2"
@@ -5140,10 +5351,12 @@ PURPOSE		: BRRSREPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r63_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r63_cumm_inr" name="r63_cumm_inr" class="r63_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r63_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r63_cumm_bwp" name="r63_cumm_bwp" class="r63_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 
@@ -5242,10 +5455,12 @@ PURPOSE		: BRRSREPORT
 
 												<td th:text="${#numbers.formatDecimal(reportsummary.r64_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r64_cumm_inr" name="r64_cumm_inr" class="r64_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r64_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r64_cumm_bwp" name="r64_cumm_bwp" class="r64_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r65_product}" colspan="2"
@@ -5312,57 +5527,72 @@ PURPOSE		: BRRSREPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r65_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r65_cumm_inr" name="r65_cumm_inr" class="r65_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r65_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r65_cumm_bwp" name="r65_cumm_bwp" class="r65_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r66_product}" colspan="2"
 													style="padding-left:12px;font-weight: bold;"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r66_qua_i_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r66_qua_i_lc" name="r66_qua_i_lc"
-													style="text-align:right;width:390px;padding-right:8px"
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px"
 													class="r66_qua_i_lc"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r66_qua_i_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r66_qua_i_qar" name="r66_qua_i_qar" class="r66_qua_i_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r66_qua_i_inr, 0, 'COMMA', 0, 'POINT')}"
 													class="r66_qua_i_inr" id="r66_qua_i_inr" name="r66_qua_i_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r66_qua_ii_lc, 0, 'COMMA', 0, 'POINT')}"
 													class="r66_qua_ii_lc" id="r66_qua_ii_lc" name="r66_qua_ii_lc"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r66_qua_ii_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r66_qua_ii_qar" name="r66_qua_ii_qar" class="r66_qua_ii_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r66_qua_ii_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r66_qua_ii_inr" name="r66_qua_ii_inr" class="r66_qua_ii_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r66_qua_iii_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r66_qua_iii_lc" name="r66_qua_iii_lc" class="r66_qua_iii_lc"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r66_qua_iii_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r66_qua_iii_qar" name="r66_qua_iii_qar" class="r66_qua_iii_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r66_qua_iii_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r66_qua_iii_inr" name="r66_qua_iii_inr" class="r66_qua_iii_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r66_qua_iv_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r66_qua_iv_lc" name="r66_qua_iv_lc" class="r66_qua_iv_lc"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r66_qua_iv_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r66_qua_iv_qar" name="r66_qua_iv_qar" class="r66_qua_iv_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r66_qua_iv_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r66_qua_iv_inr" name="r66_qua_iv_inr" class="r66_qua_iv_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r66_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r66_cumm_inr" name="r66_cumm_inr" class="r66_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r66_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r66_cumm_bwp" name="r66_cumm_bwp" class="r66_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r67_product}" colspan="2"
@@ -5430,7 +5660,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align:right;width:390px;padding-right:8px"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r67_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r67_cumm_bwp" name="r67_cumm_bwp" class="r67_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r68_product}" colspan="2"
@@ -5498,7 +5729,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align:right;width:390px;padding-right:8px"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r68_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r68_cumm_bwp" name="r68_cumm_bwp" class="r68_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r69_product}" colspan="2"
@@ -5566,7 +5798,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align:right;width:390px;padding-right:8px"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r69_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r69_cumm_bwp" name="r69_cumm_bwp" class="r69_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r70_product}" colspan="2"
@@ -5634,7 +5867,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align:right;width:390px;padding-right:8px"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r70_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r70_cumm_bwp" name="r70_cumm_bwp" class="r70_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r71_product}" colspan="2"
@@ -5701,10 +5935,12 @@ PURPOSE		: BRRSREPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r71_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r71_cumm_inr" name="r71_cumm_inr" class="r71_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r71_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r71_cumm_bwp" name="r71_cumm_bwp" class="r71_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 
@@ -5803,10 +6039,12 @@ PURPOSE		: BRRSREPORT
 
 												<td th:text="${#numbers.formatDecimal(reportsummary.r72_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r72_cumm_inr" name="r72_cumm_inr" class="r72_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r72_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r72_cumm_bwp" name="r72_cumm_bwp" class="r72_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 
@@ -5905,10 +6143,12 @@ PURPOSE		: BRRSREPORT
 
 												<td th:text="${#numbers.formatDecimal(reportsummary.r73_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r73_cumm_inr" name="r73_cumm_inr" class="r73_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r73_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r73_cumm_bwp" name="r73_cumm_bwp" class="r73_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 
@@ -6007,10 +6247,12 @@ PURPOSE		: BRRSREPORT
 
 												<td th:text="${#numbers.formatDecimal(reportsummary.r74_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r74_cumm_inr" name="r74_cumm_inr" class="r74_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r74_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r74_cumm_bwp" name="r74_cumm_bwp" class="r74_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r75_product}" colspan="2"
@@ -6077,10 +6319,12 @@ PURPOSE		: BRRSREPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r75_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r75_cumm_inr" name="r75_cumm_inr" class="r75_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r75_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r75_cumm_bwp" name="r75_cumm_bwp" class="r75_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 
@@ -6179,10 +6423,12 @@ PURPOSE		: BRRSREPORT
 
 												<td th:text="${#numbers.formatDecimal(reportsummary.r76_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r76_cumm_inr" name="r76_cumm_inr" class="r76_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r76_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r76_cumm_bwp" name="r76_cumm_bwp" class="r76_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 
@@ -6208,11 +6454,9 @@ PURPOSE		: BRRSREPORT
 														style="background-color:#FFFFFF;width:160px;height:25px;border-color:transparent;text-align:right;" />
 												</td>
 
-												<td td style="font-weight: bold; padding-left: 62px;">
-													<input type="text" class="display-input Show_input r77_qua_i_inr"
-														th:value="${reportsummary.r77_qua_i_inr != null ? #numbers.formatDecimal(reportsummary.r77_qua_i_inr,0,'COMMA',0,'POINT') : '0'}"
-														id="r77_qua_i_inr" name="r77_qua_i_inr" readonly
-														style="background-color:#FFFFFF;width:160px;height:25px;border-color:transparent;text-align:right;" />
+												<td th:text="${#numbers.formatDecimal(reportsummary.r77_qua_i_inr, 0, 'COMMA', 0, 'POINT')}"
+													class="r77_qua_i_inr" id="r77_qua_i_inr" name="r77_qua_i_inr"
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
 												</td>
 
 												<td td style="font-weight: bold; padding-left: 62px;">
@@ -6280,10 +6524,12 @@ PURPOSE		: BRRSREPORT
 
 												<td th:text="${#numbers.formatDecimal(reportsummary.r77_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r77_cumm_inr" name="r77_cumm_inr" class="r77_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r77_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r77_cumm_bwp" name="r77_cumm_bwp" class="r77_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 
@@ -6310,11 +6556,9 @@ PURPOSE		: BRRSREPORT
 														style="background-color:#FFFFFF;width:160px;height:25px;border-color:transparent;text-align:right;" />
 												</td>
 
-												<td td style="font-weight: bold; padding-left: 62px;">
-													<input type="text" class="display-input Show_input r78_qua_i_inr"
-														th:value="${reportsummary.r78_qua_i_inr != null ? #numbers.formatDecimal(reportsummary.r78_qua_i_inr,0,'COMMA',0,'POINT') : '0'}"
-														id="r78_qua_i_inr" name="r78_qua_i_inr" readonly
-														style="background-color:#FFFFFF;width:160px;height:25px;border-color:transparent;text-align:right;" />
+												<td th:text="${#numbers.formatDecimal(reportsummary.r78_qua_i_inr, 0, 'COMMA', 0, 'POINT')}"
+													class="r78_qua_i_inr" id="r78_qua_i_inr" name="r78_qua_i_inr"
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
 												</td>
 
 												<td td style="font-weight: bold; padding-left: 62px;">
@@ -6382,57 +6626,72 @@ PURPOSE		: BRRSREPORT
 
 												<td th:text="${#numbers.formatDecimal(reportsummary.r78_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r78_cumm_inr" name="r78_cumm_inr" class="r78_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r78_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r78_cumm_bwp" name="r78_cumm_bwp" class="r78_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r79_product}" colspan="2"
 													style="padding-left:12px;font-weight: bold;"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r79_qua_i_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r79_qua_i_lc" name="r79_qua_i_lc"
-													style="text-align:right;width:390px;padding-right:8px"
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px"
 													class="r79_qua_i_lc"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r79_qua_i_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r79_qua_i_qar" name="r79_qua_i_qar" class="r79_qua_i_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r79_qua_i_inr, 0, 'COMMA', 0, 'POINT')}"
 													class="r79_qua_i_inr" id="r79_qua_i_inr" name="r79_qua_i_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r79_qua_ii_lc, 0, 'COMMA', 0, 'POINT')}"
 													class="r79_qua_ii_lc" id="r79_qua_ii_lc" name="r79_qua_ii_lc"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r79_qua_ii_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r79_qua_ii_qar" name="r79_qua_ii_qar" class="r79_qua_ii_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r79_qua_ii_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r79_qua_ii_inr" name="r79_qua_ii_inr" class="r79_qua_ii_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r79_qua_iii_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r79_qua_iii_lc" name="r79_qua_iii_lc" class="r79_qua_iii_lc"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r79_qua_iii_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r79_qua_iii_qar" name="r79_qua_iii_qar" class="r79_qua_iii_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r79_qua_iii_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r79_qua_iii_inr" name="r79_qua_iii_inr" class="r79_qua_iii_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r79_qua_iv_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r79_qua_iv_lc" name="r79_qua_iv_lc" class="r79_qua_iv_lc"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r79_qua_iv_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r79_qua_iv_qar" name="r79_qua_iv_qar" class="r79_qua_iv_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r79_qua_iv_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r79_qua_iv_inr" name="r79_qua_iv_inr" class="r79_qua_iv_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r79_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r79_cumm_inr" name="r79_cumm_inr" class="r79_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r79_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r79_cumm_bwp" name="r79_cumm_bwp" class="r79_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 
@@ -6459,12 +6718,12 @@ PURPOSE		: BRRSREPORT
 														style="background-color:#FFFFFF;width:160px;height:25px;border-color:transparent;text-align:right;" />
 												</td>
 
-												<td td style="font-weight: bold; padding-left: 62px;">
-													<input type="text" class="display-input Show_input r80_qua_i_inr"
-														th:value="${reportsummary.r80_qua_i_inr != null ? #numbers.formatDecimal(reportsummary.r80_qua_i_inr,0,'COMMA',0,'POINT') : '0'}"
-														id="r80_qua_i_inr" name="r80_qua_i_inr" readonly
-														style="background-color:#FFFFFF;width:160px;height:25px;border-color:transparent;text-align:right;" />
+												<td th:text="${#numbers.formatDecimal(reportsummary.r80_qua_i_inr, 0, 'COMMA', 0, 'POINT')}"
+													class="r80_qua_i_inr" id="r80_qua_i_inr" name="r80_qua_i_inr"
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
 												</td>
+
+
 
 												<td td style="font-weight: bold; padding-left: 62px;">
 													<input type="text" class="display-input Show_input r80_qua_ii_lc"
@@ -6531,10 +6790,12 @@ PURPOSE		: BRRSREPORT
 
 												<td th:text="${#numbers.formatDecimal(reportsummary.r80_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r80_cumm_inr" name="r80_cumm_inr" class="r80_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r80_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r80_cumm_bwp" name="r80_cumm_bwp" class="r80_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 
@@ -6633,57 +6894,72 @@ PURPOSE		: BRRSREPORT
 
 												<td th:text="${#numbers.formatDecimal(reportsummary.r81_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r81_cumm_inr" name="r81_cumm_inr" class="r81_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r81_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r81_cumm_bwp" name="r81_cumm_bwp" class="r81_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r82_product}" colspan="2"
 													style="padding-left:12px;font-weight: bold;"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r82_qua_i_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r82_qua_i_lc" name="r82_qua_i_lc"
-													style="text-align:right;width:390px;padding-right:8px"
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px"
 													class="r82_qua_i_lc"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r82_qua_i_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r82_qua_i_qar" name="r82_qua_i_qar" class="r82_qua_i_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r82_qua_i_inr, 0, 'COMMA', 0, 'POINT')}"
 													class="r82_qua_i_inr" id="r82_qua_i_inr" name="r82_qua_i_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r82_qua_ii_lc, 0, 'COMMA', 0, 'POINT')}"
 													class="r82_qua_ii_lc" id="r82_qua_ii_lc" name="r82_qua_ii_lc"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r82_qua_ii_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r82_qua_ii_qar" name="r82_qua_ii_qar" class="r82_qua_ii_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r82_qua_ii_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r82_qua_ii_inr" name="r82_qua_ii_inr" class="r82_qua_ii_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r82_qua_iii_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r82_qua_iii_lc" name="r82_qua_iii_lc" class="r82_qua_iii_lc"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r82_qua_iii_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r82_qua_iii_qar" name="r82_qua_iii_qar" class="r82_qua_iii_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r82_qua_iii_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r82_qua_iii_inr" name="r82_qua_iii_inr" class="r82_qua_iii_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r82_qua_iv_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r82_qua_iv_lc" name="r82_qua_iv_lc" class="r82_qua_iv_lc"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r82_qua_iv_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r82_qua_iv_qar" name="r82_qua_iv_qar" class="r82_qua_iv_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r82_qua_iv_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r82_qua_iv_inr" name="r82_qua_iv_inr" class="r82_qua_iv_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r82_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r82_cumm_inr" name="r82_cumm_inr" class="r82_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r82_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r82_cumm_bwp" name="r82_cumm_bwp" class="r82_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r83_product}" colspan="2"
@@ -6751,7 +7027,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align:right;width:390px;padding-right:8px"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary.r83_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r83_cumm_bwp" name="r83_cumm_bwp" class="r83_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 										</tbody>
 										<tbody style="font-family: Arial" th:each="reportsummary1: ${reportsummary1}">
@@ -6821,54 +7098,68 @@ PURPOSE		: BRRSREPORT
 													style="text-align:right;width:390px;padding-right:8px"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r84_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r84_cumm_bwp" name="r84_cumm_bwp" class="r84_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary1.r85_product}" colspan="2"
 													style="padding-left:12px;font-weight: bold;"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r85_qua_i_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r85_qua_i_lc" name="r85_qua_i_lc"
-													style="text-align:right;width:390px;padding-right:8px"
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px"
 													class="r85_qua_i_lc"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r85_qua_i_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r85_qua_i_qar" name="r85_qua_i_qar" class="r85_qua_i_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r85_qua_i_inr, 0, 'COMMA', 0, 'POINT')}"
 													class="r85_qua_i_inr" id="r85_qua_i_inr" name="r85_qua_i_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r85_qua_ii_lc, 0, 'COMMA', 0, 'POINT')}"
 													class="r85_qua_ii_lc" id="r85_qua_ii_lc" name="r85_qua_ii_lc"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r85_qua_ii_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r85_qua_ii_qar" name="r85_qua_ii_qar" class="r85_qua_ii_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r85_qua_ii_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r85_qua_ii_inr" name="r85_qua_ii_inr" class="r85_qua_ii_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r85_qua_iii_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r85_qua_iii_lc" name="r85_qua_iii_lc" class="r85_qua_iii_lc"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r85_qua_iii_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r85_qua_iii_qar" name="r85_qua_iii_qar" class="r85_qua_iii_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r85_qua_iii_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r85_qua_iii_inr" name="r85_qua_iii_inr" class="r85_qua_iii_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r85_qua_iv_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r85_qua_iv_lc" name="r85_qua_iv_lc" class="r85_qua_iv_lc"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r85_qua_iv_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r85_qua_iv_qar" name="r85_qua_iv_qar" class="r85_qua_iv_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r85_qua_iv_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r85_qua_iv_inr" name="r85_qua_iv_inr" class="r85_qua_iv_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r85_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r85_cumm_inr" name="r85_cumm_inr" class="r85_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r85_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r85_cumm_bwp" name="r85_cumm_bwp" class="r85_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary1.r86_product}" colspan="2"
@@ -6936,7 +7227,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align:right;width:390px;padding-right:8px"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r86_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r86_cumm_bwp" name="r86_cumm_bwp" class="r86_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary1.r87_product}" colspan="2"
@@ -7004,7 +7296,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align:right;width:390px;padding-right:8px"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r87_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r87_cumm_bwp" name="r87_cumm_bwp" class="r87_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary1.r88_product}" colspan="2"
@@ -7069,10 +7362,12 @@ PURPOSE		: BRRSREPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r88_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r88_cumm_inr" name="r88_cumm_inr" class="r88_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r88_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r88_cumm_bwp" name="r88_cumm_bwp" class="r88_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary1.r89_product}" colspan="2"
@@ -7137,33 +7432,38 @@ PURPOSE		: BRRSREPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r89_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r89_cumm_inr" name="r89_cumm_inr" class="r89_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r89_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r89_cumm_bwp" name="r89_cumm_bwp" class="r89_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary1.r90_product}" colspan="2"
 													style="padding-left:12px"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r90_qua_i_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r90_qua_i_lc" name="r90_qua_i_lc"
-													style="text-align:right;width:390px;padding-right:8px"
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px"
 													class="r90_qua_i_lc"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r90_qua_i_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r90_qua_i_qar" name="r90_qua_i_qar" class="r90_qua_i_qar"
 													style="text-align:right;width:390px;padding-right:8px"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r90_qua_i_inr, 0, 'COMMA', 0, 'POINT')}"
 													class="r90_qua_i_inr" id="r90_qua_i_inr" name="r90_qua_i_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r90_qua_ii_lc, 0, 'COMMA', 0, 'POINT')}"
 													class="r90_qua_ii_lc" id="r90_qua_ii_lc" name="r90_qua_ii_lc"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r90_qua_ii_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r90_qua_ii_qar" name="r90_qua_ii_qar" class="r90_qua_ii_qar"
 													style="text-align:right;width:390px;padding-right:8px"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r90_qua_ii_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r90_qua_ii_inr" name="r90_qua_ii_inr" class="r90_qua_ii_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r90_qua_iii_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r90_qua_iii_lc" name="r90_qua_iii_lc" class="r90_qua_iii_lc"
 													style="text-align:right;width:390px;padding-right:8px"></td>
@@ -7184,57 +7484,71 @@ PURPOSE		: BRRSREPORT
 													style="text-align:right;width:390px;padding-right:8px"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r90_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r90_cumm_inr" name="r90_cumm_inr" class="r90_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r90_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r90_cumm_bwp" name="r90_cumm_bwp" class="r90_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary1.r91_product}" colspan="2"
 													style="padding-left:12px;font-weight: bold;"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r91_qua_i_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r91_qua_i_lc" name="r91_qua_i_lc"
-													style="text-align:right;width:390px;padding-right:8px"
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px"
 													class="r91_qua_i_lc"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r91_qua_i_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r91_qua_i_qar" name="r91_qua_i_qar" class="r91_qua_i_qar"
 													style="text-align:right;width:390px;padding-right:8px"></td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r91_qua_i_inr, 0, 'COMMA', 0, 'POINT')}"
 													class="r91_qua_i_inr" id="r91_qua_i_inr" name="r91_qua_i_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r91_qua_ii_lc, 0, 'COMMA', 0, 'POINT')}"
 													class="r91_qua_ii_lc" id="r91_qua_ii_lc" name="r91_qua_ii_lc"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r91_qua_ii_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r91_qua_ii_qar" name="r91_qua_ii_qar" class="r91_qua_ii_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r91_qua_ii_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r91_qua_ii_inr" name="r91_qua_ii_inr" class="r91_qua_ii_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r91_qua_iii_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r91_qua_iii_lc" name="r91_qua_iii_lc" class="r91_qua_iii_lc"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r91_qua_iii_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r91_qua_iii_qar" name="r91_qua_iii_qar" class="r91_qua_iii_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r91_qua_iii_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r91_qua_iii_inr" name="r91_qua_iii_inr" class="r91_qua_iii_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r91_qua_iv_lc, 0, 'COMMA', 0, 'POINT')}"
 													id="r91_qua_iv_lc" name="r91_qua_iv_lc" class="r91_qua_iv_lc"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r91_qua_iv_qar, 0, 'COMMA', 0, 'POINT')}"
 													id="r91_qua_iv_qar" name="r91_qua_iv_qar" class="r91_qua_iv_qar"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r91_qua_iv_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r91_qua_iv_inr" name="r91_qua_iv_inr" class="r91_qua_iv_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r91_cumm_inr, 0, 'COMMA', 0, 'POINT')}"
 													id="r91_cumm_inr" name="r91_cumm_inr" class="r91_cumm_inr"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 												<td th:text="${#numbers.formatDecimal(reportsummary1.r91_cumm_bwp, 0, 'COMMA', 0, 'POINT')}"
 													id="r91_cumm_bwp" name="r91_cumm_bwp" class="r91_cumm_bwp"
-													style="text-align:right;width:390px;padding-right:8px"></td>
+													style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;padding-right:8px">
+												</td>
 											</tr>
 										</tbody>
 									</table>

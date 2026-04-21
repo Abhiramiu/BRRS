@@ -14,4 +14,7 @@ public interface BRRS_AS_11_Archival_Summary_Repo1 extends JpaRepository<AS_11_A
 
     @Query(value = "select * from BRRS_AS_11_ARCHIVALTABLE_SUMMARY1 where REPORT_DATE = ?1 and REPORT_VERSION = ?2", nativeQuery = true)
     List<AS_11_Archival_Summary_Entity1> getdatabydateListarchival(Date report_date, BigDecimal report_version);
+    
+    @Query(value = "SELECT * FROM BRRS_AS_11_ARCHIVALTABLE_SUMMARY1 WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC", nativeQuery = true)
+    List<AS_11_Archival_Summary_Entity1> getdatabydateListWithVersion();
 }
