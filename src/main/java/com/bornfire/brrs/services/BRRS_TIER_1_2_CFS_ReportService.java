@@ -897,7 +897,7 @@ if (record.getR53_FOREIGN_RISK_ASSETS() != null) {
   cell2.setCellStyle(textStyle);
 }
 }
-workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+workbook.setForceFormulaRecalculation(true);
 } else {
 
 }
@@ -1450,7 +1450,7 @@ return new byte[0];
 	  cell2.setCellStyle(textStyle);
 	}
 				}
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				workbook.setForceFormulaRecalculation(true);
 				} else {
 
 				}

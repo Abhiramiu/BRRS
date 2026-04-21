@@ -447,15 +447,20 @@ label.error {
   }
 
   //to fetch summary from the database - called from the summary button
-  function showdetails() {
+/*   function showdetails() {
 
    var Callurl;
    $('#loader').modal('show');
    Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
-    location.href = Callurl;
+ /*    location.href = Callurl;
    console.log(Callurl);
 
-  }
+  } */ 
+  
+	function showdetails() {
+		isDetailsModal = true; // mark that this modal is from Details
+		showResultModal1('BRRS', 'Interlinking Values Not Available Detail Page');
+	}
 
   function showsummary() {
    $('#loader').modal('show');
@@ -538,9 +543,9 @@ label.error {
                   window.URL.revokeObjectURL(url);
                   document.body.removeChild(a);
 
-                  showResultModal('BRRS', filename + ' downloaded successfully.');
+                  showResultModal1('BRRS', filename + ' downloaded successfully.');
               } else {
-                  showResultModal('Information', 'No data was available to create a download.');
+                  showResultModal1('Information', 'No data was available to create a download.');
               }
           },
 
@@ -562,14 +567,14 @@ label.error {
       $('#resultModal').modal('hide');
 
   }
-//  function showResultModal(title, message) {
-//			// Set the text for the modal elements
-//			$('#resultModalLabel').text(title);
-//			$('#resultModalBody').text(message);
+ function showResultModal1(title, message) {
+			// Set the text for the modal elements
+		$('#resultModalLabel').text(title);
+		$('#resultModalBody').text(message);
 
-//			// Show the modal
-//			$('#resultModal').modal('show');
-//		}
+		// Show the modal
+			$('#resultModal').modal('show');
+		}
 
 function showResultModal(title, message) {
   document.getElementById('resultModalLabel1').innerText = title;
@@ -1046,7 +1051,7 @@ function cancelModify() {
 
 
 
-<title>BRRS</title>
+<title>TIER_1_2_CFS</title>
 <body> 
 <div class="container-fluid" style="padding-left:10px; padding-right:0px;">
   <div class="row">
