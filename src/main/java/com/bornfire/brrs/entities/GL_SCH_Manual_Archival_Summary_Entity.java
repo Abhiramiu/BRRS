@@ -16,274 +16,280 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class GL_SCH_Manual_Archival_Summary_Entity {
 
 	/* ================= R61 ================= */
-    @Column(name = "R61_PRODUCT")
-    private String R61_PRODUCT;
+	@Column(name = "R61_PRODUCT")
+	private String R61_PRODUCT;
 
-    @Column(name = "R61_FIG_BAL_BWP1")
-    private BigDecimal R61_FIG_BAL_BWP1;
+	@Column(name = "R61_FIG_BAL_BWP1")
+	private BigDecimal R61_FIG_BAL_BWP1;
 
-    @Column(name = "R61_FIG_BAL_BWP2")
-    private BigDecimal R61_FIG_BAL_BWP2;
+	@Column(name = "R61_FIG_BAL_BWP2")
+	private BigDecimal R61_FIG_BAL_BWP2;
 
-    @Column(name = "R61_AMT_ADJ_BWP1")
-    private BigDecimal R61_AMT_ADJ_BWP1;
+	@Column(name = "R61_AMT_ADJ_BWP1")
+	private BigDecimal R61_AMT_ADJ_BWP1;
 
-    @Column(name = "R61_AMT_ADJ_BWP2")
-    private BigDecimal R61_AMT_ADJ_BWP2;
+	@Column(name = "R61_AMT_ADJ_BWP2")
+	private BigDecimal R61_AMT_ADJ_BWP2;
 
-    @Column(name = "R61_NET_AMT_BWP1")
-    private BigDecimal R61_NET_AMT_BWP1;
+	@Column(name = "R61_NET_AMT_BWP1")
+	private BigDecimal R61_NET_AMT_BWP1;
 
-    @Column(name = "R61_NET_AMT_BWP2")
-    private BigDecimal R61_NET_AMT_BWP2;
+	@Column(name = "R61_NET_AMT_BWP2")
+	private BigDecimal R61_NET_AMT_BWP2;
 
-    @Column(name = "R61_BAL_SUB_BWP1")
-    private BigDecimal R61_BAL_SUB_BWP1;
+	@Column(name = "R61_BAL_SUB_BWP1")
+	private BigDecimal R61_BAL_SUB_BWP1;
 
-    @Column(name = "R61_BAL_SUB_BWP2")
-    private BigDecimal R61_BAL_SUB_BWP2;
+	@Column(name = "R61_BAL_SUB_BWP2")
+	private BigDecimal R61_BAL_SUB_BWP2;
 
-    @Column(name = "R61_BAL_ACT_SUB_BWP1")
-    private BigDecimal R61_BAL_ACT_SUB_BWP1;
+	@Column(name = "R61_BAL_ACT_SUB_BWP1")
+	private BigDecimal R61_BAL_ACT_SUB_BWP1;
 
-    @Column(name = "R61_BAL_ACT_SUB_BWP2")
-    private BigDecimal R61_BAL_ACT_SUB_BWP2;
-	
-	
-	
-    /* ================= R103 ================= */
-    @Column(name = "R103_PRODUCT")
-    private String R103_PRODUCT;
+	@Column(name = "R61_BAL_ACT_SUB_BWP2")
+	private BigDecimal R61_BAL_ACT_SUB_BWP2;
 
-    @Column(name = "R103_FIG_BAL_BWP1")
-    private BigDecimal R103_FIG_BAL_BWP1;
+	/* ================= R103 ================= */
+	@Column(name = "R103_PRODUCT")
+	private String R103_PRODUCT;
 
-    @Column(name = "R103_FIG_BAL_BWP2")
-    private BigDecimal R103_FIG_BAL_BWP2;
+	@Column(name = "R103_FIG_BAL_BWP1")
+	private BigDecimal R103_FIG_BAL_BWP1;
 
-    @Column(name = "R103_AMT_ADJ_BWP1")
-    private BigDecimal R103_AMT_ADJ_BWP1;
+	@Column(name = "R103_FIG_BAL_BWP2")
+	private BigDecimal R103_FIG_BAL_BWP2;
 
-    @Column(name = "R103_AMT_ADJ_BWP2")
-    private BigDecimal R103_AMT_ADJ_BWP2;
+	@Column(name = "R103_AMT_ADJ_BWP1")
+	private BigDecimal R103_AMT_ADJ_BWP1;
 
-    @Column(name = "R103_NET_AMT_BWP1")
-    private BigDecimal R103_NET_AMT_BWP1;
+	@Column(name = "R103_AMT_ADJ_BWP2")
+	private BigDecimal R103_AMT_ADJ_BWP2;
 
-    @Column(name = "R103_NET_AMT_BWP2")
-    private BigDecimal R103_NET_AMT_BWP2;
+	@Column(name = "R103_NET_AMT_BWP1")
+	private BigDecimal R103_NET_AMT_BWP1;
 
-    @Column(name = "R103_BAL_SUB_BWP1")
-    private BigDecimal R103_BAL_SUB_BWP1;
+	@Column(name = "R103_NET_AMT_BWP2")
+	private BigDecimal R103_NET_AMT_BWP2;
 
-    @Column(name = "R103_BAL_SUB_BWP2")
-    private BigDecimal R103_BAL_SUB_BWP2;
+	@Column(name = "R103_BAL_SUB_BWP1")
+	private BigDecimal R103_BAL_SUB_BWP1;
 
-    @Column(name = "R103_BAL_ACT_SUB_BWP1")
-    private BigDecimal R103_BAL_ACT_SUB_BWP1;
+	@Column(name = "R103_BAL_SUB_BWP2")
+	private BigDecimal R103_BAL_SUB_BWP2;
 
-    @Column(name = "R103_BAL_ACT_SUB_BWP2")
-    private BigDecimal R103_BAL_ACT_SUB_BWP2;
-	
-	 /* ================= R139 ================= */
-    @Column(name = "R139_PRODUCT")
-    private String R139_PRODUCT;
+	@Column(name = "R103_BAL_ACT_SUB_BWP1")
+	private BigDecimal R103_BAL_ACT_SUB_BWP1;
 
-    @Column(name = "R139_FIG_BAL_BWP1")
-    private BigDecimal R139_FIG_BAL_BWP1;
+	@Column(name = "R103_BAL_ACT_SUB_BWP2")
+	private BigDecimal R103_BAL_ACT_SUB_BWP2;
 
-    @Column(name = "R139_FIG_BAL_BWP2")
-    private BigDecimal R139_FIG_BAL_BWP2;
+	/* ================= R139 ================= */
+	@Column(name = "R139_PRODUCT")
+	private String R139_PRODUCT;
 
-    @Column(name = "R139_AMT_ADJ_BWP1")
-    private BigDecimal R139_AMT_ADJ_BWP1;
+	@Column(name = "R139_FIG_BAL_BWP1")
+	private BigDecimal R139_FIG_BAL_BWP1;
 
-    @Column(name = "R139_AMT_ADJ_BWP2")
-    private BigDecimal R139_AMT_ADJ_BWP2;
+	@Column(name = "R139_FIG_BAL_BWP2")
+	private BigDecimal R139_FIG_BAL_BWP2;
 
-    @Column(name = "R139_NET_AMT_BWP1")
-    private BigDecimal R139_NET_AMT_BWP1;
+	@Column(name = "R139_AMT_ADJ_BWP1")
+	private BigDecimal R139_AMT_ADJ_BWP1;
 
-    @Column(name = "R139_NET_AMT_BWP2")
-    private BigDecimal R139_NET_AMT_BWP2;
+	@Column(name = "R139_AMT_ADJ_BWP2")
+	private BigDecimal R139_AMT_ADJ_BWP2;
 
-    @Column(name = "R139_BAL_SUB_BWP1")
-    private BigDecimal R139_BAL_SUB_BWP1;
+	@Column(name = "R139_NET_AMT_BWP1")
+	private BigDecimal R139_NET_AMT_BWP1;
 
-    @Column(name = "R139_BAL_SUB_BWP2")
-    private BigDecimal R139_BAL_SUB_BWP2;
+	@Column(name = "R139_NET_AMT_BWP2")
+	private BigDecimal R139_NET_AMT_BWP2;
 
-    @Column(name = "R139_BAL_ACT_SUB_BWP1")
-    private BigDecimal R139_BAL_ACT_SUB_BWP1;
+	@Column(name = "R139_BAL_SUB_BWP1")
+	private BigDecimal R139_BAL_SUB_BWP1;
 
-    @Column(name = "R139_BAL_ACT_SUB_BWP2")
-    private BigDecimal R139_BAL_ACT_SUB_BWP2;
-	
-	
-	    /* ================= R130 ================= */
-    @Column(name = "R130_PRODUCT")
-    private String R130_PRODUCT;
+	@Column(name = "R139_BAL_SUB_BWP2")
+	private BigDecimal R139_BAL_SUB_BWP2;
 
-    @Column(name = "R130_FIG_BAL_BWP1")
-    private BigDecimal R130_FIG_BAL_BWP1;
+	@Column(name = "R139_BAL_ACT_SUB_BWP1")
+	private BigDecimal R139_BAL_ACT_SUB_BWP1;
 
-    @Column(name = "R130_FIG_BAL_BWP2")
-    private BigDecimal R130_FIG_BAL_BWP2;
+	@Column(name = "R139_BAL_ACT_SUB_BWP2")
+	private BigDecimal R139_BAL_ACT_SUB_BWP2;
 
-    @Column(name = "R130_AMT_ADJ_BWP1")
-    private BigDecimal R130_AMT_ADJ_BWP1;
+	/* ================= R130 ================= */
+	@Column(name = "R130_PRODUCT")
+	private String R130_PRODUCT;
 
-    @Column(name = "R130_AMT_ADJ_BWP2")
-    private BigDecimal R130_AMT_ADJ_BWP2;
+	@Column(name = "R130_FIG_BAL_BWP1")
+	private BigDecimal R130_FIG_BAL_BWP1;
 
-    @Column(name = "R130_NET_AMT_BWP1")
-    private BigDecimal R130_NET_AMT_BWP1;
+	@Column(name = "R130_FIG_BAL_BWP2")
+	private BigDecimal R130_FIG_BAL_BWP2;
 
-    @Column(name = "R130_NET_AMT_BWP2")
-    private BigDecimal R130_NET_AMT_BWP2;
+	@Column(name = "R130_AMT_ADJ_BWP1")
+	private BigDecimal R130_AMT_ADJ_BWP1;
 
-    @Column(name = "R130_BAL_SUB_BWP1")
-    private BigDecimal R130_BAL_SUB_BWP1;
+	@Column(name = "R130_AMT_ADJ_BWP2")
+	private BigDecimal R130_AMT_ADJ_BWP2;
 
-    @Column(name = "R130_BAL_SUB_BWP2")
-    private BigDecimal R130_BAL_SUB_BWP2;
+	@Column(name = "R130_NET_AMT_BWP1")
+	private BigDecimal R130_NET_AMT_BWP1;
 
-    @Column(name = "R130_BAL_ACT_SUB_BWP1")
-    private BigDecimal R130_BAL_ACT_SUB_BWP1;
+	@Column(name = "R130_NET_AMT_BWP2")
+	private BigDecimal R130_NET_AMT_BWP2;
 
-    @Column(name = "R130_BAL_ACT_SUB_BWP2")
-    private BigDecimal R130_BAL_ACT_SUB_BWP2;
-	
-	
-	    /* ================= R241 ================= */
-    @Column(name = "R241_PRODUCT")
-    private String R241_PRODUCT;
+	@Column(name = "R130_BAL_SUB_BWP1")
+	private BigDecimal R130_BAL_SUB_BWP1;
 
-    @Column(name = "R241_FIG_BAL_BWP1")
-    private BigDecimal R241_FIG_BAL_BWP1;
+	@Column(name = "R130_BAL_SUB_BWP2")
+	private BigDecimal R130_BAL_SUB_BWP2;
 
-    @Column(name = "R241_FIG_BAL_BWP2")
-    private BigDecimal R241_FIG_BAL_BWP2;
+	@Column(name = "R130_BAL_ACT_SUB_BWP1")
+	private BigDecimal R130_BAL_ACT_SUB_BWP1;
 
-    @Column(name = "R241_AMT_ADJ_BWP1")
-    private BigDecimal R241_AMT_ADJ_BWP1;
+	@Column(name = "R130_BAL_ACT_SUB_BWP2")
+	private BigDecimal R130_BAL_ACT_SUB_BWP2;
 
-    @Column(name = "R241_AMT_ADJ_BWP2")
-    private BigDecimal R241_AMT_ADJ_BWP2;
+	/* ================= R241 ================= */
+	@Column(name = "R241_PRODUCT")
+	private String R241_PRODUCT;
 
-    @Column(name = "R241_NET_AMT_BWP1")
-    private BigDecimal R241_NET_AMT_BWP1;
+	@Column(name = "R241_FIG_BAL_BWP1")
+	private BigDecimal R241_FIG_BAL_BWP1;
 
-    @Column(name = "R241_NET_AMT_BWP2")
-    private BigDecimal R241_NET_AMT_BWP2;
+	@Column(name = "R241_FIG_BAL_BWP2")
+	private BigDecimal R241_FIG_BAL_BWP2;
 
-    @Column(name = "R241_BAL_SUB_BWP1")
-    private BigDecimal R241_BAL_SUB_BWP1;
+	@Column(name = "R241_AMT_ADJ_BWP1")
+	private BigDecimal R241_AMT_ADJ_BWP1;
 
-    @Column(name = "R241_BAL_SUB_BWP2")
-    private BigDecimal R241_BAL_SUB_BWP2;
+	@Column(name = "R241_AMT_ADJ_BWP2")
+	private BigDecimal R241_AMT_ADJ_BWP2;
 
-    @Column(name = "R241_BAL_ACT_SUB_BWP1")
-    private BigDecimal R241_BAL_ACT_SUB_BWP1;
+	@Column(name = "R241_NET_AMT_BWP1")
+	private BigDecimal R241_NET_AMT_BWP1;
 
-    @Column(name = "R241_BAL_ACT_SUB_BWP2")
-    private BigDecimal R241_BAL_ACT_SUB_BWP2;
+	@Column(name = "R241_NET_AMT_BWP2")
+	private BigDecimal R241_NET_AMT_BWP2;
 
+	@Column(name = "R241_BAL_SUB_BWP1")
+	private BigDecimal R241_BAL_SUB_BWP1;
 
-    /* ================= R243 ================= */
-    @Column(name = "R243_PRODUCT")
-    private String R243_PRODUCT;
+	@Column(name = "R241_BAL_SUB_BWP2")
+	private BigDecimal R241_BAL_SUB_BWP2;
 
-    @Column(name = "R243_FIG_BAL_BWP1")
-    private BigDecimal R243_FIG_BAL_BWP1;
+	@Column(name = "R241_BAL_ACT_SUB_BWP1")
+	private BigDecimal R241_BAL_ACT_SUB_BWP1;
 
-    @Column(name = "R243_FIG_BAL_BWP2")
-    private BigDecimal R243_FIG_BAL_BWP2;
+	@Column(name = "R241_BAL_ACT_SUB_BWP2")
+	private BigDecimal R241_BAL_ACT_SUB_BWP2;
 
-    @Column(name = "R243_AMT_ADJ_BWP1")
-    private BigDecimal R243_AMT_ADJ_BWP1;
+	/* ================= R243 ================= */
+	@Column(name = "R243_PRODUCT")
+	private String R243_PRODUCT;
 
-    @Column(name = "R243_AMT_ADJ_BWP2")
-    private BigDecimal R243_AMT_ADJ_BWP2;
+	@Column(name = "R243_FIG_BAL_BWP1")
+	private BigDecimal R243_FIG_BAL_BWP1;
 
-    @Column(name = "R243_NET_AMT_BWP1")
-    private BigDecimal R243_NET_AMT_BWP1;
+	@Column(name = "R243_FIG_BAL_BWP2")
+	private BigDecimal R243_FIG_BAL_BWP2;
 
-    @Column(name = "R243_NET_AMT_BWP2")
-    private BigDecimal R243_NET_AMT_BWP2;
+	@Column(name = "R243_AMT_ADJ_BWP1")
+	private BigDecimal R243_AMT_ADJ_BWP1;
 
-    @Column(name = "R243_BAL_SUB_BWP1")
-    private BigDecimal R243_BAL_SUB_BWP1;
+	@Column(name = "R243_AMT_ADJ_BWP2")
+	private BigDecimal R243_AMT_ADJ_BWP2;
 
-    @Column(name = "R243_BAL_SUB_BWP2")
-    private BigDecimal R243_BAL_SUB_BWP2;
+	@Column(name = "R243_NET_AMT_BWP1")
+	private BigDecimal R243_NET_AMT_BWP1;
 
-    @Column(name = "R243_BAL_ACT_SUB_BWP1")
-    private BigDecimal R243_BAL_ACT_SUB_BWP1;
+	@Column(name = "R243_NET_AMT_BWP2")
+	private BigDecimal R243_NET_AMT_BWP2;
 
-    @Column(name = "R243_BAL_ACT_SUB_BWP2")
-    private BigDecimal R243_BAL_ACT_SUB_BWP2;
-	
-	 /* ================= R245 ================= */
-    @Column(name = "R245_PRODUCT")
-    private String R245_PRODUCT;
+	@Column(name = "R243_BAL_SUB_BWP1")
+	private BigDecimal R243_BAL_SUB_BWP1;
 
-    @Column(name = "R245_FIG_BAL_BWP1")
-    private BigDecimal R245_FIG_BAL_BWP1;
+	@Column(name = "R243_BAL_SUB_BWP2")
+	private BigDecimal R243_BAL_SUB_BWP2;
 
-    @Column(name = "R245_FIG_BAL_BWP2")
-    private BigDecimal R245_FIG_BAL_BWP2;
+	@Column(name = "R243_BAL_ACT_SUB_BWP1")
+	private BigDecimal R243_BAL_ACT_SUB_BWP1;
 
-    @Column(name = "R245_AMT_ADJ_BWP1")
-    private BigDecimal R245_AMT_ADJ_BWP1;
+	@Column(name = "R243_BAL_ACT_SUB_BWP2")
+	private BigDecimal R243_BAL_ACT_SUB_BWP2;
 
-    @Column(name = "R245_AMT_ADJ_BWP2")
-    private BigDecimal R245_AMT_ADJ_BWP2;
+	/* ================= R245 ================= */
+	@Column(name = "R245_PRODUCT")
+	private String R245_PRODUCT;
 
-    @Column(name = "R245_NET_AMT_BWP1")
-    private BigDecimal R245_NET_AMT_BWP1;
+	@Column(name = "R245_FIG_BAL_BWP1")
+	private BigDecimal R245_FIG_BAL_BWP1;
 
-    @Column(name = "R245_NET_AMT_BWP2")
-    private BigDecimal R245_NET_AMT_BWP2;
+	@Column(name = "R245_FIG_BAL_BWP2")
+	private BigDecimal R245_FIG_BAL_BWP2;
 
-    @Column(name = "R245_BAL_SUB_BWP1")
-    private BigDecimal R245_BAL_SUB_BWP1;
+	@Column(name = "R245_AMT_ADJ_BWP1")
+	private BigDecimal R245_AMT_ADJ_BWP1;
 
-    @Column(name = "R245_BAL_SUB_BWP2")
-    private BigDecimal R245_BAL_SUB_BWP2;
+	@Column(name = "R245_AMT_ADJ_BWP2")
+	private BigDecimal R245_AMT_ADJ_BWP2;
 
-    @Column(name = "R245_BAL_ACT_SUB_BWP1")
-    private BigDecimal R245_BAL_ACT_SUB_BWP1;
+	@Column(name = "R245_NET_AMT_BWP1")
+	private BigDecimal R245_NET_AMT_BWP1;
 
-    @Column(name = "R245_BAL_ACT_SUB_BWP2")
-    private BigDecimal R245_BAL_ACT_SUB_BWP2;
-    /* ================= COMMON ================= */
+	@Column(name = "R245_NET_AMT_BWP2")
+	private BigDecimal R245_NET_AMT_BWP2;
 
-    @Id
-    @Column(name = "REPORT_DATE")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private Date REPORT_DATE;
+	@Column(name = "R245_BAL_SUB_BWP1")
+	private BigDecimal R245_BAL_SUB_BWP1;
 
-    @Column(name = "REPORT_VERSION")
-    private BigDecimal REPORT_VERSION;
+	@Column(name = "R245_BAL_SUB_BWP2")
+	private BigDecimal R245_BAL_SUB_BWP2;
 
-    @Column(name = "REPORT_FREQUENCY")
-    private String REPORT_FREQUENCY;
+	@Column(name = "R245_BAL_ACT_SUB_BWP1")
+	private BigDecimal R245_BAL_ACT_SUB_BWP1;
 
-    @Column(name = "REPORT_CODE")
-    private String REPORT_CODE;
+	@Column(name = "R245_BAL_ACT_SUB_BWP2")
+	private BigDecimal R245_BAL_ACT_SUB_BWP2;
+	/* ================= COMMON ================= */
 
-    @Column(name = "REPORT_DESC")
-    private String REPORT_DESC;
+	@Id
+	@Column(name = "REPORT_DATE")
+	@DateTimeFormat(pattern = "dd-MM-yyyy")
+	private Date REPORT_DATE;
 
-    @Column(name = "ENTITY_FLG")
-    private String ENTITY_FLG;
+	@Column(name = "REPORT_VERSION")
+	private BigDecimal REPORT_VERSION;
 
-    @Column(name = "MODIFY_FLG")
-    private String MODIFY_FLG;
+	@Column(name = "REPORT_FREQUENCY")
+	private String REPORT_FREQUENCY;
 
-    @Column(name = "DEL_FLG")
-    private String DEL_FLG;
+	@Column(name = "REPORT_CODE")
+	private String REPORT_CODE;
+
+	@Column(name = "REPORT_DESC")
+	private String REPORT_DESC;
+
+	@Column(name = "ENTITY_FLG")
+	private String ENTITY_FLG;
+
+	@Column(name = "MODIFY_FLG")
+	private String MODIFY_FLG;
+
+	@Column(name = "DEL_FLG")
+	private String DEL_FLG;
+
+	@Column(name = "REPORT_RESUBDATE")
+	private BigDecimal REPORT_RESUBDATE;
+
+	public BigDecimal getREPORT_RESUBDATE() {
+		return REPORT_RESUBDATE;
+	}
+
+	public void setREPORT_RESUBDATE(BigDecimal rEPORT_RESUBDATE) {
+		REPORT_RESUBDATE = rEPORT_RESUBDATE;
+	}
 
 	public String getR61_PRODUCT() {
 		return R61_PRODUCT;
@@ -970,12 +976,4 @@ public class GL_SCH_Manual_Archival_Summary_Entity {
 		// TODO Auto-generated constructor stub
 	}
 
-  
-
-    
-    
-    
-    
-    
-    
 }

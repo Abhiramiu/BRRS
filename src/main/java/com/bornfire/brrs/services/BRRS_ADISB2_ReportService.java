@@ -58,23 +58,10 @@ import com.bornfire.brrs.entities.BRRS_ADISB2_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_ADISB2_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_ADISB2_Summary_Repo;
 
-
-
-import com.bornfire.brrs.entities.BDISB1_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.BDISB1_Summary_Entity;
-
-import com.bornfire.brrs.entities.ADISB1_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.ADISB1_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.ADISB1_Detail_Entity;
-import com.bornfire.brrs.entities.ADISB1_Summary_Entity;
 import com.bornfire.brrs.entities.ADISB2_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.ADISB2_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.ADISB2_Detail_Entity;
 import com.bornfire.brrs.entities.ADISB2_Summary_Entity;
-import com.bornfire.brrs.entities.ADISB1_Manual_Summary_Entity;
-import com.bornfire.brrs.entities.ADISB1_Manual_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.BRRS_ADISB1_Manual_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_ADISB1_Manual_Archival_Summary_Repo;
 
 @Component
 @Service
@@ -106,7 +93,7 @@ public class BRRS_ADISB2_ReportService {
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getADISB2View(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type,  String version) {
+			Pageable pageable, String type,  BigDecimal version) {
 		ModelAndView mv = new ModelAndView();
 //		Session hs = sessionFactory.getCurrentSession();
 //		int pageSize = pageable.getPageSize();
@@ -368,7 +355,7 @@ return new byte[0];
 }
 	
 	public byte[] getM_ADISB2Excel(String filename, String reportId, String fromdate, String todate, String currency,
-			 String dtltype, String type, String version) throws Exception {
+			 String dtltype, String type, BigDecimal version) throws Exception {
 logger.info("Service: Starting Excel generation process in memory.");
 logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, version);
 
@@ -376,12 +363,12 @@ logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, 
 Date reportDate = dateformat.parse(todate);
 
 //ARCHIVAL check
-if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+if ("ARCHIVAL".equalsIgnoreCase(type) && version != null ) {
 logger.info("Service: Generating ARCHIVAL report for version {}", version);
 return getExcelADISB2ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 }
 //RESUB check
-else if ("RESUB".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+else if ("RESUB".equalsIgnoreCase(type) && version != null ) {
 logger.info("Service: Generating RESUB report for version {}", version);
 
 
@@ -951,23 +938,34 @@ return out.toByteArray();
 }
 }
 	
-	public List<Object> getADISB2Archival() {
-		List<Object> ADISB2Archivallist = new ArrayList<>();
+	public List<Object[]> getADISB2Archival() {
+		List<Object[]> archivalList = new ArrayList<>();
+
 		try {
-			ADISB2Archivallist = ADISB2_Archival_Summary_Repo.getADISB2archival();
-			
-			System.out.println("countser" + ADISB2Archivallist.size());
+			List<ADISB2_Archival_Summary_Entity> repoData = ADISB2_Archival_Summary_Repo
+					.getdatabydateListWithVersion();
+
+			if (repoData != null && !repoData.isEmpty()) {
+				for (ADISB2_Archival_Summary_Entity entity : repoData) {
+					Object[] row = new Object[] { entity.getReport_date(), entity.getReport_version(),
+							entity.getREPORT_RESUBDATE() };
+					archivalList.add(row);
+				}
+
+				System.out.println("Fetched " + archivalList.size() + " archival records");
+				ADISB2_Archival_Summary_Entity first = repoData.get(0);
+				System.out.println("Latest archival version: " + first.getReport_version());
+			} else {
+				System.out.println("No archival data found.");
+			}
+
 		} catch (Exception e) {
-			// Log the exception
 			System.err.println("Error fetching ADISB2 Archival data: " + e.getMessage());
 			e.printStackTrace();
-
-			// Optionally, you can rethrow it or return empty list
-			// throw new RuntimeException("Failed to fetch data", e);
 		}
-		return ADISB2Archivallist;
+
+		return archivalList;
 	}
-	
 	
 	public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
 			 String dtltype, String type, String version) {
@@ -1104,7 +1102,7 @@ return new byte[0];
 }
 	
 	public byte[] getExcelADISB2ARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		if (type.equals("ARCHIVAL") & version != null) {
 

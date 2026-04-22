@@ -583,6 +583,11 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_M_SECA_ReportService.getM_SECAview(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
+			
+		case "ADISB1":
+			repsummary = BRRS_ADISB1_ReportService.getADISB1View(reportId,
+				 fromdate, todate, currency, dtltype, pageable, type, version);
+				 break;
 
 		/*
 		 * 
@@ -884,6 +889,11 @@ public class RegulatoryReportServices {
 		 * todate, currency, dtltype, pageable, type, version); break;
 		 */
 
+		case "ADISB2": repsummary = BRRS_ADISB2_ReportService.getADISB2View(reportId,
+				  fromdate, todate, currency, dtltype, pageable, type, version);
+				 
+				  break;
+				 
 		case "M_LA1":
 			repsummary = BRRS_M_LA1_reportservice.getM_LA1View(reportId, fromdate, todate, currency, dtltype, pageable,
 					type, version);
@@ -3130,6 +3140,22 @@ break;
 				  reportId, fromdate, todate, currency, dtltype, type, version);
 				  
 				 } catch (Exception e) { // TODO Auto-generated catch block
+				  e.printStackTrace(); } break;
+				  
+				  
+		case "ADISB1": try { repfile =
+				 BRRS_ADISB1_ReportService.BRRS_ADISB1Excel(filename, reportId, fromdate,
+				  todate, currency, dtltype, type, version);
+				 
+				  } catch (Exception e) { // TODO Auto-generated catch block
+				  e.printStackTrace(); } break;
+				  
+				  
+		case "ADISB2": try { repfile =
+				  BRRS_ADISB2_ReportService.getM_ADISB2Excel(filename, reportId, fromdate,
+				  todate, currency, dtltype, type, version);
+				  
+				  } catch (Exception e) { // TODO Auto-generated catch block
 				  e.printStackTrace(); } break;
 		/*
 		 * case "M_CA4": try { repfile =
@@ -5835,21 +5861,17 @@ break;
 			break;
 
 		case "ADISB1":
-			try {
-				archivalData = BRRS_ADISB1_ReportService.getADISB1Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> ADISB11List = BRRS_ADISB1_ReportService.getADISB1Archival();
+			archivalData.addAll(ADISB11List);
+			System.out.println("Fetched ADISB1 archival data: " + ADISB11List.size());
 			break;
-
-		case "ADISB2":
-			try {
-				archivalData = BRRS_ADISB2_ReportService.getADISB2Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			
+			
+			
+			case "ADISB2":
+			List<Object[]> ADISB21List = BRRS_ADISB2_ReportService.getADISB2Archival();
+			archivalData.addAll(ADISB21List);
+			System.out.println("Fetched ADISB2 archival data: " + ADISB21List.size());
 			break;
 
 		case "FSI":
@@ -6195,13 +6217,13 @@ break;
 					dtltype, type, version);
 		}
 
-		else if ("ADISB1".equals(filename)) {
+		else if ("ADISB1Detail".equals(filename)) {
 
 			fileData = BRRS_ADISB1_ReportService.getADISB1DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 		}
 
-		else if ("ADISB2".equals(filename)) {
+		else if ("ADISB2Detail".equals(filename)) {
 
 			fileData = BRRS_ADISB2_ReportService.getADISB2DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);

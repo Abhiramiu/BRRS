@@ -74,13 +74,7 @@ PURPOSE  : BRRSREPORT
  border-color: #0c0c0c;
 }
 
-.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
-  (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
- {
- color: #fff;
- background-color: #cc000000;
- border-color: #161617;
-}
+
 
 #finusertb {
  width: 460px;
@@ -1033,7 +1027,7 @@ function cancelModify() {
 
 
 
-<title>BRRS</title>
+<title>ADISB2</title>
 
 <body>
 	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
@@ -1081,7 +1075,7 @@ function cancelModify() {
 		                     data-todate=${todate}, 
 		                     data-currency=${currency},  
 		                     data-dtltype=${dtltype}, 
-		                     data-filename='M_ADISB2.xlsx',
+		                     data-filename='ADISB2.xlsx',
 		                     data-type=${type},
 		                     data-version=${version}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
@@ -1092,7 +1086,7 @@ function cancelModify() {
 										    data-todate=${todate},
 											data-currency=${currency},  
 														data-dtltype=${dtltype}, 
-										    data-filename='M_ADISB2Detail',
+										    data-filename='ADISB2Detail',
 											data-type=${type},
 														data-version=${version}
 										  ">
@@ -1148,8 +1142,7 @@ function cancelModify() {
     <td id="R6_COVERED_DEPOSITORS"
         th:text="${#numbers.formatDecimal(row.R6_COVERED_DEPOSITORS,1,'COMMA',0,'POINT')}"
         style="text-align:right;width:200px;"
-        th:attr="reportLable='R6',reportAddlCriteria1='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
+     >
     </td>
 
     <td id="R6_COVERED_DEPOSITORS_PCT"
@@ -1185,8 +1178,7 @@ function cancelModify() {
     <td id="R7_COVERED_DEPOSITORS"
         th:text="${#numbers.formatDecimal(row.R7_COVERED_DEPOSITORS,1,'COMMA',0,'POINT')}"
         style="text-align:right;width:200px;"
-        th:attr="reportLable='R7',reportAddlCriteria1='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
+   >
     </td>
 
     <td id="R7_COVERED_DEPOSITORS_PCT"
@@ -1221,9 +1213,7 @@ function cancelModify() {
 
     <td id="R8_COVERED_DEPOSITORS"
         th:text="${#numbers.formatDecimal(row.R8_COVERED_DEPOSITORS,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
-        th:attr="reportLable='R8',reportAddlCriteria1='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
+        style="text-align:right;width:200px;">
     </td>
 
     <td id="R8_COVERED_DEPOSITORS_PCT"
@@ -1258,9 +1248,7 @@ function cancelModify() {
 
     <td id="R9_COVERED_DEPOSITORS"
         th:text="${#numbers.formatDecimal(row.R9_COVERED_DEPOSITORS,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
-        th:attr="reportLable='R9',reportAddlCriteria1='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
+        style="text-align:right;width:200px;">
     </td>
 
     <td id="R9_COVERED_DEPOSITORS_PCT"
@@ -1295,9 +1283,7 @@ function cancelModify() {
 
     <td id="R10_COVERED_DEPOSITORS"
         th:text="${#numbers.formatDecimal(row.R10_COVERED_DEPOSITORS,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
-        th:attr="reportLable='R10',reportAddlCriteria1='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
+        style="text-align:right;width:200px;">
     </td>
 
     <td id="R10_COVERED_DEPOSITORS_PCT"
@@ -1332,9 +1318,7 @@ function cancelModify() {
 
     <td id="R11_COVERED_DEPOSITORS"
         th:text="${#numbers.formatDecimal(row.R11_COVERED_DEPOSITORS,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
-        th:attr="reportLable='R11',reportAddlCriteria1='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
+        style="text-align:right;width:200px;">
     </td>
 
     <td id="R11_COVERED_DEPOSITORS_PCT"
@@ -1369,9 +1353,7 @@ function cancelModify() {
 
     <td id="R12_COVERED_DEPOSITORS"
         th:text="${#numbers.formatDecimal(row.R12_COVERED_DEPOSITORS,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
-        th:attr="reportLable='R12',reportAddlCriteria1='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
+        style="text-align:right;width:200px;">
     </td>
 
     <td id="R12_COVERED_DEPOSITORS_PCT"
@@ -1406,9 +1388,7 @@ function cancelModify() {
 
     <td id="R13_COVERED_DEPOSITORS"
         th:text="${#numbers.formatDecimal(row.R13_COVERED_DEPOSITORS,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
-        th:attr="reportLable='R13',reportAddlCriteria1='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
+        style="text-align:right;width:200px;">
     </td>
 
     <td id="R13_COVERED_DEPOSITORS_PCT"
@@ -1443,9 +1423,7 @@ function cancelModify() {
 
     <td id="R14_COVERED_DEPOSITORS"
         th:text="${#numbers.formatDecimal(row.R14_COVERED_DEPOSITORS,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
-        th:attr="reportLable='R14',reportAddlCriteria1='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
+        style="text-align:right;width:200px;">
     </td>
 
     <td id="R14_COVERED_DEPOSITORS_PCT"

@@ -2,6 +2,7 @@
 
 package com.bornfire.brrs.entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -16,5 +17,7 @@ public interface BRRS_ADISB2_Archival_Summary_Repo extends JpaRepository<ADISB2_
     List<Object> getADISB2archival();
 
     @Query(value = "select * from BRRS_ADISB2_ARCHIVALTABLE_SUMMARY where REPORT_DATE = ?1 and REPORT_VERSION = ?2", nativeQuery = true)
-    List<ADISB2_Archival_Summary_Entity> getdatabydateListarchival(Date report_date, String report_version);
+    List<ADISB2_Archival_Summary_Entity> getdatabydateListarchival(Date report_date, BigDecimal report_version);
+    @Query(value = "SELECT * FROM BRRS_ADISB2_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC", nativeQuery = true)
+    List<ADISB2_Archival_Summary_Entity> getdatabydateListWithVersion();
 }
