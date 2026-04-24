@@ -2,31 +2,38 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
-
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "BRRS_TIER_1_2_CFS_ARCHIVALTABLE_SUMMARY")
+@IdClass(TIER_1_2_CFS_PK.class)
 public class TIER_1_2_CFS_Archival_Summary_Entity {
 
-
-@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
+		
+	private Date	report_date;
+	 @Column(name = "REPORT_VERSION")
+	 @Id
+	private BigDecimal	report_version;
+	@Column(name = "REPORT_RESUBDATE")
 
-private Date report_date;
-private BigDecimal report_version;
-private String report_frequency;
-private String report_code;
-private String report_desc;
-private String entity_flg;
-private String modify_flg;
-private String del_flg;
+    private Date reportResubDate;
+	private String	report_frequency;
+	private String	report_code;
+	private String	report_desc;
+	private String	entity_flg;
+	private String	modify_flg;
+	private String	del_flg;
 
 private BigDecimal R10_VALUE_IN_I_COLUMN;
 private BigDecimal R10_BWP_AMOUNT;
@@ -1061,6 +1068,18 @@ public void setR54_TOTAL_RISK_ASSETS(BigDecimal r54_TOTAL_RISK_ASSETS) {
 	R54_TOTAL_RISK_ASSETS = r54_TOTAL_RISK_ASSETS;
 }
 
+
+
+
+public Date getReportResubDate() {
+	return reportResubDate;
+}
+
+
+
+public void setReportResubDate(Date reportResubDate) {
+	this.reportResubDate = reportResubDate;
+}
 
 
 

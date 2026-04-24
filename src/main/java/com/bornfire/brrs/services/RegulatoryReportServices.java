@@ -5883,14 +5883,14 @@ break;
 			}
 			break;
 
-		case "RWA":
-			try {
-				archivalData = BRRS_RWA_ReportService.getRWAArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+//		case "RWA":
+//			try {
+//				archivalData = BRRS_RWA_ReportService.getRWAArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
 
 		case "CPR_STRUCT_LIQ":
 			try {
@@ -5964,15 +5964,25 @@ break;
 			}
 			break;
 
-		case "TIER_1_2_CFS":
-			try {
-				archivalData = BRRS_TIER_1_2_CFS_ReportService.getTIER_1_2_CFSArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+//		case "TIER_1_2_CFS":
+//			try {
+//				archivalData = BRRS_TIER_1_2_CFS_ReportService.getTIER_1_2_CFSArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
 
+		case "RWA":
+			List<Object[]> rwaList = BRRS_RWA_ReportService.getRWAArchival();
+			archivalData.addAll(rwaList);
+			System.out.println("Fetched rwaList archival data: " + rwaList.size());
+			break;
+		case "TIER_1_2_CFS":
+			List<Object[]> t12List = BRRS_TIER_1_2_CFS_ReportService.getTIER_1_2_CFSArchival();
+			archivalData.addAll(t12List);
+			System.out.println("Fetched t12List archival data: " + t12List.size());
+			break;
 		
 
 		case "GL_SCH":

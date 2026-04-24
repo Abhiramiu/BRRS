@@ -49,34 +49,14 @@ import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.ADISB2_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.ADISB2_Summary_Entity;
-import com.bornfire.brrs.entities.BRRS_EXPOSURES_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_EXPOSURES_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_EXPOSURES_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_EXPOSURES_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_FSI_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_FSI_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_FSI_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_FSI_Summary_Repo;
+
 import com.bornfire.brrs.entities.BRRS_RWA_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_RWA_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_RWA_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_RWA_Summary_Repo;
-import com.bornfire.brrs.entities.EXPOSURES_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.EXPOSURES_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.EXPOSURES_Detail_Entity;
-import com.bornfire.brrs.entities.EXPOSURES_Summary_Entity;
-import com.bornfire.brrs.entities.FORMAT_NEW_CPR_Detail_Entity;
-import com.bornfire.brrs.entities.FSI_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.FSI_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.FSI_Detail_Entity;
-import com.bornfire.brrs.entities.FSI_Summary_Entity;
+
 import com.bornfire.brrs.entities.RWA_Archival_Detail_Entity;
-//import com.bornfire.brrs.entities.FSI_Manual_Summary_Entity;
-//import com.bornfire.brrs.entities.FSI_Manual_Archival_Summary_Entity;
-//import com.bornfire.brrs.entities.BRRS_FSI_Manual_Summary_Repo;
-//import com.bornfire.brrs.entities.BRRS_FSI_Manual_Archival_Summary_Repo;
+
 import com.bornfire.brrs.entities.RWA_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.RWA_Detail_Entity;
 import com.bornfire.brrs.entities.RWA_Summary_Entity;
@@ -3244,22 +3224,55 @@ return out.toByteArray();
 }
 }
 	
-	public List<Object> getRWAArchival() {
-		List<Object> RWAArchivallist = new ArrayList<>();
-		try {
-			RWAArchivallist = RWA_Archival_Summary_Repo.getRWAarchival();
-//			FSIArchivallist = BRRS_FSI_Manual_Archival_Summary_Repo.getFSIarchival();
-			System.out.println("countser" + RWAArchivallist.size());
-		} catch (Exception e) {
-			// Log the exception
-			System.err.println("Error fetching EXPOSURES Archival data: " + e.getMessage());
-			e.printStackTrace();
+//	public List<Object> getRWAArchival() {
+//		List<Object> RWAArchivallist = new ArrayList<>();
+//		try {
+//			RWAArchivallist = RWA_Archival_Summary_Repo.getRWAarchival();
+////			FSIArchivallist = BRRS_FSI_Manual_Archival_Summary_Repo.getFSIarchival();
+//			System.out.println("countser" + RWAArchivallist.size());
+//		} catch (Exception e) {
+//			// Log the exception
+//			System.err.println("Error fetching EXPOSURES Archival data: " + e.getMessage());
+//			e.printStackTrace();
+//
+//			// Optionally, you can rethrow it or return empty list
+//			// throw new RuntimeException("Failed to fetch data", e);
+//		}
+//		return RWAArchivallist;
+//	}
+	
+	//Archival View
+		public List<Object[]> getRWAArchival() {
+			List<Object[]> archivalList = new ArrayList<>();
 
-			// Optionally, you can rethrow it or return empty list
-			// throw new RuntimeException("Failed to fetch data", e);
+			try {
+				List<RWA_Archival_Summary_Entity> repoData = RWA_Archival_Summary_Repo
+						.getdatabydateListWithVersion();
+
+				if (repoData != null && !repoData.isEmpty()) {
+					for (RWA_Archival_Summary_Entity entity : repoData) {
+						Object[] row = new Object[] {
+								entity.getReport_date(), 
+								entity.getReport_version(), 
+								 entity.getReportResubDate()
+						};
+						archivalList.add(row);
+					}
+
+					System.out.println("Fetched " + archivalList.size() + " archival records");
+					RWA_Archival_Summary_Entity first = repoData.get(0);
+					System.out.println("Latest archival version: " + first.getReport_version());
+				} else {
+					System.out.println("No archival data found.");
+				}
+
+			} catch (Exception e) {
+				System.err.println("Error fetching  RWA  Archival data: " + e.getMessage());
+				e.printStackTrace();
+			}
+
+			return archivalList;
 		}
-		return RWAArchivallist;
-	}
 	
 	
 	public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,

@@ -1033,7 +1033,7 @@ function cancelModify() {
 
 
 
-<title>BRRS</title>
+<title>RWA</title>
 <body> 
 <div class="container-fluid" style="padding-left:10px; padding-right:0px;">
   <div class="row">
@@ -4133,6 +4133,8 @@ function cancelModify() {
                    
                    <th style="text-align:left;">REPORT LABLE</th>
                    <th>REPORT ADDL CRITERIA 1</th>
+				   <th style="text-align:left;">REPORT LABLE 1</th>
+				                     <th>REPORT ADDL CRITERIA 2</th>
                    <th>REPORT DATE</th>
                   </tr>
 
@@ -4162,6 +4164,11 @@ function cancelModify() {
                    <td
                     th:text="${report.reportAddlCriteria1 != null ? report.reportAddlCriteria1 : '-'}">
                    </td>
+				   <td style="text-align:left;" th:text="${report.reportLable1 != null ? report.reportLable1 : '-'}">
+				                     </td>
+				                     <td
+				                      th:text="${report.reportAddlCriteria2 != null ? report.reportAddlCriteria2 : '-'}">
+				                     </td>
                    <td th:text="${report.reportDate != null ? #dates.format(report.reportDate, 'dd-MM-yyyy') : '-'}"></td>
                   </tr>
                  </tbody>
@@ -4231,7 +4238,22 @@ function cancelModify() {
            </div>
          </div>
 
-         <!-- Row 4 -->
+		 <!-- Row 4 -->
+		        <div class="row formline" style="margin-top:10px;">
+		          <label class="col-sm-2">Report Lable 1</label>
+		          <div class="col-sm-3">
+		            <input type="text" th:field="*{reportLable1}" class="form-control form-control-sm" readonly />
+		          </div>
+
+		          <div class="col-sm-1"></div>
+
+		          <label class="col-sm-2">Report Addl Criteria 2</label>
+		          <div class="col-sm-3">
+		            <input type="text" th:field="*{reportAddlCriteria2}" class="form-control form-control-sm" readonly />
+		          </div>
+		        </div>
+		 
+         <!-- Row 5 -->
          <div class="row formline" style="margin-top:10px;">
            <label class="col-sm-2">Report Date</label>
            <div class="col-sm-3">
@@ -4479,104 +4501,3 @@ div.dataTables_wrapper div.dataTables_info {
 
 </html>
 
-
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-
-    
-
-
-
-
-
-
-
-
-
-
- 
- 
-
-    
-
-
-
-  
-  
-  
-  
-  
-  
-  
-
-
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
- 
- 
-  
-  
-  
-  
-  
-  
-     
-     
-     
-     
-     
-     
-     
-     
-     
-     
-     
-     
-     
-     
-     

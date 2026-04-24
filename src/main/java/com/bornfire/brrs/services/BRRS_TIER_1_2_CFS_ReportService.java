@@ -49,8 +49,7 @@ import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.ADISB2_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.ADISB2_Summary_Entity;
+
 import com.bornfire.brrs.entities.BRRS_TIER_1_2_CFS_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_TIER_1_2_CFS_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_TIER_1_2_CFS_Detail_Repo;
@@ -908,22 +907,57 @@ return out.toByteArray();
 }
 }
 
-	public List<Object> getTIER_1_2_CFSArchival() {
-		List<Object> TIER_1_2_CFSArchivallist = new ArrayList<>();
-		try {
-			TIER_1_2_CFSArchivallist = BRRS_TIER_1_2_CFS_Archival_Summary_Repo.getTIER_1_2_CFSarchival();
-//			TIER_1_2_CFSArchivallist = BRRS_TIER_1_2_CFS_Manual_Archival_Summary_Repo.getTIER_1_2_CFSarchival();
-			System.out.println("countser" + TIER_1_2_CFSArchivallist.size());
-		} catch (Exception e) {
-			// Log the exception
-			System.err.println("Error fetching TIER_1_2_CFS Archival data: " + e.getMessage());
-			e.printStackTrace();
+//	public List<Object> getTIER_1_2_CFSArchival() {
+//		List<Object> TIER_1_2_CFSArchivallist = new ArrayList<>();
+//		try {
+//			TIER_1_2_CFSArchivallist = BRRS_TIER_1_2_CFS_Archival_Summary_Repo.getTIER_1_2_CFSarchival();
+////			TIER_1_2_CFSArchivallist = BRRS_TIER_1_2_CFS_Manual_Archival_Summary_Repo.getTIER_1_2_CFSarchival();
+//			System.out.println("countser" + TIER_1_2_CFSArchivallist.size());
+//		} catch (Exception e) {
+//			// Log the exception
+//			System.err.println("Error fetching TIER_1_2_CFS Archival data: " + e.getMessage());
+//			e.printStackTrace();
+//
+//			// Optionally, you can rethrow it or return empty list
+//			// throw new RuntimeException("Failed to fetch data", e);
+//		}
+//		return TIER_1_2_CFSArchivallist;
+//	}
+	
+	//Archival View
+		public List<Object[]> getTIER_1_2_CFSArchival() {
+			List<Object[]> archivalList = new ArrayList<>();
 
-			// Optionally, you can rethrow it or return empty list
-			// throw new RuntimeException("Failed to fetch data", e);
+			try {
+				List<TIER_1_2_CFS_Archival_Summary_Entity> repoData = BRRS_TIER_1_2_CFS_Archival_Summary_Repo
+						.getdatabydateListWithVersion();
+
+				if (repoData != null && !repoData.isEmpty()) {
+					for (TIER_1_2_CFS_Archival_Summary_Entity entity : repoData) {
+						Object[] row = new Object[] {
+								entity.getReport_date(), 
+								entity.getReport_version(), 
+								 entity.getReportResubDate()
+						};
+						archivalList.add(row);
+					}
+
+					System.out.println("Fetched " + archivalList.size() + " archival records");
+					TIER_1_2_CFS_Archival_Summary_Entity first = repoData.get(0);
+					System.out.println("Latest archival version: " + first.getReport_version());
+				} else {
+					System.out.println("No archival data found.");
+				}
+
+			} catch (Exception e) {
+				System.err.println("Error fetching  TIER_1_2_CFS  Archival data: " + e.getMessage());
+				e.printStackTrace();
+			}
+
+			return archivalList;
 		}
-		return TIER_1_2_CFSArchivallist;
-	}
+
+		
 	
 	
 	public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
