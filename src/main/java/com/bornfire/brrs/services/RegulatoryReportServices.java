@@ -1336,6 +1336,13 @@ public class RegulatoryReportServices {
 					type, version);
 			break;
 			
+		case "FORMAT_II":
+			
+			  repsummary = brrs_format_II_reportservice.getFORMAT_IIView(reportId, fromdate, todate, currency, dtltype, pageable,
+						type, version);
+			  
+			  break;
+			
 		case "OFF_BS_ITEMS":
 			repsummary = BRRS_OFF_BS_ITEMS_ReportService.getOFF_BS_ITEMSView(reportId, fromdate, todate, currency, dtltype, pageable,
 					type, version);
@@ -2206,6 +2213,7 @@ public class RegulatoryReportServices {
 			repdetail = BRRS_DEFERRED_TAX_ReportService.getDTAXcurrentDtl(reportId, fromdate, todate, currency,
 					dtltype, pageable, Filter, type, version);
 			break;
+		 
 
 		case "OPER_RISK_DIS":
 
@@ -5541,13 +5549,19 @@ break;
 			break;
 
 
+//		case "FORMAT_II":
+//			try {
+//				archivalData = brrs_format_II_reportservice.getFORMAT_IIArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
+			
 		case "FORMAT_II":
-			try {
-				archivalData = brrs_format_II_reportservice.getFORMAT_IIArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> format2List = brrs_format_II_reportservice.getFORMAT_IIArchival();
+			archivalData.addAll(format2List);
+			System.out.println("Fetched FORMAT_II archival data: " + format2List.size());
 			break;
 			
 		case "FORMAT_I":
