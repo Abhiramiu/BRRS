@@ -29,6 +29,12 @@ public class RWA_Archival_Detail_Entity {
 	  
 	   @Column(name = "REPORT_LABLE")
 	   private String reportLable;
+	   
+	   @Column(name = "REPORT_ADDL_CRITERIA_2")
+	   private String reportAddlCriteria2;
+	  
+	   @Column(name = "REPORT_LABLE_1")
+	   private String reportLable1;
 	   @Column(name = "REPORT_REMARKS")
 	   private String reportRemarks;
 	   @Column(name = "MODIFICATION_REMARKS")
@@ -233,6 +239,23 @@ public class RWA_Archival_Detail_Entity {
 
 	public void setDelFlg(String delFlg) {
 		this.delFlg = delFlg;
+	}
+
+	
+	public String getReportAddlCriteria2() {
+		return reportAddlCriteria2;
+	}
+
+	public void setReportAddlCriteria2(String reportAddlCriteria2) {
+		this.reportAddlCriteria2 = reportAddlCriteria2;
+	}
+
+	public String getReportLable1() {
+		return reportLable1;
+	}
+
+	public void setReportLable1(String reportLable1) {
+		this.reportLable1 = reportLable1;
 	}
 
 	public RWA_Archival_Detail_Entity() {

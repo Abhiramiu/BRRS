@@ -287,7 +287,7 @@ balanceStyle.setBorderRight(border);
 
 //Header row
 String[] headers = {
-"CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABLE", "REPORT ADDL CRITERIA1",
+"CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT LABLE1", "REPORT ADDL CRITERIA2",
 "REPORT_DATE"
 };
 
@@ -329,13 +329,15 @@ balanceCell.setCellStyle(balanceStyle);
 
 		row.createCell(4).setCellValue(item.getReportLable());
 		row.createCell(5).setCellValue(item.getReportAddlCriteria1());
-		row.createCell(6)
+		row.createCell(6).setCellValue(item.getReportLable1());
+		row.createCell(7).setCellValue(item.getReportAddlCriteria2());
+		row.createCell(8)
 				.setCellValue(item.getReportDate() != null
 						? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
 						: "");
 
 		// Apply data style for all other cells
-		for (int j = 0; j < 7; j++) {
+		for (int j = 0; j < 9; j++) {
 			if (j != 3) {
 				row.getCell(j).setCellStyle(dataStyle);
 			}
@@ -3328,7 +3330,7 @@ balanceStyle.setBorderRight(border);
 
 // Header row
 String[] headers = {
-"CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABLE", "REPORT ADDL CRITERIA", "REPORT_DATE"
+"CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABLE", "REPORT ADDL CRITERIA", "REPORT LABLE1", "REPORT ADDL CRITERIA2","REPORT_DATE"
 };
 
 XSSFRow headerRow = sheet.createRow(0);
@@ -3380,13 +3382,15 @@ balanceCell.setCellStyle(balanceStyle);
 
 row.createCell(4).setCellValue(item.getReportLable());
 row.createCell(5).setCellValue(item.getReportAddlCriteria1());
-row.createCell(6).setCellValue(
+row.createCell(6).setCellValue(item.getReportLable1());
+row.createCell(7).setCellValue(item.getReportAddlCriteria2());
+row.createCell(8).setCellValue(
 item.getReportDate() != null ?
 new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate()) : ""
 );
 
 // Apply data style for all other cells
-for (int j = 0; j < 7; j++) {
+for (int j = 0; j < 9; j++) {
 if (j != 3) {
 row.getCell(j).setCellStyle(dataStyle);
 }
