@@ -2246,12 +2246,12 @@ break;
 					pageable, Filter, type, version);
 			break;
 
-		/*
-		 * case "FORMAT_II":
-		 * 
-		 * repdetail = brrs_format_II_reportservice.getFORMAT_IIcurrentDtl(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, Filter, type, version); break;
-		 */
+		
+ case "FORMAT_II":
+
+ repdetail = brrs_format_II_reportservice.getFORMAT_IIcurrentDtl(reportId,
+ fromdate, todate, currency, dtltype, pageable, Filter, type, version); break;
+
 
 		case "MDISB1":
 
@@ -4371,6 +4371,16 @@ break;
 			try {
 				repfile = brrs_m_i_s_ca_reportservice.getM_I_S_CAExcel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, format, version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "FORMAT_II":
+			try {
+				repfile = brrs_format_II_reportservice.getFORMAT_IIExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
