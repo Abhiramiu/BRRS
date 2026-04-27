@@ -7,10 +7,10 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface BRRS_NSFR_Summary_Repo extends JpaRepository<NSFR_Summary_Entity, Date> {
+public interface BRRS_NSFR_Summary_Repo extends JpaRepository<NSFR_Summary_Entity_old, Date> {
 
     @Query(value = "SELECT * FROM BRRS_NSFR_SUMMARYTABLE WHERE REPORT_DATE=?1", nativeQuery = true)
-    List<NSFR_Summary_Entity> getdatabydateList(Date reportdate);
+    List<NSFR_Summary_Entity_old> getdatabydateList(Date reportdate);
 }
 
 

@@ -11,8 +11,8 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_NSFR_SUMMARYTABLE")
-public class NSFR_Summary_Entity {
+@Table(name = "BRRS_NSFR_ARCHIVALTABLE_SUMMARY")
+public class NSFR_Archival_Summary_Entity_old {
 
 
 @Temporal(TemporalType.DATE)
@@ -27,6 +27,7 @@ private String report_desc;
 private String entity_flg;
 private String modify_flg;
 private String del_flg;
+
 
 private BigDecimal R12_FACTOR_BOB;
 private BigDecimal R12_TOTAL_AMOUNT_BOB;
@@ -2272,13 +2273,11 @@ public void setR66_WITH_FACTOR_APPLIED_BOB(BigDecimal r66_WITH_FACTOR_APPLIED_BO
 
 
 
-public NSFR_Summary_Entity() {
+
+public NSFR_Archival_Summary_Entity_old() {
 	super();
 	// TODO Auto-generated constructor stub
 }
-
-
-
 
 
 

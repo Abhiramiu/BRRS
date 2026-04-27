@@ -12,8 +12,8 @@ import javax.persistence.Table;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_NSFR_ARCHIVALTABLE_DETAIL")
-public class NSFR_Archival_Detail_Entity {
+@Table(name = "BRRS_NSFR_DETAILTABLE")
+public class NSFR_Detail_Entity_Old {
 	
 	   @Column(name = "CUST_ID")
 	   private String custId;
@@ -364,11 +364,9 @@ public class NSFR_Archival_Detail_Entity {
 
 
 
-	public NSFR_Archival_Detail_Entity() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+	public NSFR_Detail_Entity_Old() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
 
-	
-	
 }

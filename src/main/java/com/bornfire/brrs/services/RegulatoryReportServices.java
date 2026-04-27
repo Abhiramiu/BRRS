@@ -1543,6 +1543,14 @@ public class RegulatoryReportServices {
 					pageable, type, version);
 
 			break;
+			
+		case "NSFR":
+			repsummary = BRRS_NSFR_ReportService.getNSFRView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+
+			break;
+			
+		
 
 		case "COMMON_DISCLOSURE":
 
@@ -2383,11 +2391,22 @@ break;
 			}
 			break;
 			
+		
 			
 		case "SCH_17_New":
 			try {
 				System.out.println("came to Regulatory service");
 				repfile = BRRS_SCH_17_New_Service.getSCH_17_NewExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block e.printStackTrace();
+			}
+			break;
+			
+		case "NSFR":
+			try {
+				System.out.println("came to Regulatory service");
+				repfile = BRRS_NSFR_ReportService.getNSFRExcel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, version);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block e.printStackTrace();
@@ -5557,7 +5576,14 @@ break;
 			archivalData.addAll(sch17List);
 			System.out.println("Fetched SCH_17_New archival data: " + sch17List.size());
 			break;
+			
+		case "NSFR":
+			List<Object[]> nsfrList = BRRS_NSFR_ReportService.getNSFRArchival();
+			archivalData.addAll(nsfrList);
+			System.out.println("Fetched NSFR_New archival data: " + nsfrList.size());
+			break;
 
+		
 
 //		case "FORMAT_II":
 //			try {
@@ -5979,14 +6005,7 @@ break;
 			}
 			break;
 
-		case "NSFR":
-			try {
-				archivalData = BRRS_NSFR_ReportService.getNSFRArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		
 
 //		case "TIER_1_2_CFS":
 //			try {
