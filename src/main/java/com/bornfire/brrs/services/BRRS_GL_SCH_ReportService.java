@@ -17482,80 +17482,163 @@ public class BRRS_GL_SCH_ReportService {
 		}
 	}
 
+//	public void updateReport(GL_SCH_Manual_Summary_Entity updatedEntity) {
+//		System.out.println("Came to services");
+//		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+//
+//		// Use your query to fetch by date
+//		List<GL_SCH_Manual_Summary_Entity> list = GL_SCH_Manual_summary_repo
+//				.getdatabydateList(updatedEntity.getREPORT_DATE());
+//
+//		GL_SCH_Manual_Summary_Entity existing;
+//		if (list.isEmpty()) {
+//			// Record not found — optionally create it
+//			System.out.println("No record found for REPORT_DATE: " + updatedEntity.getREPORT_DATE());
+//			existing = new GL_SCH_Manual_Summary_Entity();
+//			existing.setREPORT_DATE(updatedEntity.getREPORT_DATE());
+//		} else {
+//			existing = list.get(0);
+//		}
+//
+//		try {
+//			// Only for specific row numbers
+//			int[] rows = { 61, 103, 130, 139, 241, 243, 245 };
+//
+//			// Common fields for all these rows
+//			String[] fields = { "PRODUCT", "FIG_BAL_BWP1", "FIG_BAL_BWP2", "AMT_ADJ_BWP1", "AMT_ADJ_BWP2",
+//					"NET_AMT_BWP1", "NET_AMT_BWP2", "BAL_SUB_BWP1", "BAL_SUB_BWP2", "BAL_ACT_SUB_BWP1",
+//					"BAL_ACT_SUB_BWP2" };
+//
+//			for (int row : rows) {
+//
+//				String prefix = "R" + row + "_";
+//
+//				for (String field : fields) {
+//					String getterName = "get" + prefix + field;
+//					String setterName = "set" + prefix + field;
+//
+//					try {
+//						Method getter = GL_SCH_Manual_Summary_Entity.class.getMethod(getterName);
+//						Method setter = GL_SCH_Manual_Summary_Entity.class.getMethod(setterName,
+//								getter.getReturnType());
+//
+//						Object newValue = getter.invoke(updatedEntity);
+//						setter.invoke(existing, newValue);
+//
+//					} catch (NoSuchMethodException e) {
+//						// Skip missing fields gracefully
+//						continue;
+//					}
+//				}
+//			}
+//
+//			// Metadata
+//			existing.setREPORT_VERSION(updatedEntity.getREPORT_VERSION());
+//			existing.setREPORT_FREQUENCY(updatedEntity.getREPORT_FREQUENCY());
+//			existing.setREPORT_CODE(updatedEntity.getREPORT_CODE());
+//			existing.setREPORT_DESC(updatedEntity.getREPORT_DESC());
+//			existing.setENTITY_FLG(updatedEntity.getENTITY_FLG());
+//			existing.setMODIFY_FLG(updatedEntity.getMODIFY_FLG());
+//			existing.setDEL_FLG(updatedEntity.getDEL_FLG());
+//
+//		} catch (Exception e) {
+//			throw new RuntimeException("Error while updating GL_SCH Summary fields", e);
+//		}
+//
+//		// FIRST COMMIT — forces immediate commit
+//		GL_SCH_Manual_summary_repo.saveAndFlush(existing);
+//		System.out.println("GL_SCH Summary updated and COMMITTED");
+//
+//		// Execute procedure with updated data
+//		String oracleDate = new SimpleDateFormat("dd-MM-yyyy").format(updatedEntity.getREPORT_DATE()).toUpperCase();
+//
+//		String sql = "BEGIN BRRS.BRRS_GL_SCH_SUMMARY_PROCEDURE ('" + oracleDate + "'); END;";
+//		jdbcTemplate.execute(sql);
+//
+//		System.out.println("Procedure executed for date: " + oracleDate);
+//	}
+	
+	@Transactional
 	public void updateReport(GL_SCH_Manual_Summary_Entity updatedEntity) {
-		System.out.println("Came to services");
-		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-		// Use your query to fetch by date
-		List<GL_SCH_Manual_Summary_Entity> list = GL_SCH_Manual_summary_repo
-				.getdatabydateList(updatedEntity.getREPORT_DATE());
+	    GL_SCH_Manual_Summary_Entity existing = GL_SCH_Manual_summary_repo
+	            .findById(updatedEntity.getREPORT_DATE())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
 
-		GL_SCH_Manual_Summary_Entity existing;
-		if (list.isEmpty()) {
-			// Record not found — optionally create it
-			System.out.println("No record found for REPORT_DATE: " + updatedEntity.getREPORT_DATE());
-			existing = new GL_SCH_Manual_Summary_Entity();
-			existing.setREPORT_DATE(updatedEntity.getREPORT_DATE());
-		} else {
-			existing = list.get(0);
-		}
+	    // Rows
+	    int[] rows = {
+	            59,
+	            61,
+	            66,
+	            103,
+	            108,
+	            130,
+	            139,
+	            141,
+	            142,
+	            241,
+	            243,
+	            245,
+	            248
+	    };
 
-		try {
-			// Only for specific row numbers
-			int[] rows = { 61, 103, 130, 139, 241, 243, 245 };
+	    // Common fields for all rows
+	    String[] fields = {
+	            "FIG_BAL_BWP1",
+	            "FIG_BAL_BWP2",
+	            "AMT_ADJ_BWP1",
+	            "AMT_ADJ_BWP2",
+	            "NET_AMT_BWP1",
+	            "NET_AMT_BWP2",
+	            "BAL_SUB_BWP1",
+	            "BAL_SUB_BWP2",
+	            "BAL_ACT_SUB_BWP1",
+	            "BAL_ACT_SUB_BWP2"
+	    };
 
-			// Common fields for all these rows
-			String[] fields = { "PRODUCT", "FIG_BAL_BWP1", "FIG_BAL_BWP2", "AMT_ADJ_BWP1", "AMT_ADJ_BWP2",
-					"NET_AMT_BWP1", "NET_AMT_BWP2", "BAL_SUB_BWP1", "BAL_SUB_BWP2", "BAL_ACT_SUB_BWP1",
-					"BAL_ACT_SUB_BWP2" };
+	    try {
 
-			for (int row : rows) {
+	        for (int row : rows) {
 
-				String prefix = "R" + row + "_";
+	            for (String field : fields) {
 
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	                String fullFieldName = "R" + row + "_" + field;
 
-					try {
-						Method getter = GL_SCH_Manual_Summary_Entity.class.getMethod(getterName);
-						Method setter = GL_SCH_Manual_Summary_Entity.class.getMethod(setterName,
-								getter.getReturnType());
+	                String getterName = "get" + fullFieldName;
+	                String setterName = "set" + fullFieldName;
 
-						Object newValue = getter.invoke(updatedEntity);
-						setter.invoke(existing, newValue);
+	                try {
 
-					} catch (NoSuchMethodException e) {
-						// Skip missing fields gracefully
-						continue;
-					}
-				}
-			}
+	                    Method getter = GL_SCH_Manual_Summary_Entity.class
+	                            .getMethod(getterName);
 
-			// Metadata
-			existing.setREPORT_VERSION(updatedEntity.getREPORT_VERSION());
-			existing.setREPORT_FREQUENCY(updatedEntity.getREPORT_FREQUENCY());
-			existing.setREPORT_CODE(updatedEntity.getREPORT_CODE());
-			existing.setREPORT_DESC(updatedEntity.getREPORT_DESC());
-			existing.setENTITY_FLG(updatedEntity.getENTITY_FLG());
-			existing.setMODIFY_FLG(updatedEntity.getMODIFY_FLG());
-			existing.setDEL_FLG(updatedEntity.getDEL_FLG());
+	                    Method setter = GL_SCH_Manual_Summary_Entity.class
+	                            .getMethod(setterName, getter.getReturnType());
 
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating GL_SCH Summary fields", e);
-		}
+	                    Object newValue = getter.invoke(updatedEntity);
 
-		// FIRST COMMIT — forces immediate commit
-		GL_SCH_Manual_summary_repo.saveAndFlush(existing);
-		System.out.println("GL_SCH Summary updated and COMMITTED");
+	                    // Store only non-null values
+	                    if (newValue != null) {
 
-		// Execute procedure with updated data
-		String oracleDate = new SimpleDateFormat("dd-MM-yyyy").format(updatedEntity.getREPORT_DATE()).toUpperCase();
+	                        setter.invoke(existing, newValue);
+	                    }
 
-		String sql = "BEGIN BRRS.BRRS_GL_SCH_SUMMARY_PROCEDURE ('" + oracleDate + "'); END;";
-		jdbcTemplate.execute(sql);
+	                } catch (NoSuchMethodException e) {
 
-		System.out.println("Procedure executed for date: " + oracleDate);
+	                    // Skip unavailable fields
+	                    System.out.println("Field not found : " + fullFieldName);
+	                }
+	            }
+	        }
+
+	    } catch (Exception e) {
+
+	        throw new RuntimeException("Error while updating report fields", e);
+	    }
+
+	    GL_SCH_Manual_summary_repo.save(existing);
 	}
+	
 
 }
