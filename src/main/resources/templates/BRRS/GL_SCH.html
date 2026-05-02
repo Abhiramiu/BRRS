@@ -1049,6 +1049,14 @@ PURPOSE		: BRRS GL_SCH REPORT
 			   let updatedR59 = baseR59 + r61;
 
 			   setCellValue("#R59_FIG_BAL_BWP1", updatedR59);
+			   
+			   
+			   /* ------------------ R59 NET CALCULATION ------------------ */
+			   let r59_net_amt_bwp1 =
+			       getCellValue("#R59_FIG_BAL_BWP1") +
+			       getCellValue("#R59_AMT_ADJ_BWP1");
+
+			   setCellValue("#R59_NET_AMT_BWP1", r59_net_amt_bwp1);
 
 			/* ------------------ R61 CALCULATION ------------------ */
 			let g61 = getCellValue("#R59_FIG_BAL_BWP1") +
@@ -1448,6 +1456,10 @@ PURPOSE		: BRRS GL_SCH REPORT
 			// R61 manual fields
 			$("#R61_FIG_BAL_BWP1, #R61_AMT_ADJ_BWP1, #R61_BAL_SUB_BWP1, #R61_BAL_ACT_SUB_BWP1, #R59_FIG_BAL_BWP1").on("input change keyup", function () {
 				calculateTotals();
+			});
+			
+			$("#R59_FIG_BAL_BWP1, #R59_AMT_ADJ_BWP1").on("input change keyup", function () {
+			    calculateTotals();
 			});
 
 			// R103 manual fields
