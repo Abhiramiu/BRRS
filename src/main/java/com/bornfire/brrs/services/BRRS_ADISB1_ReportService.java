@@ -1043,7 +1043,7 @@ public class BRRS_ADISB1_ReportService {
 					}
 
 				}
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				workbook.setForceFormulaRecalculation(true);
 			} else {
 
 			}
@@ -1055,33 +1055,33 @@ public class BRRS_ADISB1_ReportService {
 	}
 
 	public List<Object[]> getADISB1Archival() {
-List<Object[]> archivalList = new ArrayList<>();
+		List<Object[]> archivalList = new ArrayList<>();
 
-try {
-	List<ADISB1_Archival_Summary_Entity> repoData = BRRS_ADISB1_Archival_Summary_Repo
-			.getdatabydateListWithVersion();
+		try {
+			List<ADISB1_Archival_Summary_Entity> repoData = BRRS_ADISB1_Archival_Summary_Repo
+					.getdatabydateListWithVersion();
 
-	if (repoData != null && !repoData.isEmpty()) {
-		for (ADISB1_Archival_Summary_Entity entity : repoData) {
-			Object[] row = new Object[] { entity.getReport_date(), entity.getReport_version(),
-					entity.getREPORT_RESUBDATE() };
-			archivalList.add(row);
+			if (repoData != null && !repoData.isEmpty()) {
+				for (ADISB1_Archival_Summary_Entity entity : repoData) {
+					Object[] row = new Object[] { entity.getReport_date(), entity.getReport_version(),
+							entity.getREPORT_RESUBDATE() };
+					archivalList.add(row);
+				}
+
+				System.out.println("Fetched " + archivalList.size() + " archival records");
+				ADISB1_Archival_Summary_Entity first = repoData.get(0);
+				System.out.println("Latest archival version: " + first.getReport_version());
+			} else {
+				System.out.println("No archival data found.");
+			}
+
+		} catch (Exception e) {
+			System.err.println("Error fetching ADISB1 Archival data: " + e.getMessage());
+			e.printStackTrace();
 		}
 
-		System.out.println("Fetched " + archivalList.size() + " archival records");
-		ADISB1_Archival_Summary_Entity first = repoData.get(0);
-		System.out.println("Latest archival version: " + first.getReport_version());
-	} else {
-		System.out.println("No archival data found.");
+		return archivalList;
 	}
-
-} catch (Exception e) {
-	System.err.println("Error fetching ADISB1 Archival data: " + e.getMessage());
-	e.printStackTrace();
-}
-
-return archivalList;
-}
 
 	public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) {
@@ -1284,7 +1284,7 @@ return archivalList;
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
-			int startRow = 10;
+			int startRow = 6;
 
 			if (!dataList.isEmpty() || !dataList1.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -1671,7 +1671,7 @@ return archivalList;
 					}
 
 				}
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				workbook.setForceFormulaRecalculation(true);
 			} else {
 
 			}

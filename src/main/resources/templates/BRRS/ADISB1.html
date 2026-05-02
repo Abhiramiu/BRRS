@@ -1054,7 +1054,7 @@ PURPOSE  : BRRSREPORT
 						</div>
 
 						<!-- Title -->
-						<h5 class="header-title">
+						<h5 class="header-title" style="text-transform: uppercase;">
 							ADISB1 Deposit by Ownership Category
 						</h5>
 
@@ -1396,8 +1396,7 @@ PURPOSE  : BRRSREPORT
 										</tr>
 										<!-- r30 -->
 										<tr>
-											<td style="text-align:left; padding-left:20px;">Accounts with beneficiaries
-												disclosed</td>
+											<td style="text-align:left; padding-left:20px;">Accounts with beneficiaries not disclosed </td>
 											<td th:each="report: ${reportsummary1}" id="r30"
 												style="text-align: right; width: 200px; padding-left:10px; ">
 												<input class="display-input Show_input " type="text"
@@ -1642,7 +1641,7 @@ PURPOSE  : BRRSREPORT
 									<th>ACCT NAME</th>
 									<th>ACCT BALANCE IN PULA</th>
 
-									<th style="text-align:left;">REPORT LABLE</th>
+									<th style="text-align:left;">REPORT LABEL</th>
 									<th>REPORT ADDL CRITERIA 1</th>
 									<th>REPORT DATE</th>
 								</tr>
@@ -1733,7 +1732,7 @@ PURPOSE  : BRRSREPORT
 
 					<!-- Row 3 -->
 					<div class="row formline" style="margin-top:10px;">
-						<label class="col-sm-2">Report Lable</label>
+						<label class="col-sm-2">Report Label</label>
 						<div class="col-sm-3">
 							<input type="text" th:field="*{reportLable}" class="form-control form-control-sm"
 								readonly />

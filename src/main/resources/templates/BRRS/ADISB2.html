@@ -1047,7 +1047,7 @@ function cancelModify() {
 
 						<!-- Title -->
 						<h5
-							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;margin-right: 10px;">
+							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;margin-right: 10px;text-transform: uppercase;">
 							Deposit Distribution Survey for Determining Coverage Levels  </h5>
 					</div>
 						    <div class="boards" style="min-width: 250px;">
@@ -1448,7 +1448,7 @@ function cancelModify() {
 
 
 <tr th:each="row : ${reportsummary}">
-    <td style="text-align:center; font-weight:bold; padding-left:20px;color: black;">Total</td>
+    <td style="text-align:center; font-weight:bold; padding-left:20px;color: red;">Total</td>
 
     <td id="R15_TOTAL_DEPOSIT_AMOUNT"
         th:text="${#numbers.formatDecimal(row.R15_TOTAL_DEPOSIT_AMOUNT,1,'COMMA',0,'POINT')}"
@@ -1523,7 +1523,7 @@ function cancelModify() {
                    <th>ACCT NAME</th>
                    <th>ACCT BALANCE IN PULA</th>
                    
-                   <th style="text-align:left;">REPORT LABLE</th>
+                   <th style="text-align:left;">REPORT LABEL</th>
                    <th>REPORT ADDL CRITERIA 1</th>
                    <th>REPORT DATE</th>
                   </tr>
@@ -1610,7 +1610,7 @@ function cancelModify() {
 
          <!-- Row 3 -->
          <div class="row formline" style="margin-top:10px;">
-           <label class="col-sm-2">Report Lable</label>
+           <label class="col-sm-2">Report Label</label>
            <div class="col-sm-3">
              <input type="text" th:field="*{reportLable}" class="form-control form-control-sm" readonly />
            </div>
