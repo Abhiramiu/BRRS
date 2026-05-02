@@ -1032,6 +1032,23 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 		/* ================= CALCULATION FUNCTION ================= */
 		function calculateTotals() {
+			
+			/* -------- FIXED UPDATE R59 WHEN R61 CHANGES -------- */
+
+			   let r61 = getCellValue("#R61_FIG_BAL_BWP1") || 0;
+
+			   // store original R59 in hidden field OR data attribute
+			   let baseR59 = $("#R59_FIG_BAL_BWP1").data("base");
+
+			   // first time store original value
+			   if (baseR59 === undefined) {
+			       baseR59 = getCellValue("#R59_FIG_BAL_BWP1") || 0;
+			       $("#R59_FIG_BAL_BWP1").data("base", baseR59);
+			   }
+
+			   let updatedR59 = baseR59 + r61;
+
+			   setCellValue("#R59_FIG_BAL_BWP1", updatedR59);
 
 			/* ------------------ R61 CALCULATION ------------------ */
 			let g61 = getCellValue("#R59_FIG_BAL_BWP1") +
@@ -1429,7 +1446,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 			calculateTotals();
 
 			// R61 manual fields
-			$("#R61_FIG_BAL_BWP1, #R61_AMT_ADJ_BWP1, #R61_BAL_SUB_BWP1, #R61_BAL_ACT_SUB_BWP1").on("input change keyup", function () {
+			$("#R61_FIG_BAL_BWP1, #R61_AMT_ADJ_BWP1, #R61_BAL_SUB_BWP1, #R61_BAL_ACT_SUB_BWP1, #R59_FIG_BAL_BWP1").on("input change keyup", function () {
 				calculateTotals();
 			});
 

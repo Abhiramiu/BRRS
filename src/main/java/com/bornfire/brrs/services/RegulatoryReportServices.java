@@ -6261,7 +6261,7 @@ break;
 					type, version);
 		}
 
-		else if ("CAP_RATIO_BUFFER".equals(filename)) {
+		else if ("CAP_RATIO_BUFFER_Detail".equals(filename)) {
 
 			fileData = brrs_cap_ratio_buffer_reportservice.getCAP_RATIO_BUFFERDetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
