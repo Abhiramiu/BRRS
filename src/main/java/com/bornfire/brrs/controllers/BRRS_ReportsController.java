@@ -4989,8 +4989,59 @@ public class BRRS_ReportsController {
 		response.getOutputStream().write(file);
 		response.getOutputStream().flush();
 	}
+	
 
-	@Autowired
+    @GetMapping("/downloadRBRConsolidatedExcel")
+    public void downloadRBRConsolidatedExcel(
+            @RequestParam(required = false) String asondate,
+            @RequestParam(required = false) String todate,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String filename,
+            HttpServletResponse response) throws IOException {
+
+        try {
+
+            System.out.println("==== RBR Download Started ====");
+            System.out.println("asondate: " + asondate);
+            System.out.println("todate: " + todate);
+
+            filename = (filename == null || filename.isEmpty())
+                    ? "RBR_Consolidated_Report"
+                    : filename;
+
+            byte[] file = regreportServices.getRBRConsolidatedDownloadFile(
+                    filename,
+                    asondate,
+                    null,
+                    todate,
+                    null,
+                    type,
+                    null,
+                    null,
+                    null   // dtltype
+            );
+
+            if (file == null || file.length == 0) {
+                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                return;
+            }
+
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setHeader("Content-Disposition",
+                    "attachment; filename=\"" + filename + ".xlsx\"");
+
+            response.getOutputStream().write(file);
+            response.getOutputStream().flush();
+
+            System.out.println("==== RBR Download Completed ====");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Download failed");
+        }
+    }
+	  
+	  @Autowired
 	BRRS_M_SIR_ReportService BRRS_M_SIR_ReportService;
 
 	@RequestMapping(value = "/MSIRupdateAll", method = { RequestMethod.GET, RequestMethod.POST })

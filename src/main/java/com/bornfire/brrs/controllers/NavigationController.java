@@ -2233,4 +2233,43 @@ public class NavigationController {
 		return "Trigger";
 	}
 
+	
+	@GetMapping("/toDownloadRBRExcel")
+	public String redirectToDownloadRBRExcel(
+	        @RequestParam String asondate,
+	        @RequestParam String fromdate,
+	        @RequestParam String todate,
+	        @RequestParam String currency,
+	        @RequestParam String type,
+	        @RequestParam String version,
+	        @RequestParam String filename) {
+
+	    String redirectUrl = String.format(
+	            "redirect:/Reports/downloadRBRConsolidatedExcel?asondate=%s&fromdate=%s&todate=%s&currency=%s&type=%s&version=%s&filename=%s",
+	            asondate, fromdate, todate, currency, type, version, filename);
+
+	    return redirectUrl;
+	}
+	
+
+    @RequestMapping(value = "RBR_CONSOLIDATED_REPORT", method = { RequestMethod.GET, RequestMethod.POST })
+    public String RBR_CONSOLIDATED_REPORT(
+            @RequestParam(required = false) String formmode,
+            Model md,
+            HttpServletRequest req) {
+
+        md.addAttribute("activeMenu", "Reports");
+        md.addAttribute("activePage", "CentralBank");
+
+        String USERID = (String) req.getSession().getAttribute("USERID");
+        md.addAttribute("USERID", USERID);
+        logger.info("==> Entered rbrCosolidatedReport controller || Formmode: {}", formmode);
+		
+System.out.println("Enter into navigation controller");
+        if (formmode == null || formmode.equals("list")) {
+            md.addAttribute("formmode", "list");
+        }
+
+        return "RBRConsolidatedReport"; // HTML name
+    }
 }

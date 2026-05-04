@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>RBR Consolidated Download</title>
+
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}" />
+    <script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+</head>
+
+<body>
+
+<div th:insert="HeaderMenu :: header" class="fixed-top"></div>
+
+<div class="container-fluid" style="margin-top:80px">
+
+    <div class="card">
+        <div class="card-header">
+            <h5>RBR Consolidated Report - Download</h5>
+        </div>
+
+        <div class="card-body">
+
+            <!-- Report Date -->
+            <div class="form-group row justify-content-center">
+                <label class="col-sm-2 col-form-label">Report Date</label>
+                <div class="col-sm-3">
+                    <input type="date" id="report_date" class="form-control">
+                </div>
+            </div>
+
+            <!-- Submit -->
+            <div class="text-center">
+                <button class="btn btn-primary" onclick="downloadRBR()">Download</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Loader -->
+<div class="modal fade" id="loader">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background:none;border:none">
+            <div class="modal-body text-center">
+                <h5>Loading...</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+function downloadRBR() {
+
+    var rawDate = document.getElementById("report_date").value;
+
+    if (!rawDate) {
+        alert("Please select Report Date");
+        return;
+    }
+
+    var asondate = formatDate(rawDate);
+    var todate = formatDate(rawDate);
+
+    var filename = "RBR_Consolidated_Report";
+    var type = "BRRS";
+
+    $('#loader').modal('show');
+
+    $.ajax({
+        url: './Reports/downloadRBRConsolidatedExcel', // ✅ FIXED (absolute path)
+        type: 'GET',
+        data: {
+            asondate: asondate,
+            todate: todate,
+            type: type,
+            filename: filename
+        },
+        xhrFields: {
+            responseType: 'blob'
+        },
+        success: function(data) {
+
+            $('#loader').modal('hide');
+
+            if (data && data.size > 100) {
+
+                const blob = new Blob([data], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                });
+
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+
+                a.href = url;
+                a.download = filename + '.xlsx';
+
+                document.body.appendChild(a);
+                a.click();
+
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                alert("Downloaded successfully");
+
+            } else {
+                alert("No data available");
+            }
+        },
+        error: function() {
+            $('#loader').modal('hide');
+            alert("Download failed");
+        }
+    });
+}
+
+function formatDate(dateStr) {
+    let d = dateStr.split("-");
+    let monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    let month = monthNames[parseInt(d[1]) - 1];
+    return d[2] + "-" + month + "-" + d[0]; // ✅ FIXED FORMAT (31-Oct-2025)
+}
+
+</script>
+
+</body>
+</html>

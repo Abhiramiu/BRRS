@@ -9,14 +9,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
+import java.io.ByteArrayInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
@@ -8750,4 +8752,192 @@ break;
 		return BRRS_SLS_INPUT_SHT_reportservice.getRT_SLSView("SLS", fromdate, todate, currency, dtltype, pageable);
 	}
 
+	
+	
+	    // ================= MAIN METHOD =================
+	public byte[] getRBRConsolidatedDownloadFile(String filename, String asondate, String fromdate, String todate,
+	        String currency, String type, String format, BigDecimal version, String dtltype) throws ParseException {
+
+	    System.out.println("Service: getRBRConsolidatedDownloadFile");
+
+	    List<String> reportList = Arrays.asList(
+	            "MDISB1", "MDISB2", "MDISB3", "MDISB4", "MDISB5"
+	    );
+
+	    // ✅ Date Handling (Safe)
+	    String formattedDate = "";
+	    if (todate != null && !todate.isEmpty()) {
+	        formattedDate = formatDate(todate);
+	    }
+
+	    String safeFromDate = (fromdate != null && !fromdate.isEmpty()) ? fromdate : formattedDate;
+
+	    // ✅ Workbook
+	    XSSFWorkbook workbook = new XSSFWorkbook();
+
+	    // ================= STATUS SHEET =================
+	    Sheet statusSheet = workbook.createSheet("Status");
+
+	    Row header = statusSheet.createRow(0);
+	    header.createCell(0).setCellValue("Report Name");
+	    header.createCell(1).setCellValue("Status");
+	    header.createCell(2).setCellValue("Remarks");
+
+	    int rowNum = 1;
+
+	    // ✅ To avoid duplicate sheet names
+	    Set<String> sheetNames = new HashSet<>();
+
+	    // ================= LOOP REPORTS =================
+	    for (String report : reportList) {
+
+	        try {
+
+	            byte[] fileData = generateRBRReport(
+	                    report, filename, asondate,
+	                    safeFromDate, formattedDate,
+	                    currency, dtltype, type, version);
+
+	            if (fileData != null && fileData.length > 0) {
+
+	                try (Workbook reportWorkbook =
+	                             new XSSFWorkbook(new ByteArrayInputStream(fileData))) {
+
+	                    for (int i = 0; i < reportWorkbook.getNumberOfSheets(); i++) {
+
+	                        Sheet srcSheet = reportWorkbook.getSheetAt(i);
+
+	                        String sheetName = report;
+	                        if (reportWorkbook.getNumberOfSheets() > 1) {
+	                            sheetName = report + "_" + (i + 1);
+	                        }
+
+	                        // ✅ Unique sheet name
+	                        sheetName = getUniqueSheetName(sheetName, sheetNames);
+	                        sheetNames.add(sheetName);
+
+	                        Sheet destSheet = workbook.createSheet(sheetName);
+
+	                        // ✅ Copy like your working logic
+	                        copySheet(srcSheet, destSheet);
+	                    }
+	                }
+
+	                // ✅ SUCCESS LOG
+	                Row row = statusSheet.createRow(rowNum++);
+	                row.createCell(0).setCellValue(report);
+	                row.createCell(1).setCellValue("SUCCESS");
+
+	            } else {
+
+	                Row row = statusSheet.createRow(rowNum++);
+	                row.createCell(0).setCellValue(report);
+	                row.createCell(1).setCellValue("FAILED");
+	                row.createCell(2).setCellValue("No Data");
+	            }
+
+	        } catch (Exception e) {
+
+	            e.printStackTrace();
+
+	            Row row = statusSheet.createRow(rowNum++);
+	            row.createCell(0).setCellValue(report);
+	            row.createCell(1).setCellValue("FAILED");
+	            row.createCell(2).setCellValue("Error: " + e.getMessage());
+	        }
+	    }
+
+	    // ✅ Auto-size
+	    for (int i = 0; i < 3; i++) {
+	        statusSheet.autoSizeColumn(i);
+	    }
+
+	    // ================= OUTPUT =================
+	    try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+	        workbook.write(bos);
+	        workbook.close();
+	        return bos.toByteArray();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return null;
+	}
+	
+	private byte[] generateRBRReport(
+	        String reportName,
+	        String filename,
+	        String asondate,
+	        String fromdate,
+	        String todate,
+	        String currency,
+	        String dtltype,
+	        String type,
+	        BigDecimal version) {
+
+	    try {
+
+	        switch (reportName) {
+
+	            case "MDISB1":
+	                return brrs_mdisb1_reportservice.getMDISB1Excel(
+	                        "MDISB1.xlsx", reportName,
+	                        fromdate, todate, currency,
+	                        dtltype, type, version);
+
+	            case "MDISB2":
+	                return brrs_mdisb2_reportservice.getMDISB2Excel(
+	                        "MDISB2.xlsx", reportName,
+	                        fromdate, todate, currency,
+	                        dtltype, type, version);
+
+	            case "MDISB3":
+	                return brrs_mdisb3_reportservice.getMDISB3Excel(
+	                        "MDISB3.xlsx", reportName,
+	                        fromdate, todate, currency,
+	                        dtltype, type, version);
+
+	            case "MDISB4":
+	                return BRRS_MDISB4_ReportService.getMDISB4Excel(
+	                        "MDISB4.xlsx", reportName,
+	                        fromdate, todate, currency,
+	                        dtltype, type, version);
+
+	            case "MDISB5":
+	                return BRRS_MDISB5_ReportService.getMDISB5Excel(
+	                        "MDISB5.xlsx", reportName,
+	                        fromdate, todate, currency,
+	                        dtltype, type, version);
+
+	            default:
+	                return null;
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return null;
+	    }
+	}
+	
+	private String formatDate(String inputDate) {
+	    if (inputDate == null || inputDate.isEmpty()) return "";
+	    try {
+	        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
+	        SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy");
+	        return outputFormat.format(inputFormat.parse(inputDate));
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return inputDate;
+	}
+
+	private String getUniqueSheetName(String baseName, Set<String> existingNames) {
+	    String name = baseName;
+	    int counter = 1;
+	    while (existingNames.contains(name)) {
+	        name = baseName + "_" + counter++;
+	    }
+	    return name;
+	}
+	
 }
