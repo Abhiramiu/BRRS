@@ -1049,7 +1049,7 @@ PURPOSE		: BRRS BASEL_III_COM_EQUITY_DISC  REPORT
 					success: function () {
 						isSummaryPage = true;
 						$("#resultModalLabel").text("BRRS");
-						$("#resultModalBody").text(" Updated Successfully.");
+						$("#resultModalBody").text(" Modified Successfully.");
 						$("#resultModal").modal("show");
 					},
 					error: function (jqXHR) {
@@ -2018,7 +2018,7 @@ PURPOSE		: BRRS BASEL_III_COM_EQUITY_DISC  REPORT
 													<i class="fas fa-edit" style="color: black; cursor:pointer;"
 														th:attr="data-acctNo=${report.acctNumber},
 														data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
-														onclick="openPL_SCHSDetail(this, 'edit')"></i>
+														onclick="openB_III_CETDDetail(this, 'edit')"></i>
 
 												</a>
 											</td>

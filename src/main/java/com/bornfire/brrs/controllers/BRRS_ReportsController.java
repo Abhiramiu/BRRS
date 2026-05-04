@@ -1027,27 +1027,53 @@ public class BRRS_ReportsController {
 		}
 	}
 
+//	@Autowired
+//	BRRS_BASEL_III_COM_EQUITY_DISC_ReportService b_III_cetd_ReportService;
+//
+//	@RequestMapping(value = "/B_III_CETDupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+//	@ResponseBody
+//	public ResponseEntity<String> updateReport(
+//			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+//			@ModelAttribute BASEL_III_COM_EQUITY_DISC_Summary_Entity request) {
+//		try {
+//			System.out.println("came to single controller");
+//
+//			// ✅ set the asondate into entity
+//			request.setReport_date(asondate);
+//			// call services
+//			b_III_cetd_ReportService.updateReport(request);
+//
+//			return ResponseEntity.ok(" Modified Successfully");
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+//		}
+//	}
+	
 	@Autowired
-	BRRS_BASEL_III_COM_EQUITY_DISC_ReportService b_III_cetd_ReportService;
+	BRRS_BASEL_III_COM_EQUITY_DISC_ReportService  b_III_cetd_ReportService;
+	
+	
 
 	@RequestMapping(value = "/B_III_CETDupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute BASEL_III_COM_EQUITY_DISC_Summary_Entity request) {
-		try {
-			System.out.println("came to single controller");
+	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @ModelAttribute BRRS_BASEL_III_COM_EQUITY_DISC_ReportService.BASEL_III_COM_EQUITY_DISC_Summary_Entity request) {
 
-			// ✅ set the asondate into entity
-			request.setReport_date(asondate);
-			// call services
-			b_III_cetd_ReportService.updateReport(request);
+	    try {
+	        System.out.println("came to single controller");
 
-			return ResponseEntity.ok(" Modified Successfully");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
+	        request.setReport_date(asondate);
+
+	        b_III_cetd_ReportService.updateReport(request);
+
+	        return ResponseEntity.ok("Modified Successfully.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Update Failed: " + e.getMessage());
+	    }
 	}
 
 	@Autowired
