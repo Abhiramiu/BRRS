@@ -983,7 +983,7 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute CAP_RATIO_BUFFER_Summary_Entity request) {
+			@ModelAttribute BRRS_CAP_RATIO_BUFFER_ReportService.CAP_RATIO_BUFFER_Summary_Entity request) {
 		try {
 			System.out.println("came to CAP_RATIO_BUFFER controller");
 
@@ -3460,7 +3460,7 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute FORMAT_II_Summary_Entity request) {
+			@ModelAttribute BRRS_FORMAT_II_ReportService.FORMAT_II_Summary_Entity request) {
 
 		try {
 			System.out.println("came to single controller");

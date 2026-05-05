@@ -3374,7 +3374,7 @@ public void setSno(BigDecimal sno) {
 
 	    ModelAndView mv = new ModelAndView();
 
-	    System.out.println("SCH_17_New View Called");
+	    System.out.println("B_III_CETD View Called");
 	    System.out.println("Type = " + type);
 	    System.out.println("Version = " + version);
 
@@ -3605,7 +3605,7 @@ public void setSno(BigDecimal sno) {
 		public void updateReport(
 		        BASEL_III_COM_EQUITY_DISC_Summary_Entity updatedEntity) {
 
-		    System.out.println("Came to SCH_17 Manual Update");
+		    System.out.println("Came to BASEL_III_COM_EQUITY_DISC Manual Update");
 		    System.out.println("Report Date: " + updatedEntity.getReport_date());
 
 		   int[] rows = {73 };
@@ -4050,7 +4050,7 @@ public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
 		
 			public byte[] getB_III_CETDExcel(String filename, String reportId, String fromdate, String todate, String currency,
 				String dtltype, String type, BigDecimal version) throws Exception {
-			logger.info("Service: Starting Excel generation process in memory.sch17");
+			logger.info("Service: Starting Excel generation process in memory.B_III_CETD");
 
 			// ARCHIVAL check
 			if ("ARCHIVAL".equalsIgnoreCase(type)
