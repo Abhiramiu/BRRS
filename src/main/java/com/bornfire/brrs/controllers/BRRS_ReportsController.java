@@ -45,6 +45,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.bornfire.brrs.dto.ReportLineItemDTO;
 import com.bornfire.brrs.entities.*;
 import com.bornfire.brrs.services.BRRS_ADISB1_ReportService;
+import com.bornfire.brrs.services.BRRS_ADISB1_ReportService.ADISB1_Manual_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_AS_11_ReportService;
 import com.bornfire.brrs.services.BRRS_BASEL_III_COM_EQUITY_DISC_ReportService;
 import com.bornfire.brrs.services.BRRS_BDISB1_ReportService;

@@ -1697,7 +1697,7 @@ PURPOSE  : BRRSREPORT
 		<!-- ADISB1 Detail Form Screen -->
 		<div th:if="${formmode == 'edit'}" class="card">
 			<div class="card-body">
-				<form th:object="${Data}" method="post" id="DetailForm">
+				<form th:object="${ADISB1Data}" method="post" id="DetailForm">
 
 					<!-- Row 1 -->
 					<div class="row formline" style="margin-top:10px;">
@@ -1752,7 +1752,7 @@ PURPOSE  : BRRSREPORT
 						<label class="col-sm-2">Report Date</label>
 						<div class="col-sm-3">
 							<input type="date" name="reportDate" class="form-control form-control-sm"
-								th:value="${#dates.format(Data.reportDate, 'yyyy-MM-dd')}" readonly />
+								th:value="${#dates.format(ADISB1Data.reportDate, 'yyyy-MM-dd')}" readonly />
 						</div>
 					</div>
 
