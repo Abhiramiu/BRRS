@@ -1109,6 +1109,91 @@ function downloadDetailfile(jobId,filename) {
     }
 </script>
 
+<script>
+function downloadPdf(button) {
+
+    var reportid = button.getAttribute('data-reportid');
+    var asondate = button.getAttribute('data-asondate');
+    var fromdate = button.getAttribute('data-fromdate');
+    var todate = button.getAttribute('data-todate');
+    var currency = button.getAttribute('data-currency');
+    var subreportid = button.getAttribute('data-subreportid');
+    var secid = button.getAttribute('data-secid');
+    var dtltype = button.getAttribute('data-dtltype');
+    var filename = button.getAttribute('data-filename');
+    var type = button.getAttribute('data-type');
+    var version = button.getAttribute('data-version');
+
+    $('#loader').modal('show');
+
+    $.ajax({
+    	url: './downloadPdf?reportid=' + reportid +
+            '&fromdate=' + fromdate +
+            '&asondate=' + asondate +
+            '&todate=' + todate +
+            '&currency=' + currency +
+            '&subreportid=' + subreportid +
+            '&secid=' + secid +
+            '&filename=' + filename +
+            '&type=' + type +
+            '&version=' + version,
+
+        type: 'GET',
+
+        xhrFields: {
+            responseType: 'blob'
+        },
+
+        success: function (data) {
+
+            $('#loader').modal('hide');
+
+            if (data && data.size > 100) {
+
+                const blob = new Blob([data], {
+                    type: 'application/pdf'
+                });
+
+                const url = window.URL.createObjectURL(blob);
+
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = filename + '.pdf';
+
+                document.body.appendChild(a);
+                a.click();
+
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                showResultModal(
+                    'BRRS',
+                    filename + '.pdf downloaded successfully.'
+                );
+
+            } else {
+                showResultModal(
+                    'Information',
+                    'No data available for PDF download.'
+                );
+            }
+        },
+
+        error: function (jqXHR, textStatus, errorThrown) {
+
+            $('#loader').modal('hide');
+
+            console.error("PDF Download failed:", textStatus, errorThrown);
+
+            showResultModal(
+                'Error',
+                'An error occurred while downloading PDF.'
+            );
+        }
+    });
+}</script>
+
 </head>
 <title>BRRS</title>
 
@@ -1188,7 +1273,24 @@ function downloadDetailfile(jobId,filename) {
 
 						</button>
 
+<button type="button"
+        class="custom-tab-btn"
+        id="custom-tab-btnPdf"
+        th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}"
+        th:attr="
+            data-reportid=${reportid},
+            data-asondate=${asondate},
+            data-fromdate=${fromdate},
+            data-todate=${todate},
+            data-currency=${currency},
+            data-dtltype=${dtltype},
+            data-filename='M_IS.xlsx',
+            data-type=${type},
+            data-version=${version}"
+        onclick="downloadPdf(this);">
 
+    <i class="fa fa-download"></i> PDF
+</button>
 
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
 							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="

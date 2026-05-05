@@ -5335,4 +5335,83 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
+	
+	
+	@RequestMapping(value = "downloadPdf", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<ByteArrayResource> downloadPdf(
+	        @RequestParam("reportid") String reportid,
+	        @RequestParam("asondate") String asondate,
+	        @RequestParam("fromdate") String fromdate,
+	        @RequestParam("todate") String todate,
+	        @RequestParam("currency") String currency,
+	        @RequestParam(value = "type", required = false) String type,
+	        @RequestParam(value = "version", required = false) String versionBD,
+	        @RequestParam(value = "subreportid", required = false) String subreportid,
+	        @RequestParam(value = "secid", required = false) String secid,
+	        @RequestParam(value = "dtltype", required = false) String dtltype,
+	        @RequestParam(value = "filename", required = false) String filename
+	) {
+
+	    try {
+
+	        BigDecimal version = null;
+
+	        // SAFE VERSION CHECK (IMPORTANT)
+	        if (versionBD != null &&
+	            !versionBD.trim().isEmpty() &&
+	            !"null".equalsIgnoreCase(versionBD) &&
+	            !"undefined".equalsIgnoreCase(versionBD)) {
+
+	            version = new BigDecimal(versionBD.trim());
+	        }
+
+	        asondate = dateFormat.format(
+	                new SimpleDateFormat("dd/MM/yyyy").parse(asondate));
+
+	        fromdate = dateFormat.format(
+	                new SimpleDateFormat("dd/MM/yyyy").parse(fromdate));
+
+	        todate = dateFormat.format(
+	                new SimpleDateFormat("dd/MM/yyyy").parse(todate));
+
+	        byte[] pdfData = regreportServices.getPdfDownloadFile(
+	                reportid,
+	                filename,
+	                asondate,
+	                fromdate,
+	                todate,
+	                currency,
+	                subreportid,
+	                secid,
+	                dtltype,
+	                type,
+	                version
+	        );
+
+	        
+	        if (pdfData == null || pdfData.length == 0) {
+	            return ResponseEntity.noContent().build();
+	        }
+
+	        ByteArrayResource resource = new ByteArrayResource(pdfData);
+
+	        HttpHeaders headers = new HttpHeaders();
+	        headers.add(
+	                HttpHeaders.CONTENT_DISPOSITION,
+	                "attachment; filename=" + filename + ".pdf"
+	        );
+
+	        return ResponseEntity.ok()
+	                .headers(headers)
+	                .contentLength(pdfData.length)
+	                .contentType(MediaType.APPLICATION_PDF)
+	                .body(resource);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+	    }
+	}
+
 }

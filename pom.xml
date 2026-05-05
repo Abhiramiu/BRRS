@@ -173,11 +173,7 @@
             <artifactId>log4j-api</artifactId>
             <version>${log4j2.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j2.version}</version>
-        </dependency>
+        
 
         <!-- Excel Streaming -->
         <dependency>
@@ -227,7 +223,13 @@
             <artifactId>joda-time</artifactId>
         </dependency>
 
-  
+
+       <!--  <dependency>
+        	<groupId>com.bornfire</groupId>
+        	<artifactId>BCBUAEBRF</artifactId>
+        	<version>0.0.1-SNAPSHOT</version>
+        </dependency> -->
+
     </dependencies>
 
     <build>
@@ -248,3 +250,7 @@
     </repositories>
 
 </project>
+
+
+
+
