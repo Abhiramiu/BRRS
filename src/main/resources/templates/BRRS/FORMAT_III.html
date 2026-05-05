@@ -1870,7 +1870,7 @@ PURPOSE		: BRRSREPORT
 			                                              title="Click to Edit this Record">
 			                                              <i class="fas fa-edit" style="color: black; cursor:pointer;"
 			                                                  th:attr="data-acctNo=${report.acctNumber},
-															data-asondate=${#dates.format(report.REPORT_DATE, 'dd-MM-yyyy')},data-type=${type}"
+															data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
 			                                                  onclick="openFORMAT_IIIDetail(this, 'edit')"></i>
 
 			                                          </a>
@@ -1889,7 +1889,7 @@ PURPOSE		: BRRSREPORT
 
 			                                      <td th:text="${report.reportLabel}" style="text-align:left"></td>
 			                                      <td th:text="${report.reportAddlCriteria1}" style="text-align:left"></td>
-			                                      <td th:text="${#dates.format(report.REPORT_DATE, 'dd-MM-yyyy')}"
+			                                      <td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"
 			                                          style="text-align:left"></td>
 			                                  </tr>
 			                              </tbody>
@@ -1972,8 +1972,8 @@ PURPOSE		: BRRSREPORT
 
 			                          <label class="col-sm-2">Report Date</label>
 			                          <div class="col-sm-3">
-			                              <input type="date" name="REPORT_DATE" class="form-control form-control-sm" readonly
-			                                  th:value="${#dates.format(FORMAT_IIIData.REPORT_DATE, 'yyyy-MM-dd')}" />
+			                              <input type="date" name="reportDate" class="form-control form-control-sm" readonly
+			                                  th:value="${#dates.format(FORMAT_IIIData.reportDate, 'yyyy-MM-dd')}" />
 			                          </div>
 			                      </div>
 

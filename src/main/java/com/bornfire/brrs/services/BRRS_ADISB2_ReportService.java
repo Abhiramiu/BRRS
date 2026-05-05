@@ -39,6 +39,7 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -128,13 +129,13 @@ public class BRRS_ADISB2_ReportService {
 
 	// 1. BY DATE + LABEL + CRITERIA
 
-	public List<ADISB2_Detail_Entity> findByDetailReportDateAndLabelAndCriteria(Date reportDate, String reportLabel,
+	public List<ADISB2_Detail_Entity> findByDetailReportDateAndLabelAndCriteria(Date reportDate, String ReportLabel,
 			String reportAddlCriteria1) {
 
 		String sql = "SELECT * FROM BRRS_ADISB2_DETAILTABLE "
 				+ "WHERE REPORT_DATE = ? AND REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ?";
 
-		return jdbcTemplate.query(sql, new Object[] { reportDate, reportLabel, reportAddlCriteria1 },
+		return jdbcTemplate.query(sql, new Object[] { reportDate, ReportLabel, reportAddlCriteria1 },
 				new CommonDisclosureDetailRowMapper());
 	}
 
@@ -169,13 +170,13 @@ public class BRRS_ADISB2_ReportService {
 
 	// 5. BY LABEL + CRITERIA
 
-	public List<ADISB2_Detail_Entity> GetDetailDataByRowIdAndColumnId(String reportLabel, String reportAddlCriteria1,
+	public List<ADISB2_Detail_Entity> GetDetailDataByRowIdAndColumnId(String ReportLabel, String reportAddlCriteria1,
 			Date reportdate) {
 
 		String sql = "SELECT * FROM BRRS_ADISB2_DETAILTABLE "
 				+ "WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ?";
 
-		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate },
+		return jdbcTemplate.query(sql, new Object[] { ReportLabel, reportAddlCriteria1, reportdate },
 				new CommonDisclosureDetailRowMapper());
 	}
 	// 6. BY ACCOUNT NUMBER
@@ -1774,8 +1775,8 @@ public class BRRS_ADISB2_ReportService {
 		@Column(name = "REPORT_ADDL_CRITERIA_1")
 		private String reportAddlCriteria1;
 
-		@Column(name = "REPORT_LABLE")
-		private String reportLable;
+		@Column(name = "REPORT_LABEL")
+		private String reportLabel;
 		@Column(name = "REPORT_REMARKS")
 		private String reportRemarks;
 		@Column(name = "MODIFICATION_REMARKS")
@@ -1854,12 +1855,12 @@ public class BRRS_ADISB2_ReportService {
 			this.reportAddlCriteria1 = reportAddlCriteria1;
 		}
 
-		public String getReportLable() {
-			return reportLable;
+		public String getReportLabel() {
+			return reportLabel;
 		}
 
-		public void setReportLable(String reportLable) {
-			this.reportLable = reportLable;
+		public void setReportLabel(String reportLabel) {
+			this.reportLabel = reportLabel;
 		}
 
 		public String getReportRemarks() {
@@ -1997,7 +1998,7 @@ public class BRRS_ADISB2_ReportService {
 			obj.setDataType(rs.getString("DATA_TYPE"));
 			obj.setReportAddlCriteria1(rs.getString("REPORT_ADDL_CRITERIA_1"));
 
-			obj.setReportLable(rs.getString("REPORT_LABLE"));
+			obj.setReportLabel(rs.getString("REPORT_LABEL"));
 			obj.setReportRemarks(rs.getString("REPORT_REMARKS"));
 			obj.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
 			obj.setDataEntryVersion(rs.getString("DATA_ENTRY_VERSION"));
@@ -2038,7 +2039,7 @@ public class BRRS_ADISB2_ReportService {
 			obj.setDataType(rs.getString("DATA_TYPE"));
 			obj.setReportAddlCriteria1(rs.getString("REPORT_ADDL_CRITERIA_1"));
 
-			obj.setReportLable(rs.getString("REPORT_LABLE"));
+			obj.setReportLabel(rs.getString("REPORT_LABEL"));
 			obj.setReportRemarks(rs.getString("REPORT_REMARKS"));
 			obj.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
 			obj.setDataEntryVersion(rs.getString("DATA_ENTRY_VERSION"));
@@ -2080,8 +2081,8 @@ public class BRRS_ADISB2_ReportService {
 		@Column(name = "REPORT_ADDL_CRITERIA_1")
 		private String reportAddlCriteria1;
 
-		@Column(name = "REPORT_LABLE")
-		private String reportLable;
+		@Column(name = "REPORT_LABEL")
+		private String reportLabel;
 		@Column(name = "REPORT_REMARKS")
 		private String reportRemarks;
 		@Column(name = "MODIFICATION_REMARKS")
@@ -2160,12 +2161,12 @@ public class BRRS_ADISB2_ReportService {
 			this.reportAddlCriteria1 = reportAddlCriteria1;
 		}
 
-		public String getReportLable() {
-			return reportLable;
+		public String getReportLabel() {
+			return reportLabel;
 		}
 
-		public void setReportLable(String reportLable) {
-			this.reportLable = reportLable;
+		public void setReportLabel(String reportLabel) {
+			this.reportLabel = reportLabel;
 		}
 
 		public String getReportRemarks() {
@@ -2604,8 +2605,8 @@ public class BRRS_ADISB2_ReportService {
 				return ARCHIVALreport;
 			}
 
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("ADISB2DetailsDetail");
+			SXSSFWorkbook workbook = new SXSSFWorkbook(100); 
+			Sheet sheet = workbook.createSheet("ADISB2DetailsDetail");
 
 			// Common border style
 			BorderStyle border = BorderStyle.THIN;
@@ -2652,7 +2653,7 @@ public class BRRS_ADISB2_ReportService {
 			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABEL",
 					"REPORT ADDL CRITERIA1", "REPORT_DATE" };
 
-			XSSFRow headerRow = sheet.createRow(0);
+			Row headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
 				Cell cell = headerRow.createCell(i);
 				cell.setCellValue(headers[i]);
@@ -2673,7 +2674,7 @@ public class BRRS_ADISB2_ReportService {
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
 				for (ADISB2_Detail_Entity item : reportData) {
-					XSSFRow row = sheet.createRow(rowIndex++);
+					Row row = sheet.createRow(rowIndex++);
 
 					row.createCell(0).setCellValue(item.getCustId());
 					row.createCell(1).setCellValue(item.getAcctNumber());
@@ -2688,7 +2689,7 @@ public class BRRS_ADISB2_ReportService {
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
-					row.createCell(4).setCellValue(item.getReportLable());
+					row.createCell(4).setCellValue(item.getReportLabel());
 					row.createCell(5).setCellValue(item.getReportAddlCriteria1());
 					row.createCell(6)
 							.setCellValue(item.getReportDate() != null
@@ -2728,8 +2729,8 @@ public class BRRS_ADISB2_ReportService {
 			if (type.equals("ARCHIVAL") & version != null) {
 
 			}
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("ADISB2 Detail NEW");
+			SXSSFWorkbook workbook = new SXSSFWorkbook(100); 
+			Sheet sheet = workbook.createSheet("ADISB2 Detail NEW");
 
 			// Common border style
 			BorderStyle border = BorderStyle.THIN;
@@ -2773,7 +2774,7 @@ public class BRRS_ADISB2_ReportService {
 			// Header row
 			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABEL",
 					"REPORT ADDL CRITERIA1", "REPORT_DATE" };
-			XSSFRow headerRow = sheet.createRow(0);
+			Row headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
 				Cell cell = headerRow.createCell(i);
 				cell.setCellValue(headers[i]);
@@ -2794,7 +2795,7 @@ public class BRRS_ADISB2_ReportService {
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
 				for (ADISB2_Archival_Detail_Entity item : reportData) {
-					XSSFRow row = sheet.createRow(rowIndex++);
+					Row row = sheet.createRow(rowIndex++);
 
 					row.createCell(0).setCellValue(item.getCustId());
 					row.createCell(1).setCellValue(item.getAcctNumber());
@@ -2809,7 +2810,7 @@ public class BRRS_ADISB2_ReportService {
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
-					row.createCell(4).setCellValue(item.getReportLable());
+					row.createCell(4).setCellValue(item.getReportLabel());
 					row.createCell(5).setCellValue(item.getReportAddlCriteria1());
 					row.createCell(6)
 							.setCellValue(item.getReportDate() != null
