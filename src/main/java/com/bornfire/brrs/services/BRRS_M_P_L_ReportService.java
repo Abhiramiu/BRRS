@@ -489,7 +489,7 @@ return new byte[0];
 }
 
 	public byte[] getM_P_LExcel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, String format, BigDecimal version) throws Exception {
+			String dtltype, String type,  BigDecimal version) throws Exception {
 logger.info("Service: Starting Excel generation process in memory.");
 logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, version);
 
