@@ -2239,7 +2239,7 @@ public class BRRS_FORMAT_III_ReportService {
 
 	public byte[] getFORMAT_IIIExcel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, BigDecimal version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.sch17");
+		logger.info("Service: Starting Excel generation process in memory.FORMAT_III");
 
 		// ARCHIVAL check
 		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version.compareTo(BigDecimal.ZERO) >= 0) {

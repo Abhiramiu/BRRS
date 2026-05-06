@@ -104,8 +104,7 @@ public class BRRS_ADISB2_ReportService {
 		String sql = "SELECT * FROM BRRS_ADISB2_ARCHIVALTABLE_SUMMARY " + "WHERE REPORT_DATE = ? "
 				+ "AND REPORT_VERSION = ?";
 
-		return jdbcTemplate.query(sql, new Object[] { REPORT_DATE, REPORT_VERSION },
-				new CommonDisclosureArchivalRowMapper());
+		return jdbcTemplate.query(sql, new Object[] { REPORT_DATE, REPORT_VERSION }, new ADISB2ArchivalRowMapper());
 	}
 	// GET ALL WITH VERSION
 
@@ -114,7 +113,7 @@ public class BRRS_ADISB2_ReportService {
 		String sql = "SELECT * FROM BRRS_ADISB2_ARCHIVALTABLE_SUMMARY " + "WHERE REPORT_VERSION IS NOT NULL "
 				+ "ORDER BY REPORT_VERSION ASC";
 
-		return jdbcTemplate.query(sql, new CommonDisclosureArchivalRowMapper());
+		return jdbcTemplate.query(sql, new ADISB2ArchivalRowMapper());
 	}
 
 	// GET MAX VERSION BY DATE
@@ -136,7 +135,7 @@ public class BRRS_ADISB2_ReportService {
 				+ "WHERE REPORT_DATE = ? AND REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ?";
 
 		return jdbcTemplate.query(sql, new Object[] { reportDate, ReportLabel, reportAddlCriteria1 },
-				new CommonDisclosureDetailRowMapper());
+				new ADISB2DetailRowMapper());
 	}
 
 	// 2. GET ALL (BY DATE - simple)
@@ -145,7 +144,7 @@ public class BRRS_ADISB2_ReportService {
 
 		String sql = "SELECT * FROM BRRS_ADISB2_DETAILTABLE WHERE REPORT_DATE = ?";
 
-		return jdbcTemplate.query(sql, new Object[] { reportdate }, new CommonDisclosureDetailRowMapper());
+		return jdbcTemplate.query(sql, new Object[] { reportdate }, new ADISB2DetailRowMapper());
 	}
 
 	// 3. PAGINATION
@@ -155,8 +154,7 @@ public class BRRS_ADISB2_ReportService {
 		String sql = "SELECT * FROM BRRS_ADISB2_DETAILTABLE "
 				+ "WHERE REPORT_DATE = ? OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
-		return jdbcTemplate.query(sql, new Object[] { reportdate, offset, limit },
-				new CommonDisclosureDetailRowMapper());
+		return jdbcTemplate.query(sql, new Object[] { reportdate, offset, limit }, new ADISB2DetailRowMapper());
 	}
 
 	// 4. COUNT
@@ -177,7 +175,7 @@ public class BRRS_ADISB2_ReportService {
 				+ "WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ?";
 
 		return jdbcTemplate.query(sql, new Object[] { ReportLabel, reportAddlCriteria1, reportdate },
-				new CommonDisclosureDetailRowMapper());
+				new ADISB2DetailRowMapper());
 	}
 	// 6. BY ACCOUNT NUMBER
 
@@ -185,7 +183,7 @@ public class BRRS_ADISB2_ReportService {
 
 		String sql = "SELECT * FROM BRRS_ADISB2_DETAILTABLE WHERE ACCT_NUMBER = ?";
 
-		return jdbcTemplate.queryForObject(sql, new Object[] { acctNumber }, new CommonDisclosureDetailRowMapper());
+		return jdbcTemplate.queryForObject(sql, new Object[] { acctNumber }, new ADISB2DetailRowMapper());
 	}
 
 	// 1. GET BY DATE + VERSION
@@ -197,7 +195,7 @@ public class BRRS_ADISB2_ReportService {
 				+ "WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
 
 		return jdbcTemplate.query(sql, new Object[] { reportdate, dataEntryVersion },
-				new SCH17ArchivalDetailRowMapper());
+				new ADISB2ArchivalDetailRowMapper());
 	}
 
 	// 2. FILTER BY LABEL + CRITERIA + DATE + VERSION
@@ -209,7 +207,7 @@ public class BRRS_ADISB2_ReportService {
 				+ "AND REPORT_ADDL_CRITERIA_1 = ? " + "AND REPORT_DATE = ? " + "AND DATA_ENTRY_VERSION = ?";
 
 		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate, dataEntryVersion },
-				new SCH17ArchivalDetailRowMapper());
+				new ADISB2ArchivalDetailRowMapper());
 	}
 
 	// ROW MAPPER
@@ -959,7 +957,7 @@ public class BRRS_ADISB2_ReportService {
 
 	// ARCHIVAL ROW MAPPER
 
-	class CommonDisclosureArchivalRowMapper implements RowMapper<ADISB2_Archival_Summary_Entity> {
+	class ADISB2ArchivalRowMapper implements RowMapper<ADISB2_Archival_Summary_Entity> {
 
 		@Override
 		public ADISB2_Archival_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -1133,12 +1131,11 @@ public class BRRS_ADISB2_ReportService {
 		private BigDecimal R15_EXCEEDING_DEPOSITORS;
 		private BigDecimal R15_COVERED_AMOUNT_PCT;
 
-		private Date REPORT_RESUBDATE;
 		@Id
 		@Temporal(TemporalType.DATE)
 		@Column(name = "REPORT_DATE")
 		private Date REPORT_DATE;
-
+		@Id
 		@Column(name = "REPORT_VERSION", length = 100)
 		private BigDecimal REPORT_VERSION;
 
@@ -1159,6 +1156,8 @@ public class BRRS_ADISB2_ReportService {
 
 		@Column(name = "DEL_FLG", length = 1)
 		private String DEL_FLG;
+
+		private Date REPORT_RESUBDATE;
 
 		public BigDecimal getR6_COVERAGE_LEVEL() {
 			return R6_COVERAGE_LEVEL;
@@ -1640,6 +1639,14 @@ public class BRRS_ADISB2_ReportService {
 			R15_COVERED_AMOUNT_PCT = r15_COVERED_AMOUNT_PCT;
 		}
 
+		public Date getREPORT_DATE() {
+			return REPORT_DATE;
+		}
+
+		public void setREPORT_DATE(Date REPORT_DATE) {
+			this.REPORT_DATE = REPORT_DATE;
+		}
+
 		public Date getREPORT_RESUBDATE() {
 			return REPORT_RESUBDATE;
 		}
@@ -1648,20 +1655,12 @@ public class BRRS_ADISB2_ReportService {
 			REPORT_RESUBDATE = rEPORT_RESUBDATE;
 		}
 
-		public Date getREPORT_DATE() {
-			return REPORT_DATE;
-		}
-
-		public void setREPORT_DATE(Date REPORT_DATE) {
-			REPORT_DATE = REPORT_DATE;
-		}
-
 		public BigDecimal getREPORT_VERSION() {
 			return REPORT_VERSION;
 		}
 
-		public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
-			REPORT_VERSION = REPORT_VERSION;
+		public void setREPORT_VERSION(BigDecimal rEPORT_VERSION) {
+			REPORT_VERSION = rEPORT_VERSION;
 		}
 
 		public String getREPORT_FREQUENCY() {
@@ -1985,7 +1984,7 @@ public class BRRS_ADISB2_ReportService {
 
 	}
 
-	class CommonDisclosureDetailRowMapper implements RowMapper<ADISB2_Detail_Entity> {
+	class ADISB2DetailRowMapper implements RowMapper<ADISB2_Detail_Entity> {
 
 		@Override
 		public ADISB2_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -2026,7 +2025,7 @@ public class BRRS_ADISB2_ReportService {
 		}
 	}
 
-	class SCH17ArchivalDetailRowMapper implements RowMapper<ADISB2_Archival_Detail_Entity> {
+	class ADISB2ArchivalDetailRowMapper implements RowMapper<ADISB2_Archival_Detail_Entity> {
 
 		@Override
 		public ADISB2_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -2605,7 +2604,7 @@ public class BRRS_ADISB2_ReportService {
 				return ARCHIVALreport;
 			}
 
-			SXSSFWorkbook workbook = new SXSSFWorkbook(100); 
+			SXSSFWorkbook workbook = new SXSSFWorkbook(100);
 			Sheet sheet = workbook.createSheet("ADISB2DetailsDetail");
 
 			// Common border style
@@ -2729,7 +2728,7 @@ public class BRRS_ADISB2_ReportService {
 			if (type.equals("ARCHIVAL") & version != null) {
 
 			}
-			SXSSFWorkbook workbook = new SXSSFWorkbook(100); 
+			SXSSFWorkbook workbook = new SXSSFWorkbook(100);
 			Sheet sheet = workbook.createSheet("ADISB2 Detail NEW");
 
 			// Common border style
@@ -2844,7 +2843,7 @@ public class BRRS_ADISB2_ReportService {
 
 	public byte[] getM_ADISB2Excel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, BigDecimal version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.sch17");
+		logger.info("Service: Starting Excel generation process in memory.ADISB2");
 
 		// ARCHIVAL check
 		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version.compareTo(BigDecimal.ZERO) >= 0) {

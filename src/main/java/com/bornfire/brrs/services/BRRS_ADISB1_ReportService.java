@@ -220,7 +220,7 @@ public class BRRS_ADISB1_ReportService {
 				+ "WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
 
 		return jdbcTemplate.query(sql, new Object[] { reportdate, dataEntryVersion },
-				new SCH17ArchivalDetailRowMapper());
+				new ADISB1ArchivalDetailRowMapper());
 	}
 
 // 2. FILTER BY LABEL + CRITERIA + DATE + VERSION
@@ -232,7 +232,7 @@ public class BRRS_ADISB1_ReportService {
 				+ "AND REPORT_ADDL_CRITERIA_1 = ? " + "AND REPORT_DATE = ? " + "AND DATA_ENTRY_VERSION = ?";
 
 		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate, dataEntryVersion },
-				new SCH17ArchivalDetailRowMapper());
+				new ADISB1ArchivalDetailRowMapper());
 	}
 
 	// ROW MAPPER
@@ -907,8 +907,8 @@ public class BRRS_ADISB1_ReportService {
 		@Temporal(TemporalType.DATE)
 		@DateTimeFormat(pattern = "dd/MM/yyyy")
 		@Id
-
 		private Date report_date;
+		@Id
 		private BigDecimal report_version;
 		@Column(name = "REPORT_RESUBDATE")
 		private BigDecimal REPORT_RESUBDATE;
@@ -1746,7 +1746,7 @@ public class BRRS_ADISB1_ReportService {
 		}
 	}
 
-	class SCH17ArchivalDetailRowMapper implements RowMapper<ADISB1_Archival_Detail_Entity> {
+	class ADISB1ArchivalDetailRowMapper implements RowMapper<ADISB1_Archival_Detail_Entity> {
 
 		@Override
 		public ADISB1_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -2630,7 +2630,7 @@ public class BRRS_ADISB1_ReportService {
 
 	public byte[] BRRS_ADISB1Excel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, BigDecimal version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.sch17");
+		logger.info("Service: Starting Excel generation process in memory.ADISB1");
 
 		// ARCHIVAL check
 		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version.compareTo(BigDecimal.ZERO) >= 0) {

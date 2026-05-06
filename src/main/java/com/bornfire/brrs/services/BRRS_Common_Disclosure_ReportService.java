@@ -197,7 +197,7 @@ public class BRRS_Common_Disclosure_ReportService {
 				+ "WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
 
 		return jdbcTemplate.query(sql, new Object[] { reportdate, dataEntryVersion },
-				new SCH17ArchivalDetailRowMapper());
+				new CommonDisclosureArchivalDetailRowMapper());
 	}
 
 // 2. FILTER BY LABEL + CRITERIA + DATE + VERSION
@@ -209,7 +209,7 @@ public class BRRS_Common_Disclosure_ReportService {
 				+ "AND REPORT_ADDL_CRITERIA_1 = ? " + "AND REPORT_DATE = ? " + "AND DATA_ENTRY_VERSION = ?";
 
 		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate, dataEntryVersion },
-				new SCH17ArchivalDetailRowMapper());
+				new CommonDisclosureArchivalDetailRowMapper());
 	}
 
 	// ROW MAPPER
@@ -1397,7 +1397,7 @@ public class BRRS_Common_Disclosure_ReportService {
 		}
 	}
 
-	class SCH17ArchivalDetailRowMapper implements RowMapper<Common_Disclosure_Archival_Detail_Entity> {
+	class CommonDisclosureArchivalDetailRowMapper implements RowMapper<Common_Disclosure_Archival_Detail_Entity> {
 
 		@Override
 		public Common_Disclosure_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -2270,7 +2270,7 @@ public class BRRS_Common_Disclosure_ReportService {
 
 	public byte[] getCommon_DisclosureExcel(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, BigDecimal version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.sch17");
+		logger.info("Service: Starting Excel generation process in memory.CommonDisclosure");
 
 		// ARCHIVAL check
 		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version.compareTo(BigDecimal.ZERO) >= 0) {
