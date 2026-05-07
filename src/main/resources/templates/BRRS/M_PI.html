@@ -1437,31 +1437,28 @@ $(document).ready(function () {
 													th:attr="reportLable='R13', reportAddlCriteria1='C5'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 											</tr>
-
 											<tr>
 
-												<td style="font-weight: normal;  " th:text="${report.R14_PRODUCT}"></td>
-												<td style="font-weight: normal;"
-													th:text="${report.R14_CROSS_REFERENCE}"></td>
-												<!--  <td style="text-align: right; background-color: rgb(107, 122, 143); color: white; font-weight: normal;" th:text="${report.R14_VALUE}"
-											th:attr="reportLable='R14', reportAddlCriteria1='C3'"  ></td> -->
-												<td th:each="report: ${reportsummary1}" id="R11"
-													style="text-align: right; width: 250px; padding-left:20px; ">
-													<input class="display-input Show_input " type="text"
-														th:value="${report.R14_VALUE != null ? #numbers.formatDecimal(report.R14_VALUE, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R14_VALUE" name="R14_VALUE"
-														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
-														readonly />
-												</td>
-												<td style="text-align: right; font-weight: normal;"
-													th:text="${report.R14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS}"
-													th:attr="reportLable='R14', reportAddlCriteria1='C4'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
-												<td style="text-align: center; font-weight: normal;"
-													th:text="${report.R14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2}"
-													th:attr="reportLable='R14', reportAddlCriteria1='C5'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
-											</tr>
+																							<td style="font-weight: normal;" th:text="${report.R14_PRODUCT}"></td>
+																							<td style="font-weight: normal;" th:text="${report.R14_CROSS_REFERENCE}">
+																							</td>
+																							<td style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143); color: white;"
+																								th:attr="reportLable='R14', reportAddlCriteria1='C3'" th:text="${report.R8_VALUE != null ? 
+											             #numbers.formatDecimal(report.R14_VALUE, 1, 'COMMA', 0, 'POINT') 
+											             : '0'}">
+																							</td>
+
+																							<td style="text-align: right; font-weight: normal;"
+																								th:text="${report.R14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS}"
+																								th:attr="reportLable='R14', reportAddlCriteria1='C4'"
+																								onclick="showdetailsbyRowAndColumn(this)"></td>
+																							<td style="text-align: center; font-weight: normal;"
+																								th:text="${report.R14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2}"
+																								th:attr="reportLable='R14', reportAddlCriteria1='C5'"
+																								onclick="showdetailsbyRowAndColumn(this)"></td>
+																						</tr>
+
+											
 
 											<tr>
 
@@ -1513,48 +1510,38 @@ $(document).ready(function () {
 												<td></td>
 											</tr>
 
-
+											
+											
 											<tr>
 
-												<td style="font-weight: normal;  " th:text="${report.R18_PRODUCT}"></td>
+												<td style="font-weight: normal;" th:text="${report.R18_PRODUCT}"></td>
 												<td style="font-weight: normal;"
 													th:text="${report.R18_CROSS_REFERENCE}"></td>
-												<!-- <td style="background-color: rgb(107, 122, 143); color: white;text-align: right; font-weight: normal;" th:text="${report.R18_VALUE}+'%'"></td> -->
-												<td th:each="report: ${reportsummary1}" id="R11"
-													style="text-align: right; width: 250px; padding-left:10px; ">
-													<input class="display-input Show_input " type="text"
-														th:value="${report.R18_VALUE != null ? #numbers.formatDecimal(report.R18_VALUE, 1, 'COMMA', 0, 'POINT') + '%' : '0%'}"
-														id="R18_VALUE" name="R18_VALUE"
-														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
-														readonly />
+												<td style="text-align: right; font-weight: normal;background-color: rgb(107, 122, 143); color: white;"
+													th:text="${#numbers.formatDecimal(report.R18_VALUE, 0, 'COMMA', 0, 'POINT')} + '%'">
 												</td>
+
 												<td style="text-align: right; font-weight: normal;"
 													th:text="${report.R18_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS}+'%'">
-												</td>
+											</td>
 												<td></td>
-											</tr>
+												</tr>
 
 
 											<tr>
 
-												<td style="font-weight: normal;  " th:text="${report.R19_PRODUCT}"></td>
+												<td style="font-weight: normal;" th:text="${report.R19_PRODUCT}"></td>
 												<td style="font-weight: normal;"
-													th:text="${report.R19_CROSS_REFERENCE}"></td>
-												<!-- <td style="background-color: rgb(107, 122, 143); color: white;text-align: right; font-weight: normal;" th:text="${report.R19_VALUE}+'%'"></td> -->
-												<td th:each="report: ${reportsummary1}" id="R11"
-													style="text-align: right; width: 250px; padding-left:10px; ">
-													<input class="display-input Show_input " type="text"
-														th:value="${report.R19_VALUE != null ? #numbers.formatDecimal(report.R19_VALUE, 1, 'COMMA', 0, 'POINT') + '%' : '0%'}"
-														id="R19_VALUE" name="R19_VALUE"
-														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
-														readonly />
+												th:text="${report.R19_CROSS_REFERENCE}"></td>
+												<td style="text-align: right; font-weight: normal;background-color: rgb(107, 122, 143); color: white;"
+													th:text="${#numbers.formatDecimal(report.R19_VALUE, 0, 'COMMA', 0, 'POINT')} + '%'">
 												</td>
+
 												<td style="text-align: right; font-weight: normal;"
 													th:text="${report.R19_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS}+'%'">
-												</td>
-												<td></td>
-											</tr>
-
+											</td>
+											<td></td>
+												</tr>
 
 											<tr>
 
@@ -1624,41 +1611,29 @@ $(document).ready(function () {
 
 											<tr>
 
-												<td style="font-weight: normal;" th:text="${report.R24_PRODUCT}"></td>
-												<td style="font-weight: normal;"
+											<td style="font-weight: normal;" th:text="${report.R24_PRODUCT}"></td>
+											<td style="font-weight: normal;"
 													th:text="${report.R24_CROSS_REFERENCE}"></td>
-												<td style="text-align: right; font-weight: normal;background-color: rgb(107, 122, 143); color: white;"
-													th:text="${#numbers.formatDecimal(report.R24_VALUE, 0, 'COMMA', 0, 'POINT')} + '%'">
+										<td style="text-align: right; font-weight: normal;background-color: rgb(107, 122, 143); color: white;"
+											th:text="${#numbers.formatDecimal(report.R24_VALUE, 0, 'COMMA', 0, 'POINT')} + '%'">
 												</td>
-
-												<td style="text-align: right; font-weight: normal;"
-													th:text="${report.R24_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS}+'%'">
-												</td>
+                                   <td style="text-align: right; font-weight: normal;"
+												th:text="${report.R24_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS}+'%'"></td>
 												<td></td>
-											</tr>
+												</tr>
 
+														<tr>
 
-											<tr>
-
-												<td style="font-weight: normal;  " th:text="${report.R25_PRODUCT}"></td>
-												<td style="font-weight: normal;"
-													th:text="${report.R25_CROSS_REFERENCE}"></td>
-												<!-- <td style="background-color: rgb(107, 122, 143); color: white;text-align: right; font-weight: normal;" th:text="${report.R25_VALUE}+'%'"></td> -->
-												<td th:each="report: ${reportsummary1}" id="R11"
-													style="text-align: right; width: 250px; padding-left:10px; ">
-													<input class="display-input Show_input " type="text"
-														th:value="${report.R25_VALUE != null ? #numbers.formatDecimal(report.R25_VALUE, 1, 'COMMA', 0, 'POINT') + '%' : '0%'}"
-														id="R25_VALUE" name="R25_VALUE"
-														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
-														readonly />
-												</td>
+														<td style="font-weight: normal;" th:text="${report.R25_PRODUCT}"></td>
+														<td style="font-weight: normal;"
+																th:text="${report.R25_CROSS_REFERENCE}"></td>
+													<td style="text-align: right; font-weight: normal;background-color: rgb(107, 122, 143); color: white;"
+														th:text="${#numbers.formatDecimal(report.R25_VALUE, 0, 'COMMA', 0, 'POINT')} + '%'">
+															</td>
 												<td style="text-align: right; font-weight: normal;"
-													th:text="${report.R25_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS}+'%'">
-												</td>
-												<td></td>
-											</tr>
-
-
+															th:text="${report.R25_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS}+'%'"></td>
+															<td></td>
+															</tr>
 											<tr>
 
 												<td style="font-weight: normal; " th:text="${report.R26_PRODUCT}"></td>
