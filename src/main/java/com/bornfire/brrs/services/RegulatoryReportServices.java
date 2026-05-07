@@ -8217,7 +8217,7 @@ break;
 							currency, dtltype, type, format, version);
 
 				case "M_PLL":
-					return BRRS_M_PLL_reportservice.getM_PLLExcel("EMAIL_M_PLL.xlsx", reportName, fromdate, todate,
+					return BRRS_M_PLL_reportservice.getM_PLLExcel("M_PLL.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, version);
 
 				case "M_PD":
@@ -8242,18 +8242,18 @@ break;
 							fromdate, todate, currency, dtltype, type, format, version);
 
 				case "M_NOSVOS":
-					return BRRS_M_NOSVOS_reportservice.getM_NOSVOSExcel("EMAIL_M_NOSVOS.xlsx", reportName, fromdate,
+					return BRRS_M_NOSVOS_reportservice.getM_NOSVOSExcel("M_NOSVOS_EMAIL.xlsx", reportName, fromdate,
 							todate, currency, dtltype, type, version);
 				case "M_AIDP":
 					return BRRS_M_AIDP_ReportService.getM_AIDPExcel("EMAIL_M_AIDP.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, version);
 
 				case "M_DEP1":
-					return BRRS_M_DEP1_reportservice.BRRS_M_DEP1Excel("EMAILM_DEP1.xlsx", reportName, fromdate, todate,
+					return BRRS_M_DEP1_reportservice.BRRS_M_DEP1Excel("M_DEP1.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, version);
 
 				case "M_DEP2":
-					return BRRS_M_DEP2_reportservice.BRRS_M_DEP2Excel("EMAIL_M_DEP2.xlsx", reportName, fromdate, todate,
+					return BRRS_M_DEP2_reportservice.BRRS_M_DEP2Excel("M_DEP2.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, version);
 
 				case "M_DEP3":
@@ -8261,7 +8261,7 @@ break;
 							currency, dtltype, type, format, version);
 
 				case "M_DEP4":
-					return BRRS_M_DEP4_ReportService.BRRS_M_DEP4Excel("EMAIL_M_DEP4.xlsx", reportName, fromdate, todate,
+					return BRRS_M_DEP4_ReportService.BRRS_M_DEP4Excel("M_DEP4.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, format, version);
 
 				case "M_OB":
@@ -8272,18 +8272,18 @@ break;
 					return BRRS_M_BOP_ReportService.getM_BOPExcel("EMAIL_M_BOP.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, format, version);
 				case "M_INT_RATES":
-					return brrs_m_int_rates_reportservice.getM_INTRATESExcel("EMAIL_M_INT_RATES.xlsx", reportName,
+					return brrs_m_int_rates_reportservice.getM_INTRATESExcel("EMAIL_M_INTRATES.xlsx", reportName,
 							fromdate, todate, currency, dtltype, type, format, version);
 
 				case "M_INT_RATES_FCA":
-					return BRRS_M_INT_RATES_FCA_ReportService.getM_INTRATESFCAExcel("EMAIL_M_INT_RATES_FCA.xlsx",
+					return BRRS_M_INT_RATES_FCA_ReportService.getM_INTRATESFCAExcel("EMAIL_M_INTRATESFCA.xlsx",
 							reportName, fromdate, todate, currency, dtltype, type, format, version);
 
 				case "M_SECA":
 					return BRRS_M_SECA_ReportService.BRRS_M_SECAExcel("EMAIL_M_SECA.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, format, version);
 				case "M_SECL":
-					return brrs_m_secl_reportservice.getM_SECLExcel("EMAIL_M_SECL.xlsx", reportName, fromdate, todate,
+					return brrs_m_secl_reportservice.getM_SECLExcel("M_SECL.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, format, version);
 
 				case "M_RPD":
@@ -8305,21 +8305,21 @@ break;
 							currency, dtltype, type, format, version);
 
 				case "Q_RLFA1":
-					return brrs_q_rlfa1_reportservice.getQ_RLFA1Excel("EMAIL_Q_RLFA1.xlsx", reportName, fromdate,
+					return brrs_q_rlfa1_reportservice.getQ_RLFA1Excel("Q_RLFA1_EMAIL.xlsx", reportName, fromdate,
 							todate, currency, dtltype, type, version);
 				case "Q_RLFA2":
 					return brrs_q_rlfa2_reportservice.getQ_RLFA2Excel("EMAIL_Q_RLFA2.xlsx", reportName, fromdate,
 							todate, currency, dtltype, type, format, version);
 
 				case "Q_SMME":
-					return BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("EMAIL_Q_SMME.xlsx", reportName,
+					return BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("Q_SMME_INT_NEW.xlsx", reportName,
 							fromdate, todate, currency, dtltype, type, version);
 				case "Q_SMME_LA":
-					return BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel("EMAIL_Q_SMME_LA.xlsx", reportName,
+					return BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel("Q_SMME_LOANS_NEW.xlsx", reportName,
 							fromdate, todate, currency, dtltype, type, version);
 
 				case "Q_SMME_DEP":
-					return BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPExcel("EMAILQ_SMME_DEP.xlsx", reportName,
+					return BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPExcel("EMAIL_Q_SMME_DEP.xlsx", reportName,
 							fromdate, todate, currency, dtltype, type, format, version);
 
 				case "Q_STAFF":
@@ -8394,7 +8394,7 @@ break;
 					return brrs_m_srwa_12d_reportservice.getM_SRWA_12DExcel("M_SRWA12D.xlsx", reportName, fromdate,
 							todate, currency, dtltype, type, version);
 				case "M_SRWA_12E":
-					return BRRS_M_SRWA_12E_reportservice.BRRS_M_SRWA_12E_LTVExcel("M_SRWA_12E.xlsx", reportName,
+					return BRRS_M_SRWA_12E_reportservice.BRRS_M_SRWA_12E_LTVExcel("M_SRWA12E.xlsx", reportName,
 							fromdate, todate, currency, dtltype, type, format, version);
 				case "M_SRWA_12F":
 					return BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FExcel("M_SRWA_12F.xlsx", reportName, fromdate,
@@ -8518,11 +8518,11 @@ break;
 							dtltype, type, format, version);
 
 				case "M_INT_RATES":
-					return brrs_m_int_rates_reportservice.getM_INTRATESExcel("M_INT_RATES.xlsx", reportName, fromdate,
+					return brrs_m_int_rates_reportservice.getM_INTRATESExcel("M_INTRATES.xlsx", reportName, fromdate,
 							todate, currency, dtltype, type, format, version);
 
 				case "M_INT_RATES_FCA":
-					return BRRS_M_INT_RATES_FCA_ReportService.getM_INTRATESFCAExcel("M_INT_RATES_FCA.xlsx", reportName,
+					return BRRS_M_INT_RATES_FCA_ReportService.getM_INTRATESFCAExcel("M_INTRATESFCA.xlsx", reportName,
 							fromdate, todate, currency, dtltype, type, format, version);
 
 				case "M_SECA":
