@@ -2982,7 +2982,7 @@ break;
 		case "M_SRWA_12D":
 			try {
 				repfile = brrs_m_srwa_12d_reportservice.getM_SRWA_12DExcel(filename, reportId, fromdate, todate,
-						currency, dtltype, type, version);
+						currency, dtltype, type,format, version);
 			} catch (Exception e) {
 
 			}
@@ -8143,7 +8143,7 @@ break;
 							fromdate, todate, currency, dtltype, type, format, version);
 				case "M_SRWA_12D":
 					return brrs_m_srwa_12d_reportservice.getM_SRWA_12DExcel("EMAIL_M_SRWA_12D.xlsx", reportName,
-							fromdate, todate, currency, dtltype, type, version);
+							fromdate, todate, currency, dtltype, type,format,version);
 				case "M_SRWA_12E":
 					return BRRS_M_SRWA_12E_reportservice.BRRS_M_SRWA_12E_LTVExcel("EMAIL_M_SRWA_12E.xlsx", reportName,
 							fromdate, todate, currency, dtltype, type, format, version);
@@ -8396,7 +8396,7 @@ break;
 							todate, currency, dtltype, type, format, version);
 				case "M_SRWA_12D":
 					return brrs_m_srwa_12d_reportservice.getM_SRWA_12DExcel("M_SRWA12D.xlsx", reportName, fromdate,
-							todate, currency, dtltype, type, version);
+							todate, currency, dtltype, type,format, version);
 				case "M_SRWA_12E":
 					return BRRS_M_SRWA_12E_reportservice.BRRS_M_SRWA_12E_LTVExcel("M_SRWA12E.xlsx", reportName,
 							fromdate, todate, currency, dtltype, type, format, version);
