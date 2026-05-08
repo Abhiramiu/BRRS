@@ -49,15 +49,11 @@ import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_CAP_ADEQ_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_CREDIT_RISK_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_CREDIT_RISK_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_CREDIT_RISK_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_CREDIT_RISK_Summary_Repo;
-import com.bornfire.brrs.entities.CAP_ADEQ_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.CAP_ADEQ_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.CAP_ADEQ_Detail_Entity;
-import com.bornfire.brrs.entities.CAP_ADEQ_Summary_Entity;
+
 import com.bornfire.brrs.entities.CREDIT_RISK_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.CREDIT_RISK_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.CREDIT_RISK_Detail_Entity;

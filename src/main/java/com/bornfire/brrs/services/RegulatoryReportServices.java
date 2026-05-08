@@ -5551,12 +5551,9 @@ break;
 			break;
 
 		case "CAP_ADEQ":
-			try {
-				archivalData = brrs_cap_adeq_reportservice.getCAP_ADEQArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> capadeqList = brrs_cap_adeq_reportservice.getCAP_ADEQArchival();
+			archivalData.addAll(capadeqList);
+			System.out.println("Fetched CAP_ADEQ archival data: " + capadeqList.size());
 			break;
 
 		case "CREDIT_RISK":
@@ -8197,7 +8194,7 @@ break;
 							todate, currency, dtltype, type, format, version);
 
 				case "M_LA1":
-					return BRRS_M_LA1_reportservice.BRRS_M_LA1Excel("EMAIL_M_LA1.xlsx", reportName, fromdate, todate,
+					return BRRS_M_LA1_reportservice.BRRS_M_LA1Excel("M_LA1.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, version);
 
 				case "M_LA2":
@@ -8312,11 +8309,18 @@ break;
 							todate, currency, dtltype, type, format, version);
 
 				case "Q_SMME":
-					return BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("Q_SMME_INT_NEW.xlsx", reportName,
+					return BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("Q_SMME_INT.xlsx", reportName,
 							fromdate, todate, currency, dtltype, type, version);
 				case "Q_SMME_LA":
-					return BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel("Q_SMME_LOANS_NEW.xlsx", reportName,
+					return BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel("Q_SMME_LOANS.xlsx", reportName,
 							fromdate, todate, currency, dtltype, type, version);
+					
+				case "Q_SMME_NEW":
+					return BRRS_Q_SMME_Intrest_Income_New_ReportService.getQ_SMMEExcel("Q_SMME_INT_NEW.xlsx", reportName,
+							fromdate, todate, currency, dtltype, type,format, version);
+				case "Q_SMME_LA_NEW":
+					return BRRS_Q_SMME_Loans_Advances_New_ReportService.getQ_SMMEExcel("Q_SMME_LOANS_NEW.xlsx", reportName,
+							fromdate, todate, currency, dtltype, type,format, version);
 
 				case "Q_SMME_DEP":
 					return BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPExcel("EMAIL_Q_SMME_DEP.xlsx", reportName,
