@@ -198,7 +198,7 @@ public class BRRS_Q_SMME_Intrest_Income_New_ReportService {
     }
 
 public byte[] getQ_SMMEExcel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, BigDecimal version) throws Exception {
+			String dtltype, String type,String format, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, version);
 
@@ -208,7 +208,7 @@ public byte[] getQ_SMMEExcel(String filename, String reportId, String fromdate, 
 		// ARCHIVAL check
 		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
-			return getSummaryExcelARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+			return getSummaryExcelARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type,format, version);
 		}
 
 		// Default (LIVE) case
@@ -931,7 +931,7 @@ public byte[] getQ_SMMEExcel(String filename, String reportId, String fromdate, 
 
     public byte[] getSummaryExcelARCHIVAL(String filename, String reportId, String fromdate,
 			String todate,
-			String currency, String dtltype, String type, BigDecimal version) throws Exception {
+			String currency, String dtltype, String type,String format, BigDecimal version) throws Exception {
         logger.info("Service: Starting Excel generation process in memory.");
         System.out.println("Gopika Excel Archival");
         if (type.equals("ARCHIVAL") & version != null) {

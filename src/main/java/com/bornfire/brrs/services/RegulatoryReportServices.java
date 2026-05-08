@@ -2597,7 +2597,7 @@ break;
 		case "Q_SMME_NEW":
 			try {
 				repfile = BRRS_Q_SMME_Intrest_Income_New_ReportService.getQ_SMMEExcel(filename, reportId, fromdate,
-						todate, currency, dtltype, type, version);
+						todate, currency, dtltype, type,format, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -2606,7 +2606,7 @@ break;
 		case "Q_SMME_LA_NEW":
 			try {
 				repfile = BRRS_Q_SMME_Loans_Advances_New_ReportService.getQ_SMMEExcel(filename, reportId, fromdate,
-						todate, currency, dtltype, type, version);
+						todate, currency, dtltype, type,format, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -8571,11 +8571,11 @@ break;
 
 				case "Q_SMME_NEW":
 					return BRRS_Q_SMME_Intrest_Income_New_ReportService.getQ_SMMEExcel("Q_SMME_INT_NEW.xlsx", reportName, fromdate,
-							todate, currency, dtltype, type, version);
+							todate, currency, dtltype, type,format, version);
 
 				case "Q_SMME_LA_NEW":
 					return BRRS_Q_SMME_Loans_Advances_New_ReportService.getQ_SMMEExcel("Q_SMME_LOANS_NEW.xlsx", reportName,
-							fromdate, todate, currency, dtltype, type, version);
+							fromdate, todate, currency, dtltype, type,format, version);
 
 					
 				case "Q_SMME_DEP":
