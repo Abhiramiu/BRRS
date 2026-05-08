@@ -604,6 +604,26 @@ PURPOSE		: BRRSREPORT
 					}
 				});
 		}
+		//function openCASH_FLOWDetail(elem, mode) {
+
+		//		var type = elem.getAttribute('data-type');
+
+		//		if (type === "ARCHIVAL") {
+		//			showResultModal('BRRS', "Archived Data cannot be modified");
+		//			return;
+		//	}
+		//
+		//	const acctNo = elem.getAttribute("data-acctNo");
+		//	const asondate = elem.getAttribute("data-asondate");
+
+		// Use the 'reportId' variable initialized above
+		// Use backticks (`) for a template literal to easily include the variable
+		//	location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+		//	}
+
+
+	</script>
+	<script>
 		function openCASH_FLOWDetail(elem, mode) {
 
 			var type = elem.getAttribute('data-type');
@@ -614,16 +634,14 @@ PURPOSE		: BRRSREPORT
 			}
 
 			const acctNo = elem.getAttribute("data-acctNo");
+			const SNO = elem.getAttribute("data-SNo");
 			const asondate = elem.getAttribute("data-asondate");
 
 			// Use the 'reportId' variable initialized above
 			// Use backticks (`) for a template literal to easily include the variable
-			location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+			location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&SNO=${SNO}&asondate=${asondate}`;
 		}
-
-
 	</script>
-
 
 	<script th:inline="javascript">
 		function showdetailsbyRowAndColumn(a) {
@@ -1074,9 +1092,9 @@ PURPOSE		: BRRSREPORT
 											</tr>
 											<!-- R10 -->
 											<tr style="height:33px;">
-											    <td th:text="${reportsummary.r10_product}"
-											        style="min-width:150px; white-space:normal; text-align:left;">
-											    </td>
+												<td th:text="${reportsummary.r10_product}"
+													style="min-width:150px; white-space:normal; text-align:left;">
+												</td>
 												<td id="r10_lc_as_on_mar" name="r10_lc_as_on_mar"
 													style="text-align:right;width:390px;padding-right: 8px;height: 20px;"
 													class="r10_lc_as_on_mar" th:attr="RowId='R10', ColumnId='C2'"
@@ -1726,9 +1744,9 @@ PURPOSE		: BRRSREPORT
 												</td>
 											</tr>
 											<tr style="height:33px;">
-																				    <td th:text="${reportsummary.r47_product}"
-																				        style="min-width:150px; white-space:normal; text-align:left;">
-																				    </td>
+												<td th:text="${reportsummary.r47_product}"
+													style="min-width:150px; white-space:normal; text-align:left;">
+												</td>
 												<td id="r47_lc_as_on_mar" name="r47_lc_as_on_mar"
 													class="r47_lc_as_on_mar"
 													style="text-align:right; width:390px; padding-right: 12px;height: 20px;"
@@ -1856,14 +1874,13 @@ PURPOSE		: BRRSREPORT
 												<a data-toggle="tooltip" class="editrec"
 													title="Click to Edit this Record">
 													<i class="fas fa-edit" style="color: black; cursor:pointer;"
-														th:attr="data-acctNo=${report.acctNumber},
-															data-asondate=${#dates.format(report.REPORT_DATE, 'dd-MM-yyyy')},data-type=${type}"
-														onclick="openCASH_FLOWDetail(this, 'edit')"></i>
+														th:attr="data-acctNo=${report.acctNumber},data-SNo=${report.sno},
+													   data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},
+													   data-type=${type}" onclick="openCASH_FLOWDetail(this, 'edit')"></i>
 
 												</a>
 											</td>
 											<td th:text="${srlno.index + 1}"></td>
-
 											<td th:text="${report.custId}" style="text-align:left"></td>
 											<td th:text="${report.acctNumber}" style="text-align:left"></td>
 											<td th:text="${report.acctName}" style="text-align:left"></td>
@@ -1876,7 +1893,7 @@ PURPOSE		: BRRSREPORT
 
 											<td th:text="${report.reportLabel}" style="text-align:left"></td>
 											<td th:text="${report.reportAddlCriteria1}" style="text-align:left"></td>
-											<td th:text="${#dates.format(report.REPORT_DATE, 'dd-MM-yyyy')}"
+											<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"
 												style="text-align:left"></td>
 										</tr>
 									</tbody>
@@ -1959,9 +1976,16 @@ PURPOSE		: BRRSREPORT
 
 								<label class="col-sm-2">Report Date</label>
 								<div class="col-sm-3">
-									<input type="date" name="REPORT_DATE" class="form-control form-control-sm" readonly
-										th:value="${#dates.format(CASH_FLOWData.REPORT_DATE, 'yyyy-MM-dd')}" />
+									<input type="date" name="reportDate" class="form-control form-control-sm" readonly
+										th:value="${#dates.format(CASH_FLOWData.reportDate, 'yyyy-MM-dd')}" />
 								</div>
+								
+								<div class="col-sm-1"></div>
+
+																<div class="col-sm-3">
+																	<input type="hidden" th:field="*{sno}"
+																		class="form-control form-control-sm" readonly />
+																</div>
 							</div>
 
 

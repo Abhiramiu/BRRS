@@ -3,7 +3,6 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.sql.ResultSet;
@@ -557,7 +556,7 @@ public class BRRS_FORMAT_III_ReportService {
 		}
 
 		public void setREPORT_DATE(Date REPORT_DATE) {
-			REPORT_DATE = REPORT_DATE;
+			this.REPORT_DATE = REPORT_DATE;
 		}
 
 		public BigDecimal getREPORT_VERSION() {
@@ -565,7 +564,7 @@ public class BRRS_FORMAT_III_ReportService {
 		}
 
 		public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
-			REPORT_VERSION = REPORT_VERSION;
+			this.REPORT_VERSION = REPORT_VERSION;
 		}
 
 		public String getREPORT_FREQUENCY() {
@@ -748,7 +747,7 @@ public class BRRS_FORMAT_III_ReportService {
 		@Temporal(TemporalType.DATE)
 		@Column(name = "REPORT_DATE")
 		private Date REPORT_DATE;
-
+		@Id
 		@Column(name = "REPORT_VERSION", length = 100)
 		private BigDecimal REPORT_VERSION;
 
@@ -969,7 +968,7 @@ public class BRRS_FORMAT_III_ReportService {
 		}
 
 		public void setREPORT_DATE(Date REPORT_DATE) {
-			REPORT_DATE = REPORT_DATE;
+			this.REPORT_DATE = REPORT_DATE;
 		}
 
 		public BigDecimal getREPORT_VERSION() {
@@ -977,7 +976,7 @@ public class BRRS_FORMAT_III_ReportService {
 		}
 
 		public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
-			REPORT_VERSION = REPORT_VERSION;
+			this.REPORT_VERSION = REPORT_VERSION;
 		}
 
 		public String getREPORT_FREQUENCY() {

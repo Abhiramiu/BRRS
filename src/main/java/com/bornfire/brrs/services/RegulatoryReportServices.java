@@ -6813,7 +6813,7 @@ break;
 						request.getParameter("formmode"));
 				break;
 			case "CASH_FLOW":
-				modelAndView = BRRS_CASH_FLOW_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
+				modelAndView = BRRS_CASH_FLOW_ReportService.getViewOrEditPage(request.getParameter("SNO"),
 						request.getParameter("formmode"));
 				break;
 			case "B_III_CETD":
@@ -8283,7 +8283,7 @@ break;
 					return BRRS_M_SECA_ReportService.BRRS_M_SECAExcel("EMAIL_M_SECA.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, format, version);
 				case "M_SECL":
-					return brrs_m_secl_reportservice.getM_SECLExcel("M_SECL.xlsx", reportName, fromdate, todate,
+					return brrs_m_secl_reportservice.getM_SECLExcel("EMAIL_M_SECL.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, format, version);
 
 				case "M_RPD":
@@ -8562,13 +8562,22 @@ break;
 							currency, dtltype, type, format, version);
 
 				case "Q_SMME":
-					return BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("Q_SMME.xlsx", reportName, fromdate,
+					return BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("Q_SMME_INT.xlsx", reportName, fromdate,
 							todate, currency, dtltype, type, version);
 
 				case "Q_SMME_LA":
-					return BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel("Q_SMME_LA.xlsx", reportName,
+					return BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel("Q_SMME_LOANS.xlsx", reportName,
 							fromdate, todate, currency, dtltype, type, version);
 
+				case "Q_SMME_NEW":
+					return BRRS_Q_SMME_Intrest_Income_New_ReportService.getQ_SMMEExcel("Q_SMME_INT_NEW.xlsx", reportName, fromdate,
+							todate, currency, dtltype, type, version);
+
+				case "Q_SMME_LA_NEW":
+					return BRRS_Q_SMME_Loans_Advances_New_ReportService.getQ_SMMEExcel("Q_SMME_LOANS_NEW.xlsx", reportName,
+							fromdate, todate, currency, dtltype, type, version);
+
+					
 				case "Q_SMME_DEP":
 					return BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPExcel("Q_SMME_DEP.xlsx", reportName, fromdate,
 							todate, currency, dtltype, type, format, version);
