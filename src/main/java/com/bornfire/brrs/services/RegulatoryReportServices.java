@@ -8202,7 +8202,7 @@ break;
 							currency, dtltype, type, format, version);
 
 				case "M_LA3":
-					return BRRS_M_LA3_reportservice.BRRS_M_LA3Excel("EMAIL_M_LA3.xlsx", reportName, fromdate, todate,
+					return BRRS_M_LA3_reportservice.BRRS_M_LA3Excel("M_LA3.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, format, version);
 
 				case "M_LA4":
@@ -8225,7 +8225,7 @@ break;
 							todate, currency, dtltype, type, format, version);
 
 				case "M_SP":
-					return BRRS_M_SP_reportservice.getM_SPExcel("EMAIL_M_SP.xlsx", reportName, fromdate, todate,
+					return BRRS_M_SP_reportservice.getM_SPExcel("M_SP.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, version);
 				case "M_GP":
 					return BRRS_M_GP_ReportService.getM_GPExcel("EMAIL_M_GP.xlsx", reportName, fromdate, todate,
