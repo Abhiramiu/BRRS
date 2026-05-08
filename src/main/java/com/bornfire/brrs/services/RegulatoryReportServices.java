@@ -8013,7 +8013,7 @@ break;
 						type, format, version);
 				System.out.println(fileData + "    fileData");
 
-				if (fileData != null && fileData.length > 0) {
+				if (fileData != null ) {
 					try (Workbook reportWorkbook = new XSSFWorkbook(new java.io.ByteArrayInputStream(fileData))) {// Copy the first sheet from each report into the consolidated workbook						
 
 						for (int i = 0; i < reportWorkbook.getNumberOfSheets(); i++) {
@@ -8652,69 +8652,40 @@ break;
 				switch (cellType1) {
 
 				case Cell.CELL_TYPE_STRING:
-				    destCell.setCellValue(srcCell.getStringCellValue());
-				    break;
+					destCell.setCellValue(srcCell.getStringCellValue());
+					break;
 
 				case Cell.CELL_TYPE_NUMERIC:
-				    if (DateUtil.isCellDateFormatted(srcCell)) {
-				        destCell.setCellValue(srcCell.getDateCellValue());
+					if (DateUtil.isCellDateFormatted(srcCell)) {
+						destCell.setCellValue(srcCell.getDateCellValue());
 
-				        CellStyle newStyle = dest.getWorkbook().createCellStyle();
-				        newStyle.cloneStyleFrom(srcCell.getCellStyle());
-				        destCell.setCellStyle(newStyle);
-				    } else {
-				        destCell.setCellValue(srcCell.getNumericCellValue());
-				    }
-				    break;
+						CellStyle newStyle = dest.getWorkbook().createCellStyle();
+						newStyle.cloneStyleFrom(srcCell.getCellStyle());
+						destCell.setCellStyle(newStyle);
+					} else {
+						destCell.setCellValue(srcCell.getNumericCellValue());
+					}
+					break;
 
 				case Cell.CELL_TYPE_BOOLEAN:
-				    destCell.setCellValue(srcCell.getBooleanCellValue());
-				    break;
+					destCell.setCellValue(srcCell.getBooleanCellValue());
+					break;
 
 				case Cell.CELL_TYPE_FORMULA:
-
-				    try {
-
-				        destCell.setCellFormula(srcCell.getCellFormula());
-
-				    } catch (Exception e) {
-
-				        System.out.println("Shared formula issue at cell : "
-				                + srcCell.getAddress());
-
-				        switch (srcCell.getCachedFormulaResultType()) {
-
-				        case Cell.CELL_TYPE_STRING:
-				            destCell.setCellValue(srcCell.getStringCellValue());
-				            break;
-
-				        case Cell.CELL_TYPE_NUMERIC:
-				            destCell.setCellValue(srcCell.getNumericCellValue());
-				            break;
-
-				        case Cell.CELL_TYPE_BOOLEAN:
-				            destCell.setCellValue(srcCell.getBooleanCellValue());
-				            break;
-
-				        default:
-				            destCell.setCellValue("");
-				        }
-				    }
-
-				    break;
+					destCell.setCellFormula(srcCell.getCellFormula());
+					break;
 
 				case Cell.CELL_TYPE_BLANK:
-				    destCell.setCellValue("");
-				    break;
+					destCell.setCellValue("");
+					break;
 
 				case Cell.CELL_TYPE_ERROR:
-				    destCell.setCellErrorValue(srcCell.getErrorCellValue());
-				    break;
+					destCell.setCellErrorValue(srcCell.getErrorCellValue());
+					break;
 
 				default:
-				    destCell.setCellValue(srcCell.toString());
+					destCell.setCellValue(srcCell.toString());
 				}
-
 				// Optionally copy style (recommended if you want formatting preserved)
 				CellStyle srcStyle = srcCell.getCellStyle();
 				if (srcStyle != null) {
