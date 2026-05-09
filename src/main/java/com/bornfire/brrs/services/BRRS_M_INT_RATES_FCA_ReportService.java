@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -27,10 +26,10 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,9 +48,6 @@ import com.bornfire.brrs.entities.M_INT_RATES_FCA_RESUB_Detail_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_FCA_RESUB_Summary_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_FCA_Summary_Entity;
 
-
-import org.springframework.beans.BeanUtils;
-
 @Component
 @Service
 
@@ -61,8 +57,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 	@Autowired
 	private Environment env;
 
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
+//	@Autowired
+//	private JdbcTemplate jdbcTemplate;
 
 	@Autowired
 	SessionFactory sessionFactory;

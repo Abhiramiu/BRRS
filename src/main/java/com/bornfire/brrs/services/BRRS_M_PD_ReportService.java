@@ -64,7 +64,7 @@ import com.bornfire.brrs.entities.M_PD_Manual_RESUB_Summary_Entity;
 import com.bornfire.brrs.entities.M_PD_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.M_PD_RESUB_Summary_Entity;
 import com.bornfire.brrs.entities.M_PD_Summary_Entity;
-import com.bornfire.brrs.entities.M_SCI_E_Archival_Summary_Entity;
+
 
 
 @Component

@@ -59,10 +59,8 @@ import com.bornfire.brrs.entities.BRRS_M_I_S_CA_Resub_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_I_S_CA_Resub_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_I_S_CA_Summary_Repo;
 import com.bornfire.brrs.entities.M_I_S_CA_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_I_S_CA_Archival_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.M_I_S_CA_Arcihval_Summary_Entity;
 import com.bornfire.brrs.entities.M_I_S_CA_Detail_Entity;
-import com.bornfire.brrs.entities.M_I_S_CA_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.M_I_S_CA_RESUB_Summary_Entity;
 import com.bornfire.brrs.entities.M_I_S_CA_Summary_Entity;
 

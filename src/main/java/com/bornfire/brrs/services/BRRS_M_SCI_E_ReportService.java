@@ -62,7 +62,7 @@ import com.bornfire.brrs.entities.M_SCI_E_Archival_Detail_Entity;
 
 import com.bornfire.brrs.entities.M_SCI_E_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_SCI_E_Detail_Entity;
-import com.bornfire.brrs.entities.M_SCI_E_Manual_Summary_Entity;
+
 import com.bornfire.brrs.entities.M_SCI_E_RESUB_Detail_Entity;
 import com.bornfire.brrs.entities.M_SCI_E_RESUB_Summary_Entity;
 import com.bornfire.brrs.entities.M_SCI_E_Summary_Entity;
