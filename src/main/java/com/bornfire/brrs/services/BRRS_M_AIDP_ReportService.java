@@ -15,7 +15,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -52,7 +51,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.AIDPResubWrapper;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Archival_Detail_Repo1;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Archival_Detail_Repo2;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Archival_Detail_Repo3;
@@ -85,10 +83,6 @@ import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Repo1;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Repo2;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Repo3;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Repo4;
-import com.bornfire.brrs.entities.BRRS_M_SFINP2_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_SFINP2_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_SFINP2_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_SFINP2_Summary_Repo;
 import com.bornfire.brrs.entities.M_AIDP_Archival_Detail_Entity1;
 import com.bornfire.brrs.entities.M_AIDP_Archival_Detail_Entity2;
 import com.bornfire.brrs.entities.M_AIDP_Archival_Detail_Entity3;
@@ -97,7 +91,6 @@ import com.bornfire.brrs.entities.M_AIDP_Archival_Summary_Entity1;
 import com.bornfire.brrs.entities.M_AIDP_Archival_Summary_Entity2;
 import com.bornfire.brrs.entities.M_AIDP_Archival_Summary_Entity3;
 import com.bornfire.brrs.entities.M_AIDP_Archival_Summary_Entity4;
-import com.bornfire.brrs.entities.M_AIDP_PK;
 import com.bornfire.brrs.entities.M_AIDP_Resub_Detail_Entity1;
 import com.bornfire.brrs.entities.M_AIDP_Resub_Detail_Entity2;
 import com.bornfire.brrs.entities.M_AIDP_Resub_Detail_Entity3;
@@ -121,7 +114,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 @Service
 public class BRRS_M_AIDP_ReportService {
 
-	private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP2_ReportService.class);
+	private static final Logger logger = LoggerFactory.getLogger(BRRS_M_AIDP_ReportService.class);
 
 	@Autowired
 	private Environment env;
@@ -131,9 +124,6 @@ public class BRRS_M_AIDP_ReportService {
 
 	@Autowired
 	AuditService auditService;
-
-	@Autowired
-	BRRS_M_SFINP2_Detail_Repo M_SFINP2_DETAIL_Repo;
 
 	@Autowired
 	BRRS_M_AIDP_Summary_Repo1 BRRS_M_aidpRepo1;
@@ -169,14 +159,6 @@ public class BRRS_M_AIDP_ReportService {
 	@Autowired
 	private BRRS_M_AIDP_Archival_Detail_Repo4 M_AIDP_Archival_Detail_Repo4;
 
-	@Autowired
-	BRRS_M_SFINP2_Summary_Repo M_SFINP2_Summary_Repo;
-
-	@Autowired
-	BRRS_M_SFINP2_Archival_Detail_Repo M_SFINP2_Archival_Detail_Repo;
-
-	@Autowired
-	BRRS_M_SFINP2_Archival_Summary_Repo M_SFINP2_Archival_Summary_Repo;
 
 	@Autowired
 	BRRS_M_AIDP_Detail_Repo1 bRRS_M_AIDP_Detail_Repo1;
