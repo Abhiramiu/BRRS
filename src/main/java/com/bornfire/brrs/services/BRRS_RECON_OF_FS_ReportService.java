@@ -51,8 +51,8 @@ import com.bornfire.brrs.entities.BRRS_Recon_Of_FS_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_Recon_Of_FS_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_Recon_Of_FS_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_Recon_Of_FS_Summary_Repo;
-import com.bornfire.brrs.entities.Recon_Of_FS_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.Recon_Of_FS_Achival_Summary_Entity;
+import com.bornfire.brrs.entities.Recon_Of_FS_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.Recon_Of_FS_Detail_Entity;
 import com.bornfire.brrs.entities.Recon_Of_FS_Summary_Entity;
 

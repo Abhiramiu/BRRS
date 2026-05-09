@@ -1,6 +1,5 @@
 package com.bornfire.brrs.entities;
 
-
 import java.util.Date;
 import java.util.List;
 
@@ -11,8 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BRRS_M_SRWA_12D_Summary_Repo extends JpaRepository<M_SRWA_12D_Summary_Entity, Date> {
 
-	@Query(value = "select * from BRRS_M_SRWA_12D_SUMMARYTABLE ", nativeQuery = true)
-	List<M_SRWA_12D_Summary_Entity> getdatabydateList(Date rpt_code);
-	
-}
+	@Query(value = "select * from BRRS_M_SRWA_12D_SUMMARYTABLE where REPORT_DATE=?1", nativeQuery = true)
+	List<M_SRWA_12D_Summary_Entity> getdatabydateList(Date ReportDate);
 
+}

@@ -10,31 +10,22 @@ import org.springframework.data.jpa.repository.Query;
 public interface BRRS_Q_RLFA1_Summary_Repo extends JpaRepository<Q_RLFA1_Summary_Entity, Date> {
 
 	@Query(value = "select * from BRRS_Q_RLFA1_SUMMARY_TABLE where REPORT_DATE =?1  ", nativeQuery = true)
-    List<Q_RLFA1_Summary_Entity> getdatabydateList(Date reportdate);
-    
-    
-    
-    @Query(value = "SELECT *  FROM BRRS_Q_RLFA1_SUMMARY_TABLE WHERE REPORT_DATE = ?1   AND REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
-    List<Q_RLFA1_Summary_Entity> getdatabydateListWithVersion(String todate);
+	List<Q_RLFA1_Summary_Entity> getdatabydateList(Date reportdate);
 
-    
-    // ✅ Find the latest version for a report date
-    @Query(value = "SELECT * FROM BRRS_Q_RLFA1_SUMMARY_TABLE " +
-                   "WHERE REPORT_DATE = ?1 " +
-                   "ORDER BY TO_NUMBER(REPORT_VERSION) DESC " +
-                   "FETCH FIRST 1 ROWS ONLY",
-           nativeQuery = true)
-    Optional<Q_RLFA1_Summary_Entity> findTopByReport_dateOrderByReport_versionDesc(Date report_date);
+	@Query(value = "SELECT *  FROM BRRS_Q_RLFA1_SUMMARY_TABLE WHERE REPORT_DATE = ?1   AND REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
+	List<Q_RLFA1_Summary_Entity> getdatabydateListWithVersion(String todate);
 
-    // ✅ Check if a version exists for a report date
-    @Query(value = "SELECT * FROM BRRS_Q_RLFA1_SUMMARY_TABLE " +
-                   "WHERE REPORT_DATE = ?1 AND REPORT_VERSION = ?2",
-           nativeQuery = true)
-    Optional<Q_RLFA1_Summary_Entity> findByReport_dateAndReport_version(Date report_date, String report_version);
+	// ✅ Find the latest version for a report date
+	@Query(value = "SELECT * FROM BRRS_Q_RLFA1_SUMMARY_TABLE " + "WHERE REPORT_DATE = ?1 "
+			+ "ORDER BY TO_NUMBER(REPORT_VERSION) DESC " + "FETCH FIRST 1 ROWS ONLY", nativeQuery = true)
+	Optional<Q_RLFA1_Summary_Entity> findTopByReport_dateOrderByReport_versionDesc(Date report_date);
 
+	// ✅ Check if a version exists for a report date
+	@Query(value = "SELECT * FROM BRRS_Q_RLFA1_SUMMARY_TABLE "
+			+ "WHERE REPORT_DATE = ?1 AND REPORT_VERSION = ?2", nativeQuery = true)
+	Optional<Q_RLFA1_Summary_Entity> findByReport_dateAndReport_version(Date report_date, String report_version);
 
-            @Query(value = "SELECT *  FROM BRRS_Q_RLFA1_SUMMARY_TABLE WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
-        List<Q_RLFA1_Summary_Entity> getdatabydateListWithVersion();
+	@Query(value = "SELECT *  FROM BRRS_Q_RLFA1_SUMMARY_TABLE WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
+	List<Q_RLFA1_Summary_Entity> getdatabydateListWithVersion();
 
 }
-

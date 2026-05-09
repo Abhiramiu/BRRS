@@ -11,14 +11,9 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -52,8 +47,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_LA4_Archival_Detail_Repo;
@@ -62,14 +55,12 @@ import com.bornfire.brrs.entities.BRRS_M_LA4_Archival_Summary_Repo2;
 import com.bornfire.brrs.entities.BRRS_M_LA4_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA4_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA4_Summary_Repo2;
-import com.bornfire.brrs.entities.M_LA1_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA4_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA4_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA4_Archival_Summary_Entity2;
 import com.bornfire.brrs.entities.M_LA4_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA4_Summary_Entity1;
 import com.bornfire.brrs.entities.M_LA4_Summary_Entity2;
-import com.bornfire.brrs.entities.Q_STAFF_Archival_Summary_Entity;
 
 @Component
 @Service
@@ -119,9 +110,6 @@ public class BRRS_M_LA4_ReportService {
 			try {
 				Date d1 = dateformat.parse(todate);
 
-				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
-				// ", BRF1_REPORT_ENTITY.class)
-				// .setParameter(1, df.parse(todate)).getResultList();
 				T1Master = M_LA4_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate), version);
 				T2Master = M_LA4_Archival_Summary_Repo2.getdatabydateListarchival(dateformat.parse(todate), version);
 

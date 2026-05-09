@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
-@Table(name="BRRS_Q_RLFA1_ARCHIVALTABLE_DETAIL_NEW")
+@Table(name="BRRS_Q_RLFA1_ARCHIVALTABLE_DETAIL")
 @IdClass(Q_RLFA1_Archival_Detail_PK.class)
 public class Q_RLFA1_Archival_Detail_Entity {
 	

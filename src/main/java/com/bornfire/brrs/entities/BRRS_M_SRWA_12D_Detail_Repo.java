@@ -8,9 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BRRS_M_SRWA_12D_Detail_Repo extends JpaRepository<M_SRWA_12D_Detail_Entity, Date>{
-	
-	@Query(value = "select * from BRRS_M_SRWA_12D_DETAILTABLE ", nativeQuery = true)
-	List<M_SRWA_12D_Detail_Entity> getdatabydateList(Date rpt_code);
-	
+public interface BRRS_M_SRWA_12D_Detail_Repo extends JpaRepository<M_SRWA_12D_Detail_Entity, Date> {
+
+	@Query(value = "select * from BRRS_M_SRWA_12D_DETAILTABLE where REPORT_DATE =?1  ", nativeQuery = true)
+	List<M_SRWA_12D_Detail_Entity> getdatabydateList(Date reportdate);
+
 }

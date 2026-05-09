@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
-@Table(name="BRRS_Q_RLFA1_DETAIL_TABLE_NEW")
+@Table(name="BRRS_Q_RLFA1_DETAIL_TABLE")
 public class Q_RLFA1_Detail_Entity_New {
 	
 	

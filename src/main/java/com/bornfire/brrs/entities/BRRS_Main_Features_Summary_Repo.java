@@ -6,9 +6,9 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface BRRS_Main_Features_Summary_Repo extends JpaRepository<Main_Features_Summary_Entity , Date> {
-    
-@Query(value = "select * from BRRS_MAIN_FEATURES_SUMMARYTABLE ", nativeQuery = true)
+public interface BRRS_Main_Features_Summary_Repo extends JpaRepository<Main_Features_Summary_Entity, Date> {
+
+	@Query(value = "SELECT * FROM BRRS_MAIN_FEATURES_SUMMARYTABLE WHERE REPORT_DATE = ?1", nativeQuery = true)
 	List<Main_Features_Summary_Entity> getdatabydateList(Date reportdate);
 
 }

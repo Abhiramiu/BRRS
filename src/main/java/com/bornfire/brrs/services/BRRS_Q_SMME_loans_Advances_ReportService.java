@@ -44,18 +44,17 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_Q_SMME_loans_Advances_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_Q_SMME_loans_Advances_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_Q_SMME_loans_Advances_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_Q_SMME_loans_Advances_Summary_Repo;
 import com.bornfire.brrs.entities.Q_SMME_loans_Advances_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.Q_SMME_loans_Advances_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.Q_SMME_loans_Advances_Detail_Entity;
 import com.bornfire.brrs.entities.Q_SMME_loans_Advances_Summary_Entity;
-import com.bornfire.brrs.entities.BRRS_Q_SMME_loans_Advances_Summary_Repo;
 
 @Component
 @Service

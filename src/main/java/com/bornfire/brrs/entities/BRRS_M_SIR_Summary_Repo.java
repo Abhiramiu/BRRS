@@ -13,17 +13,4 @@ public interface BRRS_M_SIR_Summary_Repo extends JpaRepository<M_SIR_Summary_Ent
 @Query(value = "select * from BRRS_M_SIR_SUMMARYTABLE where report_date=?1  ", nativeQuery = true)
 List<M_SIR_Summary_Entity> getdatabydateList(Date report_date);
 
-
-//@Query(value = "SELECT *  FROM BRRS_M_SIR_SUMMARYTABLE WHERE REPORT_DATE = ?1   AND REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
-//List<M_SIR_Summary_Entity> getdatabydateListWithVersion(String todate);
-//
-//// Find the latest version for a report date
-//Optional<M_SIR_Summary_Entity> findTopByReportDateOrderByReportVersionDesc(Date reportDate);
-//
-//// Check if a version exists for a report date
-//Optional<M_SIR_Summary_Entity> findByReportDateAndReportVersion(Date reportDate, String reportVersion);
-//
-//    @Query(value = "SELECT *  FROM BRRS_M_SIR_SUMMARYTABLE WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
-//List<M_SIR_Summary_Entity> getdatabydateListWithVersion();
-
 }

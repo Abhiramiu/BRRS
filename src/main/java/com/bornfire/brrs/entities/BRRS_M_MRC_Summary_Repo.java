@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 public interface BRRS_M_MRC_Summary_Repo extends JpaRepository<M_MRC_Summary_Entity, Date> {
-
-	@Query(value = "select * from BRRS_M_MRC_SUMMARYTABLE  ", nativeQuery = true)
-	List<M_MRC_Summary_Entity> getdatabydateList(Date rpt_code);
+	
+	@Query(value = "select * from BRRS_M_MRC_SUMMARYTABLE where REPORT_DATE=?1", nativeQuery = true)
+	List<M_MRC_Summary_Entity> getdatabydateList(Date ReportDate);
 	
 }

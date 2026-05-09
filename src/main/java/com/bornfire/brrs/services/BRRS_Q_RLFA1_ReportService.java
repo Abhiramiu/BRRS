@@ -44,18 +44,12 @@ import com.bornfire.brrs.entities.BRRS_Q_RLFA1_Detail_Repo_New;
 import com.bornfire.brrs.entities.BRRS_Q_RLFA1_Resub_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_Q_RLFA1_Resub_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_Q_RLFA1_Summary_Repo;
-import com.bornfire.brrs.entities.BrrsMNosvosP1Detail;
-import com.bornfire.brrs.entities.M_EPR_Summary_Entity;
-import com.bornfire.brrs.entities.M_LIQ_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12B_Detail_Entity1;
 import com.bornfire.brrs.entities.Q_RLFA1_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.Q_RLFA1_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.Q_RLFA1_Detail_Entity_New;
 import com.bornfire.brrs.entities.Q_RLFA1_Resub_Detail_Entity;
 import com.bornfire.brrs.entities.Q_RLFA1_Resub_Summary_Entity;
 import com.bornfire.brrs.entities.Q_RLFA1_Summary_Entity;
-import com.bornfire.brrs.entities.Q_RLFA2_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.Q_RLFA2_Summary_Entity;
 
 @Component
 @Service
@@ -92,66 +86,6 @@ public class BRRS_Q_RLFA1_ReportService {
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	/*
-	 * public ModelAndView getQ_RLFA1View(String reportId, String fromdate, String
-	 * todate, String currency, String dtltype, Pageable pageable, String type,
-	 * String version) {
-	 * 
-	 * ModelAndView mv = new ModelAndView(); Session hs =
-	 * sessionFactory.getCurrentSession();
-	 * 
-	 * int pageSize = pageable.getPageSize(); int currentPage =
-	 * pageable.getPageNumber(); int startItem = currentPage * pageSize;
-	 * 
-	 * System.out.println("testing"); System.out.println(version);
-	 * 
-	 * if (type.equals("ARCHIVAL") & version != null) { System.out.println(type);
-	 * List<Q_RLFA1_Archival_Summary_Entity> T1Master = new
-	 * ArrayList<Q_RLFA1_Archival_Summary_Entity>();
-	 * 
-	 * System.out.println(version); try { Date d1 = dateformat.parse(todate);
-	 * 
-	 * 
-	 * 
-	 * T1Master =
-	 * q_rlfa1_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(
-	 * todate), version);
-	 * 
-	 * } catch (ParseException e) { e.printStackTrace(); }
-	 * 
-	 * mv.addObject("reportsummary", T1Master);
-	 * 
-	 * } else {
-	 * 
-	 * List<Q_RLFA1_Summary_Entity> T1Master = new
-	 * ArrayList<Q_RLFA1_Summary_Entity>();
-	 * 
-	 * try { Date d1 = dateformat.parse(todate);
-	 * 
-	 * T1Master =
-	 * brrs_q_rlfa1_Summary_Repo.getdatabydateList(dateformat.parse(todate));
-	 * 
-	 * System.out.println("T1Master size " + T1Master.size());
-	 * mv.addObject("report_date", dateformat.format(d1));
-	 * 
-	 * } catch (ParseException e) { e.printStackTrace(); }
-	 * mv.addObject("reportsummary", T1Master);
-	 * 
-	 * }
-	 * 
-	 * 
-	 * 
-	 * mv.setViewName("BRRS/Q_RLFA1");
-	 * 
-	 * mv.addObject("displaymode", "summary");
-	 * 
-	 * System.out.println("scv" + mv.getViewName());
-	 * 
-	 * return mv;
-	 * 
-	 * }
-	 */
-	
 	
 	
 	 public ModelAndView getQ_RLFA1View(String reportId, String fromdate, String

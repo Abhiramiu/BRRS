@@ -13,7 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -46,22 +45,19 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_FAS_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_FAS_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_FAS_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_M_FAS_Manual_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_FAS_Manual_Summary_Repo;
+import com.bornfire.brrs.entities.BRRS_M_FAS_Summary_Repo;
 import com.bornfire.brrs.entities.M_FAS_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_FAS_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_FAS_Detail_Entity;
-import com.bornfire.brrs.entities.M_FAS_Manual_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_FAS_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.M_FAS_Summary_Entity;
-import com.bornfire.brrs.entities.BRRS_M_FAS_Manual_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_FAS_Summary_Repo;
 
 @Component
 @Service

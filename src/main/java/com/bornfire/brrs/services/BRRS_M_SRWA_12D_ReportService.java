@@ -31,7 +31,6 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
@@ -39,14 +38,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_M_AIDP_Resub_Detail_Repo1;
-import com.bornfire.brrs.entities.BRRS_M_AIDP_Resub_Detail_Repo2;
-import com.bornfire.brrs.entities.BRRS_M_AIDP_Resub_Detail_Repo3;
-import com.bornfire.brrs.entities.BRRS_M_AIDP_Resub_Detail_Repo4;
-import com.bornfire.brrs.entities.BRRS_M_AIDP_Resub_Summary_Repo1;
-import com.bornfire.brrs.entities.BRRS_M_AIDP_Resub_Summary_Repo2;
-import com.bornfire.brrs.entities.BRRS_M_AIDP_Resub_Summary_Repo3;
-import com.bornfire.brrs.entities.BRRS_M_AIDP_Resub_Summary_Repo4;
 import com.bornfire.brrs.entities.BRRS_M_SECL_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SFINP2_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SRWA_12D_Archival_Detail_Repo;
@@ -58,11 +49,9 @@ import com.bornfire.brrs.entities.BRRS_M_SRWA_12D_Summary_Repo;
 import com.bornfire.brrs.entities.M_SRWA_12D_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12D_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12D_Detail_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12D_PK;
 import com.bornfire.brrs.entities.M_SRWA_12D_Resub_Detail_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12D_Resub_Summary_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12D_Summary_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12H_Archival_Summary_Entity;
 
 @Component
 @Service
