@@ -60,7 +60,7 @@ import com.bornfire.brrs.entities.M_DEP4_Summary_Entity3;
 @Component
 @Service
 public class BRRS_M_DEP4_ReportService {
-private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA6_ReportService.class);
+private static final Logger logger = LoggerFactory.getLogger(BRRS_M_DEP4_ReportService.class);
 	
 
 

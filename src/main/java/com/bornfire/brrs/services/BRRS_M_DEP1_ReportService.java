@@ -1,10 +1,8 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
-
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,7 +20,6 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -53,7 +50,6 @@ import com.bornfire.brrs.entities.BRRS_M_DEP1_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_DEP1_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_DEP1_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_DEP1_Summary_Repo;
-import com.bornfire.brrs.entities.M_CA2_Detail_Entity;
 import com.bornfire.brrs.entities.M_DEP1_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_DEP1_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_DEP1_Detail_Entity;
