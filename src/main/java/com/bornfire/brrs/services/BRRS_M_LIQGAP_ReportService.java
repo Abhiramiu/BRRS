@@ -55,13 +55,11 @@ import com.bornfire.brrs.entities.BRRS_M_LIQGAP_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LIQGAP_Manual_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LIQGAP_Manual_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LIQGAP_Summary_Repo;
-import com.bornfire.brrs.entities.M_LA3_Summary_Entity2;
 import com.bornfire.brrs.entities.M_LIQGAP_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_LIQGAP_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_LIQGAP_Detail_Entity;
 import com.bornfire.brrs.entities.M_LIQGAP_Manual_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_LIQGAP_Manual_Summary_Entity;
-import com.bornfire.brrs.entities.M_LIQGAP_PK;
 import com.bornfire.brrs.entities.M_LIQGAP_Summary_Entity;
 
 @Component

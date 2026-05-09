@@ -38,7 +38,67 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.*;
+import com.bornfire.brrs.entities.BRRS_NOSVOS_Summary_PK;
+import com.bornfire.brrs.entities.BrrsMNosvosP1;
+import com.bornfire.brrs.entities.BrrsMNosvosP1Archival;
+import com.bornfire.brrs.entities.BrrsMNosvosP1ArchivalDetail;
+import com.bornfire.brrs.entities.BrrsMNosvosP1ArchivalDetailRepository;
+import com.bornfire.brrs.entities.BrrsMNosvosP1ArchivalRepository;
+import com.bornfire.brrs.entities.BrrsMNosvosP1Detail;
+import com.bornfire.brrs.entities.BrrsMNosvosP1DetailRepository;
+import com.bornfire.brrs.entities.BrrsMNosvosP1Repository;
+import com.bornfire.brrs.entities.BrrsMNosvosP1ResbuDetailEntity;
+import com.bornfire.brrs.entities.BrrsMNosvosP1ResbuDetailRepo;
+import com.bornfire.brrs.entities.BrrsMNosvosP1ResbuSummaryEntity;
+import com.bornfire.brrs.entities.BrrsMNosvosP1ResbuSummaryRepo;
+import com.bornfire.brrs.entities.BrrsMNosvosP2;
+import com.bornfire.brrs.entities.BrrsMNosvosP2Archival;
+import com.bornfire.brrs.entities.BrrsMNosvosP2ArchivalDetail;
+import com.bornfire.brrs.entities.BrrsMNosvosP2ArchivalDetailRepository;
+import com.bornfire.brrs.entities.BrrsMNosvosP2ArchivalRepository;
+import com.bornfire.brrs.entities.BrrsMNosvosP2Detail;
+import com.bornfire.brrs.entities.BrrsMNosvosP2DetailRepository;
+import com.bornfire.brrs.entities.BrrsMNosvosP2Repository;
+import com.bornfire.brrs.entities.BrrsMNosvosP2ResbuDetailEntity;
+import com.bornfire.brrs.entities.BrrsMNosvosP2ResbuDetailRepo;
+import com.bornfire.brrs.entities.BrrsMNosvosP2ResbuSummaryEntity;
+import com.bornfire.brrs.entities.BrrsMNosvosP2ResbuSummaryRepo;
+import com.bornfire.brrs.entities.BrrsMNosvosP3;
+import com.bornfire.brrs.entities.BrrsMNosvosP3Archival;
+import com.bornfire.brrs.entities.BrrsMNosvosP3ArchivalDetail;
+import com.bornfire.brrs.entities.BrrsMNosvosP3ArchivalDetailRepository;
+import com.bornfire.brrs.entities.BrrsMNosvosP3ArchivalRepository;
+import com.bornfire.brrs.entities.BrrsMNosvosP3Detail;
+import com.bornfire.brrs.entities.BrrsMNosvosP3DetailRepository;
+import com.bornfire.brrs.entities.BrrsMNosvosP3Repository;
+import com.bornfire.brrs.entities.BrrsMNosvosP3ResbuDetailEntity;
+import com.bornfire.brrs.entities.BrrsMNosvosP3ResbuDetailRepo;
+import com.bornfire.brrs.entities.BrrsMNosvosP3ResbuSummaryEntity;
+import com.bornfire.brrs.entities.BrrsMNosvosP3ResbuSummaryRepo;
+import com.bornfire.brrs.entities.BrrsMNosvosP4;
+import com.bornfire.brrs.entities.BrrsMNosvosP4Archival;
+import com.bornfire.brrs.entities.BrrsMNosvosP4ArchivalDetail;
+import com.bornfire.brrs.entities.BrrsMNosvosP4ArchivalDetailRepository;
+import com.bornfire.brrs.entities.BrrsMNosvosP4ArchivalRepository;
+import com.bornfire.brrs.entities.BrrsMNosvosP4Detail;
+import com.bornfire.brrs.entities.BrrsMNosvosP4DetailRepository;
+import com.bornfire.brrs.entities.BrrsMNosvosP4Repository;
+import com.bornfire.brrs.entities.BrrsMNosvosP4ResbuDetailEntity;
+import com.bornfire.brrs.entities.BrrsMNosvosP4ResbuDetailRepo;
+import com.bornfire.brrs.entities.BrrsMNosvosP4ResbuSummaryEntity;
+import com.bornfire.brrs.entities.BrrsMNosvosP4ResbuSummaryRepo;
+import com.bornfire.brrs.entities.BrrsMNosvosP5;
+import com.bornfire.brrs.entities.BrrsMNosvosP5Archival;
+import com.bornfire.brrs.entities.BrrsMNosvosP5ArchivalDetail;
+import com.bornfire.brrs.entities.BrrsMNosvosP5ArchivalDetailRepository;
+import com.bornfire.brrs.entities.BrrsMNosvosP5ArchivalRepository;
+import com.bornfire.brrs.entities.BrrsMNosvosP5Detail;
+import com.bornfire.brrs.entities.BrrsMNosvosP5DetailRepository;
+import com.bornfire.brrs.entities.BrrsMNosvosP5Repository;
+import com.bornfire.brrs.entities.BrrsMNosvosP5ResbuDetailEntity;
+import com.bornfire.brrs.entities.BrrsMNosvosP5ResbuDetailRepo;
+import com.bornfire.brrs.entities.BrrsMNosvosP5ResbuSummaryEntity;
+import com.bornfire.brrs.entities.BrrsMNosvosP5ResbuSummaryRepo;
 
 
 
@@ -46,9 +106,7 @@ import com.bornfire.brrs.entities.*;
 @Service
 public class BRRS_M_NOSVOS_ReportService {
 
-
-
-	private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP2_ReportService.class);
+	private static final Logger logger = LoggerFactory.getLogger(BRRS_M_NOSVOS_ReportService.class);
 
 	@Autowired
 	private Environment env;
@@ -59,19 +117,6 @@ public class BRRS_M_NOSVOS_ReportService {
 	@Autowired
 	AuditService auditService;
 
-	@Autowired
-	BRRS_M_SFINP2_Detail_Repo M_SFINP2_DETAIL_Repo;
-
-	@Autowired
-	BRRS_M_AIDP_Summary_Repo1	BRRS_M_aidpRepo1;
-				
-	@Autowired
-	BRRS_M_AIDP_Summary_Repo2	BRRS_M_aidpRepo2;
-	@Autowired
-	BRRS_M_AIDP_Summary_Repo3	BRRS_M_aidpRepo3;
-	@Autowired
-	BRRS_M_AIDP_Summary_Repo4	BRRS_M_aidpRepo4;
-	
 	@Autowired
 	BrrsMNosvosP1ArchivalRepository	BrrsMNosvosP1ArchivalRepository;
 	@Autowired
@@ -100,14 +145,6 @@ public class BRRS_M_NOSVOS_ReportService {
 	@Autowired
 	BrrsMNosvosP5ArchivalDetailRepository	BrrsMNosvosP5ArchivalRepositoryDetail;
 	
-	@Autowired
-	BRRS_M_SFINP2_Summary_Repo M_SFINP2_Summary_Repo;
-
-	@Autowired
-	BRRS_M_SFINP2_Archival_Detail_Repo M_SFINP2_Archival_Detail_Repo;
-
-	@Autowired
-	BRRS_M_SFINP2_Archival_Summary_Repo M_SFINP2_Archival_Summary_Repo;
 	
 	@Autowired
 	BrrsMNosvosP1Repository BrrsMNosvosP1Repository;

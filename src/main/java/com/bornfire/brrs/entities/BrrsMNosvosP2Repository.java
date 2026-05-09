@@ -1,11 +1,10 @@
 package com.bornfire.brrs.entities;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-
-import com.bornfire.brrs.entities.BrrsMNosvosP2;
 import java.util.Date;
 import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface BrrsMNosvosP2Repository extends JpaRepository<BrrsMNosvosP2, Date> {
 	

@@ -1,14 +1,12 @@
 package com.bornfire.brrs.entities;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-
-import com.bornfire.brrs.entities.BrrsMNosvosP1;
-
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface BrrsMNosvosP5ResbuSummaryRepo extends JpaRepository<BrrsMNosvosP5ResbuSummaryEntity, BRRS_NOSVOS_Summary_PK> {
 	
