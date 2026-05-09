@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 public interface BRRS_M_CA5_RESUB_Detail_Repo2 extends JpaRepository<M_CA5_RESUB_Detail_Entity2 , M_CA5_Archival_Detail2_PK> {
 
 	 @Query(value = "select REPORT_DATE, REPORT_VERSION from BRRS_M_CA5_RESUB_DETAILTABLE2 order by REPORT_VERSION", nativeQuery = true)
-	    List<Object> getM_EPRarchival();
+	    List<Object> getM_ca5archival();
 
 	    @Query(value = "select * from BRRS_M_CA5_RESUB_DETAILTABLE2 where REPORT_DATE = ?1 and REPORT_VERSION = ?2", nativeQuery = true)
 	    List<M_CA5_RESUB_Detail_Entity2> getdatabydateListarchival(Date report_date, BigDecimal report_version);
