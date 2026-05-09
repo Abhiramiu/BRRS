@@ -510,7 +510,7 @@ public class BRRS_M_SECL_ReportService {
 // ARCHIVAL check
 		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 			
-			if(format.equals("email")) {
+			if ("email".equalsIgnoreCase(format)) {
 				logger.info("Service: Generating ARCHIVAL report for version {}", version);
 				return getExcelM_SECLARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 			}
@@ -521,7 +521,7 @@ public class BRRS_M_SECL_ReportService {
 // RESUB check
 		else if ("RESUB".equalsIgnoreCase(type) && version != null) {
 			
-			if(format.equals("email")) {
+			if ("email".equalsIgnoreCase(format)) {
 				logger.info("Service: Generating RESUB report for version {}", version);
 
 				List<M_SECL_Archival_Summary_Entity> T1Master = M_SECL_Archival_Summary_Repo
@@ -596,7 +596,7 @@ public class BRRS_M_SECL_ReportService {
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
 // --- End of Style Definitions ---
-				if(dtltype.equals("report"))
+			if ("report".equals(dtltype))
 				{
 			List<M_SECL_Summary_Entity> dataList1 = M_SECL_Summary_Repo.getdatabydateList(reportDate);
 			int startRow = 12;

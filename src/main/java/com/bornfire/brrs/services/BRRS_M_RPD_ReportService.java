@@ -1107,9 +1107,9 @@ logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, 
 Date reportDate = dateformat.parse(todate);
 	System.out.println(type);
 	System.out.println(version);
-	if (type.equals("ARCHIVAL") & version != null) {
+	if ("ARCHIVAL".equals(type) && version != null) {
 		System.out.println("M_RPD_ARCHIVAL");
-		if(format.equals("email"))
+		if ("email".equals(format))
 		{
 			System.out.println("Arc_Email");
 			byte[] reportEmail = getExcel_Email_M_RPDExcelArc(filename, reportId, fromdate, todate, currency, dtltype, type,format,
@@ -1130,7 +1130,7 @@ Date reportDate = dateformat.parse(todate);
 		System.out.println("M_RPD_RESUB");
 	logger.info("Service: Generating RESUB report for version {}", version);
 
-	if(format.equals("email"))
+	if ("email".equals(format))
 	{
 		System.out.println("Resub_Email");
 		byte[] reportEmail = getExcel_Email_M_RPDExcelResub(filename, reportId, fromdate, todate, currency, dtltype, type,format,
@@ -1165,7 +1165,7 @@ Date reportDate = dateformat.parse(todate);
 	return BRRS_M_RPDResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 	}
 	}
-	else if(format.equals("email"))
+	else if ("email".equals(format))
 	{
 		byte[] reportEmail = getExcel_Email_M_RPDExcelNormal(filename, reportId, fromdate, todate, currency, dtltype, type,format,
 				version);

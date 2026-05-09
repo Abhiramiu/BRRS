@@ -586,7 +586,7 @@ System.out.println("✅ SECA Summary and Detail updated and COMMITTED");
 		// ARCHIVAL check
 		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
-			if(format.equals("email"))
+			if ("email".equalsIgnoreCase(format))
 			{
 			 return getExcelM_SECAARCHIVAL_EMAIL(filename, reportId, fromdate, todate, currency, dtltype, type,format, version);
 			}
@@ -594,7 +594,7 @@ System.out.println("✅ SECA Summary and Detail updated and COMMITTED");
 		}
 		else if("RESUB".equalsIgnoreCase(type) && version != null)
 		{
-			if(format.equals("email"))
+			if ("email".equalsIgnoreCase(format))
 			{
 			return getExcelM_SECARESUB_EMAIL(filename, reportId, fromdate, todate, currency, dtltype, type,format, version);
 			}
@@ -602,7 +602,7 @@ System.out.println("✅ SECA Summary and Detail updated and COMMITTED");
 		}
 		System.out.println("Normal");
 		System.out.println(format +" = Format");
-		if(format.equals("email"))
+		if ("email".equalsIgnoreCase(format))
 		{
 			System.out.println("Email");
 			return getExcelM_SECA_EMAIL(filename, reportId, fromdate, todate, currency, dtltype, type,format, version);
