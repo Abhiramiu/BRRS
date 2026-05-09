@@ -47,7 +47,6 @@ import com.bornfire.brrs.entities.M_CR_Detail_Entity;
 import com.bornfire.brrs.entities.M_CR_Resub_Detail_Entity;
 import com.bornfire.brrs.entities.M_CR_Resub_Summary_Entity;
 import com.bornfire.brrs.entities.M_CR_Summary_Entity;
-import com.bornfire.brrs.entities.M_OPTR_Archival_Summary_Entity;
 
 @Component
 @Service
