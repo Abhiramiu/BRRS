@@ -1807,9 +1807,7 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 											<td th:text="${report.r39_cross_ref}" style="text-align: left; "></td>
 
 											<td th:text="${#numbers.formatDecimal(report.r39_month_end, 0, 'COMMA', 0, 'POINT')}"
-												th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R39_MONTH_END != null 
-? #numbers.formatDecimal(reportsummary1[0].R39_MONTH_END, 1,'COMMA', 0, 'POINT') 
-: '0'}" th:attr="RowId='R39', ColumnId='C3'" id="r39_month_end"
+												th:attr="RowId='R39', ColumnId='C3'" id="r39_month_end"
 												style="text-align: right; background-color: rgb(107, 122, 143);color: white;">
 											</td>
 											<td th:text="${#numbers.formatDecimal(report.r39_average, 0, 'COMMA', 0, 'POINT')}"
@@ -2247,7 +2245,7 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 								th:value="${#dates.format(Data.reportDate, 'yyyy-MM-dd')}" />
 						</div>
 					</div>
--->
+					-->
 					<!-- Update Button -->
 					<div style="text-align:center; margin-top:20px;">
 						<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
