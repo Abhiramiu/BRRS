@@ -2470,7 +2470,7 @@ break;
 		case "M_NOSVOS":
 			try {
 				repfile = BRRS_M_NOSVOS_reportservice.getM_NOSVOSExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+						dtltype, type, format, version);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -2991,7 +2991,7 @@ break;
 		case "Q_LARADV":
 			try {
 				repfile = brrs_m_laradv_reportservice.getM_LARADVExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+						dtltype, type, format, version);
 			} catch (Exception e) {
 			}
 			break;
@@ -8240,7 +8240,7 @@ break;
 
 				case "M_NOSVOS":
 					return BRRS_M_NOSVOS_reportservice.getM_NOSVOSExcel("M_NOSVOS_EMAIL.xlsx", reportName, fromdate,
-							todate, currency, dtltype, type, version);
+							todate, currency, dtltype, type, format, version);
 				case "M_AIDP":
 					return BRRS_M_AIDP_ReportService.getM_AIDPExcel("EMAIL_M_AIDP.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, version);
@@ -8332,7 +8332,7 @@ break;
 
 				case "Q_LARADV":
 					return brrs_m_laradv_reportservice.getM_LARADVExcel("EMAIL_Q_LARADV.xlsx", reportName, fromdate,
-							todate, currency, dtltype, type, version);
+							todate, currency, dtltype, type, format, version);
 
 				case "Q_BRANCHNET":
 					return BRRS_Q_BRANCHNET_reportservice.BRRS_Q_BRANCHNETExcel("EMAIL_Q_BRANCHNET.xlsx", reportName,
@@ -8493,7 +8493,7 @@ break;
 
 				case "M_NOSVOS":
 					return BRRS_M_NOSVOS_reportservice.getM_NOSVOSExcel("M_NOSVOS.xlsx", reportName, fromdate, todate,
-							currency, dtltype, type, version);
+							currency, dtltype, type, format, version);
 
 				case "M_AIDP":
 					return BRRS_M_AIDP_ReportService.getM_AIDPExcel("M_AIDP.xlsx", reportName, fromdate, todate,
@@ -8592,7 +8592,7 @@ break;
 
 				case "Q_LARADV":
 					return brrs_m_laradv_reportservice.getM_LARADVExcel("Q_LARADV.xlsx", reportName, fromdate, todate,
-							currency, dtltype, type, version);
+							currency, dtltype, type, format, version);
 
 				case "Q_BRANCHNET":
 					return BRRS_Q_BRANCHNET_reportservice.BRRS_Q_BRANCHNETExcel("Q_BRANCHNET.xlsx", reportName,

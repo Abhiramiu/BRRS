@@ -456,6 +456,12 @@ td:has(input[id^="R"][id$="_RISK_WEIGHTED_AMOUNT_NOSTRO1"]) {
 			var filename = button.getAttribute('data-filename');
 			var type = button.getAttribute('data-type');
 			var version = button.getAttribute('data-version');
+			var format = button.getAttribute('data-format');
+
+					    if (format === null) {
+					        format = '';   // treat as null
+					    }
+						
 			$('#loader').modal('show');
 			$.ajax({
 				url: './downloadExcel?reportid=' + reportid +
@@ -468,7 +474,9 @@ td:has(input[id^="R"][id$="_RISK_WEIGHTED_AMOUNT_NOSTRO1"]) {
 					'&secid=' + secid +
 					'&filename=' + filename +
 					'&type=' + type +
-					'&version=' + version,
+					'&version=' + version					+
+					'&format=' + format,
+				
 				type: 'GET',
 				xhrFields: {
 					responseType: 'blob'
@@ -1377,6 +1385,7 @@ function calculateR101Totals() {
                     				 data-todate=${todate},
                     				 data-currency=${currency}, 
                     				 data-dtltype=${'email_report'},
+									 data-format='email',
                     				 data-filename='M_NOSVOS_EMAIL.xlsx',
 					 				 data-type=${type},
 					    			 data-version=${version}" onclick="downloadfile(this);">

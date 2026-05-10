@@ -767,7 +767,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	}
 	
 	public byte[] getM_NOSVOSExcel(String filename, String reportId, String fromdate, String todate, String currency,
-            String dtltype, String type, BigDecimal version) throws Exception {
+            String dtltype, String type,String format, BigDecimal version) throws Exception {
 	logger.info("Service: Starting Excel generation process in memory.");
 	System.out.println(type);
 	System.out.println(version);
@@ -871,7 +871,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	numberStyle.setBorderRight(BorderStyle.THIN);
 	numberStyle.setFont(font);
 	
-	if (dtltype.equals("email_report") ) {
+	if (format.equals("email") ) {
 		
 		String[] rowCodesPart1 = new String[101];
 		
