@@ -1029,7 +1029,7 @@ function cancelModify() {
 	        formData.append("type", type);
 
 	        $('#fileupload').find(':input').each(function () {
-	            const name = $(this).attr('name');
+	            const name = $(this).attr('id');
 	            if (name) {
 	                formData.append(name, $(this).val());
 	            }
