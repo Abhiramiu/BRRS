@@ -434,65 +434,65 @@ PURPOSE		: BWRBRREPORT
 			activateTab(selectedTab);
 		};
 		function downloadfile(button) {
-				    var reportid = button.getAttribute('data-reportid');
-				    var asondate = button.getAttribute('data-asondate');
-				    var fromdate = button.getAttribute('data-fromdate');
-				    var todate = button.getAttribute('data-todate');
-				    var currency = button.getAttribute('data-currency');
-				    var subreportid = button.getAttribute('data-subreportid');
-				    var secid = button.getAttribute('data-secid');
-				    var dtltype = button.getAttribute('data-dtltype');
-				    var filename = button.getAttribute('data-filename');
-				    var type = button.getAttribute('data-type');
-				    var version = button.getAttribute('data-version');
-				    var format = button.getAttribute('data-format');
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+			var format = button.getAttribute('data-format');
 
-				    if (format === null) {
-				        format = '';   // treat as null
-				    }
+			if (format === null) {
+				format = '';   // treat as null
+			}
 
-				    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-				    $.ajax({
-				        url: './downloadExcel?reportid=' + reportid +
-				             '&fromdate=' + fromdate +
-				             '&asondate=' + asondate +
-				             '&todate=' + todate +
-				             '&currency=' + currency +
-				             '&subreportid=' + subreportid +
-				             '&secid=' + secid +
-				             '&filename=' + filename +
-				             '&type=' + type +
-				             '&version=' + version +
-				             '&format=' + format,
-				        type: 'GET',
-				        xhrFields: {
-				            responseType: 'blob'
-				        },
-				        success: function (data) {
-				            $('#loader').modal('hide');
-				            if (data && data.size > 100) {
-				                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
-				                const url = window.URL.createObjectURL(blob);
-				                const a = document.createElement('a');
-				                a.style.display = 'none';
-				                a.href = url;
-				                a.download = filename;
-				                document.body.appendChild(a);
-				                a.click();
-				                window.URL.revokeObjectURL(url);
-				                document.body.removeChild(a);
-				                showResultModal('BRRS', filename + ' downloaded successfully.');
-				            } else {
-				                showResultModal('Information', 'No data was available to create a download.');
-				            }
-				        },
-				        error: function () {
-				            $('#loader').modal('hide');
-				            showResultModal('Error', 'An error occurred while downloading the file.');
-				        }
-				    });
+			$.ajax({
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version +
+					'&format=' + format,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function () {
+					$('#loader').modal('hide');
+					showResultModal('Error', 'An error occurred while downloading the file.');
 				}
+			});
+		}
 
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
@@ -662,115 +662,116 @@ PURPOSE		: BWRBRREPORT
 
 
 	<script>
-	
-			function closemodel() {
-					    const modalElement = document.getElementById('resultModal');
-					    const modal = bootstrap.Modal.getInstance(modalElement);
-					    modal.hide();
 
-					    const message = document.getElementById("resultModalBody").innerText.toLowerCase();
+		function closemodel() {
+			const modalElement = document.getElementById('resultModal');
+			const modal = bootstrap.Modal.getInstance(modalElement);
+			modal.hide();
 
-					    if (message.includes("resubmission")) {
-					        window.history.back();
-					    } else {
-					        location.reload();
-					    }
-					}
+			const message = document.getElementById("resultModalBody").innerText.toLowerCase();
+
+			if (message.includes("resubmission")) {
+				window.history.back();
+			} else {
+				location.reload();
+			}
+		}
 	</script>
 	<script>
-		
+
 
 
 		function fileuploads(btn) {
-			var asondate = btn.getAttribute("data-todate");
-			const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
 
-			// ✅ Mark RESUB once
-			isResubmissionUpdate = (type && type.toUpperCase() === 'RESUB');
+			try {
 
-			$('#loader').modal('show');
+				const asondate = btn.getAttribute("data-todate");
 
-			// Pre-calculations
-			calculateR81Totals();
-			calculateR12toR80Totals();
-			console.log("✅ Calculations executed successfully");
+				$('#loader').modal('show');
 
-			// Remove commas from numeric inputs
-			$("#fileupload input[type='text']").each(function () {
-				var val = $(this).val();
-				if (val && val.includes(",")) {
-					$(this).val(val.replace(/,/g, ''));
-				}
-			});
-
-			if (!$("#fileupload").valid()) {
-				$('#loader').modal('hide');
-				return;
-			}
-
-			// ✅ One combined FormData for all entities
-			const formData = new FormData();
-			formData.append("asondate", asondate);
-			formData.append("type", type);
+				// Step 1: Calculate totals
+				calculateR81Totals();
+				calculateR12toR80Totals();
+				console.log("✅ Calculations executed successfully");
 
 
-			// Append only named inputs
-			$('#fileupload').find(':input[name]').each(function () {
-				formData.append(this.name, this.value);
+				// Remove commas
+				$("#fileupload input[type='text']").each(function () {
+					const val = $(this).val();
+					if (val && val.includes(",")) {
+						$(this).val(val.replace(/,/g, ''));
+					}
+				});
 
-				/*         let originalName = this.name;  
-						let value = this.value;
-		
-						// Convert: R6_C2_COMPANY_NAME → R6_COMPANY_NAME
-						let fixedName = originalName.replace(/_C\d+_/, '_');
-						console.log(originalName, "→", fixedName);
-						formData.append(fixedName, value); */
-			});
-			console.log("✅ Entity executed successfully");
-
-
-
-			// Step 5: Select API endpoint dynamically
-			let apiUrl = './UpdateM_SRWA_12H'; // normal update
-			if (type && type.toUpperCase() === 'RESUB') {
-				apiUrl = './UpdateM_SRWA_12H_ReSub'; // Resubmission endpoint
-			}
-
-			// Step 6: AJAX call
-			$.ajax({
-				url: apiUrl,
-				type: 'POST',
-				data: formData,
-				processData: false,
-				contentType: false,
-				dataType: 'text',
-				success: function (response) {
-					$("#resultModalLabel").text("BRRS");
-					$("#resultModalBody").text(response);
-					$("#resultModal").modal("show");
-
-					//  Wait for user to close the modal manually
-					$("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
-						if (isResubmissionUpdate) {
-							window.location.href = previousUrl
-								? previousUrl
-								: "/BRRS/Resubmission?rptcode=M_SRWA_12H";
-						} // reload ONLY when modal is closed
-					});
-				},
-				error: function (jqXHR) {
-					console.log("Error response:", jqXHR.responseText);
-					$("#resultModalLabel").text("Error");
-					$("#resultModalBody").text("Update failed. Check console for details.");
-					$("#resultModal").modal("show");
-				},
-				complete: function () {
+				if (!$("#fileupload").valid()) {
 					$('#loader').modal('hide');
+					return;
 				}
-			});
 
-			console.log("✅ AJAX executed successfully");
+				// Get type from URL
+				const urlParams = new URLSearchParams(window.location.search);
+				const urlType = urlParams.get("type");
+
+				const isResub = urlType && urlType.toUpperCase() === 'RESUB';
+
+				// ✅ Use SERIALIZE (NOT FormData)
+				const formData =
+					$('#fileupload').serialize()
+					+ '&asondate=' + encodeURIComponent(asondate)
+					+ '&type=' + encodeURIComponent(urlType || '');
+
+				console.log("✅ Form data prepared");
+
+				let apiUrl = './UpdateM_SRWA_12H';
+				if (isResub) {
+					apiUrl = './UpdateM_SRWA_12H_ReSub';
+				}
+
+				$.ajax({
+					url: apiUrl,
+					type: 'POST',
+					data: formData,
+					dataType: 'text',
+
+					success: function (response) {
+						$("#resultModalLabel").text("BRRS");
+						$("#resultModalBody").text(response);
+						$("#resultModal").modal("show");
+
+						$("#resultModal")
+							.off("hidden.bs.modal")
+							.on("hidden.bs.modal", function () {
+								if (isResub) {
+									window.location.href =
+										window.previousUrl
+											? window.previousUrl
+											: "/BRRS/Resubmission?rptcode=M_SRWA_12H";
+								}
+							});
+					},
+
+					error: function (jqXHR) {
+						console.log("Error response:", jqXHR.responseText);
+
+						$("#resultModalLabel").text("Error");
+						$("#resultModalBody").text(
+							"Update failed: " +
+							(jqXHR.responseText || "Unknown error")
+						);
+						$("#resultModal").modal("show");
+					},
+
+					complete: function () {
+						$('#loader').modal('hide');
+					}
+				});
+
+			} catch (error) {
+				$('#loader').modal('hide');
+				console.error("Error during file upload:", error);
+			}
 		}
+
 
 	</script>
 
@@ -849,13 +850,8 @@ PURPOSE		: BWRBRREPORT
                    data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
 							<i class="fa fa-download"></i> Format
 						</button>
-						<button type="button"
-						    class="custom-tab-btn"
-						    onclick="downloadfile(this)"
-						    th:if="${displaymode == 'summary' or displaymode == 'detail'
-						          or displaymode == 'resubSummary' or displaymode == 'resubDetail'}"
-
-						    th:attr="data-reportid=${reportid},
+						<button type="button" class="custom-tab-btn" onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail'
+						          or displaymode == 'resubSummary' or displaymode == 'resubDetail'}" th:attr="data-reportid=${reportid},
 						             data-asondate=${asondate},
 						             data-fromdate=${fromdate},
 						             data-todate=${todate},
@@ -865,7 +861,7 @@ PURPOSE		: BWRBRREPORT
 						             data-type=${type},
 									 data-format='email',
 						             data-version=${version != null ? version : ''}">
-						    <i class="fa fa-download"></i> Email
+							<i class="fa fa-download"></i> Email
 						</button>
 
 
@@ -910,7 +906,8 @@ PURPOSE		: BWRBRREPORT
 					Resubmission Detail View - M SRWA 12H
 				</p>
 
-				<div th:if="${displaymode == 'summary' or displaymode == 'detail'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}">
+				<div
+					th:if="${displaymode == 'summary' or displaymode == 'detail'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}">
 					<div class="row">
 						<div class="col-sm-12">
 							<form action="#" method="POST" id="fileupload">
@@ -4998,7 +4995,7 @@ PURPOSE		: BWRBRREPORT
 						</div>
 					</div>
 				</div>
-		
+
 			</div>
 		</div>
 	</div>

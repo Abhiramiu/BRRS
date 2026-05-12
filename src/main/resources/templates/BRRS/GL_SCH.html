@@ -1035,28 +1035,28 @@ PURPOSE		: BRRS GL_SCH REPORT
 			
 			/* -------- FIXED UPDATE R59 WHEN R61 CHANGES -------- */
 
-			   let r61 = getCellValue("#R61_FIG_BAL_BWP1") || 0;
+			//   let r61 = getCellValue("#R61_FIG_BAL_BWP1") || 0;
 
 			   // store original R59 in hidden field OR data attribute
-			   let baseR59 = $("#R59_FIG_BAL_BWP1").data("base");
+			 //  let baseR59 = $("#R59_FIG_BAL_BWP1").data("base");
 
 			   // first time store original value
-			   if (baseR59 === undefined) {
-			       baseR59 = getCellValue("#R59_FIG_BAL_BWP1") || 0;
-			       $("#R59_FIG_BAL_BWP1").data("base", baseR59);
-			   }
+			//   if (baseR59 === undefined) {
+			//       baseR59 = getCellValue("#R59_FIG_BAL_BWP1") || 0;
+			//       $("#R59_FIG_BAL_BWP1").data("base", baseR59);
+			  // }
 
-			   let updatedR59 = baseR59 + r61;
+			  // let updatedR59 = baseR59 + r61;
 
-			   setCellValue("#R59_FIG_BAL_BWP1", updatedR59);
+			//   setCellValue("#R59_FIG_BAL_BWP1", updatedR59);
 			   
 			   
 			   /* ------------------ R59 NET CALCULATION ------------------ */
-			   let r59_net_amt_bwp1 =
-			       getCellValue("#R59_FIG_BAL_BWP1") +
-			       getCellValue("#R59_AMT_ADJ_BWP1");
+			  // let r59_net_amt_bwp1 =
+			    //   getCellValue("#R59_FIG_BAL_BWP1") +
+			//getCellValue("#R59_AMT_ADJ_BWP1");
 
-			   setCellValue("#R59_NET_AMT_BWP1", r59_net_amt_bwp1);
+			 //  setCellValue("#R59_NET_AMT_BWP1", r59_net_amt_bwp1);
 
 			/* ------------------ R61 CALCULATION ------------------ */
 			let g61 = getCellValue("#R59_FIG_BAL_BWP1") +
@@ -1157,21 +1157,21 @@ PURPOSE		: BRRS GL_SCH REPORT
 			setCellValue("#R245_NET_AMT_BWP2", r245_net_amt_bwp2);
 
 			//------------------ R66_FIG_BAL_BWP2 ------------------
-			let R66_FIG_BAL_BWP2 =
-				getCellValue("#R37_FIG_BAL_BWP2") +
-				getCellValue("#R41_FIG_BAL_BWP2") +
-				getCellValue("#R45_FIG_BAL_BWP2") +
-				getCellValue("#R49_FIG_BAL_BWP2") +
-				getCellValue("#R53_FIG_BAL_BWP2") +
-				getCellValue("#R57_FIG_BAL_BWP2") +
-				getCellValue("#R61_FIG_BAL_BWP2") +
-				getCellValue("#R65_FIG_BAL_BWP2");
+		//	let R66_FIG_BAL_BWP2 =
+		//		getCellValue("#R37_FIG_BAL_BWP2") +
+		//		getCellValue("#R41_FIG_BAL_BWP2") +
+		//		getCellValue("#R45_FIG_BAL_BWP2") +
+		//		getCellValue("#R49_FIG_BAL_BWP2") +
+		//		getCellValue("#R53_FIG_BAL_BWP2") +
+			//	getCellValue("#R57_FIG_BAL_BWP2") +
+			///	getCellValue("#R61_FIG_BAL_BWP2") +
+			//	getCellValue("#R65_FIG_BAL_BWP2");
 
-			setCellValue("#R66_FIG_BAL_BWP2", R66_FIG_BAL_BWP2);
+			//setCellValue("#R66_FIG_BAL_BWP2", R66_FIG_BAL_BWP2);
 
 
 			//------------------ R66_AMT_ADJ_BWP2 ------------------
-			let R66_AMT_ADJ_BWP2 =
+			/* ----------let R66_AMT_ADJ_BWP2 =
 				getCellValue("#R37_AMT_ADJ_BWP2") +
 				getCellValue("#R41_AMT_ADJ_BWP2") +
 				getCellValue("#R45_AMT_ADJ_BWP2") +
@@ -1442,7 +1442,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 				getCellValue("#R247_BAL_ACT_SUB_BWP2");
 
 			setCellValue("#R248_BAL_ACT_SUB_BWP2", V_R248_BAL_ACT_SUB_BWP2);
-
+----*/
 		}
 
 		//--------------------------------------
@@ -1492,7 +1492,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 				calculateTotals();
 			});
 
-			// R66 dependent fields
+		/* ----------	// R66 dependent fields
 			$("#R37_FIG_BAL_BWP2, #R41_FIG_BAL_BWP2, #R45_FIG_BAL_BWP2, #R49_FIG_BAL_BWP2, #R53_FIG_BAL_BWP2, #R57_FIG_BAL_BWP2, #R61_FIG_BAL_BWP2, #R65_FIG_BAL_BWP2")
 				.on("input change keyup", function () {
 					calculateTotals();
@@ -1622,7 +1622,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 			$("#R241_BAL_ACT_SUB_BWP2, #R242_BAL_ACT_SUB_BWP2, #R243_BAL_ACT_SUB_BWP2, #R244_BAL_ACT_SUB_BWP2, #R245_BAL_ACT_SUB_BWP2, #R246_BAL_ACT_SUB_BWP2, #R247_BAL_ACT_SUB_BWP2")
 				.on("input change keyup", function () {
 					calculateTotals();
-				});
+				}); ----*/
 		});
 	</script>
 

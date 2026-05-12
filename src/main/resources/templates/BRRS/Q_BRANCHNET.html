@@ -894,84 +894,99 @@ PURPOSE		: BWRBRREPORT
 		//         .always(() => $('#loader').modal('hide'));
 		// }
 
-		function fileuploads(btn) {
-			const asondate = btn.getAttribute("data-todate");
-			const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
+function fileuploads(btn) {
 
-			$('#loader').modal('show');
+    try {
 
-			// Step 1: Calculate totals
+        const asondate = btn.getAttribute("data-todate");
+
+        $('#loader').modal('show');
+
+         // Step 1: Calculate totals
 			calculateR20Totals();
 			calculateR35Totals();
 			calculateR50Totals();
 			calculateR65Totals();
+	console.log("✅ Calculations executed successfully");
+      
 
-			// Step 2: Remove commas
-			$("#fileupload input[type='text']").each(function () {
-				$(this).val($(this).val().replace(/,/g, ''));
-			});
+        // Remove commas
+        $("#fileupload input[type='text']").each(function () {
+            const val = $(this).val();
+            if (val && val.includes(",")) {
+                $(this).val(val.replace(/,/g, ''));
+            }
+        });
 
-			// Step 3: Validate form
-			if (!$("#fileupload").valid()) {
-				$('#loader').modal('hide');
-				return;
-			}
+        if (!$("#fileupload").valid()) {
+            $('#loader').modal('hide');
+            return;
+        }
 
-			// Step 4: Build FormData
-			const formData = new FormData();
-			formData.append("asondate", asondate);
-			formData.append("type", type);
+        // Get type from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlType = urlParams.get("type");
 
-			$('#fileupload').find(':input').each(function () {
-				const name = $(this).attr('name');
-				if (name) formData.append(name, $(this).val());
-			});
+        const isResub = urlType && urlType.toUpperCase() === 'RESUB';
 
-			// Step 5: Select API endpoint dynamically
-			let apiUrl = './Q_BRANCHNETupdateAll'; // normal update
-			if (type && type.toUpperCase() === 'RESUB') {
-				apiUrl = './UpdateQ_BRANCHNETReSub'; // Resubmission endpoint
-			}
+        // ✅ Use SERIALIZE (NOT FormData)
+        const formData =
+            $('#fileupload').serialize()
+            + '&asondate=' + encodeURIComponent(asondate)
+            + '&type=' + encodeURIComponent(urlType || '');
 
-			$.ajax({
-								url: apiUrl,
-								type: 'POST',
-								data: formData,
-								processData: false,
-								contentType: false,
-								dataType: 'text',
+        console.log("✅ Form data prepared");
 
-								success: function (response) {
-									$("#resultModalLabel").text("BRRS");
-									$("#resultModalBody").text(response);
-									$("#resultModal").modal("show");
+        let apiUrl = './Q_BRANCHNETupdateAll';
+        if (isResub) {
+            apiUrl = './UpdateQ_BRANCHNETReSub';
+        }
 
-									// Redirect after modal close (OLD LOGIC)
-									$("#resultModal")
-										.off("hidden.bs.modal")
-										.on("hidden.bs.modal", function () {
-											if (isResubmissionUpdate) {
-												window.location.href = previousUrl
-													? previousUrl
-													: "/BRRS/Resubmission?rptcode=Q_BRANCHNET";
-											}
-										});
-								},
+        $.ajax({
+            url: apiUrl,
+            type: 'POST',
+            data: formData,
+            dataType: 'text',
 
-								error: function (jqXHR) {
-									console.log("Error response:", jqXHR.responseText);
-									$("#resultModalLabel").text("Error");
-									$("#resultModalBody").text("Update failed. Check console.");
-									$("#resultModal").modal("show");
-								},
+            success: function (response) {
+                $("#resultModalLabel").text("BRRS");
+                $("#resultModalBody").text(response);
+                $("#resultModal").modal("show");
 
-								complete: function () {
-									$('#loader').modal('hide');
-								}
-							});
+                $("#resultModal")
+                    .off("hidden.bs.modal")
+                    .on("hidden.bs.modal", function () {
+                        if (isResub) {
+                            window.location.href =
+                                window.previousUrl
+                                    ? window.previousUrl
+                                    : "/BRRS/Resubmission?rptcode=M_SRWA_12H";
+                        }
+                    });
+            },
 
-							console.log("✅ AJAX executed successfully");
-						}
+            error: function (jqXHR) {
+                console.log("Error response:", jqXHR.responseText);
+
+                $("#resultModalLabel").text("Error");
+                $("#resultModalBody").text(
+                    "Update failed: " +
+                    (jqXHR.responseText || "Unknown error")
+                );
+                $("#resultModal").modal("show");
+            },
+
+            complete: function () {
+                $('#loader').modal('hide');
+            }
+        });
+
+    } catch (error) {
+        $('#loader').modal('hide');
+        console.error("Error during file upload:", error);
+    }
+}
+
 
 		function cancelModify() {
 			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {

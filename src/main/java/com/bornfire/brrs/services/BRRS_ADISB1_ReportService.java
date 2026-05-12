@@ -568,7 +568,11 @@ public class BRRS_ADISB1_ReportService {
 
 			obj.setR46_total_no_of_acct(rs.getBigDecimal("r46_total_no_of_acct"));
 			obj.setR46_total_value(rs.getBigDecimal("r46_total_value"));
+			obj.setR38_total_no_of_acct(rs.getBigDecimal("r38_total_no_of_acct"));
+			obj.setR38_total_value(rs.getBigDecimal("r38_total_value"));
 
+			obj.setR39_total_no_of_acct(rs.getBigDecimal("r39_total_no_of_acct"));
+			obj.setR39_total_value(rs.getBigDecimal("r39_total_value"));
 			// ================= COMMON =================
 			obj.setReport_date(rs.getDate("report_date"));
 			obj.setReport_version(rs.getBigDecimal("report_version"));
@@ -605,6 +609,10 @@ public class BRRS_ADISB1_ReportService {
 		private BigDecimal r44_total_value;
 		private BigDecimal r46_total_no_of_acct;
 		private BigDecimal r46_total_value;
+		private BigDecimal r38_total_no_of_acct;
+		private BigDecimal r38_total_value;
+		private BigDecimal r39_total_no_of_acct;
+		private BigDecimal r39_total_value;
 
 		// ================= COMMON =================
 		@Temporal(TemporalType.DATE)
@@ -762,6 +770,38 @@ public class BRRS_ADISB1_ReportService {
 
 		public void setR46_total_value(BigDecimal r46_total_value) {
 			this.r46_total_value = r46_total_value;
+		}
+
+		public BigDecimal getR38_total_no_of_acct() {
+			return r38_total_no_of_acct;
+		}
+
+		public void setR38_total_no_of_acct(BigDecimal r38_total_no_of_acct) {
+			this.r38_total_no_of_acct = r38_total_no_of_acct;
+		}
+
+		public BigDecimal getR38_total_value() {
+			return r38_total_value;
+		}
+
+		public void setR38_total_value(BigDecimal r38_total_value) {
+			this.r38_total_value = r38_total_value;
+		}
+
+		public BigDecimal getR39_total_no_of_acct() {
+			return r39_total_no_of_acct;
+		}
+
+		public void setR39_total_no_of_acct(BigDecimal r39_total_no_of_acct) {
+			this.r39_total_no_of_acct = r39_total_no_of_acct;
+		}
+
+		public BigDecimal getR39_total_value() {
+			return r39_total_value;
+		}
+
+		public void setR39_total_value(BigDecimal r39_total_value) {
+			this.r39_total_value = r39_total_value;
 		}
 
 		public Date getReport_date() {
@@ -2330,10 +2370,11 @@ public class BRRS_ADISB1_ReportService {
 			// UPDATE
 			if (isChanged) {
 
-				String sql = "UPDATE BRRS_ADISB1_DETAILTABLE " +
-			             "SET ACCT_NAME = ?, " +
-			             "ACCT_BALANCE_IN_PULA = ? " +   // ✅ no comma here
-			             "WHERE ACCT_NUMBER = ?";
+				String sql = "UPDATE BRRS_ADISB1_DETAILTABLE " + "SET ACCT_NAME = ?, " + "ACCT_BALANCE_IN_PULA = ? " + // ✅
+																														// no
+																														// comma
+																														// here
+						"WHERE ACCT_NUMBER = ?";
 
 				jdbcTemplate.update(sql, existing.getAcctName(), existing.getAcctBalanceInpula(), acctNo);
 

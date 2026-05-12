@@ -1481,11 +1481,17 @@ PURPOSE  : BRRSREPORT
 										<!-- r38 -->
 										<tr>
 											<td style="text-align:left; padding-left:20px;">Central</td>
-											<td id="r38_total_no_of_acct"
-												th:text="${#numbers.formatDecimal(reportsummary.r38_total_no_of_acct,1,'COMMA',0,'POINT')}"
-												style="text-align: right; width: 200px;padding-right:8px;"
-												th:attr="reportLable='R38', reportAddlCriteria1='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+									
+												
+												<td th:each="report: ${reportsummary}" id="r38"
+																								style="text-align: right; width: 200px; padding-left:10px; ">
+																								<input class="display-input Show_input " type="text"
+																									th:value="${report.r35_total_no_of_acct != null ? #numbers.formatDecimal(report.r38_total_no_of_acct, 1, 'COMMA', 0, 'POINT') : '0'}"
+																									id="r38_total_no_of_acct" name="r38_total_no_of_acct"
+																									style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+																									readonly />
+																							</td>
+																							
 											<td id="r38_total_value"
 												th:text="${#numbers.formatDecimal(reportsummary.r38_total_value,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;padding-right:8px;"
@@ -1495,11 +1501,14 @@ PURPOSE  : BRRSREPORT
 										<!-- r39 -->
 										<tr>
 											<td style="text-align:left; padding-left:20px;">Local</td>
-											<td id="r39_total_no_of_acct"
-												th:text="${#numbers.formatDecimal(reportsummary.r39_total_no_of_acct,1,'COMMA',0,'POINT')}"
-												style="text-align: right; width: 200px;padding-right:8px;"
-												th:attr="reportLable='R39', reportAddlCriteria1='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td th:each="report: ${reportsummary}" id="r39"
+																			style="text-align: right; width: 200px; padding-left:10px; ">
+																															<input class="display-input Show_input " type="text"
+																																th:value="${report.r39_total_no_of_acct != null ? #numbers.formatDecimal(report.r39_total_no_of_acct, 1, 'COMMA', 0, 'POINT') : '0'}"
+																																id="r39_total_no_of_acct" name="r39_total_no_of_acct"
+																																style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+																																readonly />
+																														</td>
 											<td id="r39_total_value"
 												th:text="${#numbers.formatDecimal(reportsummary.r39_total_value,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;padding-right:8px;"

@@ -1440,86 +1440,122 @@ PURPOSE		: BRRSREPORT
 				}
 
 
-		function fileuploads(btn) {
-			const asondate = btn.getAttribute("data-todate");
-			const type = btn.getAttribute("data-type");
+				function fileuploads(btn) {
 
-			// Show loader
-			$('#loader').modal('show');
+				    const asondate = btn.getAttribute("data-todate");
+				    const type = btn.getAttribute("data-type");
 
-			try {
-				// ✅ Step 1: Calculate totals
-				calculateAveragePulaTotal();
-				calculateAveragePula();
-				calculateExRateMid();
-				calculater17Totals();
-				calculater16Totals();
-				calculater15Totals();
-				calculater14Totals();
-				calculater13Totals();
-				calculater12Totals();
-				calculateR11Totals();
-				calculateR17_cer_of_depo();
-				calculateR17_32_88();
-				calculateR17_0_31();
-				calculateR34All();
+				    // Show loader
+				    $('#loader').modal('show');
 
+				    try {
 
-				// ✅ Step 2: Remove commas from all text inputs
-				$("#fileupload input[type='text']").each(function () {
-					$(this).val($(this).val().replace(/,/g, ''));
-				});
+				        // ✅ Step 1: Calculate totals
+				        calculateAveragePulaTotal();
+				        calculateAveragePula();
+				        calculateExRateMid();
+				        calculater17Totals();
+				        calculater16Totals();
+				        calculater15Totals();
+				        calculater14Totals();
+				        calculater13Totals();
+				        calculater12Totals();
+				        calculateR11Totals();
+				        calculateR17_cer_of_depo();
+				        calculateR17_32_88();
+				        calculateR17_0_31();
+				        calculateR34All();
 
-				// ✅ Step 3: Validate form
-				if (!$("#fileupload").valid()) {
-					$('#loader').modal('hide');
-					return;
+				        console.log("✅ Calculations executed successfully");
+
+				        // ✅ Step 2: Remove commas from all text inputs
+				        $("#fileupload input[type='text']").each(function () {
+
+				            let value = $(this).val();
+
+				            if (value) {
+				                $(this).val(value.replace(/,/g, ''));
+				            }
+				        });
+
+				        // ✅ Step 3: Validate form
+				        if (!$("#fileupload").valid()) {
+
+				            $('#loader').modal('hide');
+				            return;
+				        }
+
+				        // ✅ Step 4: Serialize form data
+				        const serializedData = $("#fileupload").serializeArray();
+
+				        // ✅ Step 5: Create FormData
+				        const formData = new FormData();
+
+				        // Append serialized fields
+				        $.each(serializedData, function (index, field) {
+
+				            formData.append(field.name, field.value);
+				        });
+
+				        // Append extra parameters
+				        formData.append("asondate", asondate);
+				        formData.append("type", type);
+
+				        console.log("✅ Serialize method executed successfully");
+
+				        // ✅ Step 6: Dynamic API URL
+				        let apiUrl = './MDEP3updateAll';
+
+				        if (type && type.toUpperCase() === 'RESUB') {
+
+				            apiUrl = './UpdateMDEP3ReSub';
+				        }
+
+				        // ✅ Step 7: AJAX submission
+				        $.ajax({
+
+				            url: apiUrl,
+				            type: 'POST',
+				            data: formData,
+				            processData: false,
+				            contentType: false,
+				            dataType: 'text',
+
+				            success: function (response) {
+
+				                $("#resultModalLabel").text("BRRS");
+				                $("#resultModalBody").text(response || "Modified Successfully.");
+				                $("#resultModal").modal("show");
+				            },
+
+				            error: function (jqXHR) {
+
+				                console.error("Error response:", jqXHR.responseText);
+
+				                $("#resultModalLabel").text("Error");
+				                $("#resultModalBody").text("Update failed. Check console for details.");
+				                $("#resultModal").modal("show");
+				            },
+
+				            complete: function () {
+
+				                $('#loader').modal('hide');
+				            }
+				        });
+
+				        console.log("✅ AJAX executed successfully");
+
+				    } catch (error) {
+
+				        console.error("Error in fileuploads function:", error);
+
+				        $('#loader').modal('hide');
+
+				        $("#resultModalLabel").text("Error");
+				        $("#resultModalBody").text("Unexpected error occurred. Check console.");
+				        $("#resultModal").modal("show");
+				    }
 				}
-
-				// ✅ Step 4: Build FormData
-				const formData = new FormData();
-				formData.append("asondate", asondate);
-				formData.append("type", type);
-
-				$('#fileupload').find(':input').each(function () {
-					const name = $(this).attr('name');
-					if (name) {
-						formData.append(name, $(this).val());
-					}
-				});
-
-				// ✅ Step 5: AJAX submission
-				$.ajax({
-					url: './MDEP3updateAll',
-					type: 'POST',
-					data: formData,
-					processData: false,
-					contentType: false,
-					dataType: 'text',
-					success: function () {
-						$("#resultModalLabel").text("BRRS");
-						$("#resultModalBody").text(" Modified Successfully.");
-						$("#resultModal").modal("show");
-					},
-					error: function (jqXHR) {
-						console.error("Error response:", jqXHR.responseText);
-						$("#resultModalLabel").text("Error");
-						$("#resultModalBody").text("Update failed. Check console for details.");
-						$("#resultModal").modal("show");
-					},
-					complete: function () {
-						$('#loader').modal('hide');
-					}
-				});
-
-			} catch (error) {
-				console.error("Error in fileuploads function:", error);
-				$('#loader').modal('hide');
-				$("#resultModalLabel").text("Error");
-				$("#resultModalBody").text("Unexpected error occurred. Check console.");
-				$("#resultModal").modal("show");
-			}
-		}
 	</script>
 
 	<script th:inline="javascript">

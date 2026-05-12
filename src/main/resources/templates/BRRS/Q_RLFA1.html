@@ -75,13 +75,6 @@ PURPOSE		: BRRS REPORT
 			border-color: #0c0c0c;
 		}
 
-		.btn-primary:not (:disabled):not (.disabled).active,
-		.btn-primary:not (:disabled):not (.disabled):active,
-		.show>.btn-primary.dropdown-toggle {
-			color: #fff;
-			background-color: #cc000000;
-			border-color: #161617;
-		}
 
 		#finusertb {
 			width: 460px;
@@ -218,24 +211,12 @@ PURPOSE		: BRRS REPORT
 		}
 
 		/* When input or select is focused or has a value, move the label up */
-		.form-control:focus~.form-legend,
-		.form-control:not (:placeholder-shown)~.form-legend {
-			top: -8px;
-			font-size: 1rem;
-			color: #007bff;
-		}
+		
 
 		/* Hover effect when the input/select is focused */
-		.form-control:focus:hover~.form-legend {
-			color: #0056b3;
-			/* Darker shade of blue on hover */
-		}
+		
 
-		/* Ensure the label returns to the normal color after focus or hover is removed */
-		.form-control:not (:focus)~.form-legend {
-			color: #aaa;
-			/* Normal label color */
-		}
+	
 
 		.table-cell tbody td:hover {
 			background-color: #f0f0f0;
@@ -424,38 +405,38 @@ PURPOSE		: BRRS REPORT
 		//to fetch summary from the database - called from the summary button
 		function showdetail() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${'detail'}, asondate=${asondate})}]]*/;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${'detail'}, asondate=${asondate})}]]*/
 			// showResultModal('BRRS', 'Details page not available for Manual Report');
 			location.href = Callurl;
 		}
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='summary', fromdate=${fromdate}, todate=${todate}, type=${'summary'}, asondate=${asondate})}]]*/;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='summary', fromdate=${fromdate}, todate=${todate}, type=${'summary'}, asondate=${asondate})}]]*/
 			location.href = Callurl;
 		}
 
 		function showArchivalsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='summary', fromdate=${fromdate}, todate=${todate}, type=${'ARCHIVAL'}, asondate=${asondate}, version=${version ?: ''})}]]*/;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='summary', fromdate=${fromdate}, todate=${todate}, type=${'ARCHIVAL'}, asondate=${asondate}, version=${version ?: ''})}]]*/
 			location.href = Callurl;
 		}
 
 
 		function showArchivaldetail() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${'ARCHIVAL'}, asondate=${asondate}, version=${version ?: ''})}]]*/;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${'ARCHIVAL'}, asondate=${asondate}, version=${version ?: ''})}]]*/
 			location.href = Callurl;
 		}
 
 		function showResubsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='summary', fromdate=${fromdate}, todate=${todate}, type=${'RESUB'}, asondate=${asondate}, version=${version ?: ''})}]]*/;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='summary', fromdate=${fromdate}, todate=${todate}, type=${'RESUB'}, asondate=${asondate}, version=${version ?: ''})}]]*/
 			location.href = Callurl;
 		}
 
 		function showResubdetail() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${'RESUB'}, asondate=${asondate}, version=${version ?: ''})}]]*/;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${'RESUB'}, asondate=${asondate}, version=${version ?: ''})}]]*/
 			location.href = Callurl;
 		}
 
@@ -1030,84 +1011,150 @@ PURPOSE		: BRRS REPORT
 	</script>
 
 	<script>
+function fileuploads(btn) {
 
+    var asondate = btn.getAttribute("data-todate");
+    const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
 
-		function fileuploads(btn) {
-			const asondate = btn.getAttribute("data-todate");
-			const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
+    // ✅ Mark RESUB once
+    isResubmissionUpdate = (
+        type && type.toUpperCase() === 'RESUB'
+    );
 
-			$('#loader').modal('show');
+    $('#loader').modal('show');
 
-			// Step 1: Calculate totals
-			calculateAllTotals();
+    try {
 
-			// Step 2: Remove commas
-			$("#fileupload input[type='text']").each(function () {
-				$(this).val($(this).val().replace(/,/g, ''));
-			});
+        // ✅ Pre-calculations
+        calculateAllTotals();
 
-			// Step 3: Validate form
-			if (!$("#fileupload").valid()) {
-				$('#loader').modal('hide');
-				return;
-			}
+        console.log("✅ Calculations executed successfully");
 
-			// Step 4: Build FormData
-			const formData = new FormData();
-			formData.append("asondate", asondate);
-			formData.append("type", type);
+        // ✅ Remove commas from numeric inputs
+        $("#fileupload input[type='text']").each(function () {
 
-			$('#fileupload').find(':input').each(function () {
-				const name = $(this).attr('name');
-				if (name) formData.append(name, $(this).val());
-			});
+            var val = $(this).val();
 
-			// Select API dynamically (OLD LOGIC)
-			let apiUrl = './Q_RLFA1update';
-			if (type && type.toUpperCase() === 'RESUB') {
-				apiUrl = './UpdateQ_RLFA1_ReSub';
-			}
+            if (val && val.includes(",")) {
 
-			// ✅ AJAX CALL (NEW STYLE)
-			$.ajax({
-				url: apiUrl,
-				type: 'POST',
-				data: formData,
-				processData: false,
-				contentType: false,
-				dataType: 'text',
+                $(this).val(
+                    val.replace(/,/g, '')
+                );
+            }
+        });
 
-				success: function (response) {
-					$("#resultModalLabel").text("BRRS");
-					$("#resultModalBody").text(response);
-					$("#resultModal").modal("show");
+        // ✅ Form validation
+        if (!$("#fileupload").valid()) {
 
-					// Redirect after modal close (OLD LOGIC)
-					$("#resultModal")
-						.off("hidden.bs.modal")
-						.on("hidden.bs.modal", function () {
-							if (isResubmissionUpdate) {
-								window.location.href = previousUrl
-									? previousUrl
-									: "/BRRS/Resubmission?rptcode=Q_RLFA1";
-							}
-						});
-				},
+            $('#loader').modal('hide');
+            return;
+        }
 
-				error: function (jqXHR) {
-					console.log("Error response:", jqXHR.responseText);
-					$("#resultModalLabel").text("Error");
-					$("#resultModalBody").text("Update failed. Check console.");
-					$("#resultModal").modal("show");
-				},
+        // ✅ Serialize form data
+        const serializedData = $("#fileupload").serializeArray();
 
-				complete: function () {
-					$('#loader').modal('hide');
-				}
-			});
+        // ✅ Create FormData
+        const formData = new FormData();
 
-			console.log("✅ AJAX executed successfully");
-		}
+        // Append serialized fields
+        $.each(serializedData, function (index, field) {
+
+            formData.append(
+                field.name,
+                field.value
+            );
+        });
+
+        // Append extra fields
+        formData.append("asondate", asondate);
+        formData.append("type", type);
+
+        console.log("✅ Serialize executed successfully");
+
+        // ✅ Select API dynamically
+        let apiUrl = './Q_RLFA1update';
+
+        if (type && type.toUpperCase() === 'RESUB') {
+
+            apiUrl = './UpdateQ_RLFA1_ReSub';
+        }
+
+        // ✅ AJAX Call
+        $.ajax({
+
+            url: apiUrl,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: 'text',
+
+            success: function (response) {
+
+                $("#resultModalLabel").text("BRRS");
+
+                $("#resultModalBody").text(
+                    response || "Modified Successfully."
+                );
+
+                $("#resultModal").modal("show");
+
+                // ✅ Redirect after modal close
+                $("#resultModal")
+                    .off("hidden.bs.modal")
+                    .on("hidden.bs.modal", function () {
+
+                        if (isResubmissionUpdate) {
+
+                            window.location.href = previousUrl
+                                ? previousUrl
+                                : "/BRRS/Resubmission?rptcode=Q_RLFA1";
+                        }
+                    });
+            },
+
+            error: function (jqXHR) {
+
+                console.log(
+                    "Error response:",
+                    jqXHR.responseText
+                );
+
+                $("#resultModalLabel").text("Error");
+
+                $("#resultModalBody").text(
+                    "Update failed. Check console for details."
+                );
+
+                $("#resultModal").modal("show");
+            },
+
+            complete: function () {
+
+                $('#loader').modal('hide');
+            }
+        });
+
+        console.log("✅ AJAX executed successfully");
+
+    } catch (error) {
+
+        console.error(
+            "Error in fileuploads function:",
+            error
+        );
+
+        $('#loader').modal('hide');
+
+        $("#resultModalLabel").text("Error");
+
+        $("#resultModalBody").text(
+            "Unexpected error occurred. Check console."
+        );
+
+        $("#resultModal").modal("show");
+    }
+}
 
 	</script>
 
@@ -1126,7 +1173,7 @@ PURPOSE		: BRRS REPORT
 
 
 
-<title>Q-RLFA1</title>
+<title>Q_RLFA1</title>
 
 <body>
 	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
@@ -3129,10 +3176,12 @@ PURPOSE		: BRRS REPORT
 								</div>
 								<div style="text-align: center; margin-top: 10px;">
 
+
 									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-										form="fileupload" th:attr="data-todate=${asondate},data-type=${type}"
+										form="fileupload" th:attr="data-todate=${asondate}, data-type=${type}"
 										onclick="fileuploads(this);" style="display: none;">
-										Submit </button>
+										Submit
+									</button>
 								</div>
 
 							</form>
