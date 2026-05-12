@@ -8671,9 +8671,47 @@ break;
 					destCell.setCellValue(srcCell.getBooleanCellValue());
 					break;
 
+//				case Cell.CELL_TYPE_FORMULA:
+//					destCell.setCellFormula(srcCell.getCellFormula());
+//					break;
+					
 				case Cell.CELL_TYPE_FORMULA:
-					destCell.setCellFormula(srcCell.getCellFormula());
-					break;
+
+				    try {
+
+				        destCell.setCellFormula(srcCell.getCellFormula());
+
+				    } catch (Exception e) {
+
+				        System.out.println(
+				            "Skipping broken formula at row="
+				            + srcCell.getRowIndex()
+				            + " col="
+				            + srcCell.getColumnIndex()
+				        );
+
+				        // fallback: copy displayed value instead
+
+				        switch (srcCell.getCachedFormulaResultType()) {
+
+				            case Cell.CELL_TYPE_NUMERIC:
+				                destCell.setCellValue(srcCell.getNumericCellValue());
+				                break;
+
+				            case Cell.CELL_TYPE_STRING:
+				                destCell.setCellValue(srcCell.getStringCellValue());
+				                break;
+
+				            case Cell.CELL_TYPE_BOOLEAN:
+				                destCell.setCellValue(srcCell.getBooleanCellValue());
+				                break;
+
+				            default:
+				                destCell.setCellValue("");
+				        }
+				    }
+
+				    break;
 
 				case Cell.CELL_TYPE_BLANK:
 					destCell.setCellValue("");
@@ -8691,12 +8729,45 @@ break;
 				if (srcStyle != null) {
 					CellStyle newStyle = styleMap.get(srcStyle);
 
+//					if (newStyle == null) {
+//						// Only create a NEW style if we haven't seen this one before
+//						newStyle = destWB.createCellStyle();
+//						newStyle.cloneStyleFrom(srcStyle);
+//						newStyle.setShrinkToFit(true);
+//						styleMap.put(srcStyle, newStyle);
+//					}
+					
 					if (newStyle == null) {
-						// Only create a NEW style if we haven't seen this one before
-						newStyle = destWB.createCellStyle();
-						newStyle.cloneStyleFrom(srcStyle);
-						newStyle.setShrinkToFit(true);
-						styleMap.put(srcStyle, newStyle);
+
+					    newStyle = destWB.createCellStyle();
+
+					    try {
+
+					        // Try normal clone first
+					        newStyle.cloneStyleFrom(srcStyle);
+
+					    } catch (Exception e) {
+
+					        System.out.println("Style clone failed. Using fallback style.");
+
+					        try {
+
+					            // Fallback safe copy
+					            newStyle.setWrapText(srcStyle.getWrapText());
+					            newStyle.setShrinkToFit(srcStyle.getShrinkToFit());
+
+					            try {
+					                newStyle.setDataFormat(srcStyle.getDataFormat());
+					            } catch (Exception ex) {
+					                System.out.println("Invalid data format skipped");
+					            }
+
+					        } catch (Exception ex2) {
+					            ex2.printStackTrace();
+					        }
+					    }
+
+					    styleMap.put(srcStyle, newStyle);
 					}
 
 					destCell.setCellStyle(newStyle);
