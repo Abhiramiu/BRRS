@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -248,49 +250,231 @@ public class BRRS_M_SFINP1_ReportService {
 
 
 
-    @Transactional
-    public void updateReport(M_SFINP1_Summary_Manual_Entity updatedEntity) {
-		System.out.println("Came to services");
-		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+//    @Transactional
+//    public void updateReport(M_SFINP1_Summary_Manual_Entity updatedEntity) {
+//		System.out.println("Came to services");
+//		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+//
+//		M_SFINP1_Summary_Manual_Entity existing = BRRS_M_SFINP1_Summary_Manual_Repo.findById(updatedEntity.getREPORT_DATE())
+//				.orElseThrow(() -> new RuntimeException(
+//						"Record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+//
+//		try {
+//			// 🔹 Only these rows
+//			int[] specialRows = {14, 34, 37, 39, 43, 50, 51, 52, 57, 59 };
+//
+//			for (int i : specialRows) {
+//				String prefix = "R" + i + "_";
+//				String[] fields = { "MONTH_END" };
+//
+//				for (String field : fields) {
+//					String getterName = "get" + prefix + field; 
+//					String setterName = "set" + prefix + field;
+//
+//					try {
+//						Method getter = M_SFINP1_Summary_Manual_Entity.class.getMethod(getterName);
+//						Method setter = M_SFINP1_Summary_Manual_Entity.class.getMethod(setterName, getter.getReturnType());
+//
+//						Object newValue = getter.invoke(updatedEntity);
+//						setter.invoke(existing, newValue);
+//
+//					} catch (NoSuchMethodException e) {
+//						// If getter/setter is missing, just skip
+//						continue;
+//					}
+//				}
+//			}
+//
+//		} catch (Exception e) {
+//			throw new RuntimeException("Error while updating report fields", e);
+//		}
+//
+//		// 3️⃣ Save updated entity
+//		BRRS_M_SFINP1_Summary_Manual_Repo.save(existing);
+//	}
 
-		M_SFINP1_Summary_Manual_Entity existing = BRRS_M_SFINP1_Summary_Manual_Repo.findById(updatedEntity.getREPORT_DATE())
-				.orElseThrow(() -> new RuntimeException(
-						"Record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+	
+	@Transactional
+	public void updateReport(M_SFINP1_Summary_Manual_Entity updatedEntity) {
 
-		try {
-			// 🔹 Only these rows
-			int[] specialRows = {14, 34, 37, 39, 43, 50, 51, 52, 57, 59 };
+	    System.out.println("Came to services");
+	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-			for (int i : specialRows) {
-				String prefix = "R" + i + "_";
-				String[] fields = { "MONTH_END" };
+	    // =====================================================
+	    // STEP 1 : FETCH MANUAL TABLE RECORD
+	    // =====================================================
 
-				for (String field : fields) {
-					String getterName = "get" + prefix + field; 
-					String setterName = "set" + prefix + field;
+	    M_SFINP1_Summary_Manual_Entity existing =
+	            BRRS_M_SFINP1_Summary_Manual_Repo
+	            .findById(updatedEntity.getREPORT_DATE())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Record not found for REPORT_DATE : "
+	                            + updatedEntity.getREPORT_DATE()));
 
-					try {
-						Method getter = M_SFINP1_Summary_Manual_Entity.class.getMethod(getterName);
-						Method setter = M_SFINP1_Summary_Manual_Entity.class.getMethod(setterName, getter.getReturnType());
+	    // =====================================================
+	    // STEP 2 : UPDATE ONLY MANUAL FIELDS
+	    // =====================================================
 
-						Object newValue = getter.invoke(updatedEntity);
-						setter.invoke(existing, newValue);
+	    try {
 
-					} catch (NoSuchMethodException e) {
-						// If getter/setter is missing, just skip
-						continue;
-					}
-				}
-			}
+	        int[] specialRows = {14, 34, 37, 39, 43, 50, 51, 52, 57, 59};
 
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
-		}
+	        for (int i : specialRows) {
 
-		// 3️⃣ Save updated entity
-		BRRS_M_SFINP1_Summary_Manual_Repo.save(existing);
+	            String prefix = "R" + i + "_";
+	            String field = "MONTH_END";
+
+	            String getterName = "get" + prefix + field;
+	            String setterName = "set" + prefix + field;
+
+	            try {
+
+	                Method getter =
+	                        M_SFINP1_Summary_Manual_Entity.class
+	                        .getMethod(getterName);
+
+	                Method setter =
+	                        M_SFINP1_Summary_Manual_Entity.class
+	                        .getMethod(setterName, getter.getReturnType());
+
+	                Object newValue = getter.invoke(updatedEntity);
+
+	                setter.invoke(existing, newValue);
+
+	            } catch (NoSuchMethodException e) {
+
+	                continue;
+	            }
+	        }
+
+	    } catch (Exception e) {
+
+	        throw new RuntimeException(
+	                "Error while updating report fields", e);
+	    }
+
+	    // =====================================================
+	    // STEP 3 : SAVE MANUAL TABLE
+	    // =====================================================
+
+	    BRRS_M_SFINP1_Summary_Manual_Repo.save(existing);
+
+	    // =====================================================
+	    // STEP 4 : FETCH MAIN SUMMARY ENTITY
+	    // =====================================================
+
+	    M_SFINP1_Summary_Entity summaryEntity =
+	            BRRS_M_SFINP1_Summary_Repo
+	            .findById(updatedEntity.getREPORT_DATE())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Summary Record not found"));
+
+	    // =====================================================
+	    // STEP 5 : PREVIOUS MONTH DATE
+	    // =====================================================
+
+	    Date reportDate = updatedEntity.getREPORT_DATE();
+
+	    Calendar cal = Calendar.getInstance();
+	    cal.setTime(reportDate);
+	    cal.add(Calendar.MONTH, -1);
+
+	    Date previousMonthDate = cal.getTime();
+
+	    // =====================================================
+	    // STEP 6 : FETCH PREVIOUS MONTH ARCHIVAL DATA
+	    // =====================================================
+
+	    M_SFINP1_Archival_Summary_Manual_Entity archival =
+	            BRRS_M_SFINP1_Archival_Summary_Manual_Repo
+	            .findById(previousMonthDate)
+	            .orElse(null);
+
+	    // =====================================================
+	    // STEP 7 : CALCULATE AVERAGES
+	    // =====================================================
+
+	    BigDecimal r34Avg = calculateAverage(
+	            existing.getR34_MONTH_END(),
+	            archival != null ? archival.getR34_MONTH_END() : null
+	    );
+
+	    BigDecimal r37Avg = calculateAverage(
+	            existing.getR37_MONTH_END(),
+	            archival != null ? archival.getR37_MONTH_END() : null
+	    );
+
+	    BigDecimal r39Avg = calculateAverage(
+	            existing.getR39_MONTH_END(),
+	            archival != null ? archival.getR39_MONTH_END() : null
+	    );
+
+	    BigDecimal r43Avg = calculateAverage(
+	            existing.getR43_MONTH_END(),
+	            archival != null ? archival.getR43_MONTH_END() : null
+	    );
+
+	    BigDecimal r50Avg = calculateAverage(
+	            existing.getR50_MONTH_END(),
+	            archival != null ? archival.getR50_MONTH_END() : null
+	    );
+
+	    BigDecimal r51Avg = calculateAverage(
+	            existing.getR51_MONTH_END(),
+	            archival != null ? archival.getR51_MONTH_END() : null
+	    );
+
+	    BigDecimal r52Avg = calculateAverage(
+	            existing.getR52_MONTH_END(),
+	            archival != null ? archival.getR52_MONTH_END() : null
+	    );
+
+	    BigDecimal r57Avg = calculateAverage(
+	            existing.getR57_MONTH_END(),
+	            archival != null ? archival.getR57_MONTH_END() : null
+	    );
+
+	    BigDecimal r59Avg = calculateAverage(
+	            existing.getR59_MONTH_END(),
+	            archival != null ? archival.getR59_MONTH_END() : null
+	    );
+
+	    // =====================================================
+	    // STEP 8 : STORE INTO MAIN SUMMARY ENTITY
+	    // =====================================================
+
+	    summaryEntity.setR34_average(r34Avg);
+	    summaryEntity.setR37_average(r37Avg);
+	    summaryEntity.setR39_average(r39Avg);
+	    summaryEntity.setR43_average(r43Avg);
+	    summaryEntity.setR50_average(r50Avg);
+	    summaryEntity.setR51_average(r51Avg);
+	    summaryEntity.setR52_average(r52Avg);
+	    summaryEntity.setR57_average(r57Avg);
+	    summaryEntity.setR59_average(r59Avg);
+
+	    // =====================================================
+	    // STEP 9 : SAVE MAIN SUMMARY TABLE
+	    // =====================================================
+
+	    BRRS_M_SFINP1_Summary_Repo.save(summaryEntity);
+
+	    System.out.println("Updated Successfully");
 	}
+	private BigDecimal calculateAverage(BigDecimal current,
+            BigDecimal previous) {
 
+BigDecimal curr =
+current == null ? BigDecimal.ZERO : current.abs();
+
+BigDecimal prev =
+previous == null ? BigDecimal.ZERO : previous.abs();
+
+return curr.add(prev)
+.divide(BigDecimal.valueOf(2),
+0,
+RoundingMode.HALF_UP);
+}
 	public byte[] getM_SFINP1DetailExcel(String filename, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) {
 

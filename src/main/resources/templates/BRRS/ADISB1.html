@@ -752,8 +752,11 @@ PURPOSE  : BRRSREPORT
 
 	<script>
 		function showmodify(btn) {
+
 			// Enable editable fields
-			$(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
+			$(".Show_input").not(".nonEditable")
+				.removeAttr("readonly")
+				.removeAttr("disabled");
 
 			// ===== GROUP 1 =====
 			let rows1 = [23, 25, 26, 30, 35, 42, 43, 44, 46];
@@ -762,20 +765,27 @@ PURPOSE  : BRRSREPORT
 			rows1.forEach(r => {
 				fields1.forEach(f => {
 					const selector = `#r${r}_${f}`;
-					if ($(selector).length) $(selector).css("background-color", "#d3d3d3");
+
+					if ($(selector).length) {
+						$(selector).css("background-color", "#d3d3d3");
+					}
 				});
 			});
 
-
+			// ONLY R38 & R39 total_no_of_acct
+			["#r38_total_no_of_acct", "#r39_total_no_of_acct"].forEach(selector => {
+				if ($(selector).length) {
+					$(selector).css("background-color", "#d3d3d3");
+				}
+			});
 
 			// Show buttons
 			$("#submitButton").show();
 			$("#cancelRecord").show();
 
-			// Hide the modify button clicked
+			// Hide clicked modify button
 			$(btn).hide();
 		}
-
 
 		//Cancel / Reset function
 		function cancelModify() {
@@ -846,7 +856,7 @@ PURPOSE  : BRRSREPORT
 				formData.append("type", type);
 
 				$('#fileupload').find(':input').each(function () {
-					const name = $(this).attr('name');
+					const name = $(this).attr('id');
 					if (name) {
 						formData.append(name, $(this).val());
 					}
@@ -1483,14 +1493,14 @@ PURPOSE  : BRRSREPORT
 											<td style="text-align:left; padding-left:20px;">Central</td>
 									
 												
-												<td th:each="report: ${reportsummary}" id="r38"
-																								style="text-align: right; width: 200px; padding-left:10px; ">
-																								<input class="display-input Show_input " type="text"
-																									th:value="${report.r35_total_no_of_acct != null ? #numbers.formatDecimal(report.r38_total_no_of_acct, 1, 'COMMA', 0, 'POINT') : '0'}"
-																									id="r38_total_no_of_acct" name="r38_total_no_of_acct"
-																									style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
-																									readonly />
-																							</td>
+											<td th:each="report: ${reportsummary1}" id="r38"
+																							style="text-align: right; width: 200px; padding-left:10px; ">
+																							<input class="display-input Show_input " type="text"
+																								th:value="${report.r38_total_no_of_acct != null ? #numbers.formatDecimal(report.r38_total_no_of_acct, 1, 'COMMA', 0, 'POINT') : '0'}"
+																								id="r38_total_no_of_acct" name="r38_total_no_of_acct"
+																								style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+																								readonly />
+																						</td>
 																							
 											<td id="r38_total_value"
 												th:text="${#numbers.formatDecimal(reportsummary.r38_total_value,1,'COMMA',0,'POINT')}"
@@ -1501,8 +1511,8 @@ PURPOSE  : BRRSREPORT
 										<!-- r39 -->
 										<tr>
 											<td style="text-align:left; padding-left:20px;">Local</td>
-											<td th:each="report: ${reportsummary}" id="r39"
-																			style="text-align: right; width: 200px; padding-left:10px; ">
+											<td th:each="report: ${reportsummary1}" id="r39"
+																															style="text-align: right; width: 200px; padding-left:10px; ">
 																															<input class="display-input Show_input " type="text"
 																																th:value="${report.r39_total_no_of_acct != null ? #numbers.formatDecimal(report.r39_total_no_of_acct, 1, 'COMMA', 0, 'POINT') : '0'}"
 																																id="r39_total_no_of_acct" name="r39_total_no_of_acct"

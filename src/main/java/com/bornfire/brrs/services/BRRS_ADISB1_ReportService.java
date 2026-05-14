@@ -264,13 +264,8 @@ public class BRRS_ADISB1_ReportService {
 
 			obj.setR34_total_no_of_acct(rs.getBigDecimal("r34_total_no_of_acct"));
 			obj.setR34_total_value(rs.getBigDecimal("r34_total_value"));
-
-			obj.setR38_total_no_of_acct(rs.getBigDecimal("r38_total_no_of_acct"));
 			obj.setR38_total_value(rs.getBigDecimal("r38_total_value"));
-
-			obj.setR39_total_no_of_acct(rs.getBigDecimal("r39_total_no_of_acct"));
 			obj.setR39_total_value(rs.getBigDecimal("r39_total_value"));
-
 			//
 			// COMMON FIELDS
 			//
@@ -301,13 +296,9 @@ public class BRRS_ADISB1_ReportService {
 		private BigDecimal r13_total_value;
 		private BigDecimal r14_total_no_of_acct;
 		private BigDecimal r14_total_value;
-
 		private BigDecimal r34_total_no_of_acct;
 		private BigDecimal r34_total_value;
-
-		private BigDecimal r38_total_no_of_acct;
 		private BigDecimal r38_total_value;
-		private BigDecimal r39_total_no_of_acct;
 		private BigDecimal r39_total_value;
 
 		// ================= COMMON =================
@@ -437,28 +428,12 @@ public class BRRS_ADISB1_ReportService {
 			this.r34_total_value = r34_total_value;
 		}
 
-		public BigDecimal getR38_total_no_of_acct() {
-			return r38_total_no_of_acct;
-		}
-
-		public void setR38_total_no_of_acct(BigDecimal r38_total_no_of_acct) {
-			this.r38_total_no_of_acct = r38_total_no_of_acct;
-		}
-
 		public BigDecimal getR38_total_value() {
 			return r38_total_value;
 		}
 
 		public void setR38_total_value(BigDecimal r38_total_value) {
 			this.r38_total_value = r38_total_value;
-		}
-
-		public BigDecimal getR39_total_no_of_acct() {
-			return r39_total_no_of_acct;
-		}
-
-		public void setR39_total_no_of_acct(BigDecimal r39_total_no_of_acct) {
-			this.r39_total_no_of_acct = r39_total_no_of_acct;
 		}
 
 		public BigDecimal getR39_total_value() {
@@ -569,10 +544,8 @@ public class BRRS_ADISB1_ReportService {
 			obj.setR46_total_no_of_acct(rs.getBigDecimal("r46_total_no_of_acct"));
 			obj.setR46_total_value(rs.getBigDecimal("r46_total_value"));
 			obj.setR38_total_no_of_acct(rs.getBigDecimal("r38_total_no_of_acct"));
-			obj.setR38_total_value(rs.getBigDecimal("r38_total_value"));
 
 			obj.setR39_total_no_of_acct(rs.getBigDecimal("r39_total_no_of_acct"));
-			obj.setR39_total_value(rs.getBigDecimal("r39_total_value"));
 			// ================= COMMON =================
 			obj.setReport_date(rs.getDate("report_date"));
 			obj.setReport_version(rs.getBigDecimal("report_version"));
@@ -610,9 +583,7 @@ public class BRRS_ADISB1_ReportService {
 		private BigDecimal r46_total_no_of_acct;
 		private BigDecimal r46_total_value;
 		private BigDecimal r38_total_no_of_acct;
-		private BigDecimal r38_total_value;
 		private BigDecimal r39_total_no_of_acct;
-		private BigDecimal r39_total_value;
 
 		// ================= COMMON =================
 		@Temporal(TemporalType.DATE)
@@ -780,28 +751,12 @@ public class BRRS_ADISB1_ReportService {
 			this.r38_total_no_of_acct = r38_total_no_of_acct;
 		}
 
-		public BigDecimal getR38_total_value() {
-			return r38_total_value;
-		}
-
-		public void setR38_total_value(BigDecimal r38_total_value) {
-			this.r38_total_value = r38_total_value;
-		}
-
 		public BigDecimal getR39_total_no_of_acct() {
 			return r39_total_no_of_acct;
 		}
 
 		public void setR39_total_no_of_acct(BigDecimal r39_total_no_of_acct) {
 			this.r39_total_no_of_acct = r39_total_no_of_acct;
-		}
-
-		public BigDecimal getR39_total_value() {
-			return r39_total_value;
-		}
-
-		public void setR39_total_value(BigDecimal r39_total_value) {
-			this.r39_total_value = r39_total_value;
 		}
 
 		public Date getReport_date() {
@@ -900,10 +855,7 @@ public class BRRS_ADISB1_ReportService {
 			obj.setR34_total_no_of_acct(rs.getBigDecimal("r34_total_no_of_acct"));
 			obj.setR34_total_value(rs.getBigDecimal("r34_total_value"));
 
-			obj.setR38_total_no_of_acct(rs.getBigDecimal("r38_total_no_of_acct"));
 			obj.setR38_total_value(rs.getBigDecimal("r38_total_value"));
-
-			obj.setR39_total_no_of_acct(rs.getBigDecimal("r39_total_no_of_acct"));
 			obj.setR39_total_value(rs.getBigDecimal("r39_total_value"));
 
 			obj.setReport_date(rs.getDate("report_date"));
@@ -939,11 +891,8 @@ public class BRRS_ADISB1_ReportService {
 		private BigDecimal r34_total_no_of_acct;
 		private BigDecimal r34_total_value;
 
-		private BigDecimal r38_total_no_of_acct;
 		private BigDecimal r38_total_value;
-		private BigDecimal r39_total_no_of_acct;
 		private BigDecimal r39_total_value;
-
 		@Temporal(TemporalType.DATE)
 		@DateTimeFormat(pattern = "dd/MM/yyyy")
 		@Id
@@ -1071,28 +1020,12 @@ public class BRRS_ADISB1_ReportService {
 			this.r34_total_value = r34_total_value;
 		}
 
-		public BigDecimal getR38_total_no_of_acct() {
-			return r38_total_no_of_acct;
-		}
-
-		public void setR38_total_no_of_acct(BigDecimal r38_total_no_of_acct) {
-			this.r38_total_no_of_acct = r38_total_no_of_acct;
-		}
-
 		public BigDecimal getR38_total_value() {
 			return r38_total_value;
 		}
 
 		public void setR38_total_value(BigDecimal r38_total_value) {
 			this.r38_total_value = r38_total_value;
-		}
-
-		public BigDecimal getR39_total_no_of_acct() {
-			return r39_total_no_of_acct;
-		}
-
-		public void setR39_total_no_of_acct(BigDecimal r39_total_no_of_acct) {
-			this.r39_total_no_of_acct = r39_total_no_of_acct;
 		}
 
 		public BigDecimal getR39_total_value() {
@@ -1210,7 +1143,9 @@ public class BRRS_ADISB1_ReportService {
 
 			obj.setR46_total_no_of_acct(rs.getBigDecimal("r46_total_no_of_acct"));
 			obj.setR46_total_value(rs.getBigDecimal("r46_total_value"));
+			obj.setR38_total_no_of_acct(rs.getBigDecimal("r38_total_no_of_acct"));
 
+			obj.setR39_total_no_of_acct(rs.getBigDecimal("r39_total_no_of_acct"));
 			obj.setReport_date(rs.getDate("report_date"));
 			obj.setReport_version(rs.getBigDecimal("report_version"));
 			obj.setREPORT_RESUBDATE(rs.getBigDecimal("REPORT_RESUBDATE"));
@@ -1293,7 +1228,8 @@ public class BRRS_ADISB1_ReportService {
 		private BigDecimal r44_total_value;
 		private BigDecimal r46_total_no_of_acct;
 		private BigDecimal r46_total_value;
-
+		private BigDecimal r38_total_no_of_acct;
+		private BigDecimal r39_total_no_of_acct;
 		@Temporal(TemporalType.DATE)
 		@DateTimeFormat(pattern = "dd/MM/yyyy")
 		@Id
@@ -1452,6 +1388,22 @@ public class BRRS_ADISB1_ReportService {
 
 		public void setR46_total_value(BigDecimal r46_total_value) {
 			this.r46_total_value = r46_total_value;
+		}
+
+		public BigDecimal getR38_total_no_of_acct() {
+			return r38_total_no_of_acct;
+		}
+
+		public void setR38_total_no_of_acct(BigDecimal r38_total_no_of_acct) {
+			this.r38_total_no_of_acct = r38_total_no_of_acct;
+		}
+
+		public BigDecimal getR39_total_no_of_acct() {
+			return r39_total_no_of_acct;
+		}
+
+		public void setR39_total_no_of_acct(BigDecimal r39_total_no_of_acct) {
+			this.r39_total_no_of_acct = r39_total_no_of_acct;
 		}
 
 		public Date getReport_date() {
@@ -2256,7 +2208,7 @@ public class BRRS_ADISB1_ReportService {
 		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
 		// Allowed rows
-		int[] rows = { 23, 25, 26, 30, 34, 35, 42, 43, 44, 46 };
+		int[] rows = { 23, 25, 26, 30, 34, 35, 38, 39, 42, 43, 44, 46 };
 
 		try {
 
@@ -3009,8 +2961,8 @@ public class BRRS_ADISB1_ReportService {
 					row = sheet.getRow(37);
 //R38 Col B            
 					Cell R38cell1 = row.createCell(1);
-					if (record.getR38_total_no_of_acct() != null) {
-						R38cell1.setCellValue(record.getR38_total_no_of_acct().doubleValue());
+					if (record1.getR38_total_no_of_acct() != null) {
+						R38cell1.setCellValue(record1.getR38_total_no_of_acct().doubleValue());
 						R38cell1.setCellStyle(numberStyle);
 					} else {
 						R38cell1.setCellValue("");
@@ -3030,8 +2982,8 @@ public class BRRS_ADISB1_ReportService {
 					row = sheet.getRow(38);
 //R39 Col B            
 					Cell R39cell1 = row.createCell(1);
-					if (record.getR39_total_no_of_acct() != null) {
-						R39cell1.setCellValue(record.getR39_total_no_of_acct().doubleValue());
+					if (record1.getR39_total_no_of_acct() != null) {
+						R39cell1.setCellValue(record1.getR39_total_no_of_acct().doubleValue());
 						R39cell1.setCellStyle(numberStyle);
 					} else {
 						R39cell1.setCellValue("");
@@ -3486,8 +3438,8 @@ public class BRRS_ADISB1_ReportService {
 					row = sheet.getRow(37);
 //R38 Col B            
 					Cell R38cell1 = row.createCell(1);
-					if (record.getR38_total_no_of_acct() != null) {
-						R38cell1.setCellValue(record.getR38_total_no_of_acct().doubleValue());
+					if (record1.getR38_total_no_of_acct() != null) {
+						R38cell1.setCellValue(record1.getR38_total_no_of_acct().doubleValue());
 						R38cell1.setCellStyle(numberStyle);
 					} else {
 						R38cell1.setCellValue("");
@@ -3507,8 +3459,8 @@ public class BRRS_ADISB1_ReportService {
 					row = sheet.getRow(38);
 //R39 Col B            
 					Cell R39cell1 = row.createCell(1);
-					if (record.getR39_total_no_of_acct() != null) {
-						R39cell1.setCellValue(record.getR39_total_no_of_acct().doubleValue());
+					if (record1.getR39_total_no_of_acct() != null) {
+						R39cell1.setCellValue(record1.getR39_total_no_of_acct().doubleValue());
 						R39cell1.setCellStyle(numberStyle);
 					} else {
 						R39cell1.setCellValue("");
