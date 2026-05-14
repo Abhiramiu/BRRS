@@ -1686,17 +1686,17 @@ function cancelModify() {
         <td th:attr="reportLable='R43', reportAddlCriteria1='C2'" style="text-align: right;background-color :#C0C0C0;"></td>
         
         
-       <td th:text="${#numbers.formatDecimal(report.r43_amount_2, 1, 'COMMA', 0, 'POINT')}" 
-       th:attr="reportLable='R43', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="vertical-align: middle; text-align: right;"></td> 
+     <!--  <td th:text="${#numbers.formatDecimal(report.r43_amount_2, 1, 'COMMA', 0, 'POINT')}" 
+       th:attr="reportLable='R43', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="vertical-align: middle; text-align: right;"></td> -->
        
        
-      <!--   <td th:each="report: ${reportsummary}" id="R43" style="text-align: right; width: 250px;  padding-left:10px; ">
+       <td th:each="report: ${reportsummary}" id="R43" style="text-align: right; width: 250px;  padding-left:10px; ">
     	<input
 			class="display-input Show_input " type="text"
 			th:value="${report.r43_amount_2 != null ? #numbers.formatDecimal(report.r43_amount_2, 1, 'COMMA', 0, 'POINT') : '0'}"
 			id="r43_amount_2" name="r43_amount_2"
 			style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
-		readonly /></td>  -->
+		readonly /></td>  
         
     </tr>
     <tr>

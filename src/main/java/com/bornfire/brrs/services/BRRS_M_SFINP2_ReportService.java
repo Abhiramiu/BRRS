@@ -327,8 +327,8 @@ public ModelAndView getM_SFINP2currentDtl(
 	    int[] allowedIndexes = {
 	        34, 35, 39, 40, 43, 47, 48,
 	        51, 52, 53, 54, 55, 56, 57, 58,
-	        61, 62,
-	        77, 78
+	        61, 62
+	       
 	    };
 
 	    try {

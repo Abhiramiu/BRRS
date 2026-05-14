@@ -343,7 +343,7 @@ public class BRRS_M_CA2_ReportService {
 	                            + updatedEntity.getReport_date()));
 
 	    // Only allowed R-numbers
-	    int[] amount2Indexes = { 11, 32, 42, 44, 46 };     // AMOUNT_2	
+	    int[] amount2Indexes = { 11, 32, 42, 44,43, 46 };     // AMOUNT_2	
 	    int[] amount1Indexes = {  14, 15, 16, 18, 19, 21 }; // AMOUNT_1
 
 	    try {

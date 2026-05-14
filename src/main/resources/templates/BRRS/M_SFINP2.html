@@ -2291,18 +2291,21 @@ PURPOSE		: BWRBRREPORT
 											<tr>
 												<td style="padding-left: 20px;" th:text="${report.R77_PRODUCT}"></td>
 												<td>M-CA2</td>
-												<!-- <td style="text-align: right;"
+												
+												 <td 	id="R77_MONTH_END" name="R77_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R77', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.R77_MONTH_END}"></td> -->
+													th:text="${report.R77_MONTH_END}"></td> 
+													
+													
 
-												<td id="ROW77"
+												<!--<td id="ROW77"
 													style=" font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R77_MONTH_END != null ? #numbers.formatDecimal(report.R77_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R77_MONTH_END" name="R77_MONTH_END"
 														style="background-color: #FFFFFF; width:180px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+														readonly /></td>-->
 
 												<td style="text-align:right"
 													th:text="${report.R77_AVERAGE}"></td>
@@ -2316,14 +2319,18 @@ PURPOSE		: BWRBRREPORT
 													th:attr="RowId='R78', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R78_MONTH_END}"></td> -->
-
+													
+													<td id="R78_MONTH_END" name="R78_MONTH_END" style="text-align: right;"
+										           th:text="${report.R78_MONTH_END}"></td>
+													
+<!--
 												<td id="ROW78"
 													style=" font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R78_MONTH_END != null ? #numbers.formatDecimal(report.R78_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R78_MONTH_END" name="R78_MONTH_END"
 														style="background-color: #FFFFFF; width:180px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+														readonly /></td>-->
 
 
 												<td style="text-align: right;" 
