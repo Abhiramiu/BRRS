@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface BRRS_M_LIQ_Manual_Summary_Repo extends JpaRepository<M_LIQ_Manual_Summary_Entity, Date> {
 
-	@Query(value = "select * from BRRS_M_LIQ_MANUAL_SUMMARYTABLE ", nativeQuery = true)
+	@Query(value = "select * from BRRS_M_LIQ_MANUAL_SUMMARYTABLE WHERE REPORT_DATE = ?1 ", nativeQuery = true)
 	List<M_LIQ_Manual_Summary_Entity> getdatabydateList(Date reportdate);
 
 }

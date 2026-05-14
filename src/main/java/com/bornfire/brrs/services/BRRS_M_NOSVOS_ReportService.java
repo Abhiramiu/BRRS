@@ -1,6 +1,7 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -766,11 +767,13 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	    return archivalList;
 	}
 	
-	public byte[] getM_NOSVOSExcel(String filename, String reportId, String fromdate, String todate, String currency,
+public byte[] getM_NOSVOSExcel(String filename, String reportId, String fromdate, String todate, String currency,
             String dtltype, String type,String format, BigDecimal version) throws Exception {
 	logger.info("Service: Starting Excel generation process in memory.");
 	System.out.println(type);
 	System.out.println(version);
+	
+	System.out.println("format is : " + format );
 	
 	if (type.equals("ARCHIVAL") & version != null) {
 		byte[] ARCHIVALreport = getExcelM_NOSVOSARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type,
@@ -871,7 +874,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	numberStyle.setBorderRight(BorderStyle.THIN);
 	numberStyle.setFont(font);
 	
-	if (format.equals("email") ) {
+	if ("email".equalsIgnoreCase(format) && version == null) {
 		
 		String[] rowCodesPart1 = new String[101];
 		

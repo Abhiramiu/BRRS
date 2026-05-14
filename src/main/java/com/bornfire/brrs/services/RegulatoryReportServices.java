@@ -7988,8 +7988,8 @@ break;
 				"M_LA3", "M_LA4", "M_LA5", "M_PLL", "M_PD", "M_I_S_CA", "M_SP", "M_GP", "M_TBS", "M_LIQGAP", "M_NOSVOS",
 				"M_AIDP", "M_DEP1", "M_DEP2", "M_DEP3", "M_DEP4", "M_OB", "M_BOP", "M_INT_RATES", "M_INT_RATES_FCA",
 				"M_SECA", "M_SECL", "M_RPD", "M_FAS", "M_SEC", "M_UNCONS_INVEST", "Q_ATF", "Q_RLFA1", "Q_RLFA2",
-				"Q_SMME", "Q_SMME_LA","Q_SMME_NEW","Q_SMME_LA_NEW", "Q_SMME_DEP", "Q_STAFF", "Q_LARADV", "Q_BRANCHNET");
-
+				"Q_SMME", "Q_SMME_LA","Q_SMME_DEP", "Q_STAFF", "Q_LARADV", "Q_BRANCHNET");
+	
 		System.out.println(todate);
 
 		SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MMM-dd", Locale.ENGLISH);
