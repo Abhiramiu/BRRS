@@ -303,6 +303,69 @@ public ModelAndView getM_SFINP2currentDtl(
 	private JdbcTemplate jdbcTemplate;
 	
 	@Transactional
+//	public void updateReport(M_SFINP2_Summary_Entity updatedEntity) {
+//
+//	    System.out.println("Came to services");
+//	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+//
+//	    List<M_SFINP2_Summary_Entity> list =
+//	            M_SFINP2_Summary_Repo.getdatabydateList(updatedEntity.getREPORT_DATE());
+//
+//	    M_SFINP2_Summary_Entity existing;
+//
+//	    if (list.isEmpty()) {
+//	        // 🔹 INSERT
+//	        existing = new M_SFINP2_Summary_Entity();
+//	        existing.setREPORT_DATE(updatedEntity.getREPORT_DATE());
+//	        System.out.println("Creating new record");
+//	    } else {
+//	        // 🔹 UPDATE
+//	        existing = list.get(0);
+//	        System.out.println("Updating existing record");
+//	    }
+//
+//	    int[] allowedIndexes = {
+//	        34, 35, 39, 40, 43, 47, 48,
+//	        51, 52, 53, 54, 55, 56, 57, 58,
+//	        61, 62
+//	       
+//	    };
+//
+//	    try {
+//	        for (int i : allowedIndexes) {
+//
+//	            String field = "MONTH_END";
+//
+//	            String getterName = "getR" + i + "_" + field;
+//	            String setterName = "setR" + i + "_" + field;
+//
+//	            try {
+//	                Method getter =
+//	                        M_SFINP2_Summary_Entity.class.getMethod(getterName);
+//
+//	                Method setter =
+//	                        M_SFINP2_Summary_Entity.class.getMethod(
+//	                                setterName,
+//	                                getter.getReturnType()
+//	                        );
+//
+//	                Object newValue = getter.invoke(updatedEntity);
+//	                setter.invoke(existing, newValue);
+//
+//	            } catch (NoSuchMethodException e) {
+//	                // skip missing R fields
+//	            }
+//	        }
+//
+//	    } catch (Exception e) {
+//	        throw new RuntimeException("Error while updating report fields", e);
+//	    }
+//
+//	    // ✅ ALWAYS SAVE
+//	    M_SFINP2_Summary_Repo.save(existing);
+//	}
+	
+
 	public void updateReport(M_SFINP2_Summary_Entity updatedEntity) {
 
 	    System.out.println("Came to services");
@@ -314,13 +377,18 @@ public ModelAndView getM_SFINP2currentDtl(
 	    M_SFINP2_Summary_Entity existing;
 
 	    if (list.isEmpty()) {
+
 	        // 🔹 INSERT
 	        existing = new M_SFINP2_Summary_Entity();
 	        existing.setREPORT_DATE(updatedEntity.getREPORT_DATE());
+
 	        System.out.println("Creating new record");
+
 	    } else {
+
 	        // 🔹 UPDATE
 	        existing = list.get(0);
+
 	        System.out.println("Updating existing record");
 	    }
 
@@ -328,10 +396,10 @@ public ModelAndView getM_SFINP2currentDtl(
 	        34, 35, 39, 40, 43, 47, 48,
 	        51, 52, 53, 54, 55, 56, 57, 58,
 	        61, 62
-	       
 	    };
 
 	    try {
+
 	        for (int i : allowedIndexes) {
 
 	            String field = "MONTH_END";
@@ -340,6 +408,7 @@ public ModelAndView getM_SFINP2currentDtl(
 	            String setterName = "setR" + i + "_" + field;
 
 	            try {
+
 	                Method getter =
 	                        M_SFINP2_Summary_Entity.class.getMethod(getterName);
 
@@ -350,20 +419,63 @@ public ModelAndView getM_SFINP2currentDtl(
 	                        );
 
 	                Object newValue = getter.invoke(updatedEntity);
+
 	                setter.invoke(existing, newValue);
 
 	            } catch (NoSuchMethodException e) {
-	                // skip missing R fields
+
+	                // skip missing fields
 	            }
 	        }
 
 	    } catch (Exception e) {
+
 	        throw new RuntimeException("Error while updating report fields", e);
 	    }
 
-	    // ✅ ALWAYS SAVE
+	    // ✅ SAVE ENTITY
 	    M_SFINP2_Summary_Repo.save(existing);
+
+	    // 🔥 CALL PROCEDURE AFTER COMMIT
+	    TransactionSynchronizationManager.registerSynchronization(
+	            new TransactionSynchronizationAdapter() {
+
+	                @Override
+	                public void afterCommit() {
+
+	                    try {
+
+	                        String formattedDate =
+	                                new SimpleDateFormat("dd-MM-yyyy")
+	                                        .format(updatedEntity.getREPORT_DATE());
+
+	                        logger.info(
+	                                "Transaction committed — calling BRRS_M_SFINP2_SUMMARY_PROCEDURE({})",
+	                                formattedDate
+	                        );
+
+	                        jdbcTemplate.update(
+	                                "BEGIN BRRS_M_SFINP2_SUMMARY_PROCEDURE(?); END;",
+	                                formattedDate
+	                        );
+
+	                        logger.info("Procedure executed successfully after commit.");
+
+	                    } catch (Exception e) {
+
+	                        logger.error("Procedure execution failed", e);
+
+	                        throw new RuntimeException(
+	                                "Procedure execution failed",
+	                                e
+	                        );
+	                    }
+	                }
+	            }
+	    );
 	}
+	
+
 	@Autowired BRRS_M_SFINP2_Detail_Repo M_SFINP2_detail_repo;
 	
 	

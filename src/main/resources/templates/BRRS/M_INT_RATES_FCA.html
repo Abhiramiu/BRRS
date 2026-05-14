@@ -801,87 +801,126 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 		}
 
 		function fileuploads(btn) {
-			var asondate = btn.getAttribute("data-todate");
-			const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
 
-			// ✅ Mark RESUB once
-			isResubmissionUpdate = (type && type.toUpperCase() === 'RESUB');
+			var asondate = btn.getAttribute("data-todate");
+			const type = btn.getAttribute("data-type");
+
+			isResubmissionUpdate =
+				(type && type.toUpperCase() === 'RESUB');
 
 			$('#loader').modal('show');
 
-			// Pre-calculations
+			// ✅ calculations
 			calculateAllTotals();
-			console.log("✅ Calculations executed successfully");
 
-			// Remove commas from numeric inputs
+			// ✅ remove commas
 			$("#fileupload input[type='text']").each(function () {
+
 				var val = $(this).val();
+
 				if (val && val.includes(",")) {
+
 					$(this).val(val.replace(/,/g, ''));
 				}
 			});
 
+			// ✅ validation
 			if (!$("#fileupload").valid()) {
+
 				$('#loader').modal('hide');
+
 				return;
 			}
 
-			// ✅ One combined FormData for all entities
+			// ✅ SERIALIZE STRING
+			var serializedData = $("#fileupload").serialize();
+
+			console.log("Serialized Data :", serializedData);
+
+			// ✅ FORMDATA
 			const formData = new FormData();
+
 			formData.append("asondate", asondate);
 			formData.append("type", type);
 
+			// ✅ append serialize data also
+			formData.append("serializedData", serializedData);
 
-			// Append only named inputs
-			$('#fileupload').find(':input[name]').each(function () {
-				formData.append(this.id, this.value);
+			// ✅ append all inputs using ID
+			$('#fileupload')
+				.find(':input[id]')
+				.each(function () {
 
-			});
-			console.log("✅ Entity executed successfully");
+					formData.append(this.id, $(this).val());
+				});
 
+			console.log("✅ FormData appended successfully");
 
+			// ✅ API URL
+			let apiUrl = './INTRATESFCAupdateAll';
 
-			//Select API endpoint dynamically
-			let apiUrl = './INTRATESFCAupdateAll'; // normal update
 			if (type && type.toUpperCase() === 'RESUB') {
-				apiUrl = './UpdateM_INT_RATES_FCA_ReSub'; // Resubmission endpoint
+
+				apiUrl = './UpdateM_INT_RATES_FCA_ReSub';
 			}
 
-			// ✅ Single AJAX call with type info
+			// ✅ AJAX
 			$.ajax({
+
 				url: apiUrl,
+
 				type: 'POST',
+
 				data: formData,
+
 				processData: false,
+
 				contentType: false,
+
 				dataType: 'text',
+
 				success: function (response) {
+
 					$("#resultModalLabel").text("BRRS");
+
 					$("#resultModalBody").text(response);
+
 					$("#resultModal").modal("show");
 
-					//  Wait for user to close the modal manually
-					$("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
-						if (isResubmissionUpdate) {
-							window.location.href = previousUrl
-								? previousUrl
-								: "/BRRS/Resubmission?rptcode=M_INT_RATES_FCA";
-						} // reload ONLY when modal is closed
-					});
+					$("#resultModal")
+						.off("hidden.bs.modal")
+						.on("hidden.bs.modal", function () {
+
+							if (isResubmissionUpdate) {
+
+								window.location.href = previousUrl
+									? previousUrl
+									: "/BRRS/Resubmission?rptcode=M_INT_RATES_FCA";
+							}
+						});
 				},
+
 				error: function (jqXHR) {
+
 					console.log("Error response:", jqXHR.responseText);
+
 					$("#resultModalLabel").text("Error");
-					$("#resultModalBody").text("Update failed. Check console for details.");
+
+					$("#resultModalBody").text(
+						"Update failed. Check console for details."
+					);
+
 					$("#resultModal").modal("show");
 				},
+
 				complete: function () {
+
 					$('#loader').modal('hide');
 				}
 			});
 
 			console.log("✅ AJAX executed successfully");
-		}    
+		}
 	</script>
 
 	<script th:inline="javascript">
