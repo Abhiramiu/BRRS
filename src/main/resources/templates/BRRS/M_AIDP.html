@@ -1306,7 +1306,7 @@ PURPOSE		: BWRBRREPORT
 										<thead class="thead-light">
 
 											<tr>
-												<th colspan="7"
+												<th colspan="6"
 													style="text-align: left; padding-left: 20px; width: 900px;">
 													DUE FROM AFFLIATED DOMESTIC BANKS </th>
 											</tr>
@@ -1323,10 +1323,10 @@ PURPOSE		: BWRBRREPORT
 													Currency</th>
 												<th style="background-color: #D8D8D8;text-align: left; width: 150px;">
 													Bank Rating, e.g, AAA, AA or A1</th>
+											<!--	<th style="background-color: #D8D8D8;text-align: right; width: 150px;">
+													Amount (on demand or less than 184 days)</th>-->
 												<th style="background-color: #D8D8D8;text-align: right; width: 150px;">
-													Amount (on demand or less than 184 days)</th>
-												<th style="background-color: #D8D8D8;text-align: right; width: 150px;">
-													Amount (more than 184 days)</th>
+													Amount </th>
 
 											</tr>
 
@@ -1429,13 +1429,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW11" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW11" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R11_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R11_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R11_AMT_LESS_184_DAYS" name="R11_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW11" style="padding-left: 20px; font-weight: bold;">
@@ -1541,14 +1541,14 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW12" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW12" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R12_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R12_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R12_AMT_LESS_184_DAYS" name="R12_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-
+-->
 
 												<td id="ROW12" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -1653,13 +1653,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW13" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW13" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R13_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R13_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R13_AMT_LESS_184_DAYS" name="R13_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW13" style="padding-left: 20px; font-weight: bold;">
@@ -1765,13 +1765,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW14" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW14" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R14_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R14_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R14_AMT_LESS_184_DAYS" name="R14_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW14" style="padding-left: 20px; font-weight: bold;">
@@ -1877,13 +1877,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW15" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW15" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R15_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R15_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R15_AMT_LESS_184_DAYS" name="R15_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW15" style="padding-left: 20px; font-weight: bold;">
@@ -1989,14 +1989,14 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW16" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW16" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R16_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R16_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R16_AMT_LESS_184_DAYS" name="R16_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-
+-->
 
 												<td id="ROW16" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -2101,14 +2101,14 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW17" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW17" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R17_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R17_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R17_AMT_LESS_184_DAYS" name="R17_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-
+-->
 
 												<td id="ROW17" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -2213,13 +2213,14 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW18" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW18" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R18_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R18_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R18_AMT_LESS_184_DAYS" name="R18_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
+												
 
 
 												<td id="ROW18" style="padding-left: 20px; font-weight: bold;">
@@ -2325,14 +2326,14 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW19" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW19" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R19_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R19_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R19_AMT_LESS_184_DAYS" name="R19_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-
+-->
 
 												<td id="ROW19" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -2437,13 +2438,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW20" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW20" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R20_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R20_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R20_AMT_LESS_184_DAYS" name="R20_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW20" style="padding-left: 20px; font-weight: bold;">
@@ -2549,13 +2550,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW21" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW21" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R21_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R21_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R21_AMT_LESS_184_DAYS" name="R21_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW21" style="padding-left: 20px; font-weight: bold;">
@@ -2661,13 +2662,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
+											<!--	<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R22_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R22_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R22_AMT_LESS_184_DAYS" name="R22_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
@@ -2773,14 +2774,14 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R23_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R23_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R23_AMT_LESS_184_DAYS" name="R23_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-
+-->
 
 												<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -2885,13 +2886,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R24_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R24_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R24_AMT_LESS_184_DAYS" name="R24_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
@@ -2997,13 +2998,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW25" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW25" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R25_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R25_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R25_AMT_LESS_184_DAYS" name="R25_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW25" style="padding-left: 20px; font-weight: bold;">
@@ -3109,13 +3110,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW26" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW26" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R26_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R26_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R26_AMT_LESS_184_DAYS" name="R26_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW26" style="padding-left: 20px; font-weight: bold;">
@@ -3221,13 +3222,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW27" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW27" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R27_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R27_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R27_AMT_LESS_184_DAYS" name="R27_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW27" style="padding-left: 20px; font-weight: bold;">
@@ -3333,13 +3334,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW28" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW28" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R28_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R28_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R28_AMT_LESS_184_DAYS" name="R28_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW28" style="padding-left: 20px; font-weight: bold;">
@@ -3445,13 +3446,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW29" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW29" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R29_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R29_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R29_AMT_LESS_184_DAYS" name="R29_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW29" style="padding-left: 20px; font-weight: bold;">
@@ -3557,13 +3558,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW30" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW30" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R30_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R30_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R30_AMT_LESS_184_DAYS" name="R30_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW30" style="padding-left: 20px; font-weight: bold;">
@@ -3669,13 +3670,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW31" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW31" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R31_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R31_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R31_AMT_LESS_184_DAYS" name="R31_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW31" style="padding-left: 20px; font-weight: bold;">
@@ -3781,13 +3782,14 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW32" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW32" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R32_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R32_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R32_AMT_LESS_184_DAYS" name="R32_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
+												
 
 
 												<td id="ROW32" style="padding-left: 20px; font-weight: bold;">
@@ -3893,13 +3895,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW33" style="padding-left: 20px; font-weight: bold;">
+											<!--	<td id="ROW33" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R33_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R33_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R33_AMT_LESS_184_DAYS" name="R33_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW33" style="padding-left: 20px; font-weight: bold;">
@@ -4005,13 +4007,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW34" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW34" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R34_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R34_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R34_AMT_LESS_184_DAYS" name="R34_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW34" style="padding-left: 20px; font-weight: bold;">
@@ -4117,13 +4119,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW35" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW35" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R35_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R35_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R35_AMT_LESS_184_DAYS" name="R35_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW35" style="padding-left: 20px; font-weight: bold;">
@@ -4229,13 +4231,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW36" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW36" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R36_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R36_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R36_AMT_LESS_184_DAYS" name="R36_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW36" style="padding-left: 20px; font-weight: bold;">
@@ -4341,13 +4343,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R37_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R37_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R37_AMT_LESS_184_DAYS" name="R37_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
@@ -4453,13 +4455,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R38_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R38_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R38_AMT_LESS_184_DAYS" name="R38_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
@@ -4565,14 +4567,14 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW39" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW39" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R39_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R39_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R39_AMT_LESS_184_DAYS" name="R39_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-
+-->
 
 												<td id="ROW39" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -4677,13 +4679,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW40" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW40" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R40_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R40_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R40_AMT_LESS_184_DAYS" name="R40_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW40" style="padding-left: 20px; font-weight: bold;">
@@ -4789,13 +4791,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW41" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW41" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R41_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R41_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R41_AMT_LESS_184_DAYS" name="R41_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW41" style="padding-left: 20px; font-weight: bold;">
@@ -4901,13 +4903,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW42" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW42" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R42_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R42_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R42_AMT_LESS_184_DAYS" name="R42_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW42" style="padding-left: 20px; font-weight: bold;">
@@ -5013,13 +5015,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW43" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW43" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R43_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R43_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R43_AMT_LESS_184_DAYS" name="R43_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW43" style="padding-left: 20px; font-weight: bold;">
@@ -5125,13 +5127,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW44" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW44" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R44_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R44_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R44_AMT_LESS_184_DAYS" name="R44_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW44" style="padding-left: 20px; font-weight: bold;">
@@ -5237,13 +5239,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW45" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW45" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R45_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R45_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R45_AMT_LESS_184_DAYS" name="R45_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW45" style="padding-left: 20px; font-weight: bold;">
@@ -5349,14 +5351,14 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW46" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW46" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R46_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R46_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R46_AMT_LESS_184_DAYS" name="R46_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-
+-->
 
 												<td id="ROW46" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -5461,13 +5463,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW47" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW47" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R47_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R47_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R47_AMT_LESS_184_DAYS" name="R47_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW47" style="padding-left: 20px; font-weight: bold;">
@@ -5573,13 +5575,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW48" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW48" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R48_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R48_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R48_AMT_LESS_184_DAYS" name="R48_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW48" style="padding-left: 20px; font-weight: bold;">
@@ -5685,13 +5687,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW49" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW49" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R49_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R49_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R49_AMT_LESS_184_DAYS" name="R49_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW49" style="padding-left: 20px; font-weight: bold;">
@@ -5797,13 +5799,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW50" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW50" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R50_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R50_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R50_AMT_LESS_184_DAYS" name="R50_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW50" style="padding-left: 20px; font-weight: bold;">
@@ -5855,13 +5857,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW51"
+												<!--<td id="ROW51"
 													style="background-color: rgb(107, 122, 143);color: white;padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														id="R51_TOT_AMT_LESS_184_DAYS" name="R51_TOT_AMT_LESS_184_DAYS"
 														style="background-color: rgb(107, 122, 143);color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 												<td id="ROW51"
 													style="background-color: rgb(107, 122, 143);color: white;padding-left: 20px; font-weight: bold;">
@@ -5873,13 +5875,13 @@ PURPOSE		: BWRBRREPORT
 
 											</tr>
 											<tr>
-												<td colspan="7" style="height: 50px;"></td>
+												<td colspan="6" style="height: 50px;"></td>
 											</tr>
 										</tbody>
 
 										<thead class="thead-light">
 											<tr>
-												<th colspan="7"
+												<th colspan="6"
 													style="text-align: left; padding-left: 20px; width: 900px;">
 													DUE FROM NON-AFFLIATED DOMESTIC BANKS </th>
 											</tr>
@@ -5896,10 +5898,10 @@ PURPOSE		: BWRBRREPORT
 													Currency</th>
 												<th style="background-color: #D8D8D8;text-align: left; width: 150px;">
 													Bank Rating, e.g, AAA, AA or A1</th>
+												<!--<th style="background-color: #D8D8D8;text-align: right; width: 150px;">
+													Amount (on demand or less than 184 days)</th>-->
 												<th style="background-color: #D8D8D8;text-align: right; width: 150px;">
-													Amount (on demand or less than 184 days)</th>
-												<th style="background-color: #D8D8D8;text-align: right; width: 150px;">
-													Amount (more than 184 days)</th>
+													Amount</th>
 
 											</tr>
 
@@ -6005,14 +6007,14 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW56" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW56" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R56_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R56_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R56_AMT_LESS_184_DAYS" name="R56_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-
+-->
 
 												<td id="ROW56" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -6117,13 +6119,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW57" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW57" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R57_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R57_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R57_AMT_LESS_184_DAYS" name="R57_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW57" style="padding-left: 20px; font-weight: bold;">
@@ -6229,13 +6231,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW58" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW58" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R58_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R58_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R58_AMT_LESS_184_DAYS" name="R58_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW58" style="padding-left: 20px; font-weight: bold;">
@@ -6341,13 +6343,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW59" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW59" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R59_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R59_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R59_AMT_LESS_184_DAYS" name="R59_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW59" style="padding-left: 20px; font-weight: bold;">
@@ -6453,13 +6455,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW60" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW60" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R60_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R60_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R60_AMT_LESS_184_DAYS" name="R60_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW60" style="padding-left: 20px; font-weight: bold;">
@@ -6565,13 +6567,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW61" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW61" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R61_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R61_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R61_AMT_LESS_184_DAYS" name="R61_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW61" style="padding-left: 20px; font-weight: bold;">
@@ -6677,13 +6679,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW62" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW62" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R62_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R62_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R62_AMT_LESS_184_DAYS" name="R62_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW62" style="padding-left: 20px; font-weight: bold;">
@@ -6789,13 +6791,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW63" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW63" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R63_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R63_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R63_AMT_LESS_184_DAYS" name="R63_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW63" style="padding-left: 20px; font-weight: bold;">
@@ -6901,13 +6903,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW64" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW64" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R64_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R64_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R64_AMT_LESS_184_DAYS" name="R64_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW64" style="padding-left: 20px; font-weight: bold;">
@@ -7013,13 +7015,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW65" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW65" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R65_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R65_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R65_AMT_LESS_184_DAYS" name="R65_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW65" style="padding-left: 20px; font-weight: bold;">
@@ -7125,13 +7127,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW66" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW66" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R66_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R66_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R66_AMT_LESS_184_DAYS" name="R66_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW66" style="padding-left: 20px; font-weight: bold;">
@@ -7237,13 +7239,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW67" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW67" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R67_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R67_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R67_AMT_LESS_184_DAYS" name="R67_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW67" style="padding-left: 20px; font-weight: bold;">
@@ -7349,13 +7351,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW68" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW68" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R68_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R68_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R68_AMT_LESS_184_DAYS" name="R68_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW68" style="padding-left: 20px; font-weight: bold;">
@@ -7461,13 +7463,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW69" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW69" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R69_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R69_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R69_AMT_LESS_184_DAYS" name="R69_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW69" style="padding-left: 20px; font-weight: bold;">
@@ -7573,13 +7575,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW70" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW70" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R70_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R70_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R70_AMT_LESS_184_DAYS" name="R70_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW70" style="padding-left: 20px; font-weight: bold;">
@@ -7685,13 +7687,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW71" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW71" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R71_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R71_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R71_AMT_LESS_184_DAYS" name="R71_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW71" style="padding-left: 20px; font-weight: bold;">
@@ -7797,14 +7799,14 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW72" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW72" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R72_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R72_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R72_AMT_LESS_184_DAYS" name="R72_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-
+-->
 
 												<td id="ROW72" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -7909,14 +7911,14 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW73" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW73" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R73_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R73_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R73_AMT_LESS_184_DAYS" name="R73_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-
+-->
 
 												<td id="ROW73" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -8021,13 +8023,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW74" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW74" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R74_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R74_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R74_AMT_LESS_184_DAYS" name="R74_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW74" style="padding-left: 20px; font-weight: bold;">
@@ -8133,13 +8135,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW75" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW75" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R75_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R75_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R75_AMT_LESS_184_DAYS" name="R75_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW75" style="padding-left: 20px; font-weight: bold;">
@@ -8245,13 +8247,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW76" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW76" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R76_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R76_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R76_AMT_LESS_184_DAYS" name="R76_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW76" style="padding-left: 20px; font-weight: bold;">
@@ -8357,13 +8359,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW77" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW77" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R77_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R77_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R77_AMT_LESS_184_DAYS" name="R77_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW77" style="padding-left: 20px; font-weight: bold;">
@@ -8469,14 +8471,14 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW78" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW78" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R78_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R78_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R78_AMT_LESS_184_DAYS" name="R78_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-
+-->
 
 												<td id="ROW78" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -8581,13 +8583,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW79" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW79" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R79_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R79_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R79_AMT_LESS_184_DAYS" name="R79_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW79" style="padding-left: 20px; font-weight: bold;">
@@ -8693,13 +8695,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW80" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW80" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R80_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R80_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R80_AMT_LESS_184_DAYS" name="R80_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW80" style="padding-left: 20px; font-weight: bold;">
@@ -8805,13 +8807,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW81" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW81" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R81_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R81_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R81_AMT_LESS_184_DAYS" name="R81_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW81" style="padding-left: 20px; font-weight: bold;">
@@ -8917,13 +8919,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW82" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW82" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R82_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R82_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R82_AMT_LESS_184_DAYS" name="R82_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW82" style="padding-left: 20px; font-weight: bold;">
@@ -9029,13 +9031,14 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW83" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW83" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R83_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R83_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R83_AMT_LESS_184_DAYS" name="R83_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
+												
 
 
 												<td id="ROW83" style="padding-left: 20px; font-weight: bold;">
@@ -9141,13 +9144,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW84" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW84" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R84_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R84_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R84_AMT_LESS_184_DAYS" name="R84_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW84" style="padding-left: 20px; font-weight: bold;">
@@ -9253,13 +9256,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW85" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW85" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R85_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R85_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R85_AMT_LESS_184_DAYS" name="R85_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW85" style="padding-left: 20px; font-weight: bold;">
@@ -9365,13 +9368,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW86" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW86" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R86_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R86_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R86_AMT_LESS_184_DAYS" name="R86_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW86" style="padding-left: 20px; font-weight: bold;">
@@ -9477,13 +9480,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW87" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW87" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R87_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R87_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R87_AMT_LESS_184_DAYS" name="R87_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW87" style="padding-left: 20px; font-weight: bold;">
@@ -9589,13 +9592,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW88" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW88" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R88_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R88_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R88_AMT_LESS_184_DAYS" name="R88_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW88" style="padding-left: 20px; font-weight: bold;">
@@ -9701,13 +9704,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW89" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW89" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R89_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R89_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R89_AMT_LESS_184_DAYS" name="R89_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW89" style="padding-left: 20px; font-weight: bold;">
@@ -9813,13 +9816,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW90" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW90" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R90_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R90_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R90_AMT_LESS_184_DAYS" name="R90_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW90" style="padding-left: 20px; font-weight: bold;">
@@ -9925,13 +9928,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW91" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW91" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R91_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R91_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R91_AMT_LESS_184_DAYS" name="R91_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW91" style="padding-left: 20px; font-weight: bold;">
@@ -10037,13 +10040,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW92" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW92" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R92_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R92_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R92_AMT_LESS_184_DAYS" name="R92_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW92" style="padding-left: 20px; font-weight: bold;">
@@ -10149,13 +10152,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW93" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW93" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R93_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R93_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R93_AMT_LESS_184_DAYS" name="R93_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW93" style="padding-left: 20px; font-weight: bold;">
@@ -10261,13 +10264,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW94" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW94" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R94_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R94_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R94_AMT_LESS_184_DAYS" name="R94_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW94" style="padding-left: 20px; font-weight: bold;">
@@ -10372,13 +10375,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW95" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW95" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R95_AMT_LESS_184_DAYS != null ? #numbers.formatDecimal(report.R95_AMT_LESS_184_DAYS, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R95_AMT_LESS_184_DAYS" name="R95_AMT_LESS_184_DAYS"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW95" style="padding-left: 20px; font-weight: bold;">
@@ -10426,13 +10429,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW96"
+												<!--<td id="ROW96"
 													style="background-color: rgb(107, 122, 143);color: white;padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														id="R96_TOT_AMT_LESS_184_DAYS" name="R96_TOT_AMT_LESS_184_DAYS"
 														style="background-color: rgb(107, 122, 143);color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 												<td id="ROW96"
 													style="background-color: rgb(107, 122, 143);color: white;padding-left: 20px; font-weight: bold;">
@@ -10444,7 +10447,7 @@ PURPOSE		: BWRBRREPORT
 
 											</tr>
 											<tr>
-												<td colspan="7" style="height: 50px;"></td>
+												<td colspan="6" style="height: 50px;"></td>
 											</tr>
 										</tbody>
 
@@ -10454,7 +10457,7 @@ PURPOSE		: BWRBRREPORT
 
 										<thead class="thead-light">
 											<tr>
-												<th colspan="7"
+												<th colspan="6"
 													style="text-align: left; padding-left: 20px; width: 900px;">
 													DUE TO AFFLIATED DOMESTIC BANKS </th>
 											</tr>
@@ -10471,10 +10474,10 @@ PURPOSE		: BWRBRREPORT
 													Currency</th>
 												<th style="background-color: #D8D8D8;text-align: left; width: 150px;">
 													Bank Rating, e.g, AAA, AA or A1</th>
+												<!--<th style="background-color: #D8D8D8;text-align: right; width: 150px;">
+													Amount (on demand or less than 184 days)</th>-->
 												<th style="background-color: #D8D8D8;text-align: right; width: 150px;">
-													Amount (on demand or less than 184 days)</th>
-												<th style="background-color: #D8D8D8;text-align: right; width: 150px;">
-													Amount (more than 184 days)</th>
+													Amount</th>
 
 											</tr>
 
@@ -10579,13 +10582,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW101" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW101" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R101_AMT_DEMAND != null ? #numbers.formatDecimal(report.R101_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R101_AMT_DEMAND" name="R101_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW101" style="padding-left: 20px; font-weight: bold;">
@@ -10692,13 +10695,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW102" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW102" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R102_AMT_DEMAND != null ? #numbers.formatDecimal(report.R102_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R102_AMT_DEMAND" name="R102_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW102" style="padding-left: 20px; font-weight: bold;">
@@ -10805,13 +10808,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW103" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW103" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R103_AMT_DEMAND != null ? #numbers.formatDecimal(report.R103_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R103_AMT_DEMAND" name="R103_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW103" style="padding-left: 20px; font-weight: bold;">
@@ -10918,13 +10921,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW104" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW104" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R104_AMT_DEMAND != null ? #numbers.formatDecimal(report.R104_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R104_AMT_DEMAND" name="R104_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW104" style="padding-left: 20px; font-weight: bold;">
@@ -11031,13 +11034,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW105" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW105" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R105_AMT_DEMAND != null ? #numbers.formatDecimal(report.R105_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R105_AMT_DEMAND" name="R105_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW105" style="padding-left: 20px; font-weight: bold;">
@@ -11144,13 +11147,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW106" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW106" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R106_AMT_DEMAND != null ? #numbers.formatDecimal(report.R106_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R106_AMT_DEMAND" name="R106_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW106" style="padding-left: 20px; font-weight: bold;">
@@ -11257,13 +11260,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW107" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW107" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R107_AMT_DEMAND != null ? #numbers.formatDecimal(report.R107_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R107_AMT_DEMAND" name="R107_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW107" style="padding-left: 20px; font-weight: bold;">
@@ -11370,13 +11373,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW108" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW108" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R108_AMT_DEMAND != null ? #numbers.formatDecimal(report.R108_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R108_AMT_DEMAND" name="R108_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW108" style="padding-left: 20px; font-weight: bold;">
@@ -11483,13 +11486,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW109" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW109" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R109_AMT_DEMAND != null ? #numbers.formatDecimal(report.R109_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R109_AMT_DEMAND" name="R109_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW109" style="padding-left: 20px; font-weight: bold;">
@@ -11596,13 +11599,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW110" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW110" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R110_AMT_DEMAND != null ? #numbers.formatDecimal(report.R110_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R110_AMT_DEMAND" name="R110_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW110" style="padding-left: 20px; font-weight: bold;">
@@ -11709,13 +11712,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW111" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW111" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R111_AMT_DEMAND != null ? #numbers.formatDecimal(report.R111_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R111_AMT_DEMAND" name="R111_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW111" style="padding-left: 20px; font-weight: bold;">
@@ -11822,13 +11825,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW112" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW112" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R112_AMT_DEMAND != null ? #numbers.formatDecimal(report.R112_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R112_AMT_DEMAND" name="R112_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW112" style="padding-left: 20px; font-weight: bold;">
@@ -11935,13 +11938,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW113" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW113" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R113_AMT_DEMAND != null ? #numbers.formatDecimal(report.R113_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R113_AMT_DEMAND" name="R113_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW113" style="padding-left: 20px; font-weight: bold;">
@@ -12048,13 +12051,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW114" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW114" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R114_AMT_DEMAND != null ? #numbers.formatDecimal(report.R114_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R114_AMT_DEMAND" name="R114_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW114" style="padding-left: 20px; font-weight: bold;">
@@ -12161,13 +12164,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW115" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW115" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R115_AMT_DEMAND != null ? #numbers.formatDecimal(report.R115_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R115_AMT_DEMAND" name="R115_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW115" style="padding-left: 20px; font-weight: bold;">
@@ -12274,13 +12277,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW116" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW116" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R116_AMT_DEMAND != null ? #numbers.formatDecimal(report.R116_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R116_AMT_DEMAND" name="R116_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW116" style="padding-left: 20px; font-weight: bold;">
@@ -12387,13 +12390,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW117" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW117" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R117_AMT_DEMAND != null ? #numbers.formatDecimal(report.R117_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R117_AMT_DEMAND" name="R117_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW117" style="padding-left: 20px; font-weight: bold;">
@@ -12500,13 +12503,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW118" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW118" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R118_AMT_DEMAND != null ? #numbers.formatDecimal(report.R118_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R118_AMT_DEMAND" name="R118_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW118" style="padding-left: 20px; font-weight: bold;">
@@ -12613,13 +12616,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW119" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW119" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R119_AMT_DEMAND != null ? #numbers.formatDecimal(report.R119_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R119_AMT_DEMAND" name="R119_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW119" style="padding-left: 20px; font-weight: bold;">
@@ -12726,13 +12729,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW120" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW120" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R120_AMT_DEMAND != null ? #numbers.formatDecimal(report.R120_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R120_AMT_DEMAND" name="R120_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW120" style="padding-left: 20px; font-weight: bold;">
@@ -12839,13 +12842,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW121" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW121" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R121_AMT_DEMAND != null ? #numbers.formatDecimal(report.R121_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R121_AMT_DEMAND" name="R121_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW121" style="padding-left: 20px; font-weight: bold;">
@@ -12952,13 +12955,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW122" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW122" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R122_AMT_DEMAND != null ? #numbers.formatDecimal(report.R122_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R122_AMT_DEMAND" name="R122_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW122" style="padding-left: 20px; font-weight: bold;">
@@ -13065,13 +13068,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW123" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW123" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R123_AMT_DEMAND != null ? #numbers.formatDecimal(report.R123_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R123_AMT_DEMAND" name="R123_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW123" style="padding-left: 20px; font-weight: bold;">
@@ -13178,13 +13181,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW124" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW124" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R124_AMT_DEMAND != null ? #numbers.formatDecimal(report.R124_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R124_AMT_DEMAND" name="R124_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW124" style="padding-left: 20px; font-weight: bold;">
@@ -13291,13 +13294,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW125" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW125" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R125_AMT_DEMAND != null ? #numbers.formatDecimal(report.R125_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R125_AMT_DEMAND" name="R125_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW125" style="padding-left: 20px; font-weight: bold;">
@@ -13404,13 +13407,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW126" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW126" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R126_AMT_DEMAND != null ? #numbers.formatDecimal(report.R126_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R126_AMT_DEMAND" name="R126_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW126" style="padding-left: 20px; font-weight: bold;">
@@ -13517,13 +13520,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW127" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW127" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R127_AMT_DEMAND != null ? #numbers.formatDecimal(report.R127_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R127_AMT_DEMAND" name="R127_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW127" style="padding-left: 20px; font-weight: bold;">
@@ -13630,13 +13633,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW128" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW128" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R128_AMT_DEMAND != null ? #numbers.formatDecimal(report.R128_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R128_AMT_DEMAND" name="R128_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW128" style="padding-left: 20px; font-weight: bold;">
@@ -13743,13 +13746,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW129" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW129" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R129_AMT_DEMAND != null ? #numbers.formatDecimal(report.R129_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R129_AMT_DEMAND" name="R129_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW129" style="padding-left: 20px; font-weight: bold;">
@@ -13856,13 +13859,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW130" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW130" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R130_AMT_DEMAND != null ? #numbers.formatDecimal(report.R130_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R130_AMT_DEMAND" name="R130_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW130" style="padding-left: 20px; font-weight: bold;">
@@ -13969,13 +13972,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW131" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW131" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R131_AMT_DEMAND != null ? #numbers.formatDecimal(report.R131_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R131_AMT_DEMAND" name="R131_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW131" style="padding-left: 20px; font-weight: bold;">
@@ -14082,13 +14085,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW132" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW132" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R132_AMT_DEMAND != null ? #numbers.formatDecimal(report.R132_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R132_AMT_DEMAND" name="R132_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW132" style="padding-left: 20px; font-weight: bold;">
@@ -14195,13 +14198,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW133" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW133" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R133_AMT_DEMAND != null ? #numbers.formatDecimal(report.R133_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R133_AMT_DEMAND" name="R133_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW133" style="padding-left: 20px; font-weight: bold;">
@@ -14308,13 +14311,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW134" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW134" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R134_AMT_DEMAND != null ? #numbers.formatDecimal(report.R134_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R134_AMT_DEMAND" name="R134_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW134" style="padding-left: 20px; font-weight: bold;">
@@ -14421,13 +14424,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW135" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW135" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R135_AMT_DEMAND != null ? #numbers.formatDecimal(report.R135_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R135_AMT_DEMAND" name="R135_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW135" style="padding-left: 20px; font-weight: bold;">
@@ -14534,13 +14537,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW136" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW136" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R136_AMT_DEMAND != null ? #numbers.formatDecimal(report.R136_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R136_AMT_DEMAND" name="R136_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW136" style="padding-left: 20px; font-weight: bold;">
@@ -14647,13 +14650,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW137" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW137" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R137_AMT_DEMAND != null ? #numbers.formatDecimal(report.R137_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R137_AMT_DEMAND" name="R137_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW137" style="padding-left: 20px; font-weight: bold;">
@@ -14760,13 +14763,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW138" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW138" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R138_AMT_DEMAND != null ? #numbers.formatDecimal(report.R138_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R138_AMT_DEMAND" name="R138_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW138" style="padding-left: 20px; font-weight: bold;">
@@ -14873,13 +14876,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW139" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW139" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R139_AMT_DEMAND != null ? #numbers.formatDecimal(report.R139_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R139_AMT_DEMAND" name="R139_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW139" style="padding-left: 20px; font-weight: bold;">
@@ -14986,13 +14989,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW140" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW140" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R140_AMT_DEMAND != null ? #numbers.formatDecimal(report.R140_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R140_AMT_DEMAND" name="R140_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW140" style="padding-left: 20px; font-weight: bold;">
@@ -15099,13 +15102,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW141" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW141" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R141_AMT_DEMAND != null ? #numbers.formatDecimal(report.R141_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R141_AMT_DEMAND" name="R141_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW141" style="padding-left: 20px; font-weight: bold;">
@@ -15153,13 +15156,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW142"
+												<!--<td id="ROW142"
 													style="background-color: rgb(107, 122, 143);color: white;padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														id="R142_TOT_AMT_DEMAND" name="R142_TOT_AMT_DEMAND"
 														style="background-color: rgb(107, 122, 143);color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 												<td id="ROW142"
 													style="background-color: rgb(107, 122, 143);color: white;padding-left: 20px; font-weight: bold;">
@@ -15174,14 +15177,14 @@ PURPOSE		: BWRBRREPORT
 
 										</tbody>
 										<tr>
-											<td colspan="7" class="noborder"
+											<td colspan="6" class="noborder"
 												style="height: 50px; border-right:none important;"></td>
 										</tr>
 
 										<thead class="thead-light">
 
 											<tr>
-												<th colspan="8"
+												<th colspan="7"
 													style="text-align: left; padding-left: 20px; width: 900px;">
 													DUE TO NON-AFFLIATED DOMESTIC BANKS </th>
 											</tr>
@@ -15200,10 +15203,10 @@ PURPOSE		: BWRBRREPORT
 													Currency</th>
 												<th style="background-color: #D8D8D8;text-align: left; width: 150px;">
 													Bank Rating, e.g, AAA, AA or A1</th>
+												<!--<th style="background-color: #D8D8D8;text-align: right; width: 150px;">
+													Amount (on demand or less than 184 days)</th>-->
 												<th style="background-color: #D8D8D8;text-align: right; width: 150px;">
-													Amount (on demand or less than 184 days)</th>
-												<th style="background-color: #D8D8D8;text-align: right; width: 150px;">
-													Amount (more than 184 days)</th>
+													Amount </th>
 
 											</tr>
 
@@ -15338,13 +15341,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW147" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW147" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R147_AMT_DEMAND != null ? #numbers.formatDecimal(report.R147_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R147_AMT_DEMAND" name="R147_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW147" style="padding-left: 20px; font-weight: bold;">
@@ -15482,13 +15485,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW148" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW148" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R148_AMT_DEMAND != null ? #numbers.formatDecimal(report.R148_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R148_AMT_DEMAND" name="R148_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW148" style="padding-left: 20px; font-weight: bold;">
@@ -15627,13 +15630,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW149" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW149" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R149_AMT_DEMAND != null ? #numbers.formatDecimal(report.R149_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R149_AMT_DEMAND" name="R149_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW149" style="padding-left: 20px; font-weight: bold;">
@@ -15771,13 +15774,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW150" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW150" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R150_AMT_DEMAND != null ? #numbers.formatDecimal(report.R150_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R150_AMT_DEMAND" name="R150_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW150" style="padding-left: 20px; font-weight: bold;">
@@ -15915,13 +15918,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW151" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW151" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R151_AMT_DEMAND != null ? #numbers.formatDecimal(report.R151_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R151_AMT_DEMAND" name="R151_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW151" style="padding-left: 20px; font-weight: bold;">
@@ -16059,13 +16062,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW152" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW152" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R152_AMT_DEMAND != null ? #numbers.formatDecimal(report.R152_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R152_AMT_DEMAND" name="R152_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW152" style="padding-left: 20px; font-weight: bold;">
@@ -16203,13 +16206,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW153" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW153" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R153_AMT_DEMAND != null ? #numbers.formatDecimal(report.R153_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R153_AMT_DEMAND" name="R153_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW153" style="padding-left: 20px; font-weight: bold;">
@@ -16347,13 +16350,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW154" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW154" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R154_AMT_DEMAND != null ? #numbers.formatDecimal(report.R154_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R154_AMT_DEMAND" name="R154_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW154" style="padding-left: 20px; font-weight: bold;">
@@ -16491,13 +16494,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW155" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW155" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R155_AMT_DEMAND != null ? #numbers.formatDecimal(report.R155_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R155_AMT_DEMAND" name="R155_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW155" style="padding-left: 20px; font-weight: bold;">
@@ -16635,13 +16638,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW156" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW156" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R156_AMT_DEMAND != null ? #numbers.formatDecimal(report.R156_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R156_AMT_DEMAND" name="R156_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW156" style="padding-left: 20px; font-weight: bold;">
@@ -16779,13 +16782,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW157" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW157" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R157_AMT_DEMAND != null ? #numbers.formatDecimal(report.R157_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R157_AMT_DEMAND" name="R157_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW157" style="padding-left: 20px; font-weight: bold;">
@@ -16923,13 +16926,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW158" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW158" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R158_AMT_DEMAND != null ? #numbers.formatDecimal(report.R158_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R158_AMT_DEMAND" name="R158_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW158" style="padding-left: 20px; font-weight: bold;">
@@ -17067,13 +17070,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW159" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW159" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R159_AMT_DEMAND != null ? #numbers.formatDecimal(report.R159_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R159_AMT_DEMAND" name="R159_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW159" style="padding-left: 20px; font-weight: bold;">
@@ -17211,13 +17214,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW160" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW160" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R160_AMT_DEMAND != null ? #numbers.formatDecimal(report.R160_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R160_AMT_DEMAND" name="R160_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW160" style="padding-left: 20px; font-weight: bold;">
@@ -17355,13 +17358,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW161" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW161" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R161_AMT_DEMAND != null ? #numbers.formatDecimal(report.R161_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R161_AMT_DEMAND" name="R161_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW161" style="padding-left: 20px; font-weight: bold;">
@@ -17499,13 +17502,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW162" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW162" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R162_AMT_DEMAND != null ? #numbers.formatDecimal(report.R162_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R162_AMT_DEMAND" name="R162_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW162" style="padding-left: 20px; font-weight: bold;">
@@ -17643,13 +17646,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW163" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW163" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R163_AMT_DEMAND != null ? #numbers.formatDecimal(report.R163_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R163_AMT_DEMAND" name="R163_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW163" style="padding-left: 20px; font-weight: bold;">
@@ -17787,13 +17790,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW164" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW164" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R164_AMT_DEMAND != null ? #numbers.formatDecimal(report.R164_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R164_AMT_DEMAND" name="R164_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW164" style="padding-left: 20px; font-weight: bold;">
@@ -17931,13 +17934,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW165" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW165" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R165_AMT_DEMAND != null ? #numbers.formatDecimal(report.R165_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R165_AMT_DEMAND" name="R165_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW165" style="padding-left: 20px; font-weight: bold;">
@@ -18075,13 +18078,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW166" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW166" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R166_AMT_DEMAND != null ? #numbers.formatDecimal(report.R166_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R166_AMT_DEMAND" name="R166_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW166" style="padding-left: 20px; font-weight: bold;">
@@ -18219,13 +18222,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW167" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW167" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R167_AMT_DEMAND != null ? #numbers.formatDecimal(report.R167_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R167_AMT_DEMAND" name="R167_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW167" style="padding-left: 20px; font-weight: bold;">
@@ -18363,13 +18366,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW168" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW168" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R168_AMT_DEMAND != null ? #numbers.formatDecimal(report.R168_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R168_AMT_DEMAND" name="R168_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW168" style="padding-left: 20px; font-weight: bold;">
@@ -18507,14 +18510,14 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW169" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW169" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R169_AMT_DEMAND != null ? #numbers.formatDecimal(report.R169_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R169_AMT_DEMAND" name="R169_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-
+-->
 
 												<td id="ROW169" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -18651,13 +18654,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW170" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW170" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R170_AMT_DEMAND != null ? #numbers.formatDecimal(report.R170_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R170_AMT_DEMAND" name="R170_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW170" style="padding-left: 20px; font-weight: bold;">
@@ -18795,13 +18798,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW171" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW171" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R171_AMT_DEMAND != null ? #numbers.formatDecimal(report.R171_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R171_AMT_DEMAND" name="R171_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW171" style="padding-left: 20px; font-weight: bold;">
@@ -18939,13 +18942,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW172" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW172" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R172_AMT_DEMAND != null ? #numbers.formatDecimal(report.R172_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R172_AMT_DEMAND" name="R172_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW172" style="padding-left: 20px; font-weight: bold;">
@@ -19083,13 +19086,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW173" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW173" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R173_AMT_DEMAND != null ? #numbers.formatDecimal(report.R173_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R173_AMT_DEMAND" name="R173_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW173" style="padding-left: 20px; font-weight: bold;">
@@ -19227,13 +19230,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW174" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW174" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R174_AMT_DEMAND != null ? #numbers.formatDecimal(report.R174_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R174_AMT_DEMAND" name="R174_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW174" style="padding-left: 20px; font-weight: bold;">
@@ -19371,13 +19374,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW175" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW175" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R175_AMT_DEMAND != null ? #numbers.formatDecimal(report.R175_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R175_AMT_DEMAND" name="R175_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW175" style="padding-left: 20px; font-weight: bold;">
@@ -19515,13 +19518,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW176" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW176" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R176_AMT_DEMAND != null ? #numbers.formatDecimal(report.R176_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R176_AMT_DEMAND" name="R176_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW176" style="padding-left: 20px; font-weight: bold;">
@@ -19659,13 +19662,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW177" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW177" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R177_AMT_DEMAND != null ? #numbers.formatDecimal(report.R177_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R177_AMT_DEMAND" name="R177_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW177" style="padding-left: 20px; font-weight: bold;">
@@ -19803,14 +19806,14 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW178" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW178" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R178_AMT_DEMAND != null ? #numbers.formatDecimal(report.R178_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R178_AMT_DEMAND" name="R178_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-
+-->
 
 												<td id="ROW178" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -19947,13 +19950,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW179" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW179" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R179_AMT_DEMAND != null ? #numbers.formatDecimal(report.R179_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R179_AMT_DEMAND" name="R179_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW179" style="padding-left: 20px; font-weight: bold;">
@@ -20091,13 +20094,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW180" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW180" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R180_AMT_DEMAND != null ? #numbers.formatDecimal(report.R180_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R180_AMT_DEMAND" name="R180_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW180" style="padding-left: 20px; font-weight: bold;">
@@ -20235,13 +20238,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW181" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW181" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R181_AMT_DEMAND != null ? #numbers.formatDecimal(report.R181_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R181_AMT_DEMAND" name="R181_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW181" style="padding-left: 20px; font-weight: bold;">
@@ -20379,13 +20382,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW182" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW182" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R182_AMT_DEMAND != null ? #numbers.formatDecimal(report.R182_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R182_AMT_DEMAND" name="R182_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW182" style="padding-left: 20px; font-weight: bold;">
@@ -20521,15 +20524,16 @@ PURPOSE		: BWRBRREPORT
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
 														readonly />
 
-												</td>
+											
+														</td>
 
-												<td id="ROW183" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW183" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R183_AMT_DEMAND != null ? #numbers.formatDecimal(report.R183_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R183_AMT_DEMAND" name="R183_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW183" style="padding-left: 20px; font-weight: bold;">
@@ -20667,13 +20671,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW184" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW184" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R184_AMT_DEMAND != null ? #numbers.formatDecimal(report.R184_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R184_AMT_DEMAND" name="R184_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW184" style="padding-left: 20px; font-weight: bold;">
@@ -20810,13 +20814,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW185" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW185" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R185_AMT_DEMAND != null ? #numbers.formatDecimal(report.R185_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R185_AMT_DEMAND" name="R185_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW185" style="padding-left: 20px; font-weight: bold;">
@@ -20954,13 +20958,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW186" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW186" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R186_AMT_DEMAND != null ? #numbers.formatDecimal(report.R186_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R186_AMT_DEMAND" name="R186_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW186" style="padding-left: 20px; font-weight: bold;">
@@ -21098,13 +21102,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW187" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW187" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R187_AMT_DEMAND != null ? #numbers.formatDecimal(report.R187_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R187_AMT_DEMAND" name="R187_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW187" style="padding-left: 20px; font-weight: bold;">
@@ -21242,13 +21246,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW188" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW188" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R188_AMT_DEMAND != null ? #numbers.formatDecimal(report.R188_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R188_AMT_DEMAND" name="R188_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW188" style="padding-left: 20px; font-weight: bold;">
@@ -21387,13 +21391,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW189" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW189" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R189_AMT_DEMAND != null ? #numbers.formatDecimal(report.R189_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R189_AMT_DEMAND" name="R189_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW189" style="padding-left: 20px; font-weight: bold;">
@@ -21531,13 +21535,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW190" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW190" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R190_AMT_DEMAND != null ? #numbers.formatDecimal(report.R190_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R190_AMT_DEMAND" name="R190_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW190" style="padding-left: 20px; font-weight: bold;">
@@ -21675,13 +21679,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW191" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW191" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R191_AMT_DEMAND != null ? #numbers.formatDecimal(report.R191_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R191_AMT_DEMAND" name="R191_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW191" style="padding-left: 20px; font-weight: bold;">
@@ -21819,13 +21823,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW192" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW192" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R192_AMT_DEMAND != null ? #numbers.formatDecimal(report.R192_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R192_AMT_DEMAND" name="R192_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW192" style="padding-left: 20px; font-weight: bold;">
@@ -21963,13 +21967,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW193" style="padding-left: 20px; font-weight: bold;">
+												<!--<td id="ROW193" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R193_AMT_DEMAND != null ? #numbers.formatDecimal(report.R193_AMT_DEMAND, 1, 'COMMA', 0, 'POINT') : '0.00'}"
 														id="R193_AMT_DEMAND" name="R193_AMT_DEMAND"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 
 												<td id="ROW193" style="padding-left: 20px; font-weight: bold;">
@@ -22024,13 +22028,13 @@ PURPOSE		: BWRBRREPORT
 
 												</td>
 
-												<td id="ROW194"
+												<!--<td id="ROW194"
 													style="background-color: rgb(107, 122, 143);color: white;padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														id="R194_TOT_AMT_DEMAND" name="R194_TOT_AMT_DEMAND"
 														style="background-color: rgb(107, 122, 143);color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
-												</td>
+												</td>-->
 
 												<td id="ROW194"
 													style="background-color: rgb(107, 122, 143);color: white;padding-left: 20px; font-weight: bold;">
