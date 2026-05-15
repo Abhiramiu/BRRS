@@ -920,16 +920,21 @@ function cancelModify() {
 	function calculateAllAmounts() {
 		
 		
-		// Get original DB value from r13
-		const r13Original = getAmountValue("#r13_amount_1");
+		// Store original backend value only once
+		const originalR13 =
+		    $("#r13_amount_1").data("original") ??
+		    getAmountValue("#r13_amount_1");
 
-		// Get entered value from r15
+		// Save original value into data attribute
+		$("#r13_amount_1").data("original", originalR13);
+
+		// Get UI entered value
 		const r15Value = getAmountValue("#r15_amount_1");
 
-		// Add r15 into r13
-		const updatedR13 = r13Original + r15Value;
+		// Calculate
+		const updatedR13 = originalR13 + r15Value;
 
-		// Set updated value back to r13
+		// Update r13
 		setAmountValue("#r13_amount_1", updatedR13);
 
 		// R12 = R13 + R14 - R15 - R16
