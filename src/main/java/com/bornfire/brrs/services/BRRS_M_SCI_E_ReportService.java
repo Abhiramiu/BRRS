@@ -3775,117 +3775,117 @@ cellD.setCellStyle(textStyle);
 
 //---R69 (vii) Professional fees (sum of lines (a) to (d))
 
-//------R70 a) Lawyer's fees
-
-
-// row76
-row = sheet.getRow(69);
-
-
-
-// Column 3 - month
-cellC = row.createCell(2);
-if (record.getR76_month() != null) {
-cellC.setCellValue(record.getR76_month().doubleValue());
-cellC.setCellStyle(numberStyle);
-} else {
-cellC.setCellValue("");
-cellC.setCellStyle(textStyle);
-}
-
-// Column 4 - ytd
-cellD = row.createCell(3);
-if (record.getR76_ytd() != null) {
-cellD.setCellValue(record.getR76_ytd().doubleValue());
-cellD.setCellStyle(numberStyle);
-} else {
-cellD.setCellValue("");
-cellD.setCellStyle(textStyle);
-}
-
-
-//------R71 b) Auditor's fees
-
-// row77
-row = sheet.getRow(70);
-
-
-
-// Column 3 - month
-cellC = row.createCell(2);
-if (record.getR77_month() != null) {
-cellC.setCellValue(record.getR77_month().doubleValue());
-cellC.setCellStyle(numberStyle);
-} else {
-cellC.setCellValue("");
-cellC.setCellStyle(textStyle);
-}
-
-// Column 4 - ytd
-cellD = row.createCell(3);
-if (record.getR77_ytd() != null) {
-cellD.setCellValue(record.getR77_ytd().doubleValue());
-cellD.setCellStyle(numberStyle);
-} else {
-cellD.setCellValue("");
-cellD.setCellStyle(textStyle);
-}
-
-
-//------R72 c) Management fees
-
-//row78
-row = sheet.getRow(71);
-
-
-
-// Column 3 - month
-cellC = row.createCell(2);
-if (record.getR78_month() != null) {
-cellC.setCellValue(record.getR78_month().doubleValue());
-cellC.setCellStyle(numberStyle);
-} else {
-cellC.setCellValue("");
-cellC.setCellStyle(textStyle);
-}
-
-// Column 4 - ytd
-cellD = row.createCell(3);
-if (record.getR78_ytd() != null) {
-cellD.setCellValue(record.getR78_ytd().doubleValue());
-cellD.setCellStyle(numberStyle);
-} else {
-cellD.setCellValue("");
-cellD.setCellStyle(textStyle);
-}
-
-
-//------R73 d) Other*
-
-// row79
-row = sheet.getRow(72);
-
-
-
-// Column 3 - month
-cellC = row.createCell(2);
-if (record.getR79_month() != null) {
-cellC.setCellValue(record.getR79_month().doubleValue());
-cellC.setCellStyle(numberStyle);
-} else {
-cellC.setCellValue("");
-cellC.setCellStyle(textStyle);
-}
-
-// Column 4 - ytd
-cellD = row.createCell(3);
-if (record.getR79_ytd() != null) {
-cellD.setCellValue(record.getR79_ytd().doubleValue());
-cellD.setCellStyle(numberStyle);
-} else {
-cellD.setCellValue("");
-cellD.setCellStyle(textStyle);
-}
+////------R70 a) Lawyer's fees
+//
+//
+//// row76
+//row = sheet.getRow(69);
+//
+//
+//
+//// Column 3 - month
+//cellC = row.createCell(2);
+//if (record.getR76_month() != null) {
+//cellC.setCellValue(record.getR76_month().doubleValue());
+//cellC.setCellStyle(numberStyle);
+//} else {
+//cellC.setCellValue("");
+//cellC.setCellStyle(textStyle);
+//}
+//
+//// Column 4 - ytd
+//cellD = row.createCell(3);
+//if (record.getR76_ytd() != null) {
+//cellD.setCellValue(record.getR76_ytd().doubleValue());
+//cellD.setCellStyle(numberStyle);
+//} else {
+//cellD.setCellValue("");
+//cellD.setCellStyle(textStyle);
+//}
+//
+//
+////------R71 b) Auditor's fees
+//
+//// row77
+//row = sheet.getRow(70);
+//
+//
+//
+//// Column 3 - month
+//cellC = row.createCell(2);
+//if (record.getR77_month() != null) {
+//cellC.setCellValue(record.getR77_month().doubleValue());
+//cellC.setCellStyle(numberStyle);
+//} else {
+//cellC.setCellValue("");
+//cellC.setCellStyle(textStyle);
+//}
+//
+//// Column 4 - ytd
+//cellD = row.createCell(3);
+//if (record.getR77_ytd() != null) {
+//cellD.setCellValue(record.getR77_ytd().doubleValue());
+//cellD.setCellStyle(numberStyle);
+//} else {
+//cellD.setCellValue("");
+//cellD.setCellStyle(textStyle);
+//}
+//
+//
+////------R72 c) Management fees
+//
+////row78
+//row = sheet.getRow(71);
+//
+//
+//
+//// Column 3 - month
+//cellC = row.createCell(2);
+//if (record.getR78_month() != null) {
+//cellC.setCellValue(record.getR78_month().doubleValue());
+//cellC.setCellStyle(numberStyle);
+//} else {
+//cellC.setCellValue("");
+//cellC.setCellStyle(textStyle);
+//}
+//
+//// Column 4 - ytd
+//cellD = row.createCell(3);
+//if (record.getR78_ytd() != null) {
+//cellD.setCellValue(record.getR78_ytd().doubleValue());
+//cellD.setCellStyle(numberStyle);
+//} else {
+//cellD.setCellValue("");
+//cellD.setCellStyle(textStyle);
+//}
+//
+//
+////------R73 d) Other*
+//
+//// row79
+//row = sheet.getRow(72);
+//
+//
+//
+//// Column 3 - month
+//cellC = row.createCell(2);
+//if (record.getR79_month() != null) {
+//cellC.setCellValue(record.getR79_month().doubleValue());
+//cellC.setCellStyle(numberStyle);
+//} else {
+//cellC.setCellValue("");
+//cellC.setCellStyle(textStyle);
+//}
+//
+//// Column 4 - ytd
+//cellD = row.createCell(3);
+//if (record.getR79_ytd() != null) {
+//cellD.setCellValue(record.getR79_ytd().doubleValue());
+//cellD.setCellStyle(numberStyle);
+//} else {
+//cellD.setCellValue("");
+//cellD.setCellStyle(textStyle);
+//}
 
 //---R74 (viii) All other non-interest income*
 
@@ -7169,119 +7169,119 @@ cellD.setCellValue("");
 cellD.setCellStyle(textStyle);
 }
 
-//---R69 (vii) Professional fees (sum of lines (a) to (d))
-
-//------R70 a) Lawyer's fees
-
-
-// row76
-row = sheet.getRow(69);
-
-
-
-// Column 3 - month
-cellC = row.createCell(2);
-if (record.getR76_month() != null) {
-cellC.setCellValue(record.getR76_month().doubleValue());
-cellC.setCellStyle(numberStyle);
-} else {
-cellC.setCellValue("");
-cellC.setCellStyle(textStyle);
-}
-
-// Column 4 - ytd
-cellD = row.createCell(3);
-if (record.getR76_ytd() != null) {
-cellD.setCellValue(record.getR76_ytd().doubleValue());
-cellD.setCellStyle(numberStyle);
-} else {
-cellD.setCellValue("");
-cellD.setCellStyle(textStyle);
-}
-
-
-//------R71 b) Auditor's fees
-
-// row77
-row = sheet.getRow(70);
-
-
-
-// Column 3 - month
-cellC = row.createCell(2);
-if (record.getR77_month() != null) {
-cellC.setCellValue(record.getR77_month().doubleValue());
-cellC.setCellStyle(numberStyle);
-} else {
-cellC.setCellValue("");
-cellC.setCellStyle(textStyle);
-}
-
-// Column 4 - ytd
-cellD = row.createCell(3);
-if (record.getR77_ytd() != null) {
-cellD.setCellValue(record.getR77_ytd().doubleValue());
-cellD.setCellStyle(numberStyle);
-} else {
-cellD.setCellValue("");
-cellD.setCellStyle(textStyle);
-}
-
-
-//------R72 c) Management fees
-
-//row78
-row = sheet.getRow(71);
-
-
-
-// Column 3 - month
-cellC = row.createCell(2);
-if (record.getR78_month() != null) {
-cellC.setCellValue(record.getR78_month().doubleValue());
-cellC.setCellStyle(numberStyle);
-} else {
-cellC.setCellValue("");
-cellC.setCellStyle(textStyle);
-}
-
-// Column 4 - ytd
-cellD = row.createCell(3);
-if (record.getR78_ytd() != null) {
-cellD.setCellValue(record.getR78_ytd().doubleValue());
-cellD.setCellStyle(numberStyle);
-} else {
-cellD.setCellValue("");
-cellD.setCellStyle(textStyle);
-}
-
-
-//------R73 d) Other*
-
-// row79
-row = sheet.getRow(72);
-
-
-
-// Column 3 - month
-cellC = row.createCell(2);
-if (record.getR79_month() != null) {
-cellC.setCellValue(record.getR79_month().doubleValue());
-cellC.setCellStyle(numberStyle);
-} else {
-cellC.setCellValue("");
-cellC.setCellStyle(textStyle);
-}
-
-// Column 4 - ytd
-cellD = row.createCell(3);
-if (record.getR79_ytd() != null) {
-cellD.setCellValue(record.getR79_ytd().doubleValue());
-cellD.setCellStyle(numberStyle);
-} else {
-cellD.setCellValue("");
-cellD.setCellStyle(textStyle);
-}
+////---R69 (vii) Professional fees (sum of lines (a) to (d))
+//
+////------R70 a) Lawyer's fees
+//
+//
+//// row76
+//row = sheet.getRow(69);
+//
+//
+//
+//// Column 3 - month
+//cellC = row.createCell(2);
+//if (record.getR76_month() != null) {
+//cellC.setCellValue(record.getR76_month().doubleValue());
+//cellC.setCellStyle(numberStyle);
+//} else {
+//cellC.setCellValue("");
+//cellC.setCellStyle(textStyle);
+//}
+//
+//// Column 4 - ytd
+//cellD = row.createCell(3);
+//if (record.getR76_ytd() != null) {
+//cellD.setCellValue(record.getR76_ytd().doubleValue());
+//cellD.setCellStyle(numberStyle);
+//} else {
+//cellD.setCellValue("");
+//cellD.setCellStyle(textStyle);
+//}
+//
+//
+////------R71 b) Auditor's fees
+//
+//// row77
+//row = sheet.getRow(70);
+//
+//
+//
+//// Column 3 - month
+//cellC = row.createCell(2);
+//if (record.getR77_month() != null) {
+//cellC.setCellValue(record.getR77_month().doubleValue());
+//cellC.setCellStyle(numberStyle);
+//} else {
+//cellC.setCellValue("");
+//cellC.setCellStyle(textStyle);
+//}
+//
+//// Column 4 - ytd
+//cellD = row.createCell(3);
+//if (record.getR77_ytd() != null) {
+//cellD.setCellValue(record.getR77_ytd().doubleValue());
+//cellD.setCellStyle(numberStyle);
+//} else {
+//cellD.setCellValue("");
+//cellD.setCellStyle(textStyle);
+//}
+//
+//
+////------R72 c) Management fees
+//
+////row78
+//row = sheet.getRow(71);
+//
+//
+//
+//// Column 3 - month
+//cellC = row.createCell(2);
+//if (record.getR78_month() != null) {
+//cellC.setCellValue(record.getR78_month().doubleValue());
+//cellC.setCellStyle(numberStyle);
+//} else {
+//cellC.setCellValue("");
+//cellC.setCellStyle(textStyle);
+//}
+//
+//// Column 4 - ytd
+//cellD = row.createCell(3);
+//if (record.getR78_ytd() != null) {
+//cellD.setCellValue(record.getR78_ytd().doubleValue());
+//cellD.setCellStyle(numberStyle);
+//} else {
+//cellD.setCellValue("");
+//cellD.setCellStyle(textStyle);
+//}
+//
+//
+////------R73 d) Other*
+//
+//// row79
+//row = sheet.getRow(72);
+//
+//
+//
+//// Column 3 - month
+//cellC = row.createCell(2);
+//if (record.getR79_month() != null) {
+//cellC.setCellValue(record.getR79_month().doubleValue());
+//cellC.setCellStyle(numberStyle);
+//} else {
+//cellC.setCellValue("");
+//cellC.setCellStyle(textStyle);
+//}
+//
+//// Column 4 - ytd
+//cellD = row.createCell(3);
+//if (record.getR79_ytd() != null) {
+//cellD.setCellValue(record.getR79_ytd().doubleValue());
+//cellD.setCellStyle(numberStyle);
+//} else {
+//cellD.setCellValue("");
+//cellD.setCellStyle(textStyle);
+//}
 
 //---R74 (viii) All other non-interest income*
 
@@ -10566,119 +10566,119 @@ cellD.setCellValue("");
 cellD.setCellStyle(textStyle);
 }
 
-//---R69 (vii) Professional fees (sum of lines (a) to (d))
-
-//------R70 a) Lawyer's fees
-
-
-// row76
-row = sheet.getRow(69);
-
-
-
-// Column 3 - month
-cellC = row.createCell(2);
-if (record.getR76_month() != null) {
-cellC.setCellValue(record.getR76_month().doubleValue());
-cellC.setCellStyle(numberStyle);
-} else {
-cellC.setCellValue("");
-cellC.setCellStyle(textStyle);
-}
-
-// Column 4 - ytd
-cellD = row.createCell(3);
-if (record.getR76_ytd() != null) {
-cellD.setCellValue(record.getR76_ytd().doubleValue());
-cellD.setCellStyle(numberStyle);
-} else {
-cellD.setCellValue("");
-cellD.setCellStyle(textStyle);
-}
-
-
-//------R71 b) Auditor's fees
-
-// row77
-row = sheet.getRow(70);
-
-
-
-// Column 3 - month
-cellC = row.createCell(2);
-if (record.getR77_month() != null) {
-cellC.setCellValue(record.getR77_month().doubleValue());
-cellC.setCellStyle(numberStyle);
-} else {
-cellC.setCellValue("");
-cellC.setCellStyle(textStyle);
-}
-
-// Column 4 - ytd
-cellD = row.createCell(3);
-if (record.getR77_ytd() != null) {
-cellD.setCellValue(record.getR77_ytd().doubleValue());
-cellD.setCellStyle(numberStyle);
-} else {
-cellD.setCellValue("");
-cellD.setCellStyle(textStyle);
-}
-
-
-//------R72 c) Management fees
-
-//row78
-row = sheet.getRow(71);
-
-
-
-// Column 3 - month
-cellC = row.createCell(2);
-if (record.getR78_month() != null) {
-cellC.setCellValue(record.getR78_month().doubleValue());
-cellC.setCellStyle(numberStyle);
-} else {
-cellC.setCellValue("");
-cellC.setCellStyle(textStyle);
-}
-
-// Column 4 - ytd
-cellD = row.createCell(3);
-if (record.getR78_ytd() != null) {
-cellD.setCellValue(record.getR78_ytd().doubleValue());
-cellD.setCellStyle(numberStyle);
-} else {
-cellD.setCellValue("");
-cellD.setCellStyle(textStyle);
-}
-
-
-//------R73 d) Other*
-
-// row79
-row = sheet.getRow(72);
-
-
-
-// Column 3 - month
-cellC = row.createCell(2);
-if (record.getR79_month() != null) {
-cellC.setCellValue(record.getR79_month().doubleValue());
-cellC.setCellStyle(numberStyle);
-} else {
-cellC.setCellValue("");
-cellC.setCellStyle(textStyle);
-}
-
-// Column 4 - ytd
-cellD = row.createCell(3);
-if (record.getR79_ytd() != null) {
-cellD.setCellValue(record.getR79_ytd().doubleValue());
-cellD.setCellStyle(numberStyle);
-} else {
-cellD.setCellValue("");
-cellD.setCellStyle(textStyle);
-}
+////---R69 (vii) Professional fees (sum of lines (a) to (d))
+//
+////------R70 a) Lawyer's fees
+//
+//
+//// row76
+//row = sheet.getRow(69);
+//
+//
+//
+//// Column 3 - month
+//cellC = row.createCell(2);
+//if (record.getR76_month() != null) {
+//cellC.setCellValue(record.getR76_month().doubleValue());
+//cellC.setCellStyle(numberStyle);
+//} else {
+//cellC.setCellValue("");
+//cellC.setCellStyle(textStyle);
+//}
+//
+//// Column 4 - ytd
+//cellD = row.createCell(3);
+//if (record.getR76_ytd() != null) {
+//cellD.setCellValue(record.getR76_ytd().doubleValue());
+//cellD.setCellStyle(numberStyle);
+//} else {
+//cellD.setCellValue("");
+//cellD.setCellStyle(textStyle);
+//}
+//
+//
+////------R71 b) Auditor's fees
+//
+//// row77
+//row = sheet.getRow(70);
+//
+//
+//
+//// Column 3 - month
+//cellC = row.createCell(2);
+//if (record.getR77_month() != null) {
+//cellC.setCellValue(record.getR77_month().doubleValue());
+//cellC.setCellStyle(numberStyle);
+//} else {
+//cellC.setCellValue("");
+//cellC.setCellStyle(textStyle);
+//}
+//
+//// Column 4 - ytd
+//cellD = row.createCell(3);
+//if (record.getR77_ytd() != null) {
+//cellD.setCellValue(record.getR77_ytd().doubleValue());
+//cellD.setCellStyle(numberStyle);
+//} else {
+//cellD.setCellValue("");
+//cellD.setCellStyle(textStyle);
+//}
+//
+//
+////------R72 c) Management fees
+//
+////row78
+//row = sheet.getRow(71);
+//
+//
+//
+//// Column 3 - month
+//cellC = row.createCell(2);
+//if (record.getR78_month() != null) {
+//cellC.setCellValue(record.getR78_month().doubleValue());
+//cellC.setCellStyle(numberStyle);
+//} else {
+//cellC.setCellValue("");
+//cellC.setCellStyle(textStyle);
+//}
+//
+//// Column 4 - ytd
+//cellD = row.createCell(3);
+//if (record.getR78_ytd() != null) {
+//cellD.setCellValue(record.getR78_ytd().doubleValue());
+//cellD.setCellStyle(numberStyle);
+//} else {
+//cellD.setCellValue("");
+//cellD.setCellStyle(textStyle);
+//}
+//
+//
+////------R73 d) Other*
+//
+//// row79
+//row = sheet.getRow(72);
+//
+//
+//
+//// Column 3 - month
+//cellC = row.createCell(2);
+//if (record.getR79_month() != null) {
+//cellC.setCellValue(record.getR79_month().doubleValue());
+//cellC.setCellStyle(numberStyle);
+//} else {
+//cellC.setCellValue("");
+//cellC.setCellStyle(textStyle);
+//}
+//
+//// Column 4 - ytd
+//cellD = row.createCell(3);
+//if (record.getR79_ytd() != null) {
+//cellD.setCellValue(record.getR79_ytd().doubleValue());
+//cellD.setCellStyle(numberStyle);
+//} else {
+//cellD.setCellValue("");
+//cellD.setCellStyle(textStyle);
+//}
 
 //---R74 (viii) All other non-interest income*
 
