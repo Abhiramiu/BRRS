@@ -821,144 +821,202 @@ PURPOSE		: BWRBRREPORT
 
 		//Calculating Totals for 51'st row
 		function calculateR51Totals() {
-			let totalLess = 0;
-			let totalMore = 0;
 
-			for (let i = 11; i <= 50; i++) {
-				// Get numeric values, remove commas
-				let lessVal = parseFloat($("#R" + i + "_AMT_LESS_184_DAYS").val().replace(/,/g, "")) || 0;
-				let moreVal = parseFloat($("#R" + i + "_AMT_MORE_184_DAYS").val().replace(/,/g, "")) || 0;
+		    let totalLess = 0;
+		    let totalMore = 0;
 
-				totalLess += lessVal;
-				totalMore += moreVal;
-			}
+		    for (let i = 11; i <= 50; i++) {
 
-			// Set totals with 2 decimal formatting
-			$("#R51_TOT_AMT_LESS_184_DAYS").val(totalLess.toLocaleString('en-US', {maximumFractionDigits: 0}))
+		        // LESS THAN 184 DAYS
+		        let lessText = $("#R" + i + "_AMT_LESS_184_DAYS").val() || "0";
+		        let lessVal = parseFloat(lessText.replace(/,/g, "")) || 0;
 
-			$("#R51_TOT_AMT_MORE_184_DAYS").val(
-				totalMore.toLocaleString('en-US', {maximumFractionDigits: 0}))
+		        // MORE THAN 184 DAYS
+		        let moreText = $("#R" + i + "_AMT_MORE_184_DAYS").val() || "0";
+		        let moreVal = parseFloat(moreText.replace(/,/g, "")) || 0;
 
+		        totalLess += lessVal;
+		        totalMore += moreVal;
+		    }
+
+		    // Set totals
+		    $("#R51_TOT_AMT_LESS_184_DAYS").val(
+		        totalLess.toLocaleString('en-US', {
+		            maximumFractionDigits: 0
+		        })
+		    );
+
+		    $("#R51_TOT_AMT_MORE_184_DAYS").val(
+		        totalMore.toLocaleString('en-US', {
+		            maximumFractionDigits: 0
+		        })
+		    );
 		}
 
-		// Call on page load
 		$(document).ready(function () {
-			calculateR51Totals();
 
-			// Attach listener only to R11-R50 amount fields
-			for (let i = 11; i <= 50; i++) {
-				$("#R" + i + "_AMT_LESS_184_DAYS, #R" + i + "_AMT_MORE_184_DAYS").on("input", function () {
-					calculateR51Totals();
-				});
-			}
+		    calculateR51Totals();
+
+		    for (let i = 11; i <= 50; i++) {
+
+		        $("#R" + i + "_AMT_LESS_184_DAYS, #R" + i + "_AMT_MORE_184_DAYS")
+		            .on("input", function () {
+
+		                calculateR51Totals();
+		            });
+		    }
 		});
 
 
-		//Calculating Totals for 96'th row
+		// Calculating Totals for 96th row
 		function calculateR96Totals() {
-			let totalLess = 0;
-			let totalMore = 0;
 
-			for (let i = 56; i <= 95; i++) {
-				// Get numeric values, remove commas
-				let lessVal = parseFloat($("#R" + i + "_AMT_LESS_184_DAYS").val().replace(/,/g, "")) || 0;
-				let moreVal = parseFloat($("#R" + i + "_AMT_MORE_184_DAYS").val().replace(/,/g, "")) || 0;
+		    let totalLess = 0;
+		    let totalMore = 0;
 
-				totalLess += lessVal;
-				totalMore += moreVal;
-			}
+		    for (let i = 56; i <= 95; i++) {
 
-			// Set totals with 2 decimal formatting
-			$("#R96_TOT_AMT_LESS_184_DAYS").val(
-				totalLess.toLocaleString('en-US', {maximumFractionDigits: 0}))
+		        // LESS THAN 184 DAYS
+		        let lessText = $("#R" + i + "_AMT_LESS_184_DAYS").val() || "0";
+		        let lessVal = parseFloat(lessText.replace(/,/g, "")) || 0;
 
-			$("#R96_TOT_AMT_MORE_184_DAYS").val(
-				totalMore.toLocaleString('en-US', {maximumFractionDigits: 0}))
+		        // MORE THAN 184 DAYS
+		        let moreText = $("#R" + i + "_AMT_MORE_184_DAYS").val() || "0";
+		        let moreVal = parseFloat(moreText.replace(/,/g, "")) || 0;
 
+		        totalLess += lessVal;
+		        totalMore += moreVal;
+		    }
+
+		    // Set totals
+		    $("#R96_TOT_AMT_LESS_184_DAYS").val(
+		        totalLess.toLocaleString('en-US', {
+		            maximumFractionDigits: 0
+		        })
+		    );
+
+		    $("#R96_TOT_AMT_MORE_184_DAYS").val(
+		        totalMore.toLocaleString('en-US', {
+		            maximumFractionDigits: 0
+		        })
+		    );
 		}
 
 		// Call on page load
 		$(document).ready(function () {
-			calculateR96Totals();
 
-			// Attach listener only to R11-R50 amount fields
-			for (let i = 56; i <= 95; i++) {
-				$("#R" + i + "_AMT_LESS_184_DAYS, #R" + i + "_AMT_MORE_184_DAYS").on("input", function () {
-					calculateR96Totals();
-				});
-			}
+		    calculateR96Totals();
+
+		    // Attach listener to R56 - R95 fields
+		    for (let i = 56; i <= 95; i++) {
+
+		        $("#R" + i + "_AMT_LESS_184_DAYS, #R" + i + "_AMT_MORE_184_DAYS")
+		            .on("input", function () {
+
+		                calculateR96Totals();
+		            });
+		    }
 		});
 
-
-		//Calculating Totals for 142'nd row
+		// Calculating Totals for 142nd row
 		function calculateR142Totals() {
-			let totalLess = 0;
-			let totalMore = 0;
 
-			for (let i = 101; i <= 141; i++) {
-				// Get numeric values, remove commas
-				let lessVal = parseFloat($("#R" + i + "_AMT_DEMAND").val().replace(/,/g, "")) || 0;
-				let moreVal = parseFloat($("#R" + i + "_AMT_TIME").val().replace(/,/g, "")) || 0;
+		    let totalDemand = 0;
+		    let totalTime = 0;
 
-				totalLess += lessVal;
-				totalMore += moreVal;
-			}
+		    for (let i = 101; i <= 141; i++) {
 
-			// Set totals with 2 decimal formatting
-			$("#R142_TOT_AMT_DEMAND").val(
-				totalLess.toLocaleString('en-US', {maximumFractionDigits: 0}))
+		        // DEMAND AMOUNT
+		        let demandText = $("#R" + i + "_AMT_DEMAND").val() || "0";
+		        let demandVal = parseFloat(demandText.replace(/,/g, "")) || 0;
 
-			$("#R142_TOT_AMT_TIME").val(
-				totalMore.toLocaleString('en-US', {maximumFractionDigits: 0}))
+		        // TIME AMOUNT
+		        let timeText = $("#R" + i + "_AMT_TIME").val() || "0";
+		        let timeVal = parseFloat(timeText.replace(/,/g, "")) || 0;
 
+		        totalDemand += demandVal;
+		        totalTime += timeVal;
+		    }
+
+		    // Set totals
+		    $("#R142_TOT_AMT_DEMAND").val(
+		        totalDemand.toLocaleString('en-US', {
+		            maximumFractionDigits: 0
+		        })
+		    );
+
+		    $("#R142_TOT_AMT_TIME").val(
+		        totalTime.toLocaleString('en-US', {
+		            maximumFractionDigits: 0
+		        })
+		    );
 		}
 
 		// Call on page load
 		$(document).ready(function () {
-			calculateR142Totals();
 
-			// Attach listener only to R11-R50 amount fields
-			for (let i = 101; i <= 141; i++) {
-				$("#R" + i + "_AMT_DEMAND, #R" + i + "_AMT_TIME").on("input", function () {
-					calculateR142Totals();
-				});
-			}
+		    calculateR142Totals();
+
+		    // Attach listener to R101 - R141 fields
+		    for (let i = 101; i <= 141; i++) {
+
+		        $("#R" + i + "_AMT_DEMAND, #R" + i + "_AMT_TIME")
+		            .on("input", function () {
+
+		                calculateR142Totals();
+		            });
+		    }
 		});
 
 
-		//Calculating Totals for 194'th row
+		// Calculating Totals for 194th row
 		function calculateR194Totals() {
-			let totalLess = 0;
-			let totalMore = 0;
 
-			for (let i = 147; i <= 193; i++) {
-				// Get numeric values, remove commas
-				let lessVal = parseFloat($("#R" + i + "_AMT_DEMAND").val().replace(/,/g, "")) || 0;
-				let moreVal = parseFloat($("#R" + i + "_AMT_TIME").val().replace(/,/g, "")) || 0;
+		    let totalDemand = 0;
+		    let totalTime = 0;
 
-				totalLess += lessVal;
-				totalMore += moreVal;
-			}
+		    for (let i = 147; i <= 193; i++) {
 
-			// Set totals with 2 decimal formatting
-			$("#R194_TOT_AMT_DEMAND").val(
-				totalLess.toLocaleString('en-US', {maximumFractionDigits: 0}))
+		        // DEMAND AMOUNT
+		        let demandText = $("#R" + i + "_AMT_DEMAND").val() || "0";
+		        let demandVal = parseFloat(demandText.replace(/,/g, "")) || 0;
 
-			$("#R194_TOT_AMT_TIME").val(
-				totalMore.toLocaleString('en-US', {maximumFractionDigits: 0}))
+		        // TIME AMOUNT
+		        let timeText = $("#R" + i + "_AMT_TIME").val() || "0";
+		        let timeVal = parseFloat(timeText.replace(/,/g, "")) || 0;
 
+		        totalDemand += demandVal;
+		        totalTime += timeVal;
+		    }
+
+		    // Set totals
+		    $("#R194_TOT_AMT_DEMAND").val(
+		        totalDemand.toLocaleString('en-US', {
+		            maximumFractionDigits: 0
+		        })
+		    );
+
+		    $("#R194_TOT_AMT_TIME").val(
+		        totalTime.toLocaleString('en-US', {
+		            maximumFractionDigits: 0
+		        })
+		    );
 		}
 
 		// Call on page load
 		$(document).ready(function () {
-			calculateR194Totals();
 
-			// Attach listener only to R11-R50 amount fields
-			for (let i = 147; i <= 193; i++) {
-				$("#R" + i + "_AMT_DEMAND, #R" + i + "_AMT_TIME").on("input", function () {
-					calculateR194Totals();
-				});
-			}
+		    calculateR194Totals();
+
+		    // Attach listener to R147 - R193 fields
+		    for (let i = 147; i <= 193; i++) {
+
+		        $("#R" + i + "_AMT_DEMAND, #R" + i + "_AMT_TIME")
+		            .on("input", function () {
+
+		                calculateR194Totals();
+		            });
+		    }
 		});
 	</SCRIPT>
 
