@@ -39135,96 +39135,96 @@ public class BRRS_M_CALOC_ReportService {
 		}
 
 		// row35
-		row = sheet.getRow(34);
+//		row = sheet.getRow(34);
 
 		// Row35
 		// Column B
-		cell2 = row.createCell(1);
-		if (record.getR35_pula() != null) {
-			cell2.setCellValue(record.getR35_pula().doubleValue());
-			cell2.setCellStyle(numberStyle);
-		} else {
-			cell2.setCellValue("");
-			cell2.setCellStyle(textStyle);
-		}
-
-		// Row35
-		// Column C
-		cell3 = row.createCell(2);
-		if (record.getR35_usd() != null) {
-			cell3.setCellValue(record.getR35_usd().doubleValue());
-			cell3.setCellStyle(numberStyle);
-		} else {
-			cell3.setCellValue("");
-			cell3.setCellStyle(textStyle);
-		}
-
-		// Row35
-		// Column D
-		cell4 = row.createCell(3);
-		if (record.getR35_zar() != null) {
-			cell4.setCellValue(record.getR35_zar().doubleValue());
-			cell4.setCellStyle(numberStyle);
-		} else {
-			cell4.setCellValue("");
-			cell4.setCellStyle(textStyle);
-		}
-
-		// Row35
-		// Column E
-		cell5 = row.createCell(4);
-		if (record.getR35_gbp() != null) {
-			cell5.setCellValue(record.getR35_gbp().doubleValue());
-			cell5.setCellStyle(numberStyle);
-		} else {
-			cell5.setCellValue("");
-			cell5.setCellStyle(textStyle);
-		}
-
-		// Row35
-		// Column F
-
-		cell6 = row.createCell(5);
-		if (record.getR35_euro() != null) {
-			cell6.setCellValue(record.getR35_euro().doubleValue());
-			cell6.setCellStyle(numberStyle);
-		} else {
-			cell6.setCellValue("");
-			cell6.setCellStyle(textStyle);
-		}
-
-		// Row35
-		// Column G
-
-		cell7 = row.createCell(6);
-		if (record.getR35_othercurrencies_inr() != null) {
-			cell7.setCellValue(record.getR35_othercurrencies_inr().doubleValue());
-			cell7.setCellStyle(numberStyle);
-		} else {
-			cell7.setCellValue("");
-			cell7.setCellStyle(textStyle);
-		}
-
-		// Row35
-		// Column H
-		cell8 = row.createCell(7);
-		if (record.getR35_othercurrencies_aud() != null) {
-			cell8.setCellValue(record.getR35_othercurrencies_aud().doubleValue());
-			cell8.setCellStyle(numberStyle);
-		} else {
-			cell8.setCellValue("");
-			cell8.setCellStyle(textStyle);
-		}
-
-		// Row33 - Column I
-		cell9 = row.createCell(8);
-		if (record.getR35_othercurrencies_i() != null) {
-			cell9.setCellValue(record.getR35_othercurrencies_i().doubleValue());
-			cell9.setCellStyle(numberStyle);
-		} else {
-			cell9.setCellValue("");
-			cell9.setCellStyle(textStyle);
-		}
+//		cell2 = row.createCell(1);
+//		if (record.getR35_pula() != null) {
+//			cell2.setCellValue(record.getR35_pula().doubleValue());
+//			cell2.setCellStyle(numberStyle);
+//		} else {
+//			cell2.setCellValue("");
+//			cell2.setCellStyle(textStyle);
+//		}
+//
+//		// Row35
+//		// Column C
+//		cell3 = row.createCell(2);
+//		if (record.getR35_usd() != null) {
+//			cell3.setCellValue(record.getR35_usd().doubleValue());
+//			cell3.setCellStyle(numberStyle);
+//		} else {
+//			cell3.setCellValue("");
+//			cell3.setCellStyle(textStyle);
+//		}
+//
+//		// Row35
+//		// Column D
+//		cell4 = row.createCell(3);
+//		if (record.getR35_zar() != null) {
+//			cell4.setCellValue(record.getR35_zar().doubleValue());
+//			cell4.setCellStyle(numberStyle);
+//		} else {
+//			cell4.setCellValue("");
+//			cell4.setCellStyle(textStyle);
+//		}
+//
+//		// Row35
+//		// Column E
+//		cell5 = row.createCell(4);
+//		if (record.getR35_gbp() != null) {
+//			cell5.setCellValue(record.getR35_gbp().doubleValue());
+//			cell5.setCellStyle(numberStyle);
+//		} else {
+//			cell5.setCellValue("");
+//			cell5.setCellStyle(textStyle);
+//		}
+//
+//		// Row35
+//		// Column F
+//
+//		cell6 = row.createCell(5);
+//		if (record.getR35_euro() != null) {
+//			cell6.setCellValue(record.getR35_euro().doubleValue());
+//			cell6.setCellStyle(numberStyle);
+//		} else {
+//			cell6.setCellValue("");
+//			cell6.setCellStyle(textStyle);
+//		}
+//
+//		// Row35
+//		// Column G
+//
+//		cell7 = row.createCell(6);
+//		if (record.getR35_othercurrencies_inr() != null) {
+//			cell7.setCellValue(record.getR35_othercurrencies_inr().doubleValue());
+//			cell7.setCellStyle(numberStyle);
+//		} else {
+//			cell7.setCellValue("");
+//			cell7.setCellStyle(textStyle);
+//		}
+//
+//		// Row35
+//		// Column H
+//		cell8 = row.createCell(7);
+//		if (record.getR35_othercurrencies_aud() != null) {
+//			cell8.setCellValue(record.getR35_othercurrencies_aud().doubleValue());
+//			cell8.setCellStyle(numberStyle);
+//		} else {
+//			cell8.setCellValue("");
+//			cell8.setCellStyle(textStyle);
+//		}
+//
+//		// Row33 - Column I
+//		cell9 = row.createCell(8);
+//		if (record.getR35_othercurrencies_i() != null) {
+//			cell9.setCellValue(record.getR35_othercurrencies_i().doubleValue());
+//			cell9.setCellStyle(numberStyle);
+//		} else {
+//			cell9.setCellValue("");
+//			cell9.setCellStyle(textStyle);
+//		}
 
 		// row36
 		row = sheet.getRow(35);

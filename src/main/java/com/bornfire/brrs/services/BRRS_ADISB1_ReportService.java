@@ -156,7 +156,7 @@ public class BRRS_ADISB1_ReportService {
 			String reportAddlCriteria1) {
 
 		String sql = "SELECT * FROM BRRS_ADISB1_DETAILTABLE "
-				+ "WHERE REPORT_DATE = ? AND REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ?";
+				+ "WHERE REPORT_DATE = ? AND REPORT_LABLE = ? AND REPORT_ADDL_CRITERIA_1 = ?";
 
 		return jdbcTemplate.query(sql, new Object[] { reportDate, reportLabel, reportAddlCriteria1 },
 				new ADISB1DetailRowMapper());
@@ -196,7 +196,7 @@ public class BRRS_ADISB1_ReportService {
 			Date reportdate) {
 
 		String sql = "SELECT * FROM BRRS_ADISB1_DETAILTABLE "
-				+ "WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ?";
+				+ "WHERE REPORT_LABLE = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ?";
 
 		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate },
 				new ADISB1DetailRowMapper());
@@ -228,7 +228,7 @@ public class BRRS_ADISB1_ReportService {
 	public List<ADISB1_Archival_Detail_Entity> GetArchivalDataByRowIdAndColumnId(String reportLabel,
 			String reportAddlCriteria1, Date reportdate, String dataEntryVersion) {
 
-		String sql = "SELECT * FROM BRRS_ADISB1_ARCHIVALTABLE_DETAIL " + "WHERE REPORT_LABEL = ? "
+		String sql = "SELECT * FROM BRRS_ADISB1_ARCHIVALTABLE_DETAIL " + "WHERE REPORT_LABLE = ? "
 				+ "AND REPORT_ADDL_CRITERIA_1 = ? " + "AND REPORT_DATE = ? " + "AND DATA_ENTRY_VERSION = ?";
 
 		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate, dataEntryVersion },
