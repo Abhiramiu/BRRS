@@ -2930,7 +2930,7 @@ public class BRRS_ADISB1_ReportService {
 //R34 Col C
 					Cell R34cell2 = row.createCell(2);
 					if (record.getR34_total_value() != null) {
-						R34cell2.setCellValue(record.getR34_total_no_of_acct().doubleValue());
+						R34cell2.setCellValue(record.getR34_total_value().doubleValue());
 						R34cell2.setCellStyle(numberStyle);
 					} else {
 						R34cell2.setCellValue("");
@@ -3407,7 +3407,7 @@ public class BRRS_ADISB1_ReportService {
 //R34 Col C
 					Cell R34cell2 = row.createCell(2);
 					if (record.getR34_total_value() != null) {
-						R34cell2.setCellValue(record.getR34_total_no_of_acct().doubleValue());
+						R34cell2.setCellValue(record.getR34_total_value().doubleValue());
 						R34cell2.setCellStyle(numberStyle);
 					} else {
 						R34cell2.setCellValue("");
