@@ -1208,7 +1208,8 @@ PURPOSE  : BRRSREPORT
 												></td>
 											<td id="r9_total_value"
 												th:text="${#numbers.formatDecimal(reportsummary.r9_total_value,1,'COMMA',0,'POINT')}"
-												style="text-align: right; width: 200px;padding-right:8px;"
+												style="text-align: right; width: 200px;padding-right:8px;"th:attr="reportLable='R9', reportAddlCriteria1='C3'"
+													onclick="showdetailsbyRowAndColumn(this)"
 											></td>
 										</tr>
 										<!-- r10 -->
