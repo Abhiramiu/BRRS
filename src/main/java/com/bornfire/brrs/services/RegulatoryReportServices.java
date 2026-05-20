@@ -5446,6 +5446,18 @@ break;
 				archivalData.addAll(crbList);
 				System.out.println("Fetched CAP_RATIO_BUFFER archival data: " + crbList.size());
 				break;
+				
+			case "SCOPE_OF_APP":
+				List<Object[]> SOAList = brrs_SCOPE_OF_APP_reportservice.getSCOPE_OF_APPArchival();
+				archivalData.addAll(SOAList);
+				System.out.println("Fetched SCOPE_OF_APP archival data: " + SOAList.size());
+				break;
+				
+			case "OPER_RISK_DIS":
+				List<Object[]> oprList = brrs_OPER_RISK_DIS_reportservice.getOPER_RISK_DISArchival();
+				archivalData.addAll(oprList);
+				System.out.println("Fetched SCOPE_OF_APP archival data: " + oprList.size());
+				break;
 //
 //		case "M_SCI_E":
 //			try {
@@ -5483,23 +5495,23 @@ break;
 //			}
 //			break;
 
-		case "OPER_RISK_DIS":
-			try {
-				archivalData = brrs_OPER_RISK_DIS_reportservice.getOPER_RISK_DISArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+//		case "OPER_RISK_DIS":
+//			try {
+//				archivalData = brrs_OPER_RISK_DIS_reportservice.getOPER_RISK_DISArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
 
-		case "SCOPE_OF_APP":
-			try {
-				archivalData = brrs_SCOPE_OF_APP_reportservice.getSCOPE_OF_APPArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+//		case "SCOPE_OF_APP":
+//			try {
+//				archivalData = brrs_SCOPE_OF_APP_reportservice.getSCOPE_OF_APPArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
 
 		case "Recon_Of_FS":
 			try {
@@ -5555,15 +5567,21 @@ break;
 			archivalData.addAll(capadeqList);
 			System.out.println("Fetched CAP_ADEQ archival data: " + capadeqList.size());
 			break;
-
+			
 		case "CREDIT_RISK":
-			try {
-				archivalData = brrs_credit_risk_reportservice.getCREDIT_RISKArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> creditriskList = brrs_credit_risk_reportservice.getCREDIT_RISKArchival();
+			archivalData.addAll(creditriskList);
+			System.out.println("Fetched CREDIT_RISK archival data: " + creditriskList.size());
 			break;
+
+//		case "CREDIT_RISK":
+//			try {
+//				archivalData = brrs_credit_risk_reportservice.getCREDIT_RISKArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
 
 		case "SCH_17":
 			try {

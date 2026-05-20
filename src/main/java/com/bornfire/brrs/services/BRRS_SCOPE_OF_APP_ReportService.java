@@ -1,746 +1,1601 @@
+
+
+
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.ParseException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.io.InputStream;
+import org.apache.poi.ss.usermodel.Row;
 
+import javax.persistence.Column;
+import javax.persistence.EntityManager;
+import javax.persistence.IdClass;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-
-import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.FillPatternType;
-/*import org.apache.poi.ss.usermodel.FillPatternType;*/
 import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
-/*import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;*/
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_SCOPE_OF_APP_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_SCOPE_OF_APP_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_SCOPE_OF_APP_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_SCOPE_OF_APP_Summary_Repo;
-import com.bornfire.brrs.entities.SCOPE_OF_APP_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.SCOPE_OF_APP_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.SCOPE_OF_APP_Detail_Entity;
-import com.bornfire.brrs.entities.SCOPE_OF_APP_Summary_Entity;
 
-@Component
 @Service
 
 public class BRRS_SCOPE_OF_APP_ReportService {
 	private static final Logger logger = LoggerFactory.getLogger(BRRS_SCOPE_OF_APP_ReportService.class);
-
+	
+	
 	@Autowired
 	private Environment env;
 
 	@Autowired
 	SessionFactory sessionFactory;
 
-	@Autowired
-	BRRS_SCOPE_OF_APP_Summary_Repo SCOPE_OF_APP_summary_repo;
+  
+    @PersistenceContext
+    private EntityManager entityManager;
 
-	@Autowired
-	BRRS_SCOPE_OF_APP_Archival_Summary_Repo SCOPE_OF_APP_Archival_Summary_Repo;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+	
 
-	@Autowired
-	BRRS_SCOPE_OF_APP_Detail_Repo SCOPE_OF_APP_detail_repo;
+// =====================================================
+// SUMAMRY REPO
+// =====================================================
 
-	@Autowired
-	BRRS_SCOPE_OF_APP_Archival_Detail_Repo SCOPE_OF_APP_Archival_Detail_Repo;
 
-	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
+	public List<SCOPE_OF_APP_Summary_Entity> getSummaryDataByDate(Date reportDate) {
 
-	public ModelAndView getSCOPE_OF_APPView(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, BigDecimal version) {
+    String sql = "SELECT * FROM BRRS_SCOPE_OF_APP_SUMMARYTABLE WHERE REPORT_DATE = ?";
 
-		ModelAndView mv = new ModelAndView();
+    return jdbcTemplate.query(
+            sql,
+            new Object[]{reportDate},
+            new SCOPE_OF_APP_Summary_RowMapper()
+    );
+}
+	
+// =====================================================
+// ARCHIVAL  SUMAMRY REPO
+// =====================================================
 
-		System.out.println("testing");
-		System.out.println(version);
 
-		if ("ARCHIVAL".equals(type) && version != null ) {
 
-			System.out.println("ARCHIVAL MODE");
-			System.out.println("version = " + version);
+public List<Object[]> getSCOPE_OF_APP_archival() {
 
-			List<SCOPE_OF_APP_Archival_Summary_Entity> T1Master = new ArrayList<>();
+    String sql = "SELECT REPORT_DATE, REPORT_VERSION " +
+                 "FROM BRRS_SCOPE_OF_APP_ARCHIVALTABLE_SUMMARY " +
+                 "ORDER BY REPORT_VERSION";
+
+    return jdbcTemplate.query(
+            sql,
+            (rs, rowNum) -> new Object[]{
+                    rs.getDate("REPORT_DATE"),
+                    rs.getBigDecimal("REPORT_VERSION")
+            }
+    );
+}
+
+public List<SCOPE_OF_APP_Archival_Summary_Entity> getDataByDateListArchival(
+        Date reportDate, BigDecimal reportVersion) {
+
+    String sql = "SELECT * FROM BRRS_SCOPE_OF_APP_ARCHIVALTABLE_SUMMARY " +
+                 "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+
+    return jdbcTemplate.query(
+            sql,
+            new Object[]{reportDate, reportVersion},
+            new SCOPE_OF_APP_Archival_Summary_RowMapper()
+    );
+}
+
+public List<SCOPE_OF_APP_Archival_Summary_Entity> getarchivaldatabydateListWithVersion() {
+
+    String sql = "SELECT * FROM BRRS_SCOPE_OF_APP_ARCHIVALTABLE_SUMMARY " +
+                 "WHERE REPORT_VERSION IS NOT NULL " +
+                 "ORDER BY REPORT_VERSION ASC";
+
+    return jdbcTemplate.query(
+            sql,
+            new SCOPE_OF_APP_Archival_Summary_RowMapper()
+    );
+}
+
+// =====================================================
+// DETAIL REPO
+// =====================================================	
+
+
+public List<SCOPE_OF_APP_Detail_Entity> getDetaildatabydateList(Date reportDate) {
+
+    String sql = "SELECT * FROM BRRS_SCOPE_OF_APP_DETAILTABLE WHERE REPORT_DATE = ?";
+
+    return jdbcTemplate.query(
+            sql,
+            new Object[]{reportDate},
+            new SCOPE_OF_APP_Detail_RowMapper()
+    );
+}
+
+public List<SCOPE_OF_APP_Detail_Entity> getDetaildatabydateList(Date reportDate, int offset, int limit) {
+
+    String sql = "SELECT * FROM BRRS_SCOPE_OF_APP_DETAILTABLE " +
+                 "WHERE REPORT_DATE = ? " +
+                 "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+    return jdbcTemplate.query(
+            sql,
+            new Object[]{reportDate, offset, limit},
+            new SCOPE_OF_APP_Detail_RowMapper()
+    );
+}
+
+public int getDataCount(Date reportDate) {
+
+    String sql = "SELECT COUNT(*) FROM BRRS_SCOPE_OF_APP_DETAILTABLE WHERE REPORT_DATE = ?";
+
+    return jdbcTemplate.queryForObject(sql, new Object[]{reportDate}, Integer.class);
+}
+
+public List<SCOPE_OF_APP_Detail_Entity> getdetailDataByRowIdAndColumnId(
+        String reportLabel, String reportAddlCriteria1, Date reportDate) {
+
+    String sql = "SELECT * FROM BRRS_SCOPE_OF_APP_DETAILTABLE " +
+                 "WHERE REPORT_LABEL = ? " +
+                 "AND REPORT_ADDL_CRITERIA_1 = ? " +
+                 "AND REPORT_DATE = ?";
+
+    return jdbcTemplate.query(
+            sql,
+            new Object[]{reportLabel, reportAddlCriteria1, reportDate},
+            new SCOPE_OF_APP_Detail_RowMapper()
+    );
+}
+
+public SCOPE_OF_APP_Detail_Entity findByDetailAcctnumber(String acctNumber) {
+
+    String sql = "SELECT * FROM BRRS_SCOPE_OF_APP_DETAILTABLE WHERE ACCT_NUMBER = ?";
+
+    return jdbcTemplate.queryForObject(
+            sql,
+            new Object[]{acctNumber},
+            new SCOPE_OF_APP_Detail_RowMapper()
+    );
+}
+
+
+// =====================================================
+// ARCHIVAL  DETAIL REPO
+// =====================================================
+
+public List<SCOPE_OF_APP_Archival_Detail_Entity> getarchivaldetaildatabydateList(
+        Date reportDate, String dataEntryVersion) {
+
+    String sql = "SELECT * FROM BRRS_SCOPE_OF_APP_ARCHIVALTABLE_DETAIL " +
+                 "WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
+
+    return jdbcTemplate.query(
+            sql,
+            new Object[]{reportDate, dataEntryVersion},
+            new SCOPE_OF_APP_Archival_Detail_RowMapper()
+    );
+}
+
+
+public List<SCOPE_OF_APP_Archival_Detail_Entity> GetArchivalDataByRowIdAndColumnId(
+        String reportLabel,
+        String reportAddlCriteria1,
+        Date reportDate,
+        String dataEntryVersion) {
+
+    String sql = "SELECT * FROM BRRS_SCOPE_OF_APP_ARCHIVALTABLE_DETAIL " +
+                 "WHERE REPORT_LABEL = ? " +
+                 "AND REPORT_ADDL_CRITERIA_1 = ? " +
+                 "AND REPORT_DATE = ? " +
+                 "AND DATA_ENTRY_VERSION = ?";
+
+    return jdbcTemplate.query(
+            sql,
+            new Object[]{
+                    reportLabel,
+                    reportAddlCriteria1,
+                    reportDate,
+                    dataEntryVersion
+            },
+            new SCOPE_OF_APP_Archival_Detail_RowMapper()
+    );
+}
+
+// =====================================================
+// SUMAMRY ENTITY 
+// =====================================================
+
+
+public class SCOPE_OF_APP_Summary_RowMapper implements RowMapper<SCOPE_OF_APP_Summary_Entity> {
+
+    @Override
+    public SCOPE_OF_APP_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+        SCOPE_OF_APP_Summary_Entity obj = new SCOPE_OF_APP_Summary_Entity();
+
+// =========================
+// R6
+// =========================
+obj.setR6_qua_name(rs.getString("r6_qua_name"));
+obj.setR6_product(rs.getString("r6_product"));
+obj.setR6_bank_name(rs.getString("r6_bank_name"));
+
+// =========================
+// R7
+// =========================
+obj.setR7_product(rs.getString("r7_product"));
+obj.setR7_amt(rs.getBigDecimal("r7_amt"));
+
+// =========================
+// R8
+// =========================
+obj.setR8_product(rs.getString("r8_product"));
+obj.setR8_amt(rs.getBigDecimal("r8_amt"));
+
+// =========================
+// R9
+// =========================
+obj.setR9_qua_name(rs.getString("r9_qua_name"));
+obj.setR9_product(rs.getString("r9_product"));
+obj.setR9_amt(rs.getBigDecimal("r9_amt"));
+
+// =========================
+// R10
+// =========================
+obj.setR10_product(rs.getString("r10_product"));
+obj.setR10_amt(rs.getBigDecimal("r10_amt"));
+
+        // =========================
+        // COMMON FIELDS
+        // =========================
+        obj.setReport_date(rs.getDate("report_date"));
+        obj.setReport_version(rs.getBigDecimal("report_version"));
+        obj.setReport_frequency(rs.getString("report_frequency"));
+        obj.setReport_code(rs.getString("report_code"));
+        obj.setReport_desc(rs.getString("report_desc"));
+
+        obj.setEntity_flg(rs.getString("entity_flg"));
+        obj.setModify_flg(rs.getString("modify_flg"));
+        obj.setDel_flg(rs.getString("del_flg"));
+
+
+        return obj;
+    }
+}
+
+
+public class SCOPE_OF_APP_Summary_Entity {
+	
+	  private String	r6_qua_name;
+	  private String	r6_product;
+	  private String	r6_bank_name  ;
+	  private String	r7_product;
+	  private BigDecimal	r7_amt ;
+	  private String	r8_product;
+	  private BigDecimal	r8_amt ;
+	  private String	r9_qua_name;
+	  private String	r9_product;
+	  private BigDecimal	r9_amt ;
+	  private String	r10_product;
+	  private BigDecimal	r10_amt ;
+
+	
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Id
+	
+	
+	private Date	report_date;
+	private BigDecimal	report_version;
+	private String	report_frequency;
+	private String	report_code;
+	private String	report_desc;
+	private String	entity_flg;
+	private String	modify_flg;
+	private String	del_flg;
+	public String getR6_qua_name() {
+		return r6_qua_name;
+	}
+	public void setR6_qua_name(String r6_qua_name) {
+		this.r6_qua_name = r6_qua_name;
+	}
+	public String getR6_product() {
+		return r6_product;
+	}
+	public void setR6_product(String r6_product) {
+		this.r6_product = r6_product;
+	}
+	public String getR6_bank_name() {
+		return r6_bank_name;
+	}
+	public void setR6_bank_name(String r6_bank_name) {
+		this.r6_bank_name = r6_bank_name;
+	}
+	public String getR7_product() {
+		return r7_product;
+	}
+	public void setR7_product(String r7_product) {
+		this.r7_product = r7_product;
+	}
+	public BigDecimal getR7_amt() {
+		return r7_amt;
+	}
+	public void setR7_amt(BigDecimal r7_amt) {
+		this.r7_amt = r7_amt;
+	}
+	public String getR8_product() {
+		return r8_product;
+	}
+	public void setR8_product(String r8_product) {
+		this.r8_product = r8_product;
+	}
+	public BigDecimal getR8_amt() {
+		return r8_amt;
+	}
+	public void setR8_amt(BigDecimal r8_amt) {
+		this.r8_amt = r8_amt;
+	}
+	public String getR9_qua_name() {
+		return r9_qua_name;
+	}
+	public void setR9_qua_name(String r9_qua_name) {
+		this.r9_qua_name = r9_qua_name;
+	}
+	public String getR9_product() {
+		return r9_product;
+	}
+	public void setR9_product(String r9_product) {
+		this.r9_product = r9_product;
+	}
+	public BigDecimal getR9_amt() {
+		return r9_amt;
+	}
+	public void setR9_amt(BigDecimal r9_amt) {
+		this.r9_amt = r9_amt;
+	}
+	public String getR10_product() {
+		return r10_product;
+	}
+	public void setR10_product(String r10_product) {
+		this.r10_product = r10_product;
+	}
+	public BigDecimal getR10_amt() {
+		return r10_amt;
+	}
+	public void setR10_amt(BigDecimal r10_amt) {
+		this.r10_amt = r10_amt;
+	}
+	public Date getReport_date() {
+		return report_date;
+	}
+	public void setReport_date(Date report_date) {
+		this.report_date = report_date;
+	}
+	public BigDecimal getReport_version() {
+		return report_version;
+	}
+	public void setReport_version(BigDecimal report_version) {
+		this.report_version = report_version;
+	}
+	public String getReport_frequency() {
+		return report_frequency;
+	}
+	public void setReport_frequency(String report_frequency) {
+		this.report_frequency = report_frequency;
+	}
+	public String getReport_code() {
+		return report_code;
+	}
+	public void setReport_code(String report_code) {
+		this.report_code = report_code;
+	}
+	public String getReport_desc() {
+		return report_desc;
+	}
+	public void setReport_desc(String report_desc) {
+		this.report_desc = report_desc;
+	}
+	public String getEntity_flg() {
+		return entity_flg;
+	}
+	public void setEntity_flg(String entity_flg) {
+		this.entity_flg = entity_flg;
+	}
+	public String getModify_flg() {
+		return modify_flg;
+	}
+	public void setModify_flg(String modify_flg) {
+		this.modify_flg = modify_flg;
+	}
+	public String getDel_flg() {
+		return del_flg;
+	}
+	public void setDel_flg(String del_flg) {
+		this.del_flg = del_flg;
+	}
+	
+}
+
+		
+
+// =====================================================
+// ARCHIVAL  SUMAMRY ENTITY 
+// =====================================================
+
+
+public class SCOPE_OF_APP_Archival_Summary_RowMapper
+        implements RowMapper<SCOPE_OF_APP_Archival_Summary_Entity> {
+
+    @Override
+    public SCOPE_OF_APP_Archival_Summary_Entity mapRow(ResultSet rs, int rowNum)
+            throws SQLException {
+
+        SCOPE_OF_APP_Archival_Summary_Entity obj = new SCOPE_OF_APP_Archival_Summary_Entity();
+
+      // =========================
+// R6
+// =========================
+obj.setR6_qua_name(rs.getString("r6_qua_name"));
+obj.setR6_product(rs.getString("r6_product"));
+obj.setR6_bank_name(rs.getString("r6_bank_name"));
+
+// =========================
+// R7
+// =========================
+obj.setR7_product(rs.getString("r7_product"));
+obj.setR7_amt(rs.getBigDecimal("r7_amt"));
+
+// =========================
+// R8
+// =========================
+obj.setR8_product(rs.getString("r8_product"));
+obj.setR8_amt(rs.getBigDecimal("r8_amt"));
+
+// =========================
+// R9
+// =========================
+obj.setR9_qua_name(rs.getString("r9_qua_name"));
+obj.setR9_product(rs.getString("r9_product"));
+obj.setR9_amt(rs.getBigDecimal("r9_amt"));
+
+// =========================
+// R10
+// =========================
+obj.setR10_product(rs.getString("r10_product"));
+obj.setR10_amt(rs.getBigDecimal("r10_amt"));
+
+        // =========================
+        // COMMON FIELDS
+        // =========================
+        obj.setReport_date(rs.getDate("report_date"));
+        obj.setReport_version(rs.getBigDecimal("report_version"));
+        obj.setReportResubDate(rs.getDate("report_resubdate"));
+
+        obj.setReport_frequency(rs.getString("report_frequency"));
+        obj.setReport_code(rs.getString("report_code"));
+        obj.setReport_desc(rs.getString("report_desc"));
+
+        obj.setEntity_flg(rs.getString("entity_flg"));
+        obj.setModify_flg(rs.getString("modify_flg"));
+        obj.setDel_flg(rs.getString("del_flg"));
+
+        return obj;
+    }
+}
+
+
+public class SCOPE_OF_APP_Archival_Summary_Entity {
+	
+	
+
+		
+	
+	 private String	r6_qua_name;
+	  private String	r6_product;
+	  private String	r6_bank_name  ;
+	  private String	r7_product;
+	  private BigDecimal	r7_amt ;
+	  private String	r8_product;
+	  private BigDecimal	r8_amt ;
+	  private String	r9_qua_name;
+	  private String	r9_product;
+	  private BigDecimal	r9_amt ;
+	  private String	r10_product;
+	  private BigDecimal	r10_amt ;
+	               
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Id
+		
+	private Date	report_date;
+	 @Column(name = "REPORT_VERSION")
+	 @Id
+	private BigDecimal	report_version;
+	@Column(name = "REPORT_RESUBDATE")
+
+    private Date reportResubDate;
+	private String	report_frequency;
+	private String	report_code;
+	private String	report_desc;
+	private String	entity_flg;
+	private String	modify_flg;
+	private String	del_flg;
+	
+	public String getR6_qua_name() {
+		return r6_qua_name;
+	}
+	public void setR6_qua_name(String r6_qua_name) {
+		this.r6_qua_name = r6_qua_name;
+	}
+	public String getR6_product() {
+		return r6_product;
+	}
+	public void setR6_product(String r6_product) {
+		this.r6_product = r6_product;
+	}
+	public String getR6_bank_name() {
+		return r6_bank_name;
+	}
+	public void setR6_bank_name(String r6_bank_name) {
+		this.r6_bank_name = r6_bank_name;
+	}
+	public String getR7_product() {
+		return r7_product;
+	}
+	public void setR7_product(String r7_product) {
+		this.r7_product = r7_product;
+	}
+	public BigDecimal getR7_amt() {
+		return r7_amt;
+	}
+	public void setR7_amt(BigDecimal r7_amt) {
+		this.r7_amt = r7_amt;
+	}
+	public String getR8_product() {
+		return r8_product;
+	}
+	public void setR8_product(String r8_product) {
+		this.r8_product = r8_product;
+	}
+	public BigDecimal getR8_amt() {
+		return r8_amt;
+	}
+	public void setR8_amt(BigDecimal r8_amt) {
+		this.r8_amt = r8_amt;
+	}
+	public String getR9_qua_name() {
+		return r9_qua_name;
+	}
+	public void setR9_qua_name(String r9_qua_name) {
+		this.r9_qua_name = r9_qua_name;
+	}
+	public String getR9_product() {
+		return r9_product;
+	}
+	public void setR9_product(String r9_product) {
+		this.r9_product = r9_product;
+	}
+	public BigDecimal getR9_amt() {
+		return r9_amt;
+	}
+	public void setR9_amt(BigDecimal r9_amt) {
+		this.r9_amt = r9_amt;
+	}
+	public String getR10_product() {
+		return r10_product;
+	}
+	public void setR10_product(String r10_product) {
+		this.r10_product = r10_product;
+	}
+	public BigDecimal getR10_amt() {
+		return r10_amt;
+	}
+	public void setR10_amt(BigDecimal r10_amt) {
+		this.r10_amt = r10_amt;
+	}
+	
+	
+	
+	public Date getReport_date() {
+		return report_date;
+	}
+	public void setReport_date(Date report_date) {
+		this.report_date = report_date;
+	}
+	public BigDecimal getReport_version() {
+		return report_version;
+	}
+	public void setReport_version(BigDecimal report_version) {
+		this.report_version = report_version;
+	}
+	public String getReport_frequency() {
+		return report_frequency;
+	}
+	public void setReport_frequency(String report_frequency) {
+		this.report_frequency = report_frequency;
+	}
+	public String getReport_code() {
+		return report_code;
+	}
+	public void setReport_code(String report_code) {
+		this.report_code = report_code;
+	}
+	public String getReport_desc() {
+		return report_desc;
+	}
+	public void setReport_desc(String report_desc) {
+		this.report_desc = report_desc;
+	}
+	public String getEntity_flg() {
+		return entity_flg;
+	}
+	public void setEntity_flg(String entity_flg) {
+		this.entity_flg = entity_flg;
+	}
+	public String getModify_flg() {
+		return modify_flg;
+	}
+	public void setModify_flg(String modify_flg) {
+		this.modify_flg = modify_flg;
+	}
+	public String getDel_flg() {
+		return del_flg;
+	}
+	public void setDel_flg(String del_flg) {
+		this.del_flg = del_flg;
+	}
+	
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
+	}
+	
+}
+	
+
+
+// =====================================================
+// DETAIL ENTITY  SCOPE_OF_APP
+// =====================================================	
+
+public class SCOPE_OF_APP_Detail_RowMapper implements RowMapper<SCOPE_OF_APP_Detail_Entity> {
+
+    @Override
+    public SCOPE_OF_APP_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+        SCOPE_OF_APP_Detail_Entity obj = new SCOPE_OF_APP_Detail_Entity();
+
+        // =========================
+        // BASIC DETAILS
+        // =========================
+        obj.setCustId(rs.getString("CUST_ID"));
+        obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
+        obj.setAcctName(rs.getString("ACCT_NAME"));
+        obj.setDataType(rs.getString("DATA_TYPE"));
+
+        // =========================
+        // REPORT DETAILS
+        // =========================
+        obj.setReportName(rs.getString("REPORT_NAME"));
+        obj.setReportLabel(rs.getString("REPORT_LABEL"));
+        obj.setReportAddlCriteria_1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+        obj.setReportRemarks(rs.getString("REPORT_REMARKS"));
+        obj.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
+        obj.setDataEntryVersion(rs.getString("DATA_ENTRY_VERSION"));
+
+        // =========================
+        // AMOUNT
+        // =========================
+        obj.setAcctBalanceInpula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+
+        // =========================
+        // DATE FIELDS
+        // =========================
+        obj.setReportDate(rs.getDate("REPORT_DATE"));
+        obj.setCreateTime(rs.getDate("CREATE_TIME"));
+        obj.setModifyTime(rs.getDate("MODIFY_TIME"));
+        obj.setVerifyTime(rs.getDate("VERIFY_TIME"));
+
+        // =========================
+        // USER INFO
+        // =========================
+        obj.setCreateUser(rs.getString("CREATE_USER"));
+        obj.setModifyUser(rs.getString("MODIFY_USER"));
+        obj.setVerifyUser(rs.getString("VERIFY_USER"));
+
+        // =========================
+        // FLAGS (char)
+        // =========================
+        obj.setEntityFlg(rs.getString("ENTITY_FLG") != null ? rs.getString("ENTITY_FLG").charAt(0) : ' ');
+        obj.setModifyFlg(rs.getString("MODIFY_FLG") != null ? rs.getString("MODIFY_FLG").charAt(0) : ' ');
+        obj.setDelFlg(rs.getString("DEL_FLG") != null ? rs.getString("DEL_FLG").charAt(0) : ' ');
+
+        return obj;
+    }
+}
+
+public class SCOPE_OF_APP_Detail_Entity {
+
+   
+	
+	 @Column(name = "CUST_ID")
+  private String custId;
+	 @Id
+  @Column(name = "ACCT_NUMBER")
+  private String acctNumber;
+
+  @Column(name = "ACCT_NAME")
+  private String acctName;
+
+
+  @Column(name = "DATA_TYPE")
+  private String dataType;
+
+  @Column(name = "REPORT_NAME")
+  private String reportName;
+  
+  @Column(name = "REPORT_LABEL")
+  private String reportLabel;
+  
+  @Column(name = "REPORT_ADDL_CRITERIA_1")
+  private String reportAddlCriteria_1;
+  
+ 
+  
+  @Column(name = "REPORT_REMARKS")
+  private String reportRemarks;
+  
+
+
+  @Column(name = "MODIFICATION_REMARKS")
+  private String modificationRemarks;
+
+  @Column(name = "DATA_ENTRY_VERSION")
+  private String dataEntryVersion;
+
+  @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
+  private BigDecimal acctBalanceInpula;
+
+
+  @Column(name = "REPORT_DATE")
+  @DateTimeFormat(pattern = "dd-MM-yyyy")
+  private Date reportDate;
+
+
+  @Column(name = "CREATE_USER")
+  private String createUser;
+
+  @Column(name = "CREATE_TIME")
+  @DateTimeFormat(pattern = "dd-MM-yyyy")
+  private Date createTime;
+
+  @Column(name = "MODIFY_USER")
+  private String modifyUser;
+
+
+  @Column(name = "MODIFY_TIME")
+  @DateTimeFormat(pattern = "dd-MM-yyyy")
+  private Date modifyTime;
+
+  @Column(name = "VERIFY_USER")
+  private String verifyUser;
+
+
+  @Column(name = "VERIFY_TIME")
+  @DateTimeFormat(pattern = "dd-MM-yyyy")
+  private Date verifyTime;
+
+  @Column(name = "ENTITY_FLG")
+  private char entityFlg;
+
+  @Column(name = "MODIFY_FLG")
+  private char modifyFlg;
+
+  @Column(name = "DEL_FLG")
+  private char delFlg;
+  
+  
+  public String getCustId() {
+	return custId;
+}
+
+public void setCustId(String custId) {
+	this.custId = custId;
+}
+
+public String getAcctNumber() {
+	return acctNumber;
+}
+
+public void setAcctNumber(String acctNumber) {
+	this.acctNumber = acctNumber;
+}
+
+public String getAcctName() {
+	return acctName;
+}
+
+public void setAcctName(String acctName) {
+	this.acctName = acctName;
+}
+
+public String getDataType() {
+	return dataType;
+}
+
+public void setDataType(String dataType) {
+	this.dataType = dataType;
+}
+
+public String getReportName() {
+	return reportName;
+}
+
+public void setReportName(String reportName) {
+	this.reportName = reportName;
+}
+
+public String getReportLabel() {
+	return reportLabel;
+}
+
+public void setReportLabel(String reportLabel) {
+	this.reportLabel = reportLabel;
+}
+
+public String getReportAddlCriteria_1() {
+	return reportAddlCriteria_1;
+}
+
+public void setReportAddlCriteria_1(String reportAddlCriteria_1) {
+	this.reportAddlCriteria_1 = reportAddlCriteria_1;
+}
+
+public String getReportRemarks() {
+	return reportRemarks;
+}
+
+public void setReportRemarks(String reportRemarks) {
+	this.reportRemarks = reportRemarks;
+}
+
+public String getModificationRemarks() {
+	return modificationRemarks;
+}
+
+public void setModificationRemarks(String modificationRemarks) {
+	this.modificationRemarks = modificationRemarks;
+}
+
+public String getDataEntryVersion() {
+	return dataEntryVersion;
+}
+
+public void setDataEntryVersion(String dataEntryVersion) {
+	this.dataEntryVersion = dataEntryVersion;
+}
+
+public BigDecimal getAcctBalanceInpula() {
+	return acctBalanceInpula;
+}
+
+public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
+	this.acctBalanceInpula = acctBalanceInpula;
+}
+
+public Date getReportDate() {
+	return reportDate;
+}
+
+public void setReportDate(Date reportDate) {
+	this.reportDate = reportDate;
+}
+
+public String getCreateUser() {
+	return createUser;
+}
+
+public void setCreateUser(String createUser) {
+	this.createUser = createUser;
+}
+
+public Date getCreateTime() {
+	return createTime;
+}
+
+public void setCreateTime(Date createTime) {
+	this.createTime = createTime;
+}
+
+public String getModifyUser() {
+	return modifyUser;
+}
+
+public void setModifyUser(String modifyUser) {
+	this.modifyUser = modifyUser;
+}
+
+public Date getModifyTime() {
+	return modifyTime;
+}
+
+public void setModifyTime(Date modifyTime) {
+	this.modifyTime = modifyTime;
+}
+
+public String getVerifyUser() {
+	return verifyUser;
+}
+
+public void setVerifyUser(String verifyUser) {
+	this.verifyUser = verifyUser;
+}
+
+public Date getVerifyTime() {
+	return verifyTime;
+}
+
+public void setVerifyTime(Date verifyTime) {
+	this.verifyTime = verifyTime;
+}
+
+public char getEntityFlg() {
+	return entityFlg;
+}
+
+public void setEntityFlg(char entityFlg) {
+	this.entityFlg = entityFlg;
+}
+
+public char getModifyFlg() {
+	return modifyFlg;
+}
+
+public void setModifyFlg(char modifyFlg) {
+	this.modifyFlg = modifyFlg;
+}
+
+public char getDelFlg() {
+	return delFlg;
+}
+
+public void setDelFlg(char delFlg) {
+	this.delFlg = delFlg;
+}
+
+
+}
+
+			  
+
+// =====================================================
+// ARCHIVAL  DETAIL ENTITY 
+// =====================================================
+
+
+public class SCOPE_OF_APP_Archival_Detail_RowMapper 
+        implements RowMapper<SCOPE_OF_APP_Archival_Detail_Entity> {
+
+    @Override
+    public SCOPE_OF_APP_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+        SCOPE_OF_APP_Archival_Detail_Entity obj = new SCOPE_OF_APP_Archival_Detail_Entity();
+
+        // =========================
+        // BASIC DETAILS
+        // =========================
+        obj.setCustId(rs.getString("CUST_ID"));
+        obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
+        obj.setAcctName(rs.getString("ACCT_NAME"));
+        obj.setDataType(rs.getString("DATA_TYPE"));
+
+        // =========================
+        // REPORT DETAILS
+        // =========================
+        obj.setReportName(rs.getString("REPORT_NAME"));
+        obj.setReportLabel(rs.getString("REPORT_LABEL"));
+        obj.setReportAddlCriteria_1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+        obj.setReportRemarks(rs.getString("REPORT_REMARKS"));
+        obj.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
+        obj.setDataEntryVersion(rs.getString("DATA_ENTRY_VERSION"));
+
+        // =========================
+        // AMOUNT
+        // =========================
+        obj.setAcctBalanceInpula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+
+        // =========================
+        // DATE FIELDS
+        // =========================
+        obj.setReportDate(rs.getDate("REPORT_DATE"));
+        obj.setCreateTime(rs.getDate("CREATE_TIME"));
+        obj.setModifyTime(rs.getDate("MODIFY_TIME"));
+        obj.setVerifyTime(rs.getDate("VERIFY_TIME"));
+
+        // =========================
+        // USER INFO
+        // =========================
+        obj.setCreateUser(rs.getString("CREATE_USER"));
+        obj.setModifyUser(rs.getString("MODIFY_USER"));
+        obj.setVerifyUser(rs.getString("VERIFY_USER"));
+
+        // =========================
+        // FLAGS (char)
+        // =========================
+        obj.setEntityFlg(rs.getString("ENTITY_FLG") != null ? rs.getString("ENTITY_FLG").charAt(0) : ' ');
+        obj.setModifyFlg(rs.getString("MODIFY_FLG") != null ? rs.getString("MODIFY_FLG").charAt(0) : ' ');
+        obj.setDelFlg(rs.getString("DEL_FLG") != null ? rs.getString("DEL_FLG").charAt(0) : ' ');
+
+        return obj;
+    }
+}
+
+public class SCOPE_OF_APP_Archival_Detail_Entity {
+
+   
+	
+	 @Column(name = "CUST_ID")
+  private String custId;
+	 @Id
+  @Column(name = "ACCT_NUMBER")
+  private String acctNumber;
+
+  @Column(name = "ACCT_NAME")
+  private String acctName;
+
+
+  @Column(name = "DATA_TYPE")
+  private String dataType;
+
+  @Column(name = "REPORT_NAME")
+  private String reportName;
+  
+  @Column(name = "REPORT_LABEL")
+  private String reportLabel;
+  
+  @Column(name = "REPORT_ADDL_CRITERIA_1")
+  private String reportAddlCriteria_1;
+  
+ 
+  
+  @Column(name = "REPORT_REMARKS")
+  private String reportRemarks;
+  
+
+
+  @Column(name = "MODIFICATION_REMARKS")
+  private String modificationRemarks;
+
+  @Column(name = "DATA_ENTRY_VERSION")
+  private String dataEntryVersion;
+
+  @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
+  private BigDecimal acctBalanceInpula;
+
+
+  @Column(name = "REPORT_DATE")
+  @DateTimeFormat(pattern = "dd-MM-yyyy")
+  private Date reportDate;
+
+
+  @Column(name = "CREATE_USER")
+  private String createUser;
+
+  @Column(name = "CREATE_TIME")
+  @DateTimeFormat(pattern = "dd-MM-yyyy")
+  private Date createTime;
+
+  @Column(name = "MODIFY_USER")
+  private String modifyUser;
+
+
+  @Column(name = "MODIFY_TIME")
+  @DateTimeFormat(pattern = "dd-MM-yyyy")
+  private Date modifyTime;
+
+  @Column(name = "VERIFY_USER")
+  private String verifyUser;
+
+
+  @Column(name = "VERIFY_TIME")
+  @DateTimeFormat(pattern = "dd-MM-yyyy")
+  private Date verifyTime;
+
+  @Column(name = "ENTITY_FLG")
+  private char entityFlg;
+
+  @Column(name = "MODIFY_FLG")
+  private char modifyFlg;
+
+  @Column(name = "DEL_FLG")
+  private char delFlg;
+  
+  public String getCustId() {
+	return custId;
+}
+
+public void setCustId(String custId) {
+	this.custId = custId;
+}
+
+public String getAcctNumber() {
+	return acctNumber;
+}
+
+public void setAcctNumber(String acctNumber) {
+	this.acctNumber = acctNumber;
+}
+
+public String getAcctName() {
+	return acctName;
+}
+
+public void setAcctName(String acctName) {
+	this.acctName = acctName;
+}
+
+public String getDataType() {
+	return dataType;
+}
+
+public void setDataType(String dataType) {
+	this.dataType = dataType;
+}
+
+public String getReportName() {
+	return reportName;
+}
+
+public void setReportName(String reportName) {
+	this.reportName = reportName;
+}
+
+public String getReportLabel() {
+	return reportLabel;
+}
+
+public void setReportLabel(String reportLabel) {
+	this.reportLabel = reportLabel;
+}
+
+public String getReportAddlCriteria_1() {
+	return reportAddlCriteria_1;
+}
+
+public void setReportAddlCriteria_1(String reportAddlCriteria_1) {
+	this.reportAddlCriteria_1 = reportAddlCriteria_1;
+}
+
+public String getReportRemarks() {
+	return reportRemarks;
+}
+
+public void setReportRemarks(String reportRemarks) {
+	this.reportRemarks = reportRemarks;
+}
+
+public String getModificationRemarks() {
+	return modificationRemarks;
+}
+
+public void setModificationRemarks(String modificationRemarks) {
+	this.modificationRemarks = modificationRemarks;
+}
+
+public String getDataEntryVersion() {
+	return dataEntryVersion;
+}
+
+public void setDataEntryVersion(String dataEntryVersion) {
+	this.dataEntryVersion = dataEntryVersion;
+}
+
+public BigDecimal getAcctBalanceInpula() {
+	return acctBalanceInpula;
+}
+
+public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
+	this.acctBalanceInpula = acctBalanceInpula;
+}
+
+public Date getReportDate() {
+	return reportDate;
+}
+
+public void setReportDate(Date reportDate) {
+	this.reportDate = reportDate;
+}
+
+public String getCreateUser() {
+	return createUser;
+}
+
+public void setCreateUser(String createUser) {
+	this.createUser = createUser;
+}
+
+public Date getCreateTime() {
+	return createTime;
+}
+
+public void setCreateTime(Date createTime) {
+	this.createTime = createTime;
+}
+
+public String getModifyUser() {
+	return modifyUser;
+}
+
+public void setModifyUser(String modifyUser) {
+	this.modifyUser = modifyUser;
+}
+
+public Date getModifyTime() {
+	return modifyTime;
+}
+
+public void setModifyTime(Date modifyTime) {
+	this.modifyTime = modifyTime;
+}
+
+public String getVerifyUser() {
+	return verifyUser;
+}
+
+public void setVerifyUser(String verifyUser) {
+	this.verifyUser = verifyUser;
+}
+
+public Date getVerifyTime() {
+	return verifyTime;
+}
+
+public void setVerifyTime(Date verifyTime) {
+	this.verifyTime = verifyTime;
+}
+
+public char getEntityFlg() {
+	return entityFlg;
+}
+
+public void setEntityFlg(char entityFlg) {
+	this.entityFlg = entityFlg;
+}
+
+public char getModifyFlg() {
+	return modifyFlg;
+}
+
+public void setModifyFlg(char modifyFlg) {
+	this.modifyFlg = modifyFlg;
+}
+
+public char getDelFlg() {
+	return delFlg;
+}
+
+public void setDelFlg(char delFlg) {
+	this.delFlg = delFlg;
+}
+
+
+}
+
+
+//=====================================================
+// MODEL AND VIEW METHOD summary SCOPE_OF_APP
+//=====================================================
+
+ SimpleDateFormat dateformat =
+         new SimpleDateFormat("dd-MMM-yyyy");
+		 
+		 
+		 		 	 public ModelAndView getSCOPE_OF_APPView(
+
+	        String reportId,
+	        String fromdate,
+	        String todate,
+	        String currency,
+	        String dtltype,
+	        Pageable pageable,
+	        String type,
+	        BigDecimal version) {
+
+	    ModelAndView mv = new ModelAndView();
+
+	    System.out.println("SCOPE_OF_APP View Called");
+	    System.out.println("Type = " + type);
+	    System.out.println("Version = " + version);
+
+	    // =====================================================
+	    // ARCHIVAL MODE
+	    // =====================================================
+
+	    if ("ARCHIVAL".equals(type) && version != null) {
+
+	        List<SCOPE_OF_APP_Archival_Summary_Entity> T1Master = new ArrayList<>();
+	    
+
+	        try {
+	            Date dt = dateformat.parse(todate);
+	            
+	        
+	            // ============================
+	            // SUMMARY ARCHIVAL
+	            // ============================
+	            T1Master = getDataByDateListArchival(dt, version);
+
+	            System.out.println("Archival Summary size = " + T1Master.size());
+
+	            
+
+	            mv.addObject("report_date", dateformat.format(dt));
+
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+
+	        mv.addObject("reportsummary", T1Master);
+	       
+	    }
+	    // =====================================================
+	    // NORMAL MODE
+	    // =====================================================
+
+	    else {
+
+	        List<SCOPE_OF_APP_Summary_Entity> T1Master = new ArrayList<>();
+	       
+
+	        try {
+	            Date dt = dateformat.parse(todate);
+
+	            // SUMMARY NORMAL
+	            T1Master = getSummaryDataByDate(dt);
+
+	            System.out.println("Summary size = " + T1Master.size());
+
+
+	            mv.addObject("report_date", dateformat.format(dt));
+
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+
+	        mv.addObject("reportsummary", T1Master);
+	      
+	    }
+
+	    // =====================================================
+	    // VIEW SETTINGS
+	    // =====================================================
+
+	    mv.setViewName("BRRS/SCOPE_OF_APP");
+	    mv.addObject("displaymode", "summary");
+	   
+
+	    System.out.println("View Loaded: " + mv.getViewName());
+
+	    return mv;
+	}
+	
+	
+//=====================================================
+// MODEL AND VIEW METHOD detail
+//=====================================================
+ 
+ 
+ public ModelAndView getSCOPE_OF_APPcurrentDtl(
+	        String reportId,
+	        String fromdate,
+	        String todate,
+	        String currency,
+	        String dtltype,
+	        Pageable pageable,
+	        String filter,
+	        String type,
+	        String version) {
+
+	    ModelAndView mv = new ModelAndView();
+
+	    try {
+
+	        Date parsedDate = null;
+
+	        if (todate != null && !todate.isEmpty()) {
+	            parsedDate = dateformat.parse(todate);
+	        }
+
+	        String reportLabel = null;
+	        String reportAddlCriteria1 = null;
+
+	        if (filter != null && filter.contains(",")) {
+	            String[] parts = filter.split(",");
+	            if (parts.length >= 2) {
+	                reportLabel = parts[0];
+	                reportAddlCriteria1 = parts[1];
+	            }
+	        }
+
+	        // =====================================================
+	        // ARCHIVAL MODE
+	        // =====================================================
+	        if ("ARCHIVAL".equals(type) && version != null) {
+
+	            System.out.println("ARCHIVAL DETAIL MODE");
+
+	            List<SCOPE_OF_APP_Archival_Detail_Entity> archivalDetailList;
+
+	            if (reportLabel != null && reportAddlCriteria1 != null) {
+
+	                archivalDetailList =
+	                      GetArchivalDataByRowIdAndColumnId(
+	                                reportLabel,
+	                                reportAddlCriteria1,
+	                                parsedDate,
+	                                version
+	                        );
+
+	            } else {
+
+	                archivalDetailList =
+	                		getarchivaldetaildatabydateList(
+	                                parsedDate,
+	                                version
+	                        );
+	            }
+
+	            mv.addObject("reportdetails", archivalDetailList);
+	            mv.addObject("reportmaster12", archivalDetailList);
+
+	            System.out.println("ARCHIVAL DETAIL COUNT: " + archivalDetailList.size());
+
+	        }
+
+	        // =====================================================
+	        // CURRENT MODE
+	        // =====================================================
+	        else {
+
+	            List<SCOPE_OF_APP_Detail_Entity> currentDetailList;
+
+	            if (reportLabel != null && reportAddlCriteria1 != null) {
+
+	                currentDetailList =
+	                       getdetailDataByRowIdAndColumnId(
+	                                reportLabel,
+	                                reportAddlCriteria1,
+	                                parsedDate
+	                        );
+
+	            } else {
+
+	                currentDetailList =
+	                       getDetaildatabydateList(parsedDate);
+
+	            }
+
+	            mv.addObject("reportdetails", currentDetailList);
+	            mv.addObject("reportmaster12", currentDetailList);
+
+	            System.out.println("CURRENT DETAIL COUNT: " + currentDetailList.size());
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        mv.addObject("errorMessage", e.getMessage());
+	    }
+
+	    mv.setViewName("BRRS/SCOPE_OF_APP");
+	    mv.addObject("displaymode", "Details");
+	    mv.addObject("menu", reportId);
+	    mv.addObject("currency", currency);
+	    mv.addObject("reportId", reportId);
+
+	    return mv;
+	}
+	
+//=====================================================
+// MODEL AND VIEW METHOD ARCHIVAL VIEW
+//=====================================================
+
+public List<Object[]> getSCOPE_OF_APPArchival() {
+			List<Object[]> archivalList = new ArrayList<>();
+			
 
 			try {
-				Date dt = dateformat.parse(todate);
+				
+				List<SCOPE_OF_APP_Archival_Summary_Entity> repoData =
+						getarchivaldatabydateListWithVersion();
 
-				T1Master = SCOPE_OF_APP_Archival_Summary_Repo.getdatabydateListarchival(dt, version);
+				if (repoData != null && !repoData.isEmpty()) {
+					for (SCOPE_OF_APP_Archival_Summary_Entity entity : repoData) {
+						Object[] row = new Object[] {
+								entity.getReport_date(), 
+								entity.getReport_version(), 
+								 entity.getReportResubDate()
+						};
+						archivalList.add(row);
+					}
 
-				System.out.println("T1Master size = " + T1Master.size());
+					System.out.println("Fetched " + archivalList.size() + " archival records");
+					SCOPE_OF_APP_Archival_Summary_Entity first = repoData.get(0);
+					System.out.println("Latest archival version: " + first.getReport_version());
+				} else {
+					System.out.println("No archival data found.");
+				}
 
-			} catch (ParseException e) {
+			} catch (Exception e) {
+				System.err.println("Error fetching  SCOPE_OF_APP  Archival data: " + e.getMessage());
 				e.printStackTrace();
 			}
 
-			mv.addObject("reportsummary", T1Master);
-
-		} else {
-
-			List<SCOPE_OF_APP_Summary_Entity> T1Master = new ArrayList<SCOPE_OF_APP_Summary_Entity>();
-
-			try {
-				Date d1 = dateformat.parse(todate);
-
-				T1Master = SCOPE_OF_APP_summary_repo.getdatabydateList(dateformat.parse(todate));
-
-				System.out.println("T1Master size " + T1Master.size());
-				mv.addObject("report_date", dateformat.format(d1));
-
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-			mv.addObject("reportsummary", T1Master);
-
+			return archivalList;
 		}
-
-		mv.setViewName("BRRS/SCOPE_OF_APP");
-
-		mv.addObject("displaymode", "summary");
-
-		System.out.println("scv" + mv.getViewName());
-
-		return mv;
-
-	}
-
-	public ModelAndView getSCOPE_OF_APPcurrentDtl(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String filter, String type, String version) {
-
-		int pageSize = pageable != null ? pageable.getPageSize() : 10;
-		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
-		int totalPages = 0;
-
-		ModelAndView mv = new ModelAndView();
-
-		// Session hs = sessionFactory.getCurrentSession();
-
-		try {
-			Date parsedDate = null;
-
-			if (todate != null && !todate.isEmpty()) {
-				parsedDate = dateformat.parse(todate);
-			}
-
-			String reportLable = null;
-			String reportAddlCriteria_1 = null;
-			// ✅ Split filter string into rowId & columnId
-			if (filter != null && filter.contains(",")) {
-				String[] parts = filter.split(",");
-				if (parts.length >= 2) {
-					reportLable = parts[0];
-					reportAddlCriteria_1 = parts[1];
-				}
-			}
-
-			System.out.println(type);
-			if ("ARCHIVAL".equals(type) && version != null) {
-				System.out.println(type);
-				// 🔹 Archival branch
-				List<SCOPE_OF_APP_Archival_Detail_Entity> T1Dt1;
-				if (reportLable != null && reportAddlCriteria_1 != null) {
-					T1Dt1 = SCOPE_OF_APP_Archival_Detail_Repo.GetDataByRowIdAndColumnId(reportLable,
-							reportAddlCriteria_1, parsedDate, version);
-				} else {
-					T1Dt1 = SCOPE_OF_APP_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
-				}
-
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
-
-			} else {
-				// 🔹 Current branch
-				List<SCOPE_OF_APP_Detail_Entity> T1Dt1;
-
-				if (reportLable != null && reportAddlCriteria_1 != null) {
-					T1Dt1 = SCOPE_OF_APP_detail_repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1,
-							parsedDate);
-				} else {
-					T1Dt1 = SCOPE_OF_APP_detail_repo.getdatabydateList(parsedDate);
-					totalPages = SCOPE_OF_APP_detail_repo.getdatacount(parsedDate);
-					mv.addObject("pagination", "YES");
-
-				}
-
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-
-				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
-			}
-		} catch (ParseException e) {
-			e.printStackTrace();
-			mv.addObject("errorMessage", "Invalid date format: " + todate);
-		} catch (Exception e) {
-			e.printStackTrace();
-			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
-		}
-
-		mv.setViewName("BRRS/SCOPE_OF_APP");
-		mv.addObject("displaymode", "Details");
-		mv.addObject("currentPage", currentPage);
-		System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
-		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
-		mv.addObject("reportsflag", "reportsflag");
-		mv.addObject("menu", reportId);
-		return mv;
-	}
-
-	public byte[] getSCOPE_OF_APPExcel(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, BigDecimal version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.");
-
-		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null ) {
-			logger.info("Service: Generating ARCHIVAL report for version {}", version);
-			return getExcelSCOPE_OF_APPARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
-		}
-
-		// Fetch data
-
-		List<SCOPE_OF_APP_Summary_Entity> dataList = SCOPE_OF_APP_summary_repo
-				.getdatabydateList(dateformat.parse(todate));
-
-		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for  SCOPE_OF_APP report. Returning empty result.");
-			return new byte[0];
-		}
-
-		String templateDir = env.getProperty("output.exportpathtemp");
-		String templateFileName = filename;
-		System.out.println(filename);
-		Path templatePath = Paths.get(templateDir, templateFileName);
-		System.out.println(templatePath);
-
-		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
-
-		if (!Files.exists(templatePath)) {
-			// This specific exception will be caught by the controller.
-			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
-		}
-		if (!Files.isReadable(templatePath)) {
-			// A specific exception for permission errors.
-			throw new SecurityException(
-					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
-		}
-
-		// This try-with-resources block is perfect. It guarantees all resources are
-		// closed automatically.
-		try (InputStream templateInputStream = Files.newInputStream(templatePath);
-				Workbook workbook = WorkbookFactory.create(templateInputStream);
-				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-
-			Sheet sheet = workbook.getSheetAt(0);
-
-			// --- Style Definitions ---
-			CreationHelper createHelper = workbook.getCreationHelper();
-
-			CellStyle dateStyle = workbook.createCellStyle();
-			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-			dateStyle.setBorderBottom(BorderStyle.THIN);
-			dateStyle.setBorderTop(BorderStyle.THIN);
-			dateStyle.setBorderLeft(BorderStyle.THIN);
-			dateStyle.setBorderRight(BorderStyle.THIN);
-
-			CellStyle textStyle = workbook.createCellStyle();
-			textStyle.setBorderBottom(BorderStyle.THIN);
-			textStyle.setBorderTop(BorderStyle.THIN);
-			textStyle.setBorderLeft(BorderStyle.THIN);
-			textStyle.setBorderRight(BorderStyle.THIN);
-
-			// Create the font
-			Font font = workbook.createFont();
-			font.setFontHeightInPoints((short) 8); // size 8
-			font.setFontName("Arial");
-
-			CellStyle numberStyle = workbook.createCellStyle();
-			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
-			numberStyle.setBorderBottom(BorderStyle.THIN);
-			numberStyle.setBorderTop(BorderStyle.THIN);
-			numberStyle.setBorderLeft(BorderStyle.THIN);
-			numberStyle.setBorderRight(BorderStyle.THIN);
-			numberStyle.setFont(font);
-			// --- End of Style Definitions ---
-
-			int startRow = 8;
-
-			if (!dataList.isEmpty()) {
-				for (int i = 0; i < dataList.size(); i++) {
-					SCOPE_OF_APP_Summary_Entity record = dataList.get(i);
-
-					System.out.println("rownumber=" + startRow + i);
-					Row row = sheet.getRow(startRow + i);
-					if (row == null) {
-						row = sheet.createRow(startRow + i);
-					}
-					
-					
-					// R9
-					row = sheet.getRow(8);
-					Cell  cellC = row.getCell(4);
-					if (cellC == null) cellC = row.createCell(4);
-					cellC.setCellValue(record.getR9_amt() != null ? record.getR9_amt().doubleValue() : 0);
-					
-					// R10
-					row = sheet.getRow(9);
-					  cellC = row.getCell(4);
-					if (cellC == null) cellC = row.createCell(4);
-					cellC.setCellValue(record.getR10_amt() != null ? record.getR10_amt().doubleValue() : 0);
-
-					
-					
-					  
-					
-					  
-
-				}
-
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
-			} else {
-
-			}
-
-// Write the final workbook content to the in-memory stream.
-			workbook.write(out);
-
-			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
-			return out.toByteArray();
-		}
-
-	}
-
-	public byte[] getExcelSCOPE_OF_APPARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, BigDecimal version) throws Exception {
-
-		logger.info("Service: Starting Excel generation process in memory.");
-
-		if (type.equals("ARCHIVAL") & version != null) {
-
-		}
-
-		List<SCOPE_OF_APP_Archival_Summary_Entity> dataList = SCOPE_OF_APP_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
-
-		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for SCOPE_OF_APP report. Returning empty result.");
-			return new byte[0];
-		}
-
-		String templateDir = env.getProperty("output.exportpathtemp");
-		String templateFileName = filename;
-		System.out.println(filename);
-		Path templatePath = Paths.get(templateDir, templateFileName);
-		System.out.println(templatePath);
-
-		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
-
-		if (!Files.exists(templatePath)) {
-// This specific exception will be caught by the controller.
-			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
-		}
-		if (!Files.isReadable(templatePath)) {
-// A specific exception for permission errors.
-			throw new SecurityException(
-					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
-		}
-
-// This try-with-resources block is perfect. It guarantees all resources are
-// closed automatically.
-		try (InputStream templateInputStream = Files.newInputStream(templatePath);
-				Workbook workbook = WorkbookFactory.create(templateInputStream);
-				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-
-			Sheet sheet = workbook.getSheetAt(0);
-
-// --- Style Definitions ---
-			CreationHelper createHelper = workbook.getCreationHelper();
-
-			CellStyle dateStyle = workbook.createCellStyle();
-			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-			dateStyle.setBorderBottom(BorderStyle.THIN);
-			dateStyle.setBorderTop(BorderStyle.THIN);
-			dateStyle.setBorderLeft(BorderStyle.THIN);
-			dateStyle.setBorderRight(BorderStyle.THIN);
-
-			CellStyle textStyle = workbook.createCellStyle();
-			textStyle.setBorderBottom(BorderStyle.THIN);
-			textStyle.setBorderTop(BorderStyle.THIN);
-			textStyle.setBorderLeft(BorderStyle.THIN);
-			textStyle.setBorderRight(BorderStyle.THIN);
-
-// Create the font
-			Font font = workbook.createFont();
-			font.setFontHeightInPoints((short) 8); // size 8
-			font.setFontName("Arial");
-
-			CellStyle numberStyle = workbook.createCellStyle();
-// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
-			numberStyle.setBorderBottom(BorderStyle.THIN);
-			numberStyle.setBorderTop(BorderStyle.THIN);
-			numberStyle.setBorderLeft(BorderStyle.THIN);
-			numberStyle.setBorderRight(BorderStyle.THIN);
-			numberStyle.setFont(font);
-// --- End of Style Definitions ---
-
-			int startRow =8;
-
-			if (!dataList.isEmpty()) {
-				for (int i = 0; i < dataList.size(); i++) {
-					SCOPE_OF_APP_Archival_Summary_Entity record = dataList.get(i);
-
-					System.out.println("rownumber=" + startRow + i);
-					Row row = sheet.getRow(startRow + i);
-					if (row == null) {
-						row = sheet.createRow(startRow + i);
-					}
-
-					
-					// R9
-					row = sheet.getRow(8);
-					Cell  cellC = row.getCell(4);
-					if (cellC == null) cellC = row.createCell(4);
-					cellC.setCellValue(record.getR9_amt() != null ? record.getR9_amt().doubleValue() : 0);
-					
-					// R10
-					row = sheet.getRow(9);
-					  cellC = row.getCell(4);
-					if (cellC == null) cellC = row.createCell(4);
-					cellC.setCellValue(record.getR10_amt() != null ? record.getR10_amt().doubleValue() : 0);
-					  
-					 
-
-				}
-
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
-			} else {
-
-			}
-
-// Write the final workbook content to the in-memory stream.
-			workbook.write(out);
-
-			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
-			return out.toByteArray();
-		}
-
-	}
-
-	public List<Object> getSCOPE_OF_APPArchival() {
-		List<Object> SCOPE_OF_APPArchivallist = new ArrayList<>();
-		try {
-			SCOPE_OF_APPArchivallist = SCOPE_OF_APP_Archival_Summary_Repo.getSCOPE_OF_APParchival();
-
-			System.out.println("countser" + SCOPE_OF_APPArchivallist.size());
-
-		} catch (Exception e) {
-			// Log the exception
-			System.err.println("Error fetching SCOPE_OF_APPArchivallist Archival data: " + e.getMessage());
-			e.printStackTrace();
-
-			// Optionally, you can rethrow it or return empty list
-			// throw new RuntimeException("Failed to fetch data", e);
-		}
-		return SCOPE_OF_APPArchivallist;
-	}
-
-	public byte[] getSCOPE_OF_APPDetailExcel(String filename, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) {
-		try {
-			logger.info("Generating Excel for  SCOPE_OF_APP Details...");
-			System.out.println("came to Detail download service");
-
-			if (type.equals("ARCHIVAL") & version != null) {
-				byte[] ARCHIVALreport = getSCOPE_OF_APPDetailExcelARCHIVAL(filename, fromdate, todate, currency,
-						dtltype, type, version);
-				return ARCHIVALreport;
-			}
-
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("SCOPE_OF_APP Details");
-
-			// Common border style
-			BorderStyle border = BorderStyle.THIN;
-
-			// Header style (left aligned)
-			CellStyle headerStyle = workbook.createCellStyle();
-			Font headerFont = workbook.createFont();
-			headerFont.setBold(true);
-			headerFont.setFontHeightInPoints((short) 10);
-			headerStyle.setFont(headerFont);
-			headerStyle.setAlignment(HorizontalAlignment.LEFT);
-			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-			headerStyle.setBorderTop(border);
-			headerStyle.setBorderBottom(border);
-			headerStyle.setBorderLeft(border);
-			headerStyle.setBorderRight(border);
-
-			// Right-aligned header style for ACCT BALANCE
-			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
-			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
-			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-
-			// Default data style (left aligned)
-			CellStyle dataStyle = workbook.createCellStyle();
-			dataStyle.setAlignment(HorizontalAlignment.LEFT);
-			dataStyle.setBorderTop(border);
-			dataStyle.setBorderBottom(border);
-			dataStyle.setBorderLeft(border);
-			dataStyle.setBorderRight(border);
-
-			// ACCT BALANCE style (right aligned with 3 decimals)
-			CellStyle balanceStyle = workbook.createCellStyle();
-			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
-			balanceStyle.setBorderTop(border);
-			balanceStyle.setBorderBottom(border);
-			balanceStyle.setBorderLeft(border);
-			balanceStyle.setBorderRight(border);
-
-			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT LABLE",
-					"REPORT ADDL CRITERIA1", "REPORT_DATE" };
-
-			XSSFRow headerRow = sheet.createRow(0);
-			for (int i = 0; i < headers.length; i++) {
-				Cell cell = headerRow.createCell(i);
-				cell.setCellValue(headers[i]);
-
-				if (i == 3) { // ACCT BALANCE
-					cell.setCellStyle(rightAlignedHeaderStyle);
-				} else {
-					cell.setCellStyle(headerStyle);
-				}
-
-				sheet.setColumnWidth(i, 5000);
-			}
-
-			// Get data
-			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<SCOPE_OF_APP_Detail_Entity> reportData = SCOPE_OF_APP_detail_repo.getdatabydateList(parsedToDate);
-
-			if (reportData != null && !reportData.isEmpty()) {
-				int rowIndex = 1;
-				for (SCOPE_OF_APP_Detail_Entity item : reportData) {
-					XSSFRow row = sheet.createRow(rowIndex++);
-
-					row.createCell(0).setCellValue(item.getCustId());
-					row.createCell(1).setCellValue(item.getAcctNumber());
-					row.createCell(2).setCellValue(item.getAcctName());
-					// ACCT BALANCE (right aligned, 3 decimal places)
-					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInpula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
-					} else {
-						balanceCell.setCellValue(0.000);
-					}
-					balanceCell.setCellStyle(balanceStyle);
-
-					row.createCell(4).setCellValue(item.getReportLabel());
-					row.createCell(5).setCellValue(item.getReportAddlCriteria_1());
-					row.createCell(6)
-							.setCellValue(item.getReportDate() != null
-									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
-									: "");
-
-					// Apply data style for all other cells
-					for (int j = 0; j < 7; j++) {
-						if (j != 3) {
-							row.getCell(j).setCellStyle(dataStyle);
-						}
-					}
-				}
-			} else {
-				logger.info("No data found for SCOPE_OF_APP — only header will be written.");
-			}
-
-			// Write to byte[]
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			workbook.write(bos);
-			workbook.close();
-
-			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
-			return bos.toByteArray();
-
-		} catch (Exception e) {
-			logger.error("Error generating  SCOPE_OF_APP  Excel", e);
-			return new byte[0];
-		}
-	}
-
-	public byte[] getSCOPE_OF_APPDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) {
-		try {
-			logger.info("Generating Excel for SCOPE_OF_APP ARCHIVAL Details...");
-			System.out.println("came to ARCHIVAL Detail download service");
-			if (type.equals("ARCHIVAL") & version != null) {
-
-			}
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("SCOPE_OF_APP Detail");
-
-// Common border style
-			BorderStyle border = BorderStyle.THIN;
-
-// Header style (left aligned)
-			CellStyle headerStyle = workbook.createCellStyle();
-			Font headerFont = workbook.createFont();
-			headerFont.setBold(true);
-			headerFont.setFontHeightInPoints((short) 10);
-			headerStyle.setFont(headerFont);
-			headerStyle.setAlignment(HorizontalAlignment.LEFT);
-			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-			headerStyle.setBorderTop(border);
-			headerStyle.setBorderBottom(border);
-			headerStyle.setBorderLeft(border);
-			headerStyle.setBorderRight(border);
-
-// Right-aligned header style for ACCT BALANCE
-			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
-			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
-			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-
-// Default data style (left aligned)
-			CellStyle dataStyle = workbook.createCellStyle();
-			dataStyle.setAlignment(HorizontalAlignment.LEFT);
-			dataStyle.setBorderTop(border);
-			dataStyle.setBorderBottom(border);
-			dataStyle.setBorderLeft(border);
-			dataStyle.setBorderRight(border);
-
-// ACCT BALANCE style (right aligned with 3 decimals)
-			CellStyle balanceStyle = workbook.createCellStyle();
-			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
-			balanceStyle.setBorderTop(border);
-			balanceStyle.setBorderBottom(border);
-			balanceStyle.setBorderLeft(border);
-			balanceStyle.setBorderRight(border);
-
-// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT LABLE",
-					"REPORT ADDL CRITERIA1", "REPORT_DATE" };
-
-			XSSFRow headerRow = sheet.createRow(0);
-			for (int i = 0; i < headers.length; i++) {
-				Cell cell = headerRow.createCell(i);
-				cell.setCellValue(headers[i]);
-
-				if (i == 3) { // ACCT BALANCE
-					cell.setCellStyle(rightAlignedHeaderStyle);
-				} else {
-					cell.setCellStyle(headerStyle);
-				}
-
-				sheet.setColumnWidth(i, 5000);
-			}
-
-// Get data
-			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<SCOPE_OF_APP_Archival_Detail_Entity> reportData = SCOPE_OF_APP_Archival_Detail_Repo
-					.getdatabydateList(parsedToDate, version);
-
-			if (reportData != null && !reportData.isEmpty()) {
-				int rowIndex = 1;
-				for (SCOPE_OF_APP_Archival_Detail_Entity item : reportData) {
-					XSSFRow row = sheet.createRow(rowIndex++);
-
-					row.createCell(0).setCellValue(item.getCustId());
-					row.createCell(1).setCellValue(item.getAcctNumber());
-					row.createCell(2).setCellValue(item.getAcctName());
-
-// ACCT BALANCE (right aligned, 3 decimal places)
-					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInpula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
-					} else {
-						balanceCell.setCellValue(0.000);
-					}
-					balanceCell.setCellStyle(balanceStyle);
-
-					row.createCell(4).setCellValue(item.getReportLabel());
-					row.createCell(5).setCellValue(item.getReportAddlCriteria_1());
-					row.createCell(6)
-							.setCellValue(item.getReportDate() != null
-									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
-									: "");
-
-// Apply data style for all other cells
-					for (int j = 0; j < 7; j++) {
-						if (j != 3) {
-							row.getCell(j).setCellStyle(dataStyle);
-						}
-					}
-				}
-			} else {
-				logger.info("No data found for SCOPE_OF_APP — only header will be written.");
-			}
-
-// Write to byte[]
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			workbook.write(bos);
-			workbook.close();
-
-			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
-			return bos.toByteArray();
-
-		} catch (Exception e) {
-			logger.error("Error generating SCOPE_OF_APP Excel", e);
-			return new byte[0];
-		}
-	}
-
-	@Autowired
-	BRRS_SCOPE_OF_APP_Detail_Repo BRRS_SCOPE_OF_APP_detail_repo;
-
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
-
-	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
-		ModelAndView mv = new ModelAndView("BRRS/SCOPE_OF_APP");
+//=====================================================
+// UPDATE REPORT
+//=====================================================
+
+//=====================================================
+// VIEW AND EDIT
+//=====================================================
+
+public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
+		ModelAndView mv = new ModelAndView("BRRS/SCOPE_OF_APP"); 
 
 		if (acctNo != null) {
-			SCOPE_OF_APP_Detail_Entity scope_of_appEntity = BRRS_SCOPE_OF_APP_detail_repo.findByAcctnumber(acctNo);
+			SCOPE_OF_APP_Detail_Entity scope_of_appEntity = findByDetailAcctnumber(acctNo);
 			if (scope_of_appEntity != null && scope_of_appEntity.getReportDate() != null) {
 				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(scope_of_appEntity.getReportDate());
 				mv.addObject("asondate", formattedDate);
@@ -752,6 +1607,10 @@ public class BRRS_SCOPE_OF_APP_ReportService {
 		mv.addObject("formmode", formMode != null ? formMode : "edit");
 		return mv;
 	}
+	
+//=====================================================
+// UPDATEDETAIL
+//=====================================================
 
 	@Transactional
 	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
@@ -763,7 +1622,7 @@ public class BRRS_SCOPE_OF_APP_ReportService {
 
 			logger.info("Received update for ACCT_NO: {}", acctNo);
 
-			SCOPE_OF_APP_Detail_Entity existing = BRRS_SCOPE_OF_APP_detail_repo.findByAcctnumber(acctNo);
+			SCOPE_OF_APP_Detail_Entity existing = findByDetailAcctnumber(acctNo);
 			if (existing == null) {
 				logger.warn("No record found for ACCT_NO: {}", acctNo);
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
@@ -779,19 +1638,34 @@ public class BRRS_SCOPE_OF_APP_ReportService {
 				}
 			}
 
-			if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
-				BigDecimal newacctBalanceInpula = new BigDecimal(acctBalanceInpula);
-				if (existing.getAcctBalanceInpula() == null
-						|| existing.getAcctBalanceInpula().compareTo(newacctBalanceInpula) != 0) {
-					existing.setAcctBalanceInpula(newacctBalanceInpula);
-					isChanged = true;
-					logger.info("Balance updated to {}", newacctBalanceInpula);
-				}
-			}
-
+			 if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
+		            BigDecimal newacctBalanceInpula = new BigDecimal(acctBalanceInpula);
+		            if (existing.getAcctBalanceInpula()  == null ||
+		                existing.getAcctBalanceInpula().compareTo(newacctBalanceInpula) != 0) {
+		            	 existing.setAcctBalanceInpula(newacctBalanceInpula);
+		                isChanged = true;
+		                logger.info("Balance updated to {}", newacctBalanceInpula);
+		            }
+		        }
+			 
+			 
+			
+		        
 			if (isChanged) {
-				BRRS_SCOPE_OF_APP_detail_repo.save(existing);
-				logger.info("Record updated successfully for account {}", acctNo);
+				  String sql =
+    "UPDATE BRRS_SCOPE_OF_APP_DETAILTABLE " +
+    "SET ACCT_NAME = ?, " +
+    "ACCT_BALANCE_IN_PULA = ?, " +
+   
+    "WHERE ACCT_NUMBER = ?";
+
+		           jdbcTemplate.update(
+    sql,
+    existing.getAcctName(),
+    existing.getAcctBalanceInpula(),
+  
+    existing.getAcctNumber()
+);
 
 				// Format date for procedure
 				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
@@ -819,10 +1693,535 @@ public class BRRS_SCOPE_OF_APP_ReportService {
 			}
 
 		} catch (Exception e) {
-			logger.error("Error updating SCOPE_OF_APP record", e);
+			logger.error("Error updating SCOPE_OF_APP  record", e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Error updating record: " + e.getMessage());
 		}
 	}
+	
+//=====================================================
+// DETAIL EXCEL 
+//=====================================================
 
-}
+
+	public byte[] getSCOPE_OF_APPDetailExcel(String filename, String fromdate, String todate, String currency, String dtltype,
+				String type, String version) {
+			try {
+				logger.info("Generating Excel for  SCOPE_OF_APP  Details...");
+				System.out.println("came to Detail download service");
+
+				if (type.equals("ARCHIVAL") & version != null) {
+					byte[] ARCHIVALreport = getSCOPE_OF_APPDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type,
+							version);
+					return ARCHIVALreport;
+				}
+
+				XSSFWorkbook workbook = new XSSFWorkbook();
+				XSSFSheet sheet = workbook.createSheet("SCOPE_OF_APP Details ");
+
+				// Common border style
+				BorderStyle border = BorderStyle.THIN;
+
+				// Header style (left aligned)
+			
+				CellStyle headerStyle = workbook.createCellStyle();
+				
+				Font headerFont = workbook.createFont();	
+				headerFont.setBold(true);
+				headerFont.setFontHeightInPoints((short) 10);
+				headerStyle.setFont(headerFont);
+				headerStyle.setAlignment(HorizontalAlignment.LEFT);
+				headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+				headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+				headerStyle.setBorderTop(border);
+				headerStyle.setBorderBottom(border);
+				headerStyle.setBorderLeft(border);
+				headerStyle.setBorderRight(border);
+
+				// Right-aligned header style for ACCT BALANCE
+				CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
+				rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
+				rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+				// Default data style (left aligned)
+				CellStyle dataStyle = workbook.createCellStyle();
+				dataStyle.setAlignment(HorizontalAlignment.LEFT);
+				dataStyle.setBorderTop(border);
+				dataStyle.setBorderBottom(border);
+				dataStyle.setBorderLeft(border);
+				dataStyle.setBorderRight(border);
+
+				// ACCT BALANCE style (right aligned with 3 decimals)
+				CellStyle balanceStyle = workbook.createCellStyle();
+				balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+				balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
+				balanceStyle.setBorderTop(border);
+				balanceStyle.setBorderBottom(border);
+				balanceStyle.setBorderLeft(border);
+				balanceStyle.setBorderRight(border);
+
+				// Header row
+//Header row
+String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT LABEL", "REPORT ADDL CRITERIA1", "REPORT_DATE" };
+
+
+				XSSFRow headerRow = sheet.createRow(0);
+				for (int i = 0; i < headers.length; i++) {
+					Cell cell = headerRow.createCell(i);
+					cell.setCellValue(headers[i]);
+
+				
+				if (i == 3 ) {  // ACCT BALANCE 
+				    cell.setCellStyle(rightAlignedHeaderStyle);
+				} else {
+				    cell.setCellStyle(headerStyle);
+				}
+
+					sheet.setColumnWidth(i, 5000);
+				}
+
+				// Get data
+				Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+				List<SCOPE_OF_APP_Detail_Entity> reportData = getDetaildatabydateList(parsedToDate);
+
+				if (reportData != null && !reportData.isEmpty()) {
+					int rowIndex = 1;
+					for (SCOPE_OF_APP_Detail_Entity item : reportData) { 
+						XSSFRow row = sheet.createRow(rowIndex++);
+
+row.createCell(0).setCellValue(item.getCustId());
+					row.createCell(1).setCellValue(item.getAcctNumber());
+					row.createCell(2).setCellValue(item.getAcctName());
+					// ACCT BALANCE (right aligned, 3 decimal places)
+					Cell balanceCell = row.createCell(3);
+					if (item.getAcctBalanceInpula() != null) {
+						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
+					} else {
+						balanceCell.setCellValue(0);
+					}
+					balanceCell.setCellStyle(balanceStyle);
+
+					
+
+					row.createCell(4).setCellValue(item.getReportLabel());
+					row.createCell(5).setCellValue(item.getReportAddlCriteria_1());
+					row.createCell(6)
+							.setCellValue(item.getReportDate() != null
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+									: "");
+
+					// Apply data style for all other cells
+					for (int j = 0; j < 7; j++) {
+						if (j != 3) {
+							row.getCell(j).setCellStyle(dataStyle);
+						}
+						}
+					}
+				} else {
+					logger.info("No data found for SCOPE_OF_APP — only header will be written.");
+				}
+
+				// Write to byte[]
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				workbook.write(bos);
+				workbook.close();
+
+				logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
+				return bos.toByteArray();
+
+			} catch (Exception e) {
+				logger.error("Error generating SCOPE_OF_APP Excel", e);
+				return new byte[0];
+			}
+		}
+	
+	
+//=====================================================
+// ARCHIVAL DETAIL EXCEL 
+//=====================================================
+
+	public byte[] getSCOPE_OF_APPDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
+				String dtltype, String type, String version) {
+			try {
+				logger.info("Generating Excel for SCOPE_OF_APP ARCHIVAL Details...");
+				System.out.println("came to ARCHIVAL Detail download service");
+				if (type.equals("ARCHIVAL") & version != null) {
+
+				}
+				XSSFWorkbook workbook = new XSSFWorkbook();
+				XSSFSheet sheet = workbook.createSheet("SCOPE_OF_APP Detail NEW");
+
+	// Common border style
+				BorderStyle border = BorderStyle.THIN;
+
+	// Header style (left aligned)
+				CellStyle headerStyle = workbook.createCellStyle();
+				Font headerFont = workbook.createFont();
+				headerFont.setBold(true);
+				headerFont.setFontHeightInPoints((short) 10);
+				headerStyle.setFont(headerFont);
+				headerStyle.setAlignment(HorizontalAlignment.LEFT);
+				headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+				headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+				headerStyle.setBorderTop(border);
+				headerStyle.setBorderBottom(border);
+				headerStyle.setBorderLeft(border);
+				headerStyle.setBorderRight(border);
+
+	// Right-aligned header style for ACCT BALANCE
+				CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
+				rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
+				rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+	// Default data style (left aligned)
+				CellStyle dataStyle = workbook.createCellStyle();
+				dataStyle.setAlignment(HorizontalAlignment.LEFT);
+				dataStyle.setBorderTop(border);
+				dataStyle.setBorderBottom(border);
+				dataStyle.setBorderLeft(border);
+				dataStyle.setBorderRight(border);
+
+	// ACCT BALANCE style (right aligned with 3 decimals)
+				CellStyle balanceStyle = workbook.createCellStyle();
+				balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+				balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
+				balanceStyle.setBorderTop(border);
+				balanceStyle.setBorderBottom(border);
+				balanceStyle.setBorderLeft(border);
+				balanceStyle.setBorderRight(border);
+
+	// Header row
+					String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE",  "REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT_DATE" };
+
+				XSSFRow headerRow = sheet.createRow(0);
+				for (int i = 0; i < headers.length; i++) {
+					Cell cell = headerRow.createCell(i);
+					cell.setCellValue(headers[i]);
+
+						if (i == 3 ) {  // MONTHLY_INT (3) and CREDIT_EQUIVALENT (4) nd DEBIT_EQUIVALENT(5)
+				    cell.setCellStyle(rightAlignedHeaderStyle);
+				} else {
+				    cell.setCellStyle(headerStyle);
+				}
+
+					sheet.setColumnWidth(i, 5000);
+				}
+
+	// Get data
+				Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+				List<SCOPE_OF_APP_Archival_Detail_Entity> reportData = getarchivaldetaildatabydateList(parsedToDate,
+						version);
+
+				if (reportData != null && !reportData.isEmpty()) {
+					int rowIndex = 1;
+					for (SCOPE_OF_APP_Archival_Detail_Entity item : reportData) {
+						XSSFRow row = sheet.createRow(rowIndex++);
+
+					row.createCell(0).setCellValue(item.getCustId());
+					row.createCell(1).setCellValue(item.getAcctNumber());
+					 row.createCell(2).setCellValue(item.getAcctName()); 
+
+// ACCT BALANCE (right aligned, 3 decimal places)
+					Cell balanceCell = row.createCell(3);
+					if (item.getAcctBalanceInpula() != null) {
+						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
+					} else {
+						balanceCell.setCellValue(0);
+					}
+					balanceCell.setCellStyle(balanceStyle);
+
+					
+					row.createCell(4).setCellValue(item.getReportLabel());
+					row.createCell(5).setCellValue(item.getReportAddlCriteria_1());
+					row.createCell(6)
+							.setCellValue(item.getReportDate() != null
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+									: "");
+
+// Apply data style for all other cells
+					for (int j = 0; j < 7; j++) {
+						if (j != 3) {
+							row.getCell(j).setCellStyle(dataStyle);
+						}
+						}
+					}
+				} else {
+					logger.info("No data found for SCOPE_OF_APP — only header will be written.");
+				}
+
+	// Write to byte[]
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				workbook.write(bos);
+				workbook.close();
+
+				logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
+				return bos.toByteArray();
+
+			} catch (Exception e) {
+				logger.error("Error generating SCOPE_OF_APP NEW Excel", e);
+				return new byte[0];
+			}
+		}
+		
+		
+//=====================================================
+// Summary EXCEL 
+//=====================================================
+
+	public byte[] getSCOPE_OF_APPExcel(String filename, String reportId, String fromdate, String todate, String currency,
+				String dtltype, String type, BigDecimal version) throws Exception {
+			logger.info("Service: Starting Excel generation process in memory.SCOPE_OF_APP");
+
+			// ARCHIVAL check
+			if ("ARCHIVAL".equalsIgnoreCase(type)
+			        && version != null
+			        && version.compareTo(BigDecimal.ZERO) >= 0) {
+					logger.info("Service: Generating ARCHIVAL report for version {}", version);
+				return getExcelSCOPE_OF_APPARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+			}
+
+			// Fetch data
+
+			List<SCOPE_OF_APP_Summary_Entity> dataList = getSummaryDataByDate(dateformat.parse(todate));
+		
+		
+			System.out.println("DATA SIZE IS : "+dataList.size());
+			if (dataList.isEmpty()) {
+				logger.warn("Service: No data found for  SCOPE_OF_APP report. Returning empty result.");
+				return new byte[0];
+			}
+
+			String templateDir = env.getProperty("output.exportpathtemp");
+			String templateFileName = filename;
+			System.out.println(filename);
+			Path templatePath = Paths.get(templateDir, templateFileName);
+			System.out.println(templatePath);
+
+			logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+			if (!Files.exists(templatePath)) {
+				// This specific exception will be caught by the controller.
+				throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+			}
+			if (!Files.isReadable(templatePath)) {
+				// A specific exception for permission errors.
+				throw new SecurityException(
+						"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+			}
+
+			// This try-with-resources block is perfect. It guarantees all resources are
+			// closed automatically.
+			try (InputStream templateInputStream = Files.newInputStream(templatePath);
+					Workbook workbook = WorkbookFactory.create(templateInputStream);
+					ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+				Sheet sheet = workbook.getSheetAt(0);
+
+				// --- Style Definitions ---
+				CreationHelper createHelper = workbook.getCreationHelper();
+
+				CellStyle dateStyle = workbook.createCellStyle();
+				dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+				dateStyle.setBorderBottom(BorderStyle.THIN);
+				dateStyle.setBorderTop(BorderStyle.THIN);
+				dateStyle.setBorderLeft(BorderStyle.THIN);
+				dateStyle.setBorderRight(BorderStyle.THIN);
+
+				CellStyle textStyle = workbook.createCellStyle();
+				textStyle.setBorderBottom(BorderStyle.THIN);
+				textStyle.setBorderTop(BorderStyle.THIN);
+				textStyle.setBorderLeft(BorderStyle.THIN);
+				textStyle.setBorderRight(BorderStyle.THIN);
+
+				// Create the font
+				Font font = workbook.createFont();
+				font.setFontHeightInPoints((short) 8); // size 8
+				font.setFontName("Arial");
+
+				CellStyle numberStyle = workbook.createCellStyle();
+				// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+				numberStyle.setBorderBottom(BorderStyle.THIN);
+				numberStyle.setBorderTop(BorderStyle.THIN);
+				numberStyle.setBorderLeft(BorderStyle.THIN);
+				numberStyle.setBorderRight(BorderStyle.THIN);
+				numberStyle.setFont(font);
+				// --- End of Style Definitions ---
+
+						int startRow = 8;
+						
+				if (!dataList.isEmpty()) {
+					for (int i = 0; i < dataList.size(); i++) {
+						SCOPE_OF_APP_Summary_Entity record = dataList.get(i);
+					
+						System.out.println("rownumber=" + startRow + i);
+						Row row = sheet.getRow(startRow + i);
+						if (row == null) {
+							row = sheet.createRow(startRow + i);
+						}
+
+		        	// R9
+					row = sheet.getRow(8);
+					Cell  cellC = row.getCell(4);
+					if (cellC == null) cellC = row.createCell(4);
+					cellC.setCellValue(record.getR9_amt() != null ? record.getR9_amt().doubleValue() : 0);
+					
+					// R10
+					row = sheet.getRow(9);
+					  cellC = row.getCell(4);
+					if (cellC == null) cellC = row.createCell(4);
+					cellC.setCellValue(record.getR10_amt() != null ? record.getR10_amt().doubleValue() : 0);
+
+					
+				
+					}
+					
+				workbook.setForceFormulaRecalculation(true);
+
+					
+				} else {
+
+				}
+
+	// Write the final workbook content to the in-memory stream.
+				workbook.write(out);
+
+				logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+				return out.toByteArray();
+			}
+
+		}
+
+
+
+
+//=====================================================
+//ARCHIVAL SUMMARY EXCEL 
+//=====================================================
+
+
+
+				public byte[] getExcelSCOPE_OF_APPARCHIVAL(String filename, String reportId, String fromdate, String todate,
+				String currency, String dtltype, String type, BigDecimal version) throws Exception {
+
+			logger.info("Service: Starting Excel generation process in memory.");
+
+			if (type.equals("ARCHIVAL") & version != null) {
+
+			}
+
+			List<SCOPE_OF_APP_Archival_Summary_Entity> dataList = 
+					getDataByDateListArchival(dateformat.parse(todate), version);
+		
+	    
+
+			if (dataList.isEmpty()) {
+				logger.warn("Service: No data found for SCOPE_OF_APP new report. Returning empty result.");
+				return new byte[0];
+			}
+
+			String templateDir = env.getProperty("output.exportpathtemp");
+			String templateFileName = filename;
+			System.out.println(filename);
+			Path templatePath = Paths.get(templateDir, templateFileName);
+			System.out.println(templatePath);
+
+			logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+			if (!Files.exists(templatePath)) {
+	// This specific exception will be caught by the controller.
+				throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+			}
+			if (!Files.isReadable(templatePath)) {
+	// A specific exception for permission errors.
+				throw new SecurityException(
+						"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+			}
+
+	// This try-with-resources block is perfect. It guarantees all resources are
+	// closed automatically.
+			try (InputStream templateInputStream = Files.newInputStream(templatePath);
+					Workbook workbook = WorkbookFactory.create(templateInputStream);
+					ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+				Sheet sheet = workbook.getSheetAt(0);
+
+	// --- Style Definitions ---
+				CreationHelper createHelper = workbook.getCreationHelper();
+
+				CellStyle dateStyle = workbook.createCellStyle();
+				dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+				dateStyle.setBorderBottom(BorderStyle.THIN);
+				dateStyle.setBorderTop(BorderStyle.THIN);
+				dateStyle.setBorderLeft(BorderStyle.THIN);
+				dateStyle.setBorderRight(BorderStyle.THIN);
+
+				CellStyle textStyle = workbook.createCellStyle();
+				textStyle.setBorderBottom(BorderStyle.THIN);
+				textStyle.setBorderTop(BorderStyle.THIN);
+				textStyle.setBorderLeft(BorderStyle.THIN);
+				textStyle.setBorderRight(BorderStyle.THIN);
+
+	// Create the font
+				Font font = workbook.createFont();
+				font.setFontHeightInPoints((short) 8); // size 8
+				font.setFontName("Arial");
+
+				CellStyle numberStyle = workbook.createCellStyle();
+	// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+				numberStyle.setBorderBottom(BorderStyle.THIN);
+				numberStyle.setBorderTop(BorderStyle.THIN);
+				numberStyle.setBorderLeft(BorderStyle.THIN);
+				numberStyle.setBorderRight(BorderStyle.THIN);
+				numberStyle.setFont(font);
+	// --- End of Style Definitions ---
+
+				int startRow = 8;
+
+				if (!dataList.isEmpty()) {
+					for (int i = 0; i < dataList.size(); i++) {
+						SCOPE_OF_APP_Archival_Summary_Entity record = dataList.get(i);
+					    
+						System.out.println("rownumber=" + startRow + i);
+						Row row = sheet.getRow(startRow + i);
+						if (row == null) {
+							row = sheet.createRow(startRow + i);
+						}
+
+
+	
+					// R9
+					row = sheet.getRow(8);
+					Cell  cellC = row.getCell(4);
+					if (cellC == null) cellC = row.createCell(4);
+					cellC.setCellValue(record.getR9_amt() != null ? record.getR9_amt().doubleValue() : 0);
+					
+					// R10
+					row = sheet.getRow(9);
+					  cellC = row.getCell(4);
+					if (cellC == null) cellC = row.createCell(4);
+					cellC.setCellValue(record.getR10_amt() != null ? record.getR10_amt().doubleValue() : 0);
+
+				
+						
+						
+					}
+                  workbook.setForceFormulaRecalculation(true);
+					
+				} else {
+
+				}
+
+	// Write the final workbook content to the in-memory stream.
+				workbook.write(out);
+
+				logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+				return out.toByteArray();
+			}
+
+		}
+		
+		
+		
+	}
