@@ -1666,7 +1666,7 @@ PURPOSE		: BRRS_M_CA2REPORT
 													style="text-align: right;background-color:rgb(163, 169, 177); ">
 
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R33_TOTAL != null ? #numbers.formatDecimal(report.R33_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
+														th:value="${report.R33_TOTAL != null ? #numbers.formatDecimal(report.R33_TOTAL, 1, 'COMMA', 1, 'POINT') : '0'}"
 														id="R33_TOTAL" name="R33_TOTAL"
 														style="background-color:rgb(163, 169, 177); width: 90%; height: 28px; border-color: transparent; text-align: right;"
 														readonly />

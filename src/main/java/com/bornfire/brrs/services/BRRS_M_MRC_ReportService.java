@@ -144,7 +144,7 @@ public class BRRS_M_MRC_ReportService {
 		try {
 
 			// ===== UPDATE R-CODE FIELDS USING REFLECTION =====
-			int[] rowCodes = { 33 }; // Add more codes if needed
+			int[] rowCodes = { 33 ,34 }; // Add more codes if needed
 			String[] fields = { "TOTAL" }; // Add more fields if required
 
 			for (int code : rowCodes) {
