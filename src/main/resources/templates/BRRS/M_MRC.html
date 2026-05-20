@@ -899,16 +899,12 @@ PURPOSE		: BRRS_M_CA2REPORT
 		function calculateR34Total() {
 
 			function getValue(id) {
+
 				let el = $("#" + id);
+
 				if (!el.length) return 0;
 
-				let value;
-
-				if (el.is("input")) {
-					value = el.val();
-				} else {
-					value = el.text();
-				}
+				let value = el.is("input") ? el.val() : el.text();
 
 				value = (value || "0").replace(/,/g, "").trim();
 
@@ -920,9 +916,12 @@ PURPOSE		: BRRS_M_CA2REPORT
 
 			let total = r32 * r33;
 
+			// Display in table
 			$("#R34_TOTAL").text(total.toLocaleString("en-US"));
-		}
 
+			// Send to backend
+			$("#R34_TOTAL_HIDDEN").val(total);
+		}
 		$(document).ready(function () {
 
 			// run when page loads
@@ -1674,15 +1673,29 @@ PURPOSE		: BRRS_M_CA2REPORT
 											</tr>
 
 											<tr>
-												<td style="padding-left: 20px; text-align: center; "
-													th:text="${report.R34_LINE}"></td>
-												<td style="font-weight:bold;text-align: left; "
-													th:text="${report.R34_PRODUCT}"></td>
-												<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;"
-												id="R34_TOTAL"
-													name="R34_TOTAL"
-													th:text="${report.R34_TOTAL != null ? #numbers.formatDecimal(report.R34_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}">
+												<td style="padding-left: 20px; text-align: center;"
+													th:text="${report.R34_LINE}">
 												</td>
+
+												<td style="font-weight:bold;text-align: left;"
+													th:text="${report.R34_PRODUCT}">
+												</td>
+
+												<td style="background-color: rgb(107, 122, 143); 
+												           color: white; 
+												           text-align: right;"
+													id="R34_TOTAL">
+
+													<span th:text="${report.R34_TOTAL != null ? 
+													       #numbers.formatDecimal(report.R34_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}">
+													</span>
+
+												</td>
+
+												<input type="hidden"
+													   id="R34_TOTAL_HIDDEN"
+													   name="R34_TOTAL"
+													   th:value="${report.R34_TOTAL}">
 											</tr>
 
 
