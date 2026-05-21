@@ -840,576 +840,591 @@ PURPOSE		: BRRSREPORT
 			// ❌ If user clicks CANCEL, nothing happens
 		}
 	</script>
-	<script>  
+	<script>
 
-		function getCellValue(selector) {  
-			let el = $(selector);  
-			if (!el.length) return 0;  
+		function getCellValue(selector) {
+			let el = $(selector);
+			if (!el.length) return 0;
 
-			let val = el.is("input") ? el.val() : el.text();  
-			return parseFloat((val || "0").replace(/,/g, "")) || 0;  
-		}  
-
-		function setCellValue(selector, value) {
-		    let el = $(selector);
-		    if (!el.length) return;
-
-		    const formatted = Number(value || 0).toLocaleString("en-US", {
-		        minimumFractionDigits: 0,
-		        maximumFractionDigits: 0
-		    });
-
-		    if (el.is("input")) {
-		        el.val(formatted);
-		    } else {
-		        el.text(formatted);
-
-		        // ✅ find hidden input by SAME ID
-		        let hidden = $(`#${selector.replace('#', '')}_hidden`);
-
-		        if (hidden.length) {
-		            hidden.val(value); // raw value
-		        }
-		    }
+			let val = el.is("input") ? el.val() : el.text();
+			return parseFloat((val || "0").replace(/,/g, "")) || 0;
 		}
 
-		function sumFields(selectors) {  
-			return selectors.reduce((sum, sel) => sum + getCellValue(sel), 0);  
-		}  
+		function setCellValue(selector, value) {
+			let el = $(selector);
+			if (!el.length) return;
+
+			const formatted = Number(value || 0).toLocaleString("en-US", {
+				minimumFractionDigits: 0,
+				maximumFractionDigits: 0
+			});
+
+			if (el.is("input")) {
+				el.val(formatted);
+			} else {
+				el.text(formatted);
+
+				// ✅ find hidden input by SAME ID
+				let hidden = $(`#${selector.replace('#', '')}_hidden`);
+
+				if (hidden.length) {
+					hidden.val(value); // raw value
+				}
+			}
+		}
+
+		function sumFields(selectors) {
+			return selectors.reduce((sum, sel) => sum + getCellValue(sel), 0);
+		}
 
 		//--------------------------------------  
 		// GENERIC ROW  
 		//--------------------------------------  
-		function calculateRow(prefix) {  
+		function calculateRow(prefix) {
 
-			const specialBwpRows = [  
-				"r28",  
-				"r30", "r31", "r32", "r33", "r34",  
-				"r35", "r36", "r37", "r38"  
-			];  
+			const specialBwpRows = [
+				"r28",
+				"r30", "r31", "r32", "r33", "r34",
+				"r35", "r36", "r37", "r38"
+			];
 
-			let cumm_inr = sumFields([  
-				`#${prefix}_qua_i_inr`,  
-				`#${prefix}_qua_ii_inr`,  
-				`#${prefix}_qua_iii_inr`,  
-				`#${prefix}_qua_iv_inr`  
-			]);  
+			let cumm_inr = sumFields([
+				`#${prefix}_qua_i_inr`,
+				`#${prefix}_qua_ii_inr`,
+				`#${prefix}_qua_iii_inr`,
+				`#${prefix}_qua_iv_inr`
+			]);
 
-			let cumm_bwp;  
+			let cumm_bwp;
 
 			// ✅ IMPORTANT CONDITION  
-			if (specialBwpRows.includes(prefix)) {  
-				cumm_bwp = getCellValue(`#${prefix}_qua_i_lc`);  
-			} else {  
-				cumm_bwp = sumFields([  
-					`#${prefix}_qua_i_lc`,  
-					`#${prefix}_qua_ii_lc`,  
-					`#${prefix}_qua_iii_lc`,  
-					`#${prefix}_qua_iv_lc`  
-				]);  
-			}  
+			if (specialBwpRows.includes(prefix)) {
+				cumm_bwp = getCellValue(`#${prefix}_qua_i_lc`);
+			} else {
+				cumm_bwp = sumFields([
+					`#${prefix}_qua_i_lc`,
+					`#${prefix}_qua_ii_lc`,
+					`#${prefix}_qua_iii_lc`,
+					`#${prefix}_qua_iv_lc`
+				]);
+			}
 
-			setCellValue(`#${prefix}_cumm_inr`, cumm_inr);  
-			setCellValue(`#${prefix}_cumm_bwp`, cumm_bwp);  
-		}  
-		function calculateSpecialBWP() {  
+			setCellValue(`#${prefix}_cumm_inr`, cumm_inr);
+			setCellValue(`#${prefix}_cumm_bwp`, cumm_bwp);
+		}
+		function calculateSpecialBWP() {
 
-			const specialRows = [  
-				"r28",  
-				"r30", "r31", "r32", "r33", "r34",  
-				"r35", "r36", "r37", "r38"  
-			];  
+			const specialRows = [
+				"r28",
+				"r30", "r31", "r32", "r33", "r34",
+				"r35", "r36", "r37", "r38"
+			];
 
-			specialRows.forEach(r => {  
+			specialRows.forEach(r => {
 
 				// ✅ NORMAL INR calculation (same as calculateRow)  
-				let cumm_inr =  
-					getCellValue(`#${r}_qua_i_inr`) +  
-					getCellValue(`#${r}_qua_ii_inr`) +  
-					getCellValue(`#${r}_qua_iii_inr`) +  
-					getCellValue(`#${r}_qua_iv_inr`);  
+				let cumm_inr =
+					getCellValue(`#${r}_qua_i_inr`) +
+					getCellValue(`#${r}_qua_ii_inr`) +
+					getCellValue(`#${r}_qua_iii_inr`) +
+					getCellValue(`#${r}_qua_iv_inr`);
 
 				// ✅ SPECIAL BWP (ONLY qua_i_lc)  
-				let cumm_bwp = getCellValue(`#${r}_qua_i_lc`);  
+				let cumm_bwp = getCellValue(`#${r}_qua_i_lc`);
 
-				setCellValue(`#${r}_cumm_inr`, cumm_inr);  
-				setCellValue(`#${r}_cumm_bwp`, cumm_bwp);  
-			});  
-		}  
+				setCellValue(`#${r}_cumm_inr`, cumm_inr);
+				setCellValue(`#${r}_cumm_bwp`, cumm_bwp);
+			});
+		}
 
 		//--------------------------------------  
 		// SPECIAL ROW (R57, R64)  
 		//--------------------------------------  
-		function calculateRowSpecial(prefix) {  
+		function calculateRowSpecial(prefix) {
 
-			let cumm_inr =  
-				getCellValue(`#${prefix}_qua_i_inr`) +  
-				getCellValue(`#${prefix}_qua_ii_inr`) +  
-				getCellValue(`#${prefix}_qua_iii_inr`) +  
-				getCellValue(`#${prefix}_qua_iv_inr`);  
+			let cumm_inr =
+				getCellValue(`#${prefix}_qua_i_inr`) +
+				getCellValue(`#${prefix}_qua_ii_inr`) +
+				getCellValue(`#${prefix}_qua_iii_inr`) +
+				getCellValue(`#${prefix}_qua_iv_inr`);
 
-			let cumm_bwp = getCellValue(`#${prefix}_qua_i_lc`);  
+			let cumm_bwp = getCellValue(`#${prefix}_qua_i_lc`);
 
-			setCellValue(`#${prefix}_cumm_inr`, cumm_inr);  
-			setCellValue(`#${prefix}_cumm_bwp`, cumm_bwp);  
-		}  
+			setCellValue(`#${prefix}_cumm_inr`, cumm_inr);
+			setCellValue(`#${prefix}_cumm_bwp`, cumm_bwp);
+		}
 
 		//--------------------------------------  
 		// PARTIAL ROW (R80, R81)  
 		//--------------------------------------  
-		function calculateRowPartial(prefix) {  
+		function calculateRowPartial(prefix) {
 
-			let cumm_inr =  
-				getCellValue(`#${prefix}_qua_i_inr`) +  
-				getCellValue(`#${prefix}_qua_iii_inr`);  
+			let cumm_inr =
+				getCellValue(`#${prefix}_qua_i_inr`) +
+				getCellValue(`#${prefix}_qua_iii_inr`);
 
-			let cumm_bwp = getCellValue(`#${prefix}_qua_i_lc`);  
+			let cumm_bwp = getCellValue(`#${prefix}_qua_i_lc`);
 
-			setCellValue(`#${prefix}_cumm_inr`, cumm_inr);  
-			setCellValue(`#${prefix}_cumm_bwp`, cumm_bwp);  
-		}  
+			setCellValue(`#${prefix}_cumm_inr`, cumm_inr);
+			setCellValue(`#${prefix}_cumm_bwp`, cumm_bwp);
+		}
 
 		//--------------------------------------  
 		// R22  
 		//--------------------------------------  
-		function calculateR22() {  
-			const rows = ["r18", "r19", "r20", "r21"];  
+		function calculateR22() {
+			const rows = ["r18", "r19", "r20", "r21"];
 
-			["i", "ii", "iii", "iv"].forEach(q => {  
+			["i", "ii", "iii", "iv"].forEach(q => {
 
 				// LC  
-				setCellValue(`#r22_qua_${q}_lc`,  
-					sumFields(rows.map(r => `#${r}_qua_${q}_lc`))  
-				);  
+				setCellValue(`#r22_qua_${q}_lc`,
+					sumFields(rows.map(r => `#${r}_qua_${q}_lc`))
+				);
 
 				// QAR  
-				if (q === "i") {  
+				if (q === "i") {
 					// ✅ ALWAYS EMPTY  
-					$("#r22_qua_i_qar").val("0");  
-				} else {  
-					setCellValue(`#r22_qua_${q}_qar`,  
-						sumFields(rows.map(r => `#${r}_qua_${q}_qar`))  
-					);  
-				}  
+					$("#r22_qua_i_qar").val("0");
+				} else {
+					setCellValue(`#r22_qua_${q}_qar`,
+						sumFields(rows.map(r => `#${r}_qua_${q}_qar`))
+					);
+				}
 
 				// INR  
-				setCellValue(`#r22_qua_${q}_inr`,  
-					sumFields(rows.map(r => `#${r}_qua_${q}_inr`)  
-					));  
-			});  
+				setCellValue(`#r22_qua_${q}_inr`,
+					sumFields(rows.map(r => `#${r}_qua_${q}_inr`)
+					));
+			});
 
 			// CUMM  
-			setCellValue("#r22_cumm_inr",  
-				sumFields(rows.map(r => `#${r}_cumm_inr`))  
-			);  
+			setCellValue("#r22_cumm_inr",
+				sumFields(rows.map(r => `#${r}_cumm_inr`))
+			);
 
-			setCellValue("#r22_cumm_bwp",  
-				sumFields(rows.map(r => `#${r}_qua_i_lc`)) +  
-				sumFields(rows.map(r => `#${r}_qua_ii_lc`)) +  
-				sumFields(rows.map(r => `#${r}_qua_iii_lc`)) +  
-				sumFields(rows.map(r => `#${r}_qua_iv_lc`))  
-			);  
-		}  
+			setCellValue("#r22_cumm_bwp",
+				sumFields(rows.map(r => `#${r}_qua_i_lc`)) +
+				sumFields(rows.map(r => `#${r}_qua_ii_lc`)) +
+				sumFields(rows.map(r => `#${r}_qua_iii_lc`)) +
+				sumFields(rows.map(r => `#${r}_qua_iv_lc`))
+			);
+		}
 
 		//--------------------------------------  
 		// R47  
 		//--------------------------------------  
-		function calculateR47() {  
-			const rows = ["r44", "r45", "r46"];  
+		function calculateR47() {
+			const rows = ["r44", "r45", "r46"];
 
-			["i", "ii", "iii", "iv"].forEach(q => {  
-				setCellValue(`#r47_qua_${q}_lc`, sumFields(rows.map(r => `#${r}_qua_${q}_lc`)));  
-				setCellValue(`#r47_qua_${q}_qar`, sumFields(rows.map(r => `#${r}_qua_${q}_qar`)));  
-				setCellValue(`#r47_qua_${q}_inr`, sumFields(rows.map(r => `#${r}_qua_${q}_inr`)));  
-			});  
+			["i", "ii", "iii", "iv"].forEach(q => {
+				setCellValue(`#r47_qua_${q}_lc`, sumFields(rows.map(r => `#${r}_qua_${q}_lc`)));
+				setCellValue(`#r47_qua_${q}_qar`, sumFields(rows.map(r => `#${r}_qua_${q}_qar`)));
+				setCellValue(`#r47_qua_${q}_inr`, sumFields(rows.map(r => `#${r}_qua_${q}_inr`)));
+			});
 
-			setCellValue("#r47_cumm_inr", sumFields(rows.map(r => `#${r}_cumm_inr`)));  
-			setCellValue("#r47_cumm_bwp",  
-				getCellValue("#r47_qua_i_lc") +  
-				getCellValue("#r47_qua_ii_lc") +  
-				getCellValue("#r47_qua_iii_lc") +  
-				getCellValue("#r47_qua_iv_lc")  
-			);  
-		}  
+			setCellValue("#r47_cumm_inr", sumFields(rows.map(r => `#${r}_cumm_inr`)));
+			setCellValue("#r47_cumm_bwp",
+				getCellValue("#r47_qua_i_lc") +
+				getCellValue("#r47_qua_ii_lc") +
+				getCellValue("#r47_qua_iii_lc") +
+				getCellValue("#r47_qua_iv_lc")
+			);
+		}
 
 		//--------------------------------------  
 		// R66  
 		//--------------------------------------  
-		function calculateR66() {  
+		function calculateR66() {
 
-			const rows = ["r52", "r53", "r54", "r55", "r56", "r57", "r58",  
-				"r59", "r60", "r61", "r62", "r63", "r64", "r65"];  
+			const rows = ["r52", "r53", "r54", "r55", "r56", "r57", "r58",
+				"r59", "r60", "r61", "r62", "r63", "r64", "r65"];
 
-			["i", "ii", "iii", "iv"].forEach(q => {  
-				setCellValue(`#r66_qua_${q}_lc`, sumFields(rows.map(r => `#${r}_qua_${q}_lc`)));  
-				setCellValue(`#r66_qua_${q}_qar`, sumFields(rows.map(r => `#${r}_qua_${q}_qar`)));  
-				setCellValue(`#r66_qua_${q}_inr`, sumFields(rows.map(r => `#${r}_qua_${q}_inr`)));  
-			});  
+			["i", "ii", "iii", "iv"].forEach(q => {
+				setCellValue(`#r66_qua_${q}_lc`, sumFields(rows.map(r => `#${r}_qua_${q}_lc`)));
+				setCellValue(`#r66_qua_${q}_qar`, sumFields(rows.map(r => `#${r}_qua_${q}_qar`)));
+				setCellValue(`#r66_qua_${q}_inr`, sumFields(rows.map(r => `#${r}_qua_${q}_inr`)));
+			});
 
-			setCellValue("#r66_cumm_inr", sumFields(rows.map(r => `#${r}_cumm_inr`)));  
+			setCellValue("#r66_cumm_inr", sumFields(rows.map(r => `#${r}_cumm_inr`)));
 
-			setCellValue("#r66_cumm_bwp",  
-				getCellValue("#r66_qua_i_lc") +  
-				getCellValue("#r66_qua_ii_lc") +  
-				getCellValue("#r66_qua_iii_lc") +  
-				getCellValue("#r66_qua_iv_lc")  
-			);  
-		}  
+			setCellValue("#r66_cumm_bwp",
+				getCellValue("#r66_qua_i_lc") +
+				getCellValue("#r66_qua_ii_lc") +
+				getCellValue("#r66_qua_iii_lc") +
+				getCellValue("#r66_qua_iv_lc")
+			);
+		}
 
 		//--------------------------------------  
 		// R79  
 		//--------------------------------------  
-		function calculateR79() {  
+		function calculateR79() {
 
-			const rows = ["r71", "r72", "r73", "r74", "r75", "r76", "r77", "r78"];  
+			const rows = ["r71", "r72", "r73", "r74", "r75", "r76", "r77", "r78"];
 
-			["i", "ii", "iii", "iv"].forEach(q => {  
-				setCellValue(`#r79_qua_${q}_lc`, sumFields(rows.map(r => `#${r}_qua_${q}_lc`)));  
-				setCellValue(`#r79_qua_${q}_qar`, sumFields(rows.map(r => `#${r}_qua_${q}_qar`)));  
-				setCellValue(`#r79_qua_${q}_inr`, sumFields(rows.map(r => `#${r}_qua_${q}_inr`)));  
-			});  
+			["i", "ii", "iii", "iv"].forEach(q => {
+				setCellValue(`#r79_qua_${q}_lc`, sumFields(rows.map(r => `#${r}_qua_${q}_lc`)));
+				setCellValue(`#r79_qua_${q}_qar`, sumFields(rows.map(r => `#${r}_qua_${q}_qar`)));
+				setCellValue(`#r79_qua_${q}_inr`, sumFields(rows.map(r => `#${r}_qua_${q}_inr`)));
+			});
 
-			setCellValue("#r79_cumm_inr", sumFields(rows.map(r => `#${r}_cumm_inr`)));  
+			setCellValue("#r79_cumm_inr", sumFields(rows.map(r => `#${r}_cumm_inr`)));
 
-			setCellValue("#r79_cumm_bwp",  
-				getCellValue("#r79_qua_i_lc") +  
-				getCellValue("#r79_qua_ii_lc") +  
-				getCellValue("#r79_qua_iii_lc") +  
-				getCellValue("#r79_qua_iv_lc")  
-			);  
-		}  
+			setCellValue("#r79_cumm_bwp",
+				getCellValue("#r79_qua_i_lc") +
+				getCellValue("#r79_qua_ii_lc") +
+				getCellValue("#r79_qua_iii_lc") +
+				getCellValue("#r79_qua_iv_lc")
+			);
+		}
 
 		//--------------------------------------  
 		// R40 (WITH +/- LOGIC)  
 		//--------------------------------------  
-		function calculateR40() {  
+		function calculateR40() {
 
-			const rows = ["r26", "r27", "r28", "r29", "r30", "r31", "r32",  
-				"r33", "r34", "r35", "r36", "r37", "r38", "r39"];  
+			const rows = ["r26", "r27", "r28", "r29", "r30", "r31", "r32",
+				"r33", "r34", "r35", "r36", "r37", "r38", "r39"];
 
-			["i", "ii", "iii", "iv"].forEach(q => {  
-				setCellValue(`#r40_qua_${q}_lc`, sumFields(rows.map(r => `#${r}_qua_${q}_lc`)));  
-				setCellValue(`#r40_qua_${q}_qar`, sumFields(rows.map(r => `#${r}_qua_${q}_qar`)));  
-				setCellValue(`#r40_qua_${q}_inr`, sumFields(rows.map(r => `#${r}_qua_${q}_inr`)));  
-			});  
+			["i", "ii", "iii", "iv"].forEach(q => {
+				setCellValue(`#r40_qua_${q}_lc`, sumFields(rows.map(r => `#${r}_qua_${q}_lc`)));
+				setCellValue(`#r40_qua_${q}_qar`, sumFields(rows.map(r => `#${r}_qua_${q}_qar`)));
+				setCellValue(`#r40_qua_${q}_inr`, sumFields(rows.map(r => `#${r}_qua_${q}_inr`)));
+			});
 
 			// Special +/- logic  
-			let cumm_inr =  
-				getCellValue("#r26_cumm_inr") +  
-				getCellValue("#r27_cumm_inr") -  
-				getCellValue("#r28_cumm_inr") +  
-				getCellValue("#r29_cumm_inr") -  
-				getCellValue("#r30_cumm_inr") +  
-				getCellValue("#r31_cumm_inr") -  
-				getCellValue("#r32_cumm_inr") +  
-				getCellValue("#r33_cumm_inr") -  
-				getCellValue("#r34_cumm_inr") +  
-				getCellValue("#r35_cumm_inr") +  
-				getCellValue("#r36_cumm_inr") +  
-				getCellValue("#r37_cumm_inr") +  
-				getCellValue("#r38_cumm_inr") +  
-				getCellValue("#r39_cumm_inr");  
+			let cumm_inr =
+				getCellValue("#r26_cumm_inr") +
+				getCellValue("#r27_cumm_inr") -
+				getCellValue("#r28_cumm_inr") +
+				getCellValue("#r29_cumm_inr") -
+				getCellValue("#r30_cumm_inr") +
+				getCellValue("#r31_cumm_inr") -
+				getCellValue("#r32_cumm_inr") +
+				getCellValue("#r33_cumm_inr") -
+				getCellValue("#r34_cumm_inr") +
+				getCellValue("#r35_cumm_inr") +
+				getCellValue("#r36_cumm_inr") +
+				getCellValue("#r37_cumm_inr") +
+				getCellValue("#r38_cumm_inr") +
+				getCellValue("#r39_cumm_inr");
 
-			setCellValue("#r40_cumm_inr", cumm_inr);  
+			setCellValue("#r40_cumm_inr", cumm_inr);
 
-			setCellValue("#r40_cumm_bwp",  
-				getCellValue("#r40_qua_i_lc") +  
-				getCellValue("#r40_qua_ii_lc") +  
-				getCellValue("#r40_qua_iii_lc") +  
-				getCellValue("#r40_qua_iv_lc")  
-			);  
-		}  
-		function calculateR82() {  
+			setCellValue("#r40_cumm_bwp",
+				getCellValue("#r40_qua_i_lc") +
+				getCellValue("#r40_qua_ii_lc") +
+				getCellValue("#r40_qua_iii_lc") +
+				getCellValue("#r40_qua_iv_lc")
+			);
+		}
+		function calculateR82() {
 
 			// QUARTERS  
-			setCellValue("#r82_qua_i_lc", getCellValue("#r79_qua_i_lc"));  
-			setCellValue("#r82_qua_i_qar", getCellValue("#r79_qua_i_qar"));  
-			setCellValue("#r82_qua_i_inr",  
-				getCellValue("#r79_qua_i_inr") -  
-				getCellValue("#r80_qua_i_inr") -  
-				getCellValue("#r81_qua_i_inr")  
-			);  
+			setCellValue("#r82_qua_i_lc", getCellValue("#r79_qua_i_lc"));
+			setCellValue("#r82_qua_i_qar", getCellValue("#r79_qua_i_qar"));
+			setCellValue("#r82_qua_i_inr",
+				getCellValue("#r79_qua_i_inr") -
+				getCellValue("#r80_qua_i_inr") -
+				getCellValue("#r81_qua_i_inr")
+			);
 
-			setCellValue("#r82_qua_ii_lc", getCellValue("#r79_qua_ii_lc"));  
-			setCellValue("#r82_qua_ii_qar", getCellValue("#r79_qua_ii_qar"));  
-			setCellValue("#r82_qua_ii_inr", getCellValue("#r79_qua_ii_inr"));  
+			setCellValue("#r82_qua_ii_lc", getCellValue("#r79_qua_ii_lc"));
+			setCellValue("#r82_qua_ii_qar", getCellValue("#r79_qua_ii_qar"));
+			setCellValue("#r82_qua_ii_inr", getCellValue("#r79_qua_ii_inr"));
 
-			setCellValue("#r82_qua_iii_lc", getCellValue("#r79_qua_iii_lc"));  
-			setCellValue("#r82_qua_iii_qar", getCellValue("#r79_qua_iii_qar"));  
-			setCellValue("#r82_qua_iii_inr", getCellValue("#r79_qua_iii_inr"));  
+			setCellValue("#r82_qua_iii_lc", getCellValue("#r79_qua_iii_lc"));
+			setCellValue("#r82_qua_iii_qar", getCellValue("#r79_qua_iii_qar"));
+			setCellValue("#r82_qua_iii_inr", getCellValue("#r79_qua_iii_inr"));
 
-			setCellValue("#r82_qua_iv_lc", getCellValue("#r79_qua_iv_lc"));  
-			setCellValue("#r82_qua_iv_qar", getCellValue("#r79_qua_iv_qar"));  
-			setCellValue("#r82_qua_iv_inr", getCellValue("#r79_qua_iv_inr"));  
-
-			// CUMM  
-			setCellValue("#r82_cumm_inr",  
-				getCellValue("#r79_cumm_inr") -  
-				getCellValue("#r80_cumm_inr") -  
-				getCellValue("#r81_cumm_inr")  
-			);  
-
-			setCellValue("#r82_cumm_bwp",  
-				getCellValue("#r82_qua_i_lc") +  
-				getCellValue("#r82_qua_ii_lc") +  
-				getCellValue("#r82_qua_iii_lc") +  
-				getCellValue("#r82_qua_iv_lc")  
-			);  
-		}  
-		function calculateR90() {  
-
-			setCellValue("#r90_qua_i_lc", getCellValue("#r85_qua_i_lc"));  
-			setCellValue("#r90_qua_i_inr", getCellValue("#r85_qua_i_inr"));  
-
-			setCellValue("#r90_qua_ii_lc", getCellValue("#r85_qua_ii_lc"));  
-			setCellValue("#r90_qua_ii_inr", getCellValue("#r85_qua_ii_inr"));  
+			setCellValue("#r82_qua_iv_lc", getCellValue("#r79_qua_iv_lc"));
+			setCellValue("#r82_qua_iv_qar", getCellValue("#r79_qua_iv_qar"));
+			setCellValue("#r82_qua_iv_inr", getCellValue("#r79_qua_iv_inr"));
 
 			// CUMM  
-			setCellValue("#r90_cumm_inr", getCellValue("#r85_cumm_inr"));  
+			setCellValue("#r82_cumm_inr",
+				getCellValue("#r79_cumm_inr") -
+				getCellValue("#r80_cumm_inr") -
+				getCellValue("#r81_cumm_inr")
+			);
 
-			setCellValue("#r90_cumm_bwp",  
-				getCellValue("#r90_qua_i_lc") +  
-				getCellValue("#r90_qua_ii_lc") +  
-				getCellValue("#r90_qua_iii_lc") +  
-				getCellValue("#r90_qua_iv_lc")  
-			);  
-		}  
-		function calculateR91() {  
+			setCellValue("#r82_cumm_bwp",
+				getCellValue("#r82_qua_i_lc") +
+				getCellValue("#r82_qua_ii_lc") +
+				getCellValue("#r82_qua_iii_lc") +
+				getCellValue("#r82_qua_iv_lc")
+			);
+		}
+		function calculateR90() {
+
+			setCellValue("#r90_qua_i_lc", getCellValue("#r85_qua_i_lc"));
+			setCellValue("#r90_qua_i_inr", getCellValue("#r85_qua_i_inr"));
+
+			setCellValue("#r90_qua_ii_lc", getCellValue("#r85_qua_ii_lc"));
+			setCellValue("#r90_qua_ii_inr", getCellValue("#r85_qua_ii_inr"));
+
+			// CUMM  
+			setCellValue("#r90_cumm_inr", getCellValue("#r85_cumm_inr"));
+
+			setCellValue("#r90_cumm_bwp",
+				getCellValue("#r90_qua_i_lc") +
+				getCellValue("#r90_qua_ii_lc") +
+				getCellValue("#r90_qua_iii_lc") +
+				getCellValue("#r90_qua_iv_lc")
+			);
+		}
+		function calculateR91() {
 
 			// COPY FROM R90  
-			["i", "ii", "iii", "iv"].forEach(q => {  
-				setCellValue(`#r91_qua_${q}_lc`, getCellValue(`#r90_qua_${q}_lc`));  
-				setCellValue(`#r91_qua_${q}_qar`, getCellValue(`#r90_qua_${q}_qar`));  
-				setCellValue(`#r91_qua_${q}_inr`, getCellValue(`#r90_qua_${q}_inr`));  
-			});  
+			["i", "ii", "iii", "iv"].forEach(q => {
+				setCellValue(`#r91_qua_${q}_lc`, getCellValue(`#r90_qua_${q}_lc`));
+				setCellValue(`#r91_qua_${q}_qar`, getCellValue(`#r90_qua_${q}_qar`));
+				setCellValue(`#r91_qua_${q}_inr`, getCellValue(`#r90_qua_${q}_inr`));
+			});
 
 			// CUMM  
-			setCellValue("#r91_cumm_inr",  
-				getCellValue("#r88_cumm_inr") +  
-				getCellValue("#r89_cumm_inr") +  
-				getCellValue("#r90_cumm_inr")  
-			);  
+			setCellValue("#r91_cumm_inr",
+				getCellValue("#r88_cumm_inr") +
+				getCellValue("#r89_cumm_inr") +
+				getCellValue("#r90_cumm_inr")
+			);
 
-			setCellValue("#r91_cumm_bwp",  
-				getCellValue("#r91_qua_i_lc") +  
-				getCellValue("#r91_qua_ii_lc") +  
-				getCellValue("#r91_qua_iii_lc") +  
-				getCellValue("#r91_qua_iv_lc")  
-			);  
-		}  
-		function calculateR85() {  
+			setCellValue("#r91_cumm_bwp",
+				getCellValue("#r91_qua_i_lc") +
+				getCellValue("#r91_qua_ii_lc") +
+				getCellValue("#r91_qua_iii_lc") +
+				getCellValue("#r91_qua_iv_lc")
+			);
+		}
+		function calculateR85() {
 
-			["i", "ii", "iii", "iv"].forEach(q => {  
+			["i", "ii", "iii", "iv"].forEach(q => {
 
-				setCellValue(`#r85_qua_${q}_lc`,  
-					getCellValue(`#r22_qua_${q}_lc`) +  
-					getCellValue(`#r40_qua_${q}_lc`) -  
-					getCellValue(`#r47_qua_${q}_lc`) -  
-					getCellValue(`#r66_qua_${q}_lc`) -  
-					getCellValue(`#r82_qua_${q}_lc`)  
-				);  
+				setCellValue(`#r85_qua_${q}_lc`,
+					getCellValue(`#r22_qua_${q}_lc`) +
+					getCellValue(`#r40_qua_${q}_lc`) -
+					getCellValue(`#r47_qua_${q}_lc`) -
+					getCellValue(`#r66_qua_${q}_lc`) -
+					getCellValue(`#r82_qua_${q}_lc`)
+				);
 
-				setCellValue(`#r85_qua_${q}_qar`,  
-					getCellValue(`#r22_qua_${q}_qar`) +  
-					getCellValue(`#r40_qua_${q}_qar`) -  
-					getCellValue(`#r47_qua_${q}_qar`) -  
-					getCellValue(`#r66_qua_${q}_qar`) -  
-					getCellValue(`#r82_qua_${q}_qar`)  
-				);  
+				setCellValue(`#r85_qua_${q}_qar`,
+					getCellValue(`#r22_qua_${q}_qar`) +
+					getCellValue(`#r40_qua_${q}_qar`) -
+					getCellValue(`#r47_qua_${q}_qar`) -
+					getCellValue(`#r66_qua_${q}_qar`) -
+					getCellValue(`#r82_qua_${q}_qar`)
+				);
 
-				setCellValue(`#r85_qua_${q}_inr`,  
-					getCellValue(`#r22_qua_${q}_inr`) +  
-					getCellValue(`#r40_qua_${q}_inr`) -  
-					getCellValue(`#r47_qua_${q}_inr`) -  
-					getCellValue(`#r66_qua_${q}_inr`) -  
-					getCellValue(`#r82_qua_${q}_inr`)  
-				);  
-			});  
+				setCellValue(`#r85_qua_${q}_inr`,
+					getCellValue(`#r22_qua_${q}_inr`) +
+					getCellValue(`#r40_qua_${q}_inr`) -
+					getCellValue(`#r47_qua_${q}_inr`) -
+					getCellValue(`#r66_qua_${q}_inr`) -
+					getCellValue(`#r82_qua_${q}_inr`)
+				);
+			});
 
 			// ✅ CUMM INR  
-			setCellValue("#r85_cumm_inr",  
-				getCellValue("#r22_cumm_inr") +  
-				getCellValue("#r40_cumm_inr") -  
-				getCellValue("#r47_cumm_inr") -  
-				getCellValue("#r66_cumm_inr") -  
-				getCellValue("#r82_cumm_inr")  
-			);  
+			setCellValue("#r85_cumm_inr",
+				getCellValue("#r22_cumm_inr") +
+				getCellValue("#r40_cumm_inr") -
+				getCellValue("#r47_cumm_inr") -
+				getCellValue("#r66_cumm_inr") -
+				getCellValue("#r82_cumm_inr")
+			);
 
 			// ✅ CUMM BWP (sum of LC quarters)  
-			setCellValue("#r85_cumm_bwp",  
-				getCellValue("#r85_qua_i_lc") +  
-				getCellValue("#r85_qua_ii_lc") +  
-				getCellValue("#r85_qua_iii_lc") +  
-				getCellValue("#r85_qua_iv_lc")  
-			);  
-		}  
-		function calculateR21() {  
+			setCellValue("#r85_cumm_bwp",
+				getCellValue("#r85_qua_i_lc") +
+				getCellValue("#r85_qua_ii_lc") +
+				getCellValue("#r85_qua_iii_lc") +
+				getCellValue("#r85_qua_iv_lc")
+			);
+		}
+		function calculateR21() {
 
-			let lc = getCellValue("#r21_qua_i_lc");  
+			let lc = getCellValue("#r21_qua_i_lc");
 
-			let inr = lc * 6.2934;  
+			let inr = lc * 6.2934;
 
-			setCellValue("#r21_qua_i_inr", inr);  
-		}  
-		function calculateR77() {  
+			setCellValue("#r21_qua_i_inr", inr);
+		}
+		function calculateR77() {
 
-			let lc = getCellValue("#r77_qua_i_lc");  
+			let lc = getCellValue("#r77_qua_i_lc");
 
-			let inr = lc * 6.2934;  
+			let inr = lc * 6.2934;
 
-			setCellValue("#r77_qua_i_inr", inr);  
-		}  
-		function calculateR78() {  
+			setCellValue("#r77_qua_i_inr", inr);
+		}
+		function calculateR78() {
 
-			let firstValue = 11544;  
-			let secondValue = 11483;  
+			let firstValue = 11544;
+			let secondValue = 11483;
 
-			let result = firstValue - secondValue;  
+			let result = firstValue - secondValue;
 
 			setCellValue("#r78_qua_i_inr", result);  // ✅ correct  
-		}  
+		}
 
-		function calculateR80() {  
+		function calculateR80() {
 
-			let lc = getCellValue("#r80_qua_i_lc");  
+			let lc = getCellValue("#r80_qua_i_lc");
 
-			let inr = lc * 6.2934;  
+			let inr = lc * 6.2934;
 
-			setCellValue("#r80_qua_i_inr", inr);  
-		}  
+			setCellValue("#r80_qua_i_inr", inr);
+		}
 		//--------------------------------------  
 		// READY  
 		//--------------------------------------  
 		// ✅ GLOBAL FUNCTION (IMPORTANT FIX)  
-		function runAll() {  
+		function runAll() {
 
-			const normalRows = [  
-				"r18", "r19", "r20", "r21",  
-				"r27",   
-				"r46",  
-				"r52", "r53", "r54", "r55", "r56", "r58", "r59", "r60",  
-				"r61", "r62", "r63", "r65",  
-				"r71", "r72", "r73", "r74", "r75", "r76", "r77", "r78"  
-			];  
+			const normalRows = [
+				"r18", "r19", "r20", "r21",
+				"r27",
+				"r46",
+				"r52", "r53", "r54", "r55", "r56", "r58", "r59", "r60",
+				"r61", "r62", "r63", "r65",
+				"r71", "r72", "r73", "r74", "r75", "r76", "r77", "r78"
+			];
 
-			const specialRows = ["r57", "r64"];  
-			const partialRows = ["r80", "r81"];  
+			const specialRows = ["r57", "r64"];
+			const partialRows = ["r80", "r81"];
 
 			normalRows.forEach(r => calculateRow(r)); // normal  
 
 			calculateSpecialBWP(); // override special rows  
-			specialRows.forEach(r => calculateRowSpecial(r));  
-			partialRows.forEach(r => calculateRowPartial(r));  
-			calculateR21();  
-			calculateR22();  
-			calculateR40();  
-			calculateR47();  
-			calculateR66();  
-			calculateR77();  
-			calculateR78();  
-			calculateR79();  
-			calculateR80();  
-			calculateR82();  
-			calculateR85();  
-			calculateR90();  
-			calculateR91();  
-		  
-			  
-			  
-		}  
-		$(document).ready(function () {  
+			specialRows.forEach(r => calculateRowSpecial(r));
+			partialRows.forEach(r => calculateRowPartial(r));
+			calculateR21();
+			calculateR22();
+			calculateR40();
+			calculateR47();
+			calculateR66();
+			calculateR77();
+			calculateR78();
+			calculateR79();
+			calculateR80();
+			calculateR82();
+			calculateR85();
+			calculateR90();
+			calculateR91();
+
+
+
+		}
+		$(document).ready(function () {
 
 			// Initial load  
-			runAll();  
+			runAll();
 
 			// Auto calculation on input  
-			$("[id^='r']").on("input", function () {  
-				runAll();  
-			});  
+			$("[id^='r']").on("input", function () {
+				runAll();
+			});
 
-		});  
+		});
 
 
-	</script>  
-	<script>  
+	</script>
+	<script>
 		function fileuploads(btn) {
 
-		    const asondate = btn.getAttribute("data-todate");
-		    const type = btn.getAttribute("data-type");
+			const asondate = btn.getAttribute("data-todate");
+			const type = (btn.getAttribute("data-type") || "").trim();
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    try {
+			try {
 
-		        // ✅ STEP 1: remove commas
-		        $("#fileupload input[type='text']").each(function () {
-		            let val = $(this).val();
-		            if (val) {
-		                $(this).val(val.replace(/,/g, ''));
-		            }
-		        });
+				// ✅ STEP 1: remove commas
+				$("#fileupload input[type='text']").each(function () {
 
-		        // ✅ STEP 2: run calculations
-		        runAll();
+					let val = $(this).val() || '';
 
-		        // ✅ STEP 3: validation
-		        if (!$("#fileupload").valid()) {
-		            $('#loader').modal('hide');
-		            return;
-		        }
+					$(this).val(val.replace(/,/g, ''));
+				});
 
-		        // ✅ STEP 4: CREATE FIRST
-		        const formData = new FormData();
+				// ✅ STEP 2: run calculations
+				runAll();
 
-		        formData.append("asondate", asondate);
-		        formData.append("type", type);
+				// ✅ STEP 3: validation
+				if (!$("#fileupload").valid()) {
 
-		        // ✅ STEP 5: INPUT VALUES
-		        $('#fileupload').find(':input').each(function () {
-		            const id = $(this).attr('id');
-		            if (id) {
-		                formData.append(id, $(this).val());
-		            }
-		        });
+					$('#loader').modal('hide');
+					return;
+				}
 
-		        // ✅ STEP 6: TD VALUES (AFTER formData created)
-		        $('#fileupload td[id]').each(function () {
-		            const id = $(this).attr('id');
-		            let value = $(this).text().replace(/,/g, '').trim();
+				// ✅ STEP 4: SERIALIZE FORM
+				let formData = $("#fileupload").serialize();
 
-		            if (id && value !== "") {
-		                formData.append(id, value);
-		            }
-		        });
+				formData += "&asondate=" + encodeURIComponent(asondate);
+				formData += "&type=" + encodeURIComponent(type);
 
-		        // ✅ STEP 7: AJAX
-		        $.ajax({
-		            url: './AS_11updateAll',
-		            type: 'POST',
-		            data: formData,
-		            processData: false,
-		            contentType: false,
-		            dataType: 'text',
-		            success: function () {
-		                $("#resultModalLabel").text("BRRS");
-		                $("#resultModalBody").text("Modified Successfully.");
-		                $("#resultModal").modal("show");
-		            },
-		            error: function (jqXHR) {
-		                console.error("Error:", jqXHR.responseText);
-		                $("#resultModalLabel").text("Error");
-		                $("#resultModalBody").text("Update failed.");
-		                $("#resultModal").modal("show");
-		            },
-		            complete: function () {
-		                $('#loader').modal('hide');
-		            }
-		        });
+				// ✅ STEP 5: TD VALUES
+				$('#fileupload td[id]').each(function () {
 
-		    } catch (error) {
-		        console.error("Error in fileuploads:", error);
-		        $('#loader').modal('hide');
-		    }
+					const id = $(this).attr('id');
+
+					let value = $(this).text()
+						.replace(/,/g, '')
+						.trim();
+
+					if (id && value !== "") {
+
+						formData += "&" +
+							encodeURIComponent(id) +
+							"=" +
+							encodeURIComponent(value);
+					}
+				});
+
+				console.log("✅ Serialized data prepared");
+
+				// ✅ STEP 6: AJAX
+				$.ajax({
+
+					url: './AS_11updateAll',
+					type: 'POST',
+					data: formData,
+					dataType: 'text',
+
+					success: function () {
+
+						$("#resultModalLabel").text("BRRS");
+
+						$("#resultModalBody").text("Modified Successfully.");
+
+						$("#resultModal").modal("show");
+					},
+
+					error: function (jqXHR) {
+
+						console.error("Error:", jqXHR.responseText);
+
+						$("#resultModalLabel").text("Error");
+
+						$("#resultModalBody").text("Update failed.");
+
+						$("#resultModal").modal("show");
+					},
+
+					complete: function () {
+
+						$('#loader').modal('hide');
+					}
+				});
+
+			} catch (error) {
+
+				console.error("Error in fileuploads:", error);
+
+				$('#loader').modal('hide');
+			}
 		}
 	</script>
 

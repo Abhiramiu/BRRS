@@ -414,10 +414,10 @@ PURPOSE		: BRRSREPORT
 		}
 
 		function showsummary() {
-				$('#loader').modal('show');
-				var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/
-					location.href = Callurl;
-			}
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/
+				location.href = Callurl;
+		}
 
 	</script>
 
@@ -510,14 +510,14 @@ PURPOSE		: BRRSREPORT
 			});
 		}
 		function closemodel() {
-							$("#resultModal").modal("hide");
-							$('#loader').modal('hide');
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
 
-							// Reload the page after a short delay to ensure the modal animation completes smoothly.
-							setTimeout(function () {
-								location.reload();
-							}, 300);
-						}
+			// Reload the page after a short delay to ensure the modal animation completes smoothly.
+			setTimeout(function () {
+				location.reload();
+			}, 300);
+		}
 	</script>
 
 	<script>
@@ -1169,16 +1169,16 @@ PURPOSE		: BRRSREPORT
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}" />
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-												th:if="${displaymode == 'Details'}">Summary</button>
-											<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-												th:if="${displaymode == 'summary'}">Details</button>
-											<!-- Modify Button -->
-											<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-												title="Click to EDIT Records" th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
-												th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
-												id="addRecord">
-												Modify
-											</button>
+							th:if="${displaymode == 'Details'}">Summary</button>
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
+							th:if="${displaymode == 'summary'}">Details</button>
+						<!-- Modify Button -->
+						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
+							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
+							id="addRecord">
+							Modify
+						</button>
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
 
@@ -1250,11 +1250,11 @@ PURPOSE		: BRRSREPORT
 											<tr th:each="reportsummary: ${reportsummary}">
 												<td th:text="${reportsummary.r10_fix_ass}" style="width: 100px;"></td>
 												<td th:text="${reportsummary.r10_cost}" class="left"
-													th:attr="RowId='R10', ColumnId='C2'" id="r10_cost" name="r10_cost"
-													></td>
+													th:attr="RowId='R10', ColumnId='C2'" id="r10_cost" name="r10_cost">
+												</td>
 												<td th:text="${reportsummary.r10_add}" class="left"
-													th:attr="RowId='R10', ColumnId='C3'" id="r10_add" name="r10_add"
-													></td>
+													th:attr="RowId='R10', ColumnId='C3'" id="r10_add" name="r10_add">
+												</td>
 												<td th:text="${reportsummary.r10_disposals}" class="left"
 													th:attr="RowId='R10', ColumnId='C4'" id="r10_disposals"
 													name="r10_disposals"></td>
@@ -1270,14 +1270,14 @@ PURPOSE		: BRRSREPORT
 											<tr th:each="reportsummary: ${reportsummary}">
 												<td th:text="${reportsummary.r11_fix_ass}"></td>
 												<td th:text="${reportsummary.r11_cost}" class="left"
-													th:attr="RowId='R11', ColumnId='C2'" id="r11_cost" name="r11_cost"
-											></td>
+													th:attr="RowId='R11', ColumnId='C2'" id="r11_cost" name="r11_cost">
+												</td>
 												<td th:text="${reportsummary.r11_add}" class="left"
-													th:attr="RowId='R11', ColumnId='C3'" id="r11_add" name="r11_add"
-													></td>
+													th:attr="RowId='R11', ColumnId='C3'" id="r11_add" name="r11_add">
+												</td>
 												<td th:text="${reportsummary.r11_disposals}" class="left"
 													th:attr="RowId='R11', ColumnId='C4'" id="r11_disposals"
-													name="r11_disposals" ></td>
+													name="r11_disposals"></td>
 												<td th:text="${reportsummary.r11_depreciation}" class="left"
 													id="r11_depreciation" name="r11_depreciation"
 													th:attr="RowId='R11', ColumnId='C5'"
@@ -1344,14 +1344,14 @@ PURPOSE		: BRRSREPORT
 											<tr th:each="reportsummary: ${reportsummary}">
 												<td th:text="${reportsummary.r13_fix_ass}"></td>
 												<td th:text="${reportsummary.r13_cost}" class="left"
-													th:attr="RowId='R13', ColumnId='C2'" id="r13_cost" name="r13_cost"
-													></td>
+													th:attr="RowId='R13', ColumnId='C2'" id="r13_cost" name="r13_cost">
+												</td>
 												<td th:text="${reportsummary.r13_add}" class="left"
-													th:attr="RowId='R13', ColumnId='C3'" id="r13_add" name="r13_add"
-													></td>
+													th:attr="RowId='R13', ColumnId='C3'" id="r13_add" name="r13_add">
+												</td>
 												<td th:text="${reportsummary.r13_disposals}" class="left"
 													th:attr="RowId='R13', ColumnId='C4'" id="r13_disposals"
-													name="r13_disposals" ></td>
+													name="r13_disposals"></td>
 												<td th:text="${reportsummary.r13_depreciation}" class="left"
 													id="r13_depreciation" name="r13_depreciation"
 													th:attr="RowId='R13', ColumnId='C5'"
@@ -1364,11 +1364,11 @@ PURPOSE		: BRRSREPORT
 											<tr th:each="reportsummary: ${reportsummary}">
 												<td th:text="${reportsummary.r14_fix_ass}"></td>
 												<td th:text="${reportsummary.r14_cost}" class="left"
-													th:attr="RowId='R14', ColumnId='C2'" id="r14_cost" name="r14_cost"
-													></td>
+													th:attr="RowId='R14', ColumnId='C2'" id="r14_cost" name="r14_cost">
+												</td>
 												<td th:text="${reportsummary.r14_add}" class="left"
-													th:attr="RowId='R14', ColumnId='C3'" id="r14_add" name="r14_add"
-													></td>
+													th:attr="RowId='R14', ColumnId='C3'" id="r14_add" name="r14_add">
+												</td>
 												<td th:text="${reportsummary.r14_disposals}" class="left"
 													th:attr="RowId='R14', ColumnId='C4'" id="r14_disposals"
 													name="r14_disposals"></td>
@@ -1384,11 +1384,11 @@ PURPOSE		: BRRSREPORT
 											<tr th:each="reportsummary: ${reportsummary}">
 												<td th:text="${reportsummary.r15_fix_ass}"></td>
 												<td th:text="${reportsummary.r15_cost}" class="left"
-													th:attr="RowId='R15', ColumnId='C2'" id="r15_cost" name="r15_cost"
-												></td>
+													th:attr="RowId='R15', ColumnId='C2'" id="r15_cost" name="r15_cost">
+												</td>
 												<td th:text="${reportsummary.r15_add}" class="left"
-													th:attr="RowId='R15', ColumnId='C3'" id="r15_add" name="r15_add"
-													></td>
+													th:attr="RowId='R15', ColumnId='C3'" id="r15_add" name="r15_add">
+												</td>
 												<td th:text="${reportsummary.r15_disposals}" class="left"
 													th:attr="RowId='R15', ColumnId='C4'" id="r15_disposals"
 													name="r15_disposals"></td>
@@ -1404,14 +1404,14 @@ PURPOSE		: BRRSREPORT
 											<tr th:each="reportsummary: ${reportsummary}">
 												<td th:text="${reportsummary.r16_fix_ass}"></td>
 												<td th:text="${reportsummary.r16_cost}" class="left"
-													th:attr="RowId='R16', ColumnId='C2'" id="r16_cost" name="r16_cost"
-													></td>
+													th:attr="RowId='R16', ColumnId='C2'" id="r16_cost" name="r16_cost">
+												</td>
 												<td th:text="${reportsummary.r16_add}" class="left"
-													th:attr="RowId='R16', ColumnId='C3'" id="r16_add" name="r16_add"
-													></td>
+													th:attr="RowId='R16', ColumnId='C3'" id="r16_add" name="r16_add">
+												</td>
 												<td th:text="${reportsummary.r16_disposals}" class="left"
 													th:attr="RowId='R16', ColumnId='C4'" id="r16_disposals"
-													name="r16_disposals" ></td>
+													name="r16_disposals"></td>
 												<td th:text="${reportsummary.r16_depreciation}" class="left"
 													id="r16_depreciation" name="r16_depreciation"
 													th:attr="RowId='R16', ColumnId='C4'"
@@ -1983,23 +1983,23 @@ PURPOSE		: BRRSREPORT
 
 
 		<div class="modal fade" id="resultModal1">
-				<div class="modal-dialog modal-dialog-centered">
-					<div class="modal-content">
-						<!-- Your custom styled header -->
-						<div class="menu-title-header">
-							<div class="modal-title" id="resultModalLabel1" style="text-align: center; color: white;">
-								<!-- Title will be set by JavaScript -->
-							</div>
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<!-- Your custom styled header -->
+					<div class="menu-title-header">
+						<div class="modal-title" id="resultModalLabel1" style="text-align: center; color: white;">
+							<!-- Title will be set by JavaScript -->
 						</div>
-						<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-							<p id="resultModalBody1"></p>
-							<!-- Your custom styled button -->
-							<button type="button" class="custom-tab-btn" onclick="closemodels()"
-								data-dismiss="modal">Ok</button>
-						</div>
+					</div>
+					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+						<p id="resultModalBody1"></p>
+						<!-- Your custom styled button -->
+						<button type="button" class="custom-tab-btn" onclick="closemodels()"
+							data-dismiss="modal">Ok</button>
 					</div>
 				</div>
 			</div>
+		</div>
 		<!-- Custom Cellresult Modal -->
 		<div class="modal fade" id="cellresultModal">
 			<div class="modal-dialog modal-dialog-centered">

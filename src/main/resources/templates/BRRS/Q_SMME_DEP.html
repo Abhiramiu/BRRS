@@ -670,18 +670,18 @@ PURPOSE		: BRRS REPORT
 
 		}
 		function closemodel() {
-				    const modalElement = document.getElementById('resultModal');
-				    const modal = bootstrap.Modal.getInstance(modalElement);
-				    modal.hide();
+			const modalElement = document.getElementById('resultModal');
+			const modal = bootstrap.Modal.getInstance(modalElement);
+			modal.hide();
 
-				    const message = document.getElementById("resultModalBody").innerText.toLowerCase();
+			const message = document.getElementById("resultModalBody").innerText.toLowerCase();
 
-				    if (message.includes("resubmission")) {
-				        window.history.back();
-				    } else {
-				        location.reload();
-				    }
-				}
+			if (message.includes("resubmission")) {
+				window.history.back();
+			} else {
+				location.reload();
+			}
+		}
 
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
@@ -959,10 +959,10 @@ PURPOSE		: BRRS REPORT
 
 	<script>
 
-
 		function fileuploads(btn) {
+
 			const asondate = btn.getAttribute("data-todate");
-			const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
+			const type = (btn.getAttribute("data-type") || "").trim();
 
 			$('#loader').modal('show');
 
@@ -971,50 +971,54 @@ PURPOSE		: BRRS REPORT
 
 			// Step 2: Remove commas
 			$("#fileupload input[type='text']").each(function () {
-				$(this).val($(this).val().replace(/,/g, ''));
+
+				let val = $(this).val() || '';
+
+				$(this).val(val.replace(/,/g, ''));
 			});
 
 			// Step 3: Validate form
 			if (!$("#fileupload").valid()) {
+
 				$('#loader').modal('hide');
 				return;
 			}
 
-			// Step 4: Build FormData
-			const formData = new FormData();
-			formData.append("asondate", asondate);
-			formData.append("type", type);
+			// Step 4: SERIALIZE FORM
+			let formData = $("#fileupload").serialize();
 
-			$('#fileupload').find(':input').each(function () {
-				const name = $(this).attr('name');
-				if (name) formData.append(name, $(this).val());
-			});
+			formData += "&asondate=" + encodeURIComponent(asondate);
+			formData += "&type=" + encodeURIComponent(type);
 
-			// Select API dynamically (OLD LOGIC)
+			console.log("✅ Serialized data prepared");
+
+			// Step 5: API URL
 			let apiUrl = './Q_SMME_DEPupdate';
-			if (type && type.toUpperCase() === 'RESUB') {
+
+			if (type.toUpperCase() === 'RESUB') {
 				apiUrl = './UpdateQ_SMME_DEP_ReSub';
 			}
 
-			// ✅ AJAX CALL (NEW STYLE)
+			// Step 6: AJAX
 			$.ajax({
+
 				url: apiUrl,
 				type: 'POST',
 				data: formData,
-				processData: false,
-				contentType: false,
 				dataType: 'text',
 
 				success: function (response) {
+
 					$("#resultModalLabel").text("BRRS");
 					$("#resultModalBody").text(response);
 					$("#resultModal").modal("show");
 
-					// Redirect after modal close (OLD LOGIC)
 					$("#resultModal")
 						.off("hidden.bs.modal")
 						.on("hidden.bs.modal", function () {
-							if (isResubmissionUpdate) {
+
+							if (type.toUpperCase() === 'RESUB') {
+
 								window.location.href = previousUrl
 									? previousUrl
 									: "/BRRS/Resubmission?rptcode=Q_SMME_DEP";
@@ -1023,20 +1027,22 @@ PURPOSE		: BRRS REPORT
 				},
 
 				error: function (jqXHR) {
+
 					console.log("Error response:", jqXHR.responseText);
+
 					$("#resultModalLabel").text("Error");
 					$("#resultModalBody").text("Update failed. Check console.");
 					$("#resultModal").modal("show");
 				},
 
 				complete: function () {
+
 					$('#loader').modal('hide');
 				}
 			});
 
 			console.log("✅ AJAX executed successfully");
 		}
-
 	</script>
 
 </head>

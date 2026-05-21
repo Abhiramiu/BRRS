@@ -830,14 +830,13 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
 		function fileupload_all(btn) {
 
 			var asondate = btn.getAttribute("data-todate");
-			const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
+			const type = btn.getAttribute("data-type");
 
 			// Mark RESUB once
 			isResubmissionUpdate = (type && type.toUpperCase() === 'RESUB');
 
 			$('#loader').modal('show');
 
-			// ✅ OLD PRE-CALC LOGIC (LIKE BEFORE)
 			console.log("✅ Calculations executed successfully");
 
 			// Remove commas from numeric inputs
@@ -854,43 +853,40 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
 				return;
 			}
 
-			// ✅ NEW STYLE (FormData) BUT OLD BEHAVIOR
-			const formData = new FormData();
-			formData.append("asondate", asondate);
-			formData.append("type", type);
+			// ✅ SERIALIZE FORM
+			var formData = $("#fileupload").serialize();
 
-			// Append each input ONCE (no duplication)
-			$('#fileupload').find(':input[name]').each(function () {
-				formData.append(this.id, this.value);
-			});
+			// Append extra values
+			formData += "&asondate=" + encodeURIComponent(asondate);
+			formData += "&type=" + encodeURIComponent(type);
 
-			console.log("✅ FormData prepared");
+			console.log("✅ Serialized data prepared");
 
-			// Select API dynamically (OLD LOGIC)
+			// API URL
 			let apiUrl = './SRWA12FupdateAll';
+
 			if (type && type.toUpperCase() === 'RESUB') {
 				apiUrl = './UpdateM_SRWA_12F_ReSub';
 			}
 
-			// ✅ AJAX CALL (NEW STYLE)
 			$.ajax({
 				url: apiUrl,
 				type: 'POST',
 				data: formData,
-				processData: false,
-				contentType: false,
 				dataType: 'text',
 
 				success: function (response) {
+
 					$("#resultModalLabel").text("BRRS");
 					$("#resultModalBody").text(response);
 					$("#resultModal").modal("show");
 
-					// Redirect after modal close (OLD LOGIC)
 					$("#resultModal")
 						.off("hidden.bs.modal")
 						.on("hidden.bs.modal", function () {
+
 							if (isResubmissionUpdate) {
+
 								window.location.href = previousUrl
 									? previousUrl
 									: "/BRRS/Resubmission?rptcode=M_SRWA_12F";
@@ -899,7 +895,9 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
 				},
 
 				error: function (jqXHR) {
+
 					console.log("Error response:", jqXHR.responseText);
+
 					$("#resultModalLabel").text("Error");
 					$("#resultModalBody").text("Update failed. Check console.");
 					$("#resultModal").modal("show");
@@ -912,7 +910,6 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
 
 			console.log("✅ AJAX executed successfully");
 		}
-
 	</script>
 
 	<script th:inline="javascript">

@@ -211,12 +211,12 @@ PURPOSE		: BRRS REPORT
 		}
 
 		/* When input or select is focused or has a value, move the label up */
-		
+
 
 		/* Hover effect when the input/select is focused */
-		
 
-	
+
+
 
 		.table-cell tbody td:hover {
 			background-color: #f0f0f0;
@@ -406,38 +406,38 @@ PURPOSE		: BRRS REPORT
 		function showdetail() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${'detail'}, asondate=${asondate})}]]*/
-			// showResultModal('BRRS', 'Details page not available for Manual Report');
-			location.href = Callurl;
+				// showResultModal('BRRS', 'Details page not available for Manual Report');
+				location.href = Callurl;
 		}
 		function showsummary() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='summary', fromdate=${fromdate}, todate=${todate}, type=${'summary'}, asondate=${asondate})}]]*/
-			location.href = Callurl;
+				location.href = Callurl;
 		}
 
 		function showArchivalsummary() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='summary', fromdate=${fromdate}, todate=${todate}, type=${'ARCHIVAL'}, asondate=${asondate}, version=${version ?: ''})}]]*/
-			location.href = Callurl;
+				location.href = Callurl;
 		}
 
 
 		function showArchivaldetail() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${'ARCHIVAL'}, asondate=${asondate}, version=${version ?: ''})}]]*/
-			location.href = Callurl;
+				location.href = Callurl;
 		}
 
 		function showResubsummary() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='summary', fromdate=${fromdate}, todate=${todate}, type=${'RESUB'}, asondate=${asondate}, version=${version ?: ''})}]]*/
-			location.href = Callurl;
+				location.href = Callurl;
 		}
 
 		function showResubdetail() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${'RESUB'}, asondate=${asondate}, version=${version ?: ''})}]]*/
-			location.href = Callurl;
+				location.href = Callurl;
 		}
 
 
@@ -1011,150 +1011,150 @@ PURPOSE		: BRRS REPORT
 	</script>
 
 	<script>
-function fileuploads(btn) {
+		function fileuploads(btn) {
 
-    var asondate = btn.getAttribute("data-todate");
-    const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
+			var asondate = btn.getAttribute("data-todate");
+			const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
 
-    // ✅ Mark RESUB once
-    isResubmissionUpdate = (
-        type && type.toUpperCase() === 'RESUB'
-    );
+			// ✅ Mark RESUB once
+			isResubmissionUpdate = (
+				type && type.toUpperCase() === 'RESUB'
+			);
 
-    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-    try {
+			try {
 
-        // ✅ Pre-calculations
-        calculateAllTotals();
+				// ✅ Pre-calculations
+				calculateAllTotals();
 
-        console.log("✅ Calculations executed successfully");
+				console.log("✅ Calculations executed successfully");
 
-        // ✅ Remove commas from numeric inputs
-        $("#fileupload input[type='text']").each(function () {
+				// ✅ Remove commas from numeric inputs
+				$("#fileupload input[type='text']").each(function () {
 
-            var val = $(this).val();
+					var val = $(this).val();
 
-            if (val && val.includes(",")) {
+					if (val && val.includes(",")) {
 
-                $(this).val(
-                    val.replace(/,/g, '')
-                );
-            }
-        });
+						$(this).val(
+							val.replace(/,/g, '')
+						);
+					}
+				});
 
-        // ✅ Form validation
-        if (!$("#fileupload").valid()) {
+				// ✅ Form validation
+				if (!$("#fileupload").valid()) {
 
-            $('#loader').modal('hide');
-            return;
-        }
+					$('#loader').modal('hide');
+					return;
+				}
 
-        // ✅ Serialize form data
-        const serializedData = $("#fileupload").serializeArray();
+				// ✅ Serialize form data
+				const serializedData = $("#fileupload").serializeArray();
 
-        // ✅ Create FormData
-        const formData = new FormData();
+				// ✅ Create FormData
+				const formData = new FormData();
 
-        // Append serialized fields
-        $.each(serializedData, function (index, field) {
+				// Append serialized fields
+				$.each(serializedData, function (index, field) {
 
-            formData.append(
-                field.name,
-                field.value
-            );
-        });
+					formData.append(
+						field.name,
+						field.value
+					);
+				});
 
-        // Append extra fields
-        formData.append("asondate", asondate);
-        formData.append("type", type);
+				// Append extra fields
+				formData.append("asondate", asondate);
+				formData.append("type", type);
 
-        console.log("✅ Serialize executed successfully");
+				console.log("✅ Serialize executed successfully");
 
-        // ✅ Select API dynamically
-        let apiUrl = './Q_RLFA1update';
+				// ✅ Select API dynamically
+				let apiUrl = './Q_RLFA1update';
 
-        if (type && type.toUpperCase() === 'RESUB') {
+				if (type && type.toUpperCase() === 'RESUB') {
 
-            apiUrl = './UpdateQ_RLFA1_ReSub';
-        }
+					apiUrl = './UpdateQ_RLFA1_ReSub';
+				}
 
-        // ✅ AJAX Call
-        $.ajax({
+				// ✅ AJAX Call
+				$.ajax({
 
-            url: apiUrl,
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            dataType: 'text',
+					url: apiUrl,
+					type: 'POST',
+					data: formData,
+					processData: false,
+					contentType: false,
+					dataType: 'text',
 
-            success: function (response) {
+					success: function (response) {
 
-                $("#resultModalLabel").text("BRRS");
+						$("#resultModalLabel").text("BRRS");
 
-                $("#resultModalBody").text(
-                    response || "Modified Successfully."
-                );
+						$("#resultModalBody").text(
+							response || "Modified Successfully."
+						);
 
-                $("#resultModal").modal("show");
+						$("#resultModal").modal("show");
 
-                // ✅ Redirect after modal close
-                $("#resultModal")
-                    .off("hidden.bs.modal")
-                    .on("hidden.bs.modal", function () {
+						// ✅ Redirect after modal close
+						$("#resultModal")
+							.off("hidden.bs.modal")
+							.on("hidden.bs.modal", function () {
 
-                        if (isResubmissionUpdate) {
+								if (isResubmissionUpdate) {
 
-                            window.location.href = previousUrl
-                                ? previousUrl
-                                : "/BRRS/Resubmission?rptcode=Q_RLFA1";
-                        }
-                    });
-            },
+									window.location.href = previousUrl
+										? previousUrl
+										: "/BRRS/Resubmission?rptcode=Q_RLFA1";
+								}
+							});
+					},
 
-            error: function (jqXHR) {
+					error: function (jqXHR) {
 
-                console.log(
-                    "Error response:",
-                    jqXHR.responseText
-                );
+						console.log(
+							"Error response:",
+							jqXHR.responseText
+						);
 
-                $("#resultModalLabel").text("Error");
+						$("#resultModalLabel").text("Error");
 
-                $("#resultModalBody").text(
-                    "Update failed. Check console for details."
-                );
+						$("#resultModalBody").text(
+							"Update failed. Check console for details."
+						);
 
-                $("#resultModal").modal("show");
-            },
+						$("#resultModal").modal("show");
+					},
 
-            complete: function () {
+					complete: function () {
 
-                $('#loader').modal('hide');
-            }
-        });
+						$('#loader').modal('hide');
+					}
+				});
 
-        console.log("✅ AJAX executed successfully");
+				console.log("✅ AJAX executed successfully");
 
-    } catch (error) {
+			} catch (error) {
 
-        console.error(
-            "Error in fileuploads function:",
-            error
-        );
+				console.error(
+					"Error in fileuploads function:",
+					error
+				);
 
-        $('#loader').modal('hide');
+				$('#loader').modal('hide');
 
-        $("#resultModalLabel").text("Error");
+				$("#resultModalLabel").text("Error");
 
-        $("#resultModalBody").text(
-            "Unexpected error occurred. Check console."
-        );
+				$("#resultModalBody").text(
+					"Unexpected error occurred. Check console."
+				);
 
-        $("#resultModal").modal("show");
-    }
-}
+				$("#resultModal").modal("show");
+			}
+		}
 
 	</script>
 

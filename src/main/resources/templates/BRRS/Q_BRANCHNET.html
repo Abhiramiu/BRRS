@@ -764,18 +764,18 @@ PURPOSE		: BWRBRREPORT
 
 	<script>
 		function closemodel() {
-				    const modalElement = document.getElementById('resultModal');
-				    const modal = bootstrap.Modal.getInstance(modalElement);
-				    modal.hide();
+			const modalElement = document.getElementById('resultModal');
+			const modal = bootstrap.Modal.getInstance(modalElement);
+			modal.hide();
 
-				    const message = document.getElementById("resultModalBody").innerText.toLowerCase();
+			const message = document.getElementById("resultModalBody").innerText.toLowerCase();
 
-				    if (message.includes("resubmission")) {
-				        window.history.back();
-				    } else {
-				        location.reload();
-				    }
-				}
+			if (message.includes("resubmission")) {
+				window.history.back();
+			} else {
+				location.reload();
+			}
+		}
 
 
 		// function fileuploads(btn) {
@@ -894,98 +894,98 @@ PURPOSE		: BWRBRREPORT
 		//         .always(() => $('#loader').modal('hide'));
 		// }
 
-function fileuploads(btn) {
+		function fileuploads(btn) {
 
-    try {
+			try {
 
-        const asondate = btn.getAttribute("data-todate");
+				const asondate = btn.getAttribute("data-todate");
 
-        $('#loader').modal('show');
+				$('#loader').modal('show');
 
-         // Step 1: Calculate totals
-			calculateR20Totals();
-			calculateR35Totals();
-			calculateR50Totals();
-			calculateR65Totals();
-	console.log("✅ Calculations executed successfully");
-      
+				// Step 1: Calculate totals
+				calculateR20Totals();
+				calculateR35Totals();
+				calculateR50Totals();
+				calculateR65Totals();
+				console.log("✅ Calculations executed successfully");
 
-        // Remove commas
-        $("#fileupload input[type='text']").each(function () {
-            const val = $(this).val();
-            if (val && val.includes(",")) {
-                $(this).val(val.replace(/,/g, ''));
-            }
-        });
 
-        if (!$("#fileupload").valid()) {
-            $('#loader').modal('hide');
-            return;
-        }
+				// Remove commas
+				$("#fileupload input[type='text']").each(function () {
+					const val = $(this).val();
+					if (val && val.includes(",")) {
+						$(this).val(val.replace(/,/g, ''));
+					}
+				});
 
-        // Get type from URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const urlType = urlParams.get("type");
+				if (!$("#fileupload").valid()) {
+					$('#loader').modal('hide');
+					return;
+				}
 
-        const isResub = urlType && urlType.toUpperCase() === 'RESUB';
+				// Get type from URL
+				const urlParams = new URLSearchParams(window.location.search);
+				const urlType = urlParams.get("type");
 
-        // ✅ Use SERIALIZE (NOT FormData)
-        const formData =
-            $('#fileupload').serialize()
-            + '&asondate=' + encodeURIComponent(asondate)
-            + '&type=' + encodeURIComponent(urlType || '');
+				const isResub = urlType && urlType.toUpperCase() === 'RESUB';
 
-        console.log("✅ Form data prepared");
+				// ✅ Use SERIALIZE (NOT FormData)
+				const formData =
+					$('#fileupload').serialize()
+					+ '&asondate=' + encodeURIComponent(asondate)
+					+ '&type=' + encodeURIComponent(urlType || '');
 
-        let apiUrl = './Q_BRANCHNETupdateAll';
-        if (isResub) {
-            apiUrl = './UpdateQ_BRANCHNETReSub';
-        }
+				console.log("✅ Form data prepared");
 
-        $.ajax({
-            url: apiUrl,
-            type: 'POST',
-            data: formData,
-            dataType: 'text',
+				let apiUrl = './Q_BRANCHNETupdateAll';
+				if (isResub) {
+					apiUrl = './UpdateQ_BRANCHNETReSub';
+				}
 
-            success: function (response) {
-                $("#resultModalLabel").text("BRRS");
-                $("#resultModalBody").text(response);
-                $("#resultModal").modal("show");
+				$.ajax({
+					url: apiUrl,
+					type: 'POST',
+					data: formData,
+					dataType: 'text',
 
-                $("#resultModal")
-                    .off("hidden.bs.modal")
-                    .on("hidden.bs.modal", function () {
-                        if (isResub) {
-                            window.location.href =
-                                window.previousUrl
-                                    ? window.previousUrl
-                                    : "/BRRS/Resubmission?rptcode=M_SRWA_12H";
-                        }
-                    });
-            },
+					success: function (response) {
+						$("#resultModalLabel").text("BRRS");
+						$("#resultModalBody").text(response);
+						$("#resultModal").modal("show");
 
-            error: function (jqXHR) {
-                console.log("Error response:", jqXHR.responseText);
+						$("#resultModal")
+							.off("hidden.bs.modal")
+							.on("hidden.bs.modal", function () {
+								if (isResub) {
+									window.location.href =
+										window.previousUrl
+											? window.previousUrl
+											: "/BRRS/Resubmission?rptcode=M_SRWA_12H";
+								}
+							});
+					},
 
-                $("#resultModalLabel").text("Error");
-                $("#resultModalBody").text(
-                    "Update failed: " +
-                    (jqXHR.responseText || "Unknown error")
-                );
-                $("#resultModal").modal("show");
-            },
+					error: function (jqXHR) {
+						console.log("Error response:", jqXHR.responseText);
 
-            complete: function () {
-                $('#loader').modal('hide');
-            }
-        });
+						$("#resultModalLabel").text("Error");
+						$("#resultModalBody").text(
+							"Update failed: " +
+							(jqXHR.responseText || "Unknown error")
+						);
+						$("#resultModal").modal("show");
+					},
 
-    } catch (error) {
-        $('#loader').modal('hide');
-        console.error("Error during file upload:", error);
-    }
-}
+					complete: function () {
+						$('#loader').modal('hide');
+					}
+				});
+
+			} catch (error) {
+				$('#loader').modal('hide');
+				console.error("Error during file upload:", error);
+			}
+		}
 
 
 		function cancelModify() {

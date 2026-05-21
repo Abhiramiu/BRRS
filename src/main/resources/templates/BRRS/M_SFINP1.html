@@ -1153,7 +1153,7 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 			try {
 
 				const asondate = btn.getAttribute("data-todate");
-				const type = btn.getAttribute("data-type");
+				const type = (btn.getAttribute("data-type") || "").trim();
 
 				$('#loader').modal('show');
 
@@ -1162,62 +1162,67 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 
 				// ✅ Step 2: Remove commas from inputs
 				$("#fileupload input[type='text']").each(function () {
-					let value = $(this).val();
-					if (value) {
-						$(this).val(value.replace(/,/g, ''));
-					}
+
+					let value = $(this).val() || '';
+
+					$(this).val(value.replace(/,/g, ''));
 				});
 
 				// ✅ Step 3: Validate form
 				if (!$("#fileupload").valid()) {
+
 					$('#loader').modal('hide');
 					return;
 				}
 
-				// ✅ Step 4: Build FormData
-				const formData = new FormData();
-				formData.append("asondate", asondate);
-				formData.append("type", type);
+				// ✅ Step 4: SERIALIZE FORM
+				let formData = $("#fileupload").serialize();
 
-				$('#fileupload').find(':input').each(function () {
-					const name = $(this).attr('name');
-					if (name) {
-						formData.append(name, $(this).val());
-					}
-				});
+				formData += "&asondate=" + encodeURIComponent(asondate);
+				formData += "&type=" + encodeURIComponent(type);
+
+				console.log("✅ Serialized data prepared");
 
 				// ✅ Step 5: AJAX request
 				$.ajax({
+
 					url: './MSFINP1updateAll',
 					type: 'POST',
 					data: formData,
-					processData: false,
-					contentType: false,
 					dataType: 'text',
 
 					success: function () {
 
 						$("#resultModalLabel").text("BRRS");
+
 						$("#resultModalBody").text("Modified Successfully");
+
 						$("#resultModal").modal("show");
-
-
 					},
 
 					error: function (jqXHR) {
+
 						console.error("Error response:", jqXHR.responseText);
+
 						$("#resultModalLabel").text("Error");
-						$("#resultModalBody").text("Update failed. Check console for details.");
+
+						$("#resultModalBody").text(
+							"Update failed. Check console for details."
+						);
+
 						$("#resultModal").modal("show");
 					},
 
 					complete: function () {
+
 						$('#loader').modal('hide');
 					}
 				});
 
 			} catch (error) {
+
 				console.error("Unexpected error:", error);
+
 				$('#loader').modal('hide');
 			}
 		}

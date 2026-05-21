@@ -519,17 +519,17 @@ PURPOSE		: BWRBRREPORT
 
 			for (let i = 13; i <= 18; i++) {
 
-			    if (i === 16) continue; // skip 16
+				if (i === 16) continue; // skip 16
 
-			    let fields = [
-			        "_PERFORMING_EXPOSURE",
-			        "_NON_PERFORMING",
-			        "_SPECIFIC_PROV",
-			        "_TOTAL"
-			    ];
+				let fields = [
+					"_PERFORMING_EXPOSURE",
+					"_NON_PERFORMING",
+					"_SPECIFIC_PROV",
+					"_TOTAL"
+				];
 
-			    // your logic here
-			
+				// your logic here
+
 
 				fields.forEach(field => {
 
@@ -711,16 +711,16 @@ PURPOSE		: BWRBRREPORT
 			----------------------------- */
 			for (let i = 13; i <= 19; i++) {
 
-			    if (i === 16) continue; // skip R16
+				if (i === 16) continue; // skip R16
 
-			    $("#R" + i + "_PERFORMING_EXPOSURE, " +
-			      "#R" + i + "_NON_PERFORMING, " +
-			      "#R" + i + "_SPECIFIC_PROV, " +
-			      "#R" + i + "_UNSECURED_PORTION_NPL, " +
-			      "#R" + i + "_TOTAL")
-			    .on("input", function () {
-			        calculateAll();
-			    });
+				$("#R" + i + "_PERFORMING_EXPOSURE, " +
+					"#R" + i + "_NON_PERFORMING, " +
+					"#R" + i + "_SPECIFIC_PROV, " +
+					"#R" + i + "_UNSECURED_PORTION_NPL, " +
+					"#R" + i + "_TOTAL")
+					.on("input", function () {
+						calculateAll();
+					});
 			}
 
 		});
@@ -731,107 +731,117 @@ PURPOSE		: BWRBRREPORT
 
 		function fileuploads(btn) {
 
-		    // Get As On Date
-		    const asondate = btn.getAttribute("data-todate") || "";
+			// Get As On Date
+			const asondate = btn.getAttribute("data-todate") || "";
+			const type = (btn.getAttribute("data-type") || "").trim();
 
-		    // Show Loader
-		    $('#loader').modal('show');
+			// Show Loader
+			$('#loader').modal('show');
 
-		    /* -----------------------------
-		       1️⃣ Recalculate ALL totals
-		    ----------------------------- */
-		    if (typeof calculateAll === "function") {
-		        calculateAll();
-		    }
+			/* -----------------------------
+			   1️⃣ Recalculate ALL totals
+			----------------------------- */
+			if (typeof calculateAll === "function") {
+				calculateAll();
+			}
 
-		    /* -----------------------------
-		       2️⃣ Remove Commas Before Submit
-		    ----------------------------- */
-		    $("#fileupload input[type='text']").each(function () {
-		        let val = $(this).val();
-		        if (val) {
-		            $(this).val(val.replace(/,/g, ""));
-		        }
-		    });
+			/* -----------------------------
+			   2️⃣ Remove Commas Before Submit
+			----------------------------- */
+			$("#fileupload input[type='text']").each(function () {
 
-		    /* -----------------------------
-		       3️⃣ Validate Form
-		    ----------------------------- */
-		    if (!$("#fileupload").valid()) {
-		        $('#loader').modal('hide');
-		        return;
-		    }
+				let val = $(this).val() || '';
 
-		    /* -----------------------------
-		       4️⃣ Prepare FormData
-		    ----------------------------- */
-		    const formData = new FormData($("#fileupload")[0]);
-		    formData.append("asondate", asondate);
+				$(this).val(val.replace(/,/g, ""));
+			});
 
-		    /* -----------------------------
-		       5️⃣ Detect Type (NORMAL / RESUB)
-		    ----------------------------- */
-		    let type = btn.getAttribute("data-type") || "";
-		    let apiUrl = "./updateSRWA12EAll";
-		    let isResubmissionUpdate = false;
+			/* -----------------------------
+			   3️⃣ Validate Form
+			----------------------------- */
+			if (!$("#fileupload").valid()) {
 
-		    if (type.toUpperCase() === "RESUB") {
-		        apiUrl = "./UpdateM_SRWA_12E_ReSub";
-		        isResubmissionUpdate = true;
-		    }
+				$('#loader').modal('hide');
+				return;
+			}
 
-		    /* -----------------------------
-		       6️⃣ Disable Button
-		    ----------------------------- */
-		    $(btn).prop("disabled", true);
+			/* -----------------------------
+			   4️⃣ SERIALIZE FORM
+			----------------------------- */
+			let formData = $("#fileupload").serialize();
 
-		    /* -----------------------------
-		       7️⃣ AJAX CALL
-		    ----------------------------- */
-		    $.ajax({
-		        url: apiUrl,
-		        type: "POST",
-		        data: formData,
-		        processData: false,
-		        contentType: false,
-		        dataType: "text",
+			formData += "&asondate=" + encodeURIComponent(asondate);
+			formData += "&type=" + encodeURIComponent(type);
 
-		        success: function (response) {
+			console.log("✅ Serialized data prepared");
 
-		            $("#resultModalLabel").text("BRRS");
-		            $("#resultModalBody").text(response);
-		            $("#resultModal").modal("show");
+			/* -----------------------------
+			   5️⃣ Detect Type (NORMAL / RESUB)
+			----------------------------- */
+			let apiUrl = "./updateSRWA12EAll";
 
-		            // 🔹 Wait for user to close modal manually
-		            $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
+			if (type.toUpperCase() === "RESUB") {
+				apiUrl = "./UpdateM_SRWA_12E_ReSub";
+			}
 
-		                if (isResubmissionUpdate) {
-		                    window.location.href = "/BRRS/Resubmission?rptcode=M_SRWA_12E";
-		                } else {
-		                    window.location.reload();
-		                }
+			/* -----------------------------
+			   6️⃣ Disable Button
+			----------------------------- */
+			$(btn).prop("disabled", true);
 
-		            });
-		        },
+			/* -----------------------------
+			   7️⃣ AJAX CALL
+			----------------------------- */
+			$.ajax({
 
-		        error: function (jqXHR) {
+				url: apiUrl,
+				type: "POST",
+				data: formData,
+				dataType: "text",
 
-		            console.log("Error response:", jqXHR.responseText);
+				success: function (response) {
 
-		            $("#resultModalLabel").text("Error");
-		            $("#resultModalBody").text(
-		                "Update failed: " + (jqXHR.responseText || "Server Error")
-		            );
-		            $("#resultModal").modal("show");
-		        },
+					$("#resultModalLabel").text("BRRS");
+					$("#resultModalBody").text(response);
+					$("#resultModal").modal("show");
 
-		        complete: function () {
-		            $('#loader').modal('hide');
-		            $(btn).prop("disabled", false);
-		        }
-		    });
+					$("#resultModal")
+						.off("hidden.bs.modal")
+						.on("hidden.bs.modal", function () {
+
+							if (type.toUpperCase() === "RESUB") {
+
+								window.location.href =
+									"/BRRS/Resubmission?rptcode=M_SRWA_12E";
+
+							} else {
+
+								window.location.reload();
+							}
+						});
+				},
+
+				error: function (jqXHR) {
+
+					console.log("Error response:", jqXHR.responseText);
+
+					$("#resultModalLabel").text("Error");
+
+					$("#resultModalBody").text(
+						"Update failed: " +
+						(jqXHR.responseText || "Server Error")
+					);
+
+					$("#resultModal").modal("show");
+				},
+
+				complete: function () {
+
+					$('#loader').modal('hide');
+
+					$(btn).prop("disabled", false);
+				}
+			});
 		}
-
 	</script>
 </head>
 <title>M SRWA 12E</title>
@@ -1169,19 +1179,23 @@ PURPOSE		: BWRBRREPORT
 														style="background-color: #FFFFFF; width: 290px; height: 28px; border-color: transparent; text-align: center;"
 														readonly />
 												</td>
-												
-												<td style="text-align: right; font-weight: normal;"
-													th:text="${#numbers.formatDecimal(report.R16_PERFORMING_EXPOSURE,1,'COMMA',0,'POINT')}"></td>
 
 												<td style="text-align: right; font-weight: normal;"
-													th:text="${#numbers.formatDecimal(report.R16_NON_PERFORMING,1,'COMMA',0,'POINT')}"></td>
-								
+													th:text="${#numbers.formatDecimal(report.R16_PERFORMING_EXPOSURE,1,'COMMA',0,'POINT')}">
+												</td>
+
 												<td style="text-align: right; font-weight: normal;"
-													th:text="${#numbers.formatDecimal(report.R16_SPECIFIC_PROV,1,'COMMA',0,'POINT')}"></td>																		
-												
+													th:text="${#numbers.formatDecimal(report.R16_NON_PERFORMING,1,'COMMA',0,'POINT')}">
+												</td>
+
+												<td style="text-align: right; font-weight: normal;"
+													th:text="${#numbers.formatDecimal(report.R16_SPECIFIC_PROV,1,'COMMA',0,'POINT')}">
+												</td>
+
 												<td style="background-color: rgb(107, 122, 143);font-weight: bold;color: white;padding-left: 20px; font-weight: bold;text-align: right;"
-													th:text="${#numbers.formatDecimal(report.R16_UNSECURED_PORTION_NPL,1,'COMMA',0,'POINT')}"></td>		
-												
+													th:text="${#numbers.formatDecimal(report.R16_UNSECURED_PORTION_NPL,1,'COMMA',0,'POINT')}">
+												</td>
+
 
 												<td id="ROW16" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
