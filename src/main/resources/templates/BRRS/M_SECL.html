@@ -3738,13 +3738,19 @@ function cancelModify() {
 }
 
 function fileuploads(btn) {
-    var asondate = btn.getAttribute("data-todate");
-    const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
-    
-    
-    $('#loader').modal('show');
-	    // ✅ Step 1: Calculate TOTALs
-	    calculateR16EQUITY();
+
+    try {
+
+        var asondate = btn.getAttribute("data-todate");
+        const type = btn.getAttribute("data-type");
+
+        $('#loader').modal('show');
+
+        // ==========================
+        // CALCULATIONS
+        // ==========================
+
+        calculateR16EQUITY();
         calculateR16BONDS();
         calculateR16BOBCS();
         calculateR16TreasuryBills();
@@ -3752,195 +3758,242 @@ function fileuploads(btn) {
         calculateR16CommercialPaper();
         calculateR16CertificatesOfDeposits();
         calculateR16PledgedAssets();
-calculateR16OtherSpecify();
-calculateR31EQUITY();
-calculateR31BONDS();
-calculateR31BOBCS();
-calculateR31TreasuryBills();
-calculateR31RepurchaseAgreements();
-calculateR31CommercialPaper();
-calculateR31CertificatesOfDeposits();
-calculateR31PledgedAssets();
-calculateR31OtherSpecify();
-calculateR37EQUITY();
-calculateR37BONDS();
-calculateR37BOBCS();
-calculateR37TreasuryBills();
-calculateR37RepurchaseAgreements();
-calculateR37CommercialPaper();
-calculateR37CertificatesOfDeposits();
-calculateR37PledgedAssets();
-calculateR37OtherSpecify();
-calculateR46EQUITY();
-calculateR46BONDS();
-calculateR46BOBCS();
-calculateR46TreasuryBills();
-calculateR46RepurchaseAgreements();
-calculateR46CommercialPaper();
-calculateR46CertificatesOfDeposits();
-calculateR46PledgedAssets();
-calculateR46OtherSpecify();
-calculateR50EQUITY();
-calculateR50BONDS();
-calculateR50BOBCS();
-calculateR50TreasuryBills();
-calculateR50RepurchaseAgreements();
-calculateR50CommercialPaper();
-calculateR50CertificatesOfDeposits();
-calculateR50PledgedAssets();
-calculateR50OtherSpecify();
-calculateAllR12Columns();
-calculateR34EQUITY();
-calculateR34_BONDS();
-calculateR34_BOBCS();
-calculateR34_TREASURY_BILLS();
-calculateR34_REPURCHASE_AGREEMENTS();
-calculateR34_COMMERCIAL_PAPER();
-calculateR34_CERTIFICATES_OF_DEPOSITS();
-calculateR34_PLEDGED_ASSETS();
-calculateR34_OTHER_SPECIFY();
-calculateAllR42Columns();
-calculateR12TOTAL();
-calculateR13TOTAL();
-calculateR14TOTAL();
-calculateR15TOTAL();
-calculateR16TOTAL();
-calculateR17TOTAL();
-calculateR18TOTAL();
-calculateR19TOTAL();
-calculateR20TOTAL();
-calculateR21TOTAL();
-calculateR22TOTAL();
-calculateR23TOTAL();
-calculateR24TOTAL();
-calculateR25TOTAL();
-calculateR26TOTAL();
-calculateR27TOTAL();
-calculateR28TOTAL();
-calculateR29TOTAL();
-calculateR30TOTAL();
-calculateR31TOTAL();
-calculateR32TOTAL();
-calculateR33TOTAL();
-calculateR34TOTAL();
-calculateR35TOTAL();
-calculateR36TOTAL();
-calculateR37TOTAL();
-calculateR38TOTAL();
-calculateR39TOTAL();
-calculateR40TOTAL();
-calculateR41TOTAL();
-calculateR42TOTAL();
-calculateR43TOTAL();
-calculateR44TOTAL();
-calculateR45TOTAL();
-calculateR46TOTAL();
-calculateR47TOTAL();
-calculateR48TOTAL();
-calculateR49TOTAL();
-calculateR50TOTAL();
-calculateR51TOTAL();
-calculateR52TOTAL();
-calculateR53TOTAL();
-calculateR54TOTAL();
-calculateR55TOTAL();
-calculateR56TOTAL();
-calculateAllR57Columns();
+        calculateR16OtherSpecify();
 
+        calculateR31EQUITY();
+        calculateR31BONDS();
+        calculateR31BOBCS();
+        calculateR31TreasuryBills();
+        calculateR31RepurchaseAgreements();
+        calculateR31CommercialPaper();
+        calculateR31CertificatesOfDeposits();
+        calculateR31PledgedAssets();
+        calculateR31OtherSpecify();
 
-// Remove commas from numeric inputs
-$("#fileupload input[type='text']").each(function () {
-    var val = $(this).val();
-    if (val && val.includes(",")) {
-        $(this).val(val.replace(/,/g, ''));
-    }
-});
+        calculateR37EQUITY();
+        calculateR37BONDS();
+        calculateR37BOBCS();
+        calculateR37TreasuryBills();
+        calculateR37RepurchaseAgreements();
+        calculateR37CommercialPaper();
+        calculateR37CertificatesOfDeposits();
+        calculateR37PledgedAssets();
+        calculateR37OtherSpecify();
 
-if (!$("#fileupload").valid()) {
-    $('#loader').modal('hide');
-    return;
-}
+        calculateR46EQUITY();
+        calculateR46BONDS();
+        calculateR46BOBCS();
+        calculateR46TreasuryBills();
+        calculateR46RepurchaseAgreements();
+        calculateR46CommercialPaper();
+        calculateR46CertificatesOfDeposits();
+        calculateR46PledgedAssets();
+        calculateR46OtherSpecify();
 
-// ✅ One combined FormData for all entities
-const formData = new FormData();
-formData.append("asondate", asondate);
-formData.append("type", type);
+        calculateR50EQUITY();
+        calculateR50BONDS();
+        calculateR50BOBCS();
+        calculateR50TreasuryBills();
+        calculateR50RepurchaseAgreements();
+        calculateR50CommercialPaper();
+        calculateR50CertificatesOfDeposits();
+        calculateR50PledgedAssets();
+        calculateR50OtherSpecify();
 
-alert(type)
-// --- NEW: append type value (NORMAL, RESUB, ARCHIVAL) ---
-//const selectedType = $("#SRWA_12GType").val(); // Get from dropdown
-//formData.append("type", selectedType);
-//console.log("Selected type:", selectedType);
+        calculateAllR12Columns();
 
-// --- Entity fields (R10-R17) ---
-for (let i = 12; i <= 57; i++) {
-    ["EQUITY", "BONDS", "BOBCS", "TREASURY_BILLS", "OTHER_SPECIFY",
-        "REPURCHASE_AGREEMENTS", "COMMERCIAL_PAPER", "CERTIFICATES_OF_DEPOSITS",
-        "PLEDGED_ASSETS", "TOTAL"].forEach(field => {
-        const input = $("#R" + i + "_" + field);
-        if (input.length) {
-            formData.append(input.attr("name"), input.val());
+        calculateR34EQUITY();
+        calculateR34_BONDS();
+        calculateR34_BOBCS();
+        calculateR34_TREASURY_BILLS();
+        calculateR34_REPURCHASE_AGREEMENTS();
+        calculateR34_COMMERCIAL_PAPER();
+        calculateR34_CERTIFICATES_OF_DEPOSITS();
+        calculateR34_PLEDGED_ASSETS();
+        calculateR34_OTHER_SPECIFY();
+
+        calculateAllR42Columns();
+
+        calculateR12TOTAL();
+        calculateR13TOTAL();
+        calculateR14TOTAL();
+        calculateR15TOTAL();
+        calculateR16TOTAL();
+        calculateR17TOTAL();
+        calculateR18TOTAL();
+        calculateR19TOTAL();
+        calculateR20TOTAL();
+        calculateR21TOTAL();
+        calculateR22TOTAL();
+        calculateR23TOTAL();
+        calculateR24TOTAL();
+        calculateR25TOTAL();
+        calculateR26TOTAL();
+        calculateR27TOTAL();
+        calculateR28TOTAL();
+        calculateR29TOTAL();
+        calculateR30TOTAL();
+        calculateR31TOTAL();
+        calculateR32TOTAL();
+        calculateR33TOTAL();
+        calculateR34TOTAL();
+        calculateR35TOTAL();
+        calculateR36TOTAL();
+        calculateR37TOTAL();
+        calculateR38TOTAL();
+        calculateR39TOTAL();
+        calculateR40TOTAL();
+        calculateR41TOTAL();
+        calculateR42TOTAL();
+        calculateR43TOTAL();
+        calculateR44TOTAL();
+        calculateR45TOTAL();
+        calculateR46TOTAL();
+        calculateR47TOTAL();
+        calculateR48TOTAL();
+        calculateR49TOTAL();
+        calculateR50TOTAL();
+        calculateR51TOTAL();
+        calculateR52TOTAL();
+        calculateR53TOTAL();
+        calculateR54TOTAL();
+        calculateR55TOTAL();
+        calculateR56TOTAL();
+
+        calculateAllR57Columns();
+
+        console.log("Calculations executed successfully");
+
+        // ==========================
+        // REMOVE COMMAS
+        // ==========================
+
+        $("#fileupload input[type='text']").each(function () {
+
+            var val = $(this).val();
+
+            if (val && val.includes(",")) {
+                $(this).val(val.replace(/,/g, ""));
+            }
+        });
+
+        // ==========================
+        // VALIDATION
+        // ==========================
+
+        if (!$("#fileupload").valid()) {
+
+            $('#loader').modal('hide');
+            return;
         }
-    });
-}console.log("✅ Entity executed successfully");
 
-//Select API endpoint dynamically
-// normal update
+        // ==========================
+        // URL TYPE
+        // ==========================
 
-let apiUrl;
-let successMessage;
-let redirectUrl;
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlType = urlParams.get("type");
 
-if (type && type.toUpperCase() === 'RESUB') {
-    apiUrl = './UpdateM_SECL_ReSub';
-    successMessage = "Resub Modified Successfully.";
-    redirectUrl ='/BRRS/Resubmission?rptcode=M_SECL';   // 🔹 change this to your RESUB page
-} else {
-    apiUrl = './SECLupdateAll';
-    successMessage = "Modified Successfully.";
-    redirectUrl = '/BRRS/BRRSValidations?rptcode=M_SECL&todate='+asondate; // 🔹 change this to your normal page
-}
+        const isResub =
+            urlType &&
+            urlType.toUpperCase() === "RESUB";
 
-// ✅ Single AJAX call with type info
- $.ajax({
-    url: apiUrl,
-    type: 'POST',
-    data: formData,
-    processData: false,
-    contentType: false,
-    dataType: 'text',
-    success: function (response) {
-        $("#resultModalLabel").text("BRRS");
-        $("#resultModalBody").text(successMessage);
-        $("#resultModal").modal("show");
+        // ==========================
+        // SERIALIZE FORM
+        // ==========================
 
-	    //  Wait for user to close the modal manually
-	    $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
-	    	if(type && type.toUpperCase() != 'RESUB')
-	    	{
-	    	window.location.reload();// reload ONLY when modal is closed
-	    	}
-	    	else
-	    		{
-	    		 window.location.href = redirectUrl;
-	    		}
-	    	
-	    });
-	},
-    error: function (jqXHR) {
-        console.log("Error response:", jqXHR.responseText);
-        $("#resultModalLabel").text("Error");
-        $("#resultModalBody").text("Update failed. Check console for details.");
-        $("#resultModal").modal("show");
-    },
-    complete: function () {
+        const formData =
+            $("#fileupload").serialize()
+            + "&asondate=" + encodeURIComponent(asondate)
+            + "&type=" + encodeURIComponent(urlType || "");
+
+        console.log("Form data prepared");
+
+        // ==========================
+        // URL SELECTION
+        // ==========================
+
+        let apiUrl = "./SECLupdateAll";
+        let redirectUrl =
+            "/BRRS/Resubmission?rptcode=M_SECL";
+
+        if (isResub) {
+            apiUrl = "./UpdateM_SECL_ReSub";
+        }
+
+        // ==========================
+        // AJAX
+        // ==========================
+
+        $.ajax({
+
+            url: apiUrl,
+
+            type: "POST",
+
+            data: formData,
+
+            dataType: "text",
+
+            success: function (response) {
+
+                $("#resultModalLabel").text("BRRS");
+                $("#resultModalBody").text(response);
+                $("#resultModal").modal("show");
+
+                $("#resultModal")
+                    .off("hidden.bs.modal")
+                    .on("hidden.bs.modal", function () {
+
+                        if (isResub) {
+
+                            window.location.href =
+                                window.previousUrl
+                                    ? window.previousUrl
+                                    : redirectUrl;
+
+                        } else {
+
+                            window.location.reload();
+                        }
+                    });
+            },
+
+            error: function (jqXHR) {
+
+                console.log(
+                    "Error response:",
+                    jqXHR.responseText
+                );
+
+                $("#resultModalLabel").text("Error");
+
+                $("#resultModalBody").text(
+                    "Update failed: " +
+                    (jqXHR.responseText || "Unknown error")
+                );
+
+                $("#resultModal").modal("show");
+            },
+
+            complete: function () {
+
+                $('#loader').modal('hide');
+            }
+        });
+
+        console.log("AJAX executed successfully");
+
+    } catch (error) {
+
         $('#loader').modal('hide');
+
+        console.error(
+            "Error during file upload:",
+            error
+        );
     }
-}); 
-
-console.log("✅ AJAX executed successfully");
 }
-
 $(document).ready(function(){
     var value = $('#selectedTab').val();
   //  alert(value);

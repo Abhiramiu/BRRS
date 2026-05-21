@@ -2747,148 +2747,195 @@ function closemodel() {
 }
 
 function fileuploads(btn) {
-    var asondate = btn.getAttribute("data-todate");
-    let type = btn.getAttribute("data-type");
-    $('#loader').modal('show');
 
-    // Pre-calculations
- //calculateR36BOBCTotals();
-calculateR14Totals();
-calculateR15Totals();
-calculateR16Totals();
-calculateR18Totals();
-calculateR19Totals();
-calculateR20Totals();
-calculateR21Totals();
-calculateR22Totals();
-calculateR23Totals();
-calculateR24Totals();	
-calculateR25Totals();
-calculateR26Totals();
-calculateR27Totals();
-calculateR28Totals();
-calculateR29Totals();
-calculateR30Totals();
-calculateR31Totals();
-calculateR33Totals();
-calculateR34Totals();
-calculateR36Totals();
-calculateR37Totals();
-calculateR39Totals();
-calculateR40Totals();
-calculateR41Totals();
-calculateR42Totals();
-calculateR44Totals();
-calculateR45Totals();
-calculateR46Totals();
-calculateR48Totals();
-calculateR49Totals();
-calculateR50Totals();
-calculateR52Totals();
-calculateR53Totals();
-calculateR54Totals();
-calculateR55Totals();
-calculateR56Totals();
-calculateR57Totals();
-calculateR17Totals();
-calculateR32Totals();
-calculateR38Totals();
-calculateR47Totals();
-calculateR51Totals();
-calculateR43Totals();
-calculateR35Totals();
-calculateR13Totals();
-calculateR58Totals();
-calculateR13Last();
-    
-    console.log("✅ Calculations executed successfully");
+    try {
 
-    // Remove commas from numeric inputs
-    $("#fileupload input[type='text']").each(function () {
-        var val = $(this).val();
-        if (val && val.includes(",")) {
-            $(this).val(val.replace(/,/g, ''));
-        }
-    });
+        var asondate = btn.getAttribute("data-todate");
+        let type = btn.getAttribute("data-type");
 
-    if (!$("#fileupload").valid()) {
-        $('#loader').modal('hide');
-        return;
-    }
+        $('#loader').modal('show');
 
-    // ✅ One combined FormData for all entities
-    const formData = new FormData();
-    formData.append("asondate", asondate);
-  
-    // --- NEW: append type value (NORMAL, RESUB, ARCHIVAL) ---
-    const selectedType = $("#SECAType").val(); // Get from dropdown
-    formData.append("type", selectedType);
-    console.log("Selected type:", selectedType);
+        // ==========================
+        // PRE CALCULATIONS
+        // ==========================
 
-    // --- Entity fields (R10-R17) ---
-    for (let i = 13; i <= 59; i++) {
-    	["PRODUCT","EQUITY", "BONDS", "BOBC", "TRES_BILLS", "REPURCHASE_AGREE", 
-    		"COM_PAPER", "CERT_OF_DEP", "PLEDGED_ASSET", "OTHER", "TOTAL"].forEach(field => {
-            const input = $("#R" + i + "_" + field);
-            if (input.length) {
-                formData.append(input.attr("name"), input.val());
+        calculateR14Totals();
+        calculateR15Totals();
+        calculateR16Totals();
+        calculateR18Totals();
+        calculateR19Totals();
+        calculateR20Totals();
+        calculateR21Totals();
+        calculateR22Totals();
+        calculateR23Totals();
+        calculateR24Totals();
+        calculateR25Totals();
+        calculateR26Totals();
+        calculateR27Totals();
+        calculateR28Totals();
+        calculateR29Totals();
+        calculateR30Totals();
+        calculateR31Totals();
+        calculateR33Totals();
+        calculateR34Totals();
+        calculateR36Totals();
+        calculateR37Totals();
+        calculateR39Totals();
+        calculateR40Totals();
+        calculateR41Totals();
+        calculateR42Totals();
+        calculateR44Totals();
+        calculateR45Totals();
+        calculateR46Totals();
+        calculateR48Totals();
+        calculateR49Totals();
+        calculateR50Totals();
+        calculateR52Totals();
+        calculateR53Totals();
+        calculateR54Totals();
+        calculateR55Totals();
+        calculateR56Totals();
+        calculateR57Totals();
+        calculateR17Totals();
+        calculateR32Totals();
+        calculateR38Totals();
+        calculateR47Totals();
+        calculateR51Totals();
+        calculateR43Totals();
+        calculateR35Totals();
+        calculateR13Totals();
+        calculateR58Totals();
+        calculateR13Last();
+
+        console.log("Calculations executed successfully");
+
+        // ==========================
+        // REMOVE COMMAS
+        // ==========================
+
+        $("#fileupload input[type='text']").each(function () {
+
+            var val = $(this).val();
+
+            if (val && val.includes(",")) {
+                $(this).val(val.replace(/,/g, ""));
             }
         });
-    }
-    console.log(formData)
-    console.log("✅ Entity executed successfully");
-    
-    let apiUrl;
-    let successMessage;
-    let redirectUrl;
-    
-    if (type && type.toUpperCase() === 'RESUB') {   	
-        apiUrl = './UpdateM_SECA_ReSub';
-        successMessage = "Resub Modified Successfully.";
-        redirectUrl ='/BRRS/Resubmission?rptcode=M_SECA';   // 🔹 change this to your RESUB page
-    } else {
-        apiUrl = './MSECAupdateAll';
-        successMessage = "Modified Successfully.";
-    }
 
-    // ✅ Single AJAX call with type info
-    $.ajax({
-        url: apiUrl,
-        type: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        dataType: 'text',
-        success: function (response) {
-            $("#resultModalLabel").text("BRRS");
-            $("#resultModalBody").text(successMessage);
-            $("#resultModal").modal("show");
-            
-            $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
-    	    	if(type && type.toUpperCase() != 'RESUB')
-    	    	{
-    	    	window.location.reload();// reload ONLY when modal is closed
-    	    	}
-    	    	else
-    	    		{
-    	    		 window.location.href = redirectUrl;
-    	    		}
-            });
-        },
-        error: function (xhr) {
-            console.log("Error response:", xhr.responseText);
-            $("#resultModalLabel").text("Error");
-            $("#resultModalBody").text("Update failed. Check console for details.");
-            $("#resultModal").modal("show");
-            window.location.href=redirectUrl ;
-        },
-        complete: function () {
+        // ==========================
+        // VALIDATION
+        // ==========================
+
+        if (!$("#fileupload").valid()) {
+
             $('#loader').modal('hide');
+            return;
         }
-    });
 
-    console.log("✅ AJAX executed successfully");
+        // ==========================
+        // URL TYPE
+        // ==========================
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlType = urlParams.get("type");
+
+        const isResub =
+            urlType &&
+            urlType.toUpperCase() === "RESUB";
+
+        // ==========================
+        // SERIALIZE FORM
+        // ==========================
+
+        const formData =
+            $("#fileupload").serialize()
+            + "&asondate=" + encodeURIComponent(asondate)
+            + "&type=" + encodeURIComponent(urlType || "");
+
+        console.log("Form data prepared");
+
+        // ==========================
+        // URLS
+        // ==========================
+
+        let apiUrl = "./MSECAupdateAll";
+        let redirectUrl = "/BRRS/Resubmission?rptcode=M_SECA";
+
+        if (isResub) {
+            apiUrl = "./UpdateM_SECA_ReSub";
+        }
+
+        // ==========================
+        // AJAX
+        // ==========================
+
+        $.ajax({
+
+            url: apiUrl,
+
+            type: "POST",
+
+            data: formData,
+
+            dataType: "text",
+
+            success: function (response) {
+
+                $("#resultModalLabel").text("BRRS");
+                $("#resultModalBody").text(response);
+                $("#resultModal").modal("show");
+
+                $("#resultModal")
+                    .off("hidden.bs.modal")
+                    .on("hidden.bs.modal", function () {
+
+                        if (isResub) {
+
+                            window.location.href =
+                                window.previousUrl
+                                    ? window.previousUrl
+                                    : redirectUrl;
+
+                        } else {
+
+                            window.location.reload();
+                        }
+                    });
+            },
+
+            error: function (jqXHR) {
+
+                console.log("Error response:", jqXHR.responseText);
+
+                $("#resultModalLabel").text("Error");
+
+                $("#resultModalBody").text(
+                    "Update failed : " +
+                    (jqXHR.responseText || "Unknown error")
+                );
+
+                $("#resultModal").modal("show");
+            },
+
+            complete: function () {
+
+                $('#loader').modal('hide');
+            }
+        });
+
+        console.log("AJAX executed successfully");
+
+    } catch (error) {
+
+        $('#loader').modal('hide');
+
+        console.error(
+            "Error during file upload:",
+            error
+        );
+    }
 }
+
 </script>
      <script th:inline="javascript">
      let data = [[${displaymode}]];
