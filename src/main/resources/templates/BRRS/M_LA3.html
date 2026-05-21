@@ -603,8 +603,121 @@ PURPOSE		: BRRSREPORT
 		        location.reload();
 		    }, 300);
 	}
+	function fileuploads(btn) {
 
-		function fileuploads(btn) {
+	    try {
+
+	        const asondate = btn.getAttribute("data-todate");
+
+	        $('#loader').modal('show');
+
+	        // ✅ Step 1: Calculate totals
+	        if (typeof calculateR36Totals === "function") {
+	            calculateR36Totals();
+	        }
+
+	        if (typeof calculateR39Totals === "function") {
+	            calculateR39Totals();
+	        }
+
+	        if (typeof calculateR42Totals === "function") {
+	            calculateR42Totals();
+	        }
+
+	        // ✅ Step 2: Remove commas
+	        $("#fileupload input[type='text']").each(function () {
+	            const val = $(this).val();
+
+	            if (val && val.includes(",")) {
+	                $(this).val(val.replace(/,/g, ''));
+	            }
+	        });
+
+	        // ✅ Step 3: Validate form
+	        if (!$("#fileupload").valid()) {
+	            $('#loader').modal('hide');
+	            return;
+	        }
+
+	        // ✅ Step 4: Get type from URL
+	        const urlParams = new URLSearchParams(window.location.search);
+	        const urlType = urlParams.get("type");
+
+	        const isResub = urlType && urlType.toUpperCase() === 'RESUB';
+
+	        // ✅ Step 5: Serialize form data
+	        const formData =
+	            $('#fileupload').serialize()
+	            + '&asondate=' + encodeURIComponent(asondate)
+	            + '&type=' + encodeURIComponent(urlType || '');
+
+	        console.log("✅ Form data prepared");
+
+	        // ✅ Step 6: Set API URL
+	        let apiUrl = './LA3updateAll';
+
+	        if (isResub) {
+	            apiUrl = './UpdateLA3ReSub';
+	        }
+
+	        // ✅ Step 7: Ajax call
+	        $.ajax({
+	            url: apiUrl,
+	            type: 'POST',
+	            data: formData,
+	            dataType: 'text',
+
+	            success: function (response) {
+
+	                $("#resultModalLabel").text("BRRS");
+	                $("#resultModalBody").text(
+	                    response || "Updated successfully."
+	                );
+
+	                $("#resultModal").modal("show");
+
+	                $("#resultModal")
+	                    .off("hidden.bs.modal")
+	                    .on("hidden.bs.modal", function () {
+
+	                        if (isResub) {
+
+	                            window.location.href =
+	                                window.previousUrl
+	                                    ? window.previousUrl
+	                                    : "/BRRS/Resubmission?rptcode=LA3";
+	                        }
+	                    });
+	            },
+
+	            error: function (jqXHR) {
+
+	                console.log("Error response:", jqXHR.responseText);
+
+	                $("#resultModalLabel").text("Error");
+
+	                $("#resultModalBody").text(
+	                    "Update failed: " +
+	                    (jqXHR.responseText || "Unknown error")
+	                );
+
+	                $("#resultModal").modal("show");
+	            },
+
+	            complete: function () {
+	                $('#loader').modal('hide');
+	            }
+	        });
+
+	    } catch (error) {
+
+	        $('#loader').modal('hide');
+
+	        console.error("Error during file upload:", error);
+	    }
+	}
+
+/*		function fileuploads(btn) {
 			const asondate = btn.getAttribute("data-todate");
 			$('#loader').modal('show');
 
@@ -655,7 +768,7 @@ PURPOSE		: BRRSREPORT
 					$('#loader').modal('hide');
 				}
 			});
-		}
+		}*/
 
 
 	</script>

@@ -1048,8 +1048,128 @@ PURPOSE		: BWRBRREPORT
 				isDetailsModal = false;
 			}
 		}
-
+		
 		function fileuploads(btn) {
+
+		    try {
+
+		        const asondate = btn.getAttribute("data-todate");
+		        const reportId = btn.getAttribute("data-reporttype");
+
+		        $('#loader').modal('show');
+
+		        // ✅ Step 1: Calculate totals
+		        if (typeof calculateR51Totals === "function") {
+		            calculateR51Totals();
+		        }
+
+		        if (typeof calculateR96Totals === "function") {
+		            calculateR96Totals();
+		        }
+
+		        if (typeof calculateR142Totals === "function") {
+		            calculateR142Totals();
+		        }
+
+		        if (typeof calculateR194Totals === "function") {
+		            calculateR194Totals();
+		        }
+
+		        // ✅ Step 2: Remove commas
+		        $("#fileupload input[type='text']").each(function () {
+
+		            const val = $(this).val();
+
+		            if (val && val.includes(",")) {
+		                $(this).val(val.replace(/,/g, ''));
+		            }
+		        });
+
+		        // ✅ Step 3: Validate form
+		        if (!$("#fileupload").valid()) {
+		            $('#loader').modal('hide');
+		            return;
+		        }
+
+		        // ✅ Step 4: Serialize form data
+		        const formData =
+		            $('#fileupload').serialize()
+		            + '&asondate=' + encodeURIComponent(asondate)
+		            + '&reportType=' + encodeURIComponent(reportId || '');
+
+		        console.log("✅ Form data prepared");
+
+		        // ✅ Step 5: Decide API URL
+		        let apiUrl = './AIDPupdateAll';
+
+		        const isResub =
+		            reportId && reportId.toUpperCase() === 'RESUB';
+
+		        if (isResub) {
+		            apiUrl = './AIDPupdateAll1';
+		        }
+
+		        // ✅ Step 6: Ajax Call
+		        $.ajax({
+
+		            url: apiUrl,
+		            type: 'POST',
+		            data: formData,
+		            dataType: 'text',
+
+		            success: function (response) {
+
+		                $("#resultModalLabel").text("BRRS");
+
+		                $("#resultModalBody").text(
+		                    response || "Updated successfully."
+		                );
+
+		                $("#resultModal").modal("show");
+
+		                // ✅ Redirect after modal close for RESUB
+		                $("#resultModal")
+		                    .off("hidden.bs.modal")
+		                    .on("hidden.bs.modal", function () {
+
+		                        if (isResub) {
+
+		                            window.location.href =
+		                                window.previousUrl
+		                                    ? window.previousUrl
+		                                    : "/BRRS/Resubmission?rptcode=AIDP";
+		                        }
+		                    });
+		            },
+
+		            error: function (jqXHR) {
+
+		                console.error("Error response:", jqXHR.responseText);
+
+		                $("#resultModalLabel").text("Error");
+
+		                $("#resultModalBody").text(
+		                    "Update failed: " +
+		                    (jqXHR.responseText || "Unknown error")
+		                );
+
+		                $("#resultModal").modal("show");
+		            },
+
+		            complete: function () {
+		                $('#loader').modal('hide');
+		            }
+		        });
+
+		    } catch (error) {
+
+		        $('#loader').modal('hide');
+
+		        console.error("Error during file upload:", error);
+		    }
+		}
+
+		/*function fileuploads(btn) {
 
 			const asondate = btn.getAttribute("data-todate");
 			const reportId = btn.getAttribute("data-reporttype"); // RESUB / NORMAL
@@ -1127,7 +1247,7 @@ PURPOSE		: BWRBRREPORT
 					$('#loader').modal('hide');
 				}
 			});
-		}
+		}*/
 
 
 
