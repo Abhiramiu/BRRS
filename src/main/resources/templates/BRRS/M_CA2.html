@@ -920,7 +920,7 @@ function cancelModify() {
 	function calculateAllAmounts() {
 		
 		
-		// Store original backend value only once
+		/*// Store original backend value only once
 		const originalR13 =
 		    $("#r13_amount_1").data("original") ??
 		    getAmountValue("#r13_amount_1");
@@ -935,7 +935,7 @@ function cancelModify() {
 		const updatedR13 = originalR13 + r15Value;
 
 		// Update r13
-		setAmountValue("#r13_amount_1", updatedR13);
+		setAmountValue("#r13_amount_1", updatedR13);*/
 
 		// R12 = R13 + R14 - R15 - R16
 		const r12 =
@@ -1053,7 +1053,7 @@ function cancelModify() {
 	}
 
 	
-	function fileuploads(btn) {
+/*	function fileuploads(btn) {
 	    const asondate = btn.getAttribute("data-todate");
 	    const type = btn.getAttribute("data-type");
 
@@ -1062,13 +1062,13 @@ function cancelModify() {
 
 	    try {
 	        // ✅ Step 1: Calculate totals
-	      /*   calculateR12Totals();
+	         calculateR12Totals();
 	        calculateR17Totals();
 	        calculateR26Totals();
 	        calculateR35Totals();
 	        calculateR36Totals();
 	        calculateR48Totals();
-	        calculateR49Totals(); */
+	        calculateR49Totals(); 
 	        calculateAllAmounts();
 	        //calculateR24Totals();
 	        //calculateR10Totals();
@@ -1127,6 +1127,121 @@ function cancelModify() {
 	        $("#resultModalLabel").text("Error");
 	        $("#resultModalBody").text("Unexpected error occurred. Check console.");
 	        $("#resultModal").modal("show");
+	    }
+	}*/
+	
+	
+	function fileuploads(btn) {
+
+	    const asondate =
+	            btn.getAttribute("data-todate");
+
+	    const type =
+	            btn.getAttribute("data-type");
+
+	    $('#loader').modal('show');
+
+	    try {
+
+	        calculateAllAmounts();
+
+	        // Remove commas
+	        $("#fileupload input[type='text']")
+	                .each(function () {
+
+	                    $(this).val(
+	                            $(this).val()
+	                                    .replace(/,/g, '')
+	                    );
+	                });
+
+	        // Validate
+	        if (!$("#fileupload").valid()) {
+
+	            $('#loader').modal('hide');
+
+	            return;
+	        }
+
+	        // SERIALIZE FORM
+	        let formData =
+	                $("#fileupload").serialize();
+
+	        formData +=
+	                "&asondate="
+	                + encodeURIComponent(asondate);
+
+	        formData +=
+	                "&type="
+	                + encodeURIComponent(type);
+
+	        $.ajax({
+
+	            url: './MCA2updateAll',
+
+	            type: 'POST',
+
+	            data: formData,
+
+	            processData: true,
+
+	            contentType:
+	                    'application/x-www-form-urlencoded; charset=UTF-8',
+
+	            dataType: 'text',
+
+	            success: function () {
+
+	                $("#resultModalLabel")
+	                        .text("BRRS");
+
+	                $("#resultModalBody")
+	                        .text("Modified Successfully.");
+
+	                $("#resultModal")
+	                        .modal("show");
+	            },
+
+	            error: function (jqXHR) {
+
+	                console.error(
+	                        "Error response:",
+	                        jqXHR.responseText);
+
+	                $("#resultModalLabel")
+	                        .text("Error");
+
+	                $("#resultModalBody")
+	                        .text(
+	                                "Update failed. Check console.");
+
+	                $("#resultModal")
+	                        .modal("show");
+	            },
+
+	            complete: function () {
+
+	                $('#loader').modal('hide');
+	            }
+	        });
+
+	    } catch (error) {
+
+	        console.error(
+	                "Error in fileuploads:",
+	                error);
+
+	        $('#loader').modal('hide');
+
+	        $("#resultModalLabel")
+	                .text("Error");
+
+	        $("#resultModalBody")
+	                .text(
+	                        "Unexpected error occurred.");
+
+	        $("#resultModal")
+	                .modal("show");
 	    }
 	}
 	</script>
@@ -1399,12 +1514,12 @@ function cancelModify() {
         <td style="text-align: center;" rowspan="5">3</td>
         <td style="font-weight:bold;" th:text="${report.r12_product}"></td>
         <td th:attr="reportLable='R12', reportAddlCriteria1='C2'" style="text-align: right; background-color:black;"></td>
-        <td id="r12_amount_2" th:text="${#numbers.formatDecimal(report.r12_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R12', reportAddlCriteria1='C3'" style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>
+        <td id="r12_amount_2" name="r12_amount_2" th:text="${#numbers.formatDecimal(report.r12_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R12', reportAddlCriteria1='C3'" style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>
     </tr>
     <tr>
 		<td style="font-weight:bold; padding-left: 30px;" th:text="${report.r13_product}"></td>
 		
-		<td id="r13_amount_1" th:text="${#numbers.formatDecimal(report.r13_amount_1, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R13', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)" style="vertical-align: middle; text-align: right;"></td>
+		<td id="r13_amount_1" name="r13_amount_1" th:text="${#numbers.formatDecimal(report.r13_amount_1, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R13', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)" style="vertical-align: middle; text-align: right;"></td>
       
       
        <!--  <td th:each="report: ${reportsummary}" id="R13" style="text-align: right;   padding-left:10px; ">
@@ -1461,7 +1576,7 @@ function cancelModify() {
         <td style="text-align: center;vertical-align:middle;">4</td>
         <td style="font-weight:bold;" th:text="${report.r17_product}"></td>
         <td th:attr="reportLable='R17', reportAddlCriteria1='C2'" style="text-align: right;background-color:black;"></td>
-        <td id="r17_amount_2" th:text="${#numbers.formatDecimal(report.r17_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R17', reportAddlCriteria1='C3'" style="text-align: right;background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
+        <td id="r17_amount_2"  name="r17_amount_2" th:text="${#numbers.formatDecimal(report.r17_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R17', reportAddlCriteria1='C3'" style="text-align: right;background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
     </tr>
     <tr>
         <td style="text-align: center;"></td>
@@ -1494,7 +1609,7 @@ function cancelModify() {
     <tr>
         <td style="text-align: center;"></td>
         <td style="" th:text="${report.r20_product}"></td>
-        <td id="r20_amount_1" th:text="${report?.r20_amount_1 != null ? #numbers.formatDecimal(report.r20_amount_1, 1, 'COMMA', 0, 'POINT') : ''}" th:attr="reportLable='R20', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)" style="vertical-align: middle; text-align: right;"></td>
+        <td id="r20_amount_1" name="r20_amount_1" th:text="${report?.r20_amount_1 != null ? #numbers.formatDecimal(report.r20_amount_1, 1, 'COMMA', 0, 'POINT') : ''}" th:attr="reportLable='R20', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)" style="vertical-align: middle; text-align: right;"></td>
         <td th:attr="reportLable='R20', reportAddlCriteria1='C3'" style="text-align: right;background-color:black;"></td>
     </tr>
     <tr>
@@ -1519,25 +1634,25 @@ function cancelModify() {
         </td>
         <td th:attr="reportLable='R22', reportAddlCriteria1='C2'" style="text-align: left; background-color:#C0C0C0; vertical-align: middle;">Ref. (9) M-CA4</td>
         <!-- onclick="showdetailsbyRowAndColumn(this)" -->
-        <td id="r22_amount_2" th:text="${#numbers.formatDecimal(report.r22_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R22', reportAddlCriteria1='C3'"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
+        <td id="r22_amount_2" name="r22_amount_2" th:text="${#numbers.formatDecimal(report.r22_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R22', reportAddlCriteria1='C3'"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
     </tr>
     <tr>
         <td style="text-align: center;vertical-align:middle;">6 (a)</td>
         <td style="font-weight:bold;" th:text="${report.r23_product}"></td>
         <td th:attr="reportLable='R23', reportAddlCriteria1='C2'" style="text-align:right; background-color:#C0C0C0; vertical-align: middle;">Ref. (8) M-CA3</td>
-        <td id="r23_amount_2" th:text="${#numbers.formatDecimal(report.r23_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R22', reportAddlCriteria1='C3'"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
+        <td id="r23_amount_2" name="r23_amount_2"th:text="${#numbers.formatDecimal(report.r23_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R22', reportAddlCriteria1='C3'"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
     </tr>
     <tr>
         <td style="text-align: center;vertical-align:middle;">6 (b)</td>
         <td style="font-weight:bold;" th:text="${report.r24_product}"></td>
         <td th:attr="reportLable='R24', reportAddlCriteria1='C2'"></td>
-        <td id="r24_amount_2" th:text="${#numbers.formatDecimal(report.r24_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R24', reportAddlCriteria1='C3'"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
+        <td id="r24_amount_2" name="r24_amount_2"th:text="${#numbers.formatDecimal(report.r24_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R24', reportAddlCriteria1='C3'"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
     </tr>
     <tr>
         <td style="text-align: center;"></td>
         <td style="font-weight:bold;" th:text="${report.r25_product}"></td>
         <td th:attr="reportLable='R25', reportAddlCriteria1='C2'" style="text-align:right;">M-CA7 (2) Column 3</td>
-        <td id="r25_amount_2" th:text="${#numbers.formatDecimal(report.r25_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R25', reportAddlCriteria1='C3'"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
+        <td id="r25_amount_2" name="r25_amount_2" th:text="${#numbers.formatDecimal(report.r25_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R25', reportAddlCriteria1='C3'"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
     </tr>
     <tr>
         <td style="text-align: center;">7</td>
@@ -1546,7 +1661,7 @@ function cancelModify() {
             <div th:text="'Lines' + ${#strings.substringAfter(report.r26_product, 'Lines')}"></div>
         </td>
         <td th:attr="reportLable='R26', reportAddlCriteria1='C2'" style="text-align: left; background-color:black"></td>
-        <td id="r26_amount_2" th:text="${#numbers.formatDecimal(report.r26_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R26', reportAddlCriteria1='C3'" style="text-align:right; font-weight:bold; background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
+        <td id="r26_amount_2"  name="r26_amount_2"th:text="${#numbers.formatDecimal(report.r26_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R26', reportAddlCriteria1='C3'" style="text-align:right; font-weight:bold; background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
    </tr>
 							</tbody>
 							</table>
@@ -1588,7 +1703,7 @@ function cancelModify() {
             <div th:text="'Additional' + ${#strings.substringAfter(report.r31_product, 'Additional')}"></div>
         </td>
         <td th:attr="reportLable='R31', reportAddlCriteria1='C2'" style="text-align: left;background-color:#C0C0C0; vertical-align: middle;">Ref. (10) M-CA5</td>
-        <td id="r31_amount_2" th:text="${#numbers.formatDecimal(report.r31_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R31', reportAddlCriteria1='C3'"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
+        <td id="r31_amount_2" name="r31_amount_2"th:text="${#numbers.formatDecimal(report.r31_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R31', reportAddlCriteria1='C3'"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
     </tr>
     <tr>
         <td style="text-align: center;vertical-align:middle;">10</td>
@@ -1613,25 +1728,25 @@ function cancelModify() {
             <div th:text="'Tier' + ${#strings.substringAfter(report.r33_product, 'Tier')}"></div>
         </td>
         <td th:attr="reportLable='R33', reportAddlCriteria1='C2'" style="text-align: left;background-color:#C0C0C0; vertical-align: middle;">Ref. (9) M-CA4</td>
-        <td id="r33_amount_2" th:text="${#numbers.formatDecimal(report.r33_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R33', reportAddlCriteria1='C3'"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
+        <td id="r33_amount_2" name="r33_amount_2"th:text="${#numbers.formatDecimal(report.r33_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R33', reportAddlCriteria1='C3'"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
     </tr>
     <tr>
         <td style="text-align: center;vertical-align:middle;">12</td>
         <td style="font-weight:bold;" th:text="${report.r34_product}"></td>
         <td th:attr="reportLable='R34', reportAddlCriteria1='C2'" style="text-align: right;background-color:#C0C0C0; vertical-align: middle;">Ref. (8) M-CA3</td>
-        <td id="r34_amount_2" th:text="${#numbers.formatDecimal(report.r34_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R34', reportAddlCriteria1='C3'"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
+        <td id="r34_amount_2" name="r34_amount_2" th:text="${#numbers.formatDecimal(report.r34_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R34', reportAddlCriteria1='C3'"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
     </tr>
     <tr>
         <td style="text-align: center;vertical-align:middle;">13</td>
         <td style="font-weight:bold;" th:text="${report.r35_product}"></td>
         <td th:attr="reportLable='R35', reportAddlCriteria1='C2'" style="text-align: left;background-color:#C0C0C0;"></td>
-        <td id="r35_amount_2" th:text="${#numbers.formatDecimal(report.r35_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R35', reportAddlCriteria1='C3'" style="text-align: right;background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
+        <td id="r35_amount_2" name="r35_amount_2" th:text="${#numbers.formatDecimal(report.r35_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R35', reportAddlCriteria1='C3'" style="text-align: right;background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
     </tr>
     <tr>
         <td style="text-align: center;vertical-align:middle;">14</td>
         <td style="font-weight:bold;" th:text="${report.r36_product}"></td>
         <td th:attr="reportLable='R36', reportAddlCriteria1='C2'" style="text-align: left;"></td>
-        <td id="r36_amount_2" th:text="${#numbers.formatDecimal(report.r36_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R36', reportAddlCriteria1='C3'" style="text-align: right;background-color: rgb(107, 122, 143); color: white;vertical-align: middle;"></td>
+        <td id="r36_amount_2" name="r36_amount_2" th:text="${#numbers.formatDecimal(report.r36_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R36', reportAddlCriteria1='C3'" style="text-align: right;background-color: rgb(107, 122, 143); color: white;vertical-align: middle;"></td>
      </tr> 
 							
 							</tbody>
@@ -1670,7 +1785,7 @@ function cancelModify() {
         <td style="text-align: center;vertical-align:middle;">16</td>
         <td style="font-weight:bold; vertical-align: middle;" th:text="${report.r41_product}"></td>
         <td th:attr="reportLable='R41', reportAddlCriteria1='C2'" style="text-align: left;background-color:#C0C0C0; vertical-align: middle;">Ref. (10) M-CA5</td>
-        <td id="r41_amount_2" th:text="${#numbers.formatDecimal(report.r41_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R41', reportAddlCriteria1='C3'"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
+        <td id="r41_amount_2" name="r41_amount_2" th:text="${#numbers.formatDecimal(report.r41_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R41', reportAddlCriteria1='C3'"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
     </tr>
     <tr>
         <td style="text-align: center;vertical-align:middle;">17</td>
@@ -1724,7 +1839,7 @@ function cancelModify() {
             <div th:text="'inclusion' + ${#strings.substringAfter(report.r45_product, 'inclusion')}"></div>
         </td>
         <td th:attr="reportLable='R45', reportAddlCriteria1='C2'" style="text-align: left;background-color:#C0C0C0;vertical-align: middle;">Ref. (9) M-CA4</td>
-        <td id="r45_amount_2" th:text="${#numbers.formatDecimal(report.r45_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R45', reportAddlCriteria1='C3'"  style="vertical-align: middle; text-align: right;background-color: rgb(107, 122, 143); color: white;"></td>
+        <td id="r45_amount_2" name="r45_amount_2" th:text="${#numbers.formatDecimal(report.r45_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R45', reportAddlCriteria1='C3'"  style="vertical-align: middle; text-align: right;background-color: rgb(107, 122, 143); color: white;"></td>
     </tr>
     <tr>
         <td style="text-align: center;vertical-align:middle;">21</td>
@@ -1746,19 +1861,19 @@ function cancelModify() {
         <td style="text-align: center;vertical-align:middle;">22</td>
         <td style="font-weight:bold;" th:text="${report.r47_product}"></td>
         <td th:attr="reportLable='R47', reportAddlCriteria1='C2'" style="text-align: right;background-color:#C0C0C0; vertical-align: middle;">Ref. (8) M-CA3</td>
-        <td id="r47_amount_2" th:text="${#numbers.formatDecimal(report.r47_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R47', reportAddlCriteria1='C3'"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
+        <td id="r47_amount_2" name="r47_amount_2" th:text="${#numbers.formatDecimal(report.r47_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R47', reportAddlCriteria1='C3'"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
     </tr>
     <tr>
         <td style="text-align: center;vertical-align:middle;">23</td>
         <td style="font-weight:bold;" th:text="${report.r48_product}"></td>
         <td th:attr="reportLable='R48', reportAddlCriteria1='C2'" style="text-align: left;background-color:#C0C0C0;"></td>
-        <td id="r48_amount_2" th:text="${#numbers.formatDecimal(report.r48_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R48', reportAddlCriteria1='C3'" style="text-align: right;background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
+        <td id="r48_amount_2" name="r48_amount_2" th:text="${#numbers.formatDecimal(report.r48_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R48', reportAddlCriteria1='C3'" style="text-align: right;background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
     </tr>
     <tr>
         <td style="text-align: center;vertical-align:middle;">24</td>
         <td style="font-weight:bold;" th:text="${report.r49_product}"></td>
         <td th:attr="reportLable='R49', reportAddlCriteria1='C2'" style="text-align: left;"></td>
-        <td id="r49_amount_2" th:text="${#numbers.formatDecimal(report.r49_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R49', reportAddlCriteria1='C3'" style="text-align: right;background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
+        <td id="r49_amount_2"  name="r49_amount_2"th:text="${#numbers.formatDecimal(report.r49_amount_2, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R49', reportAddlCriteria1='C3'" style="text-align: right;background-color: rgb(107, 122, 143); color: white; vertical-align: middle;"></td>
     </tr>
 </tbody>
 							</table>

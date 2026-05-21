@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.CallableStatement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -331,72 +332,317 @@ public class BRRS_M_CA2_ReportService {
 	}
 
 	@Transactional
-	public void updateReport(M_CA2_Summary_Entity updatedEntity) {
-
-	    System.out.println("Came to services");
-	    System.out.println("Report Date: " + updatedEntity.getReport_date());
-
-	    M_CA2_Summary_Entity existing =
-	            BRRS_M_CA2_Summary_Repo.findById(updatedEntity.getReport_date())
-	            .orElseThrow(() ->
-	                    new RuntimeException("Record not found for REPORT_DATE: "
-	                            + updatedEntity.getReport_date()));
-
-	    // Only allowed R-numbers
-	    int[] amount2Indexes = { 11, 32, 42, 44,43, 46 };     // AMOUNT_2	
-	    int[] amount1Indexes = {  14, 15, 16, 18, 19, 21 }; // AMOUNT_1
+	public ResponseEntity<?> updateReport(
+	        M_CA2_Summary_Entity updatedEntity) {
 
 	    try {
 
-	        // ===== AMOUNT_2 updates =====
+	        System.out.println("Updating CA2 Summary table");
+
+	        // =========================================
+	        // FETCH EXISTING RECORD
+	        // =========================================
+
+	        List<M_CA2_Summary_Entity> list =
+	                BRRS_M_CA2_Summary_Repo
+	                        .getdatabydateList(
+	                                updatedEntity.getReport_date());
+
+	        M_CA2_Summary_Entity existing;
+
+	        if (list.isEmpty()) {
+
+	            System.out.println(
+	                    "No record found for REPORT_DATE : "
+	                            + updatedEntity.getReport_date());
+
+	            existing = new M_CA2_Summary_Entity();
+
+	            existing.setReport_date(
+	                    updatedEntity.getReport_date());
+
+	        } else {
+
+	            existing = list.get(0);
+	        }
+
+	        boolean isChanged = false;
+
+	        // =========================================
+	        // ALLOWED ROWS
+	        // =========================================
+
+	        int[] amount2Indexes =
+	                {11, 32, 42, 44, 43, 46};
+
+	        int[] amount1Indexes =
+	                {14, 15, 16, 18, 19, 21};
+
+	        // =========================================
+	        // AMOUNT_2 UPDATE
+	        // =========================================
+
 	        for (int i : amount2Indexes) {
 
-	            String getterName = "getR" + i + "_amount_2";
-	            String setterName = "setR" + i + "_amount_2";
+	            String getterName =
+	                    "getR" + i + "_amount_2";
+
+	            String setterName =
+	                    "setR" + i + "_amount_2";
 
 	            try {
-	                Method getter = M_CA2_Summary_Entity.class.getMethod(getterName);
-	                Method setter = M_CA2_Summary_Entity.class.getMethod(
-	                        setterName,
-	                        getter.getReturnType()
-	                );
 
-	                Object newValue = getter.invoke(updatedEntity);
-	                setter.invoke(existing, newValue);
+	                Method getter =
+	                        M_CA2_Summary_Entity.class
+	                                .getMethod(getterName);
+
+	                Method setter =
+	                        M_CA2_Summary_Entity.class
+	                                .getMethod(
+	                                        setterName,
+	                                        getter.getReturnType());
+
+	                Object newValue =
+	                        getter.invoke(updatedEntity);
+
+	                Object oldValue =
+	                        getter.invoke(existing);
+
+	                System.out.println(
+	                        "Updating R"
+	                                + i
+	                                + "_amount_2 : "
+	                                + newValue);
+
+	                if (newValue != null &&
+	                        !newValue.equals(oldValue)) {
+
+	                    setter.invoke(existing, newValue);
+
+	                    isChanged = true;
+	                }
 
 	            } catch (NoSuchMethodException e) {
-	                continue; // skip safely
+
+	                continue;
 	            }
 	        }
 
-	        // ===== AMOUNT_1 updates =====
+	        // =========================================
+	        // AMOUNT_1 UPDATE
+	        // =========================================
+
 	        for (int i : amount1Indexes) {
 
-	            String getterName = "getR" + i + "_amount_1";
-	            String setterName = "setR" + i + "_amount_1";
+	            String getterName =
+	                    "getR" + i + "_amount_1";
+
+	            String setterName =
+	                    "setR" + i + "_amount_1";
 
 	            try {
-	                Method getter = M_CA2_Summary_Entity.class.getMethod(getterName);
-	                Method setter = M_CA2_Summary_Entity.class.getMethod(
-	                        setterName,
-	                        getter.getReturnType()
-	                );
 
-	                Object newValue = getter.invoke(updatedEntity);
-	                setter.invoke(existing, newValue);
+	                Method getter =
+	                        M_CA2_Summary_Entity.class
+	                                .getMethod(getterName);
+
+	                Method setter =
+	                        M_CA2_Summary_Entity.class
+	                                .getMethod(
+	                                        setterName,
+	                                        getter.getReturnType());
+
+	                Object newValue =
+	                        getter.invoke(updatedEntity);
+
+	                Object oldValue =
+	                        getter.invoke(existing);
+
+	                System.out.println(
+	                        "Updating R"
+	                                + i
+	                                + "_amount_1 : "
+	                                + newValue);
+
+	                if (newValue != null &&
+	                        !newValue.equals(oldValue)) {
+
+	                    setter.invoke(existing, newValue);
+
+	                    isChanged = true;
+	                }
 
 	            } catch (NoSuchMethodException e) {
-	                continue; // skip safely
+
+	                continue;
 	            }
+	        }
+
+	        // =========================================
+	        // METADATA
+	        // =========================================
+
+	        existing.setReport_version(
+	                updatedEntity.getReport_version());
+
+	        existing.setReport_frequency(
+	                updatedEntity.getReport_frequency());
+
+	        existing.setReport_code(
+	                updatedEntity.getReport_code());
+
+	        existing.setReport_desc(
+	                updatedEntity.getReport_desc());
+
+	        existing.setEntity_flg(
+	                updatedEntity.getEntity_flg());
+
+	        existing.setModify_flg(
+	                updatedEntity.getModify_flg());
+
+	        existing.setDel_flg(
+	                updatedEntity.getDel_flg());
+
+	        // =========================================
+	        // SAVE ONLY IF CHANGED
+	        // =========================================
+
+	        if (isChanged) {
+
+	            BRRS_M_CA2_Summary_Repo.save(existing);
+
+	            System.out.println(
+	                    "CA2 Summary updated successfully");
+
+	            // =========================================
+	            // FORMAT DATE
+	            // =========================================
+
+	            String formattedDate =
+	                    new SimpleDateFormat("dd-MM-yyyy")
+	                            .format(
+	                                    updatedEntity.getReport_date());
+
+	            // =========================================
+	            // CALL PROCEDURE AFTER COMMIT
+	            // =========================================
+
+	            TransactionSynchronizationManager
+	                    .registerSynchronization(
+	                            new TransactionSynchronizationAdapter() {
+
+	                                @Override
+	                                public void afterCommit() {
+
+	                                    try {
+
+	                                        System.out.println(
+	                                                "Transaction committed - calling procedure");
+
+	                                        jdbcTemplate.update(
+	                                                "BEGIN BRRS_M_CA2_SUMMARY_PROCEDURE(?); END;",
+	                                                formattedDate);
+
+	                                        System.out.println(
+	                                                "Procedure executed successfully");
+
+	                                    } catch (Exception e) {
+
+	                                        e.printStackTrace();
+	                                    }
+	                                }
+	                            });
+
+	            return ResponseEntity.ok(
+	                    "CA2 Summary updated successfully");
+
+	        } else {
+
+	            return ResponseEntity.ok(
+	                    "No changes detected");
 	        }
 
 	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
 
-	    // Save only intended updates
-	    BRRS_M_CA2_Summary_Repo.saveAndFlush(existing);
+	        e.printStackTrace();
+
+	        return ResponseEntity
+	                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body(
+	                        "Error updating CA2 Summary : "
+	                                + e.getMessage());
+	    }
 	}
+	
+	
+	
+//	@Transactional
+//	public void updateReport(M_CA2_Summary_Entity updatedEntity) {
+//
+//	    System.out.println("Came to services");
+//	    System.out.println("Report Date: " + updatedEntity.getReport_date());
+//
+//	    M_CA2_Summary_Entity existing =
+//	            BRRS_M_CA2_Summary_Repo.findById(updatedEntity.getReport_date())
+//	            .orElseThrow(() ->
+//	                    new RuntimeException("Record not found for REPORT_DATE: "
+//	                            + updatedEntity.getReport_date()));
+//
+//	    // Only allowed R-numbers
+//	    int[] amount2Indexes = { 11, 32, 42, 44,43, 46,48 };     // AMOUNT_2	
+//	    int[] amount1Indexes = {  14, 15, 16, 18, 19, 21 }; // AMOUNT_1
+//
+//	    try {
+//
+//	        // ===== AMOUNT_2 updates =====
+//	        for (int i : amount2Indexes) {
+//
+//	            String getterName = "getR" + i + "_amount_2";
+//	            String setterName = "setR" + i + "_amount_2";
+//
+//	            try {
+//	                Method getter = M_CA2_Summary_Entity.class.getMethod(getterName);
+//	                Method setter = M_CA2_Summary_Entity.class.getMethod(
+//	                        setterName,
+//	                        getter.getReturnType()
+//	                );
+//
+//	                Object newValue = getter.invoke(updatedEntity);
+//	                setter.invoke(existing, newValue);
+//
+//	            } catch (NoSuchMethodException e) {
+//	                continue; // skip safely
+//	            }
+//	        }
+//
+//	        // ===== AMOUNT_1 updates =====
+//	        for (int i : amount1Indexes) {
+//
+//	            String getterName = "getR" + i + "_amount_1";
+//	            String setterName = "setR" + i + "_amount_1";
+//
+//	            try {
+//	                Method getter = M_CA2_Summary_Entity.class.getMethod(getterName);
+//	                Method setter = M_CA2_Summary_Entity.class.getMethod(
+//	                        setterName,
+//	                        getter.getReturnType()
+//	                );
+//
+//	                Object newValue = getter.invoke(updatedEntity);
+//	                setter.invoke(existing, newValue);
+//
+//	            } catch (NoSuchMethodException e) {
+//	                continue; // skip safely
+//	            }
+//	        }
+//
+//	    } catch (Exception e) {
+//	        throw new RuntimeException("Error while updating report fields", e);
+//	    }
+//
+//	    // Save only intended updates
+//	    BRRS_M_CA2_Summary_Repo.saveAndFlush(existing);
+//	}
 
 	public byte[] getM_CA2DetailExcel(String filename, String fromdate, String todate, String currency, String dtltype,
 			String type, String version) {
