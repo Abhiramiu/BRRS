@@ -62384,14 +62384,24 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 
 
 											<!-- AC FORMULA -->
-											<td id="ROW254"
+											<!--<td id="ROW254"
 												style="padding-left: 20px; font-weight: bold; text-align: right;"
 												class="green-cell"><input
 												class="display-input Show_input green-cell" type="text"
 												id="r254_rwa_tot_ris_wei_ass"
 												name="r254_rwa_tot_ris_wei_ass"
 												style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-												readonly /></td>
+												readonly /></td>-->
+												
+												
+												<td th:each="report : ${reportsummary5}" id="ROW254"
+																								style="padding-left: 20px; font-weight: bold; text-align: right; " class="green-cell"><input
+																								class="display-input Show_input green-cell " type="text"
+																								th:value="${report.r254_rwa_tot_ris_wei_ass != null ? #numbers.formatDecimal(report.r254_rwa_tot_ris_wei_ass, 0, 'COMMA', 0, 'POINT') : '0'}"
+																								id="r254_rwa_tot_ris_wei_ass" name="r254_rwa_tot_ris_wei_ass"
+																								style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																								readonly /></td>
+												
 										</tr>
 
 
