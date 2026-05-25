@@ -620,23 +620,29 @@ function showdetails() {
 		
 		</script>
 <script>
-	function updateQlaradv() {
+function updateQlaradv() {
 
-	    $.ajax({
-	        url: '/updateBRRSQlaradv',
-	        type: 'POST',
-	        data: $("#modifyQlaradvForm").serialize(),
+    $.ajax({
+        url: '/BRRS/Reports/updateBRRSQlaradv',
+        type: 'POST',
+        data: $("#modifyQlaradvForm").serialize(),
 
-	        success: function(response) {
-	            alert(response);
-	        },
+        success: function(response) {
+            alert(response);
+            window.location.href =
+                '/BRRS/Reports/Q_LARADV?dtltype=report'
+                + '&fromdate=01/01/2025'
+                + '&todate=31/03/2026'
+                + '&type=BRRS'
+                + '&asondate=31/03/2026';
+        },
 
-	        error: function(xhr) {
-	            console.log(xhr);
-	            alert(xhr.responseText);
-	        }
-	    });
-	}
+        error: function(xhr) {
+            console.log(xhr);
+            alert(xhr.responseText);
+        }
+    });
+}
 	</script>
 		
 </head>

@@ -559,8 +559,7 @@ public void updateQlaradv(
     existingSummary.setLimitPercent(
             summary.getLimitPercent());
 
-    existingSummary.setReportDate(
-            summary.getReportDate());
+    
 
     Q_LARADV_Summary_Repo.save(existingSummary);
 
