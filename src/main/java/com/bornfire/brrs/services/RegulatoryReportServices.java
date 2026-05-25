@@ -225,6 +225,7 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_M_LARADV_ReportService brrs_m_laradv_reportservice;
 
+
 	@Autowired
 	BRRS_M_OR2_ReportService brrs_m_or2_reportservice;
 
@@ -426,6 +427,10 @@ public class RegulatoryReportServices {
 	BRRS_SCH_17_New_Service  BRRS_SCH_17_New_Service;
 	
 
+
+	 @Autowired
+	 BRRS_Q_LARADV_ReportService BRRS_Q_LARADV_reportservice;
+		
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
 	public ModelAndView getReportView(String reportId, String reportDate, String fromdate, String todate,
@@ -540,7 +545,7 @@ public class RegulatoryReportServices {
 			break;
 
 		case "Q_LARADV":
-			repsummary = brrs_m_laradv_reportservice.getM_LARADVView(reportId, fromdate, todate, currency, dtltype,
+			repsummary = BRRS_Q_LARADV_reportservice.getBRRS_Q_LARADV_View(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
 
@@ -8349,7 +8354,7 @@ break;
 							todate, currency, dtltype, type, format, version);
 
 				case "Q_LARADV":
-					return brrs_m_laradv_reportservice.getM_LARADVExcel("EMAIL_Q_LARADV.xlsx", reportName, fromdate,
+					return BRRS_Q_LARADV_reportservice.getBRRS_Q_LARADV_EmailExcel("EMAIL_Q_LARADV.xlsx", reportName, fromdate,
 							todate, currency, dtltype, type, format, version);
 
 				case "Q_BRANCHNET":
@@ -8609,8 +8614,8 @@ break;
 							todate, currency, dtltype, type, format, version);
 
 				case "Q_LARADV":
-					return brrs_m_laradv_reportservice.getM_LARADVExcel("Q_LARADV.xlsx", reportName, fromdate, todate,
-							currency, dtltype, type, format, version);
+					return BRRS_Q_LARADV_reportservice.getBRRS_Q_LARADV_EmailExcel("EMAIL_Q_LARADV.xlsx", reportName, fromdate,
+							todate, currency, dtltype, type, format, version);
 
 				case "Q_BRANCHNET":
 					return BRRS_Q_BRANCHNET_reportservice.BRRS_Q_BRANCHNETExcel("Q_BRANCHNET.xlsx", reportName,
@@ -9182,5 +9187,154 @@ public byte[] getPdfDownloadFile(
 	    return repfile;
 	}
 	
+public byte[] getConsolidatedDownloadADISBFile(String filename, String asondate, String fromdate, String todate,
+		String currency, String type, String format, BigDecimal version, String dtltype) throws ParseException {
+
+	// List of all reports you want to include
+	List<String> reportList = Arrays.asList("ADISB1", "ADISB2");
+
+	System.out.println(todate);
+
+	SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MMM-dd", Locale.ENGLISH);
+	Date date = inputFormat.parse(todate);
+
+	// 2️⃣ Format to required pattern (Date → String)
+	SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+	String formattedDate = outputFormat.format(date); // Workbook for consolidated report
+	XSSFWorkbook workbook = new XSSFWorkbook();
+	Sheet errorSheet = workbook.createSheet("Status");
+	Row headerRow = errorSheet.createRow(0);
+	headerRow.createCell(0).setCellValue("Report Name");
+	headerRow.createCell(1).setCellValue("Status");
+	headerRow.createCell(2).setCellValue("Remarks");
+
+	int errorRowNum = 1;
+
+	for (String report : reportList) {
+		try {
+			byte[] fileData = generateADISBReport(report, filename, asondate, fromdate, formattedDate, currency, dtltype,
+					type, format, version);
+			System.out.println(fileData + "    fileData");
+
+			if (fileData != null ) {
+				try (Workbook reportWorkbook = new XSSFWorkbook(new java.io.ByteArrayInputStream(fileData))) {// Copy the first sheet from each report into the consolidated workbook						
+
+					for (int i = 0; i < reportWorkbook.getNumberOfSheets(); i++) {
+						Sheet srcSheet = reportWorkbook.getSheetAt(i);
+						/*
+						 * if (srcSheet.getLastRowNum() == -1 || srcSheet.getPhysicalNumberOfRows() ==
+						 * 0) { System.out.println("Skipping empty sheet: " + srcSheet.getSheetName());
+						 * continue; }
+						 */
+						Sheet newSheet;
+						if (srcSheet.getLastRowNum() == -1 || srcSheet.getPhysicalNumberOfRows() == 0) {
+							newSheet = workbook.createSheet(report + "_" + srcSheet.getSheetName());
+						} else {
+							newSheet = workbook.createSheet(report);
+						}
+						copySheet(srcSheet, newSheet);
+					}
+
+				}
+			} else { // Log missing data
+				Row failRow = errorSheet.createRow(errorRowNum++);
+				failRow.createCell(0).setCellValue(report);
+				failRow.createCell(1).setCellValue("FAILED");
+				failRow.createCell(2).setCellValue("No data found");
+			}
+
+		} catch (Exception e) {
+			Row failRow = errorSheet.createRow(errorRowNum++);
+			failRow.createCell(0).setCellValue(report);
+			failRow.createCell(1).setCellValue("FAILED");
+			failRow.createCell(2).setCellValue("Error: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+	// Finalize workbook
+	try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+		workbook.write(bos);
+		workbook.close();
+		return bos.toByteArray();
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+
+	return null;
+}
+
+private byte[] generateADISBReport(String reportName, String filename, String asondate, String fromdate, String todate,
+		String currency, String dtltype, String type, String format, BigDecimal version) {
+
+	try { // ✅ Convert date formats if needed (example: 30/09/2025 → 30-Sep-2025)
+		SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
+		SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy");
+
+		if (fromdate != null && !fromdate.isEmpty()) {
+			Date d = outputFormat.parse(fromdate);
+			fromdate = outputFormat.format(d);
+		}
+		if (todate != null && !todate.isEmpty()) {
+			Date d = outputFormat.parse(todate);
+			todate = outputFormat.format(d);
+		}
+		if (asondate != null && !asondate.isEmpty()) {
+			Date d = outputFormat.parse(asondate);
+			asondate = outputFormat.format(d);
+		}
+
+		System.out.println("Service: Generating report for " + reportName);
+		System.out.println("Converted Dates: From " + fromdate + " To " + todate + " Ason " + asondate);
+
+		if ("email".equalsIgnoreCase(format) && version == null) {
+			switch (reportName) {
+
+			case "ADISB1":
+				return BRRS_ADISB1_ReportService.BRRS_ADISB1Excel("ADISB1.xlsx", reportName, fromdate, todate,
+						currency, dtltype, type,  version);
+
+			case "ADISB2":
+				return BRRS_ADISB2_ReportService.getM_ADISB2Excel("ADISB2.xlsx", reportName, fromdate,
+						todate, currency, dtltype, type, version);			
+
+			default:
+				System.out.println("Service: Unknown report name: " + reportName);
+				return null;
+			}
+
+		} else {
+			// ✅ Switch case for all reports
+			switch (reportName) {
+			case "ADISB1":
+				return BRRS_ADISB1_ReportService.BRRS_ADISB1Excel("ADISB1.xlsx", reportName, fromdate, todate,
+						currency, dtltype, type,  version);
+			case "ADISB2":
+				return BRRS_ADISB2_ReportService.getM_ADISB2Excel("ADISB2.xlsx", reportName, fromdate, todate,
+						currency, dtltype, type,  version);
+			
+			default:
+				System.out.println("Service: Unknown report name: " + reportName);
+				return null;
+			}
+		}
+
+	} catch (ParseException pe) {
+		System.err.println("Date parse error: " + pe.getMessage());
+		pe.printStackTrace();
+		return null;
+
+	} catch (FileNotFoundException fe) {
+		System.err.println("Template file not found: " + fe.getMessage());
+		fe.printStackTrace();
+		return null;
+
+	} catch (Exception e) {
+		System.err.println("Error generating report: " + e.getMessage());
+		e.printStackTrace();
+		return null;
+	}
+}
+
 	
 }

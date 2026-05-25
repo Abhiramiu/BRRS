@@ -2251,6 +2251,27 @@ public class NavigationController {
 	    return redirectUrl;
 	}
 	
+	 @RequestMapping(value = "ADISB_CONSOLIDATED_REPORT", method = { RequestMethod.GET, RequestMethod.POST })
+	    public String ADISB_CONSOLIDATED_REPORT(
+	            @RequestParam(required = false) String formmode,
+	            Model md,
+	            HttpServletRequest req) {
+
+	        md.addAttribute("activeMenu", "Reports");
+	        md.addAttribute("activePage", "CentralBank");
+
+	        String USERID = (String) req.getSession().getAttribute("USERID");
+	        md.addAttribute("USERID", USERID);
+	        logger.info("==> Entered ADISBCosolidatedReport controller || Formmode: {}", formmode);
+			
+	        System.out.println("Enter into navigation controller");
+	        if (formmode == null || formmode.equals("list")) {
+	            md.addAttribute("formmode", "list");
+	        }
+
+	        return "ADISBConsolidatedReport"; // HTML name
+	    }
+
 
     @RequestMapping(value = "RBR_CONSOLIDATED_REPORT", method = { RequestMethod.GET, RequestMethod.POST })
     public String RBR_CONSOLIDATED_REPORT(

@@ -120,6 +120,7 @@ import com.bornfire.brrs.services.BRRS_M_TOP_100_BORROWER_ReportService;
 import com.bornfire.brrs.services.BRRS_M_UNCONS_INVEST_ReportService;
 import com.bornfire.brrs.services.BRRS_PL_SCHS_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_BRANCHNET_ReportService;
+import com.bornfire.brrs.services.BRRS_Q_LARADV_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_RLFA1_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_RLFA2_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_SMME_DEP_ReportService;
@@ -181,6 +182,11 @@ public class BRRS_ReportsController {
 	@Autowired
 	BRRS_MDISB3_ReportService BRRS_MDISB3_ReportService;
 
+
+	 @Autowired
+	BRRS_Q_LARADV_ReportService BRRS_Q_LARADV_reportservice;
+		
+	 
 	private String pagesize;
 
 	public String getPagesize() {
@@ -4991,6 +4997,24 @@ public class BRRS_ReportsController {
 		response.getOutputStream().flush();
 	}
 	
+	@GetMapping("/downloadADISBConsolidatedExcel")
+	public void downloadADISBConsolidatedExcel(@RequestParam(required = false) String asondate,
+			@RequestParam(required = false) String fromdate, @RequestParam(required = false) String todate,
+			@RequestParam(required = false) String currency, @RequestParam(required = false) String type,
+			@RequestParam(value = "format", required = false) String format,
+			@RequestParam(required = false) BigDecimal version, @RequestParam(required = false) String filename,
+			@RequestParam(required = false) String dtltype, HttpServletResponse response)
+			throws IOException, ParseException {
+		System.out.println("SerdownloadConsolidatedExcelvice: Generating report ");
+		byte[] file = regreportServices.getConsolidatedDownloadADISBFile(filename, asondate, fromdate, todate, currency,
+				type, format, version, dtltype);
+		System.out.println("filename..." + filename);
+
+		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + ".xlsx\"");
+		response.getOutputStream().write(file);
+		response.getOutputStream().flush();
+	}
 
     @GetMapping("/downloadRBRConsolidatedExcel")
     public void downloadRBRConsolidatedExcel(
@@ -5414,5 +5438,94 @@ public class BRRS_ReportsController {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 	    }
 	}
+	
+	
+	
+//Q_LARADV
+	//Add screen navigating
+	
+	// CONTROLLER METHOD FOR ADD SCREEN
+
+	@RequestMapping(value = "/BRRS_Q_LARADV/add", method = RequestMethod.GET)
+	public ModelAndView addScreen() {
+		
+		System.out.println("came to add navigation method");
+		ModelAndView mv = new ModelAndView();
+
+	    mv.setViewName("BRRS/Q_LARADV");
+
+	    mv.addObject("displaymode", "add");
+
+	    mv.addObject("qLaradv", new Q_LARADV_Summary_Entity());
+
+	    return mv;
+	}
+	
+	
+// CONTROLLER METHOD FOR MODIFY SCREEN
+
+	@RequestMapping(value = "/BRRS_Q_LARADV/modify/{id}", method = RequestMethod.GET)
+	public ModelAndView modifyScreen(@PathVariable Long id) {
+
+	    System.out.println("came to modify navigation method");
+
+	    ModelAndView mv = new ModelAndView();
+
+	    Q_LARADV_Summary_Entity entity =
+	            BRRS_Q_LARADV_reportservice.findById(id);
+
+	    mv.setViewName("BRRS/Q_LARADV");
+	    mv.addObject("displaymode", "modify");
+	    mv.addObject("qLaradv", entity);
+
+	    return mv;
+	}
+
+//Add method
+@PostMapping("/BRRS_Q_LARADV/saveBRRSQlaradv")
+@ResponseBody
+public ResponseEntity<String> saveBRRSQlaradv(
+        @ModelAttribute Q_LARADV_Summary_Entity entity) {
+
+    try {
+
+        BRRS_Q_LARADV_reportservice.saveQlaradv(entity);
+
+        return ResponseEntity.ok(
+                "Record Saved Successfully");
+
+    } catch (Exception e) {
+
+        e.printStackTrace();
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Save Failed : " + e.getMessage());
+    }
+}
+
+//Modify Saving Method
+@PostMapping("/updateBRRSQlaradv")
+@ResponseBody
+public ResponseEntity<String> updateBRRSQlaradv(
+        @ModelAttribute Q_LARADV_Summary_Entity entity) {
+
+    try {
+    	System.out.println("CAME TO UPDATE METHOD");
+        BRRS_Q_LARADV_reportservice.updateQlaradv(entity);
+
+        return ResponseEntity.ok(
+                "Record Updated Successfully");
+
+    } catch (Exception e) {
+
+        e.printStackTrace();
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Update Failed : " + e.getMessage());
+    }
+}
+ 
 
 }
