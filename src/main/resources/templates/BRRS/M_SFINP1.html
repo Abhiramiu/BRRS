@@ -594,11 +594,11 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 
 		function showmodify(btn) {
 
-			$("#R14_MONTH_END, #R34_MONTH_END, #R37_MONTH_END, #R39_MONTH_END, #R43_MONTH_END, #R50_MONTH_END, #R51_MONTH_END, #R52_MONTH_END, #R57_MONTH_END, #R59_MONTH_END").css({
+			$("#R14_MONTH_END, #R34_MONTH_END, #R37_MONTH_END, #R39_MONTH_END, #R42_MONTH_END,#R43_MONTH_END, #R50_MONTH_END, #R51_MONTH_END, #R52_MONTH_END, #R57_MONTH_END, #R59_MONTH_END").css({
 				"background-color": "#d3d3d3"
 			}).prop("readonly", false);
 
-			$("#R14_MONTH_END, #R34_MONTH_END, #R37_MONTH_END, #R39_MONTH_END, #R43_MONTH_END, #R50_MONTH_END, #R51_MONTH_END, #R52_MONTH_END, #R57_MONTH_END, #R59_MONTH_END").css({
+			$("#R14_MONTH_END, #R34_MONTH_END, #R37_MONTH_END, #R39_MONTH_END,#R42_MONTH_END, #R43_MONTH_END, #R50_MONTH_END, #R51_MONTH_END, #R52_MONTH_END, #R57_MONTH_END, #R59_MONTH_END").css({
 				"background-color": "#d3d3d3"
 			});
 
@@ -1044,7 +1044,7 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 			/* ---------------- R40 ---------------- */
 			let r40_month_end =
 				getCellValue("#r41_month_end") +
-				getCellValue("#r42_month_end") +
+				getCellValue("#R42_MONTH_END") +
 				getCellValue("#R43_MONTH_END");
 
 			let r40_average =
@@ -1846,16 +1846,18 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 										</tr>
 
 										<tr>
-											<td style="padding-left: 30px;" th:text="${report.r42_product}"></td>
-											<td th:text="${report.r42_cross_ref}" style="text-align: left; "></td>
-											<td th:text="${#numbers.formatDecimal(report.r42_month_end, 0, 'COMMA', 0, 'POINT')}"
-												th:attr="RowId='R42', ColumnId='C3'" id="r42_month_end"
-												onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; ">
-											</td>
-											<td th:text="${#numbers.formatDecimal(report.r42_average, 0, 'COMMA', 0, 'POINT')}"
-												style="text-align: right; ">
-											</td>
-										</tr>
+																					<td style="padding-left: 30px;" th:text="${report.r42_product}"></td>
+																					<td th:text="${report.r42_cross_ref}" style="text-align: left; "></td>
+																					<td id="ROW42" style=" font-weight: bold;text-align: right;">
+																						<input class="display-input Show_input" type="text" th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R42_MONTH_END != null 
+										? #numbers.formatDecimal(reportsummary1[0].R42_MONTH_END, 1,'COMMA', 0, 'POINT') 
+										: '0'}" id="R42_MONTH_END" name="R42_MONTH_END" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																							readonly />
+																					</td>
+																					<td th:text="${#numbers.formatDecimal(report.r42_average, 0, 'COMMA', 0, 'POINT')}"
+																						style="text-align: right; ">
+																					</td>
+																				</tr>
 
 										<tr>
 											<td style="padding-left: 30px;" th:text="${report.r43_product}"></td>
