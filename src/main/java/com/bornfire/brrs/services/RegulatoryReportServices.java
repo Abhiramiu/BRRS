@@ -9336,5 +9336,311 @@ private byte[] generateADISBReport(String reportName, String filename, String as
 	}
 }
 
+
+public byte[] getConsolidatedDownloadBDISBFile(
+        String filename,
+        String asondate,
+        String fromdate,
+        String todate,
+        String currency,
+        String type,
+        String format,
+        BigDecimal version,
+        String dtltype) throws ParseException {
+
+    // Reports to merge
+    List<String> reportList = Arrays.asList(
+            "BDISB1",
+            "BDISB2",
+            "BDISB3");
+
+    // Convert incoming todate format
+    SimpleDateFormat inputFormat =
+            new SimpleDateFormat("yyyy-MMM-dd", Locale.ENGLISH);
+
+    SimpleDateFormat outputFormat =
+            new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+
+    Date parsedDate = inputFormat.parse(todate);
+
+    String formattedDate = outputFormat.format(parsedDate);
+
+    // Main consolidated workbook
+    XSSFWorkbook workbook = new XSSFWorkbook();
+
+    // Status sheet
+    Sheet statusSheet = workbook.createSheet("Status");
+
+    Row headerRow = statusSheet.createRow(0);
+
+    headerRow.createCell(0).setCellValue("Report Name");
+    headerRow.createCell(1).setCellValue("Status");
+    headerRow.createCell(2).setCellValue("Remarks");
+
+    int statusRowNum = 1;
+
+    // Loop all reports
+    for (String report : reportList) {
+
+        try {
+
+            byte[] fileData = generateBDISBReport(
+                    report,
+                    filename,
+                    asondate,
+                    fromdate,
+                    formattedDate,
+                    currency,
+                    dtltype,
+                    type,
+                    format,
+                    version);
+
+            System.out.println("Processing Report : " + report);
+
+            // Check valid excel data
+            if (fileData != null && fileData.length > 0) {
+
+                try (Workbook reportWorkbook =
+                             new XSSFWorkbook(
+                                     new ByteArrayInputStream(fileData))) {
+
+                    // Copy all sheets
+                    for (int i = 0;
+                         i < reportWorkbook.getNumberOfSheets();
+                         i++) {
+
+                        Sheet sourceSheet =
+                                reportWorkbook.getSheetAt(i);
+
+                        // Sheet name should be exactly:
+                        // BDISB1, BDISB2, BDISB3
+                        String newSheetName = report;
+
+                        // Excel sheet name max length = 31
+                        if (newSheetName.length() > 31) {
+
+                            newSheetName =
+                                    newSheetName.substring(0, 31);
+                        }
+
+                        // Avoid duplicate sheet names
+                        if (workbook.getSheet(newSheetName) != null) {
+
+                            workbook.removeSheetAt(
+                                    workbook.getSheetIndex(newSheetName));
+                        }
+
+                        Sheet targetSheet =
+                                workbook.createSheet(newSheetName);
+
+                        // Copy sheet content
+                        copySheet(sourceSheet, targetSheet);
+                    }
+
+                    // Success status
+                    Row successRow =
+                            statusSheet.createRow(statusRowNum++);
+
+                    successRow.createCell(0)
+                            .setCellValue(report);
+
+                    successRow.createCell(1)
+                            .setCellValue("SUCCESS");
+
+                    successRow.createCell(2)
+                            .setCellValue("Report Generated");
+
+                }
+
+            } else {
+
+                // No data
+                Row failRow =
+                        statusSheet.createRow(statusRowNum++);
+
+                failRow.createCell(0)
+                        .setCellValue(report);
+
+                failRow.createCell(1)
+                        .setCellValue("FAILED");
+
+                failRow.createCell(2)
+                        .setCellValue("No data found");
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            Row failRow =
+                    statusSheet.createRow(statusRowNum++);
+
+            failRow.createCell(0)
+                    .setCellValue(report);
+
+            failRow.createCell(1)
+                    .setCellValue("FAILED");
+
+            failRow.createCell(2)
+                    .setCellValue("Error : " + e.getMessage());
+        }
+    }
+
+    // Auto size status columns
+    for (int i = 0; i < 3; i++) {
+
+        statusSheet.autoSizeColumn(i);
+    }
+
+    // Final workbook output
+    try (ByteArrayOutputStream bos =
+                 new ByteArrayOutputStream()) {
+
+        workbook.write(bos);
+
+        workbook.close();
+
+        return bos.toByteArray();
+
+    } catch (Exception e) {
+
+        e.printStackTrace();
+    }
+
+    return null;
+}
+
+
+
+private byte[] generateBDISBReport(
+        String reportName,
+        String filename,
+        String asondate,
+        String fromdate,
+        String todate,
+        String currency,
+        String dtltype,
+        String type,
+        String format,
+        BigDecimal version) {
+
+    try {
+
+        // Convert dates
+        fromdate = convertDate(fromdate);
+
+        todate = convertDate(todate);
+
+        asondate = convertDate(asondate);
+
+        System.out.println(
+                "Generating Report : " + reportName);
+
+        System.out.println(
+                "From Date : " + fromdate);
+
+        System.out.println(
+                "To Date : " + todate);
+
+        System.out.println(
+                "Ason Date : " + asondate);
+
+        // Generate report
+        switch (reportName) {
+
+            case "BDISB1":
+
+                return brrs_bdisb1_reportservice.getBDISB1Excel(
+                        "BDISB1.xlsx",
+                        reportName,
+                        fromdate,
+                        todate,
+                        currency,
+                        dtltype,
+                        type,
+                        version);
+
+            case "BDISB2":
+
+                return BRRS_BDISB2_ReportService.getBDISB2Excel(
+                        "BDISB2.xlsx",
+                        reportName,
+                        fromdate,
+                        todate,
+                        currency,
+                        dtltype,
+                        type,
+                        version);
+
+            case "BDISB3":
+
+                return brrs_bdisb3_reportservice.getBDISB3Excel(
+                        "BDISB3.xlsx",
+                        reportName,
+                        fromdate,
+                        todate,
+                        currency,
+                        dtltype,
+                        type,
+                        version);
+
+            default:
+
+                System.out.println(
+                        "Unknown report : " + reportName);
+
+                return null;
+        }
+
+    } catch (FileNotFoundException fe) {
+
+        System.err.println(
+                "Template file not found : "
+                        + fe.getMessage());
+
+        fe.printStackTrace();
+
+    } catch (Exception e) {
+
+        System.err.println(
+                "Error generating report : "
+                        + e.getMessage());
+
+        e.printStackTrace();
+    }
+
+    return null;
+}
+
+private String convertDate(String dateStr) {
+
+    if (dateStr == null || dateStr.trim().isEmpty()) {
+
+        return dateStr;
+    }
+
+    try {
+
+        SimpleDateFormat inputFormat =
+                new SimpleDateFormat(
+                        "dd/MM/yyyy",
+                        Locale.ENGLISH);
+
+        SimpleDateFormat outputFormat =
+                new SimpleDateFormat(
+                        "dd-MMM-yyyy",
+                        Locale.ENGLISH);
+
+        Date date = inputFormat.parse(dateStr);
+
+        return outputFormat.format(date);
+
+    } catch (Exception e) {
+
+        // Already formatted
+        return dateStr;
+    }
+}
 	
 }
