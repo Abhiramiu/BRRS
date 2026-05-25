@@ -67,6 +67,10 @@ function downloadADISB() {
     var type = "BRRS";
 
     $('#loader').modal('show');
+    
+    console.log(rawDate);
+    console.log(asondate);
+    console.log(todate);
 
     $.ajax({
         url: './Reports/downloadADISBConsolidatedExcel', // ✅ FIXED (absolute path)
