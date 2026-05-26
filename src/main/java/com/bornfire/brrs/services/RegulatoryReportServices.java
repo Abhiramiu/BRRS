@@ -9108,7 +9108,7 @@ public class RegulatoryReportServices {
 
 		System.out.println(todate);
 
-		SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MMM-dd", Locale.ENGLISH);
+		SimpleDateFormat inputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
 		Date date = inputFormat.parse(todate);
 
 		// 2️⃣ Format to required pattern (Date → String)
@@ -9129,7 +9129,7 @@ public class RegulatoryReportServices {
 						dtltype, type, format, version);
 				System.out.println(fileData + "    fileData");
 
-				if (fileData != null) {
+				if (fileData != null && fileData.length > 0) {
 					try (Workbook reportWorkbook = new XSSFWorkbook(new java.io.ByteArrayInputStream(fileData))) {// Copy
 																													// the
 																													// first
@@ -9194,18 +9194,7 @@ public class RegulatoryReportServices {
 			SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
 			SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy");
 
-			if (fromdate != null && !fromdate.isEmpty()) {
-				Date d = outputFormat.parse(fromdate);
-				fromdate = outputFormat.format(d);
-			}
-			if (todate != null && !todate.isEmpty()) {
-				Date d = outputFormat.parse(todate);
-				todate = outputFormat.format(d);
-			}
-			if (asondate != null && !asondate.isEmpty()) {
-				Date d = outputFormat.parse(asondate);
-				asondate = outputFormat.format(d);
-			}
+			
 
 			System.out.println("Service: Generating report for " + reportName);
 			System.out.println("Converted Dates: From " + fromdate + " To " + todate + " Ason " + asondate);
