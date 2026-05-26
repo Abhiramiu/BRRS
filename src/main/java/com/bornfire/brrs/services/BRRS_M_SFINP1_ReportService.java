@@ -1309,7 +1309,7 @@ public class BRRS_M_SFINP1_ReportService {
 					numberStyle.setFont(font);
 					// --- End of Style Definitions ---
 
-					int startRow = 9;
+					int startRow = 6;
 
 					if (!dataList.isEmpty()) {
 						for (int i = 0; i < dataList.size(); i++) {
@@ -1325,6 +1325,24 @@ public class BRRS_M_SFINP1_ReportService {
 
 							Cell cellC, cellD;
 							CellStyle originalStyle;
+							// ===== Row 6 / Col b (Date) =====
+							
+							cellC = row.getCell(1);
+
+							if (cellC == null)
+							    cellC = row.createCell(1);
+
+							originalStyle = cellC.getCellStyle();
+
+							if (record.getReport_date() != null) {
+							    cellC.setCellValue(record.getReport_date()); // java.util.Date
+							    cellC.setCellStyle(dateStyle);
+							} else {
+							    cellC.setCellValue("");
+							    cellC.setCellStyle(originalStyle);
+							}
+							
+							
 							// ===== Row 10 / Col C =====
 							row = sheet.getRow(9);
 							cellC = row.getCell(2);
@@ -2260,7 +2278,7 @@ public class BRRS_M_SFINP1_ReportService {
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-				int startRow = 9;
+				int startRow = 6;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -2275,6 +2293,22 @@ public class BRRS_M_SFINP1_ReportService {
 
 						Cell cellC, cellD;
 						CellStyle originalStyle;
+						
+						cellC = row.getCell(1);
+
+						if (cellC == null)
+						    cellC = row.createCell(1);
+
+						originalStyle = cellC.getCellStyle();
+
+						if (record.getReport_date() != null) {
+						    cellC.setCellValue(record.getReport_date()); // java.util.Date
+						    cellC.setCellStyle(dateStyle);
+						} else {
+						    cellC.setCellValue("");
+						    cellC.setCellStyle(originalStyle);
+						}
+						
 						// ===== Row 10 / Col C =====
 						row = sheet.getRow(9);
 						cellC = row.getCell(2);
@@ -3194,7 +3228,7 @@ public class BRRS_M_SFINP1_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 9;
+			int startRow = 6;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -3209,6 +3243,22 @@ public class BRRS_M_SFINP1_ReportService {
 
 					Cell cellC, cellD;
 					CellStyle originalStyle;
+					
+					cellC = row.getCell(1);
+
+					if (cellC == null)
+					    cellC = row.createCell(1);
+
+					originalStyle = cellC.getCellStyle();
+
+					if (record.getReportDate() != null) {
+					    cellC.setCellValue(record.getReportDate()); // java.util.Date
+					    cellC.setCellStyle(dateStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(originalStyle);
+					}
+					
 					// ===== Row 10 / Col C =====
 					row = sheet.getRow(9);
 					cellC = row.getCell(2);
@@ -4125,7 +4175,7 @@ public class BRRS_M_SFINP1_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 9;
+			int startRow = 6;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -4140,6 +4190,22 @@ public class BRRS_M_SFINP1_ReportService {
 
 					Cell cellC, cellD;
 					CellStyle originalStyle;
+					
+					cellC = row.getCell(1);
+
+					if (cellC == null)
+					    cellC = row.createCell(1);
+
+					originalStyle = cellC.getCellStyle();
+
+					if (record.getReportDate() != null) {
+					    cellC.setCellValue(record.getReportDate()); // java.util.Date
+					    cellC.setCellStyle(dateStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(originalStyle);
+					}
+					
 					// ===== Row 10 / Col C =====
 					row = sheet.getRow(9);
 					cellC = row.getCell(2);
