@@ -316,7 +316,7 @@ public class BRRS_M_LA3_ReportService {
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
-			int startRow = 9;
+			int startRow = 6;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -326,8 +326,26 @@ public class BRRS_M_LA3_ReportService {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					//REPORT_DATE
+					row = sheet.getRow(6);
+					Cell cell1 = row.getCell(1);
+					if (cell1 == null) {
+					    cell1 = row.createCell(1);
+					}
 
-					Cell cell1 = row.createCell(1);
+					if (record.getReport_date() != null) {
+					    cell1.setCellValue(record.getReport_date()); // java.util.Date
+					    cell1.setCellStyle(dateStyle);
+					} else {
+					    cell1.setCellValue("");
+					    cell1.setCellStyle(textStyle);
+					}
+
+					
+					// row12
+					// Column B
+					row = sheet.getRow(9);
+					 cell1 = row.createCell(1);
 					if (record.getR10_no_of_ac() != null) {
 						cell1.setCellValue(record.getR10_no_of_ac().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1269,7 +1287,7 @@ public class BRRS_M_LA3_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 9;
+			int startRow = 6;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -1280,8 +1298,25 @@ public class BRRS_M_LA3_ReportService {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					//REPORT_DATE
+					row = sheet.getRow(6);
+					Cell cell1 = row.getCell(1);
+					if (cell1 == null) {
+					    cell1 = row.createCell(1);
+					}
 
-					Cell cell1 = row.createCell(1);
+					if (record.getReportDate() != null) {
+					    cell1.setCellValue(record.getReportDate()); // java.util.Date
+					    cell1.setCellStyle(dateStyle);
+					} else {
+					    cell1.setCellValue("");
+					    cell1.setCellStyle(textStyle);
+					}
+
+					
+					
+					row = sheet.getRow(9);
+					 cell1 = row.createCell(1);
 					if (record.getR10_no_of_ac() != null) {
 						cell1.setCellValue(record.getR10_no_of_ac().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2345,7 +2380,7 @@ public class BRRS_M_LA3_ReportService {
 				numberStyle.setBorderRight(BorderStyle.THIN);
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
-				int startRow = 9;
+				int startRow = 6;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -2355,8 +2390,26 @@ public class BRRS_M_LA3_ReportService {
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						//REPORT_DATE
+						row = sheet.getRow(6);
+						Cell cell1 = row.getCell(1);
+						if (cell1 == null) {
+						    cell1 = row.createCell(1);
+						}
 
-						Cell cell1 = row.createCell(1);
+						if (record.getReport_date() != null) {
+						    cell1.setCellValue(record.getReport_date()); // java.util.Date
+						    cell1.setCellStyle(dateStyle);
+						} else {
+						    cell1.setCellValue("");
+						    cell1.setCellStyle(textStyle);
+						}
+
+						
+						// row12
+						// Column B
+						row = sheet.getRow(9);
+						 cell1 = row.createCell(1);
 						if (record.getR10_no_of_ac() != null) {
 							cell1.setCellValue(record.getR10_no_of_ac().doubleValue());
 							cell1.setCellStyle(numberStyle);
@@ -3097,7 +3150,7 @@ public class BRRS_M_LA3_ReportService {
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-				int startRow = 9;
+				int startRow = 6;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -3109,7 +3162,26 @@ public class BRRS_M_LA3_ReportService {
 							row = sheet.createRow(startRow + i);
 						}
 
-						Cell cell1 = row.createCell(1);
+						//REPORT_DATE
+						row = sheet.getRow(6);
+						Cell cell1 = row.getCell(1);
+						if (cell1 == null) {
+						    cell1 = row.createCell(1);
+						}
+
+						if (record.getReportDate() != null) {
+						    cell1.setCellValue(record.getReportDate()); // java.util.Date
+						    cell1.setCellStyle(dateStyle);
+						} else {
+						    cell1.setCellValue("");
+						    cell1.setCellStyle(textStyle);
+						}
+
+						
+						// row12
+						// Column B
+						row = sheet.getRow(9);
+						cell1 = row.createCell(1);
 						if (record.getR10_no_of_ac() != null) {
 							cell1.setCellValue(record.getR10_no_of_ac().doubleValue());
 							cell1.setCellStyle(numberStyle);

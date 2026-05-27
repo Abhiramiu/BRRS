@@ -1114,7 +1114,7 @@ numberStyle.setBorderRight(BorderStyle.THIN);
 numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-int startRow = 10;
+int startRow = 6;
 
 if (!dataList.isEmpty()) {
 for (int i = 0; i < dataList.size(); i++) {
@@ -1124,9 +1124,28 @@ Row row = sheet.getRow(startRow + i);
 if (row == null) {
 row = sheet.createRow(startRow + i);
 }
+
+
+//===== Row 6 / Col b (Date) =====
+
+
+Cell cell2 = row.getCell(1);
+if (cell2 == null) {
+    cell2 = row.createCell(1);
+}
+
+if (record.getREPORT_DATE() != null) {
+    cell2.setCellValue(record.getREPORT_DATE()); // java.util.Date
+    cell2.setCellStyle(dateStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+
 // row11
 // Column C
-Cell cell2 = row.createCell(2);
+row = sheet.getRow(10);
+ cell2 = row.createCell(2);
 if (record.getR11_MONTH_END() != null) {
 cell2.setCellValue(record.getR11_MONTH_END().doubleValue());
 cell2.setCellStyle(numberStyle);
@@ -2428,7 +2447,7 @@ numberStyle.setBorderRight(BorderStyle.THIN);
 numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-int startRow = 10;
+int startRow = 6;
 
 if (!dataList.isEmpty()) {
 for (int i = 0; i < dataList.size(); i++) {
@@ -2440,13 +2459,25 @@ row = sheet.createRow(startRow + i);
 }
 
 
+Cell cell2 = row.getCell(1);
+if (cell2 == null) {
+    cell2 = row.createCell(1);
+}
 
+if (record.getREPORT_DATE() != null) {
+    cell2.setCellValue(record.getREPORT_DATE()); // java.util.Date
+    cell2.setCellStyle(dateStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
 
 
 //row11--------------->23. Current deposits
 
 // Column C
-Cell cell2 = row.createCell(2);
+row = sheet.getRow(10);
+ cell2 = row.createCell(2);
 if (record.getR11_MONTH_END() != null) {
 cell2.setCellValue(record.getR11_MONTH_END().doubleValue());
 cell2.setCellStyle(numberStyle);
@@ -3773,7 +3804,7 @@ numberStyle.setBorderRight(BorderStyle.THIN);
 numberStyle.setFont(font);
 //--- End of Style Definitions ---
 
-int startRow = 10;
+int startRow = 6;
 
 if (!dataList.isEmpty()) {
 for (int i = 0; i < dataList.size(); i++) {
@@ -3783,10 +3814,22 @@ Row row = sheet.getRow(startRow + i);
 if (row == null) {
 row = sheet.createRow(startRow + i);
 }
+Cell cell2 = row.getCell(1);
+if (cell2 == null) {
+    cell2 = row.createCell(1);
+}
+
+if (record.getREPORT_DATE() != null) {
+    cell2.setCellValue(record.getREPORT_DATE()); // java.util.Date
+    cell2.setCellStyle(dateStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
 
 // row11
 // Column C
-Cell cell2 = row.createCell(2);
+ cell2 = row.createCell(2);
 if (record.getR11_MONTH_END() != null) {
 cell2.setCellValue(record.getR11_MONTH_END().doubleValue());
 cell2.setCellStyle(numberStyle);
@@ -5070,7 +5113,7 @@ numberStyle.setBorderRight(BorderStyle.THIN);
 numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-int startRow = 10;
+int startRow = 6;
 
 if (!dataList.isEmpty()) {
 for (int i = 0; i < dataList.size(); i++) {
@@ -5082,12 +5125,24 @@ row = sheet.createRow(startRow + i);
 }
 
 
+Cell cell2 = row.getCell(1);
+if (cell2 == null) {
+    cell2 = row.createCell(1);
+}
 
+if (record.getREPORT_DATE() != null) {
+    cell2.setCellValue(record.getREPORT_DATE()); // java.util.Date
+    cell2.setCellStyle(dateStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
 
 //row11--------------->23. Current deposits
 
 // Column C
-Cell cell2 = row.createCell(2);
+row = sheet.getRow(10);
+ cell2 = row.createCell(2);
 if (record.getR11_MONTH_END() != null) {
 cell2.setCellValue(record.getR11_MONTH_END().doubleValue());
 cell2.setCellStyle(numberStyle);
@@ -6428,6 +6483,7 @@ row = sheet.createRow(startRow + i);
 
 // row11
 // Column C
+row = sheet.getRow(10);
 Cell cell2 = row.createCell(2);
 if (record.getR11_MONTH_END() != null) {
 cell2.setCellValue(record.getR11_MONTH_END().doubleValue());
@@ -7727,6 +7783,7 @@ row = sheet.createRow(startRow + i);
 //row11--------------->23. Current deposits
 
 // Column C
+row = sheet.getRow(10);
 Cell cell2 = row.createCell(2);
 if (record.getR11_MONTH_END() != null) {
 cell2.setCellValue(record.getR11_MONTH_END().doubleValue());

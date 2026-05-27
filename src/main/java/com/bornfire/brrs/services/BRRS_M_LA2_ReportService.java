@@ -450,7 +450,7 @@ public class BRRS_M_LA2_ReportService {
 					numberStyle.setFont(font);
 					// --- End of Style Definitions ---
 
-					int startRow = 11;
+					int startRow = 5;
 
 					if (!dataList.isEmpty()) {
 						for (int i = 0; i < dataList.size(); i++) {
@@ -460,9 +460,26 @@ public class BRRS_M_LA2_ReportService {
 							if (row == null) {
 								row = sheet.createRow(startRow + i);
 							}
+							//REPORT_DATE
+							row = sheet.getRow(5);
+							Cell cell1 = row.getCell(1);
+							if (cell1 == null) {
+							    cell1 = row.createCell(1);
+							}
 
+							if (record.getREPORT_DATE() != null) {
+							    cell1.setCellValue(record.getREPORT_DATE()); // java.util.Date
+							    cell1.setCellStyle(dateStyle);
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							
 							// row12
 							// Column B
+							row = sheet.getRow(11);
+							
 							Cell cell2 = row.createCell(1);
 							if (record.getR12_TOTAL() != null) {
 								cell2.setCellValue(record.getR12_TOTAL().doubleValue());
@@ -748,7 +765,7 @@ public class BRRS_M_LA2_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 11;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -759,8 +776,27 @@ public class BRRS_M_LA2_ReportService {
 						row = sheet.createRow(startRow + i);
 					}
 
+					//REPORT_DATE
+					row = sheet.getRow(5);
+					Cell cell1 = row.getCell(1);
+					if (cell1 == null) {
+					    cell1 = row.createCell(1);
+					}
+
+					if (record.getREPORT_DATE() != null) {
+					    cell1.setCellValue(record.getREPORT_DATE()); // java.util.Date
+					    cell1.setCellStyle(dateStyle);
+					} else {
+					    cell1.setCellValue("");
+					    cell1.setCellStyle(textStyle);
+					}
+
+					
 					// row12
 					// Column B
+					row = sheet.getRow(11);
+					
+
 					Cell cell2 = row.createCell(1);
 					if (record.getR12_TOTAL() != null) {
 						cell2.setCellValue(record.getR12_TOTAL().doubleValue());
@@ -1035,7 +1071,7 @@ public class BRRS_M_LA2_ReportService {
 			numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-			int startRow = 11;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -1046,8 +1082,27 @@ public class BRRS_M_LA2_ReportService {
 						row = sheet.createRow(startRow + i);
 					}
 
+					//REPORT_DATE
+					row = sheet.getRow(5);
+					Cell cell1 = row.getCell(1);
+					if (cell1 == null) {
+					    cell1 = row.createCell(1);
+					}
+
+					if (record.getReportDate() != null) {
+					    cell1.setCellValue(record.getReportDate()); // java.util.Date
+					    cell1.setCellStyle(dateStyle);
+					} else {
+					    cell1.setCellValue("");
+					    cell1.setCellStyle(textStyle);
+					}
+
+					
 					// row12
 					// Column B
+					row = sheet.getRow(11);
+					
+
 					Cell cell2 = row.createCell(1);
 					if (record.getR12_TOTAL() != null) {
 						cell2.setCellValue(record.getR12_TOTAL().doubleValue());
@@ -1313,7 +1368,7 @@ public class BRRS_M_LA2_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 11;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -1324,8 +1379,25 @@ public class BRRS_M_LA2_ReportService {
 						row = sheet.createRow(startRow + i);
 					}
 
+					//REPORT_DATE
+					row = sheet.getRow(5);
+					Cell cell1 = row.getCell(1);
+					if (cell1 == null) {
+					    cell1 = row.createCell(1);
+					}
+
+					if (record.getReportDate() != null) {
+					    cell1.setCellValue(record.getReportDate()); // java.util.Date
+					    cell1.setCellStyle(dateStyle);
+					} else {
+					    cell1.setCellValue("");
+					    cell1.setCellStyle(textStyle);
+					}
+
+					
 					// row12
 					// Column B
+					row = sheet.getRow(11);
 					Cell cell2 = row.createCell(1);
 					if (record.getR12_TOTAL() != null) {
 						cell2.setCellValue(record.getR12_TOTAL().doubleValue());
@@ -1602,7 +1674,7 @@ public class BRRS_M_LA2_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 11;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -1615,8 +1687,25 @@ public class BRRS_M_LA2_ReportService {
 						row = sheet.createRow(startRow + i);
 					}
 
+					//REPORT_DATE
+					row = sheet.getRow(5);
+					Cell cell1 = row.getCell(1);
+					if (cell1 == null) {
+					    cell1 = row.createCell(1);
+					}
+
+					if (record.getReportDate() != null) {
+					    cell1.setCellValue(record.getReportDate()); // java.util.Date
+					    cell1.setCellStyle(dateStyle);
+					} else {
+					    cell1.setCellValue("");
+					    cell1.setCellStyle(textStyle);
+					}
+
+					
 					// row12
 					// Column B
+					row = sheet.getRow(11);
 					Cell cell2 = row.createCell(1);
 					if (record.getR12_TOTAL() != null) {
 						cell2.setCellValue(record.getR12_TOTAL().doubleValue());
@@ -1881,7 +1970,7 @@ public class BRRS_M_LA2_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 11;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -1892,8 +1981,25 @@ public class BRRS_M_LA2_ReportService {
 						row = sheet.createRow(startRow + i);
 					}
 
+					//REPORT_DATE
+					row = sheet.getRow(5);
+					Cell cell1 = row.getCell(1);
+					if (cell1 == null) {
+					    cell1 = row.createCell(1);
+					}
+
+					if (record.getReportDate() != null) {
+					    cell1.setCellValue(record.getReportDate()); // java.util.Date
+					    cell1.setCellStyle(dateStyle);
+					} else {
+					    cell1.setCellValue("");
+					    cell1.setCellStyle(textStyle);
+					}
+
+					
 					// row12
 					// Column B
+					row = sheet.getRow(11);
 					Cell cell2 = row.createCell(1);
 					if (record.getR12_TOTAL() != null) {
 						cell2.setCellValue(record.getR12_TOTAL().doubleValue());

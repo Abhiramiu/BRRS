@@ -273,6 +273,14 @@ public class BRRS_M_CA1_ReportService {
 
 	        CreationHelper createHelper = workbook.getCreationHelper();
 
+	        CellStyle dateStyle = workbook.createCellStyle();
+			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+			dateStyle.setBorderBottom(BorderStyle.THIN);
+			dateStyle.setBorderTop(BorderStyle.THIN);
+			dateStyle.setBorderLeft(BorderStyle.THIN);
+			dateStyle.setBorderRight(BorderStyle.THIN);
+
+	        
 	        CellStyle textStyle = workbook.createCellStyle();
 	        textStyle.setBorderBottom(BorderStyle.THIN);
 	        textStyle.setBorderTop(BorderStyle.THIN);
@@ -290,7 +298,7 @@ public class BRRS_M_CA1_ReportService {
 	        numberStyle.setBorderRight(BorderStyle.THIN);
 	        numberStyle.setFont(font);
 
-	        int startRow = 8;
+	        int startRow = 5;
 
 	        if (!dataList.isEmpty()) {
 
@@ -298,9 +306,28 @@ public class BRRS_M_CA1_ReportService {
 
 	                M_CA1_Summary_Entity record = dataList.get(i);
 
-	                // Row 9
+	                
 	                Row row = sheet.getRow(startRow);
 	                if (row == null) row = sheet.createRow(startRow);
+	                
+	                
+	              //REPORT_DATE
+					row = sheet.getRow(5);
+					Cell cell1 = row.getCell(1);
+					if (cell1 == null) {
+					    cell1 = row.createCell(1);
+					}
+
+					if (record.getREPORT_DATE() != null) {
+					    cell1.setCellValue(record.getREPORT_DATE()); // java.util.Date
+					    cell1.setCellStyle(dateStyle);
+					} else {
+					    cell1.setCellValue("");
+					    cell1.setCellStyle(textStyle);
+					}
+	                
+	             // Row 9
+					row = sheet.getRow(8);
 	                Cell cell3 = row.getCell(3);
 	                if (cell3 == null) cell3 = row.createCell(3);
 
@@ -710,7 +737,7 @@ public class BRRS_M_CA1_ReportService {
 			percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
 			percentStyle.setAlignment(HorizontalAlignment.RIGHT);
 			// --- End of Style Definitions ---
-			int startRow = 8;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -721,7 +748,24 @@ public class BRRS_M_CA1_ReportService {
 						row = sheet.createRow(startRow + i);
 					}
 
-					//row9
+					   
+		              //REPORT_DATE
+						row = sheet.getRow(5);
+						Cell cell1 = row.getCell(1);
+						if (cell1 == null) {
+						    cell1 = row.createCell(1);
+						}
+
+						if (record.getREPORT_DATE() != null) {
+						    cell1.setCellValue(record.getREPORT_DATE()); // java.util.Date
+						    cell1.setCellStyle(dateStyle);
+						} else {
+						    cell1.setCellValue("");
+						    cell1.setCellStyle(textStyle);
+						}
+		                
+		             // Row 9
+						row = sheet.getRow(8);
 					// Column D
 					Cell cell3 = row.getCell(3);
 					if (record.getR9_AMOUNT() != null) {
@@ -1198,7 +1242,7 @@ public class BRRS_M_CA1_ReportService {
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
-			int startRow = 8;
+			int startRow = 5;
 
 
 			if (!dataList.isEmpty()) {
@@ -1211,7 +1255,24 @@ public class BRRS_M_CA1_ReportService {
 					}
 
 		
-					//row9
+					   
+		              //REPORT_DATE
+						row = sheet.getRow(5);
+						Cell cell1 = row.getCell(1);
+						if (cell1 == null) {
+						    cell1 = row.createCell(1);
+						}
+
+						if (record.getREPORT_DATE() != null) {
+						    cell1.setCellValue(record.getREPORT_DATE()); // java.util.Date
+						    cell1.setCellStyle(dateStyle);
+						} else {
+						    cell1.setCellValue("");
+						    cell1.setCellStyle(textStyle);
+						}
+		                
+		             // Row 9
+						row = sheet.getRow(8);
 					// Column D
 					Cell cell3 = row.getCell(2);
 					if (record.getR9_AMOUNT() != null) {
@@ -1483,7 +1544,7 @@ public class BRRS_M_CA1_ReportService {
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
-			int startRow = 8;
+			int startRow = 5;
 
 
 			if (!dataList.isEmpty()) {
@@ -1495,8 +1556,24 @@ public class BRRS_M_CA1_ReportService {
 						row = sheet.createRow(startRow + i);
 					}
 
-		
-					//row9
+					   
+		              //REPORT_DATE
+						row = sheet.getRow(5);
+						Cell cell1 = row.getCell(1);
+						if (cell1 == null) {
+						    cell1 = row.createCell(1);
+						}
+
+						if (record.getREPORT_DATE() != null) {
+						    cell1.setCellValue(record.getREPORT_DATE()); // java.util.Date
+						    cell1.setCellStyle(dateStyle);
+						} else {
+						    cell1.setCellValue("");
+						    cell1.setCellStyle(textStyle);
+						}
+		                
+		             // Row 9
+						row = sheet.getRow(8);
 					// Column D
 					Cell cell3 = row.getCell(2);
 					if (record.getR9_AMOUNT() != null) {

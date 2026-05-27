@@ -745,9 +745,25 @@ public class BRRS_M_CA5_ReportService {
 		Cell cell1, cell2, cell3, cell4, cell5, cell6, cell7, cell8, cell9, cell10;
 		CellStyle originalStyle;
 
+		
+		//REPORT_DATE
+		Row row = sheet.getRow(5);
+		 cell1 = row.getCell(2);
+		if (cell1 == null) {
+		    cell1 = row.createCell(2);
+		}
+
+		if (record.getReportDate() != null) {
+		    cell1.setCellValue(record.getReportDate()); // java.util.Date
+		    cell1.setCellStyle(dateStyle);
+		} else {
+		    cell1.setCellValue("");
+		    cell1.setCellStyle(textStyle);
+		}
+
 		// Column C
-		Row row = sheet.getRow(13);
-		// Column C
+		row = sheet.getRow(13);
+		
 		cell1 = row.createCell(1);
 		if (record.getR14_note_holders() != null) {
 			cell1.setCellValue(record.getR14_note_holders());
@@ -10559,9 +10575,24 @@ public class BRRS_M_CA5_ReportService {
 		Cell cell1, cell2, cell3, cell4, cell5, cell6, cell7, cell8, cell9, cell10;
 		CellStyle originalStyle;
 
-		// Column C
-		Row row = sheet.getRow(13);
-		// Column C
+		//REPORT_DATE
+				Row row = sheet.getRow(5);
+				 cell1 = row.getCell(2);
+				if (cell1 == null) {
+				    cell1 = row.createCell(2);
+				}
+
+				if (record.getReportDate() != null) {
+				    cell1.setCellValue(record.getReportDate()); // java.util.Date
+				    cell1.setCellStyle(dateStyle);
+				} else {
+				    cell1.setCellValue("");
+				    cell1.setCellStyle(textStyle);
+				}
+
+				// Column C
+				row = sheet.getRow(13);
+				
 		cell1 = row.createCell(1);
 		if (record.getR14_note_holders() != null) {
 			cell1.setCellValue(record.getR14_note_holders());
@@ -17377,9 +17408,24 @@ public class BRRS_M_CA5_ReportService {
 		Cell cell1, cell2, cell5, cell6, cell7, cell8, cell9, cell10;
 		CellStyle originalStyle;
 
-		// Column C
-		Row row = sheet.getRow(13);
-		// Column C
+		//REPORT_DATE
+				Row row = sheet.getRow(5);
+				 cell1 = row.getCell(2);
+				if (cell1 == null) {
+				    cell1 = row.createCell(2);
+				}
+
+				if (record.getReportDate() != null) {
+				    cell1.setCellValue(record.getReportDate()); // java.util.Date
+				    cell1.setCellStyle(dateStyle);
+				} else {
+				    cell1.setCellValue("");
+				    cell1.setCellStyle(textStyle);
+				}
+
+				// Column C
+				row = sheet.getRow(13);
+				
 		cell1 = row.createCell(1);
 		if (record.getR14_note_holders() != null) {
 			cell1.setCellValue(record.getR14_note_holders());
@@ -27193,9 +27239,23 @@ public class BRRS_M_CA5_ReportService {
 		Cell cell1, cell2, cell3, cell4, cell5, cell6, cell7, cell8, cell9, cell10;
 		CellStyle originalStyle;
 
-		// Column C
-		Row row = sheet.getRow(13);
-		// Column C
+		//REPORT_DATE
+				Row row = sheet.getRow(5);
+				 cell1 = row.getCell(2);
+				if (cell1 == null) {
+				    cell1 = row.createCell(2);
+				}
+
+				if (record.getReportDate() != null) {
+				    cell1.setCellValue(record.getReportDate()); // java.util.Date
+				    cell1.setCellStyle(dateStyle);
+				} else {
+				    cell1.setCellValue("");
+				    cell1.setCellStyle(textStyle);
+				}
+
+				// Column C
+				row = sheet.getRow(13);
 		cell1 = row.createCell(1);
 		if (record.getR14_note_holders() != null) {
 			cell1.setCellValue(record.getR14_note_holders());
@@ -34016,9 +34076,23 @@ public class BRRS_M_CA5_ReportService {
 		Cell cell1, cell2, cell3, cell4, cell5, cell6, cell7, cell8, cell9, cell10;
 		CellStyle originalStyle;
 
-		// Column C
-		Row row = sheet.getRow(13);
-		// Column C
+		//REPORT_DATE
+				Row row = sheet.getRow(5);
+				 cell1 = row.getCell(2);
+				if (cell1 == null) {
+				    cell1 = row.createCell(2);
+				}
+
+				if (record.getReportDate() != null) {
+				    cell1.setCellValue(record.getReportDate()); // java.util.Date
+				    cell1.setCellStyle(dateStyle);
+				} else {
+				    cell1.setCellValue("");
+				    cell1.setCellStyle(textStyle);
+				}
+
+				// Column C
+				row = sheet.getRow(13);
 		cell1 = row.createCell(1);
 		if (record.getR14_note_holders() != null) {
 			cell1.setCellValue(record.getR14_note_holders());
@@ -43832,9 +43906,23 @@ public class BRRS_M_CA5_ReportService {
 		Cell cell1, cell2, cell3, cell4, cell5, cell6, cell7, cell8, cell9, cell10;
 		CellStyle originalStyle;
 
-		// Column C
-		Row row = sheet.getRow(13);
-		// Column C
+		//REPORT_DATE
+				Row row = sheet.getRow(5);
+				 cell1 = row.getCell(2);
+				if (cell1 == null) {
+				    cell1 = row.createCell(2);
+				}
+
+				if (record.getReportDate() != null) {
+				    cell1.setCellValue(record.getReportDate()); // java.util.Date
+				    cell1.setCellStyle(dateStyle);
+				} else {
+				    cell1.setCellValue("");
+				    cell1.setCellStyle(textStyle);
+				}
+
+				// Column C
+				row = sheet.getRow(13);
 		cell1 = row.createCell(1);
 		if (record.getR14_note_holders() != null) {
 			cell1.setCellValue(record.getR14_note_holders());
