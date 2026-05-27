@@ -328,6 +328,15 @@ public class BRRS_M_PI_ReportService {
 
 	        CreationHelper createHelper = workbook.getCreationHelper();
 
+	        
+	        CellStyle dateStyle = workbook.createCellStyle();
+			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+			dateStyle.setBorderBottom(BorderStyle.THIN);
+			dateStyle.setBorderTop(BorderStyle.THIN);
+			dateStyle.setBorderLeft(BorderStyle.THIN);
+			dateStyle.setBorderRight(BorderStyle.THIN);
+
+	        
 	        CellStyle textStyle = workbook.createCellStyle();
 	        textStyle.setBorderBottom(BorderStyle.THIN);
 	        textStyle.setBorderTop(BorderStyle.THIN);
@@ -352,7 +361,7 @@ public class BRRS_M_PI_ReportService {
 
 	        // ===========================
 
-	        int startRow = 7;
+	        int startRow = 3;
 
 
 			if (!dataList.isEmpty() || !dataList1.isEmpty()) {
@@ -364,9 +373,23 @@ public class BRRS_M_PI_ReportService {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					//REPORT_DATE
+					row = sheet.getRow(3);
+					Cell cell1 = row.getCell(6);
+					if (cell1 == null) {
+					    cell1 = row.createCell(1);
+					}
 
+					if (record.getREPORT_DATE() != null) {
+					    cell1.setCellValue(record.getREPORT_DATE()); // java.util.Date
+					    cell1.setCellStyle(dateStyle);
+					} else {
+					    cell1.setCellValue("");
+					    cell1.setCellStyle(textStyle);
+					}
 					// row8
 					// Column F
+					row = sheet.getRow(7);
 					Cell cell5 = row.getCell(5);
 					if (record.getR8_VALUE() != null) {
 						cell5.setCellValue(record.getR8_VALUE().doubleValue());
@@ -1181,7 +1204,7 @@ return new byte[0];
 			percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
 			percentStyle.setAlignment(HorizontalAlignment.RIGHT);
 			// --- End of Style Definitions ---
-			int startRow = 7;
+			int startRow = 3;
 
 			if (!dataList.isEmpty() || !dataList1.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -1192,10 +1215,23 @@ return new byte[0];
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					//REPORT_DATE
+					row = sheet.getRow(3);
+					Cell cell1 = row.getCell(6);
+					if (cell1 == null) {
+					    cell1 = row.createCell(1);
+					}
 
-
+					if (record.getREPORT_DATE() != null) {
+					    cell1.setCellValue(record.getREPORT_DATE()); // java.util.Date
+					    cell1.setCellStyle(dateStyle);
+					} else {
+					    cell1.setCellValue("");
+					    cell1.setCellStyle(textStyle);
+					}
 					// row8
 					// Column F
+					row = sheet.getRow(7);
 					Cell cell5 = row.getCell(5);
 					if (record.getR8_VALUE() != null) {
 						cell5.setCellValue(record.getR8_VALUE().doubleValue());
@@ -2095,7 +2131,7 @@ return new byte[0];
 					percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
 					percentStyle.setAlignment(HorizontalAlignment.RIGHT);
 					// --- End of Style Definitions ---
-					int startRow = 6;
+					int startRow = 3;
 
 					if (!dataList.isEmpty() || !dataList1.isEmpty()) {
 						for (int i = 0; i < dataList.size(); i++) {
@@ -2108,8 +2144,23 @@ return new byte[0];
 							}
 
 
+							//REPORT_DATE
+							row = sheet.getRow(3);
+							Cell cell1 = row.getCell(6);
+							if (cell1 == null) {
+							    cell1 = row.createCell(1);
+							}
+
+							if (record.getREPORT_DATE() != null) {
+							    cell1.setCellValue(record.getREPORT_DATE()); // java.util.Date
+							    cell1.setCellStyle(dateStyle);
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
 							// row8
 							// Column F
+							row = sheet.getRow(7);
 							Cell cell5 = row.getCell(5);
 							if (record.getR8_VALUE() != null) {
 								cell5.setCellValue(record.getR8_VALUE().doubleValue());
@@ -2743,7 +2794,7 @@ return new byte[0];
 					percentStyle.setAlignment(HorizontalAlignment.RIGHT);
 					// --- End of Style Definitions ---
 
-					int startRow = 6;
+					int startRow = 3;
 
 					if (!dataList.isEmpty() || !dataList1.isEmpty()) {
 						for (int i = 0; i < dataList.size(); i++) {
@@ -2755,8 +2806,23 @@ return new byte[0];
 								row = sheet.createRow(startRow + i);
 							}
 
+							//REPORT_DATE
+							row = sheet.getRow(3);
+							Cell cell1 = row.getCell(6);
+							if (cell1 == null) {
+							    cell1 = row.createCell(1);
+							}
+
+							if (record.getREPORT_DATE() != null) {
+							    cell1.setCellValue(record.getREPORT_DATE()); // java.util.Date
+							    cell1.setCellStyle(dateStyle);
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
 							// row8
 							// Column F
+							row = sheet.getRow(7);
 							Cell cell5 = row.getCell(5);
 							if (record.getR8_VALUE() != null) {
 								cell5.setCellValue(record.getR8_VALUE().doubleValue());

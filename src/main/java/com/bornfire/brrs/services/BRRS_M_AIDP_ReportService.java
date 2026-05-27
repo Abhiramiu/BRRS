@@ -772,10 +772,10 @@ public class BRRS_M_AIDP_ReportService {
 	               ADD REPORT DATE IN ROW 6 / COLUMN B
 	               ========================================================= */
 
-	            Row row = sheet.getRow(5); // Row 6 (0-based index)
+	            Row row = sheet.getRow(6); // Row 6 (0-based index)
 
 	            if (row == null) {
-	                row = sheet.createRow(5);
+	                row = sheet.createRow(6);
 	            }
 
 	            Cell cell = row.getCell(1); // Column B
@@ -1017,10 +1017,10 @@ public class BRRS_M_AIDP_ReportService {
 	               ADD REPORT DATE IN ROW 6 / COLUMN B
 	               ========================================================= */
 
-	            Row row = sheet.getRow(5); // Row 6 (0-based index)
+	            Row row = sheet.getRow(6); // Row 6 (0-based index)
 
 	            if (row == null) {
-	                row = sheet.createRow(5);
+	                row = sheet.createRow(6);
 	            }
 
 	            Cell cell = row.getCell(1); // Column B
@@ -1254,10 +1254,10 @@ public class BRRS_M_AIDP_ReportService {
 	               ADD REPORT DATE IN ROW 6 / COLUMN B
 	               ========================================================= */
 
-	            Row row = sheet.getRow(5); // Row 6 (0-based index)
+	            Row row = sheet.getRow(6); // Row 6 (0-based index)
 
 	            if (row == null) {
-	                row = sheet.createRow(5);
+	                row = sheet.createRow(6);
 	            }
 
 	            Cell cell = row.getCell(1); // Column B

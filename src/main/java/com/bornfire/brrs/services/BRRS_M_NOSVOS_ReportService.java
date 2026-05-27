@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -848,40 +849,93 @@ public byte[] getM_NOSVOSExcel(String filename, String reportId, String fromdate
 	}
 	
 	try (InputStream templateInputStream = Files.newInputStream(templatePath);
-	Workbook workbook = WorkbookFactory.create(templateInputStream);
-	ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-	
-	Sheet sheet = workbook.getSheetAt(0);
-	
-	CreationHelper createHelper = workbook.getCreationHelper();
-	
-	Font font = workbook.createFont();
-	font.setFontHeightInPoints((short) 8);
-	font.setFontName("Arial");
-	
-	CellStyle textStyle = workbook.createCellStyle();
-	textStyle.setBorderBottom(BorderStyle.THIN);
-	textStyle.setBorderTop(BorderStyle.THIN);
-	textStyle.setBorderLeft(BorderStyle.THIN);
-	textStyle.setBorderRight(BorderStyle.THIN);
-	textStyle.setFont(font);
-	
-	CellStyle numberStyle = workbook.createCellStyle();
-	//numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("#,##0.000"));
-	numberStyle.setBorderBottom(BorderStyle.THIN);
-	numberStyle.setBorderTop(BorderStyle.THIN);
-	numberStyle.setBorderLeft(BorderStyle.THIN);
-	numberStyle.setBorderRight(BorderStyle.THIN);
-	numberStyle.setFont(font);
-	
-	if ("email".equalsIgnoreCase(format) && version == null) {
-		
-		String[] rowCodesPart1 = new String[101];
-		
-		for (int i = 1; i <= 101; i++) {
-		    rowCodesPart1[i - 1] = "R" + i;
-		}
-	
+	        Workbook workbook = WorkbookFactory.create(templateInputStream);
+	        ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+	    Sheet sheet = workbook.getSheetAt(0);
+
+	    CreationHelper createHelper = workbook.getCreationHelper();
+
+	    // ================= DATE STYLE =================
+
+	    CellStyle dateStyle = workbook.createCellStyle();
+	    dateStyle.setDataFormat(
+	            createHelper.createDataFormat().getFormat("dd-MMM-yyyy"));
+
+	    dateStyle.setBorderBottom(BorderStyle.THIN);
+	    dateStyle.setBorderTop(BorderStyle.THIN);
+	    dateStyle.setBorderLeft(BorderStyle.THIN);
+	    dateStyle.setBorderRight(BorderStyle.THIN);
+
+	    // ================= FONT =================
+
+	    Font font = workbook.createFont();
+	    font.setFontHeightInPoints((short) 8);
+	    font.setFontName("Arial");
+
+	    // ================= TEXT STYLE =================
+
+	    CellStyle textStyle = workbook.createCellStyle();
+	    textStyle.setBorderBottom(BorderStyle.THIN);
+	    textStyle.setBorderTop(BorderStyle.THIN);
+	    textStyle.setBorderLeft(BorderStyle.THIN);
+	    textStyle.setBorderRight(BorderStyle.THIN);
+	    textStyle.setFont(font);
+
+	    // ================= NUMBER STYLE =================
+
+	    CellStyle numberStyle = workbook.createCellStyle();
+	    // numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("#,##0.000"));
+	    numberStyle.setBorderBottom(BorderStyle.THIN);
+	    numberStyle.setBorderTop(BorderStyle.THIN);
+	    numberStyle.setBorderLeft(BorderStyle.THIN);
+	    numberStyle.setBorderRight(BorderStyle.THIN);
+	    numberStyle.setFont(font);
+
+	    // =========================================================
+	    // REPORT DATE - ROW 6 / COLUMN B
+	    // =========================================================
+
+	    Row row = sheet.getRow(5); // Row 6
+
+	    if (row == null) {
+	        row = sheet.createRow(5);
+	    }
+
+	    Cell cell = row.getCell(2); // Column B
+
+	    if (cell == null) {
+	        cell = row.createCell(1);
+	    }
+
+	    if (todate != null && !todate.isEmpty()) {
+
+	        Date reportDate = new SimpleDateFormat(
+	                "dd-MMM-yyyy",
+	                Locale.ENGLISH
+	        ).parse(todate);
+
+	        cell.setCellValue(reportDate);
+	        cell.setCellStyle(dateStyle);
+
+	    } else {
+
+	        cell.setCellValue("");
+	        cell.setCellStyle(textStyle);
+	    }
+
+	    // =========================================================
+	    // EMAIL FORMAT
+	    // =========================================================
+
+	    if ("email".equalsIgnoreCase(format) && version == null) {
+
+	        String[] rowCodesPart1 = new String[101];
+
+	        for (int i = 1; i <= 101; i++) {
+	            rowCodesPart1[i - 1] = "R" + i;
+	        }
+
 	
 		String[] fieldSuffixes = {
 		"NAME_OF_BANK_AND_COUNTRY_NOSTRO","TYPE_OF_ACCOUNT_NOSTRO","PURPOSE_NOSTRO","CURRENCY_NOSTRO","SOVEREIGN_RATING_AAA_AA_A1_NOSTRO","RISK_WEIGHT_NOSTRO","AMOUNT_DEMAND_NOSTRO","RISK_WEIGHTED_AMOUNT_NOSTRO"   
@@ -966,12 +1020,38 @@ public byte[] getM_NOSVOSExcel(String filename, String reportId, String fromdate
 	
 	private void writeEmailResubExcelRowData1(Sheet sheet, List<BrrsMNosvosP1ResbuSummaryEntity> dataList,
 		    String[] rowCodes, String[] fieldSuffixes, int baseRow,
-		    CellStyle numberStyle, CellStyle textStyle) {
+		    CellStyle numberStyle, CellStyle textStyle, CellStyle dateStyle) {
 			
 		System.out.println("came to write row data 1 method");
 		
 		BrrsMNosvosP1ResbuSummaryEntity record1 = dataList.get(0);
-		
+		// =========================================================
+	    // REPORT DATE - ROW 6 / COLUMN B
+	    // =========================================================
+
+	    Row reportRow = sheet.getRow(5);
+
+	    if (reportRow == null) {
+	        reportRow = sheet.createRow(5);
+	    }
+
+	    Cell reportDateCell = reportRow.getCell(1);
+
+	    if (reportDateCell == null) {
+	        reportDateCell = reportRow.createCell(1);
+	    }
+
+	    if (record1.getREPORT_DATE() != null) {
+
+	        reportDateCell.setCellValue(record1.getREPORT_DATE());
+	        reportDateCell.setCellStyle(dateStyle);
+
+	    } else {
+
+	        reportDateCell.setCellValue("");
+	        reportDateCell.setCellStyle(textStyle);
+	    }
+
 		 Row  row = sheet.getRow(10) != null ? sheet.getRow(10) : sheet.createRow(10);
 		 Cell cell1 = row.createCell(0);
 
@@ -3441,8 +3521,20 @@ public byte[] getM_NOSVOSExcel(String filename, String reportId, String fromdate
 		
 		BrrsMNosvosP1Archival record1 = dataList.get(0);
 		
-		 Row  row = sheet.getRow(10) != null ? sheet.getRow(10) : sheet.createRow(10);
-		 Cell cell1 = row.createCell(0);
+		 Row  row = sheet.getRow(5) != null ? sheet.getRow(5) : sheet.createRow(5);
+		 
+		 Cell cell1 = row.createCell(1);
+
+		 if (record1.getREPORT_DATE() != null ){
+		     cell1.setCellValue(record1.getREPORT_DATE().toString().trim() );
+		     cell1.setCellStyle(numberStyle);
+		 } else {
+		     cell1.setCellValue("");
+		     cell1.setCellStyle(textStyle);
+		 }
+		 
+		 row = sheet.getRow(10);
+		  cell1 = row.createCell(0);
 
 		 if (record1.getR1_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell1.setCellValue(record1.getR1_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
@@ -5910,8 +6002,20 @@ public byte[] getM_NOSVOSExcel(String filename, String reportId, String fromdate
 		
 		BrrsMNosvosP1 record1 = dataList.get(0);
 		
-		 Row  row = sheet.getRow(10) != null ? sheet.getRow(10) : sheet.createRow(10);
-		 Cell cell1 = row.createCell(0);
+		 Row  row = sheet.getRow(5) != null ? sheet.getRow(5) : sheet.createRow(5);
+		 
+		 Cell cell1 = row.createCell(1);
+
+		 if (record1.getREPORT_DATE()!= null ){
+		     cell1.setCellValue(record1.getREPORT_DATE().toString().trim() );
+		     cell1.setCellStyle(numberStyle);
+		 } else {
+		     cell1.setCellValue("");
+		     cell1.setCellStyle(textStyle);
+		 }
+		 
+		  row = sheet.getRow(10);
+		  cell1 = row.createCell(0);
 
 		 if (record1.getR1_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell1.setCellValue(record1.getR1_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
@@ -9917,47 +10021,135 @@ public byte[] getM_NOSVOSExcel(String filename, String reportId, String fromdate
 	}
 	
 	try (InputStream templateInputStream = Files.newInputStream(templatePath);
-	Workbook workbook = WorkbookFactory.create(templateInputStream);
-	ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-	
-	Sheet sheet = workbook.getSheetAt(0);
-	
-	CreationHelper createHelper = workbook.getCreationHelper();
-	
-	Font font = workbook.createFont();
-	font.setFontHeightInPoints((short) 8);
-	font.setFontName("Arial");
-	
-	CellStyle textStyle = workbook.createCellStyle();
-	textStyle.setBorderBottom(BorderStyle.THIN);
-	textStyle.setBorderTop(BorderStyle.THIN);
-	textStyle.setBorderLeft(BorderStyle.THIN);
-	textStyle.setBorderRight(BorderStyle.THIN);
-	textStyle.setFont(font);
-	
-	CellStyle numberStyle = workbook.createCellStyle();
-	//numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("#,##0.000"));
-	numberStyle.setBorderBottom(BorderStyle.THIN);
-	numberStyle.setBorderTop(BorderStyle.THIN);
-	numberStyle.setBorderLeft(BorderStyle.THIN);
-	numberStyle.setBorderRight(BorderStyle.THIN);
-	numberStyle.setFont(font);
-	
-if (dtltype.equals("email_report") ) {
-	
-	List<BrrsMNosvosP1ResbuSummaryEntity> dataListEmail = BrrsMNosvosP1ResbuSummaryRepo.getdatabydateListarchival(dateformat.parse(todate), version);
-	List<BrrsMNosvosP2ResbuSummaryEntity> dataListEmail2 = BrrsMNosvosP2ResbuSummaryRepo.getdatabydateListarchival(dateformat.parse(todate), version);
-	List<BrrsMNosvosP3ResbuSummaryEntity> dataListEmail3 = BrrsMNosvosP3ResbuSummaryRepo.getdatabydateListarchival(dateformat.parse(todate), version);
-	List<BrrsMNosvosP4ResbuSummaryEntity> dataListEmail4 = BrrsMNosvosP4ResbuSummaryRepo.getdatabydateListarchival(dateformat.parse(todate), version);
-	List<BrrsMNosvosP5ResbuSummaryEntity> dataListEmail5 = BrrsMNosvosP5ResbuSummaryRepo.getdatabydateListarchival(dateformat.parse(todate), version);
-	
-		
-		String[] rowCodesPart1 = new String[101];
-		
-		for (int i = 1; i <= 101; i++) {
-		    rowCodesPart1[i - 1] = "R" + i;
-		}
-	
+	        Workbook workbook = WorkbookFactory.create(templateInputStream);
+	        ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+	    Sheet sheet = workbook.getSheetAt(0);
+
+	    CreationHelper createHelper = workbook.getCreationHelper();
+
+	    // =====================================================
+	    // FONT
+	    // =====================================================
+
+	    Font font = workbook.createFont();
+	    font.setFontHeightInPoints((short) 8);
+	    font.setFontName("Arial");
+
+	    // =====================================================
+	    // DATE STYLE
+	    // =====================================================
+
+	    CellStyle dateStyle = workbook.createCellStyle();
+	    dateStyle.setDataFormat(
+	            createHelper.createDataFormat().getFormat("dd-MMM-yyyy"));
+
+	    dateStyle.setBorderBottom(BorderStyle.THIN);
+	    dateStyle.setBorderTop(BorderStyle.THIN);
+	    dateStyle.setBorderLeft(BorderStyle.THIN);
+	    dateStyle.setBorderRight(BorderStyle.THIN);
+	    dateStyle.setFont(font);
+
+	    // =====================================================
+	    // TEXT STYLE
+	    // =====================================================
+
+	    CellStyle textStyle = workbook.createCellStyle();
+	    textStyle.setBorderBottom(BorderStyle.THIN);
+	    textStyle.setBorderTop(BorderStyle.THIN);
+	    textStyle.setBorderLeft(BorderStyle.THIN);
+	    textStyle.setBorderRight(BorderStyle.THIN);
+	    textStyle.setFont(font);
+
+	    // =====================================================
+	    // NUMBER STYLE
+	    // =====================================================
+
+	    CellStyle numberStyle = workbook.createCellStyle();
+	    // numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("#,##0.000"));
+	    numberStyle.setBorderBottom(BorderStyle.THIN);
+	    numberStyle.setBorderTop(BorderStyle.THIN);
+	    numberStyle.setBorderLeft(BorderStyle.THIN);
+	    numberStyle.setBorderRight(BorderStyle.THIN);
+	    numberStyle.setFont(font);
+
+	    // =====================================================
+	    // EMAIL REPORT
+	    // =====================================================
+
+	    if (dtltype.equals("email_report")) {
+
+	        List<BrrsMNosvosP1ResbuSummaryEntity> dataListEmail =
+	                BrrsMNosvosP1ResbuSummaryRepo
+	                        .getdatabydateListarchival(
+	                                dateformat.parse(todate),
+	                                version);
+
+	        List<BrrsMNosvosP2ResbuSummaryEntity> dataListEmail2 =
+	                BrrsMNosvosP2ResbuSummaryRepo
+	                        .getdatabydateListarchival(
+	                                dateformat.parse(todate),
+	                                version);
+
+	        List<BrrsMNosvosP3ResbuSummaryEntity> dataListEmail3 =
+	                BrrsMNosvosP3ResbuSummaryRepo
+	                        .getdatabydateListarchival(
+	                                dateformat.parse(todate),
+	                                version);
+
+	        List<BrrsMNosvosP4ResbuSummaryEntity> dataListEmail4 =
+	                BrrsMNosvosP4ResbuSummaryRepo
+	                        .getdatabydateListarchival(
+	                                dateformat.parse(todate),
+	                                version);
+
+	        List<BrrsMNosvosP5ResbuSummaryEntity> dataListEmail5 =
+	                BrrsMNosvosP5ResbuSummaryRepo
+	                        .getdatabydateListarchival(
+	                                dateformat.parse(todate),
+	                                version);
+
+	        // =====================================================
+	        // REPORT DATE - ROW 6 / COLUMN B
+	        // =====================================================
+
+	        Row reportRow = sheet.getRow(5); // Row 6
+
+	        if (reportRow == null) {
+	            reportRow = sheet.createRow(5);
+	        }
+
+	        Cell reportDateCell = reportRow.getCell(2); // Column c
+
+	        if (reportDateCell == null) {
+	            reportDateCell = reportRow.createCell(1);
+	        }
+
+	        if (todate != null && !todate.isEmpty()) {
+
+	            Date reportDate = new SimpleDateFormat(
+	                    "dd-MMM-yyyy",
+	                    Locale.ENGLISH
+	            ).parse(todate);
+
+	            reportDateCell.setCellValue(reportDate);
+	            reportDateCell.setCellStyle(dateStyle);
+
+	        } else {
+
+	            reportDateCell.setCellValue("");
+	            reportDateCell.setCellStyle(textStyle);
+	        }
+
+	        // =====================================================
+	        // ROW CODES
+	        // =====================================================
+
+	        String[] rowCodesPart1 = new String[101];
+
+	        for (int i = 1; i <= 101; i++) {
+	            rowCodesPart1[i - 1] = "R" + i;
+	        }
 	
 		String[] fieldSuffixes = {
 		"NAME_OF_BANK_AND_COUNTRY_NOSTRO","TYPE_OF_ACCOUNT_NOSTRO","PURPOSE_NOSTRO","CURRENCY_NOSTRO","SOVEREIGN_RATING_AAA_AA_A1_NOSTRO","RISK_WEIGHT_NOSTRO","AMOUNT_DEMAND_NOSTRO","RISK_WEIGHTED_AMOUNT_NOSTRO"   
@@ -9978,7 +10170,7 @@ if (dtltype.equals("email_report") ) {
 	
 	
 		// First set: R11 - R50 at row 11
-		writeEmailResubExcelRowData1(sheet, dataListEmail, rowCodesPart1, fieldSuffixes, 10, numberStyle, textStyle);
+		writeEmailResubExcelRowData1(sheet, dataListEmail, rowCodesPart1, fieldSuffixes, 10, numberStyle, textStyle, numberStyle);
 		
 //		// First set: R56 - R95 at row 56
 		writeEmailResubExcelRowData2(sheet, dataListEmail2, rowCodesPart1, fieldSuffixes2, 10, numberStyle, textStyle);
@@ -10079,45 +10271,135 @@ if (dtltype.equals("email_report") ) {
 	}
 	
 	try (InputStream templateInputStream = Files.newInputStream(templatePath);
-	Workbook workbook = WorkbookFactory.create(templateInputStream);
-	ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-	
-	Sheet sheet = workbook.getSheetAt(0);
-	
-	CreationHelper createHelper = workbook.getCreationHelper();
-	
-	Font font = workbook.createFont();
-	font.setFontHeightInPoints((short) 8);
-	font.setFontName("Arial");
-	
-	CellStyle textStyle = workbook.createCellStyle();
-	textStyle.setBorderBottom(BorderStyle.THIN);
-	textStyle.setBorderTop(BorderStyle.THIN);
-	textStyle.setBorderLeft(BorderStyle.THIN);
-	textStyle.setBorderRight(BorderStyle.THIN);
-	textStyle.setFont(font);
-	
-	CellStyle numberStyle = workbook.createCellStyle();
-	//numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("#,##0.000"));
-	numberStyle.setBorderBottom(BorderStyle.THIN);
-	numberStyle.setBorderTop(BorderStyle.THIN);
-	numberStyle.setBorderLeft(BorderStyle.THIN);
-	numberStyle.setBorderRight(BorderStyle.THIN);
-	numberStyle.setFont(font);
-	
-if (dtltype.equals("email_report") ) {
-	
-	List<BrrsMNosvosP1Archival> dataListEmail = BrrsMNosvosP1ArchivalRepository.getdatabydateListarchival(dateformat.parse(todate),version);
-	List<BrrsMNosvosP2Archival> dataListEmail2 = BrrsMNosvosP2ArchivalRepository.getdatabydateListarchival(dateformat.parse(todate),version);
-	List<BrrsMNosvosP3Archival> dataListEmail3 = BrrsMNosvosP3ArchivalRepository.getdatabydateListarchival(dateformat.parse(todate),version);
-	List<BrrsMNosvosP4Archival> dataListEmail4 = BrrsMNosvosP4ArchivalRepository.getdatabydateListarchival(dateformat.parse(todate),version);
-	List<BrrsMNosvosP5Archival> dataListEmail5 = BrrsMNosvosP5ArchivalRepository.getdatabydateListarchival(dateformat.parse(todate),version);
-		
-		String[] rowCodesPart1 = new String[101];
-		
-		for (int i = 1; i <= 101; i++) {
-		    rowCodesPart1[i - 1] = "R" + i;
-		}
+	        Workbook workbook = WorkbookFactory.create(templateInputStream);
+	        ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+	    Sheet sheet = workbook.getSheetAt(0);
+
+	    CreationHelper createHelper = workbook.getCreationHelper();
+
+	    // =====================================================
+	    // FONT
+	    // =====================================================
+
+	    Font font = workbook.createFont();
+	    font.setFontHeightInPoints((short) 8);
+	    font.setFontName("Arial");
+
+	    // =====================================================
+	    // DATE STYLE
+	    // =====================================================
+
+	    CellStyle dateStyle = workbook.createCellStyle();
+	    dateStyle.setDataFormat(
+	            createHelper.createDataFormat().getFormat("dd-MMM-yyyy"));
+
+	    dateStyle.setBorderBottom(BorderStyle.THIN);
+	    dateStyle.setBorderTop(BorderStyle.THIN);
+	    dateStyle.setBorderLeft(BorderStyle.THIN);
+	    dateStyle.setBorderRight(BorderStyle.THIN);
+	    dateStyle.setFont(font);
+
+	    // =====================================================
+	    // TEXT STYLE
+	    // =====================================================
+
+	    CellStyle textStyle = workbook.createCellStyle();
+	    textStyle.setBorderBottom(BorderStyle.THIN);
+	    textStyle.setBorderTop(BorderStyle.THIN);
+	    textStyle.setBorderLeft(BorderStyle.THIN);
+	    textStyle.setBorderRight(BorderStyle.THIN);
+	    textStyle.setFont(font);
+
+	    // =====================================================
+	    // NUMBER STYLE
+	    // =====================================================
+
+	    CellStyle numberStyle = workbook.createCellStyle();
+	    // numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("#,##0.000"));
+	    numberStyle.setBorderBottom(BorderStyle.THIN);
+	    numberStyle.setBorderTop(BorderStyle.THIN);
+	    numberStyle.setBorderLeft(BorderStyle.THIN);
+	    numberStyle.setBorderRight(BorderStyle.THIN);
+	    numberStyle.setFont(font);
+
+	    // =====================================================
+	    // EMAIL REPORT
+	    // =====================================================
+
+	    if (dtltype.equals("email_report")) {
+
+	        List<BrrsMNosvosP1Archival> dataListEmail =
+	                BrrsMNosvosP1ArchivalRepository
+	                        .getdatabydateListarchival(
+	                                dateformat.parse(todate),
+	                                version);
+
+	        List<BrrsMNosvosP2Archival> dataListEmail2 =
+	                BrrsMNosvosP2ArchivalRepository
+	                        .getdatabydateListarchival(
+	                                dateformat.parse(todate),
+	                                version);
+
+	        List<BrrsMNosvosP3Archival> dataListEmail3 =
+	                BrrsMNosvosP3ArchivalRepository
+	                        .getdatabydateListarchival(
+	                                dateformat.parse(todate),
+	                                version);
+
+	        List<BrrsMNosvosP4Archival> dataListEmail4 =
+	                BrrsMNosvosP4ArchivalRepository
+	                        .getdatabydateListarchival(
+	                                dateformat.parse(todate),
+	                                version);
+
+	        List<BrrsMNosvosP5Archival> dataListEmail5 =
+	                BrrsMNosvosP5ArchivalRepository
+	                        .getdatabydateListarchival(
+	                                dateformat.parse(todate),
+	                                version);
+
+	        // =====================================================
+	        // REPORT DATE - ROW 6 / COLUMN B
+	        // =====================================================
+
+	        Row reportRow = sheet.getRow(5); // Row 6
+
+	        if (reportRow == null) {
+	            reportRow = sheet.createRow(5);
+	        }
+
+	        Cell reportDateCell = reportRow.getCell(2); // Column c
+
+	        if (reportDateCell == null) {
+	            reportDateCell = reportRow.createCell(1);
+	        }
+
+	        if (todate != null && !todate.isEmpty()) {
+
+	            Date reportDate = new SimpleDateFormat(
+	                    "dd-MMM-yyyy",
+	                    Locale.ENGLISH
+	            ).parse(todate);
+
+	            reportDateCell.setCellValue(reportDate);
+	            reportDateCell.setCellStyle(dateStyle);
+
+	        } else {
+
+	            reportDateCell.setCellValue("");
+	            reportDateCell.setCellStyle(textStyle);
+	        }
+
+	        // =====================================================
+	        // ROW CODES
+	        // =====================================================
+
+	        String[] rowCodesPart1 = new String[101];
+
+	        for (int i = 1; i <= 101; i++) {
+	            rowCodesPart1[i - 1] = "R" + i;
+	        }
 	
 	
 		String[] fieldSuffixes = {
