@@ -302,7 +302,7 @@ public class BRRS_M_DEP1_ReportService {
 			percentStyle.setAlignment(HorizontalAlignment.RIGHT);
 			// --- End of Style Definitions ---
 
-			int startRow = 11;
+			int startRow = 6;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -312,10 +312,26 @@ public class BRRS_M_DEP1_ReportService {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					//REPORT_DATE
+					row = sheet.getRow(6);
+					Cell cell1 = row.getCell(1);
+					if (cell1 == null) {
+					    cell1 = row.createCell(1);
+					}
 
+					if (record.getReport_date() != null) {
+					    cell1.setCellValue(record.getReport_date()); // java.util.Date
+					    cell1.setCellStyle(dateStyle);
+					} else {
+					    cell1.setCellValue("");
+					    cell1.setCellStyle(textStyle);
+					}
+
+					
 					// row12
 					// Column B
-					Cell cell1 = row.getCell(1);
+					row = sheet.getRow(11);
+					 cell1 = row.getCell(1);
 					if (record.getR12_current() != null) {
 						cell1.setCellValue(record.getR12_current().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -5719,7 +5735,7 @@ public class BRRS_M_DEP1_ReportService {
 			percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
 			percentStyle.setAlignment(HorizontalAlignment.RIGHT);
 			// --- End of Style Definitions ---
-			int startRow = 11;
+			int startRow = 6;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -5730,9 +5746,26 @@ public class BRRS_M_DEP1_ReportService {
 						row = sheet.createRow(startRow + i);
 					}
 
+					//REPORT_DATE
+					row = sheet.getRow(6);
+					Cell cell1 = row.getCell(1);
+					if (cell1 == null) {
+					    cell1 = row.createCell(1);
+					}
+
+					if (record.getReport_date() != null) {
+					    cell1.setCellValue(record.getReport_date()); // java.util.Date
+					    cell1.setCellStyle(dateStyle);
+					} else {
+					    cell1.setCellValue("");
+					    cell1.setCellStyle(textStyle);
+					}
+
+					
 					// row12
 					// Column B
-					Cell cell1 = row.getCell(1);
+					row = sheet.getRow(11);
+					 cell1 = row.getCell(1);
 					if (record.getR12_current() != null) {
 						cell1.setCellValue(record.getR12_current().doubleValue());
 						cell1.setCellStyle(numberStyle);

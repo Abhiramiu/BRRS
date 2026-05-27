@@ -362,7 +362,13 @@ public class BRRS_M_LIQGAP_ReportService {
 	        // ===========================
 
 	        CreationHelper createHelper = workbook.getCreationHelper();
-
+	        CellStyle dateStyle = workbook.createCellStyle();
+			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+			dateStyle.setBorderBottom(BorderStyle.THIN);
+			dateStyle.setBorderTop(BorderStyle.THIN);
+			dateStyle.setBorderLeft(BorderStyle.THIN);
+			dateStyle.setBorderRight(BorderStyle.THIN);
+			
 	        CellStyle textStyle = workbook.createCellStyle();
 	        textStyle.setBorderBottom(BorderStyle.THIN);
 	        textStyle.setBorderTop(BorderStyle.THIN);
@@ -387,7 +393,7 @@ public class BRRS_M_LIQGAP_ReportService {
 
 	        // ===========================
 
-	        int startRow = 10;
+	        int startRow = 6;
 
 
 			if (!dataList.isEmpty() || !dataList1.isEmpty()) {
@@ -399,9 +405,29 @@ public class BRRS_M_LIQGAP_ReportService {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					
+					//REPORT_DATE
+					row = sheet.getRow(6);
+					Cell cell1 = row.getCell(1);
+					if (cell1 == null) {
+					    cell1 = row.createCell(1);
+					}
 
+					if (record.getReport_date() != null) {
+					    cell1.setCellValue(record.getReport_date()); // java.util.Date
+					    cell1.setCellStyle(dateStyle);
+					} else {
+					    cell1.setCellValue("");
+					    cell1.setCellStyle(textStyle);
+					}
+
+					
 					 // ========== CELL 1 ==========
-			        Cell cell1 = row.getCell(1);
+					
+					row = sheet.getRow(10);
+
+					
+			         cell1 = row.getCell(1);
 			        if (cell1 == null) cell1 = row.createCell(1);
 
 			        if (record.getR11_first_month() != null) {
@@ -2868,7 +2894,7 @@ return new byte[0];
 			percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
 			percentStyle.setAlignment(HorizontalAlignment.RIGHT);
 			// --- End of Style Definitions ---
-			int startRow = 7;
+			int startRow = 6;
 
 			if (!dataList.isEmpty() || !dataList1.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -2880,9 +2906,25 @@ return new byte[0];
 						row = sheet.createRow(startRow + i);
 					}
 
+					//REPORT_DATE
+					row = sheet.getRow(6);
+					Cell cell1 = row.getCell(1);
+					if (cell1 == null) {
+					    cell1 = row.createCell(1);
+					}
 
+					if (record.getReportDate() != null) {
+					    cell1.setCellValue(record.getReportDate()); // java.util.Date
+					    cell1.setCellStyle(dateStyle);
+					} else {
+					    cell1.setCellValue("");
+					    cell1.setCellStyle(textStyle);
+					}
+
+					
 					 // ========== CELL 1 ==========
-			        Cell cell1 = row.getCell(1);
+					
+					row = sheet.getRow(10);
 			        if (cell1 == null) cell1 = row.createCell(1);
 
 			        if (record.getR11_first_month() != null) {
@@ -5367,7 +5409,7 @@ return new byte[0];
 					percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
 					percentStyle.setAlignment(HorizontalAlignment.RIGHT);
 					// --- End of Style Definitions ---
-					int startRow = 10;
+					int startRow = 6;
 
 					if (!dataList.isEmpty() || !dataList1.isEmpty()) {
 						for (int i = 0; i < dataList.size(); i++) {
@@ -5380,8 +5422,25 @@ return new byte[0];
 							}
 
 
+							//REPORT_DATE
+							row = sheet.getRow(6);
+							Cell cell1 = row.getCell(1);
+							if (cell1 == null) {
+							    cell1 = row.createCell(1);
+							}
+
+							if (record.getReportDate() != null) {
+							    cell1.setCellValue(record.getReportDate()); // java.util.Date
+							    cell1.setCellStyle(dateStyle);
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							
 							 // ========== CELL 1 ==========
-					        Cell cell1 = row.getCell(1);
+							
+							row = sheet.getRow(10);
 					        if (cell1 == null) cell1 = row.createCell(1);
 
 					        if (record.getR11_first_month() != null) {
@@ -7349,7 +7408,7 @@ return new byte[0];
 								percentStyle.setAlignment(HorizontalAlignment.RIGHT);
 								// --- End of Style Definitions ---
 
-								int startRow = 10;
+								int startRow = 6;
 
 								if (!dataList.isEmpty() || !dataList1.isEmpty()) {
 									for (int i = 0; i < dataList.size(); i++) {
@@ -7361,9 +7420,25 @@ return new byte[0];
 											row = sheet.createRow(startRow + i);
 										}
 
+										//REPORT_DATE
+										row = sheet.getRow(6);
+										Cell cell1 = row.getCell(1);
+										if (cell1 == null) {
+										    cell1 = row.createCell(1);
+										}
 
+										if (record.getReport_date() != null) {
+										    cell1.setCellValue(record.getReport_date()); // java.util.Date
+										    cell1.setCellStyle(dateStyle);
+										} else {
+										    cell1.setCellValue("");
+										    cell1.setCellStyle(textStyle);
+										}
+
+										
 										 // ========== CELL 1 ==========
-								        Cell cell1 = row.getCell(1);
+										
+										row = sheet.getRow(10);
 								        if (cell1 == null) cell1 = row.createCell(1);
 
 								        if (record.getR11_first_month() != null) {

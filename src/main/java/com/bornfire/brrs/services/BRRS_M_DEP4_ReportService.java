@@ -507,7 +507,7 @@ logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, 
 		// --- End of Style Definitions ---
 		// --- End of Style Definitions ---
 
-		int startRow = 9;
+		int startRow = 6;
 		
 		if (!dataList1.isEmpty()) {
 			for (int i = 0; i < dataList1.size(); i++) {
@@ -524,9 +524,26 @@ logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, 
 					row = sheet.createRow(startRow + i);
 				}
 
+				//REPORT_DATE
+				row = sheet.getRow(6);
+				Cell cell1 = row.getCell(1);
+				if (cell1 == null) {
+				    cell1 = row.createCell(1);
+				}
 
-				//R10
-				Cell cell1 = row.getCell(2);
+				if (record1.getReportDate() != null) {
+				    cell1.setCellValue(record1.getReportDate()); // java.util.Date
+				    cell1.setCellStyle(dateStyle);
+				} else {
+				    cell1.setCellValue("");
+				    cell1.setCellStyle(textStyle);
+				}
+
+				
+				// row10
+				
+				row = sheet.getRow(9);
+				 cell1 = row.getCell(2);
 				if (record1.getR10_institutional_sector() != null) {
 					cell1.setCellValue(record1.getR10_institutional_sector());
 				
@@ -9729,7 +9746,7 @@ public byte[] getExcelM_DEP4ARCHIVAL(String filename, String reportId, String fr
 		// --- End of Style Definitions ---
 		// --- End of Style Definitions ---
 
-		int startRow = 9;
+		int startRow = 6;
 		
 		if (!dataList1.isEmpty()) {
 			for (int i = 0; i < dataList1.size(); i++) {
@@ -9747,8 +9764,26 @@ public byte[] getExcelM_DEP4ARCHIVAL(String filename, String reportId, String fr
 				}
 
 
-				//R10
-				Cell cell1 = row.getCell(2);
+				//REPORT_DATE
+				row = sheet.getRow(6);
+				Cell cell1 = row.getCell(1);
+				if (cell1 == null) {
+				    cell1 = row.createCell(1);
+				}
+
+				if (record1.getReportDate() != null) {
+				    cell1.setCellValue(record1.getReportDate()); // java.util.Date
+				    cell1.setCellStyle(dateStyle);
+				} else {
+				    cell1.setCellValue("");
+				    cell1.setCellStyle(textStyle);
+				}
+
+				
+				// row10
+				
+				row = sheet.getRow(9);
+				 cell1 = row.getCell(2);
 				if (record1.getR10_institutional_sector() != null) {
 					cell1.setCellValue(record1.getR10_institutional_sector());
 				
@@ -26510,7 +26545,7 @@ public byte[] getEmail_M_DEP4Excel(String filename, String reportId, String from
 		// --- End of Style Definitions ---
 		// --- End of Style Definitions ---
 
-		int startRow = 9;
+		int startRow = 6;
 		
 		if (!dataList1.isEmpty()) {
 			for (int i = 0; i < dataList1.size(); i++) {
@@ -26528,8 +26563,26 @@ public byte[] getEmail_M_DEP4Excel(String filename, String reportId, String from
 				}
 
 
-				//R10
-				Cell cell1 = row.getCell(2);
+				//REPORT_DATE
+				row = sheet.getRow(6);
+				Cell cell1 = row.getCell(1);
+				if (cell1 == null) {
+				    cell1 = row.createCell(1);
+				}
+
+				if (record1.getReportDate() != null) {
+				    cell1.setCellValue(record1.getReportDate()); // java.util.Date
+				    cell1.setCellStyle(dateStyle);
+				} else {
+				    cell1.setCellValue("");
+				    cell1.setCellStyle(textStyle);
+				}
+
+				
+				// row10
+				
+				row = sheet.getRow(9);
+				 cell1 = row.getCell(2);
 				if (record1.getR10_institutional_sector() != null) {
 					cell1.setCellValue(record1.getR10_institutional_sector());
 				
@@ -35732,7 +35785,7 @@ public void emailnext201_1(Sheet sheet,M_DEP4_Summary_Entity3 record3,CellStyle 
 					// --- End of Style Definitions ---
 					// --- End of Style Definitions ---
 
-					int startRow = 9;
+					int startRow = 6;
 					
 					if (!dataList1.isEmpty()) {
 						for (int i = 0; i < dataList1.size(); i++) {
@@ -35752,8 +35805,26 @@ public void emailnext201_1(Sheet sheet,M_DEP4_Summary_Entity3 record3,CellStyle 
 							}
 
 
-							//R10
-							Cell cell1 = row.getCell(2);
+							//REPORT_DATE
+							row = sheet.getRow(6);
+							Cell cell1 = row.getCell(1);
+							if (cell1 == null) {
+							    cell1 = row.createCell(1);
+							}
+
+							if (record1.getReportDate() != null) {
+							    cell1.setCellValue(record1.getReportDate()); // java.util.Date
+							    cell1.setCellStyle(dateStyle);
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							
+							// row10
+							
+							row = sheet.getRow(9);
+							 cell1 = row.getCell(2);
 							if (record1.getR10_institutional_sector() != null) {
 								cell1.setCellValue(record1.getR10_institutional_sector());
 							

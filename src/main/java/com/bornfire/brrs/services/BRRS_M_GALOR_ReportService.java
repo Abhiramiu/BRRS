@@ -347,7 +347,7 @@ public class BRRS_M_GALOR_ReportService {
 			// --- End of Style Definitions ---
 
 			if (!dataList.isEmpty()) {
-				populateEntity1Data(sheet, dataList.get(0), textStyle, numberStyle);
+				populateEntity1Data(sheet, dataList.get(0), textStyle, numberStyle,dateStyle);
 			}
 
 			if (!dataList1.isEmpty()) {
@@ -366,11 +366,28 @@ public class BRRS_M_GALOR_ReportService {
 	}
 
 	private void populateEntity1Data(Sheet sheet, M_GALOR_Summary_Entity1 record, CellStyle textStyle,
-			CellStyle numberStyle) {
+			CellStyle numberStyle,CellStyle dateStyle) {
+		Row row = sheet.getRow(5) != null ? sheet.getRow(5) : sheet.createRow(5);
+
+		//REPORT_DATE
+		row = sheet.getRow(5);
+		Cell cell1 = row.getCell(1);
+		if (cell1 == null) {
+		    cell1 = row.createCell(1);
+		}
+
+		if (record.getReport_date() != null) {
+		    cell1.setCellValue(record.getReport_date()); // java.util.Date
+		    cell1.setCellStyle(dateStyle);
+		} else {
+		    cell1.setCellValue("");
+		    cell1.setCellStyle(textStyle);
+		}
 
 		// R11 - ROW 11 (Index 10)
-		Row row = sheet.getRow(10) != null ? sheet.getRow(10) : sheet.createRow(10);
-
+		row = sheet.getRow(9);
+		
+		
 		// Column B - BOTSWANA
 		Cell cellB = row.createCell(1);
 		if (record.getR11_botswana() != null) {
@@ -15864,7 +15881,7 @@ public class BRRS_M_GALOR_ReportService {
 			// --- End of Style Definitions ---
 
 			if (!dataList.isEmpty()) {
-				populateEntity1Data(sheet, dataList.get(0), textStyle, numberStyle);
+				populateEntity1Data(sheet, dataList.get(0), textStyle, numberStyle, dateStyle);
 			}
 
 			if (!dataList1.isEmpty()) {
@@ -15883,11 +15900,26 @@ public class BRRS_M_GALOR_ReportService {
 	}
 
 	private void populateEntity1Data(Sheet sheet, M_GALOR_Archival_Summary_Entity1 record, CellStyle textStyle,
-			CellStyle numberStyle) {
+			CellStyle numberStyle,CellStyle dateStyle) {
+		Row row = sheet.getRow(5) != null ? sheet.getRow(5) : sheet.createRow(5);
+
+		//REPORT_DATE
+		row = sheet.getRow(5);
+		Cell cell1 = row.getCell(1);
+		if (cell1 == null) {
+		    cell1 = row.createCell(1);
+		}
+
+		if (record.getReportDate() != null) {
+		    cell1.setCellValue(record.getReportDate()); // java.util.Date
+		    cell1.setCellStyle(dateStyle);
+		} else {
+		    cell1.setCellValue("");
+		    cell1.setCellStyle(textStyle);
+		}
 
 		// R11 - ROW 11 (Index 10)
-		Row row = sheet.getRow(10) != null ? sheet.getRow(10) : sheet.createRow(10);
-
+		row = sheet.getRow(9);
 		// Column B - BOTSWANA
 		Cell cellB = row.createCell(1);
 		if (record.getR11_botswana() != null) {
@@ -31329,7 +31361,7 @@ public class BRRS_M_GALOR_ReportService {
 	        // --- End of Style Definitions ---
 
 	        if (!dataList.isEmpty()) {
-	            EmailpopulateEntity1Data(sheet, dataList.get(0), textStyle, numberStyle);
+	            EmailpopulateEntity1Data(sheet, dataList.get(0), textStyle, numberStyle,dateStyle);
 	        }
 
 	        if (!dataList1.isEmpty()) {
@@ -31351,11 +31383,26 @@ public class BRRS_M_GALOR_ReportService {
 	}
 
 	private void EmailpopulateEntity1Data(Sheet sheet, M_GALOR_Summary_Entity1 record, CellStyle textStyle,
-	        CellStyle numberStyle) {
+	        CellStyle numberStyle,CellStyle dateStyle) {
+		Row row = sheet.getRow(5) != null ? sheet.getRow(5) : sheet.createRow(5);
 
-	    // R11 - ROW 11 (Index 10)
-	    Row row = sheet.getRow(10) != null ? sheet.getRow(10) : sheet.createRow(10);
+		//REPORT_DATE
+		row = sheet.getRow(5);
+		Cell cell1 = row.getCell(1);
+		if (cell1 == null) {
+		    cell1 = row.createCell(1);
+		}
 
+		if (record.getReport_date() != null) {
+		    cell1.setCellValue(record.getReport_date()); // java.util.Date
+		    cell1.setCellStyle(dateStyle);
+		} else {
+		    cell1.setCellValue("");
+		    cell1.setCellStyle(textStyle);
+		}
+
+		// R11 - ROW 11 (Index 10)
+		row = sheet.getRow(9);
 	 // Column B - BOTSWANA
 	 		Cell cellB = row.createCell(1);
 	 		if (record.getR11_botswana() != null) {
@@ -40903,7 +40950,7 @@ public class BRRS_M_GALOR_ReportService {
 			// --- End of Style Definitions ---
 
 			if (!dataList.isEmpty()) {
-				ArchivalEmailpopulateEntity1Data(sheet, dataList.get(0), textStyle, numberStyle);
+				ArchivalEmailpopulateEntity1Data(sheet, dataList.get(0), textStyle, numberStyle,dateStyle);
 			}
 
 			if (!dataList1.isEmpty()) {
@@ -40922,10 +40969,26 @@ public class BRRS_M_GALOR_ReportService {
 	}
 
 	private void ArchivalEmailpopulateEntity1Data(Sheet sheet, M_GALOR_Archival_Summary_Entity1 record,
-			CellStyle textStyle, CellStyle numberStyle) {
+			CellStyle textStyle, CellStyle numberStyle,CellStyle dateStyle) {
+		Row row = sheet.getRow(5) != null ? sheet.getRow(5) : sheet.createRow(5);
+
+		//REPORT_DATE
+		row = sheet.getRow(5);
+		Cell cell1 = row.getCell(1);
+		if (cell1 == null) {
+		    cell1 = row.createCell(1);
+		}
+
+		if (record.getReportDate() != null) {
+		    cell1.setCellValue(record.getReportDate()); // java.util.Date
+		    cell1.setCellStyle(dateStyle);
+		} else {
+		    cell1.setCellValue("");
+		    cell1.setCellStyle(textStyle);
+		}
 
 		// R11 - ROW 11 (Index 10)
-		Row row = sheet.getRow(10) != null ? sheet.getRow(10) : sheet.createRow(10);
+		row = sheet.getRow(9);
 
 		// Column B - BOTSWANA
 		Cell cellB = row.createCell(1);

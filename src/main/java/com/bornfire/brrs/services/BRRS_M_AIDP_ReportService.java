@@ -736,41 +736,94 @@ public class BRRS_M_AIDP_ReportService {
 
 				Sheet sheet = workbook.getSheetAt(0);
 
-				CellStyle textStyle = workbook.createCellStyle();
-				CellStyle numberStyle = workbook.createCellStyle();
-				numberStyle.cloneStyleFrom(textStyle);
+	            /* ================= DATE STYLE ================= */
+	            CellStyle dateStyle = workbook.createCellStyle();
+	            CreationHelper createHelper = workbook.getCreationHelper();
 
-				CellStyle blackBorderStyle = workbook.createCellStyle();
-				blackBorderStyle.setBorderTop(BorderStyle.THIN);
-				blackBorderStyle.setBorderBottom(BorderStyle.THIN);
-				blackBorderStyle.setBorderLeft(BorderStyle.THIN);
-				blackBorderStyle.setBorderRight(BorderStyle.THIN);
+	            dateStyle.setDataFormat(
+	                    createHelper.createDataFormat().getFormat("dd-MMM-yyyy"));
 
-				blackBorderStyle.setTopBorderColor(IndexedColors.BLACK.getIndex());
-				blackBorderStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
-				blackBorderStyle.setLeftBorderColor(IndexedColors.BLACK.getIndex());
-				blackBorderStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
+	            dateStyle.setBorderBottom(BorderStyle.THIN);
+	            dateStyle.setBorderTop(BorderStyle.THIN);
+	            dateStyle.setBorderLeft(BorderStyle.THIN);
+	            dateStyle.setBorderRight(BorderStyle.THIN);
 
-				String[] rowCodesPart1 = { "R11", "R12", "R13", "R14", "R15", "R16", "R17", "R18", "R19", "R20", "R21",
-						"R22", "R23", "R24", "R25", "R26", "R27", "R28", "R29", "R30", "R31", "R32", "R33", "R34",
-						"R35", "R36", "R37", "R38", "R39", "R40", "R41", "R42", "R43", "R44", "R45", "R46", "R47",
-						"R48", "R49", "R50" };
+	            /* ================= TEXT STYLE ================= */
+	            CellStyle textStyle = workbook.createCellStyle();
 
-				String[] rowCodesPart2 = { "R56", "R57", "R58", "R59", "R60", "R61", "R62", "R63", "R64", "R65", "R66",
-						"R67", "R68", "R69", "R70", "R71", "R72", "R73", "R74", "R75", "R76", "R77", "R78", "R79",
-						"R80", "R81", "R82", "R83", "R84", "R85", "R86", "R87", "R88", "R89", "R90", "R91", "R92",
-						"R93", "R94", "R95" };
+	            /* ================= NUMBER STYLE ================= */
+	            CellStyle numberStyle = workbook.createCellStyle();
+	            numberStyle.cloneStyleFrom(textStyle);
 
-				String[] rowCodesPart3 = { "R101", "R102", "R103", "R104", "R105", "R106", "R107", "R108", "R109",
-						"R110", "R111", "R112", "R113", "R114", "R115", "R116", "R117", "R118", "R119", "R120", "R121",
-						"R122", "R123", "R124", "R125", "R126", "R127", "R128", "R129", "R130", "R131", "R132", "R133",
-						"R134", "R135", "R136", "R137", "R138", "R139", "R140", "R141" };
+	            /* ================= BLACK BORDER STYLE ================= */
+	            CellStyle blackBorderStyle = workbook.createCellStyle();
 
-				String[] rowCodesPart4 = { "R147", "R148", "R149", "R150", "R151", "R152", "R153", "R154", "R155",
-						"R156", "R157", "R158", "R159", "R160", "R161", "R162", "R163", "R164", "R165", "R166", "R167",
-						"R168", "R169", "R170", "R171", "R172", "R173", "R174", "R175", "R176", "R177", "R178", "R179",
-						"R180", "R181", "R182", "R183", "R184", "R185", "R186", "R187", "R188", "R189", "R190", "R191",
-						"R192", "R193" };
+	            blackBorderStyle.setBorderTop(BorderStyle.THIN);
+	            blackBorderStyle.setBorderBottom(BorderStyle.THIN);
+	            blackBorderStyle.setBorderLeft(BorderStyle.THIN);
+	            blackBorderStyle.setBorderRight(BorderStyle.THIN);
+
+	            blackBorderStyle.setTopBorderColor(IndexedColors.BLACK.getIndex());
+	            blackBorderStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+	            blackBorderStyle.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+	            blackBorderStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
+
+	            /* =========================================================
+	               ADD REPORT DATE IN ROW 6 / COLUMN B
+	               ========================================================= */
+
+	            Row row = sheet.getRow(5); // Row 6 (0-based index)
+
+	            if (row == null) {
+	                row = sheet.createRow(5);
+	            }
+
+	            Cell cell = row.getCell(1); // Column B
+
+	            if (cell == null) {
+	                cell = row.createCell(1);
+	            }
+
+	            if (parsedDate != null) {
+	                cell.setCellValue(parsedDate);
+	                cell.setCellStyle(dateStyle);
+	            } else {
+	                cell.setCellValue("");
+	                cell.setCellStyle(textStyle);
+	            }
+
+	            /* ================= ARRAYS ================= */
+
+	            String[] rowCodesPart1 = { "R11", "R12", "R13", "R14", "R15",
+	                    "R16", "R17", "R18", "R19", "R20", "R21", "R22", "R23",
+	                    "R24", "R25", "R26", "R27", "R28", "R29", "R30", "R31",
+	                    "R32", "R33", "R34", "R35", "R36", "R37", "R38", "R39",
+	                    "R40", "R41", "R42", "R43", "R44", "R45", "R46", "R47",
+	                    "R48", "R49", "R50" };
+
+	            String[] rowCodesPart2 = { "R56", "R57", "R58", "R59", "R60",
+	                    "R61", "R62", "R63", "R64", "R65", "R66", "R67", "R68",
+	                    "R69", "R70", "R71", "R72", "R73", "R74", "R75", "R76",
+	                    "R77", "R78", "R79", "R80", "R81", "R82", "R83", "R84",
+	                    "R85", "R86", "R87", "R88", "R89", "R90", "R91", "R92",
+	                    "R93", "R94", "R95" };
+
+	            String[] rowCodesPart3 = { "R101", "R102", "R103", "R104", "R105",
+	                    "R106", "R107", "R108", "R109", "R110", "R111", "R112",
+	                    "R113", "R114", "R115", "R116", "R117", "R118", "R119",
+	                    "R120", "R121", "R122", "R123", "R124", "R125", "R126",
+	                    "R127", "R128", "R129", "R130", "R131", "R132", "R133",
+	                    "R134", "R135", "R136", "R137", "R138", "R139", "R140",
+	                    "R141" };
+
+	            String[] rowCodesPart4 = { "R147", "R148", "R149", "R150", "R151",
+	                    "R152", "R153", "R154", "R155", "R156", "R157", "R158",
+	                    "R159", "R160", "R161", "R162", "R163", "R164", "R165",
+	                    "R166", "R167", "R168", "R169", "R170", "R171", "R172",
+	                    "R173", "R174", "R175", "R176", "R177", "R178", "R179",
+	                    "R180", "R181", "R182", "R183", "R184", "R185", "R186",
+	                    "R187", "R188", "R189", "R190", "R191", "R192", "R193" };
+
 
 				String[] fieldSuffixes = { "NAME_OF_BANK", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE",
 						"AMT_LESS_184_DAYS", "AMT_MORE_184_DAYS" };
@@ -928,41 +981,94 @@ public class BRRS_M_AIDP_ReportService {
 
 				Sheet sheet = workbook.getSheetAt(0);
 
-				CellStyle textStyle = workbook.createCellStyle();
-				CellStyle numberStyle = workbook.createCellStyle();
-				numberStyle.cloneStyleFrom(textStyle);
+	            /* ================= DATE STYLE ================= */
+	            CellStyle dateStyle = workbook.createCellStyle();
+	            CreationHelper createHelper = workbook.getCreationHelper();
 
-				CellStyle blackBorderStyle = workbook.createCellStyle();
-				blackBorderStyle.setBorderTop(BorderStyle.THIN);
-				blackBorderStyle.setBorderBottom(BorderStyle.THIN);
-				blackBorderStyle.setBorderLeft(BorderStyle.THIN);
-				blackBorderStyle.setBorderRight(BorderStyle.THIN);
+	            dateStyle.setDataFormat(
+	                    createHelper.createDataFormat().getFormat("dd-MMM-yyyy"));
 
-				blackBorderStyle.setTopBorderColor(IndexedColors.BLACK.getIndex());
-				blackBorderStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
-				blackBorderStyle.setLeftBorderColor(IndexedColors.BLACK.getIndex());
-				blackBorderStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
+	            dateStyle.setBorderBottom(BorderStyle.THIN);
+	            dateStyle.setBorderTop(BorderStyle.THIN);
+	            dateStyle.setBorderLeft(BorderStyle.THIN);
+	            dateStyle.setBorderRight(BorderStyle.THIN);
 
-				String[] rowCodesPart1 = { "R11", "R12", "R13", "R14", "R15", "R16", "R17", "R18", "R19", "R20", "R21",
-						"R22", "R23", "R24", "R25", "R26", "R27", "R28", "R29", "R30", "R31", "R32", "R33", "R34",
-						"R35", "R36", "R37", "R38", "R39", "R40", "R41", "R42", "R43", "R44", "R45", "R46", "R47",
-						"R48", "R49", "R50" };
+	            /* ================= TEXT STYLE ================= */
+	            CellStyle textStyle = workbook.createCellStyle();
 
-				String[] rowCodesPart2 = { "R56", "R57", "R58", "R59", "R60", "R61", "R62", "R63", "R64", "R65", "R66",
-						"R67", "R68", "R69", "R70", "R71", "R72", "R73", "R74", "R75", "R76", "R77", "R78", "R79",
-						"R80", "R81", "R82", "R83", "R84", "R85", "R86", "R87", "R88", "R89", "R90", "R91", "R92",
-						"R93", "R94", "R95" };
+	            /* ================= NUMBER STYLE ================= */
+	            CellStyle numberStyle = workbook.createCellStyle();
+	            numberStyle.cloneStyleFrom(textStyle);
 
-				String[] rowCodesPart3 = { "R101", "R102", "R103", "R104", "R105", "R106", "R107", "R108", "R109",
-						"R110", "R111", "R112", "R113", "R114", "R115", "R116", "R117", "R118", "R119", "R120", "R121",
-						"R122", "R123", "R124", "R125", "R126", "R127", "R128", "R129", "R130", "R131", "R132", "R133",
-						"R134", "R135", "R136", "R137", "R138", "R139", "R140", "R141" };
+	            /* ================= BLACK BORDER STYLE ================= */
+	            CellStyle blackBorderStyle = workbook.createCellStyle();
 
-				String[] rowCodesPart4 = { "R147", "R148", "R149", "R150", "R151", "R152", "R153", "R154", "R155",
-						"R156", "R157", "R158", "R159", "R160", "R161", "R162", "R163", "R164", "R165", "R166", "R167",
-						"R168", "R169", "R170", "R171", "R172", "R173", "R174", "R175", "R176", "R177", "R178", "R179",
-						"R180", "R181", "R182", "R183", "R184", "R185", "R186", "R187", "R188", "R189", "R190", "R191",
-						"R192", "R193" };
+	            blackBorderStyle.setBorderTop(BorderStyle.THIN);
+	            blackBorderStyle.setBorderBottom(BorderStyle.THIN);
+	            blackBorderStyle.setBorderLeft(BorderStyle.THIN);
+	            blackBorderStyle.setBorderRight(BorderStyle.THIN);
+
+	            blackBorderStyle.setTopBorderColor(IndexedColors.BLACK.getIndex());
+	            blackBorderStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+	            blackBorderStyle.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+	            blackBorderStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
+
+	            /* =========================================================
+	               ADD REPORT DATE IN ROW 6 / COLUMN B
+	               ========================================================= */
+
+	            Row row = sheet.getRow(5); // Row 6 (0-based index)
+
+	            if (row == null) {
+	                row = sheet.createRow(5);
+	            }
+
+	            Cell cell = row.getCell(1); // Column B
+
+	            if (cell == null) {
+	                cell = row.createCell(1);
+	            }
+
+	            if (parsedDate != null) {
+	                cell.setCellValue(parsedDate);
+	                cell.setCellStyle(dateStyle);
+	            } else {
+	                cell.setCellValue("");
+	                cell.setCellStyle(textStyle);
+	            }
+
+	            /* ================= ARRAYS ================= */
+
+	            String[] rowCodesPart1 = { "R11", "R12", "R13", "R14", "R15",
+	                    "R16", "R17", "R18", "R19", "R20", "R21", "R22", "R23",
+	                    "R24", "R25", "R26", "R27", "R28", "R29", "R30", "R31",
+	                    "R32", "R33", "R34", "R35", "R36", "R37", "R38", "R39",
+	                    "R40", "R41", "R42", "R43", "R44", "R45", "R46", "R47",
+	                    "R48", "R49", "R50" };
+
+	            String[] rowCodesPart2 = { "R56", "R57", "R58", "R59", "R60",
+	                    "R61", "R62", "R63", "R64", "R65", "R66", "R67", "R68",
+	                    "R69", "R70", "R71", "R72", "R73", "R74", "R75", "R76",
+	                    "R77", "R78", "R79", "R80", "R81", "R82", "R83", "R84",
+	                    "R85", "R86", "R87", "R88", "R89", "R90", "R91", "R92",
+	                    "R93", "R94", "R95" };
+
+	            String[] rowCodesPart3 = { "R101", "R102", "R103", "R104", "R105",
+	                    "R106", "R107", "R108", "R109", "R110", "R111", "R112",
+	                    "R113", "R114", "R115", "R116", "R117", "R118", "R119",
+	                    "R120", "R121", "R122", "R123", "R124", "R125", "R126",
+	                    "R127", "R128", "R129", "R130", "R131", "R132", "R133",
+	                    "R134", "R135", "R136", "R137", "R138", "R139", "R140",
+	                    "R141" };
+
+	            String[] rowCodesPart4 = { "R147", "R148", "R149", "R150", "R151",
+	                    "R152", "R153", "R154", "R155", "R156", "R157", "R158",
+	                    "R159", "R160", "R161", "R162", "R163", "R164", "R165",
+	                    "R166", "R167", "R168", "R169", "R170", "R171", "R172",
+	                    "R173", "R174", "R175", "R176", "R177", "R178", "R179",
+	                    "R180", "R181", "R182", "R183", "R184", "R185", "R186",
+	                    "R187", "R188", "R189", "R190", "R191", "R192", "R193" };
+
 
 				String[] fieldSuffixes = { "NAME_OF_BANK", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE",
 						"AMT_LESS_184_DAYS", "AMT_MORE_184_DAYS" };
@@ -1112,41 +1218,93 @@ public class BRRS_M_AIDP_ReportService {
 
 				Sheet sheet = workbook.getSheetAt(0);
 
-				CellStyle textStyle = workbook.createCellStyle();
-				CellStyle numberStyle = workbook.createCellStyle();
-				numberStyle.cloneStyleFrom(textStyle);
+	            /* ================= DATE STYLE ================= */
+	            CellStyle dateStyle = workbook.createCellStyle();
+	            CreationHelper createHelper = workbook.getCreationHelper();
 
-				CellStyle blackBorderStyle = workbook.createCellStyle();
-				blackBorderStyle.setBorderTop(BorderStyle.THIN);
-				blackBorderStyle.setBorderBottom(BorderStyle.THIN);
-				blackBorderStyle.setBorderLeft(BorderStyle.THIN);
-				blackBorderStyle.setBorderRight(BorderStyle.THIN);
+	            dateStyle.setDataFormat(
+	                    createHelper.createDataFormat().getFormat("dd-MMM-yyyy"));
 
-				blackBorderStyle.setTopBorderColor(IndexedColors.BLACK.getIndex());
-				blackBorderStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
-				blackBorderStyle.setLeftBorderColor(IndexedColors.BLACK.getIndex());
-				blackBorderStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
+	            dateStyle.setBorderBottom(BorderStyle.THIN);
+	            dateStyle.setBorderTop(BorderStyle.THIN);
+	            dateStyle.setBorderLeft(BorderStyle.THIN);
+	            dateStyle.setBorderRight(BorderStyle.THIN);
 
-				String[] rowCodesPart1 = { "R11", "R12", "R13", "R14", "R15", "R16", "R17", "R18", "R19", "R20", "R21",
-						"R22", "R23", "R24", "R25", "R26", "R27", "R28", "R29", "R30", "R31", "R32", "R33", "R34",
-						"R35", "R36", "R37", "R38", "R39", "R40", "R41", "R42", "R43", "R44", "R45", "R46", "R47",
-						"R48", "R49", "R50" };
+	            /* ================= TEXT STYLE ================= */
+	            CellStyle textStyle = workbook.createCellStyle();
 
-				String[] rowCodesPart2 = { "R56", "R57", "R58", "R59", "R60", "R61", "R62", "R63", "R64", "R65", "R66",
-						"R67", "R68", "R69", "R70", "R71", "R72", "R73", "R74", "R75", "R76", "R77", "R78", "R79",
-						"R80", "R81", "R82", "R83", "R84", "R85", "R86", "R87", "R88", "R89", "R90", "R91", "R92",
-						"R93", "R94", "R95" };
+	            /* ================= NUMBER STYLE ================= */
+	            CellStyle numberStyle = workbook.createCellStyle();
+	            numberStyle.cloneStyleFrom(textStyle);
 
-				String[] rowCodesPart3 = { "R101", "R102", "R103", "R104", "R105", "R106", "R107", "R108", "R109",
-						"R110", "R111", "R112", "R113", "R114", "R115", "R116", "R117", "R118", "R119", "R120", "R121",
-						"R122", "R123", "R124", "R125", "R126", "R127", "R128", "R129", "R130", "R131", "R132", "R133",
-						"R134", "R135", "R136", "R137", "R138", "R139", "R140", "R141" };
+	            /* ================= BLACK BORDER STYLE ================= */
+	            CellStyle blackBorderStyle = workbook.createCellStyle();
 
-				String[] rowCodesPart4 = { "R147", "R148", "R149", "R150", "R151", "R152", "R153", "R154", "R155",
-						"R156", "R157", "R158", "R159", "R160", "R161", "R162", "R163", "R164", "R165", "R166", "R167",
-						"R168", "R169", "R170", "R171", "R172", "R173", "R174", "R175", "R176", "R177", "R178", "R179",
-						"R180", "R181", "R182", "R183", "R184", "R185", "R186", "R187", "R188", "R189", "R190", "R191",
-						"R192", "R193" };
+	            blackBorderStyle.setBorderTop(BorderStyle.THIN);
+	            blackBorderStyle.setBorderBottom(BorderStyle.THIN);
+	            blackBorderStyle.setBorderLeft(BorderStyle.THIN);
+	            blackBorderStyle.setBorderRight(BorderStyle.THIN);
+
+	            blackBorderStyle.setTopBorderColor(IndexedColors.BLACK.getIndex());
+	            blackBorderStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+	            blackBorderStyle.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+	            blackBorderStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
+
+	            /* =========================================================
+	               ADD REPORT DATE IN ROW 6 / COLUMN B
+	               ========================================================= */
+
+	            Row row = sheet.getRow(5); // Row 6 (0-based index)
+
+	            if (row == null) {
+	                row = sheet.createRow(5);
+	            }
+
+	            Cell cell = row.getCell(1); // Column B
+
+	            if (cell == null) {
+	                cell = row.createCell(1);
+	            }
+
+	            if (parsedDate != null) {
+	                cell.setCellValue(parsedDate);
+	                cell.setCellStyle(dateStyle);
+	            } else {
+	                cell.setCellValue("");
+	                cell.setCellStyle(textStyle);
+	            }
+
+	            /* ================= ARRAYS ================= */
+
+	            String[] rowCodesPart1 = { "R11", "R12", "R13", "R14", "R15",
+	                    "R16", "R17", "R18", "R19", "R20", "R21", "R22", "R23",
+	                    "R24", "R25", "R26", "R27", "R28", "R29", "R30", "R31",
+	                    "R32", "R33", "R34", "R35", "R36", "R37", "R38", "R39",
+	                    "R40", "R41", "R42", "R43", "R44", "R45", "R46", "R47",
+	                    "R48", "R49", "R50" };
+
+	            String[] rowCodesPart2 = { "R56", "R57", "R58", "R59", "R60",
+	                    "R61", "R62", "R63", "R64", "R65", "R66", "R67", "R68",
+	                    "R69", "R70", "R71", "R72", "R73", "R74", "R75", "R76",
+	                    "R77", "R78", "R79", "R80", "R81", "R82", "R83", "R84",
+	                    "R85", "R86", "R87", "R88", "R89", "R90", "R91", "R92",
+	                    "R93", "R94", "R95" };
+
+	            String[] rowCodesPart3 = { "R101", "R102", "R103", "R104", "R105",
+	                    "R106", "R107", "R108", "R109", "R110", "R111", "R112",
+	                    "R113", "R114", "R115", "R116", "R117", "R118", "R119",
+	                    "R120", "R121", "R122", "R123", "R124", "R125", "R126",
+	                    "R127", "R128", "R129", "R130", "R131", "R132", "R133",
+	                    "R134", "R135", "R136", "R137", "R138", "R139", "R140",
+	                    "R141" };
+
+	            String[] rowCodesPart4 = { "R147", "R148", "R149", "R150", "R151",
+	                    "R152", "R153", "R154", "R155", "R156", "R157", "R158",
+	                    "R159", "R160", "R161", "R162", "R163", "R164", "R165",
+	                    "R166", "R167", "R168", "R169", "R170", "R171", "R172",
+	                    "R173", "R174", "R175", "R176", "R177", "R178", "R179",
+	                    "R180", "R181", "R182", "R183", "R184", "R185", "R186",
+	                    "R187", "R188", "R189", "R190", "R191", "R192", "R193" };
 
 				String[] fieldSuffixes = { "NAME_OF_BANK", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE",
 						"AMT_LESS_184_DAYS", "AMT_MORE_184_DAYS" };
