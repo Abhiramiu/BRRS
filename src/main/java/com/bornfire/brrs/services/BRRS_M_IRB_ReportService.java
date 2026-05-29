@@ -595,7 +595,7 @@ public class BRRS_M_IRB_ReportService {
 // --- End of Style Definitions ---
 
 			if (!dataList.isEmpty()) {
-				populateEntity1Data(sheet, dataList.get(0), textStyle, numberStyle);
+				populateEntity1Data(sheet, todate, dataList.get(0), textStyle, numberStyle);
 			}
 
 
@@ -612,8 +612,49 @@ public class BRRS_M_IRB_ReportService {
 	}
 
 	//SUMMARY FORMAT VALUES
-   private void populateEntity1Data(Sheet sheet, M_IRB_Summary_Entity record, CellStyle textStyle, CellStyle numberStyle) {
+   private void populateEntity1Data(Sheet sheet, String todate, M_IRB_Summary_Entity record, CellStyle textStyle, CellStyle numberStyle) {
 
+	   /* ==========================================================
+	    * REPORT DATE
+	    * Set todate in C6
+	    * ========================================================== */
+
+	   try {
+
+	       // Row 5 = Excel row 6
+	       Row dateRow = sheet.getRow(5);
+
+	       if (dateRow == null) {
+	           dateRow = sheet.createRow(5);
+	       }
+
+	       // Column 2 = Excel column C
+	       Cell dateCell = dateRow.getCell(2);
+
+	       if (dateCell == null) {
+	           dateCell = dateRow.createCell(2);
+	       }
+
+	       // Date conversion
+	       SimpleDateFormat inputFormat =
+	               new SimpleDateFormat("dd-MMM-yyyy");
+
+	       SimpleDateFormat outputFormat =
+	               new SimpleDateFormat("dd/MM/yyyy");
+
+	       Date reportDateValue =
+	               inputFormat.parse(todate);
+
+	       // Set formatted date
+	       dateCell.setCellValue(
+	               outputFormat.format(reportDateValue));
+
+	       dateCell.setCellStyle(textStyle);
+
+	   } catch (ParseException e) {
+
+	       logger.error("Error parsing todate: {}", todate, e);
+	   }
 	        Row row = sheet.getRow(11) != null ? sheet.getRow(11) : sheet.createRow(11);
 	        Cell R12cell1 = row.createCell(2);
 	        if (record.getR12_upTo1Month() != null) {
@@ -5312,7 +5353,7 @@ public class BRRS_M_IRB_ReportService {
 			int startRow = 7;
 
 			if (!dataList.isEmpty()) {
-				populateArchivalEntity1Data(sheet, dataList.get(0), textStyle, numberStyle);
+				populateArchivalEntity1Data(sheet, todate, dataList.get(0), textStyle, numberStyle);
 			}else {
 
 			}
@@ -5327,8 +5368,50 @@ public class BRRS_M_IRB_ReportService {
 	}
 
 	//ARCHIVAL FORMAT VALUES
-	private void populateArchivalEntity1Data(Sheet sheet, M_IRB_Archival_Summary_Entity record, CellStyle textStyle, CellStyle numberStyle) {
+	private void populateArchivalEntity1Data(Sheet sheet, String todate, M_IRB_Archival_Summary_Entity record, CellStyle textStyle, CellStyle numberStyle) {
 
+
+		   /* ==========================================================
+		    * REPORT DATE
+		    * Set todate in C6
+		    * ========================================================== */
+
+		   try {
+
+		       // Row 5 = Excel row 6
+		       Row dateRow = sheet.getRow(5);
+
+		       if (dateRow == null) {
+		           dateRow = sheet.createRow(5);
+		       }
+
+		       // Column 2 = Excel column C
+		       Cell dateCell = dateRow.getCell(2);
+
+		       if (dateCell == null) {
+		           dateCell = dateRow.createCell(2);
+		       }
+
+		       // Date conversion
+		       SimpleDateFormat inputFormat =
+		               new SimpleDateFormat("dd-MMM-yyyy");
+
+		       SimpleDateFormat outputFormat =
+		               new SimpleDateFormat("dd/MM/yyyy");
+
+		       Date reportDateValue =
+		               inputFormat.parse(todate);
+
+		       // Set formatted date
+		       dateCell.setCellValue(
+		               outputFormat.format(reportDateValue));
+
+		       dateCell.setCellStyle(textStyle);
+
+		   } catch (ParseException e) {
+
+		       logger.error("Error parsing todate: {}", todate, e);
+		   }
 	       Row row = sheet.getRow(11) != null ? sheet.getRow(11) : sheet.createRow(11);
 	       Cell R12cell1 = row.createCell(2);
 	       if (record.getR12_upTo1Month() != null) {

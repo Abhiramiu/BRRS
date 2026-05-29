@@ -166,58 +166,6 @@ public class BRRS_M_SECL_ReportService {
 		return mv;
 	}
 
-//	
-//	else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-//        List<M_SRWA_12G_Resub_Summary_Entity1> T1Master = new ArrayList<M_SRWA_12G_Resub_Summary_Entity1>();
-//
-//        try {
-//			Date d1 = dateformat.parse(todate);
-//        T1Master = BRRS_M_SRWA_12G_Resub_Summary_Repo1.getdatabydateListResub(dateformat.parse(todate), version);
-//         
-//        T2Master = BRRS_M_SRWA_12G_Resub_Summary_Repo2.getdatabydateListResub(dateformat.parse(todate), version);
-//        
-//        T3Master = BRRS_M_SRWA_12G_Resub_Summary_Repo3.getdatabydateListResub(dateformat.parse(todate), version);
-//        
-//        } catch (ParseException e) {
-//			e.printStackTrace();
-//		}
-//            
-//            mv.addObject("reportsummary1", T1Master);
-//            mv.addObject("reportsummary2", T2Master);
-//            mv.addObject("reportsummary3", T3Master);
-//	}
-//	
-//	
-//	else {
-//		List<M_SRWA_12G_Summary_Entity> T1Master = new ArrayList<M_SRWA_12G_Summary_Entity>();
-//
-//		
-//		try {
-//			Date d1 = dateformat.parse(todate);
-//
-//			T1Master = BRRS_M_SRWA_12G_Summary_Repo.getdatabydateList(dateformat.parse(todate));
-//	
-//			
-//			
-//			
-//			System.out.println("Size of t1master is :"+T1Master.size());
-//			
-//			
-//		} catch (ParseException e) {
-//			e.printStackTrace();
-//		}
-//		mv.addObject("reportsummary1", T1Master);
-//	
-//	}
-//
-//	
-//	// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
-//	mv.setViewName("BRRS/M_SRWA_12G");
-//	mv.addObject("displaymode", "summary");
-//	System.out.println("scv" + mv.getViewName());
-//	return mv;
-//}
-
 	public void updateReport(M_SECL_Summary_Entity updatedEntity) {
 		System.out.println("Came to services");
 		System.out.println("report_date: " + updatedEntity.getReportDate());
@@ -596,9 +544,48 @@ public class BRRS_M_SECL_ReportService {
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
 // --- End of Style Definitions ---
+			
 			if ("report".equals(dtltype))
 				{
 			List<M_SECL_Summary_Entity> dataList1 = M_SECL_Summary_Repo.getdatabydateList(reportDate);
+			try {
+
+			       // Row 6 = Excel row 7
+			       Row dateRow = sheet.getRow(6);
+
+			       if (dateRow == null) {
+			           dateRow = sheet.createRow(6);
+			       }
+
+			       // Column 2 = Excel column B
+			       Cell dateCell = dateRow.getCell(1);
+
+			       if (dateCell == null) {
+			           dateCell = dateRow.createCell(1);
+			       }
+
+			       // Date conversion
+			       SimpleDateFormat inputFormat =
+			               new SimpleDateFormat("dd-MMM-yyyy");
+
+			       SimpleDateFormat outputFormat =
+			               new SimpleDateFormat("dd/MM/yyyy");
+
+			       Date reportDateValue =
+			               inputFormat.parse(todate);
+
+			       // Set formatted date
+			       dateCell.setCellValue(
+			               outputFormat.format(reportDateValue));
+
+			       dateCell.setCellStyle(textStyle);
+
+			   } catch (ParseException e) {
+
+			       logger.error("Error parsing todate: {}", todate, e);
+			   }
+			 
+			
 			int startRow = 12;
 
 			if (!dataList1.isEmpty()) {
@@ -7004,26 +6991,7 @@ public class BRRS_M_SECL_ReportService {
 		}
 	}
 
-//public List<Object> getM_SECLArchival() {
-//	List<Object> M_SECLArchivallist = new ArrayList<>();
-//	List<Object> M_FXRArchivallist2 = new ArrayList<>();
-//	List<Object> M_FXRArchivallist3 = new ArrayList<>();
-//	try {
-//		M_SECLArchivallist = M_SECL_Archival_Summary_Repo.getM_SECLarchival();
 
-//		System.out.println("countser" + M_SECLArchivallist.size());
-//		System.out.println("countser" + M_FXRArchivallist.size());
-//		System.out.println("countser" + M_FXRArchivallist.size());
-//	} catch (Exception e) {
-	// Log the exception
-//		System.err.println("Error fetching M_SECL Archival data: " + e.getMessage());
-//		e.printStackTrace();
-
-	// Optionally, you can rethrow it or return empty list
-	// throw new RuntimeException("Failed to fetch data", e);
-//	}
-//	return M_SECLArchivallist;
-//}
 
 	public byte[] getExcelM_SECLARCHIVAL(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, BigDecimal version) throws Exception {
@@ -7093,6 +7061,44 @@ public class BRRS_M_SECL_ReportService {
 				logger.warn("Service: No data found for M_SRWA_12G report. Returning empty result.");
 				return new byte[0];
 			}
+			
+			try {
+
+			       // Row 6 = Excel row 7
+			       Row dateRow = sheet.getRow(6);
+
+			       if (dateRow == null) {
+			           dateRow = sheet.createRow(6);
+			       }
+
+			       // Column 2 = Excel column B
+			       Cell dateCell = dateRow.getCell(1);
+
+			       if (dateCell == null) {
+			           dateCell = dateRow.createCell(1);
+			       }
+
+			       // Date conversion
+			       SimpleDateFormat inputFormat =
+			               new SimpleDateFormat("dd-MMM-yyyy");
+
+			       SimpleDateFormat outputFormat =
+			               new SimpleDateFormat("dd/MM/yyyy");
+
+			       Date reportDateValue =
+			               inputFormat.parse(todate);
+
+			       // Set formatted date
+			       dateCell.setCellValue(
+			               outputFormat.format(reportDateValue));
+
+			       dateCell.setCellStyle(textStyle);
+
+			   } catch (ParseException e) {
+
+			       logger.error("Error parsing todate: {}", todate, e);
+			   }
+			 
 			
 			int startRow = 12;
 
@@ -13722,6 +13728,44 @@ public class BRRS_M_SECL_ReportService {
 				logger.warn("Service: No data found for M_SRWA_12G report. Returning empty result.");
 				return new byte[0];
 			}
+			
+			try {
+
+			       // Row 6 = Excel row 7
+			       Row dateRow = sheet.getRow(6);
+
+			       if (dateRow == null) {
+			           dateRow = sheet.createRow(6);
+			       }
+
+			       // Column 2 = Excel column B
+			       Cell dateCell = dateRow.getCell(1);
+
+			       if (dateCell == null) {
+			           dateCell = dateRow.createCell(1);
+			       }
+
+			       // Date conversion
+			       SimpleDateFormat inputFormat =
+			               new SimpleDateFormat("dd-MMM-yyyy");
+
+			       SimpleDateFormat outputFormat =
+			               new SimpleDateFormat("dd/MM/yyyy");
+
+			       Date reportDateValue =
+			               inputFormat.parse(todate);
+
+			       // Set formatted date
+			       dateCell.setCellValue(
+			               outputFormat.format(reportDateValue));
+
+			       dateCell.setCellStyle(textStyle);
+
+			   } catch (ParseException e) {
+
+			       logger.error("Error parsing todate: {}", todate, e);
+			   }
+			 
 			int startRow = 12;
 
 			if (!dataList1.isEmpty()) {

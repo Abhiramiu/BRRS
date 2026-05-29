@@ -485,6 +485,44 @@ public class BRRS_M_CA4_ReportService {
 					numberStyle.setFont(font);
 					// --- End of Style Definitions ---
 
+
+					   try {
+
+					       // Row 5 = Excel row 6
+					       Row dateRow = sheet.getRow(5);
+
+					       if (dateRow == null) {
+					           dateRow = sheet.createRow(5);
+					       }
+
+					       // Column 2 = Excel column C
+					       Cell dateCell = dateRow.getCell(2);
+
+					       if (dateCell == null) {
+					           dateCell = dateRow.createCell(2);
+					       }
+
+					       // Date conversion
+					       SimpleDateFormat inputFormat =
+					               new SimpleDateFormat("dd-MMM-yyyy");
+
+					       SimpleDateFormat outputFormat =
+					               new SimpleDateFormat("dd/MM/yyyy");
+
+					       Date reportDateValue =
+					               inputFormat.parse(todate);
+
+					       // Set formatted date
+					       dateCell.setCellValue(
+					               outputFormat.format(reportDateValue));
+
+					       dateCell.setCellStyle(textStyle);
+
+					   } catch (ParseException e) {
+
+					       logger.error("Error parsing todate: {}", todate, e);
+					   }
+					   
 					int startRow = 9;
 
 					if (!dataList.isEmpty()) {
@@ -3103,6 +3141,44 @@ public class BRRS_M_CA4_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
+
+			   try {
+
+			       // Row 5 = Excel row 6
+			       Row dateRow = sheet.getRow(5);
+
+			       if (dateRow == null) {
+			           dateRow = sheet.createRow(5);
+			       }
+
+			       // Column 2 = Excel column C
+			       Cell dateCell = dateRow.getCell(2);
+
+			       if (dateCell == null) {
+			           dateCell = dateRow.createCell(2);
+			       }
+
+			       // Date conversion
+			       SimpleDateFormat inputFormat =
+			               new SimpleDateFormat("dd-MMM-yyyy");
+
+			       SimpleDateFormat outputFormat =
+			               new SimpleDateFormat("dd/MM/yyyy");
+
+			       Date reportDateValue =
+			               inputFormat.parse(todate);
+
+			       // Set formatted date
+			       dateCell.setCellValue(
+			               outputFormat.format(reportDateValue));
+
+			       dateCell.setCellStyle(textStyle);
+
+			   } catch (ParseException e) {
+
+			       logger.error("Error parsing todate: {}", todate, e);
+			   }
+			   
 			int startRow = 9;
 
 			if (!dataList.isEmpty()) {
@@ -5297,6 +5373,44 @@ public class BRRS_M_CA4_ReportService {
 			numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
+
+			   try {
+
+			       // Row 5 = Excel row 6
+			       Row dateRow = sheet.getRow(5);
+
+			       if (dateRow == null) {
+			           dateRow = sheet.createRow(5);
+			       }
+
+			       // Column 2 = Excel column C
+			       Cell dateCell = dateRow.getCell(2);
+
+			       if (dateCell == null) {
+			           dateCell = dateRow.createCell(2);
+			       }
+
+			       // Date conversion
+			       SimpleDateFormat inputFormat =
+			               new SimpleDateFormat("dd-MMM-yyyy");
+
+			       SimpleDateFormat outputFormat =
+			               new SimpleDateFormat("dd/MM/yyyy");
+
+			       Date reportDateValue =
+			               inputFormat.parse(todate);
+
+			       // Set formatted date
+			       dateCell.setCellValue(
+			               outputFormat.format(reportDateValue));
+
+			       dateCell.setCellStyle(textStyle);
+
+			   } catch (ParseException e) {
+
+			       logger.error("Error parsing todate: {}", todate, e);
+			   }
+			   
 			int startRow = 9;
 
 			if (!dataList.isEmpty()) {
@@ -7576,6 +7690,43 @@ public class BRRS_M_CA4_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
+			   try {
+
+			       // Row 5 = Excel row 6
+			       Row dateRow = sheet.getRow(5);
+
+			       if (dateRow == null) {
+			           dateRow = sheet.createRow(5);
+			       }
+
+			       // Column 2 = Excel column C
+			       Cell dateCell = dateRow.getCell(2);
+
+			       if (dateCell == null) {
+			           dateCell = dateRow.createCell(2);
+			       }
+
+			       // Date conversion
+			       SimpleDateFormat inputFormat =
+			               new SimpleDateFormat("dd-MMM-yyyy");
+
+			       SimpleDateFormat outputFormat =
+			               new SimpleDateFormat("dd/MM/yyyy");
+
+			       Date reportDateValue =
+			               inputFormat.parse(todate);
+
+			       // Set formatted date
+			       dateCell.setCellValue(
+			               outputFormat.format(reportDateValue));
+
+			       dateCell.setCellStyle(textStyle);
+
+			   } catch (ParseException e) {
+
+			       logger.error("Error parsing todate: {}", todate, e);
+			   }
+			   
 			int startRow = 9;
 
 			if (!dataList.isEmpty()) {
@@ -9772,6 +9923,44 @@ public class BRRS_M_CA4_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
+
+			   try {
+
+			       // Row 5 = Excel row 6
+			       Row dateRow = sheet.getRow(5);
+
+			       if (dateRow == null) {
+			           dateRow = sheet.createRow(5);
+			       }
+
+			       // Column 2 = Excel column C
+			       Cell dateCell = dateRow.getCell(2);
+
+			       if (dateCell == null) {
+			           dateCell = dateRow.createCell(2);
+			       }
+
+			       // Date conversion
+			       SimpleDateFormat inputFormat =
+			               new SimpleDateFormat("dd-MMM-yyyy");
+
+			       SimpleDateFormat outputFormat =
+			               new SimpleDateFormat("dd/MM/yyyy");
+
+			       Date reportDateValue =
+			               inputFormat.parse(todate);
+
+			       // Set formatted date
+			       dateCell.setCellValue(
+			               outputFormat.format(reportDateValue));
+
+			       dateCell.setCellStyle(textStyle);
+
+			   } catch (ParseException e) {
+
+			       logger.error("Error parsing todate: {}", todate, e);
+			   }
+			   
 			int startRow = 9;
 
 			if (!dataList.isEmpty()) {
@@ -12072,6 +12261,44 @@ public class BRRS_M_CA4_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
+
+			   try {
+
+			       // Row 5 = Excel row 6
+			       Row dateRow = sheet.getRow(5);
+
+			       if (dateRow == null) {
+			           dateRow = sheet.createRow(5);
+			       }
+
+			       // Column 2 = Excel column C
+			       Cell dateCell = dateRow.getCell(2);
+
+			       if (dateCell == null) {
+			           dateCell = dateRow.createCell(2);
+			       }
+
+			       // Date conversion
+			       SimpleDateFormat inputFormat =
+			               new SimpleDateFormat("dd-MMM-yyyy");
+
+			       SimpleDateFormat outputFormat =
+			               new SimpleDateFormat("dd/MM/yyyy");
+
+			       Date reportDateValue =
+			               inputFormat.parse(todate);
+
+			       // Set formatted date
+			       dateCell.setCellValue(
+			               outputFormat.format(reportDateValue));
+
+			       dateCell.setCellStyle(textStyle);
+
+			   } catch (ParseException e) {
+
+			       logger.error("Error parsing todate: {}", todate, e);
+			   }
+			   
 			int startRow = 9;
 
 			if (!dataList.isEmpty()) {

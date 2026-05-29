@@ -361,6 +361,45 @@ public class BRRS_M_LIQ_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
+			 try {
+
+			       // Row 6 = Excel row 7
+			       Row dateRow = sheet.getRow(6);
+
+			       if (dateRow == null) {
+			           dateRow = sheet.createRow(6);
+			       }
+
+			       // Column 4 = Excel column D
+			       Cell dateCell = dateRow.getCell(3);
+
+			       if (dateCell == null) {
+			           dateCell = dateRow.createCell(3);
+			       }
+
+			       // Date conversion
+			       SimpleDateFormat inputFormat =
+			               new SimpleDateFormat("dd-MMM-yyyy");
+
+			       SimpleDateFormat outputFormat =
+			               new SimpleDateFormat("dd/MM/yyyy");
+
+			       Date reportDateValue =
+			               inputFormat.parse(todate);
+
+			       // Set formatted date
+			       dateCell.setCellValue(
+			               outputFormat.format(reportDateValue));
+
+			       dateCell.setCellStyle(textStyle);
+
+			   } catch (ParseException e) {
+
+			       logger.error("Error parsing todate: {}", todate, e);
+			   }
+			   
+			 
+			 
 			int startRow = 11;
 
 			if (!dataList.isEmpty()) {
@@ -877,6 +916,43 @@ public class BRRS_M_LIQ_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
+			 try {
+
+			       // Row 6 = Excel row 7
+			       Row dateRow = sheet.getRow(6);
+
+			       if (dateRow == null) {
+			           dateRow = sheet.createRow(6);
+			       }
+
+			       // Column 4 = Excel column D
+			       Cell dateCell = dateRow.getCell(3);
+
+			       if (dateCell == null) {
+			           dateCell = dateRow.createCell(3);
+			       }
+
+			       // Date conversion
+			       SimpleDateFormat inputFormat =
+			               new SimpleDateFormat("dd-MMM-yyyy");
+
+			       SimpleDateFormat outputFormat =
+			               new SimpleDateFormat("dd/MM/yyyy");
+
+			       Date reportDateValue =
+			               inputFormat.parse(todate);
+
+			       // Set formatted date
+			       dateCell.setCellValue(
+			               outputFormat.format(reportDateValue));
+
+			       dateCell.setCellStyle(textStyle);
+
+			   } catch (ParseException e) {
+
+			       logger.error("Error parsing todate: {}", todate, e);
+			   }
+			 
 			int startRow = 11;
 
 			if (!dataList.isEmpty() && !dataList1.isEmpty()) {

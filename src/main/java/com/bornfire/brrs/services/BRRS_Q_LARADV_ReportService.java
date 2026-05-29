@@ -240,6 +240,25 @@ public byte[] getBRRS_Q_LARADV_EmailExcel(String filename,
 
         Sheet sheet = workbook.getSheetAt(0);
 
+     // Set report date in Row 6, Column 1 (B7)
+
+        Row dateRow = sheet.getRow(6);
+        if (dateRow == null) {
+            dateRow = sheet.createRow(6);
+        }
+
+        Cell dateCell = dateRow.getCell(1);
+        if (dateCell == null) {
+            dateCell = dateRow.createCell(1);
+        }
+
+        // Convert to DD/MM/YYYY format
+        SimpleDateFormat displayFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+        Date reportDisplayDate = dateformat.parse(todate);
+
+        dateCell.setCellValue(displayFormat.format(reportDisplayDate));
+        
         /* ==========================================================
          * FONT
          * ========================================================== */
@@ -302,6 +321,7 @@ public byte[] getBRRS_Q_LARADV_EmailExcel(String filename,
          * DATA FILLING
          * ========================================================== */
 
+        
         int rowIndex = 9;
 
         for (Q_LARADV_Summary_Entity item : dataList) {
@@ -319,7 +339,7 @@ public byte[] getBRRS_Q_LARADV_EmailExcel(String filename,
             cell.setCellStyle(textStyle);
 
             // Column D
-            cell = row.createCell(3);
+            cell = row.createCell(1);
             cell.setCellValue(
                     item.getFacilityType() != null
                             ? item.getFacilityType()
@@ -327,7 +347,7 @@ public byte[] getBRRS_Q_LARADV_EmailExcel(String filename,
             cell.setCellStyle(textStyle);
 
             // Column E - Original Amount
-            cell = row.createCell(4);
+            cell = row.createCell(2);
 
             double originalAmt =
                     item.getOriginalAmount() != null
@@ -340,7 +360,7 @@ public byte[] getBRRS_Q_LARADV_EmailExcel(String filename,
             totalOriginalAmount += originalAmt;
 
             // Column F - Outstanding Balance
-            cell = row.createCell(5);
+            cell = row.createCell(3);
 
             double outstandingAmt =
                     item.getUtilisationOutstandingBalance() != null
@@ -353,7 +373,7 @@ public byte[] getBRRS_Q_LARADV_EmailExcel(String filename,
             totalOutstandingBalance += outstandingAmt;
 
             // Column G - Effective Date
-            cell = row.createCell(6);
+            cell = row.createCell(4);
 
             if (item.getEffectiveDate() != null) {
                 cell.setCellValue(item.getEffectiveDate());
@@ -364,7 +384,7 @@ public byte[] getBRRS_Q_LARADV_EmailExcel(String filename,
             }
 
             // Column H
-            cell = row.createCell(7);
+            cell = row.createCell(5);
             cell.setCellValue(
                     item.getRepaymentPeriod() != null
                             ? item.getRepaymentPeriod()
@@ -372,7 +392,7 @@ public byte[] getBRRS_Q_LARADV_EmailExcel(String filename,
             cell.setCellStyle(textStyle);
 
             // Column I
-            cell = row.createCell(8);
+            cell = row.createCell(6);
             cell.setCellValue(
                     item.getPerformanceStatus() != null
                             ? item.getPerformanceStatus()
@@ -380,7 +400,7 @@ public byte[] getBRRS_Q_LARADV_EmailExcel(String filename,
             cell.setCellStyle(textStyle);
 
             // Column J
-            cell = row.createCell(9);
+            cell = row.createCell(7);
             cell.setCellValue(
                     item.getSecurityDetails() != null
                             ? item.getSecurityDetails()
@@ -388,7 +408,7 @@ public byte[] getBRRS_Q_LARADV_EmailExcel(String filename,
             cell.setCellStyle(textStyle);
 
             // Column K
-            cell = row.createCell(10);
+            cell = row.createCell(8);
             cell.setCellValue(
                     item.getBoardApproval() != null
                             ? item.getBoardApproval()
@@ -396,7 +416,7 @@ public byte[] getBRRS_Q_LARADV_EmailExcel(String filename,
             cell.setCellStyle(textStyle);
 
             // Column L
-            cell = row.createCell(11);
+            cell = row.createCell(9);
             cell.setCellValue(
                     item.getInterestRate() != null
                             ? item.getInterestRate().doubleValue()
@@ -404,7 +424,7 @@ public byte[] getBRRS_Q_LARADV_EmailExcel(String filename,
             cell.setCellStyle(numberStyle);
 
             // Column M
-            cell = row.createCell(12);
+            cell = row.createCell(10);
             cell.setCellValue(
                     item.getOutstandingBalancePercent() != null
                             ? item.getOutstandingBalancePercent().doubleValue()
@@ -412,7 +432,7 @@ public byte[] getBRRS_Q_LARADV_EmailExcel(String filename,
             cell.setCellStyle(numberStyle);
 
             // Column N
-            cell = row.createCell(13);
+            cell = row.createCell(11);
             cell.setCellValue(
                     item.getLimitPercent() != null
                             ? item.getLimitPercent().doubleValue()
@@ -426,17 +446,17 @@ public byte[] getBRRS_Q_LARADV_EmailExcel(String filename,
 
         Row totalRow = sheet.createRow(rowIndex);
 
-        Cell cell = totalRow.createCell(3);
+        Cell cell = totalRow.createCell(1);
         cell.setCellValue("TOTAL");
         cell.setCellStyle(textStyle);
 
         // Original Amount Total
-        cell = totalRow.createCell(4);
+        cell = totalRow.createCell(2);
         cell.setCellValue(totalOriginalAmount);
         cell.setCellStyle(numberStyle);
 
         // Outstanding Balance Total
-        cell = totalRow.createCell(5);
+        cell = totalRow.createCell(3);
         cell.setCellValue(totalOutstandingBalance);
         cell.setCellStyle(numberStyle);
 
@@ -444,7 +464,7 @@ public byte[] getBRRS_Q_LARADV_EmailExcel(String filename,
          * AUTO SIZE
          * ========================================================== */
 
-        for (int i = 0; i <= 13; i++) {
+        for (int i = 0; i <= 11; i++) {
             sheet.autoSizeColumn(i);
         }
 
@@ -458,7 +478,7 @@ public byte[] getBRRS_Q_LARADV_EmailExcel(String filename,
 }
 
 
-@Transactional
+
 public void saveQlaradv(Q_LARADV_Summary_Entity summary) {
 
     // Save Summary Table
@@ -506,7 +526,7 @@ public void saveQlaradv(Q_LARADV_Summary_Entity summary) {
     Q_LARADV_Detail_Repo.save(detail);
 }
 
-@Transactional
+
 public void updateQlaradv(
         Q_LARADV_Summary_Entity summary) {
 
