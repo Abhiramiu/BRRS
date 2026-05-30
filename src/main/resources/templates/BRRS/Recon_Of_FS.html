@@ -1620,7 +1620,7 @@ function submitRecon_Of_FSUpdate() {
                                     <td th:text="${report.acctNumber}"></td>
                                     <td th:text="${report.acctName}"></td>
                                     <td style="text-align:right;"
-                                        th:text="${#numbers.formatDecimal(report.acctBalanceInPula == null ? 0 : report.acctBalanceInPula, 1, 'COMMA', 0, 'POINT')}">
+                                        th:text="${#numbers.formatDecimal(report.acctBalanceInpula == null ? 0 : report.acctBalanceInpula, 1, 'COMMA', 0, 'POINT')}">
                                     </td>
 
                                     <td th:text="${report.reportLabel}"></td>
@@ -1673,7 +1673,7 @@ function submitRecon_Of_FSUpdate() {
 
                         <label class="col-sm-2">Acct Balance</label>
                         <div class="col-sm-3">
-                            <input type="number" step="0.01" th:field="*{acctBalanceInPula}"
+                            <input type="number" step="0.01" th:field="*{acctBalanceInpula}"
                                 class="form-control form-control-sm" style="text-align:right;" />
                         </div>
                     </div>

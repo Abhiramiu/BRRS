@@ -760,7 +760,7 @@ public class BRRS_M_SIR_ReportService {
 					percentStyle.cloneStyleFrom(numberStyle);
 					percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
 					percentStyle.setAlignment(HorizontalAlignment.RIGHT);
-					int startRow = 11;
+					int startRow = 5;
 
 					if (!dataList.isEmpty()) {
 						for (int i = 0; i < dataList.size(); i++) {
@@ -770,6 +770,21 @@ public class BRRS_M_SIR_ReportService {
 							if (row == null) {
 								row = sheet.createRow(startRow + i);
 							}
+							Cell R12Cell = row.createCell(2);
+
+							if (record.getReportDate() != null) {
+
+								R12Cell.setCellValue(record.getReportDate());
+
+								R12Cell.setCellStyle(dateStyle);
+
+							} else {
+
+								R12Cell.setCellValue("");
+
+								R12Cell.setCellStyle(textStyle);
+							}
+							
 //NORMAL
 
 							// row11
@@ -2233,7 +2248,7 @@ public class BRRS_M_SIR_ReportService {
 				percentStyle.cloneStyleFrom(numberStyle);
 				percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
 				percentStyle.setAlignment(HorizontalAlignment.RIGHT);
-				int startRow = 11;
+				int startRow = 5;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -2242,6 +2257,20 @@ public class BRRS_M_SIR_ReportService {
 						Row row = sheet.getRow(startRow + i);
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
+						}
+						Cell R12Cell = row.createCell(2);
+
+						if (record.getReportDate() != null) {
+
+							R12Cell.setCellValue(record.getReportDate());
+
+							R12Cell.setCellStyle(dateStyle);
+
+						} else {
+
+							R12Cell.setCellValue("");
+
+							R12Cell.setCellStyle(textStyle);
 						}
 //EMAIL
 
@@ -3695,7 +3724,7 @@ public class BRRS_M_SIR_ReportService {
 			percentStyle.cloneStyleFrom(numberStyle);
 			percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
 			percentStyle.setAlignment(HorizontalAlignment.RIGHT);
-			int startRow = 11;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -3704,6 +3733,20 @@ public class BRRS_M_SIR_ReportService {
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
+					}
+					Cell R12Cell = row.createCell(2);
+
+					if (record.getReportDate() != null) {
+
+						R12Cell.setCellValue(record.getReportDate());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
 					}
 //NORMAL
 
@@ -5147,7 +5190,7 @@ public class BRRS_M_SIR_ReportService {
 			percentStyle.cloneStyleFrom(numberStyle);
 			percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
 			percentStyle.setAlignment(HorizontalAlignment.RIGHT);
-			int startRow = 11;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -5156,6 +5199,20 @@ public class BRRS_M_SIR_ReportService {
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
+					}
+					Cell R12Cell = row.createCell(2);
+
+					if (record.getReportDate() != null) {
+
+						R12Cell.setCellValue(record.getReportDate());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
 					}
 //EMAIL
 
@@ -6611,7 +6668,7 @@ public class BRRS_M_SIR_ReportService {
 			percentStyle.cloneStyleFrom(numberStyle);
 			percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
 			percentStyle.setAlignment(HorizontalAlignment.RIGHT);
-			int startRow = 11;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -6622,6 +6679,20 @@ public class BRRS_M_SIR_ReportService {
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
+					}
+					Cell R12Cell = row.createCell(2);
+
+					if (record.getReportDate() != null) {
+
+						R12Cell.setCellValue(record.getReportDate());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
 					}
 //NORMAL
 
@@ -8064,7 +8135,7 @@ public class BRRS_M_SIR_ReportService {
 			percentStyle.cloneStyleFrom(numberStyle);
 			percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
 			percentStyle.setAlignment(HorizontalAlignment.RIGHT);
-			int startRow = 11;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -8073,6 +8144,20 @@ public class BRRS_M_SIR_ReportService {
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
+					}
+					Cell R12Cell = row.createCell(2);
+
+					if (record.getReportDate() != null) {
+
+						R12Cell.setCellValue(record.getReportDate());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
 					}
 //EMAIL
 

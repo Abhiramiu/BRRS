@@ -724,7 +724,7 @@ return archivalList;
 					numberStyle.setFont(font);
 					// --- End of Style Definitions ---
 
-					int startRow = 10;
+					int startRow = 6;
 
 					if (!dataList.isEmpty()) {
 						for (int i = 0; i < dataList.size(); i++) {
@@ -734,6 +734,21 @@ return archivalList;
 							if (row == null) {
 								row = sheet.createRow(startRow + i);
 							}
+							Cell R12Cell = row.createCell(2);
+
+							if (record.getReport_date() != null) {
+
+								R12Cell.setCellValue(record.getReport_date());
+
+								R12Cell.setCellStyle(dateStyle);
+
+							} else {
+
+								R12Cell.setCellValue("");
+
+								R12Cell.setCellStyle(textStyle);
+							}
+							row = sheet.getRow(10);
 //NORMAL
 
 							// row11
@@ -1630,7 +1645,7 @@ return archivalList;
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-				int startRow = 9;
+				int startRow = 6;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -1641,7 +1656,21 @@ return archivalList;
 							row = sheet.createRow(startRow + i);
 						}
 //EMAIL
+						Cell R12Cell = row.createCell(3);
 
+						if (record.getReport_date() != null) {
+
+							R12Cell.setCellValue(record.getReport_date());
+
+							R12Cell.setCellStyle(dateStyle);
+
+						} else {
+
+							R12Cell.setCellValue("");
+
+							R12Cell.setCellStyle(textStyle);
+						}
+						row = sheet.getRow(9);
 						// row11
 						// Column D
 						Cell cell3 = row.getCell(4);
@@ -2256,7 +2285,7 @@ return archivalList;
 			numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-			int startRow = 10;
+			int startRow = 6;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -2267,6 +2296,21 @@ return archivalList;
 						row = sheet.createRow(startRow + i);
 					}
 //NORMAL
+					Cell R12Cell = row.createCell(2);
+
+					if (record.getReportDate() != null) {
+
+						R12Cell.setCellValue(record.getReportDate());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(10);
 
 					// row11
 					// Column D
@@ -3140,7 +3184,7 @@ return archivalList;
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 9;
+			int startRow = 6;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -3151,6 +3195,21 @@ return archivalList;
 						row = sheet.createRow(startRow + i);
 					}
 //EMAIL
+					Cell R12Cell = row.createCell(3);
+
+					if (record.getReportDate() != null) {
+
+						R12Cell.setCellValue(record.getReportDate());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(9);
 
 					// row11
 					// Column D
@@ -3768,7 +3827,7 @@ return archivalList;
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 10;
+			int startRow = 6;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -4653,7 +4712,7 @@ return archivalList;
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 9;
+			int startRow = 6;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -4664,7 +4723,21 @@ return archivalList;
 						row = sheet.createRow(startRow + i);
 					}
 //EMAIL
+					Cell R12Cell = row.createCell(3);
 
+					if (record.getReportDate() != null) {
+
+						R12Cell.setCellValue(record.getReportDate());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(9);
 					// row11
 					// Column D
 					Cell cell3 = row.getCell(4);

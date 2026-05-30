@@ -119,6 +119,7 @@ import com.bornfire.brrs.services.BRRS_M_TBS_ReportService;
 import com.bornfire.brrs.services.BRRS_M_TOP_100_BORROWER_ReportService;
 import com.bornfire.brrs.services.BRRS_M_UNCONS_INVEST_ReportService;
 import com.bornfire.brrs.services.BRRS_PL_SCHS_ReportService;
+import com.bornfire.brrs.services.BRRS_PL_SCHS_ReportService.PL_SCHS_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_Q_BRANCHNET_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_LARADV_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_RLFA1_ReportService;

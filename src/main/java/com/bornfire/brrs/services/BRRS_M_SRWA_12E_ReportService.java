@@ -486,7 +486,7 @@ public class BRRS_M_SRWA_12E_ReportService {
 					numberStyle.setFont(font);
 					// --- End of Style Definitions ---
 
-					int startRow = 12;
+					int startRow = 5;
 
 					if (!dataList.isEmpty()) {
 						for (int i = 0; i < dataList.size(); i++) {
@@ -496,6 +496,21 @@ public class BRRS_M_SRWA_12E_ReportService {
 							if (row == null) {
 								row = sheet.createRow(startRow + i);
 							}
+							Cell R12Cell = row.createCell(2);
+
+							if (record.getReportDate() != null) {
+
+								R12Cell.setCellValue(record.getReportDate());
+
+								R12Cell.setCellStyle(dateStyle);
+
+							} else {
+
+								R12Cell.setCellValue("");
+
+								R12Cell.setCellStyle(textStyle);
+							}
+							row = sheet.getRow(12);
 //NORMAL
 
 							Cell cell2 = row.createCell(2);
@@ -784,7 +799,7 @@ public class BRRS_M_SRWA_12E_ReportService {
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-				int startRow = 13;
+				int startRow = 4;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -794,6 +809,22 @@ public class BRRS_M_SRWA_12E_ReportService {
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						
+						Cell R12Cell = row.createCell(3);
+
+						if (record.getReportDate() != null) {
+
+							R12Cell.setCellValue(record.getReportDate());
+
+							R12Cell.setCellStyle(dateStyle);
+
+						} else {
+
+							R12Cell.setCellValue("");
+
+							R12Cell.setCellStyle(textStyle);
+						}
+						row = sheet.getRow(13);
 //EMAIL
 
 						Cell cell2 = row.createCell(2);
@@ -1138,7 +1169,7 @@ public class BRRS_M_SRWA_12E_ReportService {
 			numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-			int startRow = 12;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -1148,6 +1179,22 @@ public class BRRS_M_SRWA_12E_ReportService {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					
+					Cell R12Cell = row.createCell(2);
+
+					if (record.getReportDate() != null) {
+
+						R12Cell.setCellValue(record.getReportDate());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(12);
 //NORMAL
 
 					Cell cell2 = row.createCell(2);
@@ -1413,7 +1460,7 @@ public class BRRS_M_SRWA_12E_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 13;
+			int startRow = 4;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -1423,6 +1470,21 @@ public class BRRS_M_SRWA_12E_ReportService {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					Cell R12Cell = row.createCell(3);
+
+					if (record.getReportDate() != null) {
+
+						R12Cell.setCellValue(record.getReportDate());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(13);
 //EMAIL
 
 					Cell cell2 = row.createCell(2);
@@ -1768,7 +1830,7 @@ public class BRRS_M_SRWA_12E_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 12;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -1780,6 +1842,21 @@ public class BRRS_M_SRWA_12E_ReportService {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					Cell R12Cell = row.createCell(2);
+
+					if (record.getReportDate() != null) {
+
+						R12Cell.setCellValue(record.getReportDate());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(12);
 //NORMAL
 
 					Cell cell2 = row.createCell(2);
@@ -2044,7 +2121,7 @@ public class BRRS_M_SRWA_12E_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 13;
+			int startRow = 4;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -2054,6 +2131,21 @@ public class BRRS_M_SRWA_12E_ReportService {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					Cell R12Cell = row.createCell(3);
+
+					if (record.getReportDate() != null) {
+
+						R12Cell.setCellValue(record.getReportDate());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(13);
 //EMAIL
 
 					Cell cell2 = row.createCell(2);

@@ -269,7 +269,7 @@ public class BRRS_Q_SMME_Loans_Advances_New_ReportService {
             numberStyle.setBorderRight(BorderStyle.THIN);
             numberStyle.setFont(font);
             // --- End of Style Definitions ---
-            int startRow = 14;
+            int startRow = 6;
 
             if (!dataList.isEmpty()) {
                 for (int i = 0; i < dataList.size(); i++) {
@@ -279,6 +279,20 @@ public class BRRS_Q_SMME_Loans_Advances_New_ReportService {
                     if (row == null) {
                         row = sheet.createRow(startRow + i);
                     }
+                    Cell R12Cell = row.createCell(5);
+
+					if (record.getReport_date() != null) {
+
+						R12Cell.setCellValue(record.getReport_date());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
                     row = sheet.getRow(14);
                     // row16
                     // Column 1
@@ -1016,7 +1030,7 @@ public class BRRS_Q_SMME_Loans_Advances_New_ReportService {
             numberStyle.setFont(font);
             // --- End of Style Definitions ---
 
-            int startRow = 14;
+            int startRow = 6;
 
             if (!dataList.isEmpty()) {
                 for (int i = 0; i < dataList.size(); i++) {
@@ -1026,6 +1040,20 @@ public class BRRS_Q_SMME_Loans_Advances_New_ReportService {
                     if (row == null) {
                         row = sheet.createRow(startRow + i);
                     }
+                    Cell R12Cell = row.createCell(5);
+
+					if (record.getReport_date() != null) {
+
+						R12Cell.setCellValue(record.getReport_date());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
                     row = sheet.getRow(14);
                     // row16
                     // Column 1

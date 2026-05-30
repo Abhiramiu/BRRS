@@ -3,19 +3,28 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.ParseException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
+import javax.persistence.Column;
+import javax.persistence.EntityManager;
+import javax.persistence.IdClass;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -32,36 +41,27 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
-import com.bornfire.brrs.entities.PL_SCHS_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.PL_SCHS_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.PL_SCHS_Detail_Entity;
-import com.bornfire.brrs.entities.PL_SCHS_Summary_Entity;
-import com.bornfire.brrs.entities.BRRS_PL_SCHS_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_PL_SCHS_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_PL_SCHS_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_PL_SCHS_Summary_Repo;
 
-@Component
 @Service
-
+@Transactional
 public class BRRS_PL_SCHS_ReportService {
+
 	private static final Logger logger = LoggerFactory.getLogger(BRRS_PL_SCHS_ReportService.class);
 
 	@Autowired
@@ -70,116 +70,11747 @@ public class BRRS_PL_SCHS_ReportService {
 	@Autowired
 	SessionFactory sessionFactory;
 
-	@Autowired
-	BRRS_PL_SCHS_Summary_Repo PL_SCHS_summary_repo;
+	// ENTITY MANAGER (Acts like Repository)
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@Autowired
-	BRRS_PL_SCHS_Archival_Summary_Repo PL_SCHS_Archival_Summary_Repo;
+	private JdbcTemplate jdbcTemplate;
 
-	@Autowired
-	BRRS_PL_SCHS_Detail_Repo PL_SCHS_detail_repo;
+	// Fetch data by report date
+	public List<PL_SCHS_Summary_Entity> getDataByDate(Date reportDate) {
 
-	@Autowired
-	BRRS_PL_SCHS_Archival_Detail_Repo PL_SCHS_Archival_Detail_Repo;
+		String sql = "SELECT * FROM BRRS_PL_SCHS_SUMMARYTABLE WHERE REPORT_DATE = ?";
 
-//	@Autowired
-//	BRRS_PL_SCHS_Manual_Summary_Repo PL_SCHS_Manual_Summary_Repo;
+		return jdbcTemplate.query(sql, new Object[] { reportDate }, new PL_SCHSRowMapper());
+	}
 
-//	@Autowired
-//	BRRS_PL_SCHS_Manual_Archival_Summary_Repo PL_SCHS_Manual_Archival_Summary_Repo;
+	// GET REPORT_DATE + REPORT_VERSION
+
+	public List<Object[]> getPL_SCHSArchival1() {
+
+		String sql = "SELECT REPORT_DATE, REPORT_VERSION " + "FROM BRRS_PL_SCHS_ARCHIVALTABLE_SUMMARY "
+				+ "ORDER BY REPORT_VERSION";
+
+		return jdbcTemplate.query(sql,
+				(rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"), rs.getBigDecimal("REPORT_VERSION") });
+	}
+
+//GET ARCHIVAL FULL DATA BY DATE + VERSION
+
+	public List<PL_SCHS_Archival_Summary_Entity> getdatabydateListarchival(Date REPORT_DATE,
+			BigDecimal REPORT_VERSION) {
+
+		String sql = "SELECT * FROM BRRS_PL_SCHS_ARCHIVALTABLE_SUMMARY " + "WHERE REPORT_DATE = ? "
+				+ "AND REPORT_VERSION = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { REPORT_DATE, REPORT_VERSION }, new PL_SCHSArchivalRowMapper());
+	}
+//GET ALL WITH VERSION
+
+	public List<PL_SCHS_Archival_Summary_Entity> getdatabydateListWithVersion() {
+
+		String sql = "SELECT * FROM BRRS_PL_SCHS_ARCHIVALTABLE_SUMMARY " + "WHERE REPORT_VERSION IS NOT NULL "
+				+ "ORDER BY REPORT_VERSION ASC";
+
+		return jdbcTemplate.query(sql, new PL_SCHSArchivalRowMapper());
+	}
+
+//GET MAX VERSION BY DATE
+
+	public BigDecimal findMaxVersion(Date REPORT_DATE) {
+
+		String sql = "SELECT MAX(REPORT_VERSION) " + "FROM BRRS_PL_SCHS_ARCHIVALTABLE_SUMMARY "
+				+ "WHERE REPORT_DATE = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { REPORT_DATE }, BigDecimal.class);
+	}
+
+// 1. BY DATE + LABEL + CRITERIA
+
+	public List<PL_SCHS_Detail_Entity> findByDetailReportDateAndLabelAndCriteria(Date reportDate, String reportLabel,
+			String reportAddlCriteria1) {
+
+		String sql = "SELECT * FROM BRRS_PL_SCHS_DETAILTABLE "
+				+ "WHERE REPORT_DATE = ? AND REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { reportDate, reportLabel, reportAddlCriteria1 },
+				new PL_SCHSDetailRowMapper());
+	}
+
+// 2. GET ALL (BY DATE - simple)
+
+	public List<PL_SCHS_Detail_Entity> getDetaildatabydateList(Date reportdate) {
+
+		String sql = "SELECT * FROM BRRS_PL_SCHS_DETAILTABLE WHERE REPORT_DATE = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { reportdate }, new PL_SCHSDetailRowMapper());
+	}
+
+// 3. PAGINATION
+
+	public List<PL_SCHS_Detail_Entity> getDetaildatabydateList(Date reportdate, int offset, int limit) {
+
+		String sql = "SELECT * FROM BRRS_PL_SCHS_DETAILTABLE "
+				+ "WHERE REPORT_DATE = ? OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+		return jdbcTemplate.query(sql, new Object[] { reportdate, offset, limit }, new PL_SCHSDetailRowMapper());
+	}
+
+// 4. COUNT
+
+	public int getDetaildatacount(Date reportdate) {
+
+		String sql = "SELECT COUNT(*) FROM BRRS_PL_SCHS_DETAILTABLE WHERE REPORT_DATE = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { reportdate }, Integer.class);
+	}
+
+// 5. BY LABEL + CRITERIA
+
+	public List<PL_SCHS_Detail_Entity> GetDetailDataByRowIdAndColumnId(String reportLabel, String reportAddlCriteria1,
+			Date reportdate) {
+
+		String sql = "SELECT * FROM BRRS_PL_SCHS_DETAILTABLE "
+				+ "WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate },
+				new PL_SCHSDetailRowMapper());
+	}
+// 6. BY ACCOUNT NUMBER
+
+	public PL_SCHS_Detail_Entity findByAcctnumber(String acctNumber) {
+
+		String sql = "SELECT * FROM BRRS_PL_SCHS_DETAILTABLE WHERE ACCT_NUMBER = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { acctNumber }, new PL_SCHSDetailRowMapper());
+	}
+
+// 1. GET BY DATE + VERSION
+
+	public List<PL_SCHS_Archival_Detail_Entity> getArchivalDetaildatabydateList(Date reportdate,
+			String dataEntryVersion) {
+
+		String sql = "SELECT * FROM BRRS_PL_SCHS_ARCHIVALTABLE_DETAIL "
+				+ "WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { reportdate, dataEntryVersion },
+				new PL_SCHSArchivalDetailRowMapper());
+	}
+
+// 2. FILTER BY LABEL + CRITERIA + DATE + VERSION
+
+	public List<PL_SCHS_Archival_Detail_Entity> GetArchivalDataByRowIdAndColumnId(String reportLabel,
+			String reportAddlCriteria1, Date reportdate, String dataEntryVersion) {
+
+		String sql = "SELECT * FROM BRRS_PL_SCHS_ARCHIVALTABLE_DETAIL " + "WHERE REPORT_LABEL = ? "
+				+ "AND REPORT_ADDL_CRITERIA_1 = ? " + "AND REPORT_DATE = ? " + "AND DATA_ENTRY_VERSION = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate, dataEntryVersion },
+				new PL_SCHSArchivalDetailRowMapper());
+	}
+
+	// ROW MAPPER
+
+	class PL_SCHSRowMapper implements RowMapper<PL_SCHS_Summary_Entity> {
+
+		@Override
+		public PL_SCHS_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+			PL_SCHS_Summary_Entity obj = new PL_SCHS_Summary_Entity();
+
+// ================= R9 =================
+			obj.setR9_intrest_div(rs.getString("R9_INTREST_DIV"));
+			obj.setR9_fig_bal_sheet(rs.getBigDecimal("R9_FIG_BAL_SHEET"));
+			obj.setR9_fig_bal_sheet_bwp(rs.getBigDecimal("R9_FIG_BAL_SHEET_BWP"));
+			obj.setR9_amt_statement_adj(rs.getBigDecimal("R9_AMT_STATEMENT_ADJ"));
+			obj.setR9_amt_statement_adj_bwp(rs.getBigDecimal("R9_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR9_net_amt(rs.getBigDecimal("R9_NET_AMT"));
+			obj.setR9_net_amt_bwp(rs.getBigDecimal("R9_NET_AMT_BWP"));
+			obj.setR9_bal_sub(rs.getBigDecimal("R9_BAL_SUB"));
+			obj.setR9_bal_sub_bwp(rs.getBigDecimal("R9_BAL_SUB_BWP"));
+			obj.setR9_bal_sub_diaries(rs.getBigDecimal("R9_BAL_SUB_DIARIES"));
+			obj.setR9_bal_sub_diaries_bwp(rs.getBigDecimal("R9_BAL_SUB_DIARIES_BWP"));
+
+			// ================= R10 =================
+			obj.setR10_intrest_div(rs.getString("R10_INTREST_DIV"));
+			obj.setR10_fig_bal_sheet(rs.getBigDecimal("R10_FIG_BAL_SHEET"));
+			obj.setR10_fig_bal_sheet_bwp(rs.getBigDecimal("R10_FIG_BAL_SHEET_BWP"));
+			obj.setR10_amt_statement_adj(rs.getBigDecimal("R10_AMT_STATEMENT_ADJ"));
+			obj.setR10_amt_statement_adj_bwp(rs.getBigDecimal("R10_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR10_net_amt(rs.getBigDecimal("R10_NET_AMT"));
+			obj.setR10_net_amt_bwp(rs.getBigDecimal("R10_NET_AMT_BWP"));
+			obj.setR10_bal_sub(rs.getBigDecimal("R10_BAL_SUB"));
+			obj.setR10_bal_sub_bwp(rs.getBigDecimal("R10_BAL_SUB_BWP"));
+			obj.setR10_bal_sub_diaries(rs.getBigDecimal("R10_BAL_SUB_DIARIES"));
+			obj.setR10_bal_sub_diaries_bwp(rs.getBigDecimal("R10_BAL_SUB_DIARIES_BWP"));
+
+			// ================= R11 =================
+			obj.setR11_intrest_div(rs.getString("R11_INTREST_DIV"));
+			obj.setR11_fig_bal_sheet(rs.getBigDecimal("R11_FIG_BAL_SHEET"));
+			obj.setR11_fig_bal_sheet_bwp(rs.getBigDecimal("R11_FIG_BAL_SHEET_BWP"));
+			obj.setR11_amt_statement_adj(rs.getBigDecimal("R11_AMT_STATEMENT_ADJ"));
+			obj.setR11_amt_statement_adj_bwp(rs.getBigDecimal("R11_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR11_net_amt(rs.getBigDecimal("R11_NET_AMT"));
+			obj.setR11_net_amt_bwp(rs.getBigDecimal("R11_NET_AMT_BWP"));
+			obj.setR11_bal_sub(rs.getBigDecimal("R11_BAL_SUB"));
+			obj.setR11_bal_sub_bwp(rs.getBigDecimal("R11_BAL_SUB_BWP"));
+			obj.setR11_bal_sub_diaries(rs.getBigDecimal("R11_BAL_SUB_DIARIES"));
+			obj.setR11_bal_sub_diaries_bwp(rs.getBigDecimal("R11_BAL_SUB_DIARIES_BWP"));
+
+			// ================= R12 =================
+			obj.setR12_intrest_div(rs.getString("R12_INTREST_DIV"));
+			obj.setR12_fig_bal_sheet(rs.getBigDecimal("R12_FIG_BAL_SHEET"));
+			obj.setR12_fig_bal_sheet_bwp(rs.getBigDecimal("R12_FIG_BAL_SHEET_BWP"));
+			obj.setR12_amt_statement_adj(rs.getBigDecimal("R12_AMT_STATEMENT_ADJ"));
+			obj.setR12_amt_statement_adj_bwp(rs.getBigDecimal("R12_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR12_net_amt(rs.getBigDecimal("R12_NET_AMT"));
+			obj.setR12_net_amt_bwp(rs.getBigDecimal("R12_NET_AMT_BWP"));
+			obj.setR12_bal_sub(rs.getBigDecimal("R12_BAL_SUB"));
+			obj.setR12_bal_sub_bwp(rs.getBigDecimal("R12_BAL_SUB_BWP"));
+			obj.setR12_bal_sub_diaries(rs.getBigDecimal("R12_BAL_SUB_DIARIES"));
+			obj.setR12_bal_sub_diaries_bwp(rs.getBigDecimal("R12_BAL_SUB_DIARIES_BWP"));
+
+			// ================= R13 =================
+			obj.setR13_intrest_div(rs.getString("R13_INTREST_DIV"));
+			obj.setR13_fig_bal_sheet(rs.getBigDecimal("R13_FIG_BAL_SHEET"));
+			obj.setR13_fig_bal_sheet_bwp(rs.getBigDecimal("R13_FIG_BAL_SHEET_BWP"));
+			obj.setR13_amt_statement_adj(rs.getBigDecimal("R13_AMT_STATEMENT_ADJ"));
+			obj.setR13_amt_statement_adj_bwp(rs.getBigDecimal("R13_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR13_net_amt(rs.getBigDecimal("R13_NET_AMT"));
+			obj.setR13_net_amt_bwp(rs.getBigDecimal("R13_NET_AMT_BWP"));
+			obj.setR13_bal_sub(rs.getBigDecimal("R13_BAL_SUB"));
+			obj.setR13_bal_sub_bwp(rs.getBigDecimal("R13_BAL_SUB_BWP"));
+			obj.setR13_bal_sub_diaries(rs.getBigDecimal("R13_BAL_SUB_DIARIES"));
+			obj.setR13_bal_sub_diaries_bwp(rs.getBigDecimal("R13_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR17_other_income(rs.getString("R17_OTHER_INCOME"));
+			obj.setR17_fig_bal_sheet(rs.getBigDecimal("R17_FIG_BAL_SHEET"));
+			obj.setR17_fig_bal_sheet_bwp(rs.getBigDecimal("R17_FIG_BAL_SHEET_BWP"));
+			obj.setR17_amt_statement_adj(rs.getBigDecimal("R17_AMT_STATEMENT_ADJ"));
+			obj.setR17_amt_statement_adj_bwp(rs.getBigDecimal("R17_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR17_net_amt(rs.getBigDecimal("R17_NET_AMT"));
+			obj.setR17_net_amt_bwp(rs.getBigDecimal("R17_NET_AMT_BWP"));
+			obj.setR17_bal_sub(rs.getBigDecimal("R17_BAL_SUB"));
+			obj.setR17_bal_sub_bwp(rs.getBigDecimal("R17_BAL_SUB_BWP"));
+			obj.setR17_bal_sub_diaries(rs.getBigDecimal("R17_BAL_SUB_DIARIES"));
+			obj.setR17_bal_sub_diaries_bwp(rs.getBigDecimal("R17_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR18_other_income(rs.getString("R18_OTHER_INCOME"));
+			obj.setR18_fig_bal_sheet(rs.getBigDecimal("R18_FIG_BAL_SHEET"));
+			obj.setR18_fig_bal_sheet_bwp(rs.getBigDecimal("R18_FIG_BAL_SHEET_BWP"));
+			obj.setR18_amt_statement_adj(rs.getBigDecimal("R18_AMT_STATEMENT_ADJ"));
+			obj.setR18_amt_statement_adj_bwp(rs.getBigDecimal("R18_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR18_net_amt(rs.getBigDecimal("R18_NET_AMT"));
+			obj.setR18_net_amt_bwp(rs.getBigDecimal("R18_NET_AMT_BWP"));
+			obj.setR18_bal_sub(rs.getBigDecimal("R18_BAL_SUB"));
+			obj.setR18_bal_sub_bwp(rs.getBigDecimal("R18_BAL_SUB_BWP"));
+			obj.setR18_bal_sub_diaries(rs.getBigDecimal("R18_BAL_SUB_DIARIES"));
+			obj.setR18_bal_sub_diaries_bwp(rs.getBigDecimal("R18_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR19_other_income(rs.getString("R19_OTHER_INCOME"));
+			obj.setR19_fig_bal_sheet(rs.getBigDecimal("R19_FIG_BAL_SHEET"));
+			obj.setR19_fig_bal_sheet_bwp(rs.getBigDecimal("R19_FIG_BAL_SHEET_BWP"));
+			obj.setR19_amt_statement_adj(rs.getBigDecimal("R19_AMT_STATEMENT_ADJ"));
+			obj.setR19_amt_statement_adj_bwp(rs.getBigDecimal("R19_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR19_net_amt(rs.getBigDecimal("R19_NET_AMT"));
+			obj.setR19_net_amt_bwp(rs.getBigDecimal("R19_NET_AMT_BWP"));
+			obj.setR19_bal_sub(rs.getBigDecimal("R19_BAL_SUB"));
+			obj.setR19_bal_sub_bwp(rs.getBigDecimal("R19_BAL_SUB_BWP"));
+			obj.setR19_bal_sub_diaries(rs.getBigDecimal("R19_BAL_SUB_DIARIES"));
+			obj.setR19_bal_sub_diaries_bwp(rs.getBigDecimal("R19_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR20_other_income(rs.getString("R20_OTHER_INCOME"));
+			obj.setR20_fig_bal_sheet(rs.getBigDecimal("R20_FIG_BAL_SHEET"));
+			obj.setR20_fig_bal_sheet_bwp(rs.getBigDecimal("R20_FIG_BAL_SHEET_BWP"));
+			obj.setR20_amt_statement_adj(rs.getBigDecimal("R20_AMT_STATEMENT_ADJ"));
+			obj.setR20_amt_statement_adj_bwp(rs.getBigDecimal("R20_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR20_net_amt(rs.getBigDecimal("R20_NET_AMT"));
+			obj.setR20_net_amt_bwp(rs.getBigDecimal("R20_NET_AMT_BWP"));
+			obj.setR20_bal_sub(rs.getBigDecimal("R20_BAL_SUB"));
+			obj.setR20_bal_sub_bwp(rs.getBigDecimal("R20_BAL_SUB_BWP"));
+			obj.setR20_bal_sub_diaries(rs.getBigDecimal("R20_BAL_SUB_DIARIES"));
+			obj.setR20_bal_sub_diaries_bwp(rs.getBigDecimal("R20_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR21_other_income(rs.getString("R21_OTHER_INCOME"));
+			obj.setR21_fig_bal_sheet(rs.getBigDecimal("R21_FIG_BAL_SHEET"));
+			obj.setR21_fig_bal_sheet_bwp(rs.getBigDecimal("R21_FIG_BAL_SHEET_BWP"));
+			obj.setR21_amt_statement_adj(rs.getBigDecimal("R21_AMT_STATEMENT_ADJ"));
+			obj.setR21_amt_statement_adj_bwp(rs.getBigDecimal("R21_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR21_net_amt(rs.getBigDecimal("R21_NET_AMT"));
+			obj.setR21_net_amt_bwp(rs.getBigDecimal("R21_NET_AMT_BWP"));
+			obj.setR21_bal_sub(rs.getBigDecimal("R21_BAL_SUB"));
+			obj.setR21_bal_sub_bwp(rs.getBigDecimal("R21_BAL_SUB_BWP"));
+			obj.setR21_bal_sub_diaries(rs.getBigDecimal("R21_BAL_SUB_DIARIES"));
+			obj.setR21_bal_sub_diaries_bwp(rs.getBigDecimal("R21_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR22_other_income(rs.getString("R22_OTHER_INCOME"));
+			obj.setR22_fig_bal_sheet(rs.getBigDecimal("R22_FIG_BAL_SHEET"));
+			obj.setR22_fig_bal_sheet_bwp(rs.getBigDecimal("R22_FIG_BAL_SHEET_BWP"));
+			obj.setR22_amt_statement_adj(rs.getBigDecimal("R22_AMT_STATEMENT_ADJ"));
+			obj.setR22_amt_statement_adj_bwp(rs.getBigDecimal("R22_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR22_net_amt(rs.getBigDecimal("R22_NET_AMT"));
+			obj.setR22_net_amt_bwp(rs.getBigDecimal("R22_NET_AMT_BWP"));
+			obj.setR22_bal_sub(rs.getBigDecimal("R22_BAL_SUB"));
+			obj.setR22_bal_sub_bwp(rs.getBigDecimal("R22_BAL_SUB_BWP"));
+			obj.setR22_bal_sub_diaries(rs.getBigDecimal("R22_BAL_SUB_DIARIES"));
+			obj.setR22_bal_sub_diaries_bwp(rs.getBigDecimal("R22_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR23_other_income(rs.getString("R23_OTHER_INCOME"));
+			obj.setR23_fig_bal_sheet(rs.getBigDecimal("R23_FIG_BAL_SHEET"));
+			obj.setR23_fig_bal_sheet_bwp(rs.getBigDecimal("R23_FIG_BAL_SHEET_BWP"));
+			obj.setR23_amt_statement_adj(rs.getBigDecimal("R23_AMT_STATEMENT_ADJ"));
+			obj.setR23_amt_statement_adj_bwp(rs.getBigDecimal("R23_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR23_net_amt(rs.getBigDecimal("R23_NET_AMT"));
+			obj.setR23_net_amt_bwp(rs.getBigDecimal("R23_NET_AMT_BWP"));
+			obj.setR23_bal_sub(rs.getBigDecimal("R23_BAL_SUB"));
+			obj.setR23_bal_sub_bwp(rs.getBigDecimal("R23_BAL_SUB_BWP"));
+			obj.setR23_bal_sub_diaries(rs.getBigDecimal("R23_BAL_SUB_DIARIES"));
+			obj.setR23_bal_sub_diaries_bwp(rs.getBigDecimal("R23_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR24_other_income(rs.getString("R24_OTHER_INCOME"));
+			obj.setR24_fig_bal_sheet(rs.getBigDecimal("R24_FIG_BAL_SHEET"));
+			obj.setR24_fig_bal_sheet_bwp(rs.getBigDecimal("R24_FIG_BAL_SHEET_BWP"));
+			obj.setR24_amt_statement_adj(rs.getBigDecimal("R24_AMT_STATEMENT_ADJ"));
+			obj.setR24_amt_statement_adj_bwp(rs.getBigDecimal("R24_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR24_net_amt(rs.getBigDecimal("R24_NET_AMT"));
+			obj.setR24_net_amt_bwp(rs.getBigDecimal("R24_NET_AMT_BWP"));
+			obj.setR24_bal_sub(rs.getBigDecimal("R24_BAL_SUB"));
+			obj.setR24_bal_sub_bwp(rs.getBigDecimal("R24_BAL_SUB_BWP"));
+			obj.setR24_bal_sub_diaries(rs.getBigDecimal("R24_BAL_SUB_DIARIES"));
+			obj.setR24_bal_sub_diaries_bwp(rs.getBigDecimal("R24_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR25_other_income(rs.getString("R25_OTHER_INCOME"));
+			obj.setR25_fig_bal_sheet(rs.getBigDecimal("R25_FIG_BAL_SHEET"));
+			obj.setR25_fig_bal_sheet_bwp(rs.getBigDecimal("R25_FIG_BAL_SHEET_BWP"));
+			obj.setR25_amt_statement_adj(rs.getBigDecimal("R25_AMT_STATEMENT_ADJ"));
+			obj.setR25_amt_statement_adj_bwp(rs.getBigDecimal("R25_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR25_net_amt(rs.getBigDecimal("R25_NET_AMT"));
+			obj.setR25_net_amt_bwp(rs.getBigDecimal("R25_NET_AMT_BWP"));
+			obj.setR25_bal_sub(rs.getBigDecimal("R25_BAL_SUB"));
+			obj.setR25_bal_sub_bwp(rs.getBigDecimal("R25_BAL_SUB_BWP"));
+			obj.setR25_bal_sub_diaries(rs.getBigDecimal("R25_BAL_SUB_DIARIES"));
+			obj.setR25_bal_sub_diaries_bwp(rs.getBigDecimal("R25_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR26_other_income(rs.getString("R26_OTHER_INCOME"));
+			obj.setR26_fig_bal_sheet(rs.getBigDecimal("R26_FIG_BAL_SHEET"));
+			obj.setR26_fig_bal_sheet_bwp(rs.getBigDecimal("R26_FIG_BAL_SHEET_BWP"));
+			obj.setR26_amt_statement_adj(rs.getBigDecimal("R26_AMT_STATEMENT_ADJ"));
+			obj.setR26_amt_statement_adj_bwp(rs.getBigDecimal("R26_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR26_net_amt(rs.getBigDecimal("R26_NET_AMT"));
+			obj.setR26_net_amt_bwp(rs.getBigDecimal("R26_NET_AMT_BWP"));
+			obj.setR26_bal_sub(rs.getBigDecimal("R26_BAL_SUB"));
+			obj.setR26_bal_sub_bwp(rs.getBigDecimal("R26_BAL_SUB_BWP"));
+			obj.setR26_bal_sub_diaries(rs.getBigDecimal("R26_BAL_SUB_DIARIES"));
+			obj.setR26_bal_sub_diaries_bwp(rs.getBigDecimal("R26_BAL_SUB_DIARIES_BWP"));
+
+// ================= R40 =================
+			obj.setR40_intrest_expended(rs.getString("R40_INTREST_EXPENDED"));
+			obj.setR40_fig_bal_sheet(rs.getBigDecimal("R40_FIG_BAL_SHEET"));
+			obj.setR40_fig_bal_sheet_bwp(rs.getBigDecimal("R40_FIG_BAL_SHEET_BWP"));
+			obj.setR40_amt_statement_adj(rs.getBigDecimal("R40_AMT_STATEMENT_ADJ"));
+			obj.setR40_amt_statement_adj_bwp(rs.getBigDecimal("R40_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR40_net_amt(rs.getBigDecimal("R40_NET_AMT"));
+			obj.setR40_net_amt_bwp(rs.getBigDecimal("R40_NET_AMT_BWP"));
+			obj.setR40_bal_sub(rs.getBigDecimal("R40_BAL_SUB"));
+			obj.setR40_bal_sub_bwp(rs.getBigDecimal("R40_BAL_SUB_BWP"));
+			obj.setR40_bal_sub_diaries_bwp(rs.getBigDecimal("R40_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR41_intrest_expended(rs.getString("R41_INTREST_EXPENDED"));
+			obj.setR41_fig_bal_sheet(rs.getBigDecimal("R41_FIG_BAL_SHEET"));
+			obj.setR41_fig_bal_sheet_bwp(rs.getBigDecimal("R41_FIG_BAL_SHEET_BWP"));
+			obj.setR41_amt_statement_adj(rs.getBigDecimal("R41_AMT_STATEMENT_ADJ"));
+			obj.setR41_amt_statement_adj_bwp(rs.getBigDecimal("R41_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR41_net_amt(rs.getBigDecimal("R41_NET_AMT"));
+			obj.setR41_net_amt_bwp(rs.getBigDecimal("R41_NET_AMT_BWP"));
+			obj.setR41_bal_sub(rs.getBigDecimal("R41_BAL_SUB"));
+			obj.setR41_bal_sub_bwp(rs.getBigDecimal("R41_BAL_SUB_BWP"));
+			obj.setR41_bal_sub_diaries(rs.getBigDecimal("R41_BAL_SUB_DIARIES"));
+			obj.setR41_bal_sub_diaries_bwp(rs.getBigDecimal("R41_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR42_intrest_expended(rs.getString("R42_INTREST_EXPENDED"));
+			obj.setR42_fig_bal_sheet(rs.getBigDecimal("R42_FIG_BAL_SHEET"));
+			obj.setR42_fig_bal_sheet_bwp(rs.getBigDecimal("R42_FIG_BAL_SHEET_BWP"));
+			obj.setR42_amt_statement_adj(rs.getBigDecimal("R42_AMT_STATEMENT_ADJ"));
+			obj.setR42_amt_statement_adj_bwp(rs.getBigDecimal("R42_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR42_net_amt(rs.getBigDecimal("R42_NET_AMT"));
+			obj.setR42_net_amt_bwp(rs.getBigDecimal("R42_NET_AMT_BWP"));
+			obj.setR42_bal_sub(rs.getBigDecimal("R42_BAL_SUB"));
+			obj.setR42_bal_sub_bwp(rs.getBigDecimal("R42_BAL_SUB_BWP"));
+			obj.setR42_bal_sub_diaries(rs.getBigDecimal("R42_BAL_SUB_DIARIES"));
+			obj.setR42_bal_sub_diaries_bwp(rs.getBigDecimal("R42_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR43_intrest_expended(rs.getString("R43_INTREST_EXPENDED"));
+			obj.setR43_fig_bal_sheet(rs.getBigDecimal("R43_FIG_BAL_SHEET"));
+			obj.setR43_fig_bal_sheet_bwp(rs.getBigDecimal("R43_FIG_BAL_SHEET_BWP"));
+			obj.setR43_amt_statement_adj(rs.getBigDecimal("R43_AMT_STATEMENT_ADJ"));
+			obj.setR43_amt_statement_adj_bwp(rs.getBigDecimal("R43_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR43_net_amt(rs.getBigDecimal("R43_NET_AMT"));
+			obj.setR43_net_amt_bwp(rs.getBigDecimal("R43_NET_AMT_BWP"));
+			obj.setR43_bal_sub(rs.getBigDecimal("R43_BAL_SUB"));
+			obj.setR43_bal_sub_bwp(rs.getBigDecimal("R43_BAL_SUB_BWP"));
+			obj.setR43_bal_sub_diaries(rs.getBigDecimal("R43_BAL_SUB_DIARIES"));
+			obj.setR43_bal_sub_diaries_bwp(rs.getBigDecimal("R43_BAL_SUB_DIARIES_BWP"));
+
+// ================= R48 =================
+			obj.setR48_operating_expenses(rs.getString("R48_OPERATING_EXPENSES"));
+			obj.setR48_fig_bal_sheet(rs.getBigDecimal("R48_FIG_BAL_SHEET"));
+			obj.setR48_fig_bal_sheet_bwp(rs.getBigDecimal("R48_FIG_BAL_SHEET_BWP"));
+			obj.setR48_amt_statement_adj(rs.getBigDecimal("R48_AMT_STATEMENT_ADJ"));
+			obj.setR48_amt_statement_adj_bwp(rs.getBigDecimal("R48_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR48_net_amt(rs.getBigDecimal("R48_NET_AMT"));
+			obj.setR48_net_amt_bwp(rs.getBigDecimal("R48_NET_AMT_BWP"));
+			obj.setR48_bal_sub(rs.getBigDecimal("R48_BAL_SUB"));
+			obj.setR48_bal_sub_bwp(rs.getBigDecimal("R48_BAL_SUB_BWP"));
+			obj.setR48_bal_sub_diaries(rs.getBigDecimal("R48_BAL_SUB_DIARIES"));
+			obj.setR48_bal_sub_diaries_bwp(rs.getBigDecimal("R48_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR49_operating_expenses(rs.getString("R49_OPERATING_EXPENSES"));
+			obj.setR49_fig_bal_sheet(rs.getBigDecimal("R49_FIG_BAL_SHEET"));
+			obj.setR49_fig_bal_sheet_bwp(rs.getBigDecimal("R49_FIG_BAL_SHEET_BWP"));
+			obj.setR49_amt_statement_adj(rs.getBigDecimal("R49_AMT_STATEMENT_ADJ"));
+			obj.setR49_amt_statement_adj_bwp(rs.getBigDecimal("R49_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR49_net_amt(rs.getBigDecimal("R49_NET_AMT"));
+			obj.setR49_net_amt_bwp(rs.getBigDecimal("R49_NET_AMT_BWP"));
+			obj.setR49_bal_sub(rs.getBigDecimal("R49_BAL_SUB"));
+			obj.setR49_bal_sub_bwp(rs.getBigDecimal("R49_BAL_SUB_BWP"));
+			obj.setR49_bal_sub_diaries(rs.getBigDecimal("R49_BAL_SUB_DIARIES"));
+			obj.setR49_bal_sub_diaries_bwp(rs.getBigDecimal("R49_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR50_operating_expenses(rs.getString("R50_OPERATING_EXPENSES"));
+			obj.setR50_fig_bal_sheet(rs.getBigDecimal("R50_FIG_BAL_SHEET"));
+			obj.setR50_fig_bal_sheet_bwp(rs.getBigDecimal("R50_FIG_BAL_SHEET_BWP"));
+			obj.setR50_amt_statement_adj(rs.getBigDecimal("R50_AMT_STATEMENT_ADJ"));
+			obj.setR50_amt_statement_adj_bwp(rs.getBigDecimal("R50_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR50_net_amt(rs.getBigDecimal("R50_NET_AMT"));
+			obj.setR50_net_amt_bwp(rs.getBigDecimal("R50_NET_AMT_BWP"));
+			obj.setR50_bal_sub(rs.getBigDecimal("R50_BAL_SUB"));
+			obj.setR50_bal_sub_bwp(rs.getBigDecimal("R50_BAL_SUB_BWP"));
+			obj.setR50_bal_sub_diaries(rs.getBigDecimal("R50_BAL_SUB_DIARIES"));
+			obj.setR50_bal_sub_diaries_bwp(rs.getBigDecimal("R50_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR51_operating_expenses(rs.getString("R51_OPERATING_EXPENSES"));
+			obj.setR51_fig_bal_sheet(rs.getBigDecimal("R51_FIG_BAL_SHEET"));
+			obj.setR51_fig_bal_sheet_bwp(rs.getBigDecimal("R51_FIG_BAL_SHEET_BWP"));
+			obj.setR51_amt_statement_adj(rs.getBigDecimal("R51_AMT_STATEMENT_ADJ"));
+			obj.setR51_amt_statement_adj_bwp(rs.getBigDecimal("R51_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR51_net_amt(rs.getBigDecimal("R51_NET_AMT"));
+			obj.setR51_net_amt_bwp(rs.getBigDecimal("R51_NET_AMT_BWP"));
+			obj.setR51_bal_sub(rs.getBigDecimal("R51_BAL_SUB"));
+			obj.setR51_bal_sub_bwp(rs.getBigDecimal("R51_BAL_SUB_BWP"));
+			obj.setR51_bal_sub_diaries(rs.getBigDecimal("R51_BAL_SUB_DIARIES"));
+			obj.setR51_bal_sub_diaries_bwp(rs.getBigDecimal("R51_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR52_operating_expenses(rs.getString("R52_OPERATING_EXPENSES"));
+			obj.setR52_fig_bal_sheet(rs.getBigDecimal("R52_FIG_BAL_SHEET"));
+			obj.setR52_fig_bal_sheet_bwp(rs.getBigDecimal("R52_FIG_BAL_SHEET_BWP"));
+			obj.setR52_amt_statement_adj(rs.getBigDecimal("R52_AMT_STATEMENT_ADJ"));
+			obj.setR52_amt_statement_adj_bwp(rs.getBigDecimal("R52_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR52_net_amt(rs.getBigDecimal("R52_NET_AMT"));
+			obj.setR52_net_amt_bwp(rs.getBigDecimal("R52_NET_AMT_BWP"));
+			obj.setR52_bal_sub(rs.getBigDecimal("R52_BAL_SUB"));
+			obj.setR52_bal_sub_bwp(rs.getBigDecimal("R52_BAL_SUB_BWP"));
+			obj.setR52_bal_sub_diaries(rs.getBigDecimal("R52_BAL_SUB_DIARIES"));
+			obj.setR52_bal_sub_diaries_bwp(rs.getBigDecimal("R52_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR53_operating_expenses(rs.getString("R53_OPERATING_EXPENSES"));
+			obj.setR53_fig_bal_sheet(rs.getBigDecimal("R53_FIG_BAL_SHEET"));
+			obj.setR53_fig_bal_sheet_bwp(rs.getBigDecimal("R53_FIG_BAL_SHEET_BWP"));
+			obj.setR53_amt_statement_adj(rs.getBigDecimal("R53_AMT_STATEMENT_ADJ"));
+			obj.setR53_amt_statement_adj_bwp(rs.getBigDecimal("R53_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR53_net_amt(rs.getBigDecimal("R53_NET_AMT"));
+			obj.setR53_net_amt_bwp(rs.getBigDecimal("R53_NET_AMT_BWP"));
+			obj.setR53_bal_sub(rs.getBigDecimal("R53_BAL_SUB"));
+			obj.setR53_bal_sub_bwp(rs.getBigDecimal("R53_BAL_SUB_BWP"));
+			obj.setR53_bal_sub_diaries(rs.getBigDecimal("R53_BAL_SUB_DIARIES"));
+			obj.setR53_bal_sub_diaries_bwp(rs.getBigDecimal("R53_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR54_operating_expenses(rs.getString("R54_OPERATING_EXPENSES"));
+			obj.setR54_fig_bal_sheet(rs.getBigDecimal("R54_FIG_BAL_SHEET"));
+			obj.setR54_fig_bal_sheet_bwp(rs.getBigDecimal("R54_FIG_BAL_SHEET_BWP"));
+			obj.setR54_amt_statement_adj(rs.getBigDecimal("R54_AMT_STATEMENT_ADJ"));
+			obj.setR54_amt_statement_adj_bwp(rs.getBigDecimal("R54_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR54_net_amt(rs.getBigDecimal("R54_NET_AMT"));
+			obj.setR54_net_amt_bwp(rs.getBigDecimal("R54_NET_AMT_BWP"));
+			obj.setR54_bal_sub(rs.getBigDecimal("R54_BAL_SUB"));
+			obj.setR54_bal_sub_bwp(rs.getBigDecimal("R54_BAL_SUB_BWP"));
+			obj.setR54_bal_sub_diaries(rs.getBigDecimal("R54_BAL_SUB_DIARIES"));
+			obj.setR54_bal_sub_diaries_bwp(rs.getBigDecimal("R54_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR55_operating_expenses(rs.getString("R55_OPERATING_EXPENSES"));
+			obj.setR55_fig_bal_sheet(rs.getBigDecimal("R55_FIG_BAL_SHEET"));
+			obj.setR55_fig_bal_sheet_bwp(rs.getBigDecimal("R55_FIG_BAL_SHEET_BWP"));
+			obj.setR55_amt_statement_adj(rs.getBigDecimal("R55_AMT_STATEMENT_ADJ"));
+			obj.setR55_amt_statement_adj_bwp(rs.getBigDecimal("R55_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR55_net_amt(rs.getBigDecimal("R55_NET_AMT"));
+			obj.setR55_net_amt_bwp(rs.getBigDecimal("R55_NET_AMT_BWP"));
+			obj.setR55_bal_sub(rs.getBigDecimal("R55_BAL_SUB"));
+			obj.setR55_bal_sub_bwp(rs.getBigDecimal("R55_BAL_SUB_BWP"));
+			obj.setR55_bal_sub_diaries(rs.getBigDecimal("R55_BAL_SUB_DIARIES"));
+			obj.setR55_bal_sub_diaries_bwp(rs.getBigDecimal("R55_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR56_operating_expenses(rs.getString("R56_OPERATING_EXPENSES"));
+			obj.setR56_fig_bal_sheet(rs.getBigDecimal("R56_FIG_BAL_SHEET"));
+			obj.setR56_fig_bal_sheet_bwp(rs.getBigDecimal("R56_FIG_BAL_SHEET_BWP"));
+			obj.setR56_amt_statement_adj(rs.getBigDecimal("R56_AMT_STATEMENT_ADJ"));
+			obj.setR56_amt_statement_adj_bwp(rs.getBigDecimal("R56_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR56_net_amt(rs.getBigDecimal("R56_NET_AMT"));
+			obj.setR56_net_amt_bwp(rs.getBigDecimal("R56_NET_AMT_BWP"));
+			obj.setR56_bal_sub(rs.getBigDecimal("R56_BAL_SUB"));
+			obj.setR56_bal_sub_bwp(rs.getBigDecimal("R56_BAL_SUB_BWP"));
+			obj.setR56_bal_sub_diaries(rs.getBigDecimal("R56_BAL_SUB_DIARIES"));
+			obj.setR56_bal_sub_diaries_bwp(rs.getBigDecimal("R56_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR57_operating_expenses(rs.getString("R57_OPERATING_EXPENSES"));
+			obj.setR57_fig_bal_sheet(rs.getBigDecimal("R57_FIG_BAL_SHEET"));
+			obj.setR57_fig_bal_sheet_bwp(rs.getBigDecimal("R57_FIG_BAL_SHEET_BWP"));
+			obj.setR57_amt_statement_adj(rs.getBigDecimal("R57_AMT_STATEMENT_ADJ"));
+			obj.setR57_amt_statement_adj_bwp(rs.getBigDecimal("R57_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR57_net_amt(rs.getBigDecimal("R57_NET_AMT"));
+			obj.setR57_net_amt_bwp(rs.getBigDecimal("R57_NET_AMT_BWP"));
+			obj.setR57_bal_sub(rs.getBigDecimal("R57_BAL_SUB"));
+			obj.setR57_bal_sub_bwp(rs.getBigDecimal("R57_BAL_SUB_BWP"));
+			obj.setR57_bal_sub_diaries(rs.getBigDecimal("R57_BAL_SUB_DIARIES"));
+			obj.setR57_bal_sub_diaries_bwp(rs.getBigDecimal("R57_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR58_operating_expenses(rs.getString("R58_OPERATING_EXPENSES"));
+			obj.setR58_fig_bal_sheet(rs.getBigDecimal("R58_FIG_BAL_SHEET"));
+			obj.setR58_fig_bal_sheet_bwp(rs.getBigDecimal("R58_FIG_BAL_SHEET_BWP"));
+			obj.setR58_amt_statement_adj(rs.getBigDecimal("R58_AMT_STATEMENT_ADJ"));
+			obj.setR58_amt_statement_adj_bwp(rs.getBigDecimal("R58_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR58_net_amt(rs.getBigDecimal("R58_NET_AMT"));
+			obj.setR58_net_amt_bwp(rs.getBigDecimal("R58_NET_AMT_BWP"));
+			obj.setR58_bal_sub(rs.getBigDecimal("R58_BAL_SUB"));
+			obj.setR58_bal_sub_bwp(rs.getBigDecimal("R58_BAL_SUB_BWP"));
+			obj.setR58_bal_sub_diaries(rs.getBigDecimal("R58_BAL_SUB_DIARIES"));
+			obj.setR58_bal_sub_diaries_bwp(rs.getBigDecimal("R58_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR59_operating_expenses(rs.getString("R59_OPERATING_EXPENSES"));
+			obj.setR59_fig_bal_sheet(rs.getBigDecimal("R59_FIG_BAL_SHEET"));
+			obj.setR59_fig_bal_sheet_bwp(rs.getBigDecimal("R59_FIG_BAL_SHEET_BWP"));
+			obj.setR59_amt_statement_adj(rs.getBigDecimal("R59_AMT_STATEMENT_ADJ"));
+			obj.setR59_amt_statement_adj_bwp(rs.getBigDecimal("R59_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR59_net_amt(rs.getBigDecimal("R59_NET_AMT"));
+			obj.setR59_net_amt_bwp(rs.getBigDecimal("R59_NET_AMT_BWP"));
+			obj.setR59_bal_sub(rs.getBigDecimal("R59_BAL_SUB"));
+			obj.setR59_bal_sub_bwp(rs.getBigDecimal("R59_BAL_SUB_BWP"));
+			obj.setR59_bal_sub_diaries(rs.getBigDecimal("R59_BAL_SUB_DIARIES"));
+			obj.setR59_bal_sub_diaries_bwp(rs.getBigDecimal("R59_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR60_operating_expenses(rs.getString("R60_OPERATING_EXPENSES"));
+			obj.setR60_fig_bal_sheet(rs.getBigDecimal("R60_FIG_BAL_SHEET"));
+			obj.setR60_fig_bal_sheet_bwp(rs.getBigDecimal("R60_FIG_BAL_SHEET_BWP"));
+			obj.setR60_amt_statement_adj(rs.getBigDecimal("R60_AMT_STATEMENT_ADJ"));
+			obj.setR60_amt_statement_adj_bwp(rs.getBigDecimal("R60_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR60_net_amt(rs.getBigDecimal("R60_NET_AMT"));
+			obj.setR60_net_amt_bwp(rs.getBigDecimal("R60_NET_AMT_BWP"));
+			obj.setR60_bal_sub(rs.getBigDecimal("R60_BAL_SUB"));
+			obj.setR60_bal_sub_bwp(rs.getBigDecimal("R60_BAL_SUB_BWP"));
+			obj.setR60_bal_sub_diaries(rs.getBigDecimal("R60_BAL_SUB_DIARIES"));
+			obj.setR60_bal_sub_diaries_bwp(rs.getBigDecimal("R60_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR61_operating_expenses(rs.getString("R61_OPERATING_EXPENSES"));
+			obj.setR61_fig_bal_sheet(rs.getBigDecimal("R61_FIG_BAL_SHEET"));
+			obj.setR61_fig_bal_sheet_bwp(rs.getBigDecimal("R61_FIG_BAL_SHEET_BWP"));
+			obj.setR61_amt_statement_adj(rs.getBigDecimal("R61_AMT_STATEMENT_ADJ"));
+			obj.setR61_amt_statement_adj_bwp(rs.getBigDecimal("R61_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR61_net_amt(rs.getBigDecimal("R61_NET_AMT"));
+			obj.setR61_net_amt_bwp(rs.getBigDecimal("R61_NET_AMT_BWP"));
+			obj.setR61_bal_sub(rs.getBigDecimal("R61_BAL_SUB"));
+			obj.setR61_bal_sub_bwp(rs.getBigDecimal("R61_BAL_SUB_BWP"));
+			obj.setR61_bal_sub_diaries(rs.getBigDecimal("R61_BAL_SUB_DIARIES"));
+			obj.setR61_bal_sub_diaries_bwp(rs.getBigDecimal("R61_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR62_operating_expenses(rs.getString("R62_OPERATING_EXPENSES"));
+			obj.setR62_fig_bal_sheet(rs.getBigDecimal("R62_FIG_BAL_SHEET"));
+			obj.setR62_fig_bal_sheet_bwp(rs.getBigDecimal("R62_FIG_BAL_SHEET_BWP"));
+			obj.setR62_amt_statement_adj(rs.getBigDecimal("R62_AMT_STATEMENT_ADJ"));
+			obj.setR62_amt_statement_adj_bwp(rs.getBigDecimal("R62_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR62_net_amt(rs.getBigDecimal("R62_NET_AMT"));
+			obj.setR62_net_amt_bwp(rs.getBigDecimal("R62_NET_AMT_BWP"));
+			obj.setR62_bal_sub(rs.getBigDecimal("R62_BAL_SUB"));
+			obj.setR62_bal_sub_bwp(rs.getBigDecimal("R62_BAL_SUB_BWP"));
+			obj.setR62_bal_sub_diaries(rs.getBigDecimal("R62_BAL_SUB_DIARIES"));
+			obj.setR62_bal_sub_diaries_bwp(rs.getBigDecimal("R62_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR63_operating_expenses(rs.getString("R63_OPERATING_EXPENSES"));
+			obj.setR63_fig_bal_sheet(rs.getBigDecimal("R63_FIG_BAL_SHEET"));
+			obj.setR63_fig_bal_sheet_bwp(rs.getBigDecimal("R63_FIG_BAL_SHEET_BWP"));
+			obj.setR63_amt_statement_adj(rs.getBigDecimal("R63_AMT_STATEMENT_ADJ"));
+			obj.setR63_amt_statement_adj_bwp(rs.getBigDecimal("R63_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR63_net_amt(rs.getBigDecimal("R63_NET_AMT"));
+			obj.setR63_net_amt_bwp(rs.getBigDecimal("R63_NET_AMT_BWP"));
+			obj.setR63_bal_sub(rs.getBigDecimal("R63_BAL_SUB"));
+			obj.setR63_bal_sub_bwp(rs.getBigDecimal("R63_BAL_SUB_BWP"));
+			obj.setR63_bal_sub_diaries(rs.getBigDecimal("R63_BAL_SUB_DIARIES"));
+			obj.setR63_bal_sub_diaries_bwp(rs.getBigDecimal("R63_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR18_bal_sub_diaries(rs.getBigDecimal("R18_BAL_SUB_DIARIES"));
+			obj.setR19_bal_sub_diaries(rs.getBigDecimal("R19_BAL_SUB_DIARIES"));
+			obj.setR20_bal_sub_diaries(rs.getBigDecimal("R20_BAL_SUB_DIARIES"));
+			obj.setR21_bal_sub_diaries(rs.getBigDecimal("R21_BAL_SUB_DIARIES"));
+			obj.setR22_bal_sub_diaries(rs.getBigDecimal("R22_BAL_SUB_DIARIES"));
+			obj.setR23_bal_sub_diaries(rs.getBigDecimal("R23_BAL_SUB_DIARIES"));
+			obj.setR24_bal_sub_diaries(rs.getBigDecimal("R24_BAL_SUB_DIARIES"));
+			obj.setR25_bal_sub_diaries(rs.getBigDecimal("R25_BAL_SUB_DIARIES"));
+			obj.setR26_bal_sub_diaries(rs.getBigDecimal("R26_BAL_SUB_DIARIES"));
+			obj.setR27_bal_sub_diaries(rs.getBigDecimal("R27_BAL_SUB_DIARIES"));
+			obj.setR28_bal_sub_diaries(rs.getBigDecimal("R28_BAL_SUB_DIARIES"));
+			obj.setR29_bal_sub_diaries(rs.getBigDecimal("R29_BAL_SUB_DIARIES"));
+			obj.setR30_bal_sub_diaries(rs.getBigDecimal("R30_BAL_SUB_DIARIES"));
+			obj.setR31_bal_sub_diaries(rs.getBigDecimal("R31_BAL_SUB_DIARIES"));
+
+			obj.setR40_bal_sub_diaries(rs.getBigDecimal("R40_BAL_SUB_DIARIES"));
+			obj.setR41_bal_sub_diaries(rs.getBigDecimal("R41_BAL_SUB_DIARIES"));
+			obj.setR42_bal_sub_diaries(rs.getBigDecimal("R42_BAL_SUB_DIARIES"));
+			obj.setR43_bal_sub_diaries(rs.getBigDecimal("R43_BAL_SUB_DIARIES"));
+
+			obj.setR48_bal_sub_diaries(rs.getBigDecimal("R48_BAL_SUB_DIARIES"));
+			obj.setR49_bal_sub_diaries(rs.getBigDecimal("R49_BAL_SUB_DIARIES"));
+			obj.setR50_bal_sub_diaries(rs.getBigDecimal("R50_BAL_SUB_DIARIES"));
+			obj.setR51_bal_sub_diaries(rs.getBigDecimal("R51_BAL_SUB_DIARIES"));
+			obj.setR52_bal_sub_diaries(rs.getBigDecimal("R52_BAL_SUB_DIARIES"));
+			obj.setR53_bal_sub_diaries(rs.getBigDecimal("R53_BAL_SUB_DIARIES"));
+			obj.setR54_bal_sub_diaries(rs.getBigDecimal("R54_BAL_SUB_DIARIES"));
+			obj.setR55_bal_sub_diaries(rs.getBigDecimal("R55_BAL_SUB_DIARIES"));
+			obj.setR56_bal_sub_diaries(rs.getBigDecimal("R56_BAL_SUB_DIARIES"));
+			obj.setR57_bal_sub_diaries(rs.getBigDecimal("R57_BAL_SUB_DIARIES"));
+			obj.setR58_bal_sub_diaries(rs.getBigDecimal("R58_BAL_SUB_DIARIES"));
+			obj.setR59_bal_sub_diaries(rs.getBigDecimal("R59_BAL_SUB_DIARIES"));
+			obj.setR60_bal_sub_diaries(rs.getBigDecimal("R60_BAL_SUB_DIARIES"));
+			obj.setR61_bal_sub_diaries(rs.getBigDecimal("R61_BAL_SUB_DIARIES"));
+			obj.setR62_bal_sub_diaries(rs.getBigDecimal("R62_BAL_SUB_DIARIES"));
+			obj.setR63_bal_sub_diaries(rs.getBigDecimal("R63_BAL_SUB_DIARIES"));
+
+			// COMMON FIELDS
+			obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+			obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+			obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+			obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+			obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+			obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+			obj.setDEL_FLG(rs.getString("DEL_FLG"));
+
+			return obj;
+		}
+	}
+
+	public static class PL_SCHS_Summary_Entity {
+
+		@Id
+		@Temporal(TemporalType.DATE)
+		@Column(name = "REPORT_DATE")
+		private Date REPORT_DATE;
+
+		// ================= R9 =================
+		@Column(name = "R9_INTREST_DIV")
+		private String r9_intrest_div;
+
+		@Column(name = "R9_FIG_BAL_SHEET")
+		private BigDecimal r9_fig_bal_sheet;
+
+		@Column(name = "R9_FIG_BAL_SHEET_BWP")
+		private BigDecimal r9_fig_bal_sheet_bwp;
+
+		@Column(name = "R9_AMT_STATEMENT_ADJ")
+		private BigDecimal r9_amt_statement_adj;
+
+		@Column(name = "R9_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r9_amt_statement_adj_bwp;
+
+		@Column(name = "R9_NET_AMT")
+		private BigDecimal r9_net_amt;
+
+		@Column(name = "R9_NET_AMT_BWP")
+		private BigDecimal r9_net_amt_bwp;
+
+		@Column(name = "R9_BAL_SUB")
+		private BigDecimal r9_bal_sub;
+
+		@Column(name = "R9_BAL_SUB_BWP")
+		private BigDecimal r9_bal_sub_bwp;
+
+		@Column(name = "R9_BAL_SUB_DIARIES")
+		private BigDecimal r9_bal_sub_diaries;
+
+		@Column(name = "R9_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r9_bal_sub_diaries_bwp;
+
+		// ================= R10 =================
+		@Column(name = "R10_INTREST_DIV")
+		private String r10_intrest_div;
+
+		@Column(name = "R10_FIG_BAL_SHEET")
+		private BigDecimal r10_fig_bal_sheet;
+
+		@Column(name = "R10_FIG_BAL_SHEET_BWP")
+		private BigDecimal r10_fig_bal_sheet_bwp;
+
+		@Column(name = "R10_AMT_STATEMENT_ADJ")
+		private BigDecimal r10_amt_statement_adj;
+
+		@Column(name = "R10_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r10_amt_statement_adj_bwp;
+
+		@Column(name = "R10_NET_AMT")
+		private BigDecimal r10_net_amt;
+
+		@Column(name = "R10_NET_AMT_BWP")
+		private BigDecimal r10_net_amt_bwp;
+
+		@Column(name = "R10_BAL_SUB")
+		private BigDecimal r10_bal_sub;
+
+		@Column(name = "R10_BAL_SUB_BWP")
+		private BigDecimal r10_bal_sub_bwp;
+
+		@Column(name = "R10_BAL_SUB_DIARIES")
+		private BigDecimal r10_bal_sub_diaries;
+
+		@Column(name = "R10_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r10_bal_sub_diaries_bwp;
+
+		// ================= R11 =================
+		@Column(name = "R11_INTREST_DIV")
+		private String r11_intrest_div;
+
+		@Column(name = "R11_FIG_BAL_SHEET")
+		private BigDecimal r11_fig_bal_sheet;
+
+		@Column(name = "R11_FIG_BAL_SHEET_BWP")
+		private BigDecimal r11_fig_bal_sheet_bwp;
+
+		@Column(name = "R11_AMT_STATEMENT_ADJ")
+		private BigDecimal r11_amt_statement_adj;
+
+		@Column(name = "R11_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r11_amt_statement_adj_bwp;
+
+		@Column(name = "R11_NET_AMT")
+		private BigDecimal r11_net_amt;
+
+		@Column(name = "R11_NET_AMT_BWP")
+		private BigDecimal r11_net_amt_bwp;
+
+		@Column(name = "R11_BAL_SUB")
+		private BigDecimal r11_bal_sub;
+
+		@Column(name = "R11_BAL_SUB_BWP")
+		private BigDecimal r11_bal_sub_bwp;
+
+		@Column(name = "R11_BAL_SUB_DIARIES")
+		private BigDecimal r11_bal_sub_diaries;
+
+		@Column(name = "R11_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r11_bal_sub_diaries_bwp;
+
+		// ================= R12 =================
+		@Column(name = "R12_INTREST_DIV")
+		private String r12_intrest_div;
+
+		@Column(name = "R12_FIG_BAL_SHEET")
+		private BigDecimal r12_fig_bal_sheet;
+
+		@Column(name = "R12_FIG_BAL_SHEET_BWP")
+		private BigDecimal r12_fig_bal_sheet_bwp;
+
+		@Column(name = "R12_AMT_STATEMENT_ADJ")
+		private BigDecimal r12_amt_statement_adj;
+
+		@Column(name = "R12_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r12_amt_statement_adj_bwp;
+
+		@Column(name = "R12_NET_AMT")
+		private BigDecimal r12_net_amt;
+
+		@Column(name = "R12_NET_AMT_BWP")
+		private BigDecimal r12_net_amt_bwp;
+
+		@Column(name = "R12_BAL_SUB")
+		private BigDecimal r12_bal_sub;
+
+		@Column(name = "R12_BAL_SUB_BWP")
+		private BigDecimal r12_bal_sub_bwp;
+
+		@Column(name = "R12_BAL_SUB_DIARIES")
+		private BigDecimal r12_bal_sub_diaries;
+
+		@Column(name = "R12_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r12_bal_sub_diaries_bwp;
+
+		// ================= R13 =================
+		@Column(name = "R13_INTREST_DIV")
+		private String r13_intrest_div;
+
+		@Column(name = "R13_FIG_BAL_SHEET")
+		private BigDecimal r13_fig_bal_sheet;
+
+		@Column(name = "R13_FIG_BAL_SHEET_BWP")
+		private BigDecimal r13_fig_bal_sheet_bwp;
+
+		@Column(name = "R13_AMT_STATEMENT_ADJ")
+		private BigDecimal r13_amt_statement_adj;
+
+		@Column(name = "R13_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r13_amt_statement_adj_bwp;
+
+		@Column(name = "R13_NET_AMT")
+		private BigDecimal r13_net_amt;
+
+		@Column(name = "R13_NET_AMT_BWP")
+		private BigDecimal r13_net_amt_bwp;
+
+		@Column(name = "R13_BAL_SUB")
+		private BigDecimal r13_bal_sub;
+
+		@Column(name = "R13_BAL_SUB_BWP")
+		private BigDecimal r13_bal_sub_bwp;
+
+		@Column(name = "R13_BAL_SUB_DIARIES")
+		private BigDecimal r13_bal_sub_diaries;
+
+		@Column(name = "R13_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r13_bal_sub_diaries_bwp;
+
+		// ================= R17 =================
+		@Column(name = "R17_OTHER_INCOME")
+		private String r17_other_income;
+
+		@Column(name = "R17_FIG_BAL_SHEET")
+		private BigDecimal r17_fig_bal_sheet;
+
+		@Column(name = "R17_FIG_BAL_SHEET_BWP")
+		private BigDecimal r17_fig_bal_sheet_bwp;
+
+		@Column(name = "R17_AMT_STATEMENT_ADJ")
+		private BigDecimal r17_amt_statement_adj;
+
+		@Column(name = "R17_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r17_amt_statement_adj_bwp;
+
+		@Column(name = "R17_NET_AMT")
+		private BigDecimal r17_net_amt;
+
+		@Column(name = "R17_NET_AMT_BWP")
+		private BigDecimal r17_net_amt_bwp;
+
+		@Column(name = "R17_BAL_SUB")
+		private BigDecimal r17_bal_sub;
+
+		@Column(name = "R17_BAL_SUB_BWP")
+		private BigDecimal r17_bal_sub_bwp;
+
+		@Column(name = "R17_BAL_SUB_DIARIES")
+		private BigDecimal r17_bal_sub_diaries;
+
+		@Column(name = "R17_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r17_bal_sub_diaries_bwp;
+
+		// ================= R18 =================
+		@Column(name = "R18_OTHER_INCOME")
+		private String r18_other_income;
+
+		@Column(name = "R18_FIG_BAL_SHEET")
+		private BigDecimal r18_fig_bal_sheet;
+
+		@Column(name = "R18_FIG_BAL_SHEET_BWP")
+		private BigDecimal r18_fig_bal_sheet_bwp;
+
+		@Column(name = "R18_AMT_STATEMENT_ADJ")
+		private BigDecimal r18_amt_statement_adj;
+
+		@Column(name = "R18_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r18_amt_statement_adj_bwp;
+
+		@Column(name = "R18_NET_AMT")
+		private BigDecimal r18_net_amt;
+
+		@Column(name = "R18_NET_AMT_BWP")
+		private BigDecimal r18_net_amt_bwp;
+
+		@Column(name = "R18_BAL_SUB")
+		private BigDecimal r18_bal_sub;
+
+		@Column(name = "R18_BAL_SUB_BWP")
+		private BigDecimal r18_bal_sub_bwp;
+
+		@Column(name = "R18_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r18_bal_sub_diaries_bwp;
+
+		// ================= R19 =================
+		@Column(name = "R19_OTHER_INCOME")
+		private String r19_other_income;
+
+		@Column(name = "R19_FIG_BAL_SHEET")
+		private BigDecimal r19_fig_bal_sheet;
+
+		@Column(name = "R19_FIG_BAL_SHEET_BWP")
+		private BigDecimal r19_fig_bal_sheet_bwp;
+
+		@Column(name = "R19_AMT_STATEMENT_ADJ")
+		private BigDecimal r19_amt_statement_adj;
+
+		@Column(name = "R19_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r19_amt_statement_adj_bwp;
+
+		@Column(name = "R19_NET_AMT")
+		private BigDecimal r19_net_amt;
+
+		@Column(name = "R19_NET_AMT_BWP")
+		private BigDecimal r19_net_amt_bwp;
+
+		@Column(name = "R19_BAL_SUB")
+		private BigDecimal r19_bal_sub;
+
+		@Column(name = "R19_BAL_SUB_BWP")
+		private BigDecimal r19_bal_sub_bwp;
+
+		@Column(name = "R19_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r19_bal_sub_diaries_bwp;
+
+		// ================= R20 =================
+		@Column(name = "R20_OTHER_INCOME")
+		private String r20_other_income;
+
+		@Column(name = "R20_FIG_BAL_SHEET")
+		private BigDecimal r20_fig_bal_sheet;
+
+		@Column(name = "R20_FIG_BAL_SHEET_BWP")
+		private BigDecimal r20_fig_bal_sheet_bwp;
+
+		@Column(name = "R20_AMT_STATEMENT_ADJ")
+		private BigDecimal r20_amt_statement_adj;
+
+		@Column(name = "R20_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r20_amt_statement_adj_bwp;
+
+		@Column(name = "R20_NET_AMT")
+		private BigDecimal r20_net_amt;
+
+		@Column(name = "R20_NET_AMT_BWP")
+		private BigDecimal r20_net_amt_bwp;
+
+		@Column(name = "R20_BAL_SUB")
+		private BigDecimal r20_bal_sub;
+
+		@Column(name = "R20_BAL_SUB_BWP")
+		private BigDecimal r20_bal_sub_bwp;
+
+		@Column(name = "R20_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r20_bal_sub_diaries_bwp;
+
+		// ================= R21 =================
+		@Column(name = "R21_OTHER_INCOME")
+		private String r21_other_income;
+
+		@Column(name = "R21_FIG_BAL_SHEET")
+		private BigDecimal r21_fig_bal_sheet;
+
+		@Column(name = "R21_FIG_BAL_SHEET_BWP")
+		private BigDecimal r21_fig_bal_sheet_bwp;
+
+		@Column(name = "R21_AMT_STATEMENT_ADJ")
+		private BigDecimal r21_amt_statement_adj;
+
+		@Column(name = "R21_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r21_amt_statement_adj_bwp;
+
+		@Column(name = "R21_NET_AMT")
+		private BigDecimal r21_net_amt;
+
+		@Column(name = "R21_NET_AMT_BWP")
+		private BigDecimal r21_net_amt_bwp;
+
+		@Column(name = "R21_BAL_SUB")
+		private BigDecimal r21_bal_sub;
+
+		@Column(name = "R21_BAL_SUB_BWP")
+		private BigDecimal r21_bal_sub_bwp;
+
+		@Column(name = "R21_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r21_bal_sub_diaries_bwp;
+
+		// ================= R22 =================
+		@Column(name = "R22_OTHER_INCOME")
+		private String r22_other_income;
+
+		@Column(name = "R22_FIG_BAL_SHEET")
+		private BigDecimal r22_fig_bal_sheet;
+
+		@Column(name = "R22_FIG_BAL_SHEET_BWP")
+		private BigDecimal r22_fig_bal_sheet_bwp;
+
+		@Column(name = "R22_AMT_STATEMENT_ADJ")
+		private BigDecimal r22_amt_statement_adj;
+
+		@Column(name = "R22_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r22_amt_statement_adj_bwp;
+
+		@Column(name = "R22_NET_AMT")
+		private BigDecimal r22_net_amt;
+
+		@Column(name = "R22_NET_AMT_BWP")
+		private BigDecimal r22_net_amt_bwp;
+
+		@Column(name = "R22_BAL_SUB")
+		private BigDecimal r22_bal_sub;
+
+		@Column(name = "R22_BAL_SUB_BWP")
+		private BigDecimal r22_bal_sub_bwp;
+
+		@Column(name = "R22_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r22_bal_sub_diaries_bwp;
+
+		// ================= R23 =================
+		@Column(name = "R23_OTHER_INCOME")
+		private String r23_other_income;
+
+		@Column(name = "R23_FIG_BAL_SHEET")
+		private BigDecimal r23_fig_bal_sheet;
+
+		@Column(name = "R23_FIG_BAL_SHEET_BWP")
+		private BigDecimal r23_fig_bal_sheet_bwp;
+
+		@Column(name = "R23_AMT_STATEMENT_ADJ")
+		private BigDecimal r23_amt_statement_adj;
+
+		@Column(name = "R23_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r23_amt_statement_adj_bwp;
+
+		@Column(name = "R23_NET_AMT")
+		private BigDecimal r23_net_amt;
+
+		@Column(name = "R23_NET_AMT_BWP")
+		private BigDecimal r23_net_amt_bwp;
+
+		@Column(name = "R23_BAL_SUB")
+		private BigDecimal r23_bal_sub;
+
+		@Column(name = "R23_BAL_SUB_BWP")
+		private BigDecimal r23_bal_sub_bwp;
+
+		@Column(name = "R23_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r23_bal_sub_diaries_bwp;
+
+		// ================= R24 =================
+		@Column(name = "R24_OTHER_INCOME")
+		private String r24_other_income;
+
+		@Column(name = "R24_FIG_BAL_SHEET")
+		private BigDecimal r24_fig_bal_sheet;
+
+		@Column(name = "R24_FIG_BAL_SHEET_BWP")
+		private BigDecimal r24_fig_bal_sheet_bwp;
+
+		@Column(name = "R24_AMT_STATEMENT_ADJ")
+		private BigDecimal r24_amt_statement_adj;
+
+		@Column(name = "R24_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r24_amt_statement_adj_bwp;
+
+		@Column(name = "R24_NET_AMT")
+		private BigDecimal r24_net_amt;
+
+		@Column(name = "R24_NET_AMT_BWP")
+		private BigDecimal r24_net_amt_bwp;
+
+		@Column(name = "R24_BAL_SUB")
+		private BigDecimal r24_bal_sub;
+
+		@Column(name = "R24_BAL_SUB_BWP")
+		private BigDecimal r24_bal_sub_bwp;
+
+		@Column(name = "R24_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r24_bal_sub_diaries_bwp;
+
+		// ================= R25 =================
+		@Column(name = "R25_OTHER_INCOME")
+		private String r25_other_income;
+
+		@Column(name = "R25_FIG_BAL_SHEET")
+		private BigDecimal r25_fig_bal_sheet;
+
+		@Column(name = "R25_FIG_BAL_SHEET_BWP")
+		private BigDecimal r25_fig_bal_sheet_bwp;
+
+		@Column(name = "R25_AMT_STATEMENT_ADJ")
+		private BigDecimal r25_amt_statement_adj;
+
+		@Column(name = "R25_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r25_amt_statement_adj_bwp;
+
+		@Column(name = "R25_NET_AMT")
+		private BigDecimal r25_net_amt;
+
+		@Column(name = "R25_NET_AMT_BWP")
+		private BigDecimal r25_net_amt_bwp;
+
+		@Column(name = "R25_BAL_SUB")
+		private BigDecimal r25_bal_sub;
+
+		@Column(name = "R25_BAL_SUB_BWP")
+		private BigDecimal r25_bal_sub_bwp;
+
+		@Column(name = "R25_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r25_bal_sub_diaries_bwp;
+
+		// ================= R26 =================
+		@Column(name = "R26_OTHER_INCOME")
+		private String r26_other_income;
+
+		@Column(name = "R26_FIG_BAL_SHEET")
+		private BigDecimal r26_fig_bal_sheet;
+
+		@Column(name = "R26_FIG_BAL_SHEET_BWP")
+		private BigDecimal r26_fig_bal_sheet_bwp;
+
+		@Column(name = "R26_AMT_STATEMENT_ADJ")
+		private BigDecimal r26_amt_statement_adj;
+
+		@Column(name = "R26_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r26_amt_statement_adj_bwp;
+
+		@Column(name = "R26_NET_AMT")
+		private BigDecimal r26_net_amt;
+
+		@Column(name = "R26_NET_AMT_BWP")
+		private BigDecimal r26_net_amt_bwp;
+
+		@Column(name = "R26_BAL_SUB")
+		private BigDecimal r26_bal_sub;
+
+		@Column(name = "R26_BAL_SUB_BWP")
+		private BigDecimal r26_bal_sub_bwp;
+
+		@Column(name = "R26_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r26_bal_sub_diaries_bwp;
+
+		// ================= R27 =================
+		@Column(name = "R27_OTHER_INCOME")
+		private String r27_other_income;
+
+		@Column(name = "R27_FIG_BAL_SHEET")
+		private BigDecimal r27_fig_bal_sheet;
+
+		@Column(name = "R27_FIG_BAL_SHEET_BWP")
+		private BigDecimal r27_fig_bal_sheet_bwp;
+
+		@Column(name = "R27_AMT_STATEMENT_ADJ")
+		private BigDecimal r27_amt_statement_adj;
+
+		@Column(name = "R27_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r27_amt_statement_adj_bwp;
+
+		@Column(name = "R27_NET_AMT")
+		private BigDecimal r27_net_amt;
+
+		@Column(name = "R27_NET_AMT_BWP")
+		private BigDecimal r27_net_amt_bwp;
+
+		@Column(name = "R27_BAL_SUB")
+		private BigDecimal r27_bal_sub;
+
+		@Column(name = "R27_BAL_SUB_BWP")
+		private BigDecimal r27_bal_sub_bwp;
+
+		@Column(name = "R27_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r27_bal_sub_diaries_bwp;
+
+		// ================= R28 =================
+		@Column(name = "R28_OTHER_INCOME")
+		private String r28_other_income;
+
+		@Column(name = "R28_FIG_BAL_SHEET")
+		private BigDecimal r28_fig_bal_sheet;
+
+		@Column(name = "R28_FIG_BAL_SHEET_BWP")
+		private BigDecimal r28_fig_bal_sheet_bwp;
+
+		@Column(name = "R28_AMT_STATEMENT_ADJ")
+		private BigDecimal r28_amt_statement_adj;
+
+		@Column(name = "R28_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r28_amt_statement_adj_bwp;
+
+		@Column(name = "R28_NET_AMT")
+		private BigDecimal r28_net_amt;
+
+		@Column(name = "R28_NET_AMT_BWP")
+		private BigDecimal r28_net_amt_bwp;
+
+		@Column(name = "R28_BAL_SUB")
+		private BigDecimal r28_bal_sub;
+
+		@Column(name = "R28_BAL_SUB_BWP")
+		private BigDecimal r28_bal_sub_bwp;
+
+		@Column(name = "R28_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r28_bal_sub_diaries_bwp;
+
+		// ================= R29 =================
+		@Column(name = "R29_OTHER_INCOME")
+		private String r29_other_income;
+
+		@Column(name = "R29_FIG_BAL_SHEET")
+		private BigDecimal r29_fig_bal_sheet;
+
+		@Column(name = "R29_FIG_BAL_SHEET_BWP")
+		private BigDecimal r29_fig_bal_sheet_bwp;
+
+		@Column(name = "R29_AMT_STATEMENT_ADJ")
+		private BigDecimal r29_amt_statement_adj;
+
+		@Column(name = "R29_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r29_amt_statement_adj_bwp;
+
+		@Column(name = "R29_NET_AMT")
+		private BigDecimal r29_net_amt;
+
+		@Column(name = "R29_NET_AMT_BWP")
+		private BigDecimal r29_net_amt_bwp;
+
+		@Column(name = "R29_BAL_SUB")
+		private BigDecimal r29_bal_sub;
+
+		@Column(name = "R29_BAL_SUB_BWP")
+		private BigDecimal r29_bal_sub_bwp;
+
+		@Column(name = "R29_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r29_bal_sub_diaries_bwp;
+
+		// ================= R30 =================
+		@Column(name = "R30_OTHER_INCOME")
+		private String r30_other_income;
+
+		@Column(name = "R30_FIG_BAL_SHEET")
+		private BigDecimal r30_fig_bal_sheet;
+
+		@Column(name = "R30_FIG_BAL_SHEET_BWP")
+		private BigDecimal r30_fig_bal_sheet_bwp;
+
+		@Column(name = "R30_AMT_STATEMENT_ADJ")
+		private BigDecimal r30_amt_statement_adj;
+
+		@Column(name = "R30_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r30_amt_statement_adj_bwp;
+
+		@Column(name = "R30_NET_AMT")
+		private BigDecimal r30_net_amt;
+
+		@Column(name = "R30_NET_AMT_BWP")
+		private BigDecimal r30_net_amt_bwp;
+
+		@Column(name = "R30_BAL_SUB")
+		private BigDecimal r30_bal_sub;
+
+		@Column(name = "R30_BAL_SUB_BWP")
+		private BigDecimal r30_bal_sub_bwp;
+
+		@Column(name = "R30_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r30_bal_sub_diaries_bwp;
+
+		// ================= R31 =================
+		@Column(name = "R31_OTHER_INCOME")
+		private String r31_other_income;
+
+		@Column(name = "R31_FIG_BAL_SHEET")
+		private BigDecimal r31_fig_bal_sheet;
+
+		@Column(name = "R31_FIG_BAL_SHEET_BWP")
+		private BigDecimal r31_fig_bal_sheet_bwp;
+
+		@Column(name = "R31_AMT_STATEMENT_ADJ")
+		private BigDecimal r31_amt_statement_adj;
+
+		@Column(name = "R31_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r31_amt_statement_adj_bwp;
+
+		@Column(name = "R31_NET_AMT")
+		private BigDecimal r31_net_amt;
+
+		@Column(name = "R31_NET_AMT_BWP")
+		private BigDecimal r31_net_amt_bwp;
+
+		@Column(name = "R31_BAL_SUB")
+		private BigDecimal r31_bal_sub;
+
+		@Column(name = "R31_BAL_SUB_BWP")
+		private BigDecimal r31_bal_sub_bwp;
+
+		@Column(name = "R31_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r31_bal_sub_diaries_bwp;
+
+		// ================= R40 =================
+		@Column(name = "R40_INTREST_EXPENDED")
+		private String r40_intrest_expended;
+
+		@Column(name = "R40_FIG_BAL_SHEET")
+		private BigDecimal r40_fig_bal_sheet;
+
+		@Column(name = "R40_FIG_BAL_SHEET_BWP")
+		private BigDecimal r40_fig_bal_sheet_bwp;
+
+		@Column(name = "R40_AMT_STATEMENT_ADJ")
+		private BigDecimal r40_amt_statement_adj;
+
+		@Column(name = "R40_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r40_amt_statement_adj_bwp;
+
+		@Column(name = "R40_NET_AMT")
+		private BigDecimal r40_net_amt;
+
+		@Column(name = "R40_NET_AMT_BWP")
+		private BigDecimal r40_net_amt_bwp;
+
+		@Column(name = "R40_BAL_SUB")
+		private BigDecimal r40_bal_sub;
+
+		@Column(name = "R40_BAL_SUB_BWP")
+		private BigDecimal r40_bal_sub_bwp;
+
+		@Column(name = "R40_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r40_bal_sub_diaries_bwp;
+
+		// ================= R41 =================
+		@Column(name = "R41_INTREST_EXPENDED")
+		private String r41_intrest_expended;
+
+		@Column(name = "R41_FIG_BAL_SHEET")
+		private BigDecimal r41_fig_bal_sheet;
+
+		@Column(name = "R41_FIG_BAL_SHEET_BWP")
+		private BigDecimal r41_fig_bal_sheet_bwp;
+
+		@Column(name = "R41_AMT_STATEMENT_ADJ")
+		private BigDecimal r41_amt_statement_adj;
+
+		@Column(name = "R41_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r41_amt_statement_adj_bwp;
+
+		@Column(name = "R41_NET_AMT")
+		private BigDecimal r41_net_amt;
+
+		@Column(name = "R41_NET_AMT_BWP")
+		private BigDecimal r41_net_amt_bwp;
+
+		@Column(name = "R41_BAL_SUB")
+		private BigDecimal r41_bal_sub;
+
+		@Column(name = "R41_BAL_SUB_BWP")
+		private BigDecimal r41_bal_sub_bwp;
+
+		@Column(name = "R41_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r41_bal_sub_diaries_bwp;
+
+		// ================= R42 =================
+		@Column(name = "R42_INTREST_EXPENDED")
+		private String r42_intrest_expended;
+
+		@Column(name = "R42_FIG_BAL_SHEET")
+		private BigDecimal r42_fig_bal_sheet;
+
+		@Column(name = "R42_FIG_BAL_SHEET_BWP")
+		private BigDecimal r42_fig_bal_sheet_bwp;
+
+		@Column(name = "R42_AMT_STATEMENT_ADJ")
+		private BigDecimal r42_amt_statement_adj;
+
+		@Column(name = "R42_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r42_amt_statement_adj_bwp;
+
+		@Column(name = "R42_NET_AMT")
+		private BigDecimal r42_net_amt;
+
+		@Column(name = "R42_NET_AMT_BWP")
+		private BigDecimal r42_net_amt_bwp;
+
+		@Column(name = "R42_BAL_SUB")
+		private BigDecimal r42_bal_sub;
+
+		@Column(name = "R42_BAL_SUB_BWP")
+		private BigDecimal r42_bal_sub_bwp;
+
+		@Column(name = "R42_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r42_bal_sub_diaries_bwp;
+
+		// ================= R43 =================
+		@Column(name = "R43_INTREST_EXPENDED")
+		private String r43_intrest_expended;
+
+		@Column(name = "R43_FIG_BAL_SHEET")
+		private BigDecimal r43_fig_bal_sheet;
+
+		@Column(name = "R43_FIG_BAL_SHEET_BWP")
+		private BigDecimal r43_fig_bal_sheet_bwp;
+
+		@Column(name = "R43_AMT_STATEMENT_ADJ")
+		private BigDecimal r43_amt_statement_adj;
+
+		@Column(name = "R43_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r43_amt_statement_adj_bwp;
+
+		@Column(name = "R43_NET_AMT")
+		private BigDecimal r43_net_amt;
+
+		@Column(name = "R43_NET_AMT_BWP")
+		private BigDecimal r43_net_amt_bwp;
+
+		@Column(name = "R43_BAL_SUB")
+		private BigDecimal r43_bal_sub;
+
+		@Column(name = "R43_BAL_SUB_BWP")
+		private BigDecimal r43_bal_sub_bwp;
+
+		@Column(name = "R43_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r43_bal_sub_diaries_bwp;
+
+		// ================= R48 =================
+		@Column(name = "R48_OPERATING_EXPENSES")
+		private String r48_operating_expenses;
+
+		@Column(name = "R48_FIG_BAL_SHEET")
+		private BigDecimal r48_fig_bal_sheet;
+
+		@Column(name = "R48_FIG_BAL_SHEET_BWP")
+		private BigDecimal r48_fig_bal_sheet_bwp;
+
+		@Column(name = "R48_AMT_STATEMENT_ADJ")
+		private BigDecimal r48_amt_statement_adj;
+
+		@Column(name = "R48_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r48_amt_statement_adj_bwp;
+
+		@Column(name = "R48_NET_AMT")
+		private BigDecimal r48_net_amt;
+
+		@Column(name = "R48_NET_AMT_BWP")
+		private BigDecimal r48_net_amt_bwp;
+
+		@Column(name = "R48_BAL_SUB")
+		private BigDecimal r48_bal_sub;
+
+		@Column(name = "R48_BAL_SUB_BWP")
+		private BigDecimal r48_bal_sub_bwp;
+
+		@Column(name = "R48_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r48_bal_sub_diaries_bwp;
+
+		// ================= R49 =================
+		@Column(name = "R49_OPERATING_EXPENSES")
+		private String r49_operating_expenses;
+
+		@Column(name = "R49_FIG_BAL_SHEET")
+		private BigDecimal r49_fig_bal_sheet;
+
+		@Column(name = "R49_FIG_BAL_SHEET_BWP")
+		private BigDecimal r49_fig_bal_sheet_bwp;
+
+		@Column(name = "R49_AMT_STATEMENT_ADJ")
+		private BigDecimal r49_amt_statement_adj;
+
+		@Column(name = "R49_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r49_amt_statement_adj_bwp;
+
+		@Column(name = "R49_NET_AMT")
+		private BigDecimal r49_net_amt;
+
+		@Column(name = "R49_NET_AMT_BWP")
+		private BigDecimal r49_net_amt_bwp;
+
+		@Column(name = "R49_BAL_SUB")
+		private BigDecimal r49_bal_sub;
+
+		@Column(name = "R49_BAL_SUB_BWP")
+		private BigDecimal r49_bal_sub_bwp;
+
+		@Column(name = "R49_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r49_bal_sub_diaries_bwp;
+
+		// ================= R50 =================
+		@Column(name = "R50_OPERATING_EXPENSES")
+		private String r50_operating_expenses;
+
+		@Column(name = "R50_FIG_BAL_SHEET")
+		private BigDecimal r50_fig_bal_sheet;
+
+		@Column(name = "R50_FIG_BAL_SHEET_BWP")
+		private BigDecimal r50_fig_bal_sheet_bwp;
+
+		@Column(name = "R50_AMT_STATEMENT_ADJ")
+		private BigDecimal r50_amt_statement_adj;
+
+		@Column(name = "R50_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r50_amt_statement_adj_bwp;
+
+		@Column(name = "R50_NET_AMT")
+		private BigDecimal r50_net_amt;
+
+		@Column(name = "R50_NET_AMT_BWP")
+		private BigDecimal r50_net_amt_bwp;
+
+		@Column(name = "R50_BAL_SUB")
+		private BigDecimal r50_bal_sub;
+
+		@Column(name = "R50_BAL_SUB_BWP")
+		private BigDecimal r50_bal_sub_bwp;
+
+		@Column(name = "R50_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r50_bal_sub_diaries_bwp;
+
+		// ================= R51 =================
+		@Column(name = "R51_OPERATING_EXPENSES")
+		private String r51_operating_expenses;
+
+		@Column(name = "R51_FIG_BAL_SHEET")
+		private BigDecimal r51_fig_bal_sheet;
+
+		@Column(name = "R51_FIG_BAL_SHEET_BWP")
+		private BigDecimal r51_fig_bal_sheet_bwp;
+
+		@Column(name = "R51_AMT_STATEMENT_ADJ")
+		private BigDecimal r51_amt_statement_adj;
+
+		@Column(name = "R51_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r51_amt_statement_adj_bwp;
+
+		@Column(name = "R51_NET_AMT")
+		private BigDecimal r51_net_amt;
+
+		@Column(name = "R51_NET_AMT_BWP")
+		private BigDecimal r51_net_amt_bwp;
+
+		@Column(name = "R51_BAL_SUB")
+		private BigDecimal r51_bal_sub;
+
+		@Column(name = "R51_BAL_SUB_BWP")
+		private BigDecimal r51_bal_sub_bwp;
+
+		@Column(name = "R51_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r51_bal_sub_diaries_bwp;
+
+		@Column(name = "R52_OPERATING_EXPENSES")
+		private String r52_operating_expenses;
+
+		@Column(name = "R52_FIG_BAL_SHEET")
+		private BigDecimal r52_fig_bal_sheet;
+
+		@Column(name = "R52_FIG_BAL_SHEET_BWP")
+		private BigDecimal r52_fig_bal_sheet_bwp;
+
+		@Column(name = "R52_AMT_STATEMENT_ADJ")
+		private BigDecimal r52_amt_statement_adj;
+
+		@Column(name = "R52_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r52_amt_statement_adj_bwp;
+
+		@Column(name = "R52_NET_AMT")
+		private BigDecimal r52_net_amt;
+
+		@Column(name = "R52_NET_AMT_BWP")
+		private BigDecimal r52_net_amt_bwp;
+
+		@Column(name = "R52_BAL_SUB")
+		private BigDecimal r52_bal_sub;
+
+		@Column(name = "R52_BAL_SUB_BWP")
+		private BigDecimal r52_bal_sub_bwp;
+
+		@Column(name = "R52_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r52_bal_sub_diaries_bwp;
+
+		@Column(name = "R53_OPERATING_EXPENSES")
+		private String r53_operating_expenses;
+
+		@Column(name = "R53_FIG_BAL_SHEET")
+		private BigDecimal r53_fig_bal_sheet;
+
+		@Column(name = "R53_FIG_BAL_SHEET_BWP")
+		private BigDecimal r53_fig_bal_sheet_bwp;
+
+		@Column(name = "R53_AMT_STATEMENT_ADJ")
+		private BigDecimal r53_amt_statement_adj;
+
+		@Column(name = "R53_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r53_amt_statement_adj_bwp;
+
+		@Column(name = "R53_NET_AMT")
+		private BigDecimal r53_net_amt;
+
+		@Column(name = "R53_NET_AMT_BWP")
+		private BigDecimal r53_net_amt_bwp;
+
+		@Column(name = "R53_BAL_SUB")
+		private BigDecimal r53_bal_sub;
+
+		@Column(name = "R53_BAL_SUB_BWP")
+		private BigDecimal r53_bal_sub_bwp;
+
+		@Column(name = "R53_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r53_bal_sub_diaries_bwp;
+
+		@Column(name = "R54_OPERATING_EXPENSES")
+		private String r54_operating_expenses;
+
+		@Column(name = "R54_FIG_BAL_SHEET")
+		private BigDecimal r54_fig_bal_sheet;
+
+		@Column(name = "R54_FIG_BAL_SHEET_BWP")
+		private BigDecimal r54_fig_bal_sheet_bwp;
+
+		@Column(name = "R54_AMT_STATEMENT_ADJ")
+		private BigDecimal r54_amt_statement_adj;
+
+		@Column(name = "R54_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r54_amt_statement_adj_bwp;
+
+		@Column(name = "R54_NET_AMT")
+		private BigDecimal r54_net_amt;
+
+		@Column(name = "R54_NET_AMT_BWP")
+		private BigDecimal r54_net_amt_bwp;
+
+		@Column(name = "R54_BAL_SUB")
+		private BigDecimal r54_bal_sub;
+
+		@Column(name = "R54_BAL_SUB_BWP")
+		private BigDecimal r54_bal_sub_bwp;
+
+		@Column(name = "R54_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r54_bal_sub_diaries_bwp;
+
+		@Column(name = "R55_OPERATING_EXPENSES")
+		private String r55_operating_expenses;
+
+		@Column(name = "R55_FIG_BAL_SHEET")
+		private BigDecimal r55_fig_bal_sheet;
+
+		@Column(name = "R55_FIG_BAL_SHEET_BWP")
+		private BigDecimal r55_fig_bal_sheet_bwp;
+
+		@Column(name = "R55_AMT_STATEMENT_ADJ")
+		private BigDecimal r55_amt_statement_adj;
+
+		@Column(name = "R55_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r55_amt_statement_adj_bwp;
+
+		@Column(name = "R55_NET_AMT")
+		private BigDecimal r55_net_amt;
+
+		@Column(name = "R55_NET_AMT_BWP")
+		private BigDecimal r55_net_amt_bwp;
+
+		@Column(name = "R55_BAL_SUB")
+		private BigDecimal r55_bal_sub;
+
+		@Column(name = "R55_BAL_SUB_BWP")
+		private BigDecimal r55_bal_sub_bwp;
+
+		@Column(name = "R55_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r55_bal_sub_diaries_bwp;
+
+		@Column(name = "R56_OPERATING_EXPENSES")
+		private String r56_operating_expenses;
+
+		@Column(name = "R56_FIG_BAL_SHEET")
+		private BigDecimal r56_fig_bal_sheet;
+
+		@Column(name = "R56_FIG_BAL_SHEET_BWP")
+		private BigDecimal r56_fig_bal_sheet_bwp;
+
+		@Column(name = "R56_AMT_STATEMENT_ADJ")
+		private BigDecimal r56_amt_statement_adj;
+
+		@Column(name = "R56_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r56_amt_statement_adj_bwp;
+
+		@Column(name = "R56_NET_AMT")
+		private BigDecimal r56_net_amt;
+
+		@Column(name = "R56_NET_AMT_BWP")
+		private BigDecimal r56_net_amt_bwp;
+
+		@Column(name = "R56_BAL_SUB")
+		private BigDecimal r56_bal_sub;
+
+		@Column(name = "R56_BAL_SUB_BWP")
+		private BigDecimal r56_bal_sub_bwp;
+
+		@Column(name = "R56_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r56_bal_sub_diaries_bwp;
+
+		@Column(name = "R57_OPERATING_EXPENSES")
+		private String r57_operating_expenses;
+
+		@Column(name = "R57_FIG_BAL_SHEET")
+		private BigDecimal r57_fig_bal_sheet;
+
+		@Column(name = "R57_FIG_BAL_SHEET_BWP")
+		private BigDecimal r57_fig_bal_sheet_bwp;
+
+		@Column(name = "R57_AMT_STATEMENT_ADJ")
+		private BigDecimal r57_amt_statement_adj;
+
+		@Column(name = "R57_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r57_amt_statement_adj_bwp;
+
+		@Column(name = "R57_NET_AMT")
+		private BigDecimal r57_net_amt;
+
+		@Column(name = "R57_NET_AMT_BWP")
+		private BigDecimal r57_net_amt_bwp;
+
+		@Column(name = "R57_BAL_SUB")
+		private BigDecimal r57_bal_sub;
+
+		@Column(name = "R57_BAL_SUB_BWP")
+		private BigDecimal r57_bal_sub_bwp;
+
+		@Column(name = "R57_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r57_bal_sub_diaries_bwp;
+
+		@Column(name = "R58_OPERATING_EXPENSES")
+		private String r58_operating_expenses;
+
+		@Column(name = "R58_FIG_BAL_SHEET")
+		private BigDecimal r58_fig_bal_sheet;
+
+		@Column(name = "R58_FIG_BAL_SHEET_BWP")
+		private BigDecimal r58_fig_bal_sheet_bwp;
+
+		@Column(name = "R58_AMT_STATEMENT_ADJ")
+		private BigDecimal r58_amt_statement_adj;
+
+		@Column(name = "R58_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r58_amt_statement_adj_bwp;
+
+		@Column(name = "R58_NET_AMT")
+		private BigDecimal r58_net_amt;
+
+		@Column(name = "R58_NET_AMT_BWP")
+		private BigDecimal r58_net_amt_bwp;
+
+		@Column(name = "R58_BAL_SUB")
+		private BigDecimal r58_bal_sub;
+
+		@Column(name = "R58_BAL_SUB_BWP")
+		private BigDecimal r58_bal_sub_bwp;
+
+		@Column(name = "R58_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r58_bal_sub_diaries_bwp;
+
+		@Column(name = "R59_OPERATING_EXPENSES")
+		private String r59_operating_expenses;
+
+		@Column(name = "R59_FIG_BAL_SHEET")
+		private BigDecimal r59_fig_bal_sheet;
+
+		@Column(name = "R59_FIG_BAL_SHEET_BWP")
+		private BigDecimal r59_fig_bal_sheet_bwp;
+
+		@Column(name = "R59_AMT_STATEMENT_ADJ")
+		private BigDecimal r59_amt_statement_adj;
+
+		@Column(name = "R59_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r59_amt_statement_adj_bwp;
+
+		@Column(name = "R59_NET_AMT")
+		private BigDecimal r59_net_amt;
+
+		@Column(name = "R59_NET_AMT_BWP")
+		private BigDecimal r59_net_amt_bwp;
+
+		@Column(name = "R59_BAL_SUB")
+		private BigDecimal r59_bal_sub;
+
+		@Column(name = "R59_BAL_SUB_BWP")
+		private BigDecimal r59_bal_sub_bwp;
+
+		@Column(name = "R59_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r59_bal_sub_diaries_bwp;
+
+		@Column(name = "R60_OPERATING_EXPENSES")
+		private String r60_operating_expenses;
+
+		@Column(name = "R60_FIG_BAL_SHEET")
+		private BigDecimal r60_fig_bal_sheet;
+
+		@Column(name = "R60_FIG_BAL_SHEET_BWP")
+		private BigDecimal r60_fig_bal_sheet_bwp;
+
+		@Column(name = "R60_AMT_STATEMENT_ADJ")
+		private BigDecimal r60_amt_statement_adj;
+
+		@Column(name = "R60_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r60_amt_statement_adj_bwp;
+
+		@Column(name = "R60_NET_AMT")
+		private BigDecimal r60_net_amt;
+
+		@Column(name = "R60_NET_AMT_BWP")
+		private BigDecimal r60_net_amt_bwp;
+
+		@Column(name = "R60_BAL_SUB")
+		private BigDecimal r60_bal_sub;
+
+		@Column(name = "R60_BAL_SUB_BWP")
+		private BigDecimal r60_bal_sub_bwp;
+
+		@Column(name = "R60_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r60_bal_sub_diaries_bwp;
+
+		@Column(name = "R61_OPERATING_EXPENSES")
+		private String r61_operating_expenses;
+
+		@Column(name = "R61_FIG_BAL_SHEET")
+		private BigDecimal r61_fig_bal_sheet;
+
+		@Column(name = "R61_FIG_BAL_SHEET_BWP")
+		private BigDecimal r61_fig_bal_sheet_bwp;
+
+		@Column(name = "R61_AMT_STATEMENT_ADJ")
+		private BigDecimal r61_amt_statement_adj;
+
+		@Column(name = "R61_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r61_amt_statement_adj_bwp;
+
+		@Column(name = "R61_NET_AMT")
+		private BigDecimal r61_net_amt;
+
+		@Column(name = "R61_NET_AMT_BWP")
+		private BigDecimal r61_net_amt_bwp;
+
+		@Column(name = "R61_BAL_SUB")
+		private BigDecimal r61_bal_sub;
+
+		@Column(name = "R61_BAL_SUB_BWP")
+		private BigDecimal r61_bal_sub_bwp;
+
+		@Column(name = "R61_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r61_bal_sub_diaries_bwp;
+
+		@Column(name = "R62_OPERATING_EXPENSES")
+		private String r62_operating_expenses;
+
+		@Column(name = "R62_FIG_BAL_SHEET")
+		private BigDecimal r62_fig_bal_sheet;
+
+		@Column(name = "R62_FIG_BAL_SHEET_BWP")
+		private BigDecimal r62_fig_bal_sheet_bwp;
+
+		@Column(name = "R62_AMT_STATEMENT_ADJ")
+		private BigDecimal r62_amt_statement_adj;
+
+		@Column(name = "R62_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r62_amt_statement_adj_bwp;
+
+		@Column(name = "R62_NET_AMT")
+		private BigDecimal r62_net_amt;
+
+		@Column(name = "R62_NET_AMT_BWP")
+		private BigDecimal r62_net_amt_bwp;
+
+		@Column(name = "R62_BAL_SUB")
+		private BigDecimal r62_bal_sub;
+
+		@Column(name = "R62_BAL_SUB_BWP")
+		private BigDecimal r62_bal_sub_bwp;
+
+		@Column(name = "R62_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r62_bal_sub_diaries_bwp;
+
+		@Column(name = "R63_OPERATING_EXPENSES")
+		private String r63_operating_expenses;
+
+		@Column(name = "R63_FIG_BAL_SHEET")
+		private BigDecimal r63_fig_bal_sheet;
+
+		@Column(name = "R63_FIG_BAL_SHEET_BWP")
+		private BigDecimal r63_fig_bal_sheet_bwp;
+
+		@Column(name = "R63_AMT_STATEMENT_ADJ")
+		private BigDecimal r63_amt_statement_adj;
+
+		@Column(name = "R63_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r63_amt_statement_adj_bwp;
+
+		@Column(name = "R63_NET_AMT")
+		private BigDecimal r63_net_amt;
+
+		@Column(name = "R63_NET_AMT_BWP")
+		private BigDecimal r63_net_amt_bwp;
+
+		@Column(name = "R63_BAL_SUB")
+		private BigDecimal r63_bal_sub;
+
+		@Column(name = "R63_BAL_SUB_BWP")
+		private BigDecimal r63_bal_sub_bwp;
+
+		@Column(name = "R63_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r63_bal_sub_diaries_bwp;
+
+		@Column(name = "R18_BAL_SUB_DIARIES")
+		private BigDecimal r18_bal_sub_diaries;
+
+		@Column(name = "R19_BAL_SUB_DIARIES")
+		private BigDecimal r19_bal_sub_diaries;
+
+		@Column(name = "R20_BAL_SUB_DIARIES")
+		private BigDecimal r20_bal_sub_diaries;
+
+		@Column(name = "R21_BAL_SUB_DIARIES")
+		private BigDecimal r21_bal_sub_diaries;
+
+		@Column(name = "R22_BAL_SUB_DIARIES")
+		private BigDecimal r22_bal_sub_diaries;
+
+		@Column(name = "R23_BAL_SUB_DIARIES")
+		private BigDecimal r23_bal_sub_diaries;
+
+		@Column(name = "R24_BAL_SUB_DIARIES")
+		private BigDecimal r24_bal_sub_diaries;
+
+		@Column(name = "R25_BAL_SUB_DIARIES")
+		private BigDecimal r25_bal_sub_diaries;
+
+		@Column(name = "R26_BAL_SUB_DIARIES")
+		private BigDecimal r26_bal_sub_diaries;
+
+		@Column(name = "R27_BAL_SUB_DIARIES")
+		private BigDecimal r27_bal_sub_diaries;
+
+		@Column(name = "R28_BAL_SUB_DIARIES")
+		private BigDecimal r28_bal_sub_diaries;
+
+		@Column(name = "R29_BAL_SUB_DIARIES")
+		private BigDecimal r29_bal_sub_diaries;
+
+		@Column(name = "R30_BAL_SUB_DIARIES")
+		private BigDecimal r30_bal_sub_diaries;
+
+		@Column(name = "R31_BAL_SUB_DIARIES")
+		private BigDecimal r31_bal_sub_diaries;
+
+		@Column(name = "R40_BAL_SUB_DIARIES")
+		private BigDecimal r40_bal_sub_diaries;
+
+		@Column(name = "R41_BAL_SUB_DIARIES")
+		private BigDecimal r41_bal_sub_diaries;
+
+		@Column(name = "R42_BAL_SUB_DIARIES")
+		private BigDecimal r42_bal_sub_diaries;
+
+		@Column(name = "R43_BAL_SUB_DIARIES")
+		private BigDecimal r43_bal_sub_diaries;
+
+		@Column(name = "R48_BAL_SUB_DIARIES")
+		private BigDecimal r48_bal_sub_diaries;
+
+		@Column(name = "R49_BAL_SUB_DIARIES")
+		private BigDecimal r49_bal_sub_diaries;
+
+		@Column(name = "R50_BAL_SUB_DIARIES")
+		private BigDecimal r50_bal_sub_diaries;
+
+		@Column(name = "R51_BAL_SUB_DIARIES")
+		private BigDecimal r51_bal_sub_diaries;
+
+		@Column(name = "R52_BAL_SUB_DIARIES")
+		private BigDecimal r52_bal_sub_diaries;
+
+		@Column(name = "R53_BAL_SUB_DIARIES")
+		private BigDecimal r53_bal_sub_diaries;
+
+		@Column(name = "R54_BAL_SUB_DIARIES")
+		private BigDecimal r54_bal_sub_diaries;
+
+		@Column(name = "R55_BAL_SUB_DIARIES")
+		private BigDecimal r55_bal_sub_diaries;
+
+		@Column(name = "R56_BAL_SUB_DIARIES")
+		private BigDecimal r56_bal_sub_diaries;
+
+		@Column(name = "R57_BAL_SUB_DIARIES")
+		private BigDecimal r57_bal_sub_diaries;
+
+		@Column(name = "R58_BAL_SUB_DIARIES")
+		private BigDecimal r58_bal_sub_diaries;
+
+		@Column(name = "R59_BAL_SUB_DIARIES")
+		private BigDecimal r59_bal_sub_diaries;
+
+		@Column(name = "R60_BAL_SUB_DIARIES")
+		private BigDecimal r60_bal_sub_diaries;
+
+		@Column(name = "R61_BAL_SUB_DIARIES")
+		private BigDecimal r61_bal_sub_diaries;
+
+		@Column(name = "R62_BAL_SUB_DIARIES")
+		private BigDecimal r62_bal_sub_diaries;
+
+		@Column(name = "R63_BAL_SUB_DIARIES")
+		private BigDecimal r63_bal_sub_diaries;
+
+		@Column(name = "REPORT_VERSION", length = 100)
+		private BigDecimal REPORT_VERSION;
+
+		@Column(name = "REPORT_FREQUENCY", length = 100)
+		private String REPORT_FREQUENCY;
+
+		@Column(name = "REPORT_CODE", length = 100)
+		private String REPORT_CODE;
+
+		@Column(name = "REPORT_DESC", length = 100)
+		private String REPORT_DESC;
+
+		@Column(name = "ENTITY_FLG", length = 1)
+		private String ENTITY_FLG;
+
+		@Column(name = "MODIFY_FLG", length = 1)
+		private String MODIFY_FLG;
+
+		@Column(name = "DEL_FLG", length = 1)
+		private String DEL_FLG;
+
+		public Date getREPORT_DATE() {
+			return REPORT_DATE;
+		}
+
+		public void setREPORT_DATE(Date REPORT_DATE) {
+			this.REPORT_DATE = REPORT_DATE;
+		}
+
+		public BigDecimal getR18_bal_sub_diaries() {
+			return r18_bal_sub_diaries;
+		}
+
+		public void setR18_bal_sub_diaries(BigDecimal r18_bal_sub_diaries) {
+			this.r18_bal_sub_diaries = r18_bal_sub_diaries;
+		}
+
+		public BigDecimal getR19_bal_sub_diaries() {
+			return r19_bal_sub_diaries;
+		}
+
+		public void setR19_bal_sub_diaries(BigDecimal r19_bal_sub_diaries) {
+			this.r19_bal_sub_diaries = r19_bal_sub_diaries;
+		}
+
+		public BigDecimal getR20_bal_sub_diaries() {
+			return r20_bal_sub_diaries;
+		}
+
+		public void setR20_bal_sub_diaries(BigDecimal r20_bal_sub_diaries) {
+			this.r20_bal_sub_diaries = r20_bal_sub_diaries;
+		}
+
+		public BigDecimal getR21_bal_sub_diaries() {
+			return r21_bal_sub_diaries;
+		}
+
+		public void setR21_bal_sub_diaries(BigDecimal r21_bal_sub_diaries) {
+			this.r21_bal_sub_diaries = r21_bal_sub_diaries;
+		}
+
+		public BigDecimal getR22_bal_sub_diaries() {
+			return r22_bal_sub_diaries;
+		}
+
+		public void setR22_bal_sub_diaries(BigDecimal r22_bal_sub_diaries) {
+			this.r22_bal_sub_diaries = r22_bal_sub_diaries;
+		}
+
+		public BigDecimal getR23_bal_sub_diaries() {
+			return r23_bal_sub_diaries;
+		}
+
+		public void setR23_bal_sub_diaries(BigDecimal r23_bal_sub_diaries) {
+			this.r23_bal_sub_diaries = r23_bal_sub_diaries;
+		}
+
+		public BigDecimal getR24_bal_sub_diaries() {
+			return r24_bal_sub_diaries;
+		}
+
+		public void setR24_bal_sub_diaries(BigDecimal r24_bal_sub_diaries) {
+			this.r24_bal_sub_diaries = r24_bal_sub_diaries;
+		}
+
+		public BigDecimal getR25_bal_sub_diaries() {
+			return r25_bal_sub_diaries;
+		}
+
+		public void setR25_bal_sub_diaries(BigDecimal r25_bal_sub_diaries) {
+			this.r25_bal_sub_diaries = r25_bal_sub_diaries;
+		}
+
+		public BigDecimal getR26_bal_sub_diaries() {
+			return r26_bal_sub_diaries;
+		}
+
+		public void setR26_bal_sub_diaries(BigDecimal r26_bal_sub_diaries) {
+			this.r26_bal_sub_diaries = r26_bal_sub_diaries;
+		}
+
+		public BigDecimal getR27_bal_sub_diaries() {
+			return r27_bal_sub_diaries;
+		}
+
+		public void setR27_bal_sub_diaries(BigDecimal r27_bal_sub_diaries) {
+			this.r27_bal_sub_diaries = r27_bal_sub_diaries;
+		}
+
+		public BigDecimal getR28_bal_sub_diaries() {
+			return r28_bal_sub_diaries;
+		}
+
+		public void setR28_bal_sub_diaries(BigDecimal r28_bal_sub_diaries) {
+			this.r28_bal_sub_diaries = r28_bal_sub_diaries;
+		}
+
+		public BigDecimal getR29_bal_sub_diaries() {
+			return r29_bal_sub_diaries;
+		}
+
+		public void setR29_bal_sub_diaries(BigDecimal r29_bal_sub_diaries) {
+			this.r29_bal_sub_diaries = r29_bal_sub_diaries;
+		}
+
+		public BigDecimal getR30_bal_sub_diaries() {
+			return r30_bal_sub_diaries;
+		}
+
+		public void setR30_bal_sub_diaries(BigDecimal r30_bal_sub_diaries) {
+			this.r30_bal_sub_diaries = r30_bal_sub_diaries;
+		}
+
+		public BigDecimal getR31_bal_sub_diaries() {
+			return r31_bal_sub_diaries;
+		}
+
+		public void setR31_bal_sub_diaries(BigDecimal r31_bal_sub_diaries) {
+			this.r31_bal_sub_diaries = r31_bal_sub_diaries;
+		}
+
+		public BigDecimal getR40_bal_sub_diaries() {
+			return r40_bal_sub_diaries;
+		}
+
+		public void setR40_bal_sub_diaries(BigDecimal r40_bal_sub_diaries) {
+			this.r40_bal_sub_diaries = r40_bal_sub_diaries;
+		}
+
+		public BigDecimal getR41_bal_sub_diaries() {
+			return r41_bal_sub_diaries;
+		}
+
+		public void setR41_bal_sub_diaries(BigDecimal r41_bal_sub_diaries) {
+			this.r41_bal_sub_diaries = r41_bal_sub_diaries;
+		}
+
+		public BigDecimal getR42_bal_sub_diaries() {
+			return r42_bal_sub_diaries;
+		}
+
+		public void setR42_bal_sub_diaries(BigDecimal r42_bal_sub_diaries) {
+			this.r42_bal_sub_diaries = r42_bal_sub_diaries;
+		}
+
+		public BigDecimal getR43_bal_sub_diaries() {
+			return r43_bal_sub_diaries;
+		}
+
+		public void setR43_bal_sub_diaries(BigDecimal r43_bal_sub_diaries) {
+			this.r43_bal_sub_diaries = r43_bal_sub_diaries;
+		}
+
+		public BigDecimal getR49_bal_sub_diaries() {
+			return r49_bal_sub_diaries;
+		}
+
+		public void setR49_bal_sub_diaries(BigDecimal r49_bal_sub_diaries) {
+			this.r49_bal_sub_diaries = r49_bal_sub_diaries;
+		}
+
+		public BigDecimal getR50_bal_sub_diaries() {
+			return r50_bal_sub_diaries;
+		}
+
+		public void setR50_bal_sub_diaries(BigDecimal r50_bal_sub_diaries) {
+			this.r50_bal_sub_diaries = r50_bal_sub_diaries;
+		}
+
+		public BigDecimal getR51_bal_sub_diaries() {
+			return r51_bal_sub_diaries;
+		}
+
+		public void setR51_bal_sub_diaries(BigDecimal r51_bal_sub_diaries) {
+			this.r51_bal_sub_diaries = r51_bal_sub_diaries;
+		}
+
+		public BigDecimal getR52_bal_sub_diaries() {
+			return r52_bal_sub_diaries;
+		}
+
+		public void setR52_bal_sub_diaries(BigDecimal r52_bal_sub_diaries) {
+			this.r52_bal_sub_diaries = r52_bal_sub_diaries;
+		}
+
+		public BigDecimal getR53_bal_sub_diaries() {
+			return r53_bal_sub_diaries;
+		}
+
+		public void setR53_bal_sub_diaries(BigDecimal r53_bal_sub_diaries) {
+			this.r53_bal_sub_diaries = r53_bal_sub_diaries;
+		}
+
+		public BigDecimal getR54_bal_sub_diaries() {
+			return r54_bal_sub_diaries;
+		}
+
+		public void setR54_bal_sub_diaries(BigDecimal r54_bal_sub_diaries) {
+			this.r54_bal_sub_diaries = r54_bal_sub_diaries;
+		}
+
+		public BigDecimal getR55_bal_sub_diaries() {
+			return r55_bal_sub_diaries;
+		}
+
+		public void setR55_bal_sub_diaries(BigDecimal r55_bal_sub_diaries) {
+			this.r55_bal_sub_diaries = r55_bal_sub_diaries;
+		}
+
+		public BigDecimal getR56_bal_sub_diaries() {
+			return r56_bal_sub_diaries;
+		}
+
+		public void setR56_bal_sub_diaries(BigDecimal r56_bal_sub_diaries) {
+			this.r56_bal_sub_diaries = r56_bal_sub_diaries;
+		}
+
+		public BigDecimal getR57_bal_sub_diaries() {
+			return r57_bal_sub_diaries;
+		}
+
+		public void setR57_bal_sub_diaries(BigDecimal r57_bal_sub_diaries) {
+			this.r57_bal_sub_diaries = r57_bal_sub_diaries;
+		}
+
+		public BigDecimal getR58_bal_sub_diaries() {
+			return r58_bal_sub_diaries;
+		}
+
+		public void setR58_bal_sub_diaries(BigDecimal r58_bal_sub_diaries) {
+			this.r58_bal_sub_diaries = r58_bal_sub_diaries;
+		}
+
+		public BigDecimal getR59_bal_sub_diaries() {
+			return r59_bal_sub_diaries;
+		}
+
+		public void setR59_bal_sub_diaries(BigDecimal r59_bal_sub_diaries) {
+			this.r59_bal_sub_diaries = r59_bal_sub_diaries;
+		}
+
+		public BigDecimal getR60_bal_sub_diaries() {
+			return r60_bal_sub_diaries;
+		}
+
+		public void setR60_bal_sub_diaries(BigDecimal r60_bal_sub_diaries) {
+			this.r60_bal_sub_diaries = r60_bal_sub_diaries;
+		}
+
+		public BigDecimal getR61_bal_sub_diaries() {
+			return r61_bal_sub_diaries;
+		}
+
+		public void setR61_bal_sub_diaries(BigDecimal r61_bal_sub_diaries) {
+			this.r61_bal_sub_diaries = r61_bal_sub_diaries;
+		}
+
+		public BigDecimal getR62_bal_sub_diaries() {
+			return r62_bal_sub_diaries;
+		}
+
+		public void setR62_bal_sub_diaries(BigDecimal r62_bal_sub_diaries) {
+			this.r62_bal_sub_diaries = r62_bal_sub_diaries;
+		}
+
+		public BigDecimal getR63_bal_sub_diaries() {
+			return r63_bal_sub_diaries;
+		}
+
+		public void setR63_bal_sub_diaries(BigDecimal r63_bal_sub_diaries) {
+			this.r63_bal_sub_diaries = r63_bal_sub_diaries;
+		}
+
+		public String getR9_intrest_div() {
+			return r9_intrest_div;
+		}
+
+		public void setR9_intrest_div(String r9_intrest_div) {
+			this.r9_intrest_div = r9_intrest_div;
+		}
+
+		public BigDecimal getR9_fig_bal_sheet() {
+			return r9_fig_bal_sheet;
+		}
+
+		public void setR9_fig_bal_sheet(BigDecimal r9_fig_bal_sheet) {
+			this.r9_fig_bal_sheet = r9_fig_bal_sheet;
+		}
+
+		public BigDecimal getR9_fig_bal_sheet_bwp() {
+			return r9_fig_bal_sheet_bwp;
+		}
+
+		public void setR9_fig_bal_sheet_bwp(BigDecimal r9_fig_bal_sheet_bwp) {
+			this.r9_fig_bal_sheet_bwp = r9_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR9_amt_statement_adj() {
+			return r9_amt_statement_adj;
+		}
+
+		public void setR9_amt_statement_adj(BigDecimal r9_amt_statement_adj) {
+			this.r9_amt_statement_adj = r9_amt_statement_adj;
+		}
+
+		public BigDecimal getR9_amt_statement_adj_bwp() {
+			return r9_amt_statement_adj_bwp;
+		}
+
+		public void setR9_amt_statement_adj_bwp(BigDecimal r9_amt_statement_adj_bwp) {
+			this.r9_amt_statement_adj_bwp = r9_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR9_net_amt() {
+			return r9_net_amt;
+		}
+
+		public void setR9_net_amt(BigDecimal r9_net_amt) {
+			this.r9_net_amt = r9_net_amt;
+		}
+
+		public BigDecimal getR9_net_amt_bwp() {
+			return r9_net_amt_bwp;
+		}
+
+		public void setR9_net_amt_bwp(BigDecimal r9_net_amt_bwp) {
+			this.r9_net_amt_bwp = r9_net_amt_bwp;
+		}
+
+		public BigDecimal getR9_bal_sub() {
+			return r9_bal_sub;
+		}
+
+		public void setR9_bal_sub(BigDecimal r9_bal_sub) {
+			this.r9_bal_sub = r9_bal_sub;
+		}
+
+		public BigDecimal getR9_bal_sub_bwp() {
+			return r9_bal_sub_bwp;
+		}
+
+		public void setR9_bal_sub_bwp(BigDecimal r9_bal_sub_bwp) {
+			this.r9_bal_sub_bwp = r9_bal_sub_bwp;
+		}
+
+		public BigDecimal getR9_bal_sub_diaries() {
+			return r9_bal_sub_diaries;
+		}
+
+		public void setR9_bal_sub_diaries(BigDecimal r9_bal_sub_diaries) {
+			this.r9_bal_sub_diaries = r9_bal_sub_diaries;
+		}
+
+		public BigDecimal getR9_bal_sub_diaries_bwp() {
+			return r9_bal_sub_diaries_bwp;
+		}
+
+		public void setR9_bal_sub_diaries_bwp(BigDecimal r9_bal_sub_diaries_bwp) {
+			this.r9_bal_sub_diaries_bwp = r9_bal_sub_diaries_bwp;
+		}
+
+		public String getR10_intrest_div() {
+			return r10_intrest_div;
+		}
+
+		public void setR10_intrest_div(String r10_intrest_div) {
+			this.r10_intrest_div = r10_intrest_div;
+		}
+
+		public BigDecimal getR10_fig_bal_sheet() {
+			return r10_fig_bal_sheet;
+		}
+
+		public void setR10_fig_bal_sheet(BigDecimal r10_fig_bal_sheet) {
+			this.r10_fig_bal_sheet = r10_fig_bal_sheet;
+		}
+
+		public BigDecimal getR10_fig_bal_sheet_bwp() {
+			return r10_fig_bal_sheet_bwp;
+		}
+
+		public void setR10_fig_bal_sheet_bwp(BigDecimal r10_fig_bal_sheet_bwp) {
+			this.r10_fig_bal_sheet_bwp = r10_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR10_amt_statement_adj() {
+			return r10_amt_statement_adj;
+		}
+
+		public void setR10_amt_statement_adj(BigDecimal r10_amt_statement_adj) {
+			this.r10_amt_statement_adj = r10_amt_statement_adj;
+		}
+
+		public BigDecimal getR10_amt_statement_adj_bwp() {
+			return r10_amt_statement_adj_bwp;
+		}
+
+		public void setR10_amt_statement_adj_bwp(BigDecimal r10_amt_statement_adj_bwp) {
+			this.r10_amt_statement_adj_bwp = r10_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR10_net_amt() {
+			return r10_net_amt;
+		}
+
+		public void setR10_net_amt(BigDecimal r10_net_amt) {
+			this.r10_net_amt = r10_net_amt;
+		}
+
+		public BigDecimal getR10_net_amt_bwp() {
+			return r10_net_amt_bwp;
+		}
+
+		public void setR10_net_amt_bwp(BigDecimal r10_net_amt_bwp) {
+			this.r10_net_amt_bwp = r10_net_amt_bwp;
+		}
+
+		public BigDecimal getR10_bal_sub() {
+			return r10_bal_sub;
+		}
+
+		public void setR10_bal_sub(BigDecimal r10_bal_sub) {
+			this.r10_bal_sub = r10_bal_sub;
+		}
+
+		public BigDecimal getR10_bal_sub_bwp() {
+			return r10_bal_sub_bwp;
+		}
+
+		public void setR10_bal_sub_bwp(BigDecimal r10_bal_sub_bwp) {
+			this.r10_bal_sub_bwp = r10_bal_sub_bwp;
+		}
+
+		public BigDecimal getR10_bal_sub_diaries() {
+			return r10_bal_sub_diaries;
+		}
+
+		public void setR10_bal_sub_diaries(BigDecimal r10_bal_sub_diaries) {
+			this.r10_bal_sub_diaries = r10_bal_sub_diaries;
+		}
+
+		public BigDecimal getR10_bal_sub_diaries_bwp() {
+			return r10_bal_sub_diaries_bwp;
+		}
+
+		public void setR10_bal_sub_diaries_bwp(BigDecimal r10_bal_sub_diaries_bwp) {
+			this.r10_bal_sub_diaries_bwp = r10_bal_sub_diaries_bwp;
+		}
+
+		public String getR11_intrest_div() {
+			return r11_intrest_div;
+		}
+
+		public void setR11_intrest_div(String r11_intrest_div) {
+			this.r11_intrest_div = r11_intrest_div;
+		}
+
+		public BigDecimal getR11_fig_bal_sheet() {
+			return r11_fig_bal_sheet;
+		}
+
+		public void setR11_fig_bal_sheet(BigDecimal r11_fig_bal_sheet) {
+			this.r11_fig_bal_sheet = r11_fig_bal_sheet;
+		}
+
+		public BigDecimal getR11_fig_bal_sheet_bwp() {
+			return r11_fig_bal_sheet_bwp;
+		}
+
+		public void setR11_fig_bal_sheet_bwp(BigDecimal r11_fig_bal_sheet_bwp) {
+			this.r11_fig_bal_sheet_bwp = r11_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR11_amt_statement_adj() {
+			return r11_amt_statement_adj;
+		}
+
+		public void setR11_amt_statement_adj(BigDecimal r11_amt_statement_adj) {
+			this.r11_amt_statement_adj = r11_amt_statement_adj;
+		}
+
+		public BigDecimal getR11_amt_statement_adj_bwp() {
+			return r11_amt_statement_adj_bwp;
+		}
+
+		public void setR11_amt_statement_adj_bwp(BigDecimal r11_amt_statement_adj_bwp) {
+			this.r11_amt_statement_adj_bwp = r11_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR11_net_amt() {
+			return r11_net_amt;
+		}
+
+		public void setR11_net_amt(BigDecimal r11_net_amt) {
+			this.r11_net_amt = r11_net_amt;
+		}
+
+		public BigDecimal getR11_net_amt_bwp() {
+			return r11_net_amt_bwp;
+		}
+
+		public void setR11_net_amt_bwp(BigDecimal r11_net_amt_bwp) {
+			this.r11_net_amt_bwp = r11_net_amt_bwp;
+		}
+
+		public BigDecimal getR11_bal_sub() {
+			return r11_bal_sub;
+		}
+
+		public void setR11_bal_sub(BigDecimal r11_bal_sub) {
+			this.r11_bal_sub = r11_bal_sub;
+		}
+
+		public BigDecimal getR11_bal_sub_bwp() {
+			return r11_bal_sub_bwp;
+		}
+
+		public void setR11_bal_sub_bwp(BigDecimal r11_bal_sub_bwp) {
+			this.r11_bal_sub_bwp = r11_bal_sub_bwp;
+		}
+
+		public BigDecimal getR11_bal_sub_diaries() {
+			return r11_bal_sub_diaries;
+		}
+
+		public void setR11_bal_sub_diaries(BigDecimal r11_bal_sub_diaries) {
+			this.r11_bal_sub_diaries = r11_bal_sub_diaries;
+		}
+
+		public BigDecimal getR11_bal_sub_diaries_bwp() {
+			return r11_bal_sub_diaries_bwp;
+		}
+
+		public void setR11_bal_sub_diaries_bwp(BigDecimal r11_bal_sub_diaries_bwp) {
+			this.r11_bal_sub_diaries_bwp = r11_bal_sub_diaries_bwp;
+		}
+
+		public String getR12_intrest_div() {
+			return r12_intrest_div;
+		}
+
+		public void setR12_intrest_div(String r12_intrest_div) {
+			this.r12_intrest_div = r12_intrest_div;
+		}
+
+		public BigDecimal getR12_fig_bal_sheet() {
+			return r12_fig_bal_sheet;
+		}
+
+		public void setR12_fig_bal_sheet(BigDecimal r12_fig_bal_sheet) {
+			this.r12_fig_bal_sheet = r12_fig_bal_sheet;
+		}
+
+		public BigDecimal getR12_fig_bal_sheet_bwp() {
+			return r12_fig_bal_sheet_bwp;
+		}
+
+		public void setR12_fig_bal_sheet_bwp(BigDecimal r12_fig_bal_sheet_bwp) {
+			this.r12_fig_bal_sheet_bwp = r12_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR12_amt_statement_adj() {
+			return r12_amt_statement_adj;
+		}
+
+		public void setR12_amt_statement_adj(BigDecimal r12_amt_statement_adj) {
+			this.r12_amt_statement_adj = r12_amt_statement_adj;
+		}
+
+		public BigDecimal getR12_amt_statement_adj_bwp() {
+			return r12_amt_statement_adj_bwp;
+		}
+
+		public void setR12_amt_statement_adj_bwp(BigDecimal r12_amt_statement_adj_bwp) {
+			this.r12_amt_statement_adj_bwp = r12_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR12_net_amt() {
+			return r12_net_amt;
+		}
+
+		public void setR12_net_amt(BigDecimal r12_net_amt) {
+			this.r12_net_amt = r12_net_amt;
+		}
+
+		public BigDecimal getR12_net_amt_bwp() {
+			return r12_net_amt_bwp;
+		}
+
+		public void setR12_net_amt_bwp(BigDecimal r12_net_amt_bwp) {
+			this.r12_net_amt_bwp = r12_net_amt_bwp;
+		}
+
+		public BigDecimal getR12_bal_sub() {
+			return r12_bal_sub;
+		}
+
+		public void setR12_bal_sub(BigDecimal r12_bal_sub) {
+			this.r12_bal_sub = r12_bal_sub;
+		}
+
+		public BigDecimal getR12_bal_sub_bwp() {
+			return r12_bal_sub_bwp;
+		}
+
+		public void setR12_bal_sub_bwp(BigDecimal r12_bal_sub_bwp) {
+			this.r12_bal_sub_bwp = r12_bal_sub_bwp;
+		}
+
+		public BigDecimal getR12_bal_sub_diaries() {
+			return r12_bal_sub_diaries;
+		}
+
+		public void setR12_bal_sub_diaries(BigDecimal r12_bal_sub_diaries) {
+			this.r12_bal_sub_diaries = r12_bal_sub_diaries;
+		}
+
+		public BigDecimal getR12_bal_sub_diaries_bwp() {
+			return r12_bal_sub_diaries_bwp;
+		}
+
+		public void setR12_bal_sub_diaries_bwp(BigDecimal r12_bal_sub_diaries_bwp) {
+			this.r12_bal_sub_diaries_bwp = r12_bal_sub_diaries_bwp;
+		}
+
+		public String getR13_intrest_div() {
+			return r13_intrest_div;
+		}
+
+		public void setR13_intrest_div(String r13_intrest_div) {
+			this.r13_intrest_div = r13_intrest_div;
+		}
+
+		public BigDecimal getR13_fig_bal_sheet() {
+			return r13_fig_bal_sheet;
+		}
+
+		public void setR13_fig_bal_sheet(BigDecimal r13_fig_bal_sheet) {
+			this.r13_fig_bal_sheet = r13_fig_bal_sheet;
+		}
+
+		public BigDecimal getR13_fig_bal_sheet_bwp() {
+			return r13_fig_bal_sheet_bwp;
+		}
+
+		public void setR13_fig_bal_sheet_bwp(BigDecimal r13_fig_bal_sheet_bwp) {
+			this.r13_fig_bal_sheet_bwp = r13_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR13_amt_statement_adj() {
+			return r13_amt_statement_adj;
+		}
+
+		public void setR13_amt_statement_adj(BigDecimal r13_amt_statement_adj) {
+			this.r13_amt_statement_adj = r13_amt_statement_adj;
+		}
+
+		public BigDecimal getR13_amt_statement_adj_bwp() {
+			return r13_amt_statement_adj_bwp;
+		}
+
+		public void setR13_amt_statement_adj_bwp(BigDecimal r13_amt_statement_adj_bwp) {
+			this.r13_amt_statement_adj_bwp = r13_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR13_net_amt() {
+			return r13_net_amt;
+		}
+
+		public void setR13_net_amt(BigDecimal r13_net_amt) {
+			this.r13_net_amt = r13_net_amt;
+		}
+
+		public BigDecimal getR13_net_amt_bwp() {
+			return r13_net_amt_bwp;
+		}
+
+		public void setR13_net_amt_bwp(BigDecimal r13_net_amt_bwp) {
+			this.r13_net_amt_bwp = r13_net_amt_bwp;
+		}
+
+		public BigDecimal getR13_bal_sub() {
+			return r13_bal_sub;
+		}
+
+		public void setR13_bal_sub(BigDecimal r13_bal_sub) {
+			this.r13_bal_sub = r13_bal_sub;
+		}
+
+		public BigDecimal getR13_bal_sub_bwp() {
+			return r13_bal_sub_bwp;
+		}
+
+		public void setR13_bal_sub_bwp(BigDecimal r13_bal_sub_bwp) {
+			this.r13_bal_sub_bwp = r13_bal_sub_bwp;
+		}
+
+		public BigDecimal getR13_bal_sub_diaries() {
+			return r13_bal_sub_diaries;
+		}
+
+		public void setR13_bal_sub_diaries(BigDecimal r13_bal_sub_diaries) {
+			this.r13_bal_sub_diaries = r13_bal_sub_diaries;
+		}
+
+		public BigDecimal getR13_bal_sub_diaries_bwp() {
+			return r13_bal_sub_diaries_bwp;
+		}
+
+		public void setR13_bal_sub_diaries_bwp(BigDecimal r13_bal_sub_diaries_bwp) {
+			this.r13_bal_sub_diaries_bwp = r13_bal_sub_diaries_bwp;
+		}
+
+		public String getR17_other_income() {
+			return r17_other_income;
+		}
+
+		public void setR17_other_income(String r17_other_income) {
+			this.r17_other_income = r17_other_income;
+		}
+
+		public BigDecimal getR17_fig_bal_sheet() {
+			return r17_fig_bal_sheet;
+		}
+
+		public void setR17_fig_bal_sheet(BigDecimal r17_fig_bal_sheet) {
+			this.r17_fig_bal_sheet = r17_fig_bal_sheet;
+		}
+
+		public BigDecimal getR17_fig_bal_sheet_bwp() {
+			return r17_fig_bal_sheet_bwp;
+		}
+
+		public void setR17_fig_bal_sheet_bwp(BigDecimal r17_fig_bal_sheet_bwp) {
+			this.r17_fig_bal_sheet_bwp = r17_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR17_amt_statement_adj() {
+			return r17_amt_statement_adj;
+		}
+
+		public void setR17_amt_statement_adj(BigDecimal r17_amt_statement_adj) {
+			this.r17_amt_statement_adj = r17_amt_statement_adj;
+		}
+
+		public BigDecimal getR17_amt_statement_adj_bwp() {
+			return r17_amt_statement_adj_bwp;
+		}
+
+		public void setR17_amt_statement_adj_bwp(BigDecimal r17_amt_statement_adj_bwp) {
+			this.r17_amt_statement_adj_bwp = r17_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR17_net_amt() {
+			return r17_net_amt;
+		}
+
+		public void setR17_net_amt(BigDecimal r17_net_amt) {
+			this.r17_net_amt = r17_net_amt;
+		}
+
+		public BigDecimal getR17_net_amt_bwp() {
+			return r17_net_amt_bwp;
+		}
+
+		public void setR17_net_amt_bwp(BigDecimal r17_net_amt_bwp) {
+			this.r17_net_amt_bwp = r17_net_amt_bwp;
+		}
+
+		public BigDecimal getR17_bal_sub() {
+			return r17_bal_sub;
+		}
+
+		public void setR17_bal_sub(BigDecimal r17_bal_sub) {
+			this.r17_bal_sub = r17_bal_sub;
+		}
+
+		public BigDecimal getR17_bal_sub_bwp() {
+			return r17_bal_sub_bwp;
+		}
+
+		public void setR17_bal_sub_bwp(BigDecimal r17_bal_sub_bwp) {
+			this.r17_bal_sub_bwp = r17_bal_sub_bwp;
+		}
+
+		public BigDecimal getR17_bal_sub_diaries_bwp() {
+			return r17_bal_sub_diaries_bwp;
+		}
+
+		public void setR17_bal_sub_diaries_bwp(BigDecimal r17_bal_sub_diaries_bwp) {
+			this.r17_bal_sub_diaries_bwp = r17_bal_sub_diaries_bwp;
+		}
+
+		public String getR18_other_income() {
+			return r18_other_income;
+		}
+
+		public void setR18_other_income(String r18_other_income) {
+			this.r18_other_income = r18_other_income;
+		}
+
+		public BigDecimal getR18_fig_bal_sheet() {
+			return r18_fig_bal_sheet;
+		}
+
+		public void setR18_fig_bal_sheet(BigDecimal r18_fig_bal_sheet) {
+			this.r18_fig_bal_sheet = r18_fig_bal_sheet;
+		}
+
+		public BigDecimal getR18_fig_bal_sheet_bwp() {
+			return r18_fig_bal_sheet_bwp;
+		}
+
+		public void setR18_fig_bal_sheet_bwp(BigDecimal r18_fig_bal_sheet_bwp) {
+			this.r18_fig_bal_sheet_bwp = r18_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR18_amt_statement_adj() {
+			return r18_amt_statement_adj;
+		}
+
+		public void setR18_amt_statement_adj(BigDecimal r18_amt_statement_adj) {
+			this.r18_amt_statement_adj = r18_amt_statement_adj;
+		}
+
+		public BigDecimal getR18_amt_statement_adj_bwp() {
+			return r18_amt_statement_adj_bwp;
+		}
+
+		public void setR18_amt_statement_adj_bwp(BigDecimal r18_amt_statement_adj_bwp) {
+			this.r18_amt_statement_adj_bwp = r18_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR18_net_amt() {
+			return r18_net_amt;
+		}
+
+		public void setR18_net_amt(BigDecimal r18_net_amt) {
+			this.r18_net_amt = r18_net_amt;
+		}
+
+		public BigDecimal getR18_net_amt_bwp() {
+			return r18_net_amt_bwp;
+		}
+
+		public void setR18_net_amt_bwp(BigDecimal r18_net_amt_bwp) {
+			this.r18_net_amt_bwp = r18_net_amt_bwp;
+		}
+
+		public BigDecimal getR18_bal_sub() {
+			return r18_bal_sub;
+		}
+
+		public void setR18_bal_sub(BigDecimal r18_bal_sub) {
+			this.r18_bal_sub = r18_bal_sub;
+		}
+
+		public BigDecimal getR18_bal_sub_bwp() {
+			return r18_bal_sub_bwp;
+		}
+
+		public void setR18_bal_sub_bwp(BigDecimal r18_bal_sub_bwp) {
+			this.r18_bal_sub_bwp = r18_bal_sub_bwp;
+		}
+
+		public BigDecimal getR18_bal_sub_diaries_bwp() {
+			return r18_bal_sub_diaries_bwp;
+		}
+
+		public void setR18_bal_sub_diaries_bwp(BigDecimal r18_bal_sub_diaries_bwp) {
+			this.r18_bal_sub_diaries_bwp = r18_bal_sub_diaries_bwp;
+		}
+
+		public String getR19_other_income() {
+			return r19_other_income;
+		}
+
+		public void setR19_other_income(String r19_other_income) {
+			this.r19_other_income = r19_other_income;
+		}
+
+		public BigDecimal getR19_fig_bal_sheet() {
+			return r19_fig_bal_sheet;
+		}
+
+		public void setR19_fig_bal_sheet(BigDecimal r19_fig_bal_sheet) {
+			this.r19_fig_bal_sheet = r19_fig_bal_sheet;
+		}
+
+		public BigDecimal getR19_fig_bal_sheet_bwp() {
+			return r19_fig_bal_sheet_bwp;
+		}
+
+		public void setR19_fig_bal_sheet_bwp(BigDecimal r19_fig_bal_sheet_bwp) {
+			this.r19_fig_bal_sheet_bwp = r19_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR19_amt_statement_adj() {
+			return r19_amt_statement_adj;
+		}
+
+		public void setR19_amt_statement_adj(BigDecimal r19_amt_statement_adj) {
+			this.r19_amt_statement_adj = r19_amt_statement_adj;
+		}
+
+		public BigDecimal getR19_amt_statement_adj_bwp() {
+			return r19_amt_statement_adj_bwp;
+		}
+
+		public void setR19_amt_statement_adj_bwp(BigDecimal r19_amt_statement_adj_bwp) {
+			this.r19_amt_statement_adj_bwp = r19_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR19_net_amt() {
+			return r19_net_amt;
+		}
+
+		public void setR19_net_amt(BigDecimal r19_net_amt) {
+			this.r19_net_amt = r19_net_amt;
+		}
+
+		public BigDecimal getR19_net_amt_bwp() {
+			return r19_net_amt_bwp;
+		}
+
+		public void setR19_net_amt_bwp(BigDecimal r19_net_amt_bwp) {
+			this.r19_net_amt_bwp = r19_net_amt_bwp;
+		}
+
+		public BigDecimal getR19_bal_sub() {
+			return r19_bal_sub;
+		}
+
+		public void setR19_bal_sub(BigDecimal r19_bal_sub) {
+			this.r19_bal_sub = r19_bal_sub;
+		}
+
+		public BigDecimal getR19_bal_sub_bwp() {
+			return r19_bal_sub_bwp;
+		}
+
+		public void setR19_bal_sub_bwp(BigDecimal r19_bal_sub_bwp) {
+			this.r19_bal_sub_bwp = r19_bal_sub_bwp;
+		}
+
+		public BigDecimal getR19_bal_sub_diaries_bwp() {
+			return r19_bal_sub_diaries_bwp;
+		}
+
+		public void setR19_bal_sub_diaries_bwp(BigDecimal r19_bal_sub_diaries_bwp) {
+			this.r19_bal_sub_diaries_bwp = r19_bal_sub_diaries_bwp;
+		}
+
+		public String getR20_other_income() {
+			return r20_other_income;
+		}
+
+		public void setR20_other_income(String r20_other_income) {
+			this.r20_other_income = r20_other_income;
+		}
+
+		public BigDecimal getR20_fig_bal_sheet() {
+			return r20_fig_bal_sheet;
+		}
+
+		public void setR20_fig_bal_sheet(BigDecimal r20_fig_bal_sheet) {
+			this.r20_fig_bal_sheet = r20_fig_bal_sheet;
+		}
+
+		public BigDecimal getR20_fig_bal_sheet_bwp() {
+			return r20_fig_bal_sheet_bwp;
+		}
+
+		public void setR20_fig_bal_sheet_bwp(BigDecimal r20_fig_bal_sheet_bwp) {
+			this.r20_fig_bal_sheet_bwp = r20_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR20_amt_statement_adj() {
+			return r20_amt_statement_adj;
+		}
+
+		public void setR20_amt_statement_adj(BigDecimal r20_amt_statement_adj) {
+			this.r20_amt_statement_adj = r20_amt_statement_adj;
+		}
+
+		public BigDecimal getR20_amt_statement_adj_bwp() {
+			return r20_amt_statement_adj_bwp;
+		}
+
+		public void setR20_amt_statement_adj_bwp(BigDecimal r20_amt_statement_adj_bwp) {
+			this.r20_amt_statement_adj_bwp = r20_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR20_net_amt() {
+			return r20_net_amt;
+		}
+
+		public void setR20_net_amt(BigDecimal r20_net_amt) {
+			this.r20_net_amt = r20_net_amt;
+		}
+
+		public BigDecimal getR20_net_amt_bwp() {
+			return r20_net_amt_bwp;
+		}
+
+		public void setR20_net_amt_bwp(BigDecimal r20_net_amt_bwp) {
+			this.r20_net_amt_bwp = r20_net_amt_bwp;
+		}
+
+		public BigDecimal getR20_bal_sub() {
+			return r20_bal_sub;
+		}
+
+		public void setR20_bal_sub(BigDecimal r20_bal_sub) {
+			this.r20_bal_sub = r20_bal_sub;
+		}
+
+		public BigDecimal getR20_bal_sub_bwp() {
+			return r20_bal_sub_bwp;
+		}
+
+		public void setR20_bal_sub_bwp(BigDecimal r20_bal_sub_bwp) {
+			this.r20_bal_sub_bwp = r20_bal_sub_bwp;
+		}
+
+		public BigDecimal getR20_bal_sub_diaries_bwp() {
+			return r20_bal_sub_diaries_bwp;
+		}
+
+		public void setR20_bal_sub_diaries_bwp(BigDecimal r20_bal_sub_diaries_bwp) {
+			this.r20_bal_sub_diaries_bwp = r20_bal_sub_diaries_bwp;
+		}
+
+		public String getR21_other_income() {
+			return r21_other_income;
+		}
+
+		public void setR21_other_income(String r21_other_income) {
+			this.r21_other_income = r21_other_income;
+		}
+
+		public BigDecimal getR21_fig_bal_sheet() {
+			return r21_fig_bal_sheet;
+		}
+
+		public void setR21_fig_bal_sheet(BigDecimal r21_fig_bal_sheet) {
+			this.r21_fig_bal_sheet = r21_fig_bal_sheet;
+		}
+
+		public BigDecimal getR21_fig_bal_sheet_bwp() {
+			return r21_fig_bal_sheet_bwp;
+		}
+
+		public void setR21_fig_bal_sheet_bwp(BigDecimal r21_fig_bal_sheet_bwp) {
+			this.r21_fig_bal_sheet_bwp = r21_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR21_amt_statement_adj() {
+			return r21_amt_statement_adj;
+		}
+
+		public void setR21_amt_statement_adj(BigDecimal r21_amt_statement_adj) {
+			this.r21_amt_statement_adj = r21_amt_statement_adj;
+		}
+
+		public BigDecimal getR21_amt_statement_adj_bwp() {
+			return r21_amt_statement_adj_bwp;
+		}
+
+		public void setR21_amt_statement_adj_bwp(BigDecimal r21_amt_statement_adj_bwp) {
+			this.r21_amt_statement_adj_bwp = r21_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR21_net_amt() {
+			return r21_net_amt;
+		}
+
+		public void setR21_net_amt(BigDecimal r21_net_amt) {
+			this.r21_net_amt = r21_net_amt;
+		}
+
+		public BigDecimal getR21_net_amt_bwp() {
+			return r21_net_amt_bwp;
+		}
+
+		public void setR21_net_amt_bwp(BigDecimal r21_net_amt_bwp) {
+			this.r21_net_amt_bwp = r21_net_amt_bwp;
+		}
+
+		public BigDecimal getR21_bal_sub() {
+			return r21_bal_sub;
+		}
+
+		public void setR21_bal_sub(BigDecimal r21_bal_sub) {
+			this.r21_bal_sub = r21_bal_sub;
+		}
+
+		public BigDecimal getR21_bal_sub_bwp() {
+			return r21_bal_sub_bwp;
+		}
+
+		public void setR21_bal_sub_bwp(BigDecimal r21_bal_sub_bwp) {
+			this.r21_bal_sub_bwp = r21_bal_sub_bwp;
+		}
+
+		public BigDecimal getR21_bal_sub_diaries_bwp() {
+			return r21_bal_sub_diaries_bwp;
+		}
+
+		public void setR21_bal_sub_diaries_bwp(BigDecimal r21_bal_sub_diaries_bwp) {
+			this.r21_bal_sub_diaries_bwp = r21_bal_sub_diaries_bwp;
+		}
+
+		public String getR22_other_income() {
+			return r22_other_income;
+		}
+
+		public void setR22_other_income(String r22_other_income) {
+			this.r22_other_income = r22_other_income;
+		}
+
+		public BigDecimal getR22_fig_bal_sheet() {
+			return r22_fig_bal_sheet;
+		}
+
+		public void setR22_fig_bal_sheet(BigDecimal r22_fig_bal_sheet) {
+			this.r22_fig_bal_sheet = r22_fig_bal_sheet;
+		}
+
+		public BigDecimal getR22_fig_bal_sheet_bwp() {
+			return r22_fig_bal_sheet_bwp;
+		}
+
+		public void setR22_fig_bal_sheet_bwp(BigDecimal r22_fig_bal_sheet_bwp) {
+			this.r22_fig_bal_sheet_bwp = r22_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR22_amt_statement_adj() {
+			return r22_amt_statement_adj;
+		}
+
+		public void setR22_amt_statement_adj(BigDecimal r22_amt_statement_adj) {
+			this.r22_amt_statement_adj = r22_amt_statement_adj;
+		}
+
+		public BigDecimal getR22_amt_statement_adj_bwp() {
+			return r22_amt_statement_adj_bwp;
+		}
+
+		public void setR22_amt_statement_adj_bwp(BigDecimal r22_amt_statement_adj_bwp) {
+			this.r22_amt_statement_adj_bwp = r22_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR22_net_amt() {
+			return r22_net_amt;
+		}
+
+		public void setR22_net_amt(BigDecimal r22_net_amt) {
+			this.r22_net_amt = r22_net_amt;
+		}
+
+		public BigDecimal getR22_net_amt_bwp() {
+			return r22_net_amt_bwp;
+		}
+
+		public void setR22_net_amt_bwp(BigDecimal r22_net_amt_bwp) {
+			this.r22_net_amt_bwp = r22_net_amt_bwp;
+		}
+
+		public BigDecimal getR22_bal_sub() {
+			return r22_bal_sub;
+		}
+
+		public void setR22_bal_sub(BigDecimal r22_bal_sub) {
+			this.r22_bal_sub = r22_bal_sub;
+		}
+
+		public BigDecimal getR22_bal_sub_bwp() {
+			return r22_bal_sub_bwp;
+		}
+
+		public void setR22_bal_sub_bwp(BigDecimal r22_bal_sub_bwp) {
+			this.r22_bal_sub_bwp = r22_bal_sub_bwp;
+		}
+
+		public BigDecimal getR22_bal_sub_diaries_bwp() {
+			return r22_bal_sub_diaries_bwp;
+		}
+
+		public void setR22_bal_sub_diaries_bwp(BigDecimal r22_bal_sub_diaries_bwp) {
+			this.r22_bal_sub_diaries_bwp = r22_bal_sub_diaries_bwp;
+		}
+
+		public String getR23_other_income() {
+			return r23_other_income;
+		}
+
+		public void setR23_other_income(String r23_other_income) {
+			this.r23_other_income = r23_other_income;
+		}
+
+		public BigDecimal getR23_fig_bal_sheet() {
+			return r23_fig_bal_sheet;
+		}
+
+		public void setR23_fig_bal_sheet(BigDecimal r23_fig_bal_sheet) {
+			this.r23_fig_bal_sheet = r23_fig_bal_sheet;
+		}
+
+		public BigDecimal getR23_fig_bal_sheet_bwp() {
+			return r23_fig_bal_sheet_bwp;
+		}
+
+		public void setR23_fig_bal_sheet_bwp(BigDecimal r23_fig_bal_sheet_bwp) {
+			this.r23_fig_bal_sheet_bwp = r23_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR23_amt_statement_adj() {
+			return r23_amt_statement_adj;
+		}
+
+		public void setR23_amt_statement_adj(BigDecimal r23_amt_statement_adj) {
+			this.r23_amt_statement_adj = r23_amt_statement_adj;
+		}
+
+		public BigDecimal getR23_amt_statement_adj_bwp() {
+			return r23_amt_statement_adj_bwp;
+		}
+
+		public void setR23_amt_statement_adj_bwp(BigDecimal r23_amt_statement_adj_bwp) {
+			this.r23_amt_statement_adj_bwp = r23_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR23_net_amt() {
+			return r23_net_amt;
+		}
+
+		public void setR23_net_amt(BigDecimal r23_net_amt) {
+			this.r23_net_amt = r23_net_amt;
+		}
+
+		public BigDecimal getR23_net_amt_bwp() {
+			return r23_net_amt_bwp;
+		}
+
+		public void setR23_net_amt_bwp(BigDecimal r23_net_amt_bwp) {
+			this.r23_net_amt_bwp = r23_net_amt_bwp;
+		}
+
+		public BigDecimal getR23_bal_sub() {
+			return r23_bal_sub;
+		}
+
+		public void setR23_bal_sub(BigDecimal r23_bal_sub) {
+			this.r23_bal_sub = r23_bal_sub;
+		}
+
+		public BigDecimal getR23_bal_sub_bwp() {
+			return r23_bal_sub_bwp;
+		}
+
+		public void setR23_bal_sub_bwp(BigDecimal r23_bal_sub_bwp) {
+			this.r23_bal_sub_bwp = r23_bal_sub_bwp;
+		}
+
+		public BigDecimal getR23_bal_sub_diaries_bwp() {
+			return r23_bal_sub_diaries_bwp;
+		}
+
+		public void setR23_bal_sub_diaries_bwp(BigDecimal r23_bal_sub_diaries_bwp) {
+			this.r23_bal_sub_diaries_bwp = r23_bal_sub_diaries_bwp;
+		}
+
+		public String getR24_other_income() {
+			return r24_other_income;
+		}
+
+		public void setR24_other_income(String r24_other_income) {
+			this.r24_other_income = r24_other_income;
+		}
+
+		public BigDecimal getR24_fig_bal_sheet() {
+			return r24_fig_bal_sheet;
+		}
+
+		public void setR24_fig_bal_sheet(BigDecimal r24_fig_bal_sheet) {
+			this.r24_fig_bal_sheet = r24_fig_bal_sheet;
+		}
+
+		public BigDecimal getR24_fig_bal_sheet_bwp() {
+			return r24_fig_bal_sheet_bwp;
+		}
+
+		public void setR24_fig_bal_sheet_bwp(BigDecimal r24_fig_bal_sheet_bwp) {
+			this.r24_fig_bal_sheet_bwp = r24_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR24_amt_statement_adj() {
+			return r24_amt_statement_adj;
+		}
+
+		public void setR24_amt_statement_adj(BigDecimal r24_amt_statement_adj) {
+			this.r24_amt_statement_adj = r24_amt_statement_adj;
+		}
+
+		public BigDecimal getR24_amt_statement_adj_bwp() {
+			return r24_amt_statement_adj_bwp;
+		}
+
+		public void setR24_amt_statement_adj_bwp(BigDecimal r24_amt_statement_adj_bwp) {
+			this.r24_amt_statement_adj_bwp = r24_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR24_net_amt() {
+			return r24_net_amt;
+		}
+
+		public void setR24_net_amt(BigDecimal r24_net_amt) {
+			this.r24_net_amt = r24_net_amt;
+		}
+
+		public BigDecimal getR24_net_amt_bwp() {
+			return r24_net_amt_bwp;
+		}
+
+		public void setR24_net_amt_bwp(BigDecimal r24_net_amt_bwp) {
+			this.r24_net_amt_bwp = r24_net_amt_bwp;
+		}
+
+		public BigDecimal getR24_bal_sub() {
+			return r24_bal_sub;
+		}
+
+		public void setR24_bal_sub(BigDecimal r24_bal_sub) {
+			this.r24_bal_sub = r24_bal_sub;
+		}
+
+		public BigDecimal getR24_bal_sub_bwp() {
+			return r24_bal_sub_bwp;
+		}
+
+		public void setR24_bal_sub_bwp(BigDecimal r24_bal_sub_bwp) {
+			this.r24_bal_sub_bwp = r24_bal_sub_bwp;
+		}
+
+		public BigDecimal getR24_bal_sub_diaries_bwp() {
+			return r24_bal_sub_diaries_bwp;
+		}
+
+		public void setR24_bal_sub_diaries_bwp(BigDecimal r24_bal_sub_diaries_bwp) {
+			this.r24_bal_sub_diaries_bwp = r24_bal_sub_diaries_bwp;
+		}
+
+		public String getR25_other_income() {
+			return r25_other_income;
+		}
+
+		public void setR25_other_income(String r25_other_income) {
+			this.r25_other_income = r25_other_income;
+		}
+
+		public BigDecimal getR25_fig_bal_sheet() {
+			return r25_fig_bal_sheet;
+		}
+
+		public void setR25_fig_bal_sheet(BigDecimal r25_fig_bal_sheet) {
+			this.r25_fig_bal_sheet = r25_fig_bal_sheet;
+		}
+
+		public BigDecimal getR25_fig_bal_sheet_bwp() {
+			return r25_fig_bal_sheet_bwp;
+		}
+
+		public void setR25_fig_bal_sheet_bwp(BigDecimal r25_fig_bal_sheet_bwp) {
+			this.r25_fig_bal_sheet_bwp = r25_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR25_amt_statement_adj() {
+			return r25_amt_statement_adj;
+		}
+
+		public void setR25_amt_statement_adj(BigDecimal r25_amt_statement_adj) {
+			this.r25_amt_statement_adj = r25_amt_statement_adj;
+		}
+
+		public BigDecimal getR25_amt_statement_adj_bwp() {
+			return r25_amt_statement_adj_bwp;
+		}
+
+		public void setR25_amt_statement_adj_bwp(BigDecimal r25_amt_statement_adj_bwp) {
+			this.r25_amt_statement_adj_bwp = r25_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR25_net_amt() {
+			return r25_net_amt;
+		}
+
+		public void setR25_net_amt(BigDecimal r25_net_amt) {
+			this.r25_net_amt = r25_net_amt;
+		}
+
+		public BigDecimal getR25_net_amt_bwp() {
+			return r25_net_amt_bwp;
+		}
+
+		public void setR25_net_amt_bwp(BigDecimal r25_net_amt_bwp) {
+			this.r25_net_amt_bwp = r25_net_amt_bwp;
+		}
+
+		public BigDecimal getR25_bal_sub() {
+			return r25_bal_sub;
+		}
+
+		public void setR25_bal_sub(BigDecimal r25_bal_sub) {
+			this.r25_bal_sub = r25_bal_sub;
+		}
+
+		public BigDecimal getR25_bal_sub_bwp() {
+			return r25_bal_sub_bwp;
+		}
+
+		public void setR25_bal_sub_bwp(BigDecimal r25_bal_sub_bwp) {
+			this.r25_bal_sub_bwp = r25_bal_sub_bwp;
+		}
+
+		public BigDecimal getR25_bal_sub_diaries_bwp() {
+			return r25_bal_sub_diaries_bwp;
+		}
+
+		public void setR25_bal_sub_diaries_bwp(BigDecimal r25_bal_sub_diaries_bwp) {
+			this.r25_bal_sub_diaries_bwp = r25_bal_sub_diaries_bwp;
+		}
+
+		public String getR26_other_income() {
+			return r26_other_income;
+		}
+
+		public void setR26_other_income(String r26_other_income) {
+			this.r26_other_income = r26_other_income;
+		}
+
+		public BigDecimal getR26_fig_bal_sheet() {
+			return r26_fig_bal_sheet;
+		}
+
+		public void setR26_fig_bal_sheet(BigDecimal r26_fig_bal_sheet) {
+			this.r26_fig_bal_sheet = r26_fig_bal_sheet;
+		}
+
+		public BigDecimal getR26_fig_bal_sheet_bwp() {
+			return r26_fig_bal_sheet_bwp;
+		}
+
+		public void setR26_fig_bal_sheet_bwp(BigDecimal r26_fig_bal_sheet_bwp) {
+			this.r26_fig_bal_sheet_bwp = r26_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR26_amt_statement_adj() {
+			return r26_amt_statement_adj;
+		}
+
+		public void setR26_amt_statement_adj(BigDecimal r26_amt_statement_adj) {
+			this.r26_amt_statement_adj = r26_amt_statement_adj;
+		}
+
+		public BigDecimal getR26_amt_statement_adj_bwp() {
+			return r26_amt_statement_adj_bwp;
+		}
+
+		public void setR26_amt_statement_adj_bwp(BigDecimal r26_amt_statement_adj_bwp) {
+			this.r26_amt_statement_adj_bwp = r26_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR26_net_amt() {
+			return r26_net_amt;
+		}
+
+		public void setR26_net_amt(BigDecimal r26_net_amt) {
+			this.r26_net_amt = r26_net_amt;
+		}
+
+		public BigDecimal getR26_net_amt_bwp() {
+			return r26_net_amt_bwp;
+		}
+
+		public void setR26_net_amt_bwp(BigDecimal r26_net_amt_bwp) {
+			this.r26_net_amt_bwp = r26_net_amt_bwp;
+		}
+
+		public BigDecimal getR26_bal_sub() {
+			return r26_bal_sub;
+		}
+
+		public void setR26_bal_sub(BigDecimal r26_bal_sub) {
+			this.r26_bal_sub = r26_bal_sub;
+		}
+
+		public BigDecimal getR26_bal_sub_bwp() {
+			return r26_bal_sub_bwp;
+		}
+
+		public void setR26_bal_sub_bwp(BigDecimal r26_bal_sub_bwp) {
+			this.r26_bal_sub_bwp = r26_bal_sub_bwp;
+		}
+
+		public BigDecimal getR26_bal_sub_diaries_bwp() {
+			return r26_bal_sub_diaries_bwp;
+		}
+
+		public void setR26_bal_sub_diaries_bwp(BigDecimal r26_bal_sub_diaries_bwp) {
+			this.r26_bal_sub_diaries_bwp = r26_bal_sub_diaries_bwp;
+		}
+
+		public String getR27_other_income() {
+			return r27_other_income;
+		}
+
+		public void setR27_other_income(String r27_other_income) {
+			this.r27_other_income = r27_other_income;
+		}
+
+		public BigDecimal getR27_fig_bal_sheet() {
+			return r27_fig_bal_sheet;
+		}
+
+		public void setR27_fig_bal_sheet(BigDecimal r27_fig_bal_sheet) {
+			this.r27_fig_bal_sheet = r27_fig_bal_sheet;
+		}
+
+		public BigDecimal getR27_fig_bal_sheet_bwp() {
+			return r27_fig_bal_sheet_bwp;
+		}
+
+		public void setR27_fig_bal_sheet_bwp(BigDecimal r27_fig_bal_sheet_bwp) {
+			this.r27_fig_bal_sheet_bwp = r27_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR27_amt_statement_adj() {
+			return r27_amt_statement_adj;
+		}
+
+		public void setR27_amt_statement_adj(BigDecimal r27_amt_statement_adj) {
+			this.r27_amt_statement_adj = r27_amt_statement_adj;
+		}
+
+		public BigDecimal getR27_amt_statement_adj_bwp() {
+			return r27_amt_statement_adj_bwp;
+		}
+
+		public void setR27_amt_statement_adj_bwp(BigDecimal r27_amt_statement_adj_bwp) {
+			this.r27_amt_statement_adj_bwp = r27_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR27_net_amt() {
+			return r27_net_amt;
+		}
+
+		public void setR27_net_amt(BigDecimal r27_net_amt) {
+			this.r27_net_amt = r27_net_amt;
+		}
+
+		public BigDecimal getR27_net_amt_bwp() {
+			return r27_net_amt_bwp;
+		}
+
+		public void setR27_net_amt_bwp(BigDecimal r27_net_amt_bwp) {
+			this.r27_net_amt_bwp = r27_net_amt_bwp;
+		}
+
+		public BigDecimal getR27_bal_sub() {
+			return r27_bal_sub;
+		}
+
+		public void setR27_bal_sub(BigDecimal r27_bal_sub) {
+			this.r27_bal_sub = r27_bal_sub;
+		}
+
+		public BigDecimal getR27_bal_sub_bwp() {
+			return r27_bal_sub_bwp;
+		}
+
+		public void setR27_bal_sub_bwp(BigDecimal r27_bal_sub_bwp) {
+			this.r27_bal_sub_bwp = r27_bal_sub_bwp;
+		}
+
+		public BigDecimal getR27_bal_sub_diaries_bwp() {
+			return r27_bal_sub_diaries_bwp;
+		}
+
+		public void setR27_bal_sub_diaries_bwp(BigDecimal r27_bal_sub_diaries_bwp) {
+			this.r27_bal_sub_diaries_bwp = r27_bal_sub_diaries_bwp;
+		}
+
+		public String getR28_other_income() {
+			return r28_other_income;
+		}
+
+		public void setR28_other_income(String r28_other_income) {
+			this.r28_other_income = r28_other_income;
+		}
+
+		public BigDecimal getR28_fig_bal_sheet() {
+			return r28_fig_bal_sheet;
+		}
+
+		public void setR28_fig_bal_sheet(BigDecimal r28_fig_bal_sheet) {
+			this.r28_fig_bal_sheet = r28_fig_bal_sheet;
+		}
+
+		public BigDecimal getR28_fig_bal_sheet_bwp() {
+			return r28_fig_bal_sheet_bwp;
+		}
+
+		public void setR28_fig_bal_sheet_bwp(BigDecimal r28_fig_bal_sheet_bwp) {
+			this.r28_fig_bal_sheet_bwp = r28_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR28_amt_statement_adj() {
+			return r28_amt_statement_adj;
+		}
+
+		public void setR28_amt_statement_adj(BigDecimal r28_amt_statement_adj) {
+			this.r28_amt_statement_adj = r28_amt_statement_adj;
+		}
+
+		public BigDecimal getR28_amt_statement_adj_bwp() {
+			return r28_amt_statement_adj_bwp;
+		}
+
+		public void setR28_amt_statement_adj_bwp(BigDecimal r28_amt_statement_adj_bwp) {
+			this.r28_amt_statement_adj_bwp = r28_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR28_net_amt() {
+			return r28_net_amt;
+		}
+
+		public void setR28_net_amt(BigDecimal r28_net_amt) {
+			this.r28_net_amt = r28_net_amt;
+		}
+
+		public BigDecimal getR28_net_amt_bwp() {
+			return r28_net_amt_bwp;
+		}
+
+		public void setR28_net_amt_bwp(BigDecimal r28_net_amt_bwp) {
+			this.r28_net_amt_bwp = r28_net_amt_bwp;
+		}
+
+		public BigDecimal getR28_bal_sub() {
+			return r28_bal_sub;
+		}
+
+		public void setR28_bal_sub(BigDecimal r28_bal_sub) {
+			this.r28_bal_sub = r28_bal_sub;
+		}
+
+		public BigDecimal getR28_bal_sub_bwp() {
+			return r28_bal_sub_bwp;
+		}
+
+		public void setR28_bal_sub_bwp(BigDecimal r28_bal_sub_bwp) {
+			this.r28_bal_sub_bwp = r28_bal_sub_bwp;
+		}
+
+		public BigDecimal getR28_bal_sub_diaries_bwp() {
+			return r28_bal_sub_diaries_bwp;
+		}
+
+		public void setR28_bal_sub_diaries_bwp(BigDecimal r28_bal_sub_diaries_bwp) {
+			this.r28_bal_sub_diaries_bwp = r28_bal_sub_diaries_bwp;
+		}
+
+		public String getR29_other_income() {
+			return r29_other_income;
+		}
+
+		public void setR29_other_income(String r29_other_income) {
+			this.r29_other_income = r29_other_income;
+		}
+
+		public BigDecimal getR29_fig_bal_sheet() {
+			return r29_fig_bal_sheet;
+		}
+
+		public void setR29_fig_bal_sheet(BigDecimal r29_fig_bal_sheet) {
+			this.r29_fig_bal_sheet = r29_fig_bal_sheet;
+		}
+
+		public BigDecimal getR29_fig_bal_sheet_bwp() {
+			return r29_fig_bal_sheet_bwp;
+		}
+
+		public void setR29_fig_bal_sheet_bwp(BigDecimal r29_fig_bal_sheet_bwp) {
+			this.r29_fig_bal_sheet_bwp = r29_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR29_amt_statement_adj() {
+			return r29_amt_statement_adj;
+		}
+
+		public void setR29_amt_statement_adj(BigDecimal r29_amt_statement_adj) {
+			this.r29_amt_statement_adj = r29_amt_statement_adj;
+		}
+
+		public BigDecimal getR29_amt_statement_adj_bwp() {
+			return r29_amt_statement_adj_bwp;
+		}
+
+		public void setR29_amt_statement_adj_bwp(BigDecimal r29_amt_statement_adj_bwp) {
+			this.r29_amt_statement_adj_bwp = r29_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR29_net_amt() {
+			return r29_net_amt;
+		}
+
+		public void setR29_net_amt(BigDecimal r29_net_amt) {
+			this.r29_net_amt = r29_net_amt;
+		}
+
+		public BigDecimal getR29_net_amt_bwp() {
+			return r29_net_amt_bwp;
+		}
+
+		public void setR29_net_amt_bwp(BigDecimal r29_net_amt_bwp) {
+			this.r29_net_amt_bwp = r29_net_amt_bwp;
+		}
+
+		public BigDecimal getR29_bal_sub() {
+			return r29_bal_sub;
+		}
+
+		public void setR29_bal_sub(BigDecimal r29_bal_sub) {
+			this.r29_bal_sub = r29_bal_sub;
+		}
+
+		public BigDecimal getR29_bal_sub_bwp() {
+			return r29_bal_sub_bwp;
+		}
+
+		public void setR29_bal_sub_bwp(BigDecimal r29_bal_sub_bwp) {
+			this.r29_bal_sub_bwp = r29_bal_sub_bwp;
+		}
+
+		public BigDecimal getR29_bal_sub_diaries_bwp() {
+			return r29_bal_sub_diaries_bwp;
+		}
+
+		public void setR29_bal_sub_diaries_bwp(BigDecimal r29_bal_sub_diaries_bwp) {
+			this.r29_bal_sub_diaries_bwp = r29_bal_sub_diaries_bwp;
+		}
+
+		public String getR30_other_income() {
+			return r30_other_income;
+		}
+
+		public void setR30_other_income(String r30_other_income) {
+			this.r30_other_income = r30_other_income;
+		}
+
+		public BigDecimal getR30_fig_bal_sheet() {
+			return r30_fig_bal_sheet;
+		}
+
+		public void setR30_fig_bal_sheet(BigDecimal r30_fig_bal_sheet) {
+			this.r30_fig_bal_sheet = r30_fig_bal_sheet;
+		}
+
+		public BigDecimal getR30_fig_bal_sheet_bwp() {
+			return r30_fig_bal_sheet_bwp;
+		}
+
+		public void setR30_fig_bal_sheet_bwp(BigDecimal r30_fig_bal_sheet_bwp) {
+			this.r30_fig_bal_sheet_bwp = r30_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR30_amt_statement_adj() {
+			return r30_amt_statement_adj;
+		}
+
+		public void setR30_amt_statement_adj(BigDecimal r30_amt_statement_adj) {
+			this.r30_amt_statement_adj = r30_amt_statement_adj;
+		}
+
+		public BigDecimal getR30_amt_statement_adj_bwp() {
+			return r30_amt_statement_adj_bwp;
+		}
+
+		public void setR30_amt_statement_adj_bwp(BigDecimal r30_amt_statement_adj_bwp) {
+			this.r30_amt_statement_adj_bwp = r30_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR30_net_amt() {
+			return r30_net_amt;
+		}
+
+		public void setR30_net_amt(BigDecimal r30_net_amt) {
+			this.r30_net_amt = r30_net_amt;
+		}
+
+		public BigDecimal getR30_net_amt_bwp() {
+			return r30_net_amt_bwp;
+		}
+
+		public void setR30_net_amt_bwp(BigDecimal r30_net_amt_bwp) {
+			this.r30_net_amt_bwp = r30_net_amt_bwp;
+		}
+
+		public BigDecimal getR30_bal_sub() {
+			return r30_bal_sub;
+		}
+
+		public void setR30_bal_sub(BigDecimal r30_bal_sub) {
+			this.r30_bal_sub = r30_bal_sub;
+		}
+
+		public BigDecimal getR30_bal_sub_bwp() {
+			return r30_bal_sub_bwp;
+		}
+
+		public void setR30_bal_sub_bwp(BigDecimal r30_bal_sub_bwp) {
+			this.r30_bal_sub_bwp = r30_bal_sub_bwp;
+		}
+
+		public BigDecimal getR30_bal_sub_diaries_bwp() {
+			return r30_bal_sub_diaries_bwp;
+		}
+
+		public void setR30_bal_sub_diaries_bwp(BigDecimal r30_bal_sub_diaries_bwp) {
+			this.r30_bal_sub_diaries_bwp = r30_bal_sub_diaries_bwp;
+		}
+
+		public String getR31_other_income() {
+			return r31_other_income;
+		}
+
+		public void setR31_other_income(String r31_other_income) {
+			this.r31_other_income = r31_other_income;
+		}
+
+		public BigDecimal getR31_fig_bal_sheet() {
+			return r31_fig_bal_sheet;
+		}
+
+		public void setR31_fig_bal_sheet(BigDecimal r31_fig_bal_sheet) {
+			this.r31_fig_bal_sheet = r31_fig_bal_sheet;
+		}
+
+		public BigDecimal getR31_fig_bal_sheet_bwp() {
+			return r31_fig_bal_sheet_bwp;
+		}
+
+		public void setR31_fig_bal_sheet_bwp(BigDecimal r31_fig_bal_sheet_bwp) {
+			this.r31_fig_bal_sheet_bwp = r31_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR31_amt_statement_adj() {
+			return r31_amt_statement_adj;
+		}
+
+		public void setR31_amt_statement_adj(BigDecimal r31_amt_statement_adj) {
+			this.r31_amt_statement_adj = r31_amt_statement_adj;
+		}
+
+		public BigDecimal getR31_amt_statement_adj_bwp() {
+			return r31_amt_statement_adj_bwp;
+		}
+
+		public void setR31_amt_statement_adj_bwp(BigDecimal r31_amt_statement_adj_bwp) {
+			this.r31_amt_statement_adj_bwp = r31_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR31_net_amt() {
+			return r31_net_amt;
+		}
+
+		public void setR31_net_amt(BigDecimal r31_net_amt) {
+			this.r31_net_amt = r31_net_amt;
+		}
+
+		public BigDecimal getR31_net_amt_bwp() {
+			return r31_net_amt_bwp;
+		}
+
+		public void setR31_net_amt_bwp(BigDecimal r31_net_amt_bwp) {
+			this.r31_net_amt_bwp = r31_net_amt_bwp;
+		}
+
+		public BigDecimal getR31_bal_sub() {
+			return r31_bal_sub;
+		}
+
+		public void setR31_bal_sub(BigDecimal r31_bal_sub) {
+			this.r31_bal_sub = r31_bal_sub;
+		}
+
+		public BigDecimal getR31_bal_sub_bwp() {
+			return r31_bal_sub_bwp;
+		}
+
+		public void setR31_bal_sub_bwp(BigDecimal r31_bal_sub_bwp) {
+			this.r31_bal_sub_bwp = r31_bal_sub_bwp;
+		}
+
+		public BigDecimal getR31_bal_sub_diaries_bwp() {
+			return r31_bal_sub_diaries_bwp;
+		}
+
+		public void setR31_bal_sub_diaries_bwp(BigDecimal r31_bal_sub_diaries_bwp) {
+			this.r31_bal_sub_diaries_bwp = r31_bal_sub_diaries_bwp;
+		}
+
+		public String getR40_intrest_expended() {
+			return r40_intrest_expended;
+		}
+
+		public void setR40_intrest_expended(String r40_intrest_expended) {
+			this.r40_intrest_expended = r40_intrest_expended;
+		}
+
+		public BigDecimal getR40_fig_bal_sheet() {
+			return r40_fig_bal_sheet;
+		}
+
+		public void setR40_fig_bal_sheet(BigDecimal r40_fig_bal_sheet) {
+			this.r40_fig_bal_sheet = r40_fig_bal_sheet;
+		}
+
+		public BigDecimal getR40_fig_bal_sheet_bwp() {
+			return r40_fig_bal_sheet_bwp;
+		}
+
+		public void setR40_fig_bal_sheet_bwp(BigDecimal r40_fig_bal_sheet_bwp) {
+			this.r40_fig_bal_sheet_bwp = r40_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR40_amt_statement_adj() {
+			return r40_amt_statement_adj;
+		}
+
+		public void setR40_amt_statement_adj(BigDecimal r40_amt_statement_adj) {
+			this.r40_amt_statement_adj = r40_amt_statement_adj;
+		}
+
+		public BigDecimal getR40_amt_statement_adj_bwp() {
+			return r40_amt_statement_adj_bwp;
+		}
+
+		public void setR40_amt_statement_adj_bwp(BigDecimal r40_amt_statement_adj_bwp) {
+			this.r40_amt_statement_adj_bwp = r40_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR40_net_amt() {
+			return r40_net_amt;
+		}
+
+		public void setR40_net_amt(BigDecimal r40_net_amt) {
+			this.r40_net_amt = r40_net_amt;
+		}
+
+		public BigDecimal getR40_net_amt_bwp() {
+			return r40_net_amt_bwp;
+		}
+
+		public void setR40_net_amt_bwp(BigDecimal r40_net_amt_bwp) {
+			this.r40_net_amt_bwp = r40_net_amt_bwp;
+		}
+
+		public BigDecimal getR40_bal_sub() {
+			return r40_bal_sub;
+		}
+
+		public void setR40_bal_sub(BigDecimal r40_bal_sub) {
+			this.r40_bal_sub = r40_bal_sub;
+		}
+
+		public BigDecimal getR40_bal_sub_bwp() {
+			return r40_bal_sub_bwp;
+		}
+
+		public void setR40_bal_sub_bwp(BigDecimal r40_bal_sub_bwp) {
+			this.r40_bal_sub_bwp = r40_bal_sub_bwp;
+		}
+
+		public BigDecimal getR40_bal_sub_diaries_bwp() {
+			return r40_bal_sub_diaries_bwp;
+		}
+
+		public void setR40_bal_sub_diaries_bwp(BigDecimal r40_bal_sub_diaries_bwp) {
+			this.r40_bal_sub_diaries_bwp = r40_bal_sub_diaries_bwp;
+		}
+
+		public String getR41_intrest_expended() {
+			return r41_intrest_expended;
+		}
+
+		public void setR41_intrest_expended(String r41_intrest_expended) {
+			this.r41_intrest_expended = r41_intrest_expended;
+		}
+
+		public BigDecimal getR41_fig_bal_sheet() {
+			return r41_fig_bal_sheet;
+		}
+
+		public void setR41_fig_bal_sheet(BigDecimal r41_fig_bal_sheet) {
+			this.r41_fig_bal_sheet = r41_fig_bal_sheet;
+		}
+
+		public BigDecimal getR41_fig_bal_sheet_bwp() {
+			return r41_fig_bal_sheet_bwp;
+		}
+
+		public void setR41_fig_bal_sheet_bwp(BigDecimal r41_fig_bal_sheet_bwp) {
+			this.r41_fig_bal_sheet_bwp = r41_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR41_amt_statement_adj() {
+			return r41_amt_statement_adj;
+		}
+
+		public void setR41_amt_statement_adj(BigDecimal r41_amt_statement_adj) {
+			this.r41_amt_statement_adj = r41_amt_statement_adj;
+		}
+
+		public BigDecimal getR41_amt_statement_adj_bwp() {
+			return r41_amt_statement_adj_bwp;
+		}
+
+		public void setR41_amt_statement_adj_bwp(BigDecimal r41_amt_statement_adj_bwp) {
+			this.r41_amt_statement_adj_bwp = r41_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR41_net_amt() {
+			return r41_net_amt;
+		}
+
+		public void setR41_net_amt(BigDecimal r41_net_amt) {
+			this.r41_net_amt = r41_net_amt;
+		}
+
+		public BigDecimal getR41_net_amt_bwp() {
+			return r41_net_amt_bwp;
+		}
+
+		public void setR41_net_amt_bwp(BigDecimal r41_net_amt_bwp) {
+			this.r41_net_amt_bwp = r41_net_amt_bwp;
+		}
+
+		public BigDecimal getR41_bal_sub() {
+			return r41_bal_sub;
+		}
+
+		public void setR41_bal_sub(BigDecimal r41_bal_sub) {
+			this.r41_bal_sub = r41_bal_sub;
+		}
+
+		public BigDecimal getR41_bal_sub_bwp() {
+			return r41_bal_sub_bwp;
+		}
+
+		public void setR41_bal_sub_bwp(BigDecimal r41_bal_sub_bwp) {
+			this.r41_bal_sub_bwp = r41_bal_sub_bwp;
+		}
+
+		public BigDecimal getR41_bal_sub_diaries_bwp() {
+			return r41_bal_sub_diaries_bwp;
+		}
+
+		public void setR41_bal_sub_diaries_bwp(BigDecimal r41_bal_sub_diaries_bwp) {
+			this.r41_bal_sub_diaries_bwp = r41_bal_sub_diaries_bwp;
+		}
+
+		public String getR42_intrest_expended() {
+			return r42_intrest_expended;
+		}
+
+		public void setR42_intrest_expended(String r42_intrest_expended) {
+			this.r42_intrest_expended = r42_intrest_expended;
+		}
+
+		public BigDecimal getR42_fig_bal_sheet() {
+			return r42_fig_bal_sheet;
+		}
+
+		public void setR42_fig_bal_sheet(BigDecimal r42_fig_bal_sheet) {
+			this.r42_fig_bal_sheet = r42_fig_bal_sheet;
+		}
+
+		public BigDecimal getR42_fig_bal_sheet_bwp() {
+			return r42_fig_bal_sheet_bwp;
+		}
+
+		public void setR42_fig_bal_sheet_bwp(BigDecimal r42_fig_bal_sheet_bwp) {
+			this.r42_fig_bal_sheet_bwp = r42_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR42_amt_statement_adj() {
+			return r42_amt_statement_adj;
+		}
+
+		public void setR42_amt_statement_adj(BigDecimal r42_amt_statement_adj) {
+			this.r42_amt_statement_adj = r42_amt_statement_adj;
+		}
+
+		public BigDecimal getR42_amt_statement_adj_bwp() {
+			return r42_amt_statement_adj_bwp;
+		}
+
+		public void setR42_amt_statement_adj_bwp(BigDecimal r42_amt_statement_adj_bwp) {
+			this.r42_amt_statement_adj_bwp = r42_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR42_net_amt() {
+			return r42_net_amt;
+		}
+
+		public void setR42_net_amt(BigDecimal r42_net_amt) {
+			this.r42_net_amt = r42_net_amt;
+		}
+
+		public BigDecimal getR42_net_amt_bwp() {
+			return r42_net_amt_bwp;
+		}
+
+		public void setR42_net_amt_bwp(BigDecimal r42_net_amt_bwp) {
+			this.r42_net_amt_bwp = r42_net_amt_bwp;
+		}
+
+		public BigDecimal getR42_bal_sub() {
+			return r42_bal_sub;
+		}
+
+		public void setR42_bal_sub(BigDecimal r42_bal_sub) {
+			this.r42_bal_sub = r42_bal_sub;
+		}
+
+		public BigDecimal getR42_bal_sub_bwp() {
+			return r42_bal_sub_bwp;
+		}
+
+		public void setR42_bal_sub_bwp(BigDecimal r42_bal_sub_bwp) {
+			this.r42_bal_sub_bwp = r42_bal_sub_bwp;
+		}
+
+		public BigDecimal getR42_bal_sub_diaries_bwp() {
+			return r42_bal_sub_diaries_bwp;
+		}
+
+		public void setR42_bal_sub_diaries_bwp(BigDecimal r42_bal_sub_diaries_bwp) {
+			this.r42_bal_sub_diaries_bwp = r42_bal_sub_diaries_bwp;
+		}
+
+		public String getR43_intrest_expended() {
+			return r43_intrest_expended;
+		}
+
+		public void setR43_intrest_expended(String r43_intrest_expended) {
+			this.r43_intrest_expended = r43_intrest_expended;
+		}
+
+		public BigDecimal getR43_fig_bal_sheet() {
+			return r43_fig_bal_sheet;
+		}
+
+		public void setR43_fig_bal_sheet(BigDecimal r43_fig_bal_sheet) {
+			this.r43_fig_bal_sheet = r43_fig_bal_sheet;
+		}
+
+		public BigDecimal getR43_fig_bal_sheet_bwp() {
+			return r43_fig_bal_sheet_bwp;
+		}
+
+		public void setR43_fig_bal_sheet_bwp(BigDecimal r43_fig_bal_sheet_bwp) {
+			this.r43_fig_bal_sheet_bwp = r43_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR43_amt_statement_adj() {
+			return r43_amt_statement_adj;
+		}
+
+		public void setR43_amt_statement_adj(BigDecimal r43_amt_statement_adj) {
+			this.r43_amt_statement_adj = r43_amt_statement_adj;
+		}
+
+		public BigDecimal getR43_amt_statement_adj_bwp() {
+			return r43_amt_statement_adj_bwp;
+		}
+
+		public void setR43_amt_statement_adj_bwp(BigDecimal r43_amt_statement_adj_bwp) {
+			this.r43_amt_statement_adj_bwp = r43_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR43_net_amt() {
+			return r43_net_amt;
+		}
+
+		public void setR43_net_amt(BigDecimal r43_net_amt) {
+			this.r43_net_amt = r43_net_amt;
+		}
+
+		public BigDecimal getR43_net_amt_bwp() {
+			return r43_net_amt_bwp;
+		}
+
+		public void setR43_net_amt_bwp(BigDecimal r43_net_amt_bwp) {
+			this.r43_net_amt_bwp = r43_net_amt_bwp;
+		}
+
+		public BigDecimal getR43_bal_sub() {
+			return r43_bal_sub;
+		}
+
+		public void setR43_bal_sub(BigDecimal r43_bal_sub) {
+			this.r43_bal_sub = r43_bal_sub;
+		}
+
+		public BigDecimal getR43_bal_sub_bwp() {
+			return r43_bal_sub_bwp;
+		}
+
+		public void setR43_bal_sub_bwp(BigDecimal r43_bal_sub_bwp) {
+			this.r43_bal_sub_bwp = r43_bal_sub_bwp;
+		}
+
+		public BigDecimal getR43_bal_sub_diaries_bwp() {
+			return r43_bal_sub_diaries_bwp;
+		}
+
+		public void setR43_bal_sub_diaries_bwp(BigDecimal r43_bal_sub_diaries_bwp) {
+			this.r43_bal_sub_diaries_bwp = r43_bal_sub_diaries_bwp;
+		}
+
+		public String getR48_operating_expenses() {
+			return r48_operating_expenses;
+		}
+
+		public void setR48_operating_expenses(String r48_operating_expenses) {
+			this.r48_operating_expenses = r48_operating_expenses;
+		}
+
+		public BigDecimal getR48_fig_bal_sheet() {
+			return r48_fig_bal_sheet;
+		}
+
+		public void setR48_fig_bal_sheet(BigDecimal r48_fig_bal_sheet) {
+			this.r48_fig_bal_sheet = r48_fig_bal_sheet;
+		}
+
+		public BigDecimal getR48_fig_bal_sheet_bwp() {
+			return r48_fig_bal_sheet_bwp;
+		}
+
+		public void setR48_fig_bal_sheet_bwp(BigDecimal r48_fig_bal_sheet_bwp) {
+			this.r48_fig_bal_sheet_bwp = r48_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR48_amt_statement_adj() {
+			return r48_amt_statement_adj;
+		}
+
+		public void setR48_amt_statement_adj(BigDecimal r48_amt_statement_adj) {
+			this.r48_amt_statement_adj = r48_amt_statement_adj;
+		}
+
+		public BigDecimal getR48_amt_statement_adj_bwp() {
+			return r48_amt_statement_adj_bwp;
+		}
+
+		public void setR48_amt_statement_adj_bwp(BigDecimal r48_amt_statement_adj_bwp) {
+			this.r48_amt_statement_adj_bwp = r48_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR48_net_amt() {
+			return r48_net_amt;
+		}
+
+		public void setR48_net_amt(BigDecimal r48_net_amt) {
+			this.r48_net_amt = r48_net_amt;
+		}
+
+		public BigDecimal getR48_net_amt_bwp() {
+			return r48_net_amt_bwp;
+		}
+
+		public void setR48_net_amt_bwp(BigDecimal r48_net_amt_bwp) {
+			this.r48_net_amt_bwp = r48_net_amt_bwp;
+		}
+
+		public BigDecimal getR48_bal_sub() {
+			return r48_bal_sub;
+		}
+
+		public void setR48_bal_sub(BigDecimal r48_bal_sub) {
+			this.r48_bal_sub = r48_bal_sub;
+		}
+
+		public BigDecimal getR48_bal_sub_bwp() {
+			return r48_bal_sub_bwp;
+		}
+
+		public void setR48_bal_sub_bwp(BigDecimal r48_bal_sub_bwp) {
+			this.r48_bal_sub_bwp = r48_bal_sub_bwp;
+		}
+
+		public BigDecimal getR48_bal_sub_diaries_bwp() {
+			return r48_bal_sub_diaries_bwp;
+		}
+
+		public void setR48_bal_sub_diaries_bwp(BigDecimal r48_bal_sub_diaries_bwp) {
+			this.r48_bal_sub_diaries_bwp = r48_bal_sub_diaries_bwp;
+		}
+
+		public String getR49_operating_expenses() {
+			return r49_operating_expenses;
+		}
+
+		public void setR49_operating_expenses(String r49_operating_expenses) {
+			this.r49_operating_expenses = r49_operating_expenses;
+		}
+
+		public BigDecimal getR49_fig_bal_sheet() {
+			return r49_fig_bal_sheet;
+		}
+
+		public void setR49_fig_bal_sheet(BigDecimal r49_fig_bal_sheet) {
+			this.r49_fig_bal_sheet = r49_fig_bal_sheet;
+		}
+
+		public BigDecimal getR49_fig_bal_sheet_bwp() {
+			return r49_fig_bal_sheet_bwp;
+		}
+
+		public void setR49_fig_bal_sheet_bwp(BigDecimal r49_fig_bal_sheet_bwp) {
+			this.r49_fig_bal_sheet_bwp = r49_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR49_amt_statement_adj() {
+			return r49_amt_statement_adj;
+		}
+
+		public void setR49_amt_statement_adj(BigDecimal r49_amt_statement_adj) {
+			this.r49_amt_statement_adj = r49_amt_statement_adj;
+		}
+
+		public BigDecimal getR49_amt_statement_adj_bwp() {
+			return r49_amt_statement_adj_bwp;
+		}
+
+		public void setR49_amt_statement_adj_bwp(BigDecimal r49_amt_statement_adj_bwp) {
+			this.r49_amt_statement_adj_bwp = r49_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR49_net_amt() {
+			return r49_net_amt;
+		}
+
+		public void setR49_net_amt(BigDecimal r49_net_amt) {
+			this.r49_net_amt = r49_net_amt;
+		}
+
+		public BigDecimal getR49_net_amt_bwp() {
+			return r49_net_amt_bwp;
+		}
+
+		public void setR49_net_amt_bwp(BigDecimal r49_net_amt_bwp) {
+			this.r49_net_amt_bwp = r49_net_amt_bwp;
+		}
+
+		public BigDecimal getR49_bal_sub() {
+			return r49_bal_sub;
+		}
+
+		public void setR49_bal_sub(BigDecimal r49_bal_sub) {
+			this.r49_bal_sub = r49_bal_sub;
+		}
+
+		public BigDecimal getR49_bal_sub_bwp() {
+			return r49_bal_sub_bwp;
+		}
+
+		public void setR49_bal_sub_bwp(BigDecimal r49_bal_sub_bwp) {
+			this.r49_bal_sub_bwp = r49_bal_sub_bwp;
+		}
+
+		public BigDecimal getR49_bal_sub_diaries_bwp() {
+			return r49_bal_sub_diaries_bwp;
+		}
+
+		public void setR49_bal_sub_diaries_bwp(BigDecimal r49_bal_sub_diaries_bwp) {
+			this.r49_bal_sub_diaries_bwp = r49_bal_sub_diaries_bwp;
+		}
+
+		public String getR50_operating_expenses() {
+			return r50_operating_expenses;
+		}
+
+		public void setR50_operating_expenses(String r50_operating_expenses) {
+			this.r50_operating_expenses = r50_operating_expenses;
+		}
+
+		public BigDecimal getR50_fig_bal_sheet() {
+			return r50_fig_bal_sheet;
+		}
+
+		public void setR50_fig_bal_sheet(BigDecimal r50_fig_bal_sheet) {
+			this.r50_fig_bal_sheet = r50_fig_bal_sheet;
+		}
+
+		public BigDecimal getR50_fig_bal_sheet_bwp() {
+			return r50_fig_bal_sheet_bwp;
+		}
+
+		public void setR50_fig_bal_sheet_bwp(BigDecimal r50_fig_bal_sheet_bwp) {
+			this.r50_fig_bal_sheet_bwp = r50_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR50_amt_statement_adj() {
+			return r50_amt_statement_adj;
+		}
+
+		public void setR50_amt_statement_adj(BigDecimal r50_amt_statement_adj) {
+			this.r50_amt_statement_adj = r50_amt_statement_adj;
+		}
+
+		public BigDecimal getR50_amt_statement_adj_bwp() {
+			return r50_amt_statement_adj_bwp;
+		}
+
+		public void setR50_amt_statement_adj_bwp(BigDecimal r50_amt_statement_adj_bwp) {
+			this.r50_amt_statement_adj_bwp = r50_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR50_net_amt() {
+			return r50_net_amt;
+		}
+
+		public void setR50_net_amt(BigDecimal r50_net_amt) {
+			this.r50_net_amt = r50_net_amt;
+		}
+
+		public BigDecimal getR50_net_amt_bwp() {
+			return r50_net_amt_bwp;
+		}
+
+		public void setR50_net_amt_bwp(BigDecimal r50_net_amt_bwp) {
+			this.r50_net_amt_bwp = r50_net_amt_bwp;
+		}
+
+		public BigDecimal getR50_bal_sub() {
+			return r50_bal_sub;
+		}
+
+		public void setR50_bal_sub(BigDecimal r50_bal_sub) {
+			this.r50_bal_sub = r50_bal_sub;
+		}
+
+		public BigDecimal getR50_bal_sub_bwp() {
+			return r50_bal_sub_bwp;
+		}
+
+		public void setR50_bal_sub_bwp(BigDecimal r50_bal_sub_bwp) {
+			this.r50_bal_sub_bwp = r50_bal_sub_bwp;
+		}
+
+		public BigDecimal getR50_bal_sub_diaries_bwp() {
+			return r50_bal_sub_diaries_bwp;
+		}
+
+		public void setR50_bal_sub_diaries_bwp(BigDecimal r50_bal_sub_diaries_bwp) {
+			this.r50_bal_sub_diaries_bwp = r50_bal_sub_diaries_bwp;
+		}
+
+		public String getR51_operating_expenses() {
+			return r51_operating_expenses;
+		}
+
+		public void setR51_operating_expenses(String r51_operating_expenses) {
+			this.r51_operating_expenses = r51_operating_expenses;
+		}
+
+		public BigDecimal getR51_fig_bal_sheet() {
+			return r51_fig_bal_sheet;
+		}
+
+		public void setR51_fig_bal_sheet(BigDecimal r51_fig_bal_sheet) {
+			this.r51_fig_bal_sheet = r51_fig_bal_sheet;
+		}
+
+		public BigDecimal getR51_fig_bal_sheet_bwp() {
+			return r51_fig_bal_sheet_bwp;
+		}
+
+		public void setR51_fig_bal_sheet_bwp(BigDecimal r51_fig_bal_sheet_bwp) {
+			this.r51_fig_bal_sheet_bwp = r51_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR51_amt_statement_adj() {
+			return r51_amt_statement_adj;
+		}
+
+		public void setR51_amt_statement_adj(BigDecimal r51_amt_statement_adj) {
+			this.r51_amt_statement_adj = r51_amt_statement_adj;
+		}
+
+		public BigDecimal getR51_amt_statement_adj_bwp() {
+			return r51_amt_statement_adj_bwp;
+		}
+
+		public void setR51_amt_statement_adj_bwp(BigDecimal r51_amt_statement_adj_bwp) {
+			this.r51_amt_statement_adj_bwp = r51_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR51_net_amt() {
+			return r51_net_amt;
+		}
+
+		public void setR51_net_amt(BigDecimal r51_net_amt) {
+			this.r51_net_amt = r51_net_amt;
+		}
+
+		public BigDecimal getR51_net_amt_bwp() {
+			return r51_net_amt_bwp;
+		}
+
+		public void setR51_net_amt_bwp(BigDecimal r51_net_amt_bwp) {
+			this.r51_net_amt_bwp = r51_net_amt_bwp;
+		}
+
+		public BigDecimal getR51_bal_sub() {
+			return r51_bal_sub;
+		}
+
+		public void setR51_bal_sub(BigDecimal r51_bal_sub) {
+			this.r51_bal_sub = r51_bal_sub;
+		}
+
+		public BigDecimal getR51_bal_sub_bwp() {
+			return r51_bal_sub_bwp;
+		}
+
+		public void setR51_bal_sub_bwp(BigDecimal r51_bal_sub_bwp) {
+			this.r51_bal_sub_bwp = r51_bal_sub_bwp;
+		}
+
+		public BigDecimal getR51_bal_sub_diaries_bwp() {
+			return r51_bal_sub_diaries_bwp;
+		}
+
+		public void setR51_bal_sub_diaries_bwp(BigDecimal r51_bal_sub_diaries_bwp) {
+			this.r51_bal_sub_diaries_bwp = r51_bal_sub_diaries_bwp;
+		}
+
+		public String getR52_operating_expenses() {
+			return r52_operating_expenses;
+		}
+
+		public void setR52_operating_expenses(String r52_operating_expenses) {
+			this.r52_operating_expenses = r52_operating_expenses;
+		}
+
+		public BigDecimal getR52_fig_bal_sheet() {
+			return r52_fig_bal_sheet;
+		}
+
+		public void setR52_fig_bal_sheet(BigDecimal r52_fig_bal_sheet) {
+			this.r52_fig_bal_sheet = r52_fig_bal_sheet;
+		}
+
+		public BigDecimal getR52_fig_bal_sheet_bwp() {
+			return r52_fig_bal_sheet_bwp;
+		}
+
+		public void setR52_fig_bal_sheet_bwp(BigDecimal r52_fig_bal_sheet_bwp) {
+			this.r52_fig_bal_sheet_bwp = r52_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR52_amt_statement_adj() {
+			return r52_amt_statement_adj;
+		}
+
+		public void setR52_amt_statement_adj(BigDecimal r52_amt_statement_adj) {
+			this.r52_amt_statement_adj = r52_amt_statement_adj;
+		}
+
+		public BigDecimal getR52_amt_statement_adj_bwp() {
+			return r52_amt_statement_adj_bwp;
+		}
+
+		public void setR52_amt_statement_adj_bwp(BigDecimal r52_amt_statement_adj_bwp) {
+			this.r52_amt_statement_adj_bwp = r52_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR52_net_amt() {
+			return r52_net_amt;
+		}
+
+		public void setR52_net_amt(BigDecimal r52_net_amt) {
+			this.r52_net_amt = r52_net_amt;
+		}
+
+		public BigDecimal getR52_net_amt_bwp() {
+			return r52_net_amt_bwp;
+		}
+
+		public void setR52_net_amt_bwp(BigDecimal r52_net_amt_bwp) {
+			this.r52_net_amt_bwp = r52_net_amt_bwp;
+		}
+
+		public BigDecimal getR52_bal_sub() {
+			return r52_bal_sub;
+		}
+
+		public void setR52_bal_sub(BigDecimal r52_bal_sub) {
+			this.r52_bal_sub = r52_bal_sub;
+		}
+
+		public BigDecimal getR52_bal_sub_bwp() {
+			return r52_bal_sub_bwp;
+		}
+
+		public void setR52_bal_sub_bwp(BigDecimal r52_bal_sub_bwp) {
+			this.r52_bal_sub_bwp = r52_bal_sub_bwp;
+		}
+
+		public BigDecimal getR52_bal_sub_diaries_bwp() {
+			return r52_bal_sub_diaries_bwp;
+		}
+
+		public void setR52_bal_sub_diaries_bwp(BigDecimal r52_bal_sub_diaries_bwp) {
+			this.r52_bal_sub_diaries_bwp = r52_bal_sub_diaries_bwp;
+		}
+
+		public String getR53_operating_expenses() {
+			return r53_operating_expenses;
+		}
+
+		public void setR53_operating_expenses(String r53_operating_expenses) {
+			this.r53_operating_expenses = r53_operating_expenses;
+		}
+
+		public BigDecimal getR53_fig_bal_sheet() {
+			return r53_fig_bal_sheet;
+		}
+
+		public void setR53_fig_bal_sheet(BigDecimal r53_fig_bal_sheet) {
+			this.r53_fig_bal_sheet = r53_fig_bal_sheet;
+		}
+
+		public BigDecimal getR53_fig_bal_sheet_bwp() {
+			return r53_fig_bal_sheet_bwp;
+		}
+
+		public void setR53_fig_bal_sheet_bwp(BigDecimal r53_fig_bal_sheet_bwp) {
+			this.r53_fig_bal_sheet_bwp = r53_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR53_amt_statement_adj() {
+			return r53_amt_statement_adj;
+		}
+
+		public void setR53_amt_statement_adj(BigDecimal r53_amt_statement_adj) {
+			this.r53_amt_statement_adj = r53_amt_statement_adj;
+		}
+
+		public BigDecimal getR53_amt_statement_adj_bwp() {
+			return r53_amt_statement_adj_bwp;
+		}
+
+		public void setR53_amt_statement_adj_bwp(BigDecimal r53_amt_statement_adj_bwp) {
+			this.r53_amt_statement_adj_bwp = r53_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR53_net_amt() {
+			return r53_net_amt;
+		}
+
+		public void setR53_net_amt(BigDecimal r53_net_amt) {
+			this.r53_net_amt = r53_net_amt;
+		}
+
+		public BigDecimal getR53_net_amt_bwp() {
+			return r53_net_amt_bwp;
+		}
+
+		public void setR53_net_amt_bwp(BigDecimal r53_net_amt_bwp) {
+			this.r53_net_amt_bwp = r53_net_amt_bwp;
+		}
+
+		public BigDecimal getR53_bal_sub() {
+			return r53_bal_sub;
+		}
+
+		public void setR53_bal_sub(BigDecimal r53_bal_sub) {
+			this.r53_bal_sub = r53_bal_sub;
+		}
+
+		public BigDecimal getR53_bal_sub_bwp() {
+			return r53_bal_sub_bwp;
+		}
+
+		public void setR53_bal_sub_bwp(BigDecimal r53_bal_sub_bwp) {
+			this.r53_bal_sub_bwp = r53_bal_sub_bwp;
+		}
+
+		public BigDecimal getR53_bal_sub_diaries_bwp() {
+			return r53_bal_sub_diaries_bwp;
+		}
+
+		public void setR53_bal_sub_diaries_bwp(BigDecimal r53_bal_sub_diaries_bwp) {
+			this.r53_bal_sub_diaries_bwp = r53_bal_sub_diaries_bwp;
+		}
+
+		public String getR54_operating_expenses() {
+			return r54_operating_expenses;
+		}
+
+		public void setR54_operating_expenses(String r54_operating_expenses) {
+			this.r54_operating_expenses = r54_operating_expenses;
+		}
+
+		public BigDecimal getR54_fig_bal_sheet() {
+			return r54_fig_bal_sheet;
+		}
+
+		public void setR54_fig_bal_sheet(BigDecimal r54_fig_bal_sheet) {
+			this.r54_fig_bal_sheet = r54_fig_bal_sheet;
+		}
+
+		public BigDecimal getR54_fig_bal_sheet_bwp() {
+			return r54_fig_bal_sheet_bwp;
+		}
+
+		public void setR54_fig_bal_sheet_bwp(BigDecimal r54_fig_bal_sheet_bwp) {
+			this.r54_fig_bal_sheet_bwp = r54_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR54_amt_statement_adj() {
+			return r54_amt_statement_adj;
+		}
+
+		public void setR54_amt_statement_adj(BigDecimal r54_amt_statement_adj) {
+			this.r54_amt_statement_adj = r54_amt_statement_adj;
+		}
+
+		public BigDecimal getR54_amt_statement_adj_bwp() {
+			return r54_amt_statement_adj_bwp;
+		}
+
+		public void setR54_amt_statement_adj_bwp(BigDecimal r54_amt_statement_adj_bwp) {
+			this.r54_amt_statement_adj_bwp = r54_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR54_net_amt() {
+			return r54_net_amt;
+		}
+
+		public void setR54_net_amt(BigDecimal r54_net_amt) {
+			this.r54_net_amt = r54_net_amt;
+		}
+
+		public BigDecimal getR54_net_amt_bwp() {
+			return r54_net_amt_bwp;
+		}
+
+		public void setR54_net_amt_bwp(BigDecimal r54_net_amt_bwp) {
+			this.r54_net_amt_bwp = r54_net_amt_bwp;
+		}
+
+		public BigDecimal getR54_bal_sub() {
+			return r54_bal_sub;
+		}
+
+		public void setR54_bal_sub(BigDecimal r54_bal_sub) {
+			this.r54_bal_sub = r54_bal_sub;
+		}
+
+		public BigDecimal getR54_bal_sub_bwp() {
+			return r54_bal_sub_bwp;
+		}
+
+		public void setR54_bal_sub_bwp(BigDecimal r54_bal_sub_bwp) {
+			this.r54_bal_sub_bwp = r54_bal_sub_bwp;
+		}
+
+		public BigDecimal getR54_bal_sub_diaries_bwp() {
+			return r54_bal_sub_diaries_bwp;
+		}
+
+		public void setR54_bal_sub_diaries_bwp(BigDecimal r54_bal_sub_diaries_bwp) {
+			this.r54_bal_sub_diaries_bwp = r54_bal_sub_diaries_bwp;
+		}
+
+		public String getR55_operating_expenses() {
+			return r55_operating_expenses;
+		}
+
+		public void setR55_operating_expenses(String r55_operating_expenses) {
+			this.r55_operating_expenses = r55_operating_expenses;
+		}
+
+		public BigDecimal getR55_fig_bal_sheet() {
+			return r55_fig_bal_sheet;
+		}
+
+		public void setR55_fig_bal_sheet(BigDecimal r55_fig_bal_sheet) {
+			this.r55_fig_bal_sheet = r55_fig_bal_sheet;
+		}
+
+		public BigDecimal getR55_fig_bal_sheet_bwp() {
+			return r55_fig_bal_sheet_bwp;
+		}
+
+		public void setR55_fig_bal_sheet_bwp(BigDecimal r55_fig_bal_sheet_bwp) {
+			this.r55_fig_bal_sheet_bwp = r55_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR55_amt_statement_adj() {
+			return r55_amt_statement_adj;
+		}
+
+		public void setR55_amt_statement_adj(BigDecimal r55_amt_statement_adj) {
+			this.r55_amt_statement_adj = r55_amt_statement_adj;
+		}
+
+		public BigDecimal getR55_amt_statement_adj_bwp() {
+			return r55_amt_statement_adj_bwp;
+		}
+
+		public void setR55_amt_statement_adj_bwp(BigDecimal r55_amt_statement_adj_bwp) {
+			this.r55_amt_statement_adj_bwp = r55_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR55_net_amt() {
+			return r55_net_amt;
+		}
+
+		public void setR55_net_amt(BigDecimal r55_net_amt) {
+			this.r55_net_amt = r55_net_amt;
+		}
+
+		public BigDecimal getR55_net_amt_bwp() {
+			return r55_net_amt_bwp;
+		}
+
+		public void setR55_net_amt_bwp(BigDecimal r55_net_amt_bwp) {
+			this.r55_net_amt_bwp = r55_net_amt_bwp;
+		}
+
+		public BigDecimal getR55_bal_sub() {
+			return r55_bal_sub;
+		}
+
+		public void setR55_bal_sub(BigDecimal r55_bal_sub) {
+			this.r55_bal_sub = r55_bal_sub;
+		}
+
+		public BigDecimal getR55_bal_sub_bwp() {
+			return r55_bal_sub_bwp;
+		}
+
+		public void setR55_bal_sub_bwp(BigDecimal r55_bal_sub_bwp) {
+			this.r55_bal_sub_bwp = r55_bal_sub_bwp;
+		}
+
+		public BigDecimal getR55_bal_sub_diaries_bwp() {
+			return r55_bal_sub_diaries_bwp;
+		}
+
+		public void setR55_bal_sub_diaries_bwp(BigDecimal r55_bal_sub_diaries_bwp) {
+			this.r55_bal_sub_diaries_bwp = r55_bal_sub_diaries_bwp;
+		}
+
+		public String getR56_operating_expenses() {
+			return r56_operating_expenses;
+		}
+
+		public void setR56_operating_expenses(String r56_operating_expenses) {
+			this.r56_operating_expenses = r56_operating_expenses;
+		}
+
+		public BigDecimal getR56_fig_bal_sheet() {
+			return r56_fig_bal_sheet;
+		}
+
+		public void setR56_fig_bal_sheet(BigDecimal r56_fig_bal_sheet) {
+			this.r56_fig_bal_sheet = r56_fig_bal_sheet;
+		}
+
+		public BigDecimal getR56_fig_bal_sheet_bwp() {
+			return r56_fig_bal_sheet_bwp;
+		}
+
+		public void setR56_fig_bal_sheet_bwp(BigDecimal r56_fig_bal_sheet_bwp) {
+			this.r56_fig_bal_sheet_bwp = r56_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR56_amt_statement_adj() {
+			return r56_amt_statement_adj;
+		}
+
+		public void setR56_amt_statement_adj(BigDecimal r56_amt_statement_adj) {
+			this.r56_amt_statement_adj = r56_amt_statement_adj;
+		}
+
+		public BigDecimal getR56_amt_statement_adj_bwp() {
+			return r56_amt_statement_adj_bwp;
+		}
+
+		public void setR56_amt_statement_adj_bwp(BigDecimal r56_amt_statement_adj_bwp) {
+			this.r56_amt_statement_adj_bwp = r56_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR56_net_amt() {
+			return r56_net_amt;
+		}
+
+		public void setR56_net_amt(BigDecimal r56_net_amt) {
+			this.r56_net_amt = r56_net_amt;
+		}
+
+		public BigDecimal getR56_net_amt_bwp() {
+			return r56_net_amt_bwp;
+		}
+
+		public void setR56_net_amt_bwp(BigDecimal r56_net_amt_bwp) {
+			this.r56_net_amt_bwp = r56_net_amt_bwp;
+		}
+
+		public BigDecimal getR56_bal_sub() {
+			return r56_bal_sub;
+		}
+
+		public void setR56_bal_sub(BigDecimal r56_bal_sub) {
+			this.r56_bal_sub = r56_bal_sub;
+		}
+
+		public BigDecimal getR56_bal_sub_bwp() {
+			return r56_bal_sub_bwp;
+		}
+
+		public void setR56_bal_sub_bwp(BigDecimal r56_bal_sub_bwp) {
+			this.r56_bal_sub_bwp = r56_bal_sub_bwp;
+		}
+
+		public BigDecimal getR56_bal_sub_diaries_bwp() {
+			return r56_bal_sub_diaries_bwp;
+		}
+
+		public void setR56_bal_sub_diaries_bwp(BigDecimal r56_bal_sub_diaries_bwp) {
+			this.r56_bal_sub_diaries_bwp = r56_bal_sub_diaries_bwp;
+		}
+
+		public String getR57_operating_expenses() {
+			return r57_operating_expenses;
+		}
+
+		public void setR57_operating_expenses(String r57_operating_expenses) {
+			this.r57_operating_expenses = r57_operating_expenses;
+		}
+
+		public BigDecimal getR57_fig_bal_sheet() {
+			return r57_fig_bal_sheet;
+		}
+
+		public void setR57_fig_bal_sheet(BigDecimal r57_fig_bal_sheet) {
+			this.r57_fig_bal_sheet = r57_fig_bal_sheet;
+		}
+
+		public BigDecimal getR57_fig_bal_sheet_bwp() {
+			return r57_fig_bal_sheet_bwp;
+		}
+
+		public void setR57_fig_bal_sheet_bwp(BigDecimal r57_fig_bal_sheet_bwp) {
+			this.r57_fig_bal_sheet_bwp = r57_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR57_amt_statement_adj() {
+			return r57_amt_statement_adj;
+		}
+
+		public void setR57_amt_statement_adj(BigDecimal r57_amt_statement_adj) {
+			this.r57_amt_statement_adj = r57_amt_statement_adj;
+		}
+
+		public BigDecimal getR57_amt_statement_adj_bwp() {
+			return r57_amt_statement_adj_bwp;
+		}
+
+		public void setR57_amt_statement_adj_bwp(BigDecimal r57_amt_statement_adj_bwp) {
+			this.r57_amt_statement_adj_bwp = r57_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR57_net_amt() {
+			return r57_net_amt;
+		}
+
+		public void setR57_net_amt(BigDecimal r57_net_amt) {
+			this.r57_net_amt = r57_net_amt;
+		}
+
+		public BigDecimal getR57_net_amt_bwp() {
+			return r57_net_amt_bwp;
+		}
+
+		public void setR57_net_amt_bwp(BigDecimal r57_net_amt_bwp) {
+			this.r57_net_amt_bwp = r57_net_amt_bwp;
+		}
+
+		public BigDecimal getR57_bal_sub() {
+			return r57_bal_sub;
+		}
+
+		public void setR57_bal_sub(BigDecimal r57_bal_sub) {
+			this.r57_bal_sub = r57_bal_sub;
+		}
+
+		public BigDecimal getR57_bal_sub_bwp() {
+			return r57_bal_sub_bwp;
+		}
+
+		public void setR57_bal_sub_bwp(BigDecimal r57_bal_sub_bwp) {
+			this.r57_bal_sub_bwp = r57_bal_sub_bwp;
+		}
+
+		public BigDecimal getR57_bal_sub_diaries_bwp() {
+			return r57_bal_sub_diaries_bwp;
+		}
+
+		public void setR57_bal_sub_diaries_bwp(BigDecimal r57_bal_sub_diaries_bwp) {
+			this.r57_bal_sub_diaries_bwp = r57_bal_sub_diaries_bwp;
+		}
+
+		public String getR58_operating_expenses() {
+			return r58_operating_expenses;
+		}
+
+		public void setR58_operating_expenses(String r58_operating_expenses) {
+			this.r58_operating_expenses = r58_operating_expenses;
+		}
+
+		public BigDecimal getR58_fig_bal_sheet() {
+			return r58_fig_bal_sheet;
+		}
+
+		public void setR58_fig_bal_sheet(BigDecimal r58_fig_bal_sheet) {
+			this.r58_fig_bal_sheet = r58_fig_bal_sheet;
+		}
+
+		public BigDecimal getR58_fig_bal_sheet_bwp() {
+			return r58_fig_bal_sheet_bwp;
+		}
+
+		public void setR58_fig_bal_sheet_bwp(BigDecimal r58_fig_bal_sheet_bwp) {
+			this.r58_fig_bal_sheet_bwp = r58_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR58_amt_statement_adj() {
+			return r58_amt_statement_adj;
+		}
+
+		public void setR58_amt_statement_adj(BigDecimal r58_amt_statement_adj) {
+			this.r58_amt_statement_adj = r58_amt_statement_adj;
+		}
+
+		public BigDecimal getR58_amt_statement_adj_bwp() {
+			return r58_amt_statement_adj_bwp;
+		}
+
+		public void setR58_amt_statement_adj_bwp(BigDecimal r58_amt_statement_adj_bwp) {
+			this.r58_amt_statement_adj_bwp = r58_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR58_net_amt() {
+			return r58_net_amt;
+		}
+
+		public void setR58_net_amt(BigDecimal r58_net_amt) {
+			this.r58_net_amt = r58_net_amt;
+		}
+
+		public BigDecimal getR58_net_amt_bwp() {
+			return r58_net_amt_bwp;
+		}
+
+		public void setR58_net_amt_bwp(BigDecimal r58_net_amt_bwp) {
+			this.r58_net_amt_bwp = r58_net_amt_bwp;
+		}
+
+		public BigDecimal getR58_bal_sub() {
+			return r58_bal_sub;
+		}
+
+		public void setR58_bal_sub(BigDecimal r58_bal_sub) {
+			this.r58_bal_sub = r58_bal_sub;
+		}
+
+		public BigDecimal getR58_bal_sub_bwp() {
+			return r58_bal_sub_bwp;
+		}
+
+		public void setR58_bal_sub_bwp(BigDecimal r58_bal_sub_bwp) {
+			this.r58_bal_sub_bwp = r58_bal_sub_bwp;
+		}
+
+		public BigDecimal getR58_bal_sub_diaries_bwp() {
+			return r58_bal_sub_diaries_bwp;
+		}
+
+		public void setR58_bal_sub_diaries_bwp(BigDecimal r58_bal_sub_diaries_bwp) {
+			this.r58_bal_sub_diaries_bwp = r58_bal_sub_diaries_bwp;
+		}
+
+		public String getR59_operating_expenses() {
+			return r59_operating_expenses;
+		}
+
+		public void setR59_operating_expenses(String r59_operating_expenses) {
+			this.r59_operating_expenses = r59_operating_expenses;
+		}
+
+		public BigDecimal getR59_fig_bal_sheet() {
+			return r59_fig_bal_sheet;
+		}
+
+		public void setR59_fig_bal_sheet(BigDecimal r59_fig_bal_sheet) {
+			this.r59_fig_bal_sheet = r59_fig_bal_sheet;
+		}
+
+		public BigDecimal getR59_fig_bal_sheet_bwp() {
+			return r59_fig_bal_sheet_bwp;
+		}
+
+		public void setR59_fig_bal_sheet_bwp(BigDecimal r59_fig_bal_sheet_bwp) {
+			this.r59_fig_bal_sheet_bwp = r59_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR59_amt_statement_adj() {
+			return r59_amt_statement_adj;
+		}
+
+		public void setR59_amt_statement_adj(BigDecimal r59_amt_statement_adj) {
+			this.r59_amt_statement_adj = r59_amt_statement_adj;
+		}
+
+		public BigDecimal getR59_amt_statement_adj_bwp() {
+			return r59_amt_statement_adj_bwp;
+		}
+
+		public void setR59_amt_statement_adj_bwp(BigDecimal r59_amt_statement_adj_bwp) {
+			this.r59_amt_statement_adj_bwp = r59_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR59_net_amt() {
+			return r59_net_amt;
+		}
+
+		public void setR59_net_amt(BigDecimal r59_net_amt) {
+			this.r59_net_amt = r59_net_amt;
+		}
+
+		public BigDecimal getR59_net_amt_bwp() {
+			return r59_net_amt_bwp;
+		}
+
+		public void setR59_net_amt_bwp(BigDecimal r59_net_amt_bwp) {
+			this.r59_net_amt_bwp = r59_net_amt_bwp;
+		}
+
+		public BigDecimal getR59_bal_sub() {
+			return r59_bal_sub;
+		}
+
+		public void setR59_bal_sub(BigDecimal r59_bal_sub) {
+			this.r59_bal_sub = r59_bal_sub;
+		}
+
+		public BigDecimal getR59_bal_sub_bwp() {
+			return r59_bal_sub_bwp;
+		}
+
+		public void setR59_bal_sub_bwp(BigDecimal r59_bal_sub_bwp) {
+			this.r59_bal_sub_bwp = r59_bal_sub_bwp;
+		}
+
+		public BigDecimal getR59_bal_sub_diaries_bwp() {
+			return r59_bal_sub_diaries_bwp;
+		}
+
+		public void setR59_bal_sub_diaries_bwp(BigDecimal r59_bal_sub_diaries_bwp) {
+			this.r59_bal_sub_diaries_bwp = r59_bal_sub_diaries_bwp;
+		}
+
+		public String getR60_operating_expenses() {
+			return r60_operating_expenses;
+		}
+
+		public void setR60_operating_expenses(String r60_operating_expenses) {
+			this.r60_operating_expenses = r60_operating_expenses;
+		}
+
+		public BigDecimal getR60_fig_bal_sheet() {
+			return r60_fig_bal_sheet;
+		}
+
+		public void setR60_fig_bal_sheet(BigDecimal r60_fig_bal_sheet) {
+			this.r60_fig_bal_sheet = r60_fig_bal_sheet;
+		}
+
+		public BigDecimal getR60_fig_bal_sheet_bwp() {
+			return r60_fig_bal_sheet_bwp;
+		}
+
+		public void setR60_fig_bal_sheet_bwp(BigDecimal r60_fig_bal_sheet_bwp) {
+			this.r60_fig_bal_sheet_bwp = r60_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR60_amt_statement_adj() {
+			return r60_amt_statement_adj;
+		}
+
+		public void setR60_amt_statement_adj(BigDecimal r60_amt_statement_adj) {
+			this.r60_amt_statement_adj = r60_amt_statement_adj;
+		}
+
+		public BigDecimal getR60_amt_statement_adj_bwp() {
+			return r60_amt_statement_adj_bwp;
+		}
+
+		public void setR60_amt_statement_adj_bwp(BigDecimal r60_amt_statement_adj_bwp) {
+			this.r60_amt_statement_adj_bwp = r60_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR60_net_amt() {
+			return r60_net_amt;
+		}
+
+		public void setR60_net_amt(BigDecimal r60_net_amt) {
+			this.r60_net_amt = r60_net_amt;
+		}
+
+		public BigDecimal getR60_net_amt_bwp() {
+			return r60_net_amt_bwp;
+		}
+
+		public void setR60_net_amt_bwp(BigDecimal r60_net_amt_bwp) {
+			this.r60_net_amt_bwp = r60_net_amt_bwp;
+		}
+
+		public BigDecimal getR60_bal_sub() {
+			return r60_bal_sub;
+		}
+
+		public void setR60_bal_sub(BigDecimal r60_bal_sub) {
+			this.r60_bal_sub = r60_bal_sub;
+		}
+
+		public BigDecimal getR60_bal_sub_bwp() {
+			return r60_bal_sub_bwp;
+		}
+
+		public void setR60_bal_sub_bwp(BigDecimal r60_bal_sub_bwp) {
+			this.r60_bal_sub_bwp = r60_bal_sub_bwp;
+		}
+
+		public BigDecimal getR60_bal_sub_diaries_bwp() {
+			return r60_bal_sub_diaries_bwp;
+		}
+
+		public void setR60_bal_sub_diaries_bwp(BigDecimal r60_bal_sub_diaries_bwp) {
+			this.r60_bal_sub_diaries_bwp = r60_bal_sub_diaries_bwp;
+		}
+
+		public String getR61_operating_expenses() {
+			return r61_operating_expenses;
+		}
+
+		public void setR61_operating_expenses(String r61_operating_expenses) {
+			this.r61_operating_expenses = r61_operating_expenses;
+		}
+
+		public BigDecimal getR61_fig_bal_sheet() {
+			return r61_fig_bal_sheet;
+		}
+
+		public void setR61_fig_bal_sheet(BigDecimal r61_fig_bal_sheet) {
+			this.r61_fig_bal_sheet = r61_fig_bal_sheet;
+		}
+
+		public BigDecimal getR61_fig_bal_sheet_bwp() {
+			return r61_fig_bal_sheet_bwp;
+		}
+
+		public void setR61_fig_bal_sheet_bwp(BigDecimal r61_fig_bal_sheet_bwp) {
+			this.r61_fig_bal_sheet_bwp = r61_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR61_amt_statement_adj() {
+			return r61_amt_statement_adj;
+		}
+
+		public void setR61_amt_statement_adj(BigDecimal r61_amt_statement_adj) {
+			this.r61_amt_statement_adj = r61_amt_statement_adj;
+		}
+
+		public BigDecimal getR61_amt_statement_adj_bwp() {
+			return r61_amt_statement_adj_bwp;
+		}
+
+		public void setR61_amt_statement_adj_bwp(BigDecimal r61_amt_statement_adj_bwp) {
+			this.r61_amt_statement_adj_bwp = r61_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR61_net_amt() {
+			return r61_net_amt;
+		}
+
+		public void setR61_net_amt(BigDecimal r61_net_amt) {
+			this.r61_net_amt = r61_net_amt;
+		}
+
+		public BigDecimal getR61_net_amt_bwp() {
+			return r61_net_amt_bwp;
+		}
+
+		public void setR61_net_amt_bwp(BigDecimal r61_net_amt_bwp) {
+			this.r61_net_amt_bwp = r61_net_amt_bwp;
+		}
+
+		public BigDecimal getR61_bal_sub() {
+			return r61_bal_sub;
+		}
+
+		public void setR61_bal_sub(BigDecimal r61_bal_sub) {
+			this.r61_bal_sub = r61_bal_sub;
+		}
+
+		public BigDecimal getR61_bal_sub_bwp() {
+			return r61_bal_sub_bwp;
+		}
+
+		public void setR61_bal_sub_bwp(BigDecimal r61_bal_sub_bwp) {
+			this.r61_bal_sub_bwp = r61_bal_sub_bwp;
+		}
+
+		public BigDecimal getR61_bal_sub_diaries_bwp() {
+			return r61_bal_sub_diaries_bwp;
+		}
+
+		public void setR61_bal_sub_diaries_bwp(BigDecimal r61_bal_sub_diaries_bwp) {
+			this.r61_bal_sub_diaries_bwp = r61_bal_sub_diaries_bwp;
+		}
+
+		public String getR62_operating_expenses() {
+			return r62_operating_expenses;
+		}
+
+		public void setR62_operating_expenses(String r62_operating_expenses) {
+			this.r62_operating_expenses = r62_operating_expenses;
+		}
+
+		public BigDecimal getR62_fig_bal_sheet() {
+			return r62_fig_bal_sheet;
+		}
+
+		public void setR62_fig_bal_sheet(BigDecimal r62_fig_bal_sheet) {
+			this.r62_fig_bal_sheet = r62_fig_bal_sheet;
+		}
+
+		public BigDecimal getR62_fig_bal_sheet_bwp() {
+			return r62_fig_bal_sheet_bwp;
+		}
+
+		public void setR62_fig_bal_sheet_bwp(BigDecimal r62_fig_bal_sheet_bwp) {
+			this.r62_fig_bal_sheet_bwp = r62_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR62_amt_statement_adj() {
+			return r62_amt_statement_adj;
+		}
+
+		public void setR62_amt_statement_adj(BigDecimal r62_amt_statement_adj) {
+			this.r62_amt_statement_adj = r62_amt_statement_adj;
+		}
+
+		public BigDecimal getR62_amt_statement_adj_bwp() {
+			return r62_amt_statement_adj_bwp;
+		}
+
+		public void setR62_amt_statement_adj_bwp(BigDecimal r62_amt_statement_adj_bwp) {
+			this.r62_amt_statement_adj_bwp = r62_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR62_net_amt() {
+			return r62_net_amt;
+		}
+
+		public void setR62_net_amt(BigDecimal r62_net_amt) {
+			this.r62_net_amt = r62_net_amt;
+		}
+
+		public BigDecimal getR62_net_amt_bwp() {
+			return r62_net_amt_bwp;
+		}
+
+		public void setR62_net_amt_bwp(BigDecimal r62_net_amt_bwp) {
+			this.r62_net_amt_bwp = r62_net_amt_bwp;
+		}
+
+		public BigDecimal getR62_bal_sub() {
+			return r62_bal_sub;
+		}
+
+		public void setR62_bal_sub(BigDecimal r62_bal_sub) {
+			this.r62_bal_sub = r62_bal_sub;
+		}
+
+		public BigDecimal getR62_bal_sub_bwp() {
+			return r62_bal_sub_bwp;
+		}
+
+		public void setR62_bal_sub_bwp(BigDecimal r62_bal_sub_bwp) {
+			this.r62_bal_sub_bwp = r62_bal_sub_bwp;
+		}
+
+		public BigDecimal getR62_bal_sub_diaries_bwp() {
+			return r62_bal_sub_diaries_bwp;
+		}
+
+		public void setR62_bal_sub_diaries_bwp(BigDecimal r62_bal_sub_diaries_bwp) {
+			this.r62_bal_sub_diaries_bwp = r62_bal_sub_diaries_bwp;
+		}
+
+		public String getR63_operating_expenses() {
+			return r63_operating_expenses;
+		}
+
+		public void setR63_operating_expenses(String r63_operating_expenses) {
+			this.r63_operating_expenses = r63_operating_expenses;
+		}
+
+		public BigDecimal getR63_fig_bal_sheet() {
+			return r63_fig_bal_sheet;
+		}
+
+		public void setR63_fig_bal_sheet(BigDecimal r63_fig_bal_sheet) {
+			this.r63_fig_bal_sheet = r63_fig_bal_sheet;
+		}
+
+		public BigDecimal getR63_fig_bal_sheet_bwp() {
+			return r63_fig_bal_sheet_bwp;
+		}
+
+		public void setR63_fig_bal_sheet_bwp(BigDecimal r63_fig_bal_sheet_bwp) {
+			this.r63_fig_bal_sheet_bwp = r63_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR63_amt_statement_adj() {
+			return r63_amt_statement_adj;
+		}
+
+		public void setR63_amt_statement_adj(BigDecimal r63_amt_statement_adj) {
+			this.r63_amt_statement_adj = r63_amt_statement_adj;
+		}
+
+		public BigDecimal getR63_amt_statement_adj_bwp() {
+			return r63_amt_statement_adj_bwp;
+		}
+
+		public void setR63_amt_statement_adj_bwp(BigDecimal r63_amt_statement_adj_bwp) {
+			this.r63_amt_statement_adj_bwp = r63_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR63_net_amt() {
+			return r63_net_amt;
+		}
+
+		public void setR63_net_amt(BigDecimal r63_net_amt) {
+			this.r63_net_amt = r63_net_amt;
+		}
+
+		public BigDecimal getR63_net_amt_bwp() {
+			return r63_net_amt_bwp;
+		}
+
+		public void setR63_net_amt_bwp(BigDecimal r63_net_amt_bwp) {
+			this.r63_net_amt_bwp = r63_net_amt_bwp;
+		}
+
+		public BigDecimal getR63_bal_sub() {
+			return r63_bal_sub;
+		}
+
+		public void setR63_bal_sub(BigDecimal r63_bal_sub) {
+			this.r63_bal_sub = r63_bal_sub;
+		}
+
+		public BigDecimal getR63_bal_sub_bwp() {
+			return r63_bal_sub_bwp;
+		}
+
+		public void setR63_bal_sub_bwp(BigDecimal r63_bal_sub_bwp) {
+			this.r63_bal_sub_bwp = r63_bal_sub_bwp;
+		}
+
+		public BigDecimal getR63_bal_sub_diaries_bwp() {
+			return r63_bal_sub_diaries_bwp;
+		}
+
+		public void setR63_bal_sub_diaries_bwp(BigDecimal r63_bal_sub_diaries_bwp) {
+			this.r63_bal_sub_diaries_bwp = r63_bal_sub_diaries_bwp;
+		}
+
+		public BigDecimal getR17_bal_sub_diaries() {
+			return r17_bal_sub_diaries;
+		}
+
+		public void setR17_bal_sub_diaries(BigDecimal r17_bal_sub_diaries) {
+			this.r17_bal_sub_diaries = r17_bal_sub_diaries;
+		}
+
+		public BigDecimal getR48_bal_sub_diaries() {
+			return r48_bal_sub_diaries;
+		}
+
+		public void setR48_bal_sub_diaries(BigDecimal r48_bal_sub_diaries) {
+			this.r48_bal_sub_diaries = r48_bal_sub_diaries;
+		}
+
+		public BigDecimal getREPORT_VERSION() {
+			return REPORT_VERSION;
+		}
+
+		public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
+			this.REPORT_VERSION = REPORT_VERSION;
+		}
+
+		public String getREPORT_FREQUENCY() {
+			return REPORT_FREQUENCY;
+		}
+
+		public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+			REPORT_FREQUENCY = rEPORT_FREQUENCY;
+		}
+
+		public String getREPORT_CODE() {
+			return REPORT_CODE;
+		}
+
+		public void setREPORT_CODE(String rEPORT_CODE) {
+			REPORT_CODE = rEPORT_CODE;
+		}
+
+		public String getREPORT_DESC() {
+			return REPORT_DESC;
+		}
+
+		public void setREPORT_DESC(String rEPORT_DESC) {
+			REPORT_DESC = rEPORT_DESC;
+		}
+
+		public String getENTITY_FLG() {
+			return ENTITY_FLG;
+		}
+
+		public void setENTITY_FLG(String eNTITY_FLG) {
+			ENTITY_FLG = eNTITY_FLG;
+		}
+
+		public String getMODIFY_FLG() {
+			return MODIFY_FLG;
+		}
+
+		public void setMODIFY_FLG(String mODIFY_FLG) {
+			MODIFY_FLG = mODIFY_FLG;
+		}
+
+		public String getDEL_FLG() {
+			return DEL_FLG;
+		}
+
+		public void setDEL_FLG(String dEL_FLG) {
+			DEL_FLG = dEL_FLG;
+		}
+
+	}
+
+//ARCHIVAL ROW MAPPER
+
+	class PL_SCHSArchivalRowMapper implements RowMapper<PL_SCHS_Archival_Summary_Entity> {
+
+		@Override
+		public PL_SCHS_Archival_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+			PL_SCHS_Archival_Summary_Entity obj = new PL_SCHS_Archival_Summary_Entity();
+
+			// ================= R9 =================
+			obj.setR9_intrest_div(rs.getString("R9_INTREST_DIV"));
+			obj.setR9_fig_bal_sheet(rs.getBigDecimal("R9_FIG_BAL_SHEET"));
+			obj.setR9_fig_bal_sheet_bwp(rs.getBigDecimal("R9_FIG_BAL_SHEET_BWP"));
+			obj.setR9_amt_statement_adj(rs.getBigDecimal("R9_AMT_STATEMENT_ADJ"));
+			obj.setR9_amt_statement_adj_bwp(rs.getBigDecimal("R9_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR9_net_amt(rs.getBigDecimal("R9_NET_AMT"));
+			obj.setR9_net_amt_bwp(rs.getBigDecimal("R9_NET_AMT_BWP"));
+			obj.setR9_bal_sub(rs.getBigDecimal("R9_BAL_SUB"));
+			obj.setR9_bal_sub_bwp(rs.getBigDecimal("R9_BAL_SUB_BWP"));
+			obj.setR9_bal_sub_diaries(rs.getBigDecimal("R9_BAL_SUB_DIARIES"));
+			obj.setR9_bal_sub_diaries_bwp(rs.getBigDecimal("R9_BAL_SUB_DIARIES_BWP"));
+
+			// ================= R10 =================
+			obj.setR10_intrest_div(rs.getString("R10_INTREST_DIV"));
+			obj.setR10_fig_bal_sheet(rs.getBigDecimal("R10_FIG_BAL_SHEET"));
+			obj.setR10_fig_bal_sheet_bwp(rs.getBigDecimal("R10_FIG_BAL_SHEET_BWP"));
+			obj.setR10_amt_statement_adj(rs.getBigDecimal("R10_AMT_STATEMENT_ADJ"));
+			obj.setR10_amt_statement_adj_bwp(rs.getBigDecimal("R10_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR10_net_amt(rs.getBigDecimal("R10_NET_AMT"));
+			obj.setR10_net_amt_bwp(rs.getBigDecimal("R10_NET_AMT_BWP"));
+			obj.setR10_bal_sub(rs.getBigDecimal("R10_BAL_SUB"));
+			obj.setR10_bal_sub_bwp(rs.getBigDecimal("R10_BAL_SUB_BWP"));
+			obj.setR10_bal_sub_diaries(rs.getBigDecimal("R10_BAL_SUB_DIARIES"));
+			obj.setR10_bal_sub_diaries_bwp(rs.getBigDecimal("R10_BAL_SUB_DIARIES_BWP"));
+
+			// ================= R11 =================
+			obj.setR11_intrest_div(rs.getString("R11_INTREST_DIV"));
+			obj.setR11_fig_bal_sheet(rs.getBigDecimal("R11_FIG_BAL_SHEET"));
+			obj.setR11_fig_bal_sheet_bwp(rs.getBigDecimal("R11_FIG_BAL_SHEET_BWP"));
+			obj.setR11_amt_statement_adj(rs.getBigDecimal("R11_AMT_STATEMENT_ADJ"));
+			obj.setR11_amt_statement_adj_bwp(rs.getBigDecimal("R11_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR11_net_amt(rs.getBigDecimal("R11_NET_AMT"));
+			obj.setR11_net_amt_bwp(rs.getBigDecimal("R11_NET_AMT_BWP"));
+			obj.setR11_bal_sub(rs.getBigDecimal("R11_BAL_SUB"));
+			obj.setR11_bal_sub_bwp(rs.getBigDecimal("R11_BAL_SUB_BWP"));
+			obj.setR11_bal_sub_diaries(rs.getBigDecimal("R11_BAL_SUB_DIARIES"));
+			obj.setR11_bal_sub_diaries_bwp(rs.getBigDecimal("R11_BAL_SUB_DIARIES_BWP"));
+
+			// ================= R12 =================
+			obj.setR12_intrest_div(rs.getString("R12_INTREST_DIV"));
+			obj.setR12_fig_bal_sheet(rs.getBigDecimal("R12_FIG_BAL_SHEET"));
+			obj.setR12_fig_bal_sheet_bwp(rs.getBigDecimal("R12_FIG_BAL_SHEET_BWP"));
+			obj.setR12_amt_statement_adj(rs.getBigDecimal("R12_AMT_STATEMENT_ADJ"));
+			obj.setR12_amt_statement_adj_bwp(rs.getBigDecimal("R12_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR12_net_amt(rs.getBigDecimal("R12_NET_AMT"));
+			obj.setR12_net_amt_bwp(rs.getBigDecimal("R12_NET_AMT_BWP"));
+			obj.setR12_bal_sub(rs.getBigDecimal("R12_BAL_SUB"));
+			obj.setR12_bal_sub_bwp(rs.getBigDecimal("R12_BAL_SUB_BWP"));
+			obj.setR12_bal_sub_diaries(rs.getBigDecimal("R12_BAL_SUB_DIARIES"));
+			obj.setR12_bal_sub_diaries_bwp(rs.getBigDecimal("R12_BAL_SUB_DIARIES_BWP"));
+
+			// ================= R13 =================
+			obj.setR13_intrest_div(rs.getString("R13_INTREST_DIV"));
+			obj.setR13_fig_bal_sheet(rs.getBigDecimal("R13_FIG_BAL_SHEET"));
+			obj.setR13_fig_bal_sheet_bwp(rs.getBigDecimal("R13_FIG_BAL_SHEET_BWP"));
+			obj.setR13_amt_statement_adj(rs.getBigDecimal("R13_AMT_STATEMENT_ADJ"));
+			obj.setR13_amt_statement_adj_bwp(rs.getBigDecimal("R13_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR13_net_amt(rs.getBigDecimal("R13_NET_AMT"));
+			obj.setR13_net_amt_bwp(rs.getBigDecimal("R13_NET_AMT_BWP"));
+			obj.setR13_bal_sub(rs.getBigDecimal("R13_BAL_SUB"));
+			obj.setR13_bal_sub_bwp(rs.getBigDecimal("R13_BAL_SUB_BWP"));
+			obj.setR13_bal_sub_diaries(rs.getBigDecimal("R13_BAL_SUB_DIARIES"));
+			obj.setR13_bal_sub_diaries_bwp(rs.getBigDecimal("R13_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR17_other_income(rs.getString("R17_OTHER_INCOME"));
+			obj.setR17_fig_bal_sheet(rs.getBigDecimal("R17_FIG_BAL_SHEET"));
+			obj.setR17_fig_bal_sheet_bwp(rs.getBigDecimal("R17_FIG_BAL_SHEET_BWP"));
+			obj.setR17_amt_statement_adj(rs.getBigDecimal("R17_AMT_STATEMENT_ADJ"));
+			obj.setR17_amt_statement_adj_bwp(rs.getBigDecimal("R17_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR17_net_amt(rs.getBigDecimal("R17_NET_AMT"));
+			obj.setR17_net_amt_bwp(rs.getBigDecimal("R17_NET_AMT_BWP"));
+			obj.setR17_bal_sub(rs.getBigDecimal("R17_BAL_SUB"));
+			obj.setR17_bal_sub_bwp(rs.getBigDecimal("R17_BAL_SUB_BWP"));
+			obj.setR17_bal_sub_diaries(rs.getBigDecimal("R17_BAL_SUB_DIARIES"));
+			obj.setR17_bal_sub_diaries_bwp(rs.getBigDecimal("R17_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR18_other_income(rs.getString("R18_OTHER_INCOME"));
+			obj.setR18_fig_bal_sheet(rs.getBigDecimal("R18_FIG_BAL_SHEET"));
+			obj.setR18_fig_bal_sheet_bwp(rs.getBigDecimal("R18_FIG_BAL_SHEET_BWP"));
+			obj.setR18_amt_statement_adj(rs.getBigDecimal("R18_AMT_STATEMENT_ADJ"));
+			obj.setR18_amt_statement_adj_bwp(rs.getBigDecimal("R18_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR18_net_amt(rs.getBigDecimal("R18_NET_AMT"));
+			obj.setR18_net_amt_bwp(rs.getBigDecimal("R18_NET_AMT_BWP"));
+			obj.setR18_bal_sub(rs.getBigDecimal("R18_BAL_SUB"));
+			obj.setR18_bal_sub_bwp(rs.getBigDecimal("R18_BAL_SUB_BWP"));
+			obj.setR18_bal_sub_diaries(rs.getBigDecimal("R18_BAL_SUB_DIARIES"));
+			obj.setR18_bal_sub_diaries_bwp(rs.getBigDecimal("R18_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR19_other_income(rs.getString("R19_OTHER_INCOME"));
+			obj.setR19_fig_bal_sheet(rs.getBigDecimal("R19_FIG_BAL_SHEET"));
+			obj.setR19_fig_bal_sheet_bwp(rs.getBigDecimal("R19_FIG_BAL_SHEET_BWP"));
+			obj.setR19_amt_statement_adj(rs.getBigDecimal("R19_AMT_STATEMENT_ADJ"));
+			obj.setR19_amt_statement_adj_bwp(rs.getBigDecimal("R19_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR19_net_amt(rs.getBigDecimal("R19_NET_AMT"));
+			obj.setR19_net_amt_bwp(rs.getBigDecimal("R19_NET_AMT_BWP"));
+			obj.setR19_bal_sub(rs.getBigDecimal("R19_BAL_SUB"));
+			obj.setR19_bal_sub_bwp(rs.getBigDecimal("R19_BAL_SUB_BWP"));
+			obj.setR19_bal_sub_diaries(rs.getBigDecimal("R19_BAL_SUB_DIARIES"));
+			obj.setR19_bal_sub_diaries_bwp(rs.getBigDecimal("R19_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR20_other_income(rs.getString("R20_OTHER_INCOME"));
+			obj.setR20_fig_bal_sheet(rs.getBigDecimal("R20_FIG_BAL_SHEET"));
+			obj.setR20_fig_bal_sheet_bwp(rs.getBigDecimal("R20_FIG_BAL_SHEET_BWP"));
+			obj.setR20_amt_statement_adj(rs.getBigDecimal("R20_AMT_STATEMENT_ADJ"));
+			obj.setR20_amt_statement_adj_bwp(rs.getBigDecimal("R20_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR20_net_amt(rs.getBigDecimal("R20_NET_AMT"));
+			obj.setR20_net_amt_bwp(rs.getBigDecimal("R20_NET_AMT_BWP"));
+			obj.setR20_bal_sub(rs.getBigDecimal("R20_BAL_SUB"));
+			obj.setR20_bal_sub_bwp(rs.getBigDecimal("R20_BAL_SUB_BWP"));
+			obj.setR20_bal_sub_diaries(rs.getBigDecimal("R20_BAL_SUB_DIARIES"));
+			obj.setR20_bal_sub_diaries_bwp(rs.getBigDecimal("R20_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR21_other_income(rs.getString("R21_OTHER_INCOME"));
+			obj.setR21_fig_bal_sheet(rs.getBigDecimal("R21_FIG_BAL_SHEET"));
+			obj.setR21_fig_bal_sheet_bwp(rs.getBigDecimal("R21_FIG_BAL_SHEET_BWP"));
+			obj.setR21_amt_statement_adj(rs.getBigDecimal("R21_AMT_STATEMENT_ADJ"));
+			obj.setR21_amt_statement_adj_bwp(rs.getBigDecimal("R21_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR21_net_amt(rs.getBigDecimal("R21_NET_AMT"));
+			obj.setR21_net_amt_bwp(rs.getBigDecimal("R21_NET_AMT_BWP"));
+			obj.setR21_bal_sub(rs.getBigDecimal("R21_BAL_SUB"));
+			obj.setR21_bal_sub_bwp(rs.getBigDecimal("R21_BAL_SUB_BWP"));
+			obj.setR21_bal_sub_diaries(rs.getBigDecimal("R21_BAL_SUB_DIARIES"));
+			obj.setR21_bal_sub_diaries_bwp(rs.getBigDecimal("R21_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR22_other_income(rs.getString("R22_OTHER_INCOME"));
+			obj.setR22_fig_bal_sheet(rs.getBigDecimal("R22_FIG_BAL_SHEET"));
+			obj.setR22_fig_bal_sheet_bwp(rs.getBigDecimal("R22_FIG_BAL_SHEET_BWP"));
+			obj.setR22_amt_statement_adj(rs.getBigDecimal("R22_AMT_STATEMENT_ADJ"));
+			obj.setR22_amt_statement_adj_bwp(rs.getBigDecimal("R22_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR22_net_amt(rs.getBigDecimal("R22_NET_AMT"));
+			obj.setR22_net_amt_bwp(rs.getBigDecimal("R22_NET_AMT_BWP"));
+			obj.setR22_bal_sub(rs.getBigDecimal("R22_BAL_SUB"));
+			obj.setR22_bal_sub_bwp(rs.getBigDecimal("R22_BAL_SUB_BWP"));
+			obj.setR22_bal_sub_diaries(rs.getBigDecimal("R22_BAL_SUB_DIARIES"));
+			obj.setR22_bal_sub_diaries_bwp(rs.getBigDecimal("R22_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR23_other_income(rs.getString("R23_OTHER_INCOME"));
+			obj.setR23_fig_bal_sheet(rs.getBigDecimal("R23_FIG_BAL_SHEET"));
+			obj.setR23_fig_bal_sheet_bwp(rs.getBigDecimal("R23_FIG_BAL_SHEET_BWP"));
+			obj.setR23_amt_statement_adj(rs.getBigDecimal("R23_AMT_STATEMENT_ADJ"));
+			obj.setR23_amt_statement_adj_bwp(rs.getBigDecimal("R23_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR23_net_amt(rs.getBigDecimal("R23_NET_AMT"));
+			obj.setR23_net_amt_bwp(rs.getBigDecimal("R23_NET_AMT_BWP"));
+			obj.setR23_bal_sub(rs.getBigDecimal("R23_BAL_SUB"));
+			obj.setR23_bal_sub_bwp(rs.getBigDecimal("R23_BAL_SUB_BWP"));
+			obj.setR23_bal_sub_diaries(rs.getBigDecimal("R23_BAL_SUB_DIARIES"));
+			obj.setR23_bal_sub_diaries_bwp(rs.getBigDecimal("R23_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR24_other_income(rs.getString("R24_OTHER_INCOME"));
+			obj.setR24_fig_bal_sheet(rs.getBigDecimal("R24_FIG_BAL_SHEET"));
+			obj.setR24_fig_bal_sheet_bwp(rs.getBigDecimal("R24_FIG_BAL_SHEET_BWP"));
+			obj.setR24_amt_statement_adj(rs.getBigDecimal("R24_AMT_STATEMENT_ADJ"));
+			obj.setR24_amt_statement_adj_bwp(rs.getBigDecimal("R24_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR24_net_amt(rs.getBigDecimal("R24_NET_AMT"));
+			obj.setR24_net_amt_bwp(rs.getBigDecimal("R24_NET_AMT_BWP"));
+			obj.setR24_bal_sub(rs.getBigDecimal("R24_BAL_SUB"));
+			obj.setR24_bal_sub_bwp(rs.getBigDecimal("R24_BAL_SUB_BWP"));
+			obj.setR24_bal_sub_diaries(rs.getBigDecimal("R24_BAL_SUB_DIARIES"));
+			obj.setR24_bal_sub_diaries_bwp(rs.getBigDecimal("R24_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR25_other_income(rs.getString("R25_OTHER_INCOME"));
+			obj.setR25_fig_bal_sheet(rs.getBigDecimal("R25_FIG_BAL_SHEET"));
+			obj.setR25_fig_bal_sheet_bwp(rs.getBigDecimal("R25_FIG_BAL_SHEET_BWP"));
+			obj.setR25_amt_statement_adj(rs.getBigDecimal("R25_AMT_STATEMENT_ADJ"));
+			obj.setR25_amt_statement_adj_bwp(rs.getBigDecimal("R25_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR25_net_amt(rs.getBigDecimal("R25_NET_AMT"));
+			obj.setR25_net_amt_bwp(rs.getBigDecimal("R25_NET_AMT_BWP"));
+			obj.setR25_bal_sub(rs.getBigDecimal("R25_BAL_SUB"));
+			obj.setR25_bal_sub_bwp(rs.getBigDecimal("R25_BAL_SUB_BWP"));
+			obj.setR25_bal_sub_diaries(rs.getBigDecimal("R25_BAL_SUB_DIARIES"));
+			obj.setR25_bal_sub_diaries_bwp(rs.getBigDecimal("R25_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR26_other_income(rs.getString("R26_OTHER_INCOME"));
+			obj.setR26_fig_bal_sheet(rs.getBigDecimal("R26_FIG_BAL_SHEET"));
+			obj.setR26_fig_bal_sheet_bwp(rs.getBigDecimal("R26_FIG_BAL_SHEET_BWP"));
+			obj.setR26_amt_statement_adj(rs.getBigDecimal("R26_AMT_STATEMENT_ADJ"));
+			obj.setR26_amt_statement_adj_bwp(rs.getBigDecimal("R26_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR26_net_amt(rs.getBigDecimal("R26_NET_AMT"));
+			obj.setR26_net_amt_bwp(rs.getBigDecimal("R26_NET_AMT_BWP"));
+			obj.setR26_bal_sub(rs.getBigDecimal("R26_BAL_SUB"));
+			obj.setR26_bal_sub_bwp(rs.getBigDecimal("R26_BAL_SUB_BWP"));
+			obj.setR26_bal_sub_diaries(rs.getBigDecimal("R26_BAL_SUB_DIARIES"));
+			obj.setR26_bal_sub_diaries_bwp(rs.getBigDecimal("R26_BAL_SUB_DIARIES_BWP"));
+
+			// ================= R40 =================
+			obj.setR40_intrest_expended(rs.getString("R40_INTREST_EXPENDED"));
+			obj.setR40_fig_bal_sheet(rs.getBigDecimal("R40_FIG_BAL_SHEET"));
+			obj.setR40_fig_bal_sheet_bwp(rs.getBigDecimal("R40_FIG_BAL_SHEET_BWP"));
+			obj.setR40_amt_statement_adj(rs.getBigDecimal("R40_AMT_STATEMENT_ADJ"));
+			obj.setR40_amt_statement_adj_bwp(rs.getBigDecimal("R40_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR40_net_amt(rs.getBigDecimal("R40_NET_AMT"));
+			obj.setR40_net_amt_bwp(rs.getBigDecimal("R40_NET_AMT_BWP"));
+			obj.setR40_bal_sub(rs.getBigDecimal("R40_BAL_SUB"));
+			obj.setR40_bal_sub_bwp(rs.getBigDecimal("R40_BAL_SUB_BWP"));
+			obj.setR40_bal_sub_diaries_bwp(rs.getBigDecimal("R40_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR41_intrest_expended(rs.getString("R41_INTREST_EXPENDED"));
+			obj.setR41_fig_bal_sheet(rs.getBigDecimal("R41_FIG_BAL_SHEET"));
+			obj.setR41_fig_bal_sheet_bwp(rs.getBigDecimal("R41_FIG_BAL_SHEET_BWP"));
+			obj.setR41_amt_statement_adj(rs.getBigDecimal("R41_AMT_STATEMENT_ADJ"));
+			obj.setR41_amt_statement_adj_bwp(rs.getBigDecimal("R41_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR41_net_amt(rs.getBigDecimal("R41_NET_AMT"));
+			obj.setR41_net_amt_bwp(rs.getBigDecimal("R41_NET_AMT_BWP"));
+			obj.setR41_bal_sub(rs.getBigDecimal("R41_BAL_SUB"));
+			obj.setR41_bal_sub_bwp(rs.getBigDecimal("R41_BAL_SUB_BWP"));
+			obj.setR41_bal_sub_diaries(rs.getBigDecimal("R41_BAL_SUB_DIARIES"));
+			obj.setR41_bal_sub_diaries_bwp(rs.getBigDecimal("R41_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR42_intrest_expended(rs.getString("R42_INTREST_EXPENDED"));
+			obj.setR42_fig_bal_sheet(rs.getBigDecimal("R42_FIG_BAL_SHEET"));
+			obj.setR42_fig_bal_sheet_bwp(rs.getBigDecimal("R42_FIG_BAL_SHEET_BWP"));
+			obj.setR42_amt_statement_adj(rs.getBigDecimal("R42_AMT_STATEMENT_ADJ"));
+			obj.setR42_amt_statement_adj_bwp(rs.getBigDecimal("R42_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR42_net_amt(rs.getBigDecimal("R42_NET_AMT"));
+			obj.setR42_net_amt_bwp(rs.getBigDecimal("R42_NET_AMT_BWP"));
+			obj.setR42_bal_sub(rs.getBigDecimal("R42_BAL_SUB"));
+			obj.setR42_bal_sub_bwp(rs.getBigDecimal("R42_BAL_SUB_BWP"));
+			obj.setR42_bal_sub_diaries(rs.getBigDecimal("R42_BAL_SUB_DIARIES"));
+			obj.setR42_bal_sub_diaries_bwp(rs.getBigDecimal("R42_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR43_intrest_expended(rs.getString("R43_INTREST_EXPENDED"));
+			obj.setR43_fig_bal_sheet(rs.getBigDecimal("R43_FIG_BAL_SHEET"));
+			obj.setR43_fig_bal_sheet_bwp(rs.getBigDecimal("R43_FIG_BAL_SHEET_BWP"));
+			obj.setR43_amt_statement_adj(rs.getBigDecimal("R43_AMT_STATEMENT_ADJ"));
+			obj.setR43_amt_statement_adj_bwp(rs.getBigDecimal("R43_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR43_net_amt(rs.getBigDecimal("R43_NET_AMT"));
+			obj.setR43_net_amt_bwp(rs.getBigDecimal("R43_NET_AMT_BWP"));
+			obj.setR43_bal_sub(rs.getBigDecimal("R43_BAL_SUB"));
+			obj.setR43_bal_sub_bwp(rs.getBigDecimal("R43_BAL_SUB_BWP"));
+			obj.setR43_bal_sub_diaries(rs.getBigDecimal("R43_BAL_SUB_DIARIES"));
+			obj.setR43_bal_sub_diaries_bwp(rs.getBigDecimal("R43_BAL_SUB_DIARIES_BWP"));
+
+			// ================= R48 =================
+			obj.setR48_operating_expenses(rs.getString("R48_OPERATING_EXPENSES"));
+			obj.setR48_fig_bal_sheet(rs.getBigDecimal("R48_FIG_BAL_SHEET"));
+			obj.setR48_fig_bal_sheet_bwp(rs.getBigDecimal("R48_FIG_BAL_SHEET_BWP"));
+			obj.setR48_amt_statement_adj(rs.getBigDecimal("R48_AMT_STATEMENT_ADJ"));
+			obj.setR48_amt_statement_adj_bwp(rs.getBigDecimal("R48_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR48_net_amt(rs.getBigDecimal("R48_NET_AMT"));
+			obj.setR48_net_amt_bwp(rs.getBigDecimal("R48_NET_AMT_BWP"));
+			obj.setR48_bal_sub(rs.getBigDecimal("R48_BAL_SUB"));
+			obj.setR48_bal_sub_bwp(rs.getBigDecimal("R48_BAL_SUB_BWP"));
+			obj.setR48_bal_sub_diaries(rs.getBigDecimal("R48_BAL_SUB_DIARIES"));
+			obj.setR48_bal_sub_diaries_bwp(rs.getBigDecimal("R48_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR49_operating_expenses(rs.getString("R49_OPERATING_EXPENSES"));
+			obj.setR49_fig_bal_sheet(rs.getBigDecimal("R49_FIG_BAL_SHEET"));
+			obj.setR49_fig_bal_sheet_bwp(rs.getBigDecimal("R49_FIG_BAL_SHEET_BWP"));
+			obj.setR49_amt_statement_adj(rs.getBigDecimal("R49_AMT_STATEMENT_ADJ"));
+			obj.setR49_amt_statement_adj_bwp(rs.getBigDecimal("R49_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR49_net_amt(rs.getBigDecimal("R49_NET_AMT"));
+			obj.setR49_net_amt_bwp(rs.getBigDecimal("R49_NET_AMT_BWP"));
+			obj.setR49_bal_sub(rs.getBigDecimal("R49_BAL_SUB"));
+			obj.setR49_bal_sub_bwp(rs.getBigDecimal("R49_BAL_SUB_BWP"));
+			obj.setR49_bal_sub_diaries(rs.getBigDecimal("R49_BAL_SUB_DIARIES"));
+			obj.setR49_bal_sub_diaries_bwp(rs.getBigDecimal("R49_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR50_operating_expenses(rs.getString("R50_OPERATING_EXPENSES"));
+			obj.setR50_fig_bal_sheet(rs.getBigDecimal("R50_FIG_BAL_SHEET"));
+			obj.setR50_fig_bal_sheet_bwp(rs.getBigDecimal("R50_FIG_BAL_SHEET_BWP"));
+			obj.setR50_amt_statement_adj(rs.getBigDecimal("R50_AMT_STATEMENT_ADJ"));
+			obj.setR50_amt_statement_adj_bwp(rs.getBigDecimal("R50_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR50_net_amt(rs.getBigDecimal("R50_NET_AMT"));
+			obj.setR50_net_amt_bwp(rs.getBigDecimal("R50_NET_AMT_BWP"));
+			obj.setR50_bal_sub(rs.getBigDecimal("R50_BAL_SUB"));
+			obj.setR50_bal_sub_bwp(rs.getBigDecimal("R50_BAL_SUB_BWP"));
+			obj.setR50_bal_sub_diaries(rs.getBigDecimal("R50_BAL_SUB_DIARIES"));
+			obj.setR50_bal_sub_diaries_bwp(rs.getBigDecimal("R50_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR51_operating_expenses(rs.getString("R51_OPERATING_EXPENSES"));
+			obj.setR51_fig_bal_sheet(rs.getBigDecimal("R51_FIG_BAL_SHEET"));
+			obj.setR51_fig_bal_sheet_bwp(rs.getBigDecimal("R51_FIG_BAL_SHEET_BWP"));
+			obj.setR51_amt_statement_adj(rs.getBigDecimal("R51_AMT_STATEMENT_ADJ"));
+			obj.setR51_amt_statement_adj_bwp(rs.getBigDecimal("R51_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR51_net_amt(rs.getBigDecimal("R51_NET_AMT"));
+			obj.setR51_net_amt_bwp(rs.getBigDecimal("R51_NET_AMT_BWP"));
+			obj.setR51_bal_sub(rs.getBigDecimal("R51_BAL_SUB"));
+			obj.setR51_bal_sub_bwp(rs.getBigDecimal("R51_BAL_SUB_BWP"));
+			obj.setR51_bal_sub_diaries(rs.getBigDecimal("R51_BAL_SUB_DIARIES"));
+			obj.setR51_bal_sub_diaries_bwp(rs.getBigDecimal("R51_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR52_operating_expenses(rs.getString("R52_OPERATING_EXPENSES"));
+			obj.setR52_fig_bal_sheet(rs.getBigDecimal("R52_FIG_BAL_SHEET"));
+			obj.setR52_fig_bal_sheet_bwp(rs.getBigDecimal("R52_FIG_BAL_SHEET_BWP"));
+			obj.setR52_amt_statement_adj(rs.getBigDecimal("R52_AMT_STATEMENT_ADJ"));
+			obj.setR52_amt_statement_adj_bwp(rs.getBigDecimal("R52_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR52_net_amt(rs.getBigDecimal("R52_NET_AMT"));
+			obj.setR52_net_amt_bwp(rs.getBigDecimal("R52_NET_AMT_BWP"));
+			obj.setR52_bal_sub(rs.getBigDecimal("R52_BAL_SUB"));
+			obj.setR52_bal_sub_bwp(rs.getBigDecimal("R52_BAL_SUB_BWP"));
+			obj.setR52_bal_sub_diaries(rs.getBigDecimal("R52_BAL_SUB_DIARIES"));
+			obj.setR52_bal_sub_diaries_bwp(rs.getBigDecimal("R52_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR53_operating_expenses(rs.getString("R53_OPERATING_EXPENSES"));
+			obj.setR53_fig_bal_sheet(rs.getBigDecimal("R53_FIG_BAL_SHEET"));
+			obj.setR53_fig_bal_sheet_bwp(rs.getBigDecimal("R53_FIG_BAL_SHEET_BWP"));
+			obj.setR53_amt_statement_adj(rs.getBigDecimal("R53_AMT_STATEMENT_ADJ"));
+			obj.setR53_amt_statement_adj_bwp(rs.getBigDecimal("R53_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR53_net_amt(rs.getBigDecimal("R53_NET_AMT"));
+			obj.setR53_net_amt_bwp(rs.getBigDecimal("R53_NET_AMT_BWP"));
+			obj.setR53_bal_sub(rs.getBigDecimal("R53_BAL_SUB"));
+			obj.setR53_bal_sub_bwp(rs.getBigDecimal("R53_BAL_SUB_BWP"));
+			obj.setR53_bal_sub_diaries(rs.getBigDecimal("R53_BAL_SUB_DIARIES"));
+			obj.setR53_bal_sub_diaries_bwp(rs.getBigDecimal("R53_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR54_operating_expenses(rs.getString("R54_OPERATING_EXPENSES"));
+			obj.setR54_fig_bal_sheet(rs.getBigDecimal("R54_FIG_BAL_SHEET"));
+			obj.setR54_fig_bal_sheet_bwp(rs.getBigDecimal("R54_FIG_BAL_SHEET_BWP"));
+			obj.setR54_amt_statement_adj(rs.getBigDecimal("R54_AMT_STATEMENT_ADJ"));
+			obj.setR54_amt_statement_adj_bwp(rs.getBigDecimal("R54_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR54_net_amt(rs.getBigDecimal("R54_NET_AMT"));
+			obj.setR54_net_amt_bwp(rs.getBigDecimal("R54_NET_AMT_BWP"));
+			obj.setR54_bal_sub(rs.getBigDecimal("R54_BAL_SUB"));
+			obj.setR54_bal_sub_bwp(rs.getBigDecimal("R54_BAL_SUB_BWP"));
+			obj.setR54_bal_sub_diaries(rs.getBigDecimal("R54_BAL_SUB_DIARIES"));
+			obj.setR54_bal_sub_diaries_bwp(rs.getBigDecimal("R54_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR55_operating_expenses(rs.getString("R55_OPERATING_EXPENSES"));
+			obj.setR55_fig_bal_sheet(rs.getBigDecimal("R55_FIG_BAL_SHEET"));
+			obj.setR55_fig_bal_sheet_bwp(rs.getBigDecimal("R55_FIG_BAL_SHEET_BWP"));
+			obj.setR55_amt_statement_adj(rs.getBigDecimal("R55_AMT_STATEMENT_ADJ"));
+			obj.setR55_amt_statement_adj_bwp(rs.getBigDecimal("R55_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR55_net_amt(rs.getBigDecimal("R55_NET_AMT"));
+			obj.setR55_net_amt_bwp(rs.getBigDecimal("R55_NET_AMT_BWP"));
+			obj.setR55_bal_sub(rs.getBigDecimal("R55_BAL_SUB"));
+			obj.setR55_bal_sub_bwp(rs.getBigDecimal("R55_BAL_SUB_BWP"));
+			obj.setR55_bal_sub_diaries(rs.getBigDecimal("R55_BAL_SUB_DIARIES"));
+			obj.setR55_bal_sub_diaries_bwp(rs.getBigDecimal("R55_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR56_operating_expenses(rs.getString("R56_OPERATING_EXPENSES"));
+			obj.setR56_fig_bal_sheet(rs.getBigDecimal("R56_FIG_BAL_SHEET"));
+			obj.setR56_fig_bal_sheet_bwp(rs.getBigDecimal("R56_FIG_BAL_SHEET_BWP"));
+			obj.setR56_amt_statement_adj(rs.getBigDecimal("R56_AMT_STATEMENT_ADJ"));
+			obj.setR56_amt_statement_adj_bwp(rs.getBigDecimal("R56_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR56_net_amt(rs.getBigDecimal("R56_NET_AMT"));
+			obj.setR56_net_amt_bwp(rs.getBigDecimal("R56_NET_AMT_BWP"));
+			obj.setR56_bal_sub(rs.getBigDecimal("R56_BAL_SUB"));
+			obj.setR56_bal_sub_bwp(rs.getBigDecimal("R56_BAL_SUB_BWP"));
+			obj.setR56_bal_sub_diaries(rs.getBigDecimal("R56_BAL_SUB_DIARIES"));
+			obj.setR56_bal_sub_diaries_bwp(rs.getBigDecimal("R56_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR57_operating_expenses(rs.getString("R57_OPERATING_EXPENSES"));
+			obj.setR57_fig_bal_sheet(rs.getBigDecimal("R57_FIG_BAL_SHEET"));
+			obj.setR57_fig_bal_sheet_bwp(rs.getBigDecimal("R57_FIG_BAL_SHEET_BWP"));
+			obj.setR57_amt_statement_adj(rs.getBigDecimal("R57_AMT_STATEMENT_ADJ"));
+			obj.setR57_amt_statement_adj_bwp(rs.getBigDecimal("R57_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR57_net_amt(rs.getBigDecimal("R57_NET_AMT"));
+			obj.setR57_net_amt_bwp(rs.getBigDecimal("R57_NET_AMT_BWP"));
+			obj.setR57_bal_sub(rs.getBigDecimal("R57_BAL_SUB"));
+			obj.setR57_bal_sub_bwp(rs.getBigDecimal("R57_BAL_SUB_BWP"));
+			obj.setR57_bal_sub_diaries(rs.getBigDecimal("R57_BAL_SUB_DIARIES"));
+			obj.setR57_bal_sub_diaries_bwp(rs.getBigDecimal("R57_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR58_operating_expenses(rs.getString("R58_OPERATING_EXPENSES"));
+			obj.setR58_fig_bal_sheet(rs.getBigDecimal("R58_FIG_BAL_SHEET"));
+			obj.setR58_fig_bal_sheet_bwp(rs.getBigDecimal("R58_FIG_BAL_SHEET_BWP"));
+			obj.setR58_amt_statement_adj(rs.getBigDecimal("R58_AMT_STATEMENT_ADJ"));
+			obj.setR58_amt_statement_adj_bwp(rs.getBigDecimal("R58_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR58_net_amt(rs.getBigDecimal("R58_NET_AMT"));
+			obj.setR58_net_amt_bwp(rs.getBigDecimal("R58_NET_AMT_BWP"));
+			obj.setR58_bal_sub(rs.getBigDecimal("R58_BAL_SUB"));
+			obj.setR58_bal_sub_bwp(rs.getBigDecimal("R58_BAL_SUB_BWP"));
+			obj.setR58_bal_sub_diaries(rs.getBigDecimal("R58_BAL_SUB_DIARIES"));
+			obj.setR58_bal_sub_diaries_bwp(rs.getBigDecimal("R58_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR59_operating_expenses(rs.getString("R59_OPERATING_EXPENSES"));
+			obj.setR59_fig_bal_sheet(rs.getBigDecimal("R59_FIG_BAL_SHEET"));
+			obj.setR59_fig_bal_sheet_bwp(rs.getBigDecimal("R59_FIG_BAL_SHEET_BWP"));
+			obj.setR59_amt_statement_adj(rs.getBigDecimal("R59_AMT_STATEMENT_ADJ"));
+			obj.setR59_amt_statement_adj_bwp(rs.getBigDecimal("R59_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR59_net_amt(rs.getBigDecimal("R59_NET_AMT"));
+			obj.setR59_net_amt_bwp(rs.getBigDecimal("R59_NET_AMT_BWP"));
+			obj.setR59_bal_sub(rs.getBigDecimal("R59_BAL_SUB"));
+			obj.setR59_bal_sub_bwp(rs.getBigDecimal("R59_BAL_SUB_BWP"));
+			obj.setR59_bal_sub_diaries(rs.getBigDecimal("R59_BAL_SUB_DIARIES"));
+			obj.setR59_bal_sub_diaries_bwp(rs.getBigDecimal("R59_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR60_operating_expenses(rs.getString("R60_OPERATING_EXPENSES"));
+			obj.setR60_fig_bal_sheet(rs.getBigDecimal("R60_FIG_BAL_SHEET"));
+			obj.setR60_fig_bal_sheet_bwp(rs.getBigDecimal("R60_FIG_BAL_SHEET_BWP"));
+			obj.setR60_amt_statement_adj(rs.getBigDecimal("R60_AMT_STATEMENT_ADJ"));
+			obj.setR60_amt_statement_adj_bwp(rs.getBigDecimal("R60_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR60_net_amt(rs.getBigDecimal("R60_NET_AMT"));
+			obj.setR60_net_amt_bwp(rs.getBigDecimal("R60_NET_AMT_BWP"));
+			obj.setR60_bal_sub(rs.getBigDecimal("R60_BAL_SUB"));
+			obj.setR60_bal_sub_bwp(rs.getBigDecimal("R60_BAL_SUB_BWP"));
+			obj.setR60_bal_sub_diaries(rs.getBigDecimal("R60_BAL_SUB_DIARIES"));
+			obj.setR60_bal_sub_diaries_bwp(rs.getBigDecimal("R60_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR61_operating_expenses(rs.getString("R61_OPERATING_EXPENSES"));
+			obj.setR61_fig_bal_sheet(rs.getBigDecimal("R61_FIG_BAL_SHEET"));
+			obj.setR61_fig_bal_sheet_bwp(rs.getBigDecimal("R61_FIG_BAL_SHEET_BWP"));
+			obj.setR61_amt_statement_adj(rs.getBigDecimal("R61_AMT_STATEMENT_ADJ"));
+			obj.setR61_amt_statement_adj_bwp(rs.getBigDecimal("R61_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR61_net_amt(rs.getBigDecimal("R61_NET_AMT"));
+			obj.setR61_net_amt_bwp(rs.getBigDecimal("R61_NET_AMT_BWP"));
+			obj.setR61_bal_sub(rs.getBigDecimal("R61_BAL_SUB"));
+			obj.setR61_bal_sub_bwp(rs.getBigDecimal("R61_BAL_SUB_BWP"));
+			obj.setR61_bal_sub_diaries(rs.getBigDecimal("R61_BAL_SUB_DIARIES"));
+			obj.setR61_bal_sub_diaries_bwp(rs.getBigDecimal("R61_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR62_operating_expenses(rs.getString("R62_OPERATING_EXPENSES"));
+			obj.setR62_fig_bal_sheet(rs.getBigDecimal("R62_FIG_BAL_SHEET"));
+			obj.setR62_fig_bal_sheet_bwp(rs.getBigDecimal("R62_FIG_BAL_SHEET_BWP"));
+			obj.setR62_amt_statement_adj(rs.getBigDecimal("R62_AMT_STATEMENT_ADJ"));
+			obj.setR62_amt_statement_adj_bwp(rs.getBigDecimal("R62_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR62_net_amt(rs.getBigDecimal("R62_NET_AMT"));
+			obj.setR62_net_amt_bwp(rs.getBigDecimal("R62_NET_AMT_BWP"));
+			obj.setR62_bal_sub(rs.getBigDecimal("R62_BAL_SUB"));
+			obj.setR62_bal_sub_bwp(rs.getBigDecimal("R62_BAL_SUB_BWP"));
+			obj.setR62_bal_sub_diaries(rs.getBigDecimal("R62_BAL_SUB_DIARIES"));
+			obj.setR62_bal_sub_diaries_bwp(rs.getBigDecimal("R62_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR63_operating_expenses(rs.getString("R63_OPERATING_EXPENSES"));
+			obj.setR63_fig_bal_sheet(rs.getBigDecimal("R63_FIG_BAL_SHEET"));
+			obj.setR63_fig_bal_sheet_bwp(rs.getBigDecimal("R63_FIG_BAL_SHEET_BWP"));
+			obj.setR63_amt_statement_adj(rs.getBigDecimal("R63_AMT_STATEMENT_ADJ"));
+			obj.setR63_amt_statement_adj_bwp(rs.getBigDecimal("R63_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR63_net_amt(rs.getBigDecimal("R63_NET_AMT"));
+			obj.setR63_net_amt_bwp(rs.getBigDecimal("R63_NET_AMT_BWP"));
+			obj.setR63_bal_sub(rs.getBigDecimal("R63_BAL_SUB"));
+			obj.setR63_bal_sub_bwp(rs.getBigDecimal("R63_BAL_SUB_BWP"));
+			obj.setR63_bal_sub_diaries(rs.getBigDecimal("R63_BAL_SUB_DIARIES"));
+			obj.setR63_bal_sub_diaries_bwp(rs.getBigDecimal("R63_BAL_SUB_DIARIES_BWP"));
+
+			obj.setR18_bal_sub_diaries(rs.getBigDecimal("R18_BAL_SUB_DIARIES"));
+			obj.setR19_bal_sub_diaries(rs.getBigDecimal("R19_BAL_SUB_DIARIES"));
+			obj.setR20_bal_sub_diaries(rs.getBigDecimal("R20_BAL_SUB_DIARIES"));
+			obj.setR21_bal_sub_diaries(rs.getBigDecimal("R21_BAL_SUB_DIARIES"));
+			obj.setR22_bal_sub_diaries(rs.getBigDecimal("R22_BAL_SUB_DIARIES"));
+			obj.setR23_bal_sub_diaries(rs.getBigDecimal("R23_BAL_SUB_DIARIES"));
+			obj.setR24_bal_sub_diaries(rs.getBigDecimal("R24_BAL_SUB_DIARIES"));
+			obj.setR25_bal_sub_diaries(rs.getBigDecimal("R25_BAL_SUB_DIARIES"));
+			obj.setR26_bal_sub_diaries(rs.getBigDecimal("R26_BAL_SUB_DIARIES"));
+			obj.setR27_bal_sub_diaries(rs.getBigDecimal("R27_BAL_SUB_DIARIES"));
+			obj.setR28_bal_sub_diaries(rs.getBigDecimal("R28_BAL_SUB_DIARIES"));
+			obj.setR29_bal_sub_diaries(rs.getBigDecimal("R29_BAL_SUB_DIARIES"));
+			obj.setR30_bal_sub_diaries(rs.getBigDecimal("R30_BAL_SUB_DIARIES"));
+			obj.setR31_bal_sub_diaries(rs.getBigDecimal("R31_BAL_SUB_DIARIES"));
+
+			obj.setR40_bal_sub_diaries(rs.getBigDecimal("R40_BAL_SUB_DIARIES"));
+			obj.setR41_bal_sub_diaries(rs.getBigDecimal("R41_BAL_SUB_DIARIES"));
+			obj.setR42_bal_sub_diaries(rs.getBigDecimal("R42_BAL_SUB_DIARIES"));
+			obj.setR43_bal_sub_diaries(rs.getBigDecimal("R43_BAL_SUB_DIARIES"));
+
+			obj.setR48_bal_sub_diaries(rs.getBigDecimal("R48_BAL_SUB_DIARIES"));
+			obj.setR49_bal_sub_diaries(rs.getBigDecimal("R49_BAL_SUB_DIARIES"));
+			obj.setR50_bal_sub_diaries(rs.getBigDecimal("R50_BAL_SUB_DIARIES"));
+			obj.setR51_bal_sub_diaries(rs.getBigDecimal("R51_BAL_SUB_DIARIES"));
+			obj.setR52_bal_sub_diaries(rs.getBigDecimal("R52_BAL_SUB_DIARIES"));
+			obj.setR53_bal_sub_diaries(rs.getBigDecimal("R53_BAL_SUB_DIARIES"));
+			obj.setR54_bal_sub_diaries(rs.getBigDecimal("R54_BAL_SUB_DIARIES"));
+			obj.setR55_bal_sub_diaries(rs.getBigDecimal("R55_BAL_SUB_DIARIES"));
+			obj.setR56_bal_sub_diaries(rs.getBigDecimal("R56_BAL_SUB_DIARIES"));
+			obj.setR57_bal_sub_diaries(rs.getBigDecimal("R57_BAL_SUB_DIARIES"));
+			obj.setR58_bal_sub_diaries(rs.getBigDecimal("R58_BAL_SUB_DIARIES"));
+			obj.setR59_bal_sub_diaries(rs.getBigDecimal("R59_BAL_SUB_DIARIES"));
+			obj.setR60_bal_sub_diaries(rs.getBigDecimal("R60_BAL_SUB_DIARIES"));
+			obj.setR61_bal_sub_diaries(rs.getBigDecimal("R61_BAL_SUB_DIARIES"));
+			obj.setR62_bal_sub_diaries(rs.getBigDecimal("R62_BAL_SUB_DIARIES"));
+			obj.setR63_bal_sub_diaries(rs.getBigDecimal("R63_BAL_SUB_DIARIES"));
+			// COMMON FIELDS
+			obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+			obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setREPORT_RESUBDATE(rs.getDate("REPORT_RESUBDATE"));
+			obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+			obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+			obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+			obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+			obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+			obj.setDEL_FLG(rs.getString("DEL_FLG"));
+
+			return obj;
+		}
+	}
+
+	@IdClass(PL_SCHS_PK.class)
+	public class PL_SCHS_Archival_Summary_Entity {
+
+		@Id
+		@Temporal(TemporalType.DATE)
+		@Column(name = "REPORT_DATE")
+		private Date REPORT_DATE;
+
+// ================= R9 =================
+		@Column(name = "R9_INTREST_DIV")
+		private String r9_intrest_div;
+
+		@Column(name = "R9_FIG_BAL_SHEET")
+		private BigDecimal r9_fig_bal_sheet;
+
+		@Column(name = "R9_FIG_BAL_SHEET_BWP")
+		private BigDecimal r9_fig_bal_sheet_bwp;
+
+		@Column(name = "R9_AMT_STATEMENT_ADJ")
+		private BigDecimal r9_amt_statement_adj;
+
+		@Column(name = "R9_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r9_amt_statement_adj_bwp;
+
+		@Column(name = "R9_NET_AMT")
+		private BigDecimal r9_net_amt;
+
+		@Column(name = "R9_NET_AMT_BWP")
+		private BigDecimal r9_net_amt_bwp;
+
+		@Column(name = "R9_BAL_SUB")
+		private BigDecimal r9_bal_sub;
+
+		@Column(name = "R9_BAL_SUB_BWP")
+		private BigDecimal r9_bal_sub_bwp;
+
+		@Column(name = "R9_BAL_SUB_DIARIES")
+		private BigDecimal r9_bal_sub_diaries;
+
+		@Column(name = "R9_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r9_bal_sub_diaries_bwp;
+
+		// ================= R10 =================
+		@Column(name = "R10_INTREST_DIV")
+		private String r10_intrest_div;
+
+		@Column(name = "R10_FIG_BAL_SHEET")
+		private BigDecimal r10_fig_bal_sheet;
+
+		@Column(name = "R10_FIG_BAL_SHEET_BWP")
+		private BigDecimal r10_fig_bal_sheet_bwp;
+
+		@Column(name = "R10_AMT_STATEMENT_ADJ")
+		private BigDecimal r10_amt_statement_adj;
+
+		@Column(name = "R10_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r10_amt_statement_adj_bwp;
+
+		@Column(name = "R10_NET_AMT")
+		private BigDecimal r10_net_amt;
+
+		@Column(name = "R10_NET_AMT_BWP")
+		private BigDecimal r10_net_amt_bwp;
+
+		@Column(name = "R10_BAL_SUB")
+		private BigDecimal r10_bal_sub;
+
+		@Column(name = "R10_BAL_SUB_BWP")
+		private BigDecimal r10_bal_sub_bwp;
+
+		@Column(name = "R10_BAL_SUB_DIARIES")
+		private BigDecimal r10_bal_sub_diaries;
+
+		@Column(name = "R10_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r10_bal_sub_diaries_bwp;
+
+		// ================= R11 =================
+		@Column(name = "R11_INTREST_DIV")
+		private String r11_intrest_div;
+
+		@Column(name = "R11_FIG_BAL_SHEET")
+		private BigDecimal r11_fig_bal_sheet;
+
+		@Column(name = "R11_FIG_BAL_SHEET_BWP")
+		private BigDecimal r11_fig_bal_sheet_bwp;
+
+		@Column(name = "R11_AMT_STATEMENT_ADJ")
+		private BigDecimal r11_amt_statement_adj;
+
+		@Column(name = "R11_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r11_amt_statement_adj_bwp;
+
+		@Column(name = "R11_NET_AMT")
+		private BigDecimal r11_net_amt;
+
+		@Column(name = "R11_NET_AMT_BWP")
+		private BigDecimal r11_net_amt_bwp;
+
+		@Column(name = "R11_BAL_SUB")
+		private BigDecimal r11_bal_sub;
+
+		@Column(name = "R11_BAL_SUB_BWP")
+		private BigDecimal r11_bal_sub_bwp;
+
+		@Column(name = "R11_BAL_SUB_DIARIES")
+		private BigDecimal r11_bal_sub_diaries;
+
+		@Column(name = "R11_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r11_bal_sub_diaries_bwp;
+
+		// ================= R12 =================
+		@Column(name = "R12_INTREST_DIV")
+		private String r12_intrest_div;
+
+		@Column(name = "R12_FIG_BAL_SHEET")
+		private BigDecimal r12_fig_bal_sheet;
+
+		@Column(name = "R12_FIG_BAL_SHEET_BWP")
+		private BigDecimal r12_fig_bal_sheet_bwp;
+
+		@Column(name = "R12_AMT_STATEMENT_ADJ")
+		private BigDecimal r12_amt_statement_adj;
+
+		@Column(name = "R12_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r12_amt_statement_adj_bwp;
+
+		@Column(name = "R12_NET_AMT")
+		private BigDecimal r12_net_amt;
+
+		@Column(name = "R12_NET_AMT_BWP")
+		private BigDecimal r12_net_amt_bwp;
+
+		@Column(name = "R12_BAL_SUB")
+		private BigDecimal r12_bal_sub;
+
+		@Column(name = "R12_BAL_SUB_BWP")
+		private BigDecimal r12_bal_sub_bwp;
+
+		@Column(name = "R12_BAL_SUB_DIARIES")
+		private BigDecimal r12_bal_sub_diaries;
+
+		@Column(name = "R12_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r12_bal_sub_diaries_bwp;
+
+		// ================= R13 =================
+		@Column(name = "R13_INTREST_DIV")
+		private String r13_intrest_div;
+
+		@Column(name = "R13_FIG_BAL_SHEET")
+		private BigDecimal r13_fig_bal_sheet;
+
+		@Column(name = "R13_FIG_BAL_SHEET_BWP")
+		private BigDecimal r13_fig_bal_sheet_bwp;
+
+		@Column(name = "R13_AMT_STATEMENT_ADJ")
+		private BigDecimal r13_amt_statement_adj;
+
+		@Column(name = "R13_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r13_amt_statement_adj_bwp;
+
+		@Column(name = "R13_NET_AMT")
+		private BigDecimal r13_net_amt;
+
+		@Column(name = "R13_NET_AMT_BWP")
+		private BigDecimal r13_net_amt_bwp;
+
+		@Column(name = "R13_BAL_SUB")
+		private BigDecimal r13_bal_sub;
+
+		@Column(name = "R13_BAL_SUB_BWP")
+		private BigDecimal r13_bal_sub_bwp;
+
+		@Column(name = "R13_BAL_SUB_DIARIES")
+		private BigDecimal r13_bal_sub_diaries;
+
+		@Column(name = "R13_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r13_bal_sub_diaries_bwp;
+
+		// ================= R17 =================
+		@Column(name = "R17_OTHER_INCOME")
+		private String r17_other_income;
+
+		@Column(name = "R17_FIG_BAL_SHEET")
+		private BigDecimal r17_fig_bal_sheet;
+
+		@Column(name = "R17_FIG_BAL_SHEET_BWP")
+		private BigDecimal r17_fig_bal_sheet_bwp;
+
+		@Column(name = "R17_AMT_STATEMENT_ADJ")
+		private BigDecimal r17_amt_statement_adj;
+
+		@Column(name = "R17_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r17_amt_statement_adj_bwp;
+
+		@Column(name = "R17_NET_AMT")
+		private BigDecimal r17_net_amt;
+
+		@Column(name = "R17_NET_AMT_BWP")
+		private BigDecimal r17_net_amt_bwp;
+
+		@Column(name = "R17_BAL_SUB")
+		private BigDecimal r17_bal_sub;
+
+		@Column(name = "R17_BAL_SUB_BWP")
+		private BigDecimal r17_bal_sub_bwp;
+
+		@Column(name = "R17_BAL_SUB_DIARIES")
+		private BigDecimal r17_bal_sub_diaries;
+
+		@Column(name = "R17_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r17_bal_sub_diaries_bwp;
+
+		// ================= R18 =================
+		@Column(name = "R18_OTHER_INCOME")
+		private String r18_other_income;
+
+		@Column(name = "R18_FIG_BAL_SHEET")
+		private BigDecimal r18_fig_bal_sheet;
+
+		@Column(name = "R18_FIG_BAL_SHEET_BWP")
+		private BigDecimal r18_fig_bal_sheet_bwp;
+
+		@Column(name = "R18_AMT_STATEMENT_ADJ")
+		private BigDecimal r18_amt_statement_adj;
+
+		@Column(name = "R18_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r18_amt_statement_adj_bwp;
+
+		@Column(name = "R18_NET_AMT")
+		private BigDecimal r18_net_amt;
+
+		@Column(name = "R18_NET_AMT_BWP")
+		private BigDecimal r18_net_amt_bwp;
+
+		@Column(name = "R18_BAL_SUB")
+		private BigDecimal r18_bal_sub;
+
+		@Column(name = "R18_BAL_SUB_BWP")
+		private BigDecimal r18_bal_sub_bwp;
+
+		@Column(name = "R18_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r18_bal_sub_diaries_bwp;
+
+		// ================= R19 =================
+		@Column(name = "R19_OTHER_INCOME")
+		private String r19_other_income;
+
+		@Column(name = "R19_FIG_BAL_SHEET")
+		private BigDecimal r19_fig_bal_sheet;
+
+		@Column(name = "R19_FIG_BAL_SHEET_BWP")
+		private BigDecimal r19_fig_bal_sheet_bwp;
+
+		@Column(name = "R19_AMT_STATEMENT_ADJ")
+		private BigDecimal r19_amt_statement_adj;
+
+		@Column(name = "R19_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r19_amt_statement_adj_bwp;
+
+		@Column(name = "R19_NET_AMT")
+		private BigDecimal r19_net_amt;
+
+		@Column(name = "R19_NET_AMT_BWP")
+		private BigDecimal r19_net_amt_bwp;
+
+		@Column(name = "R19_BAL_SUB")
+		private BigDecimal r19_bal_sub;
+
+		@Column(name = "R19_BAL_SUB_BWP")
+		private BigDecimal r19_bal_sub_bwp;
+
+		@Column(name = "R19_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r19_bal_sub_diaries_bwp;
+
+		// ================= R20 =================
+		@Column(name = "R20_OTHER_INCOME")
+		private String r20_other_income;
+
+		@Column(name = "R20_FIG_BAL_SHEET")
+		private BigDecimal r20_fig_bal_sheet;
+
+		@Column(name = "R20_FIG_BAL_SHEET_BWP")
+		private BigDecimal r20_fig_bal_sheet_bwp;
+
+		@Column(name = "R20_AMT_STATEMENT_ADJ")
+		private BigDecimal r20_amt_statement_adj;
+
+		@Column(name = "R20_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r20_amt_statement_adj_bwp;
+
+		@Column(name = "R20_NET_AMT")
+		private BigDecimal r20_net_amt;
+
+		@Column(name = "R20_NET_AMT_BWP")
+		private BigDecimal r20_net_amt_bwp;
+
+		@Column(name = "R20_BAL_SUB")
+		private BigDecimal r20_bal_sub;
+
+		@Column(name = "R20_BAL_SUB_BWP")
+		private BigDecimal r20_bal_sub_bwp;
+
+		@Column(name = "R20_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r20_bal_sub_diaries_bwp;
+
+		// ================= R21 =================
+		@Column(name = "R21_OTHER_INCOME")
+		private String r21_other_income;
+
+		@Column(name = "R21_FIG_BAL_SHEET")
+		private BigDecimal r21_fig_bal_sheet;
+
+		@Column(name = "R21_FIG_BAL_SHEET_BWP")
+		private BigDecimal r21_fig_bal_sheet_bwp;
+
+		@Column(name = "R21_AMT_STATEMENT_ADJ")
+		private BigDecimal r21_amt_statement_adj;
+
+		@Column(name = "R21_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r21_amt_statement_adj_bwp;
+
+		@Column(name = "R21_NET_AMT")
+		private BigDecimal r21_net_amt;
+
+		@Column(name = "R21_NET_AMT_BWP")
+		private BigDecimal r21_net_amt_bwp;
+
+		@Column(name = "R21_BAL_SUB")
+		private BigDecimal r21_bal_sub;
+
+		@Column(name = "R21_BAL_SUB_BWP")
+		private BigDecimal r21_bal_sub_bwp;
+
+		@Column(name = "R21_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r21_bal_sub_diaries_bwp;
+
+		// ================= R22 =================
+		@Column(name = "R22_OTHER_INCOME")
+		private String r22_other_income;
+
+		@Column(name = "R22_FIG_BAL_SHEET")
+		private BigDecimal r22_fig_bal_sheet;
+
+		@Column(name = "R22_FIG_BAL_SHEET_BWP")
+		private BigDecimal r22_fig_bal_sheet_bwp;
+
+		@Column(name = "R22_AMT_STATEMENT_ADJ")
+		private BigDecimal r22_amt_statement_adj;
+
+		@Column(name = "R22_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r22_amt_statement_adj_bwp;
+
+		@Column(name = "R22_NET_AMT")
+		private BigDecimal r22_net_amt;
+
+		@Column(name = "R22_NET_AMT_BWP")
+		private BigDecimal r22_net_amt_bwp;
+
+		@Column(name = "R22_BAL_SUB")
+		private BigDecimal r22_bal_sub;
+
+		@Column(name = "R22_BAL_SUB_BWP")
+		private BigDecimal r22_bal_sub_bwp;
+
+		@Column(name = "R22_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r22_bal_sub_diaries_bwp;
+
+		// ================= R23 =================
+		@Column(name = "R23_OTHER_INCOME")
+		private String r23_other_income;
+
+		@Column(name = "R23_FIG_BAL_SHEET")
+		private BigDecimal r23_fig_bal_sheet;
+
+		@Column(name = "R23_FIG_BAL_SHEET_BWP")
+		private BigDecimal r23_fig_bal_sheet_bwp;
+
+		@Column(name = "R23_AMT_STATEMENT_ADJ")
+		private BigDecimal r23_amt_statement_adj;
+
+		@Column(name = "R23_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r23_amt_statement_adj_bwp;
+
+		@Column(name = "R23_NET_AMT")
+		private BigDecimal r23_net_amt;
+
+		@Column(name = "R23_NET_AMT_BWP")
+		private BigDecimal r23_net_amt_bwp;
+
+		@Column(name = "R23_BAL_SUB")
+		private BigDecimal r23_bal_sub;
+
+		@Column(name = "R23_BAL_SUB_BWP")
+		private BigDecimal r23_bal_sub_bwp;
+
+		@Column(name = "R23_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r23_bal_sub_diaries_bwp;
+
+		// ================= R24 =================
+		@Column(name = "R24_OTHER_INCOME")
+		private String r24_other_income;
+
+		@Column(name = "R24_FIG_BAL_SHEET")
+		private BigDecimal r24_fig_bal_sheet;
+
+		@Column(name = "R24_FIG_BAL_SHEET_BWP")
+		private BigDecimal r24_fig_bal_sheet_bwp;
+
+		@Column(name = "R24_AMT_STATEMENT_ADJ")
+		private BigDecimal r24_amt_statement_adj;
+
+		@Column(name = "R24_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r24_amt_statement_adj_bwp;
+
+		@Column(name = "R24_NET_AMT")
+		private BigDecimal r24_net_amt;
+
+		@Column(name = "R24_NET_AMT_BWP")
+		private BigDecimal r24_net_amt_bwp;
+
+		@Column(name = "R24_BAL_SUB")
+		private BigDecimal r24_bal_sub;
+
+		@Column(name = "R24_BAL_SUB_BWP")
+		private BigDecimal r24_bal_sub_bwp;
+
+		@Column(name = "R24_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r24_bal_sub_diaries_bwp;
+
+		// ================= R25 =================
+		@Column(name = "R25_OTHER_INCOME")
+		private String r25_other_income;
+
+		@Column(name = "R25_FIG_BAL_SHEET")
+		private BigDecimal r25_fig_bal_sheet;
+
+		@Column(name = "R25_FIG_BAL_SHEET_BWP")
+		private BigDecimal r25_fig_bal_sheet_bwp;
+
+		@Column(name = "R25_AMT_STATEMENT_ADJ")
+		private BigDecimal r25_amt_statement_adj;
+
+		@Column(name = "R25_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r25_amt_statement_adj_bwp;
+
+		@Column(name = "R25_NET_AMT")
+		private BigDecimal r25_net_amt;
+
+		@Column(name = "R25_NET_AMT_BWP")
+		private BigDecimal r25_net_amt_bwp;
+
+		@Column(name = "R25_BAL_SUB")
+		private BigDecimal r25_bal_sub;
+
+		@Column(name = "R25_BAL_SUB_BWP")
+		private BigDecimal r25_bal_sub_bwp;
+
+		@Column(name = "R25_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r25_bal_sub_diaries_bwp;
+
+		// ================= R26 =================
+		@Column(name = "R26_OTHER_INCOME")
+		private String r26_other_income;
+
+		@Column(name = "R26_FIG_BAL_SHEET")
+		private BigDecimal r26_fig_bal_sheet;
+
+		@Column(name = "R26_FIG_BAL_SHEET_BWP")
+		private BigDecimal r26_fig_bal_sheet_bwp;
+
+		@Column(name = "R26_AMT_STATEMENT_ADJ")
+		private BigDecimal r26_amt_statement_adj;
+
+		@Column(name = "R26_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r26_amt_statement_adj_bwp;
+
+		@Column(name = "R26_NET_AMT")
+		private BigDecimal r26_net_amt;
+
+		@Column(name = "R26_NET_AMT_BWP")
+		private BigDecimal r26_net_amt_bwp;
+
+		@Column(name = "R26_BAL_SUB")
+		private BigDecimal r26_bal_sub;
+
+		@Column(name = "R26_BAL_SUB_BWP")
+		private BigDecimal r26_bal_sub_bwp;
+
+		@Column(name = "R26_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r26_bal_sub_diaries_bwp;
+
+		// ================= R27 =================
+		@Column(name = "R27_OTHER_INCOME")
+		private String r27_other_income;
+
+		@Column(name = "R27_FIG_BAL_SHEET")
+		private BigDecimal r27_fig_bal_sheet;
+
+		@Column(name = "R27_FIG_BAL_SHEET_BWP")
+		private BigDecimal r27_fig_bal_sheet_bwp;
+
+		@Column(name = "R27_AMT_STATEMENT_ADJ")
+		private BigDecimal r27_amt_statement_adj;
+
+		@Column(name = "R27_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r27_amt_statement_adj_bwp;
+
+		@Column(name = "R27_NET_AMT")
+		private BigDecimal r27_net_amt;
+
+		@Column(name = "R27_NET_AMT_BWP")
+		private BigDecimal r27_net_amt_bwp;
+
+		@Column(name = "R27_BAL_SUB")
+		private BigDecimal r27_bal_sub;
+
+		@Column(name = "R27_BAL_SUB_BWP")
+		private BigDecimal r27_bal_sub_bwp;
+
+		@Column(name = "R27_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r27_bal_sub_diaries_bwp;
+
+		// ================= R28 =================
+		@Column(name = "R28_OTHER_INCOME")
+		private String r28_other_income;
+
+		@Column(name = "R28_FIG_BAL_SHEET")
+		private BigDecimal r28_fig_bal_sheet;
+
+		@Column(name = "R28_FIG_BAL_SHEET_BWP")
+		private BigDecimal r28_fig_bal_sheet_bwp;
+
+		@Column(name = "R28_AMT_STATEMENT_ADJ")
+		private BigDecimal r28_amt_statement_adj;
+
+		@Column(name = "R28_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r28_amt_statement_adj_bwp;
+
+		@Column(name = "R28_NET_AMT")
+		private BigDecimal r28_net_amt;
+
+		@Column(name = "R28_NET_AMT_BWP")
+		private BigDecimal r28_net_amt_bwp;
+
+		@Column(name = "R28_BAL_SUB")
+		private BigDecimal r28_bal_sub;
+
+		@Column(name = "R28_BAL_SUB_BWP")
+		private BigDecimal r28_bal_sub_bwp;
+
+		@Column(name = "R28_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r28_bal_sub_diaries_bwp;
+
+		// ================= R29 =================
+		@Column(name = "R29_OTHER_INCOME")
+		private String r29_other_income;
+
+		@Column(name = "R29_FIG_BAL_SHEET")
+		private BigDecimal r29_fig_bal_sheet;
+
+		@Column(name = "R29_FIG_BAL_SHEET_BWP")
+		private BigDecimal r29_fig_bal_sheet_bwp;
+
+		@Column(name = "R29_AMT_STATEMENT_ADJ")
+		private BigDecimal r29_amt_statement_adj;
+
+		@Column(name = "R29_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r29_amt_statement_adj_bwp;
+
+		@Column(name = "R29_NET_AMT")
+		private BigDecimal r29_net_amt;
+
+		@Column(name = "R29_NET_AMT_BWP")
+		private BigDecimal r29_net_amt_bwp;
+
+		@Column(name = "R29_BAL_SUB")
+		private BigDecimal r29_bal_sub;
+
+		@Column(name = "R29_BAL_SUB_BWP")
+		private BigDecimal r29_bal_sub_bwp;
+
+		@Column(name = "R29_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r29_bal_sub_diaries_bwp;
+
+		// ================= R30 =================
+		@Column(name = "R30_OTHER_INCOME")
+		private String r30_other_income;
+
+		@Column(name = "R30_FIG_BAL_SHEET")
+		private BigDecimal r30_fig_bal_sheet;
+
+		@Column(name = "R30_FIG_BAL_SHEET_BWP")
+		private BigDecimal r30_fig_bal_sheet_bwp;
+
+		@Column(name = "R30_AMT_STATEMENT_ADJ")
+		private BigDecimal r30_amt_statement_adj;
+
+		@Column(name = "R30_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r30_amt_statement_adj_bwp;
+
+		@Column(name = "R30_NET_AMT")
+		private BigDecimal r30_net_amt;
+
+		@Column(name = "R30_NET_AMT_BWP")
+		private BigDecimal r30_net_amt_bwp;
+
+		@Column(name = "R30_BAL_SUB")
+		private BigDecimal r30_bal_sub;
+
+		@Column(name = "R30_BAL_SUB_BWP")
+		private BigDecimal r30_bal_sub_bwp;
+
+		@Column(name = "R30_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r30_bal_sub_diaries_bwp;
+
+		// ================= R31 =================
+		@Column(name = "R31_OTHER_INCOME")
+		private String r31_other_income;
+
+		@Column(name = "R31_FIG_BAL_SHEET")
+		private BigDecimal r31_fig_bal_sheet;
+
+		@Column(name = "R31_FIG_BAL_SHEET_BWP")
+		private BigDecimal r31_fig_bal_sheet_bwp;
+
+		@Column(name = "R31_AMT_STATEMENT_ADJ")
+		private BigDecimal r31_amt_statement_adj;
+
+		@Column(name = "R31_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r31_amt_statement_adj_bwp;
+
+		@Column(name = "R31_NET_AMT")
+		private BigDecimal r31_net_amt;
+
+		@Column(name = "R31_NET_AMT_BWP")
+		private BigDecimal r31_net_amt_bwp;
+
+		@Column(name = "R31_BAL_SUB")
+		private BigDecimal r31_bal_sub;
+
+		@Column(name = "R31_BAL_SUB_BWP")
+		private BigDecimal r31_bal_sub_bwp;
+
+		@Column(name = "R31_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r31_bal_sub_diaries_bwp;
+
+		// ================= R40 =================
+		@Column(name = "R40_INTREST_EXPENDED")
+		private String r40_intrest_expended;
+
+		@Column(name = "R40_FIG_BAL_SHEET")
+		private BigDecimal r40_fig_bal_sheet;
+
+		@Column(name = "R40_FIG_BAL_SHEET_BWP")
+		private BigDecimal r40_fig_bal_sheet_bwp;
+
+		@Column(name = "R40_AMT_STATEMENT_ADJ")
+		private BigDecimal r40_amt_statement_adj;
+
+		@Column(name = "R40_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r40_amt_statement_adj_bwp;
+
+		@Column(name = "R40_NET_AMT")
+		private BigDecimal r40_net_amt;
+
+		@Column(name = "R40_NET_AMT_BWP")
+		private BigDecimal r40_net_amt_bwp;
+
+		@Column(name = "R40_BAL_SUB")
+		private BigDecimal r40_bal_sub;
+
+		@Column(name = "R40_BAL_SUB_BWP")
+		private BigDecimal r40_bal_sub_bwp;
+
+		@Column(name = "R40_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r40_bal_sub_diaries_bwp;
+
+		// ================= R41 =================
+		@Column(name = "R41_INTREST_EXPENDED")
+		private String r41_intrest_expended;
+
+		@Column(name = "R41_FIG_BAL_SHEET")
+		private BigDecimal r41_fig_bal_sheet;
+
+		@Column(name = "R41_FIG_BAL_SHEET_BWP")
+		private BigDecimal r41_fig_bal_sheet_bwp;
+
+		@Column(name = "R41_AMT_STATEMENT_ADJ")
+		private BigDecimal r41_amt_statement_adj;
+
+		@Column(name = "R41_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r41_amt_statement_adj_bwp;
+
+		@Column(name = "R41_NET_AMT")
+		private BigDecimal r41_net_amt;
+
+		@Column(name = "R41_NET_AMT_BWP")
+		private BigDecimal r41_net_amt_bwp;
+
+		@Column(name = "R41_BAL_SUB")
+		private BigDecimal r41_bal_sub;
+
+		@Column(name = "R41_BAL_SUB_BWP")
+		private BigDecimal r41_bal_sub_bwp;
+
+		@Column(name = "R41_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r41_bal_sub_diaries_bwp;
+
+		// ================= R42 =================
+		@Column(name = "R42_INTREST_EXPENDED")
+		private String r42_intrest_expended;
+
+		@Column(name = "R42_FIG_BAL_SHEET")
+		private BigDecimal r42_fig_bal_sheet;
+
+		@Column(name = "R42_FIG_BAL_SHEET_BWP")
+		private BigDecimal r42_fig_bal_sheet_bwp;
+
+		@Column(name = "R42_AMT_STATEMENT_ADJ")
+		private BigDecimal r42_amt_statement_adj;
+
+		@Column(name = "R42_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r42_amt_statement_adj_bwp;
+
+		@Column(name = "R42_NET_AMT")
+		private BigDecimal r42_net_amt;
+
+		@Column(name = "R42_NET_AMT_BWP")
+		private BigDecimal r42_net_amt_bwp;
+
+		@Column(name = "R42_BAL_SUB")
+		private BigDecimal r42_bal_sub;
+
+		@Column(name = "R42_BAL_SUB_BWP")
+		private BigDecimal r42_bal_sub_bwp;
+
+		@Column(name = "R42_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r42_bal_sub_diaries_bwp;
+
+		// ================= R43 =================
+		@Column(name = "R43_INTREST_EXPENDED")
+		private String r43_intrest_expended;
+
+		@Column(name = "R43_FIG_BAL_SHEET")
+		private BigDecimal r43_fig_bal_sheet;
+
+		@Column(name = "R43_FIG_BAL_SHEET_BWP")
+		private BigDecimal r43_fig_bal_sheet_bwp;
+
+		@Column(name = "R43_AMT_STATEMENT_ADJ")
+		private BigDecimal r43_amt_statement_adj;
+
+		@Column(name = "R43_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r43_amt_statement_adj_bwp;
+
+		@Column(name = "R43_NET_AMT")
+		private BigDecimal r43_net_amt;
+
+		@Column(name = "R43_NET_AMT_BWP")
+		private BigDecimal r43_net_amt_bwp;
+
+		@Column(name = "R43_BAL_SUB")
+		private BigDecimal r43_bal_sub;
+
+		@Column(name = "R43_BAL_SUB_BWP")
+		private BigDecimal r43_bal_sub_bwp;
+
+		@Column(name = "R43_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r43_bal_sub_diaries_bwp;
+
+		// ================= R48 =================
+		@Column(name = "R48_OPERATING_EXPENSES")
+		private String r48_operating_expenses;
+
+		@Column(name = "R48_FIG_BAL_SHEET")
+		private BigDecimal r48_fig_bal_sheet;
+
+		@Column(name = "R48_FIG_BAL_SHEET_BWP")
+		private BigDecimal r48_fig_bal_sheet_bwp;
+
+		@Column(name = "R48_AMT_STATEMENT_ADJ")
+		private BigDecimal r48_amt_statement_adj;
+
+		@Column(name = "R48_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r48_amt_statement_adj_bwp;
+
+		@Column(name = "R48_NET_AMT")
+		private BigDecimal r48_net_amt;
+
+		@Column(name = "R48_NET_AMT_BWP")
+		private BigDecimal r48_net_amt_bwp;
+
+		@Column(name = "R48_BAL_SUB")
+		private BigDecimal r48_bal_sub;
+
+		@Column(name = "R48_BAL_SUB_BWP")
+		private BigDecimal r48_bal_sub_bwp;
+
+		@Column(name = "R48_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r48_bal_sub_diaries_bwp;
+
+		// ================= R49 =================
+		@Column(name = "R49_OPERATING_EXPENSES")
+		private String r49_operating_expenses;
+
+		@Column(name = "R49_FIG_BAL_SHEET")
+		private BigDecimal r49_fig_bal_sheet;
+
+		@Column(name = "R49_FIG_BAL_SHEET_BWP")
+		private BigDecimal r49_fig_bal_sheet_bwp;
+
+		@Column(name = "R49_AMT_STATEMENT_ADJ")
+		private BigDecimal r49_amt_statement_adj;
+
+		@Column(name = "R49_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r49_amt_statement_adj_bwp;
+
+		@Column(name = "R49_NET_AMT")
+		private BigDecimal r49_net_amt;
+
+		@Column(name = "R49_NET_AMT_BWP")
+		private BigDecimal r49_net_amt_bwp;
+
+		@Column(name = "R49_BAL_SUB")
+		private BigDecimal r49_bal_sub;
+
+		@Column(name = "R49_BAL_SUB_BWP")
+		private BigDecimal r49_bal_sub_bwp;
+
+		@Column(name = "R49_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r49_bal_sub_diaries_bwp;
+
+		// ================= R50 =================
+		@Column(name = "R50_OPERATING_EXPENSES")
+		private String r50_operating_expenses;
+
+		@Column(name = "R50_FIG_BAL_SHEET")
+		private BigDecimal r50_fig_bal_sheet;
+
+		@Column(name = "R50_FIG_BAL_SHEET_BWP")
+		private BigDecimal r50_fig_bal_sheet_bwp;
+
+		@Column(name = "R50_AMT_STATEMENT_ADJ")
+		private BigDecimal r50_amt_statement_adj;
+
+		@Column(name = "R50_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r50_amt_statement_adj_bwp;
+
+		@Column(name = "R50_NET_AMT")
+		private BigDecimal r50_net_amt;
+
+		@Column(name = "R50_NET_AMT_BWP")
+		private BigDecimal r50_net_amt_bwp;
+
+		@Column(name = "R50_BAL_SUB")
+		private BigDecimal r50_bal_sub;
+
+		@Column(name = "R50_BAL_SUB_BWP")
+		private BigDecimal r50_bal_sub_bwp;
+
+		@Column(name = "R50_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r50_bal_sub_diaries_bwp;
+
+		// ================= R51 =================
+		@Column(name = "R51_OPERATING_EXPENSES")
+		private String r51_operating_expenses;
+
+		@Column(name = "R51_FIG_BAL_SHEET")
+		private BigDecimal r51_fig_bal_sheet;
+
+		@Column(name = "R51_FIG_BAL_SHEET_BWP")
+		private BigDecimal r51_fig_bal_sheet_bwp;
+
+		@Column(name = "R51_AMT_STATEMENT_ADJ")
+		private BigDecimal r51_amt_statement_adj;
+
+		@Column(name = "R51_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r51_amt_statement_adj_bwp;
+
+		@Column(name = "R51_NET_AMT")
+		private BigDecimal r51_net_amt;
+
+		@Column(name = "R51_NET_AMT_BWP")
+		private BigDecimal r51_net_amt_bwp;
+
+		@Column(name = "R51_BAL_SUB")
+		private BigDecimal r51_bal_sub;
+
+		@Column(name = "R51_BAL_SUB_BWP")
+		private BigDecimal r51_bal_sub_bwp;
+
+		@Column(name = "R51_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r51_bal_sub_diaries_bwp;
+
+		@Column(name = "R52_OPERATING_EXPENSES")
+		private String r52_operating_expenses;
+
+		@Column(name = "R52_FIG_BAL_SHEET")
+		private BigDecimal r52_fig_bal_sheet;
+
+		@Column(name = "R52_FIG_BAL_SHEET_BWP")
+		private BigDecimal r52_fig_bal_sheet_bwp;
+
+		@Column(name = "R52_AMT_STATEMENT_ADJ")
+		private BigDecimal r52_amt_statement_adj;
+
+		@Column(name = "R52_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r52_amt_statement_adj_bwp;
+
+		@Column(name = "R52_NET_AMT")
+		private BigDecimal r52_net_amt;
+
+		@Column(name = "R52_NET_AMT_BWP")
+		private BigDecimal r52_net_amt_bwp;
+
+		@Column(name = "R52_BAL_SUB")
+		private BigDecimal r52_bal_sub;
+
+		@Column(name = "R52_BAL_SUB_BWP")
+		private BigDecimal r52_bal_sub_bwp;
+
+		@Column(name = "R52_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r52_bal_sub_diaries_bwp;
+
+		@Column(name = "R53_OPERATING_EXPENSES")
+		private String r53_operating_expenses;
+
+		@Column(name = "R53_FIG_BAL_SHEET")
+		private BigDecimal r53_fig_bal_sheet;
+
+		@Column(name = "R53_FIG_BAL_SHEET_BWP")
+		private BigDecimal r53_fig_bal_sheet_bwp;
+
+		@Column(name = "R53_AMT_STATEMENT_ADJ")
+		private BigDecimal r53_amt_statement_adj;
+
+		@Column(name = "R53_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r53_amt_statement_adj_bwp;
+
+		@Column(name = "R53_NET_AMT")
+		private BigDecimal r53_net_amt;
+
+		@Column(name = "R53_NET_AMT_BWP")
+		private BigDecimal r53_net_amt_bwp;
+
+		@Column(name = "R53_BAL_SUB")
+		private BigDecimal r53_bal_sub;
+
+		@Column(name = "R53_BAL_SUB_BWP")
+		private BigDecimal r53_bal_sub_bwp;
+
+		@Column(name = "R53_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r53_bal_sub_diaries_bwp;
+
+		@Column(name = "R54_OPERATING_EXPENSES")
+		private String r54_operating_expenses;
+
+		@Column(name = "R54_FIG_BAL_SHEET")
+		private BigDecimal r54_fig_bal_sheet;
+
+		@Column(name = "R54_FIG_BAL_SHEET_BWP")
+		private BigDecimal r54_fig_bal_sheet_bwp;
+
+		@Column(name = "R54_AMT_STATEMENT_ADJ")
+		private BigDecimal r54_amt_statement_adj;
+
+		@Column(name = "R54_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r54_amt_statement_adj_bwp;
+
+		@Column(name = "R54_NET_AMT")
+		private BigDecimal r54_net_amt;
+
+		@Column(name = "R54_NET_AMT_BWP")
+		private BigDecimal r54_net_amt_bwp;
+
+		@Column(name = "R54_BAL_SUB")
+		private BigDecimal r54_bal_sub;
+
+		@Column(name = "R54_BAL_SUB_BWP")
+		private BigDecimal r54_bal_sub_bwp;
+
+		@Column(name = "R54_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r54_bal_sub_diaries_bwp;
+
+		@Column(name = "R55_OPERATING_EXPENSES")
+		private String r55_operating_expenses;
+
+		@Column(name = "R55_FIG_BAL_SHEET")
+		private BigDecimal r55_fig_bal_sheet;
+
+		@Column(name = "R55_FIG_BAL_SHEET_BWP")
+		private BigDecimal r55_fig_bal_sheet_bwp;
+
+		@Column(name = "R55_AMT_STATEMENT_ADJ")
+		private BigDecimal r55_amt_statement_adj;
+
+		@Column(name = "R55_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r55_amt_statement_adj_bwp;
+
+		@Column(name = "R55_NET_AMT")
+		private BigDecimal r55_net_amt;
+
+		@Column(name = "R55_NET_AMT_BWP")
+		private BigDecimal r55_net_amt_bwp;
+
+		@Column(name = "R55_BAL_SUB")
+		private BigDecimal r55_bal_sub;
+
+		@Column(name = "R55_BAL_SUB_BWP")
+		private BigDecimal r55_bal_sub_bwp;
+
+		@Column(name = "R55_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r55_bal_sub_diaries_bwp;
+
+		@Column(name = "R56_OPERATING_EXPENSES")
+		private String r56_operating_expenses;
+
+		@Column(name = "R56_FIG_BAL_SHEET")
+		private BigDecimal r56_fig_bal_sheet;
+
+		@Column(name = "R56_FIG_BAL_SHEET_BWP")
+		private BigDecimal r56_fig_bal_sheet_bwp;
+
+		@Column(name = "R56_AMT_STATEMENT_ADJ")
+		private BigDecimal r56_amt_statement_adj;
+
+		@Column(name = "R56_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r56_amt_statement_adj_bwp;
+
+		@Column(name = "R56_NET_AMT")
+		private BigDecimal r56_net_amt;
+
+		@Column(name = "R56_NET_AMT_BWP")
+		private BigDecimal r56_net_amt_bwp;
+
+		@Column(name = "R56_BAL_SUB")
+		private BigDecimal r56_bal_sub;
+
+		@Column(name = "R56_BAL_SUB_BWP")
+		private BigDecimal r56_bal_sub_bwp;
+
+		@Column(name = "R56_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r56_bal_sub_diaries_bwp;
+
+		@Column(name = "R57_OPERATING_EXPENSES")
+		private String r57_operating_expenses;
+
+		@Column(name = "R57_FIG_BAL_SHEET")
+		private BigDecimal r57_fig_bal_sheet;
+
+		@Column(name = "R57_FIG_BAL_SHEET_BWP")
+		private BigDecimal r57_fig_bal_sheet_bwp;
+
+		@Column(name = "R57_AMT_STATEMENT_ADJ")
+		private BigDecimal r57_amt_statement_adj;
+
+		@Column(name = "R57_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r57_amt_statement_adj_bwp;
+
+		@Column(name = "R57_NET_AMT")
+		private BigDecimal r57_net_amt;
+
+		@Column(name = "R57_NET_AMT_BWP")
+		private BigDecimal r57_net_amt_bwp;
+
+		@Column(name = "R57_BAL_SUB")
+		private BigDecimal r57_bal_sub;
+
+		@Column(name = "R57_BAL_SUB_BWP")
+		private BigDecimal r57_bal_sub_bwp;
+
+		@Column(name = "R57_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r57_bal_sub_diaries_bwp;
+
+		@Column(name = "R58_OPERATING_EXPENSES")
+		private String r58_operating_expenses;
+
+		@Column(name = "R58_FIG_BAL_SHEET")
+		private BigDecimal r58_fig_bal_sheet;
+
+		@Column(name = "R58_FIG_BAL_SHEET_BWP")
+		private BigDecimal r58_fig_bal_sheet_bwp;
+
+		@Column(name = "R58_AMT_STATEMENT_ADJ")
+		private BigDecimal r58_amt_statement_adj;
+
+		@Column(name = "R58_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r58_amt_statement_adj_bwp;
+
+		@Column(name = "R58_NET_AMT")
+		private BigDecimal r58_net_amt;
+
+		@Column(name = "R58_NET_AMT_BWP")
+		private BigDecimal r58_net_amt_bwp;
+
+		@Column(name = "R58_BAL_SUB")
+		private BigDecimal r58_bal_sub;
+
+		@Column(name = "R58_BAL_SUB_BWP")
+		private BigDecimal r58_bal_sub_bwp;
+
+		@Column(name = "R58_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r58_bal_sub_diaries_bwp;
+
+		@Column(name = "R59_OPERATING_EXPENSES")
+		private String r59_operating_expenses;
+
+		@Column(name = "R59_FIG_BAL_SHEET")
+		private BigDecimal r59_fig_bal_sheet;
+
+		@Column(name = "R59_FIG_BAL_SHEET_BWP")
+		private BigDecimal r59_fig_bal_sheet_bwp;
+
+		@Column(name = "R59_AMT_STATEMENT_ADJ")
+		private BigDecimal r59_amt_statement_adj;
+
+		@Column(name = "R59_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r59_amt_statement_adj_bwp;
+
+		@Column(name = "R59_NET_AMT")
+		private BigDecimal r59_net_amt;
+
+		@Column(name = "R59_NET_AMT_BWP")
+		private BigDecimal r59_net_amt_bwp;
+
+		@Column(name = "R59_BAL_SUB")
+		private BigDecimal r59_bal_sub;
+
+		@Column(name = "R59_BAL_SUB_BWP")
+		private BigDecimal r59_bal_sub_bwp;
+
+		@Column(name = "R59_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r59_bal_sub_diaries_bwp;
+
+		@Column(name = "R60_OPERATING_EXPENSES")
+		private String r60_operating_expenses;
+
+		@Column(name = "R60_FIG_BAL_SHEET")
+		private BigDecimal r60_fig_bal_sheet;
+
+		@Column(name = "R60_FIG_BAL_SHEET_BWP")
+		private BigDecimal r60_fig_bal_sheet_bwp;
+
+		@Column(name = "R60_AMT_STATEMENT_ADJ")
+		private BigDecimal r60_amt_statement_adj;
+
+		@Column(name = "R60_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r60_amt_statement_adj_bwp;
+
+		@Column(name = "R60_NET_AMT")
+		private BigDecimal r60_net_amt;
+
+		@Column(name = "R60_NET_AMT_BWP")
+		private BigDecimal r60_net_amt_bwp;
+
+		@Column(name = "R60_BAL_SUB")
+		private BigDecimal r60_bal_sub;
+
+		@Column(name = "R60_BAL_SUB_BWP")
+		private BigDecimal r60_bal_sub_bwp;
+
+		@Column(name = "R60_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r60_bal_sub_diaries_bwp;
+
+		@Column(name = "R61_OPERATING_EXPENSES")
+		private String r61_operating_expenses;
+
+		@Column(name = "R61_FIG_BAL_SHEET")
+		private BigDecimal r61_fig_bal_sheet;
+
+		@Column(name = "R61_FIG_BAL_SHEET_BWP")
+		private BigDecimal r61_fig_bal_sheet_bwp;
+
+		@Column(name = "R61_AMT_STATEMENT_ADJ")
+		private BigDecimal r61_amt_statement_adj;
+
+		@Column(name = "R61_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r61_amt_statement_adj_bwp;
+
+		@Column(name = "R61_NET_AMT")
+		private BigDecimal r61_net_amt;
+
+		@Column(name = "R61_NET_AMT_BWP")
+		private BigDecimal r61_net_amt_bwp;
+
+		@Column(name = "R61_BAL_SUB")
+		private BigDecimal r61_bal_sub;
+
+		@Column(name = "R61_BAL_SUB_BWP")
+		private BigDecimal r61_bal_sub_bwp;
+
+		@Column(name = "R61_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r61_bal_sub_diaries_bwp;
+
+		@Column(name = "R62_OPERATING_EXPENSES")
+		private String r62_operating_expenses;
+
+		@Column(name = "R62_FIG_BAL_SHEET")
+		private BigDecimal r62_fig_bal_sheet;
+
+		@Column(name = "R62_FIG_BAL_SHEET_BWP")
+		private BigDecimal r62_fig_bal_sheet_bwp;
+
+		@Column(name = "R62_AMT_STATEMENT_ADJ")
+		private BigDecimal r62_amt_statement_adj;
+
+		@Column(name = "R62_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r62_amt_statement_adj_bwp;
+
+		@Column(name = "R62_NET_AMT")
+		private BigDecimal r62_net_amt;
+
+		@Column(name = "R62_NET_AMT_BWP")
+		private BigDecimal r62_net_amt_bwp;
+
+		@Column(name = "R62_BAL_SUB")
+		private BigDecimal r62_bal_sub;
+
+		@Column(name = "R62_BAL_SUB_BWP")
+		private BigDecimal r62_bal_sub_bwp;
+
+		@Column(name = "R62_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r62_bal_sub_diaries_bwp;
+
+		@Column(name = "R63_OPERATING_EXPENSES")
+		private String r63_operating_expenses;
+
+		@Column(name = "R63_FIG_BAL_SHEET")
+		private BigDecimal r63_fig_bal_sheet;
+
+		@Column(name = "R63_FIG_BAL_SHEET_BWP")
+		private BigDecimal r63_fig_bal_sheet_bwp;
+
+		@Column(name = "R63_AMT_STATEMENT_ADJ")
+		private BigDecimal r63_amt_statement_adj;
+
+		@Column(name = "R63_AMT_STATEMENT_ADJ_BWP")
+		private BigDecimal r63_amt_statement_adj_bwp;
+
+		@Column(name = "R63_NET_AMT")
+		private BigDecimal r63_net_amt;
+
+		@Column(name = "R63_NET_AMT_BWP")
+		private BigDecimal r63_net_amt_bwp;
+
+		@Column(name = "R63_BAL_SUB")
+		private BigDecimal r63_bal_sub;
+
+		@Column(name = "R63_BAL_SUB_BWP")
+		private BigDecimal r63_bal_sub_bwp;
+
+		@Column(name = "R63_BAL_SUB_DIARIES_BWP")
+		private BigDecimal r63_bal_sub_diaries_bwp;
+
+		@Column(name = "R18_BAL_SUB_DIARIES")
+		private BigDecimal r18_bal_sub_diaries;
+
+		@Column(name = "R19_BAL_SUB_DIARIES")
+		private BigDecimal r19_bal_sub_diaries;
+
+		@Column(name = "R20_BAL_SUB_DIARIES")
+		private BigDecimal r20_bal_sub_diaries;
+
+		@Column(name = "R21_BAL_SUB_DIARIES")
+		private BigDecimal r21_bal_sub_diaries;
+
+		@Column(name = "R22_BAL_SUB_DIARIES")
+		private BigDecimal r22_bal_sub_diaries;
+
+		@Column(name = "R23_BAL_SUB_DIARIES")
+		private BigDecimal r23_bal_sub_diaries;
+
+		@Column(name = "R24_BAL_SUB_DIARIES")
+		private BigDecimal r24_bal_sub_diaries;
+
+		@Column(name = "R25_BAL_SUB_DIARIES")
+		private BigDecimal r25_bal_sub_diaries;
+
+		@Column(name = "R26_BAL_SUB_DIARIES")
+		private BigDecimal r26_bal_sub_diaries;
+
+		@Column(name = "R27_BAL_SUB_DIARIES")
+		private BigDecimal r27_bal_sub_diaries;
+
+		@Column(name = "R28_BAL_SUB_DIARIES")
+		private BigDecimal r28_bal_sub_diaries;
+
+		@Column(name = "R29_BAL_SUB_DIARIES")
+		private BigDecimal r29_bal_sub_diaries;
+
+		@Column(name = "R30_BAL_SUB_DIARIES")
+		private BigDecimal r30_bal_sub_diaries;
+
+		@Column(name = "R31_BAL_SUB_DIARIES")
+		private BigDecimal r31_bal_sub_diaries;
+
+		@Column(name = "R40_BAL_SUB_DIARIES")
+		private BigDecimal r40_bal_sub_diaries;
+
+		@Column(name = "R41_BAL_SUB_DIARIES")
+		private BigDecimal r41_bal_sub_diaries;
+
+		@Column(name = "R42_BAL_SUB_DIARIES")
+		private BigDecimal r42_bal_sub_diaries;
+
+		@Column(name = "R43_BAL_SUB_DIARIES")
+		private BigDecimal r43_bal_sub_diaries;
+
+		@Column(name = "R48_BAL_SUB_DIARIES")
+		private BigDecimal r48_bal_sub_diaries;
+
+		@Column(name = "R49_BAL_SUB_DIARIES")
+		private BigDecimal r49_bal_sub_diaries;
+
+		@Column(name = "R50_BAL_SUB_DIARIES")
+		private BigDecimal r50_bal_sub_diaries;
+
+		@Column(name = "R51_BAL_SUB_DIARIES")
+		private BigDecimal r51_bal_sub_diaries;
+
+		@Column(name = "R52_BAL_SUB_DIARIES")
+		private BigDecimal r52_bal_sub_diaries;
+
+		@Column(name = "R53_BAL_SUB_DIARIES")
+		private BigDecimal r53_bal_sub_diaries;
+
+		@Column(name = "R54_BAL_SUB_DIARIES")
+		private BigDecimal r54_bal_sub_diaries;
+
+		@Column(name = "R55_BAL_SUB_DIARIES")
+		private BigDecimal r55_bal_sub_diaries;
+
+		@Column(name = "R56_BAL_SUB_DIARIES")
+		private BigDecimal r56_bal_sub_diaries;
+
+		@Column(name = "R57_BAL_SUB_DIARIES")
+		private BigDecimal r57_bal_sub_diaries;
+
+		@Column(name = "R58_BAL_SUB_DIARIES")
+		private BigDecimal r58_bal_sub_diaries;
+
+		@Column(name = "R59_BAL_SUB_DIARIES")
+		private BigDecimal r59_bal_sub_diaries;
+
+		@Column(name = "R60_BAL_SUB_DIARIES")
+		private BigDecimal r60_bal_sub_diaries;
+
+		@Column(name = "R61_BAL_SUB_DIARIES")
+		private BigDecimal r61_bal_sub_diaries;
+
+		@Column(name = "R62_BAL_SUB_DIARIES")
+		private BigDecimal r62_bal_sub_diaries;
+
+		@Column(name = "R63_BAL_SUB_DIARIES")
+		private BigDecimal r63_bal_sub_diaries;
+
+		@Id
+		@Column(name = "REPORT_VERSION", length = 100)
+		private BigDecimal REPORT_VERSION;
+
+		@Column(name = "REPORT_FREQUENCY", length = 100)
+		private String REPORT_FREQUENCY;
+
+		@Column(name = "REPORT_CODE", length = 100)
+		private String REPORT_CODE;
+
+		@Column(name = "REPORT_DESC", length = 100)
+		private String REPORT_DESC;
+
+		@Column(name = "ENTITY_FLG", length = 1)
+		private String ENTITY_FLG;
+
+		@Column(name = "MODIFY_FLG", length = 1)
+		private String MODIFY_FLG;
+
+		@Column(name = "DEL_FLG", length = 1)
+		private String DEL_FLG;
+
+		private Date REPORT_RESUBDATE;
+
+		public Date getREPORT_DATE() {
+			return REPORT_DATE;
+		}
+
+		public void setREPORT_DATE(Date REPORT_DATE) {
+			this.REPORT_DATE = REPORT_DATE;
+		}
+
+		public BigDecimal getR18_bal_sub_diaries() {
+			return r18_bal_sub_diaries;
+		}
+
+		public void setR18_bal_sub_diaries(BigDecimal r18_bal_sub_diaries) {
+			this.r18_bal_sub_diaries = r18_bal_sub_diaries;
+		}
+
+		public BigDecimal getR19_bal_sub_diaries() {
+			return r19_bal_sub_diaries;
+		}
+
+		public void setR19_bal_sub_diaries(BigDecimal r19_bal_sub_diaries) {
+			this.r19_bal_sub_diaries = r19_bal_sub_diaries;
+		}
+
+		public BigDecimal getR20_bal_sub_diaries() {
+			return r20_bal_sub_diaries;
+		}
+
+		public void setR20_bal_sub_diaries(BigDecimal r20_bal_sub_diaries) {
+			this.r20_bal_sub_diaries = r20_bal_sub_diaries;
+		}
+
+		public BigDecimal getR21_bal_sub_diaries() {
+			return r21_bal_sub_diaries;
+		}
+
+		public void setR21_bal_sub_diaries(BigDecimal r21_bal_sub_diaries) {
+			this.r21_bal_sub_diaries = r21_bal_sub_diaries;
+		}
+
+		public BigDecimal getR22_bal_sub_diaries() {
+			return r22_bal_sub_diaries;
+		}
+
+		public void setR22_bal_sub_diaries(BigDecimal r22_bal_sub_diaries) {
+			this.r22_bal_sub_diaries = r22_bal_sub_diaries;
+		}
+
+		public BigDecimal getR23_bal_sub_diaries() {
+			return r23_bal_sub_diaries;
+		}
+
+		public void setR23_bal_sub_diaries(BigDecimal r23_bal_sub_diaries) {
+			this.r23_bal_sub_diaries = r23_bal_sub_diaries;
+		}
+
+		public BigDecimal getR24_bal_sub_diaries() {
+			return r24_bal_sub_diaries;
+		}
+
+		public void setR24_bal_sub_diaries(BigDecimal r24_bal_sub_diaries) {
+			this.r24_bal_sub_diaries = r24_bal_sub_diaries;
+		}
+
+		public BigDecimal getR25_bal_sub_diaries() {
+			return r25_bal_sub_diaries;
+		}
+
+		public void setR25_bal_sub_diaries(BigDecimal r25_bal_sub_diaries) {
+			this.r25_bal_sub_diaries = r25_bal_sub_diaries;
+		}
+
+		public BigDecimal getR26_bal_sub_diaries() {
+			return r26_bal_sub_diaries;
+		}
+
+		public void setR26_bal_sub_diaries(BigDecimal r26_bal_sub_diaries) {
+			this.r26_bal_sub_diaries = r26_bal_sub_diaries;
+		}
+
+		public BigDecimal getR27_bal_sub_diaries() {
+			return r27_bal_sub_diaries;
+		}
+
+		public void setR27_bal_sub_diaries(BigDecimal r27_bal_sub_diaries) {
+			this.r27_bal_sub_diaries = r27_bal_sub_diaries;
+		}
+
+		public BigDecimal getR28_bal_sub_diaries() {
+			return r28_bal_sub_diaries;
+		}
+
+		public void setR28_bal_sub_diaries(BigDecimal r28_bal_sub_diaries) {
+			this.r28_bal_sub_diaries = r28_bal_sub_diaries;
+		}
+
+		public BigDecimal getR29_bal_sub_diaries() {
+			return r29_bal_sub_diaries;
+		}
+
+		public void setR29_bal_sub_diaries(BigDecimal r29_bal_sub_diaries) {
+			this.r29_bal_sub_diaries = r29_bal_sub_diaries;
+		}
+
+		public BigDecimal getR30_bal_sub_diaries() {
+			return r30_bal_sub_diaries;
+		}
+
+		public void setR30_bal_sub_diaries(BigDecimal r30_bal_sub_diaries) {
+			this.r30_bal_sub_diaries = r30_bal_sub_diaries;
+		}
+
+		public BigDecimal getR31_bal_sub_diaries() {
+			return r31_bal_sub_diaries;
+		}
+
+		public void setR31_bal_sub_diaries(BigDecimal r31_bal_sub_diaries) {
+			this.r31_bal_sub_diaries = r31_bal_sub_diaries;
+		}
+
+		public BigDecimal getR40_bal_sub_diaries() {
+			return r40_bal_sub_diaries;
+		}
+
+		public void setR40_bal_sub_diaries(BigDecimal r40_bal_sub_diaries) {
+			this.r40_bal_sub_diaries = r40_bal_sub_diaries;
+		}
+
+		public BigDecimal getR41_bal_sub_diaries() {
+			return r41_bal_sub_diaries;
+		}
+
+		public void setR41_bal_sub_diaries(BigDecimal r41_bal_sub_diaries) {
+			this.r41_bal_sub_diaries = r41_bal_sub_diaries;
+		}
+
+		public BigDecimal getR42_bal_sub_diaries() {
+			return r42_bal_sub_diaries;
+		}
+
+		public void setR42_bal_sub_diaries(BigDecimal r42_bal_sub_diaries) {
+			this.r42_bal_sub_diaries = r42_bal_sub_diaries;
+		}
+
+		public BigDecimal getR43_bal_sub_diaries() {
+			return r43_bal_sub_diaries;
+		}
+
+		public void setR43_bal_sub_diaries(BigDecimal r43_bal_sub_diaries) {
+			this.r43_bal_sub_diaries = r43_bal_sub_diaries;
+		}
+
+		public BigDecimal getR49_bal_sub_diaries() {
+			return r49_bal_sub_diaries;
+		}
+
+		public void setR49_bal_sub_diaries(BigDecimal r49_bal_sub_diaries) {
+			this.r49_bal_sub_diaries = r49_bal_sub_diaries;
+		}
+
+		public BigDecimal getR50_bal_sub_diaries() {
+			return r50_bal_sub_diaries;
+		}
+
+		public void setR50_bal_sub_diaries(BigDecimal r50_bal_sub_diaries) {
+			this.r50_bal_sub_diaries = r50_bal_sub_diaries;
+		}
+
+		public BigDecimal getR51_bal_sub_diaries() {
+			return r51_bal_sub_diaries;
+		}
+
+		public void setR51_bal_sub_diaries(BigDecimal r51_bal_sub_diaries) {
+			this.r51_bal_sub_diaries = r51_bal_sub_diaries;
+		}
+
+		public BigDecimal getR52_bal_sub_diaries() {
+			return r52_bal_sub_diaries;
+		}
+
+		public void setR52_bal_sub_diaries(BigDecimal r52_bal_sub_diaries) {
+			this.r52_bal_sub_diaries = r52_bal_sub_diaries;
+		}
+
+		public BigDecimal getR53_bal_sub_diaries() {
+			return r53_bal_sub_diaries;
+		}
+
+		public void setR53_bal_sub_diaries(BigDecimal r53_bal_sub_diaries) {
+			this.r53_bal_sub_diaries = r53_bal_sub_diaries;
+		}
+
+		public BigDecimal getR54_bal_sub_diaries() {
+			return r54_bal_sub_diaries;
+		}
+
+		public void setR54_bal_sub_diaries(BigDecimal r54_bal_sub_diaries) {
+			this.r54_bal_sub_diaries = r54_bal_sub_diaries;
+		}
+
+		public BigDecimal getR55_bal_sub_diaries() {
+			return r55_bal_sub_diaries;
+		}
+
+		public void setR55_bal_sub_diaries(BigDecimal r55_bal_sub_diaries) {
+			this.r55_bal_sub_diaries = r55_bal_sub_diaries;
+		}
+
+		public BigDecimal getR56_bal_sub_diaries() {
+			return r56_bal_sub_diaries;
+		}
+
+		public void setR56_bal_sub_diaries(BigDecimal r56_bal_sub_diaries) {
+			this.r56_bal_sub_diaries = r56_bal_sub_diaries;
+		}
+
+		public BigDecimal getR57_bal_sub_diaries() {
+			return r57_bal_sub_diaries;
+		}
+
+		public void setR57_bal_sub_diaries(BigDecimal r57_bal_sub_diaries) {
+			this.r57_bal_sub_diaries = r57_bal_sub_diaries;
+		}
+
+		public BigDecimal getR58_bal_sub_diaries() {
+			return r58_bal_sub_diaries;
+		}
+
+		public void setR58_bal_sub_diaries(BigDecimal r58_bal_sub_diaries) {
+			this.r58_bal_sub_diaries = r58_bal_sub_diaries;
+		}
+
+		public BigDecimal getR59_bal_sub_diaries() {
+			return r59_bal_sub_diaries;
+		}
+
+		public void setR59_bal_sub_diaries(BigDecimal r59_bal_sub_diaries) {
+			this.r59_bal_sub_diaries = r59_bal_sub_diaries;
+		}
+
+		public BigDecimal getR60_bal_sub_diaries() {
+			return r60_bal_sub_diaries;
+		}
+
+		public void setR60_bal_sub_diaries(BigDecimal r60_bal_sub_diaries) {
+			this.r60_bal_sub_diaries = r60_bal_sub_diaries;
+		}
+
+		public BigDecimal getR61_bal_sub_diaries() {
+			return r61_bal_sub_diaries;
+		}
+
+		public void setR61_bal_sub_diaries(BigDecimal r61_bal_sub_diaries) {
+			this.r61_bal_sub_diaries = r61_bal_sub_diaries;
+		}
+
+		public BigDecimal getR62_bal_sub_diaries() {
+			return r62_bal_sub_diaries;
+		}
+
+		public void setR62_bal_sub_diaries(BigDecimal r62_bal_sub_diaries) {
+			this.r62_bal_sub_diaries = r62_bal_sub_diaries;
+		}
+
+		public BigDecimal getR63_bal_sub_diaries() {
+			return r63_bal_sub_diaries;
+		}
+
+		public void setR63_bal_sub_diaries(BigDecimal r63_bal_sub_diaries) {
+			this.r63_bal_sub_diaries = r63_bal_sub_diaries;
+		}
+
+		public String getR9_intrest_div() {
+			return r9_intrest_div;
+		}
+
+		public void setR9_intrest_div(String r9_intrest_div) {
+			this.r9_intrest_div = r9_intrest_div;
+		}
+
+		public BigDecimal getR9_fig_bal_sheet() {
+			return r9_fig_bal_sheet;
+		}
+
+		public void setR9_fig_bal_sheet(BigDecimal r9_fig_bal_sheet) {
+			this.r9_fig_bal_sheet = r9_fig_bal_sheet;
+		}
+
+		public BigDecimal getR9_fig_bal_sheet_bwp() {
+			return r9_fig_bal_sheet_bwp;
+		}
+
+		public void setR9_fig_bal_sheet_bwp(BigDecimal r9_fig_bal_sheet_bwp) {
+			this.r9_fig_bal_sheet_bwp = r9_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR9_amt_statement_adj() {
+			return r9_amt_statement_adj;
+		}
+
+		public void setR9_amt_statement_adj(BigDecimal r9_amt_statement_adj) {
+			this.r9_amt_statement_adj = r9_amt_statement_adj;
+		}
+
+		public BigDecimal getR9_amt_statement_adj_bwp() {
+			return r9_amt_statement_adj_bwp;
+		}
+
+		public void setR9_amt_statement_adj_bwp(BigDecimal r9_amt_statement_adj_bwp) {
+			this.r9_amt_statement_adj_bwp = r9_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR9_net_amt() {
+			return r9_net_amt;
+		}
+
+		public void setR9_net_amt(BigDecimal r9_net_amt) {
+			this.r9_net_amt = r9_net_amt;
+		}
+
+		public BigDecimal getR9_net_amt_bwp() {
+			return r9_net_amt_bwp;
+		}
+
+		public void setR9_net_amt_bwp(BigDecimal r9_net_amt_bwp) {
+			this.r9_net_amt_bwp = r9_net_amt_bwp;
+		}
+
+		public BigDecimal getR9_bal_sub() {
+			return r9_bal_sub;
+		}
+
+		public void setR9_bal_sub(BigDecimal r9_bal_sub) {
+			this.r9_bal_sub = r9_bal_sub;
+		}
+
+		public BigDecimal getR9_bal_sub_bwp() {
+			return r9_bal_sub_bwp;
+		}
+
+		public void setR9_bal_sub_bwp(BigDecimal r9_bal_sub_bwp) {
+			this.r9_bal_sub_bwp = r9_bal_sub_bwp;
+		}
+
+		public BigDecimal getR9_bal_sub_diaries() {
+			return r9_bal_sub_diaries;
+		}
+
+		public void setR9_bal_sub_diaries(BigDecimal r9_bal_sub_diaries) {
+			this.r9_bal_sub_diaries = r9_bal_sub_diaries;
+		}
+
+		public BigDecimal getR9_bal_sub_diaries_bwp() {
+			return r9_bal_sub_diaries_bwp;
+		}
+
+		public void setR9_bal_sub_diaries_bwp(BigDecimal r9_bal_sub_diaries_bwp) {
+			this.r9_bal_sub_diaries_bwp = r9_bal_sub_diaries_bwp;
+		}
+
+		public String getR10_intrest_div() {
+			return r10_intrest_div;
+		}
+
+		public void setR10_intrest_div(String r10_intrest_div) {
+			this.r10_intrest_div = r10_intrest_div;
+		}
+
+		public BigDecimal getR10_fig_bal_sheet() {
+			return r10_fig_bal_sheet;
+		}
+
+		public void setR10_fig_bal_sheet(BigDecimal r10_fig_bal_sheet) {
+			this.r10_fig_bal_sheet = r10_fig_bal_sheet;
+		}
+
+		public BigDecimal getR10_fig_bal_sheet_bwp() {
+			return r10_fig_bal_sheet_bwp;
+		}
+
+		public void setR10_fig_bal_sheet_bwp(BigDecimal r10_fig_bal_sheet_bwp) {
+			this.r10_fig_bal_sheet_bwp = r10_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR10_amt_statement_adj() {
+			return r10_amt_statement_adj;
+		}
+
+		public void setR10_amt_statement_adj(BigDecimal r10_amt_statement_adj) {
+			this.r10_amt_statement_adj = r10_amt_statement_adj;
+		}
+
+		public BigDecimal getR10_amt_statement_adj_bwp() {
+			return r10_amt_statement_adj_bwp;
+		}
+
+		public void setR10_amt_statement_adj_bwp(BigDecimal r10_amt_statement_adj_bwp) {
+			this.r10_amt_statement_adj_bwp = r10_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR10_net_amt() {
+			return r10_net_amt;
+		}
+
+		public void setR10_net_amt(BigDecimal r10_net_amt) {
+			this.r10_net_amt = r10_net_amt;
+		}
+
+		public BigDecimal getR10_net_amt_bwp() {
+			return r10_net_amt_bwp;
+		}
+
+		public void setR10_net_amt_bwp(BigDecimal r10_net_amt_bwp) {
+			this.r10_net_amt_bwp = r10_net_amt_bwp;
+		}
+
+		public BigDecimal getR10_bal_sub() {
+			return r10_bal_sub;
+		}
+
+		public void setR10_bal_sub(BigDecimal r10_bal_sub) {
+			this.r10_bal_sub = r10_bal_sub;
+		}
+
+		public BigDecimal getR10_bal_sub_bwp() {
+			return r10_bal_sub_bwp;
+		}
+
+		public void setR10_bal_sub_bwp(BigDecimal r10_bal_sub_bwp) {
+			this.r10_bal_sub_bwp = r10_bal_sub_bwp;
+		}
+
+		public BigDecimal getR10_bal_sub_diaries() {
+			return r10_bal_sub_diaries;
+		}
+
+		public void setR10_bal_sub_diaries(BigDecimal r10_bal_sub_diaries) {
+			this.r10_bal_sub_diaries = r10_bal_sub_diaries;
+		}
+
+		public BigDecimal getR10_bal_sub_diaries_bwp() {
+			return r10_bal_sub_diaries_bwp;
+		}
+
+		public void setR10_bal_sub_diaries_bwp(BigDecimal r10_bal_sub_diaries_bwp) {
+			this.r10_bal_sub_diaries_bwp = r10_bal_sub_diaries_bwp;
+		}
+
+		public String getR11_intrest_div() {
+			return r11_intrest_div;
+		}
+
+		public void setR11_intrest_div(String r11_intrest_div) {
+			this.r11_intrest_div = r11_intrest_div;
+		}
+
+		public BigDecimal getR11_fig_bal_sheet() {
+			return r11_fig_bal_sheet;
+		}
+
+		public void setR11_fig_bal_sheet(BigDecimal r11_fig_bal_sheet) {
+			this.r11_fig_bal_sheet = r11_fig_bal_sheet;
+		}
+
+		public BigDecimal getR11_fig_bal_sheet_bwp() {
+			return r11_fig_bal_sheet_bwp;
+		}
+
+		public void setR11_fig_bal_sheet_bwp(BigDecimal r11_fig_bal_sheet_bwp) {
+			this.r11_fig_bal_sheet_bwp = r11_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR11_amt_statement_adj() {
+			return r11_amt_statement_adj;
+		}
+
+		public void setR11_amt_statement_adj(BigDecimal r11_amt_statement_adj) {
+			this.r11_amt_statement_adj = r11_amt_statement_adj;
+		}
+
+		public BigDecimal getR11_amt_statement_adj_bwp() {
+			return r11_amt_statement_adj_bwp;
+		}
+
+		public void setR11_amt_statement_adj_bwp(BigDecimal r11_amt_statement_adj_bwp) {
+			this.r11_amt_statement_adj_bwp = r11_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR11_net_amt() {
+			return r11_net_amt;
+		}
+
+		public void setR11_net_amt(BigDecimal r11_net_amt) {
+			this.r11_net_amt = r11_net_amt;
+		}
+
+		public BigDecimal getR11_net_amt_bwp() {
+			return r11_net_amt_bwp;
+		}
+
+		public void setR11_net_amt_bwp(BigDecimal r11_net_amt_bwp) {
+			this.r11_net_amt_bwp = r11_net_amt_bwp;
+		}
+
+		public BigDecimal getR11_bal_sub() {
+			return r11_bal_sub;
+		}
+
+		public void setR11_bal_sub(BigDecimal r11_bal_sub) {
+			this.r11_bal_sub = r11_bal_sub;
+		}
+
+		public BigDecimal getR11_bal_sub_bwp() {
+			return r11_bal_sub_bwp;
+		}
+
+		public void setR11_bal_sub_bwp(BigDecimal r11_bal_sub_bwp) {
+			this.r11_bal_sub_bwp = r11_bal_sub_bwp;
+		}
+
+		public BigDecimal getR11_bal_sub_diaries() {
+			return r11_bal_sub_diaries;
+		}
+
+		public void setR11_bal_sub_diaries(BigDecimal r11_bal_sub_diaries) {
+			this.r11_bal_sub_diaries = r11_bal_sub_diaries;
+		}
+
+		public BigDecimal getR11_bal_sub_diaries_bwp() {
+			return r11_bal_sub_diaries_bwp;
+		}
+
+		public void setR11_bal_sub_diaries_bwp(BigDecimal r11_bal_sub_diaries_bwp) {
+			this.r11_bal_sub_diaries_bwp = r11_bal_sub_diaries_bwp;
+		}
+
+		public String getR12_intrest_div() {
+			return r12_intrest_div;
+		}
+
+		public void setR12_intrest_div(String r12_intrest_div) {
+			this.r12_intrest_div = r12_intrest_div;
+		}
+
+		public BigDecimal getR12_fig_bal_sheet() {
+			return r12_fig_bal_sheet;
+		}
+
+		public void setR12_fig_bal_sheet(BigDecimal r12_fig_bal_sheet) {
+			this.r12_fig_bal_sheet = r12_fig_bal_sheet;
+		}
+
+		public BigDecimal getR12_fig_bal_sheet_bwp() {
+			return r12_fig_bal_sheet_bwp;
+		}
+
+		public void setR12_fig_bal_sheet_bwp(BigDecimal r12_fig_bal_sheet_bwp) {
+			this.r12_fig_bal_sheet_bwp = r12_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR12_amt_statement_adj() {
+			return r12_amt_statement_adj;
+		}
+
+		public void setR12_amt_statement_adj(BigDecimal r12_amt_statement_adj) {
+			this.r12_amt_statement_adj = r12_amt_statement_adj;
+		}
+
+		public BigDecimal getR12_amt_statement_adj_bwp() {
+			return r12_amt_statement_adj_bwp;
+		}
+
+		public void setR12_amt_statement_adj_bwp(BigDecimal r12_amt_statement_adj_bwp) {
+			this.r12_amt_statement_adj_bwp = r12_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR12_net_amt() {
+			return r12_net_amt;
+		}
+
+		public void setR12_net_amt(BigDecimal r12_net_amt) {
+			this.r12_net_amt = r12_net_amt;
+		}
+
+		public BigDecimal getR12_net_amt_bwp() {
+			return r12_net_amt_bwp;
+		}
+
+		public void setR12_net_amt_bwp(BigDecimal r12_net_amt_bwp) {
+			this.r12_net_amt_bwp = r12_net_amt_bwp;
+		}
+
+		public BigDecimal getR12_bal_sub() {
+			return r12_bal_sub;
+		}
+
+		public void setR12_bal_sub(BigDecimal r12_bal_sub) {
+			this.r12_bal_sub = r12_bal_sub;
+		}
+
+		public BigDecimal getR12_bal_sub_bwp() {
+			return r12_bal_sub_bwp;
+		}
+
+		public void setR12_bal_sub_bwp(BigDecimal r12_bal_sub_bwp) {
+			this.r12_bal_sub_bwp = r12_bal_sub_bwp;
+		}
+
+		public BigDecimal getR12_bal_sub_diaries() {
+			return r12_bal_sub_diaries;
+		}
+
+		public void setR12_bal_sub_diaries(BigDecimal r12_bal_sub_diaries) {
+			this.r12_bal_sub_diaries = r12_bal_sub_diaries;
+		}
+
+		public BigDecimal getR12_bal_sub_diaries_bwp() {
+			return r12_bal_sub_diaries_bwp;
+		}
+
+		public void setR12_bal_sub_diaries_bwp(BigDecimal r12_bal_sub_diaries_bwp) {
+			this.r12_bal_sub_diaries_bwp = r12_bal_sub_diaries_bwp;
+		}
+
+		public String getR13_intrest_div() {
+			return r13_intrest_div;
+		}
+
+		public void setR13_intrest_div(String r13_intrest_div) {
+			this.r13_intrest_div = r13_intrest_div;
+		}
+
+		public BigDecimal getR13_fig_bal_sheet() {
+			return r13_fig_bal_sheet;
+		}
+
+		public void setR13_fig_bal_sheet(BigDecimal r13_fig_bal_sheet) {
+			this.r13_fig_bal_sheet = r13_fig_bal_sheet;
+		}
+
+		public BigDecimal getR13_fig_bal_sheet_bwp() {
+			return r13_fig_bal_sheet_bwp;
+		}
+
+		public void setR13_fig_bal_sheet_bwp(BigDecimal r13_fig_bal_sheet_bwp) {
+			this.r13_fig_bal_sheet_bwp = r13_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR13_amt_statement_adj() {
+			return r13_amt_statement_adj;
+		}
+
+		public void setR13_amt_statement_adj(BigDecimal r13_amt_statement_adj) {
+			this.r13_amt_statement_adj = r13_amt_statement_adj;
+		}
+
+		public BigDecimal getR13_amt_statement_adj_bwp() {
+			return r13_amt_statement_adj_bwp;
+		}
+
+		public void setR13_amt_statement_adj_bwp(BigDecimal r13_amt_statement_adj_bwp) {
+			this.r13_amt_statement_adj_bwp = r13_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR13_net_amt() {
+			return r13_net_amt;
+		}
+
+		public void setR13_net_amt(BigDecimal r13_net_amt) {
+			this.r13_net_amt = r13_net_amt;
+		}
+
+		public BigDecimal getR13_net_amt_bwp() {
+			return r13_net_amt_bwp;
+		}
+
+		public void setR13_net_amt_bwp(BigDecimal r13_net_amt_bwp) {
+			this.r13_net_amt_bwp = r13_net_amt_bwp;
+		}
+
+		public BigDecimal getR13_bal_sub() {
+			return r13_bal_sub;
+		}
+
+		public void setR13_bal_sub(BigDecimal r13_bal_sub) {
+			this.r13_bal_sub = r13_bal_sub;
+		}
+
+		public BigDecimal getR13_bal_sub_bwp() {
+			return r13_bal_sub_bwp;
+		}
+
+		public void setR13_bal_sub_bwp(BigDecimal r13_bal_sub_bwp) {
+			this.r13_bal_sub_bwp = r13_bal_sub_bwp;
+		}
+
+		public BigDecimal getR13_bal_sub_diaries() {
+			return r13_bal_sub_diaries;
+		}
+
+		public void setR13_bal_sub_diaries(BigDecimal r13_bal_sub_diaries) {
+			this.r13_bal_sub_diaries = r13_bal_sub_diaries;
+		}
+
+		public BigDecimal getR13_bal_sub_diaries_bwp() {
+			return r13_bal_sub_diaries_bwp;
+		}
+
+		public void setR13_bal_sub_diaries_bwp(BigDecimal r13_bal_sub_diaries_bwp) {
+			this.r13_bal_sub_diaries_bwp = r13_bal_sub_diaries_bwp;
+		}
+
+		public String getR17_other_income() {
+			return r17_other_income;
+		}
+
+		public void setR17_other_income(String r17_other_income) {
+			this.r17_other_income = r17_other_income;
+		}
+
+		public BigDecimal getR17_fig_bal_sheet() {
+			return r17_fig_bal_sheet;
+		}
+
+		public void setR17_fig_bal_sheet(BigDecimal r17_fig_bal_sheet) {
+			this.r17_fig_bal_sheet = r17_fig_bal_sheet;
+		}
+
+		public BigDecimal getR17_fig_bal_sheet_bwp() {
+			return r17_fig_bal_sheet_bwp;
+		}
+
+		public void setR17_fig_bal_sheet_bwp(BigDecimal r17_fig_bal_sheet_bwp) {
+			this.r17_fig_bal_sheet_bwp = r17_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR17_amt_statement_adj() {
+			return r17_amt_statement_adj;
+		}
+
+		public void setR17_amt_statement_adj(BigDecimal r17_amt_statement_adj) {
+			this.r17_amt_statement_adj = r17_amt_statement_adj;
+		}
+
+		public BigDecimal getR17_amt_statement_adj_bwp() {
+			return r17_amt_statement_adj_bwp;
+		}
+
+		public void setR17_amt_statement_adj_bwp(BigDecimal r17_amt_statement_adj_bwp) {
+			this.r17_amt_statement_adj_bwp = r17_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR17_net_amt() {
+			return r17_net_amt;
+		}
+
+		public void setR17_net_amt(BigDecimal r17_net_amt) {
+			this.r17_net_amt = r17_net_amt;
+		}
+
+		public BigDecimal getR17_net_amt_bwp() {
+			return r17_net_amt_bwp;
+		}
+
+		public void setR17_net_amt_bwp(BigDecimal r17_net_amt_bwp) {
+			this.r17_net_amt_bwp = r17_net_amt_bwp;
+		}
+
+		public BigDecimal getR17_bal_sub() {
+			return r17_bal_sub;
+		}
+
+		public void setR17_bal_sub(BigDecimal r17_bal_sub) {
+			this.r17_bal_sub = r17_bal_sub;
+		}
+
+		public BigDecimal getR17_bal_sub_bwp() {
+			return r17_bal_sub_bwp;
+		}
+
+		public void setR17_bal_sub_bwp(BigDecimal r17_bal_sub_bwp) {
+			this.r17_bal_sub_bwp = r17_bal_sub_bwp;
+		}
+
+		public BigDecimal getR17_bal_sub_diaries_bwp() {
+			return r17_bal_sub_diaries_bwp;
+		}
+
+		public void setR17_bal_sub_diaries_bwp(BigDecimal r17_bal_sub_diaries_bwp) {
+			this.r17_bal_sub_diaries_bwp = r17_bal_sub_diaries_bwp;
+		}
+
+		public String getR18_other_income() {
+			return r18_other_income;
+		}
+
+		public void setR18_other_income(String r18_other_income) {
+			this.r18_other_income = r18_other_income;
+		}
+
+		public BigDecimal getR18_fig_bal_sheet() {
+			return r18_fig_bal_sheet;
+		}
+
+		public void setR18_fig_bal_sheet(BigDecimal r18_fig_bal_sheet) {
+			this.r18_fig_bal_sheet = r18_fig_bal_sheet;
+		}
+
+		public BigDecimal getR18_fig_bal_sheet_bwp() {
+			return r18_fig_bal_sheet_bwp;
+		}
+
+		public void setR18_fig_bal_sheet_bwp(BigDecimal r18_fig_bal_sheet_bwp) {
+			this.r18_fig_bal_sheet_bwp = r18_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR18_amt_statement_adj() {
+			return r18_amt_statement_adj;
+		}
+
+		public void setR18_amt_statement_adj(BigDecimal r18_amt_statement_adj) {
+			this.r18_amt_statement_adj = r18_amt_statement_adj;
+		}
+
+		public BigDecimal getR18_amt_statement_adj_bwp() {
+			return r18_amt_statement_adj_bwp;
+		}
+
+		public void setR18_amt_statement_adj_bwp(BigDecimal r18_amt_statement_adj_bwp) {
+			this.r18_amt_statement_adj_bwp = r18_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR18_net_amt() {
+			return r18_net_amt;
+		}
+
+		public void setR18_net_amt(BigDecimal r18_net_amt) {
+			this.r18_net_amt = r18_net_amt;
+		}
+
+		public BigDecimal getR18_net_amt_bwp() {
+			return r18_net_amt_bwp;
+		}
+
+		public void setR18_net_amt_bwp(BigDecimal r18_net_amt_bwp) {
+			this.r18_net_amt_bwp = r18_net_amt_bwp;
+		}
+
+		public BigDecimal getR18_bal_sub() {
+			return r18_bal_sub;
+		}
+
+		public void setR18_bal_sub(BigDecimal r18_bal_sub) {
+			this.r18_bal_sub = r18_bal_sub;
+		}
+
+		public BigDecimal getR18_bal_sub_bwp() {
+			return r18_bal_sub_bwp;
+		}
+
+		public void setR18_bal_sub_bwp(BigDecimal r18_bal_sub_bwp) {
+			this.r18_bal_sub_bwp = r18_bal_sub_bwp;
+		}
+
+		public BigDecimal getR18_bal_sub_diaries_bwp() {
+			return r18_bal_sub_diaries_bwp;
+		}
+
+		public void setR18_bal_sub_diaries_bwp(BigDecimal r18_bal_sub_diaries_bwp) {
+			this.r18_bal_sub_diaries_bwp = r18_bal_sub_diaries_bwp;
+		}
+
+		public String getR19_other_income() {
+			return r19_other_income;
+		}
+
+		public void setR19_other_income(String r19_other_income) {
+			this.r19_other_income = r19_other_income;
+		}
+
+		public BigDecimal getR19_fig_bal_sheet() {
+			return r19_fig_bal_sheet;
+		}
+
+		public void setR19_fig_bal_sheet(BigDecimal r19_fig_bal_sheet) {
+			this.r19_fig_bal_sheet = r19_fig_bal_sheet;
+		}
+
+		public BigDecimal getR19_fig_bal_sheet_bwp() {
+			return r19_fig_bal_sheet_bwp;
+		}
+
+		public void setR19_fig_bal_sheet_bwp(BigDecimal r19_fig_bal_sheet_bwp) {
+			this.r19_fig_bal_sheet_bwp = r19_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR19_amt_statement_adj() {
+			return r19_amt_statement_adj;
+		}
+
+		public void setR19_amt_statement_adj(BigDecimal r19_amt_statement_adj) {
+			this.r19_amt_statement_adj = r19_amt_statement_adj;
+		}
+
+		public BigDecimal getR19_amt_statement_adj_bwp() {
+			return r19_amt_statement_adj_bwp;
+		}
+
+		public void setR19_amt_statement_adj_bwp(BigDecimal r19_amt_statement_adj_bwp) {
+			this.r19_amt_statement_adj_bwp = r19_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR19_net_amt() {
+			return r19_net_amt;
+		}
+
+		public void setR19_net_amt(BigDecimal r19_net_amt) {
+			this.r19_net_amt = r19_net_amt;
+		}
+
+		public BigDecimal getR19_net_amt_bwp() {
+			return r19_net_amt_bwp;
+		}
+
+		public void setR19_net_amt_bwp(BigDecimal r19_net_amt_bwp) {
+			this.r19_net_amt_bwp = r19_net_amt_bwp;
+		}
+
+		public BigDecimal getR19_bal_sub() {
+			return r19_bal_sub;
+		}
+
+		public void setR19_bal_sub(BigDecimal r19_bal_sub) {
+			this.r19_bal_sub = r19_bal_sub;
+		}
+
+		public BigDecimal getR19_bal_sub_bwp() {
+			return r19_bal_sub_bwp;
+		}
+
+		public void setR19_bal_sub_bwp(BigDecimal r19_bal_sub_bwp) {
+			this.r19_bal_sub_bwp = r19_bal_sub_bwp;
+		}
+
+		public BigDecimal getR19_bal_sub_diaries_bwp() {
+			return r19_bal_sub_diaries_bwp;
+		}
+
+		public void setR19_bal_sub_diaries_bwp(BigDecimal r19_bal_sub_diaries_bwp) {
+			this.r19_bal_sub_diaries_bwp = r19_bal_sub_diaries_bwp;
+		}
+
+		public String getR20_other_income() {
+			return r20_other_income;
+		}
+
+		public void setR20_other_income(String r20_other_income) {
+			this.r20_other_income = r20_other_income;
+		}
+
+		public BigDecimal getR20_fig_bal_sheet() {
+			return r20_fig_bal_sheet;
+		}
+
+		public void setR20_fig_bal_sheet(BigDecimal r20_fig_bal_sheet) {
+			this.r20_fig_bal_sheet = r20_fig_bal_sheet;
+		}
+
+		public BigDecimal getR20_fig_bal_sheet_bwp() {
+			return r20_fig_bal_sheet_bwp;
+		}
+
+		public void setR20_fig_bal_sheet_bwp(BigDecimal r20_fig_bal_sheet_bwp) {
+			this.r20_fig_bal_sheet_bwp = r20_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR20_amt_statement_adj() {
+			return r20_amt_statement_adj;
+		}
+
+		public void setR20_amt_statement_adj(BigDecimal r20_amt_statement_adj) {
+			this.r20_amt_statement_adj = r20_amt_statement_adj;
+		}
+
+		public BigDecimal getR20_amt_statement_adj_bwp() {
+			return r20_amt_statement_adj_bwp;
+		}
+
+		public void setR20_amt_statement_adj_bwp(BigDecimal r20_amt_statement_adj_bwp) {
+			this.r20_amt_statement_adj_bwp = r20_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR20_net_amt() {
+			return r20_net_amt;
+		}
+
+		public void setR20_net_amt(BigDecimal r20_net_amt) {
+			this.r20_net_amt = r20_net_amt;
+		}
+
+		public BigDecimal getR20_net_amt_bwp() {
+			return r20_net_amt_bwp;
+		}
+
+		public void setR20_net_amt_bwp(BigDecimal r20_net_amt_bwp) {
+			this.r20_net_amt_bwp = r20_net_amt_bwp;
+		}
+
+		public BigDecimal getR20_bal_sub() {
+			return r20_bal_sub;
+		}
+
+		public void setR20_bal_sub(BigDecimal r20_bal_sub) {
+			this.r20_bal_sub = r20_bal_sub;
+		}
+
+		public BigDecimal getR20_bal_sub_bwp() {
+			return r20_bal_sub_bwp;
+		}
+
+		public void setR20_bal_sub_bwp(BigDecimal r20_bal_sub_bwp) {
+			this.r20_bal_sub_bwp = r20_bal_sub_bwp;
+		}
+
+		public BigDecimal getR20_bal_sub_diaries_bwp() {
+			return r20_bal_sub_diaries_bwp;
+		}
+
+		public void setR20_bal_sub_diaries_bwp(BigDecimal r20_bal_sub_diaries_bwp) {
+			this.r20_bal_sub_diaries_bwp = r20_bal_sub_diaries_bwp;
+		}
+
+		public String getR21_other_income() {
+			return r21_other_income;
+		}
+
+		public void setR21_other_income(String r21_other_income) {
+			this.r21_other_income = r21_other_income;
+		}
+
+		public BigDecimal getR21_fig_bal_sheet() {
+			return r21_fig_bal_sheet;
+		}
+
+		public void setR21_fig_bal_sheet(BigDecimal r21_fig_bal_sheet) {
+			this.r21_fig_bal_sheet = r21_fig_bal_sheet;
+		}
+
+		public BigDecimal getR21_fig_bal_sheet_bwp() {
+			return r21_fig_bal_sheet_bwp;
+		}
+
+		public void setR21_fig_bal_sheet_bwp(BigDecimal r21_fig_bal_sheet_bwp) {
+			this.r21_fig_bal_sheet_bwp = r21_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR21_amt_statement_adj() {
+			return r21_amt_statement_adj;
+		}
+
+		public void setR21_amt_statement_adj(BigDecimal r21_amt_statement_adj) {
+			this.r21_amt_statement_adj = r21_amt_statement_adj;
+		}
+
+		public BigDecimal getR21_amt_statement_adj_bwp() {
+			return r21_amt_statement_adj_bwp;
+		}
+
+		public void setR21_amt_statement_adj_bwp(BigDecimal r21_amt_statement_adj_bwp) {
+			this.r21_amt_statement_adj_bwp = r21_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR21_net_amt() {
+			return r21_net_amt;
+		}
+
+		public void setR21_net_amt(BigDecimal r21_net_amt) {
+			this.r21_net_amt = r21_net_amt;
+		}
+
+		public BigDecimal getR21_net_amt_bwp() {
+			return r21_net_amt_bwp;
+		}
+
+		public void setR21_net_amt_bwp(BigDecimal r21_net_amt_bwp) {
+			this.r21_net_amt_bwp = r21_net_amt_bwp;
+		}
+
+		public BigDecimal getR21_bal_sub() {
+			return r21_bal_sub;
+		}
+
+		public void setR21_bal_sub(BigDecimal r21_bal_sub) {
+			this.r21_bal_sub = r21_bal_sub;
+		}
+
+		public BigDecimal getR21_bal_sub_bwp() {
+			return r21_bal_sub_bwp;
+		}
+
+		public void setR21_bal_sub_bwp(BigDecimal r21_bal_sub_bwp) {
+			this.r21_bal_sub_bwp = r21_bal_sub_bwp;
+		}
+
+		public BigDecimal getR21_bal_sub_diaries_bwp() {
+			return r21_bal_sub_diaries_bwp;
+		}
+
+		public void setR21_bal_sub_diaries_bwp(BigDecimal r21_bal_sub_diaries_bwp) {
+			this.r21_bal_sub_diaries_bwp = r21_bal_sub_diaries_bwp;
+		}
+
+		public String getR22_other_income() {
+			return r22_other_income;
+		}
+
+		public void setR22_other_income(String r22_other_income) {
+			this.r22_other_income = r22_other_income;
+		}
+
+		public BigDecimal getR22_fig_bal_sheet() {
+			return r22_fig_bal_sheet;
+		}
+
+		public void setR22_fig_bal_sheet(BigDecimal r22_fig_bal_sheet) {
+			this.r22_fig_bal_sheet = r22_fig_bal_sheet;
+		}
+
+		public BigDecimal getR22_fig_bal_sheet_bwp() {
+			return r22_fig_bal_sheet_bwp;
+		}
+
+		public void setR22_fig_bal_sheet_bwp(BigDecimal r22_fig_bal_sheet_bwp) {
+			this.r22_fig_bal_sheet_bwp = r22_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR22_amt_statement_adj() {
+			return r22_amt_statement_adj;
+		}
+
+		public void setR22_amt_statement_adj(BigDecimal r22_amt_statement_adj) {
+			this.r22_amt_statement_adj = r22_amt_statement_adj;
+		}
+
+		public BigDecimal getR22_amt_statement_adj_bwp() {
+			return r22_amt_statement_adj_bwp;
+		}
+
+		public void setR22_amt_statement_adj_bwp(BigDecimal r22_amt_statement_adj_bwp) {
+			this.r22_amt_statement_adj_bwp = r22_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR22_net_amt() {
+			return r22_net_amt;
+		}
+
+		public void setR22_net_amt(BigDecimal r22_net_amt) {
+			this.r22_net_amt = r22_net_amt;
+		}
+
+		public BigDecimal getR22_net_amt_bwp() {
+			return r22_net_amt_bwp;
+		}
+
+		public void setR22_net_amt_bwp(BigDecimal r22_net_amt_bwp) {
+			this.r22_net_amt_bwp = r22_net_amt_bwp;
+		}
+
+		public BigDecimal getR22_bal_sub() {
+			return r22_bal_sub;
+		}
+
+		public void setR22_bal_sub(BigDecimal r22_bal_sub) {
+			this.r22_bal_sub = r22_bal_sub;
+		}
+
+		public BigDecimal getR22_bal_sub_bwp() {
+			return r22_bal_sub_bwp;
+		}
+
+		public void setR22_bal_sub_bwp(BigDecimal r22_bal_sub_bwp) {
+			this.r22_bal_sub_bwp = r22_bal_sub_bwp;
+		}
+
+		public BigDecimal getR22_bal_sub_diaries_bwp() {
+			return r22_bal_sub_diaries_bwp;
+		}
+
+		public void setR22_bal_sub_diaries_bwp(BigDecimal r22_bal_sub_diaries_bwp) {
+			this.r22_bal_sub_diaries_bwp = r22_bal_sub_diaries_bwp;
+		}
+
+		public String getR23_other_income() {
+			return r23_other_income;
+		}
+
+		public void setR23_other_income(String r23_other_income) {
+			this.r23_other_income = r23_other_income;
+		}
+
+		public BigDecimal getR23_fig_bal_sheet() {
+			return r23_fig_bal_sheet;
+		}
+
+		public void setR23_fig_bal_sheet(BigDecimal r23_fig_bal_sheet) {
+			this.r23_fig_bal_sheet = r23_fig_bal_sheet;
+		}
+
+		public BigDecimal getR23_fig_bal_sheet_bwp() {
+			return r23_fig_bal_sheet_bwp;
+		}
+
+		public void setR23_fig_bal_sheet_bwp(BigDecimal r23_fig_bal_sheet_bwp) {
+			this.r23_fig_bal_sheet_bwp = r23_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR23_amt_statement_adj() {
+			return r23_amt_statement_adj;
+		}
+
+		public void setR23_amt_statement_adj(BigDecimal r23_amt_statement_adj) {
+			this.r23_amt_statement_adj = r23_amt_statement_adj;
+		}
+
+		public BigDecimal getR23_amt_statement_adj_bwp() {
+			return r23_amt_statement_adj_bwp;
+		}
+
+		public void setR23_amt_statement_adj_bwp(BigDecimal r23_amt_statement_adj_bwp) {
+			this.r23_amt_statement_adj_bwp = r23_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR23_net_amt() {
+			return r23_net_amt;
+		}
+
+		public void setR23_net_amt(BigDecimal r23_net_amt) {
+			this.r23_net_amt = r23_net_amt;
+		}
+
+		public BigDecimal getR23_net_amt_bwp() {
+			return r23_net_amt_bwp;
+		}
+
+		public void setR23_net_amt_bwp(BigDecimal r23_net_amt_bwp) {
+			this.r23_net_amt_bwp = r23_net_amt_bwp;
+		}
+
+		public BigDecimal getR23_bal_sub() {
+			return r23_bal_sub;
+		}
+
+		public void setR23_bal_sub(BigDecimal r23_bal_sub) {
+			this.r23_bal_sub = r23_bal_sub;
+		}
+
+		public BigDecimal getR23_bal_sub_bwp() {
+			return r23_bal_sub_bwp;
+		}
+
+		public void setR23_bal_sub_bwp(BigDecimal r23_bal_sub_bwp) {
+			this.r23_bal_sub_bwp = r23_bal_sub_bwp;
+		}
+
+		public BigDecimal getR23_bal_sub_diaries_bwp() {
+			return r23_bal_sub_diaries_bwp;
+		}
+
+		public void setR23_bal_sub_diaries_bwp(BigDecimal r23_bal_sub_diaries_bwp) {
+			this.r23_bal_sub_diaries_bwp = r23_bal_sub_diaries_bwp;
+		}
+
+		public String getR24_other_income() {
+			return r24_other_income;
+		}
+
+		public void setR24_other_income(String r24_other_income) {
+			this.r24_other_income = r24_other_income;
+		}
+
+		public BigDecimal getR24_fig_bal_sheet() {
+			return r24_fig_bal_sheet;
+		}
+
+		public void setR24_fig_bal_sheet(BigDecimal r24_fig_bal_sheet) {
+			this.r24_fig_bal_sheet = r24_fig_bal_sheet;
+		}
+
+		public BigDecimal getR24_fig_bal_sheet_bwp() {
+			return r24_fig_bal_sheet_bwp;
+		}
+
+		public void setR24_fig_bal_sheet_bwp(BigDecimal r24_fig_bal_sheet_bwp) {
+			this.r24_fig_bal_sheet_bwp = r24_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR24_amt_statement_adj() {
+			return r24_amt_statement_adj;
+		}
+
+		public void setR24_amt_statement_adj(BigDecimal r24_amt_statement_adj) {
+			this.r24_amt_statement_adj = r24_amt_statement_adj;
+		}
+
+		public BigDecimal getR24_amt_statement_adj_bwp() {
+			return r24_amt_statement_adj_bwp;
+		}
+
+		public void setR24_amt_statement_adj_bwp(BigDecimal r24_amt_statement_adj_bwp) {
+			this.r24_amt_statement_adj_bwp = r24_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR24_net_amt() {
+			return r24_net_amt;
+		}
+
+		public void setR24_net_amt(BigDecimal r24_net_amt) {
+			this.r24_net_amt = r24_net_amt;
+		}
+
+		public BigDecimal getR24_net_amt_bwp() {
+			return r24_net_amt_bwp;
+		}
+
+		public void setR24_net_amt_bwp(BigDecimal r24_net_amt_bwp) {
+			this.r24_net_amt_bwp = r24_net_amt_bwp;
+		}
+
+		public BigDecimal getR24_bal_sub() {
+			return r24_bal_sub;
+		}
+
+		public void setR24_bal_sub(BigDecimal r24_bal_sub) {
+			this.r24_bal_sub = r24_bal_sub;
+		}
+
+		public BigDecimal getR24_bal_sub_bwp() {
+			return r24_bal_sub_bwp;
+		}
+
+		public void setR24_bal_sub_bwp(BigDecimal r24_bal_sub_bwp) {
+			this.r24_bal_sub_bwp = r24_bal_sub_bwp;
+		}
+
+		public BigDecimal getR24_bal_sub_diaries_bwp() {
+			return r24_bal_sub_diaries_bwp;
+		}
+
+		public void setR24_bal_sub_diaries_bwp(BigDecimal r24_bal_sub_diaries_bwp) {
+			this.r24_bal_sub_diaries_bwp = r24_bal_sub_diaries_bwp;
+		}
+
+		public String getR25_other_income() {
+			return r25_other_income;
+		}
+
+		public void setR25_other_income(String r25_other_income) {
+			this.r25_other_income = r25_other_income;
+		}
+
+		public BigDecimal getR25_fig_bal_sheet() {
+			return r25_fig_bal_sheet;
+		}
+
+		public void setR25_fig_bal_sheet(BigDecimal r25_fig_bal_sheet) {
+			this.r25_fig_bal_sheet = r25_fig_bal_sheet;
+		}
+
+		public BigDecimal getR25_fig_bal_sheet_bwp() {
+			return r25_fig_bal_sheet_bwp;
+		}
+
+		public void setR25_fig_bal_sheet_bwp(BigDecimal r25_fig_bal_sheet_bwp) {
+			this.r25_fig_bal_sheet_bwp = r25_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR25_amt_statement_adj() {
+			return r25_amt_statement_adj;
+		}
+
+		public void setR25_amt_statement_adj(BigDecimal r25_amt_statement_adj) {
+			this.r25_amt_statement_adj = r25_amt_statement_adj;
+		}
+
+		public BigDecimal getR25_amt_statement_adj_bwp() {
+			return r25_amt_statement_adj_bwp;
+		}
+
+		public void setR25_amt_statement_adj_bwp(BigDecimal r25_amt_statement_adj_bwp) {
+			this.r25_amt_statement_adj_bwp = r25_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR25_net_amt() {
+			return r25_net_amt;
+		}
+
+		public void setR25_net_amt(BigDecimal r25_net_amt) {
+			this.r25_net_amt = r25_net_amt;
+		}
+
+		public BigDecimal getR25_net_amt_bwp() {
+			return r25_net_amt_bwp;
+		}
+
+		public void setR25_net_amt_bwp(BigDecimal r25_net_amt_bwp) {
+			this.r25_net_amt_bwp = r25_net_amt_bwp;
+		}
+
+		public BigDecimal getR25_bal_sub() {
+			return r25_bal_sub;
+		}
+
+		public void setR25_bal_sub(BigDecimal r25_bal_sub) {
+			this.r25_bal_sub = r25_bal_sub;
+		}
+
+		public BigDecimal getR25_bal_sub_bwp() {
+			return r25_bal_sub_bwp;
+		}
+
+		public void setR25_bal_sub_bwp(BigDecimal r25_bal_sub_bwp) {
+			this.r25_bal_sub_bwp = r25_bal_sub_bwp;
+		}
+
+		public BigDecimal getR25_bal_sub_diaries_bwp() {
+			return r25_bal_sub_diaries_bwp;
+		}
+
+		public void setR25_bal_sub_diaries_bwp(BigDecimal r25_bal_sub_diaries_bwp) {
+			this.r25_bal_sub_diaries_bwp = r25_bal_sub_diaries_bwp;
+		}
+
+		public String getR26_other_income() {
+			return r26_other_income;
+		}
+
+		public void setR26_other_income(String r26_other_income) {
+			this.r26_other_income = r26_other_income;
+		}
+
+		public BigDecimal getR26_fig_bal_sheet() {
+			return r26_fig_bal_sheet;
+		}
+
+		public void setR26_fig_bal_sheet(BigDecimal r26_fig_bal_sheet) {
+			this.r26_fig_bal_sheet = r26_fig_bal_sheet;
+		}
+
+		public BigDecimal getR26_fig_bal_sheet_bwp() {
+			return r26_fig_bal_sheet_bwp;
+		}
+
+		public void setR26_fig_bal_sheet_bwp(BigDecimal r26_fig_bal_sheet_bwp) {
+			this.r26_fig_bal_sheet_bwp = r26_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR26_amt_statement_adj() {
+			return r26_amt_statement_adj;
+		}
+
+		public void setR26_amt_statement_adj(BigDecimal r26_amt_statement_adj) {
+			this.r26_amt_statement_adj = r26_amt_statement_adj;
+		}
+
+		public BigDecimal getR26_amt_statement_adj_bwp() {
+			return r26_amt_statement_adj_bwp;
+		}
+
+		public void setR26_amt_statement_adj_bwp(BigDecimal r26_amt_statement_adj_bwp) {
+			this.r26_amt_statement_adj_bwp = r26_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR26_net_amt() {
+			return r26_net_amt;
+		}
+
+		public void setR26_net_amt(BigDecimal r26_net_amt) {
+			this.r26_net_amt = r26_net_amt;
+		}
+
+		public BigDecimal getR26_net_amt_bwp() {
+			return r26_net_amt_bwp;
+		}
+
+		public void setR26_net_amt_bwp(BigDecimal r26_net_amt_bwp) {
+			this.r26_net_amt_bwp = r26_net_amt_bwp;
+		}
+
+		public BigDecimal getR26_bal_sub() {
+			return r26_bal_sub;
+		}
+
+		public void setR26_bal_sub(BigDecimal r26_bal_sub) {
+			this.r26_bal_sub = r26_bal_sub;
+		}
+
+		public BigDecimal getR26_bal_sub_bwp() {
+			return r26_bal_sub_bwp;
+		}
+
+		public void setR26_bal_sub_bwp(BigDecimal r26_bal_sub_bwp) {
+			this.r26_bal_sub_bwp = r26_bal_sub_bwp;
+		}
+
+		public BigDecimal getR26_bal_sub_diaries_bwp() {
+			return r26_bal_sub_diaries_bwp;
+		}
+
+		public void setR26_bal_sub_diaries_bwp(BigDecimal r26_bal_sub_diaries_bwp) {
+			this.r26_bal_sub_diaries_bwp = r26_bal_sub_diaries_bwp;
+		}
+
+		public String getR27_other_income() {
+			return r27_other_income;
+		}
+
+		public void setR27_other_income(String r27_other_income) {
+			this.r27_other_income = r27_other_income;
+		}
+
+		public BigDecimal getR27_fig_bal_sheet() {
+			return r27_fig_bal_sheet;
+		}
+
+		public void setR27_fig_bal_sheet(BigDecimal r27_fig_bal_sheet) {
+			this.r27_fig_bal_sheet = r27_fig_bal_sheet;
+		}
+
+		public BigDecimal getR27_fig_bal_sheet_bwp() {
+			return r27_fig_bal_sheet_bwp;
+		}
+
+		public void setR27_fig_bal_sheet_bwp(BigDecimal r27_fig_bal_sheet_bwp) {
+			this.r27_fig_bal_sheet_bwp = r27_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR27_amt_statement_adj() {
+			return r27_amt_statement_adj;
+		}
+
+		public void setR27_amt_statement_adj(BigDecimal r27_amt_statement_adj) {
+			this.r27_amt_statement_adj = r27_amt_statement_adj;
+		}
+
+		public BigDecimal getR27_amt_statement_adj_bwp() {
+			return r27_amt_statement_adj_bwp;
+		}
+
+		public void setR27_amt_statement_adj_bwp(BigDecimal r27_amt_statement_adj_bwp) {
+			this.r27_amt_statement_adj_bwp = r27_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR27_net_amt() {
+			return r27_net_amt;
+		}
+
+		public void setR27_net_amt(BigDecimal r27_net_amt) {
+			this.r27_net_amt = r27_net_amt;
+		}
+
+		public BigDecimal getR27_net_amt_bwp() {
+			return r27_net_amt_bwp;
+		}
+
+		public void setR27_net_amt_bwp(BigDecimal r27_net_amt_bwp) {
+			this.r27_net_amt_bwp = r27_net_amt_bwp;
+		}
+
+		public BigDecimal getR27_bal_sub() {
+			return r27_bal_sub;
+		}
+
+		public void setR27_bal_sub(BigDecimal r27_bal_sub) {
+			this.r27_bal_sub = r27_bal_sub;
+		}
+
+		public BigDecimal getR27_bal_sub_bwp() {
+			return r27_bal_sub_bwp;
+		}
+
+		public void setR27_bal_sub_bwp(BigDecimal r27_bal_sub_bwp) {
+			this.r27_bal_sub_bwp = r27_bal_sub_bwp;
+		}
+
+		public BigDecimal getR27_bal_sub_diaries_bwp() {
+			return r27_bal_sub_diaries_bwp;
+		}
+
+		public void setR27_bal_sub_diaries_bwp(BigDecimal r27_bal_sub_diaries_bwp) {
+			this.r27_bal_sub_diaries_bwp = r27_bal_sub_diaries_bwp;
+		}
+
+		public String getR28_other_income() {
+			return r28_other_income;
+		}
+
+		public void setR28_other_income(String r28_other_income) {
+			this.r28_other_income = r28_other_income;
+		}
+
+		public BigDecimal getR28_fig_bal_sheet() {
+			return r28_fig_bal_sheet;
+		}
+
+		public void setR28_fig_bal_sheet(BigDecimal r28_fig_bal_sheet) {
+			this.r28_fig_bal_sheet = r28_fig_bal_sheet;
+		}
+
+		public BigDecimal getR28_fig_bal_sheet_bwp() {
+			return r28_fig_bal_sheet_bwp;
+		}
+
+		public void setR28_fig_bal_sheet_bwp(BigDecimal r28_fig_bal_sheet_bwp) {
+			this.r28_fig_bal_sheet_bwp = r28_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR28_amt_statement_adj() {
+			return r28_amt_statement_adj;
+		}
+
+		public void setR28_amt_statement_adj(BigDecimal r28_amt_statement_adj) {
+			this.r28_amt_statement_adj = r28_amt_statement_adj;
+		}
+
+		public BigDecimal getR28_amt_statement_adj_bwp() {
+			return r28_amt_statement_adj_bwp;
+		}
+
+		public void setR28_amt_statement_adj_bwp(BigDecimal r28_amt_statement_adj_bwp) {
+			this.r28_amt_statement_adj_bwp = r28_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR28_net_amt() {
+			return r28_net_amt;
+		}
+
+		public void setR28_net_amt(BigDecimal r28_net_amt) {
+			this.r28_net_amt = r28_net_amt;
+		}
+
+		public BigDecimal getR28_net_amt_bwp() {
+			return r28_net_amt_bwp;
+		}
+
+		public void setR28_net_amt_bwp(BigDecimal r28_net_amt_bwp) {
+			this.r28_net_amt_bwp = r28_net_amt_bwp;
+		}
+
+		public BigDecimal getR28_bal_sub() {
+			return r28_bal_sub;
+		}
+
+		public void setR28_bal_sub(BigDecimal r28_bal_sub) {
+			this.r28_bal_sub = r28_bal_sub;
+		}
+
+		public BigDecimal getR28_bal_sub_bwp() {
+			return r28_bal_sub_bwp;
+		}
+
+		public void setR28_bal_sub_bwp(BigDecimal r28_bal_sub_bwp) {
+			this.r28_bal_sub_bwp = r28_bal_sub_bwp;
+		}
+
+		public BigDecimal getR28_bal_sub_diaries_bwp() {
+			return r28_bal_sub_diaries_bwp;
+		}
+
+		public void setR28_bal_sub_diaries_bwp(BigDecimal r28_bal_sub_diaries_bwp) {
+			this.r28_bal_sub_diaries_bwp = r28_bal_sub_diaries_bwp;
+		}
+
+		public String getR29_other_income() {
+			return r29_other_income;
+		}
+
+		public void setR29_other_income(String r29_other_income) {
+			this.r29_other_income = r29_other_income;
+		}
+
+		public BigDecimal getR29_fig_bal_sheet() {
+			return r29_fig_bal_sheet;
+		}
+
+		public void setR29_fig_bal_sheet(BigDecimal r29_fig_bal_sheet) {
+			this.r29_fig_bal_sheet = r29_fig_bal_sheet;
+		}
+
+		public BigDecimal getR29_fig_bal_sheet_bwp() {
+			return r29_fig_bal_sheet_bwp;
+		}
+
+		public void setR29_fig_bal_sheet_bwp(BigDecimal r29_fig_bal_sheet_bwp) {
+			this.r29_fig_bal_sheet_bwp = r29_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR29_amt_statement_adj() {
+			return r29_amt_statement_adj;
+		}
+
+		public void setR29_amt_statement_adj(BigDecimal r29_amt_statement_adj) {
+			this.r29_amt_statement_adj = r29_amt_statement_adj;
+		}
+
+		public BigDecimal getR29_amt_statement_adj_bwp() {
+			return r29_amt_statement_adj_bwp;
+		}
+
+		public void setR29_amt_statement_adj_bwp(BigDecimal r29_amt_statement_adj_bwp) {
+			this.r29_amt_statement_adj_bwp = r29_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR29_net_amt() {
+			return r29_net_amt;
+		}
+
+		public void setR29_net_amt(BigDecimal r29_net_amt) {
+			this.r29_net_amt = r29_net_amt;
+		}
+
+		public BigDecimal getR29_net_amt_bwp() {
+			return r29_net_amt_bwp;
+		}
+
+		public void setR29_net_amt_bwp(BigDecimal r29_net_amt_bwp) {
+			this.r29_net_amt_bwp = r29_net_amt_bwp;
+		}
+
+		public BigDecimal getR29_bal_sub() {
+			return r29_bal_sub;
+		}
+
+		public void setR29_bal_sub(BigDecimal r29_bal_sub) {
+			this.r29_bal_sub = r29_bal_sub;
+		}
+
+		public BigDecimal getR29_bal_sub_bwp() {
+			return r29_bal_sub_bwp;
+		}
+
+		public void setR29_bal_sub_bwp(BigDecimal r29_bal_sub_bwp) {
+			this.r29_bal_sub_bwp = r29_bal_sub_bwp;
+		}
+
+		public BigDecimal getR29_bal_sub_diaries_bwp() {
+			return r29_bal_sub_diaries_bwp;
+		}
+
+		public void setR29_bal_sub_diaries_bwp(BigDecimal r29_bal_sub_diaries_bwp) {
+			this.r29_bal_sub_diaries_bwp = r29_bal_sub_diaries_bwp;
+		}
+
+		public String getR30_other_income() {
+			return r30_other_income;
+		}
+
+		public void setR30_other_income(String r30_other_income) {
+			this.r30_other_income = r30_other_income;
+		}
+
+		public BigDecimal getR30_fig_bal_sheet() {
+			return r30_fig_bal_sheet;
+		}
+
+		public void setR30_fig_bal_sheet(BigDecimal r30_fig_bal_sheet) {
+			this.r30_fig_bal_sheet = r30_fig_bal_sheet;
+		}
+
+		public BigDecimal getR30_fig_bal_sheet_bwp() {
+			return r30_fig_bal_sheet_bwp;
+		}
+
+		public void setR30_fig_bal_sheet_bwp(BigDecimal r30_fig_bal_sheet_bwp) {
+			this.r30_fig_bal_sheet_bwp = r30_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR30_amt_statement_adj() {
+			return r30_amt_statement_adj;
+		}
+
+		public void setR30_amt_statement_adj(BigDecimal r30_amt_statement_adj) {
+			this.r30_amt_statement_adj = r30_amt_statement_adj;
+		}
+
+		public BigDecimal getR30_amt_statement_adj_bwp() {
+			return r30_amt_statement_adj_bwp;
+		}
+
+		public void setR30_amt_statement_adj_bwp(BigDecimal r30_amt_statement_adj_bwp) {
+			this.r30_amt_statement_adj_bwp = r30_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR30_net_amt() {
+			return r30_net_amt;
+		}
+
+		public void setR30_net_amt(BigDecimal r30_net_amt) {
+			this.r30_net_amt = r30_net_amt;
+		}
+
+		public BigDecimal getR30_net_amt_bwp() {
+			return r30_net_amt_bwp;
+		}
+
+		public void setR30_net_amt_bwp(BigDecimal r30_net_amt_bwp) {
+			this.r30_net_amt_bwp = r30_net_amt_bwp;
+		}
+
+		public BigDecimal getR30_bal_sub() {
+			return r30_bal_sub;
+		}
+
+		public void setR30_bal_sub(BigDecimal r30_bal_sub) {
+			this.r30_bal_sub = r30_bal_sub;
+		}
+
+		public BigDecimal getR30_bal_sub_bwp() {
+			return r30_bal_sub_bwp;
+		}
+
+		public void setR30_bal_sub_bwp(BigDecimal r30_bal_sub_bwp) {
+			this.r30_bal_sub_bwp = r30_bal_sub_bwp;
+		}
+
+		public BigDecimal getR30_bal_sub_diaries_bwp() {
+			return r30_bal_sub_diaries_bwp;
+		}
+
+		public void setR30_bal_sub_diaries_bwp(BigDecimal r30_bal_sub_diaries_bwp) {
+			this.r30_bal_sub_diaries_bwp = r30_bal_sub_diaries_bwp;
+		}
+
+		public String getR31_other_income() {
+			return r31_other_income;
+		}
+
+		public void setR31_other_income(String r31_other_income) {
+			this.r31_other_income = r31_other_income;
+		}
+
+		public BigDecimal getR31_fig_bal_sheet() {
+			return r31_fig_bal_sheet;
+		}
+
+		public void setR31_fig_bal_sheet(BigDecimal r31_fig_bal_sheet) {
+			this.r31_fig_bal_sheet = r31_fig_bal_sheet;
+		}
+
+		public BigDecimal getR31_fig_bal_sheet_bwp() {
+			return r31_fig_bal_sheet_bwp;
+		}
+
+		public void setR31_fig_bal_sheet_bwp(BigDecimal r31_fig_bal_sheet_bwp) {
+			this.r31_fig_bal_sheet_bwp = r31_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR31_amt_statement_adj() {
+			return r31_amt_statement_adj;
+		}
+
+		public void setR31_amt_statement_adj(BigDecimal r31_amt_statement_adj) {
+			this.r31_amt_statement_adj = r31_amt_statement_adj;
+		}
+
+		public BigDecimal getR31_amt_statement_adj_bwp() {
+			return r31_amt_statement_adj_bwp;
+		}
+
+		public void setR31_amt_statement_adj_bwp(BigDecimal r31_amt_statement_adj_bwp) {
+			this.r31_amt_statement_adj_bwp = r31_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR31_net_amt() {
+			return r31_net_amt;
+		}
+
+		public void setR31_net_amt(BigDecimal r31_net_amt) {
+			this.r31_net_amt = r31_net_amt;
+		}
+
+		public BigDecimal getR31_net_amt_bwp() {
+			return r31_net_amt_bwp;
+		}
+
+		public void setR31_net_amt_bwp(BigDecimal r31_net_amt_bwp) {
+			this.r31_net_amt_bwp = r31_net_amt_bwp;
+		}
+
+		public BigDecimal getR31_bal_sub() {
+			return r31_bal_sub;
+		}
+
+		public void setR31_bal_sub(BigDecimal r31_bal_sub) {
+			this.r31_bal_sub = r31_bal_sub;
+		}
+
+		public BigDecimal getR31_bal_sub_bwp() {
+			return r31_bal_sub_bwp;
+		}
+
+		public void setR31_bal_sub_bwp(BigDecimal r31_bal_sub_bwp) {
+			this.r31_bal_sub_bwp = r31_bal_sub_bwp;
+		}
+
+		public BigDecimal getR31_bal_sub_diaries_bwp() {
+			return r31_bal_sub_diaries_bwp;
+		}
+
+		public void setR31_bal_sub_diaries_bwp(BigDecimal r31_bal_sub_diaries_bwp) {
+			this.r31_bal_sub_diaries_bwp = r31_bal_sub_diaries_bwp;
+		}
+
+		public String getR40_intrest_expended() {
+			return r40_intrest_expended;
+		}
+
+		public void setR40_intrest_expended(String r40_intrest_expended) {
+			this.r40_intrest_expended = r40_intrest_expended;
+		}
+
+		public BigDecimal getR40_fig_bal_sheet() {
+			return r40_fig_bal_sheet;
+		}
+
+		public void setR40_fig_bal_sheet(BigDecimal r40_fig_bal_sheet) {
+			this.r40_fig_bal_sheet = r40_fig_bal_sheet;
+		}
+
+		public BigDecimal getR40_fig_bal_sheet_bwp() {
+			return r40_fig_bal_sheet_bwp;
+		}
+
+		public void setR40_fig_bal_sheet_bwp(BigDecimal r40_fig_bal_sheet_bwp) {
+			this.r40_fig_bal_sheet_bwp = r40_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR40_amt_statement_adj() {
+			return r40_amt_statement_adj;
+		}
+
+		public void setR40_amt_statement_adj(BigDecimal r40_amt_statement_adj) {
+			this.r40_amt_statement_adj = r40_amt_statement_adj;
+		}
+
+		public BigDecimal getR40_amt_statement_adj_bwp() {
+			return r40_amt_statement_adj_bwp;
+		}
+
+		public void setR40_amt_statement_adj_bwp(BigDecimal r40_amt_statement_adj_bwp) {
+			this.r40_amt_statement_adj_bwp = r40_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR40_net_amt() {
+			return r40_net_amt;
+		}
+
+		public void setR40_net_amt(BigDecimal r40_net_amt) {
+			this.r40_net_amt = r40_net_amt;
+		}
+
+		public BigDecimal getR40_net_amt_bwp() {
+			return r40_net_amt_bwp;
+		}
+
+		public void setR40_net_amt_bwp(BigDecimal r40_net_amt_bwp) {
+			this.r40_net_amt_bwp = r40_net_amt_bwp;
+		}
+
+		public BigDecimal getR40_bal_sub() {
+			return r40_bal_sub;
+		}
+
+		public void setR40_bal_sub(BigDecimal r40_bal_sub) {
+			this.r40_bal_sub = r40_bal_sub;
+		}
+
+		public BigDecimal getR40_bal_sub_bwp() {
+			return r40_bal_sub_bwp;
+		}
+
+		public void setR40_bal_sub_bwp(BigDecimal r40_bal_sub_bwp) {
+			this.r40_bal_sub_bwp = r40_bal_sub_bwp;
+		}
+
+		public BigDecimal getR40_bal_sub_diaries_bwp() {
+			return r40_bal_sub_diaries_bwp;
+		}
+
+		public void setR40_bal_sub_diaries_bwp(BigDecimal r40_bal_sub_diaries_bwp) {
+			this.r40_bal_sub_diaries_bwp = r40_bal_sub_diaries_bwp;
+		}
+
+		public String getR41_intrest_expended() {
+			return r41_intrest_expended;
+		}
+
+		public void setR41_intrest_expended(String r41_intrest_expended) {
+			this.r41_intrest_expended = r41_intrest_expended;
+		}
+
+		public BigDecimal getR41_fig_bal_sheet() {
+			return r41_fig_bal_sheet;
+		}
+
+		public void setR41_fig_bal_sheet(BigDecimal r41_fig_bal_sheet) {
+			this.r41_fig_bal_sheet = r41_fig_bal_sheet;
+		}
+
+		public BigDecimal getR41_fig_bal_sheet_bwp() {
+			return r41_fig_bal_sheet_bwp;
+		}
+
+		public void setR41_fig_bal_sheet_bwp(BigDecimal r41_fig_bal_sheet_bwp) {
+			this.r41_fig_bal_sheet_bwp = r41_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR41_amt_statement_adj() {
+			return r41_amt_statement_adj;
+		}
+
+		public void setR41_amt_statement_adj(BigDecimal r41_amt_statement_adj) {
+			this.r41_amt_statement_adj = r41_amt_statement_adj;
+		}
+
+		public BigDecimal getR41_amt_statement_adj_bwp() {
+			return r41_amt_statement_adj_bwp;
+		}
+
+		public void setR41_amt_statement_adj_bwp(BigDecimal r41_amt_statement_adj_bwp) {
+			this.r41_amt_statement_adj_bwp = r41_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR41_net_amt() {
+			return r41_net_amt;
+		}
+
+		public void setR41_net_amt(BigDecimal r41_net_amt) {
+			this.r41_net_amt = r41_net_amt;
+		}
+
+		public BigDecimal getR41_net_amt_bwp() {
+			return r41_net_amt_bwp;
+		}
+
+		public void setR41_net_amt_bwp(BigDecimal r41_net_amt_bwp) {
+			this.r41_net_amt_bwp = r41_net_amt_bwp;
+		}
+
+		public BigDecimal getR41_bal_sub() {
+			return r41_bal_sub;
+		}
+
+		public void setR41_bal_sub(BigDecimal r41_bal_sub) {
+			this.r41_bal_sub = r41_bal_sub;
+		}
+
+		public BigDecimal getR41_bal_sub_bwp() {
+			return r41_bal_sub_bwp;
+		}
+
+		public void setR41_bal_sub_bwp(BigDecimal r41_bal_sub_bwp) {
+			this.r41_bal_sub_bwp = r41_bal_sub_bwp;
+		}
+
+		public BigDecimal getR41_bal_sub_diaries_bwp() {
+			return r41_bal_sub_diaries_bwp;
+		}
+
+		public void setR41_bal_sub_diaries_bwp(BigDecimal r41_bal_sub_diaries_bwp) {
+			this.r41_bal_sub_diaries_bwp = r41_bal_sub_diaries_bwp;
+		}
+
+		public String getR42_intrest_expended() {
+			return r42_intrest_expended;
+		}
+
+		public void setR42_intrest_expended(String r42_intrest_expended) {
+			this.r42_intrest_expended = r42_intrest_expended;
+		}
+
+		public BigDecimal getR42_fig_bal_sheet() {
+			return r42_fig_bal_sheet;
+		}
+
+		public void setR42_fig_bal_sheet(BigDecimal r42_fig_bal_sheet) {
+			this.r42_fig_bal_sheet = r42_fig_bal_sheet;
+		}
+
+		public BigDecimal getR42_fig_bal_sheet_bwp() {
+			return r42_fig_bal_sheet_bwp;
+		}
+
+		public void setR42_fig_bal_sheet_bwp(BigDecimal r42_fig_bal_sheet_bwp) {
+			this.r42_fig_bal_sheet_bwp = r42_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR42_amt_statement_adj() {
+			return r42_amt_statement_adj;
+		}
+
+		public void setR42_amt_statement_adj(BigDecimal r42_amt_statement_adj) {
+			this.r42_amt_statement_adj = r42_amt_statement_adj;
+		}
+
+		public BigDecimal getR42_amt_statement_adj_bwp() {
+			return r42_amt_statement_adj_bwp;
+		}
+
+		public void setR42_amt_statement_adj_bwp(BigDecimal r42_amt_statement_adj_bwp) {
+			this.r42_amt_statement_adj_bwp = r42_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR42_net_amt() {
+			return r42_net_amt;
+		}
+
+		public void setR42_net_amt(BigDecimal r42_net_amt) {
+			this.r42_net_amt = r42_net_amt;
+		}
+
+		public BigDecimal getR42_net_amt_bwp() {
+			return r42_net_amt_bwp;
+		}
+
+		public void setR42_net_amt_bwp(BigDecimal r42_net_amt_bwp) {
+			this.r42_net_amt_bwp = r42_net_amt_bwp;
+		}
+
+		public BigDecimal getR42_bal_sub() {
+			return r42_bal_sub;
+		}
+
+		public void setR42_bal_sub(BigDecimal r42_bal_sub) {
+			this.r42_bal_sub = r42_bal_sub;
+		}
+
+		public BigDecimal getR42_bal_sub_bwp() {
+			return r42_bal_sub_bwp;
+		}
+
+		public void setR42_bal_sub_bwp(BigDecimal r42_bal_sub_bwp) {
+			this.r42_bal_sub_bwp = r42_bal_sub_bwp;
+		}
+
+		public BigDecimal getR42_bal_sub_diaries_bwp() {
+			return r42_bal_sub_diaries_bwp;
+		}
+
+		public void setR42_bal_sub_diaries_bwp(BigDecimal r42_bal_sub_diaries_bwp) {
+			this.r42_bal_sub_diaries_bwp = r42_bal_sub_diaries_bwp;
+		}
+
+		public String getR43_intrest_expended() {
+			return r43_intrest_expended;
+		}
+
+		public void setR43_intrest_expended(String r43_intrest_expended) {
+			this.r43_intrest_expended = r43_intrest_expended;
+		}
+
+		public BigDecimal getR43_fig_bal_sheet() {
+			return r43_fig_bal_sheet;
+		}
+
+		public void setR43_fig_bal_sheet(BigDecimal r43_fig_bal_sheet) {
+			this.r43_fig_bal_sheet = r43_fig_bal_sheet;
+		}
+
+		public BigDecimal getR43_fig_bal_sheet_bwp() {
+			return r43_fig_bal_sheet_bwp;
+		}
+
+		public void setR43_fig_bal_sheet_bwp(BigDecimal r43_fig_bal_sheet_bwp) {
+			this.r43_fig_bal_sheet_bwp = r43_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR43_amt_statement_adj() {
+			return r43_amt_statement_adj;
+		}
+
+		public void setR43_amt_statement_adj(BigDecimal r43_amt_statement_adj) {
+			this.r43_amt_statement_adj = r43_amt_statement_adj;
+		}
+
+		public BigDecimal getR43_amt_statement_adj_bwp() {
+			return r43_amt_statement_adj_bwp;
+		}
+
+		public void setR43_amt_statement_adj_bwp(BigDecimal r43_amt_statement_adj_bwp) {
+			this.r43_amt_statement_adj_bwp = r43_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR43_net_amt() {
+			return r43_net_amt;
+		}
+
+		public void setR43_net_amt(BigDecimal r43_net_amt) {
+			this.r43_net_amt = r43_net_amt;
+		}
+
+		public BigDecimal getR43_net_amt_bwp() {
+			return r43_net_amt_bwp;
+		}
+
+		public void setR43_net_amt_bwp(BigDecimal r43_net_amt_bwp) {
+			this.r43_net_amt_bwp = r43_net_amt_bwp;
+		}
+
+		public BigDecimal getR43_bal_sub() {
+			return r43_bal_sub;
+		}
+
+		public void setR43_bal_sub(BigDecimal r43_bal_sub) {
+			this.r43_bal_sub = r43_bal_sub;
+		}
+
+		public BigDecimal getR43_bal_sub_bwp() {
+			return r43_bal_sub_bwp;
+		}
+
+		public void setR43_bal_sub_bwp(BigDecimal r43_bal_sub_bwp) {
+			this.r43_bal_sub_bwp = r43_bal_sub_bwp;
+		}
+
+		public BigDecimal getR43_bal_sub_diaries_bwp() {
+			return r43_bal_sub_diaries_bwp;
+		}
+
+		public void setR43_bal_sub_diaries_bwp(BigDecimal r43_bal_sub_diaries_bwp) {
+			this.r43_bal_sub_diaries_bwp = r43_bal_sub_diaries_bwp;
+		}
+
+		public String getR48_operating_expenses() {
+			return r48_operating_expenses;
+		}
+
+		public void setR48_operating_expenses(String r48_operating_expenses) {
+			this.r48_operating_expenses = r48_operating_expenses;
+		}
+
+		public BigDecimal getR48_fig_bal_sheet() {
+			return r48_fig_bal_sheet;
+		}
+
+		public void setR48_fig_bal_sheet(BigDecimal r48_fig_bal_sheet) {
+			this.r48_fig_bal_sheet = r48_fig_bal_sheet;
+		}
+
+		public BigDecimal getR48_fig_bal_sheet_bwp() {
+			return r48_fig_bal_sheet_bwp;
+		}
+
+		public void setR48_fig_bal_sheet_bwp(BigDecimal r48_fig_bal_sheet_bwp) {
+			this.r48_fig_bal_sheet_bwp = r48_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR48_amt_statement_adj() {
+			return r48_amt_statement_adj;
+		}
+
+		public void setR48_amt_statement_adj(BigDecimal r48_amt_statement_adj) {
+			this.r48_amt_statement_adj = r48_amt_statement_adj;
+		}
+
+		public BigDecimal getR48_amt_statement_adj_bwp() {
+			return r48_amt_statement_adj_bwp;
+		}
+
+		public void setR48_amt_statement_adj_bwp(BigDecimal r48_amt_statement_adj_bwp) {
+			this.r48_amt_statement_adj_bwp = r48_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR48_net_amt() {
+			return r48_net_amt;
+		}
+
+		public void setR48_net_amt(BigDecimal r48_net_amt) {
+			this.r48_net_amt = r48_net_amt;
+		}
+
+		public BigDecimal getR48_net_amt_bwp() {
+			return r48_net_amt_bwp;
+		}
+
+		public void setR48_net_amt_bwp(BigDecimal r48_net_amt_bwp) {
+			this.r48_net_amt_bwp = r48_net_amt_bwp;
+		}
+
+		public BigDecimal getR48_bal_sub() {
+			return r48_bal_sub;
+		}
+
+		public void setR48_bal_sub(BigDecimal r48_bal_sub) {
+			this.r48_bal_sub = r48_bal_sub;
+		}
+
+		public BigDecimal getR48_bal_sub_bwp() {
+			return r48_bal_sub_bwp;
+		}
+
+		public void setR48_bal_sub_bwp(BigDecimal r48_bal_sub_bwp) {
+			this.r48_bal_sub_bwp = r48_bal_sub_bwp;
+		}
+
+		public BigDecimal getR48_bal_sub_diaries_bwp() {
+			return r48_bal_sub_diaries_bwp;
+		}
+
+		public void setR48_bal_sub_diaries_bwp(BigDecimal r48_bal_sub_diaries_bwp) {
+			this.r48_bal_sub_diaries_bwp = r48_bal_sub_diaries_bwp;
+		}
+
+		public String getR49_operating_expenses() {
+			return r49_operating_expenses;
+		}
+
+		public void setR49_operating_expenses(String r49_operating_expenses) {
+			this.r49_operating_expenses = r49_operating_expenses;
+		}
+
+		public BigDecimal getR49_fig_bal_sheet() {
+			return r49_fig_bal_sheet;
+		}
+
+		public void setR49_fig_bal_sheet(BigDecimal r49_fig_bal_sheet) {
+			this.r49_fig_bal_sheet = r49_fig_bal_sheet;
+		}
+
+		public BigDecimal getR49_fig_bal_sheet_bwp() {
+			return r49_fig_bal_sheet_bwp;
+		}
+
+		public void setR49_fig_bal_sheet_bwp(BigDecimal r49_fig_bal_sheet_bwp) {
+			this.r49_fig_bal_sheet_bwp = r49_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR49_amt_statement_adj() {
+			return r49_amt_statement_adj;
+		}
+
+		public void setR49_amt_statement_adj(BigDecimal r49_amt_statement_adj) {
+			this.r49_amt_statement_adj = r49_amt_statement_adj;
+		}
+
+		public BigDecimal getR49_amt_statement_adj_bwp() {
+			return r49_amt_statement_adj_bwp;
+		}
+
+		public void setR49_amt_statement_adj_bwp(BigDecimal r49_amt_statement_adj_bwp) {
+			this.r49_amt_statement_adj_bwp = r49_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR49_net_amt() {
+			return r49_net_amt;
+		}
+
+		public void setR49_net_amt(BigDecimal r49_net_amt) {
+			this.r49_net_amt = r49_net_amt;
+		}
+
+		public BigDecimal getR49_net_amt_bwp() {
+			return r49_net_amt_bwp;
+		}
+
+		public void setR49_net_amt_bwp(BigDecimal r49_net_amt_bwp) {
+			this.r49_net_amt_bwp = r49_net_amt_bwp;
+		}
+
+		public BigDecimal getR49_bal_sub() {
+			return r49_bal_sub;
+		}
+
+		public void setR49_bal_sub(BigDecimal r49_bal_sub) {
+			this.r49_bal_sub = r49_bal_sub;
+		}
+
+		public BigDecimal getR49_bal_sub_bwp() {
+			return r49_bal_sub_bwp;
+		}
+
+		public void setR49_bal_sub_bwp(BigDecimal r49_bal_sub_bwp) {
+			this.r49_bal_sub_bwp = r49_bal_sub_bwp;
+		}
+
+		public BigDecimal getR49_bal_sub_diaries_bwp() {
+			return r49_bal_sub_diaries_bwp;
+		}
+
+		public void setR49_bal_sub_diaries_bwp(BigDecimal r49_bal_sub_diaries_bwp) {
+			this.r49_bal_sub_diaries_bwp = r49_bal_sub_diaries_bwp;
+		}
+
+		public String getR50_operating_expenses() {
+			return r50_operating_expenses;
+		}
+
+		public void setR50_operating_expenses(String r50_operating_expenses) {
+			this.r50_operating_expenses = r50_operating_expenses;
+		}
+
+		public BigDecimal getR50_fig_bal_sheet() {
+			return r50_fig_bal_sheet;
+		}
+
+		public void setR50_fig_bal_sheet(BigDecimal r50_fig_bal_sheet) {
+			this.r50_fig_bal_sheet = r50_fig_bal_sheet;
+		}
+
+		public BigDecimal getR50_fig_bal_sheet_bwp() {
+			return r50_fig_bal_sheet_bwp;
+		}
+
+		public void setR50_fig_bal_sheet_bwp(BigDecimal r50_fig_bal_sheet_bwp) {
+			this.r50_fig_bal_sheet_bwp = r50_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR50_amt_statement_adj() {
+			return r50_amt_statement_adj;
+		}
+
+		public void setR50_amt_statement_adj(BigDecimal r50_amt_statement_adj) {
+			this.r50_amt_statement_adj = r50_amt_statement_adj;
+		}
+
+		public BigDecimal getR50_amt_statement_adj_bwp() {
+			return r50_amt_statement_adj_bwp;
+		}
+
+		public void setR50_amt_statement_adj_bwp(BigDecimal r50_amt_statement_adj_bwp) {
+			this.r50_amt_statement_adj_bwp = r50_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR50_net_amt() {
+			return r50_net_amt;
+		}
+
+		public void setR50_net_amt(BigDecimal r50_net_amt) {
+			this.r50_net_amt = r50_net_amt;
+		}
+
+		public BigDecimal getR50_net_amt_bwp() {
+			return r50_net_amt_bwp;
+		}
+
+		public void setR50_net_amt_bwp(BigDecimal r50_net_amt_bwp) {
+			this.r50_net_amt_bwp = r50_net_amt_bwp;
+		}
+
+		public BigDecimal getR50_bal_sub() {
+			return r50_bal_sub;
+		}
+
+		public void setR50_bal_sub(BigDecimal r50_bal_sub) {
+			this.r50_bal_sub = r50_bal_sub;
+		}
+
+		public BigDecimal getR50_bal_sub_bwp() {
+			return r50_bal_sub_bwp;
+		}
+
+		public void setR50_bal_sub_bwp(BigDecimal r50_bal_sub_bwp) {
+			this.r50_bal_sub_bwp = r50_bal_sub_bwp;
+		}
+
+		public BigDecimal getR50_bal_sub_diaries_bwp() {
+			return r50_bal_sub_diaries_bwp;
+		}
+
+		public void setR50_bal_sub_diaries_bwp(BigDecimal r50_bal_sub_diaries_bwp) {
+			this.r50_bal_sub_diaries_bwp = r50_bal_sub_diaries_bwp;
+		}
+
+		public String getR51_operating_expenses() {
+			return r51_operating_expenses;
+		}
+
+		public void setR51_operating_expenses(String r51_operating_expenses) {
+			this.r51_operating_expenses = r51_operating_expenses;
+		}
+
+		public BigDecimal getR51_fig_bal_sheet() {
+			return r51_fig_bal_sheet;
+		}
+
+		public void setR51_fig_bal_sheet(BigDecimal r51_fig_bal_sheet) {
+			this.r51_fig_bal_sheet = r51_fig_bal_sheet;
+		}
+
+		public BigDecimal getR51_fig_bal_sheet_bwp() {
+			return r51_fig_bal_sheet_bwp;
+		}
+
+		public void setR51_fig_bal_sheet_bwp(BigDecimal r51_fig_bal_sheet_bwp) {
+			this.r51_fig_bal_sheet_bwp = r51_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR51_amt_statement_adj() {
+			return r51_amt_statement_adj;
+		}
+
+		public void setR51_amt_statement_adj(BigDecimal r51_amt_statement_adj) {
+			this.r51_amt_statement_adj = r51_amt_statement_adj;
+		}
+
+		public BigDecimal getR51_amt_statement_adj_bwp() {
+			return r51_amt_statement_adj_bwp;
+		}
+
+		public void setR51_amt_statement_adj_bwp(BigDecimal r51_amt_statement_adj_bwp) {
+			this.r51_amt_statement_adj_bwp = r51_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR51_net_amt() {
+			return r51_net_amt;
+		}
+
+		public void setR51_net_amt(BigDecimal r51_net_amt) {
+			this.r51_net_amt = r51_net_amt;
+		}
+
+		public BigDecimal getR51_net_amt_bwp() {
+			return r51_net_amt_bwp;
+		}
+
+		public void setR51_net_amt_bwp(BigDecimal r51_net_amt_bwp) {
+			this.r51_net_amt_bwp = r51_net_amt_bwp;
+		}
+
+		public BigDecimal getR51_bal_sub() {
+			return r51_bal_sub;
+		}
+
+		public void setR51_bal_sub(BigDecimal r51_bal_sub) {
+			this.r51_bal_sub = r51_bal_sub;
+		}
+
+		public BigDecimal getR51_bal_sub_bwp() {
+			return r51_bal_sub_bwp;
+		}
+
+		public void setR51_bal_sub_bwp(BigDecimal r51_bal_sub_bwp) {
+			this.r51_bal_sub_bwp = r51_bal_sub_bwp;
+		}
+
+		public BigDecimal getR51_bal_sub_diaries_bwp() {
+			return r51_bal_sub_diaries_bwp;
+		}
+
+		public void setR51_bal_sub_diaries_bwp(BigDecimal r51_bal_sub_diaries_bwp) {
+			this.r51_bal_sub_diaries_bwp = r51_bal_sub_diaries_bwp;
+		}
+
+		public String getR52_operating_expenses() {
+			return r52_operating_expenses;
+		}
+
+		public void setR52_operating_expenses(String r52_operating_expenses) {
+			this.r52_operating_expenses = r52_operating_expenses;
+		}
+
+		public BigDecimal getR52_fig_bal_sheet() {
+			return r52_fig_bal_sheet;
+		}
+
+		public void setR52_fig_bal_sheet(BigDecimal r52_fig_bal_sheet) {
+			this.r52_fig_bal_sheet = r52_fig_bal_sheet;
+		}
+
+		public BigDecimal getR52_fig_bal_sheet_bwp() {
+			return r52_fig_bal_sheet_bwp;
+		}
+
+		public void setR52_fig_bal_sheet_bwp(BigDecimal r52_fig_bal_sheet_bwp) {
+			this.r52_fig_bal_sheet_bwp = r52_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR52_amt_statement_adj() {
+			return r52_amt_statement_adj;
+		}
+
+		public void setR52_amt_statement_adj(BigDecimal r52_amt_statement_adj) {
+			this.r52_amt_statement_adj = r52_amt_statement_adj;
+		}
+
+		public BigDecimal getR52_amt_statement_adj_bwp() {
+			return r52_amt_statement_adj_bwp;
+		}
+
+		public void setR52_amt_statement_adj_bwp(BigDecimal r52_amt_statement_adj_bwp) {
+			this.r52_amt_statement_adj_bwp = r52_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR52_net_amt() {
+			return r52_net_amt;
+		}
+
+		public void setR52_net_amt(BigDecimal r52_net_amt) {
+			this.r52_net_amt = r52_net_amt;
+		}
+
+		public BigDecimal getR52_net_amt_bwp() {
+			return r52_net_amt_bwp;
+		}
+
+		public void setR52_net_amt_bwp(BigDecimal r52_net_amt_bwp) {
+			this.r52_net_amt_bwp = r52_net_amt_bwp;
+		}
+
+		public BigDecimal getR52_bal_sub() {
+			return r52_bal_sub;
+		}
+
+		public void setR52_bal_sub(BigDecimal r52_bal_sub) {
+			this.r52_bal_sub = r52_bal_sub;
+		}
+
+		public BigDecimal getR52_bal_sub_bwp() {
+			return r52_bal_sub_bwp;
+		}
+
+		public void setR52_bal_sub_bwp(BigDecimal r52_bal_sub_bwp) {
+			this.r52_bal_sub_bwp = r52_bal_sub_bwp;
+		}
+
+		public BigDecimal getR52_bal_sub_diaries_bwp() {
+			return r52_bal_sub_diaries_bwp;
+		}
+
+		public void setR52_bal_sub_diaries_bwp(BigDecimal r52_bal_sub_diaries_bwp) {
+			this.r52_bal_sub_diaries_bwp = r52_bal_sub_diaries_bwp;
+		}
+
+		public String getR53_operating_expenses() {
+			return r53_operating_expenses;
+		}
+
+		public void setR53_operating_expenses(String r53_operating_expenses) {
+			this.r53_operating_expenses = r53_operating_expenses;
+		}
+
+		public BigDecimal getR53_fig_bal_sheet() {
+			return r53_fig_bal_sheet;
+		}
+
+		public void setR53_fig_bal_sheet(BigDecimal r53_fig_bal_sheet) {
+			this.r53_fig_bal_sheet = r53_fig_bal_sheet;
+		}
+
+		public BigDecimal getR53_fig_bal_sheet_bwp() {
+			return r53_fig_bal_sheet_bwp;
+		}
+
+		public void setR53_fig_bal_sheet_bwp(BigDecimal r53_fig_bal_sheet_bwp) {
+			this.r53_fig_bal_sheet_bwp = r53_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR53_amt_statement_adj() {
+			return r53_amt_statement_adj;
+		}
+
+		public void setR53_amt_statement_adj(BigDecimal r53_amt_statement_adj) {
+			this.r53_amt_statement_adj = r53_amt_statement_adj;
+		}
+
+		public BigDecimal getR53_amt_statement_adj_bwp() {
+			return r53_amt_statement_adj_bwp;
+		}
+
+		public void setR53_amt_statement_adj_bwp(BigDecimal r53_amt_statement_adj_bwp) {
+			this.r53_amt_statement_adj_bwp = r53_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR53_net_amt() {
+			return r53_net_amt;
+		}
+
+		public void setR53_net_amt(BigDecimal r53_net_amt) {
+			this.r53_net_amt = r53_net_amt;
+		}
+
+		public BigDecimal getR53_net_amt_bwp() {
+			return r53_net_amt_bwp;
+		}
+
+		public void setR53_net_amt_bwp(BigDecimal r53_net_amt_bwp) {
+			this.r53_net_amt_bwp = r53_net_amt_bwp;
+		}
+
+		public BigDecimal getR53_bal_sub() {
+			return r53_bal_sub;
+		}
+
+		public void setR53_bal_sub(BigDecimal r53_bal_sub) {
+			this.r53_bal_sub = r53_bal_sub;
+		}
+
+		public BigDecimal getR53_bal_sub_bwp() {
+			return r53_bal_sub_bwp;
+		}
+
+		public void setR53_bal_sub_bwp(BigDecimal r53_bal_sub_bwp) {
+			this.r53_bal_sub_bwp = r53_bal_sub_bwp;
+		}
+
+		public BigDecimal getR53_bal_sub_diaries_bwp() {
+			return r53_bal_sub_diaries_bwp;
+		}
+
+		public void setR53_bal_sub_diaries_bwp(BigDecimal r53_bal_sub_diaries_bwp) {
+			this.r53_bal_sub_diaries_bwp = r53_bal_sub_diaries_bwp;
+		}
+
+		public String getR54_operating_expenses() {
+			return r54_operating_expenses;
+		}
+
+		public void setR54_operating_expenses(String r54_operating_expenses) {
+			this.r54_operating_expenses = r54_operating_expenses;
+		}
+
+		public BigDecimal getR54_fig_bal_sheet() {
+			return r54_fig_bal_sheet;
+		}
+
+		public void setR54_fig_bal_sheet(BigDecimal r54_fig_bal_sheet) {
+			this.r54_fig_bal_sheet = r54_fig_bal_sheet;
+		}
+
+		public BigDecimal getR54_fig_bal_sheet_bwp() {
+			return r54_fig_bal_sheet_bwp;
+		}
+
+		public void setR54_fig_bal_sheet_bwp(BigDecimal r54_fig_bal_sheet_bwp) {
+			this.r54_fig_bal_sheet_bwp = r54_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR54_amt_statement_adj() {
+			return r54_amt_statement_adj;
+		}
+
+		public void setR54_amt_statement_adj(BigDecimal r54_amt_statement_adj) {
+			this.r54_amt_statement_adj = r54_amt_statement_adj;
+		}
+
+		public BigDecimal getR54_amt_statement_adj_bwp() {
+			return r54_amt_statement_adj_bwp;
+		}
+
+		public void setR54_amt_statement_adj_bwp(BigDecimal r54_amt_statement_adj_bwp) {
+			this.r54_amt_statement_adj_bwp = r54_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR54_net_amt() {
+			return r54_net_amt;
+		}
+
+		public void setR54_net_amt(BigDecimal r54_net_amt) {
+			this.r54_net_amt = r54_net_amt;
+		}
+
+		public BigDecimal getR54_net_amt_bwp() {
+			return r54_net_amt_bwp;
+		}
+
+		public void setR54_net_amt_bwp(BigDecimal r54_net_amt_bwp) {
+			this.r54_net_amt_bwp = r54_net_amt_bwp;
+		}
+
+		public BigDecimal getR54_bal_sub() {
+			return r54_bal_sub;
+		}
+
+		public void setR54_bal_sub(BigDecimal r54_bal_sub) {
+			this.r54_bal_sub = r54_bal_sub;
+		}
+
+		public BigDecimal getR54_bal_sub_bwp() {
+			return r54_bal_sub_bwp;
+		}
+
+		public void setR54_bal_sub_bwp(BigDecimal r54_bal_sub_bwp) {
+			this.r54_bal_sub_bwp = r54_bal_sub_bwp;
+		}
+
+		public BigDecimal getR54_bal_sub_diaries_bwp() {
+			return r54_bal_sub_diaries_bwp;
+		}
+
+		public void setR54_bal_sub_diaries_bwp(BigDecimal r54_bal_sub_diaries_bwp) {
+			this.r54_bal_sub_diaries_bwp = r54_bal_sub_diaries_bwp;
+		}
+
+		public String getR55_operating_expenses() {
+			return r55_operating_expenses;
+		}
+
+		public void setR55_operating_expenses(String r55_operating_expenses) {
+			this.r55_operating_expenses = r55_operating_expenses;
+		}
+
+		public BigDecimal getR55_fig_bal_sheet() {
+			return r55_fig_bal_sheet;
+		}
+
+		public void setR55_fig_bal_sheet(BigDecimal r55_fig_bal_sheet) {
+			this.r55_fig_bal_sheet = r55_fig_bal_sheet;
+		}
+
+		public BigDecimal getR55_fig_bal_sheet_bwp() {
+			return r55_fig_bal_sheet_bwp;
+		}
+
+		public void setR55_fig_bal_sheet_bwp(BigDecimal r55_fig_bal_sheet_bwp) {
+			this.r55_fig_bal_sheet_bwp = r55_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR55_amt_statement_adj() {
+			return r55_amt_statement_adj;
+		}
+
+		public void setR55_amt_statement_adj(BigDecimal r55_amt_statement_adj) {
+			this.r55_amt_statement_adj = r55_amt_statement_adj;
+		}
+
+		public BigDecimal getR55_amt_statement_adj_bwp() {
+			return r55_amt_statement_adj_bwp;
+		}
+
+		public void setR55_amt_statement_adj_bwp(BigDecimal r55_amt_statement_adj_bwp) {
+			this.r55_amt_statement_adj_bwp = r55_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR55_net_amt() {
+			return r55_net_amt;
+		}
+
+		public void setR55_net_amt(BigDecimal r55_net_amt) {
+			this.r55_net_amt = r55_net_amt;
+		}
+
+		public BigDecimal getR55_net_amt_bwp() {
+			return r55_net_amt_bwp;
+		}
+
+		public void setR55_net_amt_bwp(BigDecimal r55_net_amt_bwp) {
+			this.r55_net_amt_bwp = r55_net_amt_bwp;
+		}
+
+		public BigDecimal getR55_bal_sub() {
+			return r55_bal_sub;
+		}
+
+		public void setR55_bal_sub(BigDecimal r55_bal_sub) {
+			this.r55_bal_sub = r55_bal_sub;
+		}
+
+		public BigDecimal getR55_bal_sub_bwp() {
+			return r55_bal_sub_bwp;
+		}
+
+		public void setR55_bal_sub_bwp(BigDecimal r55_bal_sub_bwp) {
+			this.r55_bal_sub_bwp = r55_bal_sub_bwp;
+		}
+
+		public BigDecimal getR55_bal_sub_diaries_bwp() {
+			return r55_bal_sub_diaries_bwp;
+		}
+
+		public void setR55_bal_sub_diaries_bwp(BigDecimal r55_bal_sub_diaries_bwp) {
+			this.r55_bal_sub_diaries_bwp = r55_bal_sub_diaries_bwp;
+		}
+
+		public String getR56_operating_expenses() {
+			return r56_operating_expenses;
+		}
+
+		public void setR56_operating_expenses(String r56_operating_expenses) {
+			this.r56_operating_expenses = r56_operating_expenses;
+		}
+
+		public BigDecimal getR56_fig_bal_sheet() {
+			return r56_fig_bal_sheet;
+		}
+
+		public void setR56_fig_bal_sheet(BigDecimal r56_fig_bal_sheet) {
+			this.r56_fig_bal_sheet = r56_fig_bal_sheet;
+		}
+
+		public BigDecimal getR56_fig_bal_sheet_bwp() {
+			return r56_fig_bal_sheet_bwp;
+		}
+
+		public void setR56_fig_bal_sheet_bwp(BigDecimal r56_fig_bal_sheet_bwp) {
+			this.r56_fig_bal_sheet_bwp = r56_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR56_amt_statement_adj() {
+			return r56_amt_statement_adj;
+		}
+
+		public void setR56_amt_statement_adj(BigDecimal r56_amt_statement_adj) {
+			this.r56_amt_statement_adj = r56_amt_statement_adj;
+		}
+
+		public BigDecimal getR56_amt_statement_adj_bwp() {
+			return r56_amt_statement_adj_bwp;
+		}
+
+		public void setR56_amt_statement_adj_bwp(BigDecimal r56_amt_statement_adj_bwp) {
+			this.r56_amt_statement_adj_bwp = r56_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR56_net_amt() {
+			return r56_net_amt;
+		}
+
+		public void setR56_net_amt(BigDecimal r56_net_amt) {
+			this.r56_net_amt = r56_net_amt;
+		}
+
+		public BigDecimal getR56_net_amt_bwp() {
+			return r56_net_amt_bwp;
+		}
+
+		public void setR56_net_amt_bwp(BigDecimal r56_net_amt_bwp) {
+			this.r56_net_amt_bwp = r56_net_amt_bwp;
+		}
+
+		public BigDecimal getR56_bal_sub() {
+			return r56_bal_sub;
+		}
+
+		public void setR56_bal_sub(BigDecimal r56_bal_sub) {
+			this.r56_bal_sub = r56_bal_sub;
+		}
+
+		public BigDecimal getR56_bal_sub_bwp() {
+			return r56_bal_sub_bwp;
+		}
+
+		public void setR56_bal_sub_bwp(BigDecimal r56_bal_sub_bwp) {
+			this.r56_bal_sub_bwp = r56_bal_sub_bwp;
+		}
+
+		public BigDecimal getR56_bal_sub_diaries_bwp() {
+			return r56_bal_sub_diaries_bwp;
+		}
+
+		public void setR56_bal_sub_diaries_bwp(BigDecimal r56_bal_sub_diaries_bwp) {
+			this.r56_bal_sub_diaries_bwp = r56_bal_sub_diaries_bwp;
+		}
+
+		public String getR57_operating_expenses() {
+			return r57_operating_expenses;
+		}
+
+		public void setR57_operating_expenses(String r57_operating_expenses) {
+			this.r57_operating_expenses = r57_operating_expenses;
+		}
+
+		public BigDecimal getR57_fig_bal_sheet() {
+			return r57_fig_bal_sheet;
+		}
+
+		public void setR57_fig_bal_sheet(BigDecimal r57_fig_bal_sheet) {
+			this.r57_fig_bal_sheet = r57_fig_bal_sheet;
+		}
+
+		public BigDecimal getR57_fig_bal_sheet_bwp() {
+			return r57_fig_bal_sheet_bwp;
+		}
+
+		public void setR57_fig_bal_sheet_bwp(BigDecimal r57_fig_bal_sheet_bwp) {
+			this.r57_fig_bal_sheet_bwp = r57_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR57_amt_statement_adj() {
+			return r57_amt_statement_adj;
+		}
+
+		public void setR57_amt_statement_adj(BigDecimal r57_amt_statement_adj) {
+			this.r57_amt_statement_adj = r57_amt_statement_adj;
+		}
+
+		public BigDecimal getR57_amt_statement_adj_bwp() {
+			return r57_amt_statement_adj_bwp;
+		}
+
+		public void setR57_amt_statement_adj_bwp(BigDecimal r57_amt_statement_adj_bwp) {
+			this.r57_amt_statement_adj_bwp = r57_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR57_net_amt() {
+			return r57_net_amt;
+		}
+
+		public void setR57_net_amt(BigDecimal r57_net_amt) {
+			this.r57_net_amt = r57_net_amt;
+		}
+
+		public BigDecimal getR57_net_amt_bwp() {
+			return r57_net_amt_bwp;
+		}
+
+		public void setR57_net_amt_bwp(BigDecimal r57_net_amt_bwp) {
+			this.r57_net_amt_bwp = r57_net_amt_bwp;
+		}
+
+		public BigDecimal getR57_bal_sub() {
+			return r57_bal_sub;
+		}
+
+		public void setR57_bal_sub(BigDecimal r57_bal_sub) {
+			this.r57_bal_sub = r57_bal_sub;
+		}
+
+		public BigDecimal getR57_bal_sub_bwp() {
+			return r57_bal_sub_bwp;
+		}
+
+		public void setR57_bal_sub_bwp(BigDecimal r57_bal_sub_bwp) {
+			this.r57_bal_sub_bwp = r57_bal_sub_bwp;
+		}
+
+		public BigDecimal getR57_bal_sub_diaries_bwp() {
+			return r57_bal_sub_diaries_bwp;
+		}
+
+		public void setR57_bal_sub_diaries_bwp(BigDecimal r57_bal_sub_diaries_bwp) {
+			this.r57_bal_sub_diaries_bwp = r57_bal_sub_diaries_bwp;
+		}
+
+		public String getR58_operating_expenses() {
+			return r58_operating_expenses;
+		}
+
+		public void setR58_operating_expenses(String r58_operating_expenses) {
+			this.r58_operating_expenses = r58_operating_expenses;
+		}
+
+		public BigDecimal getR58_fig_bal_sheet() {
+			return r58_fig_bal_sheet;
+		}
+
+		public void setR58_fig_bal_sheet(BigDecimal r58_fig_bal_sheet) {
+			this.r58_fig_bal_sheet = r58_fig_bal_sheet;
+		}
+
+		public BigDecimal getR58_fig_bal_sheet_bwp() {
+			return r58_fig_bal_sheet_bwp;
+		}
+
+		public void setR58_fig_bal_sheet_bwp(BigDecimal r58_fig_bal_sheet_bwp) {
+			this.r58_fig_bal_sheet_bwp = r58_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR58_amt_statement_adj() {
+			return r58_amt_statement_adj;
+		}
+
+		public void setR58_amt_statement_adj(BigDecimal r58_amt_statement_adj) {
+			this.r58_amt_statement_adj = r58_amt_statement_adj;
+		}
+
+		public BigDecimal getR58_amt_statement_adj_bwp() {
+			return r58_amt_statement_adj_bwp;
+		}
+
+		public void setR58_amt_statement_adj_bwp(BigDecimal r58_amt_statement_adj_bwp) {
+			this.r58_amt_statement_adj_bwp = r58_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR58_net_amt() {
+			return r58_net_amt;
+		}
+
+		public void setR58_net_amt(BigDecimal r58_net_amt) {
+			this.r58_net_amt = r58_net_amt;
+		}
+
+		public BigDecimal getR58_net_amt_bwp() {
+			return r58_net_amt_bwp;
+		}
+
+		public void setR58_net_amt_bwp(BigDecimal r58_net_amt_bwp) {
+			this.r58_net_amt_bwp = r58_net_amt_bwp;
+		}
+
+		public BigDecimal getR58_bal_sub() {
+			return r58_bal_sub;
+		}
+
+		public void setR58_bal_sub(BigDecimal r58_bal_sub) {
+			this.r58_bal_sub = r58_bal_sub;
+		}
+
+		public BigDecimal getR58_bal_sub_bwp() {
+			return r58_bal_sub_bwp;
+		}
+
+		public void setR58_bal_sub_bwp(BigDecimal r58_bal_sub_bwp) {
+			this.r58_bal_sub_bwp = r58_bal_sub_bwp;
+		}
+
+		public BigDecimal getR58_bal_sub_diaries_bwp() {
+			return r58_bal_sub_diaries_bwp;
+		}
+
+		public void setR58_bal_sub_diaries_bwp(BigDecimal r58_bal_sub_diaries_bwp) {
+			this.r58_bal_sub_diaries_bwp = r58_bal_sub_diaries_bwp;
+		}
+
+		public String getR59_operating_expenses() {
+			return r59_operating_expenses;
+		}
+
+		public void setR59_operating_expenses(String r59_operating_expenses) {
+			this.r59_operating_expenses = r59_operating_expenses;
+		}
+
+		public BigDecimal getR59_fig_bal_sheet() {
+			return r59_fig_bal_sheet;
+		}
+
+		public void setR59_fig_bal_sheet(BigDecimal r59_fig_bal_sheet) {
+			this.r59_fig_bal_sheet = r59_fig_bal_sheet;
+		}
+
+		public BigDecimal getR59_fig_bal_sheet_bwp() {
+			return r59_fig_bal_sheet_bwp;
+		}
+
+		public void setR59_fig_bal_sheet_bwp(BigDecimal r59_fig_bal_sheet_bwp) {
+			this.r59_fig_bal_sheet_bwp = r59_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR59_amt_statement_adj() {
+			return r59_amt_statement_adj;
+		}
+
+		public void setR59_amt_statement_adj(BigDecimal r59_amt_statement_adj) {
+			this.r59_amt_statement_adj = r59_amt_statement_adj;
+		}
+
+		public BigDecimal getR59_amt_statement_adj_bwp() {
+			return r59_amt_statement_adj_bwp;
+		}
+
+		public void setR59_amt_statement_adj_bwp(BigDecimal r59_amt_statement_adj_bwp) {
+			this.r59_amt_statement_adj_bwp = r59_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR59_net_amt() {
+			return r59_net_amt;
+		}
+
+		public void setR59_net_amt(BigDecimal r59_net_amt) {
+			this.r59_net_amt = r59_net_amt;
+		}
+
+		public BigDecimal getR59_net_amt_bwp() {
+			return r59_net_amt_bwp;
+		}
+
+		public void setR59_net_amt_bwp(BigDecimal r59_net_amt_bwp) {
+			this.r59_net_amt_bwp = r59_net_amt_bwp;
+		}
+
+		public BigDecimal getR59_bal_sub() {
+			return r59_bal_sub;
+		}
+
+		public void setR59_bal_sub(BigDecimal r59_bal_sub) {
+			this.r59_bal_sub = r59_bal_sub;
+		}
+
+		public BigDecimal getR59_bal_sub_bwp() {
+			return r59_bal_sub_bwp;
+		}
+
+		public void setR59_bal_sub_bwp(BigDecimal r59_bal_sub_bwp) {
+			this.r59_bal_sub_bwp = r59_bal_sub_bwp;
+		}
+
+		public BigDecimal getR59_bal_sub_diaries_bwp() {
+			return r59_bal_sub_diaries_bwp;
+		}
+
+		public void setR59_bal_sub_diaries_bwp(BigDecimal r59_bal_sub_diaries_bwp) {
+			this.r59_bal_sub_diaries_bwp = r59_bal_sub_diaries_bwp;
+		}
+
+		public String getR60_operating_expenses() {
+			return r60_operating_expenses;
+		}
+
+		public void setR60_operating_expenses(String r60_operating_expenses) {
+			this.r60_operating_expenses = r60_operating_expenses;
+		}
+
+		public BigDecimal getR60_fig_bal_sheet() {
+			return r60_fig_bal_sheet;
+		}
+
+		public void setR60_fig_bal_sheet(BigDecimal r60_fig_bal_sheet) {
+			this.r60_fig_bal_sheet = r60_fig_bal_sheet;
+		}
+
+		public BigDecimal getR60_fig_bal_sheet_bwp() {
+			return r60_fig_bal_sheet_bwp;
+		}
+
+		public void setR60_fig_bal_sheet_bwp(BigDecimal r60_fig_bal_sheet_bwp) {
+			this.r60_fig_bal_sheet_bwp = r60_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR60_amt_statement_adj() {
+			return r60_amt_statement_adj;
+		}
+
+		public void setR60_amt_statement_adj(BigDecimal r60_amt_statement_adj) {
+			this.r60_amt_statement_adj = r60_amt_statement_adj;
+		}
+
+		public BigDecimal getR60_amt_statement_adj_bwp() {
+			return r60_amt_statement_adj_bwp;
+		}
+
+		public void setR60_amt_statement_adj_bwp(BigDecimal r60_amt_statement_adj_bwp) {
+			this.r60_amt_statement_adj_bwp = r60_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR60_net_amt() {
+			return r60_net_amt;
+		}
+
+		public void setR60_net_amt(BigDecimal r60_net_amt) {
+			this.r60_net_amt = r60_net_amt;
+		}
+
+		public BigDecimal getR60_net_amt_bwp() {
+			return r60_net_amt_bwp;
+		}
+
+		public void setR60_net_amt_bwp(BigDecimal r60_net_amt_bwp) {
+			this.r60_net_amt_bwp = r60_net_amt_bwp;
+		}
+
+		public BigDecimal getR60_bal_sub() {
+			return r60_bal_sub;
+		}
+
+		public void setR60_bal_sub(BigDecimal r60_bal_sub) {
+			this.r60_bal_sub = r60_bal_sub;
+		}
+
+		public BigDecimal getR60_bal_sub_bwp() {
+			return r60_bal_sub_bwp;
+		}
+
+		public void setR60_bal_sub_bwp(BigDecimal r60_bal_sub_bwp) {
+			this.r60_bal_sub_bwp = r60_bal_sub_bwp;
+		}
+
+		public BigDecimal getR60_bal_sub_diaries_bwp() {
+			return r60_bal_sub_diaries_bwp;
+		}
+
+		public void setR60_bal_sub_diaries_bwp(BigDecimal r60_bal_sub_diaries_bwp) {
+			this.r60_bal_sub_diaries_bwp = r60_bal_sub_diaries_bwp;
+		}
+
+		public String getR61_operating_expenses() {
+			return r61_operating_expenses;
+		}
+
+		public void setR61_operating_expenses(String r61_operating_expenses) {
+			this.r61_operating_expenses = r61_operating_expenses;
+		}
+
+		public BigDecimal getR61_fig_bal_sheet() {
+			return r61_fig_bal_sheet;
+		}
+
+		public void setR61_fig_bal_sheet(BigDecimal r61_fig_bal_sheet) {
+			this.r61_fig_bal_sheet = r61_fig_bal_sheet;
+		}
+
+		public BigDecimal getR61_fig_bal_sheet_bwp() {
+			return r61_fig_bal_sheet_bwp;
+		}
+
+		public void setR61_fig_bal_sheet_bwp(BigDecimal r61_fig_bal_sheet_bwp) {
+			this.r61_fig_bal_sheet_bwp = r61_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR61_amt_statement_adj() {
+			return r61_amt_statement_adj;
+		}
+
+		public void setR61_amt_statement_adj(BigDecimal r61_amt_statement_adj) {
+			this.r61_amt_statement_adj = r61_amt_statement_adj;
+		}
+
+		public BigDecimal getR61_amt_statement_adj_bwp() {
+			return r61_amt_statement_adj_bwp;
+		}
+
+		public void setR61_amt_statement_adj_bwp(BigDecimal r61_amt_statement_adj_bwp) {
+			this.r61_amt_statement_adj_bwp = r61_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR61_net_amt() {
+			return r61_net_amt;
+		}
+
+		public void setR61_net_amt(BigDecimal r61_net_amt) {
+			this.r61_net_amt = r61_net_amt;
+		}
+
+		public BigDecimal getR61_net_amt_bwp() {
+			return r61_net_amt_bwp;
+		}
+
+		public void setR61_net_amt_bwp(BigDecimal r61_net_amt_bwp) {
+			this.r61_net_amt_bwp = r61_net_amt_bwp;
+		}
+
+		public BigDecimal getR61_bal_sub() {
+			return r61_bal_sub;
+		}
+
+		public void setR61_bal_sub(BigDecimal r61_bal_sub) {
+			this.r61_bal_sub = r61_bal_sub;
+		}
+
+		public BigDecimal getR61_bal_sub_bwp() {
+			return r61_bal_sub_bwp;
+		}
+
+		public void setR61_bal_sub_bwp(BigDecimal r61_bal_sub_bwp) {
+			this.r61_bal_sub_bwp = r61_bal_sub_bwp;
+		}
+
+		public BigDecimal getR61_bal_sub_diaries_bwp() {
+			return r61_bal_sub_diaries_bwp;
+		}
+
+		public void setR61_bal_sub_diaries_bwp(BigDecimal r61_bal_sub_diaries_bwp) {
+			this.r61_bal_sub_diaries_bwp = r61_bal_sub_diaries_bwp;
+		}
+
+		public String getR62_operating_expenses() {
+			return r62_operating_expenses;
+		}
+
+		public void setR62_operating_expenses(String r62_operating_expenses) {
+			this.r62_operating_expenses = r62_operating_expenses;
+		}
+
+		public BigDecimal getR62_fig_bal_sheet() {
+			return r62_fig_bal_sheet;
+		}
+
+		public void setR62_fig_bal_sheet(BigDecimal r62_fig_bal_sheet) {
+			this.r62_fig_bal_sheet = r62_fig_bal_sheet;
+		}
+
+		public BigDecimal getR62_fig_bal_sheet_bwp() {
+			return r62_fig_bal_sheet_bwp;
+		}
+
+		public void setR62_fig_bal_sheet_bwp(BigDecimal r62_fig_bal_sheet_bwp) {
+			this.r62_fig_bal_sheet_bwp = r62_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR62_amt_statement_adj() {
+			return r62_amt_statement_adj;
+		}
+
+		public void setR62_amt_statement_adj(BigDecimal r62_amt_statement_adj) {
+			this.r62_amt_statement_adj = r62_amt_statement_adj;
+		}
+
+		public BigDecimal getR62_amt_statement_adj_bwp() {
+			return r62_amt_statement_adj_bwp;
+		}
+
+		public void setR62_amt_statement_adj_bwp(BigDecimal r62_amt_statement_adj_bwp) {
+			this.r62_amt_statement_adj_bwp = r62_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR62_net_amt() {
+			return r62_net_amt;
+		}
+
+		public void setR62_net_amt(BigDecimal r62_net_amt) {
+			this.r62_net_amt = r62_net_amt;
+		}
+
+		public BigDecimal getR62_net_amt_bwp() {
+			return r62_net_amt_bwp;
+		}
+
+		public void setR62_net_amt_bwp(BigDecimal r62_net_amt_bwp) {
+			this.r62_net_amt_bwp = r62_net_amt_bwp;
+		}
+
+		public BigDecimal getR62_bal_sub() {
+			return r62_bal_sub;
+		}
+
+		public void setR62_bal_sub(BigDecimal r62_bal_sub) {
+			this.r62_bal_sub = r62_bal_sub;
+		}
+
+		public BigDecimal getR62_bal_sub_bwp() {
+			return r62_bal_sub_bwp;
+		}
+
+		public void setR62_bal_sub_bwp(BigDecimal r62_bal_sub_bwp) {
+			this.r62_bal_sub_bwp = r62_bal_sub_bwp;
+		}
+
+		public BigDecimal getR62_bal_sub_diaries_bwp() {
+			return r62_bal_sub_diaries_bwp;
+		}
+
+		public void setR62_bal_sub_diaries_bwp(BigDecimal r62_bal_sub_diaries_bwp) {
+			this.r62_bal_sub_diaries_bwp = r62_bal_sub_diaries_bwp;
+		}
+
+		public String getR63_operating_expenses() {
+			return r63_operating_expenses;
+		}
+
+		public void setR63_operating_expenses(String r63_operating_expenses) {
+			this.r63_operating_expenses = r63_operating_expenses;
+		}
+
+		public BigDecimal getR63_fig_bal_sheet() {
+			return r63_fig_bal_sheet;
+		}
+
+		public void setR63_fig_bal_sheet(BigDecimal r63_fig_bal_sheet) {
+			this.r63_fig_bal_sheet = r63_fig_bal_sheet;
+		}
+
+		public BigDecimal getR63_fig_bal_sheet_bwp() {
+			return r63_fig_bal_sheet_bwp;
+		}
+
+		public void setR63_fig_bal_sheet_bwp(BigDecimal r63_fig_bal_sheet_bwp) {
+			this.r63_fig_bal_sheet_bwp = r63_fig_bal_sheet_bwp;
+		}
+
+		public BigDecimal getR63_amt_statement_adj() {
+			return r63_amt_statement_adj;
+		}
+
+		public void setR63_amt_statement_adj(BigDecimal r63_amt_statement_adj) {
+			this.r63_amt_statement_adj = r63_amt_statement_adj;
+		}
+
+		public BigDecimal getR63_amt_statement_adj_bwp() {
+			return r63_amt_statement_adj_bwp;
+		}
+
+		public void setR63_amt_statement_adj_bwp(BigDecimal r63_amt_statement_adj_bwp) {
+			this.r63_amt_statement_adj_bwp = r63_amt_statement_adj_bwp;
+		}
+
+		public BigDecimal getR63_net_amt() {
+			return r63_net_amt;
+		}
+
+		public void setR63_net_amt(BigDecimal r63_net_amt) {
+			this.r63_net_amt = r63_net_amt;
+		}
+
+		public BigDecimal getR63_net_amt_bwp() {
+			return r63_net_amt_bwp;
+		}
+
+		public void setR63_net_amt_bwp(BigDecimal r63_net_amt_bwp) {
+			this.r63_net_amt_bwp = r63_net_amt_bwp;
+		}
+
+		public BigDecimal getR63_bal_sub() {
+			return r63_bal_sub;
+		}
+
+		public void setR63_bal_sub(BigDecimal r63_bal_sub) {
+			this.r63_bal_sub = r63_bal_sub;
+		}
+
+		public BigDecimal getR63_bal_sub_bwp() {
+			return r63_bal_sub_bwp;
+		}
+
+		public void setR63_bal_sub_bwp(BigDecimal r63_bal_sub_bwp) {
+			this.r63_bal_sub_bwp = r63_bal_sub_bwp;
+		}
+
+		public BigDecimal getR63_bal_sub_diaries_bwp() {
+			return r63_bal_sub_diaries_bwp;
+		}
+
+		public void setR63_bal_sub_diaries_bwp(BigDecimal r63_bal_sub_diaries_bwp) {
+			this.r63_bal_sub_diaries_bwp = r63_bal_sub_diaries_bwp;
+		}
+
+		public BigDecimal getR17_bal_sub_diaries() {
+			return r17_bal_sub_diaries;
+		}
+
+		public void setR17_bal_sub_diaries(BigDecimal r17_bal_sub_diaries) {
+			this.r17_bal_sub_diaries = r17_bal_sub_diaries;
+		}
+
+		public BigDecimal getR48_bal_sub_diaries() {
+			return r48_bal_sub_diaries;
+		}
+
+		public void setR48_bal_sub_diaries(BigDecimal r48_bal_sub_diaries) {
+			this.r48_bal_sub_diaries = r48_bal_sub_diaries;
+		}
+
+		public BigDecimal getREPORT_VERSION() {
+			return REPORT_VERSION;
+		}
+
+		public void setREPORT_VERSION(BigDecimal rEPORT_VERSION) {
+			REPORT_VERSION = rEPORT_VERSION;
+		}
+
+		public String getREPORT_FREQUENCY() {
+			return REPORT_FREQUENCY;
+		}
+
+		public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+			REPORT_FREQUENCY = rEPORT_FREQUENCY;
+		}
+
+		public String getREPORT_CODE() {
+			return REPORT_CODE;
+		}
+
+		public void setREPORT_CODE(String rEPORT_CODE) {
+			REPORT_CODE = rEPORT_CODE;
+		}
+
+		public String getREPORT_DESC() {
+			return REPORT_DESC;
+		}
+
+		public void setREPORT_DESC(String rEPORT_DESC) {
+			REPORT_DESC = rEPORT_DESC;
+		}
+
+		public String getENTITY_FLG() {
+			return ENTITY_FLG;
+		}
+
+		public void setENTITY_FLG(String eNTITY_FLG) {
+			ENTITY_FLG = eNTITY_FLG;
+		}
+
+		public String getMODIFY_FLG() {
+			return MODIFY_FLG;
+		}
+
+		public void setMODIFY_FLG(String mODIFY_FLG) {
+			MODIFY_FLG = mODIFY_FLG;
+		}
+
+		public String getDEL_FLG() {
+			return DEL_FLG;
+		}
+
+		public void setDEL_FLG(String dEL_FLG) {
+			DEL_FLG = dEL_FLG;
+		}
+
+		public Date getREPORT_RESUBDATE() {
+			return REPORT_RESUBDATE;
+		}
+
+		public void setREPORT_RESUBDATE(Date rEPORT_RESUBDATE) {
+			REPORT_RESUBDATE = rEPORT_RESUBDATE;
+		}
+	}
+
+// COMPOSITE KEY CLASS INSIDE SERVICE
+
+	public static class PL_SCHS_PK implements Serializable {
+
+		private Date REPORT_DATE;
+		private BigDecimal REPORT_VERSION;
+
+		public PL_SCHS_PK() {
+		}
+
+		public PL_SCHS_PK(Date REPORT_DATE, BigDecimal REPORT_VERSION) {
+			this.REPORT_DATE = REPORT_DATE;
+			this.REPORT_VERSION = REPORT_VERSION;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o)
+				return true;
+			if (!(o instanceof PL_SCHS_PK))
+				return false;
+			PL_SCHS_PK that = (PL_SCHS_PK) o;
+			return Objects.equals(REPORT_DATE, that.REPORT_DATE) && Objects.equals(REPORT_VERSION, that.REPORT_VERSION);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(REPORT_DATE, REPORT_VERSION);
+		}
+
+		public Date getREPORT_DATE() {
+			return REPORT_DATE;
+		}
+
+		public void setREPORT_DATE(Date REPORT_DATE) {
+			this.REPORT_DATE = REPORT_DATE;
+		}
+
+		public BigDecimal getREPORT_VERSION() {
+			return REPORT_VERSION;
+		}
+
+		public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
+			this.REPORT_VERSION = REPORT_VERSION;
+		}
+	}
+
+	public class PL_SCHS_Detail_Entity {
+
+		@Column(name = "CUST_ID")
+		private String custId;
+		@Id
+		@Column(name = "ACCT_NUMBER")
+		private String acctNumber;
+
+		@Column(name = "ACCT_NAME")
+		private String acctName;
+
+		@Column(name = "DATA_TYPE")
+		private String dataType;
+
+		@Column(name = "REPORT_NAME")
+		private String reportName;
+
+		@Column(name = "REPORT_LABEL")
+		private String reportLabel;
+
+		@Column(name = "REPORT_ADDL_CRITERIA_1")
+		private String reportAddlCriteria1;
+
+		@Column(name = "REPORT_REMARKS")
+		private String reportRemarks;
+
+		@Column(name = "MODIFICATION_REMARKS")
+		private String modificationRemarks;
+
+		@Column(name = "DATA_ENTRY_VERSION")
+		private String dataEntryVersion;
+
+		@Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
+		private BigDecimal acctBalanceInpula;
+
+		@Column(name = "AVERAGE", precision = 24, scale = 3)
+		private BigDecimal average;
+
+		@Column(name = "REPORT_DATE")
+		@DateTimeFormat(pattern = "dd-MM-yyyy")
+		private Date reportDate;
+
+		@Column(name = "CREATE_USER")
+		private String createUser;
+
+		@Column(name = "CREATE_TIME")
+		@DateTimeFormat(pattern = "dd-MM-yyyy")
+		private Date createTime;
+
+		@Column(name = "MODIFY_USER")
+		private String modifyUser;
+
+		@Column(name = "MODIFY_TIME")
+		@DateTimeFormat(pattern = "dd-MM-yyyy")
+		private Date modifyTime;
+
+		@Column(name = "VERIFY_USER")
+		private String verifyUser;
+
+		@Column(name = "VERIFY_TIME")
+		@DateTimeFormat(pattern = "dd-MM-yyyy")
+		private Date verifyTime;
+
+		@Column(name = "ENTITY_FLG")
+		private char entityFlg;
+
+		@Column(name = "MODIFY_FLG")
+		private char modifyFlg;
+
+		@Column(name = "DEL_FLG")
+		private char delFlg;
+
+		public String getCustId() {
+			return custId;
+		}
+
+		public void setCustId(String custId) {
+			this.custId = custId;
+		}
+
+		public String getAcctNumber() {
+			return acctNumber;
+		}
+
+		public void setAcctNumber(String acctNumber) {
+			this.acctNumber = acctNumber;
+		}
+
+		public String getAcctName() {
+			return acctName;
+		}
+
+		public void setAcctName(String acctName) {
+			this.acctName = acctName;
+		}
+
+		public String getDataType() {
+			return dataType;
+		}
+
+		public void setDataType(String dataType) {
+			this.dataType = dataType;
+		}
+
+		public String getReportName() {
+			return reportName;
+		}
+
+		public void setReportName(String reportName) {
+			this.reportName = reportName;
+		}
+
+		public String getReportLabel() {
+			return reportLabel;
+		}
+
+		public void setReportLabel(String reportLabel) {
+			this.reportLabel = reportLabel;
+		}
+
+		public String getReportAddlCriteria1() {
+			return reportAddlCriteria1;
+		}
+
+		public void setReportAddlCriteria1(String reportAddlCriteria1) {
+			this.reportAddlCriteria1 = reportAddlCriteria1;
+		}
+
+		public String getReportRemarks() {
+			return reportRemarks;
+		}
+
+		public void setReportRemarks(String reportRemarks) {
+			this.reportRemarks = reportRemarks;
+		}
+
+		public String getModificationRemarks() {
+			return modificationRemarks;
+		}
+
+		public void setModificationRemarks(String modificationRemarks) {
+			this.modificationRemarks = modificationRemarks;
+		}
+
+		public String getDataEntryVersion() {
+			return dataEntryVersion;
+		}
+
+		public void setDataEntryVersion(String dataEntryVersion) {
+			this.dataEntryVersion = dataEntryVersion;
+		}
+
+		public BigDecimal getAcctBalanceInpula() {
+			return acctBalanceInpula;
+		}
+
+		public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
+			this.acctBalanceInpula = acctBalanceInpula;
+		}
+
+		public Date getReportDate() {
+			return reportDate;
+		}
+
+		public void setReportDate(Date reportDate) {
+			this.reportDate = reportDate;
+		}
+
+		public String getCreateUser() {
+			return createUser;
+		}
+
+		public void setCreateUser(String createUser) {
+			this.createUser = createUser;
+		}
+
+		public Date getCreateTime() {
+			return createTime;
+		}
+
+		public void setCreateTime(Date createTime) {
+			this.createTime = createTime;
+		}
+
+		public String getModifyUser() {
+			return modifyUser;
+		}
+
+		public void setModifyUser(String modifyUser) {
+			this.modifyUser = modifyUser;
+		}
+
+		public Date getModifyTime() {
+			return modifyTime;
+		}
+
+		public void setModifyTime(Date modifyTime) {
+			this.modifyTime = modifyTime;
+		}
+
+		public String getVerifyUser() {
+			return verifyUser;
+		}
+
+		public void setVerifyUser(String verifyUser) {
+			this.verifyUser = verifyUser;
+		}
+
+		public Date getVerifyTime() {
+			return verifyTime;
+		}
+
+		public void setVerifyTime(Date verifyTime) {
+			this.verifyTime = verifyTime;
+		}
+
+		public char getEntityFlg() {
+			return entityFlg;
+		}
+
+		public void setEntityFlg(char entityFlg) {
+			this.entityFlg = entityFlg;
+		}
+
+		public char getModifyFlg() {
+			return modifyFlg;
+		}
+
+		public void setModifyFlg(char modifyFlg) {
+			this.modifyFlg = modifyFlg;
+		}
+
+		public char getDelFlg() {
+			return delFlg;
+		}
+
+		public void setDelFlg(char delFlg) {
+			this.delFlg = delFlg;
+		}
+
+		public BigDecimal getAverage() {
+			return average;
+		}
+
+		public void setAverage(BigDecimal average) {
+			this.average = average;
+		}
+	}
+
+	class PL_SCHSDetailRowMapper implements RowMapper<PL_SCHS_Detail_Entity> {
+
+		@Override
+		public PL_SCHS_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+			PL_SCHS_Detail_Entity obj = new PL_SCHS_Detail_Entity();
+
+			obj.setCustId(rs.getString("CUST_ID"));
+			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
+			obj.setAcctName(rs.getString("ACCT_NAME"));
+			obj.setDataType(rs.getString("DATA_TYPE"));
+			obj.setReportName(rs.getString("REPORT_NAME"));
+			obj.setReportLabel(rs.getString("REPORT_LABEL"));
+			obj.setReportAddlCriteria1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+			obj.setReportRemarks(rs.getString("REPORT_REMARKS"));
+			obj.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
+			obj.setDataEntryVersion(rs.getString("DATA_ENTRY_VERSION"));
+			obj.setAcctBalanceInpula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+			obj.setAverage(rs.getBigDecimal("AVERAGE"));
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setCreateUser(rs.getString("CREATE_USER"));
+			obj.setCreateTime(rs.getDate("CREATE_TIME"));
+			obj.setModifyUser(rs.getString("MODIFY_USER"));
+			obj.setModifyTime(rs.getDate("MODIFY_TIME"));
+			obj.setVerifyUser(rs.getString("VERIFY_USER"));
+			obj.setVerifyTime(rs.getDate("VERIFY_TIME"));
+			obj.setEntityFlg(rs.getString("ENTITY_FLG") != null ? rs.getString("ENTITY_FLG").charAt(0) : ' ');
+
+			obj.setModifyFlg(rs.getString("MODIFY_FLG") != null ? rs.getString("MODIFY_FLG").charAt(0) : ' ');
+
+			obj.setDelFlg(rs.getString("DEL_FLG") != null ? rs.getString("DEL_FLG").charAt(0) : ' ');
+
+			return obj;
+		}
+	}
+
+	class PL_SCHSArchivalDetailRowMapper implements RowMapper<PL_SCHS_Archival_Detail_Entity> {
+
+		@Override
+		public PL_SCHS_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+			PL_SCHS_Archival_Detail_Entity obj = new PL_SCHS_Archival_Detail_Entity();
+
+			obj.setCustId(rs.getString("CUST_ID"));
+			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
+			obj.setAcctName(rs.getString("ACCT_NAME"));
+			obj.setDataType(rs.getString("DATA_TYPE"));
+			obj.setReportName(rs.getString("REPORT_NAME"));
+			obj.setReportLabel(rs.getString("REPORT_LABEL"));
+			obj.setReportAddlCriteria1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+			obj.setReportRemarks(rs.getString("REPORT_REMARKS"));
+			obj.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
+			obj.setDataEntryVersion(rs.getString("DATA_ENTRY_VERSION"));
+			obj.setAcctBalanceInpula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+			obj.setAverage(rs.getBigDecimal("AVERAGE"));
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setCreateUser(rs.getString("CREATE_USER"));
+			obj.setCreateTime(rs.getDate("CREATE_TIME"));
+			obj.setModifyUser(rs.getString("MODIFY_USER"));
+			obj.setModifyTime(rs.getDate("MODIFY_TIME"));
+			obj.setVerifyUser(rs.getString("VERIFY_USER"));
+			obj.setVerifyTime(rs.getDate("VERIFY_TIME"));
+			obj.setEntityFlg(rs.getString("ENTITY_FLG") != null ? rs.getString("ENTITY_FLG").charAt(0) : ' ');
+
+			obj.setModifyFlg(rs.getString("MODIFY_FLG") != null ? rs.getString("MODIFY_FLG").charAt(0) : ' ');
+
+			obj.setDelFlg(rs.getString("DEL_FLG") != null ? rs.getString("DEL_FLG").charAt(0) : ' ');
+
+			return obj;
+		}
+	}
+
+	public class PL_SCHS_Archival_Detail_Entity {
+
+		@Column(name = "CUST_ID")
+		private String custId;
+		@Id
+		@Column(name = "ACCT_NUMBER")
+		private String acctNumber;
+
+		@Column(name = "ACCT_NAME")
+		private String acctName;
+
+		@Column(name = "DATA_TYPE")
+		private String dataType;
+
+		@Column(name = "REPORT_NAME")
+		private String reportName;
+
+		@Column(name = "REPORT_LABEL")
+		private String reportLabel;
+
+		@Column(name = "REPORT_ADDL_CRITERIA_1")
+		private String reportAddlCriteria1;
+
+		@Column(name = "REPORT_REMARKS")
+		private String reportRemarks;
+
+		@Column(name = "MODIFICATION_REMARKS")
+		private String modificationRemarks;
+
+		@Column(name = "DATA_ENTRY_VERSION")
+		private String dataEntryVersion;
+
+		@Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
+		private BigDecimal acctBalanceInpula;
+
+		@Column(name = "AVERAGE", precision = 24, scale = 3)
+		private BigDecimal average;
+
+		@Column(name = "REPORT_DATE")
+		@DateTimeFormat(pattern = "dd-MM-yyyy")
+		private Date reportDate;
+
+		@Column(name = "CREATE_USER")
+		private String createUser;
+
+		@Column(name = "CREATE_TIME")
+		@DateTimeFormat(pattern = "dd-MM-yyyy")
+		private Date createTime;
+
+		@Column(name = "MODIFY_USER")
+		private String modifyUser;
+
+		@Column(name = "MODIFY_TIME")
+		@DateTimeFormat(pattern = "dd-MM-yyyy")
+		private Date modifyTime;
+
+		@Column(name = "VERIFY_USER")
+		private String verifyUser;
+
+		@Column(name = "VERIFY_TIME")
+		@DateTimeFormat(pattern = "dd-MM-yyyy")
+		private Date verifyTime;
+
+		@Column(name = "ENTITY_FLG")
+		private char entityFlg;
+
+		@Column(name = "MODIFY_FLG")
+		private char modifyFlg;
+
+		@Column(name = "DEL_FLG")
+		private char delFlg;
+
+		public String getCustId() {
+			return custId;
+		}
+
+		public void setCustId(String custId) {
+			this.custId = custId;
+		}
+
+		public String getAcctNumber() {
+			return acctNumber;
+		}
+
+		public void setAcctNumber(String acctNumber) {
+			this.acctNumber = acctNumber;
+		}
+
+		public String getAcctName() {
+			return acctName;
+		}
+
+		public void setAcctName(String acctName) {
+			this.acctName = acctName;
+		}
+
+		public String getDataType() {
+			return dataType;
+		}
+
+		public void setDataType(String dataType) {
+			this.dataType = dataType;
+		}
+
+		public String getReportName() {
+			return reportName;
+		}
+
+		public void setReportName(String reportName) {
+			this.reportName = reportName;
+		}
+
+		public String getReportLabel() {
+			return reportLabel;
+		}
+
+		public void setReportLabel(String reportLabel) {
+			this.reportLabel = reportLabel;
+		}
+
+		public String getReportAddlCriteria1() {
+			return reportAddlCriteria1;
+		}
+
+		public void setReportAddlCriteria1(String reportAddlCriteria1) {
+			this.reportAddlCriteria1 = reportAddlCriteria1;
+		}
+
+		public String getReportRemarks() {
+			return reportRemarks;
+		}
+
+		public void setReportRemarks(String reportRemarks) {
+			this.reportRemarks = reportRemarks;
+		}
+
+		public String getModificationRemarks() {
+			return modificationRemarks;
+		}
+
+		public void setModificationRemarks(String modificationRemarks) {
+			this.modificationRemarks = modificationRemarks;
+		}
+
+		public String getDataEntryVersion() {
+			return dataEntryVersion;
+		}
+
+		public void setDataEntryVersion(String dataEntryVersion) {
+			this.dataEntryVersion = dataEntryVersion;
+		}
+
+		public BigDecimal getAcctBalanceInpula() {
+			return acctBalanceInpula;
+		}
+
+		public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
+			this.acctBalanceInpula = acctBalanceInpula;
+		}
+
+		public Date getReportDate() {
+			return reportDate;
+		}
+
+		public void setReportDate(Date reportDate) {
+			this.reportDate = reportDate;
+		}
+
+		public String getCreateUser() {
+			return createUser;
+		}
+
+		public void setCreateUser(String createUser) {
+			this.createUser = createUser;
+		}
+
+		public Date getCreateTime() {
+			return createTime;
+		}
+
+		public void setCreateTime(Date createTime) {
+			this.createTime = createTime;
+		}
+
+		public String getModifyUser() {
+			return modifyUser;
+		}
+
+		public void setModifyUser(String modifyUser) {
+			this.modifyUser = modifyUser;
+		}
+
+		public Date getModifyTime() {
+			return modifyTime;
+		}
+
+		public void setModifyTime(Date modifyTime) {
+			this.modifyTime = modifyTime;
+		}
+
+		public String getVerifyUser() {
+			return verifyUser;
+		}
+
+		public void setVerifyUser(String verifyUser) {
+			this.verifyUser = verifyUser;
+		}
+
+		public Date getVerifyTime() {
+			return verifyTime;
+		}
+
+		public void setVerifyTime(Date verifyTime) {
+			this.verifyTime = verifyTime;
+		}
+
+		public char getEntityFlg() {
+			return entityFlg;
+		}
+
+		public void setEntityFlg(char entityFlg) {
+			this.entityFlg = entityFlg;
+		}
+
+		public char getModifyFlg() {
+			return modifyFlg;
+		}
+
+		public void setModifyFlg(char modifyFlg) {
+			this.modifyFlg = modifyFlg;
+		}
+
+		public char getDelFlg() {
+			return delFlg;
+		}
+
+		public void setDelFlg(char delFlg) {
+			this.delFlg = delFlg;
+		}
+
+		public BigDecimal getAverage() {
+			return average;
+		}
+
+		public void setAverage(BigDecimal average) {
+			this.average = average;
+		}
+	}
+
+	// MODEL AND VIEW METHOD summary
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getPL_SCHSView(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, BigDecimal version) {
+	public ModelAndView getPL_SCHSView(
+
+			String reportId, String fromdate, String todate, String currency, String dtltype, Pageable pageable,
+			String type, BigDecimal version) {
 
 		ModelAndView mv = new ModelAndView();
-		Session hs = sessionFactory.getCurrentSession();
 
-		int pageSize = pageable.getPageSize();
-		int currentPage = pageable.getPageNumber();
-		int startItem = currentPage * pageSize;
+		System.out.println("PL_SCHS View Called");
+		System.out.println("Type = " + type);
+		System.out.println("Version = " + version);
 
-		try {
-			Date d1 = dateformat.parse(todate);
+		// ARCHIVAL MODE
 
-			// ---------- CASE 1: ARCHIVAL ----------
-			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
-				List<PL_SCHS_Archival_Summary_Entity> T1Master = PL_SCHS_Archival_Summary_Repo
-						.getdatabydateListarchival(d1, version);
-				mv.addObject("reportsummary", T1Master);
-				System.out.println("T1Master Size " + T1Master.size());
+		if ("ARCHIVAL".equals(type) && version != null) {
 
+			List<PL_SCHS_Archival_Summary_Entity> T1Master = new ArrayList<>();
+
+			try {
+				Date dt = dateformat.parse(todate);
+				// SUMMARY ARCHIVAL
+				T1Master = getdatabydateListarchival(dt, version);
+				System.out.println("Archival Summary size = " + T1Master.size());
+
+				mv.addObject("REPORT_DATE", dateformat.format(dt));
+
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 
-			// ---------- CASE 3: NORMAL ----------
-			else {
-				List<PL_SCHS_Summary_Entity> T1Master = PL_SCHS_summary_repo
-						.getdatabydateList(dateformat.parse(todate));
-
-				mv.addObject("reportsummary", T1Master);
-				System.out.println("T1Master Size " + T1Master.size());
-			}
-
-		} catch (ParseException e) {
-			e.printStackTrace();
+			mv.addObject("reportsummary", T1Master);
 		}
+		// NORMAL MODE
+
+		else {
+			List<PL_SCHS_Summary_Entity> T1Master = new ArrayList<>();
+			try {
+				Date dt = dateformat.parse(todate);
+
+				// SUMMARY NORMAL
+				T1Master = getDataByDate(dt);
+
+				System.out.println("Summary size = " + T1Master.size());
+
+				mv.addObject("REPORT_DATE", dateformat.format(dt));
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			mv.addObject("reportsummary", T1Master);
+		}
+
+		// VIEW SETTINGS
 
 		mv.setViewName("BRRS/PL_SCHS");
 		mv.addObject("displaymode", "summary");
-		System.out.println("View set to: " + mv.getViewName());
+
+		System.out.println("View Loaded: " + mv.getViewName());
+
 		return mv;
 	}
 
-	public void updateReport(PL_SCHS_Summary_Entity updatedEntity) {
-
-		PL_SCHS_Summary_Entity existing = PL_SCHS_summary_repo.findById(updatedEntity.getREPORT_DATE()).orElseThrow(
-				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
-
-		int[] rows = { 12, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29, 42, 54, 61 };
-
-		String[] fields = { "intrest_div", "other_income", "operating_expenses", "fig_bal_sheet", "fig_bal_sheet_bwp",
-				"amt_statement_adj", "amt_statement_adj_bwp", "net_amt", "net_amt_bwp", "bal_sub", "bal_sub_bwp",
-				"bal_sub_diaries", "bal_sub_diaries_bwp" };
-
-		try {
-			for (int i : rows) {
-				for (String field : fields) {
-
-					String getterName = "getR" + i + "_" + field;
-					String setterName = "setR" + i + "_" + field;
-
-					try {
-						Method getter = PL_SCHS_Summary_Entity.class.getMethod(getterName);
-						Method setter = PL_SCHS_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-						Object newValue = getter.invoke(updatedEntity);
-						setter.invoke(existing, newValue);
-
-					} catch (NoSuchMethodException e) {
-						// Field not applicable for this row → skip safely
-					}
-				}
-			}
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
-		}
-
-		PL_SCHS_summary_repo.save(existing);
-	}
+	// =========================
+// MODEL AND VIEW METHOD detail
+//=========================
 
 	public ModelAndView getPL_SCHScurrentDtl(String reportId, String fromdate, String todate, String currency,
 			String dtltype, Pageable pageable, String filter, String type, String version) {
 
-		int pageSize = pageable != null ? pageable.getPageSize() : 10;
-		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
-		int totalPages = 0;
-
 		ModelAndView mv = new ModelAndView();
 
-		// Session hs = sessionFactory.getCurrentSession();
-
 		try {
+
 			Date parsedDate = null;
 
 			if (todate != null && !todate.isEmpty()) {
@@ -188,7 +11819,7 @@ public class BRRS_PL_SCHS_ReportService {
 
 			String reportLabel = null;
 			String reportAddlCriteria1 = null;
-			// ? Split filter string into rowId & columnId
+
 			if (filter != null && filter.contains(",")) {
 				String[] parts = filter.split(",");
 				if (parts.length >= 2) {
@@ -197,78 +11828,512 @@ public class BRRS_PL_SCHS_ReportService {
 				}
 			}
 
-			System.out.println(type);
+			// ARCHIVAL MODE
+
 			if ("ARCHIVAL".equals(type) && version != null) {
-				System.out.println(type);
-				// ?? Archival branch
-				List<PL_SCHS_Archival_Detail_Entity> T1Dt1;
-				if (reportLabel != null && reportAddlCriteria1 != null) {
-					T1Dt1 = PL_SCHS_Archival_Detail_Repo.GetDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1,
-							parsedDate, version);
-				} else {
-					T1Dt1 = PL_SCHS_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
-				}
 
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+				System.out.println("ARCHIVAL DETAIL MODE");
 
-			} else {
-				// ?? Current branch
-				List<PL_SCHS_Detail_Entity> T1Dt1;
+				List<PL_SCHS_Archival_Detail_Entity> archivalDetailList;
 
 				if (reportLabel != null && reportAddlCriteria1 != null) {
-					T1Dt1 = PL_SCHS_detail_repo.GetDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1, parsedDate);
-				} else {
-					T1Dt1 = PL_SCHS_detail_repo.getdatabydateList(parsedDate);
-					totalPages = PL_SCHS_detail_repo.getdatacount(parsedDate);
-					mv.addObject("pagination", "YES");
 
+					archivalDetailList = GetArchivalDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1, parsedDate,
+							version);
+
+				} else {
+
+					archivalDetailList = getArchivalDetaildatabydateList(parsedDate, version);
 				}
 
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
+				mv.addObject("reportdetails", archivalDetailList);
+				mv.addObject("reportmaster12", archivalDetailList);
 
-				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+				System.out.println("ARCHIVAL DETAIL COUNT: " + archivalDetailList.size());
+
 			}
-		} catch (ParseException e) {
-			e.printStackTrace();
-			mv.addObject("errorMessage", "Invalid date format: " + todate);
+
+			// CURRENT MODE
+
+			else {
+
+				List<PL_SCHS_Detail_Entity> currentDetailList;
+
+				if (reportLabel != null && reportAddlCriteria1 != null) {
+
+					currentDetailList = GetDetailDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1, parsedDate);
+
+				} else {
+
+					currentDetailList = getDetaildatabydateList(parsedDate);
+
+				}
+
+				mv.addObject("reportdetails", currentDetailList);
+				mv.addObject("reportmaster12", currentDetailList);
+
+				System.out.println("CURRENT DETAIL COUNT: " + currentDetailList.size());
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
-			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
+			mv.addObject("errorMessage", e.getMessage());
 		}
 
 		mv.setViewName("BRRS/PL_SCHS");
 		mv.addObject("displaymode", "Details");
-		mv.addObject("currentPage", currentPage);
-		System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
-		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
-		mv.addObject("reportsflag", "reportsflag");
 		mv.addObject("menu", reportId);
+		mv.addObject("currency", currency);
+		mv.addObject("reportId", reportId);
+
 		return mv;
+	}
+
+//Archival View
+	public List<Object[]> getPL_SCHSArchival() {
+		List<Object[]> archivalList = new ArrayList<>();
+
+		try {
+
+			List<PL_SCHS_Archival_Summary_Entity> repoData = getdatabydateListWithVersion();
+
+			if (repoData != null && !repoData.isEmpty()) {
+				for (PL_SCHS_Archival_Summary_Entity entity : repoData) {
+					Object[] row = new Object[] { entity.getREPORT_DATE(), entity.getREPORT_VERSION(),
+							entity.getREPORT_RESUBDATE() };
+					archivalList.add(row);
+				}
+
+				System.out.println("Fetched " + archivalList.size() + " archival records");
+				PL_SCHS_Archival_Summary_Entity first = repoData.get(0);
+				System.out.println("Latest archival version: " + first.getREPORT_VERSION());
+			} else {
+				System.out.println("No archival data found.");
+			}
+
+		} catch (Exception e) {
+			System.err.println("Error fetching  PL_SCHS  Archival data: " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		return archivalList;
+	}
+
+	public ModelAndView getViewOrEditPage(String acct_number, String formMode) {
+		ModelAndView mv = new ModelAndView("BRRS/PL_SCHS");
+
+		if (acct_number != null) {
+			PL_SCHS_Detail_Entity PL_SCHSEntity = findByAcctnumber(acct_number);
+			if (PL_SCHSEntity != null && PL_SCHSEntity.getReportDate() != null) {
+				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(PL_SCHSEntity.getReportDate());
+				mv.addObject("asondate", formattedDate);
+			}
+			mv.addObject("PL_SCHSData", PL_SCHSEntity);
+		}
+
+		mv.addObject("displaymode", "edit");
+		mv.addObject("formmode", formMode != null ? formMode : "edit");
+		return mv;
+	}
+
+	@Transactional
+	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
+
+		try {
+
+			String acctNo = request.getParameter("acctNumber");
+
+			String acctBalanceInpulaStr = request.getParameter("acctBalanceInpula");
+
+			String averageStr = request.getParameter("average");
+
+			String acctName = request.getParameter("acctName");
+
+			String reportDateStr = request.getParameter("reportDate");
+
+			// Existing Record
+			PL_SCHS_Detail_Entity existing = findByAcctnumber(acctNo);
+
+			if (existing == null) {
+
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+			}
+
+			boolean isChanged = false;
+
+			// ACCOUNT NAME
+			if (acctName != null && !acctName.isEmpty()) {
+
+				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
+
+					existing.setAcctName(acctName);
+
+					isChanged = true;
+				}
+			}
+
+			// ACCOUNT BALANCE
+			if (acctBalanceInpulaStr != null && !acctBalanceInpulaStr.isEmpty()) {
+
+				BigDecimal newBalance = new BigDecimal(acctBalanceInpulaStr);
+
+				if (existing.getAcctBalanceInpula() == null
+						|| existing.getAcctBalanceInpula().compareTo(newBalance) != 0) {
+
+					existing.setAcctBalanceInpula(newBalance);
+
+					isChanged = true;
+				}
+			}
+
+			// AVERAGE
+			if (averageStr != null && !averageStr.isEmpty()) {
+
+				BigDecimal newAverage = new BigDecimal(averageStr);
+
+				if (existing.getAverage() == null || existing.getAverage().compareTo(newAverage) != 0) {
+
+					existing.setAverage(newAverage);
+
+					isChanged = true;
+				}
+			}
+
+			// UPDATE
+			if (isChanged) {
+
+				String sql = "UPDATE BRRS_PL_SCHS_DETAILTABLE " + "SET ACCT_NAME = ?, " + "ACCT_BALANCE_IN_PULA = ?, "
+						+ "AVERAGE = ? " + "WHERE ACCT_NUMBER = ?";
+
+				jdbcTemplate.update(sql, existing.getAcctName(), existing.getAcctBalanceInpula(), existing.getAverage(),
+						acctNo);
+
+				System.out.println("Record updated successfully");
+
+				// DATE FORMAT
+				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+
+				// PROCEDURE CALL
+				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+
+					@Override
+					public void afterCommit() {
+
+						try {
+
+							jdbcTemplate.update("BEGIN BRRS_PL_SCHS_SUMMARY_PROCEDURE(?); END;", formattedDate);
+
+							System.out.println("Procedure executed");
+
+						} catch (Exception e) {
+
+							e.printStackTrace();
+						}
+					}
+				});
+
+				return ResponseEntity.ok("Record updated successfully!");
+			}
+
+			else {
+
+				return ResponseEntity.ok("No changes were made.");
+			}
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error updating record: " + e.getMessage());
+		}
+	}
+
+	public byte[] getPL_SCHSDetailExcel(String filename, String fromdate, String todate, String currency,
+			String dtltype, String type, String version) {
+		try {
+			logger.info("Generating Excel for  PL_SCHS Details...");
+			System.out.println("came to Detail download service");
+
+			if (type.equals("ARCHIVAL") & version != null) {
+				byte[] ARCHIVALreport = getPL_SCHSDetailNewExcelARCHIVAL(filename, fromdate, todate, currency, dtltype,
+						type, version);
+				return ARCHIVALreport;
+			}
+
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			XSSFSheet sheet = workbook.createSheet("PL_SCHSDetailsDetail");
+
+			// Common border style
+			BorderStyle border = BorderStyle.THIN;
+
+			// Header style (left aligned)
+
+			CellStyle headerStyle = workbook.createCellStyle();
+
+			Font headerFont = workbook.createFont();
+			headerFont.setBold(true);
+			headerFont.setFontHeightInPoints((short) 10);
+			headerStyle.setFont(headerFont);
+			headerStyle.setAlignment(HorizontalAlignment.LEFT);
+			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+			headerStyle.setBorderTop(border);
+			headerStyle.setBorderBottom(border);
+			headerStyle.setBorderLeft(border);
+			headerStyle.setBorderRight(border);
+
+			// Right-aligned header style for ACCT BALANCE
+			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
+			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
+			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+			// Default data style (left aligned)
+			CellStyle dataStyle = workbook.createCellStyle();
+			dataStyle.setAlignment(HorizontalAlignment.LEFT);
+			dataStyle.setBorderTop(border);
+			dataStyle.setBorderBottom(border);
+			dataStyle.setBorderLeft(border);
+			dataStyle.setBorderRight(border);
+
+			// ACCT BALANCE style (right aligned with 3 decimals)
+			CellStyle balanceStyle = workbook.createCellStyle();
+			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
+			balanceStyle.setBorderTop(border);
+			balanceStyle.setBorderBottom(border);
+			balanceStyle.setBorderLeft(border);
+			balanceStyle.setBorderRight(border);
+
+			// Header row
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "AVERAGE", "REPORT LABEL",
+					"REPORT ADDL CRITERIA1", "REPORT_DATE" };
+
+			XSSFRow headerRow = sheet.createRow(0);
+			for (int i = 0; i < headers.length; i++) {
+				Cell cell = headerRow.createCell(i);
+				cell.setCellValue(headers[i]);
+
+				if (i == 3 || i == 4) {
+					cell.setCellStyle(rightAlignedHeaderStyle);
+				} else {
+					cell.setCellStyle(headerStyle);
+				}
+
+				sheet.setColumnWidth(i, 5000);
+			}
+
+			// Get data
+			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+			List<PL_SCHS_Detail_Entity> reportData = getDetaildatabydateList(parsedToDate);
+
+			if (reportData != null && !reportData.isEmpty()) {
+				int rowIndex = 1;
+				for (PL_SCHS_Detail_Entity item : reportData) {
+					XSSFRow row = sheet.createRow(rowIndex++);
+
+					row.createCell(0).setCellValue(item.getCustId());
+					row.createCell(1).setCellValue(item.getAcctNumber());
+					row.createCell(2).setCellValue(item.getAcctName());
+
+					// ACCT BALANCE (right aligned, 3 decimal places)
+					Cell balanceCell = row.createCell(3);
+					if (item.getAcctBalanceInpula() != null) {
+						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
+					} else {
+						balanceCell.setCellValue(0);
+					}
+					balanceCell.setCellStyle(balanceStyle);
+
+					// AVERAGE (right aligned, 3 decimal places)
+					Cell balanceCell1 = row.createCell(4);
+					if (item.getAverage() != null) {
+						balanceCell1.setCellValue(item.getAverage().doubleValue());
+					} else {
+						balanceCell1.setCellValue(0);
+					}
+					balanceCell1.setCellStyle(balanceStyle);
+
+					row.createCell(5).setCellValue(item.getReportLabel());
+					row.createCell(6).setCellValue(item.getReportAddlCriteria1());
+					row.createCell(7)
+							.setCellValue(item.getReportDate() != null
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+									: "");
+
+					// Apply data style for all other cells
+					for (int j = 0; j < 8; j++) {
+						if (j != 3 && j != 4) {
+							row.getCell(j).setCellStyle(dataStyle);
+						}
+					}
+				}
+			} else {
+				logger.info("No data found for PL_SCHS — only header will be written.");
+			}
+
+			// Write to byte[]
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			workbook.write(bos);
+			workbook.close();
+
+			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
+			return bos.toByteArray();
+
+		} catch (Exception e) {
+			logger.error("Error generating PL_SCHS Excel", e);
+			return new byte[0];
+		}
+	}
+
+	public byte[] getPL_SCHSDetailNewExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
+			String dtltype, String type, String version) {
+		try {
+			logger.info("Generating Excel for PL_SCHS ARCHIVAL Details...");
+			System.out.println("came to ARCHIVAL Detail download service");
+			if (type.equals("ARCHIVAL") & version != null) {
+
+			}
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			XSSFSheet sheet = workbook.createSheet("PL_SCHS Detail NEW");
+
+			// Common border style
+			BorderStyle border = BorderStyle.THIN;
+
+			// Header style (left aligned)
+			CellStyle headerStyle = workbook.createCellStyle();
+			Font headerFont = workbook.createFont();
+			headerFont.setBold(true);
+			headerFont.setFontHeightInPoints((short) 10);
+			headerStyle.setFont(headerFont);
+			headerStyle.setAlignment(HorizontalAlignment.LEFT);
+			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+			headerStyle.setBorderTop(border);
+			headerStyle.setBorderBottom(border);
+			headerStyle.setBorderLeft(border);
+			headerStyle.setBorderRight(border);
+
+			// Right-aligned header style for ACCT BALANCE
+			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
+			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
+			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+			// Default data style (left aligned)
+			CellStyle dataStyle = workbook.createCellStyle();
+			dataStyle.setAlignment(HorizontalAlignment.LEFT);
+			dataStyle.setBorderTop(border);
+			dataStyle.setBorderBottom(border);
+			dataStyle.setBorderLeft(border);
+			dataStyle.setBorderRight(border);
+
+			// ACCT BALANCE style (right aligned with 3 decimals)
+			CellStyle balanceStyle = workbook.createCellStyle();
+			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
+			balanceStyle.setBorderTop(border);
+			balanceStyle.setBorderBottom(border);
+			balanceStyle.setBorderLeft(border);
+			balanceStyle.setBorderRight(border);
+
+			// Header row
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "AVERAGE", "REPORT LABEL",
+					"REPORT ADDL CRITERIA1", "REPORT_DATE" };
+			XSSFRow headerRow = sheet.createRow(0);
+			for (int i = 0; i < headers.length; i++) {
+				Cell cell = headerRow.createCell(i);
+				cell.setCellValue(headers[i]);
+
+				if (i == 3 || i == 4) {
+					cell.setCellStyle(rightAlignedHeaderStyle);
+				} else {
+					cell.setCellStyle(headerStyle);
+				}
+
+				sheet.setColumnWidth(i, 5000);
+			}
+
+			// Get data
+			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+			List<PL_SCHS_Archival_Detail_Entity> reportData = getArchivalDetaildatabydateList(parsedToDate, version);
+
+			if (reportData != null && !reportData.isEmpty()) {
+				int rowIndex = 1;
+				for (PL_SCHS_Archival_Detail_Entity item : reportData) {
+					XSSFRow row = sheet.createRow(rowIndex++);
+
+					row.createCell(0).setCellValue(item.getCustId());
+					row.createCell(1).setCellValue(item.getAcctNumber());
+					row.createCell(2).setCellValue(item.getAcctName());
+
+					// ACCT BALANCE (right aligned, 3 decimal places)
+					Cell balanceCell = row.createCell(3);
+					if (item.getAcctBalanceInpula() != null) {
+						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
+					} else {
+						balanceCell.setCellValue(0);
+					}
+					balanceCell.setCellStyle(balanceStyle);
+
+					// AVERAGE (right aligned, 3 decimal places)
+					Cell balanceCell1 = row.createCell(4);
+					if (item.getAverage() != null) {
+						balanceCell1.setCellValue(item.getAverage().doubleValue());
+					} else {
+						balanceCell1.setCellValue(0);
+					}
+					balanceCell1.setCellStyle(balanceStyle);
+
+					row.createCell(5).setCellValue(item.getReportLabel());
+					row.createCell(6).setCellValue(item.getReportAddlCriteria1());
+					row.createCell(7)
+							.setCellValue(item.getReportDate() != null
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+									: "");
+
+					// Apply data style for all other cells
+					for (int j = 0; j < 8; j++) {
+						if (j != 3) {
+							row.getCell(j).setCellStyle(dataStyle);
+						}
+					}
+				}
+			} else {
+				logger.info("No data found for PL_SCHS — only header will be written.");
+			}
+
+			// Write to byte[]
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			workbook.write(bos);
+			workbook.close();
+
+			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
+			return bos.toByteArray();
+
+		} catch (Exception e) {
+			logger.error("Error generating PL_SCHS NEW Excel", e);
+			return new byte[0];
+		}
 	}
 
 	public byte[] getPL_SCHSExcel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, BigDecimal version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.");
-		System.out.println(type);
-		System.out.println(version);
-		Date reportDate = dateformat.parse(todate);
+		logger.info("Service: Starting Excel generation process in memory.PL_SCHS");
 
 		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version.compareTo(BigDecimal.ZERO) >= 0) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getExcelPL_SCHSARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
-
 		}
 
-		List<PL_SCHS_Summary_Entity> dataList = PL_SCHS_summary_repo.getdatabydateList(dateformat.parse(todate));
-//		List<PL_SCHS_Manual_Summary_Entity> dataList1 = PL_SCHS_Manual_Summary_Repo
-//				.getdatabydateList(dateformat.parse(todate));
+		// Fetch data
 
+		List<PL_SCHS_Summary_Entity> dataList = getDataByDate(dateformat.parse(todate));
+
+		System.out.println("DATA SIZE IS : " + dataList.size());
 		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for brrs2.4 report. Returning empty result.");
+			logger.warn("Service: No data found for  PL_SCHS report. Returning empty result.");
 			return new byte[0];
 		}
 
@@ -326,13 +12391,6 @@ public class BRRS_PL_SCHS_ReportService {
 			numberStyle.setBorderLeft(BorderStyle.THIN);
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
-
-			CellStyle percentStyle = workbook.createCellStyle();
-			percentStyle.cloneStyleFrom(numberStyle);
-			percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
-			percentStyle.setAlignment(HorizontalAlignment.RIGHT);
-			// --- End of Style Definitions ---
-
 			// --- End of Style Definitions ---
 			int startRow = 8;
 
@@ -3938,110 +15996,22 @@ public class BRRS_PL_SCHS_ReportService {
 						R62Cell10.setCellValue("");
 						R62Cell10.setCellStyle(textStyle);
 					}
-					// row = sheet.getRow(62);
-					// Cell R63Cell1 = row.createCell(3);
-					// if (record.getR63_fig_bal_sheet() != null) {
-					// R63Cell1.setCellValue(record.getR63_fig_bal_sheet().doubleValue());
-					// R63Cell1.setCellStyle(numberStyle);
-					// } else {
-					// R63Cell1.setCellValue("");
-					// R63Cell1.setCellStyle(textStyle);
-					// }
 
-					// // R63 Col E
-					// Cell R63Cell2 = row.createCell(4);
-					// if (record.getR63_fig_bal_sheet_bwp() != null) {
-					// R63Cell2.setCellValue(record.getR63_fig_bal_sheet_bwp().doubleValue());
-					// R63Cell2.setCellStyle(numberStyle);
-					// } else {
-					// R63Cell2.setCellValue("");
-					// R63Cell2.setCellStyle(textStyle);
-					// }
-
-					// // R63 Col F
-					// Cell R63Cell3 = row.createCell(5);
-					// if (record.getR63_amt_statement_adj() != null) {
-					// R63Cell3.setCellValue(record.getR63_amt_statement_adj().doubleValue());
-					// R63Cell3.setCellStyle(numberStyle);
-					// } else {
-					// R63Cell3.setCellValue("");
-					// R63Cell3.setCellStyle(textStyle);
-					// }
-					// // R63 Col G
-					// Cell R63Cell4 = row.createCell(6);
-					// if (record.getR63_amt_statement_adj_bwp() != null) {
-					// R63Cell4.setCellValue(record.getR63_amt_statement_adj_bwp().doubleValue());
-					// R63Cell4.setCellStyle(numberStyle);
-					// } else {
-					// R63Cell4.setCellValue("");
-					// R63Cell4.setCellStyle(textStyle);
-					// }
-					// // R63 Col H
-					// Cell R63Cell5 = row.createCell(7);
-					// if (record.getR63_net_amt() != null) {
-					// R63Cell5.setCellValue(record.getR63_net_amt().doubleValue());
-					// R63Cell5.setCellStyle(numberStyle);
-					// } else {
-					// R63Cell5.setCellValue("");
-					// R63Cell5.setCellStyle(textStyle);
-					// }
-					// // R63 Col I
-					// Cell R63Cell6 = row.createCell(8);
-					// if (record.getR63_net_amt_bwp() != null) {
-					// R63Cell6.setCellValue(record.getR63_net_amt_bwp().doubleValue());
-					// R63Cell6.setCellStyle(numberStyle);
-					// } else {
-					// R63Cell6.setCellValue("");
-					// R63Cell6.setCellStyle(textStyle);
-					// }
-					// // R63 Col J
-					// Cell R63Cell7 = row.createCell(9);
-					// if (record.getR63_bal_sub() != null) {
-					// R63Cell7.setCellValue(record.getR63_bal_sub().doubleValue());
-					// R63Cell7.setCellStyle(numberStyle);
-					// } else {
-					// R63Cell7.setCellValue("");
-					// R63Cell7.setCellStyle(textStyle);
-					// }
-					// // R63 Col K
-					// Cell R63Cell8 = row.createCell(10);
-					// if (record.getR63_bal_sub_bwp() != null) {
-					// R63Cell8.setCellValue(record.getR63_bal_sub_bwp().doubleValue());
-					// R63Cell8.setCellStyle(numberStyle);
-					// } else {
-					// R63Cell8.setCellValue("");
-					// R63Cell8.setCellStyle(textStyle);
-					// }
-					// // R63 Col L
-					// Cell R63Cell9 = row.createCell(11);
-					// if (record.getR63_bal_sub_diaries() != null) {
-					// R63Cell9.setCellValue(record.getR63_bal_sub_diaries().doubleValue());
-					// R63Cell9.setCellStyle(numberStyle);
-					// } else {
-					// R63Cell9.setCellValue("");
-					// R63Cell9.setCellStyle(textStyle);
-					// }
-					// // R63 Col M
-					// Cell R63Cell10 = row.createCell(12);
-					// if (record.getR63_bal_sub_diaries_bwp() != null) {
-					// R63Cell10.setCellValue(record.getR63_bal_sub_diaries_bwp().doubleValue());
-					// R63Cell10.setCellStyle(numberStyle);
-					// } else {
-					// R63Cell10.setCellValue("");
-					// R63Cell10.setCellStyle(textStyle);
-					// }
 				}
-				// workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
-				// ✅ Let Excel calculate formulas on open
+
 				workbook.setForceFormulaRecalculation(true);
 			} else {
 
 			}
+
 			// Write the final workbook content to the in-memory stream.
 			workbook.write(out);
+
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
 			return out.toByteArray();
 		}
+
 	}
 
 	public byte[] getExcelPL_SCHSARCHIVAL(String filename, String reportId, String fromdate, String todate,
@@ -4053,13 +16023,10 @@ public class BRRS_PL_SCHS_ReportService {
 
 		}
 
-		List<PL_SCHS_Archival_Summary_Entity> dataList = PL_SCHS_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
-//		List<PL_SCHS_Manual_Archival_Summary_Entity> dataList1 = PL_SCHS_Manual_Archival_Summary_Repo
-//				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<PL_SCHS_Archival_Summary_Entity> dataList = getdatabydateListarchival(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for PL_SCHS report. Returning empty result.");
+			logger.warn("Service: No data found for PL_SCHS new report. Returning empty result.");
 			return new byte[0];
 		}
 
@@ -4118,13 +16085,12 @@ public class BRRS_PL_SCHS_ReportService {
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
-
 			int startRow = 8;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
-					PL_SCHS_Archival_Summary_Entity record = dataList.get(i);
 
+					PL_SCHS_Archival_Summary_Entity record = dataList.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
@@ -7723,534 +19689,105 @@ public class BRRS_PL_SCHS_ReportService {
 						R62Cell10.setCellValue("");
 						R62Cell10.setCellStyle(textStyle);
 					}
-					// row = sheet.getRow(62);
-					// Cell R63Cell1 = row.createCell(3);
-					// if (record.getR63_fig_bal_sheet() != null) {
-					// R63Cell1.setCellValue(record.getR63_fig_bal_sheet().doubleValue());
-					// R63Cell1.setCellStyle(numberStyle);
-					// } else {
-					// R63Cell1.setCellValue("");
-					// R63Cell1.setCellStyle(textStyle);
-					// }
 
-					// // R63 Col E
-					// Cell R63Cell2 = row.createCell(4);
-					// if (record.getR63_fig_bal_sheet_bwp() != null) {
-					// R63Cell2.setCellValue(record.getR63_fig_bal_sheet_bwp().doubleValue());
-					// R63Cell2.setCellStyle(numberStyle);
-					// } else {
-					// R63Cell2.setCellValue("");
-					// R63Cell2.setCellStyle(textStyle);
-					// }
-
-					// // R63 Col F
-					// Cell R63Cell3 = row.createCell(5);
-					// if (record.getR63_amt_statement_adj() != null) {
-					// R63Cell3.setCellValue(record.getR63_amt_statement_adj().doubleValue());
-					// R63Cell3.setCellStyle(numberStyle);
-					// } else {
-					// R63Cell3.setCellValue("");
-					// R63Cell3.setCellStyle(textStyle);
-					// }
-					// // R63 Col G
-					// Cell R63Cell4 = row.createCell(6);
-					// if (record.getR63_amt_statement_adj_bwp() != null) {
-					// R63Cell4.setCellValue(record.getR63_amt_statement_adj_bwp().doubleValue());
-					// R63Cell4.setCellStyle(numberStyle);
-					// } else {
-					// R63Cell4.setCellValue("");
-					// R63Cell4.setCellStyle(textStyle);
-					// }
-					// // R63 Col H
-					// Cell R63Cell5 = row.createCell(7);
-					// if (record.getR63_net_amt() != null) {
-					// R63Cell5.setCellValue(record.getR63_net_amt().doubleValue());
-					// R63Cell5.setCellStyle(numberStyle);
-					// } else {
-					// R63Cell5.setCellValue("");
-					// R63Cell5.setCellStyle(textStyle);
-					// }
-					// // R63 Col I
-					// Cell R63Cell6 = row.createCell(8);
-					// if (record.getR63_net_amt_bwp() != null) {
-					// R63Cell6.setCellValue(record.getR63_net_amt_bwp().doubleValue());
-					// R63Cell6.setCellStyle(numberStyle);
-					// } else {
-					// R63Cell6.setCellValue("");
-					// R63Cell6.setCellStyle(textStyle);
-					// }
-					// // R63 Col J
-					// Cell R63Cell7 = row.createCell(9);
-					// if (record.getR63_bal_sub() != null) {
-					// R63Cell7.setCellValue(record.getR63_bal_sub().doubleValue());
-					// R63Cell7.setCellStyle(numberStyle);
-					// } else {
-					// R63Cell7.setCellValue("");
-					// R63Cell7.setCellStyle(textStyle);
-					// }
-					// // R63 Col K
-					// Cell R63Cell8 = row.createCell(10);
-					// if (record.getR63_bal_sub_bwp() != null) {
-					// R63Cell8.setCellValue(record.getR63_bal_sub_bwp().doubleValue());
-					// R63Cell8.setCellStyle(numberStyle);
-					// } else {
-					// R63Cell8.setCellValue("");
-					// R63Cell8.setCellStyle(textStyle);
-					// }
-					// // R63 Col L
-					// Cell R63Cell9 = row.createCell(11);
-					// if (record.getR63_bal_sub_diaries() != null) {
-					// R63Cell9.setCellValue(record.getR63_bal_sub_diaries().doubleValue());
-					// R63Cell9.setCellStyle(numberStyle);
-					// } else {
-					// R63Cell9.setCellValue("");
-					// R63Cell9.setCellStyle(textStyle);
-					// }
-					// // R63 Col M
-					// Cell R63Cell10 = row.createCell(12);
-					// if (record.getR63_bal_sub_diaries_bwp() != null) {
-					// R63Cell10.setCellValue(record.getR63_bal_sub_diaries_bwp().doubleValue());
-					// R63Cell10.setCellStyle(numberStyle);
-					// } else {
-					// R63Cell10.setCellValue("");
-					// R63Cell10.setCellStyle(textStyle);
-					// }
 				}
-				// workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
-				// ✅ Let Excel calculate formulas on open
 				workbook.setForceFormulaRecalculation(true);
+
 			} else {
 
 			}
+
 			// Write the final workbook content to the in-memory stream.
 			workbook.write(out);
+
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
 			return out.toByteArray();
 		}
-	}
 
-	public byte[] getPL_SCHSDetailExcel(String filename, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) {
-		try {
-			logger.info("Generating Excel for PL_SCHS Details...");
-			System.out.println("came to Detail download service");
-
-			if (type.equals("ARCHIVAL") & version != null) {
-				byte[] ARCHIVALreport = getPL_SCHSDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype,
-						type, version);
-				return ARCHIVALreport;
-			}
-
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("PL_SCHSDetails");
-
-			// Common border style
-			BorderStyle border = BorderStyle.THIN;
-
-			// Header style (left aligned)
-			CellStyle headerStyle = workbook.createCellStyle();
-			Font headerFont = workbook.createFont();
-			headerFont.setBold(true);
-			headerFont.setFontHeightInPoints((short) 10);
-			headerStyle.setFont(headerFont);
-			headerStyle.setAlignment(HorizontalAlignment.LEFT);
-			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-			headerStyle.setBorderTop(border);
-			headerStyle.setBorderBottom(border);
-			headerStyle.setBorderLeft(border);
-			headerStyle.setBorderRight(border);
-
-			// Right-aligned header style for ACCT BALANCE
-			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
-			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
-			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-
-			// Default data style (left aligned)
-			CellStyle dataStyle = workbook.createCellStyle();
-			dataStyle.setAlignment(HorizontalAlignment.LEFT);
-			dataStyle.setBorderTop(border);
-			dataStyle.setBorderBottom(border);
-			dataStyle.setBorderLeft(border);
-			dataStyle.setBorderRight(border);
-
-			// ACCT BALANCE style (right aligned with 3 decimals)
-			CellStyle balanceStyle = workbook.createCellStyle();
-			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
-			balanceStyle.setBorderTop(border);
-			balanceStyle.setBorderBottom(border);
-			balanceStyle.setBorderLeft(border);
-			balanceStyle.setBorderRight(border);
-
-			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "AVERAGE", "REPORT LABLE",
-					"REPORT ADDL CRITERIA1", "REPORT_DATE" };
-
-			XSSFRow headerRow = sheet.createRow(0);
-			for (int i = 0; i < headers.length; i++) {
-				Cell cell = headerRow.createCell(i);
-				cell.setCellValue(headers[i]);
-
-				if (i == 3 || i == 4) {
-					cell.setCellStyle(rightAlignedHeaderStyle);
-				} else {
-					cell.setCellStyle(headerStyle);
-				}
-
-				sheet.setColumnWidth(i, 5000);
-			}
-
-			// Get data
-			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<PL_SCHS_Detail_Entity> reportData = PL_SCHS_detail_repo.getdatabydateList(parsedToDate);
-
-			if (reportData != null && !reportData.isEmpty()) {
-				int rowIndex = 1;
-				for (PL_SCHS_Detail_Entity item : reportData) {
-					XSSFRow row = sheet.createRow(rowIndex++);
-
-					row.createCell(0).setCellValue(item.getCustId());
-					row.createCell(1).setCellValue(item.getAcctNumber());
-					row.createCell(2).setCellValue(item.getAcctName());
-					// ACCT BALANCE (right aligned, 3 decimal places)
-					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInpula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
-					} else {
-						balanceCell.setCellValue(0);
-					}
-					balanceCell.setCellStyle(balanceStyle);
-
-					// AVERAGE (right aligned, 3 decimal places)
-					balanceCell = row.createCell(4);
-					if (item.getAverage() != null) {
-						balanceCell.setCellValue(item.getAverage().doubleValue());
-					} else {
-						balanceCell.setCellValue(0);
-					}
-					balanceCell.setCellStyle(balanceStyle);
-
-					row.createCell(5).setCellValue(item.getReportLabel());
-					row.createCell(6).setCellValue(item.getReportAddlCriteria1());
-					row.createCell(7)
-							.setCellValue(item.getREPORT_DATE() != null
-									? new SimpleDateFormat("dd-MM-yyyy").format(item.getREPORT_DATE())
-									: "");
-
-					// Apply data style for all other cells
-					for (int j = 0; j < 8; j++) {
-						if (j != 3 && j != 4) {
-							row.getCell(j).setCellStyle(dataStyle);
-						}
-					}
-				}
-			} else {
-				logger.info("No data found for PL_SCHS — only header will be written.");
-			}
-
-			// Write to byte[]
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			workbook.write(bos);
-			workbook.close();
-
-			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
-			return bos.toByteArray();
-
-		} catch (Exception e) {
-			logger.error("Error generating PL_SCHS Excel", e);
-			return new byte[0];
-		}
-	}
-
-	public byte[] getPL_SCHSDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) {
-		try {
-			logger.info("Generating Excel for PL_SCHS ARCHIVAL Details...");
-			System.out.println("came to ARCHIVAL Detail download service");
-			if (type.equals("ARCHIVAL") & version != null) {
-
-			}
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("PL_SCHSDetail");
-
-			// Common border style
-			BorderStyle border = BorderStyle.THIN;
-
-			// Header style (left aligned)
-			CellStyle headerStyle = workbook.createCellStyle();
-			Font headerFont = workbook.createFont();
-			headerFont.setBold(true);
-			headerFont.setFontHeightInPoints((short) 10);
-			headerStyle.setFont(headerFont);
-			headerStyle.setAlignment(HorizontalAlignment.LEFT);
-			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-			headerStyle.setBorderTop(border);
-			headerStyle.setBorderBottom(border);
-			headerStyle.setBorderLeft(border);
-			headerStyle.setBorderRight(border);
-
-			// Right-aligned header style for ACCT BALANCE
-			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
-			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
-			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-
-			// Default data style (left aligned)
-			CellStyle dataStyle = workbook.createCellStyle();
-			dataStyle.setAlignment(HorizontalAlignment.LEFT);
-			dataStyle.setBorderTop(border);
-			dataStyle.setBorderBottom(border);
-			dataStyle.setBorderLeft(border);
-			dataStyle.setBorderRight(border);
-
-			// ACCT BALANCE style (right aligned with 3 decimals)
-			CellStyle balanceStyle = workbook.createCellStyle();
-			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
-			balanceStyle.setBorderTop(border);
-			balanceStyle.setBorderBottom(border);
-			balanceStyle.setBorderLeft(border);
-			balanceStyle.setBorderRight(border);
-
-			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "AVERAGE", "REPORT LABLE",
-					"REPORT ADDL CRITERIA1", "REPORT_DATE" };
-
-			XSSFRow headerRow = sheet.createRow(0);
-			for (int i = 0; i < headers.length; i++) {
-				Cell cell = headerRow.createCell(i);
-				cell.setCellValue(headers[i]);
-
-				if (i == 3 || i == 4) {
-					cell.setCellStyle(rightAlignedHeaderStyle);
-				} else {
-					cell.setCellStyle(headerStyle);
-				}
-
-				sheet.setColumnWidth(i, 5000);
-			}
-
-			// Get data
-			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<PL_SCHS_Archival_Detail_Entity> reportData = PL_SCHS_Archival_Detail_Repo
-					.getdatabydateList(parsedToDate, version);
-
-			if (reportData != null && !reportData.isEmpty()) {
-				int rowIndex = 1;
-				for (PL_SCHS_Archival_Detail_Entity item : reportData) {
-					XSSFRow row = sheet.createRow(rowIndex++);
-
-					row.createCell(0).setCellValue(item.getCustId());
-					row.createCell(1).setCellValue(item.getAcctNumber());
-					row.createCell(2).setCellValue(item.getAcctName());
-
-					// ACCT BALANCE (right aligned, 3 decimal places)
-					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInpula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
-					} else {
-						balanceCell.setCellValue(0);
-					}
-					balanceCell.setCellStyle(balanceStyle);
-
-					// AVERAGE (right aligned, 3 decimal places)
-					 balanceCell = row.createCell(4);
-					if (item.getAverage() != null) {
-						balanceCell.setCellValue(item.getAverage().doubleValue());
-					} else {
-						balanceCell.setCellValue(0);
-					}
-					balanceCell.setCellStyle(balanceStyle);
-
-					row.createCell(5).setCellValue(item.getReportLabel());
-					row.createCell(6).setCellValue(item.getReportAddlCriteria1());
-					row.createCell(7)
-							.setCellValue(item.getREPORT_DATE() != null
-									? new SimpleDateFormat("dd-MM-yyyy").format(item.getREPORT_DATE())
-									: "");
-
-					// Apply data style for all other cells
-					for (int j = 0; j < 8; j++) {
-						if (j != 3 && j != 4) {
-							row.getCell(j).setCellStyle(dataStyle);
-						}
-					}
-				}
-			} else {
-				logger.info("No data found for PL_SCHS — only header will be written.");
-			}
-
-			// Write to byte[]
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			workbook.write(bos);
-			workbook.close();
-
-			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
-			return bos.toByteArray();
-
-		} catch (Exception e) {
-			logger.error("Error generating  PL_SCHS Excel", e);
-			return new byte[0];
-		}
-	}
-
-	@Autowired
-	BRRS_PL_SCHS_Detail_Repo brrs_PL_SCHS_detail_repo;
-
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
-
-	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
-		ModelAndView mv = new ModelAndView("BRRS/PL_SCHS"); // ✅ match the report name
-
-		if (acctNo != null) {
-			PL_SCHS_Detail_Entity PL_SCHSEntity = brrs_PL_SCHS_detail_repo.findByAcctnumber(acctNo);
-			if (PL_SCHSEntity != null && PL_SCHSEntity.getREPORT_DATE() != null) {
-				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(PL_SCHSEntity.getREPORT_DATE());
-				mv.addObject("asondate", formattedDate);
-			}
-			mv.addObject("PL_SCHSData", PL_SCHSEntity);
-		}
-
-		mv.addObject("displaymode", "edit");
-		mv.addObject("formmode", formMode != null ? formMode : "edit");
-		return mv;
 	}
 
 	@Transactional
-	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
+	public void updateReport(PL_SCHS_Summary_Entity updatedEntity) {
+
+		System.out.println("Came to PL SCHS Update");
+		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+
+		// Allowed rows
+		int[] rows = { 12, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29, 42, 54, 61 };
+
 		try {
-			String acctNo = request.getParameter("acctNumber");
-			String acctBalanceInpula = request.getParameter("acctBalanceInpula");
-			String average = request.getParameter("average");
-			String acctName = request.getParameter("acctName");
-			String reportDateStr = request.getParameter("REPORT_DATE");
 
-			logger.info("Received update for ACCT_NO: {}", acctNo);
+			// Loop rows
+			for (int r : rows) {
 
-			PL_SCHS_Detail_Entity existing = brrs_PL_SCHS_detail_repo.findByAcctnumber(acctNo);
-			if (existing == null) {
-				logger.warn("No record found for ACCT_NO: {}", acctNo);
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
-			}
+				// Allowed fields
+				String[] fields = {
+						"intrest_div",
+						"other_income",
+						"operating_expenses",
+						"fig_bal_sheet",
+						"fig_bal_sheet_bwp",
+						"amt_statement_adj",
+						"amt_statement_adj_bwp",
+						"net_amt",
+						"net_amt_bwp",
+						"bal_sub",
+						"bal_sub_bwp",
+						"bal_sub_diaries",
+						"bal_sub_diaries_bwp"
+				};
 
-			boolean isChanged = false;
+				for (String field : fields) {
 
-			if (acctName != null && !acctName.isEmpty()) {
-				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
-					existing.setAcctName(acctName);
-					isChanged = true;
-					logger.info("Account name updated to {}", acctName);
-				}
-			}
+					String getterName = "getR" + r + "_" + field;
 
-			if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
-				BigDecimal newacctBalanceInpula = new BigDecimal(acctBalanceInpula);
-				if (existing.getAcctBalanceInpula() == null
-						|| existing.getAcctBalanceInpula().compareTo(newacctBalanceInpula) != 0) {
-					existing.setAcctBalanceInpula(newacctBalanceInpula);
-					isChanged = true;
-					logger.info("Balance updated to {}", newacctBalanceInpula);
-				}
-			}
+					try {
 
-			if (average != null && !average.isEmpty()) {
-				BigDecimal newaverage = new BigDecimal(average);
-				if (existing.getAverage() == null || existing.getAverage().compareTo(newaverage) != 0) {
-					existing.setAverage(newaverage);
-					isChanged = true;
-					logger.info("Balance updated to {}", newaverage);
-				}
-			}
+						Method getter =
+								PL_SCHS_Summary_Entity.class.getMethod(getterName);
 
-			if (isChanged) {
-				brrs_PL_SCHS_detail_repo.save(existing);
-				logger.info("Record updated successfully for account {}", acctNo);
+						Object value = getter.invoke(updatedEntity);
 
-				// Format date for procedure
-				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+						// Skip null values
+						if (value == null)
+							continue;
 
-				// Run summary procedure after commit
-				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-					@Override
-					public void afterCommit() {
-						try {
-							logger.info("Transaction committed — calling BRRS_PL_SCHS_SUMMARY_PROCEDURE({})",
-									formattedDate);
-							jdbcTemplate.update("BEGIN BRRS_PL_SCHS_SUMMARY_PROCEDURE(?); END;", formattedDate);
-							logger.info("Procedure executed successfully after commit.");
-						} catch (Exception e) {
-							logger.error("Error executing procedure after commit", e);
-						}
+						// DB Column Name
+						String columnName =
+								"R" + r + "_" + field.toUpperCase();
+
+						String sql =
+								"UPDATE BRRS_PL_SCHS_SUMMARYTABLE " +
+								"SET " + columnName + " = ? " +
+								"WHERE REPORT_DATE = ?";
+
+						int updatedRows = jdbcTemplate.update(
+								sql,
+								value,
+								updatedEntity.getREPORT_DATE()
+						);
+
+						System.out.println(
+								columnName + " Updated -> " +
+								value + " Rows : " + updatedRows
+						);
+
+					} catch (NoSuchMethodException e) {
+						// Skip if getter not exists
+						continue;
 					}
-				});
-
-				return ResponseEntity.ok("Record updated successfully!");
-			} else {
-				logger.info("No changes detected for ACCT_NO: {}", acctNo);
-				return ResponseEntity.ok("No changes were made.");
-			}
-
-		} catch (Exception e) {
-			logger.error("Error updating PL_SCHS record", e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Error updating record: " + e.getMessage());
-		}
-	}
-
-	public List<Object[]> getPL_SCHSResub() {
-		List<Object[]> resubList = new ArrayList<>();
-		try {
-			List<PL_SCHS_Archival_Summary_Entity> latestArchivalList = PL_SCHS_Archival_Summary_Repo
-					.getdatabydateListWithVersion();
-
-			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
-				for (PL_SCHS_Archival_Summary_Entity entity : latestArchivalList) {
-					resubList.add(new Object[] { entity.getREPORT_DATE(), entity.getREPORT_VERSION(),
-							entity.getREPORT_RESUBDATE() });
 				}
-				System.out.println("Fetched " + resubList.size() + " record(s)");
-			} else {
-				System.out.println("No archival data found.");
 			}
 
-		} catch (Exception e) {
-			System.err.println("Error fetching PL_SCHS Resub data: " + e.getMessage());
-			e.printStackTrace();
-		}
-		return resubList;
-	}
-
-	// Archival View
-	public List<Object[]> getPL_SCHSArchival() {
-		List<Object[]> archivalList = new ArrayList<>();
-
-		try {
-			List<PL_SCHS_Archival_Summary_Entity> repoData = PL_SCHS_Archival_Summary_Repo
-					.getdatabydateListWithVersion();
-
-			if (repoData != null && !repoData.isEmpty()) {
-				for (PL_SCHS_Archival_Summary_Entity entity : repoData) {
-					Object[] row = new Object[] { entity.getREPORT_DATE(), entity.getREPORT_VERSION(),
-							entity.getREPORT_RESUBDATE() };
-					archivalList.add(row);
-				}
-
-				System.out.println("Fetched " + archivalList.size() + " archival records");
-				PL_SCHS_Archival_Summary_Entity first = repoData.get(0);
-				System.out.println("Latest archival version: " + first.getREPORT_VERSION());
-			} else {
-				System.out.println("No archival data found.");
-			}
+			System.out.println("PL SCHS Update Completed");
 
 		} catch (Exception e) {
-			System.err.println("Error fetching PL_SCHS Archival data: " + e.getMessage());
-			e.printStackTrace();
-		}
 
-		return archivalList;
+			throw new RuntimeException(
+					"Error while updating PL SCHS fields", e
+			);
+		}
 	}
 
 }

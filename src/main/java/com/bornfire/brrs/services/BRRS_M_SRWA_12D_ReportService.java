@@ -1012,7 +1012,7 @@ public class BRRS_M_SRWA_12D_ReportService {
 					numberStyle.setFont(font);
 					// --- End of Style Definitions ---
 
-					int startRow = 11;
+					int startRow = 5;
 
 					if (!dataList.isEmpty()) {
 						for (int i = 0; i < dataList.size(); i++) {
@@ -1023,6 +1023,21 @@ public class BRRS_M_SRWA_12D_ReportService {
 								row = sheet.createRow(startRow + i);
 							}
 //NORMAL
+							Cell R12Cell = row.createCell(4);
+
+							if (record.getReport_date() != null) {
+
+								R12Cell.setCellValue(record.getReport_date());
+
+								R12Cell.setCellStyle(dateStyle);
+
+							} else {
+
+								R12Cell.setCellValue("");
+
+								R12Cell.setCellStyle(textStyle);
+							}
+							row = sheet.getRow(11);
 
 							Cell cell4 = row.createCell(4);
 							if (record.getR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() != null) {
@@ -2196,7 +2211,7 @@ public class BRRS_M_SRWA_12D_ReportService {
 					numberStyle.setFont(font);
 					// --- End of Style Definitions ---
 
-					int startRow = 11;
+					int startRow = 5;
 
 					if (!dataList.isEmpty()) {
 						for (int i = 0; i < dataList.size(); i++) {
@@ -2207,6 +2222,21 @@ public class BRRS_M_SRWA_12D_ReportService {
 								row = sheet.createRow(startRow + i);
 							}
 //NORMAL
+							Cell R12Cell = row.createCell(4);
+
+							if (record.getReport_date() != null) {
+
+								R12Cell.setCellValue(record.getReport_date());
+
+								R12Cell.setCellStyle(dateStyle);
+
+							} else {
+
+								R12Cell.setCellValue("");
+
+								R12Cell.setCellStyle(textStyle);
+							}
+							row = sheet.getRow(11);
 
 							Cell cell4 = row.createCell(4);
 							if (record.getR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() != null) {
@@ -3361,7 +3391,7 @@ public class BRRS_M_SRWA_12D_ReportService {
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-				int startRow = 11;
+				int startRow = 5;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -3372,6 +3402,21 @@ public class BRRS_M_SRWA_12D_ReportService {
 							row = sheet.createRow(startRow + i);
 						}
 //EMAIL
+						Cell R12Cell = row.createCell(4);
+
+						if (record.getReport_date() != null) {
+
+							R12Cell.setCellValue(record.getReport_date());
+
+							R12Cell.setCellStyle(dateStyle);
+
+						} else {
+
+							R12Cell.setCellValue("");
+
+							R12Cell.setCellStyle(textStyle);
+						}
+						row = sheet.getRow(11);
 
 						Cell cell4 = row.createCell(4);
 						if (record.getR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() != null) {
@@ -4501,7 +4546,7 @@ public class BRRS_M_SRWA_12D_ReportService {
 			numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-			int startRow = 11;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -4512,6 +4557,21 @@ public class BRRS_M_SRWA_12D_ReportService {
 						row = sheet.createRow(startRow + i);
 					}
 //NORMAL
+					Cell R12Cell = row.createCell(4);
+
+					if (record.getReport_date() != null) {
+
+						R12Cell.setCellValue(record.getReport_date());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(11);
 
 					Cell cell4 = row.createCell(4);
 					if (record.getR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() != null) {
@@ -5612,7 +5672,7 @@ public class BRRS_M_SRWA_12D_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 11;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -5623,6 +5683,21 @@ public class BRRS_M_SRWA_12D_ReportService {
 						row = sheet.createRow(startRow + i);
 					}
 //EMAIL
+					Cell R12Cell = row.createCell(4);
+
+					if (record.getReport_date() != null) {
+
+						R12Cell.setCellValue(record.getReport_date());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(11);
 
 					Cell cell4 = row.createCell(4);
 					if (record.getR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() != null) {
@@ -6735,7 +6810,7 @@ public class BRRS_M_SRWA_12D_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 11;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -6748,6 +6823,21 @@ public class BRRS_M_SRWA_12D_ReportService {
 						row = sheet.createRow(startRow + i);
 					}
 //NORMAL
+					Cell R12Cell = row.createCell(4);
+
+					if (record.getReport_date() != null) {
+
+						R12Cell.setCellValue(record.getReport_date());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(11);
 
 					Cell cell4 = row.createCell(4);
 					if (record.getR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() != null) {
@@ -7847,7 +7937,7 @@ public class BRRS_M_SRWA_12D_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 11;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -7858,6 +7948,21 @@ public class BRRS_M_SRWA_12D_ReportService {
 						row = sheet.createRow(startRow + i);
 					}
 //EMAIL
+					Cell R12Cell = row.createCell(4);
+
+					if (record.getReport_date() != null) {
+
+						R12Cell.setCellValue(record.getReport_date());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(11);
 
 					Cell cell4 = row.createCell(4);
 					if (record.getR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() != null) {

@@ -318,7 +318,7 @@ public class BRRS_M_CALOC_ReportService {
 				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
 			Sheet sheet = workbook.getSheetAt(0);
-
+			CreationHelper createHelper = workbook.getCreationHelper();
 			// Style Definitions
 			CellStyle textStyle = workbook.createCellStyle();
 			textStyle.setBorderBottom(BorderStyle.THIN);
@@ -334,9 +334,26 @@ public class BRRS_M_CALOC_ReportService {
 			numberStyle.cloneStyleFrom(textStyle);
 			numberStyle.setFont(font);
 
+			// DATE STYLE
+			CellStyle dateStyle = workbook.createCellStyle();
+			dateStyle.cloneStyleFrom(textStyle);
+
+			dateStyle.setDataFormat(
+			        createHelper.createDataFormat()
+			        .getFormat("dd-MM-yyyy")
+			);
+
+			dateStyle.setFont(font);
+
 			// Populate Data
 			if (!dataList1.isEmpty()) {
-				populateEntity1Data(sheet, dataList1.get(0), textStyle, numberStyle);
+			    populateEntity1Data(
+			            sheet,
+			            dataList1.get(0),
+			            textStyle,
+			            numberStyle,
+			            dateStyle
+			    );
 			}
 
 			if (!dataList2.isEmpty()) {
@@ -347,7 +364,7 @@ public class BRRS_M_CALOC_ReportService {
 				populateEntity3Data(sheet, dataList3.get(0), textStyle, numberStyle);
 			}
 
-			workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+			workbook.setForceFormulaRecalculation(true);
 			workbook.write(out);
 
 			logger.info("Excel generated successfully. Size: {} bytes", out.size());
@@ -357,10 +374,31 @@ public class BRRS_M_CALOC_ReportService {
 	}
 
 	private void populateEntity1Data(Sheet sheet, M_CALOC_Summary_Entity1 record, CellStyle textStyle,
-			CellStyle numberStyle) {
+			CellStyle numberStyle,CellStyle dateStyle) {
 		// ROW 11 (Index 9)
-		Row row = sheet.getRow(10) != null ? sheet.getRow(10) : sheet.createRow(10);
+		Row row = sheet.getRow(6);
 
+	    if (row == null) {
+	        row = sheet.createRow(6);
+	    }
+
+	    Cell reportDateCell = row.createCell(1);
+
+	    if (record.getReportDate() != null) {
+
+	        reportDateCell.setCellValue(
+	                record.getReportDate()
+	        );
+
+	        reportDateCell.setCellStyle(dateStyle);
+
+	    } else {
+
+	        reportDateCell.setCellValue("");
+
+	        reportDateCell.setCellStyle(textStyle);
+	    }
+		row = sheet.getRow(10);
 		// row11
 		// Column B
 		Cell cell2 = row.createCell(1);
@@ -18744,7 +18782,7 @@ public class BRRS_M_CALOC_ReportService {
 				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
 			Sheet sheet = workbook.getSheetAt(0);
-
+			CreationHelper createHelper = workbook.getCreationHelper();
 			// --- Style Definitions ---
 			CellStyle textStyle = workbook.createCellStyle();
 			textStyle.setBorderBottom(BorderStyle.THIN);
@@ -18762,10 +18800,31 @@ public class BRRS_M_CALOC_ReportService {
 			numberStyle.setBorderLeft(BorderStyle.THIN);
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
+			// DATE STYLE
+			CellStyle dateStyle = workbook.createCellStyle();
+			dateStyle.cloneStyleFrom(textStyle);
+
+			dateStyle.setDataFormat(
+			        createHelper.createDataFormat()
+			        .getFormat("dd-MM-yyyy")
+			);
+
+			dateStyle.setFont(font);
+
+			// Populate Data
+			if (!dataList1.isEmpty()) {
+				populateArchivalEntity1Data1(
+			            sheet,
+			            dataList1.get(0),
+			            textStyle,
+			            numberStyle,
+			            dateStyle
+			    );
+			}
 			// --- End of Style Definitions ---
 
 			if (!dataList1.isEmpty()) {
-				populateArchivalEntity1Data1(sheet, dataList1.get(0), textStyle, numberStyle);
+				populateArchivalEntity1Data1(sheet, dataList1.get(0), textStyle, numberStyle, dateStyle);
 			}
 
 			if (!dataList2.isEmpty()) {
@@ -18776,7 +18835,7 @@ public class BRRS_M_CALOC_ReportService {
 				populateArchivalEntity3Data3(sheet, dataList3.get(0), textStyle, numberStyle);
 			}
 
-			workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+			workbook.setForceFormulaRecalculation(true);
 			workbook.write(out);
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
 			return out.toByteArray();
@@ -18786,10 +18845,24 @@ public class BRRS_M_CALOC_ReportService {
 	}
 
 	private void populateArchivalEntity1Data1(Sheet sheet, M_CALOC_Archival_Summary_Entity1 record, CellStyle textStyle,
-			CellStyle numberStyle) {
+			CellStyle numberStyle , CellStyle dateStyle) {
 		// ROW 11 (Index 9)
-		Row row = sheet.getRow(10) != null ? sheet.getRow(10) : sheet.createRow(10);
+		Row row = sheet.getRow(6) != null ? sheet.getRow(6) : sheet.createRow(6);
+		Cell reportDateCell = row.createCell(1);
 
+		if (record.getReportDate() != null) {
+
+		    reportDateCell.setCellValue(record.getReportDate());
+
+		    reportDateCell.setCellStyle(dateStyle);
+
+		} else {
+
+		    reportDateCell.setCellValue("");
+
+		    reportDateCell.setCellStyle(textStyle);
+		}
+		row = sheet.getRow(10);
 		// row11
 		// Column B
 		Cell cell2 = row.createCell(1);
@@ -37342,7 +37415,7 @@ public class BRRS_M_CALOC_ReportService {
 				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
 			Sheet sheet = workbook.getSheetAt(0);
-
+			CreationHelper createHelper = workbook.getCreationHelper();
 			// -------------------------
 			// STYLE DEFINITIONS
 			// -------------------------
@@ -37359,12 +37432,33 @@ public class BRRS_M_CALOC_ReportService {
 			CellStyle numberStyle = workbook.createCellStyle();
 			numberStyle.cloneStyleFrom(textStyle);
 			numberStyle.setFont(font);
+			// DATE STYLE
+			CellStyle dateStyle = workbook.createCellStyle();
+			dateStyle.cloneStyleFrom(textStyle);
+
+			dateStyle.setDataFormat(
+			        createHelper.createDataFormat()
+			        .getFormat("dd-MM-yyyy")
+			);
+
+			dateStyle.setFont(font);
+
+			// Populate Data
+			if (!dataList1.isEmpty()) {
+				populateEntity1EmailData(
+			            sheet,
+			            dataList1.get(0),
+			            textStyle,
+			            numberStyle,
+			            dateStyle
+			    );
+			}
 
 			// -------------------------
 			// POPULATE DATA
 			// -------------------------
 			if (!dataList1.isEmpty()) {
-				populateEntity1EmailData(sheet, dataList1.get(0), textStyle, numberStyle);
+				populateEntity1EmailData(sheet, dataList1.get(0), textStyle, numberStyle,dateStyle);
 			}
 
 			if (!dataList2.isEmpty()) {
@@ -37385,10 +37479,24 @@ public class BRRS_M_CALOC_ReportService {
 	}
 
 	private void populateEntity1EmailData(Sheet sheet, M_CALOC_Summary_Entity1 record, CellStyle textStyle,
-			CellStyle numberStyle) {
+			CellStyle numberStyle,CellStyle dateStyle) {
 		// ROW 11 (Index 9)
-		Row row = sheet.getRow(10) != null ? sheet.getRow(10) : sheet.createRow(10);
+		Row row = sheet.getRow(6) != null ? sheet.getRow(6) : sheet.createRow(6);
+		Cell reportDateCell = row.createCell(1);
 
+		if (record.getReportDate() != null) {
+
+		    reportDateCell.setCellValue(record.getReportDate());
+
+		    reportDateCell.setCellStyle(dateStyle);
+
+		} else {
+
+		    reportDateCell.setCellValue("");
+
+		    reportDateCell.setCellStyle(textStyle);
+		}
+		row = sheet.getRow(10);
 		// row11
 		// Column B
 		Cell cell2 = row.createCell(1);
@@ -44843,8 +44951,22 @@ public class BRRS_M_CALOC_ReportService {
 	private void populateEntity1EmailArchivalData(Sheet sheet, M_CALOC_Archival_Summary_Entity1 record,
 			CellStyle textStyle, CellStyle numberStyle) {
 		// ROW 11 (Index 9)
-		Row row = sheet.getRow(10) != null ? sheet.getRow(10) : sheet.createRow(10);
+		Row row = sheet.getRow(6) != null ? sheet.getRow(6) : sheet.createRow(6);
+		Cell R12Cell = row.createCell(1);
 
+		if (record.getReportDate() != null) {
+
+			R12Cell.setCellValue(record.getReportDate());
+
+			R12Cell.setCellStyle(textStyle);
+
+		} else {
+
+			R12Cell.setCellValue("");
+
+			R12Cell.setCellStyle(textStyle);
+		}
+		row = sheet.getRow(10);
 		// row11
 		// Column B
 		Cell cell2 = row.createCell(1);

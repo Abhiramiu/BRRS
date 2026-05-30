@@ -2215,7 +2215,9 @@ public class NavigationController {
 			if (formmode == null || formmode.equals("list")) {
 				md.addAttribute("formmode", "list");
 			}
-
+			 if (date != null) {
+			        md.addAttribute("LastUploadedDate", date.toString());
+			    }
 		return "CosolidatedReport";
 	}
 	

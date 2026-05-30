@@ -633,7 +633,7 @@ public class BRRS_Q_STAFF_Report_Service {
 					numberStyle.setFont(font);
 					// --- End of Style Definitions ---
 
-					int startRow = 8;
+					int startRow = 5;
 
 					if (!dataList.isEmpty()) {
 						for (int i = 0; i < dataList.size(); i++) {
@@ -643,6 +643,24 @@ public class BRRS_Q_STAFF_Report_Service {
 							if (row == null) {
 								row = sheet.createRow(startRow + i);
 							}
+							
+							
+							Cell R12Cell = row.createCell(1);
+
+							if (record.getReportDate() != null) {
+
+								R12Cell.setCellValue(record.getReportDate());
+
+								R12Cell.setCellStyle(dateStyle);
+
+							} else {
+
+								R12Cell.setCellValue("");
+
+								R12Cell.setCellStyle(textStyle);
+							}
+							row = sheet.getRow(8);
+							
 // R9 Col B
 							Cell R9cell1 = row.createCell(1);
 							if (record.getR9_LOCAL() != null) {
@@ -1229,7 +1247,7 @@ public class BRRS_Q_STAFF_Report_Service {
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-				int startRow = 8;
+				int startRow = 6;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -1239,7 +1257,21 @@ public class BRRS_Q_STAFF_Report_Service {
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						Cell R12Cell = row.createCell(3);
 
+						if (record.getReportDate() != null) {
+
+							R12Cell.setCellValue(record.getReportDate());
+
+							R12Cell.setCellStyle(dateStyle);
+
+						} else {
+
+							R12Cell.setCellValue("");
+
+							R12Cell.setCellStyle(textStyle);
+						}
+						row = sheet.getRow(8);
 						// R9 Col B
 						Cell R9cell1 = row.createCell(3);
 						if (record.getR9_LOCAL() != null) {
@@ -1944,7 +1976,7 @@ public class BRRS_Q_STAFF_Report_Service {
 			numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-			int startRow = 8;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -1954,7 +1986,21 @@ public class BRRS_Q_STAFF_Report_Service {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					Cell R12Cell = row.createCell(1);
 
+					if (record.getReportDate() != null) {
+
+						R12Cell.setCellValue(record.getReportDate());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(8);
 // R9 Col B
 					Cell R9cell1 = row.createCell(1);
 					if (record.getR9_LOCAL() != null) {
@@ -2519,7 +2565,7 @@ public class BRRS_Q_STAFF_Report_Service {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 8;
+			int startRow = 6;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -2529,7 +2575,21 @@ public class BRRS_Q_STAFF_Report_Service {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					Cell R12Cell = row.createCell(3);
 
+					if (record.getReportDate() != null) {
+
+						R12Cell.setCellValue(record.getReportDate());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(8);
 					// R9 Col B
 					Cell R9cell1 = row.createCell(3);
 					if (record.getR9_LOCAL() != null) {
@@ -3236,7 +3296,7 @@ public class BRRS_Q_STAFF_Report_Service {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 8;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -3248,6 +3308,21 @@ public class BRRS_Q_STAFF_Report_Service {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					Cell R12Cell = row.createCell(1);
+
+					if (record.getReportDate() != null) {
+
+						R12Cell.setCellValue(record.getReportDate());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(8);
 // R9 Col B
 					Cell R9cell1 = row.createCell(1);
 					if (record.getR9_LOCAL() != null) {
@@ -3811,7 +3886,7 @@ public class BRRS_Q_STAFF_Report_Service {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 8;
+			int startRow = 6;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -3821,7 +3896,21 @@ public class BRRS_Q_STAFF_Report_Service {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					Cell R12Cell = row.createCell(3);
 
+					if (record.getReportDate() != null) {
+
+						R12Cell.setCellValue(record.getReportDate());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(8);
 					// R9 Col B
 					Cell R9cell1 = row.createCell(3);
 					if (record.getR9_LOCAL() != null) {

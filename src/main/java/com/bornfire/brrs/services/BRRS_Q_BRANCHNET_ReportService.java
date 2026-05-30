@@ -690,7 +690,7 @@ public class BRRS_Q_BRANCHNET_ReportService {
 					numberStyle.setFont(font);
 					// --- End of Style Definitions ---
 
-					int startRow = 9;
+					int startRow = 5;
 
 					if (!dataList.isEmpty()) {
 						for (int i = 0; i < dataList.size(); i++) {
@@ -700,6 +700,21 @@ public class BRRS_Q_BRANCHNET_ReportService {
 							if (row == null) {
 								row = sheet.createRow(startRow + i);
 							}
+							Cell R12Cell = row.createCell(2);
+
+							if (record.getReportDate() != null) {
+
+								R12Cell.setCellValue(record.getReportDate());
+
+								R12Cell.setCellStyle(dateStyle);
+
+							} else {
+
+								R12Cell.setCellValue("");
+
+								R12Cell.setCellStyle(textStyle);
+							}
+							row = sheet.getRow(9);
 //NORMAL
 							// R10 Col C
 
@@ -2027,7 +2042,7 @@ public class BRRS_Q_BRANCHNET_ReportService {
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-				int startRow = 9;
+				int startRow = 5;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -2037,6 +2052,21 @@ public class BRRS_Q_BRANCHNET_ReportService {
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						Cell R12Cell = row.createCell(4);
+
+						if (record.getReportDate() != null) {
+
+							R12Cell.setCellValue(record.getReportDate());
+
+							R12Cell.setCellStyle(dateStyle);
+
+						} else {
+
+							R12Cell.setCellValue("");
+
+							R12Cell.setCellStyle(textStyle);
+						}
+						row = sheet.getRow(9);
 //EMAIL
 // R10 Col E
 
@@ -3553,7 +3583,7 @@ public class BRRS_Q_BRANCHNET_ReportService {
 			numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-			int startRow = 9;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -3563,6 +3593,21 @@ public class BRRS_Q_BRANCHNET_ReportService {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					Cell R12Cell = row.createCell(2);
+
+					if (record.getReportDate() != null) {
+
+						R12Cell.setCellValue(record.getReportDate());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(9);
 //NORMAL
 					// R10 Col C
 
@@ -4868,7 +4913,7 @@ public class BRRS_Q_BRANCHNET_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 9;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -4878,6 +4923,21 @@ public class BRRS_Q_BRANCHNET_ReportService {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					Cell R12Cell = row.createCell(4);
+
+					if (record.getReportDate() != null) {
+
+						R12Cell.setCellValue(record.getReportDate());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(9);
 //EMAIL
 // R10 Col E
 
@@ -6396,7 +6456,7 @@ public class BRRS_Q_BRANCHNET_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 9;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -6408,6 +6468,21 @@ public class BRRS_Q_BRANCHNET_ReportService {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					Cell R12Cell = row.createCell(2);
+
+					if (record.getReportDate() != null) {
+
+						R12Cell.setCellValue(record.getReportDate());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(9);
 //NORMAL
 					// R10 Col C
 
@@ -7712,7 +7787,7 @@ public class BRRS_Q_BRANCHNET_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 9;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -7723,6 +7798,21 @@ public class BRRS_Q_BRANCHNET_ReportService {
 						row = sheet.createRow(startRow + i);
 					}
 //EMAIL
+					Cell R12Cell = row.createCell(4);
+
+					if (record.getReportDate() != null) {
+
+						R12Cell.setCellValue(record.getReportDate());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(9);
 // R10 Col E
 
 					Cell R10cell1 = row.createCell(4);

@@ -1918,51 +1918,91 @@ PURPOSE		: BRRSREPORT
 													style="text-align:right;width:390px;padding-right: 8px;"
 													class="r13_fig_bal_sheet" th:attr="RowId='R13', ColumnId='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-												<td th:text="${#numbers.formatDecimal(reportsummary.r13_fig_bal_sheet_bwp, 0, 'COMMA', 0, 'POINT')}"
-													id="r13_fig_bal_sheet_bwp" name="r13_fig_bal_sheet_bwp"
-													class="r13_fig_bal_sheet_bwp"
-													style="text-align:right;width:390px;padding-right: 8px;background-color: rgb(107, 122, 143);color: white;"
-													th:attr="RowId='R13', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												<td
+													style="text-align:right;width:390px;padding-right:8px;background-color:rgb(107,122,143);">
+
+													<input type="text" id="r13_fig_bal_sheet_bwp"
+														name="r13_fig_bal_sheet_bwp" class="r13_fig_bal_sheet_bwp"
+														readonly
+														th:value="${#numbers.formatDecimal(reportsummary.r13_fig_bal_sheet_bwp,0,'COMMA',0,'POINT')}"
+														style="width:160px;
+													                  border:none;
+													                  background-color:rgb(107,122,143);
+													                  color:white;
+													                  text-align:right;" />
+
+												</td>
 												<td class="r13_amt_statement_adj" id="r13_amt_statement_adj"
 													name="r13_amt_statement_adj"
 													style="text-align:right;width:390px;padding-right: 8px;"
 													th:attr="RowId='R13', ColumnId='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-												<td th:text="${#numbers.formatDecimal(reportsummary.r13_amt_statement_adj_bwp, 0, 'COMMA', 0, 'POINT')}"
-													class="r13_amt_statement_adj_bwp" id="r13_amt_statement_adj_bwp"
-													name="r13_amt_statement_adj_bwp"
-													style="text-align:right;width:390px;padding-right: 8px;background-color: rgb(107, 122, 143);color: white;"
-													th:attr="RowId='R13', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												<td
+													style="text-align:right;width:390px;padding-right:8px;background-color:rgb(107,122,143);">
+
+													<input type="text" id="r13_amt_statement_adj_bwp"
+														name="r13_amt_statement_adj_bwp"
+														class="r13_amt_statement_adj_bwp" readonly
+														th:value="${#numbers.formatDecimal(reportsummary.r13_amt_statement_adj_bwp,0,'COMMA',0,'POINT')}"
+														style="width:160px;
+													                     border:none;
+													                     background-color:rgb(107,122,143);
+													                     color:white;
+													                     text-align:right;" />
+
+												</td>
 												<td id="r13_net_amt" name="r13_net_amt" class="r13_net_amt"
 													style="text-align:right;width:390px;">
 												</td>
-												<td th:text="${#numbers.formatDecimal(reportsummary.r13_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
-													id="r13_net_amt_bwp" name="r13_net_amt_bwp" class="r13_net_amt_bwp"
-													style="text-align:right;width:390px;padding-right: 8px;background-color: rgb(107, 122, 143);color: white;"
-													th:attr="RowId='R13', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												<td
+													style="text-align:right;width:390px;padding-right:8px;background-color:rgb(107,122,143);">
+
+													<input type="text" id="r13_net_amt_bwp" name="r13_net_amt_bwp"
+														class="r13_net_amt_bwp" readonly
+														th:value="${#numbers.formatDecimal(reportsummary.r13_net_amt_bwp,0,'COMMA',0,'POINT')}"
+														style="width:160px;
+												                  border:none;
+												                  background-color:rgb(107,122,143);
+												                  color:white;
+												                  text-align:right;" />
+
+												</td>
 												<td id="r13_bal_sub" name="r13_bal_sub" class="r13_bal_sub"
 													style="text-align:right;width:390px;padding-right: 8px;"
 													th:attr="RowId='R13', ColumnId='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-												<td th:text="${#numbers.formatDecimal(reportsummary.r13_bal_sub_bwp, 0, 'COMMA', 0, 'POINT')}"
-													id="r13_bal_sub_bwp" name="r13_bal_sub_bwp" class="r13_bal_sub_bwp"
-													style="text-align:right;width:390px;padding-right: 8px;background-color: rgb(107, 122, 143);color: white;"
-													th:attr="RowId='R13', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												<td
+													style="text-align:right;width:390px;padding-right:8px;background-color:rgb(107,122,143);">
+
+													<input type="text" id="r13_bal_sub_bwp" name="r13_bal_sub_bwp"
+														class="r13_bal_sub_bwp" readonly
+														th:value="${#numbers.formatDecimal(reportsummary.r13_bal_sub_bwp,0,'COMMA',0,'POINT')}"
+														style="width:160px;
+													                  border:none;
+													                  background-color:rgb(107,122,143);
+													                  color:white;
+													                  text-align:right;" />
+
+												</td>
 												<td id="r13_bal_sub_diaries" name="r13_bal_sub_diaries"
 													class="r13_bal_sub_diaries"
 													style="text-align:right;width:390px;padding-right: 8px;"
 													th:attr="RowId='R13', ColumnId='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-												<td th:text="${#numbers.formatDecimal(reportsummary.r13_bal_sub_diaries_bwp, 0, 'COMMA', 0, 'POINT')}"
-													id="r13_bal_sub_diaries_bwp" name="r13_bal_sub_diaries_bwp"
-													class="r13_bal_sub_diaries_bwp"
-													style="text-align:right;width:390px;padding-right: 8px;background-color: rgb(107, 122, 143);color: white;"
-													th:attr="RowId='R13', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												<td
+													style="text-align:right;width:390px;padding-right:8px;background-color:rgb(107,122,143);">
+
+													<input type="text" id="r13_bal_sub_diaries_bwp"
+														name="r13_bal_sub_diaries_bwp" class="r13_bal_sub_diaries_bwp"
+														readonly
+														th:value="${#numbers.formatDecimal(reportsummary.r13_bal_sub_diaries_bwp,0,'COMMA',0,'POINT')}"
+														style="width:160px;
+													                  border:none;
+													                  background-color:rgb(107,122,143);
+													                  color:white;
+													                  text-align:right;" />
+
+												</td>
 											</tr>
 										</tbody>
 									</table>
@@ -3105,9 +3145,9 @@ PURPOSE		: BRRSREPORT
 												</td>
 											</tr>
 											<tr>
-												<td> VII </td>
+												<td>VII</td>
 												<td th:text="${reportsummary.r30_other_income}"
-													style="padding-left: 26px;"></td>
+													style="padding-left: 23px;"></td>
 
 												<td th:text="${#numbers.formatDecimal(reportsummary.r30_fig_bal_sheet, 0, 'COMMA', 0, 'POINT')}"
 													id="r30_fig_bal_sheet" name="r30_fig_bal_sheet"
@@ -3164,9 +3204,6 @@ PURPOSE		: BRRSREPORT
 													th:attr="RowId='R30', ColumnId='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 											</tr>
-
-
-
 											<tr>
 												<td></td>
 												<td th:text="${reportsummary.r31_other_income}"
@@ -4627,7 +4664,7 @@ PURPOSE		: BRRSREPORT
 													title="Click to Edit this Record">
 													<i class="fas fa-edit" style="color: black; cursor:pointer;"
 														th:attr="data-acctNo=${report.acctNumber},
-														data-asondate=${#dates.format(report.REPORT_DATE, 'dd-MM-yyyy')},data-type=${type}"
+														data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
 														onclick="openPL_SCHSDetail(this, 'edit')"></i>
 
 												</a>
@@ -4646,7 +4683,7 @@ PURPOSE		: BRRSREPORT
 
 											<td th:text="${report.reportLabel}" style="text-align:left"></td>
 											<td th:text="${report.reportAddlCriteria1}" style="text-align:left"></td>
-											<td th:text="${#dates.format(report.REPORT_DATE, 'dd-MM-yyyy')}"
+											<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"
 												style="text-align:left"></td>
 										</tr>
 									</tbody>
@@ -4729,8 +4766,8 @@ PURPOSE		: BRRSREPORT
 
 								<label class="col-sm-2">Report Date</label>
 								<div class="col-sm-3">
-									<input type="date" name="REPORT_DATE" class="form-control form-control-sm" readonly
-										th:value="${#dates.format(PL_SCHSData.REPORT_DATE, 'yyyy-MM-dd')}" />
+									<input type="date" name="reportDate" class="form-control form-control-sm" readonly
+										th:value="${#dates.format(PL_SCHSData.reportDate, 'yyyy-MM-dd')}" />
 								</div>
 							</div>
 

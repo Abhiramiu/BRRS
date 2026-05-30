@@ -5488,14 +5488,6 @@ public class RegulatoryReportServices {
 //			}
 //			break;
 
-		case "Recon_Of_FS":
-			try {
-				archivalData = BRRS_RECON_OF_FS_ReportService.getRecon_Of_FSArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
 
 		case "AML":
 			try {
@@ -5506,13 +5498,11 @@ public class RegulatoryReportServices {
 			}
 			break;
 		case "EXPANDED_REGU_BS":
-			try {
-				archivalData = BRRS_Expanded_Regu_BS_ReportService.getExpanded_Regu_BSArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> EXPANDED_REGU_BSList = BRRS_Expanded_Regu_BS_ReportService.getExpanded_Regu_BSArchival();
+			archivalData.addAll(EXPANDED_REGU_BSList);
+			System.out.println("Fetched EXPANDED_REGU_BSList archival data: " + EXPANDED_REGU_BSList.size());
 			break;
+			
 		case "COMMON_DISCLOSURE":
 			List<Object[]> Common_DisclosureList = BRRS_Common_Disclosure_Reportservice.getCommon_DisclosureArchival();
 			archivalData.addAll(Common_DisclosureList);
@@ -5520,21 +5510,21 @@ public class RegulatoryReportServices {
 			break;
 
 		case "Market_Risk":
-			try {
-				archivalData = BRRS_Market_Risk_Reportservice.getMarket_RiskArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> MarketRiskList = BRRS_Market_Risk_Reportservice.getMarket_RiskArchival();
+			archivalData.addAll(MarketRiskList);
+			System.out.println("Fetched MarketRiskList archival data: " + MarketRiskList.size());
+			break;
+			
+		case "Main_Features":
+			List<Object[]> MainFeaturesList = BRRS_Main_Features_Reportservice.getMain_FeaturesArchival();
+			archivalData.addAll(MainFeaturesList);
+			System.out.println("Fetched MainFeaturesList archival data: " + MainFeaturesList.size());
 			break;
 
-		case "Main_Features":
-			try {
-				archivalData = BRRS_Main_Features_Reportservice.getMain_FeaturesArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		case "Recon_Of_FS":
+			List<Object[]>Recon_Of_FSList = BRRS_RECON_OF_FS_ReportService.getRecon_Of_FSArchival();
+			archivalData.addAll(Recon_Of_FSList);
+			System.out.println("Fetched Recon_Of_FSList archival data: " + Recon_Of_FSList.size());
 			break;
 
 		case "CAP_ADEQ":
@@ -7831,16 +7821,16 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "PL_SCHS":
-			try {
-				List<Object[]> resubList = BRRS_PL_SCHS_Reportservice.getPL_SCHSResub();
-				resubmissionData.addAll(resubList);
-				System.out.println("Resubmission data fetched for PL_SCHS: " + resubList.size());
-			} catch (Exception e) {
-				System.err.println("Error fetching resubmission data for PL_SCHS: " + e.getMessage());
-				e.printStackTrace();
-			}
-			break;
+//		case "PL_SCHS":
+//			try {
+//				List<Object[]> resubList = BRRS_PL_SCHS_Reportservice.getPL_SCHSResub();
+//				resubmissionData.addAll(resubList);
+//				System.out.println("Resubmission data fetched for PL_SCHS: " + resubList.size());
+//			} catch (Exception e) {
+//				System.err.println("Error fetching resubmission data for PL_SCHS: " + e.getMessage());
+//				e.printStackTrace();
+//			}
+//			break;
 		case "M_DEP3":
 			try {
 				List<Object[]> resubList = BRRS_M_DEP3_reportservice.getM_DEP3Resub();

@@ -270,7 +270,7 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 15;
+			int startRow = 6;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -279,6 +279,20 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
+					}
+					Cell R12Cell = row.createCell(1);
+
+					if (record.getReport_date() != null) {
+
+						R12Cell.setCellValue(record.getReport_date());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
 					}
 					row = sheet.getRow(15);
 					// row16
@@ -1002,7 +1016,7 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 15;
+			int startRow = 6;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -1011,6 +1025,20 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
+					}
+					Cell R12Cell = row.createCell(1);
+
+					if (record.getReport_date() != null) {
+
+						R12Cell.setCellValue(record.getReport_date());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
 					}
 					row = sheet.getRow(15);
 					// row16
