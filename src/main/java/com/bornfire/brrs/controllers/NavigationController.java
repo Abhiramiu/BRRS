@@ -2214,6 +2214,17 @@ public class NavigationController {
 		
 			if (formmode == null || formmode.equals("list")) {
 				md.addAttribute("formmode", "list");
+				
+
+				String reportDate = GeneralMasterRepos.findLastUploadedReportDate(); // DD-MM-YYYY
+
+				DateTimeFormatter input = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+				DateTimeFormatter output = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+				String htmlDate = LocalDate.parse(reportDate, input).format(output);
+
+				md.addAttribute("LastUploadedDate", htmlDate);
+				
 			}
 			 if (date != null) {
 			        md.addAttribute("LastUploadedDate", date.toString());
@@ -2269,6 +2280,17 @@ public class NavigationController {
 	        System.out.println("Enter into navigation controller");
 	        if (formmode == null || formmode.equals("list")) {
 	            md.addAttribute("formmode", "list");
+	            
+
+				String reportDate = GeneralMasterRepos.findLastUploadedReportDate(); // DD-MM-YYYY
+
+				DateTimeFormatter input = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+				DateTimeFormatter output = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+				String htmlDate = LocalDate.parse(reportDate, input).format(output);
+
+				md.addAttribute("LastUploadedDate", htmlDate);
+				
 	        }
 
 	        return "ADISBConsolidatedReport"; // HTML name

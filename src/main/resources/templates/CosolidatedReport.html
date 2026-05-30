@@ -678,9 +678,11 @@ below Styles is for Report date validation
 								class="row justify-content-center align-items-center formline mb-3">
 								<label class="col-sm-1 text-start">Report Date</label>
 								<div class="col-sm-3">
-									<input type="date" id="report_date" name="report_date"
-										class="form-control form-control-sm month-end-date-picker" />
-								</div>
+									<input type="date"
+																		       id="report_date"
+																		       name="report_date"
+																		       class="form-control form-control-sm month-end-date-picker"
+																		       th:value="${LastUploadedDate}" readonly />								</div>
 							</div>
 
 							<!-- Row 2 : Format Dropdown -->
