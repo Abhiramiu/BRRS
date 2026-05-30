@@ -1,357 +1,22931 @@
+
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
+
 import java.math.BigDecimal;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.ParseException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.io.InputStream;
+import org.apache.poi.ss.usermodel.Row;
+
+import javax.persistence.Column;
+import javax.persistence.EntityManager;
+
+import javax.persistence.PersistenceContext;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-
-import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.FillPatternType;
-/*import org.apache.poi.ss.usermodel.FillPatternType;*/
 import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
-/*import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;*/
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_OFF_BS_ITEMS_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_OFF_BS_ITEMS_Archival_Summary_Repo1;
-import com.bornfire.brrs.entities.BRRS_OFF_BS_ITEMS_Archival_Summary_Repo2;
-import com.bornfire.brrs.entities.BRRS_OFF_BS_ITEMS_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_OFF_BS_ITEMS_Summary_Repo1;
-import com.bornfire.brrs.entities.BRRS_OFF_BS_ITEMS_Summary_Repo2;
-import com.bornfire.brrs.entities.OFF_BS_ITEMS_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.OFF_BS_ITEMS_Archival_Summary_Entity1;
-import com.bornfire.brrs.entities.OFF_BS_ITEMS_Archival_Summary_Entity2;
-import com.bornfire.brrs.entities.OFF_BS_ITEMS_Detail_Entity;
-import com.bornfire.brrs.entities.OFF_BS_ITEMS_Summary_Entity1;
-import com.bornfire.brrs.entities.OFF_BS_ITEMS_Summary_Entity2;
 
-@Component
 @Service
 
 public class BRRS_OFF_BS_ITEMS_ReportService {
 	private static final Logger logger = LoggerFactory.getLogger(BRRS_OFF_BS_ITEMS_ReportService.class);
-
 	
-
+	
 	@Autowired
 	private Environment env;
 
 	@Autowired
 	SessionFactory sessionFactory;
 
-	
-	@Autowired 
-	BRRS_OFF_BS_ITEMS_Summary_Repo1 OFF_BS_ITEMS_summary_repo1;
-	
-	@Autowired 
-	BRRS_OFF_BS_ITEMS_Summary_Repo2 OFF_BS_ITEMS_summary_repo2;
-	 
-	@Autowired
-	BRRS_OFF_BS_ITEMS_Archival_Summary_Repo1 OFF_BS_ITEMS_Archival_Summary_Repo1;
-	
-	@Autowired
-	BRRS_OFF_BS_ITEMS_Archival_Summary_Repo2 OFF_BS_ITEMS_Archival_Summary_Repo2;
-	
-	@Autowired
-	BRRS_OFF_BS_ITEMS_Detail_Repo OFF_BS_ITEMS_detail_repo;
-	
-	
-	@Autowired
-	BRRS_OFF_BS_ITEMS_Archival_Detail_Repo OFF_BS_ITEMS_Archival_Detail_Repo;
-	  
+  
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 	
 
-	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
+// =====================================================
+// SUMAMRY REPO
+// =====================================================1
 
+
+	public List<OFF_BS_ITEMS_Summary_Entity1> getSummaryDataByDate1(Date reportDate) {
+
+    String sql = "SELECT * FROM BRRS_OFF_BS_ITEMS_SUMMARYTABLE1 WHERE REPORT_DATE = ?";
+
+    return jdbcTemplate.query(
+            sql,
+            new Object[]{reportDate},
+            new OFF_BS_ITEMS_Summary_RowMapper1()
+    );
+}
+// =====================================================2
+
+	public List<OFF_BS_ITEMS_Summary_Entity2> getSummaryDataByDate2(Date reportDate) {
+
+    String sql = "SELECT * FROM BRRS_OFF_BS_ITEMS_SUMMARYTABLE2 WHERE REPORT_DATE = ?";
+
+    return jdbcTemplate.query(
+            sql,
+            new Object[]{reportDate},
+            new OFF_BS_ITEMS_Summary_RowMapper2()
+    );
+}
 	
-	public ModelAndView getOFF_BS_ITEMSView(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, BigDecimal version) {
+// =====================================================
+// ARCHIVAL  SUMAMRY REPO
+// =====================================================1
 
-		ModelAndView mv = new ModelAndView();
+
+
+public List<Object[]> getOFF_BS_ITEMS_archival() {
+
+    String sql = "SELECT REPORT_DATE, REPORT_VERSION " +
+                 "FROM BRRS_OFF_BS_ITEMS_ARCHIVALTABLE_SUMMARY1 " +
+                 "ORDER BY REPORT_VERSION";
+
+    return jdbcTemplate.query(
+            sql,
+            (rs, rowNum) -> new Object[]{
+                    rs.getDate("REPORT_DATE"),
+                    rs.getBigDecimal("REPORT_VERSION")
+            }
+    );
+}
+
+public List<OFF_BS_ITEMS_Archival_Summary_Entity1> getDataByDateListArchival1(
+        Date reportDate, BigDecimal reportVersion) {
+
+    String sql = "SELECT * FROM BRRS_OFF_BS_ITEMS_ARCHIVALTABLE_SUMMARY1 " +
+                 "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+
+    return jdbcTemplate.query(
+            sql,
+            new Object[]{reportDate, reportVersion},
+            new OFF_BS_ITEMS_Archival_Summary_RowMapper1()
+    );
+}
+
+public List<OFF_BS_ITEMS_Archival_Summary_Entity1> getarchivaldatabydateListWithVersion1() {
+
+    String sql = "SELECT * FROM BRRS_OFF_BS_ITEMS_ARCHIVALTABLE_SUMMARY1 " +
+                 "WHERE REPORT_VERSION IS NOT NULL " +
+                 "ORDER BY REPORT_VERSION ASC";
+
+    return jdbcTemplate.query(
+            sql,
+            new OFF_BS_ITEMS_Archival_Summary_RowMapper1()
+    );
+}
+
+// =====================================================2
+
+
+
+public List<Object[]> getOFF_BS_ITEMS_Archival() {
+
+    String sql = "SELECT REPORT_DATE, REPORT_VERSION " +
+                 "FROM BRRS_OFF_BS_ITEMS_ARCHIVALTABLE_SUMMARY2 " +
+                 "ORDER BY REPORT_VERSION";
+
+    return jdbcTemplate.query(
+            sql,
+            (rs, rowNum) -> new Object[]{
+                    rs.getDate("REPORT_DATE"),
+                    rs.getBigDecimal("REPORT_VERSION")
+            }
+    );
+}
+
+public List<OFF_BS_ITEMS_Archival_Summary_Entity2> getDataByDateListArchival2(
+        Date reportDate, BigDecimal reportVersion) {
+
+    String sql = "SELECT * FROM BRRS_OFF_BS_ITEMS_ARCHIVALTABLE_SUMMARY2 " +
+                 "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+
+    return jdbcTemplate.query(
+            sql,
+            new Object[]{reportDate, reportVersion},
+            new OFF_BS_ITEMS_Archival_Summary_RowMapper2()
+    );
+}
+
+public List<OFF_BS_ITEMS_Archival_Summary_Entity2> getarchivaldatabydateListWithVersion2() {
+
+    String sql = "SELECT * FROM BRRS_OFF_BS_ITEMS_ARCHIVALTABLE_SUMMARY2 " +
+                 "WHERE REPORT_VERSION IS NOT NULL " +
+                 "ORDER BY REPORT_VERSION ASC";
+
+    return jdbcTemplate.query(
+            sql,
+            new OFF_BS_ITEMS_Archival_Summary_RowMapper2()
+    );
+}
+
+// =====================================================
+// DETAIL REPO
+// =====================================================	
+
+
+public List<OFF_BS_ITEMS_Detail_Entity> getDetaildatabydateList(Date reportDate) {
+
+    String sql = "SELECT * FROM BRRS_OFF_BS_ITEMS_DETAILTABLE WHERE REPORT_DATE = ?";
+
+    return jdbcTemplate.query(
+            sql,
+            new Object[]{reportDate},
+            new OFF_BS_ITEMS_Detail_RowMapper()
+    );
+}
+
+public List<OFF_BS_ITEMS_Detail_Entity> getDetaildatabydateList(Date reportDate, int offset, int limit) {
+
+    String sql = "SELECT * FROM BRRS_OFF_BS_ITEMS_DETAILTABLE " +
+                 "WHERE REPORT_DATE = ? " +
+                 "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+    return jdbcTemplate.query(
+            sql,
+            new Object[]{reportDate, offset, limit},
+            new OFF_BS_ITEMS_Detail_RowMapper()
+    );
+}
+
+public int getDataCount(Date reportDate) {
+
+    String sql = "SELECT COUNT(*) FROM BRRS_OFF_BS_ITEMS_DETAILTABLE WHERE REPORT_DATE = ?";
+
+    return jdbcTemplate.queryForObject(sql, new Object[]{reportDate}, Integer.class);
+}
+
+public List<OFF_BS_ITEMS_Detail_Entity> getdetailDataByRowIdAndColumnId(
+        String reportLabel, String reportAddlCriteria1, Date reportDate) {
+
+    String sql = "SELECT * FROM BRRS_OFF_BS_ITEMS_DETAILTABLE " +
+                 "WHERE REPORT_LABEL = ? " +
+                 "AND REPORT_ADDL_CRITERIA_1 = ? " +
+                 "AND REPORT_DATE = ?";
+
+    return jdbcTemplate.query(
+            sql,
+            new Object[]{reportLabel, reportAddlCriteria1, reportDate},
+            new OFF_BS_ITEMS_Detail_RowMapper()
+    );
+}
+
+public OFF_BS_ITEMS_Detail_Entity findByDetailAcctnumber(String acctNumber) {
+
+    String sql = "SELECT * FROM BRRS_OFF_BS_ITEMS_DETAILTABLE WHERE ACCT_NUMBER = ?";
+
+    return jdbcTemplate.queryForObject(
+            sql,
+            new Object[]{acctNumber},
+            new OFF_BS_ITEMS_Detail_RowMapper()
+    );
+}
+
+
+// =====================================================
+// ARCHIVAL  DETAIL REPO
+// =====================================================
+
+public List<OFF_BS_ITEMS_Archival_Detail_Entity> getarchivaldetaildatabydateList(
+        Date reportDate, String dataEntryVersion) {
+
+    String sql = "SELECT * FROM BRRS_OFF_BS_ITEMS_ARCHIVALTABLE_DETAIL " +
+                 "WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
+
+    return jdbcTemplate.query(
+            sql,
+            new Object[]{reportDate, dataEntryVersion},
+            new OFF_BS_ITEMS_Archival_Detail_RowMapper()
+    );
+}
+
+
+public List<OFF_BS_ITEMS_Archival_Detail_Entity> GetArchivalDataByRowIdAndColumnId(
+        String reportLabel,
+        String reportAddlCriteria1,
+        Date reportDate,
+        String dataEntryVersion) {
+
+    String sql = "SELECT * FROM BRRS_OFF_BS_ITEMS_ARCHIVALTABLE_DETAIL " +
+                 "WHERE REPORT_LABEL = ? " +
+                 "AND REPORT_ADDL_CRITERIA_1 = ? " +
+                 "AND REPORT_DATE = ? " +
+                 "AND DATA_ENTRY_VERSION = ?";
+
+    return jdbcTemplate.query(
+            sql,
+            new Object[]{
+                    reportLabel,
+                    reportAddlCriteria1,
+                    reportDate,
+                    dataEntryVersion
+            },
+            new OFF_BS_ITEMS_Archival_Detail_RowMapper()
+    );
+}
+
+// =====================================================
+// SUMAMRY ENTITY 
+// =====================================================1
+
+
+public class OFF_BS_ITEMS_Summary_RowMapper1 implements RowMapper<OFF_BS_ITEMS_Summary_Entity1> {
+
+    @Override
+    public OFF_BS_ITEMS_Summary_Entity1 mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+        OFF_BS_ITEMS_Summary_Entity1 obj = new OFF_BS_ITEMS_Summary_Entity1();
+
+
+// =========================
+// R12
+// =========================
+obj.setR12_product(rs.getString("r12_product"));
+obj.setR12_client_grp(rs.getString("r12_client_grp"));
+obj.setR12_total_book_expo(rs.getBigDecimal("r12_total_book_expo"));
+obj.setR12_margin_pro(rs.getBigDecimal("r12_margin_pro"));
+obj.setR12_book_expo(rs.getBigDecimal("r12_book_expo"));
+obj.setR12_ccf_cont(rs.getBigDecimal("r12_ccf_cont"));
+obj.setR12_equiv_value(rs.getBigDecimal("r12_equiv_value"));
+obj.setR12_rw_obligant(rs.getBigDecimal("r12_rw_obligant"));
+obj.setR12_rav(rs.getBigDecimal("r12_rav"));
+
+// =========================
+// R13
+// =========================
+obj.setR13_product(rs.getString("r13_product"));
+obj.setR13_client_grp(rs.getString("r13_client_grp"));
+obj.setR13_total_book_expo(rs.getBigDecimal("r13_total_book_expo"));
+obj.setR13_margin_pro(rs.getBigDecimal("r13_margin_pro"));
+obj.setR13_book_expo(rs.getBigDecimal("r13_book_expo"));
+obj.setR13_ccf_cont(rs.getBigDecimal("r13_ccf_cont"));
+obj.setR13_equiv_value(rs.getBigDecimal("r13_equiv_value"));
+obj.setR13_rw_obligant(rs.getBigDecimal("r13_rw_obligant"));
+obj.setR13_rav(rs.getBigDecimal("r13_rav"));
+
+// =========================
+// R14
+// =========================
+obj.setR14_product(rs.getString("r14_product"));
+obj.setR14_client_grp(rs.getString("r14_client_grp"));
+obj.setR14_total_book_expo(rs.getBigDecimal("r14_total_book_expo"));
+obj.setR14_margin_pro(rs.getBigDecimal("r14_margin_pro"));
+obj.setR14_book_expo(rs.getBigDecimal("r14_book_expo"));
+obj.setR14_ccf_cont(rs.getBigDecimal("r14_ccf_cont"));
+obj.setR14_equiv_value(rs.getBigDecimal("r14_equiv_value"));
+obj.setR14_rw_obligant(rs.getBigDecimal("r14_rw_obligant"));
+obj.setR14_rav(rs.getBigDecimal("r14_rav"));
+
+// =========================
+// R15
+// =========================
+obj.setR15_product(rs.getString("r15_product"));
+obj.setR15_client_grp(rs.getString("r15_client_grp"));
+obj.setR15_total_book_expo(rs.getBigDecimal("r15_total_book_expo"));
+obj.setR15_margin_pro(rs.getBigDecimal("r15_margin_pro"));
+obj.setR15_book_expo(rs.getBigDecimal("r15_book_expo"));
+obj.setR15_ccf_cont(rs.getBigDecimal("r15_ccf_cont"));
+obj.setR15_equiv_value(rs.getBigDecimal("r15_equiv_value"));
+obj.setR15_rw_obligant(rs.getBigDecimal("r15_rw_obligant"));
+obj.setR15_rav(rs.getBigDecimal("r15_rav"));
+
+// =========================
+// R16
+// =========================
+obj.setR16_product(rs.getString("r16_product"));
+obj.setR16_client_grp(rs.getString("r16_client_grp"));
+obj.setR16_total_book_expo(rs.getBigDecimal("r16_total_book_expo"));
+obj.setR16_margin_pro(rs.getBigDecimal("r16_margin_pro"));
+obj.setR16_book_expo(rs.getBigDecimal("r16_book_expo"));
+obj.setR16_ccf_cont(rs.getBigDecimal("r16_ccf_cont"));
+obj.setR16_equiv_value(rs.getBigDecimal("r16_equiv_value"));
+obj.setR16_rw_obligant(rs.getBigDecimal("r16_rw_obligant"));
+obj.setR16_rav(rs.getBigDecimal("r16_rav"));
+
+// =========================
+// R17
+// =========================
+obj.setR17_product(rs.getString("r17_product"));
+obj.setR17_client_grp(rs.getString("r17_client_grp"));
+obj.setR17_total_book_expo(rs.getBigDecimal("r17_total_book_expo"));
+obj.setR17_margin_pro(rs.getBigDecimal("r17_margin_pro"));
+obj.setR17_book_expo(rs.getBigDecimal("r17_book_expo"));
+obj.setR17_ccf_cont(rs.getBigDecimal("r17_ccf_cont"));
+obj.setR17_equiv_value(rs.getBigDecimal("r17_equiv_value"));
+obj.setR17_rw_obligant(rs.getBigDecimal("r17_rw_obligant"));
+obj.setR17_rav(rs.getBigDecimal("r17_rav"));
+
+// =========================
+// R18
+// =========================
+obj.setR18_product(rs.getString("r18_product"));
+obj.setR18_client_grp(rs.getString("r18_client_grp"));
+obj.setR18_total_book_expo(rs.getBigDecimal("r18_total_book_expo"));
+obj.setR18_margin_pro(rs.getBigDecimal("r18_margin_pro"));
+obj.setR18_book_expo(rs.getBigDecimal("r18_book_expo"));
+obj.setR18_ccf_cont(rs.getBigDecimal("r18_ccf_cont"));
+obj.setR18_equiv_value(rs.getBigDecimal("r18_equiv_value"));
+obj.setR18_rw_obligant(rs.getBigDecimal("r18_rw_obligant"));
+obj.setR18_rav(rs.getBigDecimal("r18_rav"));
+
+// =========================
+// R19
+// =========================
+obj.setR19_product(rs.getString("r19_product"));
+obj.setR19_client_grp(rs.getString("r19_client_grp"));
+obj.setR19_total_book_expo(rs.getBigDecimal("r19_total_book_expo"));
+obj.setR19_margin_pro(rs.getBigDecimal("r19_margin_pro"));
+obj.setR19_book_expo(rs.getBigDecimal("r19_book_expo"));
+obj.setR19_ccf_cont(rs.getBigDecimal("r19_ccf_cont"));
+obj.setR19_equiv_value(rs.getBigDecimal("r19_equiv_value"));
+obj.setR19_rw_obligant(rs.getBigDecimal("r19_rw_obligant"));
+obj.setR19_rav(rs.getBigDecimal("r19_rav"));
+
+// =========================
+// R20
+// =========================
+obj.setR20_product(rs.getString("r20_product"));
+obj.setR20_client_grp(rs.getString("r20_client_grp"));
+obj.setR20_total_book_expo(rs.getBigDecimal("r20_total_book_expo"));
+obj.setR20_margin_pro(rs.getBigDecimal("r20_margin_pro"));
+obj.setR20_book_expo(rs.getBigDecimal("r20_book_expo"));
+obj.setR20_ccf_cont(rs.getBigDecimal("r20_ccf_cont"));
+obj.setR20_equiv_value(rs.getBigDecimal("r20_equiv_value"));
+obj.setR20_rw_obligant(rs.getBigDecimal("r20_rw_obligant"));
+obj.setR20_rav(rs.getBigDecimal("r20_rav"));
+
+
+// =========================
+// R21
+// =========================
+obj.setR21_product(rs.getString("r21_product"));
+obj.setR21_client_grp(rs.getString("r21_client_grp"));
+obj.setR21_total_book_expo(rs.getBigDecimal("r21_total_book_expo"));
+obj.setR21_margin_pro(rs.getBigDecimal("r21_margin_pro"));
+obj.setR21_book_expo(rs.getBigDecimal("r21_book_expo"));
+obj.setR21_ccf_cont(rs.getBigDecimal("r21_ccf_cont"));
+obj.setR21_equiv_value(rs.getBigDecimal("r21_equiv_value"));
+obj.setR21_rw_obligant(rs.getBigDecimal("r21_rw_obligant"));
+obj.setR21_rav(rs.getBigDecimal("r21_rav"));
+
+// =========================
+// R22
+// =========================
+obj.setR22_product(rs.getString("r22_product"));
+obj.setR22_client_grp(rs.getString("r22_client_grp"));
+obj.setR22_total_book_expo(rs.getBigDecimal("r22_total_book_expo"));
+obj.setR22_margin_pro(rs.getBigDecimal("r22_margin_pro"));
+obj.setR22_book_expo(rs.getBigDecimal("r22_book_expo"));
+obj.setR22_ccf_cont(rs.getBigDecimal("r22_ccf_cont"));
+obj.setR22_equiv_value(rs.getBigDecimal("r22_equiv_value"));
+obj.setR22_rw_obligant(rs.getBigDecimal("r22_rw_obligant"));
+obj.setR22_rav(rs.getBigDecimal("r22_rav"));
+
+// =========================
+// R23
+// =========================
+obj.setR23_product(rs.getString("r23_product"));
+obj.setR23_client_grp(rs.getString("r23_client_grp"));
+obj.setR23_total_book_expo(rs.getBigDecimal("r23_total_book_expo"));
+obj.setR23_margin_pro(rs.getBigDecimal("r23_margin_pro"));
+obj.setR23_book_expo(rs.getBigDecimal("r23_book_expo"));
+obj.setR23_ccf_cont(rs.getBigDecimal("r23_ccf_cont"));
+obj.setR23_equiv_value(rs.getBigDecimal("r23_equiv_value"));
+obj.setR23_rw_obligant(rs.getBigDecimal("r23_rw_obligant"));
+obj.setR23_rav(rs.getBigDecimal("r23_rav"));
+
+// =========================
+// R24
+// =========================
+obj.setR24_product(rs.getString("r24_product"));
+obj.setR24_client_grp(rs.getString("r24_client_grp"));
+obj.setR24_total_book_expo(rs.getBigDecimal("r24_total_book_expo"));
+obj.setR24_margin_pro(rs.getBigDecimal("r24_margin_pro"));
+obj.setR24_book_expo(rs.getBigDecimal("r24_book_expo"));
+obj.setR24_ccf_cont(rs.getBigDecimal("r24_ccf_cont"));
+obj.setR24_equiv_value(rs.getBigDecimal("r24_equiv_value"));
+obj.setR24_rw_obligant(rs.getBigDecimal("r24_rw_obligant"));
+obj.setR24_rav(rs.getBigDecimal("r24_rav"));
+
+// =========================
+// R25
+// =========================
+obj.setR25_product(rs.getString("r25_product"));
+obj.setR25_client_grp(rs.getString("r25_client_grp"));
+obj.setR25_total_book_expo(rs.getBigDecimal("r25_total_book_expo"));
+obj.setR25_margin_pro(rs.getBigDecimal("r25_margin_pro"));
+obj.setR25_book_expo(rs.getBigDecimal("r25_book_expo"));
+obj.setR25_ccf_cont(rs.getBigDecimal("r25_ccf_cont"));
+obj.setR25_equiv_value(rs.getBigDecimal("r25_equiv_value"));
+obj.setR25_rw_obligant(rs.getBigDecimal("r25_rw_obligant"));
+obj.setR25_rav(rs.getBigDecimal("r25_rav"));
+
+// =========================
+// R26
+// =========================
+obj.setR26_product(rs.getString("r26_product"));
+obj.setR26_client_grp(rs.getString("r26_client_grp"));
+obj.setR26_total_book_expo(rs.getBigDecimal("r26_total_book_expo"));
+obj.setR26_margin_pro(rs.getBigDecimal("r26_margin_pro"));
+obj.setR26_book_expo(rs.getBigDecimal("r26_book_expo"));
+obj.setR26_ccf_cont(rs.getBigDecimal("r26_ccf_cont"));
+obj.setR26_equiv_value(rs.getBigDecimal("r26_equiv_value"));
+obj.setR26_rw_obligant(rs.getBigDecimal("r26_rw_obligant"));
+obj.setR26_rav(rs.getBigDecimal("r26_rav"));
+
+// =========================
+// R27
+// =========================
+obj.setR27_product(rs.getString("r27_product"));
+obj.setR27_client_grp(rs.getString("r27_client_grp"));
+obj.setR27_total_book_expo(rs.getBigDecimal("r27_total_book_expo"));
+obj.setR27_margin_pro(rs.getBigDecimal("r27_margin_pro"));
+obj.setR27_book_expo(rs.getBigDecimal("r27_book_expo"));
+obj.setR27_ccf_cont(rs.getBigDecimal("r27_ccf_cont"));
+obj.setR27_equiv_value(rs.getBigDecimal("r27_equiv_value"));
+obj.setR27_rw_obligant(rs.getBigDecimal("r27_rw_obligant"));
+obj.setR27_rav(rs.getBigDecimal("r27_rav"));
+
+// =========================
+// R28
+// =========================
+obj.setR28_product(rs.getString("r28_product"));
+obj.setR28_client_grp(rs.getString("r28_client_grp"));
+obj.setR28_total_book_expo(rs.getBigDecimal("r28_total_book_expo"));
+obj.setR28_margin_pro(rs.getBigDecimal("r28_margin_pro"));
+obj.setR28_book_expo(rs.getBigDecimal("r28_book_expo"));
+obj.setR28_ccf_cont(rs.getBigDecimal("r28_ccf_cont"));
+obj.setR28_equiv_value(rs.getBigDecimal("r28_equiv_value"));
+obj.setR28_rw_obligant(rs.getBigDecimal("r28_rw_obligant"));
+obj.setR28_rav(rs.getBigDecimal("r28_rav"));
+
+// =========================
+// R29
+// =========================
+obj.setR29_product(rs.getString("r29_product"));
+obj.setR29_client_grp(rs.getString("r29_client_grp"));
+obj.setR29_total_book_expo(rs.getBigDecimal("r29_total_book_expo"));
+obj.setR29_margin_pro(rs.getBigDecimal("r29_margin_pro"));
+obj.setR29_book_expo(rs.getBigDecimal("r29_book_expo"));
+obj.setR29_ccf_cont(rs.getBigDecimal("r29_ccf_cont"));
+obj.setR29_equiv_value(rs.getBigDecimal("r29_equiv_value"));
+obj.setR29_rw_obligant(rs.getBigDecimal("r29_rw_obligant"));
+obj.setR29_rav(rs.getBigDecimal("r29_rav"));
+
+// =========================
+// R30
+// =========================
+obj.setR30_product(rs.getString("r30_product"));
+obj.setR30_client_grp(rs.getString("r30_client_grp"));
+obj.setR30_total_book_expo(rs.getBigDecimal("r30_total_book_expo"));
+obj.setR30_margin_pro(rs.getBigDecimal("r30_margin_pro"));
+obj.setR30_book_expo(rs.getBigDecimal("r30_book_expo"));
+obj.setR30_ccf_cont(rs.getBigDecimal("r30_ccf_cont"));
+obj.setR30_equiv_value(rs.getBigDecimal("r30_equiv_value"));
+obj.setR30_rw_obligant(rs.getBigDecimal("r30_rw_obligant"));
+obj.setR30_rav(rs.getBigDecimal("r30_rav"));
+
+
+// =========================
+// R31
+// =========================
+obj.setR31_product(rs.getString("r31_product"));
+obj.setR31_client_grp(rs.getString("r31_client_grp"));
+obj.setR31_total_book_expo(rs.getBigDecimal("r31_total_book_expo"));
+obj.setR31_margin_pro(rs.getBigDecimal("r31_margin_pro"));
+obj.setR31_book_expo(rs.getBigDecimal("r31_book_expo"));
+obj.setR31_ccf_cont(rs.getBigDecimal("r31_ccf_cont"));
+obj.setR31_equiv_value(rs.getBigDecimal("r31_equiv_value"));
+obj.setR31_rw_obligant(rs.getBigDecimal("r31_rw_obligant"));
+obj.setR31_rav(rs.getBigDecimal("r31_rav"));
+
+// =========================
+// R32
+// =========================
+obj.setR32_product(rs.getString("r32_product"));
+obj.setR32_client_grp(rs.getString("r32_client_grp"));
+obj.setR32_total_book_expo(rs.getBigDecimal("r32_total_book_expo"));
+obj.setR32_margin_pro(rs.getBigDecimal("r32_margin_pro"));
+obj.setR32_book_expo(rs.getBigDecimal("r32_book_expo"));
+obj.setR32_ccf_cont(rs.getBigDecimal("r32_ccf_cont"));
+obj.setR32_equiv_value(rs.getBigDecimal("r32_equiv_value"));
+obj.setR32_rw_obligant(rs.getBigDecimal("r32_rw_obligant"));
+obj.setR32_rav(rs.getBigDecimal("r32_rav"));
+
+// =========================
+// R33
+// =========================
+obj.setR33_product(rs.getString("r33_product"));
+obj.setR33_client_grp(rs.getString("r33_client_grp"));
+obj.setR33_total_book_expo(rs.getBigDecimal("r33_total_book_expo"));
+obj.setR33_margin_pro(rs.getBigDecimal("r33_margin_pro"));
+obj.setR33_book_expo(rs.getBigDecimal("r33_book_expo"));
+obj.setR33_ccf_cont(rs.getBigDecimal("r33_ccf_cont"));
+obj.setR33_equiv_value(rs.getBigDecimal("r33_equiv_value"));
+obj.setR33_rw_obligant(rs.getBigDecimal("r33_rw_obligant"));
+obj.setR33_rav(rs.getBigDecimal("r33_rav"));
+
+// =========================
+// R34
+// =========================
+obj.setR34_product(rs.getString("r34_product"));
+obj.setR34_client_grp(rs.getString("r34_client_grp"));
+obj.setR34_total_book_expo(rs.getBigDecimal("r34_total_book_expo"));
+obj.setR34_margin_pro(rs.getBigDecimal("r34_margin_pro"));
+obj.setR34_book_expo(rs.getBigDecimal("r34_book_expo"));
+obj.setR34_ccf_cont(rs.getBigDecimal("r34_ccf_cont"));
+obj.setR34_equiv_value(rs.getBigDecimal("r34_equiv_value"));
+obj.setR34_rw_obligant(rs.getBigDecimal("r34_rw_obligant"));
+obj.setR34_rav(rs.getBigDecimal("r34_rav"));
+
+// =========================
+// R35
+// =========================
+obj.setR35_product(rs.getString("r35_product"));
+obj.setR35_client_grp(rs.getString("r35_client_grp"));
+obj.setR35_total_book_expo(rs.getBigDecimal("r35_total_book_expo"));
+obj.setR35_margin_pro(rs.getBigDecimal("r35_margin_pro"));
+obj.setR35_book_expo(rs.getBigDecimal("r35_book_expo"));
+obj.setR35_ccf_cont(rs.getBigDecimal("r35_ccf_cont"));
+obj.setR35_equiv_value(rs.getBigDecimal("r35_equiv_value"));
+obj.setR35_rw_obligant(rs.getBigDecimal("r35_rw_obligant"));
+obj.setR35_rav(rs.getBigDecimal("r35_rav"));
+
+// =========================
+// R36
+// =========================
+obj.setR36_product(rs.getString("r36_product"));
+obj.setR36_client_grp(rs.getString("r36_client_grp"));
+obj.setR36_total_book_expo(rs.getBigDecimal("r36_total_book_expo"));
+obj.setR36_margin_pro(rs.getBigDecimal("r36_margin_pro"));
+obj.setR36_book_expo(rs.getBigDecimal("r36_book_expo"));
+obj.setR36_ccf_cont(rs.getBigDecimal("r36_ccf_cont"));
+obj.setR36_equiv_value(rs.getBigDecimal("r36_equiv_value"));
+obj.setR36_rw_obligant(rs.getBigDecimal("r36_rw_obligant"));
+obj.setR36_rav(rs.getBigDecimal("r36_rav"));
+
+// =========================
+// R37
+// =========================
+obj.setR37_product(rs.getString("r37_product"));
+obj.setR37_client_grp(rs.getString("r37_client_grp"));
+obj.setR37_total_book_expo(rs.getBigDecimal("r37_total_book_expo"));
+obj.setR37_margin_pro(rs.getBigDecimal("r37_margin_pro"));
+obj.setR37_book_expo(rs.getBigDecimal("r37_book_expo"));
+obj.setR37_ccf_cont(rs.getBigDecimal("r37_ccf_cont"));
+obj.setR37_equiv_value(rs.getBigDecimal("r37_equiv_value"));
+obj.setR37_rw_obligant(rs.getBigDecimal("r37_rw_obligant"));
+obj.setR37_rav(rs.getBigDecimal("r37_rav"));
+
+// =========================
+// R38
+// =========================
+obj.setR38_product(rs.getString("r38_product"));
+obj.setR38_client_grp(rs.getString("r38_client_grp"));
+obj.setR38_total_book_expo(rs.getBigDecimal("r38_total_book_expo"));
+obj.setR38_margin_pro(rs.getBigDecimal("r38_margin_pro"));
+obj.setR38_book_expo(rs.getBigDecimal("r38_book_expo"));
+obj.setR38_ccf_cont(rs.getBigDecimal("r38_ccf_cont"));
+obj.setR38_equiv_value(rs.getBigDecimal("r38_equiv_value"));
+obj.setR38_rw_obligant(rs.getBigDecimal("r38_rw_obligant"));
+obj.setR38_rav(rs.getBigDecimal("r38_rav"));
+
+// =========================
+// R39
+// =========================
+obj.setR39_product(rs.getString("r39_product"));
+obj.setR39_client_grp(rs.getString("r39_client_grp"));
+obj.setR39_total_book_expo(rs.getBigDecimal("r39_total_book_expo"));
+obj.setR39_margin_pro(rs.getBigDecimal("r39_margin_pro"));
+obj.setR39_book_expo(rs.getBigDecimal("r39_book_expo"));
+obj.setR39_ccf_cont(rs.getBigDecimal("r39_ccf_cont"));
+obj.setR39_equiv_value(rs.getBigDecimal("r39_equiv_value"));
+obj.setR39_rw_obligant(rs.getBigDecimal("r39_rw_obligant"));
+obj.setR39_rav(rs.getBigDecimal("r39_rav"));
+
+// =========================
+// R40
+// =========================
+obj.setR40_product(rs.getString("r40_product"));
+obj.setR40_client_grp(rs.getString("r40_client_grp"));
+obj.setR40_total_book_expo(rs.getBigDecimal("r40_total_book_expo"));
+obj.setR40_margin_pro(rs.getBigDecimal("r40_margin_pro"));
+obj.setR40_book_expo(rs.getBigDecimal("r40_book_expo"));
+obj.setR40_ccf_cont(rs.getBigDecimal("r40_ccf_cont"));
+obj.setR40_equiv_value(rs.getBigDecimal("r40_equiv_value"));
+obj.setR40_rw_obligant(rs.getBigDecimal("r40_rw_obligant"));
+obj.setR40_rav(rs.getBigDecimal("r40_rav"));
+
+
+// =========================
+// R41
+// =========================
+obj.setR41_product(rs.getString("r41_product"));
+obj.setR41_client_grp(rs.getString("r41_client_grp"));
+obj.setR41_total_book_expo(rs.getBigDecimal("r41_total_book_expo"));
+obj.setR41_margin_pro(rs.getBigDecimal("r41_margin_pro"));
+obj.setR41_book_expo(rs.getBigDecimal("r41_book_expo"));
+obj.setR41_ccf_cont(rs.getBigDecimal("r41_ccf_cont"));
+obj.setR41_equiv_value(rs.getBigDecimal("r41_equiv_value"));
+obj.setR41_rw_obligant(rs.getBigDecimal("r41_rw_obligant"));
+obj.setR41_rav(rs.getBigDecimal("r41_rav"));
+
+// =========================
+// R42
+// =========================
+obj.setR42_product(rs.getString("r42_product"));
+obj.setR42_client_grp(rs.getString("r42_client_grp"));
+obj.setR42_total_book_expo(rs.getBigDecimal("r42_total_book_expo"));
+obj.setR42_margin_pro(rs.getBigDecimal("r42_margin_pro"));
+obj.setR42_book_expo(rs.getBigDecimal("r42_book_expo"));
+obj.setR42_ccf_cont(rs.getBigDecimal("r42_ccf_cont"));
+obj.setR42_equiv_value(rs.getBigDecimal("r42_equiv_value"));
+obj.setR42_rw_obligant(rs.getBigDecimal("r42_rw_obligant"));
+obj.setR42_rav(rs.getBigDecimal("r42_rav"));
+
+// =========================
+// R43
+// =========================
+obj.setR43_product(rs.getString("r43_product"));
+obj.setR43_client_grp(rs.getString("r43_client_grp"));
+obj.setR43_total_book_expo(rs.getBigDecimal("r43_total_book_expo"));
+obj.setR43_margin_pro(rs.getBigDecimal("r43_margin_pro"));
+obj.setR43_book_expo(rs.getBigDecimal("r43_book_expo"));
+obj.setR43_ccf_cont(rs.getBigDecimal("r43_ccf_cont"));
+obj.setR43_equiv_value(rs.getBigDecimal("r43_equiv_value"));
+obj.setR43_rw_obligant(rs.getBigDecimal("r43_rw_obligant"));
+obj.setR43_rav(rs.getBigDecimal("r43_rav"));
+
+// =========================
+// R44
+// =========================
+obj.setR44_product(rs.getString("r44_product"));
+obj.setR44_client_grp(rs.getString("r44_client_grp"));
+obj.setR44_total_book_expo(rs.getBigDecimal("r44_total_book_expo"));
+obj.setR44_margin_pro(rs.getBigDecimal("r44_margin_pro"));
+obj.setR44_book_expo(rs.getBigDecimal("r44_book_expo"));
+obj.setR44_ccf_cont(rs.getBigDecimal("r44_ccf_cont"));
+obj.setR44_equiv_value(rs.getBigDecimal("r44_equiv_value"));
+obj.setR44_rw_obligant(rs.getBigDecimal("r44_rw_obligant"));
+obj.setR44_rav(rs.getBigDecimal("r44_rav"));
+
+// =========================
+// R45
+// =========================
+obj.setR45_product(rs.getString("r45_product"));
+obj.setR45_client_grp(rs.getString("r45_client_grp"));
+obj.setR45_total_book_expo(rs.getBigDecimal("r45_total_book_expo"));
+obj.setR45_margin_pro(rs.getBigDecimal("r45_margin_pro"));
+obj.setR45_book_expo(rs.getBigDecimal("r45_book_expo"));
+obj.setR45_ccf_cont(rs.getBigDecimal("r45_ccf_cont"));
+obj.setR45_equiv_value(rs.getBigDecimal("r45_equiv_value"));
+obj.setR45_rw_obligant(rs.getBigDecimal("r45_rw_obligant"));
+obj.setR45_rav(rs.getBigDecimal("r45_rav"));
+
+// =========================
+// R46
+// =========================
+obj.setR46_product(rs.getString("r46_product"));
+obj.setR46_client_grp(rs.getString("r46_client_grp"));
+obj.setR46_total_book_expo(rs.getBigDecimal("r46_total_book_expo"));
+obj.setR46_margin_pro(rs.getBigDecimal("r46_margin_pro"));
+obj.setR46_book_expo(rs.getBigDecimal("r46_book_expo"));
+obj.setR46_ccf_cont(rs.getBigDecimal("r46_ccf_cont"));
+obj.setR46_equiv_value(rs.getBigDecimal("r46_equiv_value"));
+obj.setR46_rw_obligant(rs.getBigDecimal("r46_rw_obligant"));
+obj.setR46_rav(rs.getBigDecimal("r46_rav"));
+
+
+// =========================
+// R61
+// =========================
+obj.setR61_product(rs.getString("r61_product"));
+obj.setR61_client_grp(rs.getString("r61_client_grp"));
+obj.setR61_total_book_expo(rs.getBigDecimal("r61_total_book_expo"));
+obj.setR61_margin_pro(rs.getBigDecimal("r61_margin_pro"));
+obj.setR61_book_expo(rs.getBigDecimal("r61_book_expo"));
+obj.setR61_ccf_cont(rs.getBigDecimal("r61_ccf_cont"));
+obj.setR61_equiv_value(rs.getBigDecimal("r61_equiv_value"));
+obj.setR61_rw_obligant(rs.getBigDecimal("r61_rw_obligant"));
+obj.setR61_rav(rs.getBigDecimal("r61_rav"));
+
+// =========================
+// R62
+// =========================
+obj.setR62_product(rs.getString("r62_product"));
+obj.setR62_client_grp(rs.getString("r62_client_grp"));
+obj.setR62_total_book_expo(rs.getBigDecimal("r62_total_book_expo"));
+obj.setR62_margin_pro(rs.getBigDecimal("r62_margin_pro"));
+obj.setR62_book_expo(rs.getBigDecimal("r62_book_expo"));
+obj.setR62_ccf_cont(rs.getBigDecimal("r62_ccf_cont"));
+obj.setR62_equiv_value(rs.getBigDecimal("r62_equiv_value"));
+obj.setR62_rw_obligant(rs.getBigDecimal("r62_rw_obligant"));
+obj.setR62_rav(rs.getBigDecimal("r62_rav"));
+
+// =========================
+// R63
+// =========================
+obj.setR63_product(rs.getString("r63_product"));
+obj.setR63_client_grp(rs.getString("r63_client_grp"));
+obj.setR63_total_book_expo(rs.getBigDecimal("r63_total_book_expo"));
+obj.setR63_margin_pro(rs.getBigDecimal("r63_margin_pro"));
+obj.setR63_book_expo(rs.getBigDecimal("r63_book_expo"));
+obj.setR63_ccf_cont(rs.getBigDecimal("r63_ccf_cont"));
+obj.setR63_equiv_value(rs.getBigDecimal("r63_equiv_value"));
+obj.setR63_rw_obligant(rs.getBigDecimal("r63_rw_obligant"));
+obj.setR63_rav(rs.getBigDecimal("r63_rav"));
+
+// =========================
+// R64
+// =========================
+obj.setR64_product(rs.getString("r64_product"));
+obj.setR64_client_grp(rs.getString("r64_client_grp"));
+obj.setR64_total_book_expo(rs.getBigDecimal("r64_total_book_expo"));
+obj.setR64_margin_pro(rs.getBigDecimal("r64_margin_pro"));
+obj.setR64_book_expo(rs.getBigDecimal("r64_book_expo"));
+obj.setR64_ccf_cont(rs.getBigDecimal("r64_ccf_cont"));
+obj.setR64_equiv_value(rs.getBigDecimal("r64_equiv_value"));
+obj.setR64_rw_obligant(rs.getBigDecimal("r64_rw_obligant"));
+obj.setR64_rav(rs.getBigDecimal("r64_rav"));
+
+// =========================
+// R65
+// =========================
+obj.setR65_product(rs.getString("r65_product"));
+obj.setR65_client_grp(rs.getString("r65_client_grp"));
+obj.setR65_total_book_expo(rs.getBigDecimal("r65_total_book_expo"));
+obj.setR65_margin_pro(rs.getBigDecimal("r65_margin_pro"));
+obj.setR65_book_expo(rs.getBigDecimal("r65_book_expo"));
+obj.setR65_ccf_cont(rs.getBigDecimal("r65_ccf_cont"));
+obj.setR65_equiv_value(rs.getBigDecimal("r65_equiv_value"));
+obj.setR65_rw_obligant(rs.getBigDecimal("r65_rw_obligant"));
+obj.setR65_rav(rs.getBigDecimal("r65_rav"));
+
+// =========================
+// R66
+// =========================
+obj.setR66_product(rs.getString("r66_product"));
+obj.setR66_client_grp(rs.getString("r66_client_grp"));
+obj.setR66_total_book_expo(rs.getBigDecimal("r66_total_book_expo"));
+obj.setR66_margin_pro(rs.getBigDecimal("r66_margin_pro"));
+obj.setR66_book_expo(rs.getBigDecimal("r66_book_expo"));
+obj.setR66_ccf_cont(rs.getBigDecimal("r66_ccf_cont"));
+obj.setR66_equiv_value(rs.getBigDecimal("r66_equiv_value"));
+obj.setR66_rw_obligant(rs.getBigDecimal("r66_rw_obligant"));
+obj.setR66_rav(rs.getBigDecimal("r66_rav"));
+
+// =========================
+// R67
+// =========================
+obj.setR67_product(rs.getString("r67_product"));
+obj.setR67_client_grp(rs.getString("r67_client_grp"));
+obj.setR67_total_book_expo(rs.getBigDecimal("r67_total_book_expo"));
+obj.setR67_margin_pro(rs.getBigDecimal("r67_margin_pro"));
+obj.setR67_book_expo(rs.getBigDecimal("r67_book_expo"));
+obj.setR67_ccf_cont(rs.getBigDecimal("r67_ccf_cont"));
+obj.setR67_equiv_value(rs.getBigDecimal("r67_equiv_value"));
+obj.setR67_rw_obligant(rs.getBigDecimal("r67_rw_obligant"));
+obj.setR67_rav(rs.getBigDecimal("r67_rav"));
+
+// =========================
+// R68
+// =========================
+obj.setR68_product(rs.getString("r68_product"));
+obj.setR68_client_grp(rs.getString("r68_client_grp"));
+obj.setR68_total_book_expo(rs.getBigDecimal("r68_total_book_expo"));
+obj.setR68_margin_pro(rs.getBigDecimal("r68_margin_pro"));
+obj.setR68_book_expo(rs.getBigDecimal("r68_book_expo"));
+obj.setR68_ccf_cont(rs.getBigDecimal("r68_ccf_cont"));
+obj.setR68_equiv_value(rs.getBigDecimal("r68_equiv_value"));
+obj.setR68_rw_obligant(rs.getBigDecimal("r68_rw_obligant"));
+obj.setR68_rav(rs.getBigDecimal("r68_rav"));
+
+// =========================
+// R69
+// =========================
+obj.setR69_product(rs.getString("r69_product"));
+obj.setR69_client_grp(rs.getString("r69_client_grp"));
+obj.setR69_total_book_expo(rs.getBigDecimal("r69_total_book_expo"));
+obj.setR69_margin_pro(rs.getBigDecimal("r69_margin_pro"));
+obj.setR69_book_expo(rs.getBigDecimal("r69_book_expo"));
+obj.setR69_ccf_cont(rs.getBigDecimal("r69_ccf_cont"));
+obj.setR69_equiv_value(rs.getBigDecimal("r69_equiv_value"));
+obj.setR69_rw_obligant(rs.getBigDecimal("r69_rw_obligant"));
+obj.setR69_rav(rs.getBigDecimal("r69_rav"));
+
+// =========================
+// R70
+// =========================
+obj.setR70_product(rs.getString("r70_product"));
+obj.setR70_client_grp(rs.getString("r70_client_grp"));
+obj.setR70_total_book_expo(rs.getBigDecimal("r70_total_book_expo"));
+obj.setR70_margin_pro(rs.getBigDecimal("r70_margin_pro"));
+obj.setR70_book_expo(rs.getBigDecimal("r70_book_expo"));
+obj.setR70_ccf_cont(rs.getBigDecimal("r70_ccf_cont"));
+obj.setR70_equiv_value(rs.getBigDecimal("r70_equiv_value"));
+obj.setR70_rw_obligant(rs.getBigDecimal("r70_rw_obligant"));
+obj.setR70_rav(rs.getBigDecimal("r70_rav"));
+
+
+// =========================
+// R71
+// =========================
+obj.setR71_product(rs.getString("r71_product"));
+obj.setR71_client_grp(rs.getString("r71_client_grp"));
+obj.setR71_total_book_expo(rs.getBigDecimal("r71_total_book_expo"));
+obj.setR71_margin_pro(rs.getBigDecimal("r71_margin_pro"));
+obj.setR71_book_expo(rs.getBigDecimal("r71_book_expo"));
+obj.setR71_ccf_cont(rs.getBigDecimal("r71_ccf_cont"));
+obj.setR71_equiv_value(rs.getBigDecimal("r71_equiv_value"));
+obj.setR71_rw_obligant(rs.getBigDecimal("r71_rw_obligant"));
+obj.setR71_rav(rs.getBigDecimal("r71_rav"));
+
+// =========================
+// R72
+// =========================
+obj.setR72_product(rs.getString("r72_product"));
+obj.setR72_client_grp(rs.getString("r72_client_grp"));
+obj.setR72_total_book_expo(rs.getBigDecimal("r72_total_book_expo"));
+obj.setR72_margin_pro(rs.getBigDecimal("r72_margin_pro"));
+obj.setR72_book_expo(rs.getBigDecimal("r72_book_expo"));
+obj.setR72_ccf_cont(rs.getBigDecimal("r72_ccf_cont"));
+obj.setR72_equiv_value(rs.getBigDecimal("r72_equiv_value"));
+obj.setR72_rw_obligant(rs.getBigDecimal("r72_rw_obligant"));
+obj.setR72_rav(rs.getBigDecimal("r72_rav"));
+
+// =========================
+// R73
+// =========================
+obj.setR73_product(rs.getString("r73_product"));
+obj.setR73_client_grp(rs.getString("r73_client_grp"));
+obj.setR73_total_book_expo(rs.getBigDecimal("r73_total_book_expo"));
+obj.setR73_margin_pro(rs.getBigDecimal("r73_margin_pro"));
+obj.setR73_book_expo(rs.getBigDecimal("r73_book_expo"));
+obj.setR73_ccf_cont(rs.getBigDecimal("r73_ccf_cont"));
+obj.setR73_equiv_value(rs.getBigDecimal("r73_equiv_value"));
+obj.setR73_rw_obligant(rs.getBigDecimal("r73_rw_obligant"));
+obj.setR73_rav(rs.getBigDecimal("r73_rav"));
+
+// =========================
+// R74
+// =========================
+obj.setR74_product(rs.getString("r74_product"));
+obj.setR74_client_grp(rs.getString("r74_client_grp"));
+obj.setR74_total_book_expo(rs.getBigDecimal("r74_total_book_expo"));
+obj.setR74_margin_pro(rs.getBigDecimal("r74_margin_pro"));
+obj.setR74_book_expo(rs.getBigDecimal("r74_book_expo"));
+obj.setR74_ccf_cont(rs.getBigDecimal("r74_ccf_cont"));
+obj.setR74_equiv_value(rs.getBigDecimal("r74_equiv_value"));
+obj.setR74_rw_obligant(rs.getBigDecimal("r74_rw_obligant"));
+obj.setR74_rav(rs.getBigDecimal("r74_rav"));
+
+// =========================
+// R75
+// =========================
+obj.setR75_product(rs.getString("r75_product"));
+obj.setR75_client_grp(rs.getString("r75_client_grp"));
+obj.setR75_total_book_expo(rs.getBigDecimal("r75_total_book_expo"));
+obj.setR75_margin_pro(rs.getBigDecimal("r75_margin_pro"));
+obj.setR75_book_expo(rs.getBigDecimal("r75_book_expo"));
+obj.setR75_ccf_cont(rs.getBigDecimal("r75_ccf_cont"));
+obj.setR75_equiv_value(rs.getBigDecimal("r75_equiv_value"));
+obj.setR75_rw_obligant(rs.getBigDecimal("r75_rw_obligant"));
+obj.setR75_rav(rs.getBigDecimal("r75_rav"));
+
+// =========================
+// R76
+// =========================
+obj.setR76_product(rs.getString("r76_product"));
+obj.setR76_client_grp(rs.getString("r76_client_grp"));
+obj.setR76_total_book_expo(rs.getBigDecimal("r76_total_book_expo"));
+obj.setR76_margin_pro(rs.getBigDecimal("r76_margin_pro"));
+obj.setR76_book_expo(rs.getBigDecimal("r76_book_expo"));
+obj.setR76_ccf_cont(rs.getBigDecimal("r76_ccf_cont"));
+obj.setR76_equiv_value(rs.getBigDecimal("r76_equiv_value"));
+obj.setR76_rw_obligant(rs.getBigDecimal("r76_rw_obligant"));
+obj.setR76_rav(rs.getBigDecimal("r76_rav"));
+
+// =========================
+// R77
+// =========================
+obj.setR77_product(rs.getString("r77_product"));
+obj.setR77_client_grp(rs.getString("r77_client_grp"));
+obj.setR77_total_book_expo(rs.getBigDecimal("r77_total_book_expo"));
+obj.setR77_margin_pro(rs.getBigDecimal("r77_margin_pro"));
+obj.setR77_book_expo(rs.getBigDecimal("r77_book_expo"));
+obj.setR77_ccf_cont(rs.getBigDecimal("r77_ccf_cont"));
+obj.setR77_equiv_value(rs.getBigDecimal("r77_equiv_value"));
+obj.setR77_rw_obligant(rs.getBigDecimal("r77_rw_obligant"));
+obj.setR77_rav(rs.getBigDecimal("r77_rav"));
+
+// =========================
+// R78
+// =========================
+obj.setR78_product(rs.getString("r78_product"));
+obj.setR78_client_grp(rs.getString("r78_client_grp"));
+obj.setR78_total_book_expo(rs.getBigDecimal("r78_total_book_expo"));
+obj.setR78_margin_pro(rs.getBigDecimal("r78_margin_pro"));
+obj.setR78_book_expo(rs.getBigDecimal("r78_book_expo"));
+obj.setR78_ccf_cont(rs.getBigDecimal("r78_ccf_cont"));
+obj.setR78_equiv_value(rs.getBigDecimal("r78_equiv_value"));
+obj.setR78_rw_obligant(rs.getBigDecimal("r78_rw_obligant"));
+obj.setR78_rav(rs.getBigDecimal("r78_rav"));
+
+// =========================
+// R79
+// =========================
+obj.setR79_product(rs.getString("r79_product"));
+obj.setR79_client_grp(rs.getString("r79_client_grp"));
+obj.setR79_total_book_expo(rs.getBigDecimal("r79_total_book_expo"));
+obj.setR79_margin_pro(rs.getBigDecimal("r79_margin_pro"));
+obj.setR79_book_expo(rs.getBigDecimal("r79_book_expo"));
+obj.setR79_ccf_cont(rs.getBigDecimal("r79_ccf_cont"));
+obj.setR79_equiv_value(rs.getBigDecimal("r79_equiv_value"));
+obj.setR79_rw_obligant(rs.getBigDecimal("r79_rw_obligant"));
+obj.setR79_rav(rs.getBigDecimal("r79_rav"));
+
+// =========================
+// R80
+// =========================
+obj.setR80_product(rs.getString("r80_product"));
+obj.setR80_client_grp(rs.getString("r80_client_grp"));
+obj.setR80_total_book_expo(rs.getBigDecimal("r80_total_book_expo"));
+obj.setR80_margin_pro(rs.getBigDecimal("r80_margin_pro"));
+obj.setR80_book_expo(rs.getBigDecimal("r80_book_expo"));
+obj.setR80_ccf_cont(rs.getBigDecimal("r80_ccf_cont"));
+obj.setR80_equiv_value(rs.getBigDecimal("r80_equiv_value"));
+obj.setR80_rw_obligant(rs.getBigDecimal("r80_rw_obligant"));
+obj.setR80_rav(rs.getBigDecimal("r80_rav"));
+
+
+// =========================
+// R81
+// =========================
+obj.setR81_product(rs.getString("r81_product"));
+obj.setR81_client_grp(rs.getString("r81_client_grp"));
+obj.setR81_total_book_expo(rs.getBigDecimal("r81_total_book_expo"));
+obj.setR81_margin_pro(rs.getBigDecimal("r81_margin_pro"));
+obj.setR81_book_expo(rs.getBigDecimal("r81_book_expo"));
+obj.setR81_ccf_cont(rs.getBigDecimal("r81_ccf_cont"));
+obj.setR81_equiv_value(rs.getBigDecimal("r81_equiv_value"));
+obj.setR81_rw_obligant(rs.getBigDecimal("r81_rw_obligant"));
+obj.setR81_rav(rs.getBigDecimal("r81_rav"));
+
+// =========================
+// R82
+// =========================
+obj.setR82_product(rs.getString("r82_product"));
+obj.setR82_client_grp(rs.getString("r82_client_grp"));
+obj.setR82_total_book_expo(rs.getBigDecimal("r82_total_book_expo"));
+obj.setR82_margin_pro(rs.getBigDecimal("r82_margin_pro"));
+obj.setR82_book_expo(rs.getBigDecimal("r82_book_expo"));
+obj.setR82_ccf_cont(rs.getBigDecimal("r82_ccf_cont"));
+obj.setR82_equiv_value(rs.getBigDecimal("r82_equiv_value"));
+obj.setR82_rw_obligant(rs.getBigDecimal("r82_rw_obligant"));
+obj.setR82_rav(rs.getBigDecimal("r82_rav"));
+
+// =========================
+// R83
+// =========================
+obj.setR83_product(rs.getString("r83_product"));
+obj.setR83_client_grp(rs.getString("r83_client_grp"));
+obj.setR83_total_book_expo(rs.getBigDecimal("r83_total_book_expo"));
+obj.setR83_margin_pro(rs.getBigDecimal("r83_margin_pro"));
+obj.setR83_book_expo(rs.getBigDecimal("r83_book_expo"));
+obj.setR83_ccf_cont(rs.getBigDecimal("r83_ccf_cont"));
+obj.setR83_equiv_value(rs.getBigDecimal("r83_equiv_value"));
+obj.setR83_rw_obligant(rs.getBigDecimal("r83_rw_obligant"));
+obj.setR83_rav(rs.getBigDecimal("r83_rav"));
+
+// =========================
+// R84
+// =========================
+obj.setR84_product(rs.getString("r84_product"));
+obj.setR84_client_grp(rs.getString("r84_client_grp"));
+obj.setR84_total_book_expo(rs.getBigDecimal("r84_total_book_expo"));
+obj.setR84_margin_pro(rs.getBigDecimal("r84_margin_pro"));
+obj.setR84_book_expo(rs.getBigDecimal("r84_book_expo"));
+obj.setR84_ccf_cont(rs.getBigDecimal("r84_ccf_cont"));
+obj.setR84_equiv_value(rs.getBigDecimal("r84_equiv_value"));
+obj.setR84_rw_obligant(rs.getBigDecimal("r84_rw_obligant"));
+obj.setR84_rav(rs.getBigDecimal("r84_rav"));
+
+
+
+// =========================
+// R100
+// =========================
+obj.setR100_product(rs.getString("r100_product"));
+obj.setR100_client_grp(rs.getString("r100_client_grp"));
+obj.setR100_total_book_expo(rs.getBigDecimal("r100_total_book_expo"));
+obj.setR100_margin_pro(rs.getBigDecimal("r100_margin_pro"));
+obj.setR100_book_expo(rs.getBigDecimal("r100_book_expo"));
+obj.setR100_ccf_cont(rs.getBigDecimal("r100_ccf_cont"));
+obj.setR100_equiv_value(rs.getBigDecimal("r100_equiv_value"));
+obj.setR100_rw_obligant(rs.getBigDecimal("r100_rw_obligant"));
+obj.setR100_rav(rs.getBigDecimal("r100_rav"));
+
+// =========================
+// R101
+// =========================
+obj.setR101_product(rs.getString("r101_product"));
+obj.setR101_client_grp(rs.getString("r101_client_grp"));
+obj.setR101_total_book_expo(rs.getBigDecimal("r101_total_book_expo"));
+obj.setR101_margin_pro(rs.getBigDecimal("r101_margin_pro"));
+obj.setR101_book_expo(rs.getBigDecimal("r101_book_expo"));
+obj.setR101_ccf_cont(rs.getBigDecimal("r101_ccf_cont"));
+obj.setR101_equiv_value(rs.getBigDecimal("r101_equiv_value"));
+obj.setR101_rw_obligant(rs.getBigDecimal("r101_rw_obligant"));
+obj.setR101_rav(rs.getBigDecimal("r101_rav"));
+
+// =========================
+// R102
+// =========================
+obj.setR102_product(rs.getString("r102_product"));
+obj.setR102_client_grp(rs.getString("r102_client_grp"));
+obj.setR102_total_book_expo(rs.getBigDecimal("r102_total_book_expo"));
+obj.setR102_margin_pro(rs.getBigDecimal("r102_margin_pro"));
+obj.setR102_book_expo(rs.getBigDecimal("r102_book_expo"));
+obj.setR102_ccf_cont(rs.getBigDecimal("r102_ccf_cont"));
+obj.setR102_equiv_value(rs.getBigDecimal("r102_equiv_value"));
+obj.setR102_rw_obligant(rs.getBigDecimal("r102_rw_obligant"));
+obj.setR102_rav(rs.getBigDecimal("r102_rav"));
+
+// =========================
+// R103
+// =========================
+obj.setR103_product(rs.getString("r103_product"));
+obj.setR103_client_grp(rs.getString("r103_client_grp"));
+obj.setR103_total_book_expo(rs.getBigDecimal("r103_total_book_expo"));
+obj.setR103_margin_pro(rs.getBigDecimal("r103_margin_pro"));
+obj.setR103_book_expo(rs.getBigDecimal("r103_book_expo"));
+obj.setR103_ccf_cont(rs.getBigDecimal("r103_ccf_cont"));
+obj.setR103_equiv_value(rs.getBigDecimal("r103_equiv_value"));
+obj.setR103_rw_obligant(rs.getBigDecimal("r103_rw_obligant"));
+obj.setR103_rav(rs.getBigDecimal("r103_rav"));
+
+// =========================
+// R104
+// =========================
+obj.setR104_product(rs.getString("r104_product"));
+obj.setR104_client_grp(rs.getString("r104_client_grp"));
+obj.setR104_total_book_expo(rs.getBigDecimal("r104_total_book_expo"));
+obj.setR104_margin_pro(rs.getBigDecimal("r104_margin_pro"));
+obj.setR104_book_expo(rs.getBigDecimal("r104_book_expo"));
+obj.setR104_ccf_cont(rs.getBigDecimal("r104_ccf_cont"));
+obj.setR104_equiv_value(rs.getBigDecimal("r104_equiv_value"));
+obj.setR104_rw_obligant(rs.getBigDecimal("r104_rw_obligant"));
+obj.setR104_rav(rs.getBigDecimal("r104_rav"));
+
+// =========================
+// R105
+// =========================
+obj.setR105_product(rs.getString("r105_product"));
+obj.setR105_client_grp(rs.getString("r105_client_grp"));
+obj.setR105_total_book_expo(rs.getBigDecimal("r105_total_book_expo"));
+obj.setR105_margin_pro(rs.getBigDecimal("r105_margin_pro"));
+obj.setR105_book_expo(rs.getBigDecimal("r105_book_expo"));
+obj.setR105_ccf_cont(rs.getBigDecimal("r105_ccf_cont"));
+obj.setR105_equiv_value(rs.getBigDecimal("r105_equiv_value"));
+obj.setR105_rw_obligant(rs.getBigDecimal("r105_rw_obligant"));
+obj.setR105_rav(rs.getBigDecimal("r105_rav"));
+
+// =========================
+// R106
+// =========================
+obj.setR106_product(rs.getString("r106_product"));
+obj.setR106_client_grp(rs.getString("r106_client_grp"));
+obj.setR106_total_book_expo(rs.getBigDecimal("r106_total_book_expo"));
+obj.setR106_margin_pro(rs.getBigDecimal("r106_margin_pro"));
+obj.setR106_book_expo(rs.getBigDecimal("r106_book_expo"));
+obj.setR106_ccf_cont(rs.getBigDecimal("r106_ccf_cont"));
+obj.setR106_equiv_value(rs.getBigDecimal("r106_equiv_value"));
+obj.setR106_rw_obligant(rs.getBigDecimal("r106_rw_obligant"));
+obj.setR106_rav(rs.getBigDecimal("r106_rav"));
+
+// =========================
+// R107
+// =========================
+obj.setR107_product(rs.getString("r107_product"));
+obj.setR107_client_grp(rs.getString("r107_client_grp"));
+obj.setR107_total_book_expo(rs.getBigDecimal("r107_total_book_expo"));
+obj.setR107_margin_pro(rs.getBigDecimal("r107_margin_pro"));
+obj.setR107_book_expo(rs.getBigDecimal("r107_book_expo"));
+obj.setR107_ccf_cont(rs.getBigDecimal("r107_ccf_cont"));
+obj.setR107_equiv_value(rs.getBigDecimal("r107_equiv_value"));
+obj.setR107_rw_obligant(rs.getBigDecimal("r107_rw_obligant"));
+obj.setR107_rav(rs.getBigDecimal("r107_rav"));
+
+// =========================
+// R108
+// =========================
+obj.setR108_product(rs.getString("r108_product"));
+obj.setR108_client_grp(rs.getString("r108_client_grp"));
+obj.setR108_total_book_expo(rs.getBigDecimal("r108_total_book_expo"));
+obj.setR108_margin_pro(rs.getBigDecimal("r108_margin_pro"));
+obj.setR108_book_expo(rs.getBigDecimal("r108_book_expo"));
+obj.setR108_ccf_cont(rs.getBigDecimal("r108_ccf_cont"));
+obj.setR108_equiv_value(rs.getBigDecimal("r108_equiv_value"));
+obj.setR108_rw_obligant(rs.getBigDecimal("r108_rw_obligant"));
+obj.setR108_rav(rs.getBigDecimal("r108_rav"));
+
+// =========================
+// R109
+// =========================
+obj.setR109_product(rs.getString("r109_product"));
+obj.setR109_client_grp(rs.getString("r109_client_grp"));
+obj.setR109_total_book_expo(rs.getBigDecimal("r109_total_book_expo"));
+obj.setR109_margin_pro(rs.getBigDecimal("r109_margin_pro"));
+obj.setR109_book_expo(rs.getBigDecimal("r109_book_expo"));
+obj.setR109_ccf_cont(rs.getBigDecimal("r109_ccf_cont"));
+obj.setR109_equiv_value(rs.getBigDecimal("r109_equiv_value"));
+obj.setR109_rw_obligant(rs.getBigDecimal("r109_rw_obligant"));
+obj.setR109_rav(rs.getBigDecimal("r109_rav"));
+
+// =========================
+// R110
+// =========================
+obj.setR110_product(rs.getString("r110_product"));
+obj.setR110_client_grp(rs.getString("r110_client_grp"));
+obj.setR110_total_book_expo(rs.getBigDecimal("r110_total_book_expo"));
+obj.setR110_margin_pro(rs.getBigDecimal("r110_margin_pro"));
+obj.setR110_book_expo(rs.getBigDecimal("r110_book_expo"));
+obj.setR110_ccf_cont(rs.getBigDecimal("r110_ccf_cont"));
+obj.setR110_equiv_value(rs.getBigDecimal("r110_equiv_value"));
+obj.setR110_rw_obligant(rs.getBigDecimal("r110_rw_obligant"));
+obj.setR110_rav(rs.getBigDecimal("r110_rav"));
+
+
+// =========================
+// R111
+// =========================
+obj.setR111_product(rs.getString("r111_product"));
+obj.setR111_client_grp(rs.getString("r111_client_grp"));
+obj.setR111_total_book_expo(rs.getBigDecimal("r111_total_book_expo"));
+obj.setR111_margin_pro(rs.getBigDecimal("r111_margin_pro"));
+obj.setR111_book_expo(rs.getBigDecimal("r111_book_expo"));
+obj.setR111_ccf_cont(rs.getBigDecimal("r111_ccf_cont"));
+obj.setR111_equiv_value(rs.getBigDecimal("r111_equiv_value"));
+obj.setR111_rw_obligant(rs.getBigDecimal("r111_rw_obligant"));
+obj.setR111_rav(rs.getBigDecimal("r111_rav"));
+
+// =========================
+// R112
+// =========================
+obj.setR112_product(rs.getString("r112_product"));
+obj.setR112_client_grp(rs.getString("r112_client_grp"));
+obj.setR112_total_book_expo(rs.getBigDecimal("r112_total_book_expo"));
+obj.setR112_margin_pro(rs.getBigDecimal("r112_margin_pro"));
+obj.setR112_book_expo(rs.getBigDecimal("r112_book_expo"));
+obj.setR112_ccf_cont(rs.getBigDecimal("r112_ccf_cont"));
+obj.setR112_equiv_value(rs.getBigDecimal("r112_equiv_value"));
+obj.setR112_rw_obligant(rs.getBigDecimal("r112_rw_obligant"));
+obj.setR112_rav(rs.getBigDecimal("r112_rav"));
+
+// =========================
+// R113
+// =========================
+obj.setR113_product(rs.getString("r113_product"));
+obj.setR113_client_grp(rs.getString("r113_client_grp"));
+obj.setR113_total_book_expo(rs.getBigDecimal("r113_total_book_expo"));
+obj.setR113_margin_pro(rs.getBigDecimal("r113_margin_pro"));
+obj.setR113_book_expo(rs.getBigDecimal("r113_book_expo"));
+obj.setR113_ccf_cont(rs.getBigDecimal("r113_ccf_cont"));
+obj.setR113_equiv_value(rs.getBigDecimal("r113_equiv_value"));
+obj.setR113_rw_obligant(rs.getBigDecimal("r113_rw_obligant"));
+obj.setR113_rav(rs.getBigDecimal("r113_rav"));
+
+// =========================
+// R114
+// =========================
+obj.setR114_product(rs.getString("r114_product"));
+obj.setR114_client_grp(rs.getString("r114_client_grp"));
+obj.setR114_total_book_expo(rs.getBigDecimal("r114_total_book_expo"));
+obj.setR114_margin_pro(rs.getBigDecimal("r114_margin_pro"));
+obj.setR114_book_expo(rs.getBigDecimal("r114_book_expo"));
+obj.setR114_ccf_cont(rs.getBigDecimal("r114_ccf_cont"));
+obj.setR114_equiv_value(rs.getBigDecimal("r114_equiv_value"));
+obj.setR114_rw_obligant(rs.getBigDecimal("r114_rw_obligant"));
+obj.setR114_rav(rs.getBigDecimal("r114_rav"));
+
+// =========================
+// R115
+// =========================
+obj.setR115_product(rs.getString("r115_product"));
+obj.setR115_client_grp(rs.getString("r115_client_grp"));
+obj.setR115_total_book_expo(rs.getBigDecimal("r115_total_book_expo"));
+obj.setR115_margin_pro(rs.getBigDecimal("r115_margin_pro"));
+obj.setR115_book_expo(rs.getBigDecimal("r115_book_expo"));
+obj.setR115_ccf_cont(rs.getBigDecimal("r115_ccf_cont"));
+obj.setR115_equiv_value(rs.getBigDecimal("r115_equiv_value"));
+obj.setR115_rw_obligant(rs.getBigDecimal("r115_rw_obligant"));
+obj.setR115_rav(rs.getBigDecimal("r115_rav"));
+
+// =========================
+// R116
+// =========================
+obj.setR116_product(rs.getString("r116_product"));
+obj.setR116_client_grp(rs.getString("r116_client_grp"));
+obj.setR116_total_book_expo(rs.getBigDecimal("r116_total_book_expo"));
+obj.setR116_margin_pro(rs.getBigDecimal("r116_margin_pro"));
+obj.setR116_book_expo(rs.getBigDecimal("r116_book_expo"));
+obj.setR116_ccf_cont(rs.getBigDecimal("r116_ccf_cont"));
+obj.setR116_equiv_value(rs.getBigDecimal("r116_equiv_value"));
+obj.setR116_rw_obligant(rs.getBigDecimal("r116_rw_obligant"));
+obj.setR116_rav(rs.getBigDecimal("r116_rav"));
+
+// =========================
+// R117
+// =========================
+obj.setR117_product(rs.getString("r117_product"));
+obj.setR117_client_grp(rs.getString("r117_client_grp"));
+obj.setR117_total_book_expo(rs.getBigDecimal("r117_total_book_expo"));
+obj.setR117_margin_pro(rs.getBigDecimal("r117_margin_pro"));
+obj.setR117_book_expo(rs.getBigDecimal("r117_book_expo"));
+obj.setR117_ccf_cont(rs.getBigDecimal("r117_ccf_cont"));
+obj.setR117_equiv_value(rs.getBigDecimal("r117_equiv_value"));
+obj.setR117_rw_obligant(rs.getBigDecimal("r117_rw_obligant"));
+obj.setR117_rav(rs.getBigDecimal("r117_rav"));
+
+// =========================
+// R118
+// =========================
+obj.setR118_product(rs.getString("r118_product"));
+obj.setR118_client_grp(rs.getString("r118_client_grp"));
+obj.setR118_total_book_expo(rs.getBigDecimal("r118_total_book_expo"));
+obj.setR118_margin_pro(rs.getBigDecimal("r118_margin_pro"));
+obj.setR118_book_expo(rs.getBigDecimal("r118_book_expo"));
+obj.setR118_ccf_cont(rs.getBigDecimal("r118_ccf_cont"));
+obj.setR118_equiv_value(rs.getBigDecimal("r118_equiv_value"));
+obj.setR118_rw_obligant(rs.getBigDecimal("r118_rw_obligant"));
+obj.setR118_rav(rs.getBigDecimal("r118_rav"));
+
+// =========================
+// R119
+// =========================
+obj.setR119_product(rs.getString("r119_product"));
+obj.setR119_client_grp(rs.getString("r119_client_grp"));
+obj.setR119_total_book_expo(rs.getBigDecimal("r119_total_book_expo"));
+obj.setR119_margin_pro(rs.getBigDecimal("r119_margin_pro"));
+obj.setR119_book_expo(rs.getBigDecimal("r119_book_expo"));
+obj.setR119_ccf_cont(rs.getBigDecimal("r119_ccf_cont"));
+obj.setR119_equiv_value(rs.getBigDecimal("r119_equiv_value"));
+obj.setR119_rw_obligant(rs.getBigDecimal("r119_rw_obligant"));
+obj.setR119_rav(rs.getBigDecimal("r119_rav"));
+
+// =========================
+// R120
+// =========================
+obj.setR120_product(rs.getString("r120_product"));
+obj.setR120_client_grp(rs.getString("r120_client_grp"));
+obj.setR120_total_book_expo(rs.getBigDecimal("r120_total_book_expo"));
+obj.setR120_margin_pro(rs.getBigDecimal("r120_margin_pro"));
+obj.setR120_book_expo(rs.getBigDecimal("r120_book_expo"));
+obj.setR120_ccf_cont(rs.getBigDecimal("r120_ccf_cont"));
+obj.setR120_equiv_value(rs.getBigDecimal("r120_equiv_value"));
+obj.setR120_rw_obligant(rs.getBigDecimal("r120_rw_obligant"));
+obj.setR120_rav(rs.getBigDecimal("r120_rav"));
+
+
+// =========================
+// R121
+// =========================
+obj.setR121_product(rs.getString("r121_product"));
+obj.setR121_client_grp(rs.getString("r121_client_grp"));
+obj.setR121_total_book_expo(rs.getBigDecimal("r121_total_book_expo"));
+obj.setR121_margin_pro(rs.getBigDecimal("r121_margin_pro"));
+obj.setR121_book_expo(rs.getBigDecimal("r121_book_expo"));
+obj.setR121_ccf_cont(rs.getBigDecimal("r121_ccf_cont"));
+obj.setR121_equiv_value(rs.getBigDecimal("r121_equiv_value"));
+obj.setR121_rw_obligant(rs.getBigDecimal("r121_rw_obligant"));
+obj.setR121_rav(rs.getBigDecimal("r121_rav"));
+
+// =========================
+// R122
+// =========================
+obj.setR122_product(rs.getString("r122_product"));
+obj.setR122_client_grp(rs.getString("r122_client_grp"));
+obj.setR122_total_book_expo(rs.getBigDecimal("r122_total_book_expo"));
+obj.setR122_margin_pro(rs.getBigDecimal("r122_margin_pro"));
+obj.setR122_book_expo(rs.getBigDecimal("r122_book_expo"));
+obj.setR122_ccf_cont(rs.getBigDecimal("r122_ccf_cont"));
+obj.setR122_equiv_value(rs.getBigDecimal("r122_equiv_value"));
+obj.setR122_rw_obligant(rs.getBigDecimal("r122_rw_obligant"));
+obj.setR122_rav(rs.getBigDecimal("r122_rav"));
+
+// =========================
+// R123
+// =========================
+obj.setR123_product(rs.getString("r123_product"));
+obj.setR123_client_grp(rs.getString("r123_client_grp"));
+obj.setR123_total_book_expo(rs.getBigDecimal("r123_total_book_expo"));
+obj.setR123_margin_pro(rs.getBigDecimal("r123_margin_pro"));
+obj.setR123_book_expo(rs.getBigDecimal("r123_book_expo"));
+obj.setR123_ccf_cont(rs.getBigDecimal("r123_ccf_cont"));
+obj.setR123_equiv_value(rs.getBigDecimal("r123_equiv_value"));
+obj.setR123_rw_obligant(rs.getBigDecimal("r123_rw_obligant"));
+obj.setR123_rav(rs.getBigDecimal("r123_rav"));
+
+// =========================
+// R124
+// =========================
+obj.setR124_product(rs.getString("r124_product"));
+obj.setR124_client_grp(rs.getString("r124_client_grp"));
+obj.setR124_total_book_expo(rs.getBigDecimal("r124_total_book_expo"));
+obj.setR124_margin_pro(rs.getBigDecimal("r124_margin_pro"));
+obj.setR124_book_expo(rs.getBigDecimal("r124_book_expo"));
+obj.setR124_ccf_cont(rs.getBigDecimal("r124_ccf_cont"));
+obj.setR124_equiv_value(rs.getBigDecimal("r124_equiv_value"));
+obj.setR124_rw_obligant(rs.getBigDecimal("r124_rw_obligant"));
+obj.setR124_rav(rs.getBigDecimal("r124_rav"));
+
+// =========================
+// R125
+// =========================
+obj.setR125_product(rs.getString("r125_product"));
+obj.setR125_client_grp(rs.getString("r125_client_grp"));
+obj.setR125_total_book_expo(rs.getBigDecimal("r125_total_book_expo"));
+obj.setR125_margin_pro(rs.getBigDecimal("r125_margin_pro"));
+obj.setR125_book_expo(rs.getBigDecimal("r125_book_expo"));
+obj.setR125_ccf_cont(rs.getBigDecimal("r125_ccf_cont"));
+obj.setR125_equiv_value(rs.getBigDecimal("r125_equiv_value"));
+obj.setR125_rw_obligant(rs.getBigDecimal("r125_rw_obligant"));
+obj.setR125_rav(rs.getBigDecimal("r125_rav"));
+
+// =========================
+// R126
+// =========================
+obj.setR126_product(rs.getString("r126_product"));
+obj.setR126_client_grp(rs.getString("r126_client_grp"));
+obj.setR126_total_book_expo(rs.getBigDecimal("r126_total_book_expo"));
+obj.setR126_margin_pro(rs.getBigDecimal("r126_margin_pro"));
+obj.setR126_book_expo(rs.getBigDecimal("r126_book_expo"));
+obj.setR126_ccf_cont(rs.getBigDecimal("r126_ccf_cont"));
+obj.setR126_equiv_value(rs.getBigDecimal("r126_equiv_value"));
+obj.setR126_rw_obligant(rs.getBigDecimal("r126_rw_obligant"));
+obj.setR126_rav(rs.getBigDecimal("r126_rav"));
+
+// =========================
+// R127
+// =========================
+obj.setR127_product(rs.getString("r127_product"));
+obj.setR127_client_grp(rs.getString("r127_client_grp"));
+obj.setR127_total_book_expo(rs.getBigDecimal("r127_total_book_expo"));
+obj.setR127_margin_pro(rs.getBigDecimal("r127_margin_pro"));
+obj.setR127_book_expo(rs.getBigDecimal("r127_book_expo"));
+obj.setR127_ccf_cont(rs.getBigDecimal("r127_ccf_cont"));
+obj.setR127_equiv_value(rs.getBigDecimal("r127_equiv_value"));
+obj.setR127_rw_obligant(rs.getBigDecimal("r127_rw_obligant"));
+obj.setR127_rav(rs.getBigDecimal("r127_rav"));
+
+// =========================
+// R128
+// =========================
+obj.setR128_product(rs.getString("r128_product"));
+obj.setR128_client_grp(rs.getString("r128_client_grp"));
+obj.setR128_total_book_expo(rs.getBigDecimal("r128_total_book_expo"));
+obj.setR128_margin_pro(rs.getBigDecimal("r128_margin_pro"));
+obj.setR128_book_expo(rs.getBigDecimal("r128_book_expo"));
+obj.setR128_ccf_cont(rs.getBigDecimal("r128_ccf_cont"));
+obj.setR128_equiv_value(rs.getBigDecimal("r128_equiv_value"));
+obj.setR128_rw_obligant(rs.getBigDecimal("r128_rw_obligant"));
+obj.setR128_rav(rs.getBigDecimal("r128_rav"));
+
+// =========================
+// R129
+// =========================
+obj.setR129_product(rs.getString("r129_product"));
+obj.setR129_client_grp(rs.getString("r129_client_grp"));
+obj.setR129_total_book_expo(rs.getBigDecimal("r129_total_book_expo"));
+obj.setR129_margin_pro(rs.getBigDecimal("r129_margin_pro"));
+obj.setR129_book_expo(rs.getBigDecimal("r129_book_expo"));
+obj.setR129_ccf_cont(rs.getBigDecimal("r129_ccf_cont"));
+obj.setR129_equiv_value(rs.getBigDecimal("r129_equiv_value"));
+obj.setR129_rw_obligant(rs.getBigDecimal("r129_rw_obligant"));
+obj.setR129_rav(rs.getBigDecimal("r129_rav"));
+
+// =========================
+// R130
+// =========================
+obj.setR130_product(rs.getString("r130_product"));
+obj.setR130_client_grp(rs.getString("r130_client_grp"));
+obj.setR130_total_book_expo(rs.getBigDecimal("r130_total_book_expo"));
+obj.setR130_margin_pro(rs.getBigDecimal("r130_margin_pro"));
+obj.setR130_book_expo(rs.getBigDecimal("r130_book_expo"));
+obj.setR130_ccf_cont(rs.getBigDecimal("r130_ccf_cont"));
+obj.setR130_equiv_value(rs.getBigDecimal("r130_equiv_value"));
+obj.setR130_rw_obligant(rs.getBigDecimal("r130_rw_obligant"));
+obj.setR130_rav(rs.getBigDecimal("r130_rav"));
+
+// =========================
+// R131
+// =========================
+obj.setR131_product(rs.getString("r131_product"));
+obj.setR131_client_grp(rs.getString("r131_client_grp"));
+obj.setR131_total_book_expo(rs.getBigDecimal("r131_total_book_expo"));
+obj.setR131_margin_pro(rs.getBigDecimal("r131_margin_pro"));
+obj.setR131_book_expo(rs.getBigDecimal("r131_book_expo"));
+obj.setR131_ccf_cont(rs.getBigDecimal("r131_ccf_cont"));
+obj.setR131_equiv_value(rs.getBigDecimal("r131_equiv_value"));
+obj.setR131_rw_obligant(rs.getBigDecimal("r131_rw_obligant"));
+obj.setR131_rav(rs.getBigDecimal("r131_rav"));
+
+// =========================
+// R132
+// =========================
+obj.setR132_product(rs.getString("r132_product"));
+obj.setR132_client_grp(rs.getString("r132_client_grp"));
+obj.setR132_total_book_expo(rs.getBigDecimal("r132_total_book_expo"));
+obj.setR132_margin_pro(rs.getBigDecimal("r132_margin_pro"));
+obj.setR132_book_expo(rs.getBigDecimal("r132_book_expo"));
+obj.setR132_ccf_cont(rs.getBigDecimal("r132_ccf_cont"));
+obj.setR132_equiv_value(rs.getBigDecimal("r132_equiv_value"));
+obj.setR132_rw_obligant(rs.getBigDecimal("r132_rw_obligant"));
+obj.setR132_rav(rs.getBigDecimal("r132_rav"));
+
+// =========================
+// R133
+// =========================
+obj.setR133_product(rs.getString("r133_product"));
+obj.setR133_client_grp(rs.getString("r133_client_grp"));
+obj.setR133_total_book_expo(rs.getBigDecimal("r133_total_book_expo"));
+obj.setR133_margin_pro(rs.getBigDecimal("r133_margin_pro"));
+obj.setR133_book_expo(rs.getBigDecimal("r133_book_expo"));
+obj.setR133_ccf_cont(rs.getBigDecimal("r133_ccf_cont"));
+obj.setR133_equiv_value(rs.getBigDecimal("r133_equiv_value"));
+obj.setR133_rw_obligant(rs.getBigDecimal("r133_rw_obligant"));
+obj.setR133_rav(rs.getBigDecimal("r133_rav"));
+
+// =========================
+// R134
+// =========================
+obj.setR134_product(rs.getString("r134_product"));
+obj.setR134_client_grp(rs.getString("r134_client_grp"));
+obj.setR134_total_book_expo(rs.getBigDecimal("r134_total_book_expo"));
+obj.setR134_margin_pro(rs.getBigDecimal("r134_margin_pro"));
+obj.setR134_book_expo(rs.getBigDecimal("r134_book_expo"));
+obj.setR134_ccf_cont(rs.getBigDecimal("r134_ccf_cont"));
+obj.setR134_equiv_value(rs.getBigDecimal("r134_equiv_value"));
+obj.setR134_rw_obligant(rs.getBigDecimal("r134_rw_obligant"));
+obj.setR134_rav(rs.getBigDecimal("r134_rav"));
+
+
+// =========================
+// R148
+// =========================
+obj.setR148_product(rs.getString("r148_product"));
+obj.setR148_client_grp(rs.getString("r148_client_grp"));
+obj.setR148_total_book_expo(rs.getBigDecimal("r148_total_book_expo"));
+obj.setR148_margin_pro(rs.getBigDecimal("r148_margin_pro"));
+obj.setR148_book_expo(rs.getBigDecimal("r148_book_expo"));
+obj.setR148_ccf_cont(rs.getBigDecimal("r148_ccf_cont"));
+obj.setR148_equiv_value(rs.getBigDecimal("r148_equiv_value"));
+obj.setR148_rw_obligant(rs.getBigDecimal("r148_rw_obligant"));
+obj.setR148_rav(rs.getBigDecimal("r148_rav"));
+
+// =========================
+// R149
+// =========================
+obj.setR149_product(rs.getString("r149_product"));
+obj.setR149_client_grp(rs.getString("r149_client_grp"));
+obj.setR149_total_book_expo(rs.getBigDecimal("r149_total_book_expo"));
+obj.setR149_margin_pro(rs.getBigDecimal("r149_margin_pro"));
+obj.setR149_book_expo(rs.getBigDecimal("r149_book_expo"));
+obj.setR149_ccf_cont(rs.getBigDecimal("r149_ccf_cont"));
+obj.setR149_equiv_value(rs.getBigDecimal("r149_equiv_value"));
+obj.setR149_rw_obligant(rs.getBigDecimal("r149_rw_obligant"));
+obj.setR149_rav(rs.getBigDecimal("r149_rav"));
+
+// =========================
+// R150
+// =========================
+obj.setR150_product(rs.getString("r150_product"));
+obj.setR150_client_grp(rs.getString("r150_client_grp"));
+obj.setR150_total_book_expo(rs.getBigDecimal("r150_total_book_expo"));
+obj.setR150_margin_pro(rs.getBigDecimal("r150_margin_pro"));
+obj.setR150_book_expo(rs.getBigDecimal("r150_book_expo"));
+obj.setR150_ccf_cont(rs.getBigDecimal("r150_ccf_cont"));
+obj.setR150_equiv_value(rs.getBigDecimal("r150_equiv_value"));
+obj.setR150_rw_obligant(rs.getBigDecimal("r150_rw_obligant"));
+obj.setR150_rav(rs.getBigDecimal("r150_rav"));
+
+
+
+        //=========================
+        // COMMON FIELDS
+        // =========================
+        obj.setReport_date(rs.getDate("report_date"));
+        obj.setReport_version(rs.getBigDecimal("report_version"));
+        obj.setReport_frequency(rs.getString("report_frequency"));
+        obj.setReport_code(rs.getString("report_code"));
+        obj.setReport_desc(rs.getString("report_desc"));
+
+        obj.setEntity_flg(rs.getString("entity_flg"));
+        obj.setModify_flg(rs.getString("modify_flg"));
+        obj.setDel_flg(rs.getString("del_flg"));
+
+
+        return obj;
+    }
+}
+
+// =====================================================2
+
+
+public class OFF_BS_ITEMS_Summary_RowMapper2 implements RowMapper<OFF_BS_ITEMS_Summary_Entity2> {
+
+    @Override
+    public OFF_BS_ITEMS_Summary_Entity2 mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+        OFF_BS_ITEMS_Summary_Entity2 obj = new OFF_BS_ITEMS_Summary_Entity2();
+		
+		// =========================
+// R151
+// =========================
+obj.setR151_product(rs.getString("r151_product"));
+obj.setR151_client_grp(rs.getString("r151_client_grp"));
+obj.setR151_total_book_expo(rs.getBigDecimal("r151_total_book_expo"));
+obj.setR151_margin_pro(rs.getBigDecimal("r151_margin_pro"));
+obj.setR151_book_expo(rs.getBigDecimal("r151_book_expo"));
+obj.setR151_ccf_cont(rs.getBigDecimal("r151_ccf_cont"));
+obj.setR151_equiv_value(rs.getBigDecimal("r151_equiv_value"));
+obj.setR151_rw_obligant(rs.getBigDecimal("r151_rw_obligant"));
+obj.setR151_rav(rs.getBigDecimal("r151_rav"));
+
+// =========================
+// R152
+// =========================
+obj.setR152_product(rs.getString("r152_product"));
+obj.setR152_client_grp(rs.getString("r152_client_grp"));
+obj.setR152_total_book_expo(rs.getBigDecimal("r152_total_book_expo"));
+obj.setR152_margin_pro(rs.getBigDecimal("r152_margin_pro"));
+obj.setR152_book_expo(rs.getBigDecimal("r152_book_expo"));
+obj.setR152_ccf_cont(rs.getBigDecimal("r152_ccf_cont"));
+obj.setR152_equiv_value(rs.getBigDecimal("r152_equiv_value"));
+obj.setR152_rw_obligant(rs.getBigDecimal("r152_rw_obligant"));
+obj.setR152_rav(rs.getBigDecimal("r152_rav"));
+
+// =========================
+// R153
+// =========================
+obj.setR153_product(rs.getString("r153_product"));
+obj.setR153_client_grp(rs.getString("r153_client_grp"));
+obj.setR153_total_book_expo(rs.getBigDecimal("r153_total_book_expo"));
+obj.setR153_margin_pro(rs.getBigDecimal("r153_margin_pro"));
+obj.setR153_book_expo(rs.getBigDecimal("r153_book_expo"));
+obj.setR153_ccf_cont(rs.getBigDecimal("r153_ccf_cont"));
+obj.setR153_equiv_value(rs.getBigDecimal("r153_equiv_value"));
+obj.setR153_rw_obligant(rs.getBigDecimal("r153_rw_obligant"));
+obj.setR153_rav(rs.getBigDecimal("r153_rav"));
+
+// =========================
+// R154
+// =========================
+obj.setR154_product(rs.getString("r154_product"));
+obj.setR154_client_grp(rs.getString("r154_client_grp"));
+obj.setR154_total_book_expo(rs.getBigDecimal("r154_total_book_expo"));
+obj.setR154_margin_pro(rs.getBigDecimal("r154_margin_pro"));
+obj.setR154_book_expo(rs.getBigDecimal("r154_book_expo"));
+obj.setR154_ccf_cont(rs.getBigDecimal("r154_ccf_cont"));
+obj.setR154_equiv_value(rs.getBigDecimal("r154_equiv_value"));
+obj.setR154_rw_obligant(rs.getBigDecimal("r154_rw_obligant"));
+obj.setR154_rav(rs.getBigDecimal("r154_rav"));
+
+// =========================
+// R155
+// =========================
+obj.setR155_product(rs.getString("r155_product"));
+obj.setR155_client_grp(rs.getString("r155_client_grp"));
+obj.setR155_total_book_expo(rs.getBigDecimal("r155_total_book_expo"));
+obj.setR155_margin_pro(rs.getBigDecimal("r155_margin_pro"));
+obj.setR155_book_expo(rs.getBigDecimal("r155_book_expo"));
+obj.setR155_ccf_cont(rs.getBigDecimal("r155_ccf_cont"));
+obj.setR155_equiv_value(rs.getBigDecimal("r155_equiv_value"));
+obj.setR155_rw_obligant(rs.getBigDecimal("r155_rw_obligant"));
+obj.setR155_rav(rs.getBigDecimal("r155_rav"));
+
+// =========================
+// R156
+// =========================
+obj.setR156_product(rs.getString("r156_product"));
+obj.setR156_client_grp(rs.getString("r156_client_grp"));
+obj.setR156_total_book_expo(rs.getBigDecimal("r156_total_book_expo"));
+obj.setR156_margin_pro(rs.getBigDecimal("r156_margin_pro"));
+obj.setR156_book_expo(rs.getBigDecimal("r156_book_expo"));
+obj.setR156_ccf_cont(rs.getBigDecimal("r156_ccf_cont"));
+obj.setR156_equiv_value(rs.getBigDecimal("r156_equiv_value"));
+obj.setR156_rw_obligant(rs.getBigDecimal("r156_rw_obligant"));
+obj.setR156_rav(rs.getBigDecimal("r156_rav"));
+
+// =========================
+// R157
+// =========================
+obj.setR157_product(rs.getString("r157_product"));
+obj.setR157_client_grp(rs.getString("r157_client_grp"));
+obj.setR157_total_book_expo(rs.getBigDecimal("r157_total_book_expo"));
+obj.setR157_margin_pro(rs.getBigDecimal("r157_margin_pro"));
+obj.setR157_book_expo(rs.getBigDecimal("r157_book_expo"));
+obj.setR157_ccf_cont(rs.getBigDecimal("r157_ccf_cont"));
+obj.setR157_equiv_value(rs.getBigDecimal("r157_equiv_value"));
+obj.setR157_rw_obligant(rs.getBigDecimal("r157_rw_obligant"));
+obj.setR157_rav(rs.getBigDecimal("r157_rav"));
+
+// =========================
+// R158
+// =========================
+obj.setR158_product(rs.getString("r158_product"));
+obj.setR158_client_grp(rs.getString("r158_client_grp"));
+obj.setR158_total_book_expo(rs.getBigDecimal("r158_total_book_expo"));
+obj.setR158_margin_pro(rs.getBigDecimal("r158_margin_pro"));
+obj.setR158_book_expo(rs.getBigDecimal("r158_book_expo"));
+obj.setR158_ccf_cont(rs.getBigDecimal("r158_ccf_cont"));
+obj.setR158_equiv_value(rs.getBigDecimal("r158_equiv_value"));
+obj.setR158_rw_obligant(rs.getBigDecimal("r158_rw_obligant"));
+obj.setR158_rav(rs.getBigDecimal("r158_rav"));
+
+// =========================
+// R159
+// =========================
+obj.setR159_product(rs.getString("r159_product"));
+obj.setR159_client_grp(rs.getString("r159_client_grp"));
+obj.setR159_total_book_expo(rs.getBigDecimal("r159_total_book_expo"));
+obj.setR159_margin_pro(rs.getBigDecimal("r159_margin_pro"));
+obj.setR159_book_expo(rs.getBigDecimal("r159_book_expo"));
+obj.setR159_ccf_cont(rs.getBigDecimal("r159_ccf_cont"));
+obj.setR159_equiv_value(rs.getBigDecimal("r159_equiv_value"));
+obj.setR159_rw_obligant(rs.getBigDecimal("r159_rw_obligant"));
+obj.setR159_rav(rs.getBigDecimal("r159_rav"));
+
+// =========================
+// R160
+// =========================
+obj.setR160_product(rs.getString("r160_product"));
+obj.setR160_client_grp(rs.getString("r160_client_grp"));
+obj.setR160_total_book_expo(rs.getBigDecimal("r160_total_book_expo"));
+obj.setR160_margin_pro(rs.getBigDecimal("r160_margin_pro"));
+obj.setR160_book_expo(rs.getBigDecimal("r160_book_expo"));
+obj.setR160_ccf_cont(rs.getBigDecimal("r160_ccf_cont"));
+obj.setR160_equiv_value(rs.getBigDecimal("r160_equiv_value"));
+obj.setR160_rw_obligant(rs.getBigDecimal("r160_rw_obligant"));
+obj.setR160_rav(rs.getBigDecimal("r160_rav"));
+
+
+// =========================
+// R161
+// =========================
+obj.setR161_product(rs.getString("r161_product"));
+obj.setR161_client_grp(rs.getString("r161_client_grp"));
+obj.setR161_total_book_expo(rs.getBigDecimal("r161_total_book_expo"));
+obj.setR161_margin_pro(rs.getBigDecimal("r161_margin_pro"));
+obj.setR161_book_expo(rs.getBigDecimal("r161_book_expo"));
+obj.setR161_ccf_cont(rs.getBigDecimal("r161_ccf_cont"));
+obj.setR161_equiv_value(rs.getBigDecimal("r161_equiv_value"));
+obj.setR161_rw_obligant(rs.getBigDecimal("r161_rw_obligant"));
+obj.setR161_rav(rs.getBigDecimal("r161_rav"));
+
+// =========================
+// R162
+// =========================
+obj.setR162_product(rs.getString("r162_product"));
+obj.setR162_client_grp(rs.getString("r162_client_grp"));
+obj.setR162_total_book_expo(rs.getBigDecimal("r162_total_book_expo"));
+obj.setR162_margin_pro(rs.getBigDecimal("r162_margin_pro"));
+obj.setR162_book_expo(rs.getBigDecimal("r162_book_expo"));
+obj.setR162_ccf_cont(rs.getBigDecimal("r162_ccf_cont"));
+obj.setR162_equiv_value(rs.getBigDecimal("r162_equiv_value"));
+obj.setR162_rw_obligant(rs.getBigDecimal("r162_rw_obligant"));
+obj.setR162_rav(rs.getBigDecimal("r162_rav"));
+
+// =========================
+// R163
+// =========================
+obj.setR163_product(rs.getString("r163_product"));
+obj.setR163_client_grp(rs.getString("r163_client_grp"));
+obj.setR163_total_book_expo(rs.getBigDecimal("r163_total_book_expo"));
+obj.setR163_margin_pro(rs.getBigDecimal("r163_margin_pro"));
+obj.setR163_book_expo(rs.getBigDecimal("r163_book_expo"));
+obj.setR163_ccf_cont(rs.getBigDecimal("r163_ccf_cont"));
+obj.setR163_equiv_value(rs.getBigDecimal("r163_equiv_value"));
+obj.setR163_rw_obligant(rs.getBigDecimal("r163_rw_obligant"));
+obj.setR163_rav(rs.getBigDecimal("r163_rav"));
+
+// =========================
+// R164
+// =========================
+obj.setR164_product(rs.getString("r164_product"));
+obj.setR164_client_grp(rs.getString("r164_client_grp"));
+obj.setR164_total_book_expo(rs.getBigDecimal("r164_total_book_expo"));
+obj.setR164_margin_pro(rs.getBigDecimal("r164_margin_pro"));
+obj.setR164_book_expo(rs.getBigDecimal("r164_book_expo"));
+obj.setR164_ccf_cont(rs.getBigDecimal("r164_ccf_cont"));
+obj.setR164_equiv_value(rs.getBigDecimal("r164_equiv_value"));
+obj.setR164_rw_obligant(rs.getBigDecimal("r164_rw_obligant"));
+obj.setR164_rav(rs.getBigDecimal("r164_rav"));
+
+// =========================
+// R165
+// =========================
+obj.setR165_product(rs.getString("r165_product"));
+obj.setR165_client_grp(rs.getString("r165_client_grp"));
+obj.setR165_total_book_expo(rs.getBigDecimal("r165_total_book_expo"));
+obj.setR165_margin_pro(rs.getBigDecimal("r165_margin_pro"));
+obj.setR165_book_expo(rs.getBigDecimal("r165_book_expo"));
+obj.setR165_ccf_cont(rs.getBigDecimal("r165_ccf_cont"));
+obj.setR165_equiv_value(rs.getBigDecimal("r165_equiv_value"));
+obj.setR165_rw_obligant(rs.getBigDecimal("r165_rw_obligant"));
+obj.setR165_rav(rs.getBigDecimal("r165_rav"));
+
+// =========================
+// R166
+// =========================
+obj.setR166_product(rs.getString("r166_product"));
+obj.setR166_client_grp(rs.getString("r166_client_grp"));
+obj.setR166_total_book_expo(rs.getBigDecimal("r166_total_book_expo"));
+obj.setR166_margin_pro(rs.getBigDecimal("r166_margin_pro"));
+obj.setR166_book_expo(rs.getBigDecimal("r166_book_expo"));
+obj.setR166_ccf_cont(rs.getBigDecimal("r166_ccf_cont"));
+obj.setR166_equiv_value(rs.getBigDecimal("r166_equiv_value"));
+obj.setR166_rw_obligant(rs.getBigDecimal("r166_rw_obligant"));
+obj.setR166_rav(rs.getBigDecimal("r166_rav"));
+
+// =========================
+// R167
+// =========================
+obj.setR167_product(rs.getString("r167_product"));
+obj.setR167_client_grp(rs.getString("r167_client_grp"));
+obj.setR167_total_book_expo(rs.getBigDecimal("r167_total_book_expo"));
+obj.setR167_margin_pro(rs.getBigDecimal("r167_margin_pro"));
+obj.setR167_book_expo(rs.getBigDecimal("r167_book_expo"));
+obj.setR167_ccf_cont(rs.getBigDecimal("r167_ccf_cont"));
+obj.setR167_equiv_value(rs.getBigDecimal("r167_equiv_value"));
+obj.setR167_rw_obligant(rs.getBigDecimal("r167_rw_obligant"));
+obj.setR167_rav(rs.getBigDecimal("r167_rav"));
+
+// =========================
+// R168
+// =========================
+obj.setR168_product(rs.getString("r168_product"));
+obj.setR168_client_grp(rs.getString("r168_client_grp"));
+obj.setR168_total_book_expo(rs.getBigDecimal("r168_total_book_expo"));
+obj.setR168_margin_pro(rs.getBigDecimal("r168_margin_pro"));
+obj.setR168_book_expo(rs.getBigDecimal("r168_book_expo"));
+obj.setR168_ccf_cont(rs.getBigDecimal("r168_ccf_cont"));
+obj.setR168_equiv_value(rs.getBigDecimal("r168_equiv_value"));
+obj.setR168_rw_obligant(rs.getBigDecimal("r168_rw_obligant"));
+obj.setR168_rav(rs.getBigDecimal("r168_rav"));
+
+// =========================
+// R169
+// =========================
+obj.setR169_product(rs.getString("r169_product"));
+obj.setR169_client_grp(rs.getString("r169_client_grp"));
+obj.setR169_total_book_expo(rs.getBigDecimal("r169_total_book_expo"));
+obj.setR169_margin_pro(rs.getBigDecimal("r169_margin_pro"));
+obj.setR169_book_expo(rs.getBigDecimal("r169_book_expo"));
+obj.setR169_ccf_cont(rs.getBigDecimal("r169_ccf_cont"));
+obj.setR169_equiv_value(rs.getBigDecimal("r169_equiv_value"));
+obj.setR169_rw_obligant(rs.getBigDecimal("r169_rw_obligant"));
+obj.setR169_rav(rs.getBigDecimal("r169_rav"));
+
+// =========================
+// R170
+// =========================
+obj.setR170_product(rs.getString("r170_product"));
+obj.setR170_client_grp(rs.getString("r170_client_grp"));
+obj.setR170_total_book_expo(rs.getBigDecimal("r170_total_book_expo"));
+obj.setR170_margin_pro(rs.getBigDecimal("r170_margin_pro"));
+obj.setR170_book_expo(rs.getBigDecimal("r170_book_expo"));
+obj.setR170_ccf_cont(rs.getBigDecimal("r170_ccf_cont"));
+obj.setR170_equiv_value(rs.getBigDecimal("r170_equiv_value"));
+obj.setR170_rw_obligant(rs.getBigDecimal("r170_rw_obligant"));
+obj.setR170_rav(rs.getBigDecimal("r170_rav"));
+
+
+// =========================
+// R171
+// =========================
+obj.setR171_product(rs.getString("r171_product"));
+obj.setR171_client_grp(rs.getString("r171_client_grp"));
+obj.setR171_total_book_expo(rs.getBigDecimal("r171_total_book_expo"));
+obj.setR171_margin_pro(rs.getBigDecimal("r171_margin_pro"));
+obj.setR171_book_expo(rs.getBigDecimal("r171_book_expo"));
+obj.setR171_ccf_cont(rs.getBigDecimal("r171_ccf_cont"));
+obj.setR171_equiv_value(rs.getBigDecimal("r171_equiv_value"));
+obj.setR171_rw_obligant(rs.getBigDecimal("r171_rw_obligant"));
+obj.setR171_rav(rs.getBigDecimal("r171_rav"));
+
+// =========================
+// R172
+// =========================
+obj.setR172_product(rs.getString("r172_product"));
+obj.setR172_client_grp(rs.getString("r172_client_grp"));
+obj.setR172_total_book_expo(rs.getBigDecimal("r172_total_book_expo"));
+obj.setR172_margin_pro(rs.getBigDecimal("r172_margin_pro"));
+obj.setR172_book_expo(rs.getBigDecimal("r172_book_expo"));
+obj.setR172_ccf_cont(rs.getBigDecimal("r172_ccf_cont"));
+obj.setR172_equiv_value(rs.getBigDecimal("r172_equiv_value"));
+obj.setR172_rw_obligant(rs.getBigDecimal("r172_rw_obligant"));
+obj.setR172_rav(rs.getBigDecimal("r172_rav"));
+
+// =========================
+// R173
+// =========================
+obj.setR173_product(rs.getString("r173_product"));
+obj.setR173_client_grp(rs.getString("r173_client_grp"));
+obj.setR173_total_book_expo(rs.getBigDecimal("r173_total_book_expo"));
+obj.setR173_margin_pro(rs.getBigDecimal("r173_margin_pro"));
+obj.setR173_book_expo(rs.getBigDecimal("r173_book_expo"));
+obj.setR173_ccf_cont(rs.getBigDecimal("r173_ccf_cont"));
+obj.setR173_equiv_value(rs.getBigDecimal("r173_equiv_value"));
+obj.setR173_rw_obligant(rs.getBigDecimal("r173_rw_obligant"));
+obj.setR173_rav(rs.getBigDecimal("r173_rav"));
+
+// =========================
+// R174
+// =========================
+obj.setR174_product(rs.getString("r174_product"));
+obj.setR174_client_grp(rs.getString("r174_client_grp"));
+obj.setR174_total_book_expo(rs.getBigDecimal("r174_total_book_expo"));
+obj.setR174_margin_pro(rs.getBigDecimal("r174_margin_pro"));
+obj.setR174_book_expo(rs.getBigDecimal("r174_book_expo"));
+obj.setR174_ccf_cont(rs.getBigDecimal("r174_ccf_cont"));
+obj.setR174_equiv_value(rs.getBigDecimal("r174_equiv_value"));
+obj.setR174_rw_obligant(rs.getBigDecimal("r174_rw_obligant"));
+obj.setR174_rav(rs.getBigDecimal("r174_rav"));
+
+// =========================
+// R175
+// =========================
+obj.setR175_product(rs.getString("r175_product"));
+obj.setR175_client_grp(rs.getString("r175_client_grp"));
+obj.setR175_total_book_expo(rs.getBigDecimal("r175_total_book_expo"));
+obj.setR175_margin_pro(rs.getBigDecimal("r175_margin_pro"));
+obj.setR175_book_expo(rs.getBigDecimal("r175_book_expo"));
+obj.setR175_ccf_cont(rs.getBigDecimal("r175_ccf_cont"));
+obj.setR175_equiv_value(rs.getBigDecimal("r175_equiv_value"));
+obj.setR175_rw_obligant(rs.getBigDecimal("r175_rw_obligant"));
+obj.setR175_rav(rs.getBigDecimal("r175_rav"));
+
+// =========================
+// R176
+// =========================
+obj.setR176_product(rs.getString("r176_product"));
+obj.setR176_client_grp(rs.getString("r176_client_grp"));
+obj.setR176_total_book_expo(rs.getBigDecimal("r176_total_book_expo"));
+obj.setR176_margin_pro(rs.getBigDecimal("r176_margin_pro"));
+obj.setR176_book_expo(rs.getBigDecimal("r176_book_expo"));
+obj.setR176_ccf_cont(rs.getBigDecimal("r176_ccf_cont"));
+obj.setR176_equiv_value(rs.getBigDecimal("r176_equiv_value"));
+obj.setR176_rw_obligant(rs.getBigDecimal("r176_rw_obligant"));
+obj.setR176_rav(rs.getBigDecimal("r176_rav"));
+
+// =========================
+// R177
+// =========================
+obj.setR177_product(rs.getString("r177_product"));
+obj.setR177_client_grp(rs.getString("r177_client_grp"));
+obj.setR177_total_book_expo(rs.getBigDecimal("r177_total_book_expo"));
+obj.setR177_margin_pro(rs.getBigDecimal("r177_margin_pro"));
+obj.setR177_book_expo(rs.getBigDecimal("r177_book_expo"));
+obj.setR177_ccf_cont(rs.getBigDecimal("r177_ccf_cont"));
+obj.setR177_equiv_value(rs.getBigDecimal("r177_equiv_value"));
+obj.setR177_rw_obligant(rs.getBigDecimal("r177_rw_obligant"));
+obj.setR177_rav(rs.getBigDecimal("r177_rav"));
+
+// =========================
+// R178
+// =========================
+obj.setR178_product(rs.getString("r178_product"));
+obj.setR178_client_grp(rs.getString("r178_client_grp"));
+obj.setR178_total_book_expo(rs.getBigDecimal("r178_total_book_expo"));
+obj.setR178_margin_pro(rs.getBigDecimal("r178_margin_pro"));
+obj.setR178_book_expo(rs.getBigDecimal("r178_book_expo"));
+obj.setR178_ccf_cont(rs.getBigDecimal("r178_ccf_cont"));
+obj.setR178_equiv_value(rs.getBigDecimal("r178_equiv_value"));
+obj.setR178_rw_obligant(rs.getBigDecimal("r178_rw_obligant"));
+obj.setR178_rav(rs.getBigDecimal("r178_rav"));
+
+// =========================
+// R179
+// =========================
+obj.setR179_product(rs.getString("r179_product"));
+obj.setR179_client_grp(rs.getString("r179_client_grp"));
+obj.setR179_total_book_expo(rs.getBigDecimal("r179_total_book_expo"));
+obj.setR179_margin_pro(rs.getBigDecimal("r179_margin_pro"));
+obj.setR179_book_expo(rs.getBigDecimal("r179_book_expo"));
+obj.setR179_ccf_cont(rs.getBigDecimal("r179_ccf_cont"));
+obj.setR179_equiv_value(rs.getBigDecimal("r179_equiv_value"));
+obj.setR179_rw_obligant(rs.getBigDecimal("r179_rw_obligant"));
+obj.setR179_rav(rs.getBigDecimal("r179_rav"));
+
+// =========================
+// R180
+// =========================
+obj.setR180_product(rs.getString("r180_product"));
+obj.setR180_client_grp(rs.getString("r180_client_grp"));
+obj.setR180_total_book_expo(rs.getBigDecimal("r180_total_book_expo"));
+obj.setR180_margin_pro(rs.getBigDecimal("r180_margin_pro"));
+obj.setR180_book_expo(rs.getBigDecimal("r180_book_expo"));
+obj.setR180_ccf_cont(rs.getBigDecimal("r180_ccf_cont"));
+obj.setR180_equiv_value(rs.getBigDecimal("r180_equiv_value"));
+obj.setR180_rw_obligant(rs.getBigDecimal("r180_rw_obligant"));
+obj.setR180_rav(rs.getBigDecimal("r180_rav"));
+
+
+
+// =========================
+// R181
+// =========================
+obj.setR181_product(rs.getString("r181_product"));
+obj.setR181_client_grp(rs.getString("r181_client_grp"));
+obj.setR181_total_book_expo(rs.getBigDecimal("r181_total_book_expo"));
+obj.setR181_margin_pro(rs.getBigDecimal("r181_margin_pro"));
+obj.setR181_book_expo(rs.getBigDecimal("r181_book_expo"));
+obj.setR181_ccf_cont(rs.getBigDecimal("r181_ccf_cont"));
+obj.setR181_equiv_value(rs.getBigDecimal("r181_equiv_value"));
+obj.setR181_rw_obligant(rs.getBigDecimal("r181_rw_obligant"));
+obj.setR181_rav(rs.getBigDecimal("r181_rav"));
+
+// =========================
+// R182
+// =========================
+obj.setR182_product(rs.getString("r182_product"));
+obj.setR182_client_grp(rs.getString("r182_client_grp"));
+obj.setR182_total_book_expo(rs.getBigDecimal("r182_total_book_expo"));
+obj.setR182_margin_pro(rs.getBigDecimal("r182_margin_pro"));
+obj.setR182_book_expo(rs.getBigDecimal("r182_book_expo"));
+obj.setR182_ccf_cont(rs.getBigDecimal("r182_ccf_cont"));
+obj.setR182_equiv_value(rs.getBigDecimal("r182_equiv_value"));
+obj.setR182_rw_obligant(rs.getBigDecimal("r182_rw_obligant"));
+obj.setR182_rav(rs.getBigDecimal("r182_rav"));
+
+// =========================
+// R183
+// =========================
+obj.setR183_product(rs.getString("r183_product"));
+obj.setR183_client_grp(rs.getString("r183_client_grp"));
+obj.setR183_total_book_expo(rs.getBigDecimal("r183_total_book_expo"));
+obj.setR183_margin_pro(rs.getBigDecimal("r183_margin_pro"));
+obj.setR183_book_expo(rs.getBigDecimal("r183_book_expo"));
+obj.setR183_ccf_cont(rs.getBigDecimal("r183_ccf_cont"));
+obj.setR183_equiv_value(rs.getBigDecimal("r183_equiv_value"));
+obj.setR183_rw_obligant(rs.getBigDecimal("r183_rw_obligant"));
+obj.setR183_rav(rs.getBigDecimal("r183_rav"));
+
+// =========================
+// R184
+// =========================
+obj.setR184_product(rs.getString("r184_product"));
+obj.setR184_client_grp(rs.getString("r184_client_grp"));
+obj.setR184_total_book_expo(rs.getBigDecimal("r184_total_book_expo"));
+obj.setR184_margin_pro(rs.getBigDecimal("r184_margin_pro"));
+obj.setR184_book_expo(rs.getBigDecimal("r184_book_expo"));
+obj.setR184_ccf_cont(rs.getBigDecimal("r184_ccf_cont"));
+obj.setR184_equiv_value(rs.getBigDecimal("r184_equiv_value"));
+obj.setR184_rw_obligant(rs.getBigDecimal("r184_rw_obligant"));
+obj.setR184_rav(rs.getBigDecimal("r184_rav"));
+
+// =========================
+// R185
+// =========================
+obj.setR185_product(rs.getString("r185_product"));
+obj.setR185_client_grp(rs.getString("r185_client_grp"));
+obj.setR185_total_book_expo(rs.getBigDecimal("r185_total_book_expo"));
+obj.setR185_margin_pro(rs.getBigDecimal("r185_margin_pro"));
+obj.setR185_book_expo(rs.getBigDecimal("r185_book_expo"));
+obj.setR185_ccf_cont(rs.getBigDecimal("r185_ccf_cont"));
+obj.setR185_equiv_value(rs.getBigDecimal("r185_equiv_value"));
+obj.setR185_rw_obligant(rs.getBigDecimal("r185_rw_obligant"));
+obj.setR185_rav(rs.getBigDecimal("r185_rav"));
+
+// =========================
+// R186
+// =========================
+obj.setR186_product(rs.getString("r186_product"));
+obj.setR186_client_grp(rs.getString("r186_client_grp"));
+obj.setR186_total_book_expo(rs.getBigDecimal("r186_total_book_expo"));
+obj.setR186_margin_pro(rs.getBigDecimal("r186_margin_pro"));
+obj.setR186_book_expo(rs.getBigDecimal("r186_book_expo"));
+obj.setR186_ccf_cont(rs.getBigDecimal("r186_ccf_cont"));
+obj.setR186_equiv_value(rs.getBigDecimal("r186_equiv_value"));
+obj.setR186_rw_obligant(rs.getBigDecimal("r186_rw_obligant"));
+obj.setR186_rav(rs.getBigDecimal("r186_rav"));
+
+// =========================
+// R187
+// =========================
+obj.setR187_product(rs.getString("r187_product"));
+obj.setR187_client_grp(rs.getString("r187_client_grp"));
+obj.setR187_total_book_expo(rs.getBigDecimal("r187_total_book_expo"));
+obj.setR187_margin_pro(rs.getBigDecimal("r187_margin_pro"));
+obj.setR187_book_expo(rs.getBigDecimal("r187_book_expo"));
+obj.setR187_ccf_cont(rs.getBigDecimal("r187_ccf_cont"));
+obj.setR187_equiv_value(rs.getBigDecimal("r187_equiv_value"));
+obj.setR187_rw_obligant(rs.getBigDecimal("r187_rw_obligant"));
+obj.setR187_rav(rs.getBigDecimal("r187_rav"));
+
+// =========================
+// R188
+// =========================
+obj.setR188_product(rs.getString("r188_product"));
+obj.setR188_client_grp(rs.getString("r188_client_grp"));
+obj.setR188_total_book_expo(rs.getBigDecimal("r188_total_book_expo"));
+obj.setR188_margin_pro(rs.getBigDecimal("r188_margin_pro"));
+obj.setR188_book_expo(rs.getBigDecimal("r188_book_expo"));
+obj.setR188_ccf_cont(rs.getBigDecimal("r188_ccf_cont"));
+obj.setR188_equiv_value(rs.getBigDecimal("r188_equiv_value"));
+obj.setR188_rw_obligant(rs.getBigDecimal("r188_rw_obligant"));
+obj.setR188_rav(rs.getBigDecimal("r188_rav"));
+
+// =========================
+// R189
+// =========================
+obj.setR189_product(rs.getString("r189_product"));
+obj.setR189_client_grp(rs.getString("r189_client_grp"));
+obj.setR189_total_book_expo(rs.getBigDecimal("r189_total_book_expo"));
+obj.setR189_margin_pro(rs.getBigDecimal("r189_margin_pro"));
+obj.setR189_book_expo(rs.getBigDecimal("r189_book_expo"));
+obj.setR189_ccf_cont(rs.getBigDecimal("r189_ccf_cont"));
+obj.setR189_equiv_value(rs.getBigDecimal("r189_equiv_value"));
+obj.setR189_rw_obligant(rs.getBigDecimal("r189_rw_obligant"));
+obj.setR189_rav(rs.getBigDecimal("r189_rav"));
+		
 		
 
-		System.out.println("testing");
-		System.out.println(version);
 
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
+        // =========================
+        // COMMON FIELDS
+        // =========================
+        obj.setReport_date(rs.getDate("report_date"));
+        obj.setReport_version(rs.getBigDecimal("report_version"));
+        obj.setReport_frequency(rs.getString("report_frequency"));
+        obj.setReport_code(rs.getString("report_code"));
+        obj.setReport_desc(rs.getString("report_desc"));
 
-		    System.out.println("ARCHIVAL MODE");
-		    System.out.println("version = " + version);
+        obj.setEntity_flg(rs.getString("entity_flg"));
+        obj.setModify_flg(rs.getString("modify_flg"));
+        obj.setDel_flg(rs.getString("del_flg"));
 
-		    List<OFF_BS_ITEMS_Archival_Summary_Entity1> T1Master = new ArrayList<>();
-		    List<OFF_BS_ITEMS_Archival_Summary_Entity2> T2Master = new ArrayList<>();
 
-		 
-		    try {
-		        Date dt = dateformat.parse(todate);
+        return obj;
+    }
+}
 
-		        T1Master = OFF_BS_ITEMS_Archival_Summary_Repo1.getdatabydateListarchival(dt, version);
-		        T2Master = OFF_BS_ITEMS_Archival_Summary_Repo2.getdatabydateListarchival(dt, version);
 
-		        System.out.println("T1Master size = " + T1Master.size());
-		      
 
-		    } catch (ParseException e) {
-		        e.printStackTrace();
-		    }
-
-		    mv.addObject("reportsummary1", T1Master);
-		    mv.addObject("reportsummary2", T2Master);
-
-		 
-		} else {
-
-			List<OFF_BS_ITEMS_Summary_Entity1> T1Master = new ArrayList<OFF_BS_ITEMS_Summary_Entity1>();
-			List<OFF_BS_ITEMS_Summary_Entity2> T2Master = new ArrayList<OFF_BS_ITEMS_Summary_Entity2>();
+public class OFF_BS_ITEMS_Summary_Entity1 {
+	
+	
+	private String	r12_product;
+	private String	r12_client_grp;
+	private BigDecimal	r12_total_book_expo;
+	private BigDecimal	r12_margin_pro;
+	private BigDecimal	r12_book_expo;
+	private BigDecimal	r12_ccf_cont;
+	private BigDecimal	r12_equiv_value;
+	private BigDecimal	r12_rw_obligant;
+	private BigDecimal	r12_rav;
+	private String	r13_product;
+	private String	r13_client_grp;
+	private BigDecimal	r13_total_book_expo;
+	private BigDecimal	r13_margin_pro;
+	private BigDecimal	r13_book_expo;
+	private BigDecimal	r13_ccf_cont;
+	private BigDecimal	r13_equiv_value;
+	private BigDecimal	r13_rw_obligant;
+	private BigDecimal	r13_rav;
+	private String	r14_product;
+	private String	r14_client_grp;
+	private BigDecimal	r14_total_book_expo;
+	private BigDecimal	r14_margin_pro;
+	private BigDecimal	r14_book_expo;
+	private BigDecimal	r14_ccf_cont;
+	private BigDecimal	r14_equiv_value;
+	private BigDecimal	r14_rw_obligant;
+	private BigDecimal	r14_rav;
+	private String	r15_product;
+	private String	r15_client_grp;
+	private BigDecimal	r15_total_book_expo;
+	private BigDecimal	r15_margin_pro;
+	private BigDecimal	r15_book_expo;
+	private BigDecimal	r15_ccf_cont;
+	private BigDecimal	r15_equiv_value;
+	private BigDecimal	r15_rw_obligant;
+	private BigDecimal	r15_rav;
+	private String	r16_product;
+	private String	r16_client_grp;
+	private BigDecimal	r16_total_book_expo;
+	private BigDecimal	r16_margin_pro;
+	private BigDecimal	r16_book_expo;
+	private BigDecimal	r16_ccf_cont;
+	private BigDecimal	r16_equiv_value;
+	private BigDecimal	r16_rw_obligant;
+	private BigDecimal	r16_rav;
+	private String	r17_product;
+	private String	r17_client_grp;
+	private BigDecimal	r17_total_book_expo;
+	private BigDecimal	r17_margin_pro;
+	private BigDecimal	r17_book_expo;
+	private BigDecimal	r17_ccf_cont;
+	private BigDecimal	r17_equiv_value;
+	private BigDecimal	r17_rw_obligant;
+	private BigDecimal	r17_rav;
+	private String	r18_product;
+	private String	r18_client_grp;
+	private BigDecimal	r18_total_book_expo;
+	private BigDecimal	r18_margin_pro;
+	private BigDecimal	r18_book_expo;
+	private BigDecimal	r18_ccf_cont;
+	private BigDecimal	r18_equiv_value;
+	private BigDecimal	r18_rw_obligant;
+	private BigDecimal	r18_rav;
+	private String	r19_product;
+	private String	r19_client_grp;
+	private BigDecimal	r19_total_book_expo;
+	private BigDecimal	r19_margin_pro;
+	private BigDecimal	r19_book_expo;
+	private BigDecimal	r19_ccf_cont;
+	private BigDecimal	r19_equiv_value;
+	private BigDecimal	r19_rw_obligant;
+	private BigDecimal	r19_rav;
+	private String	r20_product;
+	private String	r20_client_grp;
+	private BigDecimal	r20_total_book_expo;
+	private BigDecimal	r20_margin_pro;
+	private BigDecimal	r20_book_expo;
+	private BigDecimal	r20_ccf_cont;
+	private BigDecimal	r20_equiv_value;
+	private BigDecimal	r20_rw_obligant;
+	private BigDecimal	r20_rav;
+	private String	r21_product;
+	private String	r21_client_grp;
+	private BigDecimal	r21_total_book_expo;
+	private BigDecimal	r21_margin_pro;
+	private BigDecimal	r21_book_expo;
+	private BigDecimal	r21_ccf_cont;
+	private BigDecimal	r21_equiv_value;
+	private BigDecimal	r21_rw_obligant;
+	private BigDecimal	r21_rav;
+	private String	r22_product;
+	private String	r22_client_grp;
+	private BigDecimal	r22_total_book_expo;
+	private BigDecimal	r22_margin_pro;
+	private BigDecimal	r22_book_expo;
+	private BigDecimal	r22_ccf_cont;
+	private BigDecimal	r22_equiv_value;
+	private BigDecimal	r22_rw_obligant;
+	private BigDecimal	r22_rav;
+	private String	r23_product;
+	private String	r23_client_grp;
+	private BigDecimal	r23_total_book_expo;
+	private BigDecimal	r23_margin_pro;
+	private BigDecimal	r23_book_expo;
+	private BigDecimal	r23_ccf_cont;
+	private BigDecimal	r23_equiv_value;
+	private BigDecimal	r23_rw_obligant;
+	private BigDecimal	r23_rav;
+	private String	r24_product;
+	private String	r24_client_grp;
+	private BigDecimal	r24_total_book_expo;
+	private BigDecimal	r24_margin_pro;
+	private BigDecimal	r24_book_expo;
+	private BigDecimal	r24_ccf_cont;
+	private BigDecimal	r24_equiv_value;
+	private BigDecimal	r24_rw_obligant;
+	private BigDecimal	r24_rav;
+	private String	r25_product;
+	private String	r25_client_grp;
+	private BigDecimal	r25_total_book_expo;
+	private BigDecimal	r25_margin_pro;
+	private BigDecimal	r25_book_expo;
+	private BigDecimal	r25_ccf_cont;
+	private BigDecimal	r25_equiv_value;
+	private BigDecimal	r25_rw_obligant;
+	private BigDecimal	r25_rav;
+	private String	r26_product;
+	private String	r26_client_grp;
+	private BigDecimal	r26_total_book_expo;
+	private BigDecimal	r26_margin_pro;
+	private BigDecimal	r26_book_expo;
+	private BigDecimal	r26_ccf_cont;
+	private BigDecimal	r26_equiv_value;
+	private BigDecimal	r26_rw_obligant;
+	private BigDecimal	r26_rav;
+	private String	r27_product;
+	private String	r27_client_grp;
+	private BigDecimal	r27_total_book_expo;
+	private BigDecimal	r27_margin_pro;
+	private BigDecimal	r27_book_expo;
+	private BigDecimal	r27_ccf_cont;
+	private BigDecimal	r27_equiv_value;
+	private BigDecimal	r27_rw_obligant;
+	private BigDecimal	r27_rav;
+	private String	r28_product;
+	private String	r28_client_grp;
+	private BigDecimal	r28_total_book_expo;
+	private BigDecimal	r28_margin_pro;
+	private BigDecimal	r28_book_expo;
+	private BigDecimal	r28_ccf_cont;
+	private BigDecimal	r28_equiv_value;
+	private BigDecimal	r28_rw_obligant;
+	private BigDecimal	r28_rav;
+	private String	r29_product;
+	private String	r29_client_grp;
+	private BigDecimal	r29_total_book_expo;
+	private BigDecimal	r29_margin_pro;
+	private BigDecimal	r29_book_expo;
+	private BigDecimal	r29_ccf_cont;
+	private BigDecimal	r29_equiv_value;
+	private BigDecimal	r29_rw_obligant;
+	private BigDecimal	r29_rav;
+	private String	r30_product;
+	private String	r30_client_grp;
+	private BigDecimal	r30_total_book_expo;
+	private BigDecimal	r30_margin_pro;
+	private BigDecimal	r30_book_expo;
+	private BigDecimal	r30_ccf_cont;
+	private BigDecimal	r30_equiv_value;
+	private BigDecimal	r30_rw_obligant;
+	private BigDecimal	r30_rav;
+	private String	r31_product;
+	private String	r31_client_grp;
+	private BigDecimal	r31_total_book_expo;
+	private BigDecimal	r31_margin_pro;
+	private BigDecimal	r31_book_expo;
+	private BigDecimal	r31_ccf_cont;
+	private BigDecimal	r31_equiv_value;
+	private BigDecimal	r31_rw_obligant;
+	private BigDecimal	r31_rav;
+	private String	r32_product;
+	private String	r32_client_grp;
+	private BigDecimal	r32_total_book_expo;
+	private BigDecimal	r32_margin_pro;
+	private BigDecimal	r32_book_expo;
+	private BigDecimal	r32_ccf_cont;
+	private BigDecimal	r32_equiv_value;
+	private BigDecimal	r32_rw_obligant;
+	private BigDecimal	r32_rav;
+	private String	r33_product;
+	private String	r33_client_grp;
+	private BigDecimal	r33_total_book_expo;
+	private BigDecimal	r33_margin_pro;
+	private BigDecimal	r33_book_expo;
+	private BigDecimal	r33_ccf_cont;
+	private BigDecimal	r33_equiv_value;
+	private BigDecimal	r33_rw_obligant;
+	private BigDecimal	r33_rav;
+	private String	r34_product;
+	private String	r34_client_grp;
+	private BigDecimal	r34_total_book_expo;
+	private BigDecimal	r34_margin_pro;
+	private BigDecimal	r34_book_expo;
+	private BigDecimal	r34_ccf_cont;
+	private BigDecimal	r34_equiv_value;
+	private BigDecimal	r34_rw_obligant;
+	private BigDecimal	r34_rav;
+	private String	r35_product;
+	private String	r35_client_grp;
+	private BigDecimal	r35_total_book_expo;
+	private BigDecimal	r35_margin_pro;
+	private BigDecimal	r35_book_expo;
+	private BigDecimal	r35_ccf_cont;
+	private BigDecimal	r35_equiv_value;
+	private BigDecimal	r35_rw_obligant;
+	private BigDecimal	r35_rav;
+	private String	r36_product;
+	private String	r36_client_grp;
+	private BigDecimal	r36_total_book_expo;
+	private BigDecimal	r36_margin_pro;
+	private BigDecimal	r36_book_expo;
+	private BigDecimal	r36_ccf_cont;
+	private BigDecimal	r36_equiv_value;
+	private BigDecimal	r36_rw_obligant;
+	private BigDecimal	r36_rav;
+	private String	r37_product;
+	private String	r37_client_grp;
+	private BigDecimal	r37_total_book_expo;
+	private BigDecimal	r37_margin_pro;
+	private BigDecimal	r37_book_expo;
+	private BigDecimal	r37_ccf_cont;
+	private BigDecimal	r37_equiv_value;
+	private BigDecimal	r37_rw_obligant;
+	private BigDecimal	r37_rav;
+	private String	r38_product;
+	private String	r38_client_grp;
+	private BigDecimal	r38_total_book_expo;
+	private BigDecimal	r38_margin_pro;
+	private BigDecimal	r38_book_expo;
+	private BigDecimal	r38_ccf_cont;
+	private BigDecimal	r38_equiv_value;
+	private BigDecimal	r38_rw_obligant;
+	private BigDecimal	r38_rav;
+	private String	r39_product;
+	private String	r39_client_grp;
+	private BigDecimal	r39_total_book_expo;
+	private BigDecimal	r39_margin_pro;
+	private BigDecimal	r39_book_expo;
+	private BigDecimal	r39_ccf_cont;
+	private BigDecimal	r39_equiv_value;
+	private BigDecimal	r39_rw_obligant;
+	private BigDecimal	r39_rav;
+	private String	r40_product;
+	private String	r40_client_grp;
+	private BigDecimal	r40_total_book_expo;
+	private BigDecimal	r40_margin_pro;
+	private BigDecimal	r40_book_expo;
+	private BigDecimal	r40_ccf_cont;
+	private BigDecimal	r40_equiv_value;
+	private BigDecimal	r40_rw_obligant;
+	private BigDecimal	r40_rav;
+	private String	r41_product;
+	private String	r41_client_grp;
+	private BigDecimal	r41_total_book_expo;
+	private BigDecimal	r41_margin_pro;
+	private BigDecimal	r41_book_expo;
+	private BigDecimal	r41_ccf_cont;
+	private BigDecimal	r41_equiv_value;
+	private BigDecimal	r41_rw_obligant;
+	private BigDecimal	r41_rav;
+	private String	r42_product;
+	private String	r42_client_grp;
+	private BigDecimal	r42_total_book_expo;
+	private BigDecimal	r42_margin_pro;
+	private BigDecimal	r42_book_expo;
+	private BigDecimal	r42_ccf_cont;
+	private BigDecimal	r42_equiv_value;
+	private BigDecimal	r42_rw_obligant;
+	private BigDecimal	r42_rav;
+	private String	r43_product;
+	private String	r43_client_grp;
+	private BigDecimal	r43_total_book_expo;
+	private BigDecimal	r43_margin_pro;
+	private BigDecimal	r43_book_expo;
+	private BigDecimal	r43_ccf_cont;
+	private BigDecimal	r43_equiv_value;
+	private BigDecimal	r43_rw_obligant;
+	private BigDecimal	r43_rav;
+	private String	r44_product;
+	private String	r44_client_grp;
+	private BigDecimal	r44_total_book_expo;
+	private BigDecimal	r44_margin_pro;
+	private BigDecimal	r44_book_expo;
+	private BigDecimal	r44_ccf_cont;
+	private BigDecimal	r44_equiv_value;
+	private BigDecimal	r44_rw_obligant;
+	private BigDecimal	r44_rav;
+	private String	r45_product;
+	private String	r45_client_grp;
+	private BigDecimal	r45_total_book_expo;
+	private BigDecimal	r45_margin_pro;
+	private BigDecimal	r45_book_expo;
+	private BigDecimal	r45_ccf_cont;
+	private BigDecimal	r45_equiv_value;
+	private BigDecimal	r45_rw_obligant;
+	private BigDecimal	r45_rav;
+	private String	r46_product;
+	private String	r46_client_grp;
+	private BigDecimal	r46_total_book_expo;
+	private BigDecimal	r46_margin_pro;
+	private BigDecimal	r46_book_expo;
+	private BigDecimal	r46_ccf_cont;
+	private BigDecimal	r46_equiv_value;
+	private BigDecimal	r46_rw_obligant;
+	private BigDecimal	r46_rav;
+	private String	r61_product;
+	private String	r61_client_grp;
+	private BigDecimal	r61_total_book_expo;
+	private BigDecimal	r61_margin_pro;
+	private BigDecimal	r61_book_expo;
+	private BigDecimal	r61_ccf_cont;
+	private BigDecimal	r61_equiv_value;
+	private BigDecimal	r61_rw_obligant;
+	private BigDecimal	r61_rav;
+	private String	r62_product;
+	private String	r62_client_grp;
+	private BigDecimal	r62_total_book_expo;
+	private BigDecimal	r62_margin_pro;
+	private BigDecimal	r62_book_expo;
+	private BigDecimal	r62_ccf_cont;
+	private BigDecimal	r62_equiv_value;
+	private BigDecimal	r62_rw_obligant;
+	private BigDecimal	r62_rav;
+	private String	r63_product;
+	private String	r63_client_grp;
+	private BigDecimal	r63_total_book_expo;
+	private BigDecimal	r63_margin_pro;
+	private BigDecimal	r63_book_expo;
+	private BigDecimal	r63_ccf_cont;
+	private BigDecimal	r63_equiv_value;
+	private BigDecimal	r63_rw_obligant;
+	private BigDecimal	r63_rav;
+	private String	r64_product;
+	private String	r64_client_grp;
+	private BigDecimal	r64_total_book_expo;
+	private BigDecimal	r64_margin_pro;
+	private BigDecimal	r64_book_expo;
+	private BigDecimal	r64_ccf_cont;
+	private BigDecimal	r64_equiv_value;
+	private BigDecimal	r64_rw_obligant;
+	private BigDecimal	r64_rav;
+	private String	r65_product;
+	private String	r65_client_grp;
+	private BigDecimal	r65_total_book_expo;
+	private BigDecimal	r65_margin_pro;
+	private BigDecimal	r65_book_expo;
+	private BigDecimal	r65_ccf_cont;
+	private BigDecimal	r65_equiv_value;
+	private BigDecimal	r65_rw_obligant;
+	private BigDecimal	r65_rav;
+	private String	r66_product;
+	private String	r66_client_grp;
+	private BigDecimal	r66_total_book_expo;
+	private BigDecimal	r66_margin_pro;
+	private BigDecimal	r66_book_expo;
+	private BigDecimal	r66_ccf_cont;
+	private BigDecimal	r66_equiv_value;
+	private BigDecimal	r66_rw_obligant;
+	private BigDecimal	r66_rav;
+	private String	r67_product;
+	private String	r67_client_grp;
+	private BigDecimal	r67_total_book_expo;
+	private BigDecimal	r67_margin_pro;
+	private BigDecimal	r67_book_expo;
+	private BigDecimal	r67_ccf_cont;
+	private BigDecimal	r67_equiv_value;
+	private BigDecimal	r67_rw_obligant;
+	private BigDecimal	r67_rav;
+	private String	r68_product;
+	private String	r68_client_grp;
+	private BigDecimal	r68_total_book_expo;
+	private BigDecimal	r68_margin_pro;
+	private BigDecimal	r68_book_expo;
+	private BigDecimal	r68_ccf_cont;
+	private BigDecimal	r68_equiv_value;
+	private BigDecimal	r68_rw_obligant;
+	private BigDecimal	r68_rav;
+	private String	r69_product;
+	private String	r69_client_grp;
+	private BigDecimal	r69_total_book_expo;
+	private BigDecimal	r69_margin_pro;
+	private BigDecimal	r69_book_expo;
+	private BigDecimal	r69_ccf_cont;
+	private BigDecimal	r69_equiv_value;
+	private BigDecimal	r69_rw_obligant;
+	private BigDecimal	r69_rav;
+	private String	r70_product;
+	private String	r70_client_grp;
+	private BigDecimal	r70_total_book_expo;
+	private BigDecimal	r70_margin_pro;
+	private BigDecimal	r70_book_expo;
+	private BigDecimal	r70_ccf_cont;
+	private BigDecimal	r70_equiv_value;
+	private BigDecimal	r70_rw_obligant;
+	private BigDecimal	r70_rav;
+	private String	r71_product;
+	private String	r71_client_grp;
+	private BigDecimal	r71_total_book_expo;
+	private BigDecimal	r71_margin_pro;
+	private BigDecimal	r71_book_expo;
+	private BigDecimal	r71_ccf_cont;
+	private BigDecimal	r71_equiv_value;
+	private BigDecimal	r71_rw_obligant;
+	private BigDecimal	r71_rav;
+	private String	r72_product;
+	private String	r72_client_grp;
+	private BigDecimal	r72_total_book_expo;
+	private BigDecimal	r72_margin_pro;
+	private BigDecimal	r72_book_expo;
+	private BigDecimal	r72_ccf_cont;
+	private BigDecimal	r72_equiv_value;
+	private BigDecimal	r72_rw_obligant;
+	private BigDecimal	r72_rav;
+	private String	r73_product;
+	private String	r73_client_grp;
+	private BigDecimal	r73_total_book_expo;
+	private BigDecimal	r73_margin_pro;
+	private BigDecimal	r73_book_expo;
+	private BigDecimal	r73_ccf_cont;
+	private BigDecimal	r73_equiv_value;
+	private BigDecimal	r73_rw_obligant;
+	private BigDecimal	r73_rav;
+	private String	r74_product;
+	private String	r74_client_grp;
+	private BigDecimal	r74_total_book_expo;
+	private BigDecimal	r74_margin_pro;
+	private BigDecimal	r74_book_expo;
+	private BigDecimal	r74_ccf_cont;
+	private BigDecimal	r74_equiv_value;
+	private BigDecimal	r74_rw_obligant;
+	private BigDecimal	r74_rav;
+	private String	r75_product;
+	private String	r75_client_grp;
+	private BigDecimal	r75_total_book_expo;
+	private BigDecimal	r75_margin_pro;
+	private BigDecimal	r75_book_expo;
+	private BigDecimal	r75_ccf_cont;
+	private BigDecimal	r75_equiv_value;
+	private BigDecimal	r75_rw_obligant;
+	private BigDecimal	r75_rav;
+	private String	r76_product;
+	private String	r76_client_grp;
+	private BigDecimal	r76_total_book_expo;
+	private BigDecimal	r76_margin_pro;
+	private BigDecimal	r76_book_expo;
+	private BigDecimal	r76_ccf_cont;
+	private BigDecimal	r76_equiv_value;
+	private BigDecimal	r76_rw_obligant;
+	private BigDecimal	r76_rav;
+	private String	r77_product;
+	private String	r77_client_grp;
+	private BigDecimal	r77_total_book_expo;
+	private BigDecimal	r77_margin_pro;
+	private BigDecimal	r77_book_expo;
+	private BigDecimal	r77_ccf_cont;
+	private BigDecimal	r77_equiv_value;
+	private BigDecimal	r77_rw_obligant;
+	private BigDecimal	r77_rav;
+	private String	r78_product;
+	private String	r78_client_grp;
+	private BigDecimal	r78_total_book_expo;
+	private BigDecimal	r78_margin_pro;
+	private BigDecimal	r78_book_expo;
+	private BigDecimal	r78_ccf_cont;
+	private BigDecimal	r78_equiv_value;
+	private BigDecimal	r78_rw_obligant;
+	private BigDecimal	r78_rav;
+	private String	r79_product;
+	private String	r79_client_grp;
+	private BigDecimal	r79_total_book_expo;
+	private BigDecimal	r79_margin_pro;
+	private BigDecimal	r79_book_expo;
+	private BigDecimal	r79_ccf_cont;
+	private BigDecimal	r79_equiv_value;
+	private BigDecimal	r79_rw_obligant;
+	private BigDecimal	r79_rav;
+	private String	r80_product;
+	private String	r80_client_grp;
+	private BigDecimal	r80_total_book_expo;
+	private BigDecimal	r80_margin_pro;
+	private BigDecimal	r80_book_expo;
+	private BigDecimal	r80_ccf_cont;
+	private BigDecimal	r80_equiv_value;
+	private BigDecimal	r80_rw_obligant;
+	private BigDecimal	r80_rav;
+	private String	r81_product;
+	private String	r81_client_grp;
+	private BigDecimal	r81_total_book_expo;
+	private BigDecimal	r81_margin_pro;
+	private BigDecimal	r81_book_expo;
+	private BigDecimal	r81_ccf_cont;
+	private BigDecimal	r81_equiv_value;
+	private BigDecimal	r81_rw_obligant;
+	private BigDecimal	r81_rav;
+	private String	r82_product;
+	private String	r82_client_grp;
+	private BigDecimal	r82_total_book_expo;
+	private BigDecimal	r82_margin_pro;
+	private BigDecimal	r82_book_expo;
+	private BigDecimal	r82_ccf_cont;
+	private BigDecimal	r82_equiv_value;
+	private BigDecimal	r82_rw_obligant;
+	private BigDecimal	r82_rav;
+	private String	r83_product;
+	private String	r83_client_grp;
+	private BigDecimal	r83_total_book_expo;
+	private BigDecimal	r83_margin_pro;
+	private BigDecimal	r83_book_expo;
+	private BigDecimal	r83_ccf_cont;
+	private BigDecimal	r83_equiv_value;
+	private BigDecimal	r83_rw_obligant;
+	private BigDecimal	r83_rav;
+	private String	r84_product;
+	private String	r84_client_grp;
+	private BigDecimal	r84_total_book_expo;
+	private BigDecimal	r84_margin_pro;
+	private BigDecimal	r84_book_expo;
+	private BigDecimal	r84_ccf_cont;
+	private BigDecimal	r84_equiv_value;
+	private BigDecimal	r84_rw_obligant;
+	private BigDecimal	r84_rav;
+	private String	r100_product;
+	private String	r100_client_grp;
+	private BigDecimal	r100_total_book_expo;
+	private BigDecimal	r100_margin_pro;
+	private BigDecimal	r100_book_expo;
+	private BigDecimal	r100_ccf_cont;
+	private BigDecimal	r100_equiv_value;
+	private BigDecimal	r100_rw_obligant;
+	private BigDecimal	r100_rav;
+	private String	r101_product;
+	private String	r101_client_grp;
+	private BigDecimal	r101_total_book_expo;
+	private BigDecimal	r101_margin_pro;
+	private BigDecimal	r101_book_expo;
+	private BigDecimal	r101_ccf_cont;
+	private BigDecimal	r101_equiv_value;
+	private BigDecimal	r101_rw_obligant;
+	private BigDecimal	r101_rav;
+	private String	r102_product;
+	private String	r102_client_grp;
+	private BigDecimal	r102_total_book_expo;
+	private BigDecimal	r102_margin_pro;
+	private BigDecimal	r102_book_expo;
+	private BigDecimal	r102_ccf_cont;
+	private BigDecimal	r102_equiv_value;
+	private BigDecimal	r102_rw_obligant;
+	private BigDecimal	r102_rav;
+	private String	r103_product;
+	private String	r103_client_grp;
+	private BigDecimal	r103_total_book_expo;
+	private BigDecimal	r103_margin_pro;
+	private BigDecimal	r103_book_expo;
+	private BigDecimal	r103_ccf_cont;
+	private BigDecimal	r103_equiv_value;
+	private BigDecimal	r103_rw_obligant;
+	private BigDecimal	r103_rav;
+	private String	r104_product;
+	private String	r104_client_grp;
+	private BigDecimal	r104_total_book_expo;
+	private BigDecimal	r104_margin_pro;
+	private BigDecimal	r104_book_expo;
+	private BigDecimal	r104_ccf_cont;
+	private BigDecimal	r104_equiv_value;
+	private BigDecimal	r104_rw_obligant;
+	private BigDecimal	r104_rav;
+	private String	r105_product;
+	private String	r105_client_grp;
+	private BigDecimal	r105_total_book_expo;
+	private BigDecimal	r105_margin_pro;
+	private BigDecimal	r105_book_expo;
+	private BigDecimal	r105_ccf_cont;
+	private BigDecimal	r105_equiv_value;
+	private BigDecimal	r105_rw_obligant;
+	private BigDecimal	r105_rav;
+	private String	r106_product;
+	private String	r106_client_grp;
+	private BigDecimal	r106_total_book_expo;
+	private BigDecimal	r106_margin_pro;
+	private BigDecimal	r106_book_expo;
+	private BigDecimal	r106_ccf_cont;
+	private BigDecimal	r106_equiv_value;
+	private BigDecimal	r106_rw_obligant;
+	private BigDecimal	r106_rav;
+	private String	r107_product;
+	private String	r107_client_grp;
+	private BigDecimal	r107_total_book_expo;
+	private BigDecimal	r107_margin_pro;
+	private BigDecimal	r107_book_expo;
+	private BigDecimal	r107_ccf_cont;
+	private BigDecimal	r107_equiv_value;
+	private BigDecimal	r107_rw_obligant;
+	private BigDecimal	r107_rav;
+	private String	r108_product;
+	private String	r108_client_grp;
+	private BigDecimal	r108_total_book_expo;
+	private BigDecimal	r108_margin_pro;
+	private BigDecimal	r108_book_expo;
+	private BigDecimal	r108_ccf_cont;
+	private BigDecimal	r108_equiv_value;
+	private BigDecimal	r108_rw_obligant;
+	private BigDecimal	r108_rav;
+	private String	r109_product;
+	private String	r109_client_grp;
+	private BigDecimal	r109_total_book_expo;
+	private BigDecimal	r109_margin_pro;
+	private BigDecimal	r109_book_expo;
+	private BigDecimal	r109_ccf_cont;
+	private BigDecimal	r109_equiv_value;
+	private BigDecimal	r109_rw_obligant;
+	private BigDecimal	r109_rav;
+	private String	r110_product;
+	private String	r110_client_grp;
+	private BigDecimal	r110_total_book_expo;
+	private BigDecimal	r110_margin_pro;
+	private BigDecimal	r110_book_expo;
+	private BigDecimal	r110_ccf_cont;
+	private BigDecimal	r110_equiv_value;
+	private BigDecimal	r110_rw_obligant;
+	private BigDecimal	r110_rav;
+	private String	r111_product;
+	private String	r111_client_grp;
+	private BigDecimal	r111_total_book_expo;
+	private BigDecimal	r111_margin_pro;
+	private BigDecimal	r111_book_expo;
+	private BigDecimal	r111_ccf_cont;
+	private BigDecimal	r111_equiv_value;
+	private BigDecimal	r111_rw_obligant;
+	private BigDecimal	r111_rav;
+	private String	r112_product;
+	private String	r112_client_grp;
+	private BigDecimal	r112_total_book_expo;
+	private BigDecimal	r112_margin_pro;
+	private BigDecimal	r112_book_expo;
+	private BigDecimal	r112_ccf_cont;
+	private BigDecimal	r112_equiv_value;
+	private BigDecimal	r112_rw_obligant;
+	private BigDecimal	r112_rav;
+	private String	r113_product;
+	private String	r113_client_grp;
+	private BigDecimal	r113_total_book_expo;
+	private BigDecimal	r113_margin_pro;
+	private BigDecimal	r113_book_expo;
+	private BigDecimal	r113_ccf_cont;
+	private BigDecimal	r113_equiv_value;
+	private BigDecimal	r113_rw_obligant;
+	private BigDecimal	r113_rav;
+	private String	r114_product;
+	private String	r114_client_grp;
+	private BigDecimal	r114_total_book_expo;
+	private BigDecimal	r114_margin_pro;
+	private BigDecimal	r114_book_expo;
+	private BigDecimal	r114_ccf_cont;
+	private BigDecimal	r114_equiv_value;
+	private BigDecimal	r114_rw_obligant;
+	private BigDecimal	r114_rav;
+	private String	r115_product;
+	private String	r115_client_grp;
+	private BigDecimal	r115_total_book_expo;
+	private BigDecimal	r115_margin_pro;
+	private BigDecimal	r115_book_expo;
+	private BigDecimal	r115_ccf_cont;
+	private BigDecimal	r115_equiv_value;
+	private BigDecimal	r115_rw_obligant;
+	private BigDecimal	r115_rav;
+	private String	r116_product;
+	private String	r116_client_grp;
+	private BigDecimal	r116_total_book_expo;
+	private BigDecimal	r116_margin_pro;
+	private BigDecimal	r116_book_expo;
+	private BigDecimal	r116_ccf_cont;
+	private BigDecimal	r116_equiv_value;
+	private BigDecimal	r116_rw_obligant;
+	private BigDecimal	r116_rav;
+	private String	r117_product;
+	private String	r117_client_grp;
+	private BigDecimal	r117_total_book_expo;
+	private BigDecimal	r117_margin_pro;
+	private BigDecimal	r117_book_expo;
+	private BigDecimal	r117_ccf_cont;
+	private BigDecimal	r117_equiv_value;
+	private BigDecimal	r117_rw_obligant;
+	private BigDecimal	r117_rav;
+	private String	r118_product;
+	private String	r118_client_grp;
+	private BigDecimal	r118_total_book_expo;
+	private BigDecimal	r118_margin_pro;
+	private BigDecimal	r118_book_expo;
+	private BigDecimal	r118_ccf_cont;
+	private BigDecimal	r118_equiv_value;
+	private BigDecimal	r118_rw_obligant;
+	private BigDecimal	r118_rav;
+	private String	r119_product;
+	private String	r119_client_grp;
+	private BigDecimal	r119_total_book_expo;
+	private BigDecimal	r119_margin_pro;
+	private BigDecimal	r119_book_expo;
+	private BigDecimal	r119_ccf_cont;
+	private BigDecimal	r119_equiv_value;
+	private BigDecimal	r119_rw_obligant;
+	private BigDecimal	r119_rav;
+	private String	r120_product;
+	private String	r120_client_grp;
+	private BigDecimal	r120_total_book_expo;
+	private BigDecimal	r120_margin_pro;
+	private BigDecimal	r120_book_expo;
+	private BigDecimal	r120_ccf_cont;
+	private BigDecimal	r120_equiv_value;
+	private BigDecimal	r120_rw_obligant;
+	private BigDecimal	r120_rav;
+	private String	r121_product;
+	private String	r121_client_grp;
+	private BigDecimal	r121_total_book_expo;
+	private BigDecimal	r121_margin_pro;
+	private BigDecimal	r121_book_expo;
+	private BigDecimal	r121_ccf_cont;
+	private BigDecimal	r121_equiv_value;
+	private BigDecimal	r121_rw_obligant;
+	private BigDecimal	r121_rav;
+	private String	r122_product;
+	private String	r122_client_grp;
+	private BigDecimal	r122_total_book_expo;
+	private BigDecimal	r122_margin_pro;
+	private BigDecimal	r122_book_expo;
+	private BigDecimal	r122_ccf_cont;
+	private BigDecimal	r122_equiv_value;
+	private BigDecimal	r122_rw_obligant;
+	private BigDecimal	r122_rav;
+	private String	r123_product;
+	private String	r123_client_grp;
+	private BigDecimal	r123_total_book_expo;
+	private BigDecimal	r123_margin_pro;
+	private BigDecimal	r123_book_expo;
+	private BigDecimal	r123_ccf_cont;
+	private BigDecimal	r123_equiv_value;
+	private BigDecimal	r123_rw_obligant;
+	private BigDecimal	r123_rav;
+	private String	r124_product;
+	private String	r124_client_grp;
+	private BigDecimal	r124_total_book_expo;
+	private BigDecimal	r124_margin_pro;
+	private BigDecimal	r124_book_expo;
+	private BigDecimal	r124_ccf_cont;
+	private BigDecimal	r124_equiv_value;
+	private BigDecimal	r124_rw_obligant;
+	private BigDecimal	r124_rav;
+	private String	r125_product;
+	private String	r125_client_grp;
+	private BigDecimal	r125_total_book_expo;
+	private BigDecimal	r125_margin_pro;
+	private BigDecimal	r125_book_expo;
+	private BigDecimal	r125_ccf_cont;
+	private BigDecimal	r125_equiv_value;
+	private BigDecimal	r125_rw_obligant;
+	private BigDecimal	r125_rav;
+	private String	r126_product;
+	private String	r126_client_grp;
+	private BigDecimal	r126_total_book_expo;
+	private BigDecimal	r126_margin_pro;
+	private BigDecimal	r126_book_expo;
+	private BigDecimal	r126_ccf_cont;
+	private BigDecimal	r126_equiv_value;
+	private BigDecimal	r126_rw_obligant;
+	private BigDecimal	r126_rav;
+	private String	r127_product;
+	private String	r127_client_grp;
+	private BigDecimal	r127_total_book_expo;
+	private BigDecimal	r127_margin_pro;
+	private BigDecimal	r127_book_expo;
+	private BigDecimal	r127_ccf_cont;
+	private BigDecimal	r127_equiv_value;
+	private BigDecimal	r127_rw_obligant;
+	private BigDecimal	r127_rav;
+	private String	r128_product;
+	private String	r128_client_grp;
+	private BigDecimal	r128_total_book_expo;
+	private BigDecimal	r128_margin_pro;
+	private BigDecimal	r128_book_expo;
+	private BigDecimal	r128_ccf_cont;
+	private BigDecimal	r128_equiv_value;
+	private BigDecimal	r128_rw_obligant;
+	private BigDecimal	r128_rav;
+	private String	r129_product;
+	private String	r129_client_grp;
+	private BigDecimal	r129_total_book_expo;
+	private BigDecimal	r129_margin_pro;
+	private BigDecimal	r129_book_expo;
+	private BigDecimal	r129_ccf_cont;
+	private BigDecimal	r129_equiv_value;
+	private BigDecimal	r129_rw_obligant;
+	private BigDecimal	r129_rav;
+	private String	r130_product;
+	private String	r130_client_grp;
+	private BigDecimal	r130_total_book_expo;
+	private BigDecimal	r130_margin_pro;
+	private BigDecimal	r130_book_expo;
+	private BigDecimal	r130_ccf_cont;
+	private BigDecimal	r130_equiv_value;
+	private BigDecimal	r130_rw_obligant;
+	private BigDecimal	r130_rav;
+	private String	r131_product;
+	private String	r131_client_grp;
+	private BigDecimal	r131_total_book_expo;
+	private BigDecimal	r131_margin_pro;
+	private BigDecimal	r131_book_expo;
+	private BigDecimal	r131_ccf_cont;
+	private BigDecimal	r131_equiv_value;
+	private BigDecimal	r131_rw_obligant;
+	private BigDecimal	r131_rav;
+	private String	r132_product;
+	private String	r132_client_grp;
+	private BigDecimal	r132_total_book_expo;
+	private BigDecimal	r132_margin_pro;
+	private BigDecimal	r132_book_expo;
+	private BigDecimal	r132_ccf_cont;
+	private BigDecimal	r132_equiv_value;
+	private BigDecimal	r132_rw_obligant;
+	private BigDecimal	r132_rav;
+	private String	r133_product;
+	private String	r133_client_grp;
+	private BigDecimal	r133_total_book_expo;
+	private BigDecimal	r133_margin_pro;
+	private BigDecimal	r133_book_expo;
+	private BigDecimal	r133_ccf_cont;
+	private BigDecimal	r133_equiv_value;
+	private BigDecimal	r133_rw_obligant;
+	private BigDecimal	r133_rav;
+	private String	r134_product;
+	private String	r134_client_grp;
+	private BigDecimal	r134_total_book_expo;
+	private BigDecimal	r134_margin_pro;
+	private BigDecimal	r134_book_expo;
+	private BigDecimal	r134_ccf_cont;
+	private BigDecimal	r134_equiv_value;
+	private BigDecimal	r134_rw_obligant;
+	private BigDecimal	r134_rav;
+	private String	r148_product;
+	private String	r148_client_grp;
+	private BigDecimal	r148_total_book_expo;
+	private BigDecimal	r148_margin_pro;
+	private BigDecimal	r148_book_expo;
+	private BigDecimal	r148_ccf_cont;
+	private BigDecimal	r148_equiv_value;
+	private BigDecimal	r148_rw_obligant;
+	private BigDecimal	r148_rav;
+	private String	r149_product;
+	private String	r149_client_grp;
+	private BigDecimal	r149_total_book_expo;
+	private BigDecimal	r149_margin_pro;
+	private BigDecimal	r149_book_expo;
+	private BigDecimal	r149_ccf_cont;
+	private BigDecimal	r149_equiv_value;
+	private BigDecimal	r149_rw_obligant;
+	private BigDecimal	r149_rav;
+	private String	r150_product;
+	private String	r150_client_grp;
+	private BigDecimal	r150_total_book_expo;
+	private BigDecimal	r150_margin_pro;
+	private BigDecimal	r150_book_expo;
+	private BigDecimal	r150_ccf_cont;
+	private BigDecimal	r150_equiv_value;
+	private BigDecimal	r150_rw_obligant;
+	private BigDecimal	r150_rav;
 
 	
-			try {
-				Date d1 = dateformat.parse(todate);
-				
-				T1Master = OFF_BS_ITEMS_summary_repo1.getdatabydateList(dateformat.parse(todate));
-				T2Master = OFF_BS_ITEMS_summary_repo2.getdatabydateList(dateformat.parse(todate));
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Id
+	
+	
+	private Date	report_date;
+	private BigDecimal	report_version;
+	private String	report_frequency;
+	private String	report_code;
+	private String	report_desc;
+	private String	entity_flg;
+	private String	modify_flg;
+	private String	del_flg;
 
+
+
+public String getR12_product() {
+			return r12_product;
+		}
+		public void setR12_product(String r12_product) {
+			this.r12_product = r12_product;
+		}
+		public String getR12_client_grp() {
+			return r12_client_grp;
+		}
+		public void setR12_client_grp(String r12_client_grp) {
+			this.r12_client_grp = r12_client_grp;
+		}
+		public BigDecimal getR12_total_book_expo() {
+			return r12_total_book_expo;
+		}
+		public void setR12_total_book_expo(BigDecimal r12_total_book_expo) {
+			this.r12_total_book_expo = r12_total_book_expo;
+		}
+		public BigDecimal getR12_margin_pro() {
+			return r12_margin_pro;
+		}
+		public void setR12_margin_pro(BigDecimal r12_margin_pro) {
+			this.r12_margin_pro = r12_margin_pro;
+		}
+		public BigDecimal getR12_book_expo() {
+			return r12_book_expo;
+		}
+		public void setR12_book_expo(BigDecimal r12_book_expo) {
+			this.r12_book_expo = r12_book_expo;
+		}
+		public BigDecimal getR12_ccf_cont() {
+			return r12_ccf_cont;
+		}
+		public void setR12_ccf_cont(BigDecimal r12_ccf_cont) {
+			this.r12_ccf_cont = r12_ccf_cont;
+		}
+		public BigDecimal getR12_equiv_value() {
+			return r12_equiv_value;
+		}
+		public void setR12_equiv_value(BigDecimal r12_equiv_value) {
+			this.r12_equiv_value = r12_equiv_value;
+		}
+		public BigDecimal getR12_rw_obligant() {
+			return r12_rw_obligant;
+		}
+		public void setR12_rw_obligant(BigDecimal r12_rw_obligant) {
+			this.r12_rw_obligant = r12_rw_obligant;
+		}
+		public BigDecimal getR12_rav() {
+			return r12_rav;
+		}
+		public void setR12_rav(BigDecimal r12_rav) {
+			this.r12_rav = r12_rav;
+		}
+		public String getR13_product() {
+			return r13_product;
+		}
+		public void setR13_product(String r13_product) {
+			this.r13_product = r13_product;
+		}
+		public String getR13_client_grp() {
+			return r13_client_grp;
+		}
+		public void setR13_client_grp(String r13_client_grp) {
+			this.r13_client_grp = r13_client_grp;
+		}
+		public BigDecimal getR13_total_book_expo() {
+			return r13_total_book_expo;
+		}
+		public void setR13_total_book_expo(BigDecimal r13_total_book_expo) {
+			this.r13_total_book_expo = r13_total_book_expo;
+		}
+		public BigDecimal getR13_margin_pro() {
+			return r13_margin_pro;
+		}
+		public void setR13_margin_pro(BigDecimal r13_margin_pro) {
+			this.r13_margin_pro = r13_margin_pro;
+		}
+		public BigDecimal getR13_book_expo() {
+			return r13_book_expo;
+		}
+		public void setR13_book_expo(BigDecimal r13_book_expo) {
+			this.r13_book_expo = r13_book_expo;
+		}
+		public BigDecimal getR13_ccf_cont() {
+			return r13_ccf_cont;
+		}
+		public void setR13_ccf_cont(BigDecimal r13_ccf_cont) {
+			this.r13_ccf_cont = r13_ccf_cont;
+		}
+		public BigDecimal getR13_equiv_value() {
+			return r13_equiv_value;
+		}
+		public void setR13_equiv_value(BigDecimal r13_equiv_value) {
+			this.r13_equiv_value = r13_equiv_value;
+		}
+		public BigDecimal getR13_rw_obligant() {
+			return r13_rw_obligant;
+		}
+		public void setR13_rw_obligant(BigDecimal r13_rw_obligant) {
+			this.r13_rw_obligant = r13_rw_obligant;
+		}
+		public BigDecimal getR13_rav() {
+			return r13_rav;
+		}
+		public void setR13_rav(BigDecimal r13_rav) {
+			this.r13_rav = r13_rav;
+		}
+		public String getR14_product() {
+			return r14_product;
+		}
+		public void setR14_product(String r14_product) {
+			this.r14_product = r14_product;
+		}
+		public String getR14_client_grp() {
+			return r14_client_grp;
+		}
+		public void setR14_client_grp(String r14_client_grp) {
+			this.r14_client_grp = r14_client_grp;
+		}
+		public BigDecimal getR14_total_book_expo() {
+			return r14_total_book_expo;
+		}
+		public void setR14_total_book_expo(BigDecimal r14_total_book_expo) {
+			this.r14_total_book_expo = r14_total_book_expo;
+		}
+		public BigDecimal getR14_margin_pro() {
+			return r14_margin_pro;
+		}
+		public void setR14_margin_pro(BigDecimal r14_margin_pro) {
+			this.r14_margin_pro = r14_margin_pro;
+		}
+		public BigDecimal getR14_book_expo() {
+			return r14_book_expo;
+		}
+		public void setR14_book_expo(BigDecimal r14_book_expo) {
+			this.r14_book_expo = r14_book_expo;
+		}
+		public BigDecimal getR14_ccf_cont() {
+			return r14_ccf_cont;
+		}
+		public void setR14_ccf_cont(BigDecimal r14_ccf_cont) {
+			this.r14_ccf_cont = r14_ccf_cont;
+		}
+		public BigDecimal getR14_equiv_value() {
+			return r14_equiv_value;
+		}
+		public void setR14_equiv_value(BigDecimal r14_equiv_value) {
+			this.r14_equiv_value = r14_equiv_value;
+		}
+		public BigDecimal getR14_rw_obligant() {
+			return r14_rw_obligant;
+		}
+		public void setR14_rw_obligant(BigDecimal r14_rw_obligant) {
+			this.r14_rw_obligant = r14_rw_obligant;
+		}
+		public BigDecimal getR14_rav() {
+			return r14_rav;
+		}
+		public void setR14_rav(BigDecimal r14_rav) {
+			this.r14_rav = r14_rav;
+		}
+		public String getR15_product() {
+			return r15_product;
+		}
+		public void setR15_product(String r15_product) {
+			this.r15_product = r15_product;
+		}
+		public String getR15_client_grp() {
+			return r15_client_grp;
+		}
+		public void setR15_client_grp(String r15_client_grp) {
+			this.r15_client_grp = r15_client_grp;
+		}
+		public BigDecimal getR15_total_book_expo() {
+			return r15_total_book_expo;
+		}
+		public void setR15_total_book_expo(BigDecimal r15_total_book_expo) {
+			this.r15_total_book_expo = r15_total_book_expo;
+		}
+		public BigDecimal getR15_margin_pro() {
+			return r15_margin_pro;
+		}
+		public void setR15_margin_pro(BigDecimal r15_margin_pro) {
+			this.r15_margin_pro = r15_margin_pro;
+		}
+		public BigDecimal getR15_book_expo() {
+			return r15_book_expo;
+		}
+		public void setR15_book_expo(BigDecimal r15_book_expo) {
+			this.r15_book_expo = r15_book_expo;
+		}
+		public BigDecimal getR15_ccf_cont() {
+			return r15_ccf_cont;
+		}
+		public void setR15_ccf_cont(BigDecimal r15_ccf_cont) {
+			this.r15_ccf_cont = r15_ccf_cont;
+		}
+		public BigDecimal getR15_equiv_value() {
+			return r15_equiv_value;
+		}
+		public void setR15_equiv_value(BigDecimal r15_equiv_value) {
+			this.r15_equiv_value = r15_equiv_value;
+		}
+		public BigDecimal getR15_rw_obligant() {
+			return r15_rw_obligant;
+		}
+		public void setR15_rw_obligant(BigDecimal r15_rw_obligant) {
+			this.r15_rw_obligant = r15_rw_obligant;
+		}
+		public BigDecimal getR15_rav() {
+			return r15_rav;
+		}
+		public void setR15_rav(BigDecimal r15_rav) {
+			this.r15_rav = r15_rav;
+		}
+		public String getR16_product() {
+			return r16_product;
+		}
+		public void setR16_product(String r16_product) {
+			this.r16_product = r16_product;
+		}
+		public String getR16_client_grp() {
+			return r16_client_grp;
+		}
+		public void setR16_client_grp(String r16_client_grp) {
+			this.r16_client_grp = r16_client_grp;
+		}
+		public BigDecimal getR16_total_book_expo() {
+			return r16_total_book_expo;
+		}
+		public void setR16_total_book_expo(BigDecimal r16_total_book_expo) {
+			this.r16_total_book_expo = r16_total_book_expo;
+		}
+		public BigDecimal getR16_margin_pro() {
+			return r16_margin_pro;
+		}
+		public void setR16_margin_pro(BigDecimal r16_margin_pro) {
+			this.r16_margin_pro = r16_margin_pro;
+		}
+		public BigDecimal getR16_book_expo() {
+			return r16_book_expo;
+		}
+		public void setR16_book_expo(BigDecimal r16_book_expo) {
+			this.r16_book_expo = r16_book_expo;
+		}
+		public BigDecimal getR16_ccf_cont() {
+			return r16_ccf_cont;
+		}
+		public void setR16_ccf_cont(BigDecimal r16_ccf_cont) {
+			this.r16_ccf_cont = r16_ccf_cont;
+		}
+		public BigDecimal getR16_equiv_value() {
+			return r16_equiv_value;
+		}
+		public void setR16_equiv_value(BigDecimal r16_equiv_value) {
+			this.r16_equiv_value = r16_equiv_value;
+		}
+		public BigDecimal getR16_rw_obligant() {
+			return r16_rw_obligant;
+		}
+		public void setR16_rw_obligant(BigDecimal r16_rw_obligant) {
+			this.r16_rw_obligant = r16_rw_obligant;
+		}
+		public BigDecimal getR16_rav() {
+			return r16_rav;
+		}
+		public void setR16_rav(BigDecimal r16_rav) {
+			this.r16_rav = r16_rav;
+		}
+		public String getR17_product() {
+			return r17_product;
+		}
+		public void setR17_product(String r17_product) {
+			this.r17_product = r17_product;
+		}
+		public String getR17_client_grp() {
+			return r17_client_grp;
+		}
+		public void setR17_client_grp(String r17_client_grp) {
+			this.r17_client_grp = r17_client_grp;
+		}
+		public BigDecimal getR17_total_book_expo() {
+			return r17_total_book_expo;
+		}
+		public void setR17_total_book_expo(BigDecimal r17_total_book_expo) {
+			this.r17_total_book_expo = r17_total_book_expo;
+		}
+		public BigDecimal getR17_margin_pro() {
+			return r17_margin_pro;
+		}
+		public void setR17_margin_pro(BigDecimal r17_margin_pro) {
+			this.r17_margin_pro = r17_margin_pro;
+		}
+		public BigDecimal getR17_book_expo() {
+			return r17_book_expo;
+		}
+		public void setR17_book_expo(BigDecimal r17_book_expo) {
+			this.r17_book_expo = r17_book_expo;
+		}
+		public BigDecimal getR17_ccf_cont() {
+			return r17_ccf_cont;
+		}
+		public void setR17_ccf_cont(BigDecimal r17_ccf_cont) {
+			this.r17_ccf_cont = r17_ccf_cont;
+		}
+		public BigDecimal getR17_equiv_value() {
+			return r17_equiv_value;
+		}
+		public void setR17_equiv_value(BigDecimal r17_equiv_value) {
+			this.r17_equiv_value = r17_equiv_value;
+		}
+		public BigDecimal getR17_rw_obligant() {
+			return r17_rw_obligant;
+		}
+		public void setR17_rw_obligant(BigDecimal r17_rw_obligant) {
+			this.r17_rw_obligant = r17_rw_obligant;
+		}
+		public BigDecimal getR17_rav() {
+			return r17_rav;
+		}
+		public void setR17_rav(BigDecimal r17_rav) {
+			this.r17_rav = r17_rav;
+		}
+		public String getR18_product() {
+			return r18_product;
+		}
+		public void setR18_product(String r18_product) {
+			this.r18_product = r18_product;
+		}
+		public String getR18_client_grp() {
+			return r18_client_grp;
+		}
+		public void setR18_client_grp(String r18_client_grp) {
+			this.r18_client_grp = r18_client_grp;
+		}
+		public BigDecimal getR18_total_book_expo() {
+			return r18_total_book_expo;
+		}
+		public void setR18_total_book_expo(BigDecimal r18_total_book_expo) {
+			this.r18_total_book_expo = r18_total_book_expo;
+		}
+		public BigDecimal getR18_margin_pro() {
+			return r18_margin_pro;
+		}
+		public void setR18_margin_pro(BigDecimal r18_margin_pro) {
+			this.r18_margin_pro = r18_margin_pro;
+		}
+		public BigDecimal getR18_book_expo() {
+			return r18_book_expo;
+		}
+		public void setR18_book_expo(BigDecimal r18_book_expo) {
+			this.r18_book_expo = r18_book_expo;
+		}
+		public BigDecimal getR18_ccf_cont() {
+			return r18_ccf_cont;
+		}
+		public void setR18_ccf_cont(BigDecimal r18_ccf_cont) {
+			this.r18_ccf_cont = r18_ccf_cont;
+		}
+		public BigDecimal getR18_equiv_value() {
+			return r18_equiv_value;
+		}
+		public void setR18_equiv_value(BigDecimal r18_equiv_value) {
+			this.r18_equiv_value = r18_equiv_value;
+		}
+		public BigDecimal getR18_rw_obligant() {
+			return r18_rw_obligant;
+		}
+		public void setR18_rw_obligant(BigDecimal r18_rw_obligant) {
+			this.r18_rw_obligant = r18_rw_obligant;
+		}
+		public BigDecimal getR18_rav() {
+			return r18_rav;
+		}
+		public void setR18_rav(BigDecimal r18_rav) {
+			this.r18_rav = r18_rav;
+		}
+		public String getR19_product() {
+			return r19_product;
+		}
+		public void setR19_product(String r19_product) {
+			this.r19_product = r19_product;
+		}
+		public String getR19_client_grp() {
+			return r19_client_grp;
+		}
+		public void setR19_client_grp(String r19_client_grp) {
+			this.r19_client_grp = r19_client_grp;
+		}
+		public BigDecimal getR19_total_book_expo() {
+			return r19_total_book_expo;
+		}
+		public void setR19_total_book_expo(BigDecimal r19_total_book_expo) {
+			this.r19_total_book_expo = r19_total_book_expo;
+		}
+		public BigDecimal getR19_margin_pro() {
+			return r19_margin_pro;
+		}
+		public void setR19_margin_pro(BigDecimal r19_margin_pro) {
+			this.r19_margin_pro = r19_margin_pro;
+		}
+		public BigDecimal getR19_book_expo() {
+			return r19_book_expo;
+		}
+		public void setR19_book_expo(BigDecimal r19_book_expo) {
+			this.r19_book_expo = r19_book_expo;
+		}
+		public BigDecimal getR19_ccf_cont() {
+			return r19_ccf_cont;
+		}
+		public void setR19_ccf_cont(BigDecimal r19_ccf_cont) {
+			this.r19_ccf_cont = r19_ccf_cont;
+		}
+		public BigDecimal getR19_equiv_value() {
+			return r19_equiv_value;
+		}
+		public void setR19_equiv_value(BigDecimal r19_equiv_value) {
+			this.r19_equiv_value = r19_equiv_value;
+		}
+		public BigDecimal getR19_rw_obligant() {
+			return r19_rw_obligant;
+		}
+		public void setR19_rw_obligant(BigDecimal r19_rw_obligant) {
+			this.r19_rw_obligant = r19_rw_obligant;
+		}
+		public BigDecimal getR19_rav() {
+			return r19_rav;
+		}
+		public void setR19_rav(BigDecimal r19_rav) {
+			this.r19_rav = r19_rav;
+		}
+		public String getR20_product() {
+			return r20_product;
+		}
+		public void setR20_product(String r20_product) {
+			this.r20_product = r20_product;
+		}
+		public String getR20_client_grp() {
+			return r20_client_grp;
+		}
+		public void setR20_client_grp(String r20_client_grp) {
+			this.r20_client_grp = r20_client_grp;
+		}
+		public BigDecimal getR20_total_book_expo() {
+			return r20_total_book_expo;
+		}
+		public void setR20_total_book_expo(BigDecimal r20_total_book_expo) {
+			this.r20_total_book_expo = r20_total_book_expo;
+		}
+		public BigDecimal getR20_margin_pro() {
+			return r20_margin_pro;
+		}
+		public void setR20_margin_pro(BigDecimal r20_margin_pro) {
+			this.r20_margin_pro = r20_margin_pro;
+		}
+		public BigDecimal getR20_book_expo() {
+			return r20_book_expo;
+		}
+		public void setR20_book_expo(BigDecimal r20_book_expo) {
+			this.r20_book_expo = r20_book_expo;
+		}
+		public BigDecimal getR20_ccf_cont() {
+			return r20_ccf_cont;
+		}
+		public void setR20_ccf_cont(BigDecimal r20_ccf_cont) {
+			this.r20_ccf_cont = r20_ccf_cont;
+		}
+		public BigDecimal getR20_equiv_value() {
+			return r20_equiv_value;
+		}
+		public void setR20_equiv_value(BigDecimal r20_equiv_value) {
+			this.r20_equiv_value = r20_equiv_value;
+		}
+		public BigDecimal getR20_rw_obligant() {
+			return r20_rw_obligant;
+		}
+		public void setR20_rw_obligant(BigDecimal r20_rw_obligant) {
+			this.r20_rw_obligant = r20_rw_obligant;
+		}
+		public BigDecimal getR20_rav() {
+			return r20_rav;
+		}
+		public void setR20_rav(BigDecimal r20_rav) {
+			this.r20_rav = r20_rav;
+		}
+		public String getR21_product() {
+			return r21_product;
+		}
+		public void setR21_product(String r21_product) {
+			this.r21_product = r21_product;
+		}
+		public String getR21_client_grp() {
+			return r21_client_grp;
+		}
+		public void setR21_client_grp(String r21_client_grp) {
+			this.r21_client_grp = r21_client_grp;
+		}
+		public BigDecimal getR21_total_book_expo() {
+			return r21_total_book_expo;
+		}
+		public void setR21_total_book_expo(BigDecimal r21_total_book_expo) {
+			this.r21_total_book_expo = r21_total_book_expo;
+		}
+		public BigDecimal getR21_margin_pro() {
+			return r21_margin_pro;
+		}
+		public void setR21_margin_pro(BigDecimal r21_margin_pro) {
+			this.r21_margin_pro = r21_margin_pro;
+		}
+		public BigDecimal getR21_book_expo() {
+			return r21_book_expo;
+		}
+		public void setR21_book_expo(BigDecimal r21_book_expo) {
+			this.r21_book_expo = r21_book_expo;
+		}
+		public BigDecimal getR21_ccf_cont() {
+			return r21_ccf_cont;
+		}
+		public void setR21_ccf_cont(BigDecimal r21_ccf_cont) {
+			this.r21_ccf_cont = r21_ccf_cont;
+		}
+		public BigDecimal getR21_equiv_value() {
+			return r21_equiv_value;
+		}
+		public void setR21_equiv_value(BigDecimal r21_equiv_value) {
+			this.r21_equiv_value = r21_equiv_value;
+		}
+		public BigDecimal getR21_rw_obligant() {
+			return r21_rw_obligant;
+		}
+		public void setR21_rw_obligant(BigDecimal r21_rw_obligant) {
+			this.r21_rw_obligant = r21_rw_obligant;
+		}
+		public BigDecimal getR21_rav() {
+			return r21_rav;
+		}
+		public void setR21_rav(BigDecimal r21_rav) {
+			this.r21_rav = r21_rav;
+		}
+		public String getR22_product() {
+			return r22_product;
+		}
+		public void setR22_product(String r22_product) {
+			this.r22_product = r22_product;
+		}
+		public String getR22_client_grp() {
+			return r22_client_grp;
+		}
+		public void setR22_client_grp(String r22_client_grp) {
+			this.r22_client_grp = r22_client_grp;
+		}
+		public BigDecimal getR22_total_book_expo() {
+			return r22_total_book_expo;
+		}
+		public void setR22_total_book_expo(BigDecimal r22_total_book_expo) {
+			this.r22_total_book_expo = r22_total_book_expo;
+		}
+		public BigDecimal getR22_margin_pro() {
+			return r22_margin_pro;
+		}
+		public void setR22_margin_pro(BigDecimal r22_margin_pro) {
+			this.r22_margin_pro = r22_margin_pro;
+		}
+		public BigDecimal getR22_book_expo() {
+			return r22_book_expo;
+		}
+		public void setR22_book_expo(BigDecimal r22_book_expo) {
+			this.r22_book_expo = r22_book_expo;
+		}
+		public BigDecimal getR22_ccf_cont() {
+			return r22_ccf_cont;
+		}
+		public void setR22_ccf_cont(BigDecimal r22_ccf_cont) {
+			this.r22_ccf_cont = r22_ccf_cont;
+		}
+		public BigDecimal getR22_equiv_value() {
+			return r22_equiv_value;
+		}
+		public void setR22_equiv_value(BigDecimal r22_equiv_value) {
+			this.r22_equiv_value = r22_equiv_value;
+		}
+		public BigDecimal getR22_rw_obligant() {
+			return r22_rw_obligant;
+		}
+		public void setR22_rw_obligant(BigDecimal r22_rw_obligant) {
+			this.r22_rw_obligant = r22_rw_obligant;
+		}
+		public BigDecimal getR22_rav() {
+			return r22_rav;
+		}
+		public void setR22_rav(BigDecimal r22_rav) {
+			this.r22_rav = r22_rav;
+		}
+		public String getR23_product() {
+			return r23_product;
+		}
+		public void setR23_product(String r23_product) {
+			this.r23_product = r23_product;
+		}
+		public String getR23_client_grp() {
+			return r23_client_grp;
+		}
+		public void setR23_client_grp(String r23_client_grp) {
+			this.r23_client_grp = r23_client_grp;
+		}
+		public BigDecimal getR23_total_book_expo() {
+			return r23_total_book_expo;
+		}
+		public void setR23_total_book_expo(BigDecimal r23_total_book_expo) {
+			this.r23_total_book_expo = r23_total_book_expo;
+		}
+		public BigDecimal getR23_margin_pro() {
+			return r23_margin_pro;
+		}
+		public void setR23_margin_pro(BigDecimal r23_margin_pro) {
+			this.r23_margin_pro = r23_margin_pro;
+		}
+		public BigDecimal getR23_book_expo() {
+			return r23_book_expo;
+		}
+		public void setR23_book_expo(BigDecimal r23_book_expo) {
+			this.r23_book_expo = r23_book_expo;
+		}
+		public BigDecimal getR23_ccf_cont() {
+			return r23_ccf_cont;
+		}
+		public void setR23_ccf_cont(BigDecimal r23_ccf_cont) {
+			this.r23_ccf_cont = r23_ccf_cont;
+		}
+		public BigDecimal getR23_equiv_value() {
+			return r23_equiv_value;
+		}
+		public void setR23_equiv_value(BigDecimal r23_equiv_value) {
+			this.r23_equiv_value = r23_equiv_value;
+		}
+		public BigDecimal getR23_rw_obligant() {
+			return r23_rw_obligant;
+		}
+		public void setR23_rw_obligant(BigDecimal r23_rw_obligant) {
+			this.r23_rw_obligant = r23_rw_obligant;
+		}
+		public BigDecimal getR23_rav() {
+			return r23_rav;
+		}
+		public void setR23_rav(BigDecimal r23_rav) {
+			this.r23_rav = r23_rav;
+		}
+		public String getR24_product() {
+			return r24_product;
+		}
+		public void setR24_product(String r24_product) {
+			this.r24_product = r24_product;
+		}
+		public String getR24_client_grp() {
+			return r24_client_grp;
+		}
+		public void setR24_client_grp(String r24_client_grp) {
+			this.r24_client_grp = r24_client_grp;
+		}
+		public BigDecimal getR24_total_book_expo() {
+			return r24_total_book_expo;
+		}
+		public void setR24_total_book_expo(BigDecimal r24_total_book_expo) {
+			this.r24_total_book_expo = r24_total_book_expo;
+		}
+		public BigDecimal getR24_margin_pro() {
+			return r24_margin_pro;
+		}
+		public void setR24_margin_pro(BigDecimal r24_margin_pro) {
+			this.r24_margin_pro = r24_margin_pro;
+		}
+		public BigDecimal getR24_book_expo() {
+			return r24_book_expo;
+		}
+		public void setR24_book_expo(BigDecimal r24_book_expo) {
+			this.r24_book_expo = r24_book_expo;
+		}
+		public BigDecimal getR24_ccf_cont() {
+			return r24_ccf_cont;
+		}
+		public void setR24_ccf_cont(BigDecimal r24_ccf_cont) {
+			this.r24_ccf_cont = r24_ccf_cont;
+		}
+		public BigDecimal getR24_equiv_value() {
+			return r24_equiv_value;
+		}
+		public void setR24_equiv_value(BigDecimal r24_equiv_value) {
+			this.r24_equiv_value = r24_equiv_value;
+		}
+		public BigDecimal getR24_rw_obligant() {
+			return r24_rw_obligant;
+		}
+		public void setR24_rw_obligant(BigDecimal r24_rw_obligant) {
+			this.r24_rw_obligant = r24_rw_obligant;
+		}
+		public BigDecimal getR24_rav() {
+			return r24_rav;
+		}
+		public void setR24_rav(BigDecimal r24_rav) {
+			this.r24_rav = r24_rav;
+		}
+		public String getR25_product() {
+			return r25_product;
+		}
+		public void setR25_product(String r25_product) {
+			this.r25_product = r25_product;
+		}
+		public String getR25_client_grp() {
+			return r25_client_grp;
+		}
+		public void setR25_client_grp(String r25_client_grp) {
+			this.r25_client_grp = r25_client_grp;
+		}
+		public BigDecimal getR25_total_book_expo() {
+			return r25_total_book_expo;
+		}
+		public void setR25_total_book_expo(BigDecimal r25_total_book_expo) {
+			this.r25_total_book_expo = r25_total_book_expo;
+		}
+		public BigDecimal getR25_margin_pro() {
+			return r25_margin_pro;
+		}
+		public void setR25_margin_pro(BigDecimal r25_margin_pro) {
+			this.r25_margin_pro = r25_margin_pro;
+		}
+		public BigDecimal getR25_book_expo() {
+			return r25_book_expo;
+		}
+		public void setR25_book_expo(BigDecimal r25_book_expo) {
+			this.r25_book_expo = r25_book_expo;
+		}
+		public BigDecimal getR25_ccf_cont() {
+			return r25_ccf_cont;
+		}
+		public void setR25_ccf_cont(BigDecimal r25_ccf_cont) {
+			this.r25_ccf_cont = r25_ccf_cont;
+		}
+		public BigDecimal getR25_equiv_value() {
+			return r25_equiv_value;
+		}
+		public void setR25_equiv_value(BigDecimal r25_equiv_value) {
+			this.r25_equiv_value = r25_equiv_value;
+		}
+		public BigDecimal getR25_rw_obligant() {
+			return r25_rw_obligant;
+		}
+		public void setR25_rw_obligant(BigDecimal r25_rw_obligant) {
+			this.r25_rw_obligant = r25_rw_obligant;
+		}
+		public BigDecimal getR25_rav() {
+			return r25_rav;
+		}
+		public void setR25_rav(BigDecimal r25_rav) {
+			this.r25_rav = r25_rav;
+		}
+		public String getR26_product() {
+			return r26_product;
+		}
+		public void setR26_product(String r26_product) {
+			this.r26_product = r26_product;
+		}
+		public String getR26_client_grp() {
+			return r26_client_grp;
+		}
+		public void setR26_client_grp(String r26_client_grp) {
+			this.r26_client_grp = r26_client_grp;
+		}
+		public BigDecimal getR26_total_book_expo() {
+			return r26_total_book_expo;
+		}
+		public void setR26_total_book_expo(BigDecimal r26_total_book_expo) {
+			this.r26_total_book_expo = r26_total_book_expo;
+		}
+		public BigDecimal getR26_margin_pro() {
+			return r26_margin_pro;
+		}
+		public void setR26_margin_pro(BigDecimal r26_margin_pro) {
+			this.r26_margin_pro = r26_margin_pro;
+		}
+		public BigDecimal getR26_book_expo() {
+			return r26_book_expo;
+		}
+		public void setR26_book_expo(BigDecimal r26_book_expo) {
+			this.r26_book_expo = r26_book_expo;
+		}
+		public BigDecimal getR26_ccf_cont() {
+			return r26_ccf_cont;
+		}
+		public void setR26_ccf_cont(BigDecimal r26_ccf_cont) {
+			this.r26_ccf_cont = r26_ccf_cont;
+		}
+		public BigDecimal getR26_equiv_value() {
+			return r26_equiv_value;
+		}
+		public void setR26_equiv_value(BigDecimal r26_equiv_value) {
+			this.r26_equiv_value = r26_equiv_value;
+		}
+		public BigDecimal getR26_rw_obligant() {
+			return r26_rw_obligant;
+		}
+		public void setR26_rw_obligant(BigDecimal r26_rw_obligant) {
+			this.r26_rw_obligant = r26_rw_obligant;
+		}
+		public BigDecimal getR26_rav() {
+			return r26_rav;
+		}
+		public void setR26_rav(BigDecimal r26_rav) {
+			this.r26_rav = r26_rav;
+		}
+		public String getR27_product() {
+			return r27_product;
+		}
+		public void setR27_product(String r27_product) {
+			this.r27_product = r27_product;
+		}
+		public String getR27_client_grp() {
+			return r27_client_grp;
+		}
+		public void setR27_client_grp(String r27_client_grp) {
+			this.r27_client_grp = r27_client_grp;
+		}
+		public BigDecimal getR27_total_book_expo() {
+			return r27_total_book_expo;
+		}
+		public void setR27_total_book_expo(BigDecimal r27_total_book_expo) {
+			this.r27_total_book_expo = r27_total_book_expo;
+		}
+		public BigDecimal getR27_margin_pro() {
+			return r27_margin_pro;
+		}
+		public void setR27_margin_pro(BigDecimal r27_margin_pro) {
+			this.r27_margin_pro = r27_margin_pro;
+		}
+		public BigDecimal getR27_book_expo() {
+			return r27_book_expo;
+		}
+		public void setR27_book_expo(BigDecimal r27_book_expo) {
+			this.r27_book_expo = r27_book_expo;
+		}
+		public BigDecimal getR27_ccf_cont() {
+			return r27_ccf_cont;
+		}
+		public void setR27_ccf_cont(BigDecimal r27_ccf_cont) {
+			this.r27_ccf_cont = r27_ccf_cont;
+		}
+		public BigDecimal getR27_equiv_value() {
+			return r27_equiv_value;
+		}
+		public void setR27_equiv_value(BigDecimal r27_equiv_value) {
+			this.r27_equiv_value = r27_equiv_value;
+		}
+		public BigDecimal getR27_rw_obligant() {
+			return r27_rw_obligant;
+		}
+		public void setR27_rw_obligant(BigDecimal r27_rw_obligant) {
+			this.r27_rw_obligant = r27_rw_obligant;
+		}
+		public BigDecimal getR27_rav() {
+			return r27_rav;
+		}
+		public void setR27_rav(BigDecimal r27_rav) {
+			this.r27_rav = r27_rav;
+		}
+		public String getR28_product() {
+			return r28_product;
+		}
+		public void setR28_product(String r28_product) {
+			this.r28_product = r28_product;
+		}
+		public String getR28_client_grp() {
+			return r28_client_grp;
+		}
+		public void setR28_client_grp(String r28_client_grp) {
+			this.r28_client_grp = r28_client_grp;
+		}
+		public BigDecimal getR28_total_book_expo() {
+			return r28_total_book_expo;
+		}
+		public void setR28_total_book_expo(BigDecimal r28_total_book_expo) {
+			this.r28_total_book_expo = r28_total_book_expo;
+		}
+		public BigDecimal getR28_margin_pro() {
+			return r28_margin_pro;
+		}
+		public void setR28_margin_pro(BigDecimal r28_margin_pro) {
+			this.r28_margin_pro = r28_margin_pro;
+		}
+		public BigDecimal getR28_book_expo() {
+			return r28_book_expo;
+		}
+		public void setR28_book_expo(BigDecimal r28_book_expo) {
+			this.r28_book_expo = r28_book_expo;
+		}
+		public BigDecimal getR28_ccf_cont() {
+			return r28_ccf_cont;
+		}
+		public void setR28_ccf_cont(BigDecimal r28_ccf_cont) {
+			this.r28_ccf_cont = r28_ccf_cont;
+		}
+		public BigDecimal getR28_equiv_value() {
+			return r28_equiv_value;
+		}
+		public void setR28_equiv_value(BigDecimal r28_equiv_value) {
+			this.r28_equiv_value = r28_equiv_value;
+		}
+		public BigDecimal getR28_rw_obligant() {
+			return r28_rw_obligant;
+		}
+		public void setR28_rw_obligant(BigDecimal r28_rw_obligant) {
+			this.r28_rw_obligant = r28_rw_obligant;
+		}
+		public BigDecimal getR28_rav() {
+			return r28_rav;
+		}
+		public void setR28_rav(BigDecimal r28_rav) {
+			this.r28_rav = r28_rav;
+		}
+		public String getR29_product() {
+			return r29_product;
+		}
+		public void setR29_product(String r29_product) {
+			this.r29_product = r29_product;
+		}
+		public String getR29_client_grp() {
+			return r29_client_grp;
+		}
+		public void setR29_client_grp(String r29_client_grp) {
+			this.r29_client_grp = r29_client_grp;
+		}
+		public BigDecimal getR29_total_book_expo() {
+			return r29_total_book_expo;
+		}
+		public void setR29_total_book_expo(BigDecimal r29_total_book_expo) {
+			this.r29_total_book_expo = r29_total_book_expo;
+		}
+		public BigDecimal getR29_margin_pro() {
+			return r29_margin_pro;
+		}
+		public void setR29_margin_pro(BigDecimal r29_margin_pro) {
+			this.r29_margin_pro = r29_margin_pro;
+		}
+		public BigDecimal getR29_book_expo() {
+			return r29_book_expo;
+		}
+		public void setR29_book_expo(BigDecimal r29_book_expo) {
+			this.r29_book_expo = r29_book_expo;
+		}
+		public BigDecimal getR29_ccf_cont() {
+			return r29_ccf_cont;
+		}
+		public void setR29_ccf_cont(BigDecimal r29_ccf_cont) {
+			this.r29_ccf_cont = r29_ccf_cont;
+		}
+		public BigDecimal getR29_equiv_value() {
+			return r29_equiv_value;
+		}
+		public void setR29_equiv_value(BigDecimal r29_equiv_value) {
+			this.r29_equiv_value = r29_equiv_value;
+		}
+		public BigDecimal getR29_rw_obligant() {
+			return r29_rw_obligant;
+		}
+		public void setR29_rw_obligant(BigDecimal r29_rw_obligant) {
+			this.r29_rw_obligant = r29_rw_obligant;
+		}
+		public BigDecimal getR29_rav() {
+			return r29_rav;
+		}
+		public void setR29_rav(BigDecimal r29_rav) {
+			this.r29_rav = r29_rav;
+		}
+		public String getR30_product() {
+			return r30_product;
+		}
+		public void setR30_product(String r30_product) {
+			this.r30_product = r30_product;
+		}
+		public String getR30_client_grp() {
+			return r30_client_grp;
+		}
+		public void setR30_client_grp(String r30_client_grp) {
+			this.r30_client_grp = r30_client_grp;
+		}
+		public BigDecimal getR30_total_book_expo() {
+			return r30_total_book_expo;
+		}
+		public void setR30_total_book_expo(BigDecimal r30_total_book_expo) {
+			this.r30_total_book_expo = r30_total_book_expo;
+		}
+		public BigDecimal getR30_margin_pro() {
+			return r30_margin_pro;
+		}
+		public void setR30_margin_pro(BigDecimal r30_margin_pro) {
+			this.r30_margin_pro = r30_margin_pro;
+		}
+		public BigDecimal getR30_book_expo() {
+			return r30_book_expo;
+		}
+		public void setR30_book_expo(BigDecimal r30_book_expo) {
+			this.r30_book_expo = r30_book_expo;
+		}
+		public BigDecimal getR30_ccf_cont() {
+			return r30_ccf_cont;
+		}
+		public void setR30_ccf_cont(BigDecimal r30_ccf_cont) {
+			this.r30_ccf_cont = r30_ccf_cont;
+		}
+		public BigDecimal getR30_equiv_value() {
+			return r30_equiv_value;
+		}
+		public void setR30_equiv_value(BigDecimal r30_equiv_value) {
+			this.r30_equiv_value = r30_equiv_value;
+		}
+		public BigDecimal getR30_rw_obligant() {
+			return r30_rw_obligant;
+		}
+		public void setR30_rw_obligant(BigDecimal r30_rw_obligant) {
+			this.r30_rw_obligant = r30_rw_obligant;
+		}
+		public BigDecimal getR30_rav() {
+			return r30_rav;
+		}
+		public void setR30_rav(BigDecimal r30_rav) {
+			this.r30_rav = r30_rav;
+		}
+		public String getR31_product() {
+			return r31_product;
+		}
+		public void setR31_product(String r31_product) {
+			this.r31_product = r31_product;
+		}
+		public String getR31_client_grp() {
+			return r31_client_grp;
+		}
+		public void setR31_client_grp(String r31_client_grp) {
+			this.r31_client_grp = r31_client_grp;
+		}
+		public BigDecimal getR31_total_book_expo() {
+			return r31_total_book_expo;
+		}
+		public void setR31_total_book_expo(BigDecimal r31_total_book_expo) {
+			this.r31_total_book_expo = r31_total_book_expo;
+		}
+		public BigDecimal getR31_margin_pro() {
+			return r31_margin_pro;
+		}
+		public void setR31_margin_pro(BigDecimal r31_margin_pro) {
+			this.r31_margin_pro = r31_margin_pro;
+		}
+		public BigDecimal getR31_book_expo() {
+			return r31_book_expo;
+		}
+		public void setR31_book_expo(BigDecimal r31_book_expo) {
+			this.r31_book_expo = r31_book_expo;
+		}
+		public BigDecimal getR31_ccf_cont() {
+			return r31_ccf_cont;
+		}
+		public void setR31_ccf_cont(BigDecimal r31_ccf_cont) {
+			this.r31_ccf_cont = r31_ccf_cont;
+		}
+		public BigDecimal getR31_equiv_value() {
+			return r31_equiv_value;
+		}
+		public void setR31_equiv_value(BigDecimal r31_equiv_value) {
+			this.r31_equiv_value = r31_equiv_value;
+		}
+		public BigDecimal getR31_rw_obligant() {
+			return r31_rw_obligant;
+		}
+		public void setR31_rw_obligant(BigDecimal r31_rw_obligant) {
+			this.r31_rw_obligant = r31_rw_obligant;
+		}
+		public BigDecimal getR31_rav() {
+			return r31_rav;
+		}
+		public void setR31_rav(BigDecimal r31_rav) {
+			this.r31_rav = r31_rav;
+		}
+		public String getR32_product() {
+			return r32_product;
+		}
+		public void setR32_product(String r32_product) {
+			this.r32_product = r32_product;
+		}
+		public String getR32_client_grp() {
+			return r32_client_grp;
+		}
+		public void setR32_client_grp(String r32_client_grp) {
+			this.r32_client_grp = r32_client_grp;
+		}
+		public BigDecimal getR32_total_book_expo() {
+			return r32_total_book_expo;
+		}
+		public void setR32_total_book_expo(BigDecimal r32_total_book_expo) {
+			this.r32_total_book_expo = r32_total_book_expo;
+		}
+		public BigDecimal getR32_margin_pro() {
+			return r32_margin_pro;
+		}
+		public void setR32_margin_pro(BigDecimal r32_margin_pro) {
+			this.r32_margin_pro = r32_margin_pro;
+		}
+		public BigDecimal getR32_book_expo() {
+			return r32_book_expo;
+		}
+		public void setR32_book_expo(BigDecimal r32_book_expo) {
+			this.r32_book_expo = r32_book_expo;
+		}
+		public BigDecimal getR32_ccf_cont() {
+			return r32_ccf_cont;
+		}
+		public void setR32_ccf_cont(BigDecimal r32_ccf_cont) {
+			this.r32_ccf_cont = r32_ccf_cont;
+		}
+		public BigDecimal getR32_equiv_value() {
+			return r32_equiv_value;
+		}
+		public void setR32_equiv_value(BigDecimal r32_equiv_value) {
+			this.r32_equiv_value = r32_equiv_value;
+		}
+		public BigDecimal getR32_rw_obligant() {
+			return r32_rw_obligant;
+		}
+		public void setR32_rw_obligant(BigDecimal r32_rw_obligant) {
+			this.r32_rw_obligant = r32_rw_obligant;
+		}
+		public BigDecimal getR32_rav() {
+			return r32_rav;
+		}
+		public void setR32_rav(BigDecimal r32_rav) {
+			this.r32_rav = r32_rav;
+		}
+		public String getR33_product() {
+			return r33_product;
+		}
+		public void setR33_product(String r33_product) {
+			this.r33_product = r33_product;
+		}
+		public String getR33_client_grp() {
+			return r33_client_grp;
+		}
+		public void setR33_client_grp(String r33_client_grp) {
+			this.r33_client_grp = r33_client_grp;
+		}
+		public BigDecimal getR33_total_book_expo() {
+			return r33_total_book_expo;
+		}
+		public void setR33_total_book_expo(BigDecimal r33_total_book_expo) {
+			this.r33_total_book_expo = r33_total_book_expo;
+		}
+		public BigDecimal getR33_margin_pro() {
+			return r33_margin_pro;
+		}
+		public void setR33_margin_pro(BigDecimal r33_margin_pro) {
+			this.r33_margin_pro = r33_margin_pro;
+		}
+		public BigDecimal getR33_book_expo() {
+			return r33_book_expo;
+		}
+		public void setR33_book_expo(BigDecimal r33_book_expo) {
+			this.r33_book_expo = r33_book_expo;
+		}
+		public BigDecimal getR33_ccf_cont() {
+			return r33_ccf_cont;
+		}
+		public void setR33_ccf_cont(BigDecimal r33_ccf_cont) {
+			this.r33_ccf_cont = r33_ccf_cont;
+		}
+		public BigDecimal getR33_equiv_value() {
+			return r33_equiv_value;
+		}
+		public void setR33_equiv_value(BigDecimal r33_equiv_value) {
+			this.r33_equiv_value = r33_equiv_value;
+		}
+		public BigDecimal getR33_rw_obligant() {
+			return r33_rw_obligant;
+		}
+		public void setR33_rw_obligant(BigDecimal r33_rw_obligant) {
+			this.r33_rw_obligant = r33_rw_obligant;
+		}
+		public BigDecimal getR33_rav() {
+			return r33_rav;
+		}
+		public void setR33_rav(BigDecimal r33_rav) {
+			this.r33_rav = r33_rav;
+		}
+		public String getR34_product() {
+			return r34_product;
+		}
+		public void setR34_product(String r34_product) {
+			this.r34_product = r34_product;
+		}
+		public String getR34_client_grp() {
+			return r34_client_grp;
+		}
+		public void setR34_client_grp(String r34_client_grp) {
+			this.r34_client_grp = r34_client_grp;
+		}
+		public BigDecimal getR34_total_book_expo() {
+			return r34_total_book_expo;
+		}
+		public void setR34_total_book_expo(BigDecimal r34_total_book_expo) {
+			this.r34_total_book_expo = r34_total_book_expo;
+		}
+		public BigDecimal getR34_margin_pro() {
+			return r34_margin_pro;
+		}
+		public void setR34_margin_pro(BigDecimal r34_margin_pro) {
+			this.r34_margin_pro = r34_margin_pro;
+		}
+		public BigDecimal getR34_book_expo() {
+			return r34_book_expo;
+		}
+		public void setR34_book_expo(BigDecimal r34_book_expo) {
+			this.r34_book_expo = r34_book_expo;
+		}
+		public BigDecimal getR34_ccf_cont() {
+			return r34_ccf_cont;
+		}
+		public void setR34_ccf_cont(BigDecimal r34_ccf_cont) {
+			this.r34_ccf_cont = r34_ccf_cont;
+		}
+		public BigDecimal getR34_equiv_value() {
+			return r34_equiv_value;
+		}
+		public void setR34_equiv_value(BigDecimal r34_equiv_value) {
+			this.r34_equiv_value = r34_equiv_value;
+		}
+		public BigDecimal getR34_rw_obligant() {
+			return r34_rw_obligant;
+		}
+		public void setR34_rw_obligant(BigDecimal r34_rw_obligant) {
+			this.r34_rw_obligant = r34_rw_obligant;
+		}
+		public BigDecimal getR34_rav() {
+			return r34_rav;
+		}
+		public void setR34_rav(BigDecimal r34_rav) {
+			this.r34_rav = r34_rav;
+		}
+		public String getR35_product() {
+			return r35_product;
+		}
+		public void setR35_product(String r35_product) {
+			this.r35_product = r35_product;
+		}
+		public String getR35_client_grp() {
+			return r35_client_grp;
+		}
+		public void setR35_client_grp(String r35_client_grp) {
+			this.r35_client_grp = r35_client_grp;
+		}
+		public BigDecimal getR35_total_book_expo() {
+			return r35_total_book_expo;
+		}
+		public void setR35_total_book_expo(BigDecimal r35_total_book_expo) {
+			this.r35_total_book_expo = r35_total_book_expo;
+		}
+		public BigDecimal getR35_margin_pro() {
+			return r35_margin_pro;
+		}
+		public void setR35_margin_pro(BigDecimal r35_margin_pro) {
+			this.r35_margin_pro = r35_margin_pro;
+		}
+		public BigDecimal getR35_book_expo() {
+			return r35_book_expo;
+		}
+		public void setR35_book_expo(BigDecimal r35_book_expo) {
+			this.r35_book_expo = r35_book_expo;
+		}
+		public BigDecimal getR35_ccf_cont() {
+			return r35_ccf_cont;
+		}
+		public void setR35_ccf_cont(BigDecimal r35_ccf_cont) {
+			this.r35_ccf_cont = r35_ccf_cont;
+		}
+		public BigDecimal getR35_equiv_value() {
+			return r35_equiv_value;
+		}
+		public void setR35_equiv_value(BigDecimal r35_equiv_value) {
+			this.r35_equiv_value = r35_equiv_value;
+		}
+		public BigDecimal getR35_rw_obligant() {
+			return r35_rw_obligant;
+		}
+		public void setR35_rw_obligant(BigDecimal r35_rw_obligant) {
+			this.r35_rw_obligant = r35_rw_obligant;
+		}
+		public BigDecimal getR35_rav() {
+			return r35_rav;
+		}
+		public void setR35_rav(BigDecimal r35_rav) {
+			this.r35_rav = r35_rav;
+		}
+		public String getR36_product() {
+			return r36_product;
+		}
+		public void setR36_product(String r36_product) {
+			this.r36_product = r36_product;
+		}
+		public String getR36_client_grp() {
+			return r36_client_grp;
+		}
+		public void setR36_client_grp(String r36_client_grp) {
+			this.r36_client_grp = r36_client_grp;
+		}
+		public BigDecimal getR36_total_book_expo() {
+			return r36_total_book_expo;
+		}
+		public void setR36_total_book_expo(BigDecimal r36_total_book_expo) {
+			this.r36_total_book_expo = r36_total_book_expo;
+		}
+		public BigDecimal getR36_margin_pro() {
+			return r36_margin_pro;
+		}
+		public void setR36_margin_pro(BigDecimal r36_margin_pro) {
+			this.r36_margin_pro = r36_margin_pro;
+		}
+		public BigDecimal getR36_book_expo() {
+			return r36_book_expo;
+		}
+		public void setR36_book_expo(BigDecimal r36_book_expo) {
+			this.r36_book_expo = r36_book_expo;
+		}
+		public BigDecimal getR36_ccf_cont() {
+			return r36_ccf_cont;
+		}
+		public void setR36_ccf_cont(BigDecimal r36_ccf_cont) {
+			this.r36_ccf_cont = r36_ccf_cont;
+		}
+		public BigDecimal getR36_equiv_value() {
+			return r36_equiv_value;
+		}
+		public void setR36_equiv_value(BigDecimal r36_equiv_value) {
+			this.r36_equiv_value = r36_equiv_value;
+		}
+		public BigDecimal getR36_rw_obligant() {
+			return r36_rw_obligant;
+		}
+		public void setR36_rw_obligant(BigDecimal r36_rw_obligant) {
+			this.r36_rw_obligant = r36_rw_obligant;
+		}
+		public BigDecimal getR36_rav() {
+			return r36_rav;
+		}
+		public void setR36_rav(BigDecimal r36_rav) {
+			this.r36_rav = r36_rav;
+		}
+		public String getR37_product() {
+			return r37_product;
+		}
+		public void setR37_product(String r37_product) {
+			this.r37_product = r37_product;
+		}
+		public String getR37_client_grp() {
+			return r37_client_grp;
+		}
+		public void setR37_client_grp(String r37_client_grp) {
+			this.r37_client_grp = r37_client_grp;
+		}
+		public BigDecimal getR37_total_book_expo() {
+			return r37_total_book_expo;
+		}
+		public void setR37_total_book_expo(BigDecimal r37_total_book_expo) {
+			this.r37_total_book_expo = r37_total_book_expo;
+		}
+		public BigDecimal getR37_margin_pro() {
+			return r37_margin_pro;
+		}
+		public void setR37_margin_pro(BigDecimal r37_margin_pro) {
+			this.r37_margin_pro = r37_margin_pro;
+		}
+		public BigDecimal getR37_book_expo() {
+			return r37_book_expo;
+		}
+		public void setR37_book_expo(BigDecimal r37_book_expo) {
+			this.r37_book_expo = r37_book_expo;
+		}
+		public BigDecimal getR37_ccf_cont() {
+			return r37_ccf_cont;
+		}
+		public void setR37_ccf_cont(BigDecimal r37_ccf_cont) {
+			this.r37_ccf_cont = r37_ccf_cont;
+		}
+		public BigDecimal getR37_equiv_value() {
+			return r37_equiv_value;
+		}
+		public void setR37_equiv_value(BigDecimal r37_equiv_value) {
+			this.r37_equiv_value = r37_equiv_value;
+		}
+		public BigDecimal getR37_rw_obligant() {
+			return r37_rw_obligant;
+		}
+		public void setR37_rw_obligant(BigDecimal r37_rw_obligant) {
+			this.r37_rw_obligant = r37_rw_obligant;
+		}
+		public BigDecimal getR37_rav() {
+			return r37_rav;
+		}
+		public void setR37_rav(BigDecimal r37_rav) {
+			this.r37_rav = r37_rav;
+		}
+		public String getR38_product() {
+			return r38_product;
+		}
+		public void setR38_product(String r38_product) {
+			this.r38_product = r38_product;
+		}
+		public String getR38_client_grp() {
+			return r38_client_grp;
+		}
+		public void setR38_client_grp(String r38_client_grp) {
+			this.r38_client_grp = r38_client_grp;
+		}
+		public BigDecimal getR38_total_book_expo() {
+			return r38_total_book_expo;
+		}
+		public void setR38_total_book_expo(BigDecimal r38_total_book_expo) {
+			this.r38_total_book_expo = r38_total_book_expo;
+		}
+		public BigDecimal getR38_margin_pro() {
+			return r38_margin_pro;
+		}
+		public void setR38_margin_pro(BigDecimal r38_margin_pro) {
+			this.r38_margin_pro = r38_margin_pro;
+		}
+		public BigDecimal getR38_book_expo() {
+			return r38_book_expo;
+		}
+		public void setR38_book_expo(BigDecimal r38_book_expo) {
+			this.r38_book_expo = r38_book_expo;
+		}
+		public BigDecimal getR38_ccf_cont() {
+			return r38_ccf_cont;
+		}
+		public void setR38_ccf_cont(BigDecimal r38_ccf_cont) {
+			this.r38_ccf_cont = r38_ccf_cont;
+		}
+		public BigDecimal getR38_equiv_value() {
+			return r38_equiv_value;
+		}
+		public void setR38_equiv_value(BigDecimal r38_equiv_value) {
+			this.r38_equiv_value = r38_equiv_value;
+		}
+		public BigDecimal getR38_rw_obligant() {
+			return r38_rw_obligant;
+		}
+		public void setR38_rw_obligant(BigDecimal r38_rw_obligant) {
+			this.r38_rw_obligant = r38_rw_obligant;
+		}
+		public BigDecimal getR38_rav() {
+			return r38_rav;
+		}
+		public void setR38_rav(BigDecimal r38_rav) {
+			this.r38_rav = r38_rav;
+		}
+		public String getR39_product() {
+			return r39_product;
+		}
+		public void setR39_product(String r39_product) {
+			this.r39_product = r39_product;
+		}
+		public String getR39_client_grp() {
+			return r39_client_grp;
+		}
+		public void setR39_client_grp(String r39_client_grp) {
+			this.r39_client_grp = r39_client_grp;
+		}
+		public BigDecimal getR39_total_book_expo() {
+			return r39_total_book_expo;
+		}
+		public void setR39_total_book_expo(BigDecimal r39_total_book_expo) {
+			this.r39_total_book_expo = r39_total_book_expo;
+		}
+		public BigDecimal getR39_margin_pro() {
+			return r39_margin_pro;
+		}
+		public void setR39_margin_pro(BigDecimal r39_margin_pro) {
+			this.r39_margin_pro = r39_margin_pro;
+		}
+		public BigDecimal getR39_book_expo() {
+			return r39_book_expo;
+		}
+		public void setR39_book_expo(BigDecimal r39_book_expo) {
+			this.r39_book_expo = r39_book_expo;
+		}
+		public BigDecimal getR39_ccf_cont() {
+			return r39_ccf_cont;
+		}
+		public void setR39_ccf_cont(BigDecimal r39_ccf_cont) {
+			this.r39_ccf_cont = r39_ccf_cont;
+		}
+		public BigDecimal getR39_equiv_value() {
+			return r39_equiv_value;
+		}
+		public void setR39_equiv_value(BigDecimal r39_equiv_value) {
+			this.r39_equiv_value = r39_equiv_value;
+		}
+		public BigDecimal getR39_rw_obligant() {
+			return r39_rw_obligant;
+		}
+		public void setR39_rw_obligant(BigDecimal r39_rw_obligant) {
+			this.r39_rw_obligant = r39_rw_obligant;
+		}
+		public BigDecimal getR39_rav() {
+			return r39_rav;
+		}
+		public void setR39_rav(BigDecimal r39_rav) {
+			this.r39_rav = r39_rav;
+		}
+		public String getR40_product() {
+			return r40_product;
+		}
+		public void setR40_product(String r40_product) {
+			this.r40_product = r40_product;
+		}
+		public String getR40_client_grp() {
+			return r40_client_grp;
+		}
+		public void setR40_client_grp(String r40_client_grp) {
+			this.r40_client_grp = r40_client_grp;
+		}
+		public BigDecimal getR40_total_book_expo() {
+			return r40_total_book_expo;
+		}
+		public void setR40_total_book_expo(BigDecimal r40_total_book_expo) {
+			this.r40_total_book_expo = r40_total_book_expo;
+		}
+		public BigDecimal getR40_margin_pro() {
+			return r40_margin_pro;
+		}
+		public void setR40_margin_pro(BigDecimal r40_margin_pro) {
+			this.r40_margin_pro = r40_margin_pro;
+		}
+		public BigDecimal getR40_book_expo() {
+			return r40_book_expo;
+		}
+		public void setR40_book_expo(BigDecimal r40_book_expo) {
+			this.r40_book_expo = r40_book_expo;
+		}
+		public BigDecimal getR40_ccf_cont() {
+			return r40_ccf_cont;
+		}
+		public void setR40_ccf_cont(BigDecimal r40_ccf_cont) {
+			this.r40_ccf_cont = r40_ccf_cont;
+		}
+		public BigDecimal getR40_equiv_value() {
+			return r40_equiv_value;
+		}
+		public void setR40_equiv_value(BigDecimal r40_equiv_value) {
+			this.r40_equiv_value = r40_equiv_value;
+		}
+		public BigDecimal getR40_rw_obligant() {
+			return r40_rw_obligant;
+		}
+		public void setR40_rw_obligant(BigDecimal r40_rw_obligant) {
+			this.r40_rw_obligant = r40_rw_obligant;
+		}
+		public BigDecimal getR40_rav() {
+			return r40_rav;
+		}
+		public void setR40_rav(BigDecimal r40_rav) {
+			this.r40_rav = r40_rav;
+		}
+		public String getR41_product() {
+			return r41_product;
+		}
+		public void setR41_product(String r41_product) {
+			this.r41_product = r41_product;
+		}
+		public String getR41_client_grp() {
+			return r41_client_grp;
+		}
+		public void setR41_client_grp(String r41_client_grp) {
+			this.r41_client_grp = r41_client_grp;
+		}
+		public BigDecimal getR41_total_book_expo() {
+			return r41_total_book_expo;
+		}
+		public void setR41_total_book_expo(BigDecimal r41_total_book_expo) {
+			this.r41_total_book_expo = r41_total_book_expo;
+		}
+		public BigDecimal getR41_margin_pro() {
+			return r41_margin_pro;
+		}
+		public void setR41_margin_pro(BigDecimal r41_margin_pro) {
+			this.r41_margin_pro = r41_margin_pro;
+		}
+		public BigDecimal getR41_book_expo() {
+			return r41_book_expo;
+		}
+		public void setR41_book_expo(BigDecimal r41_book_expo) {
+			this.r41_book_expo = r41_book_expo;
+		}
+		public BigDecimal getR41_ccf_cont() {
+			return r41_ccf_cont;
+		}
+		public void setR41_ccf_cont(BigDecimal r41_ccf_cont) {
+			this.r41_ccf_cont = r41_ccf_cont;
+		}
+		public BigDecimal getR41_equiv_value() {
+			return r41_equiv_value;
+		}
+		public void setR41_equiv_value(BigDecimal r41_equiv_value) {
+			this.r41_equiv_value = r41_equiv_value;
+		}
+		public BigDecimal getR41_rw_obligant() {
+			return r41_rw_obligant;
+		}
+		public void setR41_rw_obligant(BigDecimal r41_rw_obligant) {
+			this.r41_rw_obligant = r41_rw_obligant;
+		}
+		public BigDecimal getR41_rav() {
+			return r41_rav;
+		}
+		public void setR41_rav(BigDecimal r41_rav) {
+			this.r41_rav = r41_rav;
+		}
+		public String getR42_product() {
+			return r42_product;
+		}
+		public void setR42_product(String r42_product) {
+			this.r42_product = r42_product;
+		}
+		public String getR42_client_grp() {
+			return r42_client_grp;
+		}
+		public void setR42_client_grp(String r42_client_grp) {
+			this.r42_client_grp = r42_client_grp;
+		}
+		public BigDecimal getR42_total_book_expo() {
+			return r42_total_book_expo;
+		}
+		public void setR42_total_book_expo(BigDecimal r42_total_book_expo) {
+			this.r42_total_book_expo = r42_total_book_expo;
+		}
+		public BigDecimal getR42_margin_pro() {
+			return r42_margin_pro;
+		}
+		public void setR42_margin_pro(BigDecimal r42_margin_pro) {
+			this.r42_margin_pro = r42_margin_pro;
+		}
+		public BigDecimal getR42_book_expo() {
+			return r42_book_expo;
+		}
+		public void setR42_book_expo(BigDecimal r42_book_expo) {
+			this.r42_book_expo = r42_book_expo;
+		}
+		public BigDecimal getR42_ccf_cont() {
+			return r42_ccf_cont;
+		}
+		public void setR42_ccf_cont(BigDecimal r42_ccf_cont) {
+			this.r42_ccf_cont = r42_ccf_cont;
+		}
+		public BigDecimal getR42_equiv_value() {
+			return r42_equiv_value;
+		}
+		public void setR42_equiv_value(BigDecimal r42_equiv_value) {
+			this.r42_equiv_value = r42_equiv_value;
+		}
+		public BigDecimal getR42_rw_obligant() {
+			return r42_rw_obligant;
+		}
+		public void setR42_rw_obligant(BigDecimal r42_rw_obligant) {
+			this.r42_rw_obligant = r42_rw_obligant;
+		}
+		public BigDecimal getR42_rav() {
+			return r42_rav;
+		}
+		public void setR42_rav(BigDecimal r42_rav) {
+			this.r42_rav = r42_rav;
+		}
+		public String getR43_product() {
+			return r43_product;
+		}
+		public void setR43_product(String r43_product) {
+			this.r43_product = r43_product;
+		}
+		public String getR43_client_grp() {
+			return r43_client_grp;
+		}
+		public void setR43_client_grp(String r43_client_grp) {
+			this.r43_client_grp = r43_client_grp;
+		}
+		public BigDecimal getR43_total_book_expo() {
+			return r43_total_book_expo;
+		}
+		public void setR43_total_book_expo(BigDecimal r43_total_book_expo) {
+			this.r43_total_book_expo = r43_total_book_expo;
+		}
+		public BigDecimal getR43_margin_pro() {
+			return r43_margin_pro;
+		}
+		public void setR43_margin_pro(BigDecimal r43_margin_pro) {
+			this.r43_margin_pro = r43_margin_pro;
+		}
+		public BigDecimal getR43_book_expo() {
+			return r43_book_expo;
+		}
+		public void setR43_book_expo(BigDecimal r43_book_expo) {
+			this.r43_book_expo = r43_book_expo;
+		}
+		public BigDecimal getR43_ccf_cont() {
+			return r43_ccf_cont;
+		}
+		public void setR43_ccf_cont(BigDecimal r43_ccf_cont) {
+			this.r43_ccf_cont = r43_ccf_cont;
+		}
+		public BigDecimal getR43_equiv_value() {
+			return r43_equiv_value;
+		}
+		public void setR43_equiv_value(BigDecimal r43_equiv_value) {
+			this.r43_equiv_value = r43_equiv_value;
+		}
+		public BigDecimal getR43_rw_obligant() {
+			return r43_rw_obligant;
+		}
+		public void setR43_rw_obligant(BigDecimal r43_rw_obligant) {
+			this.r43_rw_obligant = r43_rw_obligant;
+		}
+		public BigDecimal getR43_rav() {
+			return r43_rav;
+		}
+		public void setR43_rav(BigDecimal r43_rav) {
+			this.r43_rav = r43_rav;
+		}
+		public String getR44_product() {
+			return r44_product;
+		}
+		public void setR44_product(String r44_product) {
+			this.r44_product = r44_product;
+		}
+		public String getR44_client_grp() {
+			return r44_client_grp;
+		}
+		public void setR44_client_grp(String r44_client_grp) {
+			this.r44_client_grp = r44_client_grp;
+		}
+		public BigDecimal getR44_total_book_expo() {
+			return r44_total_book_expo;
+		}
+		public void setR44_total_book_expo(BigDecimal r44_total_book_expo) {
+			this.r44_total_book_expo = r44_total_book_expo;
+		}
+		public BigDecimal getR44_margin_pro() {
+			return r44_margin_pro;
+		}
+		public void setR44_margin_pro(BigDecimal r44_margin_pro) {
+			this.r44_margin_pro = r44_margin_pro;
+		}
+		public BigDecimal getR44_book_expo() {
+			return r44_book_expo;
+		}
+		public void setR44_book_expo(BigDecimal r44_book_expo) {
+			this.r44_book_expo = r44_book_expo;
+		}
+		public BigDecimal getR44_ccf_cont() {
+			return r44_ccf_cont;
+		}
+		public void setR44_ccf_cont(BigDecimal r44_ccf_cont) {
+			this.r44_ccf_cont = r44_ccf_cont;
+		}
+		public BigDecimal getR44_equiv_value() {
+			return r44_equiv_value;
+		}
+		public void setR44_equiv_value(BigDecimal r44_equiv_value) {
+			this.r44_equiv_value = r44_equiv_value;
+		}
+		public BigDecimal getR44_rw_obligant() {
+			return r44_rw_obligant;
+		}
+		public void setR44_rw_obligant(BigDecimal r44_rw_obligant) {
+			this.r44_rw_obligant = r44_rw_obligant;
+		}
+		public BigDecimal getR44_rav() {
+			return r44_rav;
+		}
+		public void setR44_rav(BigDecimal r44_rav) {
+			this.r44_rav = r44_rav;
+		}
+		public String getR45_product() {
+			return r45_product;
+		}
+		public void setR45_product(String r45_product) {
+			this.r45_product = r45_product;
+		}
+		public String getR45_client_grp() {
+			return r45_client_grp;
+		}
+		public void setR45_client_grp(String r45_client_grp) {
+			this.r45_client_grp = r45_client_grp;
+		}
+		public BigDecimal getR45_total_book_expo() {
+			return r45_total_book_expo;
+		}
+		public void setR45_total_book_expo(BigDecimal r45_total_book_expo) {
+			this.r45_total_book_expo = r45_total_book_expo;
+		}
+		public BigDecimal getR45_margin_pro() {
+			return r45_margin_pro;
+		}
+		public void setR45_margin_pro(BigDecimal r45_margin_pro) {
+			this.r45_margin_pro = r45_margin_pro;
+		}
+		public BigDecimal getR45_book_expo() {
+			return r45_book_expo;
+		}
+		public void setR45_book_expo(BigDecimal r45_book_expo) {
+			this.r45_book_expo = r45_book_expo;
+		}
+		public BigDecimal getR45_ccf_cont() {
+			return r45_ccf_cont;
+		}
+		public void setR45_ccf_cont(BigDecimal r45_ccf_cont) {
+			this.r45_ccf_cont = r45_ccf_cont;
+		}
+		public BigDecimal getR45_equiv_value() {
+			return r45_equiv_value;
+		}
+		public void setR45_equiv_value(BigDecimal r45_equiv_value) {
+			this.r45_equiv_value = r45_equiv_value;
+		}
+		public BigDecimal getR45_rw_obligant() {
+			return r45_rw_obligant;
+		}
+		public void setR45_rw_obligant(BigDecimal r45_rw_obligant) {
+			this.r45_rw_obligant = r45_rw_obligant;
+		}
+		public BigDecimal getR45_rav() {
+			return r45_rav;
+		}
+		public void setR45_rav(BigDecimal r45_rav) {
+			this.r45_rav = r45_rav;
+		}
+		public String getR46_product() {
+			return r46_product;
+		}
+		public void setR46_product(String r46_product) {
+			this.r46_product = r46_product;
+		}
+		public String getR46_client_grp() {
+			return r46_client_grp;
+		}
+		public void setR46_client_grp(String r46_client_grp) {
+			this.r46_client_grp = r46_client_grp;
+		}
+		public BigDecimal getR46_total_book_expo() {
+			return r46_total_book_expo;
+		}
+		public void setR46_total_book_expo(BigDecimal r46_total_book_expo) {
+			this.r46_total_book_expo = r46_total_book_expo;
+		}
+		public BigDecimal getR46_margin_pro() {
+			return r46_margin_pro;
+		}
+		public void setR46_margin_pro(BigDecimal r46_margin_pro) {
+			this.r46_margin_pro = r46_margin_pro;
+		}
+		public BigDecimal getR46_book_expo() {
+			return r46_book_expo;
+		}
+		public void setR46_book_expo(BigDecimal r46_book_expo) {
+			this.r46_book_expo = r46_book_expo;
+		}
+		public BigDecimal getR46_ccf_cont() {
+			return r46_ccf_cont;
+		}
+		public void setR46_ccf_cont(BigDecimal r46_ccf_cont) {
+			this.r46_ccf_cont = r46_ccf_cont;
+		}
+		public BigDecimal getR46_equiv_value() {
+			return r46_equiv_value;
+		}
+		public void setR46_equiv_value(BigDecimal r46_equiv_value) {
+			this.r46_equiv_value = r46_equiv_value;
+		}
+		public BigDecimal getR46_rw_obligant() {
+			return r46_rw_obligant;
+		}
+		public void setR46_rw_obligant(BigDecimal r46_rw_obligant) {
+			this.r46_rw_obligant = r46_rw_obligant;
+		}
+		public BigDecimal getR46_rav() {
+			return r46_rav;
+		}
+		public void setR46_rav(BigDecimal r46_rav) {
+			this.r46_rav = r46_rav;
+		}
+		public String getR61_product() {
+			return r61_product;
+		}
+		public void setR61_product(String r61_product) {
+			this.r61_product = r61_product;
+		}
+		public String getR61_client_grp() {
+			return r61_client_grp;
+		}
+		public void setR61_client_grp(String r61_client_grp) {
+			this.r61_client_grp = r61_client_grp;
+		}
+		public BigDecimal getR61_total_book_expo() {
+			return r61_total_book_expo;
+		}
+		public void setR61_total_book_expo(BigDecimal r61_total_book_expo) {
+			this.r61_total_book_expo = r61_total_book_expo;
+		}
+		public BigDecimal getR61_margin_pro() {
+			return r61_margin_pro;
+		}
+		public void setR61_margin_pro(BigDecimal r61_margin_pro) {
+			this.r61_margin_pro = r61_margin_pro;
+		}
+		public BigDecimal getR61_book_expo() {
+			return r61_book_expo;
+		}
+		public void setR61_book_expo(BigDecimal r61_book_expo) {
+			this.r61_book_expo = r61_book_expo;
+		}
+		public BigDecimal getR61_ccf_cont() {
+			return r61_ccf_cont;
+		}
+		public void setR61_ccf_cont(BigDecimal r61_ccf_cont) {
+			this.r61_ccf_cont = r61_ccf_cont;
+		}
+		public BigDecimal getR61_equiv_value() {
+			return r61_equiv_value;
+		}
+		public void setR61_equiv_value(BigDecimal r61_equiv_value) {
+			this.r61_equiv_value = r61_equiv_value;
+		}
+		public BigDecimal getR61_rw_obligant() {
+			return r61_rw_obligant;
+		}
+		public void setR61_rw_obligant(BigDecimal r61_rw_obligant) {
+			this.r61_rw_obligant = r61_rw_obligant;
+		}
+		public BigDecimal getR61_rav() {
+			return r61_rav;
+		}
+		public void setR61_rav(BigDecimal r61_rav) {
+			this.r61_rav = r61_rav;
+		}
+		public String getR62_product() {
+			return r62_product;
+		}
+		public void setR62_product(String r62_product) {
+			this.r62_product = r62_product;
+		}
+		public String getR62_client_grp() {
+			return r62_client_grp;
+		}
+		public void setR62_client_grp(String r62_client_grp) {
+			this.r62_client_grp = r62_client_grp;
+		}
+		public BigDecimal getR62_total_book_expo() {
+			return r62_total_book_expo;
+		}
+		public void setR62_total_book_expo(BigDecimal r62_total_book_expo) {
+			this.r62_total_book_expo = r62_total_book_expo;
+		}
+		public BigDecimal getR62_margin_pro() {
+			return r62_margin_pro;
+		}
+		public void setR62_margin_pro(BigDecimal r62_margin_pro) {
+			this.r62_margin_pro = r62_margin_pro;
+		}
+		public BigDecimal getR62_book_expo() {
+			return r62_book_expo;
+		}
+		public void setR62_book_expo(BigDecimal r62_book_expo) {
+			this.r62_book_expo = r62_book_expo;
+		}
+		public BigDecimal getR62_ccf_cont() {
+			return r62_ccf_cont;
+		}
+		public void setR62_ccf_cont(BigDecimal r62_ccf_cont) {
+			this.r62_ccf_cont = r62_ccf_cont;
+		}
+		public BigDecimal getR62_equiv_value() {
+			return r62_equiv_value;
+		}
+		public void setR62_equiv_value(BigDecimal r62_equiv_value) {
+			this.r62_equiv_value = r62_equiv_value;
+		}
+		public BigDecimal getR62_rw_obligant() {
+			return r62_rw_obligant;
+		}
+		public void setR62_rw_obligant(BigDecimal r62_rw_obligant) {
+			this.r62_rw_obligant = r62_rw_obligant;
+		}
+		public BigDecimal getR62_rav() {
+			return r62_rav;
+		}
+		public void setR62_rav(BigDecimal r62_rav) {
+			this.r62_rav = r62_rav;
+		}
+		public String getR63_product() {
+			return r63_product;
+		}
+		public void setR63_product(String r63_product) {
+			this.r63_product = r63_product;
+		}
+		public String getR63_client_grp() {
+			return r63_client_grp;
+		}
+		public void setR63_client_grp(String r63_client_grp) {
+			this.r63_client_grp = r63_client_grp;
+		}
+		public BigDecimal getR63_total_book_expo() {
+			return r63_total_book_expo;
+		}
+		public void setR63_total_book_expo(BigDecimal r63_total_book_expo) {
+			this.r63_total_book_expo = r63_total_book_expo;
+		}
+		public BigDecimal getR63_margin_pro() {
+			return r63_margin_pro;
+		}
+		public void setR63_margin_pro(BigDecimal r63_margin_pro) {
+			this.r63_margin_pro = r63_margin_pro;
+		}
+		public BigDecimal getR63_book_expo() {
+			return r63_book_expo;
+		}
+		public void setR63_book_expo(BigDecimal r63_book_expo) {
+			this.r63_book_expo = r63_book_expo;
+		}
+		public BigDecimal getR63_ccf_cont() {
+			return r63_ccf_cont;
+		}
+		public void setR63_ccf_cont(BigDecimal r63_ccf_cont) {
+			this.r63_ccf_cont = r63_ccf_cont;
+		}
+		public BigDecimal getR63_equiv_value() {
+			return r63_equiv_value;
+		}
+		public void setR63_equiv_value(BigDecimal r63_equiv_value) {
+			this.r63_equiv_value = r63_equiv_value;
+		}
+		public BigDecimal getR63_rw_obligant() {
+			return r63_rw_obligant;
+		}
+		public void setR63_rw_obligant(BigDecimal r63_rw_obligant) {
+			this.r63_rw_obligant = r63_rw_obligant;
+		}
+		public BigDecimal getR63_rav() {
+			return r63_rav;
+		}
+		public void setR63_rav(BigDecimal r63_rav) {
+			this.r63_rav = r63_rav;
+		}
+		public String getR64_product() {
+			return r64_product;
+		}
+		public void setR64_product(String r64_product) {
+			this.r64_product = r64_product;
+		}
+		public String getR64_client_grp() {
+			return r64_client_grp;
+		}
+		public void setR64_client_grp(String r64_client_grp) {
+			this.r64_client_grp = r64_client_grp;
+		}
+		public BigDecimal getR64_total_book_expo() {
+			return r64_total_book_expo;
+		}
+		public void setR64_total_book_expo(BigDecimal r64_total_book_expo) {
+			this.r64_total_book_expo = r64_total_book_expo;
+		}
+		public BigDecimal getR64_margin_pro() {
+			return r64_margin_pro;
+		}
+		public void setR64_margin_pro(BigDecimal r64_margin_pro) {
+			this.r64_margin_pro = r64_margin_pro;
+		}
+		public BigDecimal getR64_book_expo() {
+			return r64_book_expo;
+		}
+		public void setR64_book_expo(BigDecimal r64_book_expo) {
+			this.r64_book_expo = r64_book_expo;
+		}
+		public BigDecimal getR64_ccf_cont() {
+			return r64_ccf_cont;
+		}
+		public void setR64_ccf_cont(BigDecimal r64_ccf_cont) {
+			this.r64_ccf_cont = r64_ccf_cont;
+		}
+		public BigDecimal getR64_equiv_value() {
+			return r64_equiv_value;
+		}
+		public void setR64_equiv_value(BigDecimal r64_equiv_value) {
+			this.r64_equiv_value = r64_equiv_value;
+		}
+		public BigDecimal getR64_rw_obligant() {
+			return r64_rw_obligant;
+		}
+		public void setR64_rw_obligant(BigDecimal r64_rw_obligant) {
+			this.r64_rw_obligant = r64_rw_obligant;
+		}
+		public BigDecimal getR64_rav() {
+			return r64_rav;
+		}
+		public void setR64_rav(BigDecimal r64_rav) {
+			this.r64_rav = r64_rav;
+		}
+		public String getR65_product() {
+			return r65_product;
+		}
+		public void setR65_product(String r65_product) {
+			this.r65_product = r65_product;
+		}
+		public String getR65_client_grp() {
+			return r65_client_grp;
+		}
+		public void setR65_client_grp(String r65_client_grp) {
+			this.r65_client_grp = r65_client_grp;
+		}
+		public BigDecimal getR65_total_book_expo() {
+			return r65_total_book_expo;
+		}
+		public void setR65_total_book_expo(BigDecimal r65_total_book_expo) {
+			this.r65_total_book_expo = r65_total_book_expo;
+		}
+		public BigDecimal getR65_margin_pro() {
+			return r65_margin_pro;
+		}
+		public void setR65_margin_pro(BigDecimal r65_margin_pro) {
+			this.r65_margin_pro = r65_margin_pro;
+		}
+		public BigDecimal getR65_book_expo() {
+			return r65_book_expo;
+		}
+		public void setR65_book_expo(BigDecimal r65_book_expo) {
+			this.r65_book_expo = r65_book_expo;
+		}
+		public BigDecimal getR65_ccf_cont() {
+			return r65_ccf_cont;
+		}
+		public void setR65_ccf_cont(BigDecimal r65_ccf_cont) {
+			this.r65_ccf_cont = r65_ccf_cont;
+		}
+		public BigDecimal getR65_equiv_value() {
+			return r65_equiv_value;
+		}
+		public void setR65_equiv_value(BigDecimal r65_equiv_value) {
+			this.r65_equiv_value = r65_equiv_value;
+		}
+		public BigDecimal getR65_rw_obligant() {
+			return r65_rw_obligant;
+		}
+		public void setR65_rw_obligant(BigDecimal r65_rw_obligant) {
+			this.r65_rw_obligant = r65_rw_obligant;
+		}
+		public BigDecimal getR65_rav() {
+			return r65_rav;
+		}
+		public void setR65_rav(BigDecimal r65_rav) {
+			this.r65_rav = r65_rav;
+		}
+		public String getR66_product() {
+			return r66_product;
+		}
+		public void setR66_product(String r66_product) {
+			this.r66_product = r66_product;
+		}
+		public String getR66_client_grp() {
+			return r66_client_grp;
+		}
+		public void setR66_client_grp(String r66_client_grp) {
+			this.r66_client_grp = r66_client_grp;
+		}
+		public BigDecimal getR66_total_book_expo() {
+			return r66_total_book_expo;
+		}
+		public void setR66_total_book_expo(BigDecimal r66_total_book_expo) {
+			this.r66_total_book_expo = r66_total_book_expo;
+		}
+		public BigDecimal getR66_margin_pro() {
+			return r66_margin_pro;
+		}
+		public void setR66_margin_pro(BigDecimal r66_margin_pro) {
+			this.r66_margin_pro = r66_margin_pro;
+		}
+		public BigDecimal getR66_book_expo() {
+			return r66_book_expo;
+		}
+		public void setR66_book_expo(BigDecimal r66_book_expo) {
+			this.r66_book_expo = r66_book_expo;
+		}
+		public BigDecimal getR66_ccf_cont() {
+			return r66_ccf_cont;
+		}
+		public void setR66_ccf_cont(BigDecimal r66_ccf_cont) {
+			this.r66_ccf_cont = r66_ccf_cont;
+		}
+		public BigDecimal getR66_equiv_value() {
+			return r66_equiv_value;
+		}
+		public void setR66_equiv_value(BigDecimal r66_equiv_value) {
+			this.r66_equiv_value = r66_equiv_value;
+		}
+		public BigDecimal getR66_rw_obligant() {
+			return r66_rw_obligant;
+		}
+		public void setR66_rw_obligant(BigDecimal r66_rw_obligant) {
+			this.r66_rw_obligant = r66_rw_obligant;
+		}
+		public BigDecimal getR66_rav() {
+			return r66_rav;
+		}
+		public void setR66_rav(BigDecimal r66_rav) {
+			this.r66_rav = r66_rav;
+		}
+		public String getR67_product() {
+			return r67_product;
+		}
+		public void setR67_product(String r67_product) {
+			this.r67_product = r67_product;
+		}
+		public String getR67_client_grp() {
+			return r67_client_grp;
+		}
+		public void setR67_client_grp(String r67_client_grp) {
+			this.r67_client_grp = r67_client_grp;
+		}
+		public BigDecimal getR67_total_book_expo() {
+			return r67_total_book_expo;
+		}
+		public void setR67_total_book_expo(BigDecimal r67_total_book_expo) {
+			this.r67_total_book_expo = r67_total_book_expo;
+		}
+		public BigDecimal getR67_margin_pro() {
+			return r67_margin_pro;
+		}
+		public void setR67_margin_pro(BigDecimal r67_margin_pro) {
+			this.r67_margin_pro = r67_margin_pro;
+		}
+		public BigDecimal getR67_book_expo() {
+			return r67_book_expo;
+		}
+		public void setR67_book_expo(BigDecimal r67_book_expo) {
+			this.r67_book_expo = r67_book_expo;
+		}
+		public BigDecimal getR67_ccf_cont() {
+			return r67_ccf_cont;
+		}
+		public void setR67_ccf_cont(BigDecimal r67_ccf_cont) {
+			this.r67_ccf_cont = r67_ccf_cont;
+		}
+		public BigDecimal getR67_equiv_value() {
+			return r67_equiv_value;
+		}
+		public void setR67_equiv_value(BigDecimal r67_equiv_value) {
+			this.r67_equiv_value = r67_equiv_value;
+		}
+		public BigDecimal getR67_rw_obligant() {
+			return r67_rw_obligant;
+		}
+		public void setR67_rw_obligant(BigDecimal r67_rw_obligant) {
+			this.r67_rw_obligant = r67_rw_obligant;
+		}
+		public BigDecimal getR67_rav() {
+			return r67_rav;
+		}
+		public void setR67_rav(BigDecimal r67_rav) {
+			this.r67_rav = r67_rav;
+		}
+		public String getR68_product() {
+			return r68_product;
+		}
+		public void setR68_product(String r68_product) {
+			this.r68_product = r68_product;
+		}
+		public String getR68_client_grp() {
+			return r68_client_grp;
+		}
+		public void setR68_client_grp(String r68_client_grp) {
+			this.r68_client_grp = r68_client_grp;
+		}
+		public BigDecimal getR68_total_book_expo() {
+			return r68_total_book_expo;
+		}
+		public void setR68_total_book_expo(BigDecimal r68_total_book_expo) {
+			this.r68_total_book_expo = r68_total_book_expo;
+		}
+		public BigDecimal getR68_margin_pro() {
+			return r68_margin_pro;
+		}
+		public void setR68_margin_pro(BigDecimal r68_margin_pro) {
+			this.r68_margin_pro = r68_margin_pro;
+		}
+		public BigDecimal getR68_book_expo() {
+			return r68_book_expo;
+		}
+		public void setR68_book_expo(BigDecimal r68_book_expo) {
+			this.r68_book_expo = r68_book_expo;
+		}
+		public BigDecimal getR68_ccf_cont() {
+			return r68_ccf_cont;
+		}
+		public void setR68_ccf_cont(BigDecimal r68_ccf_cont) {
+			this.r68_ccf_cont = r68_ccf_cont;
+		}
+		public BigDecimal getR68_equiv_value() {
+			return r68_equiv_value;
+		}
+		public void setR68_equiv_value(BigDecimal r68_equiv_value) {
+			this.r68_equiv_value = r68_equiv_value;
+		}
+		public BigDecimal getR68_rw_obligant() {
+			return r68_rw_obligant;
+		}
+		public void setR68_rw_obligant(BigDecimal r68_rw_obligant) {
+			this.r68_rw_obligant = r68_rw_obligant;
+		}
+		public BigDecimal getR68_rav() {
+			return r68_rav;
+		}
+		public void setR68_rav(BigDecimal r68_rav) {
+			this.r68_rav = r68_rav;
+		}
+		public String getR69_product() {
+			return r69_product;
+		}
+		public void setR69_product(String r69_product) {
+			this.r69_product = r69_product;
+		}
+		public String getR69_client_grp() {
+			return r69_client_grp;
+		}
+		public void setR69_client_grp(String r69_client_grp) {
+			this.r69_client_grp = r69_client_grp;
+		}
+		public BigDecimal getR69_total_book_expo() {
+			return r69_total_book_expo;
+		}
+		public void setR69_total_book_expo(BigDecimal r69_total_book_expo) {
+			this.r69_total_book_expo = r69_total_book_expo;
+		}
+		public BigDecimal getR69_margin_pro() {
+			return r69_margin_pro;
+		}
+		public void setR69_margin_pro(BigDecimal r69_margin_pro) {
+			this.r69_margin_pro = r69_margin_pro;
+		}
+		public BigDecimal getR69_book_expo() {
+			return r69_book_expo;
+		}
+		public void setR69_book_expo(BigDecimal r69_book_expo) {
+			this.r69_book_expo = r69_book_expo;
+		}
+		public BigDecimal getR69_ccf_cont() {
+			return r69_ccf_cont;
+		}
+		public void setR69_ccf_cont(BigDecimal r69_ccf_cont) {
+			this.r69_ccf_cont = r69_ccf_cont;
+		}
+		public BigDecimal getR69_equiv_value() {
+			return r69_equiv_value;
+		}
+		public void setR69_equiv_value(BigDecimal r69_equiv_value) {
+			this.r69_equiv_value = r69_equiv_value;
+		}
+		public BigDecimal getR69_rw_obligant() {
+			return r69_rw_obligant;
+		}
+		public void setR69_rw_obligant(BigDecimal r69_rw_obligant) {
+			this.r69_rw_obligant = r69_rw_obligant;
+		}
+		public BigDecimal getR69_rav() {
+			return r69_rav;
+		}
+		public void setR69_rav(BigDecimal r69_rav) {
+			this.r69_rav = r69_rav;
+		}
+		public String getR70_product() {
+			return r70_product;
+		}
+		public void setR70_product(String r70_product) {
+			this.r70_product = r70_product;
+		}
+		public String getR70_client_grp() {
+			return r70_client_grp;
+		}
+		public void setR70_client_grp(String r70_client_grp) {
+			this.r70_client_grp = r70_client_grp;
+		}
+		public BigDecimal getR70_total_book_expo() {
+			return r70_total_book_expo;
+		}
+		public void setR70_total_book_expo(BigDecimal r70_total_book_expo) {
+			this.r70_total_book_expo = r70_total_book_expo;
+		}
+		public BigDecimal getR70_margin_pro() {
+			return r70_margin_pro;
+		}
+		public void setR70_margin_pro(BigDecimal r70_margin_pro) {
+			this.r70_margin_pro = r70_margin_pro;
+		}
+		public BigDecimal getR70_book_expo() {
+			return r70_book_expo;
+		}
+		public void setR70_book_expo(BigDecimal r70_book_expo) {
+			this.r70_book_expo = r70_book_expo;
+		}
+		public BigDecimal getR70_ccf_cont() {
+			return r70_ccf_cont;
+		}
+		public void setR70_ccf_cont(BigDecimal r70_ccf_cont) {
+			this.r70_ccf_cont = r70_ccf_cont;
+		}
+		public BigDecimal getR70_equiv_value() {
+			return r70_equiv_value;
+		}
+		public void setR70_equiv_value(BigDecimal r70_equiv_value) {
+			this.r70_equiv_value = r70_equiv_value;
+		}
+		public BigDecimal getR70_rw_obligant() {
+			return r70_rw_obligant;
+		}
+		public void setR70_rw_obligant(BigDecimal r70_rw_obligant) {
+			this.r70_rw_obligant = r70_rw_obligant;
+		}
+		public BigDecimal getR70_rav() {
+			return r70_rav;
+		}
+		public void setR70_rav(BigDecimal r70_rav) {
+			this.r70_rav = r70_rav;
+		}
+		public String getR71_product() {
+			return r71_product;
+		}
+		public void setR71_product(String r71_product) {
+			this.r71_product = r71_product;
+		}
+		public String getR71_client_grp() {
+			return r71_client_grp;
+		}
+		public void setR71_client_grp(String r71_client_grp) {
+			this.r71_client_grp = r71_client_grp;
+		}
+		public BigDecimal getR71_total_book_expo() {
+			return r71_total_book_expo;
+		}
+		public void setR71_total_book_expo(BigDecimal r71_total_book_expo) {
+			this.r71_total_book_expo = r71_total_book_expo;
+		}
+		public BigDecimal getR71_margin_pro() {
+			return r71_margin_pro;
+		}
+		public void setR71_margin_pro(BigDecimal r71_margin_pro) {
+			this.r71_margin_pro = r71_margin_pro;
+		}
+		public BigDecimal getR71_book_expo() {
+			return r71_book_expo;
+		}
+		public void setR71_book_expo(BigDecimal r71_book_expo) {
+			this.r71_book_expo = r71_book_expo;
+		}
+		public BigDecimal getR71_ccf_cont() {
+			return r71_ccf_cont;
+		}
+		public void setR71_ccf_cont(BigDecimal r71_ccf_cont) {
+			this.r71_ccf_cont = r71_ccf_cont;
+		}
+		public BigDecimal getR71_equiv_value() {
+			return r71_equiv_value;
+		}
+		public void setR71_equiv_value(BigDecimal r71_equiv_value) {
+			this.r71_equiv_value = r71_equiv_value;
+		}
+		public BigDecimal getR71_rw_obligant() {
+			return r71_rw_obligant;
+		}
+		public void setR71_rw_obligant(BigDecimal r71_rw_obligant) {
+			this.r71_rw_obligant = r71_rw_obligant;
+		}
+		public BigDecimal getR71_rav() {
+			return r71_rav;
+		}
+		public void setR71_rav(BigDecimal r71_rav) {
+			this.r71_rav = r71_rav;
+		}
+		public String getR72_product() {
+			return r72_product;
+		}
+		public void setR72_product(String r72_product) {
+			this.r72_product = r72_product;
+		}
+		public String getR72_client_grp() {
+			return r72_client_grp;
+		}
+		public void setR72_client_grp(String r72_client_grp) {
+			this.r72_client_grp = r72_client_grp;
+		}
+		public BigDecimal getR72_total_book_expo() {
+			return r72_total_book_expo;
+		}
+		public void setR72_total_book_expo(BigDecimal r72_total_book_expo) {
+			this.r72_total_book_expo = r72_total_book_expo;
+		}
+		public BigDecimal getR72_margin_pro() {
+			return r72_margin_pro;
+		}
+		public void setR72_margin_pro(BigDecimal r72_margin_pro) {
+			this.r72_margin_pro = r72_margin_pro;
+		}
+		public BigDecimal getR72_book_expo() {
+			return r72_book_expo;
+		}
+		public void setR72_book_expo(BigDecimal r72_book_expo) {
+			this.r72_book_expo = r72_book_expo;
+		}
+		public BigDecimal getR72_ccf_cont() {
+			return r72_ccf_cont;
+		}
+		public void setR72_ccf_cont(BigDecimal r72_ccf_cont) {
+			this.r72_ccf_cont = r72_ccf_cont;
+		}
+		public BigDecimal getR72_equiv_value() {
+			return r72_equiv_value;
+		}
+		public void setR72_equiv_value(BigDecimal r72_equiv_value) {
+			this.r72_equiv_value = r72_equiv_value;
+		}
+		public BigDecimal getR72_rw_obligant() {
+			return r72_rw_obligant;
+		}
+		public void setR72_rw_obligant(BigDecimal r72_rw_obligant) {
+			this.r72_rw_obligant = r72_rw_obligant;
+		}
+		public BigDecimal getR72_rav() {
+			return r72_rav;
+		}
+		public void setR72_rav(BigDecimal r72_rav) {
+			this.r72_rav = r72_rav;
+		}
+		public String getR73_product() {
+			return r73_product;
+		}
+		public void setR73_product(String r73_product) {
+			this.r73_product = r73_product;
+		}
+		public String getR73_client_grp() {
+			return r73_client_grp;
+		}
+		public void setR73_client_grp(String r73_client_grp) {
+			this.r73_client_grp = r73_client_grp;
+		}
+		public BigDecimal getR73_total_book_expo() {
+			return r73_total_book_expo;
+		}
+		public void setR73_total_book_expo(BigDecimal r73_total_book_expo) {
+			this.r73_total_book_expo = r73_total_book_expo;
+		}
+		public BigDecimal getR73_margin_pro() {
+			return r73_margin_pro;
+		}
+		public void setR73_margin_pro(BigDecimal r73_margin_pro) {
+			this.r73_margin_pro = r73_margin_pro;
+		}
+		public BigDecimal getR73_book_expo() {
+			return r73_book_expo;
+		}
+		public void setR73_book_expo(BigDecimal r73_book_expo) {
+			this.r73_book_expo = r73_book_expo;
+		}
+		public BigDecimal getR73_ccf_cont() {
+			return r73_ccf_cont;
+		}
+		public void setR73_ccf_cont(BigDecimal r73_ccf_cont) {
+			this.r73_ccf_cont = r73_ccf_cont;
+		}
+		public BigDecimal getR73_equiv_value() {
+			return r73_equiv_value;
+		}
+		public void setR73_equiv_value(BigDecimal r73_equiv_value) {
+			this.r73_equiv_value = r73_equiv_value;
+		}
+		public BigDecimal getR73_rw_obligant() {
+			return r73_rw_obligant;
+		}
+		public void setR73_rw_obligant(BigDecimal r73_rw_obligant) {
+			this.r73_rw_obligant = r73_rw_obligant;
+		}
+		public BigDecimal getR73_rav() {
+			return r73_rav;
+		}
+		public void setR73_rav(BigDecimal r73_rav) {
+			this.r73_rav = r73_rav;
+		}
+		public String getR74_product() {
+			return r74_product;
+		}
+		public void setR74_product(String r74_product) {
+			this.r74_product = r74_product;
+		}
+		public String getR74_client_grp() {
+			return r74_client_grp;
+		}
+		public void setR74_client_grp(String r74_client_grp) {
+			this.r74_client_grp = r74_client_grp;
+		}
+		public BigDecimal getR74_total_book_expo() {
+			return r74_total_book_expo;
+		}
+		public void setR74_total_book_expo(BigDecimal r74_total_book_expo) {
+			this.r74_total_book_expo = r74_total_book_expo;
+		}
+		public BigDecimal getR74_margin_pro() {
+			return r74_margin_pro;
+		}
+		public void setR74_margin_pro(BigDecimal r74_margin_pro) {
+			this.r74_margin_pro = r74_margin_pro;
+		}
+		public BigDecimal getR74_book_expo() {
+			return r74_book_expo;
+		}
+		public void setR74_book_expo(BigDecimal r74_book_expo) {
+			this.r74_book_expo = r74_book_expo;
+		}
+		public BigDecimal getR74_ccf_cont() {
+			return r74_ccf_cont;
+		}
+		public void setR74_ccf_cont(BigDecimal r74_ccf_cont) {
+			this.r74_ccf_cont = r74_ccf_cont;
+		}
+		public BigDecimal getR74_equiv_value() {
+			return r74_equiv_value;
+		}
+		public void setR74_equiv_value(BigDecimal r74_equiv_value) {
+			this.r74_equiv_value = r74_equiv_value;
+		}
+		public BigDecimal getR74_rw_obligant() {
+			return r74_rw_obligant;
+		}
+		public void setR74_rw_obligant(BigDecimal r74_rw_obligant) {
+			this.r74_rw_obligant = r74_rw_obligant;
+		}
+		public BigDecimal getR74_rav() {
+			return r74_rav;
+		}
+		public void setR74_rav(BigDecimal r74_rav) {
+			this.r74_rav = r74_rav;
+		}
+		public String getR75_product() {
+			return r75_product;
+		}
+		public void setR75_product(String r75_product) {
+			this.r75_product = r75_product;
+		}
+		public String getR75_client_grp() {
+			return r75_client_grp;
+		}
+		public void setR75_client_grp(String r75_client_grp) {
+			this.r75_client_grp = r75_client_grp;
+		}
+		public BigDecimal getR75_total_book_expo() {
+			return r75_total_book_expo;
+		}
+		public void setR75_total_book_expo(BigDecimal r75_total_book_expo) {
+			this.r75_total_book_expo = r75_total_book_expo;
+		}
+		public BigDecimal getR75_margin_pro() {
+			return r75_margin_pro;
+		}
+		public void setR75_margin_pro(BigDecimal r75_margin_pro) {
+			this.r75_margin_pro = r75_margin_pro;
+		}
+		public BigDecimal getR75_book_expo() {
+			return r75_book_expo;
+		}
+		public void setR75_book_expo(BigDecimal r75_book_expo) {
+			this.r75_book_expo = r75_book_expo;
+		}
+		public BigDecimal getR75_ccf_cont() {
+			return r75_ccf_cont;
+		}
+		public void setR75_ccf_cont(BigDecimal r75_ccf_cont) {
+			this.r75_ccf_cont = r75_ccf_cont;
+		}
+		public BigDecimal getR75_equiv_value() {
+			return r75_equiv_value;
+		}
+		public void setR75_equiv_value(BigDecimal r75_equiv_value) {
+			this.r75_equiv_value = r75_equiv_value;
+		}
+		public BigDecimal getR75_rw_obligant() {
+			return r75_rw_obligant;
+		}
+		public void setR75_rw_obligant(BigDecimal r75_rw_obligant) {
+			this.r75_rw_obligant = r75_rw_obligant;
+		}
+		public BigDecimal getR75_rav() {
+			return r75_rav;
+		}
+		public void setR75_rav(BigDecimal r75_rav) {
+			this.r75_rav = r75_rav;
+		}
+		public String getR76_product() {
+			return r76_product;
+		}
+		public void setR76_product(String r76_product) {
+			this.r76_product = r76_product;
+		}
+		public String getR76_client_grp() {
+			return r76_client_grp;
+		}
+		public void setR76_client_grp(String r76_client_grp) {
+			this.r76_client_grp = r76_client_grp;
+		}
+		public BigDecimal getR76_total_book_expo() {
+			return r76_total_book_expo;
+		}
+		public void setR76_total_book_expo(BigDecimal r76_total_book_expo) {
+			this.r76_total_book_expo = r76_total_book_expo;
+		}
+		public BigDecimal getR76_margin_pro() {
+			return r76_margin_pro;
+		}
+		public void setR76_margin_pro(BigDecimal r76_margin_pro) {
+			this.r76_margin_pro = r76_margin_pro;
+		}
+		public BigDecimal getR76_book_expo() {
+			return r76_book_expo;
+		}
+		public void setR76_book_expo(BigDecimal r76_book_expo) {
+			this.r76_book_expo = r76_book_expo;
+		}
+		public BigDecimal getR76_ccf_cont() {
+			return r76_ccf_cont;
+		}
+		public void setR76_ccf_cont(BigDecimal r76_ccf_cont) {
+			this.r76_ccf_cont = r76_ccf_cont;
+		}
+		public BigDecimal getR76_equiv_value() {
+			return r76_equiv_value;
+		}
+		public void setR76_equiv_value(BigDecimal r76_equiv_value) {
+			this.r76_equiv_value = r76_equiv_value;
+		}
+		public BigDecimal getR76_rw_obligant() {
+			return r76_rw_obligant;
+		}
+		public void setR76_rw_obligant(BigDecimal r76_rw_obligant) {
+			this.r76_rw_obligant = r76_rw_obligant;
+		}
+		public BigDecimal getR76_rav() {
+			return r76_rav;
+		}
+		public void setR76_rav(BigDecimal r76_rav) {
+			this.r76_rav = r76_rav;
+		}
+		public String getR77_product() {
+			return r77_product;
+		}
+		public void setR77_product(String r77_product) {
+			this.r77_product = r77_product;
+		}
+		public String getR77_client_grp() {
+			return r77_client_grp;
+		}
+		public void setR77_client_grp(String r77_client_grp) {
+			this.r77_client_grp = r77_client_grp;
+		}
+		public BigDecimal getR77_total_book_expo() {
+			return r77_total_book_expo;
+		}
+		public void setR77_total_book_expo(BigDecimal r77_total_book_expo) {
+			this.r77_total_book_expo = r77_total_book_expo;
+		}
+		public BigDecimal getR77_margin_pro() {
+			return r77_margin_pro;
+		}
+		public void setR77_margin_pro(BigDecimal r77_margin_pro) {
+			this.r77_margin_pro = r77_margin_pro;
+		}
+		public BigDecimal getR77_book_expo() {
+			return r77_book_expo;
+		}
+		public void setR77_book_expo(BigDecimal r77_book_expo) {
+			this.r77_book_expo = r77_book_expo;
+		}
+		public BigDecimal getR77_ccf_cont() {
+			return r77_ccf_cont;
+		}
+		public void setR77_ccf_cont(BigDecimal r77_ccf_cont) {
+			this.r77_ccf_cont = r77_ccf_cont;
+		}
+		public BigDecimal getR77_equiv_value() {
+			return r77_equiv_value;
+		}
+		public void setR77_equiv_value(BigDecimal r77_equiv_value) {
+			this.r77_equiv_value = r77_equiv_value;
+		}
+		public BigDecimal getR77_rw_obligant() {
+			return r77_rw_obligant;
+		}
+		public void setR77_rw_obligant(BigDecimal r77_rw_obligant) {
+			this.r77_rw_obligant = r77_rw_obligant;
+		}
+		public BigDecimal getR77_rav() {
+			return r77_rav;
+		}
+		public void setR77_rav(BigDecimal r77_rav) {
+			this.r77_rav = r77_rav;
+		}
+		public String getR78_product() {
+			return r78_product;
+		}
+		public void setR78_product(String r78_product) {
+			this.r78_product = r78_product;
+		}
+		public String getR78_client_grp() {
+			return r78_client_grp;
+		}
+		public void setR78_client_grp(String r78_client_grp) {
+			this.r78_client_grp = r78_client_grp;
+		}
+		public BigDecimal getR78_total_book_expo() {
+			return r78_total_book_expo;
+		}
+		public void setR78_total_book_expo(BigDecimal r78_total_book_expo) {
+			this.r78_total_book_expo = r78_total_book_expo;
+		}
+		public BigDecimal getR78_margin_pro() {
+			return r78_margin_pro;
+		}
+		public void setR78_margin_pro(BigDecimal r78_margin_pro) {
+			this.r78_margin_pro = r78_margin_pro;
+		}
+		public BigDecimal getR78_book_expo() {
+			return r78_book_expo;
+		}
+		public void setR78_book_expo(BigDecimal r78_book_expo) {
+			this.r78_book_expo = r78_book_expo;
+		}
+		public BigDecimal getR78_ccf_cont() {
+			return r78_ccf_cont;
+		}
+		public void setR78_ccf_cont(BigDecimal r78_ccf_cont) {
+			this.r78_ccf_cont = r78_ccf_cont;
+		}
+		public BigDecimal getR78_equiv_value() {
+			return r78_equiv_value;
+		}
+		public void setR78_equiv_value(BigDecimal r78_equiv_value) {
+			this.r78_equiv_value = r78_equiv_value;
+		}
+		public BigDecimal getR78_rw_obligant() {
+			return r78_rw_obligant;
+		}
+		public void setR78_rw_obligant(BigDecimal r78_rw_obligant) {
+			this.r78_rw_obligant = r78_rw_obligant;
+		}
+		public BigDecimal getR78_rav() {
+			return r78_rav;
+		}
+		public void setR78_rav(BigDecimal r78_rav) {
+			this.r78_rav = r78_rav;
+		}
+		public String getR79_product() {
+			return r79_product;
+		}
+		public void setR79_product(String r79_product) {
+			this.r79_product = r79_product;
+		}
+		public String getR79_client_grp() {
+			return r79_client_grp;
+		}
+		public void setR79_client_grp(String r79_client_grp) {
+			this.r79_client_grp = r79_client_grp;
+		}
+		public BigDecimal getR79_total_book_expo() {
+			return r79_total_book_expo;
+		}
+		public void setR79_total_book_expo(BigDecimal r79_total_book_expo) {
+			this.r79_total_book_expo = r79_total_book_expo;
+		}
+		public BigDecimal getR79_margin_pro() {
+			return r79_margin_pro;
+		}
+		public void setR79_margin_pro(BigDecimal r79_margin_pro) {
+			this.r79_margin_pro = r79_margin_pro;
+		}
+		public BigDecimal getR79_book_expo() {
+			return r79_book_expo;
+		}
+		public void setR79_book_expo(BigDecimal r79_book_expo) {
+			this.r79_book_expo = r79_book_expo;
+		}
+		public BigDecimal getR79_ccf_cont() {
+			return r79_ccf_cont;
+		}
+		public void setR79_ccf_cont(BigDecimal r79_ccf_cont) {
+			this.r79_ccf_cont = r79_ccf_cont;
+		}
+		public BigDecimal getR79_equiv_value() {
+			return r79_equiv_value;
+		}
+		public void setR79_equiv_value(BigDecimal r79_equiv_value) {
+			this.r79_equiv_value = r79_equiv_value;
+		}
+		public BigDecimal getR79_rw_obligant() {
+			return r79_rw_obligant;
+		}
+		public void setR79_rw_obligant(BigDecimal r79_rw_obligant) {
+			this.r79_rw_obligant = r79_rw_obligant;
+		}
+		public BigDecimal getR79_rav() {
+			return r79_rav;
+		}
+		public void setR79_rav(BigDecimal r79_rav) {
+			this.r79_rav = r79_rav;
+		}
+		public String getR80_product() {
+			return r80_product;
+		}
+		public void setR80_product(String r80_product) {
+			this.r80_product = r80_product;
+		}
+		public String getR80_client_grp() {
+			return r80_client_grp;
+		}
+		public void setR80_client_grp(String r80_client_grp) {
+			this.r80_client_grp = r80_client_grp;
+		}
+		public BigDecimal getR80_total_book_expo() {
+			return r80_total_book_expo;
+		}
+		public void setR80_total_book_expo(BigDecimal r80_total_book_expo) {
+			this.r80_total_book_expo = r80_total_book_expo;
+		}
+		public BigDecimal getR80_margin_pro() {
+			return r80_margin_pro;
+		}
+		public void setR80_margin_pro(BigDecimal r80_margin_pro) {
+			this.r80_margin_pro = r80_margin_pro;
+		}
+		public BigDecimal getR80_book_expo() {
+			return r80_book_expo;
+		}
+		public void setR80_book_expo(BigDecimal r80_book_expo) {
+			this.r80_book_expo = r80_book_expo;
+		}
+		public BigDecimal getR80_ccf_cont() {
+			return r80_ccf_cont;
+		}
+		public void setR80_ccf_cont(BigDecimal r80_ccf_cont) {
+			this.r80_ccf_cont = r80_ccf_cont;
+		}
+		public BigDecimal getR80_equiv_value() {
+			return r80_equiv_value;
+		}
+		public void setR80_equiv_value(BigDecimal r80_equiv_value) {
+			this.r80_equiv_value = r80_equiv_value;
+		}
+		public BigDecimal getR80_rw_obligant() {
+			return r80_rw_obligant;
+		}
+		public void setR80_rw_obligant(BigDecimal r80_rw_obligant) {
+			this.r80_rw_obligant = r80_rw_obligant;
+		}
+		public BigDecimal getR80_rav() {
+			return r80_rav;
+		}
+		public void setR80_rav(BigDecimal r80_rav) {
+			this.r80_rav = r80_rav;
+		}
+		public String getR81_product() {
+			return r81_product;
+		}
+		public void setR81_product(String r81_product) {
+			this.r81_product = r81_product;
+		}
+		public String getR81_client_grp() {
+			return r81_client_grp;
+		}
+		public void setR81_client_grp(String r81_client_grp) {
+			this.r81_client_grp = r81_client_grp;
+		}
+		public BigDecimal getR81_total_book_expo() {
+			return r81_total_book_expo;
+		}
+		public void setR81_total_book_expo(BigDecimal r81_total_book_expo) {
+			this.r81_total_book_expo = r81_total_book_expo;
+		}
+		public BigDecimal getR81_margin_pro() {
+			return r81_margin_pro;
+		}
+		public void setR81_margin_pro(BigDecimal r81_margin_pro) {
+			this.r81_margin_pro = r81_margin_pro;
+		}
+		public BigDecimal getR81_book_expo() {
+			return r81_book_expo;
+		}
+		public void setR81_book_expo(BigDecimal r81_book_expo) {
+			this.r81_book_expo = r81_book_expo;
+		}
+		public BigDecimal getR81_ccf_cont() {
+			return r81_ccf_cont;
+		}
+		public void setR81_ccf_cont(BigDecimal r81_ccf_cont) {
+			this.r81_ccf_cont = r81_ccf_cont;
+		}
+		public BigDecimal getR81_equiv_value() {
+			return r81_equiv_value;
+		}
+		public void setR81_equiv_value(BigDecimal r81_equiv_value) {
+			this.r81_equiv_value = r81_equiv_value;
+		}
+		public BigDecimal getR81_rw_obligant() {
+			return r81_rw_obligant;
+		}
+		public void setR81_rw_obligant(BigDecimal r81_rw_obligant) {
+			this.r81_rw_obligant = r81_rw_obligant;
+		}
+		public BigDecimal getR81_rav() {
+			return r81_rav;
+		}
+		public void setR81_rav(BigDecimal r81_rav) {
+			this.r81_rav = r81_rav;
+		}
+		public String getR82_product() {
+			return r82_product;
+		}
+		public void setR82_product(String r82_product) {
+			this.r82_product = r82_product;
+		}
+		public String getR82_client_grp() {
+			return r82_client_grp;
+		}
+		public void setR82_client_grp(String r82_client_grp) {
+			this.r82_client_grp = r82_client_grp;
+		}
+		public BigDecimal getR82_total_book_expo() {
+			return r82_total_book_expo;
+		}
+		public void setR82_total_book_expo(BigDecimal r82_total_book_expo) {
+			this.r82_total_book_expo = r82_total_book_expo;
+		}
+		public BigDecimal getR82_margin_pro() {
+			return r82_margin_pro;
+		}
+		public void setR82_margin_pro(BigDecimal r82_margin_pro) {
+			this.r82_margin_pro = r82_margin_pro;
+		}
+		public BigDecimal getR82_book_expo() {
+			return r82_book_expo;
+		}
+		public void setR82_book_expo(BigDecimal r82_book_expo) {
+			this.r82_book_expo = r82_book_expo;
+		}
+		public BigDecimal getR82_ccf_cont() {
+			return r82_ccf_cont;
+		}
+		public void setR82_ccf_cont(BigDecimal r82_ccf_cont) {
+			this.r82_ccf_cont = r82_ccf_cont;
+		}
+		public BigDecimal getR82_equiv_value() {
+			return r82_equiv_value;
+		}
+		public void setR82_equiv_value(BigDecimal r82_equiv_value) {
+			this.r82_equiv_value = r82_equiv_value;
+		}
+		public BigDecimal getR82_rw_obligant() {
+			return r82_rw_obligant;
+		}
+		public void setR82_rw_obligant(BigDecimal r82_rw_obligant) {
+			this.r82_rw_obligant = r82_rw_obligant;
+		}
+		public BigDecimal getR82_rav() {
+			return r82_rav;
+		}
+		public void setR82_rav(BigDecimal r82_rav) {
+			this.r82_rav = r82_rav;
+		}
+		public String getR83_product() {
+			return r83_product;
+		}
+		public void setR83_product(String r83_product) {
+			this.r83_product = r83_product;
+		}
+		public String getR83_client_grp() {
+			return r83_client_grp;
+		}
+		public void setR83_client_grp(String r83_client_grp) {
+			this.r83_client_grp = r83_client_grp;
+		}
+		public BigDecimal getR83_total_book_expo() {
+			return r83_total_book_expo;
+		}
+		public void setR83_total_book_expo(BigDecimal r83_total_book_expo) {
+			this.r83_total_book_expo = r83_total_book_expo;
+		}
+		public BigDecimal getR83_margin_pro() {
+			return r83_margin_pro;
+		}
+		public void setR83_margin_pro(BigDecimal r83_margin_pro) {
+			this.r83_margin_pro = r83_margin_pro;
+		}
+		public BigDecimal getR83_book_expo() {
+			return r83_book_expo;
+		}
+		public void setR83_book_expo(BigDecimal r83_book_expo) {
+			this.r83_book_expo = r83_book_expo;
+		}
+		public BigDecimal getR83_ccf_cont() {
+			return r83_ccf_cont;
+		}
+		public void setR83_ccf_cont(BigDecimal r83_ccf_cont) {
+			this.r83_ccf_cont = r83_ccf_cont;
+		}
+		public BigDecimal getR83_equiv_value() {
+			return r83_equiv_value;
+		}
+		public void setR83_equiv_value(BigDecimal r83_equiv_value) {
+			this.r83_equiv_value = r83_equiv_value;
+		}
+		public BigDecimal getR83_rw_obligant() {
+			return r83_rw_obligant;
+		}
+		public void setR83_rw_obligant(BigDecimal r83_rw_obligant) {
+			this.r83_rw_obligant = r83_rw_obligant;
+		}
+		public BigDecimal getR83_rav() {
+			return r83_rav;
+		}
+		public void setR83_rav(BigDecimal r83_rav) {
+			this.r83_rav = r83_rav;
+		}
+		public String getR84_product() {
+			return r84_product;
+		}
+		public void setR84_product(String r84_product) {
+			this.r84_product = r84_product;
+		}
+		public String getR84_client_grp() {
+			return r84_client_grp;
+		}
+		public void setR84_client_grp(String r84_client_grp) {
+			this.r84_client_grp = r84_client_grp;
+		}
+		public BigDecimal getR84_total_book_expo() {
+			return r84_total_book_expo;
+		}
+		public void setR84_total_book_expo(BigDecimal r84_total_book_expo) {
+			this.r84_total_book_expo = r84_total_book_expo;
+		}
+		public BigDecimal getR84_margin_pro() {
+			return r84_margin_pro;
+		}
+		public void setR84_margin_pro(BigDecimal r84_margin_pro) {
+			this.r84_margin_pro = r84_margin_pro;
+		}
+		public BigDecimal getR84_book_expo() {
+			return r84_book_expo;
+		}
+		public void setR84_book_expo(BigDecimal r84_book_expo) {
+			this.r84_book_expo = r84_book_expo;
+		}
+		public BigDecimal getR84_ccf_cont() {
+			return r84_ccf_cont;
+		}
+		public void setR84_ccf_cont(BigDecimal r84_ccf_cont) {
+			this.r84_ccf_cont = r84_ccf_cont;
+		}
+		public BigDecimal getR84_equiv_value() {
+			return r84_equiv_value;
+		}
+		public void setR84_equiv_value(BigDecimal r84_equiv_value) {
+			this.r84_equiv_value = r84_equiv_value;
+		}
+		public BigDecimal getR84_rw_obligant() {
+			return r84_rw_obligant;
+		}
+		public void setR84_rw_obligant(BigDecimal r84_rw_obligant) {
+			this.r84_rw_obligant = r84_rw_obligant;
+		}
+		public BigDecimal getR84_rav() {
+			return r84_rav;
+		}
+		public void setR84_rav(BigDecimal r84_rav) {
+			this.r84_rav = r84_rav;
+		}
+		public String getR100_product() {
+			return r100_product;
+		}
+		public void setR100_product(String r100_product) {
+			this.r100_product = r100_product;
+		}
+		public String getR100_client_grp() {
+			return r100_client_grp;
+		}
+		public void setR100_client_grp(String r100_client_grp) {
+			this.r100_client_grp = r100_client_grp;
+		}
+		public BigDecimal getR100_total_book_expo() {
+			return r100_total_book_expo;
+		}
+		public void setR100_total_book_expo(BigDecimal r100_total_book_expo) {
+			this.r100_total_book_expo = r100_total_book_expo;
+		}
+		public BigDecimal getR100_margin_pro() {
+			return r100_margin_pro;
+		}
+		public void setR100_margin_pro(BigDecimal r100_margin_pro) {
+			this.r100_margin_pro = r100_margin_pro;
+		}
+		public BigDecimal getR100_book_expo() {
+			return r100_book_expo;
+		}
+		public void setR100_book_expo(BigDecimal r100_book_expo) {
+			this.r100_book_expo = r100_book_expo;
+		}
+		public BigDecimal getR100_ccf_cont() {
+			return r100_ccf_cont;
+		}
+		public void setR100_ccf_cont(BigDecimal r100_ccf_cont) {
+			this.r100_ccf_cont = r100_ccf_cont;
+		}
+		public BigDecimal getR100_equiv_value() {
+			return r100_equiv_value;
+		}
+		public void setR100_equiv_value(BigDecimal r100_equiv_value) {
+			this.r100_equiv_value = r100_equiv_value;
+		}
+		public BigDecimal getR100_rw_obligant() {
+			return r100_rw_obligant;
+		}
+		public void setR100_rw_obligant(BigDecimal r100_rw_obligant) {
+			this.r100_rw_obligant = r100_rw_obligant;
+		}
+		public BigDecimal getR100_rav() {
+			return r100_rav;
+		}
+		public void setR100_rav(BigDecimal r100_rav) {
+			this.r100_rav = r100_rav;
+		}
+		public String getR101_product() {
+			return r101_product;
+		}
+		public void setR101_product(String r101_product) {
+			this.r101_product = r101_product;
+		}
+		public String getR101_client_grp() {
+			return r101_client_grp;
+		}
+		public void setR101_client_grp(String r101_client_grp) {
+			this.r101_client_grp = r101_client_grp;
+		}
+		public BigDecimal getR101_total_book_expo() {
+			return r101_total_book_expo;
+		}
+		public void setR101_total_book_expo(BigDecimal r101_total_book_expo) {
+			this.r101_total_book_expo = r101_total_book_expo;
+		}
+		public BigDecimal getR101_margin_pro() {
+			return r101_margin_pro;
+		}
+		public void setR101_margin_pro(BigDecimal r101_margin_pro) {
+			this.r101_margin_pro = r101_margin_pro;
+		}
+		public BigDecimal getR101_book_expo() {
+			return r101_book_expo;
+		}
+		public void setR101_book_expo(BigDecimal r101_book_expo) {
+			this.r101_book_expo = r101_book_expo;
+		}
+		public BigDecimal getR101_ccf_cont() {
+			return r101_ccf_cont;
+		}
+		public void setR101_ccf_cont(BigDecimal r101_ccf_cont) {
+			this.r101_ccf_cont = r101_ccf_cont;
+		}
+		public BigDecimal getR101_equiv_value() {
+			return r101_equiv_value;
+		}
+		public void setR101_equiv_value(BigDecimal r101_equiv_value) {
+			this.r101_equiv_value = r101_equiv_value;
+		}
+		public BigDecimal getR101_rw_obligant() {
+			return r101_rw_obligant;
+		}
+		public void setR101_rw_obligant(BigDecimal r101_rw_obligant) {
+			this.r101_rw_obligant = r101_rw_obligant;
+		}
+		public BigDecimal getR101_rav() {
+			return r101_rav;
+		}
+		public void setR101_rav(BigDecimal r101_rav) {
+			this.r101_rav = r101_rav;
+		}
+		public String getR102_product() {
+			return r102_product;
+		}
+		public void setR102_product(String r102_product) {
+			this.r102_product = r102_product;
+		}
+		public String getR102_client_grp() {
+			return r102_client_grp;
+		}
+		public void setR102_client_grp(String r102_client_grp) {
+			this.r102_client_grp = r102_client_grp;
+		}
+		public BigDecimal getR102_total_book_expo() {
+			return r102_total_book_expo;
+		}
+		public void setR102_total_book_expo(BigDecimal r102_total_book_expo) {
+			this.r102_total_book_expo = r102_total_book_expo;
+		}
+		public BigDecimal getR102_margin_pro() {
+			return r102_margin_pro;
+		}
+		public void setR102_margin_pro(BigDecimal r102_margin_pro) {
+			this.r102_margin_pro = r102_margin_pro;
+		}
+		public BigDecimal getR102_book_expo() {
+			return r102_book_expo;
+		}
+		public void setR102_book_expo(BigDecimal r102_book_expo) {
+			this.r102_book_expo = r102_book_expo;
+		}
+		public BigDecimal getR102_ccf_cont() {
+			return r102_ccf_cont;
+		}
+		public void setR102_ccf_cont(BigDecimal r102_ccf_cont) {
+			this.r102_ccf_cont = r102_ccf_cont;
+		}
+		public BigDecimal getR102_equiv_value() {
+			return r102_equiv_value;
+		}
+		public void setR102_equiv_value(BigDecimal r102_equiv_value) {
+			this.r102_equiv_value = r102_equiv_value;
+		}
+		public BigDecimal getR102_rw_obligant() {
+			return r102_rw_obligant;
+		}
+		public void setR102_rw_obligant(BigDecimal r102_rw_obligant) {
+			this.r102_rw_obligant = r102_rw_obligant;
+		}
+		public BigDecimal getR102_rav() {
+			return r102_rav;
+		}
+		public void setR102_rav(BigDecimal r102_rav) {
+			this.r102_rav = r102_rav;
+		}
+		public String getR103_product() {
+			return r103_product;
+		}
+		public void setR103_product(String r103_product) {
+			this.r103_product = r103_product;
+		}
+		public String getR103_client_grp() {
+			return r103_client_grp;
+		}
+		public void setR103_client_grp(String r103_client_grp) {
+			this.r103_client_grp = r103_client_grp;
+		}
+		public BigDecimal getR103_total_book_expo() {
+			return r103_total_book_expo;
+		}
+		public void setR103_total_book_expo(BigDecimal r103_total_book_expo) {
+			this.r103_total_book_expo = r103_total_book_expo;
+		}
+		public BigDecimal getR103_margin_pro() {
+			return r103_margin_pro;
+		}
+		public void setR103_margin_pro(BigDecimal r103_margin_pro) {
+			this.r103_margin_pro = r103_margin_pro;
+		}
+		public BigDecimal getR103_book_expo() {
+			return r103_book_expo;
+		}
+		public void setR103_book_expo(BigDecimal r103_book_expo) {
+			this.r103_book_expo = r103_book_expo;
+		}
+		public BigDecimal getR103_ccf_cont() {
+			return r103_ccf_cont;
+		}
+		public void setR103_ccf_cont(BigDecimal r103_ccf_cont) {
+			this.r103_ccf_cont = r103_ccf_cont;
+		}
+		public BigDecimal getR103_equiv_value() {
+			return r103_equiv_value;
+		}
+		public void setR103_equiv_value(BigDecimal r103_equiv_value) {
+			this.r103_equiv_value = r103_equiv_value;
+		}
+		public BigDecimal getR103_rw_obligant() {
+			return r103_rw_obligant;
+		}
+		public void setR103_rw_obligant(BigDecimal r103_rw_obligant) {
+			this.r103_rw_obligant = r103_rw_obligant;
+		}
+		public BigDecimal getR103_rav() {
+			return r103_rav;
+		}
+		public void setR103_rav(BigDecimal r103_rav) {
+			this.r103_rav = r103_rav;
+		}
+		public String getR104_product() {
+			return r104_product;
+		}
+		public void setR104_product(String r104_product) {
+			this.r104_product = r104_product;
+		}
+		public String getR104_client_grp() {
+			return r104_client_grp;
+		}
+		public void setR104_client_grp(String r104_client_grp) {
+			this.r104_client_grp = r104_client_grp;
+		}
+		public BigDecimal getR104_total_book_expo() {
+			return r104_total_book_expo;
+		}
+		public void setR104_total_book_expo(BigDecimal r104_total_book_expo) {
+			this.r104_total_book_expo = r104_total_book_expo;
+		}
+		public BigDecimal getR104_margin_pro() {
+			return r104_margin_pro;
+		}
+		public void setR104_margin_pro(BigDecimal r104_margin_pro) {
+			this.r104_margin_pro = r104_margin_pro;
+		}
+		public BigDecimal getR104_book_expo() {
+			return r104_book_expo;
+		}
+		public void setR104_book_expo(BigDecimal r104_book_expo) {
+			this.r104_book_expo = r104_book_expo;
+		}
+		public BigDecimal getR104_ccf_cont() {
+			return r104_ccf_cont;
+		}
+		public void setR104_ccf_cont(BigDecimal r104_ccf_cont) {
+			this.r104_ccf_cont = r104_ccf_cont;
+		}
+		public BigDecimal getR104_equiv_value() {
+			return r104_equiv_value;
+		}
+		public void setR104_equiv_value(BigDecimal r104_equiv_value) {
+			this.r104_equiv_value = r104_equiv_value;
+		}
+		public BigDecimal getR104_rw_obligant() {
+			return r104_rw_obligant;
+		}
+		public void setR104_rw_obligant(BigDecimal r104_rw_obligant) {
+			this.r104_rw_obligant = r104_rw_obligant;
+		}
+		public BigDecimal getR104_rav() {
+			return r104_rav;
+		}
+		public void setR104_rav(BigDecimal r104_rav) {
+			this.r104_rav = r104_rav;
+		}
+		public String getR105_product() {
+			return r105_product;
+		}
+		public void setR105_product(String r105_product) {
+			this.r105_product = r105_product;
+		}
+		public String getR105_client_grp() {
+			return r105_client_grp;
+		}
+		public void setR105_client_grp(String r105_client_grp) {
+			this.r105_client_grp = r105_client_grp;
+		}
+		public BigDecimal getR105_total_book_expo() {
+			return r105_total_book_expo;
+		}
+		public void setR105_total_book_expo(BigDecimal r105_total_book_expo) {
+			this.r105_total_book_expo = r105_total_book_expo;
+		}
+		public BigDecimal getR105_margin_pro() {
+			return r105_margin_pro;
+		}
+		public void setR105_margin_pro(BigDecimal r105_margin_pro) {
+			this.r105_margin_pro = r105_margin_pro;
+		}
+		public BigDecimal getR105_book_expo() {
+			return r105_book_expo;
+		}
+		public void setR105_book_expo(BigDecimal r105_book_expo) {
+			this.r105_book_expo = r105_book_expo;
+		}
+		public BigDecimal getR105_ccf_cont() {
+			return r105_ccf_cont;
+		}
+		public void setR105_ccf_cont(BigDecimal r105_ccf_cont) {
+			this.r105_ccf_cont = r105_ccf_cont;
+		}
+		public BigDecimal getR105_equiv_value() {
+			return r105_equiv_value;
+		}
+		public void setR105_equiv_value(BigDecimal r105_equiv_value) {
+			this.r105_equiv_value = r105_equiv_value;
+		}
+		public BigDecimal getR105_rw_obligant() {
+			return r105_rw_obligant;
+		}
+		public void setR105_rw_obligant(BigDecimal r105_rw_obligant) {
+			this.r105_rw_obligant = r105_rw_obligant;
+		}
+		public BigDecimal getR105_rav() {
+			return r105_rav;
+		}
+		public void setR105_rav(BigDecimal r105_rav) {
+			this.r105_rav = r105_rav;
+		}
+		public String getR106_product() {
+			return r106_product;
+		}
+		public void setR106_product(String r106_product) {
+			this.r106_product = r106_product;
+		}
+		public String getR106_client_grp() {
+			return r106_client_grp;
+		}
+		public void setR106_client_grp(String r106_client_grp) {
+			this.r106_client_grp = r106_client_grp;
+		}
+		public BigDecimal getR106_total_book_expo() {
+			return r106_total_book_expo;
+		}
+		public void setR106_total_book_expo(BigDecimal r106_total_book_expo) {
+			this.r106_total_book_expo = r106_total_book_expo;
+		}
+		public BigDecimal getR106_margin_pro() {
+			return r106_margin_pro;
+		}
+		public void setR106_margin_pro(BigDecimal r106_margin_pro) {
+			this.r106_margin_pro = r106_margin_pro;
+		}
+		public BigDecimal getR106_book_expo() {
+			return r106_book_expo;
+		}
+		public void setR106_book_expo(BigDecimal r106_book_expo) {
+			this.r106_book_expo = r106_book_expo;
+		}
+		public BigDecimal getR106_ccf_cont() {
+			return r106_ccf_cont;
+		}
+		public void setR106_ccf_cont(BigDecimal r106_ccf_cont) {
+			this.r106_ccf_cont = r106_ccf_cont;
+		}
+		public BigDecimal getR106_equiv_value() {
+			return r106_equiv_value;
+		}
+		public void setR106_equiv_value(BigDecimal r106_equiv_value) {
+			this.r106_equiv_value = r106_equiv_value;
+		}
+		public BigDecimal getR106_rw_obligant() {
+			return r106_rw_obligant;
+		}
+		public void setR106_rw_obligant(BigDecimal r106_rw_obligant) {
+			this.r106_rw_obligant = r106_rw_obligant;
+		}
+		public BigDecimal getR106_rav() {
+			return r106_rav;
+		}
+		public void setR106_rav(BigDecimal r106_rav) {
+			this.r106_rav = r106_rav;
+		}
+		public String getR107_product() {
+			return r107_product;
+		}
+		public void setR107_product(String r107_product) {
+			this.r107_product = r107_product;
+		}
+		public String getR107_client_grp() {
+			return r107_client_grp;
+		}
+		public void setR107_client_grp(String r107_client_grp) {
+			this.r107_client_grp = r107_client_grp;
+		}
+		public BigDecimal getR107_total_book_expo() {
+			return r107_total_book_expo;
+		}
+		public void setR107_total_book_expo(BigDecimal r107_total_book_expo) {
+			this.r107_total_book_expo = r107_total_book_expo;
+		}
+		public BigDecimal getR107_margin_pro() {
+			return r107_margin_pro;
+		}
+		public void setR107_margin_pro(BigDecimal r107_margin_pro) {
+			this.r107_margin_pro = r107_margin_pro;
+		}
+		public BigDecimal getR107_book_expo() {
+			return r107_book_expo;
+		}
+		public void setR107_book_expo(BigDecimal r107_book_expo) {
+			this.r107_book_expo = r107_book_expo;
+		}
+		public BigDecimal getR107_ccf_cont() {
+			return r107_ccf_cont;
+		}
+		public void setR107_ccf_cont(BigDecimal r107_ccf_cont) {
+			this.r107_ccf_cont = r107_ccf_cont;
+		}
+		public BigDecimal getR107_equiv_value() {
+			return r107_equiv_value;
+		}
+		public void setR107_equiv_value(BigDecimal r107_equiv_value) {
+			this.r107_equiv_value = r107_equiv_value;
+		}
+		public BigDecimal getR107_rw_obligant() {
+			return r107_rw_obligant;
+		}
+		public void setR107_rw_obligant(BigDecimal r107_rw_obligant) {
+			this.r107_rw_obligant = r107_rw_obligant;
+		}
+		public BigDecimal getR107_rav() {
+			return r107_rav;
+		}
+		public void setR107_rav(BigDecimal r107_rav) {
+			this.r107_rav = r107_rav;
+		}
+		public String getR108_product() {
+			return r108_product;
+		}
+		public void setR108_product(String r108_product) {
+			this.r108_product = r108_product;
+		}
+		public String getR108_client_grp() {
+			return r108_client_grp;
+		}
+		public void setR108_client_grp(String r108_client_grp) {
+			this.r108_client_grp = r108_client_grp;
+		}
+		public BigDecimal getR108_total_book_expo() {
+			return r108_total_book_expo;
+		}
+		public void setR108_total_book_expo(BigDecimal r108_total_book_expo) {
+			this.r108_total_book_expo = r108_total_book_expo;
+		}
+		public BigDecimal getR108_margin_pro() {
+			return r108_margin_pro;
+		}
+		public void setR108_margin_pro(BigDecimal r108_margin_pro) {
+			this.r108_margin_pro = r108_margin_pro;
+		}
+		public BigDecimal getR108_book_expo() {
+			return r108_book_expo;
+		}
+		public void setR108_book_expo(BigDecimal r108_book_expo) {
+			this.r108_book_expo = r108_book_expo;
+		}
+		public BigDecimal getR108_ccf_cont() {
+			return r108_ccf_cont;
+		}
+		public void setR108_ccf_cont(BigDecimal r108_ccf_cont) {
+			this.r108_ccf_cont = r108_ccf_cont;
+		}
+		public BigDecimal getR108_equiv_value() {
+			return r108_equiv_value;
+		}
+		public void setR108_equiv_value(BigDecimal r108_equiv_value) {
+			this.r108_equiv_value = r108_equiv_value;
+		}
+		public BigDecimal getR108_rw_obligant() {
+			return r108_rw_obligant;
+		}
+		public void setR108_rw_obligant(BigDecimal r108_rw_obligant) {
+			this.r108_rw_obligant = r108_rw_obligant;
+		}
+		public BigDecimal getR108_rav() {
+			return r108_rav;
+		}
+		public void setR108_rav(BigDecimal r108_rav) {
+			this.r108_rav = r108_rav;
+		}
+		public String getR109_product() {
+			return r109_product;
+		}
+		public void setR109_product(String r109_product) {
+			this.r109_product = r109_product;
+		}
+		public String getR109_client_grp() {
+			return r109_client_grp;
+		}
+		public void setR109_client_grp(String r109_client_grp) {
+			this.r109_client_grp = r109_client_grp;
+		}
+		public BigDecimal getR109_total_book_expo() {
+			return r109_total_book_expo;
+		}
+		public void setR109_total_book_expo(BigDecimal r109_total_book_expo) {
+			this.r109_total_book_expo = r109_total_book_expo;
+		}
+		public BigDecimal getR109_margin_pro() {
+			return r109_margin_pro;
+		}
+		public void setR109_margin_pro(BigDecimal r109_margin_pro) {
+			this.r109_margin_pro = r109_margin_pro;
+		}
+		public BigDecimal getR109_book_expo() {
+			return r109_book_expo;
+		}
+		public void setR109_book_expo(BigDecimal r109_book_expo) {
+			this.r109_book_expo = r109_book_expo;
+		}
+		public BigDecimal getR109_ccf_cont() {
+			return r109_ccf_cont;
+		}
+		public void setR109_ccf_cont(BigDecimal r109_ccf_cont) {
+			this.r109_ccf_cont = r109_ccf_cont;
+		}
+		public BigDecimal getR109_equiv_value() {
+			return r109_equiv_value;
+		}
+		public void setR109_equiv_value(BigDecimal r109_equiv_value) {
+			this.r109_equiv_value = r109_equiv_value;
+		}
+		public BigDecimal getR109_rw_obligant() {
+			return r109_rw_obligant;
+		}
+		public void setR109_rw_obligant(BigDecimal r109_rw_obligant) {
+			this.r109_rw_obligant = r109_rw_obligant;
+		}
+		public BigDecimal getR109_rav() {
+			return r109_rav;
+		}
+		public void setR109_rav(BigDecimal r109_rav) {
+			this.r109_rav = r109_rav;
+		}
+		public String getR110_product() {
+			return r110_product;
+		}
+		public void setR110_product(String r110_product) {
+			this.r110_product = r110_product;
+		}
+		public String getR110_client_grp() {
+			return r110_client_grp;
+		}
+		public void setR110_client_grp(String r110_client_grp) {
+			this.r110_client_grp = r110_client_grp;
+		}
+		public BigDecimal getR110_total_book_expo() {
+			return r110_total_book_expo;
+		}
+		public void setR110_total_book_expo(BigDecimal r110_total_book_expo) {
+			this.r110_total_book_expo = r110_total_book_expo;
+		}
+		public BigDecimal getR110_margin_pro() {
+			return r110_margin_pro;
+		}
+		public void setR110_margin_pro(BigDecimal r110_margin_pro) {
+			this.r110_margin_pro = r110_margin_pro;
+		}
+		public BigDecimal getR110_book_expo() {
+			return r110_book_expo;
+		}
+		public void setR110_book_expo(BigDecimal r110_book_expo) {
+			this.r110_book_expo = r110_book_expo;
+		}
+		public BigDecimal getR110_ccf_cont() {
+			return r110_ccf_cont;
+		}
+		public void setR110_ccf_cont(BigDecimal r110_ccf_cont) {
+			this.r110_ccf_cont = r110_ccf_cont;
+		}
+		public BigDecimal getR110_equiv_value() {
+			return r110_equiv_value;
+		}
+		public void setR110_equiv_value(BigDecimal r110_equiv_value) {
+			this.r110_equiv_value = r110_equiv_value;
+		}
+		public BigDecimal getR110_rw_obligant() {
+			return r110_rw_obligant;
+		}
+		public void setR110_rw_obligant(BigDecimal r110_rw_obligant) {
+			this.r110_rw_obligant = r110_rw_obligant;
+		}
+		public BigDecimal getR110_rav() {
+			return r110_rav;
+		}
+		public void setR110_rav(BigDecimal r110_rav) {
+			this.r110_rav = r110_rav;
+		}
+		public String getR111_product() {
+			return r111_product;
+		}
+		public void setR111_product(String r111_product) {
+			this.r111_product = r111_product;
+		}
+		public String getR111_client_grp() {
+			return r111_client_grp;
+		}
+		public void setR111_client_grp(String r111_client_grp) {
+			this.r111_client_grp = r111_client_grp;
+		}
+		public BigDecimal getR111_total_book_expo() {
+			return r111_total_book_expo;
+		}
+		public void setR111_total_book_expo(BigDecimal r111_total_book_expo) {
+			this.r111_total_book_expo = r111_total_book_expo;
+		}
+		public BigDecimal getR111_margin_pro() {
+			return r111_margin_pro;
+		}
+		public void setR111_margin_pro(BigDecimal r111_margin_pro) {
+			this.r111_margin_pro = r111_margin_pro;
+		}
+		public BigDecimal getR111_book_expo() {
+			return r111_book_expo;
+		}
+		public void setR111_book_expo(BigDecimal r111_book_expo) {
+			this.r111_book_expo = r111_book_expo;
+		}
+		public BigDecimal getR111_ccf_cont() {
+			return r111_ccf_cont;
+		}
+		public void setR111_ccf_cont(BigDecimal r111_ccf_cont) {
+			this.r111_ccf_cont = r111_ccf_cont;
+		}
+		public BigDecimal getR111_equiv_value() {
+			return r111_equiv_value;
+		}
+		public void setR111_equiv_value(BigDecimal r111_equiv_value) {
+			this.r111_equiv_value = r111_equiv_value;
+		}
+		public BigDecimal getR111_rw_obligant() {
+			return r111_rw_obligant;
+		}
+		public void setR111_rw_obligant(BigDecimal r111_rw_obligant) {
+			this.r111_rw_obligant = r111_rw_obligant;
+		}
+		public BigDecimal getR111_rav() {
+			return r111_rav;
+		}
+		public void setR111_rav(BigDecimal r111_rav) {
+			this.r111_rav = r111_rav;
+		}
+		public String getR112_product() {
+			return r112_product;
+		}
+		public void setR112_product(String r112_product) {
+			this.r112_product = r112_product;
+		}
+		public String getR112_client_grp() {
+			return r112_client_grp;
+		}
+		public void setR112_client_grp(String r112_client_grp) {
+			this.r112_client_grp = r112_client_grp;
+		}
+		public BigDecimal getR112_total_book_expo() {
+			return r112_total_book_expo;
+		}
+		public void setR112_total_book_expo(BigDecimal r112_total_book_expo) {
+			this.r112_total_book_expo = r112_total_book_expo;
+		}
+		public BigDecimal getR112_margin_pro() {
+			return r112_margin_pro;
+		}
+		public void setR112_margin_pro(BigDecimal r112_margin_pro) {
+			this.r112_margin_pro = r112_margin_pro;
+		}
+		public BigDecimal getR112_book_expo() {
+			return r112_book_expo;
+		}
+		public void setR112_book_expo(BigDecimal r112_book_expo) {
+			this.r112_book_expo = r112_book_expo;
+		}
+		public BigDecimal getR112_ccf_cont() {
+			return r112_ccf_cont;
+		}
+		public void setR112_ccf_cont(BigDecimal r112_ccf_cont) {
+			this.r112_ccf_cont = r112_ccf_cont;
+		}
+		public BigDecimal getR112_equiv_value() {
+			return r112_equiv_value;
+		}
+		public void setR112_equiv_value(BigDecimal r112_equiv_value) {
+			this.r112_equiv_value = r112_equiv_value;
+		}
+		public BigDecimal getR112_rw_obligant() {
+			return r112_rw_obligant;
+		}
+		public void setR112_rw_obligant(BigDecimal r112_rw_obligant) {
+			this.r112_rw_obligant = r112_rw_obligant;
+		}
+		public BigDecimal getR112_rav() {
+			return r112_rav;
+		}
+		public void setR112_rav(BigDecimal r112_rav) {
+			this.r112_rav = r112_rav;
+		}
+		public String getR113_product() {
+			return r113_product;
+		}
+		public void setR113_product(String r113_product) {
+			this.r113_product = r113_product;
+		}
+		public String getR113_client_grp() {
+			return r113_client_grp;
+		}
+		public void setR113_client_grp(String r113_client_grp) {
+			this.r113_client_grp = r113_client_grp;
+		}
+		public BigDecimal getR113_total_book_expo() {
+			return r113_total_book_expo;
+		}
+		public void setR113_total_book_expo(BigDecimal r113_total_book_expo) {
+			this.r113_total_book_expo = r113_total_book_expo;
+		}
+		public BigDecimal getR113_margin_pro() {
+			return r113_margin_pro;
+		}
+		public void setR113_margin_pro(BigDecimal r113_margin_pro) {
+			this.r113_margin_pro = r113_margin_pro;
+		}
+		public BigDecimal getR113_book_expo() {
+			return r113_book_expo;
+		}
+		public void setR113_book_expo(BigDecimal r113_book_expo) {
+			this.r113_book_expo = r113_book_expo;
+		}
+		public BigDecimal getR113_ccf_cont() {
+			return r113_ccf_cont;
+		}
+		public void setR113_ccf_cont(BigDecimal r113_ccf_cont) {
+			this.r113_ccf_cont = r113_ccf_cont;
+		}
+		public BigDecimal getR113_equiv_value() {
+			return r113_equiv_value;
+		}
+		public void setR113_equiv_value(BigDecimal r113_equiv_value) {
+			this.r113_equiv_value = r113_equiv_value;
+		}
+		public BigDecimal getR113_rw_obligant() {
+			return r113_rw_obligant;
+		}
+		public void setR113_rw_obligant(BigDecimal r113_rw_obligant) {
+			this.r113_rw_obligant = r113_rw_obligant;
+		}
+		public BigDecimal getR113_rav() {
+			return r113_rav;
+		}
+		public void setR113_rav(BigDecimal r113_rav) {
+			this.r113_rav = r113_rav;
+		}
+		public String getR114_product() {
+			return r114_product;
+		}
+		public void setR114_product(String r114_product) {
+			this.r114_product = r114_product;
+		}
+		public String getR114_client_grp() {
+			return r114_client_grp;
+		}
+		public void setR114_client_grp(String r114_client_grp) {
+			this.r114_client_grp = r114_client_grp;
+		}
+		public BigDecimal getR114_total_book_expo() {
+			return r114_total_book_expo;
+		}
+		public void setR114_total_book_expo(BigDecimal r114_total_book_expo) {
+			this.r114_total_book_expo = r114_total_book_expo;
+		}
+		public BigDecimal getR114_margin_pro() {
+			return r114_margin_pro;
+		}
+		public void setR114_margin_pro(BigDecimal r114_margin_pro) {
+			this.r114_margin_pro = r114_margin_pro;
+		}
+		public BigDecimal getR114_book_expo() {
+			return r114_book_expo;
+		}
+		public void setR114_book_expo(BigDecimal r114_book_expo) {
+			this.r114_book_expo = r114_book_expo;
+		}
+		public BigDecimal getR114_ccf_cont() {
+			return r114_ccf_cont;
+		}
+		public void setR114_ccf_cont(BigDecimal r114_ccf_cont) {
+			this.r114_ccf_cont = r114_ccf_cont;
+		}
+		public BigDecimal getR114_equiv_value() {
+			return r114_equiv_value;
+		}
+		public void setR114_equiv_value(BigDecimal r114_equiv_value) {
+			this.r114_equiv_value = r114_equiv_value;
+		}
+		public BigDecimal getR114_rw_obligant() {
+			return r114_rw_obligant;
+		}
+		public void setR114_rw_obligant(BigDecimal r114_rw_obligant) {
+			this.r114_rw_obligant = r114_rw_obligant;
+		}
+		public BigDecimal getR114_rav() {
+			return r114_rav;
+		}
+		public void setR114_rav(BigDecimal r114_rav) {
+			this.r114_rav = r114_rav;
+		}
+		public String getR115_product() {
+			return r115_product;
+		}
+		public void setR115_product(String r115_product) {
+			this.r115_product = r115_product;
+		}
+		public String getR115_client_grp() {
+			return r115_client_grp;
+		}
+		public void setR115_client_grp(String r115_client_grp) {
+			this.r115_client_grp = r115_client_grp;
+		}
+		public BigDecimal getR115_total_book_expo() {
+			return r115_total_book_expo;
+		}
+		public void setR115_total_book_expo(BigDecimal r115_total_book_expo) {
+			this.r115_total_book_expo = r115_total_book_expo;
+		}
+		public BigDecimal getR115_margin_pro() {
+			return r115_margin_pro;
+		}
+		public void setR115_margin_pro(BigDecimal r115_margin_pro) {
+			this.r115_margin_pro = r115_margin_pro;
+		}
+		public BigDecimal getR115_book_expo() {
+			return r115_book_expo;
+		}
+		public void setR115_book_expo(BigDecimal r115_book_expo) {
+			this.r115_book_expo = r115_book_expo;
+		}
+		public BigDecimal getR115_ccf_cont() {
+			return r115_ccf_cont;
+		}
+		public void setR115_ccf_cont(BigDecimal r115_ccf_cont) {
+			this.r115_ccf_cont = r115_ccf_cont;
+		}
+		public BigDecimal getR115_equiv_value() {
+			return r115_equiv_value;
+		}
+		public void setR115_equiv_value(BigDecimal r115_equiv_value) {
+			this.r115_equiv_value = r115_equiv_value;
+		}
+		public BigDecimal getR115_rw_obligant() {
+			return r115_rw_obligant;
+		}
+		public void setR115_rw_obligant(BigDecimal r115_rw_obligant) {
+			this.r115_rw_obligant = r115_rw_obligant;
+		}
+		public BigDecimal getR115_rav() {
+			return r115_rav;
+		}
+		public void setR115_rav(BigDecimal r115_rav) {
+			this.r115_rav = r115_rav;
+		}
+		public String getR116_product() {
+			return r116_product;
+		}
+		public void setR116_product(String r116_product) {
+			this.r116_product = r116_product;
+		}
+		public String getR116_client_grp() {
+			return r116_client_grp;
+		}
+		public void setR116_client_grp(String r116_client_grp) {
+			this.r116_client_grp = r116_client_grp;
+		}
+		public BigDecimal getR116_total_book_expo() {
+			return r116_total_book_expo;
+		}
+		public void setR116_total_book_expo(BigDecimal r116_total_book_expo) {
+			this.r116_total_book_expo = r116_total_book_expo;
+		}
+		public BigDecimal getR116_margin_pro() {
+			return r116_margin_pro;
+		}
+		public void setR116_margin_pro(BigDecimal r116_margin_pro) {
+			this.r116_margin_pro = r116_margin_pro;
+		}
+		public BigDecimal getR116_book_expo() {
+			return r116_book_expo;
+		}
+		public void setR116_book_expo(BigDecimal r116_book_expo) {
+			this.r116_book_expo = r116_book_expo;
+		}
+		public BigDecimal getR116_ccf_cont() {
+			return r116_ccf_cont;
+		}
+		public void setR116_ccf_cont(BigDecimal r116_ccf_cont) {
+			this.r116_ccf_cont = r116_ccf_cont;
+		}
+		public BigDecimal getR116_equiv_value() {
+			return r116_equiv_value;
+		}
+		public void setR116_equiv_value(BigDecimal r116_equiv_value) {
+			this.r116_equiv_value = r116_equiv_value;
+		}
+		public BigDecimal getR116_rw_obligant() {
+			return r116_rw_obligant;
+		}
+		public void setR116_rw_obligant(BigDecimal r116_rw_obligant) {
+			this.r116_rw_obligant = r116_rw_obligant;
+		}
+		public BigDecimal getR116_rav() {
+			return r116_rav;
+		}
+		public void setR116_rav(BigDecimal r116_rav) {
+			this.r116_rav = r116_rav;
+		}
+		public String getR117_product() {
+			return r117_product;
+		}
+		public void setR117_product(String r117_product) {
+			this.r117_product = r117_product;
+		}
+		public String getR117_client_grp() {
+			return r117_client_grp;
+		}
+		public void setR117_client_grp(String r117_client_grp) {
+			this.r117_client_grp = r117_client_grp;
+		}
+		public BigDecimal getR117_total_book_expo() {
+			return r117_total_book_expo;
+		}
+		public void setR117_total_book_expo(BigDecimal r117_total_book_expo) {
+			this.r117_total_book_expo = r117_total_book_expo;
+		}
+		public BigDecimal getR117_margin_pro() {
+			return r117_margin_pro;
+		}
+		public void setR117_margin_pro(BigDecimal r117_margin_pro) {
+			this.r117_margin_pro = r117_margin_pro;
+		}
+		public BigDecimal getR117_book_expo() {
+			return r117_book_expo;
+		}
+		public void setR117_book_expo(BigDecimal r117_book_expo) {
+			this.r117_book_expo = r117_book_expo;
+		}
+		public BigDecimal getR117_ccf_cont() {
+			return r117_ccf_cont;
+		}
+		public void setR117_ccf_cont(BigDecimal r117_ccf_cont) {
+			this.r117_ccf_cont = r117_ccf_cont;
+		}
+		public BigDecimal getR117_equiv_value() {
+			return r117_equiv_value;
+		}
+		public void setR117_equiv_value(BigDecimal r117_equiv_value) {
+			this.r117_equiv_value = r117_equiv_value;
+		}
+		public BigDecimal getR117_rw_obligant() {
+			return r117_rw_obligant;
+		}
+		public void setR117_rw_obligant(BigDecimal r117_rw_obligant) {
+			this.r117_rw_obligant = r117_rw_obligant;
+		}
+		public BigDecimal getR117_rav() {
+			return r117_rav;
+		}
+		public void setR117_rav(BigDecimal r117_rav) {
+			this.r117_rav = r117_rav;
+		}
+		public String getR118_product() {
+			return r118_product;
+		}
+		public void setR118_product(String r118_product) {
+			this.r118_product = r118_product;
+		}
+		public String getR118_client_grp() {
+			return r118_client_grp;
+		}
+		public void setR118_client_grp(String r118_client_grp) {
+			this.r118_client_grp = r118_client_grp;
+		}
+		public BigDecimal getR118_total_book_expo() {
+			return r118_total_book_expo;
+		}
+		public void setR118_total_book_expo(BigDecimal r118_total_book_expo) {
+			this.r118_total_book_expo = r118_total_book_expo;
+		}
+		public BigDecimal getR118_margin_pro() {
+			return r118_margin_pro;
+		}
+		public void setR118_margin_pro(BigDecimal r118_margin_pro) {
+			this.r118_margin_pro = r118_margin_pro;
+		}
+		public BigDecimal getR118_book_expo() {
+			return r118_book_expo;
+		}
+		public void setR118_book_expo(BigDecimal r118_book_expo) {
+			this.r118_book_expo = r118_book_expo;
+		}
+		public BigDecimal getR118_ccf_cont() {
+			return r118_ccf_cont;
+		}
+		public void setR118_ccf_cont(BigDecimal r118_ccf_cont) {
+			this.r118_ccf_cont = r118_ccf_cont;
+		}
+		public BigDecimal getR118_equiv_value() {
+			return r118_equiv_value;
+		}
+		public void setR118_equiv_value(BigDecimal r118_equiv_value) {
+			this.r118_equiv_value = r118_equiv_value;
+		}
+		public BigDecimal getR118_rw_obligant() {
+			return r118_rw_obligant;
+		}
+		public void setR118_rw_obligant(BigDecimal r118_rw_obligant) {
+			this.r118_rw_obligant = r118_rw_obligant;
+		}
+		public BigDecimal getR118_rav() {
+			return r118_rav;
+		}
+		public void setR118_rav(BigDecimal r118_rav) {
+			this.r118_rav = r118_rav;
+		}
+		public String getR119_product() {
+			return r119_product;
+		}
+		public void setR119_product(String r119_product) {
+			this.r119_product = r119_product;
+		}
+		public String getR119_client_grp() {
+			return r119_client_grp;
+		}
+		public void setR119_client_grp(String r119_client_grp) {
+			this.r119_client_grp = r119_client_grp;
+		}
+		public BigDecimal getR119_total_book_expo() {
+			return r119_total_book_expo;
+		}
+		public void setR119_total_book_expo(BigDecimal r119_total_book_expo) {
+			this.r119_total_book_expo = r119_total_book_expo;
+		}
+		public BigDecimal getR119_margin_pro() {
+			return r119_margin_pro;
+		}
+		public void setR119_margin_pro(BigDecimal r119_margin_pro) {
+			this.r119_margin_pro = r119_margin_pro;
+		}
+		public BigDecimal getR119_book_expo() {
+			return r119_book_expo;
+		}
+		public void setR119_book_expo(BigDecimal r119_book_expo) {
+			this.r119_book_expo = r119_book_expo;
+		}
+		public BigDecimal getR119_ccf_cont() {
+			return r119_ccf_cont;
+		}
+		public void setR119_ccf_cont(BigDecimal r119_ccf_cont) {
+			this.r119_ccf_cont = r119_ccf_cont;
+		}
+		public BigDecimal getR119_equiv_value() {
+			return r119_equiv_value;
+		}
+		public void setR119_equiv_value(BigDecimal r119_equiv_value) {
+			this.r119_equiv_value = r119_equiv_value;
+		}
+		public BigDecimal getR119_rw_obligant() {
+			return r119_rw_obligant;
+		}
+		public void setR119_rw_obligant(BigDecimal r119_rw_obligant) {
+			this.r119_rw_obligant = r119_rw_obligant;
+		}
+		public BigDecimal getR119_rav() {
+			return r119_rav;
+		}
+		public void setR119_rav(BigDecimal r119_rav) {
+			this.r119_rav = r119_rav;
+		}
+		public String getR120_product() {
+			return r120_product;
+		}
+		public void setR120_product(String r120_product) {
+			this.r120_product = r120_product;
+		}
+		public String getR120_client_grp() {
+			return r120_client_grp;
+		}
+		public void setR120_client_grp(String r120_client_grp) {
+			this.r120_client_grp = r120_client_grp;
+		}
+		public BigDecimal getR120_total_book_expo() {
+			return r120_total_book_expo;
+		}
+		public void setR120_total_book_expo(BigDecimal r120_total_book_expo) {
+			this.r120_total_book_expo = r120_total_book_expo;
+		}
+		public BigDecimal getR120_margin_pro() {
+			return r120_margin_pro;
+		}
+		public void setR120_margin_pro(BigDecimal r120_margin_pro) {
+			this.r120_margin_pro = r120_margin_pro;
+		}
+		public BigDecimal getR120_book_expo() {
+			return r120_book_expo;
+		}
+		public void setR120_book_expo(BigDecimal r120_book_expo) {
+			this.r120_book_expo = r120_book_expo;
+		}
+		public BigDecimal getR120_ccf_cont() {
+			return r120_ccf_cont;
+		}
+		public void setR120_ccf_cont(BigDecimal r120_ccf_cont) {
+			this.r120_ccf_cont = r120_ccf_cont;
+		}
+		public BigDecimal getR120_equiv_value() {
+			return r120_equiv_value;
+		}
+		public void setR120_equiv_value(BigDecimal r120_equiv_value) {
+			this.r120_equiv_value = r120_equiv_value;
+		}
+		public BigDecimal getR120_rw_obligant() {
+			return r120_rw_obligant;
+		}
+		public void setR120_rw_obligant(BigDecimal r120_rw_obligant) {
+			this.r120_rw_obligant = r120_rw_obligant;
+		}
+		public BigDecimal getR120_rav() {
+			return r120_rav;
+		}
+		public void setR120_rav(BigDecimal r120_rav) {
+			this.r120_rav = r120_rav;
+		}
+		public String getR121_product() {
+			return r121_product;
+		}
+		public void setR121_product(String r121_product) {
+			this.r121_product = r121_product;
+		}
+		public String getR121_client_grp() {
+			return r121_client_grp;
+		}
+		public void setR121_client_grp(String r121_client_grp) {
+			this.r121_client_grp = r121_client_grp;
+		}
+		public BigDecimal getR121_total_book_expo() {
+			return r121_total_book_expo;
+		}
+		public void setR121_total_book_expo(BigDecimal r121_total_book_expo) {
+			this.r121_total_book_expo = r121_total_book_expo;
+		}
+		public BigDecimal getR121_margin_pro() {
+			return r121_margin_pro;
+		}
+		public void setR121_margin_pro(BigDecimal r121_margin_pro) {
+			this.r121_margin_pro = r121_margin_pro;
+		}
+		public BigDecimal getR121_book_expo() {
+			return r121_book_expo;
+		}
+		public void setR121_book_expo(BigDecimal r121_book_expo) {
+			this.r121_book_expo = r121_book_expo;
+		}
+		public BigDecimal getR121_ccf_cont() {
+			return r121_ccf_cont;
+		}
+		public void setR121_ccf_cont(BigDecimal r121_ccf_cont) {
+			this.r121_ccf_cont = r121_ccf_cont;
+		}
+		public BigDecimal getR121_equiv_value() {
+			return r121_equiv_value;
+		}
+		public void setR121_equiv_value(BigDecimal r121_equiv_value) {
+			this.r121_equiv_value = r121_equiv_value;
+		}
+		public BigDecimal getR121_rw_obligant() {
+			return r121_rw_obligant;
+		}
+		public void setR121_rw_obligant(BigDecimal r121_rw_obligant) {
+			this.r121_rw_obligant = r121_rw_obligant;
+		}
+		public BigDecimal getR121_rav() {
+			return r121_rav;
+		}
+		public void setR121_rav(BigDecimal r121_rav) {
+			this.r121_rav = r121_rav;
+		}
+		public String getR122_product() {
+			return r122_product;
+		}
+		public void setR122_product(String r122_product) {
+			this.r122_product = r122_product;
+		}
+		public String getR122_client_grp() {
+			return r122_client_grp;
+		}
+		public void setR122_client_grp(String r122_client_grp) {
+			this.r122_client_grp = r122_client_grp;
+		}
+		public BigDecimal getR122_total_book_expo() {
+			return r122_total_book_expo;
+		}
+		public void setR122_total_book_expo(BigDecimal r122_total_book_expo) {
+			this.r122_total_book_expo = r122_total_book_expo;
+		}
+		public BigDecimal getR122_margin_pro() {
+			return r122_margin_pro;
+		}
+		public void setR122_margin_pro(BigDecimal r122_margin_pro) {
+			this.r122_margin_pro = r122_margin_pro;
+		}
+		public BigDecimal getR122_book_expo() {
+			return r122_book_expo;
+		}
+		public void setR122_book_expo(BigDecimal r122_book_expo) {
+			this.r122_book_expo = r122_book_expo;
+		}
+		public BigDecimal getR122_ccf_cont() {
+			return r122_ccf_cont;
+		}
+		public void setR122_ccf_cont(BigDecimal r122_ccf_cont) {
+			this.r122_ccf_cont = r122_ccf_cont;
+		}
+		public BigDecimal getR122_equiv_value() {
+			return r122_equiv_value;
+		}
+		public void setR122_equiv_value(BigDecimal r122_equiv_value) {
+			this.r122_equiv_value = r122_equiv_value;
+		}
+		public BigDecimal getR122_rw_obligant() {
+			return r122_rw_obligant;
+		}
+		public void setR122_rw_obligant(BigDecimal r122_rw_obligant) {
+			this.r122_rw_obligant = r122_rw_obligant;
+		}
+		public BigDecimal getR122_rav() {
+			return r122_rav;
+		}
+		public void setR122_rav(BigDecimal r122_rav) {
+			this.r122_rav = r122_rav;
+		}
+		public String getR123_product() {
+			return r123_product;
+		}
+		public void setR123_product(String r123_product) {
+			this.r123_product = r123_product;
+		}
+		public String getR123_client_grp() {
+			return r123_client_grp;
+		}
+		public void setR123_client_grp(String r123_client_grp) {
+			this.r123_client_grp = r123_client_grp;
+		}
+		public BigDecimal getR123_total_book_expo() {
+			return r123_total_book_expo;
+		}
+		public void setR123_total_book_expo(BigDecimal r123_total_book_expo) {
+			this.r123_total_book_expo = r123_total_book_expo;
+		}
+		public BigDecimal getR123_margin_pro() {
+			return r123_margin_pro;
+		}
+		public void setR123_margin_pro(BigDecimal r123_margin_pro) {
+			this.r123_margin_pro = r123_margin_pro;
+		}
+		public BigDecimal getR123_book_expo() {
+			return r123_book_expo;
+		}
+		public void setR123_book_expo(BigDecimal r123_book_expo) {
+			this.r123_book_expo = r123_book_expo;
+		}
+		public BigDecimal getR123_ccf_cont() {
+			return r123_ccf_cont;
+		}
+		public void setR123_ccf_cont(BigDecimal r123_ccf_cont) {
+			this.r123_ccf_cont = r123_ccf_cont;
+		}
+		public BigDecimal getR123_equiv_value() {
+			return r123_equiv_value;
+		}
+		public void setR123_equiv_value(BigDecimal r123_equiv_value) {
+			this.r123_equiv_value = r123_equiv_value;
+		}
+		public BigDecimal getR123_rw_obligant() {
+			return r123_rw_obligant;
+		}
+		public void setR123_rw_obligant(BigDecimal r123_rw_obligant) {
+			this.r123_rw_obligant = r123_rw_obligant;
+		}
+		public BigDecimal getR123_rav() {
+			return r123_rav;
+		}
+		public void setR123_rav(BigDecimal r123_rav) {
+			this.r123_rav = r123_rav;
+		}
+		public String getR124_product() {
+			return r124_product;
+		}
+		public void setR124_product(String r124_product) {
+			this.r124_product = r124_product;
+		}
+		public String getR124_client_grp() {
+			return r124_client_grp;
+		}
+		public void setR124_client_grp(String r124_client_grp) {
+			this.r124_client_grp = r124_client_grp;
+		}
+		public BigDecimal getR124_total_book_expo() {
+			return r124_total_book_expo;
+		}
+		public void setR124_total_book_expo(BigDecimal r124_total_book_expo) {
+			this.r124_total_book_expo = r124_total_book_expo;
+		}
+		public BigDecimal getR124_margin_pro() {
+			return r124_margin_pro;
+		}
+		public void setR124_margin_pro(BigDecimal r124_margin_pro) {
+			this.r124_margin_pro = r124_margin_pro;
+		}
+		public BigDecimal getR124_book_expo() {
+			return r124_book_expo;
+		}
+		public void setR124_book_expo(BigDecimal r124_book_expo) {
+			this.r124_book_expo = r124_book_expo;
+		}
+		public BigDecimal getR124_ccf_cont() {
+			return r124_ccf_cont;
+		}
+		public void setR124_ccf_cont(BigDecimal r124_ccf_cont) {
+			this.r124_ccf_cont = r124_ccf_cont;
+		}
+		public BigDecimal getR124_equiv_value() {
+			return r124_equiv_value;
+		}
+		public void setR124_equiv_value(BigDecimal r124_equiv_value) {
+			this.r124_equiv_value = r124_equiv_value;
+		}
+		public BigDecimal getR124_rw_obligant() {
+			return r124_rw_obligant;
+		}
+		public void setR124_rw_obligant(BigDecimal r124_rw_obligant) {
+			this.r124_rw_obligant = r124_rw_obligant;
+		}
+		public BigDecimal getR124_rav() {
+			return r124_rav;
+		}
+		public void setR124_rav(BigDecimal r124_rav) {
+			this.r124_rav = r124_rav;
+		}
+		public String getR125_product() {
+			return r125_product;
+		}
+		public void setR125_product(String r125_product) {
+			this.r125_product = r125_product;
+		}
+		public String getR125_client_grp() {
+			return r125_client_grp;
+		}
+		public void setR125_client_grp(String r125_client_grp) {
+			this.r125_client_grp = r125_client_grp;
+		}
+		public BigDecimal getR125_total_book_expo() {
+			return r125_total_book_expo;
+		}
+		public void setR125_total_book_expo(BigDecimal r125_total_book_expo) {
+			this.r125_total_book_expo = r125_total_book_expo;
+		}
+		public BigDecimal getR125_margin_pro() {
+			return r125_margin_pro;
+		}
+		public void setR125_margin_pro(BigDecimal r125_margin_pro) {
+			this.r125_margin_pro = r125_margin_pro;
+		}
+		public BigDecimal getR125_book_expo() {
+			return r125_book_expo;
+		}
+		public void setR125_book_expo(BigDecimal r125_book_expo) {
+			this.r125_book_expo = r125_book_expo;
+		}
+		public BigDecimal getR125_ccf_cont() {
+			return r125_ccf_cont;
+		}
+		public void setR125_ccf_cont(BigDecimal r125_ccf_cont) {
+			this.r125_ccf_cont = r125_ccf_cont;
+		}
+		public BigDecimal getR125_equiv_value() {
+			return r125_equiv_value;
+		}
+		public void setR125_equiv_value(BigDecimal r125_equiv_value) {
+			this.r125_equiv_value = r125_equiv_value;
+		}
+		public BigDecimal getR125_rw_obligant() {
+			return r125_rw_obligant;
+		}
+		public void setR125_rw_obligant(BigDecimal r125_rw_obligant) {
+			this.r125_rw_obligant = r125_rw_obligant;
+		}
+		public BigDecimal getR125_rav() {
+			return r125_rav;
+		}
+		public void setR125_rav(BigDecimal r125_rav) {
+			this.r125_rav = r125_rav;
+		}
+		public String getR126_product() {
+			return r126_product;
+		}
+		public void setR126_product(String r126_product) {
+			this.r126_product = r126_product;
+		}
+		public String getR126_client_grp() {
+			return r126_client_grp;
+		}
+		public void setR126_client_grp(String r126_client_grp) {
+			this.r126_client_grp = r126_client_grp;
+		}
+		public BigDecimal getR126_total_book_expo() {
+			return r126_total_book_expo;
+		}
+		public void setR126_total_book_expo(BigDecimal r126_total_book_expo) {
+			this.r126_total_book_expo = r126_total_book_expo;
+		}
+		public BigDecimal getR126_margin_pro() {
+			return r126_margin_pro;
+		}
+		public void setR126_margin_pro(BigDecimal r126_margin_pro) {
+			this.r126_margin_pro = r126_margin_pro;
+		}
+		public BigDecimal getR126_book_expo() {
+			return r126_book_expo;
+		}
+		public void setR126_book_expo(BigDecimal r126_book_expo) {
+			this.r126_book_expo = r126_book_expo;
+		}
+		public BigDecimal getR126_ccf_cont() {
+			return r126_ccf_cont;
+		}
+		public void setR126_ccf_cont(BigDecimal r126_ccf_cont) {
+			this.r126_ccf_cont = r126_ccf_cont;
+		}
+		public BigDecimal getR126_equiv_value() {
+			return r126_equiv_value;
+		}
+		public void setR126_equiv_value(BigDecimal r126_equiv_value) {
+			this.r126_equiv_value = r126_equiv_value;
+		}
+		public BigDecimal getR126_rw_obligant() {
+			return r126_rw_obligant;
+		}
+		public void setR126_rw_obligant(BigDecimal r126_rw_obligant) {
+			this.r126_rw_obligant = r126_rw_obligant;
+		}
+		public BigDecimal getR126_rav() {
+			return r126_rav;
+		}
+		public void setR126_rav(BigDecimal r126_rav) {
+			this.r126_rav = r126_rav;
+		}
+		public String getR127_product() {
+			return r127_product;
+		}
+		public void setR127_product(String r127_product) {
+			this.r127_product = r127_product;
+		}
+		public String getR127_client_grp() {
+			return r127_client_grp;
+		}
+		public void setR127_client_grp(String r127_client_grp) {
+			this.r127_client_grp = r127_client_grp;
+		}
+		public BigDecimal getR127_total_book_expo() {
+			return r127_total_book_expo;
+		}
+		public void setR127_total_book_expo(BigDecimal r127_total_book_expo) {
+			this.r127_total_book_expo = r127_total_book_expo;
+		}
+		public BigDecimal getR127_margin_pro() {
+			return r127_margin_pro;
+		}
+		public void setR127_margin_pro(BigDecimal r127_margin_pro) {
+			this.r127_margin_pro = r127_margin_pro;
+		}
+		public BigDecimal getR127_book_expo() {
+			return r127_book_expo;
+		}
+		public void setR127_book_expo(BigDecimal r127_book_expo) {
+			this.r127_book_expo = r127_book_expo;
+		}
+		public BigDecimal getR127_ccf_cont() {
+			return r127_ccf_cont;
+		}
+		public void setR127_ccf_cont(BigDecimal r127_ccf_cont) {
+			this.r127_ccf_cont = r127_ccf_cont;
+		}
+		public BigDecimal getR127_equiv_value() {
+			return r127_equiv_value;
+		}
+		public void setR127_equiv_value(BigDecimal r127_equiv_value) {
+			this.r127_equiv_value = r127_equiv_value;
+		}
+		public BigDecimal getR127_rw_obligant() {
+			return r127_rw_obligant;
+		}
+		public void setR127_rw_obligant(BigDecimal r127_rw_obligant) {
+			this.r127_rw_obligant = r127_rw_obligant;
+		}
+		public BigDecimal getR127_rav() {
+			return r127_rav;
+		}
+		public void setR127_rav(BigDecimal r127_rav) {
+			this.r127_rav = r127_rav;
+		}
+		public String getR128_product() {
+			return r128_product;
+		}
+		public void setR128_product(String r128_product) {
+			this.r128_product = r128_product;
+		}
+		public String getR128_client_grp() {
+			return r128_client_grp;
+		}
+		public void setR128_client_grp(String r128_client_grp) {
+			this.r128_client_grp = r128_client_grp;
+		}
+		public BigDecimal getR128_total_book_expo() {
+			return r128_total_book_expo;
+		}
+		public void setR128_total_book_expo(BigDecimal r128_total_book_expo) {
+			this.r128_total_book_expo = r128_total_book_expo;
+		}
+		public BigDecimal getR128_margin_pro() {
+			return r128_margin_pro;
+		}
+		public void setR128_margin_pro(BigDecimal r128_margin_pro) {
+			this.r128_margin_pro = r128_margin_pro;
+		}
+		public BigDecimal getR128_book_expo() {
+			return r128_book_expo;
+		}
+		public void setR128_book_expo(BigDecimal r128_book_expo) {
+			this.r128_book_expo = r128_book_expo;
+		}
+		public BigDecimal getR128_ccf_cont() {
+			return r128_ccf_cont;
+		}
+		public void setR128_ccf_cont(BigDecimal r128_ccf_cont) {
+			this.r128_ccf_cont = r128_ccf_cont;
+		}
+		public BigDecimal getR128_equiv_value() {
+			return r128_equiv_value;
+		}
+		public void setR128_equiv_value(BigDecimal r128_equiv_value) {
+			this.r128_equiv_value = r128_equiv_value;
+		}
+		public BigDecimal getR128_rw_obligant() {
+			return r128_rw_obligant;
+		}
+		public void setR128_rw_obligant(BigDecimal r128_rw_obligant) {
+			this.r128_rw_obligant = r128_rw_obligant;
+		}
+		public BigDecimal getR128_rav() {
+			return r128_rav;
+		}
+		public void setR128_rav(BigDecimal r128_rav) {
+			this.r128_rav = r128_rav;
+		}
+		public String getR129_product() {
+			return r129_product;
+		}
+		public void setR129_product(String r129_product) {
+			this.r129_product = r129_product;
+		}
+		public String getR129_client_grp() {
+			return r129_client_grp;
+		}
+		public void setR129_client_grp(String r129_client_grp) {
+			this.r129_client_grp = r129_client_grp;
+		}
+		public BigDecimal getR129_total_book_expo() {
+			return r129_total_book_expo;
+		}
+		public void setR129_total_book_expo(BigDecimal r129_total_book_expo) {
+			this.r129_total_book_expo = r129_total_book_expo;
+		}
+		public BigDecimal getR129_margin_pro() {
+			return r129_margin_pro;
+		}
+		public void setR129_margin_pro(BigDecimal r129_margin_pro) {
+			this.r129_margin_pro = r129_margin_pro;
+		}
+		public BigDecimal getR129_book_expo() {
+			return r129_book_expo;
+		}
+		public void setR129_book_expo(BigDecimal r129_book_expo) {
+			this.r129_book_expo = r129_book_expo;
+		}
+		public BigDecimal getR129_ccf_cont() {
+			return r129_ccf_cont;
+		}
+		public void setR129_ccf_cont(BigDecimal r129_ccf_cont) {
+			this.r129_ccf_cont = r129_ccf_cont;
+		}
+		public BigDecimal getR129_equiv_value() {
+			return r129_equiv_value;
+		}
+		public void setR129_equiv_value(BigDecimal r129_equiv_value) {
+			this.r129_equiv_value = r129_equiv_value;
+		}
+		public BigDecimal getR129_rw_obligant() {
+			return r129_rw_obligant;
+		}
+		public void setR129_rw_obligant(BigDecimal r129_rw_obligant) {
+			this.r129_rw_obligant = r129_rw_obligant;
+		}
+		public BigDecimal getR129_rav() {
+			return r129_rav;
+		}
+		public void setR129_rav(BigDecimal r129_rav) {
+			this.r129_rav = r129_rav;
+		}
+		public String getR130_product() {
+			return r130_product;
+		}
+		public void setR130_product(String r130_product) {
+			this.r130_product = r130_product;
+		}
+		public String getR130_client_grp() {
+			return r130_client_grp;
+		}
+		public void setR130_client_grp(String r130_client_grp) {
+			this.r130_client_grp = r130_client_grp;
+		}
+		public BigDecimal getR130_total_book_expo() {
+			return r130_total_book_expo;
+		}
+		public void setR130_total_book_expo(BigDecimal r130_total_book_expo) {
+			this.r130_total_book_expo = r130_total_book_expo;
+		}
+		public BigDecimal getR130_margin_pro() {
+			return r130_margin_pro;
+		}
+		public void setR130_margin_pro(BigDecimal r130_margin_pro) {
+			this.r130_margin_pro = r130_margin_pro;
+		}
+		public BigDecimal getR130_book_expo() {
+			return r130_book_expo;
+		}
+		public void setR130_book_expo(BigDecimal r130_book_expo) {
+			this.r130_book_expo = r130_book_expo;
+		}
+		public BigDecimal getR130_ccf_cont() {
+			return r130_ccf_cont;
+		}
+		public void setR130_ccf_cont(BigDecimal r130_ccf_cont) {
+			this.r130_ccf_cont = r130_ccf_cont;
+		}
+		public BigDecimal getR130_equiv_value() {
+			return r130_equiv_value;
+		}
+		public void setR130_equiv_value(BigDecimal r130_equiv_value) {
+			this.r130_equiv_value = r130_equiv_value;
+		}
+		public BigDecimal getR130_rw_obligant() {
+			return r130_rw_obligant;
+		}
+		public void setR130_rw_obligant(BigDecimal r130_rw_obligant) {
+			this.r130_rw_obligant = r130_rw_obligant;
+		}
+		public BigDecimal getR130_rav() {
+			return r130_rav;
+		}
+		public void setR130_rav(BigDecimal r130_rav) {
+			this.r130_rav = r130_rav;
+		}
+		public String getR131_product() {
+			return r131_product;
+		}
+		public void setR131_product(String r131_product) {
+			this.r131_product = r131_product;
+		}
+		public String getR131_client_grp() {
+			return r131_client_grp;
+		}
+		public void setR131_client_grp(String r131_client_grp) {
+			this.r131_client_grp = r131_client_grp;
+		}
+		public BigDecimal getR131_total_book_expo() {
+			return r131_total_book_expo;
+		}
+		public void setR131_total_book_expo(BigDecimal r131_total_book_expo) {
+			this.r131_total_book_expo = r131_total_book_expo;
+		}
+		public BigDecimal getR131_margin_pro() {
+			return r131_margin_pro;
+		}
+		public void setR131_margin_pro(BigDecimal r131_margin_pro) {
+			this.r131_margin_pro = r131_margin_pro;
+		}
+		public BigDecimal getR131_book_expo() {
+			return r131_book_expo;
+		}
+		public void setR131_book_expo(BigDecimal r131_book_expo) {
+			this.r131_book_expo = r131_book_expo;
+		}
+		public BigDecimal getR131_ccf_cont() {
+			return r131_ccf_cont;
+		}
+		public void setR131_ccf_cont(BigDecimal r131_ccf_cont) {
+			this.r131_ccf_cont = r131_ccf_cont;
+		}
+		public BigDecimal getR131_equiv_value() {
+			return r131_equiv_value;
+		}
+		public void setR131_equiv_value(BigDecimal r131_equiv_value) {
+			this.r131_equiv_value = r131_equiv_value;
+		}
+		public BigDecimal getR131_rw_obligant() {
+			return r131_rw_obligant;
+		}
+		public void setR131_rw_obligant(BigDecimal r131_rw_obligant) {
+			this.r131_rw_obligant = r131_rw_obligant;
+		}
+		public BigDecimal getR131_rav() {
+			return r131_rav;
+		}
+		public void setR131_rav(BigDecimal r131_rav) {
+			this.r131_rav = r131_rav;
+		}
+		public String getR132_product() {
+			return r132_product;
+		}
+		public void setR132_product(String r132_product) {
+			this.r132_product = r132_product;
+		}
+		public String getR132_client_grp() {
+			return r132_client_grp;
+		}
+		public void setR132_client_grp(String r132_client_grp) {
+			this.r132_client_grp = r132_client_grp;
+		}
+		public BigDecimal getR132_total_book_expo() {
+			return r132_total_book_expo;
+		}
+		public void setR132_total_book_expo(BigDecimal r132_total_book_expo) {
+			this.r132_total_book_expo = r132_total_book_expo;
+		}
+		public BigDecimal getR132_margin_pro() {
+			return r132_margin_pro;
+		}
+		public void setR132_margin_pro(BigDecimal r132_margin_pro) {
+			this.r132_margin_pro = r132_margin_pro;
+		}
+		public BigDecimal getR132_book_expo() {
+			return r132_book_expo;
+		}
+		public void setR132_book_expo(BigDecimal r132_book_expo) {
+			this.r132_book_expo = r132_book_expo;
+		}
+		public BigDecimal getR132_ccf_cont() {
+			return r132_ccf_cont;
+		}
+		public void setR132_ccf_cont(BigDecimal r132_ccf_cont) {
+			this.r132_ccf_cont = r132_ccf_cont;
+		}
+		public BigDecimal getR132_equiv_value() {
+			return r132_equiv_value;
+		}
+		public void setR132_equiv_value(BigDecimal r132_equiv_value) {
+			this.r132_equiv_value = r132_equiv_value;
+		}
+		public BigDecimal getR132_rw_obligant() {
+			return r132_rw_obligant;
+		}
+		public void setR132_rw_obligant(BigDecimal r132_rw_obligant) {
+			this.r132_rw_obligant = r132_rw_obligant;
+		}
+		public BigDecimal getR132_rav() {
+			return r132_rav;
+		}
+		public void setR132_rav(BigDecimal r132_rav) {
+			this.r132_rav = r132_rav;
+		}
+		public String getR133_product() {
+			return r133_product;
+		}
+		public void setR133_product(String r133_product) {
+			this.r133_product = r133_product;
+		}
+		public String getR133_client_grp() {
+			return r133_client_grp;
+		}
+		public void setR133_client_grp(String r133_client_grp) {
+			this.r133_client_grp = r133_client_grp;
+		}
+		public BigDecimal getR133_total_book_expo() {
+			return r133_total_book_expo;
+		}
+		public void setR133_total_book_expo(BigDecimal r133_total_book_expo) {
+			this.r133_total_book_expo = r133_total_book_expo;
+		}
+		public BigDecimal getR133_margin_pro() {
+			return r133_margin_pro;
+		}
+		public void setR133_margin_pro(BigDecimal r133_margin_pro) {
+			this.r133_margin_pro = r133_margin_pro;
+		}
+		public BigDecimal getR133_book_expo() {
+			return r133_book_expo;
+		}
+		public void setR133_book_expo(BigDecimal r133_book_expo) {
+			this.r133_book_expo = r133_book_expo;
+		}
+		public BigDecimal getR133_ccf_cont() {
+			return r133_ccf_cont;
+		}
+		public void setR133_ccf_cont(BigDecimal r133_ccf_cont) {
+			this.r133_ccf_cont = r133_ccf_cont;
+		}
+		public BigDecimal getR133_equiv_value() {
+			return r133_equiv_value;
+		}
+		public void setR133_equiv_value(BigDecimal r133_equiv_value) {
+			this.r133_equiv_value = r133_equiv_value;
+		}
+		public BigDecimal getR133_rw_obligant() {
+			return r133_rw_obligant;
+		}
+		public void setR133_rw_obligant(BigDecimal r133_rw_obligant) {
+			this.r133_rw_obligant = r133_rw_obligant;
+		}
+		public BigDecimal getR133_rav() {
+			return r133_rav;
+		}
+		public void setR133_rav(BigDecimal r133_rav) {
+			this.r133_rav = r133_rav;
+		}
+		public String getR134_product() {
+			return r134_product;
+		}
+		public void setR134_product(String r134_product) {
+			this.r134_product = r134_product;
+		}
+		public String getR134_client_grp() {
+			return r134_client_grp;
+		}
+		public void setR134_client_grp(String r134_client_grp) {
+			this.r134_client_grp = r134_client_grp;
+		}
+		public BigDecimal getR134_total_book_expo() {
+			return r134_total_book_expo;
+		}
+		public void setR134_total_book_expo(BigDecimal r134_total_book_expo) {
+			this.r134_total_book_expo = r134_total_book_expo;
+		}
+		public BigDecimal getR134_margin_pro() {
+			return r134_margin_pro;
+		}
+		public void setR134_margin_pro(BigDecimal r134_margin_pro) {
+			this.r134_margin_pro = r134_margin_pro;
+		}
+		public BigDecimal getR134_book_expo() {
+			return r134_book_expo;
+		}
+		public void setR134_book_expo(BigDecimal r134_book_expo) {
+			this.r134_book_expo = r134_book_expo;
+		}
+		public BigDecimal getR134_ccf_cont() {
+			return r134_ccf_cont;
+		}
+		public void setR134_ccf_cont(BigDecimal r134_ccf_cont) {
+			this.r134_ccf_cont = r134_ccf_cont;
+		}
+		public BigDecimal getR134_equiv_value() {
+			return r134_equiv_value;
+		}
+		public void setR134_equiv_value(BigDecimal r134_equiv_value) {
+			this.r134_equiv_value = r134_equiv_value;
+		}
+		public BigDecimal getR134_rw_obligant() {
+			return r134_rw_obligant;
+		}
+		public void setR134_rw_obligant(BigDecimal r134_rw_obligant) {
+			this.r134_rw_obligant = r134_rw_obligant;
+		}
+		public BigDecimal getR134_rav() {
+			return r134_rav;
+		}
+		public void setR134_rav(BigDecimal r134_rav) {
+			this.r134_rav = r134_rav;
+		}
+		public String getR148_product() {
+			return r148_product;
+		}
+		public void setR148_product(String r148_product) {
+			this.r148_product = r148_product;
+		}
+		public String getR148_client_grp() {
+			return r148_client_grp;
+		}
+		public void setR148_client_grp(String r148_client_grp) {
+			this.r148_client_grp = r148_client_grp;
+		}
+		public BigDecimal getR148_total_book_expo() {
+			return r148_total_book_expo;
+		}
+		public void setR148_total_book_expo(BigDecimal r148_total_book_expo) {
+			this.r148_total_book_expo = r148_total_book_expo;
+		}
+		public BigDecimal getR148_margin_pro() {
+			return r148_margin_pro;
+		}
+		public void setR148_margin_pro(BigDecimal r148_margin_pro) {
+			this.r148_margin_pro = r148_margin_pro;
+		}
+		public BigDecimal getR148_book_expo() {
+			return r148_book_expo;
+		}
+		public void setR148_book_expo(BigDecimal r148_book_expo) {
+			this.r148_book_expo = r148_book_expo;
+		}
+		public BigDecimal getR148_ccf_cont() {
+			return r148_ccf_cont;
+		}
+		public void setR148_ccf_cont(BigDecimal r148_ccf_cont) {
+			this.r148_ccf_cont = r148_ccf_cont;
+		}
+		public BigDecimal getR148_equiv_value() {
+			return r148_equiv_value;
+		}
+		public void setR148_equiv_value(BigDecimal r148_equiv_value) {
+			this.r148_equiv_value = r148_equiv_value;
+		}
+		public BigDecimal getR148_rw_obligant() {
+			return r148_rw_obligant;
+		}
+		public void setR148_rw_obligant(BigDecimal r148_rw_obligant) {
+			this.r148_rw_obligant = r148_rw_obligant;
+		}
+		public BigDecimal getR148_rav() {
+			return r148_rav;
+		}
+		public void setR148_rav(BigDecimal r148_rav) {
+			this.r148_rav = r148_rav;
+		}
+		public String getR149_product() {
+			return r149_product;
+		}
+		public void setR149_product(String r149_product) {
+			this.r149_product = r149_product;
+		}
+		public String getR149_client_grp() {
+			return r149_client_grp;
+		}
+		public void setR149_client_grp(String r149_client_grp) {
+			this.r149_client_grp = r149_client_grp;
+		}
+		public BigDecimal getR149_total_book_expo() {
+			return r149_total_book_expo;
+		}
+		public void setR149_total_book_expo(BigDecimal r149_total_book_expo) {
+			this.r149_total_book_expo = r149_total_book_expo;
+		}
+		public BigDecimal getR149_margin_pro() {
+			return r149_margin_pro;
+		}
+		public void setR149_margin_pro(BigDecimal r149_margin_pro) {
+			this.r149_margin_pro = r149_margin_pro;
+		}
+		public BigDecimal getR149_book_expo() {
+			return r149_book_expo;
+		}
+		public void setR149_book_expo(BigDecimal r149_book_expo) {
+			this.r149_book_expo = r149_book_expo;
+		}
+		public BigDecimal getR149_ccf_cont() {
+			return r149_ccf_cont;
+		}
+		public void setR149_ccf_cont(BigDecimal r149_ccf_cont) {
+			this.r149_ccf_cont = r149_ccf_cont;
+		}
+		public BigDecimal getR149_equiv_value() {
+			return r149_equiv_value;
+		}
+		public void setR149_equiv_value(BigDecimal r149_equiv_value) {
+			this.r149_equiv_value = r149_equiv_value;
+		}
+		public BigDecimal getR149_rw_obligant() {
+			return r149_rw_obligant;
+		}
+		public void setR149_rw_obligant(BigDecimal r149_rw_obligant) {
+			this.r149_rw_obligant = r149_rw_obligant;
+		}
+		public BigDecimal getR149_rav() {
+			return r149_rav;
+		}
+		public void setR149_rav(BigDecimal r149_rav) {
+			this.r149_rav = r149_rav;
+		}
+		public String getR150_product() {
+			return r150_product;
+		}
+		public void setR150_product(String r150_product) {
+			this.r150_product = r150_product;
+		}
+		public String getR150_client_grp() {
+			return r150_client_grp;
+		}
+		public void setR150_client_grp(String r150_client_grp) {
+			this.r150_client_grp = r150_client_grp;
+		}
+		public BigDecimal getR150_total_book_expo() {
+			return r150_total_book_expo;
+		}
+		public void setR150_total_book_expo(BigDecimal r150_total_book_expo) {
+			this.r150_total_book_expo = r150_total_book_expo;
+		}
+		public BigDecimal getR150_margin_pro() {
+			return r150_margin_pro;
+		}
+		public void setR150_margin_pro(BigDecimal r150_margin_pro) {
+			this.r150_margin_pro = r150_margin_pro;
+		}
+		public BigDecimal getR150_book_expo() {
+			return r150_book_expo;
+		}
+		public void setR150_book_expo(BigDecimal r150_book_expo) {
+			this.r150_book_expo = r150_book_expo;
+		}
+		public BigDecimal getR150_ccf_cont() {
+			return r150_ccf_cont;
+		}
+		public void setR150_ccf_cont(BigDecimal r150_ccf_cont) {
+			this.r150_ccf_cont = r150_ccf_cont;
+		}
+		public BigDecimal getR150_equiv_value() {
+			return r150_equiv_value;
+		}
+		public void setR150_equiv_value(BigDecimal r150_equiv_value) {
+			this.r150_equiv_value = r150_equiv_value;
+		}
+		public BigDecimal getR150_rw_obligant() {
+			return r150_rw_obligant;
+		}
+		public void setR150_rw_obligant(BigDecimal r150_rw_obligant) {
+			this.r150_rw_obligant = r150_rw_obligant;
+		}
+		public BigDecimal getR150_rav() {
+			return r150_rav;
+		}
+		public void setR150_rav(BigDecimal r150_rav) {
+			this.r150_rav = r150_rav;
+		}	
+	
+	
+	
+//=============common feilds 
+	public Date getReport_date() {
+		return report_date;
+	}
+	public void setReport_date(Date report_date) {
+		this.report_date = report_date;
+	}
+	public BigDecimal getReport_version() {
+		return report_version;
+	}
+	public void setReport_version(BigDecimal report_version) {
+		this.report_version = report_version;
+	}
+	public String getReport_frequency() {
+		return report_frequency;
+	}
+	public void setReport_frequency(String report_frequency) {
+		this.report_frequency = report_frequency;
+	}
+	public String getReport_code() {
+		return report_code;
+	}
+	public void setReport_code(String report_code) {
+		this.report_code = report_code;
+	}
+	public String getReport_desc() {
+		return report_desc;
+	}
+	public void setReport_desc(String report_desc) {
+		this.report_desc = report_desc;
+	}
+	public String getEntity_flg() {
+		return entity_flg;
+	}
+	public void setEntity_flg(String entity_flg) {
+		this.entity_flg = entity_flg;
+	}
+	public String getModify_flg() {
+		return modify_flg;
+	}
+	public void setModify_flg(String modify_flg) {
+		this.modify_flg = modify_flg;
+	}
+	public String getDel_flg() {
+		return del_flg;
+	}
+	public void setDel_flg(String del_flg) {
+		this.del_flg = del_flg;
+	}
+	
+}
+
+	public class OFF_BS_ITEMS_Summary_Entity2 {
+	
+	
+	private String	r151_product;
+	private String	r151_client_grp;
+	private BigDecimal	r151_total_book_expo;
+	private BigDecimal	r151_margin_pro;
+	private BigDecimal	r151_book_expo;
+	private BigDecimal	r151_ccf_cont;
+	private BigDecimal	r151_equiv_value;
+	private BigDecimal	r151_rw_obligant;
+	private BigDecimal	r151_rav;
+	private String	r152_product;
+	private String	r152_client_grp;
+	private BigDecimal	r152_total_book_expo;
+	private BigDecimal	r152_margin_pro;
+	private BigDecimal	r152_book_expo;
+	private BigDecimal	r152_ccf_cont;
+	private BigDecimal	r152_equiv_value;
+	private BigDecimal	r152_rw_obligant;
+	private BigDecimal	r152_rav;
+	private String	r153_product;
+	private String	r153_client_grp;
+	private BigDecimal	r153_total_book_expo;
+	private BigDecimal	r153_margin_pro;
+	private BigDecimal	r153_book_expo;
+	private BigDecimal	r153_ccf_cont;
+	private BigDecimal	r153_equiv_value;
+	private BigDecimal	r153_rw_obligant;
+	private BigDecimal	r153_rav;
+	private String	r154_product;
+	private String	r154_client_grp;
+	private BigDecimal	r154_total_book_expo;
+	private BigDecimal	r154_margin_pro;
+	private BigDecimal	r154_book_expo;
+	private BigDecimal	r154_ccf_cont;
+	private BigDecimal	r154_equiv_value;
+	private BigDecimal	r154_rw_obligant;
+	private BigDecimal	r154_rav;
+	private String	r155_product;
+	private String	r155_client_grp;
+	private BigDecimal	r155_total_book_expo;
+	private BigDecimal	r155_margin_pro;
+	private BigDecimal	r155_book_expo;
+	private BigDecimal	r155_ccf_cont;
+	private BigDecimal	r155_equiv_value;
+	private BigDecimal	r155_rw_obligant;
+	private BigDecimal	r155_rav;
+	private String	r156_product;
+	private String	r156_client_grp;
+	private BigDecimal	r156_total_book_expo;
+	private BigDecimal	r156_margin_pro;
+	private BigDecimal	r156_book_expo;
+	private BigDecimal	r156_ccf_cont;
+	private BigDecimal	r156_equiv_value;
+	private BigDecimal	r156_rw_obligant;
+	private BigDecimal	r156_rav;
+	private String	r157_product;
+	private String	r157_client_grp;
+	private BigDecimal	r157_total_book_expo;
+	private BigDecimal	r157_margin_pro;
+	private BigDecimal	r157_book_expo;
+	private BigDecimal	r157_ccf_cont;
+	private BigDecimal	r157_equiv_value;
+	private BigDecimal	r157_rw_obligant;
+	private BigDecimal	r157_rav;
+	private String	r158_product;
+	private String	r158_client_grp;
+	private BigDecimal	r158_total_book_expo;
+	private BigDecimal	r158_margin_pro;
+	private BigDecimal	r158_book_expo;
+	private BigDecimal	r158_ccf_cont;
+	private BigDecimal	r158_equiv_value;
+	private BigDecimal	r158_rw_obligant;
+	private BigDecimal	r158_rav;
+	private String	r159_product;
+	private String	r159_client_grp;
+	private BigDecimal	r159_total_book_expo;
+	private BigDecimal	r159_margin_pro;
+	private BigDecimal	r159_book_expo;
+	private BigDecimal	r159_ccf_cont;
+	private BigDecimal	r159_equiv_value;
+	private BigDecimal	r159_rw_obligant;
+	private BigDecimal	r159_rav;
+	private String	r160_product;
+	private String	r160_client_grp;
+	private BigDecimal	r160_total_book_expo;
+	private BigDecimal	r160_margin_pro;
+	private BigDecimal	r160_book_expo;
+	private BigDecimal	r160_ccf_cont;
+	private BigDecimal	r160_equiv_value;
+	private BigDecimal	r160_rw_obligant;
+	private BigDecimal	r160_rav;
+	private String	r161_product;
+	private String	r161_client_grp;
+	private BigDecimal	r161_total_book_expo;
+	private BigDecimal	r161_margin_pro;
+	private BigDecimal	r161_book_expo;
+	private BigDecimal	r161_ccf_cont;
+	private BigDecimal	r161_equiv_value;
+	private BigDecimal	r161_rw_obligant;
+	private BigDecimal	r161_rav;
+	private String	r162_product;
+	private String	r162_client_grp;
+	private BigDecimal	r162_total_book_expo;
+	private BigDecimal	r162_margin_pro;
+	private BigDecimal	r162_book_expo;
+	private BigDecimal	r162_ccf_cont;
+	private BigDecimal	r162_equiv_value;
+	private BigDecimal	r162_rw_obligant;
+	private BigDecimal	r162_rav;
+	private String	r163_product;
+	private String	r163_client_grp;
+	private BigDecimal	r163_total_book_expo;
+	private BigDecimal	r163_margin_pro;
+	private BigDecimal	r163_book_expo;
+	private BigDecimal	r163_ccf_cont;
+	private BigDecimal	r163_equiv_value;
+	private BigDecimal	r163_rw_obligant;
+	private BigDecimal	r163_rav;
+	private String	r164_product;
+	private String	r164_client_grp;
+	private BigDecimal	r164_total_book_expo;
+	private BigDecimal	r164_margin_pro;
+	private BigDecimal	r164_book_expo;
+	private BigDecimal	r164_ccf_cont;
+	private BigDecimal	r164_equiv_value;
+	private BigDecimal	r164_rw_obligant;
+	private BigDecimal	r164_rav;
+	private String	r165_product;
+	private String	r165_client_grp;
+	private BigDecimal	r165_total_book_expo;
+	private BigDecimal	r165_margin_pro;
+	private BigDecimal	r165_book_expo;
+	private BigDecimal	r165_ccf_cont;
+	private BigDecimal	r165_equiv_value;
+	private BigDecimal	r165_rw_obligant;
+	private BigDecimal	r165_rav;
+	private String	r166_product;
+	private String	r166_client_grp;
+	private BigDecimal	r166_total_book_expo;
+	private BigDecimal	r166_margin_pro;
+	private BigDecimal	r166_book_expo;
+	private BigDecimal	r166_ccf_cont;
+	private BigDecimal	r166_equiv_value;
+	private BigDecimal	r166_rw_obligant;
+	private BigDecimal	r166_rav;
+	private String	r167_product;
+	private String	r167_client_grp;
+	private BigDecimal	r167_total_book_expo;
+	private BigDecimal	r167_margin_pro;
+	private BigDecimal	r167_book_expo;
+	private BigDecimal	r167_ccf_cont;
+	private BigDecimal	r167_equiv_value;
+	private BigDecimal	r167_rw_obligant;
+	private BigDecimal	r167_rav;
+	private String	r168_product;
+	private String	r168_client_grp;
+	private BigDecimal	r168_total_book_expo;
+	private BigDecimal	r168_margin_pro;
+	private BigDecimal	r168_book_expo;
+	private BigDecimal	r168_ccf_cont;
+	private BigDecimal	r168_equiv_value;
+	private BigDecimal	r168_rw_obligant;
+	private BigDecimal	r168_rav;
+	private String	r169_product;
+	private String	r169_client_grp;
+	private BigDecimal	r169_total_book_expo;
+	private BigDecimal	r169_margin_pro;
+	private BigDecimal	r169_book_expo;
+	private BigDecimal	r169_ccf_cont;
+	private BigDecimal	r169_equiv_value;
+	private BigDecimal	r169_rw_obligant;
+	private BigDecimal	r169_rav;
+	private String	r170_product;
+	private String	r170_client_grp;
+	private BigDecimal	r170_total_book_expo;
+	private BigDecimal	r170_margin_pro;
+	private BigDecimal	r170_book_expo;
+	private BigDecimal	r170_ccf_cont;
+	private BigDecimal	r170_equiv_value;
+	private BigDecimal	r170_rw_obligant;
+	private BigDecimal	r170_rav;
+	private String	r171_product;
+	private String	r171_client_grp;
+	private BigDecimal	r171_total_book_expo;
+	private BigDecimal	r171_margin_pro;
+	private BigDecimal	r171_book_expo;
+	private BigDecimal	r171_ccf_cont;
+	private BigDecimal	r171_equiv_value;
+	private BigDecimal	r171_rw_obligant;
+	private BigDecimal	r171_rav;
+	private String	r172_product;
+	private String	r172_client_grp;
+	private BigDecimal	r172_total_book_expo;
+	private BigDecimal	r172_margin_pro;
+	private BigDecimal	r172_book_expo;
+	private BigDecimal	r172_ccf_cont;
+	private BigDecimal	r172_equiv_value;
+	private BigDecimal	r172_rw_obligant;
+	private BigDecimal	r172_rav;
+	private String	r173_product;
+	private String	r173_client_grp;
+	private BigDecimal	r173_total_book_expo;
+	private BigDecimal	r173_margin_pro;
+	private BigDecimal	r173_book_expo;
+	private BigDecimal	r173_ccf_cont;
+	private BigDecimal	r173_equiv_value;
+	private BigDecimal	r173_rw_obligant;
+	private BigDecimal	r173_rav;
+	private String	r174_product;
+	private String	r174_client_grp;
+	private BigDecimal	r174_total_book_expo;
+	private BigDecimal	r174_margin_pro;
+	private BigDecimal	r174_book_expo;
+	private BigDecimal	r174_ccf_cont;
+	private BigDecimal	r174_equiv_value;
+	private BigDecimal	r174_rw_obligant;
+	private BigDecimal	r174_rav;
+	private String	r175_product;
+	private String	r175_client_grp;
+	private BigDecimal	r175_total_book_expo;
+	private BigDecimal	r175_margin_pro;
+	private BigDecimal	r175_book_expo;
+	private BigDecimal	r175_ccf_cont;
+	private BigDecimal	r175_equiv_value;
+	private BigDecimal	r175_rw_obligant;
+	private BigDecimal	r175_rav;
+	private String	r176_product;
+	private String	r176_client_grp;
+	private BigDecimal	r176_total_book_expo;
+	private BigDecimal	r176_margin_pro;
+	private BigDecimal	r176_book_expo;
+	private BigDecimal	r176_ccf_cont;
+	private BigDecimal	r176_equiv_value;
+	private BigDecimal	r176_rw_obligant;
+	private BigDecimal	r176_rav;
+	private String	r177_product;
+	private String	r177_client_grp;
+	private BigDecimal	r177_total_book_expo;
+	private BigDecimal	r177_margin_pro;
+	private BigDecimal	r177_book_expo;
+	private BigDecimal	r177_ccf_cont;
+	private BigDecimal	r177_equiv_value;
+	private BigDecimal	r177_rw_obligant;
+	private BigDecimal	r177_rav;
+	private String	r178_product;
+	private String	r178_client_grp;
+	private BigDecimal	r178_total_book_expo;
+	private BigDecimal	r178_margin_pro;
+	private BigDecimal	r178_book_expo;
+	private BigDecimal	r178_ccf_cont;
+	private BigDecimal	r178_equiv_value;
+	private BigDecimal	r178_rw_obligant;
+	private BigDecimal	r178_rav;
+	private String	r179_product;
+	private String	r179_client_grp;
+	private BigDecimal	r179_total_book_expo;
+	private BigDecimal	r179_margin_pro;
+	private BigDecimal	r179_book_expo;
+	private BigDecimal	r179_ccf_cont;
+	private BigDecimal	r179_equiv_value;
+	private BigDecimal	r179_rw_obligant;
+	private BigDecimal	r179_rav;
+	private String	r180_product;
+	private String	r180_client_grp;
+	private BigDecimal	r180_total_book_expo;
+	private BigDecimal	r180_margin_pro;
+	private BigDecimal	r180_book_expo;
+	private BigDecimal	r180_ccf_cont;
+	private BigDecimal	r180_equiv_value;
+	private BigDecimal	r180_rw_obligant;
+	private BigDecimal	r180_rav;
+	private String	r181_product;
+	private String	r181_client_grp;
+	private BigDecimal	r181_total_book_expo;
+	private BigDecimal	r181_margin_pro;
+	private BigDecimal	r181_book_expo;
+	private BigDecimal	r181_ccf_cont;
+	private BigDecimal	r181_equiv_value;
+	private BigDecimal	r181_rw_obligant;
+	private BigDecimal	r181_rav;
+	private String	r182_product;
+	private String	r182_client_grp;
+	private BigDecimal	r182_total_book_expo;
+	private BigDecimal	r182_margin_pro;
+	private BigDecimal	r182_book_expo;
+	private BigDecimal	r182_ccf_cont;
+	private BigDecimal	r182_equiv_value;
+	private BigDecimal	r182_rw_obligant;
+	private BigDecimal	r182_rav;
+	private String	r183_product;
+	private String	r183_client_grp;
+	private BigDecimal	r183_total_book_expo;
+	private BigDecimal	r183_margin_pro;
+	private BigDecimal	r183_book_expo;
+	private BigDecimal	r183_ccf_cont;
+	private BigDecimal	r183_equiv_value;
+	private BigDecimal	r183_rw_obligant;
+	private BigDecimal	r183_rav;
+	private String	r184_product;
+	private String	r184_client_grp;
+	private BigDecimal	r184_total_book_expo;
+	private BigDecimal	r184_margin_pro;
+	private BigDecimal	r184_book_expo;
+	private BigDecimal	r184_ccf_cont;
+	private BigDecimal	r184_equiv_value;
+	private BigDecimal	r184_rw_obligant;
+	private BigDecimal	r184_rav;
+	private String	r185_product;
+	private String	r185_client_grp;
+	private BigDecimal	r185_total_book_expo;
+	private BigDecimal	r185_margin_pro;
+	private BigDecimal	r185_book_expo;
+	private BigDecimal	r185_ccf_cont;
+	private BigDecimal	r185_equiv_value;
+	private BigDecimal	r185_rw_obligant;
+	private BigDecimal	r185_rav;
+	private String	r186_product;
+	private String	r186_client_grp;
+	private BigDecimal	r186_total_book_expo;
+	private BigDecimal	r186_margin_pro;
+	private BigDecimal	r186_book_expo;
+	private BigDecimal	r186_ccf_cont;
+	private BigDecimal	r186_equiv_value;
+	private BigDecimal	r186_rw_obligant;
+	private BigDecimal	r186_rav;
+	private String	r187_product;
+	private String	r187_client_grp;
+	private BigDecimal	r187_total_book_expo;
+	private BigDecimal	r187_margin_pro;
+	private BigDecimal	r187_book_expo;
+	private BigDecimal	r187_ccf_cont;
+	private BigDecimal	r187_equiv_value;
+	private BigDecimal	r187_rw_obligant;
+	private BigDecimal	r187_rav;
+	private String	r188_product;
+	private String	r188_client_grp;
+	private BigDecimal	r188_total_book_expo;
+	private BigDecimal	r188_margin_pro;
+	private BigDecimal	r188_book_expo;
+	private BigDecimal	r188_ccf_cont;
+	private BigDecimal	r188_equiv_value;
+	private BigDecimal	r188_rw_obligant;
+	private BigDecimal	r188_rav;
+	private String	r189_product;
+	private String	r189_client_grp;
+	private BigDecimal	r189_total_book_expo;
+	private BigDecimal	r189_margin_pro;
+	private BigDecimal	r189_book_expo;
+	private BigDecimal	r189_ccf_cont;
+	private BigDecimal	r189_equiv_value;
+	private BigDecimal	r189_rw_obligant;
+	private BigDecimal	r189_rav;
+
+	
+
+
+	
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Id
+	
+	
+	private Date	report_date;
+	private BigDecimal	report_version;
+	private String	report_frequency;
+	private String	report_code;
+	private String	report_desc;
+	private String	entity_flg;
+	private String	modify_flg;
+	private String	del_flg;
+
+
+
+	public String getR151_product() {
+			return r151_product;
+		}
+		public void setR151_product(String r151_product) {
+			this.r151_product = r151_product;
+		}
+		public String getR151_client_grp() {
+			return r151_client_grp;
+		}
+		public void setR151_client_grp(String r151_client_grp) {
+			this.r151_client_grp = r151_client_grp;
+		}
+		public BigDecimal getR151_total_book_expo() {
+			return r151_total_book_expo;
+		}
+		public void setR151_total_book_expo(BigDecimal r151_total_book_expo) {
+			this.r151_total_book_expo = r151_total_book_expo;
+		}
+		public BigDecimal getR151_margin_pro() {
+			return r151_margin_pro;
+		}
+		public void setR151_margin_pro(BigDecimal r151_margin_pro) {
+			this.r151_margin_pro = r151_margin_pro;
+		}
+		public BigDecimal getR151_book_expo() {
+			return r151_book_expo;
+		}
+		public void setR151_book_expo(BigDecimal r151_book_expo) {
+			this.r151_book_expo = r151_book_expo;
+		}
+		public BigDecimal getR151_ccf_cont() {
+			return r151_ccf_cont;
+		}
+		public void setR151_ccf_cont(BigDecimal r151_ccf_cont) {
+			this.r151_ccf_cont = r151_ccf_cont;
+		}
+		public BigDecimal getR151_equiv_value() {
+			return r151_equiv_value;
+		}
+		public void setR151_equiv_value(BigDecimal r151_equiv_value) {
+			this.r151_equiv_value = r151_equiv_value;
+		}
+		public BigDecimal getR151_rw_obligant() {
+			return r151_rw_obligant;
+		}
+		public void setR151_rw_obligant(BigDecimal r151_rw_obligant) {
+			this.r151_rw_obligant = r151_rw_obligant;
+		}
+		public BigDecimal getR151_rav() {
+			return r151_rav;
+		}
+		public void setR151_rav(BigDecimal r151_rav) {
+			this.r151_rav = r151_rav;
+		}
+		public String getR152_product() {
+			return r152_product;
+		}
+		public void setR152_product(String r152_product) {
+			this.r152_product = r152_product;
+		}
+		public String getR152_client_grp() {
+			return r152_client_grp;
+		}
+		public void setR152_client_grp(String r152_client_grp) {
+			this.r152_client_grp = r152_client_grp;
+		}
+		public BigDecimal getR152_total_book_expo() {
+			return r152_total_book_expo;
+		}
+		public void setR152_total_book_expo(BigDecimal r152_total_book_expo) {
+			this.r152_total_book_expo = r152_total_book_expo;
+		}
+		public BigDecimal getR152_margin_pro() {
+			return r152_margin_pro;
+		}
+		public void setR152_margin_pro(BigDecimal r152_margin_pro) {
+			this.r152_margin_pro = r152_margin_pro;
+		}
+		public BigDecimal getR152_book_expo() {
+			return r152_book_expo;
+		}
+		public void setR152_book_expo(BigDecimal r152_book_expo) {
+			this.r152_book_expo = r152_book_expo;
+		}
+		public BigDecimal getR152_ccf_cont() {
+			return r152_ccf_cont;
+		}
+		public void setR152_ccf_cont(BigDecimal r152_ccf_cont) {
+			this.r152_ccf_cont = r152_ccf_cont;
+		}
+		public BigDecimal getR152_equiv_value() {
+			return r152_equiv_value;
+		}
+		public void setR152_equiv_value(BigDecimal r152_equiv_value) {
+			this.r152_equiv_value = r152_equiv_value;
+		}
+		public BigDecimal getR152_rw_obligant() {
+			return r152_rw_obligant;
+		}
+		public void setR152_rw_obligant(BigDecimal r152_rw_obligant) {
+			this.r152_rw_obligant = r152_rw_obligant;
+		}
+		public BigDecimal getR152_rav() {
+			return r152_rav;
+		}
+		public void setR152_rav(BigDecimal r152_rav) {
+			this.r152_rav = r152_rav;
+		}
+		public String getR153_product() {
+			return r153_product;
+		}
+		public void setR153_product(String r153_product) {
+			this.r153_product = r153_product;
+		}
+		public String getR153_client_grp() {
+			return r153_client_grp;
+		}
+		public void setR153_client_grp(String r153_client_grp) {
+			this.r153_client_grp = r153_client_grp;
+		}
+		public BigDecimal getR153_total_book_expo() {
+			return r153_total_book_expo;
+		}
+		public void setR153_total_book_expo(BigDecimal r153_total_book_expo) {
+			this.r153_total_book_expo = r153_total_book_expo;
+		}
+		public BigDecimal getR153_margin_pro() {
+			return r153_margin_pro;
+		}
+		public void setR153_margin_pro(BigDecimal r153_margin_pro) {
+			this.r153_margin_pro = r153_margin_pro;
+		}
+		public BigDecimal getR153_book_expo() {
+			return r153_book_expo;
+		}
+		public void setR153_book_expo(BigDecimal r153_book_expo) {
+			this.r153_book_expo = r153_book_expo;
+		}
+		public BigDecimal getR153_ccf_cont() {
+			return r153_ccf_cont;
+		}
+		public void setR153_ccf_cont(BigDecimal r153_ccf_cont) {
+			this.r153_ccf_cont = r153_ccf_cont;
+		}
+		public BigDecimal getR153_equiv_value() {
+			return r153_equiv_value;
+		}
+		public void setR153_equiv_value(BigDecimal r153_equiv_value) {
+			this.r153_equiv_value = r153_equiv_value;
+		}
+		public BigDecimal getR153_rw_obligant() {
+			return r153_rw_obligant;
+		}
+		public void setR153_rw_obligant(BigDecimal r153_rw_obligant) {
+			this.r153_rw_obligant = r153_rw_obligant;
+		}
+		public BigDecimal getR153_rav() {
+			return r153_rav;
+		}
+		public void setR153_rav(BigDecimal r153_rav) {
+			this.r153_rav = r153_rav;
+		}
+		public String getR154_product() {
+			return r154_product;
+		}
+		public void setR154_product(String r154_product) {
+			this.r154_product = r154_product;
+		}
+		public String getR154_client_grp() {
+			return r154_client_grp;
+		}
+		public void setR154_client_grp(String r154_client_grp) {
+			this.r154_client_grp = r154_client_grp;
+		}
+		public BigDecimal getR154_total_book_expo() {
+			return r154_total_book_expo;
+		}
+		public void setR154_total_book_expo(BigDecimal r154_total_book_expo) {
+			this.r154_total_book_expo = r154_total_book_expo;
+		}
+		public BigDecimal getR154_margin_pro() {
+			return r154_margin_pro;
+		}
+		public void setR154_margin_pro(BigDecimal r154_margin_pro) {
+			this.r154_margin_pro = r154_margin_pro;
+		}
+		public BigDecimal getR154_book_expo() {
+			return r154_book_expo;
+		}
+		public void setR154_book_expo(BigDecimal r154_book_expo) {
+			this.r154_book_expo = r154_book_expo;
+		}
+		public BigDecimal getR154_ccf_cont() {
+			return r154_ccf_cont;
+		}
+		public void setR154_ccf_cont(BigDecimal r154_ccf_cont) {
+			this.r154_ccf_cont = r154_ccf_cont;
+		}
+		public BigDecimal getR154_equiv_value() {
+			return r154_equiv_value;
+		}
+		public void setR154_equiv_value(BigDecimal r154_equiv_value) {
+			this.r154_equiv_value = r154_equiv_value;
+		}
+		public BigDecimal getR154_rw_obligant() {
+			return r154_rw_obligant;
+		}
+		public void setR154_rw_obligant(BigDecimal r154_rw_obligant) {
+			this.r154_rw_obligant = r154_rw_obligant;
+		}
+		public BigDecimal getR154_rav() {
+			return r154_rav;
+		}
+		public void setR154_rav(BigDecimal r154_rav) {
+			this.r154_rav = r154_rav;
+		}
+		public String getR155_product() {
+			return r155_product;
+		}
+		public void setR155_product(String r155_product) {
+			this.r155_product = r155_product;
+		}
+		public String getR155_client_grp() {
+			return r155_client_grp;
+		}
+		public void setR155_client_grp(String r155_client_grp) {
+			this.r155_client_grp = r155_client_grp;
+		}
+		public BigDecimal getR155_total_book_expo() {
+			return r155_total_book_expo;
+		}
+		public void setR155_total_book_expo(BigDecimal r155_total_book_expo) {
+			this.r155_total_book_expo = r155_total_book_expo;
+		}
+		public BigDecimal getR155_margin_pro() {
+			return r155_margin_pro;
+		}
+		public void setR155_margin_pro(BigDecimal r155_margin_pro) {
+			this.r155_margin_pro = r155_margin_pro;
+		}
+		public BigDecimal getR155_book_expo() {
+			return r155_book_expo;
+		}
+		public void setR155_book_expo(BigDecimal r155_book_expo) {
+			this.r155_book_expo = r155_book_expo;
+		}
+		public BigDecimal getR155_ccf_cont() {
+			return r155_ccf_cont;
+		}
+		public void setR155_ccf_cont(BigDecimal r155_ccf_cont) {
+			this.r155_ccf_cont = r155_ccf_cont;
+		}
+		public BigDecimal getR155_equiv_value() {
+			return r155_equiv_value;
+		}
+		public void setR155_equiv_value(BigDecimal r155_equiv_value) {
+			this.r155_equiv_value = r155_equiv_value;
+		}
+		public BigDecimal getR155_rw_obligant() {
+			return r155_rw_obligant;
+		}
+		public void setR155_rw_obligant(BigDecimal r155_rw_obligant) {
+			this.r155_rw_obligant = r155_rw_obligant;
+		}
+		public BigDecimal getR155_rav() {
+			return r155_rav;
+		}
+		public void setR155_rav(BigDecimal r155_rav) {
+			this.r155_rav = r155_rav;
+		}
+		public String getR156_product() {
+			return r156_product;
+		}
+		public void setR156_product(String r156_product) {
+			this.r156_product = r156_product;
+		}
+		public String getR156_client_grp() {
+			return r156_client_grp;
+		}
+		public void setR156_client_grp(String r156_client_grp) {
+			this.r156_client_grp = r156_client_grp;
+		}
+		public BigDecimal getR156_total_book_expo() {
+			return r156_total_book_expo;
+		}
+		public void setR156_total_book_expo(BigDecimal r156_total_book_expo) {
+			this.r156_total_book_expo = r156_total_book_expo;
+		}
+		public BigDecimal getR156_margin_pro() {
+			return r156_margin_pro;
+		}
+		public void setR156_margin_pro(BigDecimal r156_margin_pro) {
+			this.r156_margin_pro = r156_margin_pro;
+		}
+		public BigDecimal getR156_book_expo() {
+			return r156_book_expo;
+		}
+		public void setR156_book_expo(BigDecimal r156_book_expo) {
+			this.r156_book_expo = r156_book_expo;
+		}
+		public BigDecimal getR156_ccf_cont() {
+			return r156_ccf_cont;
+		}
+		public void setR156_ccf_cont(BigDecimal r156_ccf_cont) {
+			this.r156_ccf_cont = r156_ccf_cont;
+		}
+		public BigDecimal getR156_equiv_value() {
+			return r156_equiv_value;
+		}
+		public void setR156_equiv_value(BigDecimal r156_equiv_value) {
+			this.r156_equiv_value = r156_equiv_value;
+		}
+		public BigDecimal getR156_rw_obligant() {
+			return r156_rw_obligant;
+		}
+		public void setR156_rw_obligant(BigDecimal r156_rw_obligant) {
+			this.r156_rw_obligant = r156_rw_obligant;
+		}
+		public BigDecimal getR156_rav() {
+			return r156_rav;
+		}
+		public void setR156_rav(BigDecimal r156_rav) {
+			this.r156_rav = r156_rav;
+		}
+		public String getR157_product() {
+			return r157_product;
+		}
+		public void setR157_product(String r157_product) {
+			this.r157_product = r157_product;
+		}
+		public String getR157_client_grp() {
+			return r157_client_grp;
+		}
+		public void setR157_client_grp(String r157_client_grp) {
+			this.r157_client_grp = r157_client_grp;
+		}
+		public BigDecimal getR157_total_book_expo() {
+			return r157_total_book_expo;
+		}
+		public void setR157_total_book_expo(BigDecimal r157_total_book_expo) {
+			this.r157_total_book_expo = r157_total_book_expo;
+		}
+		public BigDecimal getR157_margin_pro() {
+			return r157_margin_pro;
+		}
+		public void setR157_margin_pro(BigDecimal r157_margin_pro) {
+			this.r157_margin_pro = r157_margin_pro;
+		}
+		public BigDecimal getR157_book_expo() {
+			return r157_book_expo;
+		}
+		public void setR157_book_expo(BigDecimal r157_book_expo) {
+			this.r157_book_expo = r157_book_expo;
+		}
+		public BigDecimal getR157_ccf_cont() {
+			return r157_ccf_cont;
+		}
+		public void setR157_ccf_cont(BigDecimal r157_ccf_cont) {
+			this.r157_ccf_cont = r157_ccf_cont;
+		}
+		public BigDecimal getR157_equiv_value() {
+			return r157_equiv_value;
+		}
+		public void setR157_equiv_value(BigDecimal r157_equiv_value) {
+			this.r157_equiv_value = r157_equiv_value;
+		}
+		public BigDecimal getR157_rw_obligant() {
+			return r157_rw_obligant;
+		}
+		public void setR157_rw_obligant(BigDecimal r157_rw_obligant) {
+			this.r157_rw_obligant = r157_rw_obligant;
+		}
+		public BigDecimal getR157_rav() {
+			return r157_rav;
+		}
+		public void setR157_rav(BigDecimal r157_rav) {
+			this.r157_rav = r157_rav;
+		}
+		public String getR158_product() {
+			return r158_product;
+		}
+		public void setR158_product(String r158_product) {
+			this.r158_product = r158_product;
+		}
+		public String getR158_client_grp() {
+			return r158_client_grp;
+		}
+		public void setR158_client_grp(String r158_client_grp) {
+			this.r158_client_grp = r158_client_grp;
+		}
+		public BigDecimal getR158_total_book_expo() {
+			return r158_total_book_expo;
+		}
+		public void setR158_total_book_expo(BigDecimal r158_total_book_expo) {
+			this.r158_total_book_expo = r158_total_book_expo;
+		}
+		public BigDecimal getR158_margin_pro() {
+			return r158_margin_pro;
+		}
+		public void setR158_margin_pro(BigDecimal r158_margin_pro) {
+			this.r158_margin_pro = r158_margin_pro;
+		}
+		public BigDecimal getR158_book_expo() {
+			return r158_book_expo;
+		}
+		public void setR158_book_expo(BigDecimal r158_book_expo) {
+			this.r158_book_expo = r158_book_expo;
+		}
+		public BigDecimal getR158_ccf_cont() {
+			return r158_ccf_cont;
+		}
+		public void setR158_ccf_cont(BigDecimal r158_ccf_cont) {
+			this.r158_ccf_cont = r158_ccf_cont;
+		}
+		public BigDecimal getR158_equiv_value() {
+			return r158_equiv_value;
+		}
+		public void setR158_equiv_value(BigDecimal r158_equiv_value) {
+			this.r158_equiv_value = r158_equiv_value;
+		}
+		public BigDecimal getR158_rw_obligant() {
+			return r158_rw_obligant;
+		}
+		public void setR158_rw_obligant(BigDecimal r158_rw_obligant) {
+			this.r158_rw_obligant = r158_rw_obligant;
+		}
+		public BigDecimal getR158_rav() {
+			return r158_rav;
+		}
+		public void setR158_rav(BigDecimal r158_rav) {
+			this.r158_rav = r158_rav;
+		}
+		public String getR159_product() {
+			return r159_product;
+		}
+		public void setR159_product(String r159_product) {
+			this.r159_product = r159_product;
+		}
+		public String getR159_client_grp() {
+			return r159_client_grp;
+		}
+		public void setR159_client_grp(String r159_client_grp) {
+			this.r159_client_grp = r159_client_grp;
+		}
+		public BigDecimal getR159_total_book_expo() {
+			return r159_total_book_expo;
+		}
+		public void setR159_total_book_expo(BigDecimal r159_total_book_expo) {
+			this.r159_total_book_expo = r159_total_book_expo;
+		}
+		public BigDecimal getR159_margin_pro() {
+			return r159_margin_pro;
+		}
+		public void setR159_margin_pro(BigDecimal r159_margin_pro) {
+			this.r159_margin_pro = r159_margin_pro;
+		}
+		public BigDecimal getR159_book_expo() {
+			return r159_book_expo;
+		}
+		public void setR159_book_expo(BigDecimal r159_book_expo) {
+			this.r159_book_expo = r159_book_expo;
+		}
+		public BigDecimal getR159_ccf_cont() {
+			return r159_ccf_cont;
+		}
+		public void setR159_ccf_cont(BigDecimal r159_ccf_cont) {
+			this.r159_ccf_cont = r159_ccf_cont;
+		}
+		public BigDecimal getR159_equiv_value() {
+			return r159_equiv_value;
+		}
+		public void setR159_equiv_value(BigDecimal r159_equiv_value) {
+			this.r159_equiv_value = r159_equiv_value;
+		}
+		public BigDecimal getR159_rw_obligant() {
+			return r159_rw_obligant;
+		}
+		public void setR159_rw_obligant(BigDecimal r159_rw_obligant) {
+			this.r159_rw_obligant = r159_rw_obligant;
+		}
+		public BigDecimal getR159_rav() {
+			return r159_rav;
+		}
+		public void setR159_rav(BigDecimal r159_rav) {
+			this.r159_rav = r159_rav;
+		}
+		public String getR160_product() {
+			return r160_product;
+		}
+		public void setR160_product(String r160_product) {
+			this.r160_product = r160_product;
+		}
+		public String getR160_client_grp() {
+			return r160_client_grp;
+		}
+		public void setR160_client_grp(String r160_client_grp) {
+			this.r160_client_grp = r160_client_grp;
+		}
+		public BigDecimal getR160_total_book_expo() {
+			return r160_total_book_expo;
+		}
+		public void setR160_total_book_expo(BigDecimal r160_total_book_expo) {
+			this.r160_total_book_expo = r160_total_book_expo;
+		}
+		public BigDecimal getR160_margin_pro() {
+			return r160_margin_pro;
+		}
+		public void setR160_margin_pro(BigDecimal r160_margin_pro) {
+			this.r160_margin_pro = r160_margin_pro;
+		}
+		public BigDecimal getR160_book_expo() {
+			return r160_book_expo;
+		}
+		public void setR160_book_expo(BigDecimal r160_book_expo) {
+			this.r160_book_expo = r160_book_expo;
+		}
+		public BigDecimal getR160_ccf_cont() {
+			return r160_ccf_cont;
+		}
+		public void setR160_ccf_cont(BigDecimal r160_ccf_cont) {
+			this.r160_ccf_cont = r160_ccf_cont;
+		}
+		public BigDecimal getR160_equiv_value() {
+			return r160_equiv_value;
+		}
+		public void setR160_equiv_value(BigDecimal r160_equiv_value) {
+			this.r160_equiv_value = r160_equiv_value;
+		}
+		public BigDecimal getR160_rw_obligant() {
+			return r160_rw_obligant;
+		}
+		public void setR160_rw_obligant(BigDecimal r160_rw_obligant) {
+			this.r160_rw_obligant = r160_rw_obligant;
+		}
+		public BigDecimal getR160_rav() {
+			return r160_rav;
+		}
+		public void setR160_rav(BigDecimal r160_rav) {
+			this.r160_rav = r160_rav;
+		}
+		public String getR161_product() {
+			return r161_product;
+		}
+		public void setR161_product(String r161_product) {
+			this.r161_product = r161_product;
+		}
+		public String getR161_client_grp() {
+			return r161_client_grp;
+		}
+		public void setR161_client_grp(String r161_client_grp) {
+			this.r161_client_grp = r161_client_grp;
+		}
+		public BigDecimal getR161_total_book_expo() {
+			return r161_total_book_expo;
+		}
+		public void setR161_total_book_expo(BigDecimal r161_total_book_expo) {
+			this.r161_total_book_expo = r161_total_book_expo;
+		}
+		public BigDecimal getR161_margin_pro() {
+			return r161_margin_pro;
+		}
+		public void setR161_margin_pro(BigDecimal r161_margin_pro) {
+			this.r161_margin_pro = r161_margin_pro;
+		}
+		public BigDecimal getR161_book_expo() {
+			return r161_book_expo;
+		}
+		public void setR161_book_expo(BigDecimal r161_book_expo) {
+			this.r161_book_expo = r161_book_expo;
+		}
+		public BigDecimal getR161_ccf_cont() {
+			return r161_ccf_cont;
+		}
+		public void setR161_ccf_cont(BigDecimal r161_ccf_cont) {
+			this.r161_ccf_cont = r161_ccf_cont;
+		}
+		public BigDecimal getR161_equiv_value() {
+			return r161_equiv_value;
+		}
+		public void setR161_equiv_value(BigDecimal r161_equiv_value) {
+			this.r161_equiv_value = r161_equiv_value;
+		}
+		public BigDecimal getR161_rw_obligant() {
+			return r161_rw_obligant;
+		}
+		public void setR161_rw_obligant(BigDecimal r161_rw_obligant) {
+			this.r161_rw_obligant = r161_rw_obligant;
+		}
+		public BigDecimal getR161_rav() {
+			return r161_rav;
+		}
+		public void setR161_rav(BigDecimal r161_rav) {
+			this.r161_rav = r161_rav;
+		}
+		public String getR162_product() {
+			return r162_product;
+		}
+		public void setR162_product(String r162_product) {
+			this.r162_product = r162_product;
+		}
+		public String getR162_client_grp() {
+			return r162_client_grp;
+		}
+		public void setR162_client_grp(String r162_client_grp) {
+			this.r162_client_grp = r162_client_grp;
+		}
+		public BigDecimal getR162_total_book_expo() {
+			return r162_total_book_expo;
+		}
+		public void setR162_total_book_expo(BigDecimal r162_total_book_expo) {
+			this.r162_total_book_expo = r162_total_book_expo;
+		}
+		public BigDecimal getR162_margin_pro() {
+			return r162_margin_pro;
+		}
+		public void setR162_margin_pro(BigDecimal r162_margin_pro) {
+			this.r162_margin_pro = r162_margin_pro;
+		}
+		public BigDecimal getR162_book_expo() {
+			return r162_book_expo;
+		}
+		public void setR162_book_expo(BigDecimal r162_book_expo) {
+			this.r162_book_expo = r162_book_expo;
+		}
+		public BigDecimal getR162_ccf_cont() {
+			return r162_ccf_cont;
+		}
+		public void setR162_ccf_cont(BigDecimal r162_ccf_cont) {
+			this.r162_ccf_cont = r162_ccf_cont;
+		}
+		public BigDecimal getR162_equiv_value() {
+			return r162_equiv_value;
+		}
+		public void setR162_equiv_value(BigDecimal r162_equiv_value) {
+			this.r162_equiv_value = r162_equiv_value;
+		}
+		public BigDecimal getR162_rw_obligant() {
+			return r162_rw_obligant;
+		}
+		public void setR162_rw_obligant(BigDecimal r162_rw_obligant) {
+			this.r162_rw_obligant = r162_rw_obligant;
+		}
+		public BigDecimal getR162_rav() {
+			return r162_rav;
+		}
+		public void setR162_rav(BigDecimal r162_rav) {
+			this.r162_rav = r162_rav;
+		}
+		public String getR163_product() {
+			return r163_product;
+		}
+		public void setR163_product(String r163_product) {
+			this.r163_product = r163_product;
+		}
+		public String getR163_client_grp() {
+			return r163_client_grp;
+		}
+		public void setR163_client_grp(String r163_client_grp) {
+			this.r163_client_grp = r163_client_grp;
+		}
+		public BigDecimal getR163_total_book_expo() {
+			return r163_total_book_expo;
+		}
+		public void setR163_total_book_expo(BigDecimal r163_total_book_expo) {
+			this.r163_total_book_expo = r163_total_book_expo;
+		}
+		public BigDecimal getR163_margin_pro() {
+			return r163_margin_pro;
+		}
+		public void setR163_margin_pro(BigDecimal r163_margin_pro) {
+			this.r163_margin_pro = r163_margin_pro;
+		}
+		public BigDecimal getR163_book_expo() {
+			return r163_book_expo;
+		}
+		public void setR163_book_expo(BigDecimal r163_book_expo) {
+			this.r163_book_expo = r163_book_expo;
+		}
+		public BigDecimal getR163_ccf_cont() {
+			return r163_ccf_cont;
+		}
+		public void setR163_ccf_cont(BigDecimal r163_ccf_cont) {
+			this.r163_ccf_cont = r163_ccf_cont;
+		}
+		public BigDecimal getR163_equiv_value() {
+			return r163_equiv_value;
+		}
+		public void setR163_equiv_value(BigDecimal r163_equiv_value) {
+			this.r163_equiv_value = r163_equiv_value;
+		}
+		public BigDecimal getR163_rw_obligant() {
+			return r163_rw_obligant;
+		}
+		public void setR163_rw_obligant(BigDecimal r163_rw_obligant) {
+			this.r163_rw_obligant = r163_rw_obligant;
+		}
+		public BigDecimal getR163_rav() {
+			return r163_rav;
+		}
+		public void setR163_rav(BigDecimal r163_rav) {
+			this.r163_rav = r163_rav;
+		}
+		public String getR164_product() {
+			return r164_product;
+		}
+		public void setR164_product(String r164_product) {
+			this.r164_product = r164_product;
+		}
+		public String getR164_client_grp() {
+			return r164_client_grp;
+		}
+		public void setR164_client_grp(String r164_client_grp) {
+			this.r164_client_grp = r164_client_grp;
+		}
+		public BigDecimal getR164_total_book_expo() {
+			return r164_total_book_expo;
+		}
+		public void setR164_total_book_expo(BigDecimal r164_total_book_expo) {
+			this.r164_total_book_expo = r164_total_book_expo;
+		}
+		public BigDecimal getR164_margin_pro() {
+			return r164_margin_pro;
+		}
+		public void setR164_margin_pro(BigDecimal r164_margin_pro) {
+			this.r164_margin_pro = r164_margin_pro;
+		}
+		public BigDecimal getR164_book_expo() {
+			return r164_book_expo;
+		}
+		public void setR164_book_expo(BigDecimal r164_book_expo) {
+			this.r164_book_expo = r164_book_expo;
+		}
+		public BigDecimal getR164_ccf_cont() {
+			return r164_ccf_cont;
+		}
+		public void setR164_ccf_cont(BigDecimal r164_ccf_cont) {
+			this.r164_ccf_cont = r164_ccf_cont;
+		}
+		public BigDecimal getR164_equiv_value() {
+			return r164_equiv_value;
+		}
+		public void setR164_equiv_value(BigDecimal r164_equiv_value) {
+			this.r164_equiv_value = r164_equiv_value;
+		}
+		public BigDecimal getR164_rw_obligant() {
+			return r164_rw_obligant;
+		}
+		public void setR164_rw_obligant(BigDecimal r164_rw_obligant) {
+			this.r164_rw_obligant = r164_rw_obligant;
+		}
+		public BigDecimal getR164_rav() {
+			return r164_rav;
+		}
+		public void setR164_rav(BigDecimal r164_rav) {
+			this.r164_rav = r164_rav;
+		}
+		public String getR165_product() {
+			return r165_product;
+		}
+		public void setR165_product(String r165_product) {
+			this.r165_product = r165_product;
+		}
+		public String getR165_client_grp() {
+			return r165_client_grp;
+		}
+		public void setR165_client_grp(String r165_client_grp) {
+			this.r165_client_grp = r165_client_grp;
+		}
+		public BigDecimal getR165_total_book_expo() {
+			return r165_total_book_expo;
+		}
+		public void setR165_total_book_expo(BigDecimal r165_total_book_expo) {
+			this.r165_total_book_expo = r165_total_book_expo;
+		}
+		public BigDecimal getR165_margin_pro() {
+			return r165_margin_pro;
+		}
+		public void setR165_margin_pro(BigDecimal r165_margin_pro) {
+			this.r165_margin_pro = r165_margin_pro;
+		}
+		public BigDecimal getR165_book_expo() {
+			return r165_book_expo;
+		}
+		public void setR165_book_expo(BigDecimal r165_book_expo) {
+			this.r165_book_expo = r165_book_expo;
+		}
+		public BigDecimal getR165_ccf_cont() {
+			return r165_ccf_cont;
+		}
+		public void setR165_ccf_cont(BigDecimal r165_ccf_cont) {
+			this.r165_ccf_cont = r165_ccf_cont;
+		}
+		public BigDecimal getR165_equiv_value() {
+			return r165_equiv_value;
+		}
+		public void setR165_equiv_value(BigDecimal r165_equiv_value) {
+			this.r165_equiv_value = r165_equiv_value;
+		}
+		public BigDecimal getR165_rw_obligant() {
+			return r165_rw_obligant;
+		}
+		public void setR165_rw_obligant(BigDecimal r165_rw_obligant) {
+			this.r165_rw_obligant = r165_rw_obligant;
+		}
+		public BigDecimal getR165_rav() {
+			return r165_rav;
+		}
+		public void setR165_rav(BigDecimal r165_rav) {
+			this.r165_rav = r165_rav;
+		}
+		public String getR166_product() {
+			return r166_product;
+		}
+		public void setR166_product(String r166_product) {
+			this.r166_product = r166_product;
+		}
+		public String getR166_client_grp() {
+			return r166_client_grp;
+		}
+		public void setR166_client_grp(String r166_client_grp) {
+			this.r166_client_grp = r166_client_grp;
+		}
+		public BigDecimal getR166_total_book_expo() {
+			return r166_total_book_expo;
+		}
+		public void setR166_total_book_expo(BigDecimal r166_total_book_expo) {
+			this.r166_total_book_expo = r166_total_book_expo;
+		}
+		public BigDecimal getR166_margin_pro() {
+			return r166_margin_pro;
+		}
+		public void setR166_margin_pro(BigDecimal r166_margin_pro) {
+			this.r166_margin_pro = r166_margin_pro;
+		}
+		public BigDecimal getR166_book_expo() {
+			return r166_book_expo;
+		}
+		public void setR166_book_expo(BigDecimal r166_book_expo) {
+			this.r166_book_expo = r166_book_expo;
+		}
+		public BigDecimal getR166_ccf_cont() {
+			return r166_ccf_cont;
+		}
+		public void setR166_ccf_cont(BigDecimal r166_ccf_cont) {
+			this.r166_ccf_cont = r166_ccf_cont;
+		}
+		public BigDecimal getR166_equiv_value() {
+			return r166_equiv_value;
+		}
+		public void setR166_equiv_value(BigDecimal r166_equiv_value) {
+			this.r166_equiv_value = r166_equiv_value;
+		}
+		public BigDecimal getR166_rw_obligant() {
+			return r166_rw_obligant;
+		}
+		public void setR166_rw_obligant(BigDecimal r166_rw_obligant) {
+			this.r166_rw_obligant = r166_rw_obligant;
+		}
+		public BigDecimal getR166_rav() {
+			return r166_rav;
+		}
+		public void setR166_rav(BigDecimal r166_rav) {
+			this.r166_rav = r166_rav;
+		}
+		public String getR167_product() {
+			return r167_product;
+		}
+		public void setR167_product(String r167_product) {
+			this.r167_product = r167_product;
+		}
+		public String getR167_client_grp() {
+			return r167_client_grp;
+		}
+		public void setR167_client_grp(String r167_client_grp) {
+			this.r167_client_grp = r167_client_grp;
+		}
+		public BigDecimal getR167_total_book_expo() {
+			return r167_total_book_expo;
+		}
+		public void setR167_total_book_expo(BigDecimal r167_total_book_expo) {
+			this.r167_total_book_expo = r167_total_book_expo;
+		}
+		public BigDecimal getR167_margin_pro() {
+			return r167_margin_pro;
+		}
+		public void setR167_margin_pro(BigDecimal r167_margin_pro) {
+			this.r167_margin_pro = r167_margin_pro;
+		}
+		public BigDecimal getR167_book_expo() {
+			return r167_book_expo;
+		}
+		public void setR167_book_expo(BigDecimal r167_book_expo) {
+			this.r167_book_expo = r167_book_expo;
+		}
+		public BigDecimal getR167_ccf_cont() {
+			return r167_ccf_cont;
+		}
+		public void setR167_ccf_cont(BigDecimal r167_ccf_cont) {
+			this.r167_ccf_cont = r167_ccf_cont;
+		}
+		public BigDecimal getR167_equiv_value() {
+			return r167_equiv_value;
+		}
+		public void setR167_equiv_value(BigDecimal r167_equiv_value) {
+			this.r167_equiv_value = r167_equiv_value;
+		}
+		public BigDecimal getR167_rw_obligant() {
+			return r167_rw_obligant;
+		}
+		public void setR167_rw_obligant(BigDecimal r167_rw_obligant) {
+			this.r167_rw_obligant = r167_rw_obligant;
+		}
+		public BigDecimal getR167_rav() {
+			return r167_rav;
+		}
+		public void setR167_rav(BigDecimal r167_rav) {
+			this.r167_rav = r167_rav;
+		}
+		public String getR168_product() {
+			return r168_product;
+		}
+		public void setR168_product(String r168_product) {
+			this.r168_product = r168_product;
+		}
+		public String getR168_client_grp() {
+			return r168_client_grp;
+		}
+		public void setR168_client_grp(String r168_client_grp) {
+			this.r168_client_grp = r168_client_grp;
+		}
+		public BigDecimal getR168_total_book_expo() {
+			return r168_total_book_expo;
+		}
+		public void setR168_total_book_expo(BigDecimal r168_total_book_expo) {
+			this.r168_total_book_expo = r168_total_book_expo;
+		}
+		public BigDecimal getR168_margin_pro() {
+			return r168_margin_pro;
+		}
+		public void setR168_margin_pro(BigDecimal r168_margin_pro) {
+			this.r168_margin_pro = r168_margin_pro;
+		}
+		public BigDecimal getR168_book_expo() {
+			return r168_book_expo;
+		}
+		public void setR168_book_expo(BigDecimal r168_book_expo) {
+			this.r168_book_expo = r168_book_expo;
+		}
+		public BigDecimal getR168_ccf_cont() {
+			return r168_ccf_cont;
+		}
+		public void setR168_ccf_cont(BigDecimal r168_ccf_cont) {
+			this.r168_ccf_cont = r168_ccf_cont;
+		}
+		public BigDecimal getR168_equiv_value() {
+			return r168_equiv_value;
+		}
+		public void setR168_equiv_value(BigDecimal r168_equiv_value) {
+			this.r168_equiv_value = r168_equiv_value;
+		}
+		public BigDecimal getR168_rw_obligant() {
+			return r168_rw_obligant;
+		}
+		public void setR168_rw_obligant(BigDecimal r168_rw_obligant) {
+			this.r168_rw_obligant = r168_rw_obligant;
+		}
+		public BigDecimal getR168_rav() {
+			return r168_rav;
+		}
+		public void setR168_rav(BigDecimal r168_rav) {
+			this.r168_rav = r168_rav;
+		}
+		public String getR169_product() {
+			return r169_product;
+		}
+		public void setR169_product(String r169_product) {
+			this.r169_product = r169_product;
+		}
+		public String getR169_client_grp() {
+			return r169_client_grp;
+		}
+		public void setR169_client_grp(String r169_client_grp) {
+			this.r169_client_grp = r169_client_grp;
+		}
+		public BigDecimal getR169_total_book_expo() {
+			return r169_total_book_expo;
+		}
+		public void setR169_total_book_expo(BigDecimal r169_total_book_expo) {
+			this.r169_total_book_expo = r169_total_book_expo;
+		}
+		public BigDecimal getR169_margin_pro() {
+			return r169_margin_pro;
+		}
+		public void setR169_margin_pro(BigDecimal r169_margin_pro) {
+			this.r169_margin_pro = r169_margin_pro;
+		}
+		public BigDecimal getR169_book_expo() {
+			return r169_book_expo;
+		}
+		public void setR169_book_expo(BigDecimal r169_book_expo) {
+			this.r169_book_expo = r169_book_expo;
+		}
+		public BigDecimal getR169_ccf_cont() {
+			return r169_ccf_cont;
+		}
+		public void setR169_ccf_cont(BigDecimal r169_ccf_cont) {
+			this.r169_ccf_cont = r169_ccf_cont;
+		}
+		public BigDecimal getR169_equiv_value() {
+			return r169_equiv_value;
+		}
+		public void setR169_equiv_value(BigDecimal r169_equiv_value) {
+			this.r169_equiv_value = r169_equiv_value;
+		}
+		public BigDecimal getR169_rw_obligant() {
+			return r169_rw_obligant;
+		}
+		public void setR169_rw_obligant(BigDecimal r169_rw_obligant) {
+			this.r169_rw_obligant = r169_rw_obligant;
+		}
+		public BigDecimal getR169_rav() {
+			return r169_rav;
+		}
+		public void setR169_rav(BigDecimal r169_rav) {
+			this.r169_rav = r169_rav;
+		}
+		public String getR170_product() {
+			return r170_product;
+		}
+		public void setR170_product(String r170_product) {
+			this.r170_product = r170_product;
+		}
+		public String getR170_client_grp() {
+			return r170_client_grp;
+		}
+		public void setR170_client_grp(String r170_client_grp) {
+			this.r170_client_grp = r170_client_grp;
+		}
+		public BigDecimal getR170_total_book_expo() {
+			return r170_total_book_expo;
+		}
+		public void setR170_total_book_expo(BigDecimal r170_total_book_expo) {
+			this.r170_total_book_expo = r170_total_book_expo;
+		}
+		public BigDecimal getR170_margin_pro() {
+			return r170_margin_pro;
+		}
+		public void setR170_margin_pro(BigDecimal r170_margin_pro) {
+			this.r170_margin_pro = r170_margin_pro;
+		}
+		public BigDecimal getR170_book_expo() {
+			return r170_book_expo;
+		}
+		public void setR170_book_expo(BigDecimal r170_book_expo) {
+			this.r170_book_expo = r170_book_expo;
+		}
+		public BigDecimal getR170_ccf_cont() {
+			return r170_ccf_cont;
+		}
+		public void setR170_ccf_cont(BigDecimal r170_ccf_cont) {
+			this.r170_ccf_cont = r170_ccf_cont;
+		}
+		public BigDecimal getR170_equiv_value() {
+			return r170_equiv_value;
+		}
+		public void setR170_equiv_value(BigDecimal r170_equiv_value) {
+			this.r170_equiv_value = r170_equiv_value;
+		}
+		public BigDecimal getR170_rw_obligant() {
+			return r170_rw_obligant;
+		}
+		public void setR170_rw_obligant(BigDecimal r170_rw_obligant) {
+			this.r170_rw_obligant = r170_rw_obligant;
+		}
+		public BigDecimal getR170_rav() {
+			return r170_rav;
+		}
+		public void setR170_rav(BigDecimal r170_rav) {
+			this.r170_rav = r170_rav;
+		}
+		public String getR171_product() {
+			return r171_product;
+		}
+		public void setR171_product(String r171_product) {
+			this.r171_product = r171_product;
+		}
+		public String getR171_client_grp() {
+			return r171_client_grp;
+		}
+		public void setR171_client_grp(String r171_client_grp) {
+			this.r171_client_grp = r171_client_grp;
+		}
+		public BigDecimal getR171_total_book_expo() {
+			return r171_total_book_expo;
+		}
+		public void setR171_total_book_expo(BigDecimal r171_total_book_expo) {
+			this.r171_total_book_expo = r171_total_book_expo;
+		}
+		public BigDecimal getR171_margin_pro() {
+			return r171_margin_pro;
+		}
+		public void setR171_margin_pro(BigDecimal r171_margin_pro) {
+			this.r171_margin_pro = r171_margin_pro;
+		}
+		public BigDecimal getR171_book_expo() {
+			return r171_book_expo;
+		}
+		public void setR171_book_expo(BigDecimal r171_book_expo) {
+			this.r171_book_expo = r171_book_expo;
+		}
+		public BigDecimal getR171_ccf_cont() {
+			return r171_ccf_cont;
+		}
+		public void setR171_ccf_cont(BigDecimal r171_ccf_cont) {
+			this.r171_ccf_cont = r171_ccf_cont;
+		}
+		public BigDecimal getR171_equiv_value() {
+			return r171_equiv_value;
+		}
+		public void setR171_equiv_value(BigDecimal r171_equiv_value) {
+			this.r171_equiv_value = r171_equiv_value;
+		}
+		public BigDecimal getR171_rw_obligant() {
+			return r171_rw_obligant;
+		}
+		public void setR171_rw_obligant(BigDecimal r171_rw_obligant) {
+			this.r171_rw_obligant = r171_rw_obligant;
+		}
+		public BigDecimal getR171_rav() {
+			return r171_rav;
+		}
+		public void setR171_rav(BigDecimal r171_rav) {
+			this.r171_rav = r171_rav;
+		}
+		public String getR172_product() {
+			return r172_product;
+		}
+		public void setR172_product(String r172_product) {
+			this.r172_product = r172_product;
+		}
+		public String getR172_client_grp() {
+			return r172_client_grp;
+		}
+		public void setR172_client_grp(String r172_client_grp) {
+			this.r172_client_grp = r172_client_grp;
+		}
+		public BigDecimal getR172_total_book_expo() {
+			return r172_total_book_expo;
+		}
+		public void setR172_total_book_expo(BigDecimal r172_total_book_expo) {
+			this.r172_total_book_expo = r172_total_book_expo;
+		}
+		public BigDecimal getR172_margin_pro() {
+			return r172_margin_pro;
+		}
+		public void setR172_margin_pro(BigDecimal r172_margin_pro) {
+			this.r172_margin_pro = r172_margin_pro;
+		}
+		public BigDecimal getR172_book_expo() {
+			return r172_book_expo;
+		}
+		public void setR172_book_expo(BigDecimal r172_book_expo) {
+			this.r172_book_expo = r172_book_expo;
+		}
+		public BigDecimal getR172_ccf_cont() {
+			return r172_ccf_cont;
+		}
+		public void setR172_ccf_cont(BigDecimal r172_ccf_cont) {
+			this.r172_ccf_cont = r172_ccf_cont;
+		}
+		public BigDecimal getR172_equiv_value() {
+			return r172_equiv_value;
+		}
+		public void setR172_equiv_value(BigDecimal r172_equiv_value) {
+			this.r172_equiv_value = r172_equiv_value;
+		}
+		public BigDecimal getR172_rw_obligant() {
+			return r172_rw_obligant;
+		}
+		public void setR172_rw_obligant(BigDecimal r172_rw_obligant) {
+			this.r172_rw_obligant = r172_rw_obligant;
+		}
+		public BigDecimal getR172_rav() {
+			return r172_rav;
+		}
+		public void setR172_rav(BigDecimal r172_rav) {
+			this.r172_rav = r172_rav;
+		}
+		public String getR173_product() {
+			return r173_product;
+		}
+		public void setR173_product(String r173_product) {
+			this.r173_product = r173_product;
+		}
+		public String getR173_client_grp() {
+			return r173_client_grp;
+		}
+		public void setR173_client_grp(String r173_client_grp) {
+			this.r173_client_grp = r173_client_grp;
+		}
+		public BigDecimal getR173_total_book_expo() {
+			return r173_total_book_expo;
+		}
+		public void setR173_total_book_expo(BigDecimal r173_total_book_expo) {
+			this.r173_total_book_expo = r173_total_book_expo;
+		}
+		public BigDecimal getR173_margin_pro() {
+			return r173_margin_pro;
+		}
+		public void setR173_margin_pro(BigDecimal r173_margin_pro) {
+			this.r173_margin_pro = r173_margin_pro;
+		}
+		public BigDecimal getR173_book_expo() {
+			return r173_book_expo;
+		}
+		public void setR173_book_expo(BigDecimal r173_book_expo) {
+			this.r173_book_expo = r173_book_expo;
+		}
+		public BigDecimal getR173_ccf_cont() {
+			return r173_ccf_cont;
+		}
+		public void setR173_ccf_cont(BigDecimal r173_ccf_cont) {
+			this.r173_ccf_cont = r173_ccf_cont;
+		}
+		public BigDecimal getR173_equiv_value() {
+			return r173_equiv_value;
+		}
+		public void setR173_equiv_value(BigDecimal r173_equiv_value) {
+			this.r173_equiv_value = r173_equiv_value;
+		}
+		public BigDecimal getR173_rw_obligant() {
+			return r173_rw_obligant;
+		}
+		public void setR173_rw_obligant(BigDecimal r173_rw_obligant) {
+			this.r173_rw_obligant = r173_rw_obligant;
+		}
+		public BigDecimal getR173_rav() {
+			return r173_rav;
+		}
+		public void setR173_rav(BigDecimal r173_rav) {
+			this.r173_rav = r173_rav;
+		}
+		public String getR174_product() {
+			return r174_product;
+		}
+		public void setR174_product(String r174_product) {
+			this.r174_product = r174_product;
+		}
+		public String getR174_client_grp() {
+			return r174_client_grp;
+		}
+		public void setR174_client_grp(String r174_client_grp) {
+			this.r174_client_grp = r174_client_grp;
+		}
+		public BigDecimal getR174_total_book_expo() {
+			return r174_total_book_expo;
+		}
+		public void setR174_total_book_expo(BigDecimal r174_total_book_expo) {
+			this.r174_total_book_expo = r174_total_book_expo;
+		}
+		public BigDecimal getR174_margin_pro() {
+			return r174_margin_pro;
+		}
+		public void setR174_margin_pro(BigDecimal r174_margin_pro) {
+			this.r174_margin_pro = r174_margin_pro;
+		}
+		public BigDecimal getR174_book_expo() {
+			return r174_book_expo;
+		}
+		public void setR174_book_expo(BigDecimal r174_book_expo) {
+			this.r174_book_expo = r174_book_expo;
+		}
+		public BigDecimal getR174_ccf_cont() {
+			return r174_ccf_cont;
+		}
+		public void setR174_ccf_cont(BigDecimal r174_ccf_cont) {
+			this.r174_ccf_cont = r174_ccf_cont;
+		}
+		public BigDecimal getR174_equiv_value() {
+			return r174_equiv_value;
+		}
+		public void setR174_equiv_value(BigDecimal r174_equiv_value) {
+			this.r174_equiv_value = r174_equiv_value;
+		}
+		public BigDecimal getR174_rw_obligant() {
+			return r174_rw_obligant;
+		}
+		public void setR174_rw_obligant(BigDecimal r174_rw_obligant) {
+			this.r174_rw_obligant = r174_rw_obligant;
+		}
+		public BigDecimal getR174_rav() {
+			return r174_rav;
+		}
+		public void setR174_rav(BigDecimal r174_rav) {
+			this.r174_rav = r174_rav;
+		}
+		public String getR175_product() {
+			return r175_product;
+		}
+		public void setR175_product(String r175_product) {
+			this.r175_product = r175_product;
+		}
+		public String getR175_client_grp() {
+			return r175_client_grp;
+		}
+		public void setR175_client_grp(String r175_client_grp) {
+			this.r175_client_grp = r175_client_grp;
+		}
+		public BigDecimal getR175_total_book_expo() {
+			return r175_total_book_expo;
+		}
+		public void setR175_total_book_expo(BigDecimal r175_total_book_expo) {
+			this.r175_total_book_expo = r175_total_book_expo;
+		}
+		public BigDecimal getR175_margin_pro() {
+			return r175_margin_pro;
+		}
+		public void setR175_margin_pro(BigDecimal r175_margin_pro) {
+			this.r175_margin_pro = r175_margin_pro;
+		}
+		public BigDecimal getR175_book_expo() {
+			return r175_book_expo;
+		}
+		public void setR175_book_expo(BigDecimal r175_book_expo) {
+			this.r175_book_expo = r175_book_expo;
+		}
+		public BigDecimal getR175_ccf_cont() {
+			return r175_ccf_cont;
+		}
+		public void setR175_ccf_cont(BigDecimal r175_ccf_cont) {
+			this.r175_ccf_cont = r175_ccf_cont;
+		}
+		public BigDecimal getR175_equiv_value() {
+			return r175_equiv_value;
+		}
+		public void setR175_equiv_value(BigDecimal r175_equiv_value) {
+			this.r175_equiv_value = r175_equiv_value;
+		}
+		public BigDecimal getR175_rw_obligant() {
+			return r175_rw_obligant;
+		}
+		public void setR175_rw_obligant(BigDecimal r175_rw_obligant) {
+			this.r175_rw_obligant = r175_rw_obligant;
+		}
+		public BigDecimal getR175_rav() {
+			return r175_rav;
+		}
+		public void setR175_rav(BigDecimal r175_rav) {
+			this.r175_rav = r175_rav;
+		}
+		public String getR176_product() {
+			return r176_product;
+		}
+		public void setR176_product(String r176_product) {
+			this.r176_product = r176_product;
+		}
+		public String getR176_client_grp() {
+			return r176_client_grp;
+		}
+		public void setR176_client_grp(String r176_client_grp) {
+			this.r176_client_grp = r176_client_grp;
+		}
+		public BigDecimal getR176_total_book_expo() {
+			return r176_total_book_expo;
+		}
+		public void setR176_total_book_expo(BigDecimal r176_total_book_expo) {
+			this.r176_total_book_expo = r176_total_book_expo;
+		}
+		public BigDecimal getR176_margin_pro() {
+			return r176_margin_pro;
+		}
+		public void setR176_margin_pro(BigDecimal r176_margin_pro) {
+			this.r176_margin_pro = r176_margin_pro;
+		}
+		public BigDecimal getR176_book_expo() {
+			return r176_book_expo;
+		}
+		public void setR176_book_expo(BigDecimal r176_book_expo) {
+			this.r176_book_expo = r176_book_expo;
+		}
+		public BigDecimal getR176_ccf_cont() {
+			return r176_ccf_cont;
+		}
+		public void setR176_ccf_cont(BigDecimal r176_ccf_cont) {
+			this.r176_ccf_cont = r176_ccf_cont;
+		}
+		public BigDecimal getR176_equiv_value() {
+			return r176_equiv_value;
+		}
+		public void setR176_equiv_value(BigDecimal r176_equiv_value) {
+			this.r176_equiv_value = r176_equiv_value;
+		}
+		public BigDecimal getR176_rw_obligant() {
+			return r176_rw_obligant;
+		}
+		public void setR176_rw_obligant(BigDecimal r176_rw_obligant) {
+			this.r176_rw_obligant = r176_rw_obligant;
+		}
+		public BigDecimal getR176_rav() {
+			return r176_rav;
+		}
+		public void setR176_rav(BigDecimal r176_rav) {
+			this.r176_rav = r176_rav;
+		}
+		public String getR177_product() {
+			return r177_product;
+		}
+		public void setR177_product(String r177_product) {
+			this.r177_product = r177_product;
+		}
+		public String getR177_client_grp() {
+			return r177_client_grp;
+		}
+		public void setR177_client_grp(String r177_client_grp) {
+			this.r177_client_grp = r177_client_grp;
+		}
+		public BigDecimal getR177_total_book_expo() {
+			return r177_total_book_expo;
+		}
+		public void setR177_total_book_expo(BigDecimal r177_total_book_expo) {
+			this.r177_total_book_expo = r177_total_book_expo;
+		}
+		public BigDecimal getR177_margin_pro() {
+			return r177_margin_pro;
+		}
+		public void setR177_margin_pro(BigDecimal r177_margin_pro) {
+			this.r177_margin_pro = r177_margin_pro;
+		}
+		public BigDecimal getR177_book_expo() {
+			return r177_book_expo;
+		}
+		public void setR177_book_expo(BigDecimal r177_book_expo) {
+			this.r177_book_expo = r177_book_expo;
+		}
+		public BigDecimal getR177_ccf_cont() {
+			return r177_ccf_cont;
+		}
+		public void setR177_ccf_cont(BigDecimal r177_ccf_cont) {
+			this.r177_ccf_cont = r177_ccf_cont;
+		}
+		public BigDecimal getR177_equiv_value() {
+			return r177_equiv_value;
+		}
+		public void setR177_equiv_value(BigDecimal r177_equiv_value) {
+			this.r177_equiv_value = r177_equiv_value;
+		}
+		public BigDecimal getR177_rw_obligant() {
+			return r177_rw_obligant;
+		}
+		public void setR177_rw_obligant(BigDecimal r177_rw_obligant) {
+			this.r177_rw_obligant = r177_rw_obligant;
+		}
+		public BigDecimal getR177_rav() {
+			return r177_rav;
+		}
+		public void setR177_rav(BigDecimal r177_rav) {
+			this.r177_rav = r177_rav;
+		}
+		public String getR178_product() {
+			return r178_product;
+		}
+		public void setR178_product(String r178_product) {
+			this.r178_product = r178_product;
+		}
+		public String getR178_client_grp() {
+			return r178_client_grp;
+		}
+		public void setR178_client_grp(String r178_client_grp) {
+			this.r178_client_grp = r178_client_grp;
+		}
+		public BigDecimal getR178_total_book_expo() {
+			return r178_total_book_expo;
+		}
+		public void setR178_total_book_expo(BigDecimal r178_total_book_expo) {
+			this.r178_total_book_expo = r178_total_book_expo;
+		}
+		public BigDecimal getR178_margin_pro() {
+			return r178_margin_pro;
+		}
+		public void setR178_margin_pro(BigDecimal r178_margin_pro) {
+			this.r178_margin_pro = r178_margin_pro;
+		}
+		public BigDecimal getR178_book_expo() {
+			return r178_book_expo;
+		}
+		public void setR178_book_expo(BigDecimal r178_book_expo) {
+			this.r178_book_expo = r178_book_expo;
+		}
+		public BigDecimal getR178_ccf_cont() {
+			return r178_ccf_cont;
+		}
+		public void setR178_ccf_cont(BigDecimal r178_ccf_cont) {
+			this.r178_ccf_cont = r178_ccf_cont;
+		}
+		public BigDecimal getR178_equiv_value() {
+			return r178_equiv_value;
+		}
+		public void setR178_equiv_value(BigDecimal r178_equiv_value) {
+			this.r178_equiv_value = r178_equiv_value;
+		}
+		public BigDecimal getR178_rw_obligant() {
+			return r178_rw_obligant;
+		}
+		public void setR178_rw_obligant(BigDecimal r178_rw_obligant) {
+			this.r178_rw_obligant = r178_rw_obligant;
+		}
+		public BigDecimal getR178_rav() {
+			return r178_rav;
+		}
+		public void setR178_rav(BigDecimal r178_rav) {
+			this.r178_rav = r178_rav;
+		}
+		public String getR179_product() {
+			return r179_product;
+		}
+		public void setR179_product(String r179_product) {
+			this.r179_product = r179_product;
+		}
+		public String getR179_client_grp() {
+			return r179_client_grp;
+		}
+		public void setR179_client_grp(String r179_client_grp) {
+			this.r179_client_grp = r179_client_grp;
+		}
+		public BigDecimal getR179_total_book_expo() {
+			return r179_total_book_expo;
+		}
+		public void setR179_total_book_expo(BigDecimal r179_total_book_expo) {
+			this.r179_total_book_expo = r179_total_book_expo;
+		}
+		public BigDecimal getR179_margin_pro() {
+			return r179_margin_pro;
+		}
+		public void setR179_margin_pro(BigDecimal r179_margin_pro) {
+			this.r179_margin_pro = r179_margin_pro;
+		}
+		public BigDecimal getR179_book_expo() {
+			return r179_book_expo;
+		}
+		public void setR179_book_expo(BigDecimal r179_book_expo) {
+			this.r179_book_expo = r179_book_expo;
+		}
+		public BigDecimal getR179_ccf_cont() {
+			return r179_ccf_cont;
+		}
+		public void setR179_ccf_cont(BigDecimal r179_ccf_cont) {
+			this.r179_ccf_cont = r179_ccf_cont;
+		}
+		public BigDecimal getR179_equiv_value() {
+			return r179_equiv_value;
+		}
+		public void setR179_equiv_value(BigDecimal r179_equiv_value) {
+			this.r179_equiv_value = r179_equiv_value;
+		}
+		public BigDecimal getR179_rw_obligant() {
+			return r179_rw_obligant;
+		}
+		public void setR179_rw_obligant(BigDecimal r179_rw_obligant) {
+			this.r179_rw_obligant = r179_rw_obligant;
+		}
+		public BigDecimal getR179_rav() {
+			return r179_rav;
+		}
+		public void setR179_rav(BigDecimal r179_rav) {
+			this.r179_rav = r179_rav;
+		}
+		public String getR180_product() {
+			return r180_product;
+		}
+		public void setR180_product(String r180_product) {
+			this.r180_product = r180_product;
+		}
+		public String getR180_client_grp() {
+			return r180_client_grp;
+		}
+		public void setR180_client_grp(String r180_client_grp) {
+			this.r180_client_grp = r180_client_grp;
+		}
+		public BigDecimal getR180_total_book_expo() {
+			return r180_total_book_expo;
+		}
+		public void setR180_total_book_expo(BigDecimal r180_total_book_expo) {
+			this.r180_total_book_expo = r180_total_book_expo;
+		}
+		public BigDecimal getR180_margin_pro() {
+			return r180_margin_pro;
+		}
+		public void setR180_margin_pro(BigDecimal r180_margin_pro) {
+			this.r180_margin_pro = r180_margin_pro;
+		}
+		public BigDecimal getR180_book_expo() {
+			return r180_book_expo;
+		}
+		public void setR180_book_expo(BigDecimal r180_book_expo) {
+			this.r180_book_expo = r180_book_expo;
+		}
+		public BigDecimal getR180_ccf_cont() {
+			return r180_ccf_cont;
+		}
+		public void setR180_ccf_cont(BigDecimal r180_ccf_cont) {
+			this.r180_ccf_cont = r180_ccf_cont;
+		}
+		public BigDecimal getR180_equiv_value() {
+			return r180_equiv_value;
+		}
+		public void setR180_equiv_value(BigDecimal r180_equiv_value) {
+			this.r180_equiv_value = r180_equiv_value;
+		}
+		public BigDecimal getR180_rw_obligant() {
+			return r180_rw_obligant;
+		}
+		public void setR180_rw_obligant(BigDecimal r180_rw_obligant) {
+			this.r180_rw_obligant = r180_rw_obligant;
+		}
+		public BigDecimal getR180_rav() {
+			return r180_rav;
+		}
+		public void setR180_rav(BigDecimal r180_rav) {
+			this.r180_rav = r180_rav;
+		}
+		public String getR181_product() {
+			return r181_product;
+		}
+		public void setR181_product(String r181_product) {
+			this.r181_product = r181_product;
+		}
+		public String getR181_client_grp() {
+			return r181_client_grp;
+		}
+		public void setR181_client_grp(String r181_client_grp) {
+			this.r181_client_grp = r181_client_grp;
+		}
+		public BigDecimal getR181_total_book_expo() {
+			return r181_total_book_expo;
+		}
+		public void setR181_total_book_expo(BigDecimal r181_total_book_expo) {
+			this.r181_total_book_expo = r181_total_book_expo;
+		}
+		public BigDecimal getR181_margin_pro() {
+			return r181_margin_pro;
+		}
+		public void setR181_margin_pro(BigDecimal r181_margin_pro) {
+			this.r181_margin_pro = r181_margin_pro;
+		}
+		public BigDecimal getR181_book_expo() {
+			return r181_book_expo;
+		}
+		public void setR181_book_expo(BigDecimal r181_book_expo) {
+			this.r181_book_expo = r181_book_expo;
+		}
+		public BigDecimal getR181_ccf_cont() {
+			return r181_ccf_cont;
+		}
+		public void setR181_ccf_cont(BigDecimal r181_ccf_cont) {
+			this.r181_ccf_cont = r181_ccf_cont;
+		}
+		public BigDecimal getR181_equiv_value() {
+			return r181_equiv_value;
+		}
+		public void setR181_equiv_value(BigDecimal r181_equiv_value) {
+			this.r181_equiv_value = r181_equiv_value;
+		}
+		public BigDecimal getR181_rw_obligant() {
+			return r181_rw_obligant;
+		}
+		public void setR181_rw_obligant(BigDecimal r181_rw_obligant) {
+			this.r181_rw_obligant = r181_rw_obligant;
+		}
+		public BigDecimal getR181_rav() {
+			return r181_rav;
+		}
+		public void setR181_rav(BigDecimal r181_rav) {
+			this.r181_rav = r181_rav;
+		}
+		public String getR182_product() {
+			return r182_product;
+		}
+		public void setR182_product(String r182_product) {
+			this.r182_product = r182_product;
+		}
+		public String getR182_client_grp() {
+			return r182_client_grp;
+		}
+		public void setR182_client_grp(String r182_client_grp) {
+			this.r182_client_grp = r182_client_grp;
+		}
+		public BigDecimal getR182_total_book_expo() {
+			return r182_total_book_expo;
+		}
+		public void setR182_total_book_expo(BigDecimal r182_total_book_expo) {
+			this.r182_total_book_expo = r182_total_book_expo;
+		}
+		public BigDecimal getR182_margin_pro() {
+			return r182_margin_pro;
+		}
+		public void setR182_margin_pro(BigDecimal r182_margin_pro) {
+			this.r182_margin_pro = r182_margin_pro;
+		}
+		public BigDecimal getR182_book_expo() {
+			return r182_book_expo;
+		}
+		public void setR182_book_expo(BigDecimal r182_book_expo) {
+			this.r182_book_expo = r182_book_expo;
+		}
+		public BigDecimal getR182_ccf_cont() {
+			return r182_ccf_cont;
+		}
+		public void setR182_ccf_cont(BigDecimal r182_ccf_cont) {
+			this.r182_ccf_cont = r182_ccf_cont;
+		}
+		public BigDecimal getR182_equiv_value() {
+			return r182_equiv_value;
+		}
+		public void setR182_equiv_value(BigDecimal r182_equiv_value) {
+			this.r182_equiv_value = r182_equiv_value;
+		}
+		public BigDecimal getR182_rw_obligant() {
+			return r182_rw_obligant;
+		}
+		public void setR182_rw_obligant(BigDecimal r182_rw_obligant) {
+			this.r182_rw_obligant = r182_rw_obligant;
+		}
+		public BigDecimal getR182_rav() {
+			return r182_rav;
+		}
+		public void setR182_rav(BigDecimal r182_rav) {
+			this.r182_rav = r182_rav;
+		}
+		public String getR183_product() {
+			return r183_product;
+		}
+		public void setR183_product(String r183_product) {
+			this.r183_product = r183_product;
+		}
+		public String getR183_client_grp() {
+			return r183_client_grp;
+		}
+		public void setR183_client_grp(String r183_client_grp) {
+			this.r183_client_grp = r183_client_grp;
+		}
+		public BigDecimal getR183_total_book_expo() {
+			return r183_total_book_expo;
+		}
+		public void setR183_total_book_expo(BigDecimal r183_total_book_expo) {
+			this.r183_total_book_expo = r183_total_book_expo;
+		}
+		public BigDecimal getR183_margin_pro() {
+			return r183_margin_pro;
+		}
+		public void setR183_margin_pro(BigDecimal r183_margin_pro) {
+			this.r183_margin_pro = r183_margin_pro;
+		}
+		public BigDecimal getR183_book_expo() {
+			return r183_book_expo;
+		}
+		public void setR183_book_expo(BigDecimal r183_book_expo) {
+			this.r183_book_expo = r183_book_expo;
+		}
+		public BigDecimal getR183_ccf_cont() {
+			return r183_ccf_cont;
+		}
+		public void setR183_ccf_cont(BigDecimal r183_ccf_cont) {
+			this.r183_ccf_cont = r183_ccf_cont;
+		}
+		public BigDecimal getR183_equiv_value() {
+			return r183_equiv_value;
+		}
+		public void setR183_equiv_value(BigDecimal r183_equiv_value) {
+			this.r183_equiv_value = r183_equiv_value;
+		}
+		public BigDecimal getR183_rw_obligant() {
+			return r183_rw_obligant;
+		}
+		public void setR183_rw_obligant(BigDecimal r183_rw_obligant) {
+			this.r183_rw_obligant = r183_rw_obligant;
+		}
+		public BigDecimal getR183_rav() {
+			return r183_rav;
+		}
+		public void setR183_rav(BigDecimal r183_rav) {
+			this.r183_rav = r183_rav;
+		}
+		public String getR184_product() {
+			return r184_product;
+		}
+		public void setR184_product(String r184_product) {
+			this.r184_product = r184_product;
+		}
+		public String getR184_client_grp() {
+			return r184_client_grp;
+		}
+		public void setR184_client_grp(String r184_client_grp) {
+			this.r184_client_grp = r184_client_grp;
+		}
+		public BigDecimal getR184_total_book_expo() {
+			return r184_total_book_expo;
+		}
+		public void setR184_total_book_expo(BigDecimal r184_total_book_expo) {
+			this.r184_total_book_expo = r184_total_book_expo;
+		}
+		public BigDecimal getR184_margin_pro() {
+			return r184_margin_pro;
+		}
+		public void setR184_margin_pro(BigDecimal r184_margin_pro) {
+			this.r184_margin_pro = r184_margin_pro;
+		}
+		public BigDecimal getR184_book_expo() {
+			return r184_book_expo;
+		}
+		public void setR184_book_expo(BigDecimal r184_book_expo) {
+			this.r184_book_expo = r184_book_expo;
+		}
+		public BigDecimal getR184_ccf_cont() {
+			return r184_ccf_cont;
+		}
+		public void setR184_ccf_cont(BigDecimal r184_ccf_cont) {
+			this.r184_ccf_cont = r184_ccf_cont;
+		}
+		public BigDecimal getR184_equiv_value() {
+			return r184_equiv_value;
+		}
+		public void setR184_equiv_value(BigDecimal r184_equiv_value) {
+			this.r184_equiv_value = r184_equiv_value;
+		}
+		public BigDecimal getR184_rw_obligant() {
+			return r184_rw_obligant;
+		}
+		public void setR184_rw_obligant(BigDecimal r184_rw_obligant) {
+			this.r184_rw_obligant = r184_rw_obligant;
+		}
+		public BigDecimal getR184_rav() {
+			return r184_rav;
+		}
+		public void setR184_rav(BigDecimal r184_rav) {
+			this.r184_rav = r184_rav;
+		}
+		public String getR185_product() {
+			return r185_product;
+		}
+		public void setR185_product(String r185_product) {
+			this.r185_product = r185_product;
+		}
+		public String getR185_client_grp() {
+			return r185_client_grp;
+		}
+		public void setR185_client_grp(String r185_client_grp) {
+			this.r185_client_grp = r185_client_grp;
+		}
+		public BigDecimal getR185_total_book_expo() {
+			return r185_total_book_expo;
+		}
+		public void setR185_total_book_expo(BigDecimal r185_total_book_expo) {
+			this.r185_total_book_expo = r185_total_book_expo;
+		}
+		public BigDecimal getR185_margin_pro() {
+			return r185_margin_pro;
+		}
+		public void setR185_margin_pro(BigDecimal r185_margin_pro) {
+			this.r185_margin_pro = r185_margin_pro;
+		}
+		public BigDecimal getR185_book_expo() {
+			return r185_book_expo;
+		}
+		public void setR185_book_expo(BigDecimal r185_book_expo) {
+			this.r185_book_expo = r185_book_expo;
+		}
+		public BigDecimal getR185_ccf_cont() {
+			return r185_ccf_cont;
+		}
+		public void setR185_ccf_cont(BigDecimal r185_ccf_cont) {
+			this.r185_ccf_cont = r185_ccf_cont;
+		}
+		public BigDecimal getR185_equiv_value() {
+			return r185_equiv_value;
+		}
+		public void setR185_equiv_value(BigDecimal r185_equiv_value) {
+			this.r185_equiv_value = r185_equiv_value;
+		}
+		public BigDecimal getR185_rw_obligant() {
+			return r185_rw_obligant;
+		}
+		public void setR185_rw_obligant(BigDecimal r185_rw_obligant) {
+			this.r185_rw_obligant = r185_rw_obligant;
+		}
+		public BigDecimal getR185_rav() {
+			return r185_rav;
+		}
+		public void setR185_rav(BigDecimal r185_rav) {
+			this.r185_rav = r185_rav;
+		}
+		public String getR186_product() {
+			return r186_product;
+		}
+		public void setR186_product(String r186_product) {
+			this.r186_product = r186_product;
+		}
+		public String getR186_client_grp() {
+			return r186_client_grp;
+		}
+		public void setR186_client_grp(String r186_client_grp) {
+			this.r186_client_grp = r186_client_grp;
+		}
+		public BigDecimal getR186_total_book_expo() {
+			return r186_total_book_expo;
+		}
+		public void setR186_total_book_expo(BigDecimal r186_total_book_expo) {
+			this.r186_total_book_expo = r186_total_book_expo;
+		}
+		public BigDecimal getR186_margin_pro() {
+			return r186_margin_pro;
+		}
+		public void setR186_margin_pro(BigDecimal r186_margin_pro) {
+			this.r186_margin_pro = r186_margin_pro;
+		}
+		public BigDecimal getR186_book_expo() {
+			return r186_book_expo;
+		}
+		public void setR186_book_expo(BigDecimal r186_book_expo) {
+			this.r186_book_expo = r186_book_expo;
+		}
+		public BigDecimal getR186_ccf_cont() {
+			return r186_ccf_cont;
+		}
+		public void setR186_ccf_cont(BigDecimal r186_ccf_cont) {
+			this.r186_ccf_cont = r186_ccf_cont;
+		}
+		public BigDecimal getR186_equiv_value() {
+			return r186_equiv_value;
+		}
+		public void setR186_equiv_value(BigDecimal r186_equiv_value) {
+			this.r186_equiv_value = r186_equiv_value;
+		}
+		public BigDecimal getR186_rw_obligant() {
+			return r186_rw_obligant;
+		}
+		public void setR186_rw_obligant(BigDecimal r186_rw_obligant) {
+			this.r186_rw_obligant = r186_rw_obligant;
+		}
+		public BigDecimal getR186_rav() {
+			return r186_rav;
+		}
+		public void setR186_rav(BigDecimal r186_rav) {
+			this.r186_rav = r186_rav;
+		}
+		public String getR187_product() {
+			return r187_product;
+		}
+		public void setR187_product(String r187_product) {
+			this.r187_product = r187_product;
+		}
+		public String getR187_client_grp() {
+			return r187_client_grp;
+		}
+		public void setR187_client_grp(String r187_client_grp) {
+			this.r187_client_grp = r187_client_grp;
+		}
+		public BigDecimal getR187_total_book_expo() {
+			return r187_total_book_expo;
+		}
+		public void setR187_total_book_expo(BigDecimal r187_total_book_expo) {
+			this.r187_total_book_expo = r187_total_book_expo;
+		}
+		public BigDecimal getR187_margin_pro() {
+			return r187_margin_pro;
+		}
+		public void setR187_margin_pro(BigDecimal r187_margin_pro) {
+			this.r187_margin_pro = r187_margin_pro;
+		}
+		public BigDecimal getR187_book_expo() {
+			return r187_book_expo;
+		}
+		public void setR187_book_expo(BigDecimal r187_book_expo) {
+			this.r187_book_expo = r187_book_expo;
+		}
+		public BigDecimal getR187_ccf_cont() {
+			return r187_ccf_cont;
+		}
+		public void setR187_ccf_cont(BigDecimal r187_ccf_cont) {
+			this.r187_ccf_cont = r187_ccf_cont;
+		}
+		public BigDecimal getR187_equiv_value() {
+			return r187_equiv_value;
+		}
+		public void setR187_equiv_value(BigDecimal r187_equiv_value) {
+			this.r187_equiv_value = r187_equiv_value;
+		}
+		public BigDecimal getR187_rw_obligant() {
+			return r187_rw_obligant;
+		}
+		public void setR187_rw_obligant(BigDecimal r187_rw_obligant) {
+			this.r187_rw_obligant = r187_rw_obligant;
+		}
+		public BigDecimal getR187_rav() {
+			return r187_rav;
+		}
+		public void setR187_rav(BigDecimal r187_rav) {
+			this.r187_rav = r187_rav;
+		}
+		public String getR188_product() {
+			return r188_product;
+		}
+		public void setR188_product(String r188_product) {
+			this.r188_product = r188_product;
+		}
+		public String getR188_client_grp() {
+			return r188_client_grp;
+		}
+		public void setR188_client_grp(String r188_client_grp) {
+			this.r188_client_grp = r188_client_grp;
+		}
+		public BigDecimal getR188_total_book_expo() {
+			return r188_total_book_expo;
+		}
+		public void setR188_total_book_expo(BigDecimal r188_total_book_expo) {
+			this.r188_total_book_expo = r188_total_book_expo;
+		}
+		public BigDecimal getR188_margin_pro() {
+			return r188_margin_pro;
+		}
+		public void setR188_margin_pro(BigDecimal r188_margin_pro) {
+			this.r188_margin_pro = r188_margin_pro;
+		}
+		public BigDecimal getR188_book_expo() {
+			return r188_book_expo;
+		}
+		public void setR188_book_expo(BigDecimal r188_book_expo) {
+			this.r188_book_expo = r188_book_expo;
+		}
+		public BigDecimal getR188_ccf_cont() {
+			return r188_ccf_cont;
+		}
+		public void setR188_ccf_cont(BigDecimal r188_ccf_cont) {
+			this.r188_ccf_cont = r188_ccf_cont;
+		}
+		public BigDecimal getR188_equiv_value() {
+			return r188_equiv_value;
+		}
+		public void setR188_equiv_value(BigDecimal r188_equiv_value) {
+			this.r188_equiv_value = r188_equiv_value;
+		}
+		public BigDecimal getR188_rw_obligant() {
+			return r188_rw_obligant;
+		}
+		public void setR188_rw_obligant(BigDecimal r188_rw_obligant) {
+			this.r188_rw_obligant = r188_rw_obligant;
+		}
+		public BigDecimal getR188_rav() {
+			return r188_rav;
+		}
+		public void setR188_rav(BigDecimal r188_rav) {
+			this.r188_rav = r188_rav;
+		}
+		public String getR189_product() {
+			return r189_product;
+		}
+		public void setR189_product(String r189_product) {
+			this.r189_product = r189_product;
+		}
+		public String getR189_client_grp() {
+			return r189_client_grp;
+		}
+		public void setR189_client_grp(String r189_client_grp) {
+			this.r189_client_grp = r189_client_grp;
+		}
+		public BigDecimal getR189_total_book_expo() {
+			return r189_total_book_expo;
+		}
+		public void setR189_total_book_expo(BigDecimal r189_total_book_expo) {
+			this.r189_total_book_expo = r189_total_book_expo;
+		}
+		public BigDecimal getR189_margin_pro() {
+			return r189_margin_pro;
+		}
+		public void setR189_margin_pro(BigDecimal r189_margin_pro) {
+			this.r189_margin_pro = r189_margin_pro;
+		}
+		public BigDecimal getR189_book_expo() {
+			return r189_book_expo;
+		}
+		public void setR189_book_expo(BigDecimal r189_book_expo) {
+			this.r189_book_expo = r189_book_expo;
+		}
+		public BigDecimal getR189_ccf_cont() {
+			return r189_ccf_cont;
+		}
+		public void setR189_ccf_cont(BigDecimal r189_ccf_cont) {
+			this.r189_ccf_cont = r189_ccf_cont;
+		}
+		public BigDecimal getR189_equiv_value() {
+			return r189_equiv_value;
+		}
+		public void setR189_equiv_value(BigDecimal r189_equiv_value) {
+			this.r189_equiv_value = r189_equiv_value;
+		}
+		public BigDecimal getR189_rw_obligant() {
+			return r189_rw_obligant;
+		}
+		public void setR189_rw_obligant(BigDecimal r189_rw_obligant) {
+			this.r189_rw_obligant = r189_rw_obligant;
+		}
+		public BigDecimal getR189_rav() {
+			return r189_rav;
+		}
+		public void setR189_rav(BigDecimal r189_rav) {
+			this.r189_rav = r189_rav;
+		}
+	
+	
+	
+//=============common feilds 
+	public Date getReport_date() {
+		return report_date;
+	}
+	public void setReport_date(Date report_date) {
+		this.report_date = report_date;
+	}
+	public BigDecimal getReport_version() {
+		return report_version;
+	}
+	public void setReport_version(BigDecimal report_version) {
+		this.report_version = report_version;
+	}
+	public String getReport_frequency() {
+		return report_frequency;
+	}
+	public void setReport_frequency(String report_frequency) {
+		this.report_frequency = report_frequency;
+	}
+	public String getReport_code() {
+		return report_code;
+	}
+	public void setReport_code(String report_code) {
+		this.report_code = report_code;
+	}
+	public String getReport_desc() {
+		return report_desc;
+	}
+	public void setReport_desc(String report_desc) {
+		this.report_desc = report_desc;
+	}
+	public String getEntity_flg() {
+		return entity_flg;
+	}
+	public void setEntity_flg(String entity_flg) {
+		this.entity_flg = entity_flg;
+	}
+	public String getModify_flg() {
+		return modify_flg;
+	}
+	public void setModify_flg(String modify_flg) {
+		this.modify_flg = modify_flg;
+	}
+	public String getDel_flg() {
+		return del_flg;
+	}
+	public void setDel_flg(String del_flg) {
+		this.del_flg = del_flg;
+	}
+	
+}	
+
+// =====================================================
+// ARCHIVAL  SUMAMRY ENTITY 
+// =====================================================
+
+
+public class OFF_BS_ITEMS_Archival_Summary_RowMapper1
+        implements RowMapper<OFF_BS_ITEMS_Archival_Summary_Entity1> {
+
+    @Override
+    public OFF_BS_ITEMS_Archival_Summary_Entity1 mapRow(ResultSet rs, int rowNum)
+            throws SQLException {
+
+        OFF_BS_ITEMS_Archival_Summary_Entity1 obj = new OFF_BS_ITEMS_Archival_Summary_Entity1();
+
+ // =========================
+// R12
+// =========================
+obj.setR12_product(rs.getString("r12_product"));
+obj.setR12_client_grp(rs.getString("r12_client_grp"));
+obj.setR12_total_book_expo(rs.getBigDecimal("r12_total_book_expo"));
+obj.setR12_margin_pro(rs.getBigDecimal("r12_margin_pro"));
+obj.setR12_book_expo(rs.getBigDecimal("r12_book_expo"));
+obj.setR12_ccf_cont(rs.getBigDecimal("r12_ccf_cont"));
+obj.setR12_equiv_value(rs.getBigDecimal("r12_equiv_value"));
+obj.setR12_rw_obligant(rs.getBigDecimal("r12_rw_obligant"));
+obj.setR12_rav(rs.getBigDecimal("r12_rav"));
+
+// =========================
+// R13
+// =========================
+obj.setR13_product(rs.getString("r13_product"));
+obj.setR13_client_grp(rs.getString("r13_client_grp"));
+obj.setR13_total_book_expo(rs.getBigDecimal("r13_total_book_expo"));
+obj.setR13_margin_pro(rs.getBigDecimal("r13_margin_pro"));
+obj.setR13_book_expo(rs.getBigDecimal("r13_book_expo"));
+obj.setR13_ccf_cont(rs.getBigDecimal("r13_ccf_cont"));
+obj.setR13_equiv_value(rs.getBigDecimal("r13_equiv_value"));
+obj.setR13_rw_obligant(rs.getBigDecimal("r13_rw_obligant"));
+obj.setR13_rav(rs.getBigDecimal("r13_rav"));
+
+// =========================
+// R14
+// =========================
+obj.setR14_product(rs.getString("r14_product"));
+obj.setR14_client_grp(rs.getString("r14_client_grp"));
+obj.setR14_total_book_expo(rs.getBigDecimal("r14_total_book_expo"));
+obj.setR14_margin_pro(rs.getBigDecimal("r14_margin_pro"));
+obj.setR14_book_expo(rs.getBigDecimal("r14_book_expo"));
+obj.setR14_ccf_cont(rs.getBigDecimal("r14_ccf_cont"));
+obj.setR14_equiv_value(rs.getBigDecimal("r14_equiv_value"));
+obj.setR14_rw_obligant(rs.getBigDecimal("r14_rw_obligant"));
+obj.setR14_rav(rs.getBigDecimal("r14_rav"));
+
+// =========================
+// R15
+// =========================
+obj.setR15_product(rs.getString("r15_product"));
+obj.setR15_client_grp(rs.getString("r15_client_grp"));
+obj.setR15_total_book_expo(rs.getBigDecimal("r15_total_book_expo"));
+obj.setR15_margin_pro(rs.getBigDecimal("r15_margin_pro"));
+obj.setR15_book_expo(rs.getBigDecimal("r15_book_expo"));
+obj.setR15_ccf_cont(rs.getBigDecimal("r15_ccf_cont"));
+obj.setR15_equiv_value(rs.getBigDecimal("r15_equiv_value"));
+obj.setR15_rw_obligant(rs.getBigDecimal("r15_rw_obligant"));
+obj.setR15_rav(rs.getBigDecimal("r15_rav"));
+
+// =========================
+// R16
+// =========================
+obj.setR16_product(rs.getString("r16_product"));
+obj.setR16_client_grp(rs.getString("r16_client_grp"));
+obj.setR16_total_book_expo(rs.getBigDecimal("r16_total_book_expo"));
+obj.setR16_margin_pro(rs.getBigDecimal("r16_margin_pro"));
+obj.setR16_book_expo(rs.getBigDecimal("r16_book_expo"));
+obj.setR16_ccf_cont(rs.getBigDecimal("r16_ccf_cont"));
+obj.setR16_equiv_value(rs.getBigDecimal("r16_equiv_value"));
+obj.setR16_rw_obligant(rs.getBigDecimal("r16_rw_obligant"));
+obj.setR16_rav(rs.getBigDecimal("r16_rav"));
+
+// =========================
+// R17
+// =========================
+obj.setR17_product(rs.getString("r17_product"));
+obj.setR17_client_grp(rs.getString("r17_client_grp"));
+obj.setR17_total_book_expo(rs.getBigDecimal("r17_total_book_expo"));
+obj.setR17_margin_pro(rs.getBigDecimal("r17_margin_pro"));
+obj.setR17_book_expo(rs.getBigDecimal("r17_book_expo"));
+obj.setR17_ccf_cont(rs.getBigDecimal("r17_ccf_cont"));
+obj.setR17_equiv_value(rs.getBigDecimal("r17_equiv_value"));
+obj.setR17_rw_obligant(rs.getBigDecimal("r17_rw_obligant"));
+obj.setR17_rav(rs.getBigDecimal("r17_rav"));
+
+// =========================
+// R18
+// =========================
+obj.setR18_product(rs.getString("r18_product"));
+obj.setR18_client_grp(rs.getString("r18_client_grp"));
+obj.setR18_total_book_expo(rs.getBigDecimal("r18_total_book_expo"));
+obj.setR18_margin_pro(rs.getBigDecimal("r18_margin_pro"));
+obj.setR18_book_expo(rs.getBigDecimal("r18_book_expo"));
+obj.setR18_ccf_cont(rs.getBigDecimal("r18_ccf_cont"));
+obj.setR18_equiv_value(rs.getBigDecimal("r18_equiv_value"));
+obj.setR18_rw_obligant(rs.getBigDecimal("r18_rw_obligant"));
+obj.setR18_rav(rs.getBigDecimal("r18_rav"));
+
+// =========================
+// R19
+// =========================
+obj.setR19_product(rs.getString("r19_product"));
+obj.setR19_client_grp(rs.getString("r19_client_grp"));
+obj.setR19_total_book_expo(rs.getBigDecimal("r19_total_book_expo"));
+obj.setR19_margin_pro(rs.getBigDecimal("r19_margin_pro"));
+obj.setR19_book_expo(rs.getBigDecimal("r19_book_expo"));
+obj.setR19_ccf_cont(rs.getBigDecimal("r19_ccf_cont"));
+obj.setR19_equiv_value(rs.getBigDecimal("r19_equiv_value"));
+obj.setR19_rw_obligant(rs.getBigDecimal("r19_rw_obligant"));
+obj.setR19_rav(rs.getBigDecimal("r19_rav"));
+
+// =========================
+// R20
+// =========================
+obj.setR20_product(rs.getString("r20_product"));
+obj.setR20_client_grp(rs.getString("r20_client_grp"));
+obj.setR20_total_book_expo(rs.getBigDecimal("r20_total_book_expo"));
+obj.setR20_margin_pro(rs.getBigDecimal("r20_margin_pro"));
+obj.setR20_book_expo(rs.getBigDecimal("r20_book_expo"));
+obj.setR20_ccf_cont(rs.getBigDecimal("r20_ccf_cont"));
+obj.setR20_equiv_value(rs.getBigDecimal("r20_equiv_value"));
+obj.setR20_rw_obligant(rs.getBigDecimal("r20_rw_obligant"));
+obj.setR20_rav(rs.getBigDecimal("r20_rav"));
+
+
+// =========================
+// R21
+// =========================
+obj.setR21_product(rs.getString("r21_product"));
+obj.setR21_client_grp(rs.getString("r21_client_grp"));
+obj.setR21_total_book_expo(rs.getBigDecimal("r21_total_book_expo"));
+obj.setR21_margin_pro(rs.getBigDecimal("r21_margin_pro"));
+obj.setR21_book_expo(rs.getBigDecimal("r21_book_expo"));
+obj.setR21_ccf_cont(rs.getBigDecimal("r21_ccf_cont"));
+obj.setR21_equiv_value(rs.getBigDecimal("r21_equiv_value"));
+obj.setR21_rw_obligant(rs.getBigDecimal("r21_rw_obligant"));
+obj.setR21_rav(rs.getBigDecimal("r21_rav"));
+
+// =========================
+// R22
+// =========================
+obj.setR22_product(rs.getString("r22_product"));
+obj.setR22_client_grp(rs.getString("r22_client_grp"));
+obj.setR22_total_book_expo(rs.getBigDecimal("r22_total_book_expo"));
+obj.setR22_margin_pro(rs.getBigDecimal("r22_margin_pro"));
+obj.setR22_book_expo(rs.getBigDecimal("r22_book_expo"));
+obj.setR22_ccf_cont(rs.getBigDecimal("r22_ccf_cont"));
+obj.setR22_equiv_value(rs.getBigDecimal("r22_equiv_value"));
+obj.setR22_rw_obligant(rs.getBigDecimal("r22_rw_obligant"));
+obj.setR22_rav(rs.getBigDecimal("r22_rav"));
+
+// =========================
+// R23
+// =========================
+obj.setR23_product(rs.getString("r23_product"));
+obj.setR23_client_grp(rs.getString("r23_client_grp"));
+obj.setR23_total_book_expo(rs.getBigDecimal("r23_total_book_expo"));
+obj.setR23_margin_pro(rs.getBigDecimal("r23_margin_pro"));
+obj.setR23_book_expo(rs.getBigDecimal("r23_book_expo"));
+obj.setR23_ccf_cont(rs.getBigDecimal("r23_ccf_cont"));
+obj.setR23_equiv_value(rs.getBigDecimal("r23_equiv_value"));
+obj.setR23_rw_obligant(rs.getBigDecimal("r23_rw_obligant"));
+obj.setR23_rav(rs.getBigDecimal("r23_rav"));
+
+// =========================
+// R24
+// =========================
+obj.setR24_product(rs.getString("r24_product"));
+obj.setR24_client_grp(rs.getString("r24_client_grp"));
+obj.setR24_total_book_expo(rs.getBigDecimal("r24_total_book_expo"));
+obj.setR24_margin_pro(rs.getBigDecimal("r24_margin_pro"));
+obj.setR24_book_expo(rs.getBigDecimal("r24_book_expo"));
+obj.setR24_ccf_cont(rs.getBigDecimal("r24_ccf_cont"));
+obj.setR24_equiv_value(rs.getBigDecimal("r24_equiv_value"));
+obj.setR24_rw_obligant(rs.getBigDecimal("r24_rw_obligant"));
+obj.setR24_rav(rs.getBigDecimal("r24_rav"));
+
+// =========================
+// R25
+// =========================
+obj.setR25_product(rs.getString("r25_product"));
+obj.setR25_client_grp(rs.getString("r25_client_grp"));
+obj.setR25_total_book_expo(rs.getBigDecimal("r25_total_book_expo"));
+obj.setR25_margin_pro(rs.getBigDecimal("r25_margin_pro"));
+obj.setR25_book_expo(rs.getBigDecimal("r25_book_expo"));
+obj.setR25_ccf_cont(rs.getBigDecimal("r25_ccf_cont"));
+obj.setR25_equiv_value(rs.getBigDecimal("r25_equiv_value"));
+obj.setR25_rw_obligant(rs.getBigDecimal("r25_rw_obligant"));
+obj.setR25_rav(rs.getBigDecimal("r25_rav"));
+
+// =========================
+// R26
+// =========================
+obj.setR26_product(rs.getString("r26_product"));
+obj.setR26_client_grp(rs.getString("r26_client_grp"));
+obj.setR26_total_book_expo(rs.getBigDecimal("r26_total_book_expo"));
+obj.setR26_margin_pro(rs.getBigDecimal("r26_margin_pro"));
+obj.setR26_book_expo(rs.getBigDecimal("r26_book_expo"));
+obj.setR26_ccf_cont(rs.getBigDecimal("r26_ccf_cont"));
+obj.setR26_equiv_value(rs.getBigDecimal("r26_equiv_value"));
+obj.setR26_rw_obligant(rs.getBigDecimal("r26_rw_obligant"));
+obj.setR26_rav(rs.getBigDecimal("r26_rav"));
+
+// =========================
+// R27
+// =========================
+obj.setR27_product(rs.getString("r27_product"));
+obj.setR27_client_grp(rs.getString("r27_client_grp"));
+obj.setR27_total_book_expo(rs.getBigDecimal("r27_total_book_expo"));
+obj.setR27_margin_pro(rs.getBigDecimal("r27_margin_pro"));
+obj.setR27_book_expo(rs.getBigDecimal("r27_book_expo"));
+obj.setR27_ccf_cont(rs.getBigDecimal("r27_ccf_cont"));
+obj.setR27_equiv_value(rs.getBigDecimal("r27_equiv_value"));
+obj.setR27_rw_obligant(rs.getBigDecimal("r27_rw_obligant"));
+obj.setR27_rav(rs.getBigDecimal("r27_rav"));
+
+// =========================
+// R28
+// =========================
+obj.setR28_product(rs.getString("r28_product"));
+obj.setR28_client_grp(rs.getString("r28_client_grp"));
+obj.setR28_total_book_expo(rs.getBigDecimal("r28_total_book_expo"));
+obj.setR28_margin_pro(rs.getBigDecimal("r28_margin_pro"));
+obj.setR28_book_expo(rs.getBigDecimal("r28_book_expo"));
+obj.setR28_ccf_cont(rs.getBigDecimal("r28_ccf_cont"));
+obj.setR28_equiv_value(rs.getBigDecimal("r28_equiv_value"));
+obj.setR28_rw_obligant(rs.getBigDecimal("r28_rw_obligant"));
+obj.setR28_rav(rs.getBigDecimal("r28_rav"));
+
+// =========================
+// R29
+// =========================
+obj.setR29_product(rs.getString("r29_product"));
+obj.setR29_client_grp(rs.getString("r29_client_grp"));
+obj.setR29_total_book_expo(rs.getBigDecimal("r29_total_book_expo"));
+obj.setR29_margin_pro(rs.getBigDecimal("r29_margin_pro"));
+obj.setR29_book_expo(rs.getBigDecimal("r29_book_expo"));
+obj.setR29_ccf_cont(rs.getBigDecimal("r29_ccf_cont"));
+obj.setR29_equiv_value(rs.getBigDecimal("r29_equiv_value"));
+obj.setR29_rw_obligant(rs.getBigDecimal("r29_rw_obligant"));
+obj.setR29_rav(rs.getBigDecimal("r29_rav"));
+
+// =========================
+// R30
+// =========================
+obj.setR30_product(rs.getString("r30_product"));
+obj.setR30_client_grp(rs.getString("r30_client_grp"));
+obj.setR30_total_book_expo(rs.getBigDecimal("r30_total_book_expo"));
+obj.setR30_margin_pro(rs.getBigDecimal("r30_margin_pro"));
+obj.setR30_book_expo(rs.getBigDecimal("r30_book_expo"));
+obj.setR30_ccf_cont(rs.getBigDecimal("r30_ccf_cont"));
+obj.setR30_equiv_value(rs.getBigDecimal("r30_equiv_value"));
+obj.setR30_rw_obligant(rs.getBigDecimal("r30_rw_obligant"));
+obj.setR30_rav(rs.getBigDecimal("r30_rav"));
+
+
+// =========================
+// R31
+// =========================
+obj.setR31_product(rs.getString("r31_product"));
+obj.setR31_client_grp(rs.getString("r31_client_grp"));
+obj.setR31_total_book_expo(rs.getBigDecimal("r31_total_book_expo"));
+obj.setR31_margin_pro(rs.getBigDecimal("r31_margin_pro"));
+obj.setR31_book_expo(rs.getBigDecimal("r31_book_expo"));
+obj.setR31_ccf_cont(rs.getBigDecimal("r31_ccf_cont"));
+obj.setR31_equiv_value(rs.getBigDecimal("r31_equiv_value"));
+obj.setR31_rw_obligant(rs.getBigDecimal("r31_rw_obligant"));
+obj.setR31_rav(rs.getBigDecimal("r31_rav"));
+
+// =========================
+// R32
+// =========================
+obj.setR32_product(rs.getString("r32_product"));
+obj.setR32_client_grp(rs.getString("r32_client_grp"));
+obj.setR32_total_book_expo(rs.getBigDecimal("r32_total_book_expo"));
+obj.setR32_margin_pro(rs.getBigDecimal("r32_margin_pro"));
+obj.setR32_book_expo(rs.getBigDecimal("r32_book_expo"));
+obj.setR32_ccf_cont(rs.getBigDecimal("r32_ccf_cont"));
+obj.setR32_equiv_value(rs.getBigDecimal("r32_equiv_value"));
+obj.setR32_rw_obligant(rs.getBigDecimal("r32_rw_obligant"));
+obj.setR32_rav(rs.getBigDecimal("r32_rav"));
+
+// =========================
+// R33
+// =========================
+obj.setR33_product(rs.getString("r33_product"));
+obj.setR33_client_grp(rs.getString("r33_client_grp"));
+obj.setR33_total_book_expo(rs.getBigDecimal("r33_total_book_expo"));
+obj.setR33_margin_pro(rs.getBigDecimal("r33_margin_pro"));
+obj.setR33_book_expo(rs.getBigDecimal("r33_book_expo"));
+obj.setR33_ccf_cont(rs.getBigDecimal("r33_ccf_cont"));
+obj.setR33_equiv_value(rs.getBigDecimal("r33_equiv_value"));
+obj.setR33_rw_obligant(rs.getBigDecimal("r33_rw_obligant"));
+obj.setR33_rav(rs.getBigDecimal("r33_rav"));
+
+// =========================
+// R34
+// =========================
+obj.setR34_product(rs.getString("r34_product"));
+obj.setR34_client_grp(rs.getString("r34_client_grp"));
+obj.setR34_total_book_expo(rs.getBigDecimal("r34_total_book_expo"));
+obj.setR34_margin_pro(rs.getBigDecimal("r34_margin_pro"));
+obj.setR34_book_expo(rs.getBigDecimal("r34_book_expo"));
+obj.setR34_ccf_cont(rs.getBigDecimal("r34_ccf_cont"));
+obj.setR34_equiv_value(rs.getBigDecimal("r34_equiv_value"));
+obj.setR34_rw_obligant(rs.getBigDecimal("r34_rw_obligant"));
+obj.setR34_rav(rs.getBigDecimal("r34_rav"));
+
+// =========================
+// R35
+// =========================
+obj.setR35_product(rs.getString("r35_product"));
+obj.setR35_client_grp(rs.getString("r35_client_grp"));
+obj.setR35_total_book_expo(rs.getBigDecimal("r35_total_book_expo"));
+obj.setR35_margin_pro(rs.getBigDecimal("r35_margin_pro"));
+obj.setR35_book_expo(rs.getBigDecimal("r35_book_expo"));
+obj.setR35_ccf_cont(rs.getBigDecimal("r35_ccf_cont"));
+obj.setR35_equiv_value(rs.getBigDecimal("r35_equiv_value"));
+obj.setR35_rw_obligant(rs.getBigDecimal("r35_rw_obligant"));
+obj.setR35_rav(rs.getBigDecimal("r35_rav"));
+
+// =========================
+// R36
+// =========================
+obj.setR36_product(rs.getString("r36_product"));
+obj.setR36_client_grp(rs.getString("r36_client_grp"));
+obj.setR36_total_book_expo(rs.getBigDecimal("r36_total_book_expo"));
+obj.setR36_margin_pro(rs.getBigDecimal("r36_margin_pro"));
+obj.setR36_book_expo(rs.getBigDecimal("r36_book_expo"));
+obj.setR36_ccf_cont(rs.getBigDecimal("r36_ccf_cont"));
+obj.setR36_equiv_value(rs.getBigDecimal("r36_equiv_value"));
+obj.setR36_rw_obligant(rs.getBigDecimal("r36_rw_obligant"));
+obj.setR36_rav(rs.getBigDecimal("r36_rav"));
+
+// =========================
+// R37
+// =========================
+obj.setR37_product(rs.getString("r37_product"));
+obj.setR37_client_grp(rs.getString("r37_client_grp"));
+obj.setR37_total_book_expo(rs.getBigDecimal("r37_total_book_expo"));
+obj.setR37_margin_pro(rs.getBigDecimal("r37_margin_pro"));
+obj.setR37_book_expo(rs.getBigDecimal("r37_book_expo"));
+obj.setR37_ccf_cont(rs.getBigDecimal("r37_ccf_cont"));
+obj.setR37_equiv_value(rs.getBigDecimal("r37_equiv_value"));
+obj.setR37_rw_obligant(rs.getBigDecimal("r37_rw_obligant"));
+obj.setR37_rav(rs.getBigDecimal("r37_rav"));
+
+// =========================
+// R38
+// =========================
+obj.setR38_product(rs.getString("r38_product"));
+obj.setR38_client_grp(rs.getString("r38_client_grp"));
+obj.setR38_total_book_expo(rs.getBigDecimal("r38_total_book_expo"));
+obj.setR38_margin_pro(rs.getBigDecimal("r38_margin_pro"));
+obj.setR38_book_expo(rs.getBigDecimal("r38_book_expo"));
+obj.setR38_ccf_cont(rs.getBigDecimal("r38_ccf_cont"));
+obj.setR38_equiv_value(rs.getBigDecimal("r38_equiv_value"));
+obj.setR38_rw_obligant(rs.getBigDecimal("r38_rw_obligant"));
+obj.setR38_rav(rs.getBigDecimal("r38_rav"));
+
+// =========================
+// R39
+// =========================
+obj.setR39_product(rs.getString("r39_product"));
+obj.setR39_client_grp(rs.getString("r39_client_grp"));
+obj.setR39_total_book_expo(rs.getBigDecimal("r39_total_book_expo"));
+obj.setR39_margin_pro(rs.getBigDecimal("r39_margin_pro"));
+obj.setR39_book_expo(rs.getBigDecimal("r39_book_expo"));
+obj.setR39_ccf_cont(rs.getBigDecimal("r39_ccf_cont"));
+obj.setR39_equiv_value(rs.getBigDecimal("r39_equiv_value"));
+obj.setR39_rw_obligant(rs.getBigDecimal("r39_rw_obligant"));
+obj.setR39_rav(rs.getBigDecimal("r39_rav"));
+
+// =========================
+// R40
+// =========================
+obj.setR40_product(rs.getString("r40_product"));
+obj.setR40_client_grp(rs.getString("r40_client_grp"));
+obj.setR40_total_book_expo(rs.getBigDecimal("r40_total_book_expo"));
+obj.setR40_margin_pro(rs.getBigDecimal("r40_margin_pro"));
+obj.setR40_book_expo(rs.getBigDecimal("r40_book_expo"));
+obj.setR40_ccf_cont(rs.getBigDecimal("r40_ccf_cont"));
+obj.setR40_equiv_value(rs.getBigDecimal("r40_equiv_value"));
+obj.setR40_rw_obligant(rs.getBigDecimal("r40_rw_obligant"));
+obj.setR40_rav(rs.getBigDecimal("r40_rav"));
+
+
+// =========================
+// R41
+// =========================
+obj.setR41_product(rs.getString("r41_product"));
+obj.setR41_client_grp(rs.getString("r41_client_grp"));
+obj.setR41_total_book_expo(rs.getBigDecimal("r41_total_book_expo"));
+obj.setR41_margin_pro(rs.getBigDecimal("r41_margin_pro"));
+obj.setR41_book_expo(rs.getBigDecimal("r41_book_expo"));
+obj.setR41_ccf_cont(rs.getBigDecimal("r41_ccf_cont"));
+obj.setR41_equiv_value(rs.getBigDecimal("r41_equiv_value"));
+obj.setR41_rw_obligant(rs.getBigDecimal("r41_rw_obligant"));
+obj.setR41_rav(rs.getBigDecimal("r41_rav"));
+
+// =========================
+// R42
+// =========================
+obj.setR42_product(rs.getString("r42_product"));
+obj.setR42_client_grp(rs.getString("r42_client_grp"));
+obj.setR42_total_book_expo(rs.getBigDecimal("r42_total_book_expo"));
+obj.setR42_margin_pro(rs.getBigDecimal("r42_margin_pro"));
+obj.setR42_book_expo(rs.getBigDecimal("r42_book_expo"));
+obj.setR42_ccf_cont(rs.getBigDecimal("r42_ccf_cont"));
+obj.setR42_equiv_value(rs.getBigDecimal("r42_equiv_value"));
+obj.setR42_rw_obligant(rs.getBigDecimal("r42_rw_obligant"));
+obj.setR42_rav(rs.getBigDecimal("r42_rav"));
+
+// =========================
+// R43
+// =========================
+obj.setR43_product(rs.getString("r43_product"));
+obj.setR43_client_grp(rs.getString("r43_client_grp"));
+obj.setR43_total_book_expo(rs.getBigDecimal("r43_total_book_expo"));
+obj.setR43_margin_pro(rs.getBigDecimal("r43_margin_pro"));
+obj.setR43_book_expo(rs.getBigDecimal("r43_book_expo"));
+obj.setR43_ccf_cont(rs.getBigDecimal("r43_ccf_cont"));
+obj.setR43_equiv_value(rs.getBigDecimal("r43_equiv_value"));
+obj.setR43_rw_obligant(rs.getBigDecimal("r43_rw_obligant"));
+obj.setR43_rav(rs.getBigDecimal("r43_rav"));
+
+// =========================
+// R44
+// =========================
+obj.setR44_product(rs.getString("r44_product"));
+obj.setR44_client_grp(rs.getString("r44_client_grp"));
+obj.setR44_total_book_expo(rs.getBigDecimal("r44_total_book_expo"));
+obj.setR44_margin_pro(rs.getBigDecimal("r44_margin_pro"));
+obj.setR44_book_expo(rs.getBigDecimal("r44_book_expo"));
+obj.setR44_ccf_cont(rs.getBigDecimal("r44_ccf_cont"));
+obj.setR44_equiv_value(rs.getBigDecimal("r44_equiv_value"));
+obj.setR44_rw_obligant(rs.getBigDecimal("r44_rw_obligant"));
+obj.setR44_rav(rs.getBigDecimal("r44_rav"));
+
+// =========================
+// R45
+// =========================
+obj.setR45_product(rs.getString("r45_product"));
+obj.setR45_client_grp(rs.getString("r45_client_grp"));
+obj.setR45_total_book_expo(rs.getBigDecimal("r45_total_book_expo"));
+obj.setR45_margin_pro(rs.getBigDecimal("r45_margin_pro"));
+obj.setR45_book_expo(rs.getBigDecimal("r45_book_expo"));
+obj.setR45_ccf_cont(rs.getBigDecimal("r45_ccf_cont"));
+obj.setR45_equiv_value(rs.getBigDecimal("r45_equiv_value"));
+obj.setR45_rw_obligant(rs.getBigDecimal("r45_rw_obligant"));
+obj.setR45_rav(rs.getBigDecimal("r45_rav"));
+
+// =========================
+// R46
+// =========================
+obj.setR46_product(rs.getString("r46_product"));
+obj.setR46_client_grp(rs.getString("r46_client_grp"));
+obj.setR46_total_book_expo(rs.getBigDecimal("r46_total_book_expo"));
+obj.setR46_margin_pro(rs.getBigDecimal("r46_margin_pro"));
+obj.setR46_book_expo(rs.getBigDecimal("r46_book_expo"));
+obj.setR46_ccf_cont(rs.getBigDecimal("r46_ccf_cont"));
+obj.setR46_equiv_value(rs.getBigDecimal("r46_equiv_value"));
+obj.setR46_rw_obligant(rs.getBigDecimal("r46_rw_obligant"));
+obj.setR46_rav(rs.getBigDecimal("r46_rav"));
+
+
+// =========================
+// R61
+// =========================
+obj.setR61_product(rs.getString("r61_product"));
+obj.setR61_client_grp(rs.getString("r61_client_grp"));
+obj.setR61_total_book_expo(rs.getBigDecimal("r61_total_book_expo"));
+obj.setR61_margin_pro(rs.getBigDecimal("r61_margin_pro"));
+obj.setR61_book_expo(rs.getBigDecimal("r61_book_expo"));
+obj.setR61_ccf_cont(rs.getBigDecimal("r61_ccf_cont"));
+obj.setR61_equiv_value(rs.getBigDecimal("r61_equiv_value"));
+obj.setR61_rw_obligant(rs.getBigDecimal("r61_rw_obligant"));
+obj.setR61_rav(rs.getBigDecimal("r61_rav"));
+
+// =========================
+// R62
+// =========================
+obj.setR62_product(rs.getString("r62_product"));
+obj.setR62_client_grp(rs.getString("r62_client_grp"));
+obj.setR62_total_book_expo(rs.getBigDecimal("r62_total_book_expo"));
+obj.setR62_margin_pro(rs.getBigDecimal("r62_margin_pro"));
+obj.setR62_book_expo(rs.getBigDecimal("r62_book_expo"));
+obj.setR62_ccf_cont(rs.getBigDecimal("r62_ccf_cont"));
+obj.setR62_equiv_value(rs.getBigDecimal("r62_equiv_value"));
+obj.setR62_rw_obligant(rs.getBigDecimal("r62_rw_obligant"));
+obj.setR62_rav(rs.getBigDecimal("r62_rav"));
+
+// =========================
+// R63
+// =========================
+obj.setR63_product(rs.getString("r63_product"));
+obj.setR63_client_grp(rs.getString("r63_client_grp"));
+obj.setR63_total_book_expo(rs.getBigDecimal("r63_total_book_expo"));
+obj.setR63_margin_pro(rs.getBigDecimal("r63_margin_pro"));
+obj.setR63_book_expo(rs.getBigDecimal("r63_book_expo"));
+obj.setR63_ccf_cont(rs.getBigDecimal("r63_ccf_cont"));
+obj.setR63_equiv_value(rs.getBigDecimal("r63_equiv_value"));
+obj.setR63_rw_obligant(rs.getBigDecimal("r63_rw_obligant"));
+obj.setR63_rav(rs.getBigDecimal("r63_rav"));
+
+// =========================
+// R64
+// =========================
+obj.setR64_product(rs.getString("r64_product"));
+obj.setR64_client_grp(rs.getString("r64_client_grp"));
+obj.setR64_total_book_expo(rs.getBigDecimal("r64_total_book_expo"));
+obj.setR64_margin_pro(rs.getBigDecimal("r64_margin_pro"));
+obj.setR64_book_expo(rs.getBigDecimal("r64_book_expo"));
+obj.setR64_ccf_cont(rs.getBigDecimal("r64_ccf_cont"));
+obj.setR64_equiv_value(rs.getBigDecimal("r64_equiv_value"));
+obj.setR64_rw_obligant(rs.getBigDecimal("r64_rw_obligant"));
+obj.setR64_rav(rs.getBigDecimal("r64_rav"));
+
+// =========================
+// R65
+// =========================
+obj.setR65_product(rs.getString("r65_product"));
+obj.setR65_client_grp(rs.getString("r65_client_grp"));
+obj.setR65_total_book_expo(rs.getBigDecimal("r65_total_book_expo"));
+obj.setR65_margin_pro(rs.getBigDecimal("r65_margin_pro"));
+obj.setR65_book_expo(rs.getBigDecimal("r65_book_expo"));
+obj.setR65_ccf_cont(rs.getBigDecimal("r65_ccf_cont"));
+obj.setR65_equiv_value(rs.getBigDecimal("r65_equiv_value"));
+obj.setR65_rw_obligant(rs.getBigDecimal("r65_rw_obligant"));
+obj.setR65_rav(rs.getBigDecimal("r65_rav"));
+
+// =========================
+// R66
+// =========================
+obj.setR66_product(rs.getString("r66_product"));
+obj.setR66_client_grp(rs.getString("r66_client_grp"));
+obj.setR66_total_book_expo(rs.getBigDecimal("r66_total_book_expo"));
+obj.setR66_margin_pro(rs.getBigDecimal("r66_margin_pro"));
+obj.setR66_book_expo(rs.getBigDecimal("r66_book_expo"));
+obj.setR66_ccf_cont(rs.getBigDecimal("r66_ccf_cont"));
+obj.setR66_equiv_value(rs.getBigDecimal("r66_equiv_value"));
+obj.setR66_rw_obligant(rs.getBigDecimal("r66_rw_obligant"));
+obj.setR66_rav(rs.getBigDecimal("r66_rav"));
+
+// =========================
+// R67
+// =========================
+obj.setR67_product(rs.getString("r67_product"));
+obj.setR67_client_grp(rs.getString("r67_client_grp"));
+obj.setR67_total_book_expo(rs.getBigDecimal("r67_total_book_expo"));
+obj.setR67_margin_pro(rs.getBigDecimal("r67_margin_pro"));
+obj.setR67_book_expo(rs.getBigDecimal("r67_book_expo"));
+obj.setR67_ccf_cont(rs.getBigDecimal("r67_ccf_cont"));
+obj.setR67_equiv_value(rs.getBigDecimal("r67_equiv_value"));
+obj.setR67_rw_obligant(rs.getBigDecimal("r67_rw_obligant"));
+obj.setR67_rav(rs.getBigDecimal("r67_rav"));
+
+// =========================
+// R68
+// =========================
+obj.setR68_product(rs.getString("r68_product"));
+obj.setR68_client_grp(rs.getString("r68_client_grp"));
+obj.setR68_total_book_expo(rs.getBigDecimal("r68_total_book_expo"));
+obj.setR68_margin_pro(rs.getBigDecimal("r68_margin_pro"));
+obj.setR68_book_expo(rs.getBigDecimal("r68_book_expo"));
+obj.setR68_ccf_cont(rs.getBigDecimal("r68_ccf_cont"));
+obj.setR68_equiv_value(rs.getBigDecimal("r68_equiv_value"));
+obj.setR68_rw_obligant(rs.getBigDecimal("r68_rw_obligant"));
+obj.setR68_rav(rs.getBigDecimal("r68_rav"));
+
+// =========================
+// R69
+// =========================
+obj.setR69_product(rs.getString("r69_product"));
+obj.setR69_client_grp(rs.getString("r69_client_grp"));
+obj.setR69_total_book_expo(rs.getBigDecimal("r69_total_book_expo"));
+obj.setR69_margin_pro(rs.getBigDecimal("r69_margin_pro"));
+obj.setR69_book_expo(rs.getBigDecimal("r69_book_expo"));
+obj.setR69_ccf_cont(rs.getBigDecimal("r69_ccf_cont"));
+obj.setR69_equiv_value(rs.getBigDecimal("r69_equiv_value"));
+obj.setR69_rw_obligant(rs.getBigDecimal("r69_rw_obligant"));
+obj.setR69_rav(rs.getBigDecimal("r69_rav"));
+
+// =========================
+// R70
+// =========================
+obj.setR70_product(rs.getString("r70_product"));
+obj.setR70_client_grp(rs.getString("r70_client_grp"));
+obj.setR70_total_book_expo(rs.getBigDecimal("r70_total_book_expo"));
+obj.setR70_margin_pro(rs.getBigDecimal("r70_margin_pro"));
+obj.setR70_book_expo(rs.getBigDecimal("r70_book_expo"));
+obj.setR70_ccf_cont(rs.getBigDecimal("r70_ccf_cont"));
+obj.setR70_equiv_value(rs.getBigDecimal("r70_equiv_value"));
+obj.setR70_rw_obligant(rs.getBigDecimal("r70_rw_obligant"));
+obj.setR70_rav(rs.getBigDecimal("r70_rav"));
+
+
+// =========================
+// R71
+// =========================
+obj.setR71_product(rs.getString("r71_product"));
+obj.setR71_client_grp(rs.getString("r71_client_grp"));
+obj.setR71_total_book_expo(rs.getBigDecimal("r71_total_book_expo"));
+obj.setR71_margin_pro(rs.getBigDecimal("r71_margin_pro"));
+obj.setR71_book_expo(rs.getBigDecimal("r71_book_expo"));
+obj.setR71_ccf_cont(rs.getBigDecimal("r71_ccf_cont"));
+obj.setR71_equiv_value(rs.getBigDecimal("r71_equiv_value"));
+obj.setR71_rw_obligant(rs.getBigDecimal("r71_rw_obligant"));
+obj.setR71_rav(rs.getBigDecimal("r71_rav"));
+
+// =========================
+// R72
+// =========================
+obj.setR72_product(rs.getString("r72_product"));
+obj.setR72_client_grp(rs.getString("r72_client_grp"));
+obj.setR72_total_book_expo(rs.getBigDecimal("r72_total_book_expo"));
+obj.setR72_margin_pro(rs.getBigDecimal("r72_margin_pro"));
+obj.setR72_book_expo(rs.getBigDecimal("r72_book_expo"));
+obj.setR72_ccf_cont(rs.getBigDecimal("r72_ccf_cont"));
+obj.setR72_equiv_value(rs.getBigDecimal("r72_equiv_value"));
+obj.setR72_rw_obligant(rs.getBigDecimal("r72_rw_obligant"));
+obj.setR72_rav(rs.getBigDecimal("r72_rav"));
+
+// =========================
+// R73
+// =========================
+obj.setR73_product(rs.getString("r73_product"));
+obj.setR73_client_grp(rs.getString("r73_client_grp"));
+obj.setR73_total_book_expo(rs.getBigDecimal("r73_total_book_expo"));
+obj.setR73_margin_pro(rs.getBigDecimal("r73_margin_pro"));
+obj.setR73_book_expo(rs.getBigDecimal("r73_book_expo"));
+obj.setR73_ccf_cont(rs.getBigDecimal("r73_ccf_cont"));
+obj.setR73_equiv_value(rs.getBigDecimal("r73_equiv_value"));
+obj.setR73_rw_obligant(rs.getBigDecimal("r73_rw_obligant"));
+obj.setR73_rav(rs.getBigDecimal("r73_rav"));
+
+// =========================
+// R74
+// =========================
+obj.setR74_product(rs.getString("r74_product"));
+obj.setR74_client_grp(rs.getString("r74_client_grp"));
+obj.setR74_total_book_expo(rs.getBigDecimal("r74_total_book_expo"));
+obj.setR74_margin_pro(rs.getBigDecimal("r74_margin_pro"));
+obj.setR74_book_expo(rs.getBigDecimal("r74_book_expo"));
+obj.setR74_ccf_cont(rs.getBigDecimal("r74_ccf_cont"));
+obj.setR74_equiv_value(rs.getBigDecimal("r74_equiv_value"));
+obj.setR74_rw_obligant(rs.getBigDecimal("r74_rw_obligant"));
+obj.setR74_rav(rs.getBigDecimal("r74_rav"));
+
+// =========================
+// R75
+// =========================
+obj.setR75_product(rs.getString("r75_product"));
+obj.setR75_client_grp(rs.getString("r75_client_grp"));
+obj.setR75_total_book_expo(rs.getBigDecimal("r75_total_book_expo"));
+obj.setR75_margin_pro(rs.getBigDecimal("r75_margin_pro"));
+obj.setR75_book_expo(rs.getBigDecimal("r75_book_expo"));
+obj.setR75_ccf_cont(rs.getBigDecimal("r75_ccf_cont"));
+obj.setR75_equiv_value(rs.getBigDecimal("r75_equiv_value"));
+obj.setR75_rw_obligant(rs.getBigDecimal("r75_rw_obligant"));
+obj.setR75_rav(rs.getBigDecimal("r75_rav"));
+
+// =========================
+// R76
+// =========================
+obj.setR76_product(rs.getString("r76_product"));
+obj.setR76_client_grp(rs.getString("r76_client_grp"));
+obj.setR76_total_book_expo(rs.getBigDecimal("r76_total_book_expo"));
+obj.setR76_margin_pro(rs.getBigDecimal("r76_margin_pro"));
+obj.setR76_book_expo(rs.getBigDecimal("r76_book_expo"));
+obj.setR76_ccf_cont(rs.getBigDecimal("r76_ccf_cont"));
+obj.setR76_equiv_value(rs.getBigDecimal("r76_equiv_value"));
+obj.setR76_rw_obligant(rs.getBigDecimal("r76_rw_obligant"));
+obj.setR76_rav(rs.getBigDecimal("r76_rav"));
+
+// =========================
+// R77
+// =========================
+obj.setR77_product(rs.getString("r77_product"));
+obj.setR77_client_grp(rs.getString("r77_client_grp"));
+obj.setR77_total_book_expo(rs.getBigDecimal("r77_total_book_expo"));
+obj.setR77_margin_pro(rs.getBigDecimal("r77_margin_pro"));
+obj.setR77_book_expo(rs.getBigDecimal("r77_book_expo"));
+obj.setR77_ccf_cont(rs.getBigDecimal("r77_ccf_cont"));
+obj.setR77_equiv_value(rs.getBigDecimal("r77_equiv_value"));
+obj.setR77_rw_obligant(rs.getBigDecimal("r77_rw_obligant"));
+obj.setR77_rav(rs.getBigDecimal("r77_rav"));
+
+// =========================
+// R78
+// =========================
+obj.setR78_product(rs.getString("r78_product"));
+obj.setR78_client_grp(rs.getString("r78_client_grp"));
+obj.setR78_total_book_expo(rs.getBigDecimal("r78_total_book_expo"));
+obj.setR78_margin_pro(rs.getBigDecimal("r78_margin_pro"));
+obj.setR78_book_expo(rs.getBigDecimal("r78_book_expo"));
+obj.setR78_ccf_cont(rs.getBigDecimal("r78_ccf_cont"));
+obj.setR78_equiv_value(rs.getBigDecimal("r78_equiv_value"));
+obj.setR78_rw_obligant(rs.getBigDecimal("r78_rw_obligant"));
+obj.setR78_rav(rs.getBigDecimal("r78_rav"));
+
+// =========================
+// R79
+// =========================
+obj.setR79_product(rs.getString("r79_product"));
+obj.setR79_client_grp(rs.getString("r79_client_grp"));
+obj.setR79_total_book_expo(rs.getBigDecimal("r79_total_book_expo"));
+obj.setR79_margin_pro(rs.getBigDecimal("r79_margin_pro"));
+obj.setR79_book_expo(rs.getBigDecimal("r79_book_expo"));
+obj.setR79_ccf_cont(rs.getBigDecimal("r79_ccf_cont"));
+obj.setR79_equiv_value(rs.getBigDecimal("r79_equiv_value"));
+obj.setR79_rw_obligant(rs.getBigDecimal("r79_rw_obligant"));
+obj.setR79_rav(rs.getBigDecimal("r79_rav"));
+
+// =========================
+// R80
+// =========================
+obj.setR80_product(rs.getString("r80_product"));
+obj.setR80_client_grp(rs.getString("r80_client_grp"));
+obj.setR80_total_book_expo(rs.getBigDecimal("r80_total_book_expo"));
+obj.setR80_margin_pro(rs.getBigDecimal("r80_margin_pro"));
+obj.setR80_book_expo(rs.getBigDecimal("r80_book_expo"));
+obj.setR80_ccf_cont(rs.getBigDecimal("r80_ccf_cont"));
+obj.setR80_equiv_value(rs.getBigDecimal("r80_equiv_value"));
+obj.setR80_rw_obligant(rs.getBigDecimal("r80_rw_obligant"));
+obj.setR80_rav(rs.getBigDecimal("r80_rav"));
+
+
+// =========================
+// R81
+// =========================
+obj.setR81_product(rs.getString("r81_product"));
+obj.setR81_client_grp(rs.getString("r81_client_grp"));
+obj.setR81_total_book_expo(rs.getBigDecimal("r81_total_book_expo"));
+obj.setR81_margin_pro(rs.getBigDecimal("r81_margin_pro"));
+obj.setR81_book_expo(rs.getBigDecimal("r81_book_expo"));
+obj.setR81_ccf_cont(rs.getBigDecimal("r81_ccf_cont"));
+obj.setR81_equiv_value(rs.getBigDecimal("r81_equiv_value"));
+obj.setR81_rw_obligant(rs.getBigDecimal("r81_rw_obligant"));
+obj.setR81_rav(rs.getBigDecimal("r81_rav"));
+
+// =========================
+// R82
+// =========================
+obj.setR82_product(rs.getString("r82_product"));
+obj.setR82_client_grp(rs.getString("r82_client_grp"));
+obj.setR82_total_book_expo(rs.getBigDecimal("r82_total_book_expo"));
+obj.setR82_margin_pro(rs.getBigDecimal("r82_margin_pro"));
+obj.setR82_book_expo(rs.getBigDecimal("r82_book_expo"));
+obj.setR82_ccf_cont(rs.getBigDecimal("r82_ccf_cont"));
+obj.setR82_equiv_value(rs.getBigDecimal("r82_equiv_value"));
+obj.setR82_rw_obligant(rs.getBigDecimal("r82_rw_obligant"));
+obj.setR82_rav(rs.getBigDecimal("r82_rav"));
+
+// =========================
+// R83
+// =========================
+obj.setR83_product(rs.getString("r83_product"));
+obj.setR83_client_grp(rs.getString("r83_client_grp"));
+obj.setR83_total_book_expo(rs.getBigDecimal("r83_total_book_expo"));
+obj.setR83_margin_pro(rs.getBigDecimal("r83_margin_pro"));
+obj.setR83_book_expo(rs.getBigDecimal("r83_book_expo"));
+obj.setR83_ccf_cont(rs.getBigDecimal("r83_ccf_cont"));
+obj.setR83_equiv_value(rs.getBigDecimal("r83_equiv_value"));
+obj.setR83_rw_obligant(rs.getBigDecimal("r83_rw_obligant"));
+obj.setR83_rav(rs.getBigDecimal("r83_rav"));
+
+// =========================
+// R84
+// =========================
+obj.setR84_product(rs.getString("r84_product"));
+obj.setR84_client_grp(rs.getString("r84_client_grp"));
+obj.setR84_total_book_expo(rs.getBigDecimal("r84_total_book_expo"));
+obj.setR84_margin_pro(rs.getBigDecimal("r84_margin_pro"));
+obj.setR84_book_expo(rs.getBigDecimal("r84_book_expo"));
+obj.setR84_ccf_cont(rs.getBigDecimal("r84_ccf_cont"));
+obj.setR84_equiv_value(rs.getBigDecimal("r84_equiv_value"));
+obj.setR84_rw_obligant(rs.getBigDecimal("r84_rw_obligant"));
+obj.setR84_rav(rs.getBigDecimal("r84_rav"));
+
+
+
+// =========================
+// R100
+// =========================
+obj.setR100_product(rs.getString("r100_product"));
+obj.setR100_client_grp(rs.getString("r100_client_grp"));
+obj.setR100_total_book_expo(rs.getBigDecimal("r100_total_book_expo"));
+obj.setR100_margin_pro(rs.getBigDecimal("r100_margin_pro"));
+obj.setR100_book_expo(rs.getBigDecimal("r100_book_expo"));
+obj.setR100_ccf_cont(rs.getBigDecimal("r100_ccf_cont"));
+obj.setR100_equiv_value(rs.getBigDecimal("r100_equiv_value"));
+obj.setR100_rw_obligant(rs.getBigDecimal("r100_rw_obligant"));
+obj.setR100_rav(rs.getBigDecimal("r100_rav"));
+
+// =========================
+// R101
+// =========================
+obj.setR101_product(rs.getString("r101_product"));
+obj.setR101_client_grp(rs.getString("r101_client_grp"));
+obj.setR101_total_book_expo(rs.getBigDecimal("r101_total_book_expo"));
+obj.setR101_margin_pro(rs.getBigDecimal("r101_margin_pro"));
+obj.setR101_book_expo(rs.getBigDecimal("r101_book_expo"));
+obj.setR101_ccf_cont(rs.getBigDecimal("r101_ccf_cont"));
+obj.setR101_equiv_value(rs.getBigDecimal("r101_equiv_value"));
+obj.setR101_rw_obligant(rs.getBigDecimal("r101_rw_obligant"));
+obj.setR101_rav(rs.getBigDecimal("r101_rav"));
+
+// =========================
+// R102
+// =========================
+obj.setR102_product(rs.getString("r102_product"));
+obj.setR102_client_grp(rs.getString("r102_client_grp"));
+obj.setR102_total_book_expo(rs.getBigDecimal("r102_total_book_expo"));
+obj.setR102_margin_pro(rs.getBigDecimal("r102_margin_pro"));
+obj.setR102_book_expo(rs.getBigDecimal("r102_book_expo"));
+obj.setR102_ccf_cont(rs.getBigDecimal("r102_ccf_cont"));
+obj.setR102_equiv_value(rs.getBigDecimal("r102_equiv_value"));
+obj.setR102_rw_obligant(rs.getBigDecimal("r102_rw_obligant"));
+obj.setR102_rav(rs.getBigDecimal("r102_rav"));
+
+// =========================
+// R103
+// =========================
+obj.setR103_product(rs.getString("r103_product"));
+obj.setR103_client_grp(rs.getString("r103_client_grp"));
+obj.setR103_total_book_expo(rs.getBigDecimal("r103_total_book_expo"));
+obj.setR103_margin_pro(rs.getBigDecimal("r103_margin_pro"));
+obj.setR103_book_expo(rs.getBigDecimal("r103_book_expo"));
+obj.setR103_ccf_cont(rs.getBigDecimal("r103_ccf_cont"));
+obj.setR103_equiv_value(rs.getBigDecimal("r103_equiv_value"));
+obj.setR103_rw_obligant(rs.getBigDecimal("r103_rw_obligant"));
+obj.setR103_rav(rs.getBigDecimal("r103_rav"));
+
+// =========================
+// R104
+// =========================
+obj.setR104_product(rs.getString("r104_product"));
+obj.setR104_client_grp(rs.getString("r104_client_grp"));
+obj.setR104_total_book_expo(rs.getBigDecimal("r104_total_book_expo"));
+obj.setR104_margin_pro(rs.getBigDecimal("r104_margin_pro"));
+obj.setR104_book_expo(rs.getBigDecimal("r104_book_expo"));
+obj.setR104_ccf_cont(rs.getBigDecimal("r104_ccf_cont"));
+obj.setR104_equiv_value(rs.getBigDecimal("r104_equiv_value"));
+obj.setR104_rw_obligant(rs.getBigDecimal("r104_rw_obligant"));
+obj.setR104_rav(rs.getBigDecimal("r104_rav"));
+
+// =========================
+// R105
+// =========================
+obj.setR105_product(rs.getString("r105_product"));
+obj.setR105_client_grp(rs.getString("r105_client_grp"));
+obj.setR105_total_book_expo(rs.getBigDecimal("r105_total_book_expo"));
+obj.setR105_margin_pro(rs.getBigDecimal("r105_margin_pro"));
+obj.setR105_book_expo(rs.getBigDecimal("r105_book_expo"));
+obj.setR105_ccf_cont(rs.getBigDecimal("r105_ccf_cont"));
+obj.setR105_equiv_value(rs.getBigDecimal("r105_equiv_value"));
+obj.setR105_rw_obligant(rs.getBigDecimal("r105_rw_obligant"));
+obj.setR105_rav(rs.getBigDecimal("r105_rav"));
+
+// =========================
+// R106
+// =========================
+obj.setR106_product(rs.getString("r106_product"));
+obj.setR106_client_grp(rs.getString("r106_client_grp"));
+obj.setR106_total_book_expo(rs.getBigDecimal("r106_total_book_expo"));
+obj.setR106_margin_pro(rs.getBigDecimal("r106_margin_pro"));
+obj.setR106_book_expo(rs.getBigDecimal("r106_book_expo"));
+obj.setR106_ccf_cont(rs.getBigDecimal("r106_ccf_cont"));
+obj.setR106_equiv_value(rs.getBigDecimal("r106_equiv_value"));
+obj.setR106_rw_obligant(rs.getBigDecimal("r106_rw_obligant"));
+obj.setR106_rav(rs.getBigDecimal("r106_rav"));
+
+// =========================
+// R107
+// =========================
+obj.setR107_product(rs.getString("r107_product"));
+obj.setR107_client_grp(rs.getString("r107_client_grp"));
+obj.setR107_total_book_expo(rs.getBigDecimal("r107_total_book_expo"));
+obj.setR107_margin_pro(rs.getBigDecimal("r107_margin_pro"));
+obj.setR107_book_expo(rs.getBigDecimal("r107_book_expo"));
+obj.setR107_ccf_cont(rs.getBigDecimal("r107_ccf_cont"));
+obj.setR107_equiv_value(rs.getBigDecimal("r107_equiv_value"));
+obj.setR107_rw_obligant(rs.getBigDecimal("r107_rw_obligant"));
+obj.setR107_rav(rs.getBigDecimal("r107_rav"));
+
+// =========================
+// R108
+// =========================
+obj.setR108_product(rs.getString("r108_product"));
+obj.setR108_client_grp(rs.getString("r108_client_grp"));
+obj.setR108_total_book_expo(rs.getBigDecimal("r108_total_book_expo"));
+obj.setR108_margin_pro(rs.getBigDecimal("r108_margin_pro"));
+obj.setR108_book_expo(rs.getBigDecimal("r108_book_expo"));
+obj.setR108_ccf_cont(rs.getBigDecimal("r108_ccf_cont"));
+obj.setR108_equiv_value(rs.getBigDecimal("r108_equiv_value"));
+obj.setR108_rw_obligant(rs.getBigDecimal("r108_rw_obligant"));
+obj.setR108_rav(rs.getBigDecimal("r108_rav"));
+
+// =========================
+// R109
+// =========================
+obj.setR109_product(rs.getString("r109_product"));
+obj.setR109_client_grp(rs.getString("r109_client_grp"));
+obj.setR109_total_book_expo(rs.getBigDecimal("r109_total_book_expo"));
+obj.setR109_margin_pro(rs.getBigDecimal("r109_margin_pro"));
+obj.setR109_book_expo(rs.getBigDecimal("r109_book_expo"));
+obj.setR109_ccf_cont(rs.getBigDecimal("r109_ccf_cont"));
+obj.setR109_equiv_value(rs.getBigDecimal("r109_equiv_value"));
+obj.setR109_rw_obligant(rs.getBigDecimal("r109_rw_obligant"));
+obj.setR109_rav(rs.getBigDecimal("r109_rav"));
+
+// =========================
+// R110
+// =========================
+obj.setR110_product(rs.getString("r110_product"));
+obj.setR110_client_grp(rs.getString("r110_client_grp"));
+obj.setR110_total_book_expo(rs.getBigDecimal("r110_total_book_expo"));
+obj.setR110_margin_pro(rs.getBigDecimal("r110_margin_pro"));
+obj.setR110_book_expo(rs.getBigDecimal("r110_book_expo"));
+obj.setR110_ccf_cont(rs.getBigDecimal("r110_ccf_cont"));
+obj.setR110_equiv_value(rs.getBigDecimal("r110_equiv_value"));
+obj.setR110_rw_obligant(rs.getBigDecimal("r110_rw_obligant"));
+obj.setR110_rav(rs.getBigDecimal("r110_rav"));
+
+
+// =========================
+// R111
+// =========================
+obj.setR111_product(rs.getString("r111_product"));
+obj.setR111_client_grp(rs.getString("r111_client_grp"));
+obj.setR111_total_book_expo(rs.getBigDecimal("r111_total_book_expo"));
+obj.setR111_margin_pro(rs.getBigDecimal("r111_margin_pro"));
+obj.setR111_book_expo(rs.getBigDecimal("r111_book_expo"));
+obj.setR111_ccf_cont(rs.getBigDecimal("r111_ccf_cont"));
+obj.setR111_equiv_value(rs.getBigDecimal("r111_equiv_value"));
+obj.setR111_rw_obligant(rs.getBigDecimal("r111_rw_obligant"));
+obj.setR111_rav(rs.getBigDecimal("r111_rav"));
+
+// =========================
+// R112
+// =========================
+obj.setR112_product(rs.getString("r112_product"));
+obj.setR112_client_grp(rs.getString("r112_client_grp"));
+obj.setR112_total_book_expo(rs.getBigDecimal("r112_total_book_expo"));
+obj.setR112_margin_pro(rs.getBigDecimal("r112_margin_pro"));
+obj.setR112_book_expo(rs.getBigDecimal("r112_book_expo"));
+obj.setR112_ccf_cont(rs.getBigDecimal("r112_ccf_cont"));
+obj.setR112_equiv_value(rs.getBigDecimal("r112_equiv_value"));
+obj.setR112_rw_obligant(rs.getBigDecimal("r112_rw_obligant"));
+obj.setR112_rav(rs.getBigDecimal("r112_rav"));
+
+// =========================
+// R113
+// =========================
+obj.setR113_product(rs.getString("r113_product"));
+obj.setR113_client_grp(rs.getString("r113_client_grp"));
+obj.setR113_total_book_expo(rs.getBigDecimal("r113_total_book_expo"));
+obj.setR113_margin_pro(rs.getBigDecimal("r113_margin_pro"));
+obj.setR113_book_expo(rs.getBigDecimal("r113_book_expo"));
+obj.setR113_ccf_cont(rs.getBigDecimal("r113_ccf_cont"));
+obj.setR113_equiv_value(rs.getBigDecimal("r113_equiv_value"));
+obj.setR113_rw_obligant(rs.getBigDecimal("r113_rw_obligant"));
+obj.setR113_rav(rs.getBigDecimal("r113_rav"));
+
+// =========================
+// R114
+// =========================
+obj.setR114_product(rs.getString("r114_product"));
+obj.setR114_client_grp(rs.getString("r114_client_grp"));
+obj.setR114_total_book_expo(rs.getBigDecimal("r114_total_book_expo"));
+obj.setR114_margin_pro(rs.getBigDecimal("r114_margin_pro"));
+obj.setR114_book_expo(rs.getBigDecimal("r114_book_expo"));
+obj.setR114_ccf_cont(rs.getBigDecimal("r114_ccf_cont"));
+obj.setR114_equiv_value(rs.getBigDecimal("r114_equiv_value"));
+obj.setR114_rw_obligant(rs.getBigDecimal("r114_rw_obligant"));
+obj.setR114_rav(rs.getBigDecimal("r114_rav"));
+
+// =========================
+// R115
+// =========================
+obj.setR115_product(rs.getString("r115_product"));
+obj.setR115_client_grp(rs.getString("r115_client_grp"));
+obj.setR115_total_book_expo(rs.getBigDecimal("r115_total_book_expo"));
+obj.setR115_margin_pro(rs.getBigDecimal("r115_margin_pro"));
+obj.setR115_book_expo(rs.getBigDecimal("r115_book_expo"));
+obj.setR115_ccf_cont(rs.getBigDecimal("r115_ccf_cont"));
+obj.setR115_equiv_value(rs.getBigDecimal("r115_equiv_value"));
+obj.setR115_rw_obligant(rs.getBigDecimal("r115_rw_obligant"));
+obj.setR115_rav(rs.getBigDecimal("r115_rav"));
+
+// =========================
+// R116
+// =========================
+obj.setR116_product(rs.getString("r116_product"));
+obj.setR116_client_grp(rs.getString("r116_client_grp"));
+obj.setR116_total_book_expo(rs.getBigDecimal("r116_total_book_expo"));
+obj.setR116_margin_pro(rs.getBigDecimal("r116_margin_pro"));
+obj.setR116_book_expo(rs.getBigDecimal("r116_book_expo"));
+obj.setR116_ccf_cont(rs.getBigDecimal("r116_ccf_cont"));
+obj.setR116_equiv_value(rs.getBigDecimal("r116_equiv_value"));
+obj.setR116_rw_obligant(rs.getBigDecimal("r116_rw_obligant"));
+obj.setR116_rav(rs.getBigDecimal("r116_rav"));
+
+// =========================
+// R117
+// =========================
+obj.setR117_product(rs.getString("r117_product"));
+obj.setR117_client_grp(rs.getString("r117_client_grp"));
+obj.setR117_total_book_expo(rs.getBigDecimal("r117_total_book_expo"));
+obj.setR117_margin_pro(rs.getBigDecimal("r117_margin_pro"));
+obj.setR117_book_expo(rs.getBigDecimal("r117_book_expo"));
+obj.setR117_ccf_cont(rs.getBigDecimal("r117_ccf_cont"));
+obj.setR117_equiv_value(rs.getBigDecimal("r117_equiv_value"));
+obj.setR117_rw_obligant(rs.getBigDecimal("r117_rw_obligant"));
+obj.setR117_rav(rs.getBigDecimal("r117_rav"));
+
+// =========================
+// R118
+// =========================
+obj.setR118_product(rs.getString("r118_product"));
+obj.setR118_client_grp(rs.getString("r118_client_grp"));
+obj.setR118_total_book_expo(rs.getBigDecimal("r118_total_book_expo"));
+obj.setR118_margin_pro(rs.getBigDecimal("r118_margin_pro"));
+obj.setR118_book_expo(rs.getBigDecimal("r118_book_expo"));
+obj.setR118_ccf_cont(rs.getBigDecimal("r118_ccf_cont"));
+obj.setR118_equiv_value(rs.getBigDecimal("r118_equiv_value"));
+obj.setR118_rw_obligant(rs.getBigDecimal("r118_rw_obligant"));
+obj.setR118_rav(rs.getBigDecimal("r118_rav"));
+
+// =========================
+// R119
+// =========================
+obj.setR119_product(rs.getString("r119_product"));
+obj.setR119_client_grp(rs.getString("r119_client_grp"));
+obj.setR119_total_book_expo(rs.getBigDecimal("r119_total_book_expo"));
+obj.setR119_margin_pro(rs.getBigDecimal("r119_margin_pro"));
+obj.setR119_book_expo(rs.getBigDecimal("r119_book_expo"));
+obj.setR119_ccf_cont(rs.getBigDecimal("r119_ccf_cont"));
+obj.setR119_equiv_value(rs.getBigDecimal("r119_equiv_value"));
+obj.setR119_rw_obligant(rs.getBigDecimal("r119_rw_obligant"));
+obj.setR119_rav(rs.getBigDecimal("r119_rav"));
+
+// =========================
+// R120
+// =========================
+obj.setR120_product(rs.getString("r120_product"));
+obj.setR120_client_grp(rs.getString("r120_client_grp"));
+obj.setR120_total_book_expo(rs.getBigDecimal("r120_total_book_expo"));
+obj.setR120_margin_pro(rs.getBigDecimal("r120_margin_pro"));
+obj.setR120_book_expo(rs.getBigDecimal("r120_book_expo"));
+obj.setR120_ccf_cont(rs.getBigDecimal("r120_ccf_cont"));
+obj.setR120_equiv_value(rs.getBigDecimal("r120_equiv_value"));
+obj.setR120_rw_obligant(rs.getBigDecimal("r120_rw_obligant"));
+obj.setR120_rav(rs.getBigDecimal("r120_rav"));
+
+
+// =========================
+// R121
+// =========================
+obj.setR121_product(rs.getString("r121_product"));
+obj.setR121_client_grp(rs.getString("r121_client_grp"));
+obj.setR121_total_book_expo(rs.getBigDecimal("r121_total_book_expo"));
+obj.setR121_margin_pro(rs.getBigDecimal("r121_margin_pro"));
+obj.setR121_book_expo(rs.getBigDecimal("r121_book_expo"));
+obj.setR121_ccf_cont(rs.getBigDecimal("r121_ccf_cont"));
+obj.setR121_equiv_value(rs.getBigDecimal("r121_equiv_value"));
+obj.setR121_rw_obligant(rs.getBigDecimal("r121_rw_obligant"));
+obj.setR121_rav(rs.getBigDecimal("r121_rav"));
+
+// =========================
+// R122
+// =========================
+obj.setR122_product(rs.getString("r122_product"));
+obj.setR122_client_grp(rs.getString("r122_client_grp"));
+obj.setR122_total_book_expo(rs.getBigDecimal("r122_total_book_expo"));
+obj.setR122_margin_pro(rs.getBigDecimal("r122_margin_pro"));
+obj.setR122_book_expo(rs.getBigDecimal("r122_book_expo"));
+obj.setR122_ccf_cont(rs.getBigDecimal("r122_ccf_cont"));
+obj.setR122_equiv_value(rs.getBigDecimal("r122_equiv_value"));
+obj.setR122_rw_obligant(rs.getBigDecimal("r122_rw_obligant"));
+obj.setR122_rav(rs.getBigDecimal("r122_rav"));
+
+// =========================
+// R123
+// =========================
+obj.setR123_product(rs.getString("r123_product"));
+obj.setR123_client_grp(rs.getString("r123_client_grp"));
+obj.setR123_total_book_expo(rs.getBigDecimal("r123_total_book_expo"));
+obj.setR123_margin_pro(rs.getBigDecimal("r123_margin_pro"));
+obj.setR123_book_expo(rs.getBigDecimal("r123_book_expo"));
+obj.setR123_ccf_cont(rs.getBigDecimal("r123_ccf_cont"));
+obj.setR123_equiv_value(rs.getBigDecimal("r123_equiv_value"));
+obj.setR123_rw_obligant(rs.getBigDecimal("r123_rw_obligant"));
+obj.setR123_rav(rs.getBigDecimal("r123_rav"));
+
+// =========================
+// R124
+// =========================
+obj.setR124_product(rs.getString("r124_product"));
+obj.setR124_client_grp(rs.getString("r124_client_grp"));
+obj.setR124_total_book_expo(rs.getBigDecimal("r124_total_book_expo"));
+obj.setR124_margin_pro(rs.getBigDecimal("r124_margin_pro"));
+obj.setR124_book_expo(rs.getBigDecimal("r124_book_expo"));
+obj.setR124_ccf_cont(rs.getBigDecimal("r124_ccf_cont"));
+obj.setR124_equiv_value(rs.getBigDecimal("r124_equiv_value"));
+obj.setR124_rw_obligant(rs.getBigDecimal("r124_rw_obligant"));
+obj.setR124_rav(rs.getBigDecimal("r124_rav"));
+
+// =========================
+// R125
+// =========================
+obj.setR125_product(rs.getString("r125_product"));
+obj.setR125_client_grp(rs.getString("r125_client_grp"));
+obj.setR125_total_book_expo(rs.getBigDecimal("r125_total_book_expo"));
+obj.setR125_margin_pro(rs.getBigDecimal("r125_margin_pro"));
+obj.setR125_book_expo(rs.getBigDecimal("r125_book_expo"));
+obj.setR125_ccf_cont(rs.getBigDecimal("r125_ccf_cont"));
+obj.setR125_equiv_value(rs.getBigDecimal("r125_equiv_value"));
+obj.setR125_rw_obligant(rs.getBigDecimal("r125_rw_obligant"));
+obj.setR125_rav(rs.getBigDecimal("r125_rav"));
+
+// =========================
+// R126
+// =========================
+obj.setR126_product(rs.getString("r126_product"));
+obj.setR126_client_grp(rs.getString("r126_client_grp"));
+obj.setR126_total_book_expo(rs.getBigDecimal("r126_total_book_expo"));
+obj.setR126_margin_pro(rs.getBigDecimal("r126_margin_pro"));
+obj.setR126_book_expo(rs.getBigDecimal("r126_book_expo"));
+obj.setR126_ccf_cont(rs.getBigDecimal("r126_ccf_cont"));
+obj.setR126_equiv_value(rs.getBigDecimal("r126_equiv_value"));
+obj.setR126_rw_obligant(rs.getBigDecimal("r126_rw_obligant"));
+obj.setR126_rav(rs.getBigDecimal("r126_rav"));
+
+// =========================
+// R127
+// =========================
+obj.setR127_product(rs.getString("r127_product"));
+obj.setR127_client_grp(rs.getString("r127_client_grp"));
+obj.setR127_total_book_expo(rs.getBigDecimal("r127_total_book_expo"));
+obj.setR127_margin_pro(rs.getBigDecimal("r127_margin_pro"));
+obj.setR127_book_expo(rs.getBigDecimal("r127_book_expo"));
+obj.setR127_ccf_cont(rs.getBigDecimal("r127_ccf_cont"));
+obj.setR127_equiv_value(rs.getBigDecimal("r127_equiv_value"));
+obj.setR127_rw_obligant(rs.getBigDecimal("r127_rw_obligant"));
+obj.setR127_rav(rs.getBigDecimal("r127_rav"));
+
+// =========================
+// R128
+// =========================
+obj.setR128_product(rs.getString("r128_product"));
+obj.setR128_client_grp(rs.getString("r128_client_grp"));
+obj.setR128_total_book_expo(rs.getBigDecimal("r128_total_book_expo"));
+obj.setR128_margin_pro(rs.getBigDecimal("r128_margin_pro"));
+obj.setR128_book_expo(rs.getBigDecimal("r128_book_expo"));
+obj.setR128_ccf_cont(rs.getBigDecimal("r128_ccf_cont"));
+obj.setR128_equiv_value(rs.getBigDecimal("r128_equiv_value"));
+obj.setR128_rw_obligant(rs.getBigDecimal("r128_rw_obligant"));
+obj.setR128_rav(rs.getBigDecimal("r128_rav"));
+
+// =========================
+// R129
+// =========================
+obj.setR129_product(rs.getString("r129_product"));
+obj.setR129_client_grp(rs.getString("r129_client_grp"));
+obj.setR129_total_book_expo(rs.getBigDecimal("r129_total_book_expo"));
+obj.setR129_margin_pro(rs.getBigDecimal("r129_margin_pro"));
+obj.setR129_book_expo(rs.getBigDecimal("r129_book_expo"));
+obj.setR129_ccf_cont(rs.getBigDecimal("r129_ccf_cont"));
+obj.setR129_equiv_value(rs.getBigDecimal("r129_equiv_value"));
+obj.setR129_rw_obligant(rs.getBigDecimal("r129_rw_obligant"));
+obj.setR129_rav(rs.getBigDecimal("r129_rav"));
+
+// =========================
+// R130
+// =========================
+obj.setR130_product(rs.getString("r130_product"));
+obj.setR130_client_grp(rs.getString("r130_client_grp"));
+obj.setR130_total_book_expo(rs.getBigDecimal("r130_total_book_expo"));
+obj.setR130_margin_pro(rs.getBigDecimal("r130_margin_pro"));
+obj.setR130_book_expo(rs.getBigDecimal("r130_book_expo"));
+obj.setR130_ccf_cont(rs.getBigDecimal("r130_ccf_cont"));
+obj.setR130_equiv_value(rs.getBigDecimal("r130_equiv_value"));
+obj.setR130_rw_obligant(rs.getBigDecimal("r130_rw_obligant"));
+obj.setR130_rav(rs.getBigDecimal("r130_rav"));
+
+// =========================
+// R131
+// =========================
+obj.setR131_product(rs.getString("r131_product"));
+obj.setR131_client_grp(rs.getString("r131_client_grp"));
+obj.setR131_total_book_expo(rs.getBigDecimal("r131_total_book_expo"));
+obj.setR131_margin_pro(rs.getBigDecimal("r131_margin_pro"));
+obj.setR131_book_expo(rs.getBigDecimal("r131_book_expo"));
+obj.setR131_ccf_cont(rs.getBigDecimal("r131_ccf_cont"));
+obj.setR131_equiv_value(rs.getBigDecimal("r131_equiv_value"));
+obj.setR131_rw_obligant(rs.getBigDecimal("r131_rw_obligant"));
+obj.setR131_rav(rs.getBigDecimal("r131_rav"));
+
+// =========================
+// R132
+// =========================
+obj.setR132_product(rs.getString("r132_product"));
+obj.setR132_client_grp(rs.getString("r132_client_grp"));
+obj.setR132_total_book_expo(rs.getBigDecimal("r132_total_book_expo"));
+obj.setR132_margin_pro(rs.getBigDecimal("r132_margin_pro"));
+obj.setR132_book_expo(rs.getBigDecimal("r132_book_expo"));
+obj.setR132_ccf_cont(rs.getBigDecimal("r132_ccf_cont"));
+obj.setR132_equiv_value(rs.getBigDecimal("r132_equiv_value"));
+obj.setR132_rw_obligant(rs.getBigDecimal("r132_rw_obligant"));
+obj.setR132_rav(rs.getBigDecimal("r132_rav"));
+
+// =========================
+// R133
+// =========================
+obj.setR133_product(rs.getString("r133_product"));
+obj.setR133_client_grp(rs.getString("r133_client_grp"));
+obj.setR133_total_book_expo(rs.getBigDecimal("r133_total_book_expo"));
+obj.setR133_margin_pro(rs.getBigDecimal("r133_margin_pro"));
+obj.setR133_book_expo(rs.getBigDecimal("r133_book_expo"));
+obj.setR133_ccf_cont(rs.getBigDecimal("r133_ccf_cont"));
+obj.setR133_equiv_value(rs.getBigDecimal("r133_equiv_value"));
+obj.setR133_rw_obligant(rs.getBigDecimal("r133_rw_obligant"));
+obj.setR133_rav(rs.getBigDecimal("r133_rav"));
+
+// =========================
+// R134
+// =========================
+obj.setR134_product(rs.getString("r134_product"));
+obj.setR134_client_grp(rs.getString("r134_client_grp"));
+obj.setR134_total_book_expo(rs.getBigDecimal("r134_total_book_expo"));
+obj.setR134_margin_pro(rs.getBigDecimal("r134_margin_pro"));
+obj.setR134_book_expo(rs.getBigDecimal("r134_book_expo"));
+obj.setR134_ccf_cont(rs.getBigDecimal("r134_ccf_cont"));
+obj.setR134_equiv_value(rs.getBigDecimal("r134_equiv_value"));
+obj.setR134_rw_obligant(rs.getBigDecimal("r134_rw_obligant"));
+obj.setR134_rav(rs.getBigDecimal("r134_rav"));
+
+
+// =========================
+// R148
+// =========================
+obj.setR148_product(rs.getString("r148_product"));
+obj.setR148_client_grp(rs.getString("r148_client_grp"));
+obj.setR148_total_book_expo(rs.getBigDecimal("r148_total_book_expo"));
+obj.setR148_margin_pro(rs.getBigDecimal("r148_margin_pro"));
+obj.setR148_book_expo(rs.getBigDecimal("r148_book_expo"));
+obj.setR148_ccf_cont(rs.getBigDecimal("r148_ccf_cont"));
+obj.setR148_equiv_value(rs.getBigDecimal("r148_equiv_value"));
+obj.setR148_rw_obligant(rs.getBigDecimal("r148_rw_obligant"));
+obj.setR148_rav(rs.getBigDecimal("r148_rav"));
+
+// =========================
+// R149
+// =========================
+obj.setR149_product(rs.getString("r149_product"));
+obj.setR149_client_grp(rs.getString("r149_client_grp"));
+obj.setR149_total_book_expo(rs.getBigDecimal("r149_total_book_expo"));
+obj.setR149_margin_pro(rs.getBigDecimal("r149_margin_pro"));
+obj.setR149_book_expo(rs.getBigDecimal("r149_book_expo"));
+obj.setR149_ccf_cont(rs.getBigDecimal("r149_ccf_cont"));
+obj.setR149_equiv_value(rs.getBigDecimal("r149_equiv_value"));
+obj.setR149_rw_obligant(rs.getBigDecimal("r149_rw_obligant"));
+obj.setR149_rav(rs.getBigDecimal("r149_rav"));
+
+// =========================
+// R150
+// =========================
+obj.setR150_product(rs.getString("r150_product"));
+obj.setR150_client_grp(rs.getString("r150_client_grp"));
+obj.setR150_total_book_expo(rs.getBigDecimal("r150_total_book_expo"));
+obj.setR150_margin_pro(rs.getBigDecimal("r150_margin_pro"));
+obj.setR150_book_expo(rs.getBigDecimal("r150_book_expo"));
+obj.setR150_ccf_cont(rs.getBigDecimal("r150_ccf_cont"));
+obj.setR150_equiv_value(rs.getBigDecimal("r150_equiv_value"));
+obj.setR150_rw_obligant(rs.getBigDecimal("r150_rw_obligant"));
+obj.setR150_rav(rs.getBigDecimal("r150_rav"));
+
+        // =========================
+        // COMMON FIELDS
+        // =========================
+        obj.setReport_date(rs.getDate("report_date"));
+        obj.setReport_version(rs.getBigDecimal("report_version"));
+        obj.setReportResubDate(rs.getDate("report_resubdate"));
+
+        obj.setReport_frequency(rs.getString("report_frequency"));
+        obj.setReport_code(rs.getString("report_code"));
+        obj.setReport_desc(rs.getString("report_desc"));
+
+        obj.setEntity_flg(rs.getString("entity_flg"));
+        obj.setModify_flg(rs.getString("modify_flg"));
+        obj.setDel_flg(rs.getString("del_flg"));
+
+        return obj;
+    }
+}
+
+
+public class OFF_BS_ITEMS_Archival_Summary_Entity1 {
+	
+	
+	private String	r12_product;
+	private String	r12_client_grp;
+	private BigDecimal	r12_total_book_expo;
+	private BigDecimal	r12_margin_pro;
+	private BigDecimal	r12_book_expo;
+	private BigDecimal	r12_ccf_cont;
+	private BigDecimal	r12_equiv_value;
+	private BigDecimal	r12_rw_obligant;
+	private BigDecimal	r12_rav;
+	private String	r13_product;
+	private String	r13_client_grp;
+	private BigDecimal	r13_total_book_expo;
+	private BigDecimal	r13_margin_pro;
+	private BigDecimal	r13_book_expo;
+	private BigDecimal	r13_ccf_cont;
+	private BigDecimal	r13_equiv_value;
+	private BigDecimal	r13_rw_obligant;
+	private BigDecimal	r13_rav;
+	private String	r14_product;
+	private String	r14_client_grp;
+	private BigDecimal	r14_total_book_expo;
+	private BigDecimal	r14_margin_pro;
+	private BigDecimal	r14_book_expo;
+	private BigDecimal	r14_ccf_cont;
+	private BigDecimal	r14_equiv_value;
+	private BigDecimal	r14_rw_obligant;
+	private BigDecimal	r14_rav;
+	private String	r15_product;
+	private String	r15_client_grp;
+	private BigDecimal	r15_total_book_expo;
+	private BigDecimal	r15_margin_pro;
+	private BigDecimal	r15_book_expo;
+	private BigDecimal	r15_ccf_cont;
+	private BigDecimal	r15_equiv_value;
+	private BigDecimal	r15_rw_obligant;
+	private BigDecimal	r15_rav;
+	private String	r16_product;
+	private String	r16_client_grp;
+	private BigDecimal	r16_total_book_expo;
+	private BigDecimal	r16_margin_pro;
+	private BigDecimal	r16_book_expo;
+	private BigDecimal	r16_ccf_cont;
+	private BigDecimal	r16_equiv_value;
+	private BigDecimal	r16_rw_obligant;
+	private BigDecimal	r16_rav;
+	private String	r17_product;
+	private String	r17_client_grp;
+	private BigDecimal	r17_total_book_expo;
+	private BigDecimal	r17_margin_pro;
+	private BigDecimal	r17_book_expo;
+	private BigDecimal	r17_ccf_cont;
+	private BigDecimal	r17_equiv_value;
+	private BigDecimal	r17_rw_obligant;
+	private BigDecimal	r17_rav;
+	private String	r18_product;
+	private String	r18_client_grp;
+	private BigDecimal	r18_total_book_expo;
+	private BigDecimal	r18_margin_pro;
+	private BigDecimal	r18_book_expo;
+	private BigDecimal	r18_ccf_cont;
+	private BigDecimal	r18_equiv_value;
+	private BigDecimal	r18_rw_obligant;
+	private BigDecimal	r18_rav;
+	private String	r19_product;
+	private String	r19_client_grp;
+	private BigDecimal	r19_total_book_expo;
+	private BigDecimal	r19_margin_pro;
+	private BigDecimal	r19_book_expo;
+	private BigDecimal	r19_ccf_cont;
+	private BigDecimal	r19_equiv_value;
+	private BigDecimal	r19_rw_obligant;
+	private BigDecimal	r19_rav;
+	private String	r20_product;
+	private String	r20_client_grp;
+	private BigDecimal	r20_total_book_expo;
+	private BigDecimal	r20_margin_pro;
+	private BigDecimal	r20_book_expo;
+	private BigDecimal	r20_ccf_cont;
+	private BigDecimal	r20_equiv_value;
+	private BigDecimal	r20_rw_obligant;
+	private BigDecimal	r20_rav;
+	private String	r21_product;
+	private String	r21_client_grp;
+	private BigDecimal	r21_total_book_expo;
+	private BigDecimal	r21_margin_pro;
+	private BigDecimal	r21_book_expo;
+	private BigDecimal	r21_ccf_cont;
+	private BigDecimal	r21_equiv_value;
+	private BigDecimal	r21_rw_obligant;
+	private BigDecimal	r21_rav;
+	private String	r22_product;
+	private String	r22_client_grp;
+	private BigDecimal	r22_total_book_expo;
+	private BigDecimal	r22_margin_pro;
+	private BigDecimal	r22_book_expo;
+	private BigDecimal	r22_ccf_cont;
+	private BigDecimal	r22_equiv_value;
+	private BigDecimal	r22_rw_obligant;
+	private BigDecimal	r22_rav;
+	private String	r23_product;
+	private String	r23_client_grp;
+	private BigDecimal	r23_total_book_expo;
+	private BigDecimal	r23_margin_pro;
+	private BigDecimal	r23_book_expo;
+	private BigDecimal	r23_ccf_cont;
+	private BigDecimal	r23_equiv_value;
+	private BigDecimal	r23_rw_obligant;
+	private BigDecimal	r23_rav;
+	private String	r24_product;
+	private String	r24_client_grp;
+	private BigDecimal	r24_total_book_expo;
+	private BigDecimal	r24_margin_pro;
+	private BigDecimal	r24_book_expo;
+	private BigDecimal	r24_ccf_cont;
+	private BigDecimal	r24_equiv_value;
+	private BigDecimal	r24_rw_obligant;
+	private BigDecimal	r24_rav;
+	private String	r25_product;
+	private String	r25_client_grp;
+	private BigDecimal	r25_total_book_expo;
+	private BigDecimal	r25_margin_pro;
+	private BigDecimal	r25_book_expo;
+	private BigDecimal	r25_ccf_cont;
+	private BigDecimal	r25_equiv_value;
+	private BigDecimal	r25_rw_obligant;
+	private BigDecimal	r25_rav;
+	private String	r26_product;
+	private String	r26_client_grp;
+	private BigDecimal	r26_total_book_expo;
+	private BigDecimal	r26_margin_pro;
+	private BigDecimal	r26_book_expo;
+	private BigDecimal	r26_ccf_cont;
+	private BigDecimal	r26_equiv_value;
+	private BigDecimal	r26_rw_obligant;
+	private BigDecimal	r26_rav;
+	private String	r27_product;
+	private String	r27_client_grp;
+	private BigDecimal	r27_total_book_expo;
+	private BigDecimal	r27_margin_pro;
+	private BigDecimal	r27_book_expo;
+	private BigDecimal	r27_ccf_cont;
+	private BigDecimal	r27_equiv_value;
+	private BigDecimal	r27_rw_obligant;
+	private BigDecimal	r27_rav;
+	private String	r28_product;
+	private String	r28_client_grp;
+	private BigDecimal	r28_total_book_expo;
+	private BigDecimal	r28_margin_pro;
+	private BigDecimal	r28_book_expo;
+	private BigDecimal	r28_ccf_cont;
+	private BigDecimal	r28_equiv_value;
+	private BigDecimal	r28_rw_obligant;
+	private BigDecimal	r28_rav;
+	private String	r29_product;
+	private String	r29_client_grp;
+	private BigDecimal	r29_total_book_expo;
+	private BigDecimal	r29_margin_pro;
+	private BigDecimal	r29_book_expo;
+	private BigDecimal	r29_ccf_cont;
+	private BigDecimal	r29_equiv_value;
+	private BigDecimal	r29_rw_obligant;
+	private BigDecimal	r29_rav;
+	private String	r30_product;
+	private String	r30_client_grp;
+	private BigDecimal	r30_total_book_expo;
+	private BigDecimal	r30_margin_pro;
+	private BigDecimal	r30_book_expo;
+	private BigDecimal	r30_ccf_cont;
+	private BigDecimal	r30_equiv_value;
+	private BigDecimal	r30_rw_obligant;
+	private BigDecimal	r30_rav;
+	private String	r31_product;
+	private String	r31_client_grp;
+	private BigDecimal	r31_total_book_expo;
+	private BigDecimal	r31_margin_pro;
+	private BigDecimal	r31_book_expo;
+	private BigDecimal	r31_ccf_cont;
+	private BigDecimal	r31_equiv_value;
+	private BigDecimal	r31_rw_obligant;
+	private BigDecimal	r31_rav;
+	private String	r32_product;
+	private String	r32_client_grp;
+	private BigDecimal	r32_total_book_expo;
+	private BigDecimal	r32_margin_pro;
+	private BigDecimal	r32_book_expo;
+	private BigDecimal	r32_ccf_cont;
+	private BigDecimal	r32_equiv_value;
+	private BigDecimal	r32_rw_obligant;
+	private BigDecimal	r32_rav;
+	private String	r33_product;
+	private String	r33_client_grp;
+	private BigDecimal	r33_total_book_expo;
+	private BigDecimal	r33_margin_pro;
+	private BigDecimal	r33_book_expo;
+	private BigDecimal	r33_ccf_cont;
+	private BigDecimal	r33_equiv_value;
+	private BigDecimal	r33_rw_obligant;
+	private BigDecimal	r33_rav;
+	private String	r34_product;
+	private String	r34_client_grp;
+	private BigDecimal	r34_total_book_expo;
+	private BigDecimal	r34_margin_pro;
+	private BigDecimal	r34_book_expo;
+	private BigDecimal	r34_ccf_cont;
+	private BigDecimal	r34_equiv_value;
+	private BigDecimal	r34_rw_obligant;
+	private BigDecimal	r34_rav;
+	private String	r35_product;
+	private String	r35_client_grp;
+	private BigDecimal	r35_total_book_expo;
+	private BigDecimal	r35_margin_pro;
+	private BigDecimal	r35_book_expo;
+	private BigDecimal	r35_ccf_cont;
+	private BigDecimal	r35_equiv_value;
+	private BigDecimal	r35_rw_obligant;
+	private BigDecimal	r35_rav;
+	private String	r36_product;
+	private String	r36_client_grp;
+	private BigDecimal	r36_total_book_expo;
+	private BigDecimal	r36_margin_pro;
+	private BigDecimal	r36_book_expo;
+	private BigDecimal	r36_ccf_cont;
+	private BigDecimal	r36_equiv_value;
+	private BigDecimal	r36_rw_obligant;
+	private BigDecimal	r36_rav;
+	private String	r37_product;
+	private String	r37_client_grp;
+	private BigDecimal	r37_total_book_expo;
+	private BigDecimal	r37_margin_pro;
+	private BigDecimal	r37_book_expo;
+	private BigDecimal	r37_ccf_cont;
+	private BigDecimal	r37_equiv_value;
+	private BigDecimal	r37_rw_obligant;
+	private BigDecimal	r37_rav;
+	private String	r38_product;
+	private String	r38_client_grp;
+	private BigDecimal	r38_total_book_expo;
+	private BigDecimal	r38_margin_pro;
+	private BigDecimal	r38_book_expo;
+	private BigDecimal	r38_ccf_cont;
+	private BigDecimal	r38_equiv_value;
+	private BigDecimal	r38_rw_obligant;
+	private BigDecimal	r38_rav;
+	private String	r39_product;
+	private String	r39_client_grp;
+	private BigDecimal	r39_total_book_expo;
+	private BigDecimal	r39_margin_pro;
+	private BigDecimal	r39_book_expo;
+	private BigDecimal	r39_ccf_cont;
+	private BigDecimal	r39_equiv_value;
+	private BigDecimal	r39_rw_obligant;
+	private BigDecimal	r39_rav;
+	private String	r40_product;
+	private String	r40_client_grp;
+	private BigDecimal	r40_total_book_expo;
+	private BigDecimal	r40_margin_pro;
+	private BigDecimal	r40_book_expo;
+	private BigDecimal	r40_ccf_cont;
+	private BigDecimal	r40_equiv_value;
+	private BigDecimal	r40_rw_obligant;
+	private BigDecimal	r40_rav;
+	private String	r41_product;
+	private String	r41_client_grp;
+	private BigDecimal	r41_total_book_expo;
+	private BigDecimal	r41_margin_pro;
+	private BigDecimal	r41_book_expo;
+	private BigDecimal	r41_ccf_cont;
+	private BigDecimal	r41_equiv_value;
+	private BigDecimal	r41_rw_obligant;
+	private BigDecimal	r41_rav;
+	private String	r42_product;
+	private String	r42_client_grp;
+	private BigDecimal	r42_total_book_expo;
+	private BigDecimal	r42_margin_pro;
+	private BigDecimal	r42_book_expo;
+	private BigDecimal	r42_ccf_cont;
+	private BigDecimal	r42_equiv_value;
+	private BigDecimal	r42_rw_obligant;
+	private BigDecimal	r42_rav;
+	private String	r43_product;
+	private String	r43_client_grp;
+	private BigDecimal	r43_total_book_expo;
+	private BigDecimal	r43_margin_pro;
+	private BigDecimal	r43_book_expo;
+	private BigDecimal	r43_ccf_cont;
+	private BigDecimal	r43_equiv_value;
+	private BigDecimal	r43_rw_obligant;
+	private BigDecimal	r43_rav;
+	private String	r44_product;
+	private String	r44_client_grp;
+	private BigDecimal	r44_total_book_expo;
+	private BigDecimal	r44_margin_pro;
+	private BigDecimal	r44_book_expo;
+	private BigDecimal	r44_ccf_cont;
+	private BigDecimal	r44_equiv_value;
+	private BigDecimal	r44_rw_obligant;
+	private BigDecimal	r44_rav;
+	private String	r45_product;
+	private String	r45_client_grp;
+	private BigDecimal	r45_total_book_expo;
+	private BigDecimal	r45_margin_pro;
+	private BigDecimal	r45_book_expo;
+	private BigDecimal	r45_ccf_cont;
+	private BigDecimal	r45_equiv_value;
+	private BigDecimal	r45_rw_obligant;
+	private BigDecimal	r45_rav;
+	private String	r46_product;
+	private String	r46_client_grp;
+	private BigDecimal	r46_total_book_expo;
+	private BigDecimal	r46_margin_pro;
+	private BigDecimal	r46_book_expo;
+	private BigDecimal	r46_ccf_cont;
+	private BigDecimal	r46_equiv_value;
+	private BigDecimal	r46_rw_obligant;
+	private BigDecimal	r46_rav;
+	private String	r61_product;
+	private String	r61_client_grp;
+	private BigDecimal	r61_total_book_expo;
+	private BigDecimal	r61_margin_pro;
+	private BigDecimal	r61_book_expo;
+	private BigDecimal	r61_ccf_cont;
+	private BigDecimal	r61_equiv_value;
+	private BigDecimal	r61_rw_obligant;
+	private BigDecimal	r61_rav;
+	private String	r62_product;
+	private String	r62_client_grp;
+	private BigDecimal	r62_total_book_expo;
+	private BigDecimal	r62_margin_pro;
+	private BigDecimal	r62_book_expo;
+	private BigDecimal	r62_ccf_cont;
+	private BigDecimal	r62_equiv_value;
+	private BigDecimal	r62_rw_obligant;
+	private BigDecimal	r62_rav;
+	private String	r63_product;
+	private String	r63_client_grp;
+	private BigDecimal	r63_total_book_expo;
+	private BigDecimal	r63_margin_pro;
+	private BigDecimal	r63_book_expo;
+	private BigDecimal	r63_ccf_cont;
+	private BigDecimal	r63_equiv_value;
+	private BigDecimal	r63_rw_obligant;
+	private BigDecimal	r63_rav;
+	private String	r64_product;
+	private String	r64_client_grp;
+	private BigDecimal	r64_total_book_expo;
+	private BigDecimal	r64_margin_pro;
+	private BigDecimal	r64_book_expo;
+	private BigDecimal	r64_ccf_cont;
+	private BigDecimal	r64_equiv_value;
+	private BigDecimal	r64_rw_obligant;
+	private BigDecimal	r64_rav;
+	private String	r65_product;
+	private String	r65_client_grp;
+	private BigDecimal	r65_total_book_expo;
+	private BigDecimal	r65_margin_pro;
+	private BigDecimal	r65_book_expo;
+	private BigDecimal	r65_ccf_cont;
+	private BigDecimal	r65_equiv_value;
+	private BigDecimal	r65_rw_obligant;
+	private BigDecimal	r65_rav;
+	private String	r66_product;
+	private String	r66_client_grp;
+	private BigDecimal	r66_total_book_expo;
+	private BigDecimal	r66_margin_pro;
+	private BigDecimal	r66_book_expo;
+	private BigDecimal	r66_ccf_cont;
+	private BigDecimal	r66_equiv_value;
+	private BigDecimal	r66_rw_obligant;
+	private BigDecimal	r66_rav;
+	private String	r67_product;
+	private String	r67_client_grp;
+	private BigDecimal	r67_total_book_expo;
+	private BigDecimal	r67_margin_pro;
+	private BigDecimal	r67_book_expo;
+	private BigDecimal	r67_ccf_cont;
+	private BigDecimal	r67_equiv_value;
+	private BigDecimal	r67_rw_obligant;
+	private BigDecimal	r67_rav;
+	private String	r68_product;
+	private String	r68_client_grp;
+	private BigDecimal	r68_total_book_expo;
+	private BigDecimal	r68_margin_pro;
+	private BigDecimal	r68_book_expo;
+	private BigDecimal	r68_ccf_cont;
+	private BigDecimal	r68_equiv_value;
+	private BigDecimal	r68_rw_obligant;
+	private BigDecimal	r68_rav;
+	private String	r69_product;
+	private String	r69_client_grp;
+	private BigDecimal	r69_total_book_expo;
+	private BigDecimal	r69_margin_pro;
+	private BigDecimal	r69_book_expo;
+	private BigDecimal	r69_ccf_cont;
+	private BigDecimal	r69_equiv_value;
+	private BigDecimal	r69_rw_obligant;
+	private BigDecimal	r69_rav;
+	private String	r70_product;
+	private String	r70_client_grp;
+	private BigDecimal	r70_total_book_expo;
+	private BigDecimal	r70_margin_pro;
+	private BigDecimal	r70_book_expo;
+	private BigDecimal	r70_ccf_cont;
+	private BigDecimal	r70_equiv_value;
+	private BigDecimal	r70_rw_obligant;
+	private BigDecimal	r70_rav;
+	private String	r71_product;
+	private String	r71_client_grp;
+	private BigDecimal	r71_total_book_expo;
+	private BigDecimal	r71_margin_pro;
+	private BigDecimal	r71_book_expo;
+	private BigDecimal	r71_ccf_cont;
+	private BigDecimal	r71_equiv_value;
+	private BigDecimal	r71_rw_obligant;
+	private BigDecimal	r71_rav;
+	private String	r72_product;
+	private String	r72_client_grp;
+	private BigDecimal	r72_total_book_expo;
+	private BigDecimal	r72_margin_pro;
+	private BigDecimal	r72_book_expo;
+	private BigDecimal	r72_ccf_cont;
+	private BigDecimal	r72_equiv_value;
+	private BigDecimal	r72_rw_obligant;
+	private BigDecimal	r72_rav;
+	private String	r73_product;
+	private String	r73_client_grp;
+	private BigDecimal	r73_total_book_expo;
+	private BigDecimal	r73_margin_pro;
+	private BigDecimal	r73_book_expo;
+	private BigDecimal	r73_ccf_cont;
+	private BigDecimal	r73_equiv_value;
+	private BigDecimal	r73_rw_obligant;
+	private BigDecimal	r73_rav;
+	private String	r74_product;
+	private String	r74_client_grp;
+	private BigDecimal	r74_total_book_expo;
+	private BigDecimal	r74_margin_pro;
+	private BigDecimal	r74_book_expo;
+	private BigDecimal	r74_ccf_cont;
+	private BigDecimal	r74_equiv_value;
+	private BigDecimal	r74_rw_obligant;
+	private BigDecimal	r74_rav;
+	private String	r75_product;
+	private String	r75_client_grp;
+	private BigDecimal	r75_total_book_expo;
+	private BigDecimal	r75_margin_pro;
+	private BigDecimal	r75_book_expo;
+	private BigDecimal	r75_ccf_cont;
+	private BigDecimal	r75_equiv_value;
+	private BigDecimal	r75_rw_obligant;
+	private BigDecimal	r75_rav;
+	private String	r76_product;
+	private String	r76_client_grp;
+	private BigDecimal	r76_total_book_expo;
+	private BigDecimal	r76_margin_pro;
+	private BigDecimal	r76_book_expo;
+	private BigDecimal	r76_ccf_cont;
+	private BigDecimal	r76_equiv_value;
+	private BigDecimal	r76_rw_obligant;
+	private BigDecimal	r76_rav;
+	private String	r77_product;
+	private String	r77_client_grp;
+	private BigDecimal	r77_total_book_expo;
+	private BigDecimal	r77_margin_pro;
+	private BigDecimal	r77_book_expo;
+	private BigDecimal	r77_ccf_cont;
+	private BigDecimal	r77_equiv_value;
+	private BigDecimal	r77_rw_obligant;
+	private BigDecimal	r77_rav;
+	private String	r78_product;
+	private String	r78_client_grp;
+	private BigDecimal	r78_total_book_expo;
+	private BigDecimal	r78_margin_pro;
+	private BigDecimal	r78_book_expo;
+	private BigDecimal	r78_ccf_cont;
+	private BigDecimal	r78_equiv_value;
+	private BigDecimal	r78_rw_obligant;
+	private BigDecimal	r78_rav;
+	private String	r79_product;
+	private String	r79_client_grp;
+	private BigDecimal	r79_total_book_expo;
+	private BigDecimal	r79_margin_pro;
+	private BigDecimal	r79_book_expo;
+	private BigDecimal	r79_ccf_cont;
+	private BigDecimal	r79_equiv_value;
+	private BigDecimal	r79_rw_obligant;
+	private BigDecimal	r79_rav;
+	private String	r80_product;
+	private String	r80_client_grp;
+	private BigDecimal	r80_total_book_expo;
+	private BigDecimal	r80_margin_pro;
+	private BigDecimal	r80_book_expo;
+	private BigDecimal	r80_ccf_cont;
+	private BigDecimal	r80_equiv_value;
+	private BigDecimal	r80_rw_obligant;
+	private BigDecimal	r80_rav;
+	private String	r81_product;
+	private String	r81_client_grp;
+	private BigDecimal	r81_total_book_expo;
+	private BigDecimal	r81_margin_pro;
+	private BigDecimal	r81_book_expo;
+	private BigDecimal	r81_ccf_cont;
+	private BigDecimal	r81_equiv_value;
+	private BigDecimal	r81_rw_obligant;
+	private BigDecimal	r81_rav;
+	private String	r82_product;
+	private String	r82_client_grp;
+	private BigDecimal	r82_total_book_expo;
+	private BigDecimal	r82_margin_pro;
+	private BigDecimal	r82_book_expo;
+	private BigDecimal	r82_ccf_cont;
+	private BigDecimal	r82_equiv_value;
+	private BigDecimal	r82_rw_obligant;
+	private BigDecimal	r82_rav;
+	private String	r83_product;
+	private String	r83_client_grp;
+	private BigDecimal	r83_total_book_expo;
+	private BigDecimal	r83_margin_pro;
+	private BigDecimal	r83_book_expo;
+	private BigDecimal	r83_ccf_cont;
+	private BigDecimal	r83_equiv_value;
+	private BigDecimal	r83_rw_obligant;
+	private BigDecimal	r83_rav;
+	private String	r84_product;
+	private String	r84_client_grp;
+	private BigDecimal	r84_total_book_expo;
+	private BigDecimal	r84_margin_pro;
+	private BigDecimal	r84_book_expo;
+	private BigDecimal	r84_ccf_cont;
+	private BigDecimal	r84_equiv_value;
+	private BigDecimal	r84_rw_obligant;
+	private BigDecimal	r84_rav;
+	private String	r100_product;
+	private String	r100_client_grp;
+	private BigDecimal	r100_total_book_expo;
+	private BigDecimal	r100_margin_pro;
+	private BigDecimal	r100_book_expo;
+	private BigDecimal	r100_ccf_cont;
+	private BigDecimal	r100_equiv_value;
+	private BigDecimal	r100_rw_obligant;
+	private BigDecimal	r100_rav;
+	private String	r101_product;
+	private String	r101_client_grp;
+	private BigDecimal	r101_total_book_expo;
+	private BigDecimal	r101_margin_pro;
+	private BigDecimal	r101_book_expo;
+	private BigDecimal	r101_ccf_cont;
+	private BigDecimal	r101_equiv_value;
+	private BigDecimal	r101_rw_obligant;
+	private BigDecimal	r101_rav;
+	private String	r102_product;
+	private String	r102_client_grp;
+	private BigDecimal	r102_total_book_expo;
+	private BigDecimal	r102_margin_pro;
+	private BigDecimal	r102_book_expo;
+	private BigDecimal	r102_ccf_cont;
+	private BigDecimal	r102_equiv_value;
+	private BigDecimal	r102_rw_obligant;
+	private BigDecimal	r102_rav;
+	private String	r103_product;
+	private String	r103_client_grp;
+	private BigDecimal	r103_total_book_expo;
+	private BigDecimal	r103_margin_pro;
+	private BigDecimal	r103_book_expo;
+	private BigDecimal	r103_ccf_cont;
+	private BigDecimal	r103_equiv_value;
+	private BigDecimal	r103_rw_obligant;
+	private BigDecimal	r103_rav;
+	private String	r104_product;
+	private String	r104_client_grp;
+	private BigDecimal	r104_total_book_expo;
+	private BigDecimal	r104_margin_pro;
+	private BigDecimal	r104_book_expo;
+	private BigDecimal	r104_ccf_cont;
+	private BigDecimal	r104_equiv_value;
+	private BigDecimal	r104_rw_obligant;
+	private BigDecimal	r104_rav;
+	private String	r105_product;
+	private String	r105_client_grp;
+	private BigDecimal	r105_total_book_expo;
+	private BigDecimal	r105_margin_pro;
+	private BigDecimal	r105_book_expo;
+	private BigDecimal	r105_ccf_cont;
+	private BigDecimal	r105_equiv_value;
+	private BigDecimal	r105_rw_obligant;
+	private BigDecimal	r105_rav;
+	private String	r106_product;
+	private String	r106_client_grp;
+	private BigDecimal	r106_total_book_expo;
+	private BigDecimal	r106_margin_pro;
+	private BigDecimal	r106_book_expo;
+	private BigDecimal	r106_ccf_cont;
+	private BigDecimal	r106_equiv_value;
+	private BigDecimal	r106_rw_obligant;
+	private BigDecimal	r106_rav;
+	private String	r107_product;
+	private String	r107_client_grp;
+	private BigDecimal	r107_total_book_expo;
+	private BigDecimal	r107_margin_pro;
+	private BigDecimal	r107_book_expo;
+	private BigDecimal	r107_ccf_cont;
+	private BigDecimal	r107_equiv_value;
+	private BigDecimal	r107_rw_obligant;
+	private BigDecimal	r107_rav;
+	private String	r108_product;
+	private String	r108_client_grp;
+	private BigDecimal	r108_total_book_expo;
+	private BigDecimal	r108_margin_pro;
+	private BigDecimal	r108_book_expo;
+	private BigDecimal	r108_ccf_cont;
+	private BigDecimal	r108_equiv_value;
+	private BigDecimal	r108_rw_obligant;
+	private BigDecimal	r108_rav;
+	private String	r109_product;
+	private String	r109_client_grp;
+	private BigDecimal	r109_total_book_expo;
+	private BigDecimal	r109_margin_pro;
+	private BigDecimal	r109_book_expo;
+	private BigDecimal	r109_ccf_cont;
+	private BigDecimal	r109_equiv_value;
+	private BigDecimal	r109_rw_obligant;
+	private BigDecimal	r109_rav;
+	private String	r110_product;
+	private String	r110_client_grp;
+	private BigDecimal	r110_total_book_expo;
+	private BigDecimal	r110_margin_pro;
+	private BigDecimal	r110_book_expo;
+	private BigDecimal	r110_ccf_cont;
+	private BigDecimal	r110_equiv_value;
+	private BigDecimal	r110_rw_obligant;
+	private BigDecimal	r110_rav;
+	private String	r111_product;
+	private String	r111_client_grp;
+	private BigDecimal	r111_total_book_expo;
+	private BigDecimal	r111_margin_pro;
+	private BigDecimal	r111_book_expo;
+	private BigDecimal	r111_ccf_cont;
+	private BigDecimal	r111_equiv_value;
+	private BigDecimal	r111_rw_obligant;
+	private BigDecimal	r111_rav;
+	private String	r112_product;
+	private String	r112_client_grp;
+	private BigDecimal	r112_total_book_expo;
+	private BigDecimal	r112_margin_pro;
+	private BigDecimal	r112_book_expo;
+	private BigDecimal	r112_ccf_cont;
+	private BigDecimal	r112_equiv_value;
+	private BigDecimal	r112_rw_obligant;
+	private BigDecimal	r112_rav;
+	private String	r113_product;
+	private String	r113_client_grp;
+	private BigDecimal	r113_total_book_expo;
+	private BigDecimal	r113_margin_pro;
+	private BigDecimal	r113_book_expo;
+	private BigDecimal	r113_ccf_cont;
+	private BigDecimal	r113_equiv_value;
+	private BigDecimal	r113_rw_obligant;
+	private BigDecimal	r113_rav;
+	private String	r114_product;
+	private String	r114_client_grp;
+	private BigDecimal	r114_total_book_expo;
+	private BigDecimal	r114_margin_pro;
+	private BigDecimal	r114_book_expo;
+	private BigDecimal	r114_ccf_cont;
+	private BigDecimal	r114_equiv_value;
+	private BigDecimal	r114_rw_obligant;
+	private BigDecimal	r114_rav;
+	private String	r115_product;
+	private String	r115_client_grp;
+	private BigDecimal	r115_total_book_expo;
+	private BigDecimal	r115_margin_pro;
+	private BigDecimal	r115_book_expo;
+	private BigDecimal	r115_ccf_cont;
+	private BigDecimal	r115_equiv_value;
+	private BigDecimal	r115_rw_obligant;
+	private BigDecimal	r115_rav;
+	private String	r116_product;
+	private String	r116_client_grp;
+	private BigDecimal	r116_total_book_expo;
+	private BigDecimal	r116_margin_pro;
+	private BigDecimal	r116_book_expo;
+	private BigDecimal	r116_ccf_cont;
+	private BigDecimal	r116_equiv_value;
+	private BigDecimal	r116_rw_obligant;
+	private BigDecimal	r116_rav;
+	private String	r117_product;
+	private String	r117_client_grp;
+	private BigDecimal	r117_total_book_expo;
+	private BigDecimal	r117_margin_pro;
+	private BigDecimal	r117_book_expo;
+	private BigDecimal	r117_ccf_cont;
+	private BigDecimal	r117_equiv_value;
+	private BigDecimal	r117_rw_obligant;
+	private BigDecimal	r117_rav;
+	private String	r118_product;
+	private String	r118_client_grp;
+	private BigDecimal	r118_total_book_expo;
+	private BigDecimal	r118_margin_pro;
+	private BigDecimal	r118_book_expo;
+	private BigDecimal	r118_ccf_cont;
+	private BigDecimal	r118_equiv_value;
+	private BigDecimal	r118_rw_obligant;
+	private BigDecimal	r118_rav;
+	private String	r119_product;
+	private String	r119_client_grp;
+	private BigDecimal	r119_total_book_expo;
+	private BigDecimal	r119_margin_pro;
+	private BigDecimal	r119_book_expo;
+	private BigDecimal	r119_ccf_cont;
+	private BigDecimal	r119_equiv_value;
+	private BigDecimal	r119_rw_obligant;
+	private BigDecimal	r119_rav;
+	private String	r120_product;
+	private String	r120_client_grp;
+	private BigDecimal	r120_total_book_expo;
+	private BigDecimal	r120_margin_pro;
+	private BigDecimal	r120_book_expo;
+	private BigDecimal	r120_ccf_cont;
+	private BigDecimal	r120_equiv_value;
+	private BigDecimal	r120_rw_obligant;
+	private BigDecimal	r120_rav;
+	private String	r121_product;
+	private String	r121_client_grp;
+	private BigDecimal	r121_total_book_expo;
+	private BigDecimal	r121_margin_pro;
+	private BigDecimal	r121_book_expo;
+	private BigDecimal	r121_ccf_cont;
+	private BigDecimal	r121_equiv_value;
+	private BigDecimal	r121_rw_obligant;
+	private BigDecimal	r121_rav;
+	private String	r122_product;
+	private String	r122_client_grp;
+	private BigDecimal	r122_total_book_expo;
+	private BigDecimal	r122_margin_pro;
+	private BigDecimal	r122_book_expo;
+	private BigDecimal	r122_ccf_cont;
+	private BigDecimal	r122_equiv_value;
+	private BigDecimal	r122_rw_obligant;
+	private BigDecimal	r122_rav;
+	private String	r123_product;
+	private String	r123_client_grp;
+	private BigDecimal	r123_total_book_expo;
+	private BigDecimal	r123_margin_pro;
+	private BigDecimal	r123_book_expo;
+	private BigDecimal	r123_ccf_cont;
+	private BigDecimal	r123_equiv_value;
+	private BigDecimal	r123_rw_obligant;
+	private BigDecimal	r123_rav;
+	private String	r124_product;
+	private String	r124_client_grp;
+	private BigDecimal	r124_total_book_expo;
+	private BigDecimal	r124_margin_pro;
+	private BigDecimal	r124_book_expo;
+	private BigDecimal	r124_ccf_cont;
+	private BigDecimal	r124_equiv_value;
+	private BigDecimal	r124_rw_obligant;
+	private BigDecimal	r124_rav;
+	private String	r125_product;
+	private String	r125_client_grp;
+	private BigDecimal	r125_total_book_expo;
+	private BigDecimal	r125_margin_pro;
+	private BigDecimal	r125_book_expo;
+	private BigDecimal	r125_ccf_cont;
+	private BigDecimal	r125_equiv_value;
+	private BigDecimal	r125_rw_obligant;
+	private BigDecimal	r125_rav;
+	private String	r126_product;
+	private String	r126_client_grp;
+	private BigDecimal	r126_total_book_expo;
+	private BigDecimal	r126_margin_pro;
+	private BigDecimal	r126_book_expo;
+	private BigDecimal	r126_ccf_cont;
+	private BigDecimal	r126_equiv_value;
+	private BigDecimal	r126_rw_obligant;
+	private BigDecimal	r126_rav;
+	private String	r127_product;
+	private String	r127_client_grp;
+	private BigDecimal	r127_total_book_expo;
+	private BigDecimal	r127_margin_pro;
+	private BigDecimal	r127_book_expo;
+	private BigDecimal	r127_ccf_cont;
+	private BigDecimal	r127_equiv_value;
+	private BigDecimal	r127_rw_obligant;
+	private BigDecimal	r127_rav;
+	private String	r128_product;
+	private String	r128_client_grp;
+	private BigDecimal	r128_total_book_expo;
+	private BigDecimal	r128_margin_pro;
+	private BigDecimal	r128_book_expo;
+	private BigDecimal	r128_ccf_cont;
+	private BigDecimal	r128_equiv_value;
+	private BigDecimal	r128_rw_obligant;
+	private BigDecimal	r128_rav;
+	private String	r129_product;
+	private String	r129_client_grp;
+	private BigDecimal	r129_total_book_expo;
+	private BigDecimal	r129_margin_pro;
+	private BigDecimal	r129_book_expo;
+	private BigDecimal	r129_ccf_cont;
+	private BigDecimal	r129_equiv_value;
+	private BigDecimal	r129_rw_obligant;
+	private BigDecimal	r129_rav;
+	private String	r130_product;
+	private String	r130_client_grp;
+	private BigDecimal	r130_total_book_expo;
+	private BigDecimal	r130_margin_pro;
+	private BigDecimal	r130_book_expo;
+	private BigDecimal	r130_ccf_cont;
+	private BigDecimal	r130_equiv_value;
+	private BigDecimal	r130_rw_obligant;
+	private BigDecimal	r130_rav;
+	private String	r131_product;
+	private String	r131_client_grp;
+	private BigDecimal	r131_total_book_expo;
+	private BigDecimal	r131_margin_pro;
+	private BigDecimal	r131_book_expo;
+	private BigDecimal	r131_ccf_cont;
+	private BigDecimal	r131_equiv_value;
+	private BigDecimal	r131_rw_obligant;
+	private BigDecimal	r131_rav;
+	private String	r132_product;
+	private String	r132_client_grp;
+	private BigDecimal	r132_total_book_expo;
+	private BigDecimal	r132_margin_pro;
+	private BigDecimal	r132_book_expo;
+	private BigDecimal	r132_ccf_cont;
+	private BigDecimal	r132_equiv_value;
+	private BigDecimal	r132_rw_obligant;
+	private BigDecimal	r132_rav;
+	private String	r133_product;
+	private String	r133_client_grp;
+	private BigDecimal	r133_total_book_expo;
+	private BigDecimal	r133_margin_pro;
+	private BigDecimal	r133_book_expo;
+	private BigDecimal	r133_ccf_cont;
+	private BigDecimal	r133_equiv_value;
+	private BigDecimal	r133_rw_obligant;
+	private BigDecimal	r133_rav;
+	private String	r134_product;
+	private String	r134_client_grp;
+	private BigDecimal	r134_total_book_expo;
+	private BigDecimal	r134_margin_pro;
+	private BigDecimal	r134_book_expo;
+	private BigDecimal	r134_ccf_cont;
+	private BigDecimal	r134_equiv_value;
+	private BigDecimal	r134_rw_obligant;
+	private BigDecimal	r134_rav;
+	private String	r148_product;
+	private String	r148_client_grp;
+	private BigDecimal	r148_total_book_expo;
+	private BigDecimal	r148_margin_pro;
+	private BigDecimal	r148_book_expo;
+	private BigDecimal	r148_ccf_cont;
+	private BigDecimal	r148_equiv_value;
+	private BigDecimal	r148_rw_obligant;
+	private BigDecimal	r148_rav;
+	private String	r149_product;
+	private String	r149_client_grp;
+	private BigDecimal	r149_total_book_expo;
+	private BigDecimal	r149_margin_pro;
+	private BigDecimal	r149_book_expo;
+	private BigDecimal	r149_ccf_cont;
+	private BigDecimal	r149_equiv_value;
+	private BigDecimal	r149_rw_obligant;
+	private BigDecimal	r149_rav;
+	private String	r150_product;
+	private String	r150_client_grp;
+	private BigDecimal	r150_total_book_expo;
+	private BigDecimal	r150_margin_pro;
+	private BigDecimal	r150_book_expo;
+	private BigDecimal	r150_ccf_cont;
+	private BigDecimal	r150_equiv_value;
+	private BigDecimal	r150_rw_obligant;
+	private BigDecimal	r150_rav;
+	               
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Id
+		
+	private Date	report_date;
+	 @Column(name = "REPORT_VERSION")
+	 @Id
+	private BigDecimal	report_version;
+	@Column(name = "REPORT_RESUBDATE")
+
+    private Date reportResubDate;
+	private String	report_frequency;
+	private String	report_code;
+	private String	report_desc;
+	private String	entity_flg;
+	private String	modify_flg;
+	private String	del_flg;
+	
+	public String getR12_product() {
+		return r12_product;
+	}
+	public void setR12_product(String r12_product) {
+		this.r12_product = r12_product;
+	}
+	public String getR12_client_grp() {
+		return r12_client_grp;
+	}
+	public void setR12_client_grp(String r12_client_grp) {
+		this.r12_client_grp = r12_client_grp;
+	}
+	public BigDecimal getR12_total_book_expo() {
+		return r12_total_book_expo;
+	}
+	public void setR12_total_book_expo(BigDecimal r12_total_book_expo) {
+		this.r12_total_book_expo = r12_total_book_expo;
+	}
+	public BigDecimal getR12_margin_pro() {
+		return r12_margin_pro;
+	}
+	public void setR12_margin_pro(BigDecimal r12_margin_pro) {
+		this.r12_margin_pro = r12_margin_pro;
+	}
+	public BigDecimal getR12_book_expo() {
+		return r12_book_expo;
+	}
+	public void setR12_book_expo(BigDecimal r12_book_expo) {
+		this.r12_book_expo = r12_book_expo;
+	}
+	public BigDecimal getR12_ccf_cont() {
+		return r12_ccf_cont;
+	}
+	public void setR12_ccf_cont(BigDecimal r12_ccf_cont) {
+		this.r12_ccf_cont = r12_ccf_cont;
+	}
+	public BigDecimal getR12_equiv_value() {
+		return r12_equiv_value;
+	}
+	public void setR12_equiv_value(BigDecimal r12_equiv_value) {
+		this.r12_equiv_value = r12_equiv_value;
+	}
+	public BigDecimal getR12_rw_obligant() {
+		return r12_rw_obligant;
+	}
+	public void setR12_rw_obligant(BigDecimal r12_rw_obligant) {
+		this.r12_rw_obligant = r12_rw_obligant;
+	}
+	public BigDecimal getR12_rav() {
+		return r12_rav;
+	}
+	public void setR12_rav(BigDecimal r12_rav) {
+		this.r12_rav = r12_rav;
+	}
+	public String getR13_product() {
+		return r13_product;
+	}
+	public void setR13_product(String r13_product) {
+		this.r13_product = r13_product;
+	}
+	public String getR13_client_grp() {
+		return r13_client_grp;
+	}
+	public void setR13_client_grp(String r13_client_grp) {
+		this.r13_client_grp = r13_client_grp;
+	}
+	public BigDecimal getR13_total_book_expo() {
+		return r13_total_book_expo;
+	}
+	public void setR13_total_book_expo(BigDecimal r13_total_book_expo) {
+		this.r13_total_book_expo = r13_total_book_expo;
+	}
+	public BigDecimal getR13_margin_pro() {
+		return r13_margin_pro;
+	}
+	public void setR13_margin_pro(BigDecimal r13_margin_pro) {
+		this.r13_margin_pro = r13_margin_pro;
+	}
+	public BigDecimal getR13_book_expo() {
+		return r13_book_expo;
+	}
+	public void setR13_book_expo(BigDecimal r13_book_expo) {
+		this.r13_book_expo = r13_book_expo;
+	}
+	public BigDecimal getR13_ccf_cont() {
+		return r13_ccf_cont;
+	}
+	public void setR13_ccf_cont(BigDecimal r13_ccf_cont) {
+		this.r13_ccf_cont = r13_ccf_cont;
+	}
+	public BigDecimal getR13_equiv_value() {
+		return r13_equiv_value;
+	}
+	public void setR13_equiv_value(BigDecimal r13_equiv_value) {
+		this.r13_equiv_value = r13_equiv_value;
+	}
+	public BigDecimal getR13_rw_obligant() {
+		return r13_rw_obligant;
+	}
+	public void setR13_rw_obligant(BigDecimal r13_rw_obligant) {
+		this.r13_rw_obligant = r13_rw_obligant;
+	}
+	public BigDecimal getR13_rav() {
+		return r13_rav;
+	}
+	public void setR13_rav(BigDecimal r13_rav) {
+		this.r13_rav = r13_rav;
+	}
+	public String getR14_product() {
+		return r14_product;
+	}
+	public void setR14_product(String r14_product) {
+		this.r14_product = r14_product;
+	}
+	public String getR14_client_grp() {
+		return r14_client_grp;
+	}
+	public void setR14_client_grp(String r14_client_grp) {
+		this.r14_client_grp = r14_client_grp;
+	}
+	public BigDecimal getR14_total_book_expo() {
+		return r14_total_book_expo;
+	}
+	public void setR14_total_book_expo(BigDecimal r14_total_book_expo) {
+		this.r14_total_book_expo = r14_total_book_expo;
+	}
+	public BigDecimal getR14_margin_pro() {
+		return r14_margin_pro;
+	}
+	public void setR14_margin_pro(BigDecimal r14_margin_pro) {
+		this.r14_margin_pro = r14_margin_pro;
+	}
+	public BigDecimal getR14_book_expo() {
+		return r14_book_expo;
+	}
+	public void setR14_book_expo(BigDecimal r14_book_expo) {
+		this.r14_book_expo = r14_book_expo;
+	}
+	public BigDecimal getR14_ccf_cont() {
+		return r14_ccf_cont;
+	}
+	public void setR14_ccf_cont(BigDecimal r14_ccf_cont) {
+		this.r14_ccf_cont = r14_ccf_cont;
+	}
+	public BigDecimal getR14_equiv_value() {
+		return r14_equiv_value;
+	}
+	public void setR14_equiv_value(BigDecimal r14_equiv_value) {
+		this.r14_equiv_value = r14_equiv_value;
+	}
+	public BigDecimal getR14_rw_obligant() {
+		return r14_rw_obligant;
+	}
+	public void setR14_rw_obligant(BigDecimal r14_rw_obligant) {
+		this.r14_rw_obligant = r14_rw_obligant;
+	}
+	public BigDecimal getR14_rav() {
+		return r14_rav;
+	}
+	public void setR14_rav(BigDecimal r14_rav) {
+		this.r14_rav = r14_rav;
+	}
+	public String getR15_product() {
+		return r15_product;
+	}
+	public void setR15_product(String r15_product) {
+		this.r15_product = r15_product;
+	}
+	public String getR15_client_grp() {
+		return r15_client_grp;
+	}
+	public void setR15_client_grp(String r15_client_grp) {
+		this.r15_client_grp = r15_client_grp;
+	}
+	public BigDecimal getR15_total_book_expo() {
+		return r15_total_book_expo;
+	}
+	public void setR15_total_book_expo(BigDecimal r15_total_book_expo) {
+		this.r15_total_book_expo = r15_total_book_expo;
+	}
+	public BigDecimal getR15_margin_pro() {
+		return r15_margin_pro;
+	}
+	public void setR15_margin_pro(BigDecimal r15_margin_pro) {
+		this.r15_margin_pro = r15_margin_pro;
+	}
+	public BigDecimal getR15_book_expo() {
+		return r15_book_expo;
+	}
+	public void setR15_book_expo(BigDecimal r15_book_expo) {
+		this.r15_book_expo = r15_book_expo;
+	}
+	public BigDecimal getR15_ccf_cont() {
+		return r15_ccf_cont;
+	}
+	public void setR15_ccf_cont(BigDecimal r15_ccf_cont) {
+		this.r15_ccf_cont = r15_ccf_cont;
+	}
+	public BigDecimal getR15_equiv_value() {
+		return r15_equiv_value;
+	}
+	public void setR15_equiv_value(BigDecimal r15_equiv_value) {
+		this.r15_equiv_value = r15_equiv_value;
+	}
+	public BigDecimal getR15_rw_obligant() {
+		return r15_rw_obligant;
+	}
+	public void setR15_rw_obligant(BigDecimal r15_rw_obligant) {
+		this.r15_rw_obligant = r15_rw_obligant;
+	}
+	public BigDecimal getR15_rav() {
+		return r15_rav;
+	}
+	public void setR15_rav(BigDecimal r15_rav) {
+		this.r15_rav = r15_rav;
+	}
+	public String getR16_product() {
+		return r16_product;
+	}
+	public void setR16_product(String r16_product) {
+		this.r16_product = r16_product;
+	}
+	public String getR16_client_grp() {
+		return r16_client_grp;
+	}
+	public void setR16_client_grp(String r16_client_grp) {
+		this.r16_client_grp = r16_client_grp;
+	}
+	public BigDecimal getR16_total_book_expo() {
+		return r16_total_book_expo;
+	}
+	public void setR16_total_book_expo(BigDecimal r16_total_book_expo) {
+		this.r16_total_book_expo = r16_total_book_expo;
+	}
+	public BigDecimal getR16_margin_pro() {
+		return r16_margin_pro;
+	}
+	public void setR16_margin_pro(BigDecimal r16_margin_pro) {
+		this.r16_margin_pro = r16_margin_pro;
+	}
+	public BigDecimal getR16_book_expo() {
+		return r16_book_expo;
+	}
+	public void setR16_book_expo(BigDecimal r16_book_expo) {
+		this.r16_book_expo = r16_book_expo;
+	}
+	public BigDecimal getR16_ccf_cont() {
+		return r16_ccf_cont;
+	}
+	public void setR16_ccf_cont(BigDecimal r16_ccf_cont) {
+		this.r16_ccf_cont = r16_ccf_cont;
+	}
+	public BigDecimal getR16_equiv_value() {
+		return r16_equiv_value;
+	}
+	public void setR16_equiv_value(BigDecimal r16_equiv_value) {
+		this.r16_equiv_value = r16_equiv_value;
+	}
+	public BigDecimal getR16_rw_obligant() {
+		return r16_rw_obligant;
+	}
+	public void setR16_rw_obligant(BigDecimal r16_rw_obligant) {
+		this.r16_rw_obligant = r16_rw_obligant;
+	}
+	public BigDecimal getR16_rav() {
+		return r16_rav;
+	}
+	public void setR16_rav(BigDecimal r16_rav) {
+		this.r16_rav = r16_rav;
+	}
+	public String getR17_product() {
+		return r17_product;
+	}
+	public void setR17_product(String r17_product) {
+		this.r17_product = r17_product;
+	}
+	public String getR17_client_grp() {
+		return r17_client_grp;
+	}
+	public void setR17_client_grp(String r17_client_grp) {
+		this.r17_client_grp = r17_client_grp;
+	}
+	public BigDecimal getR17_total_book_expo() {
+		return r17_total_book_expo;
+	}
+	public void setR17_total_book_expo(BigDecimal r17_total_book_expo) {
+		this.r17_total_book_expo = r17_total_book_expo;
+	}
+	public BigDecimal getR17_margin_pro() {
+		return r17_margin_pro;
+	}
+	public void setR17_margin_pro(BigDecimal r17_margin_pro) {
+		this.r17_margin_pro = r17_margin_pro;
+	}
+	public BigDecimal getR17_book_expo() {
+		return r17_book_expo;
+	}
+	public void setR17_book_expo(BigDecimal r17_book_expo) {
+		this.r17_book_expo = r17_book_expo;
+	}
+	public BigDecimal getR17_ccf_cont() {
+		return r17_ccf_cont;
+	}
+	public void setR17_ccf_cont(BigDecimal r17_ccf_cont) {
+		this.r17_ccf_cont = r17_ccf_cont;
+	}
+	public BigDecimal getR17_equiv_value() {
+		return r17_equiv_value;
+	}
+	public void setR17_equiv_value(BigDecimal r17_equiv_value) {
+		this.r17_equiv_value = r17_equiv_value;
+	}
+	public BigDecimal getR17_rw_obligant() {
+		return r17_rw_obligant;
+	}
+	public void setR17_rw_obligant(BigDecimal r17_rw_obligant) {
+		this.r17_rw_obligant = r17_rw_obligant;
+	}
+	public BigDecimal getR17_rav() {
+		return r17_rav;
+	}
+	public void setR17_rav(BigDecimal r17_rav) {
+		this.r17_rav = r17_rav;
+	}
+	public String getR18_product() {
+		return r18_product;
+	}
+	public void setR18_product(String r18_product) {
+		this.r18_product = r18_product;
+	}
+	public String getR18_client_grp() {
+		return r18_client_grp;
+	}
+	public void setR18_client_grp(String r18_client_grp) {
+		this.r18_client_grp = r18_client_grp;
+	}
+	public BigDecimal getR18_total_book_expo() {
+		return r18_total_book_expo;
+	}
+	public void setR18_total_book_expo(BigDecimal r18_total_book_expo) {
+		this.r18_total_book_expo = r18_total_book_expo;
+	}
+	public BigDecimal getR18_margin_pro() {
+		return r18_margin_pro;
+	}
+	public void setR18_margin_pro(BigDecimal r18_margin_pro) {
+		this.r18_margin_pro = r18_margin_pro;
+	}
+	public BigDecimal getR18_book_expo() {
+		return r18_book_expo;
+	}
+	public void setR18_book_expo(BigDecimal r18_book_expo) {
+		this.r18_book_expo = r18_book_expo;
+	}
+	public BigDecimal getR18_ccf_cont() {
+		return r18_ccf_cont;
+	}
+	public void setR18_ccf_cont(BigDecimal r18_ccf_cont) {
+		this.r18_ccf_cont = r18_ccf_cont;
+	}
+	public BigDecimal getR18_equiv_value() {
+		return r18_equiv_value;
+	}
+	public void setR18_equiv_value(BigDecimal r18_equiv_value) {
+		this.r18_equiv_value = r18_equiv_value;
+	}
+	public BigDecimal getR18_rw_obligant() {
+		return r18_rw_obligant;
+	}
+	public void setR18_rw_obligant(BigDecimal r18_rw_obligant) {
+		this.r18_rw_obligant = r18_rw_obligant;
+	}
+	public BigDecimal getR18_rav() {
+		return r18_rav;
+	}
+	public void setR18_rav(BigDecimal r18_rav) {
+		this.r18_rav = r18_rav;
+	}
+	public String getR19_product() {
+		return r19_product;
+	}
+	public void setR19_product(String r19_product) {
+		this.r19_product = r19_product;
+	}
+	public String getR19_client_grp() {
+		return r19_client_grp;
+	}
+	public void setR19_client_grp(String r19_client_grp) {
+		this.r19_client_grp = r19_client_grp;
+	}
+	public BigDecimal getR19_total_book_expo() {
+		return r19_total_book_expo;
+	}
+	public void setR19_total_book_expo(BigDecimal r19_total_book_expo) {
+		this.r19_total_book_expo = r19_total_book_expo;
+	}
+	public BigDecimal getR19_margin_pro() {
+		return r19_margin_pro;
+	}
+	public void setR19_margin_pro(BigDecimal r19_margin_pro) {
+		this.r19_margin_pro = r19_margin_pro;
+	}
+	public BigDecimal getR19_book_expo() {
+		return r19_book_expo;
+	}
+	public void setR19_book_expo(BigDecimal r19_book_expo) {
+		this.r19_book_expo = r19_book_expo;
+	}
+	public BigDecimal getR19_ccf_cont() {
+		return r19_ccf_cont;
+	}
+	public void setR19_ccf_cont(BigDecimal r19_ccf_cont) {
+		this.r19_ccf_cont = r19_ccf_cont;
+	}
+	public BigDecimal getR19_equiv_value() {
+		return r19_equiv_value;
+	}
+	public void setR19_equiv_value(BigDecimal r19_equiv_value) {
+		this.r19_equiv_value = r19_equiv_value;
+	}
+	public BigDecimal getR19_rw_obligant() {
+		return r19_rw_obligant;
+	}
+	public void setR19_rw_obligant(BigDecimal r19_rw_obligant) {
+		this.r19_rw_obligant = r19_rw_obligant;
+	}
+	public BigDecimal getR19_rav() {
+		return r19_rav;
+	}
+	public void setR19_rav(BigDecimal r19_rav) {
+		this.r19_rav = r19_rav;
+	}
+	public String getR20_product() {
+		return r20_product;
+	}
+	public void setR20_product(String r20_product) {
+		this.r20_product = r20_product;
+	}
+	public String getR20_client_grp() {
+		return r20_client_grp;
+	}
+	public void setR20_client_grp(String r20_client_grp) {
+		this.r20_client_grp = r20_client_grp;
+	}
+	public BigDecimal getR20_total_book_expo() {
+		return r20_total_book_expo;
+	}
+	public void setR20_total_book_expo(BigDecimal r20_total_book_expo) {
+		this.r20_total_book_expo = r20_total_book_expo;
+	}
+	public BigDecimal getR20_margin_pro() {
+		return r20_margin_pro;
+	}
+	public void setR20_margin_pro(BigDecimal r20_margin_pro) {
+		this.r20_margin_pro = r20_margin_pro;
+	}
+	public BigDecimal getR20_book_expo() {
+		return r20_book_expo;
+	}
+	public void setR20_book_expo(BigDecimal r20_book_expo) {
+		this.r20_book_expo = r20_book_expo;
+	}
+	public BigDecimal getR20_ccf_cont() {
+		return r20_ccf_cont;
+	}
+	public void setR20_ccf_cont(BigDecimal r20_ccf_cont) {
+		this.r20_ccf_cont = r20_ccf_cont;
+	}
+	public BigDecimal getR20_equiv_value() {
+		return r20_equiv_value;
+	}
+	public void setR20_equiv_value(BigDecimal r20_equiv_value) {
+		this.r20_equiv_value = r20_equiv_value;
+	}
+	public BigDecimal getR20_rw_obligant() {
+		return r20_rw_obligant;
+	}
+	public void setR20_rw_obligant(BigDecimal r20_rw_obligant) {
+		this.r20_rw_obligant = r20_rw_obligant;
+	}
+	public BigDecimal getR20_rav() {
+		return r20_rav;
+	}
+	public void setR20_rav(BigDecimal r20_rav) {
+		this.r20_rav = r20_rav;
+	}
+	public String getR21_product() {
+		return r21_product;
+	}
+	public void setR21_product(String r21_product) {
+		this.r21_product = r21_product;
+	}
+	public String getR21_client_grp() {
+		return r21_client_grp;
+	}
+	public void setR21_client_grp(String r21_client_grp) {
+		this.r21_client_grp = r21_client_grp;
+	}
+	public BigDecimal getR21_total_book_expo() {
+		return r21_total_book_expo;
+	}
+	public void setR21_total_book_expo(BigDecimal r21_total_book_expo) {
+		this.r21_total_book_expo = r21_total_book_expo;
+	}
+	public BigDecimal getR21_margin_pro() {
+		return r21_margin_pro;
+	}
+	public void setR21_margin_pro(BigDecimal r21_margin_pro) {
+		this.r21_margin_pro = r21_margin_pro;
+	}
+	public BigDecimal getR21_book_expo() {
+		return r21_book_expo;
+	}
+	public void setR21_book_expo(BigDecimal r21_book_expo) {
+		this.r21_book_expo = r21_book_expo;
+	}
+	public BigDecimal getR21_ccf_cont() {
+		return r21_ccf_cont;
+	}
+	public void setR21_ccf_cont(BigDecimal r21_ccf_cont) {
+		this.r21_ccf_cont = r21_ccf_cont;
+	}
+	public BigDecimal getR21_equiv_value() {
+		return r21_equiv_value;
+	}
+	public void setR21_equiv_value(BigDecimal r21_equiv_value) {
+		this.r21_equiv_value = r21_equiv_value;
+	}
+	public BigDecimal getR21_rw_obligant() {
+		return r21_rw_obligant;
+	}
+	public void setR21_rw_obligant(BigDecimal r21_rw_obligant) {
+		this.r21_rw_obligant = r21_rw_obligant;
+	}
+	public BigDecimal getR21_rav() {
+		return r21_rav;
+	}
+	public void setR21_rav(BigDecimal r21_rav) {
+		this.r21_rav = r21_rav;
+	}
+	public String getR22_product() {
+		return r22_product;
+	}
+	public void setR22_product(String r22_product) {
+		this.r22_product = r22_product;
+	}
+	public String getR22_client_grp() {
+		return r22_client_grp;
+	}
+	public void setR22_client_grp(String r22_client_grp) {
+		this.r22_client_grp = r22_client_grp;
+	}
+	public BigDecimal getR22_total_book_expo() {
+		return r22_total_book_expo;
+	}
+	public void setR22_total_book_expo(BigDecimal r22_total_book_expo) {
+		this.r22_total_book_expo = r22_total_book_expo;
+	}
+	public BigDecimal getR22_margin_pro() {
+		return r22_margin_pro;
+	}
+	public void setR22_margin_pro(BigDecimal r22_margin_pro) {
+		this.r22_margin_pro = r22_margin_pro;
+	}
+	public BigDecimal getR22_book_expo() {
+		return r22_book_expo;
+	}
+	public void setR22_book_expo(BigDecimal r22_book_expo) {
+		this.r22_book_expo = r22_book_expo;
+	}
+	public BigDecimal getR22_ccf_cont() {
+		return r22_ccf_cont;
+	}
+	public void setR22_ccf_cont(BigDecimal r22_ccf_cont) {
+		this.r22_ccf_cont = r22_ccf_cont;
+	}
+	public BigDecimal getR22_equiv_value() {
+		return r22_equiv_value;
+	}
+	public void setR22_equiv_value(BigDecimal r22_equiv_value) {
+		this.r22_equiv_value = r22_equiv_value;
+	}
+	public BigDecimal getR22_rw_obligant() {
+		return r22_rw_obligant;
+	}
+	public void setR22_rw_obligant(BigDecimal r22_rw_obligant) {
+		this.r22_rw_obligant = r22_rw_obligant;
+	}
+	public BigDecimal getR22_rav() {
+		return r22_rav;
+	}
+	public void setR22_rav(BigDecimal r22_rav) {
+		this.r22_rav = r22_rav;
+	}
+	public String getR23_product() {
+		return r23_product;
+	}
+	public void setR23_product(String r23_product) {
+		this.r23_product = r23_product;
+	}
+	public String getR23_client_grp() {
+		return r23_client_grp;
+	}
+	public void setR23_client_grp(String r23_client_grp) {
+		this.r23_client_grp = r23_client_grp;
+	}
+	public BigDecimal getR23_total_book_expo() {
+		return r23_total_book_expo;
+	}
+	public void setR23_total_book_expo(BigDecimal r23_total_book_expo) {
+		this.r23_total_book_expo = r23_total_book_expo;
+	}
+	public BigDecimal getR23_margin_pro() {
+		return r23_margin_pro;
+	}
+	public void setR23_margin_pro(BigDecimal r23_margin_pro) {
+		this.r23_margin_pro = r23_margin_pro;
+	}
+	public BigDecimal getR23_book_expo() {
+		return r23_book_expo;
+	}
+	public void setR23_book_expo(BigDecimal r23_book_expo) {
+		this.r23_book_expo = r23_book_expo;
+	}
+	public BigDecimal getR23_ccf_cont() {
+		return r23_ccf_cont;
+	}
+	public void setR23_ccf_cont(BigDecimal r23_ccf_cont) {
+		this.r23_ccf_cont = r23_ccf_cont;
+	}
+	public BigDecimal getR23_equiv_value() {
+		return r23_equiv_value;
+	}
+	public void setR23_equiv_value(BigDecimal r23_equiv_value) {
+		this.r23_equiv_value = r23_equiv_value;
+	}
+	public BigDecimal getR23_rw_obligant() {
+		return r23_rw_obligant;
+	}
+	public void setR23_rw_obligant(BigDecimal r23_rw_obligant) {
+		this.r23_rw_obligant = r23_rw_obligant;
+	}
+	public BigDecimal getR23_rav() {
+		return r23_rav;
+	}
+	public void setR23_rav(BigDecimal r23_rav) {
+		this.r23_rav = r23_rav;
+	}
+	public String getR24_product() {
+		return r24_product;
+	}
+	public void setR24_product(String r24_product) {
+		this.r24_product = r24_product;
+	}
+	public String getR24_client_grp() {
+		return r24_client_grp;
+	}
+	public void setR24_client_grp(String r24_client_grp) {
+		this.r24_client_grp = r24_client_grp;
+	}
+	public BigDecimal getR24_total_book_expo() {
+		return r24_total_book_expo;
+	}
+	public void setR24_total_book_expo(BigDecimal r24_total_book_expo) {
+		this.r24_total_book_expo = r24_total_book_expo;
+	}
+	public BigDecimal getR24_margin_pro() {
+		return r24_margin_pro;
+	}
+	public void setR24_margin_pro(BigDecimal r24_margin_pro) {
+		this.r24_margin_pro = r24_margin_pro;
+	}
+	public BigDecimal getR24_book_expo() {
+		return r24_book_expo;
+	}
+	public void setR24_book_expo(BigDecimal r24_book_expo) {
+		this.r24_book_expo = r24_book_expo;
+	}
+	public BigDecimal getR24_ccf_cont() {
+		return r24_ccf_cont;
+	}
+	public void setR24_ccf_cont(BigDecimal r24_ccf_cont) {
+		this.r24_ccf_cont = r24_ccf_cont;
+	}
+	public BigDecimal getR24_equiv_value() {
+		return r24_equiv_value;
+	}
+	public void setR24_equiv_value(BigDecimal r24_equiv_value) {
+		this.r24_equiv_value = r24_equiv_value;
+	}
+	public BigDecimal getR24_rw_obligant() {
+		return r24_rw_obligant;
+	}
+	public void setR24_rw_obligant(BigDecimal r24_rw_obligant) {
+		this.r24_rw_obligant = r24_rw_obligant;
+	}
+	public BigDecimal getR24_rav() {
+		return r24_rav;
+	}
+	public void setR24_rav(BigDecimal r24_rav) {
+		this.r24_rav = r24_rav;
+	}
+	public String getR25_product() {
+		return r25_product;
+	}
+	public void setR25_product(String r25_product) {
+		this.r25_product = r25_product;
+	}
+	public String getR25_client_grp() {
+		return r25_client_grp;
+	}
+	public void setR25_client_grp(String r25_client_grp) {
+		this.r25_client_grp = r25_client_grp;
+	}
+	public BigDecimal getR25_total_book_expo() {
+		return r25_total_book_expo;
+	}
+	public void setR25_total_book_expo(BigDecimal r25_total_book_expo) {
+		this.r25_total_book_expo = r25_total_book_expo;
+	}
+	public BigDecimal getR25_margin_pro() {
+		return r25_margin_pro;
+	}
+	public void setR25_margin_pro(BigDecimal r25_margin_pro) {
+		this.r25_margin_pro = r25_margin_pro;
+	}
+	public BigDecimal getR25_book_expo() {
+		return r25_book_expo;
+	}
+	public void setR25_book_expo(BigDecimal r25_book_expo) {
+		this.r25_book_expo = r25_book_expo;
+	}
+	public BigDecimal getR25_ccf_cont() {
+		return r25_ccf_cont;
+	}
+	public void setR25_ccf_cont(BigDecimal r25_ccf_cont) {
+		this.r25_ccf_cont = r25_ccf_cont;
+	}
+	public BigDecimal getR25_equiv_value() {
+		return r25_equiv_value;
+	}
+	public void setR25_equiv_value(BigDecimal r25_equiv_value) {
+		this.r25_equiv_value = r25_equiv_value;
+	}
+	public BigDecimal getR25_rw_obligant() {
+		return r25_rw_obligant;
+	}
+	public void setR25_rw_obligant(BigDecimal r25_rw_obligant) {
+		this.r25_rw_obligant = r25_rw_obligant;
+	}
+	public BigDecimal getR25_rav() {
+		return r25_rav;
+	}
+	public void setR25_rav(BigDecimal r25_rav) {
+		this.r25_rav = r25_rav;
+	}
+	public String getR26_product() {
+		return r26_product;
+	}
+	public void setR26_product(String r26_product) {
+		this.r26_product = r26_product;
+	}
+	public String getR26_client_grp() {
+		return r26_client_grp;
+	}
+	public void setR26_client_grp(String r26_client_grp) {
+		this.r26_client_grp = r26_client_grp;
+	}
+	public BigDecimal getR26_total_book_expo() {
+		return r26_total_book_expo;
+	}
+	public void setR26_total_book_expo(BigDecimal r26_total_book_expo) {
+		this.r26_total_book_expo = r26_total_book_expo;
+	}
+	public BigDecimal getR26_margin_pro() {
+		return r26_margin_pro;
+	}
+	public void setR26_margin_pro(BigDecimal r26_margin_pro) {
+		this.r26_margin_pro = r26_margin_pro;
+	}
+	public BigDecimal getR26_book_expo() {
+		return r26_book_expo;
+	}
+	public void setR26_book_expo(BigDecimal r26_book_expo) {
+		this.r26_book_expo = r26_book_expo;
+	}
+	public BigDecimal getR26_ccf_cont() {
+		return r26_ccf_cont;
+	}
+	public void setR26_ccf_cont(BigDecimal r26_ccf_cont) {
+		this.r26_ccf_cont = r26_ccf_cont;
+	}
+	public BigDecimal getR26_equiv_value() {
+		return r26_equiv_value;
+	}
+	public void setR26_equiv_value(BigDecimal r26_equiv_value) {
+		this.r26_equiv_value = r26_equiv_value;
+	}
+	public BigDecimal getR26_rw_obligant() {
+		return r26_rw_obligant;
+	}
+	public void setR26_rw_obligant(BigDecimal r26_rw_obligant) {
+		this.r26_rw_obligant = r26_rw_obligant;
+	}
+	public BigDecimal getR26_rav() {
+		return r26_rav;
+	}
+	public void setR26_rav(BigDecimal r26_rav) {
+		this.r26_rav = r26_rav;
+	}
+	public String getR27_product() {
+		return r27_product;
+	}
+	public void setR27_product(String r27_product) {
+		this.r27_product = r27_product;
+	}
+	public String getR27_client_grp() {
+		return r27_client_grp;
+	}
+	public void setR27_client_grp(String r27_client_grp) {
+		this.r27_client_grp = r27_client_grp;
+	}
+	public BigDecimal getR27_total_book_expo() {
+		return r27_total_book_expo;
+	}
+	public void setR27_total_book_expo(BigDecimal r27_total_book_expo) {
+		this.r27_total_book_expo = r27_total_book_expo;
+	}
+	public BigDecimal getR27_margin_pro() {
+		return r27_margin_pro;
+	}
+	public void setR27_margin_pro(BigDecimal r27_margin_pro) {
+		this.r27_margin_pro = r27_margin_pro;
+	}
+	public BigDecimal getR27_book_expo() {
+		return r27_book_expo;
+	}
+	public void setR27_book_expo(BigDecimal r27_book_expo) {
+		this.r27_book_expo = r27_book_expo;
+	}
+	public BigDecimal getR27_ccf_cont() {
+		return r27_ccf_cont;
+	}
+	public void setR27_ccf_cont(BigDecimal r27_ccf_cont) {
+		this.r27_ccf_cont = r27_ccf_cont;
+	}
+	public BigDecimal getR27_equiv_value() {
+		return r27_equiv_value;
+	}
+	public void setR27_equiv_value(BigDecimal r27_equiv_value) {
+		this.r27_equiv_value = r27_equiv_value;
+	}
+	public BigDecimal getR27_rw_obligant() {
+		return r27_rw_obligant;
+	}
+	public void setR27_rw_obligant(BigDecimal r27_rw_obligant) {
+		this.r27_rw_obligant = r27_rw_obligant;
+	}
+	public BigDecimal getR27_rav() {
+		return r27_rav;
+	}
+	public void setR27_rav(BigDecimal r27_rav) {
+		this.r27_rav = r27_rav;
+	}
+	public String getR28_product() {
+		return r28_product;
+	}
+	public void setR28_product(String r28_product) {
+		this.r28_product = r28_product;
+	}
+	public String getR28_client_grp() {
+		return r28_client_grp;
+	}
+	public void setR28_client_grp(String r28_client_grp) {
+		this.r28_client_grp = r28_client_grp;
+	}
+	public BigDecimal getR28_total_book_expo() {
+		return r28_total_book_expo;
+	}
+	public void setR28_total_book_expo(BigDecimal r28_total_book_expo) {
+		this.r28_total_book_expo = r28_total_book_expo;
+	}
+	public BigDecimal getR28_margin_pro() {
+		return r28_margin_pro;
+	}
+	public void setR28_margin_pro(BigDecimal r28_margin_pro) {
+		this.r28_margin_pro = r28_margin_pro;
+	}
+	public BigDecimal getR28_book_expo() {
+		return r28_book_expo;
+	}
+	public void setR28_book_expo(BigDecimal r28_book_expo) {
+		this.r28_book_expo = r28_book_expo;
+	}
+	public BigDecimal getR28_ccf_cont() {
+		return r28_ccf_cont;
+	}
+	public void setR28_ccf_cont(BigDecimal r28_ccf_cont) {
+		this.r28_ccf_cont = r28_ccf_cont;
+	}
+	public BigDecimal getR28_equiv_value() {
+		return r28_equiv_value;
+	}
+	public void setR28_equiv_value(BigDecimal r28_equiv_value) {
+		this.r28_equiv_value = r28_equiv_value;
+	}
+	public BigDecimal getR28_rw_obligant() {
+		return r28_rw_obligant;
+	}
+	public void setR28_rw_obligant(BigDecimal r28_rw_obligant) {
+		this.r28_rw_obligant = r28_rw_obligant;
+	}
+	public BigDecimal getR28_rav() {
+		return r28_rav;
+	}
+	public void setR28_rav(BigDecimal r28_rav) {
+		this.r28_rav = r28_rav;
+	}
+	public String getR29_product() {
+		return r29_product;
+	}
+	public void setR29_product(String r29_product) {
+		this.r29_product = r29_product;
+	}
+	public String getR29_client_grp() {
+		return r29_client_grp;
+	}
+	public void setR29_client_grp(String r29_client_grp) {
+		this.r29_client_grp = r29_client_grp;
+	}
+	public BigDecimal getR29_total_book_expo() {
+		return r29_total_book_expo;
+	}
+	public void setR29_total_book_expo(BigDecimal r29_total_book_expo) {
+		this.r29_total_book_expo = r29_total_book_expo;
+	}
+	public BigDecimal getR29_margin_pro() {
+		return r29_margin_pro;
+	}
+	public void setR29_margin_pro(BigDecimal r29_margin_pro) {
+		this.r29_margin_pro = r29_margin_pro;
+	}
+	public BigDecimal getR29_book_expo() {
+		return r29_book_expo;
+	}
+	public void setR29_book_expo(BigDecimal r29_book_expo) {
+		this.r29_book_expo = r29_book_expo;
+	}
+	public BigDecimal getR29_ccf_cont() {
+		return r29_ccf_cont;
+	}
+	public void setR29_ccf_cont(BigDecimal r29_ccf_cont) {
+		this.r29_ccf_cont = r29_ccf_cont;
+	}
+	public BigDecimal getR29_equiv_value() {
+		return r29_equiv_value;
+	}
+	public void setR29_equiv_value(BigDecimal r29_equiv_value) {
+		this.r29_equiv_value = r29_equiv_value;
+	}
+	public BigDecimal getR29_rw_obligant() {
+		return r29_rw_obligant;
+	}
+	public void setR29_rw_obligant(BigDecimal r29_rw_obligant) {
+		this.r29_rw_obligant = r29_rw_obligant;
+	}
+	public BigDecimal getR29_rav() {
+		return r29_rav;
+	}
+	public void setR29_rav(BigDecimal r29_rav) {
+		this.r29_rav = r29_rav;
+	}
+	public String getR30_product() {
+		return r30_product;
+	}
+	public void setR30_product(String r30_product) {
+		this.r30_product = r30_product;
+	}
+	public String getR30_client_grp() {
+		return r30_client_grp;
+	}
+	public void setR30_client_grp(String r30_client_grp) {
+		this.r30_client_grp = r30_client_grp;
+	}
+	public BigDecimal getR30_total_book_expo() {
+		return r30_total_book_expo;
+	}
+	public void setR30_total_book_expo(BigDecimal r30_total_book_expo) {
+		this.r30_total_book_expo = r30_total_book_expo;
+	}
+	public BigDecimal getR30_margin_pro() {
+		return r30_margin_pro;
+	}
+	public void setR30_margin_pro(BigDecimal r30_margin_pro) {
+		this.r30_margin_pro = r30_margin_pro;
+	}
+	public BigDecimal getR30_book_expo() {
+		return r30_book_expo;
+	}
+	public void setR30_book_expo(BigDecimal r30_book_expo) {
+		this.r30_book_expo = r30_book_expo;
+	}
+	public BigDecimal getR30_ccf_cont() {
+		return r30_ccf_cont;
+	}
+	public void setR30_ccf_cont(BigDecimal r30_ccf_cont) {
+		this.r30_ccf_cont = r30_ccf_cont;
+	}
+	public BigDecimal getR30_equiv_value() {
+		return r30_equiv_value;
+	}
+	public void setR30_equiv_value(BigDecimal r30_equiv_value) {
+		this.r30_equiv_value = r30_equiv_value;
+	}
+	public BigDecimal getR30_rw_obligant() {
+		return r30_rw_obligant;
+	}
+	public void setR30_rw_obligant(BigDecimal r30_rw_obligant) {
+		this.r30_rw_obligant = r30_rw_obligant;
+	}
+	public BigDecimal getR30_rav() {
+		return r30_rav;
+	}
+	public void setR30_rav(BigDecimal r30_rav) {
+		this.r30_rav = r30_rav;
+	}
+	public String getR31_product() {
+		return r31_product;
+	}
+	public void setR31_product(String r31_product) {
+		this.r31_product = r31_product;
+	}
+	public String getR31_client_grp() {
+		return r31_client_grp;
+	}
+	public void setR31_client_grp(String r31_client_grp) {
+		this.r31_client_grp = r31_client_grp;
+	}
+	public BigDecimal getR31_total_book_expo() {
+		return r31_total_book_expo;
+	}
+	public void setR31_total_book_expo(BigDecimal r31_total_book_expo) {
+		this.r31_total_book_expo = r31_total_book_expo;
+	}
+	public BigDecimal getR31_margin_pro() {
+		return r31_margin_pro;
+	}
+	public void setR31_margin_pro(BigDecimal r31_margin_pro) {
+		this.r31_margin_pro = r31_margin_pro;
+	}
+	public BigDecimal getR31_book_expo() {
+		return r31_book_expo;
+	}
+	public void setR31_book_expo(BigDecimal r31_book_expo) {
+		this.r31_book_expo = r31_book_expo;
+	}
+	public BigDecimal getR31_ccf_cont() {
+		return r31_ccf_cont;
+	}
+	public void setR31_ccf_cont(BigDecimal r31_ccf_cont) {
+		this.r31_ccf_cont = r31_ccf_cont;
+	}
+	public BigDecimal getR31_equiv_value() {
+		return r31_equiv_value;
+	}
+	public void setR31_equiv_value(BigDecimal r31_equiv_value) {
+		this.r31_equiv_value = r31_equiv_value;
+	}
+	public BigDecimal getR31_rw_obligant() {
+		return r31_rw_obligant;
+	}
+	public void setR31_rw_obligant(BigDecimal r31_rw_obligant) {
+		this.r31_rw_obligant = r31_rw_obligant;
+	}
+	public BigDecimal getR31_rav() {
+		return r31_rav;
+	}
+	public void setR31_rav(BigDecimal r31_rav) {
+		this.r31_rav = r31_rav;
+	}
+	public String getR32_product() {
+		return r32_product;
+	}
+	public void setR32_product(String r32_product) {
+		this.r32_product = r32_product;
+	}
+	public String getR32_client_grp() {
+		return r32_client_grp;
+	}
+	public void setR32_client_grp(String r32_client_grp) {
+		this.r32_client_grp = r32_client_grp;
+	}
+	public BigDecimal getR32_total_book_expo() {
+		return r32_total_book_expo;
+	}
+	public void setR32_total_book_expo(BigDecimal r32_total_book_expo) {
+		this.r32_total_book_expo = r32_total_book_expo;
+	}
+	public BigDecimal getR32_margin_pro() {
+		return r32_margin_pro;
+	}
+	public void setR32_margin_pro(BigDecimal r32_margin_pro) {
+		this.r32_margin_pro = r32_margin_pro;
+	}
+	public BigDecimal getR32_book_expo() {
+		return r32_book_expo;
+	}
+	public void setR32_book_expo(BigDecimal r32_book_expo) {
+		this.r32_book_expo = r32_book_expo;
+	}
+	public BigDecimal getR32_ccf_cont() {
+		return r32_ccf_cont;
+	}
+	public void setR32_ccf_cont(BigDecimal r32_ccf_cont) {
+		this.r32_ccf_cont = r32_ccf_cont;
+	}
+	public BigDecimal getR32_equiv_value() {
+		return r32_equiv_value;
+	}
+	public void setR32_equiv_value(BigDecimal r32_equiv_value) {
+		this.r32_equiv_value = r32_equiv_value;
+	}
+	public BigDecimal getR32_rw_obligant() {
+		return r32_rw_obligant;
+	}
+	public void setR32_rw_obligant(BigDecimal r32_rw_obligant) {
+		this.r32_rw_obligant = r32_rw_obligant;
+	}
+	public BigDecimal getR32_rav() {
+		return r32_rav;
+	}
+	public void setR32_rav(BigDecimal r32_rav) {
+		this.r32_rav = r32_rav;
+	}
+	public String getR33_product() {
+		return r33_product;
+	}
+	public void setR33_product(String r33_product) {
+		this.r33_product = r33_product;
+	}
+	public String getR33_client_grp() {
+		return r33_client_grp;
+	}
+	public void setR33_client_grp(String r33_client_grp) {
+		this.r33_client_grp = r33_client_grp;
+	}
+	public BigDecimal getR33_total_book_expo() {
+		return r33_total_book_expo;
+	}
+	public void setR33_total_book_expo(BigDecimal r33_total_book_expo) {
+		this.r33_total_book_expo = r33_total_book_expo;
+	}
+	public BigDecimal getR33_margin_pro() {
+		return r33_margin_pro;
+	}
+	public void setR33_margin_pro(BigDecimal r33_margin_pro) {
+		this.r33_margin_pro = r33_margin_pro;
+	}
+	public BigDecimal getR33_book_expo() {
+		return r33_book_expo;
+	}
+	public void setR33_book_expo(BigDecimal r33_book_expo) {
+		this.r33_book_expo = r33_book_expo;
+	}
+	public BigDecimal getR33_ccf_cont() {
+		return r33_ccf_cont;
+	}
+	public void setR33_ccf_cont(BigDecimal r33_ccf_cont) {
+		this.r33_ccf_cont = r33_ccf_cont;
+	}
+	public BigDecimal getR33_equiv_value() {
+		return r33_equiv_value;
+	}
+	public void setR33_equiv_value(BigDecimal r33_equiv_value) {
+		this.r33_equiv_value = r33_equiv_value;
+	}
+	public BigDecimal getR33_rw_obligant() {
+		return r33_rw_obligant;
+	}
+	public void setR33_rw_obligant(BigDecimal r33_rw_obligant) {
+		this.r33_rw_obligant = r33_rw_obligant;
+	}
+	public BigDecimal getR33_rav() {
+		return r33_rav;
+	}
+	public void setR33_rav(BigDecimal r33_rav) {
+		this.r33_rav = r33_rav;
+	}
+	public String getR34_product() {
+		return r34_product;
+	}
+	public void setR34_product(String r34_product) {
+		this.r34_product = r34_product;
+	}
+	public String getR34_client_grp() {
+		return r34_client_grp;
+	}
+	public void setR34_client_grp(String r34_client_grp) {
+		this.r34_client_grp = r34_client_grp;
+	}
+	public BigDecimal getR34_total_book_expo() {
+		return r34_total_book_expo;
+	}
+	public void setR34_total_book_expo(BigDecimal r34_total_book_expo) {
+		this.r34_total_book_expo = r34_total_book_expo;
+	}
+	public BigDecimal getR34_margin_pro() {
+		return r34_margin_pro;
+	}
+	public void setR34_margin_pro(BigDecimal r34_margin_pro) {
+		this.r34_margin_pro = r34_margin_pro;
+	}
+	public BigDecimal getR34_book_expo() {
+		return r34_book_expo;
+	}
+	public void setR34_book_expo(BigDecimal r34_book_expo) {
+		this.r34_book_expo = r34_book_expo;
+	}
+	public BigDecimal getR34_ccf_cont() {
+		return r34_ccf_cont;
+	}
+	public void setR34_ccf_cont(BigDecimal r34_ccf_cont) {
+		this.r34_ccf_cont = r34_ccf_cont;
+	}
+	public BigDecimal getR34_equiv_value() {
+		return r34_equiv_value;
+	}
+	public void setR34_equiv_value(BigDecimal r34_equiv_value) {
+		this.r34_equiv_value = r34_equiv_value;
+	}
+	public BigDecimal getR34_rw_obligant() {
+		return r34_rw_obligant;
+	}
+	public void setR34_rw_obligant(BigDecimal r34_rw_obligant) {
+		this.r34_rw_obligant = r34_rw_obligant;
+	}
+	public BigDecimal getR34_rav() {
+		return r34_rav;
+	}
+	public void setR34_rav(BigDecimal r34_rav) {
+		this.r34_rav = r34_rav;
+	}
+	public String getR35_product() {
+		return r35_product;
+	}
+	public void setR35_product(String r35_product) {
+		this.r35_product = r35_product;
+	}
+	public String getR35_client_grp() {
+		return r35_client_grp;
+	}
+	public void setR35_client_grp(String r35_client_grp) {
+		this.r35_client_grp = r35_client_grp;
+	}
+	public BigDecimal getR35_total_book_expo() {
+		return r35_total_book_expo;
+	}
+	public void setR35_total_book_expo(BigDecimal r35_total_book_expo) {
+		this.r35_total_book_expo = r35_total_book_expo;
+	}
+	public BigDecimal getR35_margin_pro() {
+		return r35_margin_pro;
+	}
+	public void setR35_margin_pro(BigDecimal r35_margin_pro) {
+		this.r35_margin_pro = r35_margin_pro;
+	}
+	public BigDecimal getR35_book_expo() {
+		return r35_book_expo;
+	}
+	public void setR35_book_expo(BigDecimal r35_book_expo) {
+		this.r35_book_expo = r35_book_expo;
+	}
+	public BigDecimal getR35_ccf_cont() {
+		return r35_ccf_cont;
+	}
+	public void setR35_ccf_cont(BigDecimal r35_ccf_cont) {
+		this.r35_ccf_cont = r35_ccf_cont;
+	}
+	public BigDecimal getR35_equiv_value() {
+		return r35_equiv_value;
+	}
+	public void setR35_equiv_value(BigDecimal r35_equiv_value) {
+		this.r35_equiv_value = r35_equiv_value;
+	}
+	public BigDecimal getR35_rw_obligant() {
+		return r35_rw_obligant;
+	}
+	public void setR35_rw_obligant(BigDecimal r35_rw_obligant) {
+		this.r35_rw_obligant = r35_rw_obligant;
+	}
+	public BigDecimal getR35_rav() {
+		return r35_rav;
+	}
+	public void setR35_rav(BigDecimal r35_rav) {
+		this.r35_rav = r35_rav;
+	}
+	public String getR36_product() {
+		return r36_product;
+	}
+	public void setR36_product(String r36_product) {
+		this.r36_product = r36_product;
+	}
+	public String getR36_client_grp() {
+		return r36_client_grp;
+	}
+	public void setR36_client_grp(String r36_client_grp) {
+		this.r36_client_grp = r36_client_grp;
+	}
+	public BigDecimal getR36_total_book_expo() {
+		return r36_total_book_expo;
+	}
+	public void setR36_total_book_expo(BigDecimal r36_total_book_expo) {
+		this.r36_total_book_expo = r36_total_book_expo;
+	}
+	public BigDecimal getR36_margin_pro() {
+		return r36_margin_pro;
+	}
+	public void setR36_margin_pro(BigDecimal r36_margin_pro) {
+		this.r36_margin_pro = r36_margin_pro;
+	}
+	public BigDecimal getR36_book_expo() {
+		return r36_book_expo;
+	}
+	public void setR36_book_expo(BigDecimal r36_book_expo) {
+		this.r36_book_expo = r36_book_expo;
+	}
+	public BigDecimal getR36_ccf_cont() {
+		return r36_ccf_cont;
+	}
+	public void setR36_ccf_cont(BigDecimal r36_ccf_cont) {
+		this.r36_ccf_cont = r36_ccf_cont;
+	}
+	public BigDecimal getR36_equiv_value() {
+		return r36_equiv_value;
+	}
+	public void setR36_equiv_value(BigDecimal r36_equiv_value) {
+		this.r36_equiv_value = r36_equiv_value;
+	}
+	public BigDecimal getR36_rw_obligant() {
+		return r36_rw_obligant;
+	}
+	public void setR36_rw_obligant(BigDecimal r36_rw_obligant) {
+		this.r36_rw_obligant = r36_rw_obligant;
+	}
+	public BigDecimal getR36_rav() {
+		return r36_rav;
+	}
+	public void setR36_rav(BigDecimal r36_rav) {
+		this.r36_rav = r36_rav;
+	}
+	public String getR37_product() {
+		return r37_product;
+	}
+	public void setR37_product(String r37_product) {
+		this.r37_product = r37_product;
+	}
+	public String getR37_client_grp() {
+		return r37_client_grp;
+	}
+	public void setR37_client_grp(String r37_client_grp) {
+		this.r37_client_grp = r37_client_grp;
+	}
+	public BigDecimal getR37_total_book_expo() {
+		return r37_total_book_expo;
+	}
+	public void setR37_total_book_expo(BigDecimal r37_total_book_expo) {
+		this.r37_total_book_expo = r37_total_book_expo;
+	}
+	public BigDecimal getR37_margin_pro() {
+		return r37_margin_pro;
+	}
+	public void setR37_margin_pro(BigDecimal r37_margin_pro) {
+		this.r37_margin_pro = r37_margin_pro;
+	}
+	public BigDecimal getR37_book_expo() {
+		return r37_book_expo;
+	}
+	public void setR37_book_expo(BigDecimal r37_book_expo) {
+		this.r37_book_expo = r37_book_expo;
+	}
+	public BigDecimal getR37_ccf_cont() {
+		return r37_ccf_cont;
+	}
+	public void setR37_ccf_cont(BigDecimal r37_ccf_cont) {
+		this.r37_ccf_cont = r37_ccf_cont;
+	}
+	public BigDecimal getR37_equiv_value() {
+		return r37_equiv_value;
+	}
+	public void setR37_equiv_value(BigDecimal r37_equiv_value) {
+		this.r37_equiv_value = r37_equiv_value;
+	}
+	public BigDecimal getR37_rw_obligant() {
+		return r37_rw_obligant;
+	}
+	public void setR37_rw_obligant(BigDecimal r37_rw_obligant) {
+		this.r37_rw_obligant = r37_rw_obligant;
+	}
+	public BigDecimal getR37_rav() {
+		return r37_rav;
+	}
+	public void setR37_rav(BigDecimal r37_rav) {
+		this.r37_rav = r37_rav;
+	}
+	public String getR38_product() {
+		return r38_product;
+	}
+	public void setR38_product(String r38_product) {
+		this.r38_product = r38_product;
+	}
+	public String getR38_client_grp() {
+		return r38_client_grp;
+	}
+	public void setR38_client_grp(String r38_client_grp) {
+		this.r38_client_grp = r38_client_grp;
+	}
+	public BigDecimal getR38_total_book_expo() {
+		return r38_total_book_expo;
+	}
+	public void setR38_total_book_expo(BigDecimal r38_total_book_expo) {
+		this.r38_total_book_expo = r38_total_book_expo;
+	}
+	public BigDecimal getR38_margin_pro() {
+		return r38_margin_pro;
+	}
+	public void setR38_margin_pro(BigDecimal r38_margin_pro) {
+		this.r38_margin_pro = r38_margin_pro;
+	}
+	public BigDecimal getR38_book_expo() {
+		return r38_book_expo;
+	}
+	public void setR38_book_expo(BigDecimal r38_book_expo) {
+		this.r38_book_expo = r38_book_expo;
+	}
+	public BigDecimal getR38_ccf_cont() {
+		return r38_ccf_cont;
+	}
+	public void setR38_ccf_cont(BigDecimal r38_ccf_cont) {
+		this.r38_ccf_cont = r38_ccf_cont;
+	}
+	public BigDecimal getR38_equiv_value() {
+		return r38_equiv_value;
+	}
+	public void setR38_equiv_value(BigDecimal r38_equiv_value) {
+		this.r38_equiv_value = r38_equiv_value;
+	}
+	public BigDecimal getR38_rw_obligant() {
+		return r38_rw_obligant;
+	}
+	public void setR38_rw_obligant(BigDecimal r38_rw_obligant) {
+		this.r38_rw_obligant = r38_rw_obligant;
+	}
+	public BigDecimal getR38_rav() {
+		return r38_rav;
+	}
+	public void setR38_rav(BigDecimal r38_rav) {
+		this.r38_rav = r38_rav;
+	}
+	public String getR39_product() {
+		return r39_product;
+	}
+	public void setR39_product(String r39_product) {
+		this.r39_product = r39_product;
+	}
+	public String getR39_client_grp() {
+		return r39_client_grp;
+	}
+	public void setR39_client_grp(String r39_client_grp) {
+		this.r39_client_grp = r39_client_grp;
+	}
+	public BigDecimal getR39_total_book_expo() {
+		return r39_total_book_expo;
+	}
+	public void setR39_total_book_expo(BigDecimal r39_total_book_expo) {
+		this.r39_total_book_expo = r39_total_book_expo;
+	}
+	public BigDecimal getR39_margin_pro() {
+		return r39_margin_pro;
+	}
+	public void setR39_margin_pro(BigDecimal r39_margin_pro) {
+		this.r39_margin_pro = r39_margin_pro;
+	}
+	public BigDecimal getR39_book_expo() {
+		return r39_book_expo;
+	}
+	public void setR39_book_expo(BigDecimal r39_book_expo) {
+		this.r39_book_expo = r39_book_expo;
+	}
+	public BigDecimal getR39_ccf_cont() {
+		return r39_ccf_cont;
+	}
+	public void setR39_ccf_cont(BigDecimal r39_ccf_cont) {
+		this.r39_ccf_cont = r39_ccf_cont;
+	}
+	public BigDecimal getR39_equiv_value() {
+		return r39_equiv_value;
+	}
+	public void setR39_equiv_value(BigDecimal r39_equiv_value) {
+		this.r39_equiv_value = r39_equiv_value;
+	}
+	public BigDecimal getR39_rw_obligant() {
+		return r39_rw_obligant;
+	}
+	public void setR39_rw_obligant(BigDecimal r39_rw_obligant) {
+		this.r39_rw_obligant = r39_rw_obligant;
+	}
+	public BigDecimal getR39_rav() {
+		return r39_rav;
+	}
+	public void setR39_rav(BigDecimal r39_rav) {
+		this.r39_rav = r39_rav;
+	}
+	public String getR40_product() {
+		return r40_product;
+	}
+	public void setR40_product(String r40_product) {
+		this.r40_product = r40_product;
+	}
+	public String getR40_client_grp() {
+		return r40_client_grp;
+	}
+	public void setR40_client_grp(String r40_client_grp) {
+		this.r40_client_grp = r40_client_grp;
+	}
+	public BigDecimal getR40_total_book_expo() {
+		return r40_total_book_expo;
+	}
+	public void setR40_total_book_expo(BigDecimal r40_total_book_expo) {
+		this.r40_total_book_expo = r40_total_book_expo;
+	}
+	public BigDecimal getR40_margin_pro() {
+		return r40_margin_pro;
+	}
+	public void setR40_margin_pro(BigDecimal r40_margin_pro) {
+		this.r40_margin_pro = r40_margin_pro;
+	}
+	public BigDecimal getR40_book_expo() {
+		return r40_book_expo;
+	}
+	public void setR40_book_expo(BigDecimal r40_book_expo) {
+		this.r40_book_expo = r40_book_expo;
+	}
+	public BigDecimal getR40_ccf_cont() {
+		return r40_ccf_cont;
+	}
+	public void setR40_ccf_cont(BigDecimal r40_ccf_cont) {
+		this.r40_ccf_cont = r40_ccf_cont;
+	}
+	public BigDecimal getR40_equiv_value() {
+		return r40_equiv_value;
+	}
+	public void setR40_equiv_value(BigDecimal r40_equiv_value) {
+		this.r40_equiv_value = r40_equiv_value;
+	}
+	public BigDecimal getR40_rw_obligant() {
+		return r40_rw_obligant;
+	}
+	public void setR40_rw_obligant(BigDecimal r40_rw_obligant) {
+		this.r40_rw_obligant = r40_rw_obligant;
+	}
+	public BigDecimal getR40_rav() {
+		return r40_rav;
+	}
+	public void setR40_rav(BigDecimal r40_rav) {
+		this.r40_rav = r40_rav;
+	}
+	public String getR41_product() {
+		return r41_product;
+	}
+	public void setR41_product(String r41_product) {
+		this.r41_product = r41_product;
+	}
+	public String getR41_client_grp() {
+		return r41_client_grp;
+	}
+	public void setR41_client_grp(String r41_client_grp) {
+		this.r41_client_grp = r41_client_grp;
+	}
+	public BigDecimal getR41_total_book_expo() {
+		return r41_total_book_expo;
+	}
+	public void setR41_total_book_expo(BigDecimal r41_total_book_expo) {
+		this.r41_total_book_expo = r41_total_book_expo;
+	}
+	public BigDecimal getR41_margin_pro() {
+		return r41_margin_pro;
+	}
+	public void setR41_margin_pro(BigDecimal r41_margin_pro) {
+		this.r41_margin_pro = r41_margin_pro;
+	}
+	public BigDecimal getR41_book_expo() {
+		return r41_book_expo;
+	}
+	public void setR41_book_expo(BigDecimal r41_book_expo) {
+		this.r41_book_expo = r41_book_expo;
+	}
+	public BigDecimal getR41_ccf_cont() {
+		return r41_ccf_cont;
+	}
+	public void setR41_ccf_cont(BigDecimal r41_ccf_cont) {
+		this.r41_ccf_cont = r41_ccf_cont;
+	}
+	public BigDecimal getR41_equiv_value() {
+		return r41_equiv_value;
+	}
+	public void setR41_equiv_value(BigDecimal r41_equiv_value) {
+		this.r41_equiv_value = r41_equiv_value;
+	}
+	public BigDecimal getR41_rw_obligant() {
+		return r41_rw_obligant;
+	}
+	public void setR41_rw_obligant(BigDecimal r41_rw_obligant) {
+		this.r41_rw_obligant = r41_rw_obligant;
+	}
+	public BigDecimal getR41_rav() {
+		return r41_rav;
+	}
+	public void setR41_rav(BigDecimal r41_rav) {
+		this.r41_rav = r41_rav;
+	}
+	public String getR42_product() {
+		return r42_product;
+	}
+	public void setR42_product(String r42_product) {
+		this.r42_product = r42_product;
+	}
+	public String getR42_client_grp() {
+		return r42_client_grp;
+	}
+	public void setR42_client_grp(String r42_client_grp) {
+		this.r42_client_grp = r42_client_grp;
+	}
+	public BigDecimal getR42_total_book_expo() {
+		return r42_total_book_expo;
+	}
+	public void setR42_total_book_expo(BigDecimal r42_total_book_expo) {
+		this.r42_total_book_expo = r42_total_book_expo;
+	}
+	public BigDecimal getR42_margin_pro() {
+		return r42_margin_pro;
+	}
+	public void setR42_margin_pro(BigDecimal r42_margin_pro) {
+		this.r42_margin_pro = r42_margin_pro;
+	}
+	public BigDecimal getR42_book_expo() {
+		return r42_book_expo;
+	}
+	public void setR42_book_expo(BigDecimal r42_book_expo) {
+		this.r42_book_expo = r42_book_expo;
+	}
+	public BigDecimal getR42_ccf_cont() {
+		return r42_ccf_cont;
+	}
+	public void setR42_ccf_cont(BigDecimal r42_ccf_cont) {
+		this.r42_ccf_cont = r42_ccf_cont;
+	}
+	public BigDecimal getR42_equiv_value() {
+		return r42_equiv_value;
+	}
+	public void setR42_equiv_value(BigDecimal r42_equiv_value) {
+		this.r42_equiv_value = r42_equiv_value;
+	}
+	public BigDecimal getR42_rw_obligant() {
+		return r42_rw_obligant;
+	}
+	public void setR42_rw_obligant(BigDecimal r42_rw_obligant) {
+		this.r42_rw_obligant = r42_rw_obligant;
+	}
+	public BigDecimal getR42_rav() {
+		return r42_rav;
+	}
+	public void setR42_rav(BigDecimal r42_rav) {
+		this.r42_rav = r42_rav;
+	}
+	public String getR43_product() {
+		return r43_product;
+	}
+	public void setR43_product(String r43_product) {
+		this.r43_product = r43_product;
+	}
+	public String getR43_client_grp() {
+		return r43_client_grp;
+	}
+	public void setR43_client_grp(String r43_client_grp) {
+		this.r43_client_grp = r43_client_grp;
+	}
+	public BigDecimal getR43_total_book_expo() {
+		return r43_total_book_expo;
+	}
+	public void setR43_total_book_expo(BigDecimal r43_total_book_expo) {
+		this.r43_total_book_expo = r43_total_book_expo;
+	}
+	public BigDecimal getR43_margin_pro() {
+		return r43_margin_pro;
+	}
+	public void setR43_margin_pro(BigDecimal r43_margin_pro) {
+		this.r43_margin_pro = r43_margin_pro;
+	}
+	public BigDecimal getR43_book_expo() {
+		return r43_book_expo;
+	}
+	public void setR43_book_expo(BigDecimal r43_book_expo) {
+		this.r43_book_expo = r43_book_expo;
+	}
+	public BigDecimal getR43_ccf_cont() {
+		return r43_ccf_cont;
+	}
+	public void setR43_ccf_cont(BigDecimal r43_ccf_cont) {
+		this.r43_ccf_cont = r43_ccf_cont;
+	}
+	public BigDecimal getR43_equiv_value() {
+		return r43_equiv_value;
+	}
+	public void setR43_equiv_value(BigDecimal r43_equiv_value) {
+		this.r43_equiv_value = r43_equiv_value;
+	}
+	public BigDecimal getR43_rw_obligant() {
+		return r43_rw_obligant;
+	}
+	public void setR43_rw_obligant(BigDecimal r43_rw_obligant) {
+		this.r43_rw_obligant = r43_rw_obligant;
+	}
+	public BigDecimal getR43_rav() {
+		return r43_rav;
+	}
+	public void setR43_rav(BigDecimal r43_rav) {
+		this.r43_rav = r43_rav;
+	}
+	public String getR44_product() {
+		return r44_product;
+	}
+	public void setR44_product(String r44_product) {
+		this.r44_product = r44_product;
+	}
+	public String getR44_client_grp() {
+		return r44_client_grp;
+	}
+	public void setR44_client_grp(String r44_client_grp) {
+		this.r44_client_grp = r44_client_grp;
+	}
+	public BigDecimal getR44_total_book_expo() {
+		return r44_total_book_expo;
+	}
+	public void setR44_total_book_expo(BigDecimal r44_total_book_expo) {
+		this.r44_total_book_expo = r44_total_book_expo;
+	}
+	public BigDecimal getR44_margin_pro() {
+		return r44_margin_pro;
+	}
+	public void setR44_margin_pro(BigDecimal r44_margin_pro) {
+		this.r44_margin_pro = r44_margin_pro;
+	}
+	public BigDecimal getR44_book_expo() {
+		return r44_book_expo;
+	}
+	public void setR44_book_expo(BigDecimal r44_book_expo) {
+		this.r44_book_expo = r44_book_expo;
+	}
+	public BigDecimal getR44_ccf_cont() {
+		return r44_ccf_cont;
+	}
+	public void setR44_ccf_cont(BigDecimal r44_ccf_cont) {
+		this.r44_ccf_cont = r44_ccf_cont;
+	}
+	public BigDecimal getR44_equiv_value() {
+		return r44_equiv_value;
+	}
+	public void setR44_equiv_value(BigDecimal r44_equiv_value) {
+		this.r44_equiv_value = r44_equiv_value;
+	}
+	public BigDecimal getR44_rw_obligant() {
+		return r44_rw_obligant;
+	}
+	public void setR44_rw_obligant(BigDecimal r44_rw_obligant) {
+		this.r44_rw_obligant = r44_rw_obligant;
+	}
+	public BigDecimal getR44_rav() {
+		return r44_rav;
+	}
+	public void setR44_rav(BigDecimal r44_rav) {
+		this.r44_rav = r44_rav;
+	}
+	public String getR45_product() {
+		return r45_product;
+	}
+	public void setR45_product(String r45_product) {
+		this.r45_product = r45_product;
+	}
+	public String getR45_client_grp() {
+		return r45_client_grp;
+	}
+	public void setR45_client_grp(String r45_client_grp) {
+		this.r45_client_grp = r45_client_grp;
+	}
+	public BigDecimal getR45_total_book_expo() {
+		return r45_total_book_expo;
+	}
+	public void setR45_total_book_expo(BigDecimal r45_total_book_expo) {
+		this.r45_total_book_expo = r45_total_book_expo;
+	}
+	public BigDecimal getR45_margin_pro() {
+		return r45_margin_pro;
+	}
+	public void setR45_margin_pro(BigDecimal r45_margin_pro) {
+		this.r45_margin_pro = r45_margin_pro;
+	}
+	public BigDecimal getR45_book_expo() {
+		return r45_book_expo;
+	}
+	public void setR45_book_expo(BigDecimal r45_book_expo) {
+		this.r45_book_expo = r45_book_expo;
+	}
+	public BigDecimal getR45_ccf_cont() {
+		return r45_ccf_cont;
+	}
+	public void setR45_ccf_cont(BigDecimal r45_ccf_cont) {
+		this.r45_ccf_cont = r45_ccf_cont;
+	}
+	public BigDecimal getR45_equiv_value() {
+		return r45_equiv_value;
+	}
+	public void setR45_equiv_value(BigDecimal r45_equiv_value) {
+		this.r45_equiv_value = r45_equiv_value;
+	}
+	public BigDecimal getR45_rw_obligant() {
+		return r45_rw_obligant;
+	}
+	public void setR45_rw_obligant(BigDecimal r45_rw_obligant) {
+		this.r45_rw_obligant = r45_rw_obligant;
+	}
+	public BigDecimal getR45_rav() {
+		return r45_rav;
+	}
+	public void setR45_rav(BigDecimal r45_rav) {
+		this.r45_rav = r45_rav;
+	}
+	public String getR46_product() {
+		return r46_product;
+	}
+	public void setR46_product(String r46_product) {
+		this.r46_product = r46_product;
+	}
+	public String getR46_client_grp() {
+		return r46_client_grp;
+	}
+	public void setR46_client_grp(String r46_client_grp) {
+		this.r46_client_grp = r46_client_grp;
+	}
+	public BigDecimal getR46_total_book_expo() {
+		return r46_total_book_expo;
+	}
+	public void setR46_total_book_expo(BigDecimal r46_total_book_expo) {
+		this.r46_total_book_expo = r46_total_book_expo;
+	}
+	public BigDecimal getR46_margin_pro() {
+		return r46_margin_pro;
+	}
+	public void setR46_margin_pro(BigDecimal r46_margin_pro) {
+		this.r46_margin_pro = r46_margin_pro;
+	}
+	public BigDecimal getR46_book_expo() {
+		return r46_book_expo;
+	}
+	public void setR46_book_expo(BigDecimal r46_book_expo) {
+		this.r46_book_expo = r46_book_expo;
+	}
+	public BigDecimal getR46_ccf_cont() {
+		return r46_ccf_cont;
+	}
+	public void setR46_ccf_cont(BigDecimal r46_ccf_cont) {
+		this.r46_ccf_cont = r46_ccf_cont;
+	}
+	public BigDecimal getR46_equiv_value() {
+		return r46_equiv_value;
+	}
+	public void setR46_equiv_value(BigDecimal r46_equiv_value) {
+		this.r46_equiv_value = r46_equiv_value;
+	}
+	public BigDecimal getR46_rw_obligant() {
+		return r46_rw_obligant;
+	}
+	public void setR46_rw_obligant(BigDecimal r46_rw_obligant) {
+		this.r46_rw_obligant = r46_rw_obligant;
+	}
+	public BigDecimal getR46_rav() {
+		return r46_rav;
+	}
+	public void setR46_rav(BigDecimal r46_rav) {
+		this.r46_rav = r46_rav;
+	}
+	public String getR61_product() {
+		return r61_product;
+	}
+	public void setR61_product(String r61_product) {
+		this.r61_product = r61_product;
+	}
+	public String getR61_client_grp() {
+		return r61_client_grp;
+	}
+	public void setR61_client_grp(String r61_client_grp) {
+		this.r61_client_grp = r61_client_grp;
+	}
+	public BigDecimal getR61_total_book_expo() {
+		return r61_total_book_expo;
+	}
+	public void setR61_total_book_expo(BigDecimal r61_total_book_expo) {
+		this.r61_total_book_expo = r61_total_book_expo;
+	}
+	public BigDecimal getR61_margin_pro() {
+		return r61_margin_pro;
+	}
+	public void setR61_margin_pro(BigDecimal r61_margin_pro) {
+		this.r61_margin_pro = r61_margin_pro;
+	}
+	public BigDecimal getR61_book_expo() {
+		return r61_book_expo;
+	}
+	public void setR61_book_expo(BigDecimal r61_book_expo) {
+		this.r61_book_expo = r61_book_expo;
+	}
+	public BigDecimal getR61_ccf_cont() {
+		return r61_ccf_cont;
+	}
+	public void setR61_ccf_cont(BigDecimal r61_ccf_cont) {
+		this.r61_ccf_cont = r61_ccf_cont;
+	}
+	public BigDecimal getR61_equiv_value() {
+		return r61_equiv_value;
+	}
+	public void setR61_equiv_value(BigDecimal r61_equiv_value) {
+		this.r61_equiv_value = r61_equiv_value;
+	}
+	public BigDecimal getR61_rw_obligant() {
+		return r61_rw_obligant;
+	}
+	public void setR61_rw_obligant(BigDecimal r61_rw_obligant) {
+		this.r61_rw_obligant = r61_rw_obligant;
+	}
+	public BigDecimal getR61_rav() {
+		return r61_rav;
+	}
+	public void setR61_rav(BigDecimal r61_rav) {
+		this.r61_rav = r61_rav;
+	}
+	public String getR62_product() {
+		return r62_product;
+	}
+	public void setR62_product(String r62_product) {
+		this.r62_product = r62_product;
+	}
+	public String getR62_client_grp() {
+		return r62_client_grp;
+	}
+	public void setR62_client_grp(String r62_client_grp) {
+		this.r62_client_grp = r62_client_grp;
+	}
+	public BigDecimal getR62_total_book_expo() {
+		return r62_total_book_expo;
+	}
+	public void setR62_total_book_expo(BigDecimal r62_total_book_expo) {
+		this.r62_total_book_expo = r62_total_book_expo;
+	}
+	public BigDecimal getR62_margin_pro() {
+		return r62_margin_pro;
+	}
+	public void setR62_margin_pro(BigDecimal r62_margin_pro) {
+		this.r62_margin_pro = r62_margin_pro;
+	}
+	public BigDecimal getR62_book_expo() {
+		return r62_book_expo;
+	}
+	public void setR62_book_expo(BigDecimal r62_book_expo) {
+		this.r62_book_expo = r62_book_expo;
+	}
+	public BigDecimal getR62_ccf_cont() {
+		return r62_ccf_cont;
+	}
+	public void setR62_ccf_cont(BigDecimal r62_ccf_cont) {
+		this.r62_ccf_cont = r62_ccf_cont;
+	}
+	public BigDecimal getR62_equiv_value() {
+		return r62_equiv_value;
+	}
+	public void setR62_equiv_value(BigDecimal r62_equiv_value) {
+		this.r62_equiv_value = r62_equiv_value;
+	}
+	public BigDecimal getR62_rw_obligant() {
+		return r62_rw_obligant;
+	}
+	public void setR62_rw_obligant(BigDecimal r62_rw_obligant) {
+		this.r62_rw_obligant = r62_rw_obligant;
+	}
+	public BigDecimal getR62_rav() {
+		return r62_rav;
+	}
+	public void setR62_rav(BigDecimal r62_rav) {
+		this.r62_rav = r62_rav;
+	}
+	public String getR63_product() {
+		return r63_product;
+	}
+	public void setR63_product(String r63_product) {
+		this.r63_product = r63_product;
+	}
+	public String getR63_client_grp() {
+		return r63_client_grp;
+	}
+	public void setR63_client_grp(String r63_client_grp) {
+		this.r63_client_grp = r63_client_grp;
+	}
+	public BigDecimal getR63_total_book_expo() {
+		return r63_total_book_expo;
+	}
+	public void setR63_total_book_expo(BigDecimal r63_total_book_expo) {
+		this.r63_total_book_expo = r63_total_book_expo;
+	}
+	public BigDecimal getR63_margin_pro() {
+		return r63_margin_pro;
+	}
+	public void setR63_margin_pro(BigDecimal r63_margin_pro) {
+		this.r63_margin_pro = r63_margin_pro;
+	}
+	public BigDecimal getR63_book_expo() {
+		return r63_book_expo;
+	}
+	public void setR63_book_expo(BigDecimal r63_book_expo) {
+		this.r63_book_expo = r63_book_expo;
+	}
+	public BigDecimal getR63_ccf_cont() {
+		return r63_ccf_cont;
+	}
+	public void setR63_ccf_cont(BigDecimal r63_ccf_cont) {
+		this.r63_ccf_cont = r63_ccf_cont;
+	}
+	public BigDecimal getR63_equiv_value() {
+		return r63_equiv_value;
+	}
+	public void setR63_equiv_value(BigDecimal r63_equiv_value) {
+		this.r63_equiv_value = r63_equiv_value;
+	}
+	public BigDecimal getR63_rw_obligant() {
+		return r63_rw_obligant;
+	}
+	public void setR63_rw_obligant(BigDecimal r63_rw_obligant) {
+		this.r63_rw_obligant = r63_rw_obligant;
+	}
+	public BigDecimal getR63_rav() {
+		return r63_rav;
+	}
+	public void setR63_rav(BigDecimal r63_rav) {
+		this.r63_rav = r63_rav;
+	}
+	public String getR64_product() {
+		return r64_product;
+	}
+	public void setR64_product(String r64_product) {
+		this.r64_product = r64_product;
+	}
+	public String getR64_client_grp() {
+		return r64_client_grp;
+	}
+	public void setR64_client_grp(String r64_client_grp) {
+		this.r64_client_grp = r64_client_grp;
+	}
+	public BigDecimal getR64_total_book_expo() {
+		return r64_total_book_expo;
+	}
+	public void setR64_total_book_expo(BigDecimal r64_total_book_expo) {
+		this.r64_total_book_expo = r64_total_book_expo;
+	}
+	public BigDecimal getR64_margin_pro() {
+		return r64_margin_pro;
+	}
+	public void setR64_margin_pro(BigDecimal r64_margin_pro) {
+		this.r64_margin_pro = r64_margin_pro;
+	}
+	public BigDecimal getR64_book_expo() {
+		return r64_book_expo;
+	}
+	public void setR64_book_expo(BigDecimal r64_book_expo) {
+		this.r64_book_expo = r64_book_expo;
+	}
+	public BigDecimal getR64_ccf_cont() {
+		return r64_ccf_cont;
+	}
+	public void setR64_ccf_cont(BigDecimal r64_ccf_cont) {
+		this.r64_ccf_cont = r64_ccf_cont;
+	}
+	public BigDecimal getR64_equiv_value() {
+		return r64_equiv_value;
+	}
+	public void setR64_equiv_value(BigDecimal r64_equiv_value) {
+		this.r64_equiv_value = r64_equiv_value;
+	}
+	public BigDecimal getR64_rw_obligant() {
+		return r64_rw_obligant;
+	}
+	public void setR64_rw_obligant(BigDecimal r64_rw_obligant) {
+		this.r64_rw_obligant = r64_rw_obligant;
+	}
+	public BigDecimal getR64_rav() {
+		return r64_rav;
+	}
+	public void setR64_rav(BigDecimal r64_rav) {
+		this.r64_rav = r64_rav;
+	}
+	public String getR65_product() {
+		return r65_product;
+	}
+	public void setR65_product(String r65_product) {
+		this.r65_product = r65_product;
+	}
+	public String getR65_client_grp() {
+		return r65_client_grp;
+	}
+	public void setR65_client_grp(String r65_client_grp) {
+		this.r65_client_grp = r65_client_grp;
+	}
+	public BigDecimal getR65_total_book_expo() {
+		return r65_total_book_expo;
+	}
+	public void setR65_total_book_expo(BigDecimal r65_total_book_expo) {
+		this.r65_total_book_expo = r65_total_book_expo;
+	}
+	public BigDecimal getR65_margin_pro() {
+		return r65_margin_pro;
+	}
+	public void setR65_margin_pro(BigDecimal r65_margin_pro) {
+		this.r65_margin_pro = r65_margin_pro;
+	}
+	public BigDecimal getR65_book_expo() {
+		return r65_book_expo;
+	}
+	public void setR65_book_expo(BigDecimal r65_book_expo) {
+		this.r65_book_expo = r65_book_expo;
+	}
+	public BigDecimal getR65_ccf_cont() {
+		return r65_ccf_cont;
+	}
+	public void setR65_ccf_cont(BigDecimal r65_ccf_cont) {
+		this.r65_ccf_cont = r65_ccf_cont;
+	}
+	public BigDecimal getR65_equiv_value() {
+		return r65_equiv_value;
+	}
+	public void setR65_equiv_value(BigDecimal r65_equiv_value) {
+		this.r65_equiv_value = r65_equiv_value;
+	}
+	public BigDecimal getR65_rw_obligant() {
+		return r65_rw_obligant;
+	}
+	public void setR65_rw_obligant(BigDecimal r65_rw_obligant) {
+		this.r65_rw_obligant = r65_rw_obligant;
+	}
+	public BigDecimal getR65_rav() {
+		return r65_rav;
+	}
+	public void setR65_rav(BigDecimal r65_rav) {
+		this.r65_rav = r65_rav;
+	}
+	public String getR66_product() {
+		return r66_product;
+	}
+	public void setR66_product(String r66_product) {
+		this.r66_product = r66_product;
+	}
+	public String getR66_client_grp() {
+		return r66_client_grp;
+	}
+	public void setR66_client_grp(String r66_client_grp) {
+		this.r66_client_grp = r66_client_grp;
+	}
+	public BigDecimal getR66_total_book_expo() {
+		return r66_total_book_expo;
+	}
+	public void setR66_total_book_expo(BigDecimal r66_total_book_expo) {
+		this.r66_total_book_expo = r66_total_book_expo;
+	}
+	public BigDecimal getR66_margin_pro() {
+		return r66_margin_pro;
+	}
+	public void setR66_margin_pro(BigDecimal r66_margin_pro) {
+		this.r66_margin_pro = r66_margin_pro;
+	}
+	public BigDecimal getR66_book_expo() {
+		return r66_book_expo;
+	}
+	public void setR66_book_expo(BigDecimal r66_book_expo) {
+		this.r66_book_expo = r66_book_expo;
+	}
+	public BigDecimal getR66_ccf_cont() {
+		return r66_ccf_cont;
+	}
+	public void setR66_ccf_cont(BigDecimal r66_ccf_cont) {
+		this.r66_ccf_cont = r66_ccf_cont;
+	}
+	public BigDecimal getR66_equiv_value() {
+		return r66_equiv_value;
+	}
+	public void setR66_equiv_value(BigDecimal r66_equiv_value) {
+		this.r66_equiv_value = r66_equiv_value;
+	}
+	public BigDecimal getR66_rw_obligant() {
+		return r66_rw_obligant;
+	}
+	public void setR66_rw_obligant(BigDecimal r66_rw_obligant) {
+		this.r66_rw_obligant = r66_rw_obligant;
+	}
+	public BigDecimal getR66_rav() {
+		return r66_rav;
+	}
+	public void setR66_rav(BigDecimal r66_rav) {
+		this.r66_rav = r66_rav;
+	}
+	public String getR67_product() {
+		return r67_product;
+	}
+	public void setR67_product(String r67_product) {
+		this.r67_product = r67_product;
+	}
+	public String getR67_client_grp() {
+		return r67_client_grp;
+	}
+	public void setR67_client_grp(String r67_client_grp) {
+		this.r67_client_grp = r67_client_grp;
+	}
+	public BigDecimal getR67_total_book_expo() {
+		return r67_total_book_expo;
+	}
+	public void setR67_total_book_expo(BigDecimal r67_total_book_expo) {
+		this.r67_total_book_expo = r67_total_book_expo;
+	}
+	public BigDecimal getR67_margin_pro() {
+		return r67_margin_pro;
+	}
+	public void setR67_margin_pro(BigDecimal r67_margin_pro) {
+		this.r67_margin_pro = r67_margin_pro;
+	}
+	public BigDecimal getR67_book_expo() {
+		return r67_book_expo;
+	}
+	public void setR67_book_expo(BigDecimal r67_book_expo) {
+		this.r67_book_expo = r67_book_expo;
+	}
+	public BigDecimal getR67_ccf_cont() {
+		return r67_ccf_cont;
+	}
+	public void setR67_ccf_cont(BigDecimal r67_ccf_cont) {
+		this.r67_ccf_cont = r67_ccf_cont;
+	}
+	public BigDecimal getR67_equiv_value() {
+		return r67_equiv_value;
+	}
+	public void setR67_equiv_value(BigDecimal r67_equiv_value) {
+		this.r67_equiv_value = r67_equiv_value;
+	}
+	public BigDecimal getR67_rw_obligant() {
+		return r67_rw_obligant;
+	}
+	public void setR67_rw_obligant(BigDecimal r67_rw_obligant) {
+		this.r67_rw_obligant = r67_rw_obligant;
+	}
+	public BigDecimal getR67_rav() {
+		return r67_rav;
+	}
+	public void setR67_rav(BigDecimal r67_rav) {
+		this.r67_rav = r67_rav;
+	}
+	public String getR68_product() {
+		return r68_product;
+	}
+	public void setR68_product(String r68_product) {
+		this.r68_product = r68_product;
+	}
+	public String getR68_client_grp() {
+		return r68_client_grp;
+	}
+	public void setR68_client_grp(String r68_client_grp) {
+		this.r68_client_grp = r68_client_grp;
+	}
+	public BigDecimal getR68_total_book_expo() {
+		return r68_total_book_expo;
+	}
+	public void setR68_total_book_expo(BigDecimal r68_total_book_expo) {
+		this.r68_total_book_expo = r68_total_book_expo;
+	}
+	public BigDecimal getR68_margin_pro() {
+		return r68_margin_pro;
+	}
+	public void setR68_margin_pro(BigDecimal r68_margin_pro) {
+		this.r68_margin_pro = r68_margin_pro;
+	}
+	public BigDecimal getR68_book_expo() {
+		return r68_book_expo;
+	}
+	public void setR68_book_expo(BigDecimal r68_book_expo) {
+		this.r68_book_expo = r68_book_expo;
+	}
+	public BigDecimal getR68_ccf_cont() {
+		return r68_ccf_cont;
+	}
+	public void setR68_ccf_cont(BigDecimal r68_ccf_cont) {
+		this.r68_ccf_cont = r68_ccf_cont;
+	}
+	public BigDecimal getR68_equiv_value() {
+		return r68_equiv_value;
+	}
+	public void setR68_equiv_value(BigDecimal r68_equiv_value) {
+		this.r68_equiv_value = r68_equiv_value;
+	}
+	public BigDecimal getR68_rw_obligant() {
+		return r68_rw_obligant;
+	}
+	public void setR68_rw_obligant(BigDecimal r68_rw_obligant) {
+		this.r68_rw_obligant = r68_rw_obligant;
+	}
+	public BigDecimal getR68_rav() {
+		return r68_rav;
+	}
+	public void setR68_rav(BigDecimal r68_rav) {
+		this.r68_rav = r68_rav;
+	}
+	public String getR69_product() {
+		return r69_product;
+	}
+	public void setR69_product(String r69_product) {
+		this.r69_product = r69_product;
+	}
+	public String getR69_client_grp() {
+		return r69_client_grp;
+	}
+	public void setR69_client_grp(String r69_client_grp) {
+		this.r69_client_grp = r69_client_grp;
+	}
+	public BigDecimal getR69_total_book_expo() {
+		return r69_total_book_expo;
+	}
+	public void setR69_total_book_expo(BigDecimal r69_total_book_expo) {
+		this.r69_total_book_expo = r69_total_book_expo;
+	}
+	public BigDecimal getR69_margin_pro() {
+		return r69_margin_pro;
+	}
+	public void setR69_margin_pro(BigDecimal r69_margin_pro) {
+		this.r69_margin_pro = r69_margin_pro;
+	}
+	public BigDecimal getR69_book_expo() {
+		return r69_book_expo;
+	}
+	public void setR69_book_expo(BigDecimal r69_book_expo) {
+		this.r69_book_expo = r69_book_expo;
+	}
+	public BigDecimal getR69_ccf_cont() {
+		return r69_ccf_cont;
+	}
+	public void setR69_ccf_cont(BigDecimal r69_ccf_cont) {
+		this.r69_ccf_cont = r69_ccf_cont;
+	}
+	public BigDecimal getR69_equiv_value() {
+		return r69_equiv_value;
+	}
+	public void setR69_equiv_value(BigDecimal r69_equiv_value) {
+		this.r69_equiv_value = r69_equiv_value;
+	}
+	public BigDecimal getR69_rw_obligant() {
+		return r69_rw_obligant;
+	}
+	public void setR69_rw_obligant(BigDecimal r69_rw_obligant) {
+		this.r69_rw_obligant = r69_rw_obligant;
+	}
+	public BigDecimal getR69_rav() {
+		return r69_rav;
+	}
+	public void setR69_rav(BigDecimal r69_rav) {
+		this.r69_rav = r69_rav;
+	}
+	public String getR70_product() {
+		return r70_product;
+	}
+	public void setR70_product(String r70_product) {
+		this.r70_product = r70_product;
+	}
+	public String getR70_client_grp() {
+		return r70_client_grp;
+	}
+	public void setR70_client_grp(String r70_client_grp) {
+		this.r70_client_grp = r70_client_grp;
+	}
+	public BigDecimal getR70_total_book_expo() {
+		return r70_total_book_expo;
+	}
+	public void setR70_total_book_expo(BigDecimal r70_total_book_expo) {
+		this.r70_total_book_expo = r70_total_book_expo;
+	}
+	public BigDecimal getR70_margin_pro() {
+		return r70_margin_pro;
+	}
+	public void setR70_margin_pro(BigDecimal r70_margin_pro) {
+		this.r70_margin_pro = r70_margin_pro;
+	}
+	public BigDecimal getR70_book_expo() {
+		return r70_book_expo;
+	}
+	public void setR70_book_expo(BigDecimal r70_book_expo) {
+		this.r70_book_expo = r70_book_expo;
+	}
+	public BigDecimal getR70_ccf_cont() {
+		return r70_ccf_cont;
+	}
+	public void setR70_ccf_cont(BigDecimal r70_ccf_cont) {
+		this.r70_ccf_cont = r70_ccf_cont;
+	}
+	public BigDecimal getR70_equiv_value() {
+		return r70_equiv_value;
+	}
+	public void setR70_equiv_value(BigDecimal r70_equiv_value) {
+		this.r70_equiv_value = r70_equiv_value;
+	}
+	public BigDecimal getR70_rw_obligant() {
+		return r70_rw_obligant;
+	}
+	public void setR70_rw_obligant(BigDecimal r70_rw_obligant) {
+		this.r70_rw_obligant = r70_rw_obligant;
+	}
+	public BigDecimal getR70_rav() {
+		return r70_rav;
+	}
+	public void setR70_rav(BigDecimal r70_rav) {
+		this.r70_rav = r70_rav;
+	}
+	public String getR71_product() {
+		return r71_product;
+	}
+	public void setR71_product(String r71_product) {
+		this.r71_product = r71_product;
+	}
+	public String getR71_client_grp() {
+		return r71_client_grp;
+	}
+	public void setR71_client_grp(String r71_client_grp) {
+		this.r71_client_grp = r71_client_grp;
+	}
+	public BigDecimal getR71_total_book_expo() {
+		return r71_total_book_expo;
+	}
+	public void setR71_total_book_expo(BigDecimal r71_total_book_expo) {
+		this.r71_total_book_expo = r71_total_book_expo;
+	}
+	public BigDecimal getR71_margin_pro() {
+		return r71_margin_pro;
+	}
+	public void setR71_margin_pro(BigDecimal r71_margin_pro) {
+		this.r71_margin_pro = r71_margin_pro;
+	}
+	public BigDecimal getR71_book_expo() {
+		return r71_book_expo;
+	}
+	public void setR71_book_expo(BigDecimal r71_book_expo) {
+		this.r71_book_expo = r71_book_expo;
+	}
+	public BigDecimal getR71_ccf_cont() {
+		return r71_ccf_cont;
+	}
+	public void setR71_ccf_cont(BigDecimal r71_ccf_cont) {
+		this.r71_ccf_cont = r71_ccf_cont;
+	}
+	public BigDecimal getR71_equiv_value() {
+		return r71_equiv_value;
+	}
+	public void setR71_equiv_value(BigDecimal r71_equiv_value) {
+		this.r71_equiv_value = r71_equiv_value;
+	}
+	public BigDecimal getR71_rw_obligant() {
+		return r71_rw_obligant;
+	}
+	public void setR71_rw_obligant(BigDecimal r71_rw_obligant) {
+		this.r71_rw_obligant = r71_rw_obligant;
+	}
+	public BigDecimal getR71_rav() {
+		return r71_rav;
+	}
+	public void setR71_rav(BigDecimal r71_rav) {
+		this.r71_rav = r71_rav;
+	}
+	public String getR72_product() {
+		return r72_product;
+	}
+	public void setR72_product(String r72_product) {
+		this.r72_product = r72_product;
+	}
+	public String getR72_client_grp() {
+		return r72_client_grp;
+	}
+	public void setR72_client_grp(String r72_client_grp) {
+		this.r72_client_grp = r72_client_grp;
+	}
+	public BigDecimal getR72_total_book_expo() {
+		return r72_total_book_expo;
+	}
+	public void setR72_total_book_expo(BigDecimal r72_total_book_expo) {
+		this.r72_total_book_expo = r72_total_book_expo;
+	}
+	public BigDecimal getR72_margin_pro() {
+		return r72_margin_pro;
+	}
+	public void setR72_margin_pro(BigDecimal r72_margin_pro) {
+		this.r72_margin_pro = r72_margin_pro;
+	}
+	public BigDecimal getR72_book_expo() {
+		return r72_book_expo;
+	}
+	public void setR72_book_expo(BigDecimal r72_book_expo) {
+		this.r72_book_expo = r72_book_expo;
+	}
+	public BigDecimal getR72_ccf_cont() {
+		return r72_ccf_cont;
+	}
+	public void setR72_ccf_cont(BigDecimal r72_ccf_cont) {
+		this.r72_ccf_cont = r72_ccf_cont;
+	}
+	public BigDecimal getR72_equiv_value() {
+		return r72_equiv_value;
+	}
+	public void setR72_equiv_value(BigDecimal r72_equiv_value) {
+		this.r72_equiv_value = r72_equiv_value;
+	}
+	public BigDecimal getR72_rw_obligant() {
+		return r72_rw_obligant;
+	}
+	public void setR72_rw_obligant(BigDecimal r72_rw_obligant) {
+		this.r72_rw_obligant = r72_rw_obligant;
+	}
+	public BigDecimal getR72_rav() {
+		return r72_rav;
+	}
+	public void setR72_rav(BigDecimal r72_rav) {
+		this.r72_rav = r72_rav;
+	}
+	public String getR73_product() {
+		return r73_product;
+	}
+	public void setR73_product(String r73_product) {
+		this.r73_product = r73_product;
+	}
+	public String getR73_client_grp() {
+		return r73_client_grp;
+	}
+	public void setR73_client_grp(String r73_client_grp) {
+		this.r73_client_grp = r73_client_grp;
+	}
+	public BigDecimal getR73_total_book_expo() {
+		return r73_total_book_expo;
+	}
+	public void setR73_total_book_expo(BigDecimal r73_total_book_expo) {
+		this.r73_total_book_expo = r73_total_book_expo;
+	}
+	public BigDecimal getR73_margin_pro() {
+		return r73_margin_pro;
+	}
+	public void setR73_margin_pro(BigDecimal r73_margin_pro) {
+		this.r73_margin_pro = r73_margin_pro;
+	}
+	public BigDecimal getR73_book_expo() {
+		return r73_book_expo;
+	}
+	public void setR73_book_expo(BigDecimal r73_book_expo) {
+		this.r73_book_expo = r73_book_expo;
+	}
+	public BigDecimal getR73_ccf_cont() {
+		return r73_ccf_cont;
+	}
+	public void setR73_ccf_cont(BigDecimal r73_ccf_cont) {
+		this.r73_ccf_cont = r73_ccf_cont;
+	}
+	public BigDecimal getR73_equiv_value() {
+		return r73_equiv_value;
+	}
+	public void setR73_equiv_value(BigDecimal r73_equiv_value) {
+		this.r73_equiv_value = r73_equiv_value;
+	}
+	public BigDecimal getR73_rw_obligant() {
+		return r73_rw_obligant;
+	}
+	public void setR73_rw_obligant(BigDecimal r73_rw_obligant) {
+		this.r73_rw_obligant = r73_rw_obligant;
+	}
+	public BigDecimal getR73_rav() {
+		return r73_rav;
+	}
+	public void setR73_rav(BigDecimal r73_rav) {
+		this.r73_rav = r73_rav;
+	}
+	public String getR74_product() {
+		return r74_product;
+	}
+	public void setR74_product(String r74_product) {
+		this.r74_product = r74_product;
+	}
+	public String getR74_client_grp() {
+		return r74_client_grp;
+	}
+	public void setR74_client_grp(String r74_client_grp) {
+		this.r74_client_grp = r74_client_grp;
+	}
+	public BigDecimal getR74_total_book_expo() {
+		return r74_total_book_expo;
+	}
+	public void setR74_total_book_expo(BigDecimal r74_total_book_expo) {
+		this.r74_total_book_expo = r74_total_book_expo;
+	}
+	public BigDecimal getR74_margin_pro() {
+		return r74_margin_pro;
+	}
+	public void setR74_margin_pro(BigDecimal r74_margin_pro) {
+		this.r74_margin_pro = r74_margin_pro;
+	}
+	public BigDecimal getR74_book_expo() {
+		return r74_book_expo;
+	}
+	public void setR74_book_expo(BigDecimal r74_book_expo) {
+		this.r74_book_expo = r74_book_expo;
+	}
+	public BigDecimal getR74_ccf_cont() {
+		return r74_ccf_cont;
+	}
+	public void setR74_ccf_cont(BigDecimal r74_ccf_cont) {
+		this.r74_ccf_cont = r74_ccf_cont;
+	}
+	public BigDecimal getR74_equiv_value() {
+		return r74_equiv_value;
+	}
+	public void setR74_equiv_value(BigDecimal r74_equiv_value) {
+		this.r74_equiv_value = r74_equiv_value;
+	}
+	public BigDecimal getR74_rw_obligant() {
+		return r74_rw_obligant;
+	}
+	public void setR74_rw_obligant(BigDecimal r74_rw_obligant) {
+		this.r74_rw_obligant = r74_rw_obligant;
+	}
+	public BigDecimal getR74_rav() {
+		return r74_rav;
+	}
+	public void setR74_rav(BigDecimal r74_rav) {
+		this.r74_rav = r74_rav;
+	}
+	public String getR75_product() {
+		return r75_product;
+	}
+	public void setR75_product(String r75_product) {
+		this.r75_product = r75_product;
+	}
+	public String getR75_client_grp() {
+		return r75_client_grp;
+	}
+	public void setR75_client_grp(String r75_client_grp) {
+		this.r75_client_grp = r75_client_grp;
+	}
+	public BigDecimal getR75_total_book_expo() {
+		return r75_total_book_expo;
+	}
+	public void setR75_total_book_expo(BigDecimal r75_total_book_expo) {
+		this.r75_total_book_expo = r75_total_book_expo;
+	}
+	public BigDecimal getR75_margin_pro() {
+		return r75_margin_pro;
+	}
+	public void setR75_margin_pro(BigDecimal r75_margin_pro) {
+		this.r75_margin_pro = r75_margin_pro;
+	}
+	public BigDecimal getR75_book_expo() {
+		return r75_book_expo;
+	}
+	public void setR75_book_expo(BigDecimal r75_book_expo) {
+		this.r75_book_expo = r75_book_expo;
+	}
+	public BigDecimal getR75_ccf_cont() {
+		return r75_ccf_cont;
+	}
+	public void setR75_ccf_cont(BigDecimal r75_ccf_cont) {
+		this.r75_ccf_cont = r75_ccf_cont;
+	}
+	public BigDecimal getR75_equiv_value() {
+		return r75_equiv_value;
+	}
+	public void setR75_equiv_value(BigDecimal r75_equiv_value) {
+		this.r75_equiv_value = r75_equiv_value;
+	}
+	public BigDecimal getR75_rw_obligant() {
+		return r75_rw_obligant;
+	}
+	public void setR75_rw_obligant(BigDecimal r75_rw_obligant) {
+		this.r75_rw_obligant = r75_rw_obligant;
+	}
+	public BigDecimal getR75_rav() {
+		return r75_rav;
+	}
+	public void setR75_rav(BigDecimal r75_rav) {
+		this.r75_rav = r75_rav;
+	}
+	public String getR76_product() {
+		return r76_product;
+	}
+	public void setR76_product(String r76_product) {
+		this.r76_product = r76_product;
+	}
+	public String getR76_client_grp() {
+		return r76_client_grp;
+	}
+	public void setR76_client_grp(String r76_client_grp) {
+		this.r76_client_grp = r76_client_grp;
+	}
+	public BigDecimal getR76_total_book_expo() {
+		return r76_total_book_expo;
+	}
+	public void setR76_total_book_expo(BigDecimal r76_total_book_expo) {
+		this.r76_total_book_expo = r76_total_book_expo;
+	}
+	public BigDecimal getR76_margin_pro() {
+		return r76_margin_pro;
+	}
+	public void setR76_margin_pro(BigDecimal r76_margin_pro) {
+		this.r76_margin_pro = r76_margin_pro;
+	}
+	public BigDecimal getR76_book_expo() {
+		return r76_book_expo;
+	}
+	public void setR76_book_expo(BigDecimal r76_book_expo) {
+		this.r76_book_expo = r76_book_expo;
+	}
+	public BigDecimal getR76_ccf_cont() {
+		return r76_ccf_cont;
+	}
+	public void setR76_ccf_cont(BigDecimal r76_ccf_cont) {
+		this.r76_ccf_cont = r76_ccf_cont;
+	}
+	public BigDecimal getR76_equiv_value() {
+		return r76_equiv_value;
+	}
+	public void setR76_equiv_value(BigDecimal r76_equiv_value) {
+		this.r76_equiv_value = r76_equiv_value;
+	}
+	public BigDecimal getR76_rw_obligant() {
+		return r76_rw_obligant;
+	}
+	public void setR76_rw_obligant(BigDecimal r76_rw_obligant) {
+		this.r76_rw_obligant = r76_rw_obligant;
+	}
+	public BigDecimal getR76_rav() {
+		return r76_rav;
+	}
+	public void setR76_rav(BigDecimal r76_rav) {
+		this.r76_rav = r76_rav;
+	}
+	public String getR77_product() {
+		return r77_product;
+	}
+	public void setR77_product(String r77_product) {
+		this.r77_product = r77_product;
+	}
+	public String getR77_client_grp() {
+		return r77_client_grp;
+	}
+	public void setR77_client_grp(String r77_client_grp) {
+		this.r77_client_grp = r77_client_grp;
+	}
+	public BigDecimal getR77_total_book_expo() {
+		return r77_total_book_expo;
+	}
+	public void setR77_total_book_expo(BigDecimal r77_total_book_expo) {
+		this.r77_total_book_expo = r77_total_book_expo;
+	}
+	public BigDecimal getR77_margin_pro() {
+		return r77_margin_pro;
+	}
+	public void setR77_margin_pro(BigDecimal r77_margin_pro) {
+		this.r77_margin_pro = r77_margin_pro;
+	}
+	public BigDecimal getR77_book_expo() {
+		return r77_book_expo;
+	}
+	public void setR77_book_expo(BigDecimal r77_book_expo) {
+		this.r77_book_expo = r77_book_expo;
+	}
+	public BigDecimal getR77_ccf_cont() {
+		return r77_ccf_cont;
+	}
+	public void setR77_ccf_cont(BigDecimal r77_ccf_cont) {
+		this.r77_ccf_cont = r77_ccf_cont;
+	}
+	public BigDecimal getR77_equiv_value() {
+		return r77_equiv_value;
+	}
+	public void setR77_equiv_value(BigDecimal r77_equiv_value) {
+		this.r77_equiv_value = r77_equiv_value;
+	}
+	public BigDecimal getR77_rw_obligant() {
+		return r77_rw_obligant;
+	}
+	public void setR77_rw_obligant(BigDecimal r77_rw_obligant) {
+		this.r77_rw_obligant = r77_rw_obligant;
+	}
+	public BigDecimal getR77_rav() {
+		return r77_rav;
+	}
+	public void setR77_rav(BigDecimal r77_rav) {
+		this.r77_rav = r77_rav;
+	}
+	public String getR78_product() {
+		return r78_product;
+	}
+	public void setR78_product(String r78_product) {
+		this.r78_product = r78_product;
+	}
+	public String getR78_client_grp() {
+		return r78_client_grp;
+	}
+	public void setR78_client_grp(String r78_client_grp) {
+		this.r78_client_grp = r78_client_grp;
+	}
+	public BigDecimal getR78_total_book_expo() {
+		return r78_total_book_expo;
+	}
+	public void setR78_total_book_expo(BigDecimal r78_total_book_expo) {
+		this.r78_total_book_expo = r78_total_book_expo;
+	}
+	public BigDecimal getR78_margin_pro() {
+		return r78_margin_pro;
+	}
+	public void setR78_margin_pro(BigDecimal r78_margin_pro) {
+		this.r78_margin_pro = r78_margin_pro;
+	}
+	public BigDecimal getR78_book_expo() {
+		return r78_book_expo;
+	}
+	public void setR78_book_expo(BigDecimal r78_book_expo) {
+		this.r78_book_expo = r78_book_expo;
+	}
+	public BigDecimal getR78_ccf_cont() {
+		return r78_ccf_cont;
+	}
+	public void setR78_ccf_cont(BigDecimal r78_ccf_cont) {
+		this.r78_ccf_cont = r78_ccf_cont;
+	}
+	public BigDecimal getR78_equiv_value() {
+		return r78_equiv_value;
+	}
+	public void setR78_equiv_value(BigDecimal r78_equiv_value) {
+		this.r78_equiv_value = r78_equiv_value;
+	}
+	public BigDecimal getR78_rw_obligant() {
+		return r78_rw_obligant;
+	}
+	public void setR78_rw_obligant(BigDecimal r78_rw_obligant) {
+		this.r78_rw_obligant = r78_rw_obligant;
+	}
+	public BigDecimal getR78_rav() {
+		return r78_rav;
+	}
+	public void setR78_rav(BigDecimal r78_rav) {
+		this.r78_rav = r78_rav;
+	}
+	public String getR79_product() {
+		return r79_product;
+	}
+	public void setR79_product(String r79_product) {
+		this.r79_product = r79_product;
+	}
+	public String getR79_client_grp() {
+		return r79_client_grp;
+	}
+	public void setR79_client_grp(String r79_client_grp) {
+		this.r79_client_grp = r79_client_grp;
+	}
+	public BigDecimal getR79_total_book_expo() {
+		return r79_total_book_expo;
+	}
+	public void setR79_total_book_expo(BigDecimal r79_total_book_expo) {
+		this.r79_total_book_expo = r79_total_book_expo;
+	}
+	public BigDecimal getR79_margin_pro() {
+		return r79_margin_pro;
+	}
+	public void setR79_margin_pro(BigDecimal r79_margin_pro) {
+		this.r79_margin_pro = r79_margin_pro;
+	}
+	public BigDecimal getR79_book_expo() {
+		return r79_book_expo;
+	}
+	public void setR79_book_expo(BigDecimal r79_book_expo) {
+		this.r79_book_expo = r79_book_expo;
+	}
+	public BigDecimal getR79_ccf_cont() {
+		return r79_ccf_cont;
+	}
+	public void setR79_ccf_cont(BigDecimal r79_ccf_cont) {
+		this.r79_ccf_cont = r79_ccf_cont;
+	}
+	public BigDecimal getR79_equiv_value() {
+		return r79_equiv_value;
+	}
+	public void setR79_equiv_value(BigDecimal r79_equiv_value) {
+		this.r79_equiv_value = r79_equiv_value;
+	}
+	public BigDecimal getR79_rw_obligant() {
+		return r79_rw_obligant;
+	}
+	public void setR79_rw_obligant(BigDecimal r79_rw_obligant) {
+		this.r79_rw_obligant = r79_rw_obligant;
+	}
+	public BigDecimal getR79_rav() {
+		return r79_rav;
+	}
+	public void setR79_rav(BigDecimal r79_rav) {
+		this.r79_rav = r79_rav;
+	}
+	public String getR80_product() {
+		return r80_product;
+	}
+	public void setR80_product(String r80_product) {
+		this.r80_product = r80_product;
+	}
+	public String getR80_client_grp() {
+		return r80_client_grp;
+	}
+	public void setR80_client_grp(String r80_client_grp) {
+		this.r80_client_grp = r80_client_grp;
+	}
+	public BigDecimal getR80_total_book_expo() {
+		return r80_total_book_expo;
+	}
+	public void setR80_total_book_expo(BigDecimal r80_total_book_expo) {
+		this.r80_total_book_expo = r80_total_book_expo;
+	}
+	public BigDecimal getR80_margin_pro() {
+		return r80_margin_pro;
+	}
+	public void setR80_margin_pro(BigDecimal r80_margin_pro) {
+		this.r80_margin_pro = r80_margin_pro;
+	}
+	public BigDecimal getR80_book_expo() {
+		return r80_book_expo;
+	}
+	public void setR80_book_expo(BigDecimal r80_book_expo) {
+		this.r80_book_expo = r80_book_expo;
+	}
+	public BigDecimal getR80_ccf_cont() {
+		return r80_ccf_cont;
+	}
+	public void setR80_ccf_cont(BigDecimal r80_ccf_cont) {
+		this.r80_ccf_cont = r80_ccf_cont;
+	}
+	public BigDecimal getR80_equiv_value() {
+		return r80_equiv_value;
+	}
+	public void setR80_equiv_value(BigDecimal r80_equiv_value) {
+		this.r80_equiv_value = r80_equiv_value;
+	}
+	public BigDecimal getR80_rw_obligant() {
+		return r80_rw_obligant;
+	}
+	public void setR80_rw_obligant(BigDecimal r80_rw_obligant) {
+		this.r80_rw_obligant = r80_rw_obligant;
+	}
+	public BigDecimal getR80_rav() {
+		return r80_rav;
+	}
+	public void setR80_rav(BigDecimal r80_rav) {
+		this.r80_rav = r80_rav;
+	}
+	public String getR81_product() {
+		return r81_product;
+	}
+	public void setR81_product(String r81_product) {
+		this.r81_product = r81_product;
+	}
+	public String getR81_client_grp() {
+		return r81_client_grp;
+	}
+	public void setR81_client_grp(String r81_client_grp) {
+		this.r81_client_grp = r81_client_grp;
+	}
+	public BigDecimal getR81_total_book_expo() {
+		return r81_total_book_expo;
+	}
+	public void setR81_total_book_expo(BigDecimal r81_total_book_expo) {
+		this.r81_total_book_expo = r81_total_book_expo;
+	}
+	public BigDecimal getR81_margin_pro() {
+		return r81_margin_pro;
+	}
+	public void setR81_margin_pro(BigDecimal r81_margin_pro) {
+		this.r81_margin_pro = r81_margin_pro;
+	}
+	public BigDecimal getR81_book_expo() {
+		return r81_book_expo;
+	}
+	public void setR81_book_expo(BigDecimal r81_book_expo) {
+		this.r81_book_expo = r81_book_expo;
+	}
+	public BigDecimal getR81_ccf_cont() {
+		return r81_ccf_cont;
+	}
+	public void setR81_ccf_cont(BigDecimal r81_ccf_cont) {
+		this.r81_ccf_cont = r81_ccf_cont;
+	}
+	public BigDecimal getR81_equiv_value() {
+		return r81_equiv_value;
+	}
+	public void setR81_equiv_value(BigDecimal r81_equiv_value) {
+		this.r81_equiv_value = r81_equiv_value;
+	}
+	public BigDecimal getR81_rw_obligant() {
+		return r81_rw_obligant;
+	}
+	public void setR81_rw_obligant(BigDecimal r81_rw_obligant) {
+		this.r81_rw_obligant = r81_rw_obligant;
+	}
+	public BigDecimal getR81_rav() {
+		return r81_rav;
+	}
+	public void setR81_rav(BigDecimal r81_rav) {
+		this.r81_rav = r81_rav;
+	}
+	public String getR82_product() {
+		return r82_product;
+	}
+	public void setR82_product(String r82_product) {
+		this.r82_product = r82_product;
+	}
+	public String getR82_client_grp() {
+		return r82_client_grp;
+	}
+	public void setR82_client_grp(String r82_client_grp) {
+		this.r82_client_grp = r82_client_grp;
+	}
+	public BigDecimal getR82_total_book_expo() {
+		return r82_total_book_expo;
+	}
+	public void setR82_total_book_expo(BigDecimal r82_total_book_expo) {
+		this.r82_total_book_expo = r82_total_book_expo;
+	}
+	public BigDecimal getR82_margin_pro() {
+		return r82_margin_pro;
+	}
+	public void setR82_margin_pro(BigDecimal r82_margin_pro) {
+		this.r82_margin_pro = r82_margin_pro;
+	}
+	public BigDecimal getR82_book_expo() {
+		return r82_book_expo;
+	}
+	public void setR82_book_expo(BigDecimal r82_book_expo) {
+		this.r82_book_expo = r82_book_expo;
+	}
+	public BigDecimal getR82_ccf_cont() {
+		return r82_ccf_cont;
+	}
+	public void setR82_ccf_cont(BigDecimal r82_ccf_cont) {
+		this.r82_ccf_cont = r82_ccf_cont;
+	}
+	public BigDecimal getR82_equiv_value() {
+		return r82_equiv_value;
+	}
+	public void setR82_equiv_value(BigDecimal r82_equiv_value) {
+		this.r82_equiv_value = r82_equiv_value;
+	}
+	public BigDecimal getR82_rw_obligant() {
+		return r82_rw_obligant;
+	}
+	public void setR82_rw_obligant(BigDecimal r82_rw_obligant) {
+		this.r82_rw_obligant = r82_rw_obligant;
+	}
+	public BigDecimal getR82_rav() {
+		return r82_rav;
+	}
+	public void setR82_rav(BigDecimal r82_rav) {
+		this.r82_rav = r82_rav;
+	}
+	public String getR83_product() {
+		return r83_product;
+	}
+	public void setR83_product(String r83_product) {
+		this.r83_product = r83_product;
+	}
+	public String getR83_client_grp() {
+		return r83_client_grp;
+	}
+	public void setR83_client_grp(String r83_client_grp) {
+		this.r83_client_grp = r83_client_grp;
+	}
+	public BigDecimal getR83_total_book_expo() {
+		return r83_total_book_expo;
+	}
+	public void setR83_total_book_expo(BigDecimal r83_total_book_expo) {
+		this.r83_total_book_expo = r83_total_book_expo;
+	}
+	public BigDecimal getR83_margin_pro() {
+		return r83_margin_pro;
+	}
+	public void setR83_margin_pro(BigDecimal r83_margin_pro) {
+		this.r83_margin_pro = r83_margin_pro;
+	}
+	public BigDecimal getR83_book_expo() {
+		return r83_book_expo;
+	}
+	public void setR83_book_expo(BigDecimal r83_book_expo) {
+		this.r83_book_expo = r83_book_expo;
+	}
+	public BigDecimal getR83_ccf_cont() {
+		return r83_ccf_cont;
+	}
+	public void setR83_ccf_cont(BigDecimal r83_ccf_cont) {
+		this.r83_ccf_cont = r83_ccf_cont;
+	}
+	public BigDecimal getR83_equiv_value() {
+		return r83_equiv_value;
+	}
+	public void setR83_equiv_value(BigDecimal r83_equiv_value) {
+		this.r83_equiv_value = r83_equiv_value;
+	}
+	public BigDecimal getR83_rw_obligant() {
+		return r83_rw_obligant;
+	}
+	public void setR83_rw_obligant(BigDecimal r83_rw_obligant) {
+		this.r83_rw_obligant = r83_rw_obligant;
+	}
+	public BigDecimal getR83_rav() {
+		return r83_rav;
+	}
+	public void setR83_rav(BigDecimal r83_rav) {
+		this.r83_rav = r83_rav;
+	}
+	public String getR84_product() {
+		return r84_product;
+	}
+	public void setR84_product(String r84_product) {
+		this.r84_product = r84_product;
+	}
+	public String getR84_client_grp() {
+		return r84_client_grp;
+	}
+	public void setR84_client_grp(String r84_client_grp) {
+		this.r84_client_grp = r84_client_grp;
+	}
+	public BigDecimal getR84_total_book_expo() {
+		return r84_total_book_expo;
+	}
+	public void setR84_total_book_expo(BigDecimal r84_total_book_expo) {
+		this.r84_total_book_expo = r84_total_book_expo;
+	}
+	public BigDecimal getR84_margin_pro() {
+		return r84_margin_pro;
+	}
+	public void setR84_margin_pro(BigDecimal r84_margin_pro) {
+		this.r84_margin_pro = r84_margin_pro;
+	}
+	public BigDecimal getR84_book_expo() {
+		return r84_book_expo;
+	}
+	public void setR84_book_expo(BigDecimal r84_book_expo) {
+		this.r84_book_expo = r84_book_expo;
+	}
+	public BigDecimal getR84_ccf_cont() {
+		return r84_ccf_cont;
+	}
+	public void setR84_ccf_cont(BigDecimal r84_ccf_cont) {
+		this.r84_ccf_cont = r84_ccf_cont;
+	}
+	public BigDecimal getR84_equiv_value() {
+		return r84_equiv_value;
+	}
+	public void setR84_equiv_value(BigDecimal r84_equiv_value) {
+		this.r84_equiv_value = r84_equiv_value;
+	}
+	public BigDecimal getR84_rw_obligant() {
+		return r84_rw_obligant;
+	}
+	public void setR84_rw_obligant(BigDecimal r84_rw_obligant) {
+		this.r84_rw_obligant = r84_rw_obligant;
+	}
+	public BigDecimal getR84_rav() {
+		return r84_rav;
+	}
+	public void setR84_rav(BigDecimal r84_rav) {
+		this.r84_rav = r84_rav;
+	}
+	public String getR100_product() {
+		return r100_product;
+	}
+	public void setR100_product(String r100_product) {
+		this.r100_product = r100_product;
+	}
+	public String getR100_client_grp() {
+		return r100_client_grp;
+	}
+	public void setR100_client_grp(String r100_client_grp) {
+		this.r100_client_grp = r100_client_grp;
+	}
+	public BigDecimal getR100_total_book_expo() {
+		return r100_total_book_expo;
+	}
+	public void setR100_total_book_expo(BigDecimal r100_total_book_expo) {
+		this.r100_total_book_expo = r100_total_book_expo;
+	}
+	public BigDecimal getR100_margin_pro() {
+		return r100_margin_pro;
+	}
+	public void setR100_margin_pro(BigDecimal r100_margin_pro) {
+		this.r100_margin_pro = r100_margin_pro;
+	}
+	public BigDecimal getR100_book_expo() {
+		return r100_book_expo;
+	}
+	public void setR100_book_expo(BigDecimal r100_book_expo) {
+		this.r100_book_expo = r100_book_expo;
+	}
+	public BigDecimal getR100_ccf_cont() {
+		return r100_ccf_cont;
+	}
+	public void setR100_ccf_cont(BigDecimal r100_ccf_cont) {
+		this.r100_ccf_cont = r100_ccf_cont;
+	}
+	public BigDecimal getR100_equiv_value() {
+		return r100_equiv_value;
+	}
+	public void setR100_equiv_value(BigDecimal r100_equiv_value) {
+		this.r100_equiv_value = r100_equiv_value;
+	}
+	public BigDecimal getR100_rw_obligant() {
+		return r100_rw_obligant;
+	}
+	public void setR100_rw_obligant(BigDecimal r100_rw_obligant) {
+		this.r100_rw_obligant = r100_rw_obligant;
+	}
+	public BigDecimal getR100_rav() {
+		return r100_rav;
+	}
+	public void setR100_rav(BigDecimal r100_rav) {
+		this.r100_rav = r100_rav;
+	}
+	public String getR101_product() {
+		return r101_product;
+	}
+	public void setR101_product(String r101_product) {
+		this.r101_product = r101_product;
+	}
+	public String getR101_client_grp() {
+		return r101_client_grp;
+	}
+	public void setR101_client_grp(String r101_client_grp) {
+		this.r101_client_grp = r101_client_grp;
+	}
+	public BigDecimal getR101_total_book_expo() {
+		return r101_total_book_expo;
+	}
+	public void setR101_total_book_expo(BigDecimal r101_total_book_expo) {
+		this.r101_total_book_expo = r101_total_book_expo;
+	}
+	public BigDecimal getR101_margin_pro() {
+		return r101_margin_pro;
+	}
+	public void setR101_margin_pro(BigDecimal r101_margin_pro) {
+		this.r101_margin_pro = r101_margin_pro;
+	}
+	public BigDecimal getR101_book_expo() {
+		return r101_book_expo;
+	}
+	public void setR101_book_expo(BigDecimal r101_book_expo) {
+		this.r101_book_expo = r101_book_expo;
+	}
+	public BigDecimal getR101_ccf_cont() {
+		return r101_ccf_cont;
+	}
+	public void setR101_ccf_cont(BigDecimal r101_ccf_cont) {
+		this.r101_ccf_cont = r101_ccf_cont;
+	}
+	public BigDecimal getR101_equiv_value() {
+		return r101_equiv_value;
+	}
+	public void setR101_equiv_value(BigDecimal r101_equiv_value) {
+		this.r101_equiv_value = r101_equiv_value;
+	}
+	public BigDecimal getR101_rw_obligant() {
+		return r101_rw_obligant;
+	}
+	public void setR101_rw_obligant(BigDecimal r101_rw_obligant) {
+		this.r101_rw_obligant = r101_rw_obligant;
+	}
+	public BigDecimal getR101_rav() {
+		return r101_rav;
+	}
+	public void setR101_rav(BigDecimal r101_rav) {
+		this.r101_rav = r101_rav;
+	}
+	public String getR102_product() {
+		return r102_product;
+	}
+	public void setR102_product(String r102_product) {
+		this.r102_product = r102_product;
+	}
+	public String getR102_client_grp() {
+		return r102_client_grp;
+	}
+	public void setR102_client_grp(String r102_client_grp) {
+		this.r102_client_grp = r102_client_grp;
+	}
+	public BigDecimal getR102_total_book_expo() {
+		return r102_total_book_expo;
+	}
+	public void setR102_total_book_expo(BigDecimal r102_total_book_expo) {
+		this.r102_total_book_expo = r102_total_book_expo;
+	}
+	public BigDecimal getR102_margin_pro() {
+		return r102_margin_pro;
+	}
+	public void setR102_margin_pro(BigDecimal r102_margin_pro) {
+		this.r102_margin_pro = r102_margin_pro;
+	}
+	public BigDecimal getR102_book_expo() {
+		return r102_book_expo;
+	}
+	public void setR102_book_expo(BigDecimal r102_book_expo) {
+		this.r102_book_expo = r102_book_expo;
+	}
+	public BigDecimal getR102_ccf_cont() {
+		return r102_ccf_cont;
+	}
+	public void setR102_ccf_cont(BigDecimal r102_ccf_cont) {
+		this.r102_ccf_cont = r102_ccf_cont;
+	}
+	public BigDecimal getR102_equiv_value() {
+		return r102_equiv_value;
+	}
+	public void setR102_equiv_value(BigDecimal r102_equiv_value) {
+		this.r102_equiv_value = r102_equiv_value;
+	}
+	public BigDecimal getR102_rw_obligant() {
+		return r102_rw_obligant;
+	}
+	public void setR102_rw_obligant(BigDecimal r102_rw_obligant) {
+		this.r102_rw_obligant = r102_rw_obligant;
+	}
+	public BigDecimal getR102_rav() {
+		return r102_rav;
+	}
+	public void setR102_rav(BigDecimal r102_rav) {
+		this.r102_rav = r102_rav;
+	}
+	public String getR103_product() {
+		return r103_product;
+	}
+	public void setR103_product(String r103_product) {
+		this.r103_product = r103_product;
+	}
+	public String getR103_client_grp() {
+		return r103_client_grp;
+	}
+	public void setR103_client_grp(String r103_client_grp) {
+		this.r103_client_grp = r103_client_grp;
+	}
+	public BigDecimal getR103_total_book_expo() {
+		return r103_total_book_expo;
+	}
+	public void setR103_total_book_expo(BigDecimal r103_total_book_expo) {
+		this.r103_total_book_expo = r103_total_book_expo;
+	}
+	public BigDecimal getR103_margin_pro() {
+		return r103_margin_pro;
+	}
+	public void setR103_margin_pro(BigDecimal r103_margin_pro) {
+		this.r103_margin_pro = r103_margin_pro;
+	}
+	public BigDecimal getR103_book_expo() {
+		return r103_book_expo;
+	}
+	public void setR103_book_expo(BigDecimal r103_book_expo) {
+		this.r103_book_expo = r103_book_expo;
+	}
+	public BigDecimal getR103_ccf_cont() {
+		return r103_ccf_cont;
+	}
+	public void setR103_ccf_cont(BigDecimal r103_ccf_cont) {
+		this.r103_ccf_cont = r103_ccf_cont;
+	}
+	public BigDecimal getR103_equiv_value() {
+		return r103_equiv_value;
+	}
+	public void setR103_equiv_value(BigDecimal r103_equiv_value) {
+		this.r103_equiv_value = r103_equiv_value;
+	}
+	public BigDecimal getR103_rw_obligant() {
+		return r103_rw_obligant;
+	}
+	public void setR103_rw_obligant(BigDecimal r103_rw_obligant) {
+		this.r103_rw_obligant = r103_rw_obligant;
+	}
+	public BigDecimal getR103_rav() {
+		return r103_rav;
+	}
+	public void setR103_rav(BigDecimal r103_rav) {
+		this.r103_rav = r103_rav;
+	}
+	public String getR104_product() {
+		return r104_product;
+	}
+	public void setR104_product(String r104_product) {
+		this.r104_product = r104_product;
+	}
+	public String getR104_client_grp() {
+		return r104_client_grp;
+	}
+	public void setR104_client_grp(String r104_client_grp) {
+		this.r104_client_grp = r104_client_grp;
+	}
+	public BigDecimal getR104_total_book_expo() {
+		return r104_total_book_expo;
+	}
+	public void setR104_total_book_expo(BigDecimal r104_total_book_expo) {
+		this.r104_total_book_expo = r104_total_book_expo;
+	}
+	public BigDecimal getR104_margin_pro() {
+		return r104_margin_pro;
+	}
+	public void setR104_margin_pro(BigDecimal r104_margin_pro) {
+		this.r104_margin_pro = r104_margin_pro;
+	}
+	public BigDecimal getR104_book_expo() {
+		return r104_book_expo;
+	}
+	public void setR104_book_expo(BigDecimal r104_book_expo) {
+		this.r104_book_expo = r104_book_expo;
+	}
+	public BigDecimal getR104_ccf_cont() {
+		return r104_ccf_cont;
+	}
+	public void setR104_ccf_cont(BigDecimal r104_ccf_cont) {
+		this.r104_ccf_cont = r104_ccf_cont;
+	}
+	public BigDecimal getR104_equiv_value() {
+		return r104_equiv_value;
+	}
+	public void setR104_equiv_value(BigDecimal r104_equiv_value) {
+		this.r104_equiv_value = r104_equiv_value;
+	}
+	public BigDecimal getR104_rw_obligant() {
+		return r104_rw_obligant;
+	}
+	public void setR104_rw_obligant(BigDecimal r104_rw_obligant) {
+		this.r104_rw_obligant = r104_rw_obligant;
+	}
+	public BigDecimal getR104_rav() {
+		return r104_rav;
+	}
+	public void setR104_rav(BigDecimal r104_rav) {
+		this.r104_rav = r104_rav;
+	}
+	public String getR105_product() {
+		return r105_product;
+	}
+	public void setR105_product(String r105_product) {
+		this.r105_product = r105_product;
+	}
+	public String getR105_client_grp() {
+		return r105_client_grp;
+	}
+	public void setR105_client_grp(String r105_client_grp) {
+		this.r105_client_grp = r105_client_grp;
+	}
+	public BigDecimal getR105_total_book_expo() {
+		return r105_total_book_expo;
+	}
+	public void setR105_total_book_expo(BigDecimal r105_total_book_expo) {
+		this.r105_total_book_expo = r105_total_book_expo;
+	}
+	public BigDecimal getR105_margin_pro() {
+		return r105_margin_pro;
+	}
+	public void setR105_margin_pro(BigDecimal r105_margin_pro) {
+		this.r105_margin_pro = r105_margin_pro;
+	}
+	public BigDecimal getR105_book_expo() {
+		return r105_book_expo;
+	}
+	public void setR105_book_expo(BigDecimal r105_book_expo) {
+		this.r105_book_expo = r105_book_expo;
+	}
+	public BigDecimal getR105_ccf_cont() {
+		return r105_ccf_cont;
+	}
+	public void setR105_ccf_cont(BigDecimal r105_ccf_cont) {
+		this.r105_ccf_cont = r105_ccf_cont;
+	}
+	public BigDecimal getR105_equiv_value() {
+		return r105_equiv_value;
+	}
+	public void setR105_equiv_value(BigDecimal r105_equiv_value) {
+		this.r105_equiv_value = r105_equiv_value;
+	}
+	public BigDecimal getR105_rw_obligant() {
+		return r105_rw_obligant;
+	}
+	public void setR105_rw_obligant(BigDecimal r105_rw_obligant) {
+		this.r105_rw_obligant = r105_rw_obligant;
+	}
+	public BigDecimal getR105_rav() {
+		return r105_rav;
+	}
+	public void setR105_rav(BigDecimal r105_rav) {
+		this.r105_rav = r105_rav;
+	}
+	public String getR106_product() {
+		return r106_product;
+	}
+	public void setR106_product(String r106_product) {
+		this.r106_product = r106_product;
+	}
+	public String getR106_client_grp() {
+		return r106_client_grp;
+	}
+	public void setR106_client_grp(String r106_client_grp) {
+		this.r106_client_grp = r106_client_grp;
+	}
+	public BigDecimal getR106_total_book_expo() {
+		return r106_total_book_expo;
+	}
+	public void setR106_total_book_expo(BigDecimal r106_total_book_expo) {
+		this.r106_total_book_expo = r106_total_book_expo;
+	}
+	public BigDecimal getR106_margin_pro() {
+		return r106_margin_pro;
+	}
+	public void setR106_margin_pro(BigDecimal r106_margin_pro) {
+		this.r106_margin_pro = r106_margin_pro;
+	}
+	public BigDecimal getR106_book_expo() {
+		return r106_book_expo;
+	}
+	public void setR106_book_expo(BigDecimal r106_book_expo) {
+		this.r106_book_expo = r106_book_expo;
+	}
+	public BigDecimal getR106_ccf_cont() {
+		return r106_ccf_cont;
+	}
+	public void setR106_ccf_cont(BigDecimal r106_ccf_cont) {
+		this.r106_ccf_cont = r106_ccf_cont;
+	}
+	public BigDecimal getR106_equiv_value() {
+		return r106_equiv_value;
+	}
+	public void setR106_equiv_value(BigDecimal r106_equiv_value) {
+		this.r106_equiv_value = r106_equiv_value;
+	}
+	public BigDecimal getR106_rw_obligant() {
+		return r106_rw_obligant;
+	}
+	public void setR106_rw_obligant(BigDecimal r106_rw_obligant) {
+		this.r106_rw_obligant = r106_rw_obligant;
+	}
+	public BigDecimal getR106_rav() {
+		return r106_rav;
+	}
+	public void setR106_rav(BigDecimal r106_rav) {
+		this.r106_rav = r106_rav;
+	}
+	public String getR107_product() {
+		return r107_product;
+	}
+	public void setR107_product(String r107_product) {
+		this.r107_product = r107_product;
+	}
+	public String getR107_client_grp() {
+		return r107_client_grp;
+	}
+	public void setR107_client_grp(String r107_client_grp) {
+		this.r107_client_grp = r107_client_grp;
+	}
+	public BigDecimal getR107_total_book_expo() {
+		return r107_total_book_expo;
+	}
+	public void setR107_total_book_expo(BigDecimal r107_total_book_expo) {
+		this.r107_total_book_expo = r107_total_book_expo;
+	}
+	public BigDecimal getR107_margin_pro() {
+		return r107_margin_pro;
+	}
+	public void setR107_margin_pro(BigDecimal r107_margin_pro) {
+		this.r107_margin_pro = r107_margin_pro;
+	}
+	public BigDecimal getR107_book_expo() {
+		return r107_book_expo;
+	}
+	public void setR107_book_expo(BigDecimal r107_book_expo) {
+		this.r107_book_expo = r107_book_expo;
+	}
+	public BigDecimal getR107_ccf_cont() {
+		return r107_ccf_cont;
+	}
+	public void setR107_ccf_cont(BigDecimal r107_ccf_cont) {
+		this.r107_ccf_cont = r107_ccf_cont;
+	}
+	public BigDecimal getR107_equiv_value() {
+		return r107_equiv_value;
+	}
+	public void setR107_equiv_value(BigDecimal r107_equiv_value) {
+		this.r107_equiv_value = r107_equiv_value;
+	}
+	public BigDecimal getR107_rw_obligant() {
+		return r107_rw_obligant;
+	}
+	public void setR107_rw_obligant(BigDecimal r107_rw_obligant) {
+		this.r107_rw_obligant = r107_rw_obligant;
+	}
+	public BigDecimal getR107_rav() {
+		return r107_rav;
+	}
+	public void setR107_rav(BigDecimal r107_rav) {
+		this.r107_rav = r107_rav;
+	}
+	public String getR108_product() {
+		return r108_product;
+	}
+	public void setR108_product(String r108_product) {
+		this.r108_product = r108_product;
+	}
+	public String getR108_client_grp() {
+		return r108_client_grp;
+	}
+	public void setR108_client_grp(String r108_client_grp) {
+		this.r108_client_grp = r108_client_grp;
+	}
+	public BigDecimal getR108_total_book_expo() {
+		return r108_total_book_expo;
+	}
+	public void setR108_total_book_expo(BigDecimal r108_total_book_expo) {
+		this.r108_total_book_expo = r108_total_book_expo;
+	}
+	public BigDecimal getR108_margin_pro() {
+		return r108_margin_pro;
+	}
+	public void setR108_margin_pro(BigDecimal r108_margin_pro) {
+		this.r108_margin_pro = r108_margin_pro;
+	}
+	public BigDecimal getR108_book_expo() {
+		return r108_book_expo;
+	}
+	public void setR108_book_expo(BigDecimal r108_book_expo) {
+		this.r108_book_expo = r108_book_expo;
+	}
+	public BigDecimal getR108_ccf_cont() {
+		return r108_ccf_cont;
+	}
+	public void setR108_ccf_cont(BigDecimal r108_ccf_cont) {
+		this.r108_ccf_cont = r108_ccf_cont;
+	}
+	public BigDecimal getR108_equiv_value() {
+		return r108_equiv_value;
+	}
+	public void setR108_equiv_value(BigDecimal r108_equiv_value) {
+		this.r108_equiv_value = r108_equiv_value;
+	}
+	public BigDecimal getR108_rw_obligant() {
+		return r108_rw_obligant;
+	}
+	public void setR108_rw_obligant(BigDecimal r108_rw_obligant) {
+		this.r108_rw_obligant = r108_rw_obligant;
+	}
+	public BigDecimal getR108_rav() {
+		return r108_rav;
+	}
+	public void setR108_rav(BigDecimal r108_rav) {
+		this.r108_rav = r108_rav;
+	}
+	public String getR109_product() {
+		return r109_product;
+	}
+	public void setR109_product(String r109_product) {
+		this.r109_product = r109_product;
+	}
+	public String getR109_client_grp() {
+		return r109_client_grp;
+	}
+	public void setR109_client_grp(String r109_client_grp) {
+		this.r109_client_grp = r109_client_grp;
+	}
+	public BigDecimal getR109_total_book_expo() {
+		return r109_total_book_expo;
+	}
+	public void setR109_total_book_expo(BigDecimal r109_total_book_expo) {
+		this.r109_total_book_expo = r109_total_book_expo;
+	}
+	public BigDecimal getR109_margin_pro() {
+		return r109_margin_pro;
+	}
+	public void setR109_margin_pro(BigDecimal r109_margin_pro) {
+		this.r109_margin_pro = r109_margin_pro;
+	}
+	public BigDecimal getR109_book_expo() {
+		return r109_book_expo;
+	}
+	public void setR109_book_expo(BigDecimal r109_book_expo) {
+		this.r109_book_expo = r109_book_expo;
+	}
+	public BigDecimal getR109_ccf_cont() {
+		return r109_ccf_cont;
+	}
+	public void setR109_ccf_cont(BigDecimal r109_ccf_cont) {
+		this.r109_ccf_cont = r109_ccf_cont;
+	}
+	public BigDecimal getR109_equiv_value() {
+		return r109_equiv_value;
+	}
+	public void setR109_equiv_value(BigDecimal r109_equiv_value) {
+		this.r109_equiv_value = r109_equiv_value;
+	}
+	public BigDecimal getR109_rw_obligant() {
+		return r109_rw_obligant;
+	}
+	public void setR109_rw_obligant(BigDecimal r109_rw_obligant) {
+		this.r109_rw_obligant = r109_rw_obligant;
+	}
+	public BigDecimal getR109_rav() {
+		return r109_rav;
+	}
+	public void setR109_rav(BigDecimal r109_rav) {
+		this.r109_rav = r109_rav;
+	}
+	public String getR110_product() {
+		return r110_product;
+	}
+	public void setR110_product(String r110_product) {
+		this.r110_product = r110_product;
+	}
+	public String getR110_client_grp() {
+		return r110_client_grp;
+	}
+	public void setR110_client_grp(String r110_client_grp) {
+		this.r110_client_grp = r110_client_grp;
+	}
+	public BigDecimal getR110_total_book_expo() {
+		return r110_total_book_expo;
+	}
+	public void setR110_total_book_expo(BigDecimal r110_total_book_expo) {
+		this.r110_total_book_expo = r110_total_book_expo;
+	}
+	public BigDecimal getR110_margin_pro() {
+		return r110_margin_pro;
+	}
+	public void setR110_margin_pro(BigDecimal r110_margin_pro) {
+		this.r110_margin_pro = r110_margin_pro;
+	}
+	public BigDecimal getR110_book_expo() {
+		return r110_book_expo;
+	}
+	public void setR110_book_expo(BigDecimal r110_book_expo) {
+		this.r110_book_expo = r110_book_expo;
+	}
+	public BigDecimal getR110_ccf_cont() {
+		return r110_ccf_cont;
+	}
+	public void setR110_ccf_cont(BigDecimal r110_ccf_cont) {
+		this.r110_ccf_cont = r110_ccf_cont;
+	}
+	public BigDecimal getR110_equiv_value() {
+		return r110_equiv_value;
+	}
+	public void setR110_equiv_value(BigDecimal r110_equiv_value) {
+		this.r110_equiv_value = r110_equiv_value;
+	}
+	public BigDecimal getR110_rw_obligant() {
+		return r110_rw_obligant;
+	}
+	public void setR110_rw_obligant(BigDecimal r110_rw_obligant) {
+		this.r110_rw_obligant = r110_rw_obligant;
+	}
+	public BigDecimal getR110_rav() {
+		return r110_rav;
+	}
+	public void setR110_rav(BigDecimal r110_rav) {
+		this.r110_rav = r110_rav;
+	}
+	public String getR111_product() {
+		return r111_product;
+	}
+	public void setR111_product(String r111_product) {
+		this.r111_product = r111_product;
+	}
+	public String getR111_client_grp() {
+		return r111_client_grp;
+	}
+	public void setR111_client_grp(String r111_client_grp) {
+		this.r111_client_grp = r111_client_grp;
+	}
+	public BigDecimal getR111_total_book_expo() {
+		return r111_total_book_expo;
+	}
+	public void setR111_total_book_expo(BigDecimal r111_total_book_expo) {
+		this.r111_total_book_expo = r111_total_book_expo;
+	}
+	public BigDecimal getR111_margin_pro() {
+		return r111_margin_pro;
+	}
+	public void setR111_margin_pro(BigDecimal r111_margin_pro) {
+		this.r111_margin_pro = r111_margin_pro;
+	}
+	public BigDecimal getR111_book_expo() {
+		return r111_book_expo;
+	}
+	public void setR111_book_expo(BigDecimal r111_book_expo) {
+		this.r111_book_expo = r111_book_expo;
+	}
+	public BigDecimal getR111_ccf_cont() {
+		return r111_ccf_cont;
+	}
+	public void setR111_ccf_cont(BigDecimal r111_ccf_cont) {
+		this.r111_ccf_cont = r111_ccf_cont;
+	}
+	public BigDecimal getR111_equiv_value() {
+		return r111_equiv_value;
+	}
+	public void setR111_equiv_value(BigDecimal r111_equiv_value) {
+		this.r111_equiv_value = r111_equiv_value;
+	}
+	public BigDecimal getR111_rw_obligant() {
+		return r111_rw_obligant;
+	}
+	public void setR111_rw_obligant(BigDecimal r111_rw_obligant) {
+		this.r111_rw_obligant = r111_rw_obligant;
+	}
+	public BigDecimal getR111_rav() {
+		return r111_rav;
+	}
+	public void setR111_rav(BigDecimal r111_rav) {
+		this.r111_rav = r111_rav;
+	}
+	public String getR112_product() {
+		return r112_product;
+	}
+	public void setR112_product(String r112_product) {
+		this.r112_product = r112_product;
+	}
+	public String getR112_client_grp() {
+		return r112_client_grp;
+	}
+	public void setR112_client_grp(String r112_client_grp) {
+		this.r112_client_grp = r112_client_grp;
+	}
+	public BigDecimal getR112_total_book_expo() {
+		return r112_total_book_expo;
+	}
+	public void setR112_total_book_expo(BigDecimal r112_total_book_expo) {
+		this.r112_total_book_expo = r112_total_book_expo;
+	}
+	public BigDecimal getR112_margin_pro() {
+		return r112_margin_pro;
+	}
+	public void setR112_margin_pro(BigDecimal r112_margin_pro) {
+		this.r112_margin_pro = r112_margin_pro;
+	}
+	public BigDecimal getR112_book_expo() {
+		return r112_book_expo;
+	}
+	public void setR112_book_expo(BigDecimal r112_book_expo) {
+		this.r112_book_expo = r112_book_expo;
+	}
+	public BigDecimal getR112_ccf_cont() {
+		return r112_ccf_cont;
+	}
+	public void setR112_ccf_cont(BigDecimal r112_ccf_cont) {
+		this.r112_ccf_cont = r112_ccf_cont;
+	}
+	public BigDecimal getR112_equiv_value() {
+		return r112_equiv_value;
+	}
+	public void setR112_equiv_value(BigDecimal r112_equiv_value) {
+		this.r112_equiv_value = r112_equiv_value;
+	}
+	public BigDecimal getR112_rw_obligant() {
+		return r112_rw_obligant;
+	}
+	public void setR112_rw_obligant(BigDecimal r112_rw_obligant) {
+		this.r112_rw_obligant = r112_rw_obligant;
+	}
+	public BigDecimal getR112_rav() {
+		return r112_rav;
+	}
+	public void setR112_rav(BigDecimal r112_rav) {
+		this.r112_rav = r112_rav;
+	}
+	public String getR113_product() {
+		return r113_product;
+	}
+	public void setR113_product(String r113_product) {
+		this.r113_product = r113_product;
+	}
+	public String getR113_client_grp() {
+		return r113_client_grp;
+	}
+	public void setR113_client_grp(String r113_client_grp) {
+		this.r113_client_grp = r113_client_grp;
+	}
+	public BigDecimal getR113_total_book_expo() {
+		return r113_total_book_expo;
+	}
+	public void setR113_total_book_expo(BigDecimal r113_total_book_expo) {
+		this.r113_total_book_expo = r113_total_book_expo;
+	}
+	public BigDecimal getR113_margin_pro() {
+		return r113_margin_pro;
+	}
+	public void setR113_margin_pro(BigDecimal r113_margin_pro) {
+		this.r113_margin_pro = r113_margin_pro;
+	}
+	public BigDecimal getR113_book_expo() {
+		return r113_book_expo;
+	}
+	public void setR113_book_expo(BigDecimal r113_book_expo) {
+		this.r113_book_expo = r113_book_expo;
+	}
+	public BigDecimal getR113_ccf_cont() {
+		return r113_ccf_cont;
+	}
+	public void setR113_ccf_cont(BigDecimal r113_ccf_cont) {
+		this.r113_ccf_cont = r113_ccf_cont;
+	}
+	public BigDecimal getR113_equiv_value() {
+		return r113_equiv_value;
+	}
+	public void setR113_equiv_value(BigDecimal r113_equiv_value) {
+		this.r113_equiv_value = r113_equiv_value;
+	}
+	public BigDecimal getR113_rw_obligant() {
+		return r113_rw_obligant;
+	}
+	public void setR113_rw_obligant(BigDecimal r113_rw_obligant) {
+		this.r113_rw_obligant = r113_rw_obligant;
+	}
+	public BigDecimal getR113_rav() {
+		return r113_rav;
+	}
+	public void setR113_rav(BigDecimal r113_rav) {
+		this.r113_rav = r113_rav;
+	}
+	public String getR114_product() {
+		return r114_product;
+	}
+	public void setR114_product(String r114_product) {
+		this.r114_product = r114_product;
+	}
+	public String getR114_client_grp() {
+		return r114_client_grp;
+	}
+	public void setR114_client_grp(String r114_client_grp) {
+		this.r114_client_grp = r114_client_grp;
+	}
+	public BigDecimal getR114_total_book_expo() {
+		return r114_total_book_expo;
+	}
+	public void setR114_total_book_expo(BigDecimal r114_total_book_expo) {
+		this.r114_total_book_expo = r114_total_book_expo;
+	}
+	public BigDecimal getR114_margin_pro() {
+		return r114_margin_pro;
+	}
+	public void setR114_margin_pro(BigDecimal r114_margin_pro) {
+		this.r114_margin_pro = r114_margin_pro;
+	}
+	public BigDecimal getR114_book_expo() {
+		return r114_book_expo;
+	}
+	public void setR114_book_expo(BigDecimal r114_book_expo) {
+		this.r114_book_expo = r114_book_expo;
+	}
+	public BigDecimal getR114_ccf_cont() {
+		return r114_ccf_cont;
+	}
+	public void setR114_ccf_cont(BigDecimal r114_ccf_cont) {
+		this.r114_ccf_cont = r114_ccf_cont;
+	}
+	public BigDecimal getR114_equiv_value() {
+		return r114_equiv_value;
+	}
+	public void setR114_equiv_value(BigDecimal r114_equiv_value) {
+		this.r114_equiv_value = r114_equiv_value;
+	}
+	public BigDecimal getR114_rw_obligant() {
+		return r114_rw_obligant;
+	}
+	public void setR114_rw_obligant(BigDecimal r114_rw_obligant) {
+		this.r114_rw_obligant = r114_rw_obligant;
+	}
+	public BigDecimal getR114_rav() {
+		return r114_rav;
+	}
+	public void setR114_rav(BigDecimal r114_rav) {
+		this.r114_rav = r114_rav;
+	}
+	public String getR115_product() {
+		return r115_product;
+	}
+	public void setR115_product(String r115_product) {
+		this.r115_product = r115_product;
+	}
+	public String getR115_client_grp() {
+		return r115_client_grp;
+	}
+	public void setR115_client_grp(String r115_client_grp) {
+		this.r115_client_grp = r115_client_grp;
+	}
+	public BigDecimal getR115_total_book_expo() {
+		return r115_total_book_expo;
+	}
+	public void setR115_total_book_expo(BigDecimal r115_total_book_expo) {
+		this.r115_total_book_expo = r115_total_book_expo;
+	}
+	public BigDecimal getR115_margin_pro() {
+		return r115_margin_pro;
+	}
+	public void setR115_margin_pro(BigDecimal r115_margin_pro) {
+		this.r115_margin_pro = r115_margin_pro;
+	}
+	public BigDecimal getR115_book_expo() {
+		return r115_book_expo;
+	}
+	public void setR115_book_expo(BigDecimal r115_book_expo) {
+		this.r115_book_expo = r115_book_expo;
+	}
+	public BigDecimal getR115_ccf_cont() {
+		return r115_ccf_cont;
+	}
+	public void setR115_ccf_cont(BigDecimal r115_ccf_cont) {
+		this.r115_ccf_cont = r115_ccf_cont;
+	}
+	public BigDecimal getR115_equiv_value() {
+		return r115_equiv_value;
+	}
+	public void setR115_equiv_value(BigDecimal r115_equiv_value) {
+		this.r115_equiv_value = r115_equiv_value;
+	}
+	public BigDecimal getR115_rw_obligant() {
+		return r115_rw_obligant;
+	}
+	public void setR115_rw_obligant(BigDecimal r115_rw_obligant) {
+		this.r115_rw_obligant = r115_rw_obligant;
+	}
+	public BigDecimal getR115_rav() {
+		return r115_rav;
+	}
+	public void setR115_rav(BigDecimal r115_rav) {
+		this.r115_rav = r115_rav;
+	}
+	public String getR116_product() {
+		return r116_product;
+	}
+	public void setR116_product(String r116_product) {
+		this.r116_product = r116_product;
+	}
+	public String getR116_client_grp() {
+		return r116_client_grp;
+	}
+	public void setR116_client_grp(String r116_client_grp) {
+		this.r116_client_grp = r116_client_grp;
+	}
+	public BigDecimal getR116_total_book_expo() {
+		return r116_total_book_expo;
+	}
+	public void setR116_total_book_expo(BigDecimal r116_total_book_expo) {
+		this.r116_total_book_expo = r116_total_book_expo;
+	}
+	public BigDecimal getR116_margin_pro() {
+		return r116_margin_pro;
+	}
+	public void setR116_margin_pro(BigDecimal r116_margin_pro) {
+		this.r116_margin_pro = r116_margin_pro;
+	}
+	public BigDecimal getR116_book_expo() {
+		return r116_book_expo;
+	}
+	public void setR116_book_expo(BigDecimal r116_book_expo) {
+		this.r116_book_expo = r116_book_expo;
+	}
+	public BigDecimal getR116_ccf_cont() {
+		return r116_ccf_cont;
+	}
+	public void setR116_ccf_cont(BigDecimal r116_ccf_cont) {
+		this.r116_ccf_cont = r116_ccf_cont;
+	}
+	public BigDecimal getR116_equiv_value() {
+		return r116_equiv_value;
+	}
+	public void setR116_equiv_value(BigDecimal r116_equiv_value) {
+		this.r116_equiv_value = r116_equiv_value;
+	}
+	public BigDecimal getR116_rw_obligant() {
+		return r116_rw_obligant;
+	}
+	public void setR116_rw_obligant(BigDecimal r116_rw_obligant) {
+		this.r116_rw_obligant = r116_rw_obligant;
+	}
+	public BigDecimal getR116_rav() {
+		return r116_rav;
+	}
+	public void setR116_rav(BigDecimal r116_rav) {
+		this.r116_rav = r116_rav;
+	}
+	public String getR117_product() {
+		return r117_product;
+	}
+	public void setR117_product(String r117_product) {
+		this.r117_product = r117_product;
+	}
+	public String getR117_client_grp() {
+		return r117_client_grp;
+	}
+	public void setR117_client_grp(String r117_client_grp) {
+		this.r117_client_grp = r117_client_grp;
+	}
+	public BigDecimal getR117_total_book_expo() {
+		return r117_total_book_expo;
+	}
+	public void setR117_total_book_expo(BigDecimal r117_total_book_expo) {
+		this.r117_total_book_expo = r117_total_book_expo;
+	}
+	public BigDecimal getR117_margin_pro() {
+		return r117_margin_pro;
+	}
+	public void setR117_margin_pro(BigDecimal r117_margin_pro) {
+		this.r117_margin_pro = r117_margin_pro;
+	}
+	public BigDecimal getR117_book_expo() {
+		return r117_book_expo;
+	}
+	public void setR117_book_expo(BigDecimal r117_book_expo) {
+		this.r117_book_expo = r117_book_expo;
+	}
+	public BigDecimal getR117_ccf_cont() {
+		return r117_ccf_cont;
+	}
+	public void setR117_ccf_cont(BigDecimal r117_ccf_cont) {
+		this.r117_ccf_cont = r117_ccf_cont;
+	}
+	public BigDecimal getR117_equiv_value() {
+		return r117_equiv_value;
+	}
+	public void setR117_equiv_value(BigDecimal r117_equiv_value) {
+		this.r117_equiv_value = r117_equiv_value;
+	}
+	public BigDecimal getR117_rw_obligant() {
+		return r117_rw_obligant;
+	}
+	public void setR117_rw_obligant(BigDecimal r117_rw_obligant) {
+		this.r117_rw_obligant = r117_rw_obligant;
+	}
+	public BigDecimal getR117_rav() {
+		return r117_rav;
+	}
+	public void setR117_rav(BigDecimal r117_rav) {
+		this.r117_rav = r117_rav;
+	}
+	public String getR118_product() {
+		return r118_product;
+	}
+	public void setR118_product(String r118_product) {
+		this.r118_product = r118_product;
+	}
+	public String getR118_client_grp() {
+		return r118_client_grp;
+	}
+	public void setR118_client_grp(String r118_client_grp) {
+		this.r118_client_grp = r118_client_grp;
+	}
+	public BigDecimal getR118_total_book_expo() {
+		return r118_total_book_expo;
+	}
+	public void setR118_total_book_expo(BigDecimal r118_total_book_expo) {
+		this.r118_total_book_expo = r118_total_book_expo;
+	}
+	public BigDecimal getR118_margin_pro() {
+		return r118_margin_pro;
+	}
+	public void setR118_margin_pro(BigDecimal r118_margin_pro) {
+		this.r118_margin_pro = r118_margin_pro;
+	}
+	public BigDecimal getR118_book_expo() {
+		return r118_book_expo;
+	}
+	public void setR118_book_expo(BigDecimal r118_book_expo) {
+		this.r118_book_expo = r118_book_expo;
+	}
+	public BigDecimal getR118_ccf_cont() {
+		return r118_ccf_cont;
+	}
+	public void setR118_ccf_cont(BigDecimal r118_ccf_cont) {
+		this.r118_ccf_cont = r118_ccf_cont;
+	}
+	public BigDecimal getR118_equiv_value() {
+		return r118_equiv_value;
+	}
+	public void setR118_equiv_value(BigDecimal r118_equiv_value) {
+		this.r118_equiv_value = r118_equiv_value;
+	}
+	public BigDecimal getR118_rw_obligant() {
+		return r118_rw_obligant;
+	}
+	public void setR118_rw_obligant(BigDecimal r118_rw_obligant) {
+		this.r118_rw_obligant = r118_rw_obligant;
+	}
+	public BigDecimal getR118_rav() {
+		return r118_rav;
+	}
+	public void setR118_rav(BigDecimal r118_rav) {
+		this.r118_rav = r118_rav;
+	}
+	public String getR119_product() {
+		return r119_product;
+	}
+	public void setR119_product(String r119_product) {
+		this.r119_product = r119_product;
+	}
+	public String getR119_client_grp() {
+		return r119_client_grp;
+	}
+	public void setR119_client_grp(String r119_client_grp) {
+		this.r119_client_grp = r119_client_grp;
+	}
+	public BigDecimal getR119_total_book_expo() {
+		return r119_total_book_expo;
+	}
+	public void setR119_total_book_expo(BigDecimal r119_total_book_expo) {
+		this.r119_total_book_expo = r119_total_book_expo;
+	}
+	public BigDecimal getR119_margin_pro() {
+		return r119_margin_pro;
+	}
+	public void setR119_margin_pro(BigDecimal r119_margin_pro) {
+		this.r119_margin_pro = r119_margin_pro;
+	}
+	public BigDecimal getR119_book_expo() {
+		return r119_book_expo;
+	}
+	public void setR119_book_expo(BigDecimal r119_book_expo) {
+		this.r119_book_expo = r119_book_expo;
+	}
+	public BigDecimal getR119_ccf_cont() {
+		return r119_ccf_cont;
+	}
+	public void setR119_ccf_cont(BigDecimal r119_ccf_cont) {
+		this.r119_ccf_cont = r119_ccf_cont;
+	}
+	public BigDecimal getR119_equiv_value() {
+		return r119_equiv_value;
+	}
+	public void setR119_equiv_value(BigDecimal r119_equiv_value) {
+		this.r119_equiv_value = r119_equiv_value;
+	}
+	public BigDecimal getR119_rw_obligant() {
+		return r119_rw_obligant;
+	}
+	public void setR119_rw_obligant(BigDecimal r119_rw_obligant) {
+		this.r119_rw_obligant = r119_rw_obligant;
+	}
+	public BigDecimal getR119_rav() {
+		return r119_rav;
+	}
+	public void setR119_rav(BigDecimal r119_rav) {
+		this.r119_rav = r119_rav;
+	}
+	public String getR120_product() {
+		return r120_product;
+	}
+	public void setR120_product(String r120_product) {
+		this.r120_product = r120_product;
+	}
+	public String getR120_client_grp() {
+		return r120_client_grp;
+	}
+	public void setR120_client_grp(String r120_client_grp) {
+		this.r120_client_grp = r120_client_grp;
+	}
+	public BigDecimal getR120_total_book_expo() {
+		return r120_total_book_expo;
+	}
+	public void setR120_total_book_expo(BigDecimal r120_total_book_expo) {
+		this.r120_total_book_expo = r120_total_book_expo;
+	}
+	public BigDecimal getR120_margin_pro() {
+		return r120_margin_pro;
+	}
+	public void setR120_margin_pro(BigDecimal r120_margin_pro) {
+		this.r120_margin_pro = r120_margin_pro;
+	}
+	public BigDecimal getR120_book_expo() {
+		return r120_book_expo;
+	}
+	public void setR120_book_expo(BigDecimal r120_book_expo) {
+		this.r120_book_expo = r120_book_expo;
+	}
+	public BigDecimal getR120_ccf_cont() {
+		return r120_ccf_cont;
+	}
+	public void setR120_ccf_cont(BigDecimal r120_ccf_cont) {
+		this.r120_ccf_cont = r120_ccf_cont;
+	}
+	public BigDecimal getR120_equiv_value() {
+		return r120_equiv_value;
+	}
+	public void setR120_equiv_value(BigDecimal r120_equiv_value) {
+		this.r120_equiv_value = r120_equiv_value;
+	}
+	public BigDecimal getR120_rw_obligant() {
+		return r120_rw_obligant;
+	}
+	public void setR120_rw_obligant(BigDecimal r120_rw_obligant) {
+		this.r120_rw_obligant = r120_rw_obligant;
+	}
+	public BigDecimal getR120_rav() {
+		return r120_rav;
+	}
+	public void setR120_rav(BigDecimal r120_rav) {
+		this.r120_rav = r120_rav;
+	}
+	public String getR121_product() {
+		return r121_product;
+	}
+	public void setR121_product(String r121_product) {
+		this.r121_product = r121_product;
+	}
+	public String getR121_client_grp() {
+		return r121_client_grp;
+	}
+	public void setR121_client_grp(String r121_client_grp) {
+		this.r121_client_grp = r121_client_grp;
+	}
+	public BigDecimal getR121_total_book_expo() {
+		return r121_total_book_expo;
+	}
+	public void setR121_total_book_expo(BigDecimal r121_total_book_expo) {
+		this.r121_total_book_expo = r121_total_book_expo;
+	}
+	public BigDecimal getR121_margin_pro() {
+		return r121_margin_pro;
+	}
+	public void setR121_margin_pro(BigDecimal r121_margin_pro) {
+		this.r121_margin_pro = r121_margin_pro;
+	}
+	public BigDecimal getR121_book_expo() {
+		return r121_book_expo;
+	}
+	public void setR121_book_expo(BigDecimal r121_book_expo) {
+		this.r121_book_expo = r121_book_expo;
+	}
+	public BigDecimal getR121_ccf_cont() {
+		return r121_ccf_cont;
+	}
+	public void setR121_ccf_cont(BigDecimal r121_ccf_cont) {
+		this.r121_ccf_cont = r121_ccf_cont;
+	}
+	public BigDecimal getR121_equiv_value() {
+		return r121_equiv_value;
+	}
+	public void setR121_equiv_value(BigDecimal r121_equiv_value) {
+		this.r121_equiv_value = r121_equiv_value;
+	}
+	public BigDecimal getR121_rw_obligant() {
+		return r121_rw_obligant;
+	}
+	public void setR121_rw_obligant(BigDecimal r121_rw_obligant) {
+		this.r121_rw_obligant = r121_rw_obligant;
+	}
+	public BigDecimal getR121_rav() {
+		return r121_rav;
+	}
+	public void setR121_rav(BigDecimal r121_rav) {
+		this.r121_rav = r121_rav;
+	}
+	public String getR122_product() {
+		return r122_product;
+	}
+	public void setR122_product(String r122_product) {
+		this.r122_product = r122_product;
+	}
+	public String getR122_client_grp() {
+		return r122_client_grp;
+	}
+	public void setR122_client_grp(String r122_client_grp) {
+		this.r122_client_grp = r122_client_grp;
+	}
+	public BigDecimal getR122_total_book_expo() {
+		return r122_total_book_expo;
+	}
+	public void setR122_total_book_expo(BigDecimal r122_total_book_expo) {
+		this.r122_total_book_expo = r122_total_book_expo;
+	}
+	public BigDecimal getR122_margin_pro() {
+		return r122_margin_pro;
+	}
+	public void setR122_margin_pro(BigDecimal r122_margin_pro) {
+		this.r122_margin_pro = r122_margin_pro;
+	}
+	public BigDecimal getR122_book_expo() {
+		return r122_book_expo;
+	}
+	public void setR122_book_expo(BigDecimal r122_book_expo) {
+		this.r122_book_expo = r122_book_expo;
+	}
+	public BigDecimal getR122_ccf_cont() {
+		return r122_ccf_cont;
+	}
+	public void setR122_ccf_cont(BigDecimal r122_ccf_cont) {
+		this.r122_ccf_cont = r122_ccf_cont;
+	}
+	public BigDecimal getR122_equiv_value() {
+		return r122_equiv_value;
+	}
+	public void setR122_equiv_value(BigDecimal r122_equiv_value) {
+		this.r122_equiv_value = r122_equiv_value;
+	}
+	public BigDecimal getR122_rw_obligant() {
+		return r122_rw_obligant;
+	}
+	public void setR122_rw_obligant(BigDecimal r122_rw_obligant) {
+		this.r122_rw_obligant = r122_rw_obligant;
+	}
+	public BigDecimal getR122_rav() {
+		return r122_rav;
+	}
+	public void setR122_rav(BigDecimal r122_rav) {
+		this.r122_rav = r122_rav;
+	}
+	public String getR123_product() {
+		return r123_product;
+	}
+	public void setR123_product(String r123_product) {
+		this.r123_product = r123_product;
+	}
+	public String getR123_client_grp() {
+		return r123_client_grp;
+	}
+	public void setR123_client_grp(String r123_client_grp) {
+		this.r123_client_grp = r123_client_grp;
+	}
+	public BigDecimal getR123_total_book_expo() {
+		return r123_total_book_expo;
+	}
+	public void setR123_total_book_expo(BigDecimal r123_total_book_expo) {
+		this.r123_total_book_expo = r123_total_book_expo;
+	}
+	public BigDecimal getR123_margin_pro() {
+		return r123_margin_pro;
+	}
+	public void setR123_margin_pro(BigDecimal r123_margin_pro) {
+		this.r123_margin_pro = r123_margin_pro;
+	}
+	public BigDecimal getR123_book_expo() {
+		return r123_book_expo;
+	}
+	public void setR123_book_expo(BigDecimal r123_book_expo) {
+		this.r123_book_expo = r123_book_expo;
+	}
+	public BigDecimal getR123_ccf_cont() {
+		return r123_ccf_cont;
+	}
+	public void setR123_ccf_cont(BigDecimal r123_ccf_cont) {
+		this.r123_ccf_cont = r123_ccf_cont;
+	}
+	public BigDecimal getR123_equiv_value() {
+		return r123_equiv_value;
+	}
+	public void setR123_equiv_value(BigDecimal r123_equiv_value) {
+		this.r123_equiv_value = r123_equiv_value;
+	}
+	public BigDecimal getR123_rw_obligant() {
+		return r123_rw_obligant;
+	}
+	public void setR123_rw_obligant(BigDecimal r123_rw_obligant) {
+		this.r123_rw_obligant = r123_rw_obligant;
+	}
+	public BigDecimal getR123_rav() {
+		return r123_rav;
+	}
+	public void setR123_rav(BigDecimal r123_rav) {
+		this.r123_rav = r123_rav;
+	}
+	public String getR124_product() {
+		return r124_product;
+	}
+	public void setR124_product(String r124_product) {
+		this.r124_product = r124_product;
+	}
+	public String getR124_client_grp() {
+		return r124_client_grp;
+	}
+	public void setR124_client_grp(String r124_client_grp) {
+		this.r124_client_grp = r124_client_grp;
+	}
+	public BigDecimal getR124_total_book_expo() {
+		return r124_total_book_expo;
+	}
+	public void setR124_total_book_expo(BigDecimal r124_total_book_expo) {
+		this.r124_total_book_expo = r124_total_book_expo;
+	}
+	public BigDecimal getR124_margin_pro() {
+		return r124_margin_pro;
+	}
+	public void setR124_margin_pro(BigDecimal r124_margin_pro) {
+		this.r124_margin_pro = r124_margin_pro;
+	}
+	public BigDecimal getR124_book_expo() {
+		return r124_book_expo;
+	}
+	public void setR124_book_expo(BigDecimal r124_book_expo) {
+		this.r124_book_expo = r124_book_expo;
+	}
+	public BigDecimal getR124_ccf_cont() {
+		return r124_ccf_cont;
+	}
+	public void setR124_ccf_cont(BigDecimal r124_ccf_cont) {
+		this.r124_ccf_cont = r124_ccf_cont;
+	}
+	public BigDecimal getR124_equiv_value() {
+		return r124_equiv_value;
+	}
+	public void setR124_equiv_value(BigDecimal r124_equiv_value) {
+		this.r124_equiv_value = r124_equiv_value;
+	}
+	public BigDecimal getR124_rw_obligant() {
+		return r124_rw_obligant;
+	}
+	public void setR124_rw_obligant(BigDecimal r124_rw_obligant) {
+		this.r124_rw_obligant = r124_rw_obligant;
+	}
+	public BigDecimal getR124_rav() {
+		return r124_rav;
+	}
+	public void setR124_rav(BigDecimal r124_rav) {
+		this.r124_rav = r124_rav;
+	}
+	public String getR125_product() {
+		return r125_product;
+	}
+	public void setR125_product(String r125_product) {
+		this.r125_product = r125_product;
+	}
+	public String getR125_client_grp() {
+		return r125_client_grp;
+	}
+	public void setR125_client_grp(String r125_client_grp) {
+		this.r125_client_grp = r125_client_grp;
+	}
+	public BigDecimal getR125_total_book_expo() {
+		return r125_total_book_expo;
+	}
+	public void setR125_total_book_expo(BigDecimal r125_total_book_expo) {
+		this.r125_total_book_expo = r125_total_book_expo;
+	}
+	public BigDecimal getR125_margin_pro() {
+		return r125_margin_pro;
+	}
+	public void setR125_margin_pro(BigDecimal r125_margin_pro) {
+		this.r125_margin_pro = r125_margin_pro;
+	}
+	public BigDecimal getR125_book_expo() {
+		return r125_book_expo;
+	}
+	public void setR125_book_expo(BigDecimal r125_book_expo) {
+		this.r125_book_expo = r125_book_expo;
+	}
+	public BigDecimal getR125_ccf_cont() {
+		return r125_ccf_cont;
+	}
+	public void setR125_ccf_cont(BigDecimal r125_ccf_cont) {
+		this.r125_ccf_cont = r125_ccf_cont;
+	}
+	public BigDecimal getR125_equiv_value() {
+		return r125_equiv_value;
+	}
+	public void setR125_equiv_value(BigDecimal r125_equiv_value) {
+		this.r125_equiv_value = r125_equiv_value;
+	}
+	public BigDecimal getR125_rw_obligant() {
+		return r125_rw_obligant;
+	}
+	public void setR125_rw_obligant(BigDecimal r125_rw_obligant) {
+		this.r125_rw_obligant = r125_rw_obligant;
+	}
+	public BigDecimal getR125_rav() {
+		return r125_rav;
+	}
+	public void setR125_rav(BigDecimal r125_rav) {
+		this.r125_rav = r125_rav;
+	}
+	public String getR126_product() {
+		return r126_product;
+	}
+	public void setR126_product(String r126_product) {
+		this.r126_product = r126_product;
+	}
+	public String getR126_client_grp() {
+		return r126_client_grp;
+	}
+	public void setR126_client_grp(String r126_client_grp) {
+		this.r126_client_grp = r126_client_grp;
+	}
+	public BigDecimal getR126_total_book_expo() {
+		return r126_total_book_expo;
+	}
+	public void setR126_total_book_expo(BigDecimal r126_total_book_expo) {
+		this.r126_total_book_expo = r126_total_book_expo;
+	}
+	public BigDecimal getR126_margin_pro() {
+		return r126_margin_pro;
+	}
+	public void setR126_margin_pro(BigDecimal r126_margin_pro) {
+		this.r126_margin_pro = r126_margin_pro;
+	}
+	public BigDecimal getR126_book_expo() {
+		return r126_book_expo;
+	}
+	public void setR126_book_expo(BigDecimal r126_book_expo) {
+		this.r126_book_expo = r126_book_expo;
+	}
+	public BigDecimal getR126_ccf_cont() {
+		return r126_ccf_cont;
+	}
+	public void setR126_ccf_cont(BigDecimal r126_ccf_cont) {
+		this.r126_ccf_cont = r126_ccf_cont;
+	}
+	public BigDecimal getR126_equiv_value() {
+		return r126_equiv_value;
+	}
+	public void setR126_equiv_value(BigDecimal r126_equiv_value) {
+		this.r126_equiv_value = r126_equiv_value;
+	}
+	public BigDecimal getR126_rw_obligant() {
+		return r126_rw_obligant;
+	}
+	public void setR126_rw_obligant(BigDecimal r126_rw_obligant) {
+		this.r126_rw_obligant = r126_rw_obligant;
+	}
+	public BigDecimal getR126_rav() {
+		return r126_rav;
+	}
+	public void setR126_rav(BigDecimal r126_rav) {
+		this.r126_rav = r126_rav;
+	}
+	public String getR127_product() {
+		return r127_product;
+	}
+	public void setR127_product(String r127_product) {
+		this.r127_product = r127_product;
+	}
+	public String getR127_client_grp() {
+		return r127_client_grp;
+	}
+	public void setR127_client_grp(String r127_client_grp) {
+		this.r127_client_grp = r127_client_grp;
+	}
+	public BigDecimal getR127_total_book_expo() {
+		return r127_total_book_expo;
+	}
+	public void setR127_total_book_expo(BigDecimal r127_total_book_expo) {
+		this.r127_total_book_expo = r127_total_book_expo;
+	}
+	public BigDecimal getR127_margin_pro() {
+		return r127_margin_pro;
+	}
+	public void setR127_margin_pro(BigDecimal r127_margin_pro) {
+		this.r127_margin_pro = r127_margin_pro;
+	}
+	public BigDecimal getR127_book_expo() {
+		return r127_book_expo;
+	}
+	public void setR127_book_expo(BigDecimal r127_book_expo) {
+		this.r127_book_expo = r127_book_expo;
+	}
+	public BigDecimal getR127_ccf_cont() {
+		return r127_ccf_cont;
+	}
+	public void setR127_ccf_cont(BigDecimal r127_ccf_cont) {
+		this.r127_ccf_cont = r127_ccf_cont;
+	}
+	public BigDecimal getR127_equiv_value() {
+		return r127_equiv_value;
+	}
+	public void setR127_equiv_value(BigDecimal r127_equiv_value) {
+		this.r127_equiv_value = r127_equiv_value;
+	}
+	public BigDecimal getR127_rw_obligant() {
+		return r127_rw_obligant;
+	}
+	public void setR127_rw_obligant(BigDecimal r127_rw_obligant) {
+		this.r127_rw_obligant = r127_rw_obligant;
+	}
+	public BigDecimal getR127_rav() {
+		return r127_rav;
+	}
+	public void setR127_rav(BigDecimal r127_rav) {
+		this.r127_rav = r127_rav;
+	}
+	public String getR128_product() {
+		return r128_product;
+	}
+	public void setR128_product(String r128_product) {
+		this.r128_product = r128_product;
+	}
+	public String getR128_client_grp() {
+		return r128_client_grp;
+	}
+	public void setR128_client_grp(String r128_client_grp) {
+		this.r128_client_grp = r128_client_grp;
+	}
+	public BigDecimal getR128_total_book_expo() {
+		return r128_total_book_expo;
+	}
+	public void setR128_total_book_expo(BigDecimal r128_total_book_expo) {
+		this.r128_total_book_expo = r128_total_book_expo;
+	}
+	public BigDecimal getR128_margin_pro() {
+		return r128_margin_pro;
+	}
+	public void setR128_margin_pro(BigDecimal r128_margin_pro) {
+		this.r128_margin_pro = r128_margin_pro;
+	}
+	public BigDecimal getR128_book_expo() {
+		return r128_book_expo;
+	}
+	public void setR128_book_expo(BigDecimal r128_book_expo) {
+		this.r128_book_expo = r128_book_expo;
+	}
+	public BigDecimal getR128_ccf_cont() {
+		return r128_ccf_cont;
+	}
+	public void setR128_ccf_cont(BigDecimal r128_ccf_cont) {
+		this.r128_ccf_cont = r128_ccf_cont;
+	}
+	public BigDecimal getR128_equiv_value() {
+		return r128_equiv_value;
+	}
+	public void setR128_equiv_value(BigDecimal r128_equiv_value) {
+		this.r128_equiv_value = r128_equiv_value;
+	}
+	public BigDecimal getR128_rw_obligant() {
+		return r128_rw_obligant;
+	}
+	public void setR128_rw_obligant(BigDecimal r128_rw_obligant) {
+		this.r128_rw_obligant = r128_rw_obligant;
+	}
+	public BigDecimal getR128_rav() {
+		return r128_rav;
+	}
+	public void setR128_rav(BigDecimal r128_rav) {
+		this.r128_rav = r128_rav;
+	}
+	public String getR129_product() {
+		return r129_product;
+	}
+	public void setR129_product(String r129_product) {
+		this.r129_product = r129_product;
+	}
+	public String getR129_client_grp() {
+		return r129_client_grp;
+	}
+	public void setR129_client_grp(String r129_client_grp) {
+		this.r129_client_grp = r129_client_grp;
+	}
+	public BigDecimal getR129_total_book_expo() {
+		return r129_total_book_expo;
+	}
+	public void setR129_total_book_expo(BigDecimal r129_total_book_expo) {
+		this.r129_total_book_expo = r129_total_book_expo;
+	}
+	public BigDecimal getR129_margin_pro() {
+		return r129_margin_pro;
+	}
+	public void setR129_margin_pro(BigDecimal r129_margin_pro) {
+		this.r129_margin_pro = r129_margin_pro;
+	}
+	public BigDecimal getR129_book_expo() {
+		return r129_book_expo;
+	}
+	public void setR129_book_expo(BigDecimal r129_book_expo) {
+		this.r129_book_expo = r129_book_expo;
+	}
+	public BigDecimal getR129_ccf_cont() {
+		return r129_ccf_cont;
+	}
+	public void setR129_ccf_cont(BigDecimal r129_ccf_cont) {
+		this.r129_ccf_cont = r129_ccf_cont;
+	}
+	public BigDecimal getR129_equiv_value() {
+		return r129_equiv_value;
+	}
+	public void setR129_equiv_value(BigDecimal r129_equiv_value) {
+		this.r129_equiv_value = r129_equiv_value;
+	}
+	public BigDecimal getR129_rw_obligant() {
+		return r129_rw_obligant;
+	}
+	public void setR129_rw_obligant(BigDecimal r129_rw_obligant) {
+		this.r129_rw_obligant = r129_rw_obligant;
+	}
+	public BigDecimal getR129_rav() {
+		return r129_rav;
+	}
+	public void setR129_rav(BigDecimal r129_rav) {
+		this.r129_rav = r129_rav;
+	}
+	public String getR130_product() {
+		return r130_product;
+	}
+	public void setR130_product(String r130_product) {
+		this.r130_product = r130_product;
+	}
+	public String getR130_client_grp() {
+		return r130_client_grp;
+	}
+	public void setR130_client_grp(String r130_client_grp) {
+		this.r130_client_grp = r130_client_grp;
+	}
+	public BigDecimal getR130_total_book_expo() {
+		return r130_total_book_expo;
+	}
+	public void setR130_total_book_expo(BigDecimal r130_total_book_expo) {
+		this.r130_total_book_expo = r130_total_book_expo;
+	}
+	public BigDecimal getR130_margin_pro() {
+		return r130_margin_pro;
+	}
+	public void setR130_margin_pro(BigDecimal r130_margin_pro) {
+		this.r130_margin_pro = r130_margin_pro;
+	}
+	public BigDecimal getR130_book_expo() {
+		return r130_book_expo;
+	}
+	public void setR130_book_expo(BigDecimal r130_book_expo) {
+		this.r130_book_expo = r130_book_expo;
+	}
+	public BigDecimal getR130_ccf_cont() {
+		return r130_ccf_cont;
+	}
+	public void setR130_ccf_cont(BigDecimal r130_ccf_cont) {
+		this.r130_ccf_cont = r130_ccf_cont;
+	}
+	public BigDecimal getR130_equiv_value() {
+		return r130_equiv_value;
+	}
+	public void setR130_equiv_value(BigDecimal r130_equiv_value) {
+		this.r130_equiv_value = r130_equiv_value;
+	}
+	public BigDecimal getR130_rw_obligant() {
+		return r130_rw_obligant;
+	}
+	public void setR130_rw_obligant(BigDecimal r130_rw_obligant) {
+		this.r130_rw_obligant = r130_rw_obligant;
+	}
+	public BigDecimal getR130_rav() {
+		return r130_rav;
+	}
+	public void setR130_rav(BigDecimal r130_rav) {
+		this.r130_rav = r130_rav;
+	}
+	public String getR131_product() {
+		return r131_product;
+	}
+	public void setR131_product(String r131_product) {
+		this.r131_product = r131_product;
+	}
+	public String getR131_client_grp() {
+		return r131_client_grp;
+	}
+	public void setR131_client_grp(String r131_client_grp) {
+		this.r131_client_grp = r131_client_grp;
+	}
+	public BigDecimal getR131_total_book_expo() {
+		return r131_total_book_expo;
+	}
+	public void setR131_total_book_expo(BigDecimal r131_total_book_expo) {
+		this.r131_total_book_expo = r131_total_book_expo;
+	}
+	public BigDecimal getR131_margin_pro() {
+		return r131_margin_pro;
+	}
+	public void setR131_margin_pro(BigDecimal r131_margin_pro) {
+		this.r131_margin_pro = r131_margin_pro;
+	}
+	public BigDecimal getR131_book_expo() {
+		return r131_book_expo;
+	}
+	public void setR131_book_expo(BigDecimal r131_book_expo) {
+		this.r131_book_expo = r131_book_expo;
+	}
+	public BigDecimal getR131_ccf_cont() {
+		return r131_ccf_cont;
+	}
+	public void setR131_ccf_cont(BigDecimal r131_ccf_cont) {
+		this.r131_ccf_cont = r131_ccf_cont;
+	}
+	public BigDecimal getR131_equiv_value() {
+		return r131_equiv_value;
+	}
+	public void setR131_equiv_value(BigDecimal r131_equiv_value) {
+		this.r131_equiv_value = r131_equiv_value;
+	}
+	public BigDecimal getR131_rw_obligant() {
+		return r131_rw_obligant;
+	}
+	public void setR131_rw_obligant(BigDecimal r131_rw_obligant) {
+		this.r131_rw_obligant = r131_rw_obligant;
+	}
+	public BigDecimal getR131_rav() {
+		return r131_rav;
+	}
+	public void setR131_rav(BigDecimal r131_rav) {
+		this.r131_rav = r131_rav;
+	}
+	public String getR132_product() {
+		return r132_product;
+	}
+	public void setR132_product(String r132_product) {
+		this.r132_product = r132_product;
+	}
+	public String getR132_client_grp() {
+		return r132_client_grp;
+	}
+	public void setR132_client_grp(String r132_client_grp) {
+		this.r132_client_grp = r132_client_grp;
+	}
+	public BigDecimal getR132_total_book_expo() {
+		return r132_total_book_expo;
+	}
+	public void setR132_total_book_expo(BigDecimal r132_total_book_expo) {
+		this.r132_total_book_expo = r132_total_book_expo;
+	}
+	public BigDecimal getR132_margin_pro() {
+		return r132_margin_pro;
+	}
+	public void setR132_margin_pro(BigDecimal r132_margin_pro) {
+		this.r132_margin_pro = r132_margin_pro;
+	}
+	public BigDecimal getR132_book_expo() {
+		return r132_book_expo;
+	}
+	public void setR132_book_expo(BigDecimal r132_book_expo) {
+		this.r132_book_expo = r132_book_expo;
+	}
+	public BigDecimal getR132_ccf_cont() {
+		return r132_ccf_cont;
+	}
+	public void setR132_ccf_cont(BigDecimal r132_ccf_cont) {
+		this.r132_ccf_cont = r132_ccf_cont;
+	}
+	public BigDecimal getR132_equiv_value() {
+		return r132_equiv_value;
+	}
+	public void setR132_equiv_value(BigDecimal r132_equiv_value) {
+		this.r132_equiv_value = r132_equiv_value;
+	}
+	public BigDecimal getR132_rw_obligant() {
+		return r132_rw_obligant;
+	}
+	public void setR132_rw_obligant(BigDecimal r132_rw_obligant) {
+		this.r132_rw_obligant = r132_rw_obligant;
+	}
+	public BigDecimal getR132_rav() {
+		return r132_rav;
+	}
+	public void setR132_rav(BigDecimal r132_rav) {
+		this.r132_rav = r132_rav;
+	}
+	public String getR133_product() {
+		return r133_product;
+	}
+	public void setR133_product(String r133_product) {
+		this.r133_product = r133_product;
+	}
+	public String getR133_client_grp() {
+		return r133_client_grp;
+	}
+	public void setR133_client_grp(String r133_client_grp) {
+		this.r133_client_grp = r133_client_grp;
+	}
+	public BigDecimal getR133_total_book_expo() {
+		return r133_total_book_expo;
+	}
+	public void setR133_total_book_expo(BigDecimal r133_total_book_expo) {
+		this.r133_total_book_expo = r133_total_book_expo;
+	}
+	public BigDecimal getR133_margin_pro() {
+		return r133_margin_pro;
+	}
+	public void setR133_margin_pro(BigDecimal r133_margin_pro) {
+		this.r133_margin_pro = r133_margin_pro;
+	}
+	public BigDecimal getR133_book_expo() {
+		return r133_book_expo;
+	}
+	public void setR133_book_expo(BigDecimal r133_book_expo) {
+		this.r133_book_expo = r133_book_expo;
+	}
+	public BigDecimal getR133_ccf_cont() {
+		return r133_ccf_cont;
+	}
+	public void setR133_ccf_cont(BigDecimal r133_ccf_cont) {
+		this.r133_ccf_cont = r133_ccf_cont;
+	}
+	public BigDecimal getR133_equiv_value() {
+		return r133_equiv_value;
+	}
+	public void setR133_equiv_value(BigDecimal r133_equiv_value) {
+		this.r133_equiv_value = r133_equiv_value;
+	}
+	public BigDecimal getR133_rw_obligant() {
+		return r133_rw_obligant;
+	}
+	public void setR133_rw_obligant(BigDecimal r133_rw_obligant) {
+		this.r133_rw_obligant = r133_rw_obligant;
+	}
+	public BigDecimal getR133_rav() {
+		return r133_rav;
+	}
+	public void setR133_rav(BigDecimal r133_rav) {
+		this.r133_rav = r133_rav;
+	}
+	public String getR134_product() {
+		return r134_product;
+	}
+	public void setR134_product(String r134_product) {
+		this.r134_product = r134_product;
+	}
+	public String getR134_client_grp() {
+		return r134_client_grp;
+	}
+	public void setR134_client_grp(String r134_client_grp) {
+		this.r134_client_grp = r134_client_grp;
+	}
+	public BigDecimal getR134_total_book_expo() {
+		return r134_total_book_expo;
+	}
+	public void setR134_total_book_expo(BigDecimal r134_total_book_expo) {
+		this.r134_total_book_expo = r134_total_book_expo;
+	}
+	public BigDecimal getR134_margin_pro() {
+		return r134_margin_pro;
+	}
+	public void setR134_margin_pro(BigDecimal r134_margin_pro) {
+		this.r134_margin_pro = r134_margin_pro;
+	}
+	public BigDecimal getR134_book_expo() {
+		return r134_book_expo;
+	}
+	public void setR134_book_expo(BigDecimal r134_book_expo) {
+		this.r134_book_expo = r134_book_expo;
+	}
+	public BigDecimal getR134_ccf_cont() {
+		return r134_ccf_cont;
+	}
+	public void setR134_ccf_cont(BigDecimal r134_ccf_cont) {
+		this.r134_ccf_cont = r134_ccf_cont;
+	}
+	public BigDecimal getR134_equiv_value() {
+		return r134_equiv_value;
+	}
+	public void setR134_equiv_value(BigDecimal r134_equiv_value) {
+		this.r134_equiv_value = r134_equiv_value;
+	}
+	public BigDecimal getR134_rw_obligant() {
+		return r134_rw_obligant;
+	}
+	public void setR134_rw_obligant(BigDecimal r134_rw_obligant) {
+		this.r134_rw_obligant = r134_rw_obligant;
+	}
+	public BigDecimal getR134_rav() {
+		return r134_rav;
+	}
+	public void setR134_rav(BigDecimal r134_rav) {
+		this.r134_rav = r134_rav;
+	}
+	public String getR148_product() {
+		return r148_product;
+	}
+	public void setR148_product(String r148_product) {
+		this.r148_product = r148_product;
+	}
+	public String getR148_client_grp() {
+		return r148_client_grp;
+	}
+	public void setR148_client_grp(String r148_client_grp) {
+		this.r148_client_grp = r148_client_grp;
+	}
+	public BigDecimal getR148_total_book_expo() {
+		return r148_total_book_expo;
+	}
+	public void setR148_total_book_expo(BigDecimal r148_total_book_expo) {
+		this.r148_total_book_expo = r148_total_book_expo;
+	}
+	public BigDecimal getR148_margin_pro() {
+		return r148_margin_pro;
+	}
+	public void setR148_margin_pro(BigDecimal r148_margin_pro) {
+		this.r148_margin_pro = r148_margin_pro;
+	}
+	public BigDecimal getR148_book_expo() {
+		return r148_book_expo;
+	}
+	public void setR148_book_expo(BigDecimal r148_book_expo) {
+		this.r148_book_expo = r148_book_expo;
+	}
+	public BigDecimal getR148_ccf_cont() {
+		return r148_ccf_cont;
+	}
+	public void setR148_ccf_cont(BigDecimal r148_ccf_cont) {
+		this.r148_ccf_cont = r148_ccf_cont;
+	}
+	public BigDecimal getR148_equiv_value() {
+		return r148_equiv_value;
+	}
+	public void setR148_equiv_value(BigDecimal r148_equiv_value) {
+		this.r148_equiv_value = r148_equiv_value;
+	}
+	public BigDecimal getR148_rw_obligant() {
+		return r148_rw_obligant;
+	}
+	public void setR148_rw_obligant(BigDecimal r148_rw_obligant) {
+		this.r148_rw_obligant = r148_rw_obligant;
+	}
+	public BigDecimal getR148_rav() {
+		return r148_rav;
+	}
+	public void setR148_rav(BigDecimal r148_rav) {
+		this.r148_rav = r148_rav;
+	}
+	public String getR149_product() {
+		return r149_product;
+	}
+	public void setR149_product(String r149_product) {
+		this.r149_product = r149_product;
+	}
+	public String getR149_client_grp() {
+		return r149_client_grp;
+	}
+	public void setR149_client_grp(String r149_client_grp) {
+		this.r149_client_grp = r149_client_grp;
+	}
+	public BigDecimal getR149_total_book_expo() {
+		return r149_total_book_expo;
+	}
+	public void setR149_total_book_expo(BigDecimal r149_total_book_expo) {
+		this.r149_total_book_expo = r149_total_book_expo;
+	}
+	public BigDecimal getR149_margin_pro() {
+		return r149_margin_pro;
+	}
+	public void setR149_margin_pro(BigDecimal r149_margin_pro) {
+		this.r149_margin_pro = r149_margin_pro;
+	}
+	public BigDecimal getR149_book_expo() {
+		return r149_book_expo;
+	}
+	public void setR149_book_expo(BigDecimal r149_book_expo) {
+		this.r149_book_expo = r149_book_expo;
+	}
+	public BigDecimal getR149_ccf_cont() {
+		return r149_ccf_cont;
+	}
+	public void setR149_ccf_cont(BigDecimal r149_ccf_cont) {
+		this.r149_ccf_cont = r149_ccf_cont;
+	}
+	public BigDecimal getR149_equiv_value() {
+		return r149_equiv_value;
+	}
+	public void setR149_equiv_value(BigDecimal r149_equiv_value) {
+		this.r149_equiv_value = r149_equiv_value;
+	}
+	public BigDecimal getR149_rw_obligant() {
+		return r149_rw_obligant;
+	}
+	public void setR149_rw_obligant(BigDecimal r149_rw_obligant) {
+		this.r149_rw_obligant = r149_rw_obligant;
+	}
+	public BigDecimal getR149_rav() {
+		return r149_rav;
+	}
+	public void setR149_rav(BigDecimal r149_rav) {
+		this.r149_rav = r149_rav;
+	}
+	public String getR150_product() {
+		return r150_product;
+	}
+	public void setR150_product(String r150_product) {
+		this.r150_product = r150_product;
+	}
+	public String getR150_client_grp() {
+		return r150_client_grp;
+	}
+	public void setR150_client_grp(String r150_client_grp) {
+		this.r150_client_grp = r150_client_grp;
+	}
+	public BigDecimal getR150_total_book_expo() {
+		return r150_total_book_expo;
+	}
+	public void setR150_total_book_expo(BigDecimal r150_total_book_expo) {
+		this.r150_total_book_expo = r150_total_book_expo;
+	}
+	public BigDecimal getR150_margin_pro() {
+		return r150_margin_pro;
+	}
+	public void setR150_margin_pro(BigDecimal r150_margin_pro) {
+		this.r150_margin_pro = r150_margin_pro;
+	}
+	public BigDecimal getR150_book_expo() {
+		return r150_book_expo;
+	}
+	public void setR150_book_expo(BigDecimal r150_book_expo) {
+		this.r150_book_expo = r150_book_expo;
+	}
+	public BigDecimal getR150_ccf_cont() {
+		return r150_ccf_cont;
+	}
+	public void setR150_ccf_cont(BigDecimal r150_ccf_cont) {
+		this.r150_ccf_cont = r150_ccf_cont;
+	}
+	public BigDecimal getR150_equiv_value() {
+		return r150_equiv_value;
+	}
+	public void setR150_equiv_value(BigDecimal r150_equiv_value) {
+		this.r150_equiv_value = r150_equiv_value;
+	}
+	public BigDecimal getR150_rw_obligant() {
+		return r150_rw_obligant;
+	}
+	public void setR150_rw_obligant(BigDecimal r150_rw_obligant) {
+		this.r150_rw_obligant = r150_rw_obligant;
+	}
+	public BigDecimal getR150_rav() {
+		return r150_rav;
+	}
+	public void setR150_rav(BigDecimal r150_rav) {
+		this.r150_rav = r150_rav;
+	}
+	
+	
+	
+	public Date getReport_date() {
+		return report_date;
+	}
+	public void setReport_date(Date report_date) {
+		this.report_date = report_date;
+	}
+	public BigDecimal getReport_version() {
+		return report_version;
+	}
+	public void setReport_version(BigDecimal report_version) {
+		this.report_version = report_version;
+	}
+	public String getReport_frequency() {
+		return report_frequency;
+	}
+	public void setReport_frequency(String report_frequency) {
+		this.report_frequency = report_frequency;
+	}
+	public String getReport_code() {
+		return report_code;
+	}
+	public void setReport_code(String report_code) {
+		this.report_code = report_code;
+	}
+	public String getReport_desc() {
+		return report_desc;
+	}
+	public void setReport_desc(String report_desc) {
+		this.report_desc = report_desc;
+	}
+	public String getEntity_flg() {
+		return entity_flg;
+	}
+	public void setEntity_flg(String entity_flg) {
+		this.entity_flg = entity_flg;
+	}
+	public String getModify_flg() {
+		return modify_flg;
+	}
+	public void setModify_flg(String modify_flg) {
+		this.modify_flg = modify_flg;
+	}
+	public String getDel_flg() {
+		return del_flg;
+	}
+	public void setDel_flg(String del_flg) {
+		this.del_flg = del_flg;
+	}
+	
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
+	}
+	
+}
+	
+
+
+// =====================================================
+// ARCHIVAL  SUMAMRY ENTITY  2
+// =====================================================2
+
+
+public class OFF_BS_ITEMS_Archival_Summary_RowMapper2
+        implements RowMapper<OFF_BS_ITEMS_Archival_Summary_Entity2> {
+
+    @Override
+    public OFF_BS_ITEMS_Archival_Summary_Entity2 mapRow(ResultSet rs, int rowNum)
+            throws SQLException {
+
+        OFF_BS_ITEMS_Archival_Summary_Entity2 obj = new OFF_BS_ITEMS_Archival_Summary_Entity2();
+		
+// =========================
+// R151
+// =========================
+obj.setR151_product(rs.getString("r151_product"));
+obj.setR151_client_grp(rs.getString("r151_client_grp"));
+obj.setR151_total_book_expo(rs.getBigDecimal("r151_total_book_expo"));
+obj.setR151_margin_pro(rs.getBigDecimal("r151_margin_pro"));
+obj.setR151_book_expo(rs.getBigDecimal("r151_book_expo"));
+obj.setR151_ccf_cont(rs.getBigDecimal("r151_ccf_cont"));
+obj.setR151_equiv_value(rs.getBigDecimal("r151_equiv_value"));
+obj.setR151_rw_obligant(rs.getBigDecimal("r151_rw_obligant"));
+obj.setR151_rav(rs.getBigDecimal("r151_rav"));
+
+// =========================
+// R152
+// =========================
+obj.setR152_product(rs.getString("r152_product"));
+obj.setR152_client_grp(rs.getString("r152_client_grp"));
+obj.setR152_total_book_expo(rs.getBigDecimal("r152_total_book_expo"));
+obj.setR152_margin_pro(rs.getBigDecimal("r152_margin_pro"));
+obj.setR152_book_expo(rs.getBigDecimal("r152_book_expo"));
+obj.setR152_ccf_cont(rs.getBigDecimal("r152_ccf_cont"));
+obj.setR152_equiv_value(rs.getBigDecimal("r152_equiv_value"));
+obj.setR152_rw_obligant(rs.getBigDecimal("r152_rw_obligant"));
+obj.setR152_rav(rs.getBigDecimal("r152_rav"));
+
+// =========================
+// R153
+// =========================
+obj.setR153_product(rs.getString("r153_product"));
+obj.setR153_client_grp(rs.getString("r153_client_grp"));
+obj.setR153_total_book_expo(rs.getBigDecimal("r153_total_book_expo"));
+obj.setR153_margin_pro(rs.getBigDecimal("r153_margin_pro"));
+obj.setR153_book_expo(rs.getBigDecimal("r153_book_expo"));
+obj.setR153_ccf_cont(rs.getBigDecimal("r153_ccf_cont"));
+obj.setR153_equiv_value(rs.getBigDecimal("r153_equiv_value"));
+obj.setR153_rw_obligant(rs.getBigDecimal("r153_rw_obligant"));
+obj.setR153_rav(rs.getBigDecimal("r153_rav"));
+
+// =========================
+// R154
+// =========================
+obj.setR154_product(rs.getString("r154_product"));
+obj.setR154_client_grp(rs.getString("r154_client_grp"));
+obj.setR154_total_book_expo(rs.getBigDecimal("r154_total_book_expo"));
+obj.setR154_margin_pro(rs.getBigDecimal("r154_margin_pro"));
+obj.setR154_book_expo(rs.getBigDecimal("r154_book_expo"));
+obj.setR154_ccf_cont(rs.getBigDecimal("r154_ccf_cont"));
+obj.setR154_equiv_value(rs.getBigDecimal("r154_equiv_value"));
+obj.setR154_rw_obligant(rs.getBigDecimal("r154_rw_obligant"));
+obj.setR154_rav(rs.getBigDecimal("r154_rav"));
+
+// =========================
+// R155
+// =========================
+obj.setR155_product(rs.getString("r155_product"));
+obj.setR155_client_grp(rs.getString("r155_client_grp"));
+obj.setR155_total_book_expo(rs.getBigDecimal("r155_total_book_expo"));
+obj.setR155_margin_pro(rs.getBigDecimal("r155_margin_pro"));
+obj.setR155_book_expo(rs.getBigDecimal("r155_book_expo"));
+obj.setR155_ccf_cont(rs.getBigDecimal("r155_ccf_cont"));
+obj.setR155_equiv_value(rs.getBigDecimal("r155_equiv_value"));
+obj.setR155_rw_obligant(rs.getBigDecimal("r155_rw_obligant"));
+obj.setR155_rav(rs.getBigDecimal("r155_rav"));
+
+// =========================
+// R156
+// =========================
+obj.setR156_product(rs.getString("r156_product"));
+obj.setR156_client_grp(rs.getString("r156_client_grp"));
+obj.setR156_total_book_expo(rs.getBigDecimal("r156_total_book_expo"));
+obj.setR156_margin_pro(rs.getBigDecimal("r156_margin_pro"));
+obj.setR156_book_expo(rs.getBigDecimal("r156_book_expo"));
+obj.setR156_ccf_cont(rs.getBigDecimal("r156_ccf_cont"));
+obj.setR156_equiv_value(rs.getBigDecimal("r156_equiv_value"));
+obj.setR156_rw_obligant(rs.getBigDecimal("r156_rw_obligant"));
+obj.setR156_rav(rs.getBigDecimal("r156_rav"));
+
+// =========================
+// R157
+// =========================
+obj.setR157_product(rs.getString("r157_product"));
+obj.setR157_client_grp(rs.getString("r157_client_grp"));
+obj.setR157_total_book_expo(rs.getBigDecimal("r157_total_book_expo"));
+obj.setR157_margin_pro(rs.getBigDecimal("r157_margin_pro"));
+obj.setR157_book_expo(rs.getBigDecimal("r157_book_expo"));
+obj.setR157_ccf_cont(rs.getBigDecimal("r157_ccf_cont"));
+obj.setR157_equiv_value(rs.getBigDecimal("r157_equiv_value"));
+obj.setR157_rw_obligant(rs.getBigDecimal("r157_rw_obligant"));
+obj.setR157_rav(rs.getBigDecimal("r157_rav"));
+
+// =========================
+// R158
+// =========================
+obj.setR158_product(rs.getString("r158_product"));
+obj.setR158_client_grp(rs.getString("r158_client_grp"));
+obj.setR158_total_book_expo(rs.getBigDecimal("r158_total_book_expo"));
+obj.setR158_margin_pro(rs.getBigDecimal("r158_margin_pro"));
+obj.setR158_book_expo(rs.getBigDecimal("r158_book_expo"));
+obj.setR158_ccf_cont(rs.getBigDecimal("r158_ccf_cont"));
+obj.setR158_equiv_value(rs.getBigDecimal("r158_equiv_value"));
+obj.setR158_rw_obligant(rs.getBigDecimal("r158_rw_obligant"));
+obj.setR158_rav(rs.getBigDecimal("r158_rav"));
+
+// =========================
+// R159
+// =========================
+obj.setR159_product(rs.getString("r159_product"));
+obj.setR159_client_grp(rs.getString("r159_client_grp"));
+obj.setR159_total_book_expo(rs.getBigDecimal("r159_total_book_expo"));
+obj.setR159_margin_pro(rs.getBigDecimal("r159_margin_pro"));
+obj.setR159_book_expo(rs.getBigDecimal("r159_book_expo"));
+obj.setR159_ccf_cont(rs.getBigDecimal("r159_ccf_cont"));
+obj.setR159_equiv_value(rs.getBigDecimal("r159_equiv_value"));
+obj.setR159_rw_obligant(rs.getBigDecimal("r159_rw_obligant"));
+obj.setR159_rav(rs.getBigDecimal("r159_rav"));
+
+// =========================
+// R160
+// =========================
+obj.setR160_product(rs.getString("r160_product"));
+obj.setR160_client_grp(rs.getString("r160_client_grp"));
+obj.setR160_total_book_expo(rs.getBigDecimal("r160_total_book_expo"));
+obj.setR160_margin_pro(rs.getBigDecimal("r160_margin_pro"));
+obj.setR160_book_expo(rs.getBigDecimal("r160_book_expo"));
+obj.setR160_ccf_cont(rs.getBigDecimal("r160_ccf_cont"));
+obj.setR160_equiv_value(rs.getBigDecimal("r160_equiv_value"));
+obj.setR160_rw_obligant(rs.getBigDecimal("r160_rw_obligant"));
+obj.setR160_rav(rs.getBigDecimal("r160_rav"));
+
+
+// =========================
+// R161
+// =========================
+obj.setR161_product(rs.getString("r161_product"));
+obj.setR161_client_grp(rs.getString("r161_client_grp"));
+obj.setR161_total_book_expo(rs.getBigDecimal("r161_total_book_expo"));
+obj.setR161_margin_pro(rs.getBigDecimal("r161_margin_pro"));
+obj.setR161_book_expo(rs.getBigDecimal("r161_book_expo"));
+obj.setR161_ccf_cont(rs.getBigDecimal("r161_ccf_cont"));
+obj.setR161_equiv_value(rs.getBigDecimal("r161_equiv_value"));
+obj.setR161_rw_obligant(rs.getBigDecimal("r161_rw_obligant"));
+obj.setR161_rav(rs.getBigDecimal("r161_rav"));
+
+// =========================
+// R162
+// =========================
+obj.setR162_product(rs.getString("r162_product"));
+obj.setR162_client_grp(rs.getString("r162_client_grp"));
+obj.setR162_total_book_expo(rs.getBigDecimal("r162_total_book_expo"));
+obj.setR162_margin_pro(rs.getBigDecimal("r162_margin_pro"));
+obj.setR162_book_expo(rs.getBigDecimal("r162_book_expo"));
+obj.setR162_ccf_cont(rs.getBigDecimal("r162_ccf_cont"));
+obj.setR162_equiv_value(rs.getBigDecimal("r162_equiv_value"));
+obj.setR162_rw_obligant(rs.getBigDecimal("r162_rw_obligant"));
+obj.setR162_rav(rs.getBigDecimal("r162_rav"));
+
+// =========================
+// R163
+// =========================
+obj.setR163_product(rs.getString("r163_product"));
+obj.setR163_client_grp(rs.getString("r163_client_grp"));
+obj.setR163_total_book_expo(rs.getBigDecimal("r163_total_book_expo"));
+obj.setR163_margin_pro(rs.getBigDecimal("r163_margin_pro"));
+obj.setR163_book_expo(rs.getBigDecimal("r163_book_expo"));
+obj.setR163_ccf_cont(rs.getBigDecimal("r163_ccf_cont"));
+obj.setR163_equiv_value(rs.getBigDecimal("r163_equiv_value"));
+obj.setR163_rw_obligant(rs.getBigDecimal("r163_rw_obligant"));
+obj.setR163_rav(rs.getBigDecimal("r163_rav"));
+
+// =========================
+// R164
+// =========================
+obj.setR164_product(rs.getString("r164_product"));
+obj.setR164_client_grp(rs.getString("r164_client_grp"));
+obj.setR164_total_book_expo(rs.getBigDecimal("r164_total_book_expo"));
+obj.setR164_margin_pro(rs.getBigDecimal("r164_margin_pro"));
+obj.setR164_book_expo(rs.getBigDecimal("r164_book_expo"));
+obj.setR164_ccf_cont(rs.getBigDecimal("r164_ccf_cont"));
+obj.setR164_equiv_value(rs.getBigDecimal("r164_equiv_value"));
+obj.setR164_rw_obligant(rs.getBigDecimal("r164_rw_obligant"));
+obj.setR164_rav(rs.getBigDecimal("r164_rav"));
+
+// =========================
+// R165
+// =========================
+obj.setR165_product(rs.getString("r165_product"));
+obj.setR165_client_grp(rs.getString("r165_client_grp"));
+obj.setR165_total_book_expo(rs.getBigDecimal("r165_total_book_expo"));
+obj.setR165_margin_pro(rs.getBigDecimal("r165_margin_pro"));
+obj.setR165_book_expo(rs.getBigDecimal("r165_book_expo"));
+obj.setR165_ccf_cont(rs.getBigDecimal("r165_ccf_cont"));
+obj.setR165_equiv_value(rs.getBigDecimal("r165_equiv_value"));
+obj.setR165_rw_obligant(rs.getBigDecimal("r165_rw_obligant"));
+obj.setR165_rav(rs.getBigDecimal("r165_rav"));
+
+// =========================
+// R166
+// =========================
+obj.setR166_product(rs.getString("r166_product"));
+obj.setR166_client_grp(rs.getString("r166_client_grp"));
+obj.setR166_total_book_expo(rs.getBigDecimal("r166_total_book_expo"));
+obj.setR166_margin_pro(rs.getBigDecimal("r166_margin_pro"));
+obj.setR166_book_expo(rs.getBigDecimal("r166_book_expo"));
+obj.setR166_ccf_cont(rs.getBigDecimal("r166_ccf_cont"));
+obj.setR166_equiv_value(rs.getBigDecimal("r166_equiv_value"));
+obj.setR166_rw_obligant(rs.getBigDecimal("r166_rw_obligant"));
+obj.setR166_rav(rs.getBigDecimal("r166_rav"));
+
+// =========================
+// R167
+// =========================
+obj.setR167_product(rs.getString("r167_product"));
+obj.setR167_client_grp(rs.getString("r167_client_grp"));
+obj.setR167_total_book_expo(rs.getBigDecimal("r167_total_book_expo"));
+obj.setR167_margin_pro(rs.getBigDecimal("r167_margin_pro"));
+obj.setR167_book_expo(rs.getBigDecimal("r167_book_expo"));
+obj.setR167_ccf_cont(rs.getBigDecimal("r167_ccf_cont"));
+obj.setR167_equiv_value(rs.getBigDecimal("r167_equiv_value"));
+obj.setR167_rw_obligant(rs.getBigDecimal("r167_rw_obligant"));
+obj.setR167_rav(rs.getBigDecimal("r167_rav"));
+
+// =========================
+// R168
+// =========================
+obj.setR168_product(rs.getString("r168_product"));
+obj.setR168_client_grp(rs.getString("r168_client_grp"));
+obj.setR168_total_book_expo(rs.getBigDecimal("r168_total_book_expo"));
+obj.setR168_margin_pro(rs.getBigDecimal("r168_margin_pro"));
+obj.setR168_book_expo(rs.getBigDecimal("r168_book_expo"));
+obj.setR168_ccf_cont(rs.getBigDecimal("r168_ccf_cont"));
+obj.setR168_equiv_value(rs.getBigDecimal("r168_equiv_value"));
+obj.setR168_rw_obligant(rs.getBigDecimal("r168_rw_obligant"));
+obj.setR168_rav(rs.getBigDecimal("r168_rav"));
+
+// =========================
+// R169
+// =========================
+obj.setR169_product(rs.getString("r169_product"));
+obj.setR169_client_grp(rs.getString("r169_client_grp"));
+obj.setR169_total_book_expo(rs.getBigDecimal("r169_total_book_expo"));
+obj.setR169_margin_pro(rs.getBigDecimal("r169_margin_pro"));
+obj.setR169_book_expo(rs.getBigDecimal("r169_book_expo"));
+obj.setR169_ccf_cont(rs.getBigDecimal("r169_ccf_cont"));
+obj.setR169_equiv_value(rs.getBigDecimal("r169_equiv_value"));
+obj.setR169_rw_obligant(rs.getBigDecimal("r169_rw_obligant"));
+obj.setR169_rav(rs.getBigDecimal("r169_rav"));
+
+// =========================
+// R170
+// =========================
+obj.setR170_product(rs.getString("r170_product"));
+obj.setR170_client_grp(rs.getString("r170_client_grp"));
+obj.setR170_total_book_expo(rs.getBigDecimal("r170_total_book_expo"));
+obj.setR170_margin_pro(rs.getBigDecimal("r170_margin_pro"));
+obj.setR170_book_expo(rs.getBigDecimal("r170_book_expo"));
+obj.setR170_ccf_cont(rs.getBigDecimal("r170_ccf_cont"));
+obj.setR170_equiv_value(rs.getBigDecimal("r170_equiv_value"));
+obj.setR170_rw_obligant(rs.getBigDecimal("r170_rw_obligant"));
+obj.setR170_rav(rs.getBigDecimal("r170_rav"));
+
+
+// =========================
+// R171
+// =========================
+obj.setR171_product(rs.getString("r171_product"));
+obj.setR171_client_grp(rs.getString("r171_client_grp"));
+obj.setR171_total_book_expo(rs.getBigDecimal("r171_total_book_expo"));
+obj.setR171_margin_pro(rs.getBigDecimal("r171_margin_pro"));
+obj.setR171_book_expo(rs.getBigDecimal("r171_book_expo"));
+obj.setR171_ccf_cont(rs.getBigDecimal("r171_ccf_cont"));
+obj.setR171_equiv_value(rs.getBigDecimal("r171_equiv_value"));
+obj.setR171_rw_obligant(rs.getBigDecimal("r171_rw_obligant"));
+obj.setR171_rav(rs.getBigDecimal("r171_rav"));
+
+// =========================
+// R172
+// =========================
+obj.setR172_product(rs.getString("r172_product"));
+obj.setR172_client_grp(rs.getString("r172_client_grp"));
+obj.setR172_total_book_expo(rs.getBigDecimal("r172_total_book_expo"));
+obj.setR172_margin_pro(rs.getBigDecimal("r172_margin_pro"));
+obj.setR172_book_expo(rs.getBigDecimal("r172_book_expo"));
+obj.setR172_ccf_cont(rs.getBigDecimal("r172_ccf_cont"));
+obj.setR172_equiv_value(rs.getBigDecimal("r172_equiv_value"));
+obj.setR172_rw_obligant(rs.getBigDecimal("r172_rw_obligant"));
+obj.setR172_rav(rs.getBigDecimal("r172_rav"));
+
+// =========================
+// R173
+// =========================
+obj.setR173_product(rs.getString("r173_product"));
+obj.setR173_client_grp(rs.getString("r173_client_grp"));
+obj.setR173_total_book_expo(rs.getBigDecimal("r173_total_book_expo"));
+obj.setR173_margin_pro(rs.getBigDecimal("r173_margin_pro"));
+obj.setR173_book_expo(rs.getBigDecimal("r173_book_expo"));
+obj.setR173_ccf_cont(rs.getBigDecimal("r173_ccf_cont"));
+obj.setR173_equiv_value(rs.getBigDecimal("r173_equiv_value"));
+obj.setR173_rw_obligant(rs.getBigDecimal("r173_rw_obligant"));
+obj.setR173_rav(rs.getBigDecimal("r173_rav"));
+
+// =========================
+// R174
+// =========================
+obj.setR174_product(rs.getString("r174_product"));
+obj.setR174_client_grp(rs.getString("r174_client_grp"));
+obj.setR174_total_book_expo(rs.getBigDecimal("r174_total_book_expo"));
+obj.setR174_margin_pro(rs.getBigDecimal("r174_margin_pro"));
+obj.setR174_book_expo(rs.getBigDecimal("r174_book_expo"));
+obj.setR174_ccf_cont(rs.getBigDecimal("r174_ccf_cont"));
+obj.setR174_equiv_value(rs.getBigDecimal("r174_equiv_value"));
+obj.setR174_rw_obligant(rs.getBigDecimal("r174_rw_obligant"));
+obj.setR174_rav(rs.getBigDecimal("r174_rav"));
+
+// =========================
+// R175
+// =========================
+obj.setR175_product(rs.getString("r175_product"));
+obj.setR175_client_grp(rs.getString("r175_client_grp"));
+obj.setR175_total_book_expo(rs.getBigDecimal("r175_total_book_expo"));
+obj.setR175_margin_pro(rs.getBigDecimal("r175_margin_pro"));
+obj.setR175_book_expo(rs.getBigDecimal("r175_book_expo"));
+obj.setR175_ccf_cont(rs.getBigDecimal("r175_ccf_cont"));
+obj.setR175_equiv_value(rs.getBigDecimal("r175_equiv_value"));
+obj.setR175_rw_obligant(rs.getBigDecimal("r175_rw_obligant"));
+obj.setR175_rav(rs.getBigDecimal("r175_rav"));
+
+// =========================
+// R176
+// =========================
+obj.setR176_product(rs.getString("r176_product"));
+obj.setR176_client_grp(rs.getString("r176_client_grp"));
+obj.setR176_total_book_expo(rs.getBigDecimal("r176_total_book_expo"));
+obj.setR176_margin_pro(rs.getBigDecimal("r176_margin_pro"));
+obj.setR176_book_expo(rs.getBigDecimal("r176_book_expo"));
+obj.setR176_ccf_cont(rs.getBigDecimal("r176_ccf_cont"));
+obj.setR176_equiv_value(rs.getBigDecimal("r176_equiv_value"));
+obj.setR176_rw_obligant(rs.getBigDecimal("r176_rw_obligant"));
+obj.setR176_rav(rs.getBigDecimal("r176_rav"));
+
+// =========================
+// R177
+// =========================
+obj.setR177_product(rs.getString("r177_product"));
+obj.setR177_client_grp(rs.getString("r177_client_grp"));
+obj.setR177_total_book_expo(rs.getBigDecimal("r177_total_book_expo"));
+obj.setR177_margin_pro(rs.getBigDecimal("r177_margin_pro"));
+obj.setR177_book_expo(rs.getBigDecimal("r177_book_expo"));
+obj.setR177_ccf_cont(rs.getBigDecimal("r177_ccf_cont"));
+obj.setR177_equiv_value(rs.getBigDecimal("r177_equiv_value"));
+obj.setR177_rw_obligant(rs.getBigDecimal("r177_rw_obligant"));
+obj.setR177_rav(rs.getBigDecimal("r177_rav"));
+
+// =========================
+// R178
+// =========================
+obj.setR178_product(rs.getString("r178_product"));
+obj.setR178_client_grp(rs.getString("r178_client_grp"));
+obj.setR178_total_book_expo(rs.getBigDecimal("r178_total_book_expo"));
+obj.setR178_margin_pro(rs.getBigDecimal("r178_margin_pro"));
+obj.setR178_book_expo(rs.getBigDecimal("r178_book_expo"));
+obj.setR178_ccf_cont(rs.getBigDecimal("r178_ccf_cont"));
+obj.setR178_equiv_value(rs.getBigDecimal("r178_equiv_value"));
+obj.setR178_rw_obligant(rs.getBigDecimal("r178_rw_obligant"));
+obj.setR178_rav(rs.getBigDecimal("r178_rav"));
+
+// =========================
+// R179
+// =========================
+obj.setR179_product(rs.getString("r179_product"));
+obj.setR179_client_grp(rs.getString("r179_client_grp"));
+obj.setR179_total_book_expo(rs.getBigDecimal("r179_total_book_expo"));
+obj.setR179_margin_pro(rs.getBigDecimal("r179_margin_pro"));
+obj.setR179_book_expo(rs.getBigDecimal("r179_book_expo"));
+obj.setR179_ccf_cont(rs.getBigDecimal("r179_ccf_cont"));
+obj.setR179_equiv_value(rs.getBigDecimal("r179_equiv_value"));
+obj.setR179_rw_obligant(rs.getBigDecimal("r179_rw_obligant"));
+obj.setR179_rav(rs.getBigDecimal("r179_rav"));
+
+// =========================
+// R180
+// =========================
+obj.setR180_product(rs.getString("r180_product"));
+obj.setR180_client_grp(rs.getString("r180_client_grp"));
+obj.setR180_total_book_expo(rs.getBigDecimal("r180_total_book_expo"));
+obj.setR180_margin_pro(rs.getBigDecimal("r180_margin_pro"));
+obj.setR180_book_expo(rs.getBigDecimal("r180_book_expo"));
+obj.setR180_ccf_cont(rs.getBigDecimal("r180_ccf_cont"));
+obj.setR180_equiv_value(rs.getBigDecimal("r180_equiv_value"));
+obj.setR180_rw_obligant(rs.getBigDecimal("r180_rw_obligant"));
+obj.setR180_rav(rs.getBigDecimal("r180_rav"));
+
+
+
+// =========================
+// R181
+// =========================
+obj.setR181_product(rs.getString("r181_product"));
+obj.setR181_client_grp(rs.getString("r181_client_grp"));
+obj.setR181_total_book_expo(rs.getBigDecimal("r181_total_book_expo"));
+obj.setR181_margin_pro(rs.getBigDecimal("r181_margin_pro"));
+obj.setR181_book_expo(rs.getBigDecimal("r181_book_expo"));
+obj.setR181_ccf_cont(rs.getBigDecimal("r181_ccf_cont"));
+obj.setR181_equiv_value(rs.getBigDecimal("r181_equiv_value"));
+obj.setR181_rw_obligant(rs.getBigDecimal("r181_rw_obligant"));
+obj.setR181_rav(rs.getBigDecimal("r181_rav"));
+
+// =========================
+// R182
+// =========================
+obj.setR182_product(rs.getString("r182_product"));
+obj.setR182_client_grp(rs.getString("r182_client_grp"));
+obj.setR182_total_book_expo(rs.getBigDecimal("r182_total_book_expo"));
+obj.setR182_margin_pro(rs.getBigDecimal("r182_margin_pro"));
+obj.setR182_book_expo(rs.getBigDecimal("r182_book_expo"));
+obj.setR182_ccf_cont(rs.getBigDecimal("r182_ccf_cont"));
+obj.setR182_equiv_value(rs.getBigDecimal("r182_equiv_value"));
+obj.setR182_rw_obligant(rs.getBigDecimal("r182_rw_obligant"));
+obj.setR182_rav(rs.getBigDecimal("r182_rav"));
+
+// =========================
+// R183
+// =========================
+obj.setR183_product(rs.getString("r183_product"));
+obj.setR183_client_grp(rs.getString("r183_client_grp"));
+obj.setR183_total_book_expo(rs.getBigDecimal("r183_total_book_expo"));
+obj.setR183_margin_pro(rs.getBigDecimal("r183_margin_pro"));
+obj.setR183_book_expo(rs.getBigDecimal("r183_book_expo"));
+obj.setR183_ccf_cont(rs.getBigDecimal("r183_ccf_cont"));
+obj.setR183_equiv_value(rs.getBigDecimal("r183_equiv_value"));
+obj.setR183_rw_obligant(rs.getBigDecimal("r183_rw_obligant"));
+obj.setR183_rav(rs.getBigDecimal("r183_rav"));
+
+// =========================
+// R184
+// =========================
+obj.setR184_product(rs.getString("r184_product"));
+obj.setR184_client_grp(rs.getString("r184_client_grp"));
+obj.setR184_total_book_expo(rs.getBigDecimal("r184_total_book_expo"));
+obj.setR184_margin_pro(rs.getBigDecimal("r184_margin_pro"));
+obj.setR184_book_expo(rs.getBigDecimal("r184_book_expo"));
+obj.setR184_ccf_cont(rs.getBigDecimal("r184_ccf_cont"));
+obj.setR184_equiv_value(rs.getBigDecimal("r184_equiv_value"));
+obj.setR184_rw_obligant(rs.getBigDecimal("r184_rw_obligant"));
+obj.setR184_rav(rs.getBigDecimal("r184_rav"));
+
+// =========================
+// R185
+// =========================
+obj.setR185_product(rs.getString("r185_product"));
+obj.setR185_client_grp(rs.getString("r185_client_grp"));
+obj.setR185_total_book_expo(rs.getBigDecimal("r185_total_book_expo"));
+obj.setR185_margin_pro(rs.getBigDecimal("r185_margin_pro"));
+obj.setR185_book_expo(rs.getBigDecimal("r185_book_expo"));
+obj.setR185_ccf_cont(rs.getBigDecimal("r185_ccf_cont"));
+obj.setR185_equiv_value(rs.getBigDecimal("r185_equiv_value"));
+obj.setR185_rw_obligant(rs.getBigDecimal("r185_rw_obligant"));
+obj.setR185_rav(rs.getBigDecimal("r185_rav"));
+
+// =========================
+// R186
+// =========================
+obj.setR186_product(rs.getString("r186_product"));
+obj.setR186_client_grp(rs.getString("r186_client_grp"));
+obj.setR186_total_book_expo(rs.getBigDecimal("r186_total_book_expo"));
+obj.setR186_margin_pro(rs.getBigDecimal("r186_margin_pro"));
+obj.setR186_book_expo(rs.getBigDecimal("r186_book_expo"));
+obj.setR186_ccf_cont(rs.getBigDecimal("r186_ccf_cont"));
+obj.setR186_equiv_value(rs.getBigDecimal("r186_equiv_value"));
+obj.setR186_rw_obligant(rs.getBigDecimal("r186_rw_obligant"));
+obj.setR186_rav(rs.getBigDecimal("r186_rav"));
+
+// =========================
+// R187
+// =========================
+obj.setR187_product(rs.getString("r187_product"));
+obj.setR187_client_grp(rs.getString("r187_client_grp"));
+obj.setR187_total_book_expo(rs.getBigDecimal("r187_total_book_expo"));
+obj.setR187_margin_pro(rs.getBigDecimal("r187_margin_pro"));
+obj.setR187_book_expo(rs.getBigDecimal("r187_book_expo"));
+obj.setR187_ccf_cont(rs.getBigDecimal("r187_ccf_cont"));
+obj.setR187_equiv_value(rs.getBigDecimal("r187_equiv_value"));
+obj.setR187_rw_obligant(rs.getBigDecimal("r187_rw_obligant"));
+obj.setR187_rav(rs.getBigDecimal("r187_rav"));
+
+// =========================
+// R188
+// =========================
+obj.setR188_product(rs.getString("r188_product"));
+obj.setR188_client_grp(rs.getString("r188_client_grp"));
+obj.setR188_total_book_expo(rs.getBigDecimal("r188_total_book_expo"));
+obj.setR188_margin_pro(rs.getBigDecimal("r188_margin_pro"));
+obj.setR188_book_expo(rs.getBigDecimal("r188_book_expo"));
+obj.setR188_ccf_cont(rs.getBigDecimal("r188_ccf_cont"));
+obj.setR188_equiv_value(rs.getBigDecimal("r188_equiv_value"));
+obj.setR188_rw_obligant(rs.getBigDecimal("r188_rw_obligant"));
+obj.setR188_rav(rs.getBigDecimal("r188_rav"));
+
+// =========================
+// R189
+// =========================
+obj.setR189_product(rs.getString("r189_product"));
+obj.setR189_client_grp(rs.getString("r189_client_grp"));
+obj.setR189_total_book_expo(rs.getBigDecimal("r189_total_book_expo"));
+obj.setR189_margin_pro(rs.getBigDecimal("r189_margin_pro"));
+obj.setR189_book_expo(rs.getBigDecimal("r189_book_expo"));
+obj.setR189_ccf_cont(rs.getBigDecimal("r189_ccf_cont"));
+obj.setR189_equiv_value(rs.getBigDecimal("r189_equiv_value"));
+obj.setR189_rw_obligant(rs.getBigDecimal("r189_rw_obligant"));
+obj.setR189_rav(rs.getBigDecimal("r189_rav"));
+
+        // =========================
+        // COMMON FIELDS
+        // =========================
+        obj.setReport_date(rs.getDate("report_date"));
+        obj.setReport_version(rs.getBigDecimal("report_version"));
+        obj.setReportResubDate(rs.getDate("report_resubdate"));
+
+        obj.setReport_frequency(rs.getString("report_frequency"));
+        obj.setReport_code(rs.getString("report_code"));
+        obj.setReport_desc(rs.getString("report_desc"));
+
+        obj.setEntity_flg(rs.getString("entity_flg"));
+        obj.setModify_flg(rs.getString("modify_flg"));
+        obj.setDel_flg(rs.getString("del_flg"));
+
+        return obj;
+    }
+}
+
+
+
+
+
+public class OFF_BS_ITEMS_Archival_Summary_Entity2 {
+	
+
+
+private String	r151_product;
+	private String	r151_client_grp;
+	private BigDecimal	r151_total_book_expo;
+	private BigDecimal	r151_margin_pro;
+	private BigDecimal	r151_book_expo;
+	private BigDecimal	r151_ccf_cont;
+	private BigDecimal	r151_equiv_value;
+	private BigDecimal	r151_rw_obligant;
+	private BigDecimal	r151_rav;
+	private String	r152_product;
+	private String	r152_client_grp;
+	private BigDecimal	r152_total_book_expo;
+	private BigDecimal	r152_margin_pro;
+	private BigDecimal	r152_book_expo;
+	private BigDecimal	r152_ccf_cont;
+	private BigDecimal	r152_equiv_value;
+	private BigDecimal	r152_rw_obligant;
+	private BigDecimal	r152_rav;
+	private String	r153_product;
+	private String	r153_client_grp;
+	private BigDecimal	r153_total_book_expo;
+	private BigDecimal	r153_margin_pro;
+	private BigDecimal	r153_book_expo;
+	private BigDecimal	r153_ccf_cont;
+	private BigDecimal	r153_equiv_value;
+	private BigDecimal	r153_rw_obligant;
+	private BigDecimal	r153_rav;
+	private String	r154_product;
+	private String	r154_client_grp;
+	private BigDecimal	r154_total_book_expo;
+	private BigDecimal	r154_margin_pro;
+	private BigDecimal	r154_book_expo;
+	private BigDecimal	r154_ccf_cont;
+	private BigDecimal	r154_equiv_value;
+	private BigDecimal	r154_rw_obligant;
+	private BigDecimal	r154_rav;
+	private String	r155_product;
+	private String	r155_client_grp;
+	private BigDecimal	r155_total_book_expo;
+	private BigDecimal	r155_margin_pro;
+	private BigDecimal	r155_book_expo;
+	private BigDecimal	r155_ccf_cont;
+	private BigDecimal	r155_equiv_value;
+	private BigDecimal	r155_rw_obligant;
+	private BigDecimal	r155_rav;
+	private String	r156_product;
+	private String	r156_client_grp;
+	private BigDecimal	r156_total_book_expo;
+	private BigDecimal	r156_margin_pro;
+	private BigDecimal	r156_book_expo;
+	private BigDecimal	r156_ccf_cont;
+	private BigDecimal	r156_equiv_value;
+	private BigDecimal	r156_rw_obligant;
+	private BigDecimal	r156_rav;
+	private String	r157_product;
+	private String	r157_client_grp;
+	private BigDecimal	r157_total_book_expo;
+	private BigDecimal	r157_margin_pro;
+	private BigDecimal	r157_book_expo;
+	private BigDecimal	r157_ccf_cont;
+	private BigDecimal	r157_equiv_value;
+	private BigDecimal	r157_rw_obligant;
+	private BigDecimal	r157_rav;
+	private String	r158_product;
+	private String	r158_client_grp;
+	private BigDecimal	r158_total_book_expo;
+	private BigDecimal	r158_margin_pro;
+	private BigDecimal	r158_book_expo;
+	private BigDecimal	r158_ccf_cont;
+	private BigDecimal	r158_equiv_value;
+	private BigDecimal	r158_rw_obligant;
+	private BigDecimal	r158_rav;
+	private String	r159_product;
+	private String	r159_client_grp;
+	private BigDecimal	r159_total_book_expo;
+	private BigDecimal	r159_margin_pro;
+	private BigDecimal	r159_book_expo;
+	private BigDecimal	r159_ccf_cont;
+	private BigDecimal	r159_equiv_value;
+	private BigDecimal	r159_rw_obligant;
+	private BigDecimal	r159_rav;
+	private String	r160_product;
+	private String	r160_client_grp;
+	private BigDecimal	r160_total_book_expo;
+	private BigDecimal	r160_margin_pro;
+	private BigDecimal	r160_book_expo;
+	private BigDecimal	r160_ccf_cont;
+	private BigDecimal	r160_equiv_value;
+	private BigDecimal	r160_rw_obligant;
+	private BigDecimal	r160_rav;
+	private String	r161_product;
+	private String	r161_client_grp;
+	private BigDecimal	r161_total_book_expo;
+	private BigDecimal	r161_margin_pro;
+	private BigDecimal	r161_book_expo;
+	private BigDecimal	r161_ccf_cont;
+	private BigDecimal	r161_equiv_value;
+	private BigDecimal	r161_rw_obligant;
+	private BigDecimal	r161_rav;
+	private String	r162_product;
+	private String	r162_client_grp;
+	private BigDecimal	r162_total_book_expo;
+	private BigDecimal	r162_margin_pro;
+	private BigDecimal	r162_book_expo;
+	private BigDecimal	r162_ccf_cont;
+	private BigDecimal	r162_equiv_value;
+	private BigDecimal	r162_rw_obligant;
+	private BigDecimal	r162_rav;
+	private String	r163_product;
+	private String	r163_client_grp;
+	private BigDecimal	r163_total_book_expo;
+	private BigDecimal	r163_margin_pro;
+	private BigDecimal	r163_book_expo;
+	private BigDecimal	r163_ccf_cont;
+	private BigDecimal	r163_equiv_value;
+	private BigDecimal	r163_rw_obligant;
+	private BigDecimal	r163_rav;
+	private String	r164_product;
+	private String	r164_client_grp;
+	private BigDecimal	r164_total_book_expo;
+	private BigDecimal	r164_margin_pro;
+	private BigDecimal	r164_book_expo;
+	private BigDecimal	r164_ccf_cont;
+	private BigDecimal	r164_equiv_value;
+	private BigDecimal	r164_rw_obligant;
+	private BigDecimal	r164_rav;
+	private String	r165_product;
+	private String	r165_client_grp;
+	private BigDecimal	r165_total_book_expo;
+	private BigDecimal	r165_margin_pro;
+	private BigDecimal	r165_book_expo;
+	private BigDecimal	r165_ccf_cont;
+	private BigDecimal	r165_equiv_value;
+	private BigDecimal	r165_rw_obligant;
+	private BigDecimal	r165_rav;
+	private String	r166_product;
+	private String	r166_client_grp;
+	private BigDecimal	r166_total_book_expo;
+	private BigDecimal	r166_margin_pro;
+	private BigDecimal	r166_book_expo;
+	private BigDecimal	r166_ccf_cont;
+	private BigDecimal	r166_equiv_value;
+	private BigDecimal	r166_rw_obligant;
+	private BigDecimal	r166_rav;
+	private String	r167_product;
+	private String	r167_client_grp;
+	private BigDecimal	r167_total_book_expo;
+	private BigDecimal	r167_margin_pro;
+	private BigDecimal	r167_book_expo;
+	private BigDecimal	r167_ccf_cont;
+	private BigDecimal	r167_equiv_value;
+	private BigDecimal	r167_rw_obligant;
+	private BigDecimal	r167_rav;
+	private String	r168_product;
+	private String	r168_client_grp;
+	private BigDecimal	r168_total_book_expo;
+	private BigDecimal	r168_margin_pro;
+	private BigDecimal	r168_book_expo;
+	private BigDecimal	r168_ccf_cont;
+	private BigDecimal	r168_equiv_value;
+	private BigDecimal	r168_rw_obligant;
+	private BigDecimal	r168_rav;
+	private String	r169_product;
+	private String	r169_client_grp;
+	private BigDecimal	r169_total_book_expo;
+	private BigDecimal	r169_margin_pro;
+	private BigDecimal	r169_book_expo;
+	private BigDecimal	r169_ccf_cont;
+	private BigDecimal	r169_equiv_value;
+	private BigDecimal	r169_rw_obligant;
+	private BigDecimal	r169_rav;
+	private String	r170_product;
+	private String	r170_client_grp;
+	private BigDecimal	r170_total_book_expo;
+	private BigDecimal	r170_margin_pro;
+	private BigDecimal	r170_book_expo;
+	private BigDecimal	r170_ccf_cont;
+	private BigDecimal	r170_equiv_value;
+	private BigDecimal	r170_rw_obligant;
+	private BigDecimal	r170_rav;
+	private String	r171_product;
+	private String	r171_client_grp;
+	private BigDecimal	r171_total_book_expo;
+	private BigDecimal	r171_margin_pro;
+	private BigDecimal	r171_book_expo;
+	private BigDecimal	r171_ccf_cont;
+	private BigDecimal	r171_equiv_value;
+	private BigDecimal	r171_rw_obligant;
+	private BigDecimal	r171_rav;
+	private String	r172_product;
+	private String	r172_client_grp;
+	private BigDecimal	r172_total_book_expo;
+	private BigDecimal	r172_margin_pro;
+	private BigDecimal	r172_book_expo;
+	private BigDecimal	r172_ccf_cont;
+	private BigDecimal	r172_equiv_value;
+	private BigDecimal	r172_rw_obligant;
+	private BigDecimal	r172_rav;
+	private String	r173_product;
+	private String	r173_client_grp;
+	private BigDecimal	r173_total_book_expo;
+	private BigDecimal	r173_margin_pro;
+	private BigDecimal	r173_book_expo;
+	private BigDecimal	r173_ccf_cont;
+	private BigDecimal	r173_equiv_value;
+	private BigDecimal	r173_rw_obligant;
+	private BigDecimal	r173_rav;
+	private String	r174_product;
+	private String	r174_client_grp;
+	private BigDecimal	r174_total_book_expo;
+	private BigDecimal	r174_margin_pro;
+	private BigDecimal	r174_book_expo;
+	private BigDecimal	r174_ccf_cont;
+	private BigDecimal	r174_equiv_value;
+	private BigDecimal	r174_rw_obligant;
+	private BigDecimal	r174_rav;
+	private String	r175_product;
+	private String	r175_client_grp;
+	private BigDecimal	r175_total_book_expo;
+	private BigDecimal	r175_margin_pro;
+	private BigDecimal	r175_book_expo;
+	private BigDecimal	r175_ccf_cont;
+	private BigDecimal	r175_equiv_value;
+	private BigDecimal	r175_rw_obligant;
+	private BigDecimal	r175_rav;
+	private String	r176_product;
+	private String	r176_client_grp;
+	private BigDecimal	r176_total_book_expo;
+	private BigDecimal	r176_margin_pro;
+	private BigDecimal	r176_book_expo;
+	private BigDecimal	r176_ccf_cont;
+	private BigDecimal	r176_equiv_value;
+	private BigDecimal	r176_rw_obligant;
+	private BigDecimal	r176_rav;
+	private String	r177_product;
+	private String	r177_client_grp;
+	private BigDecimal	r177_total_book_expo;
+	private BigDecimal	r177_margin_pro;
+	private BigDecimal	r177_book_expo;
+	private BigDecimal	r177_ccf_cont;
+	private BigDecimal	r177_equiv_value;
+	private BigDecimal	r177_rw_obligant;
+	private BigDecimal	r177_rav;
+	private String	r178_product;
+	private String	r178_client_grp;
+	private BigDecimal	r178_total_book_expo;
+	private BigDecimal	r178_margin_pro;
+	private BigDecimal	r178_book_expo;
+	private BigDecimal	r178_ccf_cont;
+	private BigDecimal	r178_equiv_value;
+	private BigDecimal	r178_rw_obligant;
+	private BigDecimal	r178_rav;
+	private String	r179_product;
+	private String	r179_client_grp;
+	private BigDecimal	r179_total_book_expo;
+	private BigDecimal	r179_margin_pro;
+	private BigDecimal	r179_book_expo;
+	private BigDecimal	r179_ccf_cont;
+	private BigDecimal	r179_equiv_value;
+	private BigDecimal	r179_rw_obligant;
+	private BigDecimal	r179_rav;
+	private String	r180_product;
+	private String	r180_client_grp;
+	private BigDecimal	r180_total_book_expo;
+	private BigDecimal	r180_margin_pro;
+	private BigDecimal	r180_book_expo;
+	private BigDecimal	r180_ccf_cont;
+	private BigDecimal	r180_equiv_value;
+	private BigDecimal	r180_rw_obligant;
+	private BigDecimal	r180_rav;
+	private String	r181_product;
+	private String	r181_client_grp;
+	private BigDecimal	r181_total_book_expo;
+	private BigDecimal	r181_margin_pro;
+	private BigDecimal	r181_book_expo;
+	private BigDecimal	r181_ccf_cont;
+	private BigDecimal	r181_equiv_value;
+	private BigDecimal	r181_rw_obligant;
+	private BigDecimal	r181_rav;
+	private String	r182_product;
+	private String	r182_client_grp;
+	private BigDecimal	r182_total_book_expo;
+	private BigDecimal	r182_margin_pro;
+	private BigDecimal	r182_book_expo;
+	private BigDecimal	r182_ccf_cont;
+	private BigDecimal	r182_equiv_value;
+	private BigDecimal	r182_rw_obligant;
+	private BigDecimal	r182_rav;
+	private String	r183_product;
+	private String	r183_client_grp;
+	private BigDecimal	r183_total_book_expo;
+	private BigDecimal	r183_margin_pro;
+	private BigDecimal	r183_book_expo;
+	private BigDecimal	r183_ccf_cont;
+	private BigDecimal	r183_equiv_value;
+	private BigDecimal	r183_rw_obligant;
+	private BigDecimal	r183_rav;
+	private String	r184_product;
+	private String	r184_client_grp;
+	private BigDecimal	r184_total_book_expo;
+	private BigDecimal	r184_margin_pro;
+	private BigDecimal	r184_book_expo;
+	private BigDecimal	r184_ccf_cont;
+	private BigDecimal	r184_equiv_value;
+	private BigDecimal	r184_rw_obligant;
+	private BigDecimal	r184_rav;
+	private String	r185_product;
+	private String	r185_client_grp;
+	private BigDecimal	r185_total_book_expo;
+	private BigDecimal	r185_margin_pro;
+	private BigDecimal	r185_book_expo;
+	private BigDecimal	r185_ccf_cont;
+	private BigDecimal	r185_equiv_value;
+	private BigDecimal	r185_rw_obligant;
+	private BigDecimal	r185_rav;
+	private String	r186_product;
+	private String	r186_client_grp;
+	private BigDecimal	r186_total_book_expo;
+	private BigDecimal	r186_margin_pro;
+	private BigDecimal	r186_book_expo;
+	private BigDecimal	r186_ccf_cont;
+	private BigDecimal	r186_equiv_value;
+	private BigDecimal	r186_rw_obligant;
+	private BigDecimal	r186_rav;
+	private String	r187_product;
+	private String	r187_client_grp;
+	private BigDecimal	r187_total_book_expo;
+	private BigDecimal	r187_margin_pro;
+	private BigDecimal	r187_book_expo;
+	private BigDecimal	r187_ccf_cont;
+	private BigDecimal	r187_equiv_value;
+	private BigDecimal	r187_rw_obligant;
+	private BigDecimal	r187_rav;
+	private String	r188_product;
+	private String	r188_client_grp;
+	private BigDecimal	r188_total_book_expo;
+	private BigDecimal	r188_margin_pro;
+	private BigDecimal	r188_book_expo;
+	private BigDecimal	r188_ccf_cont;
+	private BigDecimal	r188_equiv_value;
+	private BigDecimal	r188_rw_obligant;
+	private BigDecimal	r188_rav;
+	private String	r189_product;
+	private String	r189_client_grp;
+	private BigDecimal	r189_total_book_expo;
+	private BigDecimal	r189_margin_pro;
+	private BigDecimal	r189_book_expo;
+	private BigDecimal	r189_ccf_cont;
+	private BigDecimal	r189_equiv_value;
+	private BigDecimal	r189_rw_obligant;
+	private BigDecimal	r189_rav;
+
+
+	               
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Id
+		
+	private Date	report_date;
+	 @Column(name = "REPORT_VERSION")
+	 @Id
+	private BigDecimal	report_version;
+	@Column(name = "REPORT_RESUBDATE")
+
+    private Date reportResubDate;
+	private String	report_frequency;
+	private String	report_code;
+	private String	report_desc;
+	private String	entity_flg;
+	private String	modify_flg;
+	private String	del_flg;
+	
+
+
+public String getR151_product() {
+		return r151_product;
+	}
+	public void setR151_product(String r151_product) {
+		this.r151_product = r151_product;
+	}
+	public String getR151_client_grp() {
+		return r151_client_grp;
+	}
+	public void setR151_client_grp(String r151_client_grp) {
+		this.r151_client_grp = r151_client_grp;
+	}
+	public BigDecimal getR151_total_book_expo() {
+		return r151_total_book_expo;
+	}
+	public void setR151_total_book_expo(BigDecimal r151_total_book_expo) {
+		this.r151_total_book_expo = r151_total_book_expo;
+	}
+	public BigDecimal getR151_margin_pro() {
+		return r151_margin_pro;
+	}
+	public void setR151_margin_pro(BigDecimal r151_margin_pro) {
+		this.r151_margin_pro = r151_margin_pro;
+	}
+	public BigDecimal getR151_book_expo() {
+		return r151_book_expo;
+	}
+	public void setR151_book_expo(BigDecimal r151_book_expo) {
+		this.r151_book_expo = r151_book_expo;
+	}
+	public BigDecimal getR151_ccf_cont() {
+		return r151_ccf_cont;
+	}
+	public void setR151_ccf_cont(BigDecimal r151_ccf_cont) {
+		this.r151_ccf_cont = r151_ccf_cont;
+	}
+	public BigDecimal getR151_equiv_value() {
+		return r151_equiv_value;
+	}
+	public void setR151_equiv_value(BigDecimal r151_equiv_value) {
+		this.r151_equiv_value = r151_equiv_value;
+	}
+	public BigDecimal getR151_rw_obligant() {
+		return r151_rw_obligant;
+	}
+	public void setR151_rw_obligant(BigDecimal r151_rw_obligant) {
+		this.r151_rw_obligant = r151_rw_obligant;
+	}
+	public BigDecimal getR151_rav() {
+		return r151_rav;
+	}
+	public void setR151_rav(BigDecimal r151_rav) {
+		this.r151_rav = r151_rav;
+	}
+	public String getR152_product() {
+		return r152_product;
+	}
+	public void setR152_product(String r152_product) {
+		this.r152_product = r152_product;
+	}
+	public String getR152_client_grp() {
+		return r152_client_grp;
+	}
+	public void setR152_client_grp(String r152_client_grp) {
+		this.r152_client_grp = r152_client_grp;
+	}
+	public BigDecimal getR152_total_book_expo() {
+		return r152_total_book_expo;
+	}
+	public void setR152_total_book_expo(BigDecimal r152_total_book_expo) {
+		this.r152_total_book_expo = r152_total_book_expo;
+	}
+	public BigDecimal getR152_margin_pro() {
+		return r152_margin_pro;
+	}
+	public void setR152_margin_pro(BigDecimal r152_margin_pro) {
+		this.r152_margin_pro = r152_margin_pro;
+	}
+	public BigDecimal getR152_book_expo() {
+		return r152_book_expo;
+	}
+	public void setR152_book_expo(BigDecimal r152_book_expo) {
+		this.r152_book_expo = r152_book_expo;
+	}
+	public BigDecimal getR152_ccf_cont() {
+		return r152_ccf_cont;
+	}
+	public void setR152_ccf_cont(BigDecimal r152_ccf_cont) {
+		this.r152_ccf_cont = r152_ccf_cont;
+	}
+	public BigDecimal getR152_equiv_value() {
+		return r152_equiv_value;
+	}
+	public void setR152_equiv_value(BigDecimal r152_equiv_value) {
+		this.r152_equiv_value = r152_equiv_value;
+	}
+	public BigDecimal getR152_rw_obligant() {
+		return r152_rw_obligant;
+	}
+	public void setR152_rw_obligant(BigDecimal r152_rw_obligant) {
+		this.r152_rw_obligant = r152_rw_obligant;
+	}
+	public BigDecimal getR152_rav() {
+		return r152_rav;
+	}
+	public void setR152_rav(BigDecimal r152_rav) {
+		this.r152_rav = r152_rav;
+	}
+	public String getR153_product() {
+		return r153_product;
+	}
+	public void setR153_product(String r153_product) {
+		this.r153_product = r153_product;
+	}
+	public String getR153_client_grp() {
+		return r153_client_grp;
+	}
+	public void setR153_client_grp(String r153_client_grp) {
+		this.r153_client_grp = r153_client_grp;
+	}
+	public BigDecimal getR153_total_book_expo() {
+		return r153_total_book_expo;
+	}
+	public void setR153_total_book_expo(BigDecimal r153_total_book_expo) {
+		this.r153_total_book_expo = r153_total_book_expo;
+	}
+	public BigDecimal getR153_margin_pro() {
+		return r153_margin_pro;
+	}
+	public void setR153_margin_pro(BigDecimal r153_margin_pro) {
+		this.r153_margin_pro = r153_margin_pro;
+	}
+	public BigDecimal getR153_book_expo() {
+		return r153_book_expo;
+	}
+	public void setR153_book_expo(BigDecimal r153_book_expo) {
+		this.r153_book_expo = r153_book_expo;
+	}
+	public BigDecimal getR153_ccf_cont() {
+		return r153_ccf_cont;
+	}
+	public void setR153_ccf_cont(BigDecimal r153_ccf_cont) {
+		this.r153_ccf_cont = r153_ccf_cont;
+	}
+	public BigDecimal getR153_equiv_value() {
+		return r153_equiv_value;
+	}
+	public void setR153_equiv_value(BigDecimal r153_equiv_value) {
+		this.r153_equiv_value = r153_equiv_value;
+	}
+	public BigDecimal getR153_rw_obligant() {
+		return r153_rw_obligant;
+	}
+	public void setR153_rw_obligant(BigDecimal r153_rw_obligant) {
+		this.r153_rw_obligant = r153_rw_obligant;
+	}
+	public BigDecimal getR153_rav() {
+		return r153_rav;
+	}
+	public void setR153_rav(BigDecimal r153_rav) {
+		this.r153_rav = r153_rav;
+	}
+	public String getR154_product() {
+		return r154_product;
+	}
+	public void setR154_product(String r154_product) {
+		this.r154_product = r154_product;
+	}
+	public String getR154_client_grp() {
+		return r154_client_grp;
+	}
+	public void setR154_client_grp(String r154_client_grp) {
+		this.r154_client_grp = r154_client_grp;
+	}
+	public BigDecimal getR154_total_book_expo() {
+		return r154_total_book_expo;
+	}
+	public void setR154_total_book_expo(BigDecimal r154_total_book_expo) {
+		this.r154_total_book_expo = r154_total_book_expo;
+	}
+	public BigDecimal getR154_margin_pro() {
+		return r154_margin_pro;
+	}
+	public void setR154_margin_pro(BigDecimal r154_margin_pro) {
+		this.r154_margin_pro = r154_margin_pro;
+	}
+	public BigDecimal getR154_book_expo() {
+		return r154_book_expo;
+	}
+	public void setR154_book_expo(BigDecimal r154_book_expo) {
+		this.r154_book_expo = r154_book_expo;
+	}
+	public BigDecimal getR154_ccf_cont() {
+		return r154_ccf_cont;
+	}
+	public void setR154_ccf_cont(BigDecimal r154_ccf_cont) {
+		this.r154_ccf_cont = r154_ccf_cont;
+	}
+	public BigDecimal getR154_equiv_value() {
+		return r154_equiv_value;
+	}
+	public void setR154_equiv_value(BigDecimal r154_equiv_value) {
+		this.r154_equiv_value = r154_equiv_value;
+	}
+	public BigDecimal getR154_rw_obligant() {
+		return r154_rw_obligant;
+	}
+	public void setR154_rw_obligant(BigDecimal r154_rw_obligant) {
+		this.r154_rw_obligant = r154_rw_obligant;
+	}
+	public BigDecimal getR154_rav() {
+		return r154_rav;
+	}
+	public void setR154_rav(BigDecimal r154_rav) {
+		this.r154_rav = r154_rav;
+	}
+	public String getR155_product() {
+		return r155_product;
+	}
+	public void setR155_product(String r155_product) {
+		this.r155_product = r155_product;
+	}
+	public String getR155_client_grp() {
+		return r155_client_grp;
+	}
+	public void setR155_client_grp(String r155_client_grp) {
+		this.r155_client_grp = r155_client_grp;
+	}
+	public BigDecimal getR155_total_book_expo() {
+		return r155_total_book_expo;
+	}
+	public void setR155_total_book_expo(BigDecimal r155_total_book_expo) {
+		this.r155_total_book_expo = r155_total_book_expo;
+	}
+	public BigDecimal getR155_margin_pro() {
+		return r155_margin_pro;
+	}
+	public void setR155_margin_pro(BigDecimal r155_margin_pro) {
+		this.r155_margin_pro = r155_margin_pro;
+	}
+	public BigDecimal getR155_book_expo() {
+		return r155_book_expo;
+	}
+	public void setR155_book_expo(BigDecimal r155_book_expo) {
+		this.r155_book_expo = r155_book_expo;
+	}
+	public BigDecimal getR155_ccf_cont() {
+		return r155_ccf_cont;
+	}
+	public void setR155_ccf_cont(BigDecimal r155_ccf_cont) {
+		this.r155_ccf_cont = r155_ccf_cont;
+	}
+	public BigDecimal getR155_equiv_value() {
+		return r155_equiv_value;
+	}
+	public void setR155_equiv_value(BigDecimal r155_equiv_value) {
+		this.r155_equiv_value = r155_equiv_value;
+	}
+	public BigDecimal getR155_rw_obligant() {
+		return r155_rw_obligant;
+	}
+	public void setR155_rw_obligant(BigDecimal r155_rw_obligant) {
+		this.r155_rw_obligant = r155_rw_obligant;
+	}
+	public BigDecimal getR155_rav() {
+		return r155_rav;
+	}
+	public void setR155_rav(BigDecimal r155_rav) {
+		this.r155_rav = r155_rav;
+	}
+	public String getR156_product() {
+		return r156_product;
+	}
+	public void setR156_product(String r156_product) {
+		this.r156_product = r156_product;
+	}
+	public String getR156_client_grp() {
+		return r156_client_grp;
+	}
+	public void setR156_client_grp(String r156_client_grp) {
+		this.r156_client_grp = r156_client_grp;
+	}
+	public BigDecimal getR156_total_book_expo() {
+		return r156_total_book_expo;
+	}
+	public void setR156_total_book_expo(BigDecimal r156_total_book_expo) {
+		this.r156_total_book_expo = r156_total_book_expo;
+	}
+	public BigDecimal getR156_margin_pro() {
+		return r156_margin_pro;
+	}
+	public void setR156_margin_pro(BigDecimal r156_margin_pro) {
+		this.r156_margin_pro = r156_margin_pro;
+	}
+	public BigDecimal getR156_book_expo() {
+		return r156_book_expo;
+	}
+	public void setR156_book_expo(BigDecimal r156_book_expo) {
+		this.r156_book_expo = r156_book_expo;
+	}
+	public BigDecimal getR156_ccf_cont() {
+		return r156_ccf_cont;
+	}
+	public void setR156_ccf_cont(BigDecimal r156_ccf_cont) {
+		this.r156_ccf_cont = r156_ccf_cont;
+	}
+	public BigDecimal getR156_equiv_value() {
+		return r156_equiv_value;
+	}
+	public void setR156_equiv_value(BigDecimal r156_equiv_value) {
+		this.r156_equiv_value = r156_equiv_value;
+	}
+	public BigDecimal getR156_rw_obligant() {
+		return r156_rw_obligant;
+	}
+	public void setR156_rw_obligant(BigDecimal r156_rw_obligant) {
+		this.r156_rw_obligant = r156_rw_obligant;
+	}
+	public BigDecimal getR156_rav() {
+		return r156_rav;
+	}
+	public void setR156_rav(BigDecimal r156_rav) {
+		this.r156_rav = r156_rav;
+	}
+	public String getR157_product() {
+		return r157_product;
+	}
+	public void setR157_product(String r157_product) {
+		this.r157_product = r157_product;
+	}
+	public String getR157_client_grp() {
+		return r157_client_grp;
+	}
+	public void setR157_client_grp(String r157_client_grp) {
+		this.r157_client_grp = r157_client_grp;
+	}
+	public BigDecimal getR157_total_book_expo() {
+		return r157_total_book_expo;
+	}
+	public void setR157_total_book_expo(BigDecimal r157_total_book_expo) {
+		this.r157_total_book_expo = r157_total_book_expo;
+	}
+	public BigDecimal getR157_margin_pro() {
+		return r157_margin_pro;
+	}
+	public void setR157_margin_pro(BigDecimal r157_margin_pro) {
+		this.r157_margin_pro = r157_margin_pro;
+	}
+	public BigDecimal getR157_book_expo() {
+		return r157_book_expo;
+	}
+	public void setR157_book_expo(BigDecimal r157_book_expo) {
+		this.r157_book_expo = r157_book_expo;
+	}
+	public BigDecimal getR157_ccf_cont() {
+		return r157_ccf_cont;
+	}
+	public void setR157_ccf_cont(BigDecimal r157_ccf_cont) {
+		this.r157_ccf_cont = r157_ccf_cont;
+	}
+	public BigDecimal getR157_equiv_value() {
+		return r157_equiv_value;
+	}
+	public void setR157_equiv_value(BigDecimal r157_equiv_value) {
+		this.r157_equiv_value = r157_equiv_value;
+	}
+	public BigDecimal getR157_rw_obligant() {
+		return r157_rw_obligant;
+	}
+	public void setR157_rw_obligant(BigDecimal r157_rw_obligant) {
+		this.r157_rw_obligant = r157_rw_obligant;
+	}
+	public BigDecimal getR157_rav() {
+		return r157_rav;
+	}
+	public void setR157_rav(BigDecimal r157_rav) {
+		this.r157_rav = r157_rav;
+	}
+	public String getR158_product() {
+		return r158_product;
+	}
+	public void setR158_product(String r158_product) {
+		this.r158_product = r158_product;
+	}
+	public String getR158_client_grp() {
+		return r158_client_grp;
+	}
+	public void setR158_client_grp(String r158_client_grp) {
+		this.r158_client_grp = r158_client_grp;
+	}
+	public BigDecimal getR158_total_book_expo() {
+		return r158_total_book_expo;
+	}
+	public void setR158_total_book_expo(BigDecimal r158_total_book_expo) {
+		this.r158_total_book_expo = r158_total_book_expo;
+	}
+	public BigDecimal getR158_margin_pro() {
+		return r158_margin_pro;
+	}
+	public void setR158_margin_pro(BigDecimal r158_margin_pro) {
+		this.r158_margin_pro = r158_margin_pro;
+	}
+	public BigDecimal getR158_book_expo() {
+		return r158_book_expo;
+	}
+	public void setR158_book_expo(BigDecimal r158_book_expo) {
+		this.r158_book_expo = r158_book_expo;
+	}
+	public BigDecimal getR158_ccf_cont() {
+		return r158_ccf_cont;
+	}
+	public void setR158_ccf_cont(BigDecimal r158_ccf_cont) {
+		this.r158_ccf_cont = r158_ccf_cont;
+	}
+	public BigDecimal getR158_equiv_value() {
+		return r158_equiv_value;
+	}
+	public void setR158_equiv_value(BigDecimal r158_equiv_value) {
+		this.r158_equiv_value = r158_equiv_value;
+	}
+	public BigDecimal getR158_rw_obligant() {
+		return r158_rw_obligant;
+	}
+	public void setR158_rw_obligant(BigDecimal r158_rw_obligant) {
+		this.r158_rw_obligant = r158_rw_obligant;
+	}
+	public BigDecimal getR158_rav() {
+		return r158_rav;
+	}
+	public void setR158_rav(BigDecimal r158_rav) {
+		this.r158_rav = r158_rav;
+	}
+	public String getR159_product() {
+		return r159_product;
+	}
+	public void setR159_product(String r159_product) {
+		this.r159_product = r159_product;
+	}
+	public String getR159_client_grp() {
+		return r159_client_grp;
+	}
+	public void setR159_client_grp(String r159_client_grp) {
+		this.r159_client_grp = r159_client_grp;
+	}
+	public BigDecimal getR159_total_book_expo() {
+		return r159_total_book_expo;
+	}
+	public void setR159_total_book_expo(BigDecimal r159_total_book_expo) {
+		this.r159_total_book_expo = r159_total_book_expo;
+	}
+	public BigDecimal getR159_margin_pro() {
+		return r159_margin_pro;
+	}
+	public void setR159_margin_pro(BigDecimal r159_margin_pro) {
+		this.r159_margin_pro = r159_margin_pro;
+	}
+	public BigDecimal getR159_book_expo() {
+		return r159_book_expo;
+	}
+	public void setR159_book_expo(BigDecimal r159_book_expo) {
+		this.r159_book_expo = r159_book_expo;
+	}
+	public BigDecimal getR159_ccf_cont() {
+		return r159_ccf_cont;
+	}
+	public void setR159_ccf_cont(BigDecimal r159_ccf_cont) {
+		this.r159_ccf_cont = r159_ccf_cont;
+	}
+	public BigDecimal getR159_equiv_value() {
+		return r159_equiv_value;
+	}
+	public void setR159_equiv_value(BigDecimal r159_equiv_value) {
+		this.r159_equiv_value = r159_equiv_value;
+	}
+	public BigDecimal getR159_rw_obligant() {
+		return r159_rw_obligant;
+	}
+	public void setR159_rw_obligant(BigDecimal r159_rw_obligant) {
+		this.r159_rw_obligant = r159_rw_obligant;
+	}
+	public BigDecimal getR159_rav() {
+		return r159_rav;
+	}
+	public void setR159_rav(BigDecimal r159_rav) {
+		this.r159_rav = r159_rav;
+	}
+	public String getR160_product() {
+		return r160_product;
+	}
+	public void setR160_product(String r160_product) {
+		this.r160_product = r160_product;
+	}
+	public String getR160_client_grp() {
+		return r160_client_grp;
+	}
+	public void setR160_client_grp(String r160_client_grp) {
+		this.r160_client_grp = r160_client_grp;
+	}
+	public BigDecimal getR160_total_book_expo() {
+		return r160_total_book_expo;
+	}
+	public void setR160_total_book_expo(BigDecimal r160_total_book_expo) {
+		this.r160_total_book_expo = r160_total_book_expo;
+	}
+	public BigDecimal getR160_margin_pro() {
+		return r160_margin_pro;
+	}
+	public void setR160_margin_pro(BigDecimal r160_margin_pro) {
+		this.r160_margin_pro = r160_margin_pro;
+	}
+	public BigDecimal getR160_book_expo() {
+		return r160_book_expo;
+	}
+	public void setR160_book_expo(BigDecimal r160_book_expo) {
+		this.r160_book_expo = r160_book_expo;
+	}
+	public BigDecimal getR160_ccf_cont() {
+		return r160_ccf_cont;
+	}
+	public void setR160_ccf_cont(BigDecimal r160_ccf_cont) {
+		this.r160_ccf_cont = r160_ccf_cont;
+	}
+	public BigDecimal getR160_equiv_value() {
+		return r160_equiv_value;
+	}
+	public void setR160_equiv_value(BigDecimal r160_equiv_value) {
+		this.r160_equiv_value = r160_equiv_value;
+	}
+	public BigDecimal getR160_rw_obligant() {
+		return r160_rw_obligant;
+	}
+	public void setR160_rw_obligant(BigDecimal r160_rw_obligant) {
+		this.r160_rw_obligant = r160_rw_obligant;
+	}
+	public BigDecimal getR160_rav() {
+		return r160_rav;
+	}
+	public void setR160_rav(BigDecimal r160_rav) {
+		this.r160_rav = r160_rav;
+	}
+	public String getR161_product() {
+		return r161_product;
+	}
+	public void setR161_product(String r161_product) {
+		this.r161_product = r161_product;
+	}
+	public String getR161_client_grp() {
+		return r161_client_grp;
+	}
+	public void setR161_client_grp(String r161_client_grp) {
+		this.r161_client_grp = r161_client_grp;
+	}
+	public BigDecimal getR161_total_book_expo() {
+		return r161_total_book_expo;
+	}
+	public void setR161_total_book_expo(BigDecimal r161_total_book_expo) {
+		this.r161_total_book_expo = r161_total_book_expo;
+	}
+	public BigDecimal getR161_margin_pro() {
+		return r161_margin_pro;
+	}
+	public void setR161_margin_pro(BigDecimal r161_margin_pro) {
+		this.r161_margin_pro = r161_margin_pro;
+	}
+	public BigDecimal getR161_book_expo() {
+		return r161_book_expo;
+	}
+	public void setR161_book_expo(BigDecimal r161_book_expo) {
+		this.r161_book_expo = r161_book_expo;
+	}
+	public BigDecimal getR161_ccf_cont() {
+		return r161_ccf_cont;
+	}
+	public void setR161_ccf_cont(BigDecimal r161_ccf_cont) {
+		this.r161_ccf_cont = r161_ccf_cont;
+	}
+	public BigDecimal getR161_equiv_value() {
+		return r161_equiv_value;
+	}
+	public void setR161_equiv_value(BigDecimal r161_equiv_value) {
+		this.r161_equiv_value = r161_equiv_value;
+	}
+	public BigDecimal getR161_rw_obligant() {
+		return r161_rw_obligant;
+	}
+	public void setR161_rw_obligant(BigDecimal r161_rw_obligant) {
+		this.r161_rw_obligant = r161_rw_obligant;
+	}
+	public BigDecimal getR161_rav() {
+		return r161_rav;
+	}
+	public void setR161_rav(BigDecimal r161_rav) {
+		this.r161_rav = r161_rav;
+	}
+	public String getR162_product() {
+		return r162_product;
+	}
+	public void setR162_product(String r162_product) {
+		this.r162_product = r162_product;
+	}
+	public String getR162_client_grp() {
+		return r162_client_grp;
+	}
+	public void setR162_client_grp(String r162_client_grp) {
+		this.r162_client_grp = r162_client_grp;
+	}
+	public BigDecimal getR162_total_book_expo() {
+		return r162_total_book_expo;
+	}
+	public void setR162_total_book_expo(BigDecimal r162_total_book_expo) {
+		this.r162_total_book_expo = r162_total_book_expo;
+	}
+	public BigDecimal getR162_margin_pro() {
+		return r162_margin_pro;
+	}
+	public void setR162_margin_pro(BigDecimal r162_margin_pro) {
+		this.r162_margin_pro = r162_margin_pro;
+	}
+	public BigDecimal getR162_book_expo() {
+		return r162_book_expo;
+	}
+	public void setR162_book_expo(BigDecimal r162_book_expo) {
+		this.r162_book_expo = r162_book_expo;
+	}
+	public BigDecimal getR162_ccf_cont() {
+		return r162_ccf_cont;
+	}
+	public void setR162_ccf_cont(BigDecimal r162_ccf_cont) {
+		this.r162_ccf_cont = r162_ccf_cont;
+	}
+	public BigDecimal getR162_equiv_value() {
+		return r162_equiv_value;
+	}
+	public void setR162_equiv_value(BigDecimal r162_equiv_value) {
+		this.r162_equiv_value = r162_equiv_value;
+	}
+	public BigDecimal getR162_rw_obligant() {
+		return r162_rw_obligant;
+	}
+	public void setR162_rw_obligant(BigDecimal r162_rw_obligant) {
+		this.r162_rw_obligant = r162_rw_obligant;
+	}
+	public BigDecimal getR162_rav() {
+		return r162_rav;
+	}
+	public void setR162_rav(BigDecimal r162_rav) {
+		this.r162_rav = r162_rav;
+	}
+	public String getR163_product() {
+		return r163_product;
+	}
+	public void setR163_product(String r163_product) {
+		this.r163_product = r163_product;
+	}
+	public String getR163_client_grp() {
+		return r163_client_grp;
+	}
+	public void setR163_client_grp(String r163_client_grp) {
+		this.r163_client_grp = r163_client_grp;
+	}
+	public BigDecimal getR163_total_book_expo() {
+		return r163_total_book_expo;
+	}
+	public void setR163_total_book_expo(BigDecimal r163_total_book_expo) {
+		this.r163_total_book_expo = r163_total_book_expo;
+	}
+	public BigDecimal getR163_margin_pro() {
+		return r163_margin_pro;
+	}
+	public void setR163_margin_pro(BigDecimal r163_margin_pro) {
+		this.r163_margin_pro = r163_margin_pro;
+	}
+	public BigDecimal getR163_book_expo() {
+		return r163_book_expo;
+	}
+	public void setR163_book_expo(BigDecimal r163_book_expo) {
+		this.r163_book_expo = r163_book_expo;
+	}
+	public BigDecimal getR163_ccf_cont() {
+		return r163_ccf_cont;
+	}
+	public void setR163_ccf_cont(BigDecimal r163_ccf_cont) {
+		this.r163_ccf_cont = r163_ccf_cont;
+	}
+	public BigDecimal getR163_equiv_value() {
+		return r163_equiv_value;
+	}
+	public void setR163_equiv_value(BigDecimal r163_equiv_value) {
+		this.r163_equiv_value = r163_equiv_value;
+	}
+	public BigDecimal getR163_rw_obligant() {
+		return r163_rw_obligant;
+	}
+	public void setR163_rw_obligant(BigDecimal r163_rw_obligant) {
+		this.r163_rw_obligant = r163_rw_obligant;
+	}
+	public BigDecimal getR163_rav() {
+		return r163_rav;
+	}
+	public void setR163_rav(BigDecimal r163_rav) {
+		this.r163_rav = r163_rav;
+	}
+	public String getR164_product() {
+		return r164_product;
+	}
+	public void setR164_product(String r164_product) {
+		this.r164_product = r164_product;
+	}
+	public String getR164_client_grp() {
+		return r164_client_grp;
+	}
+	public void setR164_client_grp(String r164_client_grp) {
+		this.r164_client_grp = r164_client_grp;
+	}
+	public BigDecimal getR164_total_book_expo() {
+		return r164_total_book_expo;
+	}
+	public void setR164_total_book_expo(BigDecimal r164_total_book_expo) {
+		this.r164_total_book_expo = r164_total_book_expo;
+	}
+	public BigDecimal getR164_margin_pro() {
+		return r164_margin_pro;
+	}
+	public void setR164_margin_pro(BigDecimal r164_margin_pro) {
+		this.r164_margin_pro = r164_margin_pro;
+	}
+	public BigDecimal getR164_book_expo() {
+		return r164_book_expo;
+	}
+	public void setR164_book_expo(BigDecimal r164_book_expo) {
+		this.r164_book_expo = r164_book_expo;
+	}
+	public BigDecimal getR164_ccf_cont() {
+		return r164_ccf_cont;
+	}
+	public void setR164_ccf_cont(BigDecimal r164_ccf_cont) {
+		this.r164_ccf_cont = r164_ccf_cont;
+	}
+	public BigDecimal getR164_equiv_value() {
+		return r164_equiv_value;
+	}
+	public void setR164_equiv_value(BigDecimal r164_equiv_value) {
+		this.r164_equiv_value = r164_equiv_value;
+	}
+	public BigDecimal getR164_rw_obligant() {
+		return r164_rw_obligant;
+	}
+	public void setR164_rw_obligant(BigDecimal r164_rw_obligant) {
+		this.r164_rw_obligant = r164_rw_obligant;
+	}
+	public BigDecimal getR164_rav() {
+		return r164_rav;
+	}
+	public void setR164_rav(BigDecimal r164_rav) {
+		this.r164_rav = r164_rav;
+	}
+	public String getR165_product() {
+		return r165_product;
+	}
+	public void setR165_product(String r165_product) {
+		this.r165_product = r165_product;
+	}
+	public String getR165_client_grp() {
+		return r165_client_grp;
+	}
+	public void setR165_client_grp(String r165_client_grp) {
+		this.r165_client_grp = r165_client_grp;
+	}
+	public BigDecimal getR165_total_book_expo() {
+		return r165_total_book_expo;
+	}
+	public void setR165_total_book_expo(BigDecimal r165_total_book_expo) {
+		this.r165_total_book_expo = r165_total_book_expo;
+	}
+	public BigDecimal getR165_margin_pro() {
+		return r165_margin_pro;
+	}
+	public void setR165_margin_pro(BigDecimal r165_margin_pro) {
+		this.r165_margin_pro = r165_margin_pro;
+	}
+	public BigDecimal getR165_book_expo() {
+		return r165_book_expo;
+	}
+	public void setR165_book_expo(BigDecimal r165_book_expo) {
+		this.r165_book_expo = r165_book_expo;
+	}
+	public BigDecimal getR165_ccf_cont() {
+		return r165_ccf_cont;
+	}
+	public void setR165_ccf_cont(BigDecimal r165_ccf_cont) {
+		this.r165_ccf_cont = r165_ccf_cont;
+	}
+	public BigDecimal getR165_equiv_value() {
+		return r165_equiv_value;
+	}
+	public void setR165_equiv_value(BigDecimal r165_equiv_value) {
+		this.r165_equiv_value = r165_equiv_value;
+	}
+	public BigDecimal getR165_rw_obligant() {
+		return r165_rw_obligant;
+	}
+	public void setR165_rw_obligant(BigDecimal r165_rw_obligant) {
+		this.r165_rw_obligant = r165_rw_obligant;
+	}
+	public BigDecimal getR165_rav() {
+		return r165_rav;
+	}
+	public void setR165_rav(BigDecimal r165_rav) {
+		this.r165_rav = r165_rav;
+	}
+	public String getR166_product() {
+		return r166_product;
+	}
+	public void setR166_product(String r166_product) {
+		this.r166_product = r166_product;
+	}
+	public String getR166_client_grp() {
+		return r166_client_grp;
+	}
+	public void setR166_client_grp(String r166_client_grp) {
+		this.r166_client_grp = r166_client_grp;
+	}
+	public BigDecimal getR166_total_book_expo() {
+		return r166_total_book_expo;
+	}
+	public void setR166_total_book_expo(BigDecimal r166_total_book_expo) {
+		this.r166_total_book_expo = r166_total_book_expo;
+	}
+	public BigDecimal getR166_margin_pro() {
+		return r166_margin_pro;
+	}
+	public void setR166_margin_pro(BigDecimal r166_margin_pro) {
+		this.r166_margin_pro = r166_margin_pro;
+	}
+	public BigDecimal getR166_book_expo() {
+		return r166_book_expo;
+	}
+	public void setR166_book_expo(BigDecimal r166_book_expo) {
+		this.r166_book_expo = r166_book_expo;
+	}
+	public BigDecimal getR166_ccf_cont() {
+		return r166_ccf_cont;
+	}
+	public void setR166_ccf_cont(BigDecimal r166_ccf_cont) {
+		this.r166_ccf_cont = r166_ccf_cont;
+	}
+	public BigDecimal getR166_equiv_value() {
+		return r166_equiv_value;
+	}
+	public void setR166_equiv_value(BigDecimal r166_equiv_value) {
+		this.r166_equiv_value = r166_equiv_value;
+	}
+	public BigDecimal getR166_rw_obligant() {
+		return r166_rw_obligant;
+	}
+	public void setR166_rw_obligant(BigDecimal r166_rw_obligant) {
+		this.r166_rw_obligant = r166_rw_obligant;
+	}
+	public BigDecimal getR166_rav() {
+		return r166_rav;
+	}
+	public void setR166_rav(BigDecimal r166_rav) {
+		this.r166_rav = r166_rav;
+	}
+	public String getR167_product() {
+		return r167_product;
+	}
+	public void setR167_product(String r167_product) {
+		this.r167_product = r167_product;
+	}
+	public String getR167_client_grp() {
+		return r167_client_grp;
+	}
+	public void setR167_client_grp(String r167_client_grp) {
+		this.r167_client_grp = r167_client_grp;
+	}
+	public BigDecimal getR167_total_book_expo() {
+		return r167_total_book_expo;
+	}
+	public void setR167_total_book_expo(BigDecimal r167_total_book_expo) {
+		this.r167_total_book_expo = r167_total_book_expo;
+	}
+	public BigDecimal getR167_margin_pro() {
+		return r167_margin_pro;
+	}
+	public void setR167_margin_pro(BigDecimal r167_margin_pro) {
+		this.r167_margin_pro = r167_margin_pro;
+	}
+	public BigDecimal getR167_book_expo() {
+		return r167_book_expo;
+	}
+	public void setR167_book_expo(BigDecimal r167_book_expo) {
+		this.r167_book_expo = r167_book_expo;
+	}
+	public BigDecimal getR167_ccf_cont() {
+		return r167_ccf_cont;
+	}
+	public void setR167_ccf_cont(BigDecimal r167_ccf_cont) {
+		this.r167_ccf_cont = r167_ccf_cont;
+	}
+	public BigDecimal getR167_equiv_value() {
+		return r167_equiv_value;
+	}
+	public void setR167_equiv_value(BigDecimal r167_equiv_value) {
+		this.r167_equiv_value = r167_equiv_value;
+	}
+	public BigDecimal getR167_rw_obligant() {
+		return r167_rw_obligant;
+	}
+	public void setR167_rw_obligant(BigDecimal r167_rw_obligant) {
+		this.r167_rw_obligant = r167_rw_obligant;
+	}
+	public BigDecimal getR167_rav() {
+		return r167_rav;
+	}
+	public void setR167_rav(BigDecimal r167_rav) {
+		this.r167_rav = r167_rav;
+	}
+	public String getR168_product() {
+		return r168_product;
+	}
+	public void setR168_product(String r168_product) {
+		this.r168_product = r168_product;
+	}
+	public String getR168_client_grp() {
+		return r168_client_grp;
+	}
+	public void setR168_client_grp(String r168_client_grp) {
+		this.r168_client_grp = r168_client_grp;
+	}
+	public BigDecimal getR168_total_book_expo() {
+		return r168_total_book_expo;
+	}
+	public void setR168_total_book_expo(BigDecimal r168_total_book_expo) {
+		this.r168_total_book_expo = r168_total_book_expo;
+	}
+	public BigDecimal getR168_margin_pro() {
+		return r168_margin_pro;
+	}
+	public void setR168_margin_pro(BigDecimal r168_margin_pro) {
+		this.r168_margin_pro = r168_margin_pro;
+	}
+	public BigDecimal getR168_book_expo() {
+		return r168_book_expo;
+	}
+	public void setR168_book_expo(BigDecimal r168_book_expo) {
+		this.r168_book_expo = r168_book_expo;
+	}
+	public BigDecimal getR168_ccf_cont() {
+		return r168_ccf_cont;
+	}
+	public void setR168_ccf_cont(BigDecimal r168_ccf_cont) {
+		this.r168_ccf_cont = r168_ccf_cont;
+	}
+	public BigDecimal getR168_equiv_value() {
+		return r168_equiv_value;
+	}
+	public void setR168_equiv_value(BigDecimal r168_equiv_value) {
+		this.r168_equiv_value = r168_equiv_value;
+	}
+	public BigDecimal getR168_rw_obligant() {
+		return r168_rw_obligant;
+	}
+	public void setR168_rw_obligant(BigDecimal r168_rw_obligant) {
+		this.r168_rw_obligant = r168_rw_obligant;
+	}
+	public BigDecimal getR168_rav() {
+		return r168_rav;
+	}
+	public void setR168_rav(BigDecimal r168_rav) {
+		this.r168_rav = r168_rav;
+	}
+	public String getR169_product() {
+		return r169_product;
+	}
+	public void setR169_product(String r169_product) {
+		this.r169_product = r169_product;
+	}
+	public String getR169_client_grp() {
+		return r169_client_grp;
+	}
+	public void setR169_client_grp(String r169_client_grp) {
+		this.r169_client_grp = r169_client_grp;
+	}
+	public BigDecimal getR169_total_book_expo() {
+		return r169_total_book_expo;
+	}
+	public void setR169_total_book_expo(BigDecimal r169_total_book_expo) {
+		this.r169_total_book_expo = r169_total_book_expo;
+	}
+	public BigDecimal getR169_margin_pro() {
+		return r169_margin_pro;
+	}
+	public void setR169_margin_pro(BigDecimal r169_margin_pro) {
+		this.r169_margin_pro = r169_margin_pro;
+	}
+	public BigDecimal getR169_book_expo() {
+		return r169_book_expo;
+	}
+	public void setR169_book_expo(BigDecimal r169_book_expo) {
+		this.r169_book_expo = r169_book_expo;
+	}
+	public BigDecimal getR169_ccf_cont() {
+		return r169_ccf_cont;
+	}
+	public void setR169_ccf_cont(BigDecimal r169_ccf_cont) {
+		this.r169_ccf_cont = r169_ccf_cont;
+	}
+	public BigDecimal getR169_equiv_value() {
+		return r169_equiv_value;
+	}
+	public void setR169_equiv_value(BigDecimal r169_equiv_value) {
+		this.r169_equiv_value = r169_equiv_value;
+	}
+	public BigDecimal getR169_rw_obligant() {
+		return r169_rw_obligant;
+	}
+	public void setR169_rw_obligant(BigDecimal r169_rw_obligant) {
+		this.r169_rw_obligant = r169_rw_obligant;
+	}
+	public BigDecimal getR169_rav() {
+		return r169_rav;
+	}
+	public void setR169_rav(BigDecimal r169_rav) {
+		this.r169_rav = r169_rav;
+	}
+	public String getR170_product() {
+		return r170_product;
+	}
+	public void setR170_product(String r170_product) {
+		this.r170_product = r170_product;
+	}
+	public String getR170_client_grp() {
+		return r170_client_grp;
+	}
+	public void setR170_client_grp(String r170_client_grp) {
+		this.r170_client_grp = r170_client_grp;
+	}
+	public BigDecimal getR170_total_book_expo() {
+		return r170_total_book_expo;
+	}
+	public void setR170_total_book_expo(BigDecimal r170_total_book_expo) {
+		this.r170_total_book_expo = r170_total_book_expo;
+	}
+	public BigDecimal getR170_margin_pro() {
+		return r170_margin_pro;
+	}
+	public void setR170_margin_pro(BigDecimal r170_margin_pro) {
+		this.r170_margin_pro = r170_margin_pro;
+	}
+	public BigDecimal getR170_book_expo() {
+		return r170_book_expo;
+	}
+	public void setR170_book_expo(BigDecimal r170_book_expo) {
+		this.r170_book_expo = r170_book_expo;
+	}
+	public BigDecimal getR170_ccf_cont() {
+		return r170_ccf_cont;
+	}
+	public void setR170_ccf_cont(BigDecimal r170_ccf_cont) {
+		this.r170_ccf_cont = r170_ccf_cont;
+	}
+	public BigDecimal getR170_equiv_value() {
+		return r170_equiv_value;
+	}
+	public void setR170_equiv_value(BigDecimal r170_equiv_value) {
+		this.r170_equiv_value = r170_equiv_value;
+	}
+	public BigDecimal getR170_rw_obligant() {
+		return r170_rw_obligant;
+	}
+	public void setR170_rw_obligant(BigDecimal r170_rw_obligant) {
+		this.r170_rw_obligant = r170_rw_obligant;
+	}
+	public BigDecimal getR170_rav() {
+		return r170_rav;
+	}
+	public void setR170_rav(BigDecimal r170_rav) {
+		this.r170_rav = r170_rav;
+	}
+	public String getR171_product() {
+		return r171_product;
+	}
+	public void setR171_product(String r171_product) {
+		this.r171_product = r171_product;
+	}
+	public String getR171_client_grp() {
+		return r171_client_grp;
+	}
+	public void setR171_client_grp(String r171_client_grp) {
+		this.r171_client_grp = r171_client_grp;
+	}
+	public BigDecimal getR171_total_book_expo() {
+		return r171_total_book_expo;
+	}
+	public void setR171_total_book_expo(BigDecimal r171_total_book_expo) {
+		this.r171_total_book_expo = r171_total_book_expo;
+	}
+	public BigDecimal getR171_margin_pro() {
+		return r171_margin_pro;
+	}
+	public void setR171_margin_pro(BigDecimal r171_margin_pro) {
+		this.r171_margin_pro = r171_margin_pro;
+	}
+	public BigDecimal getR171_book_expo() {
+		return r171_book_expo;
+	}
+	public void setR171_book_expo(BigDecimal r171_book_expo) {
+		this.r171_book_expo = r171_book_expo;
+	}
+	public BigDecimal getR171_ccf_cont() {
+		return r171_ccf_cont;
+	}
+	public void setR171_ccf_cont(BigDecimal r171_ccf_cont) {
+		this.r171_ccf_cont = r171_ccf_cont;
+	}
+	public BigDecimal getR171_equiv_value() {
+		return r171_equiv_value;
+	}
+	public void setR171_equiv_value(BigDecimal r171_equiv_value) {
+		this.r171_equiv_value = r171_equiv_value;
+	}
+	public BigDecimal getR171_rw_obligant() {
+		return r171_rw_obligant;
+	}
+	public void setR171_rw_obligant(BigDecimal r171_rw_obligant) {
+		this.r171_rw_obligant = r171_rw_obligant;
+	}
+	public BigDecimal getR171_rav() {
+		return r171_rav;
+	}
+	public void setR171_rav(BigDecimal r171_rav) {
+		this.r171_rav = r171_rav;
+	}
+	public String getR172_product() {
+		return r172_product;
+	}
+	public void setR172_product(String r172_product) {
+		this.r172_product = r172_product;
+	}
+	public String getR172_client_grp() {
+		return r172_client_grp;
+	}
+	public void setR172_client_grp(String r172_client_grp) {
+		this.r172_client_grp = r172_client_grp;
+	}
+	public BigDecimal getR172_total_book_expo() {
+		return r172_total_book_expo;
+	}
+	public void setR172_total_book_expo(BigDecimal r172_total_book_expo) {
+		this.r172_total_book_expo = r172_total_book_expo;
+	}
+	public BigDecimal getR172_margin_pro() {
+		return r172_margin_pro;
+	}
+	public void setR172_margin_pro(BigDecimal r172_margin_pro) {
+		this.r172_margin_pro = r172_margin_pro;
+	}
+	public BigDecimal getR172_book_expo() {
+		return r172_book_expo;
+	}
+	public void setR172_book_expo(BigDecimal r172_book_expo) {
+		this.r172_book_expo = r172_book_expo;
+	}
+	public BigDecimal getR172_ccf_cont() {
+		return r172_ccf_cont;
+	}
+	public void setR172_ccf_cont(BigDecimal r172_ccf_cont) {
+		this.r172_ccf_cont = r172_ccf_cont;
+	}
+	public BigDecimal getR172_equiv_value() {
+		return r172_equiv_value;
+	}
+	public void setR172_equiv_value(BigDecimal r172_equiv_value) {
+		this.r172_equiv_value = r172_equiv_value;
+	}
+	public BigDecimal getR172_rw_obligant() {
+		return r172_rw_obligant;
+	}
+	public void setR172_rw_obligant(BigDecimal r172_rw_obligant) {
+		this.r172_rw_obligant = r172_rw_obligant;
+	}
+	public BigDecimal getR172_rav() {
+		return r172_rav;
+	}
+	public void setR172_rav(BigDecimal r172_rav) {
+		this.r172_rav = r172_rav;
+	}
+	public String getR173_product() {
+		return r173_product;
+	}
+	public void setR173_product(String r173_product) {
+		this.r173_product = r173_product;
+	}
+	public String getR173_client_grp() {
+		return r173_client_grp;
+	}
+	public void setR173_client_grp(String r173_client_grp) {
+		this.r173_client_grp = r173_client_grp;
+	}
+	public BigDecimal getR173_total_book_expo() {
+		return r173_total_book_expo;
+	}
+	public void setR173_total_book_expo(BigDecimal r173_total_book_expo) {
+		this.r173_total_book_expo = r173_total_book_expo;
+	}
+	public BigDecimal getR173_margin_pro() {
+		return r173_margin_pro;
+	}
+	public void setR173_margin_pro(BigDecimal r173_margin_pro) {
+		this.r173_margin_pro = r173_margin_pro;
+	}
+	public BigDecimal getR173_book_expo() {
+		return r173_book_expo;
+	}
+	public void setR173_book_expo(BigDecimal r173_book_expo) {
+		this.r173_book_expo = r173_book_expo;
+	}
+	public BigDecimal getR173_ccf_cont() {
+		return r173_ccf_cont;
+	}
+	public void setR173_ccf_cont(BigDecimal r173_ccf_cont) {
+		this.r173_ccf_cont = r173_ccf_cont;
+	}
+	public BigDecimal getR173_equiv_value() {
+		return r173_equiv_value;
+	}
+	public void setR173_equiv_value(BigDecimal r173_equiv_value) {
+		this.r173_equiv_value = r173_equiv_value;
+	}
+	public BigDecimal getR173_rw_obligant() {
+		return r173_rw_obligant;
+	}
+	public void setR173_rw_obligant(BigDecimal r173_rw_obligant) {
+		this.r173_rw_obligant = r173_rw_obligant;
+	}
+	public BigDecimal getR173_rav() {
+		return r173_rav;
+	}
+	public void setR173_rav(BigDecimal r173_rav) {
+		this.r173_rav = r173_rav;
+	}
+	public String getR174_product() {
+		return r174_product;
+	}
+	public void setR174_product(String r174_product) {
+		this.r174_product = r174_product;
+	}
+	public String getR174_client_grp() {
+		return r174_client_grp;
+	}
+	public void setR174_client_grp(String r174_client_grp) {
+		this.r174_client_grp = r174_client_grp;
+	}
+	public BigDecimal getR174_total_book_expo() {
+		return r174_total_book_expo;
+	}
+	public void setR174_total_book_expo(BigDecimal r174_total_book_expo) {
+		this.r174_total_book_expo = r174_total_book_expo;
+	}
+	public BigDecimal getR174_margin_pro() {
+		return r174_margin_pro;
+	}
+	public void setR174_margin_pro(BigDecimal r174_margin_pro) {
+		this.r174_margin_pro = r174_margin_pro;
+	}
+	public BigDecimal getR174_book_expo() {
+		return r174_book_expo;
+	}
+	public void setR174_book_expo(BigDecimal r174_book_expo) {
+		this.r174_book_expo = r174_book_expo;
+	}
+	public BigDecimal getR174_ccf_cont() {
+		return r174_ccf_cont;
+	}
+	public void setR174_ccf_cont(BigDecimal r174_ccf_cont) {
+		this.r174_ccf_cont = r174_ccf_cont;
+	}
+	public BigDecimal getR174_equiv_value() {
+		return r174_equiv_value;
+	}
+	public void setR174_equiv_value(BigDecimal r174_equiv_value) {
+		this.r174_equiv_value = r174_equiv_value;
+	}
+	public BigDecimal getR174_rw_obligant() {
+		return r174_rw_obligant;
+	}
+	public void setR174_rw_obligant(BigDecimal r174_rw_obligant) {
+		this.r174_rw_obligant = r174_rw_obligant;
+	}
+	public BigDecimal getR174_rav() {
+		return r174_rav;
+	}
+	public void setR174_rav(BigDecimal r174_rav) {
+		this.r174_rav = r174_rav;
+	}
+	public String getR175_product() {
+		return r175_product;
+	}
+	public void setR175_product(String r175_product) {
+		this.r175_product = r175_product;
+	}
+	public String getR175_client_grp() {
+		return r175_client_grp;
+	}
+	public void setR175_client_grp(String r175_client_grp) {
+		this.r175_client_grp = r175_client_grp;
+	}
+	public BigDecimal getR175_total_book_expo() {
+		return r175_total_book_expo;
+	}
+	public void setR175_total_book_expo(BigDecimal r175_total_book_expo) {
+		this.r175_total_book_expo = r175_total_book_expo;
+	}
+	public BigDecimal getR175_margin_pro() {
+		return r175_margin_pro;
+	}
+	public void setR175_margin_pro(BigDecimal r175_margin_pro) {
+		this.r175_margin_pro = r175_margin_pro;
+	}
+	public BigDecimal getR175_book_expo() {
+		return r175_book_expo;
+	}
+	public void setR175_book_expo(BigDecimal r175_book_expo) {
+		this.r175_book_expo = r175_book_expo;
+	}
+	public BigDecimal getR175_ccf_cont() {
+		return r175_ccf_cont;
+	}
+	public void setR175_ccf_cont(BigDecimal r175_ccf_cont) {
+		this.r175_ccf_cont = r175_ccf_cont;
+	}
+	public BigDecimal getR175_equiv_value() {
+		return r175_equiv_value;
+	}
+	public void setR175_equiv_value(BigDecimal r175_equiv_value) {
+		this.r175_equiv_value = r175_equiv_value;
+	}
+	public BigDecimal getR175_rw_obligant() {
+		return r175_rw_obligant;
+	}
+	public void setR175_rw_obligant(BigDecimal r175_rw_obligant) {
+		this.r175_rw_obligant = r175_rw_obligant;
+	}
+	public BigDecimal getR175_rav() {
+		return r175_rav;
+	}
+	public void setR175_rav(BigDecimal r175_rav) {
+		this.r175_rav = r175_rav;
+	}
+	public String getR176_product() {
+		return r176_product;
+	}
+	public void setR176_product(String r176_product) {
+		this.r176_product = r176_product;
+	}
+	public String getR176_client_grp() {
+		return r176_client_grp;
+	}
+	public void setR176_client_grp(String r176_client_grp) {
+		this.r176_client_grp = r176_client_grp;
+	}
+	public BigDecimal getR176_total_book_expo() {
+		return r176_total_book_expo;
+	}
+	public void setR176_total_book_expo(BigDecimal r176_total_book_expo) {
+		this.r176_total_book_expo = r176_total_book_expo;
+	}
+	public BigDecimal getR176_margin_pro() {
+		return r176_margin_pro;
+	}
+	public void setR176_margin_pro(BigDecimal r176_margin_pro) {
+		this.r176_margin_pro = r176_margin_pro;
+	}
+	public BigDecimal getR176_book_expo() {
+		return r176_book_expo;
+	}
+	public void setR176_book_expo(BigDecimal r176_book_expo) {
+		this.r176_book_expo = r176_book_expo;
+	}
+	public BigDecimal getR176_ccf_cont() {
+		return r176_ccf_cont;
+	}
+	public void setR176_ccf_cont(BigDecimal r176_ccf_cont) {
+		this.r176_ccf_cont = r176_ccf_cont;
+	}
+	public BigDecimal getR176_equiv_value() {
+		return r176_equiv_value;
+	}
+	public void setR176_equiv_value(BigDecimal r176_equiv_value) {
+		this.r176_equiv_value = r176_equiv_value;
+	}
+	public BigDecimal getR176_rw_obligant() {
+		return r176_rw_obligant;
+	}
+	public void setR176_rw_obligant(BigDecimal r176_rw_obligant) {
+		this.r176_rw_obligant = r176_rw_obligant;
+	}
+	public BigDecimal getR176_rav() {
+		return r176_rav;
+	}
+	public void setR176_rav(BigDecimal r176_rav) {
+		this.r176_rav = r176_rav;
+	}
+	public String getR177_product() {
+		return r177_product;
+	}
+	public void setR177_product(String r177_product) {
+		this.r177_product = r177_product;
+	}
+	public String getR177_client_grp() {
+		return r177_client_grp;
+	}
+	public void setR177_client_grp(String r177_client_grp) {
+		this.r177_client_grp = r177_client_grp;
+	}
+	public BigDecimal getR177_total_book_expo() {
+		return r177_total_book_expo;
+	}
+	public void setR177_total_book_expo(BigDecimal r177_total_book_expo) {
+		this.r177_total_book_expo = r177_total_book_expo;
+	}
+	public BigDecimal getR177_margin_pro() {
+		return r177_margin_pro;
+	}
+	public void setR177_margin_pro(BigDecimal r177_margin_pro) {
+		this.r177_margin_pro = r177_margin_pro;
+	}
+	public BigDecimal getR177_book_expo() {
+		return r177_book_expo;
+	}
+	public void setR177_book_expo(BigDecimal r177_book_expo) {
+		this.r177_book_expo = r177_book_expo;
+	}
+	public BigDecimal getR177_ccf_cont() {
+		return r177_ccf_cont;
+	}
+	public void setR177_ccf_cont(BigDecimal r177_ccf_cont) {
+		this.r177_ccf_cont = r177_ccf_cont;
+	}
+	public BigDecimal getR177_equiv_value() {
+		return r177_equiv_value;
+	}
+	public void setR177_equiv_value(BigDecimal r177_equiv_value) {
+		this.r177_equiv_value = r177_equiv_value;
+	}
+	public BigDecimal getR177_rw_obligant() {
+		return r177_rw_obligant;
+	}
+	public void setR177_rw_obligant(BigDecimal r177_rw_obligant) {
+		this.r177_rw_obligant = r177_rw_obligant;
+	}
+	public BigDecimal getR177_rav() {
+		return r177_rav;
+	}
+	public void setR177_rav(BigDecimal r177_rav) {
+		this.r177_rav = r177_rav;
+	}
+	public String getR178_product() {
+		return r178_product;
+	}
+	public void setR178_product(String r178_product) {
+		this.r178_product = r178_product;
+	}
+	public String getR178_client_grp() {
+		return r178_client_grp;
+	}
+	public void setR178_client_grp(String r178_client_grp) {
+		this.r178_client_grp = r178_client_grp;
+	}
+	public BigDecimal getR178_total_book_expo() {
+		return r178_total_book_expo;
+	}
+	public void setR178_total_book_expo(BigDecimal r178_total_book_expo) {
+		this.r178_total_book_expo = r178_total_book_expo;
+	}
+	public BigDecimal getR178_margin_pro() {
+		return r178_margin_pro;
+	}
+	public void setR178_margin_pro(BigDecimal r178_margin_pro) {
+		this.r178_margin_pro = r178_margin_pro;
+	}
+	public BigDecimal getR178_book_expo() {
+		return r178_book_expo;
+	}
+	public void setR178_book_expo(BigDecimal r178_book_expo) {
+		this.r178_book_expo = r178_book_expo;
+	}
+	public BigDecimal getR178_ccf_cont() {
+		return r178_ccf_cont;
+	}
+	public void setR178_ccf_cont(BigDecimal r178_ccf_cont) {
+		this.r178_ccf_cont = r178_ccf_cont;
+	}
+	public BigDecimal getR178_equiv_value() {
+		return r178_equiv_value;
+	}
+	public void setR178_equiv_value(BigDecimal r178_equiv_value) {
+		this.r178_equiv_value = r178_equiv_value;
+	}
+	public BigDecimal getR178_rw_obligant() {
+		return r178_rw_obligant;
+	}
+	public void setR178_rw_obligant(BigDecimal r178_rw_obligant) {
+		this.r178_rw_obligant = r178_rw_obligant;
+	}
+	public BigDecimal getR178_rav() {
+		return r178_rav;
+	}
+	public void setR178_rav(BigDecimal r178_rav) {
+		this.r178_rav = r178_rav;
+	}
+	public String getR179_product() {
+		return r179_product;
+	}
+	public void setR179_product(String r179_product) {
+		this.r179_product = r179_product;
+	}
+	public String getR179_client_grp() {
+		return r179_client_grp;
+	}
+	public void setR179_client_grp(String r179_client_grp) {
+		this.r179_client_grp = r179_client_grp;
+	}
+	public BigDecimal getR179_total_book_expo() {
+		return r179_total_book_expo;
+	}
+	public void setR179_total_book_expo(BigDecimal r179_total_book_expo) {
+		this.r179_total_book_expo = r179_total_book_expo;
+	}
+	public BigDecimal getR179_margin_pro() {
+		return r179_margin_pro;
+	}
+	public void setR179_margin_pro(BigDecimal r179_margin_pro) {
+		this.r179_margin_pro = r179_margin_pro;
+	}
+	public BigDecimal getR179_book_expo() {
+		return r179_book_expo;
+	}
+	public void setR179_book_expo(BigDecimal r179_book_expo) {
+		this.r179_book_expo = r179_book_expo;
+	}
+	public BigDecimal getR179_ccf_cont() {
+		return r179_ccf_cont;
+	}
+	public void setR179_ccf_cont(BigDecimal r179_ccf_cont) {
+		this.r179_ccf_cont = r179_ccf_cont;
+	}
+	public BigDecimal getR179_equiv_value() {
+		return r179_equiv_value;
+	}
+	public void setR179_equiv_value(BigDecimal r179_equiv_value) {
+		this.r179_equiv_value = r179_equiv_value;
+	}
+	public BigDecimal getR179_rw_obligant() {
+		return r179_rw_obligant;
+	}
+	public void setR179_rw_obligant(BigDecimal r179_rw_obligant) {
+		this.r179_rw_obligant = r179_rw_obligant;
+	}
+	public BigDecimal getR179_rav() {
+		return r179_rav;
+	}
+	public void setR179_rav(BigDecimal r179_rav) {
+		this.r179_rav = r179_rav;
+	}
+	public String getR180_product() {
+		return r180_product;
+	}
+	public void setR180_product(String r180_product) {
+		this.r180_product = r180_product;
+	}
+	public String getR180_client_grp() {
+		return r180_client_grp;
+	}
+	public void setR180_client_grp(String r180_client_grp) {
+		this.r180_client_grp = r180_client_grp;
+	}
+	public BigDecimal getR180_total_book_expo() {
+		return r180_total_book_expo;
+	}
+	public void setR180_total_book_expo(BigDecimal r180_total_book_expo) {
+		this.r180_total_book_expo = r180_total_book_expo;
+	}
+	public BigDecimal getR180_margin_pro() {
+		return r180_margin_pro;
+	}
+	public void setR180_margin_pro(BigDecimal r180_margin_pro) {
+		this.r180_margin_pro = r180_margin_pro;
+	}
+	public BigDecimal getR180_book_expo() {
+		return r180_book_expo;
+	}
+	public void setR180_book_expo(BigDecimal r180_book_expo) {
+		this.r180_book_expo = r180_book_expo;
+	}
+	public BigDecimal getR180_ccf_cont() {
+		return r180_ccf_cont;
+	}
+	public void setR180_ccf_cont(BigDecimal r180_ccf_cont) {
+		this.r180_ccf_cont = r180_ccf_cont;
+	}
+	public BigDecimal getR180_equiv_value() {
+		return r180_equiv_value;
+	}
+	public void setR180_equiv_value(BigDecimal r180_equiv_value) {
+		this.r180_equiv_value = r180_equiv_value;
+	}
+	public BigDecimal getR180_rw_obligant() {
+		return r180_rw_obligant;
+	}
+	public void setR180_rw_obligant(BigDecimal r180_rw_obligant) {
+		this.r180_rw_obligant = r180_rw_obligant;
+	}
+	public BigDecimal getR180_rav() {
+		return r180_rav;
+	}
+	public void setR180_rav(BigDecimal r180_rav) {
+		this.r180_rav = r180_rav;
+	}
+	public String getR181_product() {
+		return r181_product;
+	}
+	public void setR181_product(String r181_product) {
+		this.r181_product = r181_product;
+	}
+	public String getR181_client_grp() {
+		return r181_client_grp;
+	}
+	public void setR181_client_grp(String r181_client_grp) {
+		this.r181_client_grp = r181_client_grp;
+	}
+	public BigDecimal getR181_total_book_expo() {
+		return r181_total_book_expo;
+	}
+	public void setR181_total_book_expo(BigDecimal r181_total_book_expo) {
+		this.r181_total_book_expo = r181_total_book_expo;
+	}
+	public BigDecimal getR181_margin_pro() {
+		return r181_margin_pro;
+	}
+	public void setR181_margin_pro(BigDecimal r181_margin_pro) {
+		this.r181_margin_pro = r181_margin_pro;
+	}
+	public BigDecimal getR181_book_expo() {
+		return r181_book_expo;
+	}
+	public void setR181_book_expo(BigDecimal r181_book_expo) {
+		this.r181_book_expo = r181_book_expo;
+	}
+	public BigDecimal getR181_ccf_cont() {
+		return r181_ccf_cont;
+	}
+	public void setR181_ccf_cont(BigDecimal r181_ccf_cont) {
+		this.r181_ccf_cont = r181_ccf_cont;
+	}
+	public BigDecimal getR181_equiv_value() {
+		return r181_equiv_value;
+	}
+	public void setR181_equiv_value(BigDecimal r181_equiv_value) {
+		this.r181_equiv_value = r181_equiv_value;
+	}
+	public BigDecimal getR181_rw_obligant() {
+		return r181_rw_obligant;
+	}
+	public void setR181_rw_obligant(BigDecimal r181_rw_obligant) {
+		this.r181_rw_obligant = r181_rw_obligant;
+	}
+	public BigDecimal getR181_rav() {
+		return r181_rav;
+	}
+	public void setR181_rav(BigDecimal r181_rav) {
+		this.r181_rav = r181_rav;
+	}
+	public String getR182_product() {
+		return r182_product;
+	}
+	public void setR182_product(String r182_product) {
+		this.r182_product = r182_product;
+	}
+	public String getR182_client_grp() {
+		return r182_client_grp;
+	}
+	public void setR182_client_grp(String r182_client_grp) {
+		this.r182_client_grp = r182_client_grp;
+	}
+	public BigDecimal getR182_total_book_expo() {
+		return r182_total_book_expo;
+	}
+	public void setR182_total_book_expo(BigDecimal r182_total_book_expo) {
+		this.r182_total_book_expo = r182_total_book_expo;
+	}
+	public BigDecimal getR182_margin_pro() {
+		return r182_margin_pro;
+	}
+	public void setR182_margin_pro(BigDecimal r182_margin_pro) {
+		this.r182_margin_pro = r182_margin_pro;
+	}
+	public BigDecimal getR182_book_expo() {
+		return r182_book_expo;
+	}
+	public void setR182_book_expo(BigDecimal r182_book_expo) {
+		this.r182_book_expo = r182_book_expo;
+	}
+	public BigDecimal getR182_ccf_cont() {
+		return r182_ccf_cont;
+	}
+	public void setR182_ccf_cont(BigDecimal r182_ccf_cont) {
+		this.r182_ccf_cont = r182_ccf_cont;
+	}
+	public BigDecimal getR182_equiv_value() {
+		return r182_equiv_value;
+	}
+	public void setR182_equiv_value(BigDecimal r182_equiv_value) {
+		this.r182_equiv_value = r182_equiv_value;
+	}
+	public BigDecimal getR182_rw_obligant() {
+		return r182_rw_obligant;
+	}
+	public void setR182_rw_obligant(BigDecimal r182_rw_obligant) {
+		this.r182_rw_obligant = r182_rw_obligant;
+	}
+	public BigDecimal getR182_rav() {
+		return r182_rav;
+	}
+	public void setR182_rav(BigDecimal r182_rav) {
+		this.r182_rav = r182_rav;
+	}
+	public String getR183_product() {
+		return r183_product;
+	}
+	public void setR183_product(String r183_product) {
+		this.r183_product = r183_product;
+	}
+	public String getR183_client_grp() {
+		return r183_client_grp;
+	}
+	public void setR183_client_grp(String r183_client_grp) {
+		this.r183_client_grp = r183_client_grp;
+	}
+	public BigDecimal getR183_total_book_expo() {
+		return r183_total_book_expo;
+	}
+	public void setR183_total_book_expo(BigDecimal r183_total_book_expo) {
+		this.r183_total_book_expo = r183_total_book_expo;
+	}
+	public BigDecimal getR183_margin_pro() {
+		return r183_margin_pro;
+	}
+	public void setR183_margin_pro(BigDecimal r183_margin_pro) {
+		this.r183_margin_pro = r183_margin_pro;
+	}
+	public BigDecimal getR183_book_expo() {
+		return r183_book_expo;
+	}
+	public void setR183_book_expo(BigDecimal r183_book_expo) {
+		this.r183_book_expo = r183_book_expo;
+	}
+	public BigDecimal getR183_ccf_cont() {
+		return r183_ccf_cont;
+	}
+	public void setR183_ccf_cont(BigDecimal r183_ccf_cont) {
+		this.r183_ccf_cont = r183_ccf_cont;
+	}
+	public BigDecimal getR183_equiv_value() {
+		return r183_equiv_value;
+	}
+	public void setR183_equiv_value(BigDecimal r183_equiv_value) {
+		this.r183_equiv_value = r183_equiv_value;
+	}
+	public BigDecimal getR183_rw_obligant() {
+		return r183_rw_obligant;
+	}
+	public void setR183_rw_obligant(BigDecimal r183_rw_obligant) {
+		this.r183_rw_obligant = r183_rw_obligant;
+	}
+	public BigDecimal getR183_rav() {
+		return r183_rav;
+	}
+	public void setR183_rav(BigDecimal r183_rav) {
+		this.r183_rav = r183_rav;
+	}
+	public String getR184_product() {
+		return r184_product;
+	}
+	public void setR184_product(String r184_product) {
+		this.r184_product = r184_product;
+	}
+	public String getR184_client_grp() {
+		return r184_client_grp;
+	}
+	public void setR184_client_grp(String r184_client_grp) {
+		this.r184_client_grp = r184_client_grp;
+	}
+	public BigDecimal getR184_total_book_expo() {
+		return r184_total_book_expo;
+	}
+	public void setR184_total_book_expo(BigDecimal r184_total_book_expo) {
+		this.r184_total_book_expo = r184_total_book_expo;
+	}
+	public BigDecimal getR184_margin_pro() {
+		return r184_margin_pro;
+	}
+	public void setR184_margin_pro(BigDecimal r184_margin_pro) {
+		this.r184_margin_pro = r184_margin_pro;
+	}
+	public BigDecimal getR184_book_expo() {
+		return r184_book_expo;
+	}
+	public void setR184_book_expo(BigDecimal r184_book_expo) {
+		this.r184_book_expo = r184_book_expo;
+	}
+	public BigDecimal getR184_ccf_cont() {
+		return r184_ccf_cont;
+	}
+	public void setR184_ccf_cont(BigDecimal r184_ccf_cont) {
+		this.r184_ccf_cont = r184_ccf_cont;
+	}
+	public BigDecimal getR184_equiv_value() {
+		return r184_equiv_value;
+	}
+	public void setR184_equiv_value(BigDecimal r184_equiv_value) {
+		this.r184_equiv_value = r184_equiv_value;
+	}
+	public BigDecimal getR184_rw_obligant() {
+		return r184_rw_obligant;
+	}
+	public void setR184_rw_obligant(BigDecimal r184_rw_obligant) {
+		this.r184_rw_obligant = r184_rw_obligant;
+	}
+	public BigDecimal getR184_rav() {
+		return r184_rav;
+	}
+	public void setR184_rav(BigDecimal r184_rav) {
+		this.r184_rav = r184_rav;
+	}
+	public String getR185_product() {
+		return r185_product;
+	}
+	public void setR185_product(String r185_product) {
+		this.r185_product = r185_product;
+	}
+	public String getR185_client_grp() {
+		return r185_client_grp;
+	}
+	public void setR185_client_grp(String r185_client_grp) {
+		this.r185_client_grp = r185_client_grp;
+	}
+	public BigDecimal getR185_total_book_expo() {
+		return r185_total_book_expo;
+	}
+	public void setR185_total_book_expo(BigDecimal r185_total_book_expo) {
+		this.r185_total_book_expo = r185_total_book_expo;
+	}
+	public BigDecimal getR185_margin_pro() {
+		return r185_margin_pro;
+	}
+	public void setR185_margin_pro(BigDecimal r185_margin_pro) {
+		this.r185_margin_pro = r185_margin_pro;
+	}
+	public BigDecimal getR185_book_expo() {
+		return r185_book_expo;
+	}
+	public void setR185_book_expo(BigDecimal r185_book_expo) {
+		this.r185_book_expo = r185_book_expo;
+	}
+	public BigDecimal getR185_ccf_cont() {
+		return r185_ccf_cont;
+	}
+	public void setR185_ccf_cont(BigDecimal r185_ccf_cont) {
+		this.r185_ccf_cont = r185_ccf_cont;
+	}
+	public BigDecimal getR185_equiv_value() {
+		return r185_equiv_value;
+	}
+	public void setR185_equiv_value(BigDecimal r185_equiv_value) {
+		this.r185_equiv_value = r185_equiv_value;
+	}
+	public BigDecimal getR185_rw_obligant() {
+		return r185_rw_obligant;
+	}
+	public void setR185_rw_obligant(BigDecimal r185_rw_obligant) {
+		this.r185_rw_obligant = r185_rw_obligant;
+	}
+	public BigDecimal getR185_rav() {
+		return r185_rav;
+	}
+	public void setR185_rav(BigDecimal r185_rav) {
+		this.r185_rav = r185_rav;
+	}
+	public String getR186_product() {
+		return r186_product;
+	}
+	public void setR186_product(String r186_product) {
+		this.r186_product = r186_product;
+	}
+	public String getR186_client_grp() {
+		return r186_client_grp;
+	}
+	public void setR186_client_grp(String r186_client_grp) {
+		this.r186_client_grp = r186_client_grp;
+	}
+	public BigDecimal getR186_total_book_expo() {
+		return r186_total_book_expo;
+	}
+	public void setR186_total_book_expo(BigDecimal r186_total_book_expo) {
+		this.r186_total_book_expo = r186_total_book_expo;
+	}
+	public BigDecimal getR186_margin_pro() {
+		return r186_margin_pro;
+	}
+	public void setR186_margin_pro(BigDecimal r186_margin_pro) {
+		this.r186_margin_pro = r186_margin_pro;
+	}
+	public BigDecimal getR186_book_expo() {
+		return r186_book_expo;
+	}
+	public void setR186_book_expo(BigDecimal r186_book_expo) {
+		this.r186_book_expo = r186_book_expo;
+	}
+	public BigDecimal getR186_ccf_cont() {
+		return r186_ccf_cont;
+	}
+	public void setR186_ccf_cont(BigDecimal r186_ccf_cont) {
+		this.r186_ccf_cont = r186_ccf_cont;
+	}
+	public BigDecimal getR186_equiv_value() {
+		return r186_equiv_value;
+	}
+	public void setR186_equiv_value(BigDecimal r186_equiv_value) {
+		this.r186_equiv_value = r186_equiv_value;
+	}
+	public BigDecimal getR186_rw_obligant() {
+		return r186_rw_obligant;
+	}
+	public void setR186_rw_obligant(BigDecimal r186_rw_obligant) {
+		this.r186_rw_obligant = r186_rw_obligant;
+	}
+	public BigDecimal getR186_rav() {
+		return r186_rav;
+	}
+	public void setR186_rav(BigDecimal r186_rav) {
+		this.r186_rav = r186_rav;
+	}
+	public String getR187_product() {
+		return r187_product;
+	}
+	public void setR187_product(String r187_product) {
+		this.r187_product = r187_product;
+	}
+	public String getR187_client_grp() {
+		return r187_client_grp;
+	}
+	public void setR187_client_grp(String r187_client_grp) {
+		this.r187_client_grp = r187_client_grp;
+	}
+	public BigDecimal getR187_total_book_expo() {
+		return r187_total_book_expo;
+	}
+	public void setR187_total_book_expo(BigDecimal r187_total_book_expo) {
+		this.r187_total_book_expo = r187_total_book_expo;
+	}
+	public BigDecimal getR187_margin_pro() {
+		return r187_margin_pro;
+	}
+	public void setR187_margin_pro(BigDecimal r187_margin_pro) {
+		this.r187_margin_pro = r187_margin_pro;
+	}
+	public BigDecimal getR187_book_expo() {
+		return r187_book_expo;
+	}
+	public void setR187_book_expo(BigDecimal r187_book_expo) {
+		this.r187_book_expo = r187_book_expo;
+	}
+	public BigDecimal getR187_ccf_cont() {
+		return r187_ccf_cont;
+	}
+	public void setR187_ccf_cont(BigDecimal r187_ccf_cont) {
+		this.r187_ccf_cont = r187_ccf_cont;
+	}
+	public BigDecimal getR187_equiv_value() {
+		return r187_equiv_value;
+	}
+	public void setR187_equiv_value(BigDecimal r187_equiv_value) {
+		this.r187_equiv_value = r187_equiv_value;
+	}
+	public BigDecimal getR187_rw_obligant() {
+		return r187_rw_obligant;
+	}
+	public void setR187_rw_obligant(BigDecimal r187_rw_obligant) {
+		this.r187_rw_obligant = r187_rw_obligant;
+	}
+	public BigDecimal getR187_rav() {
+		return r187_rav;
+	}
+	public void setR187_rav(BigDecimal r187_rav) {
+		this.r187_rav = r187_rav;
+	}
+	public String getR188_product() {
+		return r188_product;
+	}
+	public void setR188_product(String r188_product) {
+		this.r188_product = r188_product;
+	}
+	public String getR188_client_grp() {
+		return r188_client_grp;
+	}
+	public void setR188_client_grp(String r188_client_grp) {
+		this.r188_client_grp = r188_client_grp;
+	}
+	public BigDecimal getR188_total_book_expo() {
+		return r188_total_book_expo;
+	}
+	public void setR188_total_book_expo(BigDecimal r188_total_book_expo) {
+		this.r188_total_book_expo = r188_total_book_expo;
+	}
+	public BigDecimal getR188_margin_pro() {
+		return r188_margin_pro;
+	}
+	public void setR188_margin_pro(BigDecimal r188_margin_pro) {
+		this.r188_margin_pro = r188_margin_pro;
+	}
+	public BigDecimal getR188_book_expo() {
+		return r188_book_expo;
+	}
+	public void setR188_book_expo(BigDecimal r188_book_expo) {
+		this.r188_book_expo = r188_book_expo;
+	}
+	public BigDecimal getR188_ccf_cont() {
+		return r188_ccf_cont;
+	}
+	public void setR188_ccf_cont(BigDecimal r188_ccf_cont) {
+		this.r188_ccf_cont = r188_ccf_cont;
+	}
+	public BigDecimal getR188_equiv_value() {
+		return r188_equiv_value;
+	}
+	public void setR188_equiv_value(BigDecimal r188_equiv_value) {
+		this.r188_equiv_value = r188_equiv_value;
+	}
+	public BigDecimal getR188_rw_obligant() {
+		return r188_rw_obligant;
+	}
+	public void setR188_rw_obligant(BigDecimal r188_rw_obligant) {
+		this.r188_rw_obligant = r188_rw_obligant;
+	}
+	public BigDecimal getR188_rav() {
+		return r188_rav;
+	}
+	public void setR188_rav(BigDecimal r188_rav) {
+		this.r188_rav = r188_rav;
+	}
+	public String getR189_product() {
+		return r189_product;
+	}
+	public void setR189_product(String r189_product) {
+		this.r189_product = r189_product;
+	}
+	public String getR189_client_grp() {
+		return r189_client_grp;
+	}
+	public void setR189_client_grp(String r189_client_grp) {
+		this.r189_client_grp = r189_client_grp;
+	}
+	public BigDecimal getR189_total_book_expo() {
+		return r189_total_book_expo;
+	}
+	public void setR189_total_book_expo(BigDecimal r189_total_book_expo) {
+		this.r189_total_book_expo = r189_total_book_expo;
+	}
+	public BigDecimal getR189_margin_pro() {
+		return r189_margin_pro;
+	}
+	public void setR189_margin_pro(BigDecimal r189_margin_pro) {
+		this.r189_margin_pro = r189_margin_pro;
+	}
+	public BigDecimal getR189_book_expo() {
+		return r189_book_expo;
+	}
+	public void setR189_book_expo(BigDecimal r189_book_expo) {
+		this.r189_book_expo = r189_book_expo;
+	}
+	public BigDecimal getR189_ccf_cont() {
+		return r189_ccf_cont;
+	}
+	public void setR189_ccf_cont(BigDecimal r189_ccf_cont) {
+		this.r189_ccf_cont = r189_ccf_cont;
+	}
+	public BigDecimal getR189_equiv_value() {
+		return r189_equiv_value;
+	}
+	public void setR189_equiv_value(BigDecimal r189_equiv_value) {
+		this.r189_equiv_value = r189_equiv_value;
+	}
+	public BigDecimal getR189_rw_obligant() {
+		return r189_rw_obligant;
+	}
+	public void setR189_rw_obligant(BigDecimal r189_rw_obligant) {
+		this.r189_rw_obligant = r189_rw_obligant;
+	}
+	public BigDecimal getR189_rav() {
+		return r189_rav;
+	}
+	public void setR189_rav(BigDecimal r189_rav) {
+		this.r189_rav = r189_rav;
+	}
+	
+	
+	
+	public Date getReport_date() {
+		return report_date;
+	}
+	public void setReport_date(Date report_date) {
+		this.report_date = report_date;
+	}
+	public BigDecimal getReport_version() {
+		return report_version;
+	}
+	public void setReport_version(BigDecimal report_version) {
+		this.report_version = report_version;
+	}
+	public String getReport_frequency() {
+		return report_frequency;
+	}
+	public void setReport_frequency(String report_frequency) {
+		this.report_frequency = report_frequency;
+	}
+	public String getReport_code() {
+		return report_code;
+	}
+	public void setReport_code(String report_code) {
+		this.report_code = report_code;
+	}
+	public String getReport_desc() {
+		return report_desc;
+	}
+	public void setReport_desc(String report_desc) {
+		this.report_desc = report_desc;
+	}
+	public String getEntity_flg() {
+		return entity_flg;
+	}
+	public void setEntity_flg(String entity_flg) {
+		this.entity_flg = entity_flg;
+	}
+	public String getModify_flg() {
+		return modify_flg;
+	}
+	public void setModify_flg(String modify_flg) {
+		this.modify_flg = modify_flg;
+	}
+	public String getDel_flg() {
+		return del_flg;
+	}
+	public void setDel_flg(String del_flg) {
+		this.del_flg = del_flg;
+	}
+	
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
+	}
+	
+}	
+
+
+// =====================================================
+// DETAIL ENTITY  OFF_BS_ITEMS
+// =====================================================	
+
+public class OFF_BS_ITEMS_Detail_RowMapper implements RowMapper<OFF_BS_ITEMS_Detail_Entity> {
+
+    @Override
+    public OFF_BS_ITEMS_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+        OFF_BS_ITEMS_Detail_Entity obj = new OFF_BS_ITEMS_Detail_Entity();
+
+        // =========================
+        // BASIC DETAILS
+        // =========================
+        obj.setCustId(rs.getString("CUST_ID"));
+        obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
+        obj.setAcctName(rs.getString("ACCT_NAME"));
+        obj.setDataType(rs.getString("DATA_TYPE"));
+
+        // =========================
+        // REPORT DETAILS
+        // =========================
+        obj.setReportName(rs.getString("REPORT_NAME"));
+        obj.setReportLabel(rs.getString("REPORT_LABEL"));
+        obj.setReportAddlCriteria_1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+        obj.setReportRemarks(rs.getString("REPORT_REMARKS"));
+        obj.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
+        obj.setDataEntryVersion(rs.getString("DATA_ENTRY_VERSION"));
+
+        // =========================
+        // AMOUNT
+        // =========================
+        obj.setAcctBalanceInpula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+
+        // =========================
+        // DATE FIELDS
+        // =========================
+        obj.setReportDate(rs.getDate("REPORT_DATE"));
+        obj.setCreateTime(rs.getDate("CREATE_TIME"));
+        obj.setModifyTime(rs.getDate("MODIFY_TIME"));
+        obj.setVerifyTime(rs.getDate("VERIFY_TIME"));
+
+        // =========================
+        // USER INFO
+        // =========================
+        obj.setCreateUser(rs.getString("CREATE_USER"));
+        obj.setModifyUser(rs.getString("MODIFY_USER"));
+        obj.setVerifyUser(rs.getString("VERIFY_USER"));
+
+        // =========================
+        // FLAGS (char)
+        // =========================
+        obj.setEntityFlg(rs.getString("ENTITY_FLG") != null ? rs.getString("ENTITY_FLG").charAt(0) : ' ');
+        obj.setModifyFlg(rs.getString("MODIFY_FLG") != null ? rs.getString("MODIFY_FLG").charAt(0) : ' ');
+        obj.setDelFlg(rs.getString("DEL_FLG") != null ? rs.getString("DEL_FLG").charAt(0) : ' ');
+		
+		 // =========================
+        // ADDITIONAL FIELDS
+        // =========================
+        obj.setAverage(rs.getBigDecimal("AVERAGE"));
+        obj.setGlCode(rs.getString("GL_CODE"));
+
+        return obj;
+    }
+}
+
+public class OFF_BS_ITEMS_Detail_Entity {
+
+   
+	
+	 @Column(name = "CUST_ID")
+  private String custId;
+	 @Id
+  @Column(name = "ACCT_NUMBER")
+  private String acctNumber;
+
+  @Column(name = "ACCT_NAME")
+  private String acctName;
+
+
+  @Column(name = "DATA_TYPE")
+  private String dataType;
+
+  @Column(name = "REPORT_NAME")
+  private String reportName;
+  
+  @Column(name = "REPORT_LABEL")
+  private String reportLabel;
+  
+  @Column(name = "REPORT_ADDL_CRITERIA_1")
+  private String reportAddlCriteria_1;
+  
+ 
+  
+  @Column(name = "REPORT_REMARKS")
+  private String reportRemarks;
+  
+
+
+  @Column(name = "MODIFICATION_REMARKS")
+  private String modificationRemarks;
+
+  @Column(name = "DATA_ENTRY_VERSION")
+  private String dataEntryVersion;
+
+  @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
+  private BigDecimal acctBalanceInpula;
+
+
+  @Column(name = "REPORT_DATE")
+  @DateTimeFormat(pattern = "dd-MM-yyyy")
+  private Date reportDate;
+
+
+  @Column(name = "CREATE_USER")
+  private String createUser;
+
+  @Column(name = "CREATE_TIME")
+  @DateTimeFormat(pattern = "dd-MM-yyyy")
+  private Date createTime;
+
+  @Column(name = "MODIFY_USER")
+  private String modifyUser;
+
+
+  @Column(name = "MODIFY_TIME")
+  @DateTimeFormat(pattern = "dd-MM-yyyy")
+  private Date modifyTime;
+
+  @Column(name = "VERIFY_USER")
+  private String verifyUser;
+
+
+  @Column(name = "VERIFY_TIME")
+  @DateTimeFormat(pattern = "dd-MM-yyyy")
+  private Date verifyTime;
+
+  @Column(name = "ENTITY_FLG")
+  private char entityFlg;
+
+  @Column(name = "MODIFY_FLG")
+  private char modifyFlg;
+
+  @Column(name = "DEL_FLG")
+  private char delFlg;
+  
+    
+  @Column(name = "AVERAGE", precision = 18, scale = 2)
+  private BigDecimal average;
+  
+  @Column(name = "GL_CODE")
+  private String glCode;
+  
+  
+  public String getCustId() {
+	return custId;
+}
+
+public void setCustId(String custId) {
+	this.custId = custId;
+}
+
+public String getAcctNumber() {
+	return acctNumber;
+}
+
+public void setAcctNumber(String acctNumber) {
+	this.acctNumber = acctNumber;
+}
+
+public String getAcctName() {
+	return acctName;
+}
+
+public void setAcctName(String acctName) {
+	this.acctName = acctName;
+}
+
+public String getDataType() {
+	return dataType;
+}
+
+public void setDataType(String dataType) {
+	this.dataType = dataType;
+}
+
+public String getReportName() {
+	return reportName;
+}
+
+public void setReportName(String reportName) {
+	this.reportName = reportName;
+}
+
+public String getReportLabel() {
+	return reportLabel;
+}
+
+public void setReportLabel(String reportLabel) {
+	this.reportLabel = reportLabel;
+}
+
+public String getReportAddlCriteria_1() {
+	return reportAddlCriteria_1;
+}
+
+public void setReportAddlCriteria_1(String reportAddlCriteria_1) {
+	this.reportAddlCriteria_1 = reportAddlCriteria_1;
+}
+
+public String getReportRemarks() {
+	return reportRemarks;
+}
+
+public void setReportRemarks(String reportRemarks) {
+	this.reportRemarks = reportRemarks;
+}
+
+public String getModificationRemarks() {
+	return modificationRemarks;
+}
+
+public void setModificationRemarks(String modificationRemarks) {
+	this.modificationRemarks = modificationRemarks;
+}
+
+public String getDataEntryVersion() {
+	return dataEntryVersion;
+}
+
+public void setDataEntryVersion(String dataEntryVersion) {
+	this.dataEntryVersion = dataEntryVersion;
+}
+
+public BigDecimal getAcctBalanceInpula() {
+	return acctBalanceInpula;
+}
+
+public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
+	this.acctBalanceInpula = acctBalanceInpula;
+}
+
+public Date getReportDate() {
+	return reportDate;
+}
+
+public void setReportDate(Date reportDate) {
+	this.reportDate = reportDate;
+}
+
+public String getCreateUser() {
+	return createUser;
+}
+
+public void setCreateUser(String createUser) {
+	this.createUser = createUser;
+}
+
+public Date getCreateTime() {
+	return createTime;
+}
+
+public void setCreateTime(Date createTime) {
+	this.createTime = createTime;
+}
+
+public String getModifyUser() {
+	return modifyUser;
+}
+
+public void setModifyUser(String modifyUser) {
+	this.modifyUser = modifyUser;
+}
+
+public Date getModifyTime() {
+	return modifyTime;
+}
+
+public void setModifyTime(Date modifyTime) {
+	this.modifyTime = modifyTime;
+}
+
+public String getVerifyUser() {
+	return verifyUser;
+}
+
+public void setVerifyUser(String verifyUser) {
+	this.verifyUser = verifyUser;
+}
+
+public Date getVerifyTime() {
+	return verifyTime;
+}
+
+public void setVerifyTime(Date verifyTime) {
+	this.verifyTime = verifyTime;
+}
+
+public char getEntityFlg() {
+	return entityFlg;
+}
+
+public void setEntityFlg(char entityFlg) {
+	this.entityFlg = entityFlg;
+}
+
+public char getModifyFlg() {
+	return modifyFlg;
+}
+
+public void setModifyFlg(char modifyFlg) {
+	this.modifyFlg = modifyFlg;
+}
+
+public char getDelFlg() {
+	return delFlg;
+}
+
+public void setDelFlg(char delFlg) {
+	this.delFlg = delFlg;
+}
+
+public BigDecimal getAverage() {
+	return average;
+}
+
+public void setAverage(BigDecimal average) {
+	this.average = average;
+}
+
+public String getGlCode() {
+	return glCode;
+}
+
+public void setGlCode(String glCode) {
+	this.glCode = glCode;
+}
+
+
+}
+
+
+// =====================================================
+// ARCHIVAL  DETAIL ENTITY 
+// =====================================================
+
+
+public class OFF_BS_ITEMS_Archival_Detail_RowMapper 
+        implements RowMapper<OFF_BS_ITEMS_Archival_Detail_Entity> {
+
+    @Override
+    public OFF_BS_ITEMS_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+        OFF_BS_ITEMS_Archival_Detail_Entity obj = new OFF_BS_ITEMS_Archival_Detail_Entity();
+
+        // =========================
+        // BASIC DETAILS
+        // =========================
+        obj.setCustId(rs.getString("CUST_ID"));
+        obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
+        obj.setAcctName(rs.getString("ACCT_NAME"));
+        obj.setDataType(rs.getString("DATA_TYPE"));
+
+        // =========================
+        // REPORT DETAILS
+        // =========================
+        obj.setReportName(rs.getString("REPORT_NAME"));
+        obj.setReportLabel(rs.getString("REPORT_LABEL"));
+        obj.setReportAddlCriteria_1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+        obj.setReportRemarks(rs.getString("REPORT_REMARKS"));
+        obj.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
+        obj.setDataEntryVersion(rs.getString("DATA_ENTRY_VERSION"));
+
+        // =========================
+        // AMOUNT
+        // =========================
+        obj.setAcctBalanceInpula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+
+        // =========================
+        // DATE FIELDS
+        // =========================
+        obj.setReportDate(rs.getDate("REPORT_DATE"));
+        obj.setCreateTime(rs.getDate("CREATE_TIME"));
+        obj.setModifyTime(rs.getDate("MODIFY_TIME"));
+        obj.setVerifyTime(rs.getDate("VERIFY_TIME"));
+
+        // =========================
+        // USER INFO
+        // =========================
+        obj.setCreateUser(rs.getString("CREATE_USER"));
+        obj.setModifyUser(rs.getString("MODIFY_USER"));
+        obj.setVerifyUser(rs.getString("VERIFY_USER"));
+		
+		// =========================
+        // ADDITIONAL FIELDS
+        // =========================
+        obj.setAverage(rs.getBigDecimal("AVERAGE"));
+        obj.setGlCode(rs.getString("GL_CODE"));
+
+        // =========================
+        // FLAGS (char)
+        // =========================
+        obj.setEntityFlg(rs.getString("ENTITY_FLG") != null ? rs.getString("ENTITY_FLG").charAt(0) : ' ');
+        obj.setModifyFlg(rs.getString("MODIFY_FLG") != null ? rs.getString("MODIFY_FLG").charAt(0) : ' ');
+        obj.setDelFlg(rs.getString("DEL_FLG") != null ? rs.getString("DEL_FLG").charAt(0) : ' ');
+
+        return obj;
+    }
+}
+
+public class OFF_BS_ITEMS_Archival_Detail_Entity {
+
+   
+	
+	 @Column(name = "CUST_ID")
+  private String custId;
+	 @Id
+  @Column(name = "ACCT_NUMBER")
+  private String acctNumber;
+
+  @Column(name = "ACCT_NAME")
+  private String acctName;
+
+
+  @Column(name = "DATA_TYPE")
+  private String dataType;
+
+  @Column(name = "REPORT_NAME")
+  private String reportName;
+  
+  @Column(name = "REPORT_LABEL")
+  private String reportLabel;
+  
+  @Column(name = "REPORT_ADDL_CRITERIA_1")
+  private String reportAddlCriteria_1;
+  
+ 
+  
+  @Column(name = "REPORT_REMARKS")
+  private String reportRemarks;
+  
+
+
+  @Column(name = "MODIFICATION_REMARKS")
+  private String modificationRemarks;
+
+  @Column(name = "DATA_ENTRY_VERSION")
+  private String dataEntryVersion;
+
+  @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
+  private BigDecimal acctBalanceInpula;
+
+
+  @Column(name = "REPORT_DATE")
+  @DateTimeFormat(pattern = "dd-MM-yyyy")
+  private Date reportDate;
+
+
+  @Column(name = "CREATE_USER")
+  private String createUser;
+
+  @Column(name = "CREATE_TIME")
+  @DateTimeFormat(pattern = "dd-MM-yyyy")
+  private Date createTime;
+
+  @Column(name = "MODIFY_USER")
+  private String modifyUser;
+
+
+  @Column(name = "MODIFY_TIME")
+  @DateTimeFormat(pattern = "dd-MM-yyyy")
+  private Date modifyTime;
+
+  @Column(name = "VERIFY_USER")
+  private String verifyUser;
+
+
+  @Column(name = "VERIFY_TIME")
+  @DateTimeFormat(pattern = "dd-MM-yyyy")
+  private Date verifyTime;
+
+  @Column(name = "ENTITY_FLG")
+  private char entityFlg;
+
+  @Column(name = "MODIFY_FLG")
+  private char modifyFlg;
+
+  @Column(name = "DEL_FLG")
+  private char delFlg;
+  
+  
+    
+  @Column(name = "AVERAGE", precision = 18, scale = 2)
+  private BigDecimal average;
+  
+  @Column(name = "GL_CODE")
+  private String glCode;
+  
+  
+  
+  
+  public String getCustId() {
+	return custId;
+}
+
+public void setCustId(String custId) {
+	this.custId = custId;
+}
+
+public String getAcctNumber() {
+	return acctNumber;
+}
+
+public void setAcctNumber(String acctNumber) {
+	this.acctNumber = acctNumber;
+}
+
+public String getAcctName() {
+	return acctName;
+}
+
+public void setAcctName(String acctName) {
+	this.acctName = acctName;
+}
+
+public String getDataType() {
+	return dataType;
+}
+
+public void setDataType(String dataType) {
+	this.dataType = dataType;
+}
+
+public String getReportName() {
+	return reportName;
+}
+
+public void setReportName(String reportName) {
+	this.reportName = reportName;
+}
+
+public String getReportLabel() {
+	return reportLabel;
+}
+
+public void setReportLabel(String reportLabel) {
+	this.reportLabel = reportLabel;
+}
+
+public String getReportAddlCriteria_1() {
+	return reportAddlCriteria_1;
+}
+
+public void setReportAddlCriteria_1(String reportAddlCriteria_1) {
+	this.reportAddlCriteria_1 = reportAddlCriteria_1;
+}
+
+public String getReportRemarks() {
+	return reportRemarks;
+}
+
+public void setReportRemarks(String reportRemarks) {
+	this.reportRemarks = reportRemarks;
+}
+
+public String getModificationRemarks() {
+	return modificationRemarks;
+}
+
+public void setModificationRemarks(String modificationRemarks) {
+	this.modificationRemarks = modificationRemarks;
+}
+
+public String getDataEntryVersion() {
+	return dataEntryVersion;
+}
+
+public void setDataEntryVersion(String dataEntryVersion) {
+	this.dataEntryVersion = dataEntryVersion;
+}
+
+public BigDecimal getAcctBalanceInpula() {
+	return acctBalanceInpula;
+}
+
+public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
+	this.acctBalanceInpula = acctBalanceInpula;
+}
+
+public Date getReportDate() {
+	return reportDate;
+}
+
+public void setReportDate(Date reportDate) {
+	this.reportDate = reportDate;
+}
+
+public String getCreateUser() {
+	return createUser;
+}
+
+public void setCreateUser(String createUser) {
+	this.createUser = createUser;
+}
+
+public Date getCreateTime() {
+	return createTime;
+}
+
+public void setCreateTime(Date createTime) {
+	this.createTime = createTime;
+}
+
+public String getModifyUser() {
+	return modifyUser;
+}
+
+public void setModifyUser(String modifyUser) {
+	this.modifyUser = modifyUser;
+}
+
+public Date getModifyTime() {
+	return modifyTime;
+}
+
+public void setModifyTime(Date modifyTime) {
+	this.modifyTime = modifyTime;
+}
+
+public String getVerifyUser() {
+	return verifyUser;
+}
+
+public void setVerifyUser(String verifyUser) {
+	this.verifyUser = verifyUser;
+}
+
+public Date getVerifyTime() {
+	return verifyTime;
+}
+
+public void setVerifyTime(Date verifyTime) {
+	this.verifyTime = verifyTime;
+}
+
+public char getEntityFlg() {
+	return entityFlg;
+}
+
+public void setEntityFlg(char entityFlg) {
+	this.entityFlg = entityFlg;
+}
+
+public char getModifyFlg() {
+	return modifyFlg;
+}
+
+public void setModifyFlg(char modifyFlg) {
+	this.modifyFlg = modifyFlg;
+}
+
+public char getDelFlg() {
+	return delFlg;
+}
+
+public void setDelFlg(char delFlg) {
+	this.delFlg = delFlg;
+}
+
+public BigDecimal getAverage() {
+	return average;
+}
+
+public void setAverage(BigDecimal average) {
+	this.average = average;
+}
+
+public String getGlCode() {
+	return glCode;
+}
+
+public void setGlCode(String glCode) {
+	this.glCode = glCode;
+}
+
+
+}
+
+
+//=====================================================
+// MODEL AND VIEW METHOD summary OFF_BS_ITEMS
+//=====================================================
+
+ SimpleDateFormat dateformat =
+         new SimpleDateFormat("dd-MMM-yyyy");
+		 
+		 
+		 		 	 public ModelAndView getOFF_BS_ITEMSView(
+
+	        String reportId,
+	        String fromdate,
+	        String todate,
+	        String currency,
+	        String dtltype,
+	        Pageable pageable,
+	        String type,
+	        BigDecimal version) {
+
+	    ModelAndView mv = new ModelAndView();
+
+	    System.out.println("OFF_BS_ITEMS View Called");
+	    System.out.println("Type = " + type);
+	    System.out.println("Version = " + version);
+
+	    // =====================================================
+	    // ARCHIVAL MODE
+	    // =====================================================
+
+	    if ("ARCHIVAL".equals(type) && version != null) {
+
+	        List<OFF_BS_ITEMS_Archival_Summary_Entity1> T1Master = new ArrayList<>();
+	        List<OFF_BS_ITEMS_Archival_Summary_Entity2> T2Master = new ArrayList<>();
+
+	        try {
+	            Date dt = dateformat.parse(todate);
+	            
+	        
+	            // ============================
+	            // SUMMARY ARCHIVAL
+	            // ============================
+	            T1Master = getDataByDateListArchival1(dt, version);
+
+	            System.out.println("Archival Summary size = " + T1Master.size());
+				
+				
+				T2Master = getDataByDateListArchival2(dt, version);
+
+	            System.out.println("Archival Summary size = " + T2Master.size());
+
+
+
+	            
+
+	            mv.addObject("report_date", dateformat.format(dt));
+
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+
+	        mv.addObject("reportsummary1", T1Master);
+			mv.addObject("reportsummary2", T2Master);
+	       
+	    }
+	    // =====================================================
+	    // NORMAL MODE
+	    // =====================================================
+
+	    else {
+
+	        List<OFF_BS_ITEMS_Summary_Entity1> T1Master = new ArrayList<>();
+	       List<OFF_BS_ITEMS_Summary_Entity2> T2Master = new ArrayList();
+
+	        try {
+	            Date dt = dateformat.parse(todate);
+
+	            // SUMMARY NORMAL
+	            T1Master = getSummaryDataByDate1(dt);
+
+	            System.out.println("Summary size = " + T1Master.size());
+				
+				T2Master = getSummaryDataByDate2(dt);
+
+	            System.out.println("Summary size = " + T2Master.size());
+
+
+	            mv.addObject("report_date", dateformat.format(dt));
+
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+
+	        mv.addObject("reportsummary1", T1Master);
+			mv.addObject("reportsummary2", T2Master);
+	      
+	    }
+
+	    // =====================================================
+	    // VIEW SETTINGS
+	    // =====================================================
+
+	    mv.setViewName("BRRS/OFF_BS_ITEMS");
+	    mv.addObject("displaymode", "summary");
+	   
+
+	    System.out.println("View Loaded: " + mv.getViewName());
+
+	    return mv;
+	}
+	
+	
+//=====================================================
+// MODEL AND VIEW METHOD detail
+//=====================================================
+ 
+ 
+ public ModelAndView getOFF_BS_ITEMScurrentDtl(
+	        String reportId,
+	        String fromdate,
+	        String todate,
+	        String currency,
+	        String dtltype,
+	        Pageable pageable,
+	        String filter,
+	        String type,
+	        String version) {
+
+	    ModelAndView mv = new ModelAndView();
+
+	    try {
+
+	        Date parsedDate = null;
+
+	        if (todate != null && !todate.isEmpty()) {
+	            parsedDate = dateformat.parse(todate);
+	        }
+
+	        String reportLabel = null;
+	        String reportAddlCriteria1 = null;
+
+	        if (filter != null && filter.contains(",")) {
+	            String[] parts = filter.split(",");
+	            if (parts.length >= 2) {
+	                reportLabel = parts[0];
+	                reportAddlCriteria1 = parts[1];
+	            }
+	        }
+
+	        // =====================================================
+	        // ARCHIVAL MODE
+	        // =====================================================
+	        if ("ARCHIVAL".equals(type) && version != null) {
+
+	            System.out.println("ARCHIVAL DETAIL MODE");
+
+	            List<OFF_BS_ITEMS_Archival_Detail_Entity> archivalDetailList;
+
+	            if (reportLabel != null && reportAddlCriteria1 != null) {
+
+	                archivalDetailList =
+	                      GetArchivalDataByRowIdAndColumnId(
+	                                reportLabel,
+	                                reportAddlCriteria1,
+	                                parsedDate,
+	                                version
+	                        );
+
+	            } else {
+
+	                archivalDetailList =
+	                		getarchivaldetaildatabydateList(
+	                                parsedDate,
+	                                version
+	                        );
+	            }
+
+	            mv.addObject("reportdetails", archivalDetailList);
+	            mv.addObject("reportmaster12", archivalDetailList);
+
+	            System.out.println("ARCHIVAL DETAIL COUNT: " + archivalDetailList.size());
+
+	        }
+
+	        // =====================================================
+	        // CURRENT MODE
+	        // =====================================================
+	        else {
+
+	            List<OFF_BS_ITEMS_Detail_Entity> currentDetailList;
+
+	            if (reportLabel != null && reportAddlCriteria1 != null) {
+
+	                currentDetailList =
+	                       getdetailDataByRowIdAndColumnId(
+	                                reportLabel,
+	                                reportAddlCriteria1,
+	                                parsedDate
+	                        );
+
+	            } else {
+
+	                currentDetailList =
+	                       getDetaildatabydateList(parsedDate);
+
+	            }
+
+	            mv.addObject("reportdetails", currentDetailList);
+	            mv.addObject("reportmaster12", currentDetailList);
+
+	            System.out.println("CURRENT DETAIL COUNT: " + currentDetailList.size());
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        mv.addObject("errorMessage", e.getMessage());
+	    }
+
+	    mv.setViewName("BRRS/OFF_BS_ITEMS");
+	    mv.addObject("displaymode", "Details");
+	    mv.addObject("menu", reportId);
+	    mv.addObject("currency", currency);
+	    mv.addObject("reportId", reportId);
+
+	    return mv;
+	}
+	
+//=====================================================
+// MODEL AND VIEW METHOD ARCHIVAL VIEW
+//=====================================================
+
+public List<Object[]> getOFF_BS_ITEMSArchival() {
+			List<Object[]> archivalList = new ArrayList<>();
 			
-				System.out.println("T1Master size " + T1Master.size());
-				mv.addObject("report_date", dateformat.format(d1));
 
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-			  mv.addObject("reportsummary1", T1Master);
-			    mv.addObject("reportsummary2", T2Master);
-
-		}
-
-	
-
-		mv.setViewName("BRRS/OFF_BS_ITEMS");
-
-		mv.addObject("displaymode", "summary");
-
-		System.out.println("scv" + mv.getViewName());
-
-		return mv;
-
-	}
-	 
-	
-	
-	public ModelAndView getOFF_BS_ITEMScurrentDtl(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String filter, String type, String version) {
-
-		int pageSize = pageable != null ? pageable.getPageSize() : 10;
-		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
-		int totalPages = 0;
-
-		ModelAndView mv = new ModelAndView();
-
-		//Session hs = sessionFactory.getCurrentSession();
-
-		try {
-			Date parsedDate = null;
-
-			if (todate != null && !todate.isEmpty()) {
-				parsedDate = dateformat.parse(todate);
-			}
-
-			String reportLable = null;
-			String reportAddlCriteria_1 = null;
-			// ✅ Split filter string into rowId & columnId
-			if (filter != null && filter.contains(",")) {
-				String[] parts = filter.split(",");
-				if (parts.length >= 2) {
-					reportLable = parts[0];
-					reportAddlCriteria_1 = parts[1];
-				}
-			}
-
-			System.out.println(type);
-			if ("ARCHIVAL".equals(type) && version != null) {
-				System.out.println(type);
-				// 🔹 Archival branch
-				List<OFF_BS_ITEMS_Archival_Detail_Entity> T1Dt1;
+			try {
 				
-				if (reportLable != null && reportAddlCriteria_1 != null) {
-					T1Dt1 = OFF_BS_ITEMS_Archival_Detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1, parsedDate, version);
-				} else {
-					T1Dt1 = OFF_BS_ITEMS_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
-				}
+				List<OFF_BS_ITEMS_Archival_Summary_Entity1> repoData =
+						getarchivaldatabydateListWithVersion1();
 
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
-
-			} else {
-				// 🔹 Current branch
-				List<OFF_BS_ITEMS_Detail_Entity> T1Dt1;
-
-				if (reportLable != null && reportAddlCriteria_1 != null) {
-					T1Dt1 = OFF_BS_ITEMS_detail_repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1, parsedDate);
-				} else {
-					T1Dt1 = OFF_BS_ITEMS_detail_repo.getdatabydateList(parsedDate);
-					totalPages = OFF_BS_ITEMS_detail_repo.getdatacount(parsedDate);
-					mv.addObject("pagination", "YES");
-
-				}
-
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-
-				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
-			}
-		} catch (ParseException e) {
-			e.printStackTrace();
-			mv.addObject("errorMessage", "Invalid date format: " + todate);
-		} catch (Exception e) {
-			e.printStackTrace();
-			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
-		}
-
-	
-
-	
-		mv.setViewName("BRRS/OFF_BS_ITEMS");
-		mv.addObject("displaymode", "Details");
-		mv.addObject("currentPage", currentPage);
-		System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
-		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
-		mv.addObject("reportsflag", "reportsflag");
-		mv.addObject("menu", reportId);
-		return mv;
-	}
-	
-	
-	
-	
-
-	public byte[] getOFF_BS_ITEMSExcel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, BigDecimal version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.");
-
-		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
-			logger.info("Service: Generating ARCHIVAL report for version {}", version);
-			return getExcelOFF_BS_ITEMSARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
-		}
-
-		// Fetch data
-
-		List<OFF_BS_ITEMS_Summary_Entity1> dataList = OFF_BS_ITEMS_summary_repo1.getdatabydateList(dateformat.parse(todate));
-		List<OFF_BS_ITEMS_Summary_Entity2> dataList1 = OFF_BS_ITEMS_summary_repo2.getdatabydateList(dateformat.parse(todate));
-	
-
-		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for  OFF_BS_ITEMS report. Returning empty result.");
-			return new byte[0];
-		}
-
-		String templateDir = env.getProperty("output.exportpathtemp");
-		String templateFileName = filename;
-		System.out.println(filename);
-		Path templatePath = Paths.get(templateDir, templateFileName);
-		System.out.println(templatePath);
-
-		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
-
-		if (!Files.exists(templatePath)) {
-			// This specific exception will be caught by the controller.
-			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
-		}
-		if (!Files.isReadable(templatePath)) {
-			// A specific exception for permission errors.
-			throw new SecurityException(
-					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
-		}
-
-		// This try-with-resources block is perfect. It guarantees all resources are
-		// closed automatically.
-		try (InputStream templateInputStream = Files.newInputStream(templatePath);
-				Workbook workbook = WorkbookFactory.create(templateInputStream);
-				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-
-			Sheet sheet = workbook.getSheetAt(0);
-
-			// --- Style Definitions ---
-			CreationHelper createHelper = workbook.getCreationHelper();
-
-			CellStyle dateStyle = workbook.createCellStyle();
-			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-			dateStyle.setBorderBottom(BorderStyle.THIN);
-			dateStyle.setBorderTop(BorderStyle.THIN);
-			dateStyle.setBorderLeft(BorderStyle.THIN);
-			dateStyle.setBorderRight(BorderStyle.THIN);
-
-			CellStyle textStyle = workbook.createCellStyle();
-			textStyle.setBorderBottom(BorderStyle.THIN);
-			textStyle.setBorderTop(BorderStyle.THIN);
-			textStyle.setBorderLeft(BorderStyle.THIN);
-			textStyle.setBorderRight(BorderStyle.THIN);
-
-			// Create the font
-			Font font = workbook.createFont();
-			font.setFontHeightInPoints((short) 8); // size 8
-			font.setFontName("Arial");
-
-			CellStyle numberStyle = workbook.createCellStyle();
-			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
-			numberStyle.setBorderBottom(BorderStyle.THIN);
-			numberStyle.setBorderTop(BorderStyle.THIN);
-			numberStyle.setBorderLeft(BorderStyle.THIN);
-			numberStyle.setBorderRight(BorderStyle.THIN);
-			numberStyle.setFont(font);
-			// --- End of Style Definitions ---
-
-			int startRow = 10;
-
-			if (!dataList.isEmpty()) {
-				for (int i = 0; i < dataList.size(); i++) {
-					OFF_BS_ITEMS_Summary_Entity1 record = dataList.get(i);
-					OFF_BS_ITEMS_Summary_Entity2 record1 = dataList1.get(i);
-					System.out.println("rownumber=" + startRow + i);
-					Row row = sheet.getRow(startRow + i);
-					if (row == null) {
-						row = sheet.createRow(startRow + i);
+				if (repoData != null && !repoData.isEmpty()) {
+					for (OFF_BS_ITEMS_Archival_Summary_Entity1 entity : repoData) {
+						Object[] row = new Object[] {
+								entity.getReport_date(), 
+								entity.getReport_version(), 
+								 entity.getReportResubDate()
+						};
+						archivalList.add(row);
 					}
 
-  Cell  cellC ,cellD , cellE , cellF , cellG , cellH, cellI;
+					System.out.println("Fetched " + archivalList.size() + " archival records");
+					OFF_BS_ITEMS_Archival_Summary_Entity1 first = repoData.get(0);
+					System.out.println("Latest archival version: " + first.getReport_version());
+				} else {
+					System.out.println("No archival data found.");
+				}
+
+			} catch (Exception e) {
+				System.err.println("Error fetching  OFF_BS_ITEMS  Archival data: " + e.getMessage());
+				e.printStackTrace();
+			}
+
+			return archivalList;
+		}
+//=====================================================
+// UPDATE REPORT
+//=====================================================
+
+//=====================================================
+// VIEW AND EDIT
+//=====================================================
+
+public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
+		ModelAndView mv = new ModelAndView("BRRS/OFF_BS_ITEMS"); 
+
+		if (acctNo != null) {
+			OFF_BS_ITEMS_Detail_Entity OFF_BS_ITEMSEntity = findByDetailAcctnumber(acctNo);
+			if (OFF_BS_ITEMSEntity != null && OFF_BS_ITEMSEntity.getReportDate() != null) {
+				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(OFF_BS_ITEMSEntity.getReportDate());
+				mv.addObject("asondate", formattedDate);
+			}
+			mv.addObject("d_taxData", OFF_BS_ITEMSEntity);
+		}
+
+		mv.addObject("displaymode", "edit");
+		mv.addObject("formmode", formMode != null ? formMode : "edit");
+		return mv;
+	}
+	
+//=====================================================
+// UPDATEDETAIL
+//=====================================================
+
+	@Transactional
+	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
+		try {
+			String acctNo = request.getParameter("acctNumber");
+			String acctBalanceInpula = request.getParameter("acctBalanceInpula");
+			String average = request.getParameter("average");
+			String acctName = request.getParameter("acctName");
+			String reportDateStr = request.getParameter("reportDate");
+
+			logger.info("Received update for ACCT_NO: {}", acctNo);
+
+			OFF_BS_ITEMS_Detail_Entity existing = findByDetailAcctnumber(acctNo);
+			if (existing == null) {
+				logger.warn("No record found for ACCT_NO: {}", acctNo);
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+			}
+
+			boolean isChanged = false;
+
+			if (acctName != null && !acctName.isEmpty()) {
+				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
+					existing.setAcctName(acctName);
+					isChanged = true;
+					logger.info("Account name updated to {}", acctName);
+				}
+			}
+
+			 if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
+		            BigDecimal newacctBalanceInpula = new BigDecimal(acctBalanceInpula);
+		            if (existing.getAcctBalanceInpula()  == null ||
+		                existing.getAcctBalanceInpula().compareTo(newacctBalanceInpula) != 0) {
+		            	 existing.setAcctBalanceInpula(newacctBalanceInpula);
+		                isChanged = true;
+		                logger.info("Balance updated to {}", newacctBalanceInpula);
+		            }
+		        }
+			 
+			 
+			 if (average != null && !average.isEmpty()) {
+		            BigDecimal newaverage = new BigDecimal(average);
+		            if (existing.getAverage()  == null ||
+		                existing.getAverage().compareTo(newaverage) != 0) {
+		            	 existing.setAverage(newaverage);
+		                isChanged = true;
+		                logger.info("Balance updated to {}", newaverage);
+		            }
+		        }
+			
+		        
+			if (isChanged) {
+				  String sql =
+						  "UPDATE BRRS_OFF_BS_ITEMS_DETAILTABLE " +
+								    "SET ACCT_NAME = ?, " +
+								    "ACCT_BALANCE_IN_PULA = ?, " +
+								    "AVERAGE = ? " +
+								    "WHERE ACCT_NUMBER = ?";
+
+		           jdbcTemplate.update(
+    sql,
+    existing.getAcctName(),
+    existing.getAcctBalanceInpula(),
+    existing.getAverage(),
+    existing.getAcctNumber()
+);
+
+				// Format date for procedure
+				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+
+				// Run summary procedure after commit
+				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+					@Override
+					public void afterCommit() {
+						try {
+							logger.info("Transaction committed — calling BRRS_OFF_BS_ITEMS_SUMMARY_PROCEDURE({})",
+									formattedDate);
+							jdbcTemplate.update("BEGIN BRRS_OFF_BS_ITEMS_SUMMARY_PROCEDURE(?); END;", formattedDate);
+							logger.info("Procedure executed successfully after commit.");
+						} catch (Exception e) {
+							logger.error("Error executing procedure after commit", e);
+						}
+					}
+				});
+
+				return ResponseEntity.ok("Record updated successfully!");
+			} else {
+				logger.info("No changes detected for ACCT_NO: {}", acctNo);
+				return ResponseEntity.ok("No changes were made.");
+			}
+
+		} catch (Exception e) {
+			logger.error("Error updating OFF_BS_ITEMS  record", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error updating record: " + e.getMessage());
+		}
+	}
+	
+//=====================================================
+// DETAIL EXCEL 
+//=====================================================
+
+
+	public byte[] getOFF_BS_ITEMSDetailExcel(String filename, String fromdate, String todate, String currency, String dtltype,
+				String type, String version) {
+			try {
+				logger.info("Generating Excel for  OFF_BS_ITEMS  Details...");
+				System.out.println("came to Detail download service");
+
+				if (type.equals("ARCHIVAL") & version != null) {
+					byte[] ARCHIVALreport = getOFF_BS_ITEMSDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type,
+							version);
+					return ARCHIVALreport;
+				}
+
+				XSSFWorkbook workbook = new XSSFWorkbook();
+				XSSFSheet sheet = workbook.createSheet("OFF_BS_ITEMS Details ");
+
+				// Common border style
+				BorderStyle border = BorderStyle.THIN;
+
+				// Header style (left aligned)
+			
+				CellStyle headerStyle = workbook.createCellStyle();
+				
+				Font headerFont = workbook.createFont();	
+				headerFont.setBold(true);
+				headerFont.setFontHeightInPoints((short) 10);
+				headerStyle.setFont(headerFont);
+				headerStyle.setAlignment(HorizontalAlignment.LEFT);
+				headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+				headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+				headerStyle.setBorderTop(border);
+				headerStyle.setBorderBottom(border);
+				headerStyle.setBorderLeft(border);
+				headerStyle.setBorderRight(border);
+
+				// Right-aligned header style for ACCT BALANCE
+				CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
+				rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
+				rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+				// Default data style (left aligned)
+				CellStyle dataStyle = workbook.createCellStyle();
+				dataStyle.setAlignment(HorizontalAlignment.LEFT);
+				dataStyle.setBorderTop(border);
+				dataStyle.setBorderBottom(border);
+				dataStyle.setBorderLeft(border);
+				dataStyle.setBorderRight(border);
+
+				// ACCT BALANCE style (right aligned with 3 decimals)
+				CellStyle balanceStyle = workbook.createCellStyle();
+				balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+				balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
+				balanceStyle.setBorderTop(border);
+				balanceStyle.setBorderBottom(border);
+				balanceStyle.setBorderLeft(border);
+				balanceStyle.setBorderRight(border);
+
+				// Header row
+//Header row
+String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "AVERAGE","REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT_DATE" };
+
+
+				XSSFRow headerRow = sheet.createRow(0);
+				for (int i = 0; i < headers.length; i++) {
+				Cell cell = headerRow.createCell(i);
+				cell.setCellValue(headers[i]);
+
+				if (i == 3 || i == 4 ) {  // MONTHLY_INT (3) and CREDIT_EQUIVALENT (4) nd DEBIT_EQUIVALENT(5)
+				    cell.setCellStyle(rightAlignedHeaderStyle);
+				} else {
+				    cell.setCellStyle(headerStyle);
+				}
+
+				sheet.setColumnWidth(i, 5000);
+			}
+
+				// Get data
+				Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+				List<OFF_BS_ITEMS_Detail_Entity> reportData = getDetaildatabydateList(parsedToDate);
+
+				if (reportData != null && !reportData.isEmpty()) {
+					int rowIndex = 1;
+					for (OFF_BS_ITEMS_Detail_Entity item : reportData) { 
+						XSSFRow row = sheet.createRow(rowIndex++);
+
+row.createCell(0).setCellValue(item.getCustId());
+					row.createCell(1).setCellValue(item.getAcctNumber());
+					row.createCell(2).setCellValue(item.getAcctName());
+					// ACCT BALANCE (right aligned, 3 decimal places)
+					Cell balanceCell = row.createCell(3);
+					if (item.getAcctBalanceInpula() != null) {
+						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
+					} else {
+						balanceCell.setCellValue(0);
+					}
+					balanceCell.setCellStyle(balanceStyle);
+					// AVERAGE
+					 balanceCell = row.createCell(4);
+					if (item.getAverage() != null) {
+						balanceCell.setCellValue(item.getAverage().doubleValue());
+					} else {
+						balanceCell.setCellValue(0);
+					}
+					balanceCell.setCellStyle(balanceStyle);
+					
+
+					row.createCell(5).setCellValue(item.getReportLabel());
+					row.createCell(6).setCellValue(item.getReportAddlCriteria_1());
+					row.createCell(7)
+							.setCellValue(item.getReportDate() != null
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+									: "");
+
+					
+					// Apply data style for all other cells
+					for (int j = 0; j < 8; j++) {
+						 if (j != 3 && j != 4 ) {
+							row.getCell(j).setCellStyle(dataStyle);
+						}
+						}
+					}
+				} else {
+					logger.info("No data found for OFF_BS_ITEMS — only header will be written.");
+				}
+
+				// Write to byte[]
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				workbook.write(bos);
+				workbook.close();
+
+				logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
+				return bos.toByteArray();
+
+			} catch (Exception e) {
+				logger.error("Error generating OFF_BS_ITEMS Excel", e);
+				return new byte[0];
+			}
+		}
+	
+	
+//=====================================================
+// ARCHIVAL DETAIL EXCEL 
+//=====================================================
+
+	public byte[] getOFF_BS_ITEMSDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
+				String dtltype, String type, String version) {
+			try {
+				logger.info("Generating Excel for OFF_BS_ITEMS ARCHIVAL Details...");
+				System.out.println("came to ARCHIVAL Detail download service");
+				if (type.equals("ARCHIVAL") & version != null) {
+
+				}
+				XSSFWorkbook workbook = new XSSFWorkbook();
+				XSSFSheet sheet = workbook.createSheet("OFF_BS_ITEMS Detail NEW");
+
+	// Common border style
+				BorderStyle border = BorderStyle.THIN;
+
+	// Header style (left aligned)
+				CellStyle headerStyle = workbook.createCellStyle();
+				Font headerFont = workbook.createFont();
+				headerFont.setBold(true);
+				headerFont.setFontHeightInPoints((short) 10);
+				headerStyle.setFont(headerFont);
+				headerStyle.setAlignment(HorizontalAlignment.LEFT);
+				headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+				headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+				headerStyle.setBorderTop(border);
+				headerStyle.setBorderBottom(border);
+				headerStyle.setBorderLeft(border);
+				headerStyle.setBorderRight(border);
+
+	// Right-aligned header style for ACCT BALANCE
+				CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
+				rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
+				rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+	// Default data style (left aligned)
+				CellStyle dataStyle = workbook.createCellStyle();
+				dataStyle.setAlignment(HorizontalAlignment.LEFT);
+				dataStyle.setBorderTop(border);
+				dataStyle.setBorderBottom(border);
+				dataStyle.setBorderLeft(border);
+				dataStyle.setBorderRight(border);
+
+	// ACCT BALANCE style (right aligned with 3 decimals)
+				CellStyle balanceStyle = workbook.createCellStyle();
+				balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+				balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
+				balanceStyle.setBorderTop(border);
+				balanceStyle.setBorderBottom(border);
+				balanceStyle.setBorderLeft(border);
+				balanceStyle.setBorderRight(border);
+
+	// Header row
+				String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "AVERAGE","REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT_DATE" };
+
+				XSSFRow headerRow = sheet.createRow(0);
+				for (int i = 0; i < headers.length; i++) {
+				Cell cell = headerRow.createCell(i);
+				cell.setCellValue(headers[i]);
+
+				if (i == 3 || i == 4 ) {  // MONTHLY_INT (3) and CREDIT_EQUIVALENT (4) nd DEBIT_EQUIVALENT(5)
+				    cell.setCellStyle(rightAlignedHeaderStyle);
+				} else {
+				    cell.setCellStyle(headerStyle);
+				}
+				sheet.setColumnWidth(i, 5000);
+			}
+
+	// Get data
+				Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+				List<OFF_BS_ITEMS_Archival_Detail_Entity> reportData = getarchivaldetaildatabydateList(parsedToDate,
+						version);
+
+				if (reportData != null && !reportData.isEmpty()) {
+					int rowIndex = 1;
+					for (OFF_BS_ITEMS_Archival_Detail_Entity item : reportData) {
+						XSSFRow row = sheet.createRow(rowIndex++);
+
+		row.createCell(0).setCellValue(item.getCustId());
+					row.createCell(1).setCellValue(item.getAcctNumber());
+					 row.createCell(2).setCellValue(item.getAcctName()); 
+
+// ACCT BALANCE (right aligned, 3 decimal places)
+					Cell balanceCell = row.createCell(3);
+					if (item.getAcctBalanceInpula() != null) {
+						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
+					} else {
+						balanceCell.setCellValue(0);
+					}
+					balanceCell.setCellStyle(balanceStyle);
+
+					// AVERAGE
+					 balanceCell = row.createCell(4);
+					if (item.getAverage() != null) {
+						balanceCell.setCellValue(item.getAverage().doubleValue());
+					} else {
+						balanceCell.setCellValue(0);
+					}
+					balanceCell.setCellStyle(balanceStyle);
+					row.createCell(5).setCellValue(item.getReportLabel());
+					row.createCell(6).setCellValue(item.getReportAddlCriteria_1());
+					row.createCell(7)
+							.setCellValue(item.getReportDate() != null
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+									: "");
+
+// Apply data style for all other cells
+					for (int j = 0; j < 8; j++) {
+						 if (j != 3 && j != 4 ) {
+							row.getCell(j).setCellStyle(dataStyle);
+						}
+						}
+					}
+				} else {
+					logger.info("No data found for OFF_BS_ITEMS — only header will be written.");
+				}
+
+	// Write to byte[]
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				workbook.write(bos);
+				workbook.close();
+
+				logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
+				return bos.toByteArray();
+
+			} catch (Exception e) {
+				logger.error("Error generating OFF_BS_ITEMS NEW Excel", e);
+				return new byte[0];
+			}
+		}
+		
+		
+//=====================================================
+// Summary EXCEL 
+//=====================================================
+
+	public byte[] getOFF_BS_ITEMSExcel(String filename, String reportId, String fromdate, String todate, String currency,
+				String dtltype, String type, BigDecimal version) throws Exception {
+			logger.info("Service: Starting Excel generation process in memory.OFF_BS_ITEMS");
+
+			// ARCHIVAL check
+			if ("ARCHIVAL".equalsIgnoreCase(type)
+			        && version != null
+			        && version.compareTo(BigDecimal.ZERO) >= 0) {
+					logger.info("Service: Generating ARCHIVAL report for version {}", version);
+				return getExcelOFF_BS_ITEMSARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+			}
+
+			// Fetch data
+
+			List<OFF_BS_ITEMS_Summary_Entity1> dataList = getSummaryDataByDate1(dateformat.parse(todate));
+			List<OFF_BS_ITEMS_Summary_Entity2> dataList1 = getSummaryDataByDate2(dateformat.parse(todate));
+		
+		
+			System.out.println("DATA SIZE IS : "+dataList.size());
+			if (dataList.isEmpty()) {
+				logger.warn("Service: No data found for  OFF_BS_ITEMS report. Returning empty result.");
+				return new byte[0];
+			}
+
+			String templateDir = env.getProperty("output.exportpathtemp");
+			String templateFileName = filename;
+			System.out.println(filename);
+			Path templatePath = Paths.get(templateDir, templateFileName);
+			System.out.println(templatePath);
+
+			logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+			if (!Files.exists(templatePath)) {
+				// This specific exception will be caught by the controller.
+				throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+			}
+			if (!Files.isReadable(templatePath)) {
+				// A specific exception for permission errors.
+				throw new SecurityException(
+						"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+			}
+
+			// This try-with-resources block is perfect. It guarantees all resources are
+			// closed automatically.
+			try (InputStream templateInputStream = Files.newInputStream(templatePath);
+					Workbook workbook = WorkbookFactory.create(templateInputStream);
+					ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+				Sheet sheet = workbook.getSheetAt(0);
+
+				// --- Style Definitions ---
+				CreationHelper createHelper = workbook.getCreationHelper();
+
+				CellStyle dateStyle = workbook.createCellStyle();
+				dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+				dateStyle.setBorderBottom(BorderStyle.THIN);
+				dateStyle.setBorderTop(BorderStyle.THIN);
+				dateStyle.setBorderLeft(BorderStyle.THIN);
+				dateStyle.setBorderRight(BorderStyle.THIN);
+
+				CellStyle textStyle = workbook.createCellStyle();
+				textStyle.setBorderBottom(BorderStyle.THIN);
+				textStyle.setBorderTop(BorderStyle.THIN);
+				textStyle.setBorderLeft(BorderStyle.THIN);
+				textStyle.setBorderRight(BorderStyle.THIN);
+
+				// Create the font
+				Font font = workbook.createFont();
+				font.setFontHeightInPoints((short) 8); // size 8
+				font.setFontName("Arial");
+
+				CellStyle numberStyle = workbook.createCellStyle();
+				// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+				numberStyle.setBorderBottom(BorderStyle.THIN);
+				numberStyle.setBorderTop(BorderStyle.THIN);
+				numberStyle.setBorderLeft(BorderStyle.THIN);
+				numberStyle.setBorderRight(BorderStyle.THIN);
+				numberStyle.setFont(font);
+				// --- End of Style Definitions ---
+
+						int startRow = 10;
+						
+				if (!dataList.isEmpty()) {
+					for (int i = 0; i < dataList.size(); i++) {
+					
+						OFF_BS_ITEMS_Summary_Entity1 record = dataList.get(i);
+					OFF_BS_ITEMS_Summary_Entity2 record1 = dataList1.get(i);
+					
+						System.out.println("rownumber=" + startRow + i);
+						Row row = sheet.getRow(startRow + i);
+						if (row == null) {
+							row = sheet.createRow(startRow + i);
+						}
+
+		     Cell  cellC ,cellD , cellE , cellF , cellG , cellH, cellI;
 
 
 
@@ -5854,122 +28428,126 @@ if (record1.getR189_rw_obligant() != null) {
 } else {
   cellH.setCellValue(0);
 }
+					
+				
+					}
+					
+				workbook.setForceFormulaRecalculation(true);
 
-			
+					
+				} else {
+
 				}
 
-				workbook.setForceFormulaRecalculation(true);
-			} else {
+	// Write the final workbook content to the in-memory stream.
+				workbook.write(out);
+
+				logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+				return out.toByteArray();
+			}
+
+		}
+
+
+
+
+//=====================================================
+//ARCHIVAL SUMMARY EXCEL 
+//=====================================================
+
+
+
+				public byte[] getExcelOFF_BS_ITEMSARCHIVAL(String filename, String reportId, String fromdate, String todate,
+				String currency, String dtltype, String type, BigDecimal version) throws Exception {
+
+			logger.info("Service: Starting Excel generation process in memory.");
+
+			if (type.equals("ARCHIVAL") & version != null) {	
 
 			}
 
-// Write the final workbook content to the in-memory stream.
-			workbook.write(out);
-
-			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
-			return out.toByteArray();
-		}
-
-	}
-
-	
-	public byte[] getExcelOFF_BS_ITEMSARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, BigDecimal version) throws Exception {
-
-		logger.info("Service: Starting Excel generation process in memory.");
-
-		if (type.equals("ARCHIVAL") & version != null) {
-
-		}
-		
-		List<OFF_BS_ITEMS_Archival_Summary_Entity1> dataList = OFF_BS_ITEMS_Archival_Summary_Repo1
-				.getdatabydateListarchival(dateformat.parse(todate), version);
-		
-
-		
-		List<OFF_BS_ITEMS_Archival_Summary_Entity2> dataList1 = OFF_BS_ITEMS_Archival_Summary_Repo2
-				.getdatabydateListarchival(dateformat.parse(todate), version);
-		
-
-		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for OFF_BS_ITEMS report. Returning empty result.");
-			return new byte[0];
-		}
-
-		String templateDir = env.getProperty("output.exportpathtemp");
-		String templateFileName = filename;
-		System.out.println(filename);
-		Path templatePath = Paths.get(templateDir, templateFileName);
-		System.out.println(templatePath);
-
-		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
-
-		if (!Files.exists(templatePath)) {
-// This specific exception will be caught by the controller.
-			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
-		}
-		if (!Files.isReadable(templatePath)) {
-// A specific exception for permission errors.
-			throw new SecurityException(
-					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
-		}
-
-// This try-with-resources block is perfect. It guarantees all resources are
-// closed automatically.
-		try (InputStream templateInputStream = Files.newInputStream(templatePath);
-				Workbook workbook = WorkbookFactory.create(templateInputStream);
-				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-
-			Sheet sheet = workbook.getSheetAt(0);
-
-// --- Style Definitions ---
-			CreationHelper createHelper = workbook.getCreationHelper();
-
-			CellStyle dateStyle = workbook.createCellStyle();
-			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-			dateStyle.setBorderBottom(BorderStyle.THIN);
-			dateStyle.setBorderTop(BorderStyle.THIN);
-			dateStyle.setBorderLeft(BorderStyle.THIN);
-			dateStyle.setBorderRight(BorderStyle.THIN);
-
-			CellStyle textStyle = workbook.createCellStyle();
-			textStyle.setBorderBottom(BorderStyle.THIN);
-			textStyle.setBorderTop(BorderStyle.THIN);
-			textStyle.setBorderLeft(BorderStyle.THIN);
-			textStyle.setBorderRight(BorderStyle.THIN);
-
-// Create the font
-			Font font = workbook.createFont();
-			font.setFontHeightInPoints((short) 8); // size 8
-			font.setFontName("Arial");
-
-			CellStyle numberStyle = workbook.createCellStyle();
-// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
-			numberStyle.setBorderBottom(BorderStyle.THIN);
-			numberStyle.setBorderTop(BorderStyle.THIN);
-			numberStyle.setBorderLeft(BorderStyle.THIN);
-			numberStyle.setBorderRight(BorderStyle.THIN);
-			numberStyle.setFont(font);
-// --- End of Style Definitions ---
-
-			int startRow =10;
-
-			if (!dataList.isEmpty()) {
-				for (int i = 0; i < dataList.size(); i++) {
-					OFF_BS_ITEMS_Archival_Summary_Entity1 record = dataList.get(i);
-					OFF_BS_ITEMS_Archival_Summary_Entity2 record1 = dataList1.get(i);
-				
-					System.out.println("rownumber=" + startRow + i);
-					Row row = sheet.getRow(startRow + i);
-					if (row == null) {
-						row = sheet.createRow(startRow + i);
-					}
-
-
+			List<OFF_BS_ITEMS_Archival_Summary_Entity1> dataList = 
+					getDataByDateListArchival1(dateformat.parse(todate), version);
 					
-					
-					  Cell  cellC ,cellD , cellE , cellF , cellG , cellH, cellI;
+			List<OFF_BS_ITEMS_Archival_Summary_Entity2> dataList1 = 
+					getDataByDateListArchival2(dateformat.parse(todate), version);
+		
+	    
+
+			if (dataList.isEmpty()) {
+				logger.warn("Service: No data found for OFF_BS_ITEMS new report. Returning empty result.");
+				return new byte[0];
+			}
+
+			String templateDir = env.getProperty("output.exportpathtemp");
+			String templateFileName = filename;
+			System.out.println(filename);
+			Path templatePath = Paths.get(templateDir, templateFileName);
+			System.out.println(templatePath);
+
+			logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+			if (!Files.exists(templatePath)) {
+	// This specific exception will be caught by the controller.
+				throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+			}
+			if (!Files.isReadable(templatePath)) {
+	// A specific exception for permission errors.
+				throw new SecurityException(
+						"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+			}
+
+	// This try-with-resources block is perfect. It guarantees all resources are
+	// closed automatically.
+			try (InputStream templateInputStream = Files.newInputStream(templatePath);
+					Workbook workbook = WorkbookFactory.create(templateInputStream);
+					ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+				Sheet sheet = workbook.getSheetAt(0);
+
+	// --- Style Definitions ---
+				CreationHelper createHelper = workbook.getCreationHelper();
+
+				CellStyle dateStyle = workbook.createCellStyle();
+				dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+				dateStyle.setBorderBottom(BorderStyle.THIN);
+				dateStyle.setBorderTop(BorderStyle.THIN);
+				dateStyle.setBorderLeft(BorderStyle.THIN);
+				dateStyle.setBorderRight(BorderStyle.THIN);
+
+				CellStyle textStyle = workbook.createCellStyle();
+				textStyle.setBorderBottom(BorderStyle.THIN);
+				textStyle.setBorderTop(BorderStyle.THIN);
+				textStyle.setBorderLeft(BorderStyle.THIN);
+				textStyle.setBorderRight(BorderStyle.THIN);
+
+	// Create the font
+				Font font = workbook.createFont();
+				font.setFontHeightInPoints((short) 8); // size 8
+				font.setFontName("Arial");
+
+				CellStyle numberStyle = workbook.createCellStyle();
+	// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+				numberStyle.setBorderBottom(BorderStyle.THIN);
+				numberStyle.setBorderTop(BorderStyle.THIN);
+				numberStyle.setBorderLeft(BorderStyle.THIN);
+				numberStyle.setBorderRight(BorderStyle.THIN);
+				numberStyle.setFont(font);
+	// --- End of Style Definitions ---
+
+				int startRow = 10;
+
+				if (!dataList.isEmpty()) {
+					for (int i = 0; i < dataList.size(); i++) {
+						OFF_BS_ITEMS_Archival_Summary_Entity1 record = dataList.get(i);
+					    OFF_BS_ITEMS_Archival_Summary_Entity2 record1 = dataList1.get(i);
+						System.out.println("rownumber=" + startRow + i);
+						Row row = sheet.getRow(startRow + i);
+						if (row == null) {
+							row = sheet.createRow(startRow + i);
+						}
+	  Cell  cellC ,cellD , cellE , cellF , cellG , cellH, cellI;
 
 
 
@@ -11473,483 +34051,27 @@ if (record1.getR189_rw_obligant() != null) {
 					  cellH.setCellValue(0);
 					}
 
+
+				
+						
+						
+					}
+                  workbook.setForceFormulaRecalculation(true);
 					
-					
-					
-				}
-
-			workbook.setForceFormulaRecalculation(true);
-			} else {
-
-			}
-
-// Write the final workbook content to the in-memory stream.
-			workbook.write(out);
-
-			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
-			return out.toByteArray();
-		}
-
-	}
-	
-	
-//	public void updateReport(OFF_BS_ITEMS_Summary_Entity1 updatedEntity) {
-//
-//		OFF_BS_ITEMS_Summary_Entity1 existing = OFF_BS_ITEMS_summary_repo1.findById(updatedEntity.getReport_date()).orElseThrow(
-//				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
-//
-//		int[] rows = { };
-//
-//		String[] fields = { " "};
-//
-//		try {
-//			for (int i : rows) {
-//				for (String field : fields) {
-//
-//					String getterName = "getR" + i + "_" + field;
-//					String setterName = "setR" + i + "_" + field;
-//
-//					try {
-//						Method getter = OFF_BS_ITEMS_Summary_Entity1.class.getMethod(getterName);
-//						Method setter = OFF_BS_ITEMS_Summary_Entity1.class.getMethod(setterName, getter.getReturnType());
-//
-//						Object newValue = getter.invoke(updatedEntity);
-//						setter.invoke(existing, newValue);
-//
-//					} catch (NoSuchMethodException e) {
-//						// Field not applicable for this row → skip safely
-//					}
-//				}
-//			}
-//		} catch (Exception e) {
-//			throw new RuntimeException("Error while updating report fields", e);
-//		}
-//
-//		OFF_BS_ITEMS_summary_repo1.save(existing);
-//	}
-	
-
-	//Archival View
-	public List<Object[]> getOFF_BS_ITEMSArchival() {
-		List<Object[]> archivalList = new ArrayList<>();
-
-		try {
-			List<OFF_BS_ITEMS_Archival_Summary_Entity1> repoData = OFF_BS_ITEMS_Archival_Summary_Repo1
-					.getdatabydateListWithVersion();
-
-			if (repoData != null && !repoData.isEmpty()) {
-				for (OFF_BS_ITEMS_Archival_Summary_Entity1 entity : repoData) {
-					Object[] row = new Object[] {
-							entity.getReport_date(), 
-							entity.getReport_version(), 
-							 entity.getReportResubDate()
-					};
-					archivalList.add(row);
-				}
-
-				System.out.println("Fetched " + archivalList.size() + " archival records");
-				OFF_BS_ITEMS_Archival_Summary_Entity1 first = repoData.get(0);
-				System.out.println("Latest archival version: " + first.getReport_version());
-			} else {
-				System.out.println("No archival data found.");
-			}
-
-		} catch (Exception e) {
-			System.err.println("Error fetching  OFF_BS_ITEMS  Archival data: " + e.getMessage());
-			e.printStackTrace();
-		}
-
-		return archivalList;
-	}
-
-	
-	
-	
-
-	
-	
-	
-	public byte[] getOFF_BS_ITEMSDetailExcel(String filename, String fromdate, String todate, String currency, String dtltype,
-			String type, String version) {
-		try {
-			logger.info("Generating Excel for  OFF_BS_ITEMS Details...");
-			System.out.println("came to Detail download service");
-
-			if (type.equals("ARCHIVAL") & version != null) {
-				byte[] ARCHIVALreport = getOFF_BS_ITEMSDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type,
-						version);
-				return ARCHIVALreport;
-			}
-
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("OFF_BS_ITEMS Details");
-
-			// Common border style
-			BorderStyle border = BorderStyle.THIN;
-
-			// Header style (left aligned)
-			CellStyle headerStyle = workbook.createCellStyle();
-			Font headerFont = workbook.createFont();
-			headerFont.setBold(true);
-			headerFont.setFontHeightInPoints((short) 10);
-			headerStyle.setFont(headerFont);
-			headerStyle.setAlignment(HorizontalAlignment.LEFT);
-			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-			headerStyle.setBorderTop(border);
-			headerStyle.setBorderBottom(border);
-			headerStyle.setBorderLeft(border);
-			headerStyle.setBorderRight(border);
-
-			// Right-aligned header style for ACCT BALANCE
-			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
-			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
-			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-
-			// Default data style (left aligned)
-			CellStyle dataStyle = workbook.createCellStyle();
-			dataStyle.setAlignment(HorizontalAlignment.LEFT);
-			dataStyle.setBorderTop(border);
-			dataStyle.setBorderBottom(border);
-			dataStyle.setBorderLeft(border);
-			dataStyle.setBorderRight(border);
-
-			// ACCT BALANCE style (right aligned with 3 decimals)
-			CellStyle balanceStyle = workbook.createCellStyle();
-			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
-			balanceStyle.setBorderTop(border);
-			balanceStyle.setBorderBottom(border);
-			balanceStyle.setBorderLeft(border);
-			balanceStyle.setBorderRight(border);
-
-			// Header row
-			String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "AVERAGE","REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT_DATE" };
-
-			XSSFRow headerRow = sheet.createRow(0);
-			for (int i = 0; i < headers.length; i++) {
-				Cell cell = headerRow.createCell(i);
-				cell.setCellValue(headers[i]);
-
-				if (i == 3 || i == 4 ) {  // MONTHLY_INT (3) and CREDIT_EQUIVALENT (4) nd DEBIT_EQUIVALENT(5)
-				    cell.setCellStyle(rightAlignedHeaderStyle);
 				} else {
-				    cell.setCellStyle(headerStyle);
+
 				}
 
-				sheet.setColumnWidth(i, 5000);
+	// Write the final workbook content to the in-memory stream.
+				workbook.write(out);
+
+				logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+				return out.toByteArray();
 			}
 
-			// Get data
-			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<OFF_BS_ITEMS_Detail_Entity> reportData = OFF_BS_ITEMS_detail_repo.getdatabydateList(parsedToDate);
-
-			if (reportData != null && !reportData.isEmpty()) {
-				int rowIndex = 1;
-				for (OFF_BS_ITEMS_Detail_Entity item : reportData) {
-					XSSFRow row = sheet.createRow(rowIndex++);
-
-					row.createCell(0).setCellValue(item.getCustId());
-					row.createCell(1).setCellValue(item.getAcctNumber());
-					row.createCell(2).setCellValue(item.getAcctName());
-					// ACCT BALANCE (right aligned, 3 decimal places)
-					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInpula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
-					} else {
-						balanceCell.setCellValue(0);
-					}
-					balanceCell.setCellStyle(balanceStyle);
-					// AVERAGE
-					 balanceCell = row.createCell(4);
-					if (item.getAverage() != null) {
-						balanceCell.setCellValue(item.getAverage().doubleValue());
-					} else {
-						balanceCell.setCellValue(0);
-					}
-					balanceCell.setCellStyle(balanceStyle);
-					
-
-					row.createCell(5).setCellValue(item.getReportLabel());
-					row.createCell(6).setCellValue(item.getReportAddlCriteria_1());
-					row.createCell(7)
-							.setCellValue(item.getReportDate() != null
-									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
-									: "");
-
-					// Apply data style for all other cells
-					for (int j = 0; j < 8; j++) {
-						 if (j != 3 && j != 4 ) {
-							row.getCell(j).setCellStyle(dataStyle);
-						}
-					}
-				}
-			} else {
-				logger.info("No data found for OFF_BS_ITEMS — only header will be written.");
-			}
-
-			// Write to byte[]
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			workbook.write(bos);
-			workbook.close();
-
-			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
-			return bos.toByteArray();
-
-		} catch (Exception e) {
-			logger.error("Error generating OFF_BS_ITEMS Excel", e);
-			return new byte[0];
 		}
+		
+		
+		
 	}
-	
-	
-	
-	
-	
-	
-	
-	public byte[] getOFF_BS_ITEMSDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) {
-		try {
-			logger.info("Generating Excel for OFF_BS_ITEMS ARCHIVAL Details...");
-			System.out.println("came to ARCHIVAL Detail download service");
-			if (type.equals("ARCHIVAL") & version != null) {
-
-			}
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("OFF_BS_ITEMS Detail");
-
-// Common border style
-			BorderStyle border = BorderStyle.THIN;
-
-// Header style (left aligned)
-			CellStyle headerStyle = workbook.createCellStyle();
-			Font headerFont = workbook.createFont();
-			headerFont.setBold(true);
-			headerFont.setFontHeightInPoints((short) 10);
-			headerStyle.setFont(headerFont);
-			headerStyle.setAlignment(HorizontalAlignment.LEFT);
-			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-			headerStyle.setBorderTop(border);
-			headerStyle.setBorderBottom(border);
-			headerStyle.setBorderLeft(border);
-			headerStyle.setBorderRight(border);
-
-// Right-aligned header style for ACCT BALANCE
-			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
-			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
-			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-
-// Default data style (left aligned)
-			CellStyle dataStyle = workbook.createCellStyle();
-			dataStyle.setAlignment(HorizontalAlignment.LEFT);
-			dataStyle.setBorderTop(border);
-			dataStyle.setBorderBottom(border);
-			dataStyle.setBorderLeft(border);
-			dataStyle.setBorderRight(border);
-
-// ACCT BALANCE style (right aligned with 3 decimals)
-			CellStyle balanceStyle = workbook.createCellStyle();
-			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
-			balanceStyle.setBorderTop(border);
-			balanceStyle.setBorderBottom(border);
-			balanceStyle.setBorderLeft(border);
-			balanceStyle.setBorderRight(border);
-
-// Header row
-			String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "AVERAGE","REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT_DATE" };
-
-			XSSFRow headerRow = sheet.createRow(0);
-			for (int i = 0; i < headers.length; i++) {
-				Cell cell = headerRow.createCell(i);
-				cell.setCellValue(headers[i]);
-
-				if (i == 3 || i == 4 ) {  // MONTHLY_INT (3) and CREDIT_EQUIVALENT (4) nd DEBIT_EQUIVALENT(5)
-				    cell.setCellStyle(rightAlignedHeaderStyle);
-				} else {
-				    cell.setCellStyle(headerStyle);
-				}
-				sheet.setColumnWidth(i, 5000);
-			}
-
-// Get data
-			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<OFF_BS_ITEMS_Archival_Detail_Entity> reportData = OFF_BS_ITEMS_Archival_Detail_Repo.getdatabydateList(parsedToDate,
-					version);
-
-			if (reportData != null && !reportData.isEmpty()) {
-				int rowIndex = 1;
-				for (OFF_BS_ITEMS_Archival_Detail_Entity item : reportData) {
-					XSSFRow row = sheet.createRow(rowIndex++);
-
-					row.createCell(0).setCellValue(item.getCustId());
-					row.createCell(1).setCellValue(item.getAcctNumber());
-					 row.createCell(2).setCellValue(item.getAcctName()); 
-
-// ACCT BALANCE (right aligned, 3 decimal places)
-					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInpula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
-					} else {
-						balanceCell.setCellValue(0);
-					}
-					balanceCell.setCellStyle(balanceStyle);
-
-					// AVERAGE
-					 balanceCell = row.createCell(4);
-					if (item.getAverage() != null) {
-						balanceCell.setCellValue(item.getAverage().doubleValue());
-					} else {
-						balanceCell.setCellValue(0);
-					}
-					balanceCell.setCellStyle(balanceStyle);
-					row.createCell(5).setCellValue(item.getReportLabel());
-					row.createCell(6).setCellValue(item.getReportAddlCriteria_1());
-					row.createCell(7)
-							.setCellValue(item.getReportDate() != null
-									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
-									: "");
-
-// Apply data style for all other cells
-					for (int j = 0; j < 8; j++) {
-						 if (j != 3 && j != 4 ) {
-							row.getCell(j).setCellStyle(dataStyle);
-						}
-					}
-				}
-			} else {
-				logger.info("No data found for OFF_BS_ITEMS — only header will be written.");
-			}
-
-// Write to byte[]
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			workbook.write(bos);
-			workbook.close();
-
-			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
-			return bos.toByteArray();
-
-		} catch (Exception e) {
-			logger.error("Error generating OFF_BS_ITEMS Excel", e);
-			return new byte[0];
-		}
-	}
-	
-	
-	
-	
-//	 @Autowired BRRS_OFF_BS_ITEMS_Detail_Repo OFF_BS_ITEMS_detail_repo;
-	
-	
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
-
-	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
-		ModelAndView mv = new ModelAndView("BRRS/OFF_BS_ITEMS"); 
-
-		if (acctNo != null) {
-			OFF_BS_ITEMS_Detail_Entity OFF_BS_ITEMSEntity = OFF_BS_ITEMS_detail_repo.findByAcctnumber(acctNo);
-			if (OFF_BS_ITEMSEntity != null && OFF_BS_ITEMSEntity.getReportDate() != null) {
-				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(OFF_BS_ITEMSEntity.getReportDate());
-				mv.addObject("asondate", formattedDate);
-			}
-			mv.addObject("d_taxData", OFF_BS_ITEMSEntity);
-		}
-
-		mv.addObject("displaymode", "edit");
-		mv.addObject("formmode", formMode != null ? formMode : "edit");
-		return mv;
-	}
-
-	@Transactional
-	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
-		try {
-			String acctNo = request.getParameter("acctNumber");
-			String acctBalanceInpula = request.getParameter("acctBalanceInpula");
-     		String average = request.getParameter("average");
-			String acctName = request.getParameter("acctName");
-			String reportDateStr = request.getParameter("reportDate");
-
-			logger.info("Received update for ACCT_NO: {}", acctNo);
-
-			OFF_BS_ITEMS_Detail_Entity existing = OFF_BS_ITEMS_detail_repo.findByAcctnumber(acctNo);
-			if (existing == null) {
-				logger.warn("No record found for ACCT_NO: {}", acctNo);
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
-			}
-
-			boolean isChanged = false;
-
-			if (acctName != null && !acctName.isEmpty()) {
-				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
-					existing.setAcctName(acctName);
-					isChanged = true;
-					logger.info("Account name updated to {}", acctName);
-				}
-			}
-
-			 if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
-		            BigDecimal newacctBalanceInpula = new BigDecimal(acctBalanceInpula);
-		            if (existing.getAcctBalanceInpula()  == null ||
-		                existing.getAcctBalanceInpula().compareTo(newacctBalanceInpula) != 0) {
-		            	 existing.setAcctBalanceInpula(newacctBalanceInpula);
-		                isChanged = true;
-		                logger.info("Balance updated to {}", newacctBalanceInpula);
-		            }
-		        }
-			 
-			 
-			 if (average != null && !average.isEmpty()) {
-		            BigDecimal newaverage = new BigDecimal(average);
-		            if (existing.getAverage()  == null ||
-		                existing.getAverage().compareTo(newaverage) != 0) {
-		            	 existing.setAverage(newaverage);
-		                isChanged = true;
-		                logger.info("Balance updated to {}", newaverage);
-		            }
-		        }
-		        
-		if (isChanged) {
-				OFF_BS_ITEMS_detail_repo.save(existing);
-				logger.info("Record updated successfully for account {}", acctNo);
-
-				// Format date for procedure
-				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
-
-				// Run summary procedure after commit
-				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-					@Override
-					public void afterCommit() {
-						try {
-							logger.info("Transaction committed — calling BRRS_OFF_BS_ITEMS_SUMMARY_PROCEDURE({})",
-									formattedDate);
-							jdbcTemplate.update("BEGIN BRRS_OFF_BS_ITEMS_SUMMARY_PROCEDURE(?); END;", formattedDate);
-							logger.info("Procedure executed successfully after commit.");
-						} catch (Exception e) {
-							logger.error("Error executing procedure after commit", e);
-						}
-					}
-				});
-
-				return ResponseEntity.ok("Record updated successfully!");
-			} else {
-				logger.info("No changes detected for ACCT_NO: {}", acctNo);
-				return ResponseEntity.ok("No changes were made.");
-			}
-
-		} catch (Exception e) {
-			logger.error("Error updating OFF_BS_ITEMS record", e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Error updating record: " + e.getMessage());
-		}
-	}
-	
-	
-	
-	
-
-}
