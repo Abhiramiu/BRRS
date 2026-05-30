@@ -1249,7 +1249,7 @@ public class BRRS_M_CA2_ReportService {
 					numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-					int startRow = 9;
+					int startRow = 5;
 
 					if (!dataList.isEmpty()) {
 						for (int i = 0; i < dataList.size(); i++) {
@@ -1259,9 +1259,31 @@ public class BRRS_M_CA2_ReportService {
 							if (row == null) {
 								row = sheet.createRow(startRow + i);
 							}
+							
+							
+
+						
+														
+														
+														
+														
+							
+							
 
 							Cell cell3, cell4;
 							CellStyle originalStyle;
+							
+							
+							//row6
+							// Column C
+							Cell cellBdate = row.createCell(2);
+							if (record.getReport_date() != null) {
+								cellBdate.setCellValue(record.getReport_date());
+								cellBdate.setCellStyle(dateStyle);
+							} else {
+								cellBdate.setCellValue("");
+								cellBdate.setCellStyle(textStyle);
+							}
 
 // ===== Row 10 / Col D =====
 							row = sheet.getRow(9);
@@ -1671,7 +1693,7 @@ public class BRRS_M_CA2_ReportService {
 				numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-				int startRow = 9;
+				int startRow = 5;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -1684,6 +1706,18 @@ public class BRRS_M_CA2_ReportService {
 
 						Cell cell3, cell4;
 						CellStyle originalStyle;
+						
+						//row6
+						// Column C
+						Cell cellBdate = row.createCell(2);
+						if (record.getReport_date() != null) {
+							cellBdate.setCellValue(record.getReport_date());
+							cellBdate.setCellStyle(dateStyle);
+						} else {
+							cellBdate.setCellValue("");
+							cellBdate.setCellStyle(textStyle);
+						}
+
 
 // ROW 10 = Common shares
 
@@ -2100,7 +2134,7 @@ public class BRRS_M_CA2_ReportService {
 			numberStyle.setFont(font);
 //--- End of Style Definitions ---
 
-			int startRow = 9;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -2113,6 +2147,20 @@ public class BRRS_M_CA2_ReportService {
 
 					Cell cell3, cell4;
 					CellStyle originalStyle;
+					
+					//row6
+					// Column C
+					Cell cellBdate = row.createCell(2);
+					if (record.getReport_date() != null) {
+						cellBdate.setCellValue(record.getReport_date());
+						cellBdate.setCellStyle(dateStyle);
+					} else {
+						cellBdate.setCellValue("");
+						cellBdate.setCellStyle(textStyle);
+					}
+
+					
+					
 // ===== Row 10 / Col D =====
 					row = sheet.getRow(9);
 					cell4 = row.getCell(3);
@@ -2499,7 +2547,7 @@ public class BRRS_M_CA2_ReportService {
 			numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-			int startRow = 9;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -2512,6 +2560,18 @@ public class BRRS_M_CA2_ReportService {
 
 					Cell cell3, cell4;
 					CellStyle originalStyle;
+					
+					//row6
+					// Column C
+					Cell cellBdate = row.createCell(2);
+					if (record.getReport_date() != null) {
+						cellBdate.setCellValue(record.getReport_date());
+						cellBdate.setCellStyle(dateStyle);
+					} else {
+						cellBdate.setCellValue("");
+						cellBdate.setCellStyle(textStyle);
+					}
+
 
 // ROW 10 = Common shares
 
@@ -2930,7 +2990,7 @@ public class BRRS_M_CA2_ReportService {
 			numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-			int startRow = 9;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -2944,6 +3004,18 @@ public class BRRS_M_CA2_ReportService {
 					}
 					Cell cell3, cell4;
 					CellStyle originalStyle;
+					
+					//row6
+					// Column C
+					Cell cellBdate = row.createCell(2);
+					if (record.getReport_date() != null) {
+						cellBdate.setCellValue(record.getReport_date());
+						cellBdate.setCellStyle(dateStyle);
+					} else {
+						cellBdate.setCellValue("");
+						cellBdate.setCellStyle(textStyle);
+					}
+
 
 // ===== Row 10 / Col D =====
 					row = sheet.getRow(9);
@@ -3331,7 +3403,7 @@ public class BRRS_M_CA2_ReportService {
 			numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-			int startRow = 9;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -3344,6 +3416,18 @@ public class BRRS_M_CA2_ReportService {
 
 					Cell cell3, cell4;
 					CellStyle originalStyle;
+					
+					//row6
+					// Column C
+					Cell cellBdate = row.createCell(2);
+					if (record.getReport_date() != null) {
+						cellBdate.setCellValue(record.getReport_date());
+						cellBdate.setCellStyle(dateStyle);
+					} else {
+						cellBdate.setCellValue("");
+						cellBdate.setCellStyle(textStyle);
+					}
+
 
 // ROW 10 = Common shares
 

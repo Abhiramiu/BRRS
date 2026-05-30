@@ -1243,7 +1243,10 @@ CreationHelper createHelper = workbook.getCreationHelper();
 		numberStyle.setBorderLeft(BorderStyle.THIN);
 		numberStyle.setBorderRight(BorderStyle.THIN);
 		numberStyle.setFont(font);
-		int startRow = 10;
+//		int startRow = 10;
+		
+		int startRow = 6;
+
 
 		if (!dataList1.isEmpty()) {
 			for (int i = 0; i < dataList1.size(); i++) {
@@ -1261,6 +1264,24 @@ CreationHelper createHelper = workbook.getCreationHelper();
 				if (row == null) {
 					row = sheet.createRow(startRow + i);
 				}
+				
+				//row 6
+					// Column B
+					Cell cellBdate = row.createCell(2);
+					if (record1.getReportDate() != null) {
+						cellBdate.setCellValue(record1.getReportDate());
+						cellBdate.setCellStyle(dateStyle);
+					} else {
+						cellBdate.setCellValue("");
+						cellBdate.setCellStyle(textStyle);
+					}
+					
+					
+					//ROW 11
+					row = sheet.getRow(10);
+
+				
+				
 				//ROW11		
 				//COL-B
 				Cell cell1=row.getCell(1);
@@ -29252,7 +29273,7 @@ CreationHelper createHelper = workbook.getCreationHelper();
 		numberStyle.setBorderLeft(BorderStyle.THIN);
 		numberStyle.setBorderRight(BorderStyle.THIN);
 		numberStyle.setFont(font);
-		int startRow = 11;
+		int startRow = 6;
 
 		if (!dataList1.isEmpty()) {
 			for (int i = 0; i < dataList1.size(); i++) {
@@ -29270,6 +29291,22 @@ CreationHelper createHelper = workbook.getCreationHelper();
 				if (row == null) {
 					row = sheet.createRow(startRow + i);
 				}
+				
+				
+				//row 7
+				// Column B
+				Cell cellBdate = row.createCell(2);
+				if (record1.getReportDate() != null) {
+					cellBdate.setCellValue(record1.getReportDate());
+					cellBdate.setCellStyle(dateStyle);
+				} else {
+					cellBdate.setCellValue("");
+					cellBdate.setCellStyle(textStyle);
+				}
+				
+				
+				//ROW 11
+				row = sheet.getRow(10);
 
 				//ROW11		
 				//COL-B
@@ -51771,7 +51808,7 @@ public byte[] getExcel_Email_M_RPDExcelNormal(String filename,String reportId, S
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
 			
-			int startRow = 10;
+			int startRow = 7;
 	      		
 	  if (!dataList1.isEmpty()) {
 			for (int i = 0; i < dataList1.size(); i++) {
@@ -51789,6 +51826,22 @@ public byte[] getExcel_Email_M_RPDExcelNormal(String filename,String reportId, S
 				if (row == null) {
 					row = sheet.createRow(startRow + i);
 				}
+				
+				//row 7
+				// Column B
+				Cell cellBdate = row.createCell(4);
+				if (record1.getReportDate() != null) {
+					cellBdate.setCellValue(record1.getReportDate());
+					cellBdate.setCellStyle(dateStyle);
+				} else {
+					cellBdate.setCellValue("");
+					cellBdate.setCellStyle(textStyle);
+				}
+				
+				
+				//ROW 11
+				row = sheet.getRow(10);
+
 				//ROW11		
 				//COL-B
 				Cell cell1=row.getCell(3);
@@ -53644,7 +53697,7 @@ public byte[] BRRS_M_RPDResubExcel(String filename, String reportId, String from
 			numberStyle.setBorderLeft(BorderStyle.THIN);
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
-			int startRow = 10;
+			int startRow = 6;
 
 			if (!dataList1.isEmpty()) {
 				for (int i = 0; i < dataList1.size(); i++) {
@@ -53662,6 +53715,22 @@ public byte[] BRRS_M_RPDResubExcel(String filename, String reportId, String from
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					
+					//row 7
+					// Column B
+					Cell cellBdate = row.createCell(2);
+					if (record1.getReportDate() != null) {
+						cellBdate.setCellValue(record1.getReportDate());
+						cellBdate.setCellStyle(dateStyle);
+					} else {
+						cellBdate.setCellValue("");
+						cellBdate.setCellStyle(textStyle);
+					}
+					
+					
+					//ROW 11
+					row = sheet.getRow(10);
+					
 					//ROW11		
 					//COL-B
 					Cell cell1=row.getCell(1);
@@ -80265,7 +80334,7 @@ public void next201_5_6(Sheet sheet,BRRS_M_RPD_Resub_Summary_Entity5 record5,BRR
 				numberStyle.setBorderRight(BorderStyle.THIN);
 				numberStyle.setFont(font);
 				
-				int startRow = 10;
+				int startRow = 7;
 		      		
 		  if (!dataList1.isEmpty()) {
 				for (int i = 0; i < dataList1.size(); i++) {
@@ -80285,6 +80354,21 @@ public void next201_5_6(Sheet sheet,BRRS_M_RPD_Resub_Summary_Entity5 record5,BRR
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					
+					//row 8
+					// Column B
+					Cell cellBdate = row.createCell(4);
+					if (record1.getReportDate() != null) {
+						cellBdate.setCellValue(record1.getReportDate());
+						cellBdate.setCellStyle(dateStyle);
+					} else {
+						cellBdate.setCellValue("");
+						cellBdate.setCellStyle(textStyle);
+					}
+					
+					
+					//ROW 11
+					row = sheet.getRow(10);
 					//ROW11		
 					//COL-B
 					Cell cell1=row.getCell(3);
@@ -82115,7 +82199,7 @@ public void next201_5_6(Sheet sheet,BRRS_M_RPD_Resub_Summary_Entity5 record5,BRR
 				numberStyle.setBorderRight(BorderStyle.THIN);
 				numberStyle.setFont(font);
 				
-				int startRow = 10;
+				int startRow = 7;
 		      		
 		  if (!dataList1.isEmpty()) {
 				for (int i = 0; i < dataList1.size(); i++) {
@@ -82135,6 +82219,22 @@ public void next201_5_6(Sheet sheet,BRRS_M_RPD_Resub_Summary_Entity5 record5,BRR
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					
+					
+					//row 8
+					// Column B
+					Cell cellBdate = row.createCell(4);
+					if (record1.getReportDate() != null) {
+						cellBdate.setCellValue(record1.getReportDate());
+						cellBdate.setCellStyle(dateStyle);
+					} else {
+						cellBdate.setCellValue("");
+						cellBdate.setCellStyle(textStyle);
+					}
+					
+					
+					//ROW 11
+					row = sheet.getRow(10);
 					//ROW11		
 					//COL-B
 					Cell cell1=row.getCell(3);

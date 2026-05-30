@@ -554,7 +554,7 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-				int startRow = 11;
+				int startRow = 5;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -564,6 +564,22 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						
+						//row6
+						// Column B
+						Cell cellBdate = row.createCell(6);
+						if (record.getReportDate() != null) {
+							cellBdate.setCellValue(record.getReportDate());
+							cellBdate.setCellStyle(dateStyle);
+						} else {
+							cellBdate.setCellValue("");
+							cellBdate.setCellStyle(textStyle);
+						}
+						
+						
+						
+						//ROW 12
+						row = sheet.getRow(11);
 
 	//row12
 				// Column D 
@@ -4197,7 +4213,7 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 			numberStyle.setFont(font);
 //--- End of Style Definitions ---
 
-			int startRow = 11;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -4207,6 +4223,23 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					
+					
+					//row6
+					// Column B
+					Cell cellBdate = row.createCell(6);
+					if (record.getReport_date() != null) {
+						cellBdate.setCellValue(record.getReport_date());
+						cellBdate.setCellStyle(dateStyle);
+					} else {
+						cellBdate.setCellValue("");
+						cellBdate.setCellStyle(textStyle);
+					}
+					
+					
+					
+					//ROW 12
+					row = sheet.getRow(11);
 
 //row12
 					// Column D 
@@ -7844,7 +7877,7 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 11;
+			int startRow = 5;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -7856,6 +7889,22 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					
+					//row6
+					// Column B
+					Cell cellBdate = row.createCell(6);
+					if (record.getReport_date() != null) {
+						cellBdate.setCellValue(record.getReport_date());
+						cellBdate.setCellStyle(dateStyle);
+					} else {
+						cellBdate.setCellValue("");
+						cellBdate.setCellStyle(textStyle);
+					}
+					
+					
+					
+					//ROW 12
+					row = sheet.getRow(11);
 
 					//row12
 					// Column D 
@@ -11502,7 +11551,7 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-				int startRow = 11;
+				int startRow = 5;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -11512,6 +11561,22 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						
+						//row6
+						// Column B
+						Cell cellBdate = row.createCell(6);
+						if (record.getReportDate() != null) {
+							cellBdate.setCellValue(record.getReportDate());
+							cellBdate.setCellStyle(dateStyle);
+						} else {
+							cellBdate.setCellValue("");
+							cellBdate.setCellStyle(textStyle);
+						}
+						
+						
+						
+						//ROW 12
+						row = sheet.getRow(11);
 
 		//row12
 						// Column C
@@ -14811,7 +14876,7 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-				int startRow = 11;
+				int startRow = 5;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -14822,6 +14887,21 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 							row = sheet.createRow(startRow + i);
 						}
 
+						//row6
+						// Column B
+						Cell cellBdate = row.createCell(6);
+						if (record.getReport_date() != null) {
+							cellBdate.setCellValue(record.getReport_date());
+							cellBdate.setCellStyle(dateStyle);
+						} else {
+							cellBdate.setCellValue("");
+							cellBdate.setCellStyle(textStyle);
+						}
+						
+						
+						
+						//ROW 12
+						row = sheet.getRow(11);
 
 						//row12
 					// Column C
@@ -18125,7 +18205,7 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-				int startRow = 11;
+				int startRow = 5;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -18135,6 +18215,22 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						
+						//row6
+						// Column B
+						Cell cellBdate = row.createCell(6);
+						if (record.getReport_date() != null) {
+							cellBdate.setCellValue(record.getReport_date());
+							cellBdate.setCellStyle(dateStyle);
+						} else {
+							cellBdate.setCellValue("");
+							cellBdate.setCellStyle(textStyle);
+						}
+						
+						
+						
+						//ROW 12
+						row = sheet.getRow(11);
 
 			//row12
 					// Column C

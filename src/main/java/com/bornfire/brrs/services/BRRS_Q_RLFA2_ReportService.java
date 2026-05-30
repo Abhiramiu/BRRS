@@ -536,7 +536,7 @@ public class BRRS_Q_RLFA2_ReportService {
 						numberStyle.setFont(font);
 						// --- End of Style Definitions ---
 
-						int startRow = 10;
+						int startRow = 6;
 
 						if (!dataList.isEmpty()) {
 							for (int i = 0; i < dataList.size(); i++) {
@@ -546,6 +546,25 @@ public class BRRS_Q_RLFA2_ReportService {
 								if (row == null) {
 									row = sheet.createRow(startRow + i);
 								}
+								
+								
+
+								//row7
+															// Column B
+															Cell cellBdate = row.createCell(1);
+															if (record.getReport_date() != null) {
+																cellBdate.setCellValue(record.getReport_date());
+																cellBdate.setCellStyle(dateStyle);
+															} else {
+																cellBdate.setCellValue("");
+																cellBdate.setCellStyle(textStyle);
+															}
+															
+															
+															
+															//ROW 11
+															row = sheet.getRow(10);
+															
 
 			// row11
 							// Column B2 - Original Amount 
@@ -2249,7 +2268,7 @@ public class BRRS_Q_RLFA2_ReportService {
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-				int startRow = 8;
+				int startRow = 6;
 
 					if (!dataList.isEmpty()) {
 						for (int i = 0; i < dataList.size(); i++) {
@@ -2259,6 +2278,25 @@ public class BRRS_Q_RLFA2_ReportService {
 							if (row == null) {
 								row = sheet.createRow(startRow + i);
 							}
+							
+
+							//row7
+														// Column B
+														Cell cellBdate = row.createCell(3);
+														if (record.getReport_date() != null) {
+															cellBdate.setCellValue(record.getReport_date());
+															cellBdate.setCellStyle(dateStyle);
+														} else {
+															cellBdate.setCellValue("");
+															cellBdate.setCellStyle(textStyle);
+														}
+														
+														
+														
+														//ROW 9
+														row = sheet.getRow(8);
+														
+							
 							
 							// row10
 							// Column B2 - Original Amount 
@@ -4270,7 +4308,7 @@ public class BRRS_Q_RLFA2_ReportService {
 				numberStyle.setFont(font);
 	// --- End of Style Definitions ---
 
-				int startRow = 10;
+				int startRow = 6;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -4280,6 +4318,24 @@ public class BRRS_Q_RLFA2_ReportService {
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						
+
+						//row7
+													// Column B
+													Cell cellBdate = row.createCell(1);
+													if (record.getReport_date() != null) {
+														cellBdate.setCellValue(record.getReport_date());
+														cellBdate.setCellStyle(dateStyle);
+													} else {
+														cellBdate.setCellValue("");
+														cellBdate.setCellStyle(textStyle);
+													}
+													
+													
+													
+													//ROW 13
+													row = sheet.getRow(10);
+													
 
 	              			// row11
 							// Column B2 - Original Amount 
@@ -5960,7 +6016,7 @@ public class BRRS_Q_RLFA2_ReportService {
 				// --- End of Style Definitions ---
 
 				
-	int startRow = 8;
+	int startRow = 6;
 
 					if (!dataList.isEmpty()) {
 						for (int i = 0; i < dataList.size(); i++) {
@@ -5970,6 +6026,22 @@ public class BRRS_Q_RLFA2_ReportService {
 							if (row == null) {
 								row = sheet.createRow(startRow + i);
 							}
+							
+							//row7
+							// Column B
+							Cell cellBdate = row.createCell(3);
+							if (record.getReport_date() != null) {
+								cellBdate.setCellValue(record.getReport_date());
+								cellBdate.setCellStyle(dateStyle);
+							} else {
+								cellBdate.setCellValue("");
+								cellBdate.setCellStyle(textStyle);
+							}
+							
+							
+							
+							//ROW 9
+							row = sheet.getRow(8);
 							
 
 							// row10
@@ -7983,7 +8055,7 @@ public class BRRS_Q_RLFA2_ReportService {
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-				int startRow = 10;
+				int startRow = 6;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -7995,6 +8067,22 @@ public class BRRS_Q_RLFA2_ReportService {
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						
+						//row7
+						// Column B
+						Cell cellBdate = row.createCell(1);
+						if (record.getReport_date() != null) {
+							cellBdate.setCellValue(record.getReport_date());
+							cellBdate.setCellStyle(dateStyle);
+						} else {
+							cellBdate.setCellValue("");
+							cellBdate.setCellStyle(textStyle);
+						}
+						
+						
+						
+						//ROW 11
+						row = sheet.getRow(10);
 
 							// row11
 							// Column B2 - Original Amount 
@@ -9676,7 +9764,7 @@ public class BRRS_Q_RLFA2_ReportService {
 				// --- End of Style Definitions ---
 
 
-	int startRow = 8;
+	int startRow = 6;
 
 					if (!dataList.isEmpty()) {
 						for (int i = 0; i < dataList.size(); i++) {
@@ -9687,6 +9775,21 @@ public class BRRS_Q_RLFA2_ReportService {
 								row = sheet.createRow(startRow + i);
 							}
 							
+							//row7
+							// Column B
+							Cell cellBdate = row.createCell(3);
+							if (record.getReport_date() != null) {
+								cellBdate.setCellValue(record.getReport_date());
+								cellBdate.setCellStyle(dateStyle);
+							} else {
+								cellBdate.setCellValue("");
+								cellBdate.setCellStyle(textStyle);
+							}
+							
+							
+							
+							//ROW 9
+							row = sheet.getRow(8);
 
 							// row10
 							// Column B2 - Original Amount 

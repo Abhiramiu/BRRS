@@ -918,7 +918,7 @@ numberStyle.setBorderRight(BorderStyle.THIN);
 numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-int startRow = 9;
+int startRow = 6;
 
 if (!dataList.isEmpty()) {
 for (int i = 0; i < dataList.size(); i++) {
@@ -928,6 +928,24 @@ Row row = sheet.getRow(startRow + i);
 if (row == null) {
 row = sheet.createRow(startRow + i);
 }
+
+//row7
+// Column B
+Cell cellBdate = row.createCell(1);
+if (record.getReport_date() != null) {
+	cellBdate.setCellValue(record.getReport_date());
+	cellBdate.setCellStyle(dateStyle);
+} else {
+	cellBdate.setCellValue("");
+	cellBdate.setCellStyle(textStyle);
+}
+
+
+
+//ROW 10
+row = sheet.getRow(9);
+
+
 // row10
 // Column E
 Cell cellE = row.createCell(4);
@@ -2663,7 +2681,7 @@ numberStyle.setBorderRight(BorderStyle.THIN);
 numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-int startRow = 9;
+int startRow = 6;
 
 if (!dataList.isEmpty()) {
 for (int i = 0; i < dataList.size(); i++) {
@@ -2673,6 +2691,23 @@ Row row = sheet.getRow(startRow + i);
 if (row == null) {
 row = sheet.createRow(startRow + i);
 }
+
+
+//row7
+//Column B
+Cell cellBdate = row.createCell(1);
+if (record.getReport_date() != null) {
+	cellBdate.setCellValue(record.getReport_date());
+	cellBdate.setCellStyle(dateStyle);
+} else {
+	cellBdate.setCellValue("");
+	cellBdate.setCellStyle(textStyle);
+}
+
+
+
+//ROW 10
+row = sheet.getRow(9);
 
 //ROW10  Balance at the beginning of period
 
@@ -4692,7 +4727,7 @@ numberStyle.setBorderRight(BorderStyle.THIN);
 numberStyle.setFont(font);
 //--- End of Style Definitions ---
 
-int startRow = 9;
+int startRow = 6;
 
 if (!dataList.isEmpty()) {
 for (int i = 0; i < dataList.size(); i++) {
@@ -4702,6 +4737,23 @@ Row row = sheet.getRow(startRow + i);
 if (row == null) {
 row = sheet.createRow(startRow + i);
 }
+
+
+//row7
+//Column B
+Cell cellBdate = row.createCell(1);
+if (record.getReport_date() != null) {
+	cellBdate.setCellValue(record.getReport_date());
+	cellBdate.setCellStyle(dateStyle);
+} else {
+	cellBdate.setCellValue("");
+	cellBdate.setCellStyle(textStyle);
+}
+
+
+
+//ROW 10
+row = sheet.getRow(9);
 // row10
 // Column E
 Cell cellE = row.createCell(4);
@@ -6417,7 +6469,7 @@ numberStyle.setBorderRight(BorderStyle.THIN);
 numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-int startRow = 9;
+int startRow = 6;
 
 if (!dataList.isEmpty()) {
 for (int i = 0; i < dataList.size(); i++) {
@@ -6427,6 +6479,23 @@ Row row = sheet.getRow(startRow + i);
 if (row == null) {
 row = sheet.createRow(startRow + i);
 }
+
+
+//row7
+//Column B
+Cell cellBdate = row.createCell(1);
+if (record.getReport_date() != null) {
+	cellBdate.setCellValue(record.getReport_date());
+	cellBdate.setCellStyle(dateStyle);
+} else {
+	cellBdate.setCellValue("");
+	cellBdate.setCellStyle(textStyle);
+}
+
+
+
+//ROW 10
+row = sheet.getRow(9);
 
 //EMAIL EXCEL 
 
@@ -8451,7 +8520,7 @@ numberStyle.setBorderRight(BorderStyle.THIN);
 numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-int startRow = 9;
+int startRow = 6;
 
 if (!dataList.isEmpty()) {
 for (int i = 0; i < dataList.size(); i++) {
@@ -8463,6 +8532,23 @@ Row row = sheet.getRow(startRow + i);
 if (row == null) {
 row = sheet.createRow(startRow + i);
 }
+
+
+//row7
+//Column B
+Cell cellBdate = row.createCell(1);
+if (record.getReport_date() != null) {
+	cellBdate.setCellValue(record.getReport_date());
+	cellBdate.setCellStyle(dateStyle);
+} else {
+	cellBdate.setCellValue("");
+	cellBdate.setCellStyle(textStyle);
+}
+
+
+
+//ROW 10
+row = sheet.getRow(9);
 // row10
 // Column E
 Cell cellE = row.createCell(4);
@@ -10176,7 +10262,7 @@ numberStyle.setBorderRight(BorderStyle.THIN);
 numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-int startRow = 9;
+int startRow = 6;
 
 if (!dataList.isEmpty()) {
 for (int i = 0; i < dataList.size(); i++) {
@@ -10187,6 +10273,21 @@ if (row == null) {
 row = sheet.createRow(startRow + i);
 }
 
+//row7
+//Column B
+Cell cellBdate = row.createCell(1);
+if (record.getReport_date() != null) {
+	cellBdate.setCellValue(record.getReport_date());
+	cellBdate.setCellStyle(dateStyle);
+} else {
+	cellBdate.setCellValue("");
+	cellBdate.setCellStyle(textStyle);
+}
+
+
+
+//ROW 10
+row = sheet.getRow(9);
 //EMAIL EXCEL 
 
 //int startRow = 9;

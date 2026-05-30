@@ -547,7 +547,7 @@ public class BRRS_M_INT_RATES_ReportService {
 						numberStyle.setFont(font);
 						// --- End of Style Definitions ---
 
-						int startRow = 10;
+						int startRow = 5;
 
 						if (!dataList.isEmpty()) {
 							for (int i = 0; i < dataList.size(); i++) {
@@ -557,6 +557,22 @@ public class BRRS_M_INT_RATES_ReportService {
 								if (row == null) {
 									row = sheet.createRow(startRow + i);
 								}
+								
+								//row6
+								// Column B
+								Cell cellBdate = row.createCell(2);
+								if (record.getReportDate() != null) {
+									cellBdate.setCellValue(record.getReportDate());
+									cellBdate.setCellStyle(dateStyle);
+								} else {
+									cellBdate.setCellValue("");
+									cellBdate.setCellStyle(textStyle);
+								}
+								
+								
+								
+								//ROW 11
+								row = sheet.getRow(10);
 
 		Cell cell1 = row.createCell(1);
 						if (record.getR11_NOMINAL_INTEREST_RATE() != null) {
@@ -1678,7 +1694,7 @@ public class BRRS_M_INT_RATES_ReportService {
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-				int startRow = 10;
+				int startRow = 5;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -1688,6 +1704,22 @@ public class BRRS_M_INT_RATES_ReportService {
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						
+						//row6
+						// Column B
+						Cell cellBdate = row.createCell(2);
+						if (record.getReportDate() != null) {
+							cellBdate.setCellValue(record.getReportDate());
+							cellBdate.setCellStyle(dateStyle);
+						} else {
+							cellBdate.setCellValue("");
+							cellBdate.setCellStyle(textStyle);
+						}
+						
+						
+						
+						//ROW 11
+						row = sheet.getRow(10);
 
 
 							Cell cell1 = row.createCell(1);
@@ -2415,7 +2447,7 @@ public class BRRS_M_INT_RATES_ReportService {
 				numberStyle.setFont(font);
 	// --- End of Style Definitions ---
 
-				int startRow = 10;
+				int startRow = 5;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -2425,6 +2457,22 @@ public class BRRS_M_INT_RATES_ReportService {
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						
+						//row6
+						// Column B
+						Cell cellBdate = row.createCell(2);
+						if (record.getReport_date() != null) {
+							cellBdate.setCellValue(record.getReport_date());
+							cellBdate.setCellStyle(dateStyle);
+						} else {
+							cellBdate.setCellValue("");
+							cellBdate.setCellStyle(textStyle);
+						}
+						
+						
+						
+						//ROW 11
+						row = sheet.getRow(10);
 
 		Cell cell1 = row.createCell(1);
 							if (record.getR11_NOMINAL_INTEREST_RATE() != null) {
@@ -3539,7 +3587,7 @@ public class BRRS_M_INT_RATES_ReportService {
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-				int startRow = 10;
+				int startRow = 5;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -3549,6 +3597,22 @@ public class BRRS_M_INT_RATES_ReportService {
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						
+						//row6
+						// Column B
+						Cell cellBdate = row.createCell(2);
+						if (record.getReport_date() != null) {
+							cellBdate.setCellValue(record.getReport_date());
+							cellBdate.setCellStyle(dateStyle);
+						} else {
+							cellBdate.setCellValue("");
+							cellBdate.setCellStyle(textStyle);
+						}
+						
+						
+						
+						//ROW 11
+						row = sheet.getRow(10);
 
 	Cell cell1 = row.createCell(1);
 			if (record.getR11_NOMINAL_INTEREST_RATE() != null) {
@@ -4271,7 +4335,7 @@ public class BRRS_M_INT_RATES_ReportService {
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-				int startRow = 10;
+				int startRow = 5;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -4283,6 +4347,21 @@ public class BRRS_M_INT_RATES_ReportService {
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						//row6
+						// Column B
+						Cell cellBdate = row.createCell(2);
+						if (record.getReport_date() != null) {
+							cellBdate.setCellValue(record.getReport_date());
+							cellBdate.setCellStyle(dateStyle);
+						} else {
+							cellBdate.setCellValue("");
+							cellBdate.setCellStyle(textStyle);
+						}
+						
+						
+						
+						//ROW 11
+						row = sheet.getRow(10);
 
 						Cell cell1 = row.createCell(1);
 						if (record.getR11_NOMINAL_INTEREST_RATE() != null) {
@@ -5398,7 +5477,7 @@ public class BRRS_M_INT_RATES_ReportService {
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-				int startRow = 10;
+				int startRow = 5;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -5408,6 +5487,22 @@ public class BRRS_M_INT_RATES_ReportService {
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						
+						//row6
+						// Column B
+						Cell cellBdate = row.createCell(2);
+						if (record.getReport_date() != null) {
+							cellBdate.setCellValue(record.getReport_date());
+							cellBdate.setCellStyle(dateStyle);
+						} else {
+							cellBdate.setCellValue("");
+							cellBdate.setCellStyle(textStyle);
+						}
+						
+						
+						
+						//ROW 11
+						row = sheet.getRow(10);
 
 		Cell cell1 = row.createCell(1);
 		if (record.getR11_NOMINAL_INTEREST_RATE() != null) {

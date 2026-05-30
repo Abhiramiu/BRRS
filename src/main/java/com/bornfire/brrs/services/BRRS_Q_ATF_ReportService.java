@@ -854,7 +854,7 @@ public class BRRS_Q_ATF_ReportService {
 							numberStyle.setFont(font);
 							// --- End of Style Definitions ---
 
-							int startRow = 11;
+							int startRow = 6;
 
 							if (!dataList.isEmpty()) {
 								for (int i = 0; i < dataList.size(); i++) {
@@ -864,6 +864,23 @@ public class BRRS_Q_ATF_ReportService {
 									if (row == null) {
 										row = sheet.createRow(startRow + i);
 									}
+									
+									//row7
+									// Column B
+									Cell cellBdate = row.createCell(1);
+									if (record.getReport_date() != null) {
+										cellBdate.setCellValue(record.getReport_date());
+										cellBdate.setCellStyle(dateStyle);
+									} else {
+										cellBdate.setCellValue("");
+										cellBdate.setCellStyle(textStyle);
+									}
+									
+									
+									
+									//ROW 12
+									row = sheet.getRow(11);
+									
 		// row12
 							
 							
@@ -3026,7 +3043,7 @@ public class BRRS_Q_ATF_ReportService {
 					numberStyle.setFont(font);
 					// --- End of Style Definitions ---
 
-					int startRow = 9;
+					int startRow = 3;
 
 					if (!dataList.isEmpty()) {
 						for (int i = 0; i < dataList.size(); i++) {
@@ -3037,6 +3054,23 @@ public class BRRS_Q_ATF_ReportService {
 								row = sheet.createRow(startRow + i);
 							}
 
+							
+							//row4
+							// Column B
+							Cell cellBdate = row.createCell(1);
+							if (record.getReport_date() != null) {
+								cellBdate.setCellValue(record.getReport_date());
+								cellBdate.setCellStyle(dateStyle);
+							} else {
+								cellBdate.setCellValue("");
+								cellBdate.setCellStyle(textStyle);
+							}
+							
+							
+							
+							//ROW 10
+							row = sheet.getRow(9);
+							
 
 		                  // row10 central government new
 							
@@ -5166,7 +5200,7 @@ public class BRRS_Q_ATF_ReportService {
 					numberStyle.setFont(font);
 		// --- End of Style Definitions ---
 
-					int startRow = 11;
+					int startRow = 6;
 
 					if (!dataList.isEmpty()) {
 						for (int i = 0; i < dataList.size(); i++) {
@@ -5176,6 +5210,22 @@ public class BRRS_Q_ATF_ReportService {
 							if (row == null) {
 								row = sheet.createRow(startRow + i);
 							}
+							
+							//row7
+							// Column B
+							Cell cellBdate = row.createCell(1);
+							if (record.getReport_date() != null) {
+								cellBdate.setCellValue(record.getReport_date());
+								cellBdate.setCellStyle(dateStyle);
+							} else {
+								cellBdate.setCellValue("");
+								cellBdate.setCellStyle(textStyle);
+							}
+							
+							
+							
+							//ROW 12
+							row = sheet.getRow(11);
 
 		// row12
 							
@@ -7318,7 +7368,7 @@ public class BRRS_Q_ATF_ReportService {
 					numberStyle.setFont(font);
 					// --- End of Style Definitions ---
 
-					int startRow = 9;
+					int startRow = 3;
 
 					if (!dataList.isEmpty()) {
 						for (int i = 0; i < dataList.size(); i++) {
@@ -7328,6 +7378,22 @@ public class BRRS_Q_ATF_ReportService {
 							if (row == null) {
 								row = sheet.createRow(startRow + i);
 							}
+							
+							//row4
+							// Column B
+							Cell cellBdate = row.createCell(1);
+							if (record.getReport_date() != null) {
+								cellBdate.setCellValue(record.getReport_date());
+								cellBdate.setCellStyle(dateStyle);
+							} else {
+								cellBdate.setCellValue("");
+								cellBdate.setCellStyle(textStyle);
+							}
+							
+							
+							
+							//ROW 10
+							row = sheet.getRow(9);
 
 
 		                  // row10 central government new
@@ -9451,7 +9517,7 @@ public class BRRS_Q_ATF_ReportService {
 			 * numberStyle.setBorderRight(BorderStyle.THIN); numberStyle.setFont(font); //
 			 * --- End of Style Definitions ---
 			 * 
-			 * int startRow = 11;
+			 * int startRow = 6;
 			 * 
 			 * if (!dataList.isEmpty()) { for (int i = 0; i < dataList.size(); i++) {
 			 * 
@@ -9460,6 +9526,24 @@ public class BRRS_Q_ATF_ReportService {
 			 * System.out.println("rownumber=" + startRow + i); Row row =
 			 * sheet.getRow(startRow + i); if (row == null) { row = sheet.createRow(startRow
 			 * + i); }
+			 * 
+			 * 		//row7
+									// Column B
+									Cell cellBdate = row.createCell(1);
+									if (record.getReport_date() != null) {
+										cellBdate.setCellValue(record.getReport_date());
+										cellBdate.setCellStyle(dateStyle);
+									} else {
+										cellBdate.setCellValue("");
+										cellBdate.setCellStyle(textStyle);
+									}
+									
+									
+									
+									//ROW 12
+									row = sheet.getRow(11);
+			 * 
+			 * 
 			 * 
 			 * // row12
 			 * 
@@ -10846,13 +10930,31 @@ public class BRRS_Q_ATF_ReportService {
 			 * numberStyle.setBorderRight(BorderStyle.THIN); numberStyle.setFont(font); //
 			 * --- End of Style Definitions ---
 			 * 
-			 * int startRow = 9;
+			 * int startRow = 3;
 			 * 
 			 * if (!dataList.isEmpty()) { for (int i = 0; i < dataList.size(); i++) {
 			 * Q_ATF_RESUB_Summary_Entity record = dataList.get(i);
 			 * System.out.println("rownumber=" + startRow + i); Row row =
 			 * sheet.getRow(startRow + i); if (row == null) { row = sheet.createRow(startRow
 			 * + i); }
+			 * 
+			 * 
+			 * 
+			 * 				//row4
+							// Column B
+							Cell cellBdate = row.createCell(1);
+							if (record.getReport_date() != null) {
+								cellBdate.setCellValue(record.getReport_date());
+								cellBdate.setCellStyle(dateStyle);
+							} else {
+								cellBdate.setCellValue("");
+								cellBdate.setCellStyle(textStyle);
+							}
+							
+							
+							
+							//ROW 10
+							row = sheet.getRow(9);
 			 * 
 			 * 
 			 * // row10 central government new

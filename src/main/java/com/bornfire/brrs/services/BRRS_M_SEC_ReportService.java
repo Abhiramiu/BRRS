@@ -1026,7 +1026,7 @@ List<M_SEC_Archival_Detail4_Entity> T4Master =
 						numberStyle.setFont(font);
 						// --- End of Style Definitions ---
 
-						int startRow = 10;
+						int startRow = 6;
 
 						if (!dataList1.isEmpty()) {
 							for (int i = 0; i < dataList1.size(); i++) {
@@ -1036,6 +1036,25 @@ List<M_SEC_Archival_Detail4_Entity> T4Master =
 								if (row == null) {
 									row = sheet.createRow(startRow + i);
 								}
+								
+								//row7
+								// Column B
+								Cell cellBdate = row.createCell(1);
+								if (record.getReportDate() != null) {
+									cellBdate.setCellValue(record.getReportDate());
+									cellBdate.setCellStyle(dateStyle);
+								} else {
+									cellBdate.setCellValue("");
+									cellBdate.setCellStyle(textStyle);
+								}
+								
+								
+								
+								//ROW 11
+								row = sheet.getRow(10);
+								
+								
+								
 
 			// row11
 						Cell cellB = row.createCell(1);
@@ -2025,7 +2044,7 @@ List<M_SEC_Archival_Detail4_Entity> T4Master =
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-				int startRow = 9;
+				int startRow = 6;
 
 				if (!dataList1.isEmpty()) {
 					for (int i = 0; i < dataList1.size(); i++) {
@@ -2035,6 +2054,25 @@ List<M_SEC_Archival_Detail4_Entity> T4Master =
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						
+						
+						//row7
+						// Column B
+						Cell cellBdate = row.createCell(5);
+						if (record.getReportDate() != null) {
+							cellBdate.setCellValue(record.getReportDate());
+							cellBdate.setCellStyle(dateStyle);
+						} else {
+							cellBdate.setCellValue("");
+							cellBdate.setCellStyle(textStyle);
+						}
+						
+						
+						
+						//ROW 10
+						row = sheet.getRow(9);
+						
+						
 
 		           // row10
 		// Column B2 - Original Amount
@@ -4006,7 +4044,7 @@ List<M_SEC_Archival_Detail4_Entity> T4Master =
 				numberStyle.setFont(font);
 	// --- End of Style Definitions ---
 
-				int startRow = 10;
+				int startRow = 6;
 
 				if (!dataList1.isEmpty()) {
 					for (int i = 0; i < dataList1.size(); i++) {
@@ -4016,6 +4054,22 @@ List<M_SEC_Archival_Detail4_Entity> T4Master =
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						
+						//row7
+						// Column B
+						Cell cellBdate = row.createCell(1);
+						if (record.getReport_date() != null) {
+							cellBdate.setCellValue(record.getReport_date());
+							cellBdate.setCellStyle(dateStyle);
+						} else {
+							cellBdate.setCellValue("");
+							cellBdate.setCellStyle(textStyle);
+						}
+						
+						
+						
+						//ROW 11
+						row = sheet.getRow(10);
 
 	// row11
 						// Column B2 - Original Amount
@@ -4978,7 +5032,7 @@ List<M_SEC_Archival_Detail4_Entity> T4Master =
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-				int startRow = 10;
+				int startRow = 6;
 
 				if (!dataList1.isEmpty()) {
 					for (int i = 0; i < dataList1.size(); i++) {
@@ -4988,6 +5042,23 @@ List<M_SEC_Archival_Detail4_Entity> T4Master =
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						
+						//row7
+						// Column B
+						Cell cellBdate = row.createCell(5);
+						if (record.getReport_date() != null) {
+							cellBdate.setCellValue(record.getReport_date());
+							cellBdate.setCellStyle(dateStyle);
+						} else {
+							cellBdate.setCellValue("");
+							cellBdate.setCellStyle(textStyle);
+						}
+						
+						
+						
+						//ROW 10
+						row = sheet.getRow(9);
+
 
 	// row10
 							// Column B2 - Original Amount
@@ -6955,7 +7026,7 @@ List<M_SEC_Archival_Detail4_Entity> T4Master =
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-				int startRow = 10;
+				int startRow = 6;
 
 				if (!dataList1.isEmpty()) {
 					for (int i = 0; i < dataList1.size(); i++) {
@@ -6967,6 +7038,22 @@ List<M_SEC_Archival_Detail4_Entity> T4Master =
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						
+						//row7
+						// Column B
+						Cell cellBdate = row.createCell(1);
+						if (record.getReport_date() != null) {
+							cellBdate.setCellValue(record.getReport_date());
+							cellBdate.setCellStyle(dateStyle);
+						} else {
+							cellBdate.setCellValue("");
+							cellBdate.setCellStyle(textStyle);
+						}
+						
+						
+						
+						//ROW 11
+						row = sheet.getRow(10);
 
 							// row11
 			// Column B2 - Original Amount
@@ -7930,7 +8017,7 @@ List<M_SEC_Archival_Detail4_Entity> T4Master =
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-				int startRow = 9;
+				int startRow = 6;
 
 				if (!dataList1.isEmpty()) {
 					for (int i = 0; i < dataList1.size(); i++) {
@@ -7940,6 +8027,22 @@ List<M_SEC_Archival_Detail4_Entity> T4Master =
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						
+						//row7
+						// Column B
+						Cell cellBdate = row.createCell(5);
+						if (record.getReport_date() != null) {
+							cellBdate.setCellValue(record.getReport_date());
+							cellBdate.setCellStyle(dateStyle);
+						} else {
+							cellBdate.setCellValue("");
+							cellBdate.setCellStyle(textStyle);
+						}
+						
+						
+						
+						//ROW 10
+						row = sheet.getRow(9);
 
 			// row10
 		// Column B2 - Original Amount

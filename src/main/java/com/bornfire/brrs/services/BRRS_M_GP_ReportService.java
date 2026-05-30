@@ -545,7 +545,7 @@ public class BRRS_M_GP_ReportService {
 						numberStyle.setFont(font);
 						// --- End of Style Definitions ---
 
-						int startRow = 11;
+						int startRow = 3;
 
 						if (!dataList.isEmpty()) {
 							for (int i = 0; i < dataList.size(); i++) {
@@ -555,6 +555,22 @@ public class BRRS_M_GP_ReportService {
 								if (row == null) {
 									row = sheet.createRow(startRow + i);
 								}
+								
+								//row4
+								// Column B
+								Cell cellBdate = row.createCell(1);
+								if (record.getReportDate() != null) {
+									cellBdate.setCellValue(record.getReportDate());
+									cellBdate.setCellStyle(dateStyle);
+								} else {
+									cellBdate.setCellValue("");
+									cellBdate.setCellStyle(textStyle);
+								}
+								
+								
+								
+								//ROW 11
+								row = sheet.getRow(10);
 
 		// row10
 						// Column C
@@ -2255,7 +2271,7 @@ public class BRRS_M_GP_ReportService {
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-				int startRow = 7;
+				int startRow = 3;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -2265,6 +2281,22 @@ public class BRRS_M_GP_ReportService {
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						
+						//row4
+						// Column B
+						Cell cellBdate = row.createCell(1);
+						if (record.getReportDate() != null) {
+							cellBdate.setCellValue(record.getReportDate());
+							cellBdate.setCellStyle(dateStyle);
+						} else {
+							cellBdate.setCellValue("");
+							cellBdate.setCellStyle(textStyle);
+						}
+						
+						
+						
+						//ROW 11
+						row = sheet.getRow(7);
 
 	//-------------------8
 					
@@ -3235,7 +3267,7 @@ public class BRRS_M_GP_ReportService {
 				numberStyle.setFont(font);
 	// --- End of Style Definitions ---
 
-				int startRow = 11;
+				int startRow = 3;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -3245,6 +3277,21 @@ public class BRRS_M_GP_ReportService {
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						//row4
+						// Column B
+						Cell cellBdate = row.createCell(1);
+						if (record.getReport_date() != null) {
+							cellBdate.setCellValue(record.getReport_date());
+							cellBdate.setCellStyle(dateStyle);
+						} else {
+							cellBdate.setCellValue("");
+							cellBdate.setCellStyle(textStyle);
+						}
+						
+						
+						
+						//ROW 11
+						row = sheet.getRow(10);
 
 	// row10
 										// Column C
@@ -4925,7 +4972,7 @@ public class BRRS_M_GP_ReportService {
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-				int startRow = 7;
+				int startRow = 3;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -4935,6 +4982,22 @@ public class BRRS_M_GP_ReportService {
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						
+						//row4
+						// Column B
+						Cell cellBdate = row.createCell(1);
+						if (record.getReport_date() != null) {
+							cellBdate.setCellValue(record.getReport_date());
+							cellBdate.setCellStyle(dateStyle);
+						} else {
+							cellBdate.setCellValue("");
+							cellBdate.setCellStyle(textStyle);
+						}
+						
+						
+						
+						//ROW 11
+						row = sheet.getRow(7);
 
 
 										//-------------------8
@@ -5907,7 +5970,7 @@ public class BRRS_M_GP_ReportService {
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-				int startRow = 11;
+				int startRow = 3;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -5919,6 +5982,22 @@ public class BRRS_M_GP_ReportService {
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						
+						//row4
+						// Column B
+						Cell cellBdate = row.createCell(1);
+						if (record.getReport_date() != null) {
+							cellBdate.setCellValue(record.getReport_date());
+							cellBdate.setCellStyle(dateStyle);
+						} else {
+							cellBdate.setCellValue("");
+							cellBdate.setCellStyle(textStyle);
+						}
+						
+						
+						
+						//ROW 11
+						row = sheet.getRow(10);
 
 					// row10
 										// Column C
@@ -7599,7 +7678,7 @@ public class BRRS_M_GP_ReportService {
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-				int startRow = 7;
+				int startRow = 3;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -7609,6 +7688,23 @@ public class BRRS_M_GP_ReportService {
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						
+
+						//row4
+						// Column B
+						Cell cellBdate = row.createCell(1);
+						if (record.getReport_date() != null) {
+							cellBdate.setCellValue(record.getReport_date());
+							cellBdate.setCellStyle(dateStyle);
+						} else {
+							cellBdate.setCellValue("");
+							cellBdate.setCellStyle(textStyle);
+						}
+						
+						
+						
+						//ROW 11
+						row = sheet.getRow(7);
 
 		//-------------------8
 					

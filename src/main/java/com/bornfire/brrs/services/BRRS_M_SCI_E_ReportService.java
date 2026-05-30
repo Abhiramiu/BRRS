@@ -936,7 +936,7 @@ numberStyle.setBorderRight(BorderStyle.THIN);
 numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-int startRow = 10;
+int startRow = 6;
 
 if (!dataList.isEmpty()) {
 for (int i = 0; i < dataList.size(); i++) {
@@ -946,6 +946,26 @@ Row row = sheet.getRow(startRow + i);
 if (row == null) {
 row = sheet.createRow(startRow + i);
 }
+
+
+
+
+//row7
+// Column B
+Cell cellBdate = row.createCell(1);
+if (record.getReport_date() != null) {
+	cellBdate.setCellValue(record.getReport_date());
+	cellBdate.setCellStyle(dateStyle);
+} else {
+	cellBdate.setCellValue("");
+	cellBdate.setCellStyle(textStyle);
+}
+
+
+
+//ROW 11
+row = sheet.getRow(10);
+
 
 Cell cellC,cellD;    
 
@@ -2509,7 +2529,7 @@ numberStyle.setBorderRight(BorderStyle.THIN);
 numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-int startRow = 10;
+int startRow = 6;
 
 if (!dataList.isEmpty()) {
 for (int i = 0; i < dataList.size(); i++) {
@@ -2520,7 +2540,21 @@ if (row == null) {
 row = sheet.createRow(startRow + i);
 }
 
+//row7
+//Column B
+Cell cellBdate = row.createCell(1);
+if (record.getReport_date() != null) {
+	cellBdate.setCellValue(record.getReport_date());
+	cellBdate.setCellStyle(dateStyle);
+} else {
+	cellBdate.setCellValue("");
+	cellBdate.setCellStyle(textStyle);
+}
 
+
+
+//ROW 11
+row = sheet.getRow(10);
 
 Cell cellC,cellD;   
 
@@ -4353,7 +4387,7 @@ numberStyle.setBorderRight(BorderStyle.THIN);
 numberStyle.setFont(font);
 //--- End of Style Definitions ---
 
-int startRow = 10;
+int startRow = 6;
 
 if (!dataList.isEmpty()) {
 for (int i = 0; i < dataList.size(); i++) {
@@ -4363,6 +4397,22 @@ Row row = sheet.getRow(startRow + i);
 if (row == null) {
 row = sheet.createRow(startRow + i);
 }
+
+//row7
+//Column B
+Cell cellBdate = row.createCell(1);
+if (record.getReport_date() != null) {
+	cellBdate.setCellValue(record.getReport_date());
+	cellBdate.setCellStyle(dateStyle);
+} else {
+	cellBdate.setCellValue("");
+	cellBdate.setCellStyle(textStyle);
+}
+
+
+
+//ROW 11
+row = sheet.getRow(10);
 
 Cell cellC,cellD;    
 
@@ -5905,7 +5955,7 @@ numberStyle.setBorderRight(BorderStyle.THIN);
 numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-int startRow = 10;
+int startRow = 6;
 
 if (!dataList.isEmpty()) {
 for (int i = 0; i < dataList.size(); i++) {
@@ -5916,6 +5966,21 @@ if (row == null) {
 row = sheet.createRow(startRow + i);
 }
 
+//row7
+//Column B
+Cell cellBdate = row.createCell(1);
+if (record.getReport_date() != null) {
+	cellBdate.setCellValue(record.getReport_date());
+	cellBdate.setCellStyle(dateStyle);
+} else {
+	cellBdate.setCellValue("");
+	cellBdate.setCellStyle(textStyle);
+}
+
+
+
+//ROW 11
+row = sheet.getRow(10);
 
 
 Cell cellC,cellD;   
@@ -7749,7 +7814,7 @@ numberStyle.setBorderRight(BorderStyle.THIN);
 numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-int startRow = 10;
+int startRow = 6;
 
 if (!dataList.isEmpty()) {
 for (int i = 0; i < dataList.size(); i++) {
@@ -7761,6 +7826,22 @@ Row row = sheet.getRow(startRow + i);
 if (row == null) {
 row = sheet.createRow(startRow + i);
 }
+
+//row7
+//Column B
+Cell cellBdate = row.createCell(1);
+if (record.getReport_date() != null) {
+	cellBdate.setCellValue(record.getReport_date());
+	cellBdate.setCellStyle(dateStyle);
+} else {
+	cellBdate.setCellValue("");
+	cellBdate.setCellStyle(textStyle);
+}
+
+
+
+//ROW 11
+row = sheet.getRow(10);
 
 Cell cellC,cellD;    
 
@@ -9302,7 +9383,7 @@ numberStyle.setBorderRight(BorderStyle.THIN);
 numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-int startRow = 10;
+int startRow = 6;
 
 if (!dataList.isEmpty()) {
 for (int i = 0; i < dataList.size(); i++) {
@@ -9313,7 +9394,21 @@ if (row == null) {
 row = sheet.createRow(startRow + i);
 }
 
+//row7
+//Column B
+Cell cellBdate = row.createCell(1);
+if (record.getReport_date() != null) {
+	cellBdate.setCellValue(record.getReport_date());
+	cellBdate.setCellStyle(dateStyle);
+} else {
+	cellBdate.setCellValue("");
+	cellBdate.setCellStyle(textStyle);
+}
 
+
+
+//ROW 11
+row = sheet.getRow(10);
 
 Cell cellC,cellD;   
 
