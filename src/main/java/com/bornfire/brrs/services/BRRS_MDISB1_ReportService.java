@@ -3,18 +3,28 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.CallableStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+import javax.persistence.Column;
+import javax.persistence.EntityManager;
+import javax.persistence.IdClass;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
@@ -39,12 +49,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
@@ -54,18 +68,9 @@ import com.bornfire.brrs.entities.BRRS_MDISB1_Archival_Summary_Repo1;
 import com.bornfire.brrs.entities.BRRS_MDISB1_Archival_Summary_Repo2;
 import com.bornfire.brrs.entities.BRRS_MDISB1_Archival_Summary_Repo3;
 import com.bornfire.brrs.entities.BRRS_MDISB1_Detail_Repo;
-import com.bornfire.brrs.entities.MDISB1_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.MDISB1_Archival_Summary_Entity1;
-import com.bornfire.brrs.entities.MDISB1_Archival_Summary_Entity2;
-import com.bornfire.brrs.entities.MDISB1_Archival_Summary_Manual;
-import com.bornfire.brrs.entities.MDISB1_Detail_Entity;
-import com.bornfire.brrs.entities.MDISB1_Summary_Entity1;
-import com.bornfire.brrs.entities.MDISB1_Summary_Entity2;
-import com.bornfire.brrs.entities.MDISB1_Summary_Entity_Manual;
 import com.bornfire.brrs.entities.MDISB1_Summary_Repo1;
 import com.bornfire.brrs.entities.MDISB1_Summary_Repo2;
 import com.bornfire.brrs.entities.MDISB1_Summary_Repo3;
-
 @Component
 @Service
 
@@ -78,61 +83,22542 @@ public class BRRS_MDISB1_ReportService {
 	@Autowired
 	SessionFactory sessionFactory;
 
-	@Autowired
-	BRRS_MDISB1_Detail_Repo BRRS_MDISB1_Detail_Repo;
+	// ENTITY MANAGER (Acts like Repository)
+		@PersistenceContext
+		private EntityManager entityManager;
+		
 
-	@Autowired
-	MDISB1_Summary_Repo1 MDISB1_Summary_repo1;
+	
+	// Fetch data by report date
+	public List<MDISB1_Summary_Entity1> getDataByDate1(Date reportDate) {
 
-	@Autowired
-	MDISB1_Summary_Repo2 MDISB1_Summary_repo2;
+		String sql = "SELECT * FROM BRRS_MDISB1_SUMMARYTABLE1 WHERE REPORT_DATE = ?";
 
-	@Autowired
-	MDISB1_Summary_Repo3 MDISB1_Summary_repo3;
+		return jdbcTemplate.query(sql, new Object[] { reportDate }, new MDISB1_RowMapper1());
+	}
 
-	@Autowired
-	BRRS_MDISB1_Archival_Summary_Repo1 brrs_MDISB1_Archival_Summary_Repo1;
+	// Fetch data by report date
+	public List<MDISB1_Summary_Entity2> getDataByDate2(Date reportDate) {
 
-	@Autowired
-	BRRS_MDISB1_Archival_Summary_Repo2 brrs_MDISB1_Archival_Summary_Repo2;
+		String sql = "SELECT * FROM BRRS_MDISB1_SUMMARYTABLE2 WHERE REPORT_DATE = ?";
 
-	@Autowired
-	BRRS_MDISB1_Archival_Summary_Repo3 brrs_MDISB1_Archival_Summary_Repo3;
+		return jdbcTemplate.query(sql, new Object[] { reportDate }, new MDISB1_RowMapper2());
+	}
 
-	@Autowired
-	BRRS_MDISB1_Archival_Detail_Repo brrs_MDISB1_Archival_Detail_Repo;
+	// Fetch data by report date
+	public List<MDISB1_Summary_Entity_Manual> getDataByDate3(Date reportDate) {
 
+		String sql = "SELECT * FROM BRRS_MDISB1_SUMMARYTABLE_MANUAL WHERE REPORT_DATE = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { reportDate }, new MDISB1_RowMapper_MANUAL());
+	}
+	
+	// GET REPORT_DATE + REPORT_VERSION
+
+		public List<Object[]> getMDISB1Archival1() {
+
+			String sql = "SELECT REPORT_DATE, REPORT_VERSION " + "FROM BRRS_MDISB1_ARCHIVALTABLE_SUMMARY1"
+					+ "ORDER BY REPORT_VERSION";
+
+			return jdbcTemplate.query(sql,
+					(rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"), rs.getBigDecimal("REPORT_VERSION") });
+		}
+		
+		public List<Object[]> getMDISB1Archival2() {
+
+			String sql = "SELECT REPORT_DATE, REPORT_VERSION " + "FROM BRRS_MDISB1_ARCHIVALTABLE_SUMMARY2"
+					+ "ORDER BY REPORT_VERSION";
+
+			return jdbcTemplate.query(sql,
+					(rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"), rs.getBigDecimal("REPORT_VERSION") });
+		}
+
+
+		public List<Object[]> getMDISB1ArchivalMAN() {
+
+			String sql = "SELECT REPORT_DATE, REPORT_VERSION " + "FROM BRRS_MDISB1_ARCHIVALTABLE_MANUAL"
+					+ "ORDER BY REPORT_VERSION";
+
+			return jdbcTemplate.query(sql,
+					(rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"), rs.getBigDecimal("REPORT_VERSION") });
+		}
+	
+	
+		//GET ARCHIVAL FULL DATA BY DATE + VERSION
+
+		public List<MDISB1_Archival_Summary_Entity1> getdatabydateListarchival1(Date REPORT_DATE,
+				BigDecimal REPORT_VERSION) {
+
+			String sql = "SELECT * FROM BRRS_MDISB1_ARCHIVALTABLE_SUMMARY1 " + "WHERE REPORT_DATE = ? "
+					+ "AND REPORT_VERSION = ?";
+
+			return jdbcTemplate.query(sql, new Object[] { REPORT_DATE, REPORT_VERSION }, new MDISB1_RowMapper_Archival1());
+		}
+		
+		public List<MDISB1_Archival_Summary_Entity2> getdatabydateListarchival2(Date REPORT_DATE,
+				BigDecimal REPORT_VERSION) {
+
+			String sql = "SELECT * FROM BRRS_MDISB1_ARCHIVALTABLE_SUMMARY2 " + "WHERE REPORT_DATE = ? "
+					+ "AND REPORT_VERSION = ?";
+
+			return jdbcTemplate.query(sql, new Object[] { REPORT_DATE, REPORT_VERSION }, new MDISB1_RowMapper_Archival2());
+		}
+	
+	
+		public List<MDISB1_Archival_Summary_Manual> getdatabydateListarchival3(Date REPORT_DATE,
+				BigDecimal REPORT_VERSION) {
+
+			String sql = "SELECT * FROM BRRS_MDISB1_ARCHIVALTABLE_MANUAL " + "WHERE REPORT_DATE = ? "
+					+ "AND REPORT_VERSION = ?";
+
+			return jdbcTemplate.query(sql, new Object[] { REPORT_DATE, REPORT_VERSION }, new MDISB1_RowMapper_Archival_Manual());
+		}
+	
+		//GET ALL WITH VERSION
+
+		public List<MDISB1_Archival_Summary_Entity1> getdatabydateListWithVersion1() {
+
+			String sql = "SELECT * FROM BRRS_MDISB1_ARCHIVALTABLE_SUMMARY1 " + "WHERE REPORT_VERSION IS NOT NULL "
+					+ "ORDER BY REPORT_VERSION ASC";
+
+			return jdbcTemplate.query(sql, new MDISB1_RowMapper_Archival1());
+		}
+		
+		public List<MDISB1_Archival_Summary_Entity2> getdatabydateListWithVersion2() {
+
+			String sql = "SELECT * FROM BRRS_MDISB1_ARCHIVALTABLE_SUMMARY2 " + "WHERE REPORT_VERSION IS NOT NULL "
+					+ "ORDER BY REPORT_VERSION ASC";
+
+			return jdbcTemplate.query(sql, new MDISB1_RowMapper_Archival2());
+		}
+	
+		public List<MDISB1_Archival_Summary_Manual> getdatabydateListWithVersion3() {
+
+			String sql = "SELECT * FROM BRRS_MDISB1_ARCHIVALTABLE_MANUAL " + "WHERE REPORT_VERSION IS NOT NULL "
+					+ "ORDER BY REPORT_VERSION ASC";
+
+			return jdbcTemplate.query(sql, new MDISB1_RowMapper_Archival_Manual());
+		}
+	
+		//GET MAX VERSION BY DATE
+
+		public BigDecimal findMaxVersion1(Date REPORT_DATE) {
+
+			String sql = "SELECT MAX(REPORT_VERSION) " + "FROM BRRS_MDISB1_ARCHIVALTABLE_SUMMARY1"
+					+ "WHERE REPORT_DATE = ?";
+
+			return jdbcTemplate.queryForObject(sql, new Object[] { REPORT_DATE }, BigDecimal.class);
+		}
+		
+		public BigDecimal findMaxVersion2(Date REPORT_DATE) {
+
+			String sql = "SELECT MAX(REPORT_VERSION) " + "FROM BRRS_MDISB1_ARCHIVALTABLE_SUMMARY2"
+					+ "WHERE REPORT_DATE = ?";
+
+			return jdbcTemplate.queryForObject(sql, new Object[] { REPORT_DATE }, BigDecimal.class);
+		}
+		
+		
+		public BigDecimal findMaxVersion3(Date REPORT_DATE) {
+
+			String sql = "SELECT MAX(REPORT_VERSION) " + "FROM BRRS_MDISB1_ARCHIVALTABLE_MANUAL"
+					+ "WHERE REPORT_DATE = ?";
+
+			return jdbcTemplate.queryForObject(sql, new Object[] { REPORT_DATE }, BigDecimal.class);
+		}
+		
+		// 1. BY DATE + LABEL + CRITERIA
+
+		public List<MDISB1_Detail_Entity> findByDetailReportDateAndLabelAndCriteria(Date reportDate, String reportLabel,
+				String reportAddlCriteria1) {
+
+			String sql = "SELECT * FROM BRRS_MDISB1_DETAILTABLE "
+					+ "WHERE REPORT_DATE = ? AND REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ?";
+
+			return jdbcTemplate.query(sql, new Object[] { reportDate, reportLabel, reportAddlCriteria1 },
+					new MDISB1DetailRowMapper());
+		}	
+		
+		// 2. GET ALL (BY DATE - simple)
+
+		public List<MDISB1_Detail_Entity> getDetaildatabydateList(Date reportdate) {
+
+			String sql = "SELECT * FROM BRRS_MDISB1_DETAILTABLE WHERE REPORT_DATE = ?";
+
+			return jdbcTemplate.query(sql, new Object[] { reportdate }, new MDISB1DetailRowMapper());
+		}
+
+	// 3. PAGINATION
+
+		public List<MDISB1_Detail_Entity> getDetaildatabydateList(Date reportdate, int offset, int limit) {
+
+			String sql = "SELECT * FROM BRRS_MDISB1_DETAILTABLE "
+					+ "WHERE REPORT_DATE = ? OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+			return jdbcTemplate.query(sql, new Object[] { reportdate, offset, limit }, new MDISB1DetailRowMapper());
+		}
+	
+		// 4. COUNT
+
+		public int getDetaildatacount(Date reportdate) {
+
+			String sql = "SELECT COUNT(*) FROM BRRS_MDISB1_DETAILTABLE WHERE REPORT_DATE = ?";
+
+			return jdbcTemplate.queryForObject(sql, new Object[] { reportdate }, Integer.class);
+		}
+
+	// 5. BY LABEL + CRITERIA
+
+		public List<MDISB1_Detail_Entity> GetDetailDataByRowIdAndColumnId(String reportLabel,
+				String reportAddlCriteria1, Date reportdate) {
+
+			String sql = "SELECT * FROM BRRS_MDISB1_DETAILTABLE "
+					+ "WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ?";
+
+			return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate },
+					new MDISB1DetailRowMapper());
+		}
+	// 6. BY ACCOUNT NUMBER
+
+		public MDISB1_Detail_Entity findByAcctnumber(String acctNumber) {
+
+			String sql = "SELECT * FROM BRRS_MDISB1_DETAILTABLE WHERE ACCT_NUMBER = ?";
+
+			return jdbcTemplate.queryForObject(sql, new Object[] { acctNumber }, new MDISB1DetailRowMapper());
+		}	
+		
+		
+		// 1. GET BY DATE + VERSION
+
+		public List<MDISB1_Archival_Detail_Entity> getArchivalDetaildatabydateList(Date reportdate,
+				String dataEntryVersion) {
+
+			String sql = "SELECT * FROM BRRS_MDISB1_ARCHIVALTABLE_DETAIL "
+					+ "WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
+
+			return jdbcTemplate.query(sql, new Object[] { reportdate, dataEntryVersion },
+					new MDISB1ArchivalDetailRowMapper());
+		}
+
+	// 2. FILTER BY LABEL + CRITERIA + DATE + VERSION
+
+		public List<MDISB1_Archival_Detail_Entity> GetArchivalDataByRowIdAndColumnId(String report_label,
+				String report_addl_criteria_1, Date reportdate, String dataEntryVersion) {
+
+			String sql = "SELECT * FROM BRRS_MDISB1_ARCHIVALTABLE_DETAIL " + "WHERE REPORT_LABEL = ? "
+					+ "AND REPORT_ADDL_CRITERIA_1 = ? " + "AND REPORT_DATE = ? " + "AND DATA_ENTRY_VERSION = ?";
+
+			return jdbcTemplate.query(sql, new Object[] { report_label, report_addl_criteria_1, reportdate, dataEntryVersion },
+					new MDISB1ArchivalDetailRowMapper());
+		}
+		
+		// ROW MAPPER
+
+		class MDISB1_RowMapper1 implements RowMapper<MDISB1_Summary_Entity1> {
+
+			@Override
+			public MDISB1_Summary_Entity1 mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+				MDISB1_Summary_Entity1 obj = new MDISB1_Summary_Entity1();	
+		
+				obj.setR7_deposit_size(rs.getString("R7_DEPOSIT_SIZE"));
+				obj.setR7_deposit_type(rs.getString("R7_DEPOSIT_TYPE"));
+				obj.setR7_deposit_excluding_number(rs.getBigDecimal("R7_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR7_deposit_excluding_amount(rs.getBigDecimal("R7_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR7_deposit_foreign_number(rs.getBigDecimal("R7_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR7_deposit_foreign_amount(rs.getBigDecimal("R7_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR7_total_number(rs.getBigDecimal("R7_TOTAL_NUMBER"));
+				obj.setR7_total_amount(rs.getBigDecimal("R7_TOTAL_AMOUNT"));
+				obj.setR7_total_deposit_bank(rs.getBigDecimal("R7_TOTAL_DEPOSIT_BANK"));
+				
+				obj.setR8_deposit_size(rs.getString("R8_DEPOSIT_SIZE"));
+				obj.setR8_deposit_type(rs.getString("R8_DEPOSIT_TYPE"));
+				obj.setR8_deposit_excluding_number(rs.getBigDecimal("R8_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR8_deposit_excluding_amount(rs.getBigDecimal("R8_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR8_deposit_foreign_number(rs.getBigDecimal("R8_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR8_deposit_foreign_amount(rs.getBigDecimal("R8_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR8_total_number(rs.getBigDecimal("R8_TOTAL_NUMBER"));
+				obj.setR8_total_amount(rs.getBigDecimal("R8_TOTAL_AMOUNT"));
+				obj.setR8_total_deposit_bank(rs.getBigDecimal("R8_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR9_deposit_size(rs.getString("R9_DEPOSIT_SIZE"));
+				obj.setR9_deposit_type(rs.getString("R9_DEPOSIT_TYPE"));
+				obj.setR9_deposit_excluding_number(rs.getBigDecimal("R9_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR9_deposit_excluding_amount(rs.getBigDecimal("R9_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR9_deposit_foreign_number(rs.getBigDecimal("R9_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR9_deposit_foreign_amount(rs.getBigDecimal("R9_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR9_total_number(rs.getBigDecimal("R9_TOTAL_NUMBER"));
+				obj.setR9_total_amount(rs.getBigDecimal("R9_TOTAL_AMOUNT"));
+				obj.setR9_total_deposit_bank(rs.getBigDecimal("R9_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR10_deposit_size(rs.getString("R10_DEPOSIT_SIZE"));
+				obj.setR10_deposit_type(rs.getString("R10_DEPOSIT_TYPE"));
+				obj.setR10_deposit_excluding_number(rs.getBigDecimal("R10_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR10_deposit_excluding_amount(rs.getBigDecimal("R10_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR10_deposit_foreign_number(rs.getBigDecimal("R10_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR10_deposit_foreign_amount(rs.getBigDecimal("R10_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR10_total_number(rs.getBigDecimal("R10_TOTAL_NUMBER"));
+				obj.setR10_total_amount(rs.getBigDecimal("R10_TOTAL_AMOUNT"));
+				obj.setR10_total_deposit_bank(rs.getBigDecimal("R10_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR11_deposit_size(rs.getString("R11_DEPOSIT_SIZE"));
+				obj.setR11_deposit_type(rs.getString("R11_DEPOSIT_TYPE"));
+				obj.setR11_deposit_excluding_number(rs.getBigDecimal("R11_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR11_deposit_excluding_amount(rs.getBigDecimal("R11_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR11_deposit_foreign_number(rs.getBigDecimal("R11_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR11_deposit_foreign_amount(rs.getBigDecimal("R11_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR11_total_number(rs.getBigDecimal("R11_TOTAL_NUMBER"));
+				obj.setR11_total_amount(rs.getBigDecimal("R11_TOTAL_AMOUNT"));
+				obj.setR11_total_deposit_bank(rs.getBigDecimal("R11_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR12_deposit_size(rs.getString("R12_DEPOSIT_SIZE"));
+				obj.setR12_deposit_type(rs.getString("R12_DEPOSIT_TYPE"));
+				obj.setR12_deposit_excluding_number(rs.getBigDecimal("R12_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR12_deposit_excluding_amount(rs.getBigDecimal("R12_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR12_deposit_foreign_number(rs.getBigDecimal("R12_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR12_deposit_foreign_amount(rs.getBigDecimal("R12_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR12_total_number(rs.getBigDecimal("R12_TOTAL_NUMBER"));
+				obj.setR12_total_amount(rs.getBigDecimal("R12_TOTAL_AMOUNT"));
+				obj.setR12_total_deposit_bank(rs.getBigDecimal("R12_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR13_deposit_size(rs.getString("R13_DEPOSIT_SIZE"));
+				obj.setR13_deposit_type(rs.getString("R13_DEPOSIT_TYPE"));
+				obj.setR13_deposit_excluding_number(rs.getBigDecimal("R13_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR13_deposit_excluding_amount(rs.getBigDecimal("R13_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR13_deposit_foreign_number(rs.getBigDecimal("R13_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR13_deposit_foreign_amount(rs.getBigDecimal("R13_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR13_total_number(rs.getBigDecimal("R13_TOTAL_NUMBER"));
+				obj.setR13_total_amount(rs.getBigDecimal("R13_TOTAL_AMOUNT"));
+				obj.setR13_total_deposit_bank(rs.getBigDecimal("R13_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR14_deposit_size(rs.getString("R14_DEPOSIT_SIZE"));
+				obj.setR14_deposit_type(rs.getString("R14_DEPOSIT_TYPE"));
+				obj.setR14_deposit_excluding_number(rs.getBigDecimal("R14_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR14_deposit_excluding_amount(rs.getBigDecimal("R14_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR14_deposit_foreign_number(rs.getBigDecimal("R14_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR14_deposit_foreign_amount(rs.getBigDecimal("R14_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR14_total_number(rs.getBigDecimal("R14_TOTAL_NUMBER"));
+				obj.setR14_total_amount(rs.getBigDecimal("R14_TOTAL_AMOUNT"));
+				obj.setR14_total_deposit_bank(rs.getBigDecimal("R14_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR15_deposit_size(rs.getString("R15_DEPOSIT_SIZE"));
+				obj.setR15_deposit_type(rs.getString("R15_DEPOSIT_TYPE"));
+				obj.setR15_deposit_excluding_number(rs.getBigDecimal("R15_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR15_deposit_excluding_amount(rs.getBigDecimal("R15_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR15_deposit_foreign_number(rs.getBigDecimal("R15_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR15_deposit_foreign_amount(rs.getBigDecimal("R15_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR15_total_number(rs.getBigDecimal("R15_TOTAL_NUMBER"));
+				obj.setR15_total_amount(rs.getBigDecimal("R15_TOTAL_AMOUNT"));
+				obj.setR15_total_deposit_bank(rs.getBigDecimal("R15_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR16_deposit_size(rs.getString("R16_DEPOSIT_SIZE"));
+				obj.setR16_deposit_type(rs.getString("R16_DEPOSIT_TYPE"));
+				obj.setR16_deposit_excluding_number(rs.getBigDecimal("R16_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR16_deposit_excluding_amount(rs.getBigDecimal("R16_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR16_deposit_foreign_number(rs.getBigDecimal("R16_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR16_deposit_foreign_amount(rs.getBigDecimal("R16_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR16_total_number(rs.getBigDecimal("R16_TOTAL_NUMBER"));
+				obj.setR16_total_amount(rs.getBigDecimal("R16_TOTAL_AMOUNT"));
+				obj.setR16_total_deposit_bank(rs.getBigDecimal("R16_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR17_deposit_size(rs.getString("R17_DEPOSIT_SIZE"));
+				obj.setR17_deposit_type(rs.getString("R17_DEPOSIT_TYPE"));
+				obj.setR17_deposit_excluding_number(rs.getBigDecimal("R17_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR17_deposit_excluding_amount(rs.getBigDecimal("R17_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR17_deposit_foreign_number(rs.getBigDecimal("R17_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR17_deposit_foreign_amount(rs.getBigDecimal("R17_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR17_total_number(rs.getBigDecimal("R17_TOTAL_NUMBER"));
+				obj.setR17_total_amount(rs.getBigDecimal("R17_TOTAL_AMOUNT"));
+				obj.setR17_total_deposit_bank(rs.getBigDecimal("R17_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR18_deposit_size(rs.getString("R18_DEPOSIT_SIZE"));
+				obj.setR18_deposit_type(rs.getString("R18_DEPOSIT_TYPE"));
+				obj.setR18_deposit_excluding_number(rs.getBigDecimal("R18_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR18_deposit_excluding_amount(rs.getBigDecimal("R18_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR18_deposit_foreign_number(rs.getBigDecimal("R18_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR18_deposit_foreign_amount(rs.getBigDecimal("R18_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR18_total_number(rs.getBigDecimal("R18_TOTAL_NUMBER"));
+				obj.setR18_total_amount(rs.getBigDecimal("R18_TOTAL_AMOUNT"));
+				obj.setR18_total_deposit_bank(rs.getBigDecimal("R18_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR19_deposit_size(rs.getString("R19_DEPOSIT_SIZE"));
+				obj.setR19_deposit_type(rs.getString("R19_DEPOSIT_TYPE"));
+				obj.setR19_deposit_excluding_number(rs.getBigDecimal("R19_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR19_deposit_excluding_amount(rs.getBigDecimal("R19_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR19_deposit_foreign_number(rs.getBigDecimal("R19_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR19_deposit_foreign_amount(rs.getBigDecimal("R19_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR19_total_number(rs.getBigDecimal("R19_TOTAL_NUMBER"));
+				obj.setR19_total_amount(rs.getBigDecimal("R19_TOTAL_AMOUNT"));
+				obj.setR19_total_deposit_bank(rs.getBigDecimal("R19_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR20_deposit_size(rs.getString("R20_DEPOSIT_SIZE"));
+				obj.setR20_deposit_type(rs.getString("R20_DEPOSIT_TYPE"));
+				obj.setR20_deposit_excluding_number(rs.getBigDecimal("R20_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR20_deposit_excluding_amount(rs.getBigDecimal("R20_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR20_deposit_foreign_number(rs.getBigDecimal("R20_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR20_deposit_foreign_amount(rs.getBigDecimal("R20_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR20_total_number(rs.getBigDecimal("R20_TOTAL_NUMBER"));
+				obj.setR20_total_amount(rs.getBigDecimal("R20_TOTAL_AMOUNT"));
+				obj.setR20_total_deposit_bank(rs.getBigDecimal("R20_TOTAL_DEPOSIT_BANK"));
+				
+				obj.setR21_deposit_size(rs.getString("R21_DEPOSIT_SIZE"));
+				obj.setR21_deposit_type(rs.getString("R21_DEPOSIT_TYPE"));
+				obj.setR21_deposit_excluding_number(rs.getBigDecimal("R21_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR21_deposit_excluding_amount(rs.getBigDecimal("R21_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR21_deposit_foreign_number(rs.getBigDecimal("R21_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR21_deposit_foreign_amount(rs.getBigDecimal("R21_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR21_total_number(rs.getBigDecimal("R21_TOTAL_NUMBER"));
+				obj.setR21_total_amount(rs.getBigDecimal("R21_TOTAL_AMOUNT"));
+				obj.setR21_total_deposit_bank(rs.getBigDecimal("R21_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR22_deposit_size(rs.getString("R22_DEPOSIT_SIZE"));
+				obj.setR22_deposit_type(rs.getString("R22_DEPOSIT_TYPE"));
+				obj.setR22_deposit_excluding_number(rs.getBigDecimal("R22_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR22_deposit_excluding_amount(rs.getBigDecimal("R22_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR22_deposit_foreign_number(rs.getBigDecimal("R22_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR22_deposit_foreign_amount(rs.getBigDecimal("R22_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR22_total_number(rs.getBigDecimal("R22_TOTAL_NUMBER"));
+				obj.setR22_total_amount(rs.getBigDecimal("R22_TOTAL_AMOUNT"));
+				obj.setR22_total_deposit_bank(rs.getBigDecimal("R22_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR23_deposit_size(rs.getString("R23_DEPOSIT_SIZE"));
+				obj.setR23_deposit_type(rs.getString("R23_DEPOSIT_TYPE"));
+				obj.setR23_deposit_excluding_number(rs.getBigDecimal("R23_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR23_deposit_excluding_amount(rs.getBigDecimal("R23_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR23_deposit_foreign_number(rs.getBigDecimal("R23_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR23_deposit_foreign_amount(rs.getBigDecimal("R23_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR23_total_number(rs.getBigDecimal("R23_TOTAL_NUMBER"));
+				obj.setR23_total_amount(rs.getBigDecimal("R23_TOTAL_AMOUNT"));
+				obj.setR23_total_deposit_bank(rs.getBigDecimal("R23_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR24_deposit_size(rs.getString("R24_DEPOSIT_SIZE"));
+				obj.setR24_deposit_type(rs.getString("R24_DEPOSIT_TYPE"));
+				obj.setR24_deposit_excluding_number(rs.getBigDecimal("R24_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR24_deposit_excluding_amount(rs.getBigDecimal("R24_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR24_deposit_foreign_number(rs.getBigDecimal("R24_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR24_deposit_foreign_amount(rs.getBigDecimal("R24_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR24_total_number(rs.getBigDecimal("R24_TOTAL_NUMBER"));
+				obj.setR24_total_amount(rs.getBigDecimal("R24_TOTAL_AMOUNT"));
+				obj.setR24_total_deposit_bank(rs.getBigDecimal("R24_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR25_deposit_size(rs.getString("R25_DEPOSIT_SIZE"));
+				obj.setR25_deposit_type(rs.getString("R25_DEPOSIT_TYPE"));
+				obj.setR25_deposit_excluding_number(rs.getBigDecimal("R25_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR25_deposit_excluding_amount(rs.getBigDecimal("R25_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR25_deposit_foreign_number(rs.getBigDecimal("R25_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR25_deposit_foreign_amount(rs.getBigDecimal("R25_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR25_total_number(rs.getBigDecimal("R25_TOTAL_NUMBER"));
+				obj.setR25_total_amount(rs.getBigDecimal("R25_TOTAL_AMOUNT"));
+				obj.setR25_total_deposit_bank(rs.getBigDecimal("R25_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR26_deposit_size(rs.getString("R26_DEPOSIT_SIZE"));
+				obj.setR26_deposit_type(rs.getString("R26_DEPOSIT_TYPE"));
+				obj.setR26_deposit_excluding_number(rs.getBigDecimal("R26_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR26_deposit_excluding_amount(rs.getBigDecimal("R26_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR26_deposit_foreign_number(rs.getBigDecimal("R26_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR26_deposit_foreign_amount(rs.getBigDecimal("R26_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR26_total_number(rs.getBigDecimal("R26_TOTAL_NUMBER"));
+				obj.setR26_total_amount(rs.getBigDecimal("R26_TOTAL_AMOUNT"));
+				obj.setR26_total_deposit_bank(rs.getBigDecimal("R26_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR27_deposit_size(rs.getString("R27_DEPOSIT_SIZE"));
+				obj.setR27_deposit_type(rs.getString("R27_DEPOSIT_TYPE"));
+				obj.setR27_deposit_excluding_number(rs.getBigDecimal("R27_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR27_deposit_excluding_amount(rs.getBigDecimal("R27_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR27_deposit_foreign_number(rs.getBigDecimal("R27_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR27_deposit_foreign_amount(rs.getBigDecimal("R27_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR27_total_number(rs.getBigDecimal("R27_TOTAL_NUMBER"));
+				obj.setR27_total_amount(rs.getBigDecimal("R27_TOTAL_AMOUNT"));
+				obj.setR27_total_deposit_bank(rs.getBigDecimal("R27_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR28_deposit_size(rs.getString("R28_DEPOSIT_SIZE"));
+				obj.setR28_deposit_type(rs.getString("R28_DEPOSIT_TYPE"));
+				obj.setR28_deposit_excluding_number(rs.getBigDecimal("R28_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR28_deposit_excluding_amount(rs.getBigDecimal("R28_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR28_deposit_foreign_number(rs.getBigDecimal("R28_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR28_deposit_foreign_amount(rs.getBigDecimal("R28_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR28_total_number(rs.getBigDecimal("R28_TOTAL_NUMBER"));
+				obj.setR28_total_amount(rs.getBigDecimal("R28_TOTAL_AMOUNT"));
+				obj.setR28_total_deposit_bank(rs.getBigDecimal("R28_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR29_deposit_size(rs.getString("R29_DEPOSIT_SIZE"));
+				obj.setR29_deposit_type(rs.getString("R29_DEPOSIT_TYPE"));
+				obj.setR29_deposit_excluding_number(rs.getBigDecimal("R29_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR29_deposit_excluding_amount(rs.getBigDecimal("R29_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR29_deposit_foreign_number(rs.getBigDecimal("R29_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR29_deposit_foreign_amount(rs.getBigDecimal("R29_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR29_total_number(rs.getBigDecimal("R29_TOTAL_NUMBER"));
+				obj.setR29_total_amount(rs.getBigDecimal("R29_TOTAL_AMOUNT"));
+				obj.setR29_total_deposit_bank(rs.getBigDecimal("R29_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR30_deposit_size(rs.getString("R30_DEPOSIT_SIZE"));
+				obj.setR30_deposit_type(rs.getString("R30_DEPOSIT_TYPE"));
+				obj.setR30_deposit_excluding_number(rs.getBigDecimal("R30_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR30_deposit_excluding_amount(rs.getBigDecimal("R30_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR30_deposit_foreign_number(rs.getBigDecimal("R30_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR30_deposit_foreign_amount(rs.getBigDecimal("R30_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR30_total_number(rs.getBigDecimal("R30_TOTAL_NUMBER"));
+				obj.setR30_total_amount(rs.getBigDecimal("R30_TOTAL_AMOUNT"));
+				obj.setR30_total_deposit_bank(rs.getBigDecimal("R30_TOTAL_DEPOSIT_BANK"));
+				
+				obj.setR31_deposit_size(rs.getString("R31_DEPOSIT_SIZE"));
+				obj.setR31_deposit_type(rs.getString("R31_DEPOSIT_TYPE"));
+				obj.setR31_deposit_excluding_number(rs.getBigDecimal("R31_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR31_deposit_excluding_amount(rs.getBigDecimal("R31_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR31_deposit_foreign_number(rs.getBigDecimal("R31_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR31_deposit_foreign_amount(rs.getBigDecimal("R31_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR31_total_number(rs.getBigDecimal("R31_TOTAL_NUMBER"));
+				obj.setR31_total_amount(rs.getBigDecimal("R31_TOTAL_AMOUNT"));
+				obj.setR31_total_deposit_bank(rs.getBigDecimal("R31_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR32_deposit_size(rs.getString("R32_DEPOSIT_SIZE"));
+				obj.setR32_deposit_type(rs.getString("R32_DEPOSIT_TYPE"));
+				obj.setR32_deposit_excluding_number(rs.getBigDecimal("R32_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR32_deposit_excluding_amount(rs.getBigDecimal("R32_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR32_deposit_foreign_number(rs.getBigDecimal("R32_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR32_deposit_foreign_amount(rs.getBigDecimal("R32_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR32_total_number(rs.getBigDecimal("R32_TOTAL_NUMBER"));
+				obj.setR32_total_amount(rs.getBigDecimal("R32_TOTAL_AMOUNT"));
+				obj.setR32_total_deposit_bank(rs.getBigDecimal("R32_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR33_deposit_size(rs.getString("R33_DEPOSIT_SIZE"));
+				obj.setR33_deposit_type(rs.getString("R33_DEPOSIT_TYPE"));
+				obj.setR33_deposit_excluding_number(rs.getBigDecimal("R33_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR33_deposit_excluding_amount(rs.getBigDecimal("R33_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR33_deposit_foreign_number(rs.getBigDecimal("R33_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR33_deposit_foreign_amount(rs.getBigDecimal("R33_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR33_total_number(rs.getBigDecimal("R33_TOTAL_NUMBER"));
+				obj.setR33_total_amount(rs.getBigDecimal("R33_TOTAL_AMOUNT"));
+				obj.setR33_total_deposit_bank(rs.getBigDecimal("R33_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR34_deposit_size(rs.getString("R34_DEPOSIT_SIZE"));
+				obj.setR34_deposit_type(rs.getString("R34_DEPOSIT_TYPE"));
+				obj.setR34_deposit_excluding_number(rs.getBigDecimal("R34_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR34_deposit_excluding_amount(rs.getBigDecimal("R34_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR34_deposit_foreign_number(rs.getBigDecimal("R34_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR34_deposit_foreign_amount(rs.getBigDecimal("R34_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR34_total_number(rs.getBigDecimal("R34_TOTAL_NUMBER"));
+				obj.setR34_total_amount(rs.getBigDecimal("R34_TOTAL_AMOUNT"));
+				obj.setR34_total_deposit_bank(rs.getBigDecimal("R34_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR35_deposit_size(rs.getString("R35_DEPOSIT_SIZE"));
+				obj.setR35_deposit_type(rs.getString("R35_DEPOSIT_TYPE"));
+				obj.setR35_deposit_excluding_number(rs.getBigDecimal("R35_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR35_deposit_excluding_amount(rs.getBigDecimal("R35_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR35_deposit_foreign_number(rs.getBigDecimal("R35_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR35_deposit_foreign_amount(rs.getBigDecimal("R35_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR35_total_number(rs.getBigDecimal("R35_TOTAL_NUMBER"));
+				obj.setR35_total_amount(rs.getBigDecimal("R35_TOTAL_AMOUNT"));
+				obj.setR35_total_deposit_bank(rs.getBigDecimal("R35_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR36_deposit_size(rs.getString("R36_DEPOSIT_SIZE"));
+				obj.setR36_deposit_type(rs.getString("R36_DEPOSIT_TYPE"));
+				obj.setR36_deposit_excluding_number(rs.getBigDecimal("R36_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR36_deposit_excluding_amount(rs.getBigDecimal("R36_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR36_deposit_foreign_number(rs.getBigDecimal("R36_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR36_deposit_foreign_amount(rs.getBigDecimal("R36_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR36_total_number(rs.getBigDecimal("R36_TOTAL_NUMBER"));
+				obj.setR36_total_amount(rs.getBigDecimal("R36_TOTAL_AMOUNT"));
+				obj.setR36_total_deposit_bank(rs.getBigDecimal("R36_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR37_deposit_size(rs.getString("R37_DEPOSIT_SIZE"));
+				obj.setR37_deposit_type(rs.getString("R37_DEPOSIT_TYPE"));
+				obj.setR37_deposit_excluding_number(rs.getBigDecimal("R37_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR37_deposit_excluding_amount(rs.getBigDecimal("R37_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR37_deposit_foreign_number(rs.getBigDecimal("R37_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR37_deposit_foreign_amount(rs.getBigDecimal("R37_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR37_total_number(rs.getBigDecimal("R37_TOTAL_NUMBER"));
+				obj.setR37_total_amount(rs.getBigDecimal("R37_TOTAL_AMOUNT"));
+				obj.setR37_total_deposit_bank(rs.getBigDecimal("R37_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR38_deposit_size(rs.getString("R38_DEPOSIT_SIZE"));
+				obj.setR38_deposit_type(rs.getString("R38_DEPOSIT_TYPE"));
+				obj.setR38_deposit_excluding_number(rs.getBigDecimal("R38_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR38_deposit_excluding_amount(rs.getBigDecimal("R38_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR38_deposit_foreign_number(rs.getBigDecimal("R38_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR38_deposit_foreign_amount(rs.getBigDecimal("R38_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR38_total_number(rs.getBigDecimal("R38_TOTAL_NUMBER"));
+				obj.setR38_total_amount(rs.getBigDecimal("R38_TOTAL_AMOUNT"));
+				obj.setR38_total_deposit_bank(rs.getBigDecimal("R38_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR39_deposit_size(rs.getString("R39_DEPOSIT_SIZE"));
+				obj.setR39_deposit_type(rs.getString("R39_DEPOSIT_TYPE"));
+				obj.setR39_deposit_excluding_number(rs.getBigDecimal("R39_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR39_deposit_excluding_amount(rs.getBigDecimal("R39_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR39_deposit_foreign_number(rs.getBigDecimal("R39_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR39_deposit_foreign_amount(rs.getBigDecimal("R39_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR39_total_number(rs.getBigDecimal("R39_TOTAL_NUMBER"));
+				obj.setR39_total_amount(rs.getBigDecimal("R39_TOTAL_AMOUNT"));
+				obj.setR39_total_deposit_bank(rs.getBigDecimal("R39_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR40_deposit_size(rs.getString("R40_DEPOSIT_SIZE"));
+				obj.setR40_deposit_type(rs.getString("R40_DEPOSIT_TYPE"));
+				obj.setR40_deposit_excluding_number(rs.getBigDecimal("R40_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR40_deposit_excluding_amount(rs.getBigDecimal("R40_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR40_deposit_foreign_number(rs.getBigDecimal("R40_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR40_deposit_foreign_amount(rs.getBigDecimal("R40_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR40_total_number(rs.getBigDecimal("R40_TOTAL_NUMBER"));
+				obj.setR40_total_amount(rs.getBigDecimal("R40_TOTAL_AMOUNT"));
+				obj.setR40_total_deposit_bank(rs.getBigDecimal("R40_TOTAL_DEPOSIT_BANK"));
+				
+				obj.setR41_deposit_size(rs.getString("R41_DEPOSIT_SIZE"));
+				obj.setR41_deposit_type(rs.getString("R41_DEPOSIT_TYPE"));
+				obj.setR41_deposit_excluding_number(rs.getBigDecimal("R41_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR41_deposit_excluding_amount(rs.getBigDecimal("R41_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR41_deposit_foreign_number(rs.getBigDecimal("R41_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR41_deposit_foreign_amount(rs.getBigDecimal("R41_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR41_total_number(rs.getBigDecimal("R41_TOTAL_NUMBER"));
+				obj.setR41_total_amount(rs.getBigDecimal("R41_TOTAL_AMOUNT"));
+				obj.setR41_total_deposit_bank(rs.getBigDecimal("R41_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR42_deposit_size(rs.getString("R42_DEPOSIT_SIZE"));
+				obj.setR42_deposit_type(rs.getString("R42_DEPOSIT_TYPE"));
+				obj.setR42_deposit_excluding_number(rs.getBigDecimal("R42_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR42_deposit_excluding_amount(rs.getBigDecimal("R42_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR42_deposit_foreign_number(rs.getBigDecimal("R42_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR42_deposit_foreign_amount(rs.getBigDecimal("R42_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR42_total_number(rs.getBigDecimal("R42_TOTAL_NUMBER"));
+				obj.setR42_total_amount(rs.getBigDecimal("R42_TOTAL_AMOUNT"));
+				obj.setR42_total_deposit_bank(rs.getBigDecimal("R42_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR43_deposit_size(rs.getString("R43_DEPOSIT_SIZE"));
+				obj.setR43_deposit_type(rs.getString("R43_DEPOSIT_TYPE"));
+				obj.setR43_deposit_excluding_number(rs.getBigDecimal("R43_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR43_deposit_excluding_amount(rs.getBigDecimal("R43_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR43_deposit_foreign_number(rs.getBigDecimal("R43_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR43_deposit_foreign_amount(rs.getBigDecimal("R43_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR43_total_number(rs.getBigDecimal("R43_TOTAL_NUMBER"));
+				obj.setR43_total_amount(rs.getBigDecimal("R43_TOTAL_AMOUNT"));
+				obj.setR43_total_deposit_bank(rs.getBigDecimal("R43_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR44_deposit_size(rs.getString("R44_DEPOSIT_SIZE"));
+				obj.setR44_deposit_type(rs.getString("R44_DEPOSIT_TYPE"));
+				obj.setR44_deposit_excluding_number(rs.getBigDecimal("R44_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR44_deposit_excluding_amount(rs.getBigDecimal("R44_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR44_deposit_foreign_number(rs.getBigDecimal("R44_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR44_deposit_foreign_amount(rs.getBigDecimal("R44_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR44_total_number(rs.getBigDecimal("R44_TOTAL_NUMBER"));
+				obj.setR44_total_amount(rs.getBigDecimal("R44_TOTAL_AMOUNT"));
+				obj.setR44_total_deposit_bank(rs.getBigDecimal("R44_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR45_deposit_size(rs.getString("R45_DEPOSIT_SIZE"));
+				obj.setR45_deposit_type(rs.getString("R45_DEPOSIT_TYPE"));
+				obj.setR45_deposit_excluding_number(rs.getBigDecimal("R45_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR45_deposit_excluding_amount(rs.getBigDecimal("R45_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR45_deposit_foreign_number(rs.getBigDecimal("R45_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR45_deposit_foreign_amount(rs.getBigDecimal("R45_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR45_total_number(rs.getBigDecimal("R45_TOTAL_NUMBER"));
+				obj.setR45_total_amount(rs.getBigDecimal("R45_TOTAL_AMOUNT"));
+				obj.setR45_total_deposit_bank(rs.getBigDecimal("R45_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR46_deposit_size(rs.getString("R46_DEPOSIT_SIZE"));
+				obj.setR46_deposit_type(rs.getString("R46_DEPOSIT_TYPE"));
+				obj.setR46_deposit_excluding_number(rs.getBigDecimal("R46_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR46_deposit_excluding_amount(rs.getBigDecimal("R46_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR46_deposit_foreign_number(rs.getBigDecimal("R46_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR46_deposit_foreign_amount(rs.getBigDecimal("R46_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR46_total_number(rs.getBigDecimal("R46_TOTAL_NUMBER"));
+				obj.setR46_total_amount(rs.getBigDecimal("R46_TOTAL_AMOUNT"));
+				obj.setR46_total_deposit_bank(rs.getBigDecimal("R46_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR47_deposit_size(rs.getString("R47_DEPOSIT_SIZE"));
+				obj.setR47_deposit_type(rs.getString("R47_DEPOSIT_TYPE"));
+				obj.setR47_deposit_excluding_number(rs.getBigDecimal("R47_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR47_deposit_excluding_amount(rs.getBigDecimal("R47_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR47_deposit_foreign_number(rs.getBigDecimal("R47_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR47_deposit_foreign_amount(rs.getBigDecimal("R47_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR47_total_number(rs.getBigDecimal("R47_TOTAL_NUMBER"));
+				obj.setR47_total_amount(rs.getBigDecimal("R47_TOTAL_AMOUNT"));
+				obj.setR47_total_deposit_bank(rs.getBigDecimal("R47_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR48_deposit_size(rs.getString("R48_DEPOSIT_SIZE"));
+				obj.setR48_deposit_type(rs.getString("R48_DEPOSIT_TYPE"));
+				obj.setR48_deposit_excluding_number(rs.getBigDecimal("R48_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR48_deposit_excluding_amount(rs.getBigDecimal("R48_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR48_deposit_foreign_number(rs.getBigDecimal("R48_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR48_deposit_foreign_amount(rs.getBigDecimal("R48_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR48_total_number(rs.getBigDecimal("R48_TOTAL_NUMBER"));
+				obj.setR48_total_amount(rs.getBigDecimal("R48_TOTAL_AMOUNT"));
+				obj.setR48_total_deposit_bank(rs.getBigDecimal("R48_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR49_deposit_size(rs.getString("R49_DEPOSIT_SIZE"));
+				obj.setR49_deposit_type(rs.getString("R49_DEPOSIT_TYPE"));
+				obj.setR49_deposit_excluding_number(rs.getBigDecimal("R49_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR49_deposit_excluding_amount(rs.getBigDecimal("R49_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR49_deposit_foreign_number(rs.getBigDecimal("R49_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR49_deposit_foreign_amount(rs.getBigDecimal("R49_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR49_total_number(rs.getBigDecimal("R49_TOTAL_NUMBER"));
+				obj.setR49_total_amount(rs.getBigDecimal("R49_TOTAL_AMOUNT"));
+				obj.setR49_total_deposit_bank(rs.getBigDecimal("R49_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR50_deposit_size(rs.getString("R50_DEPOSIT_SIZE"));
+				obj.setR50_deposit_type(rs.getString("R50_DEPOSIT_TYPE"));
+				obj.setR50_deposit_excluding_number(rs.getBigDecimal("R50_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR50_deposit_excluding_amount(rs.getBigDecimal("R50_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR50_deposit_foreign_number(rs.getBigDecimal("R50_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR50_deposit_foreign_amount(rs.getBigDecimal("R50_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR50_total_number(rs.getBigDecimal("R50_TOTAL_NUMBER"));
+				obj.setR50_total_amount(rs.getBigDecimal("R50_TOTAL_AMOUNT"));
+				obj.setR50_total_deposit_bank(rs.getBigDecimal("R50_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR51_deposit_size(rs.getString("R51_DEPOSIT_SIZE"));
+				obj.setR51_deposit_type(rs.getString("R51_DEPOSIT_TYPE"));
+				obj.setR51_deposit_excluding_number(rs.getBigDecimal("R51_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR51_deposit_excluding_amount(rs.getBigDecimal("R51_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR51_deposit_foreign_number(rs.getBigDecimal("R51_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR51_deposit_foreign_amount(rs.getBigDecimal("R51_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR51_total_number(rs.getBigDecimal("R51_TOTAL_NUMBER"));
+				obj.setR51_total_amount(rs.getBigDecimal("R51_TOTAL_AMOUNT"));
+				obj.setR51_total_deposit_bank(rs.getBigDecimal("R51_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR52_deposit_size(rs.getString("R52_DEPOSIT_SIZE"));
+				obj.setR52_deposit_type(rs.getString("R52_DEPOSIT_TYPE"));
+				obj.setR52_deposit_excluding_number(rs.getBigDecimal("R52_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR52_deposit_excluding_amount(rs.getBigDecimal("R52_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR52_deposit_foreign_number(rs.getBigDecimal("R52_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR52_deposit_foreign_amount(rs.getBigDecimal("R52_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR52_total_number(rs.getBigDecimal("R52_TOTAL_NUMBER"));
+				obj.setR52_total_amount(rs.getBigDecimal("R52_TOTAL_AMOUNT"));
+				obj.setR52_total_deposit_bank(rs.getBigDecimal("R52_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR53_deposit_size(rs.getString("R53_DEPOSIT_SIZE"));
+				obj.setR53_deposit_type(rs.getString("R53_DEPOSIT_TYPE"));
+				obj.setR53_deposit_excluding_number(rs.getBigDecimal("R53_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR53_deposit_excluding_amount(rs.getBigDecimal("R53_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR53_deposit_foreign_number(rs.getBigDecimal("R53_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR53_deposit_foreign_amount(rs.getBigDecimal("R53_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR53_total_number(rs.getBigDecimal("R53_TOTAL_NUMBER"));
+				obj.setR53_total_amount(rs.getBigDecimal("R53_TOTAL_AMOUNT"));
+				obj.setR53_total_deposit_bank(rs.getBigDecimal("R53_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR54_deposit_size(rs.getString("R54_DEPOSIT_SIZE"));
+				obj.setR54_deposit_type(rs.getString("R54_DEPOSIT_TYPE"));
+				obj.setR54_deposit_excluding_number(rs.getBigDecimal("R54_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR54_deposit_excluding_amount(rs.getBigDecimal("R54_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR54_deposit_foreign_number(rs.getBigDecimal("R54_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR54_deposit_foreign_amount(rs.getBigDecimal("R54_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR54_total_number(rs.getBigDecimal("R54_TOTAL_NUMBER"));
+				obj.setR54_total_amount(rs.getBigDecimal("R54_TOTAL_AMOUNT"));
+				obj.setR54_total_deposit_bank(rs.getBigDecimal("R54_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR55_deposit_size(rs.getString("R55_DEPOSIT_SIZE"));
+				obj.setR55_deposit_type(rs.getString("R55_DEPOSIT_TYPE"));
+				obj.setR55_deposit_excluding_number(rs.getBigDecimal("R55_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR55_deposit_excluding_amount(rs.getBigDecimal("R55_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR55_deposit_foreign_number(rs.getBigDecimal("R55_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR55_deposit_foreign_amount(rs.getBigDecimal("R55_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR55_total_number(rs.getBigDecimal("R55_TOTAL_NUMBER"));
+				obj.setR55_total_amount(rs.getBigDecimal("R55_TOTAL_AMOUNT"));
+				obj.setR55_total_deposit_bank(rs.getBigDecimal("R55_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR56_deposit_size(rs.getString("R56_DEPOSIT_SIZE"));
+				obj.setR56_deposit_type(rs.getString("R56_DEPOSIT_TYPE"));
+				obj.setR56_deposit_excluding_number(rs.getBigDecimal("R56_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR56_deposit_excluding_amount(rs.getBigDecimal("R56_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR56_deposit_foreign_number(rs.getBigDecimal("R56_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR56_deposit_foreign_amount(rs.getBigDecimal("R56_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR56_total_number(rs.getBigDecimal("R56_TOTAL_NUMBER"));
+				obj.setR56_total_amount(rs.getBigDecimal("R56_TOTAL_AMOUNT"));
+				obj.setR56_total_deposit_bank(rs.getBigDecimal("R56_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR57_deposit_size(rs.getString("R57_DEPOSIT_SIZE"));
+				obj.setR57_deposit_type(rs.getString("R57_DEPOSIT_TYPE"));
+				obj.setR57_deposit_excluding_number(rs.getBigDecimal("R57_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR57_deposit_excluding_amount(rs.getBigDecimal("R57_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR57_deposit_foreign_number(rs.getBigDecimal("R57_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR57_deposit_foreign_amount(rs.getBigDecimal("R57_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR57_total_number(rs.getBigDecimal("R57_TOTAL_NUMBER"));
+				obj.setR57_total_amount(rs.getBigDecimal("R57_TOTAL_AMOUNT"));
+				obj.setR57_total_deposit_bank(rs.getBigDecimal("R57_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR58_deposit_size(rs.getString("R58_DEPOSIT_SIZE"));
+				obj.setR58_deposit_type(rs.getString("R58_DEPOSIT_TYPE"));
+				obj.setR58_deposit_excluding_number(rs.getBigDecimal("R58_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR58_deposit_excluding_amount(rs.getBigDecimal("R58_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR58_deposit_foreign_number(rs.getBigDecimal("R58_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR58_deposit_foreign_amount(rs.getBigDecimal("R58_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR58_total_number(rs.getBigDecimal("R58_TOTAL_NUMBER"));
+				obj.setR58_total_amount(rs.getBigDecimal("R58_TOTAL_AMOUNT"));
+				obj.setR58_total_deposit_bank(rs.getBigDecimal("R58_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR59_deposit_size(rs.getString("R59_DEPOSIT_SIZE"));
+				obj.setR59_deposit_type(rs.getString("R59_DEPOSIT_TYPE"));
+				obj.setR59_deposit_excluding_number(rs.getBigDecimal("R59_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR59_deposit_excluding_amount(rs.getBigDecimal("R59_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR59_deposit_foreign_number(rs.getBigDecimal("R59_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR59_deposit_foreign_amount(rs.getBigDecimal("R59_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR59_total_number(rs.getBigDecimal("R59_TOTAL_NUMBER"));
+				obj.setR59_total_amount(rs.getBigDecimal("R59_TOTAL_AMOUNT"));
+				obj.setR59_total_deposit_bank(rs.getBigDecimal("R59_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR60_deposit_size(rs.getString("R60_DEPOSIT_SIZE"));
+				obj.setR60_deposit_type(rs.getString("R60_DEPOSIT_TYPE"));
+				obj.setR60_deposit_excluding_number(rs.getBigDecimal("R60_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR60_deposit_excluding_amount(rs.getBigDecimal("R60_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR60_deposit_foreign_number(rs.getBigDecimal("R60_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR60_deposit_foreign_amount(rs.getBigDecimal("R60_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR60_total_number(rs.getBigDecimal("R60_TOTAL_NUMBER"));
+				obj.setR60_total_amount(rs.getBigDecimal("R60_TOTAL_AMOUNT"));
+				obj.setR60_total_deposit_bank(rs.getBigDecimal("R60_TOTAL_DEPOSIT_BANK"));
+				
+				obj.setR61_deposit_size(rs.getString("R61_DEPOSIT_SIZE"));
+				obj.setR61_deposit_type(rs.getString("R61_DEPOSIT_TYPE"));
+				obj.setR61_deposit_excluding_number(rs.getBigDecimal("R61_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR61_deposit_excluding_amount(rs.getBigDecimal("R61_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR61_deposit_foreign_number(rs.getBigDecimal("R61_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR61_deposit_foreign_amount(rs.getBigDecimal("R61_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR61_total_number(rs.getBigDecimal("R61_TOTAL_NUMBER"));
+				obj.setR61_total_amount(rs.getBigDecimal("R61_TOTAL_AMOUNT"));
+				obj.setR61_total_deposit_bank(rs.getBigDecimal("R61_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR62_deposit_size(rs.getString("R62_DEPOSIT_SIZE"));
+				obj.setR62_deposit_type(rs.getString("R62_DEPOSIT_TYPE"));
+				obj.setR62_deposit_excluding_number(rs.getBigDecimal("R62_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR62_deposit_excluding_amount(rs.getBigDecimal("R62_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR62_deposit_foreign_number(rs.getBigDecimal("R62_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR62_deposit_foreign_amount(rs.getBigDecimal("R62_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR62_total_number(rs.getBigDecimal("R62_TOTAL_NUMBER"));
+				obj.setR62_total_amount(rs.getBigDecimal("R62_TOTAL_AMOUNT"));
+				obj.setR62_total_deposit_bank(rs.getBigDecimal("R62_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR63_deposit_size(rs.getString("R63_DEPOSIT_SIZE"));
+				obj.setR63_deposit_type(rs.getString("R63_DEPOSIT_TYPE"));
+				obj.setR63_deposit_excluding_number(rs.getBigDecimal("R63_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR63_deposit_excluding_amount(rs.getBigDecimal("R63_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR63_deposit_foreign_number(rs.getBigDecimal("R63_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR63_deposit_foreign_amount(rs.getBigDecimal("R63_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR63_total_number(rs.getBigDecimal("R63_TOTAL_NUMBER"));
+				obj.setR63_total_amount(rs.getBigDecimal("R63_TOTAL_AMOUNT"));
+				obj.setR63_total_deposit_bank(rs.getBigDecimal("R63_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR64_deposit_size(rs.getString("R64_DEPOSIT_SIZE"));
+				obj.setR64_deposit_type(rs.getString("R64_DEPOSIT_TYPE"));
+				obj.setR64_deposit_excluding_number(rs.getBigDecimal("R64_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR64_deposit_excluding_amount(rs.getBigDecimal("R64_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR64_deposit_foreign_number(rs.getBigDecimal("R64_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR64_deposit_foreign_amount(rs.getBigDecimal("R64_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR64_total_number(rs.getBigDecimal("R64_TOTAL_NUMBER"));
+				obj.setR64_total_amount(rs.getBigDecimal("R64_TOTAL_AMOUNT"));
+				obj.setR64_total_deposit_bank(rs.getBigDecimal("R64_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR65_deposit_size(rs.getString("R65_DEPOSIT_SIZE"));
+				obj.setR65_deposit_type(rs.getString("R65_DEPOSIT_TYPE"));
+				obj.setR65_deposit_excluding_number(rs.getBigDecimal("R65_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR65_deposit_excluding_amount(rs.getBigDecimal("R65_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR65_deposit_foreign_number(rs.getBigDecimal("R65_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR65_deposit_foreign_amount(rs.getBigDecimal("R65_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR65_total_number(rs.getBigDecimal("R65_TOTAL_NUMBER"));
+				obj.setR65_total_amount(rs.getBigDecimal("R65_TOTAL_AMOUNT"));
+				obj.setR65_total_deposit_bank(rs.getBigDecimal("R65_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR66_deposit_size(rs.getString("R66_DEPOSIT_SIZE"));
+				obj.setR66_deposit_type(rs.getString("R66_DEPOSIT_TYPE"));
+				obj.setR66_deposit_excluding_number(rs.getBigDecimal("R66_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR66_deposit_excluding_amount(rs.getBigDecimal("R66_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR66_deposit_foreign_number(rs.getBigDecimal("R66_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR66_deposit_foreign_amount(rs.getBigDecimal("R66_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR66_total_number(rs.getBigDecimal("R66_TOTAL_NUMBER"));
+				obj.setR66_total_amount(rs.getBigDecimal("R66_TOTAL_AMOUNT"));
+				obj.setR66_total_deposit_bank(rs.getBigDecimal("R66_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR67_deposit_size(rs.getString("R67_DEPOSIT_SIZE"));
+				obj.setR67_deposit_type(rs.getString("R67_DEPOSIT_TYPE"));
+				obj.setR67_deposit_excluding_number(rs.getBigDecimal("R67_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR67_deposit_excluding_amount(rs.getBigDecimal("R67_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR67_deposit_foreign_number(rs.getBigDecimal("R67_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR67_deposit_foreign_amount(rs.getBigDecimal("R67_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR67_total_number(rs.getBigDecimal("R67_TOTAL_NUMBER"));
+				obj.setR67_total_amount(rs.getBigDecimal("R67_TOTAL_AMOUNT"));
+				obj.setR67_total_deposit_bank(rs.getBigDecimal("R67_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR68_deposit_size(rs.getString("R68_DEPOSIT_SIZE"));
+				obj.setR68_deposit_type(rs.getString("R68_DEPOSIT_TYPE"));
+				obj.setR68_deposit_excluding_number(rs.getBigDecimal("R68_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR68_deposit_excluding_amount(rs.getBigDecimal("R68_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR68_deposit_foreign_number(rs.getBigDecimal("R68_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR68_deposit_foreign_amount(rs.getBigDecimal("R68_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR68_total_number(rs.getBigDecimal("R68_TOTAL_NUMBER"));
+				obj.setR68_total_amount(rs.getBigDecimal("R68_TOTAL_AMOUNT"));
+				obj.setR68_total_deposit_bank(rs.getBigDecimal("R68_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR69_deposit_size(rs.getString("R69_DEPOSIT_SIZE"));
+				obj.setR69_deposit_type(rs.getString("R69_DEPOSIT_TYPE"));
+				obj.setR69_deposit_excluding_number(rs.getBigDecimal("R69_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR69_deposit_excluding_amount(rs.getBigDecimal("R69_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR69_deposit_foreign_number(rs.getBigDecimal("R69_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR69_deposit_foreign_amount(rs.getBigDecimal("R69_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR69_total_number(rs.getBigDecimal("R69_TOTAL_NUMBER"));
+				obj.setR69_total_amount(rs.getBigDecimal("R69_TOTAL_AMOUNT"));
+				obj.setR69_total_deposit_bank(rs.getBigDecimal("R69_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR70_deposit_size(rs.getString("R70_DEPOSIT_SIZE"));
+				obj.setR70_deposit_type(rs.getString("R70_DEPOSIT_TYPE"));
+				obj.setR70_deposit_excluding_number(rs.getBigDecimal("R70_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR70_deposit_excluding_amount(rs.getBigDecimal("R70_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR70_deposit_foreign_number(rs.getBigDecimal("R70_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR70_deposit_foreign_amount(rs.getBigDecimal("R70_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR70_total_number(rs.getBigDecimal("R70_TOTAL_NUMBER"));
+				obj.setR70_total_amount(rs.getBigDecimal("R70_TOTAL_AMOUNT"));
+				obj.setR70_total_deposit_bank(rs.getBigDecimal("R70_TOTAL_DEPOSIT_BANK"));
+				
+				obj.setR71_deposit_size(rs.getString("R71_DEPOSIT_SIZE"));
+				obj.setR71_deposit_type(rs.getString("R71_DEPOSIT_TYPE"));
+				obj.setR71_deposit_excluding_number(rs.getBigDecimal("R71_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR71_deposit_excluding_amount(rs.getBigDecimal("R71_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR71_deposit_foreign_number(rs.getBigDecimal("R71_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR71_deposit_foreign_amount(rs.getBigDecimal("R71_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR71_total_number(rs.getBigDecimal("R71_TOTAL_NUMBER"));
+				obj.setR71_total_amount(rs.getBigDecimal("R71_TOTAL_AMOUNT"));
+				obj.setR71_total_deposit_bank(rs.getBigDecimal("R71_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR72_deposit_size(rs.getString("R72_DEPOSIT_SIZE"));
+				obj.setR72_deposit_type(rs.getString("R72_DEPOSIT_TYPE"));
+				obj.setR72_deposit_excluding_number(rs.getBigDecimal("R72_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR72_deposit_excluding_amount(rs.getBigDecimal("R72_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR72_deposit_foreign_number(rs.getBigDecimal("R72_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR72_deposit_foreign_amount(rs.getBigDecimal("R72_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR72_total_number(rs.getBigDecimal("R72_TOTAL_NUMBER"));
+				obj.setR72_total_amount(rs.getBigDecimal("R72_TOTAL_AMOUNT"));
+				obj.setR72_total_deposit_bank(rs.getBigDecimal("R72_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR73_deposit_size(rs.getString("R73_DEPOSIT_SIZE"));
+				obj.setR73_deposit_type(rs.getString("R73_DEPOSIT_TYPE"));
+				obj.setR73_deposit_excluding_number(rs.getBigDecimal("R73_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR73_deposit_excluding_amount(rs.getBigDecimal("R73_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR73_deposit_foreign_number(rs.getBigDecimal("R73_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR73_deposit_foreign_amount(rs.getBigDecimal("R73_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR73_total_number(rs.getBigDecimal("R73_TOTAL_NUMBER"));
+				obj.setR73_total_amount(rs.getBigDecimal("R73_TOTAL_AMOUNT"));
+				obj.setR73_total_deposit_bank(rs.getBigDecimal("R73_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR74_deposit_size(rs.getString("R74_DEPOSIT_SIZE"));
+				obj.setR74_deposit_type(rs.getString("R74_DEPOSIT_TYPE"));
+				obj.setR74_deposit_excluding_number(rs.getBigDecimal("R74_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR74_deposit_excluding_amount(rs.getBigDecimal("R74_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR74_deposit_foreign_number(rs.getBigDecimal("R74_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR74_deposit_foreign_amount(rs.getBigDecimal("R74_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR74_total_number(rs.getBigDecimal("R74_TOTAL_NUMBER"));
+				obj.setR74_total_amount(rs.getBigDecimal("R74_TOTAL_AMOUNT"));
+				obj.setR74_total_deposit_bank(rs.getBigDecimal("R74_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR75_deposit_size(rs.getString("R75_DEPOSIT_SIZE"));
+				obj.setR75_deposit_type(rs.getString("R75_DEPOSIT_TYPE"));
+				obj.setR75_deposit_excluding_number(rs.getBigDecimal("R75_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR75_deposit_excluding_amount(rs.getBigDecimal("R75_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR75_deposit_foreign_number(rs.getBigDecimal("R75_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR75_deposit_foreign_amount(rs.getBigDecimal("R75_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR75_total_number(rs.getBigDecimal("R75_TOTAL_NUMBER"));
+				obj.setR75_total_amount(rs.getBigDecimal("R75_TOTAL_AMOUNT"));
+				obj.setR75_total_deposit_bank(rs.getBigDecimal("R75_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR76_deposit_size(rs.getString("R76_DEPOSIT_SIZE"));
+				obj.setR76_deposit_type(rs.getString("R76_DEPOSIT_TYPE"));
+				obj.setR76_deposit_excluding_number(rs.getBigDecimal("R76_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR76_deposit_excluding_amount(rs.getBigDecimal("R76_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR76_deposit_foreign_number(rs.getBigDecimal("R76_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR76_deposit_foreign_amount(rs.getBigDecimal("R76_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR76_total_number(rs.getBigDecimal("R76_TOTAL_NUMBER"));
+				obj.setR76_total_amount(rs.getBigDecimal("R76_TOTAL_AMOUNT"));
+				obj.setR76_total_deposit_bank(rs.getBigDecimal("R76_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR77_deposit_size(rs.getString("R77_DEPOSIT_SIZE"));
+				obj.setR77_deposit_type(rs.getString("R77_DEPOSIT_TYPE"));
+				obj.setR77_deposit_excluding_number(rs.getBigDecimal("R77_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR77_deposit_excluding_amount(rs.getBigDecimal("R77_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR77_deposit_foreign_number(rs.getBigDecimal("R77_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR77_deposit_foreign_amount(rs.getBigDecimal("R77_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR77_total_number(rs.getBigDecimal("R77_TOTAL_NUMBER"));
+				obj.setR77_total_amount(rs.getBigDecimal("R77_TOTAL_AMOUNT"));
+				obj.setR77_total_deposit_bank(rs.getBigDecimal("R77_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR78_deposit_size(rs.getString("R78_DEPOSIT_SIZE"));
+				obj.setR78_deposit_type(rs.getString("R78_DEPOSIT_TYPE"));
+				obj.setR78_deposit_excluding_number(rs.getBigDecimal("R78_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR78_deposit_excluding_amount(rs.getBigDecimal("R78_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR78_deposit_foreign_number(rs.getBigDecimal("R78_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR78_deposit_foreign_amount(rs.getBigDecimal("R78_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR78_total_number(rs.getBigDecimal("R78_TOTAL_NUMBER"));
+				obj.setR78_total_amount(rs.getBigDecimal("R78_TOTAL_AMOUNT"));
+				obj.setR78_total_deposit_bank(rs.getBigDecimal("R78_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR79_deposit_size(rs.getString("R79_DEPOSIT_SIZE"));
+				obj.setR79_deposit_type(rs.getString("R79_DEPOSIT_TYPE"));
+				obj.setR79_deposit_excluding_number(rs.getBigDecimal("R79_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR79_deposit_excluding_amount(rs.getBigDecimal("R79_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR79_deposit_foreign_number(rs.getBigDecimal("R79_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR79_deposit_foreign_amount(rs.getBigDecimal("R79_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR79_total_number(rs.getBigDecimal("R79_TOTAL_NUMBER"));
+				obj.setR79_total_amount(rs.getBigDecimal("R79_TOTAL_AMOUNT"));
+				obj.setR79_total_deposit_bank(rs.getBigDecimal("R79_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR80_deposit_size(rs.getString("R80_DEPOSIT_SIZE"));
+				obj.setR80_deposit_type(rs.getString("R80_DEPOSIT_TYPE"));
+				obj.setR80_deposit_excluding_number(rs.getBigDecimal("R80_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR80_deposit_excluding_amount(rs.getBigDecimal("R80_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR80_deposit_foreign_number(rs.getBigDecimal("R80_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR80_deposit_foreign_amount(rs.getBigDecimal("R80_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR80_total_number(rs.getBigDecimal("R80_TOTAL_NUMBER"));
+				obj.setR80_total_amount(rs.getBigDecimal("R80_TOTAL_AMOUNT"));
+				obj.setR80_total_deposit_bank(rs.getBigDecimal("R80_TOTAL_DEPOSIT_BANK"));
+				
+				obj.setR81_deposit_size(rs.getString("R81_DEPOSIT_SIZE"));
+				obj.setR81_deposit_type(rs.getString("R81_DEPOSIT_TYPE"));
+				obj.setR81_deposit_excluding_number(rs.getBigDecimal("R81_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR81_deposit_excluding_amount(rs.getBigDecimal("R81_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR81_deposit_foreign_number(rs.getBigDecimal("R81_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR81_deposit_foreign_amount(rs.getBigDecimal("R81_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR81_total_number(rs.getBigDecimal("R81_TOTAL_NUMBER"));
+				obj.setR81_total_amount(rs.getBigDecimal("R81_TOTAL_AMOUNT"));
+				obj.setR81_total_deposit_bank(rs.getBigDecimal("R81_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR82_deposit_size(rs.getString("R82_DEPOSIT_SIZE"));
+				obj.setR82_deposit_type(rs.getString("R82_DEPOSIT_TYPE"));
+				obj.setR82_deposit_excluding_number(rs.getBigDecimal("R82_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR82_deposit_excluding_amount(rs.getBigDecimal("R82_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR82_deposit_foreign_number(rs.getBigDecimal("R82_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR82_deposit_foreign_amount(rs.getBigDecimal("R82_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR82_total_number(rs.getBigDecimal("R82_TOTAL_NUMBER"));
+				obj.setR82_total_amount(rs.getBigDecimal("R82_TOTAL_AMOUNT"));
+				obj.setR82_total_deposit_bank(rs.getBigDecimal("R82_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR83_deposit_size(rs.getString("R83_DEPOSIT_SIZE"));
+				obj.setR83_deposit_type(rs.getString("R83_DEPOSIT_TYPE"));
+				obj.setR83_deposit_excluding_number(rs.getBigDecimal("R83_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR83_deposit_excluding_amount(rs.getBigDecimal("R83_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR83_deposit_foreign_number(rs.getBigDecimal("R83_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR83_deposit_foreign_amount(rs.getBigDecimal("R83_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR83_total_number(rs.getBigDecimal("R83_TOTAL_NUMBER"));
+				obj.setR83_total_amount(rs.getBigDecimal("R83_TOTAL_AMOUNT"));
+				obj.setR83_total_deposit_bank(rs.getBigDecimal("R83_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR84_deposit_size(rs.getString("R84_DEPOSIT_SIZE"));
+				obj.setR84_deposit_type(rs.getString("R84_DEPOSIT_TYPE"));
+				obj.setR84_deposit_excluding_number(rs.getBigDecimal("R84_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR84_deposit_excluding_amount(rs.getBigDecimal("R84_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR84_deposit_foreign_number(rs.getBigDecimal("R84_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR84_deposit_foreign_amount(rs.getBigDecimal("R84_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR84_total_number(rs.getBigDecimal("R84_TOTAL_NUMBER"));
+				obj.setR84_total_amount(rs.getBigDecimal("R84_TOTAL_AMOUNT"));
+				obj.setR84_total_deposit_bank(rs.getBigDecimal("R84_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR85_deposit_size(rs.getString("R85_DEPOSIT_SIZE"));
+				obj.setR85_deposit_type(rs.getString("R85_DEPOSIT_TYPE"));
+				obj.setR85_deposit_excluding_number(rs.getBigDecimal("R85_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR85_deposit_excluding_amount(rs.getBigDecimal("R85_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR85_deposit_foreign_number(rs.getBigDecimal("R85_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR85_deposit_foreign_amount(rs.getBigDecimal("R85_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR85_total_number(rs.getBigDecimal("R85_TOTAL_NUMBER"));
+				obj.setR85_total_amount(rs.getBigDecimal("R85_TOTAL_AMOUNT"));
+				obj.setR85_total_deposit_bank(rs.getBigDecimal("R85_TOTAL_DEPOSIT_BANK"));
+
+				obj.setR86_deposit_size(rs.getString("R86_DEPOSIT_SIZE"));
+				obj.setR86_deposit_type(rs.getString("R86_DEPOSIT_TYPE"));
+				obj.setR86_deposit_excluding_number(rs.getBigDecimal("R86_DEPOSIT_EXCLUDING_NUMBER"));
+				obj.setR86_deposit_excluding_amount(rs.getBigDecimal("R86_DEPOSIT_EXCLUDING_AMOUNT"));
+				obj.setR86_deposit_foreign_number(rs.getBigDecimal("R86_DEPOSIT_FOREIGN_NUMBER"));
+				obj.setR86_deposit_foreign_amount(rs.getBigDecimal("R86_DEPOSIT_FOREIGN_AMOUNT"));
+				obj.setR86_total_number(rs.getBigDecimal("R86_TOTAL_NUMBER"));
+				obj.setR86_total_amount(rs.getBigDecimal("R86_TOTAL_AMOUNT"));
+				obj.setR86_total_deposit_bank(rs.getBigDecimal("R86_TOTAL_DEPOSIT_BANK"));
+		
+				// COMMON FIELDS
+				obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+				obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+				obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+				obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+				obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+				obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+				obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+				obj.setDEL_FLG(rs.getString("DEL_FLG"));
+				
+
+				return obj;
+			}
+		}
+		
+		public static class MDISB1_Summary_Entity1 {
+		
+			@Column(name = "R7_DEPOSIT_SIZE")
+			private String r7_deposit_size;
+
+			@Column(name = "R7_DEPOSIT_TYPE")
+			private String r7_deposit_type;
+
+			@Column(name = "R7_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r7_deposit_excluding_number;
+
+			@Column(name = "R7_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r7_deposit_excluding_amount;
+
+			@Column(name = "R7_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r7_deposit_foreign_number;
+
+			@Column(name = "R7_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r7_deposit_foreign_amount;
+
+			@Column(name = "R7_TOTAL_NUMBER")
+			private BigDecimal r7_total_number;
+
+			@Column(name = "R7_TOTAL_AMOUNT")
+			private BigDecimal r7_total_amount;
+
+			@Column(name = "R7_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r7_total_deposit_bank;
+			
+			
+			@Column(name = "R8_DEPOSIT_SIZE")
+			private String r8_deposit_size;
+
+			@Column(name = "R8_DEPOSIT_TYPE")
+			private String r8_deposit_type;
+
+			@Column(name = "R8_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r8_deposit_excluding_number;
+
+			@Column(name = "R8_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r8_deposit_excluding_amount;
+
+			@Column(name = "R8_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r8_deposit_foreign_number;
+
+			@Column(name = "R8_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r8_deposit_foreign_amount;
+
+			@Column(name = "R8_TOTAL_NUMBER")
+			private BigDecimal r8_total_number;
+
+			@Column(name = "R8_TOTAL_AMOUNT")
+			private BigDecimal r8_total_amount;
+
+			@Column(name = "R8_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r8_total_deposit_bank;
+
+			@Column(name = "R9_DEPOSIT_SIZE")
+			private String r9_deposit_size;
+
+			@Column(name = "R9_DEPOSIT_TYPE")
+			private String r9_deposit_type;
+
+			@Column(name = "R9_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r9_deposit_excluding_number;
+
+			@Column(name = "R9_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r9_deposit_excluding_amount;
+
+			@Column(name = "R9_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r9_deposit_foreign_number;
+
+			@Column(name = "R9_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r9_deposit_foreign_amount;
+
+			@Column(name = "R9_TOTAL_NUMBER")
+			private BigDecimal r9_total_number;
+
+			@Column(name = "R9_TOTAL_AMOUNT")
+			private BigDecimal r9_total_amount;
+
+			@Column(name = "R9_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r9_total_deposit_bank;
+
+			@Column(name = "R10_DEPOSIT_SIZE")
+			private String r10_deposit_size;
+
+			@Column(name = "R10_DEPOSIT_TYPE")
+			private String r10_deposit_type;
+
+			@Column(name = "R10_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r10_deposit_excluding_number;
+
+			@Column(name = "R10_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r10_deposit_excluding_amount;
+
+			@Column(name = "R10_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r10_deposit_foreign_number;
+
+			@Column(name = "R10_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r10_deposit_foreign_amount;
+
+			@Column(name = "R10_TOTAL_NUMBER")
+			private BigDecimal r10_total_number;
+
+			@Column(name = "R10_TOTAL_AMOUNT")
+			private BigDecimal r10_total_amount;
+
+			@Column(name = "R10_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r10_total_deposit_bank;
+
+			@Column(name = "R11_DEPOSIT_SIZE")
+			private String r11_deposit_size;
+
+			@Column(name = "R11_DEPOSIT_TYPE")
+			private String r11_deposit_type;
+
+			@Column(name = "R11_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r11_deposit_excluding_number;
+
+			@Column(name = "R11_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r11_deposit_excluding_amount;
+
+			@Column(name = "R11_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r11_deposit_foreign_number;
+
+			@Column(name = "R11_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r11_deposit_foreign_amount;
+
+			@Column(name = "R11_TOTAL_NUMBER")
+			private BigDecimal r11_total_number;
+
+			@Column(name = "R11_TOTAL_AMOUNT")
+			private BigDecimal r11_total_amount;
+
+			@Column(name = "R11_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r11_total_deposit_bank;
+
+			@Column(name = "R12_DEPOSIT_SIZE")
+			private String r12_deposit_size;
+
+			@Column(name = "R12_DEPOSIT_TYPE")
+			private String r12_deposit_type;
+
+			@Column(name = "R12_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r12_deposit_excluding_number;
+
+			@Column(name = "R12_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r12_deposit_excluding_amount;
+
+			@Column(name = "R12_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r12_deposit_foreign_number;
+
+			@Column(name = "R12_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r12_deposit_foreign_amount;
+
+			@Column(name = "R12_TOTAL_NUMBER")
+			private BigDecimal r12_total_number;
+
+			@Column(name = "R12_TOTAL_AMOUNT")
+			private BigDecimal r12_total_amount;
+
+			@Column(name = "R12_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r12_total_deposit_bank;
+
+			@Column(name = "R13_DEPOSIT_SIZE")
+			private String r13_deposit_size;
+
+			@Column(name = "R13_DEPOSIT_TYPE")
+			private String r13_deposit_type;
+
+			@Column(name = "R13_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r13_deposit_excluding_number;
+
+			@Column(name = "R13_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r13_deposit_excluding_amount;
+
+			@Column(name = "R13_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r13_deposit_foreign_number;
+
+			@Column(name = "R13_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r13_deposit_foreign_amount;
+
+			@Column(name = "R13_TOTAL_NUMBER")
+			private BigDecimal r13_total_number;
+
+			@Column(name = "R13_TOTAL_AMOUNT")
+			private BigDecimal r13_total_amount;
+
+			@Column(name = "R13_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r13_total_deposit_bank;
+
+			@Column(name = "R14_DEPOSIT_SIZE")
+			private String r14_deposit_size;
+
+			@Column(name = "R14_DEPOSIT_TYPE")
+			private String r14_deposit_type;
+
+			@Column(name = "R14_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r14_deposit_excluding_number;
+
+			@Column(name = "R14_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r14_deposit_excluding_amount;
+
+			@Column(name = "R14_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r14_deposit_foreign_number;
+
+			@Column(name = "R14_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r14_deposit_foreign_amount;
+
+			@Column(name = "R14_TOTAL_NUMBER")
+			private BigDecimal r14_total_number;
+
+			@Column(name = "R14_TOTAL_AMOUNT")
+			private BigDecimal r14_total_amount;
+
+			@Column(name = "R14_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r14_total_deposit_bank;
+
+			@Column(name = "R15_DEPOSIT_SIZE")
+			private String r15_deposit_size;
+
+			@Column(name = "R15_DEPOSIT_TYPE")
+			private String r15_deposit_type;
+
+			@Column(name = "R15_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r15_deposit_excluding_number;
+
+			@Column(name = "R15_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r15_deposit_excluding_amount;
+
+			@Column(name = "R15_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r15_deposit_foreign_number;
+
+			@Column(name = "R15_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r15_deposit_foreign_amount;
+
+			@Column(name = "R15_TOTAL_NUMBER")
+			private BigDecimal r15_total_number;
+
+			@Column(name = "R15_TOTAL_AMOUNT")
+			private BigDecimal r15_total_amount;
+
+			@Column(name = "R15_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r15_total_deposit_bank;
+
+			@Column(name = "R16_DEPOSIT_SIZE")
+			private String r16_deposit_size;
+
+			@Column(name = "R16_DEPOSIT_TYPE")
+			private String r16_deposit_type;
+
+			@Column(name = "R16_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r16_deposit_excluding_number;
+
+			@Column(name = "R16_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r16_deposit_excluding_amount;
+
+			@Column(name = "R16_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r16_deposit_foreign_number;
+
+			@Column(name = "R16_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r16_deposit_foreign_amount;
+
+			@Column(name = "R16_TOTAL_NUMBER")
+			private BigDecimal r16_total_number;
+
+			@Column(name = "R16_TOTAL_AMOUNT")
+			private BigDecimal r16_total_amount;
+
+			@Column(name = "R16_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r16_total_deposit_bank;
+
+			@Column(name = "R17_DEPOSIT_SIZE")
+			private String r17_deposit_size;
+
+			@Column(name = "R17_DEPOSIT_TYPE")
+			private String r17_deposit_type;
+
+			@Column(name = "R17_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r17_deposit_excluding_number;
+
+			@Column(name = "R17_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r17_deposit_excluding_amount;
+
+			@Column(name = "R17_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r17_deposit_foreign_number;
+
+			@Column(name = "R17_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r17_deposit_foreign_amount;
+
+			@Column(name = "R17_TOTAL_NUMBER")
+			private BigDecimal r17_total_number;
+
+			@Column(name = "R17_TOTAL_AMOUNT")
+			private BigDecimal r17_total_amount;
+
+			@Column(name = "R17_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r17_total_deposit_bank;
+
+			@Column(name = "R18_DEPOSIT_SIZE")
+			private String r18_deposit_size;
+
+			@Column(name = "R18_DEPOSIT_TYPE")
+			private String r18_deposit_type;
+
+			@Column(name = "R18_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r18_deposit_excluding_number;
+
+			@Column(name = "R18_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r18_deposit_excluding_amount;
+
+			@Column(name = "R18_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r18_deposit_foreign_number;
+
+			@Column(name = "R18_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r18_deposit_foreign_amount;
+
+			@Column(name = "R18_TOTAL_NUMBER")
+			private BigDecimal r18_total_number;
+
+			@Column(name = "R18_TOTAL_AMOUNT")
+			private BigDecimal r18_total_amount;
+
+			@Column(name = "R18_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r18_total_deposit_bank;
+
+			@Column(name = "R19_DEPOSIT_SIZE")
+			private String r19_deposit_size;
+
+			@Column(name = "R19_DEPOSIT_TYPE")
+			private String r19_deposit_type;
+
+			@Column(name = "R19_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r19_deposit_excluding_number;
+
+			@Column(name = "R19_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r19_deposit_excluding_amount;
+
+			@Column(name = "R19_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r19_deposit_foreign_number;
+
+			@Column(name = "R19_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r19_deposit_foreign_amount;
+
+			@Column(name = "R19_TOTAL_NUMBER")
+			private BigDecimal r19_total_number;
+
+			@Column(name = "R19_TOTAL_AMOUNT")
+			private BigDecimal r19_total_amount;
+
+			@Column(name = "R19_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r19_total_deposit_bank;
+
+			@Column(name = "R20_DEPOSIT_SIZE")
+			private String r20_deposit_size;
+
+			@Column(name = "R20_DEPOSIT_TYPE")
+			private String r20_deposit_type;
+
+			@Column(name = "R20_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r20_deposit_excluding_number;
+
+			@Column(name = "R20_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r20_deposit_excluding_amount;
+
+			@Column(name = "R20_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r20_deposit_foreign_number;
+
+			@Column(name = "R20_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r20_deposit_foreign_amount;
+
+			@Column(name = "R20_TOTAL_NUMBER")
+			private BigDecimal r20_total_number;
+
+			@Column(name = "R20_TOTAL_AMOUNT")
+			private BigDecimal r20_total_amount;
+
+			@Column(name = "R20_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r20_total_deposit_bank;
+			
+			@Column(name = "R21_DEPOSIT_SIZE")
+			private String r21_deposit_size;
+
+			@Column(name = "R21_DEPOSIT_TYPE")
+			private String r21_deposit_type;
+
+			@Column(name = "R21_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r21_deposit_excluding_number;
+
+			@Column(name = "R21_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r21_deposit_excluding_amount;
+
+			@Column(name = "R21_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r21_deposit_foreign_number;
+
+			@Column(name = "R21_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r21_deposit_foreign_amount;
+
+			@Column(name = "R21_TOTAL_NUMBER")
+			private BigDecimal r21_total_number;
+
+			@Column(name = "R21_TOTAL_AMOUNT")
+			private BigDecimal r21_total_amount;
+
+			@Column(name = "R21_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r21_total_deposit_bank;
+
+			@Column(name = "R22_DEPOSIT_SIZE")
+			private String r22_deposit_size;
+
+			@Column(name = "R22_DEPOSIT_TYPE")
+			private String r22_deposit_type;
+
+			@Column(name = "R22_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r22_deposit_excluding_number;
+
+			@Column(name = "R22_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r22_deposit_excluding_amount;
+
+			@Column(name = "R22_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r22_deposit_foreign_number;
+
+			@Column(name = "R22_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r22_deposit_foreign_amount;
+
+			@Column(name = "R22_TOTAL_NUMBER")
+			private BigDecimal r22_total_number;
+
+			@Column(name = "R22_TOTAL_AMOUNT")
+			private BigDecimal r22_total_amount;
+
+			@Column(name = "R22_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r22_total_deposit_bank;
+
+			@Column(name = "R23_DEPOSIT_SIZE")
+			private String r23_deposit_size;
+
+			@Column(name = "R23_DEPOSIT_TYPE")
+			private String r23_deposit_type;
+
+			@Column(name = "R23_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r23_deposit_excluding_number;
+
+			@Column(name = "R23_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r23_deposit_excluding_amount;
+
+			@Column(name = "R23_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r23_deposit_foreign_number;
+
+			@Column(name = "R23_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r23_deposit_foreign_amount;
+
+			@Column(name = "R23_TOTAL_NUMBER")
+			private BigDecimal r23_total_number;
+
+			@Column(name = "R23_TOTAL_AMOUNT")
+			private BigDecimal r23_total_amount;
+
+			@Column(name = "R23_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r23_total_deposit_bank;
+
+			@Column(name = "R24_DEPOSIT_SIZE")
+			private String r24_deposit_size;
+
+			@Column(name = "R24_DEPOSIT_TYPE")
+			private String r24_deposit_type;
+
+			@Column(name = "R24_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r24_deposit_excluding_number;
+
+			@Column(name = "R24_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r24_deposit_excluding_amount;
+
+			@Column(name = "R24_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r24_deposit_foreign_number;
+
+			@Column(name = "R24_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r24_deposit_foreign_amount;
+
+			@Column(name = "R24_TOTAL_NUMBER")
+			private BigDecimal r24_total_number;
+
+			@Column(name = "R24_TOTAL_AMOUNT")
+			private BigDecimal r24_total_amount;
+
+			@Column(name = "R24_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r24_total_deposit_bank;
+
+			@Column(name = "R25_DEPOSIT_SIZE")
+			private String r25_deposit_size;
+
+			@Column(name = "R25_DEPOSIT_TYPE")
+			private String r25_deposit_type;
+
+			@Column(name = "R25_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r25_deposit_excluding_number;
+
+			@Column(name = "R25_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r25_deposit_excluding_amount;
+
+			@Column(name = "R25_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r25_deposit_foreign_number;
+
+			@Column(name = "R25_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r25_deposit_foreign_amount;
+
+			@Column(name = "R25_TOTAL_NUMBER")
+			private BigDecimal r25_total_number;
+
+			@Column(name = "R25_TOTAL_AMOUNT")
+			private BigDecimal r25_total_amount;
+
+			@Column(name = "R25_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r25_total_deposit_bank;
+
+			@Column(name = "R26_DEPOSIT_SIZE")
+			private String r26_deposit_size;
+
+			@Column(name = "R26_DEPOSIT_TYPE")
+			private String r26_deposit_type;
+
+			@Column(name = "R26_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r26_deposit_excluding_number;
+
+			@Column(name = "R26_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r26_deposit_excluding_amount;
+
+			@Column(name = "R26_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r26_deposit_foreign_number;
+
+			@Column(name = "R26_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r26_deposit_foreign_amount;
+
+			@Column(name = "R26_TOTAL_NUMBER")
+			private BigDecimal r26_total_number;
+
+			@Column(name = "R26_TOTAL_AMOUNT")
+			private BigDecimal r26_total_amount;
+
+			@Column(name = "R26_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r26_total_deposit_bank;
+
+			@Column(name = "R27_DEPOSIT_SIZE")
+			private String r27_deposit_size;
+
+			@Column(name = "R27_DEPOSIT_TYPE")
+			private String r27_deposit_type;
+
+			@Column(name = "R27_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r27_deposit_excluding_number;
+
+			@Column(name = "R27_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r27_deposit_excluding_amount;
+
+			@Column(name = "R27_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r27_deposit_foreign_number;
+
+			@Column(name = "R27_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r27_deposit_foreign_amount;
+
+			@Column(name = "R27_TOTAL_NUMBER")
+			private BigDecimal r27_total_number;
+
+			@Column(name = "R27_TOTAL_AMOUNT")
+			private BigDecimal r27_total_amount;
+
+			@Column(name = "R27_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r27_total_deposit_bank;
+
+			@Column(name = "R28_DEPOSIT_SIZE")
+			private String r28_deposit_size;
+
+			@Column(name = "R28_DEPOSIT_TYPE")
+			private String r28_deposit_type;
+
+			@Column(name = "R28_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r28_deposit_excluding_number;
+
+			@Column(name = "R28_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r28_deposit_excluding_amount;
+
+			@Column(name = "R28_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r28_deposit_foreign_number;
+
+			@Column(name = "R28_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r28_deposit_foreign_amount;
+
+			@Column(name = "R28_TOTAL_NUMBER")
+			private BigDecimal r28_total_number;
+
+			@Column(name = "R28_TOTAL_AMOUNT")
+			private BigDecimal r28_total_amount;
+
+			@Column(name = "R28_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r28_total_deposit_bank;
+
+			@Column(name = "R29_DEPOSIT_SIZE")
+			private String r29_deposit_size;
+
+			@Column(name = "R29_DEPOSIT_TYPE")
+			private String r29_deposit_type;
+
+			@Column(name = "R29_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r29_deposit_excluding_number;
+
+			@Column(name = "R29_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r29_deposit_excluding_amount;
+
+			@Column(name = "R29_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r29_deposit_foreign_number;
+
+			@Column(name = "R29_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r29_deposit_foreign_amount;
+
+			@Column(name = "R29_TOTAL_NUMBER")
+			private BigDecimal r29_total_number;
+
+			@Column(name = "R29_TOTAL_AMOUNT")
+			private BigDecimal r29_total_amount;
+
+			@Column(name = "R29_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r29_total_deposit_bank;
+
+			@Column(name = "R30_DEPOSIT_SIZE")
+			private String r30_deposit_size;
+
+			@Column(name = "R30_DEPOSIT_TYPE")
+			private String r30_deposit_type;
+
+			@Column(name = "R30_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r30_deposit_excluding_number;
+
+			@Column(name = "R30_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r30_deposit_excluding_amount;
+
+			@Column(name = "R30_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r30_deposit_foreign_number;
+
+			@Column(name = "R30_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r30_deposit_foreign_amount;
+
+			@Column(name = "R30_TOTAL_NUMBER")
+			private BigDecimal r30_total_number;
+
+			@Column(name = "R30_TOTAL_AMOUNT")
+			private BigDecimal r30_total_amount;
+
+			@Column(name = "R30_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r30_total_deposit_bank;
+			
+			@Column(name = "R31_DEPOSIT_SIZE")
+			private String r31_deposit_size;
+
+			@Column(name = "R31_DEPOSIT_TYPE")
+			private String r31_deposit_type;
+
+			@Column(name = "R31_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r31_deposit_excluding_number;
+
+			@Column(name = "R31_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r31_deposit_excluding_amount;
+
+			@Column(name = "R31_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r31_deposit_foreign_number;
+
+			@Column(name = "R31_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r31_deposit_foreign_amount;
+
+			@Column(name = "R31_TOTAL_NUMBER")
+			private BigDecimal r31_total_number;
+
+			@Column(name = "R31_TOTAL_AMOUNT")
+			private BigDecimal r31_total_amount;
+
+			@Column(name = "R31_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r31_total_deposit_bank;
+
+			@Column(name = "R32_DEPOSIT_SIZE")
+			private String r32_deposit_size;
+
+			@Column(name = "R32_DEPOSIT_TYPE")
+			private String r32_deposit_type;
+
+			@Column(name = "R32_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r32_deposit_excluding_number;
+
+			@Column(name = "R32_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r32_deposit_excluding_amount;
+
+			@Column(name = "R32_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r32_deposit_foreign_number;
+
+			@Column(name = "R32_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r32_deposit_foreign_amount;
+
+			@Column(name = "R32_TOTAL_NUMBER")
+			private BigDecimal r32_total_number;
+
+			@Column(name = "R32_TOTAL_AMOUNT")
+			private BigDecimal r32_total_amount;
+
+			@Column(name = "R32_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r32_total_deposit_bank;
+
+			@Column(name = "R33_DEPOSIT_SIZE")
+			private String r33_deposit_size;
+
+			@Column(name = "R33_DEPOSIT_TYPE")
+			private String r33_deposit_type;
+
+			@Column(name = "R33_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r33_deposit_excluding_number;
+
+			@Column(name = "R33_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r33_deposit_excluding_amount;
+
+			@Column(name = "R33_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r33_deposit_foreign_number;
+
+			@Column(name = "R33_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r33_deposit_foreign_amount;
+
+			@Column(name = "R33_TOTAL_NUMBER")
+			private BigDecimal r33_total_number;
+
+			@Column(name = "R33_TOTAL_AMOUNT")
+			private BigDecimal r33_total_amount;
+
+			@Column(name = "R33_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r33_total_deposit_bank;
+
+			@Column(name = "R34_DEPOSIT_SIZE")
+			private String r34_deposit_size;
+
+			@Column(name = "R34_DEPOSIT_TYPE")
+			private String r34_deposit_type;
+
+			@Column(name = "R34_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r34_deposit_excluding_number;
+
+			@Column(name = "R34_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r34_deposit_excluding_amount;
+
+			@Column(name = "R34_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r34_deposit_foreign_number;
+
+			@Column(name = "R34_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r34_deposit_foreign_amount;
+
+			@Column(name = "R34_TOTAL_NUMBER")
+			private BigDecimal r34_total_number;
+
+			@Column(name = "R34_TOTAL_AMOUNT")
+			private BigDecimal r34_total_amount;
+
+			@Column(name = "R34_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r34_total_deposit_bank;
+
+			@Column(name = "R35_DEPOSIT_SIZE")
+			private String r35_deposit_size;
+
+			@Column(name = "R35_DEPOSIT_TYPE")
+			private String r35_deposit_type;
+
+			@Column(name = "R35_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r35_deposit_excluding_number;
+
+			@Column(name = "R35_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r35_deposit_excluding_amount;
+
+			@Column(name = "R35_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r35_deposit_foreign_number;
+
+			@Column(name = "R35_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r35_deposit_foreign_amount;
+
+			@Column(name = "R35_TOTAL_NUMBER")
+			private BigDecimal r35_total_number;
+
+			@Column(name = "R35_TOTAL_AMOUNT")
+			private BigDecimal r35_total_amount;
+
+			@Column(name = "R35_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r35_total_deposit_bank;
+
+			@Column(name = "R36_DEPOSIT_SIZE")
+			private String r36_deposit_size;
+
+			@Column(name = "R36_DEPOSIT_TYPE")
+			private String r36_deposit_type;
+
+			@Column(name = "R36_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r36_deposit_excluding_number;
+
+			@Column(name = "R36_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r36_deposit_excluding_amount;
+
+			@Column(name = "R36_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r36_deposit_foreign_number;
+
+			@Column(name = "R36_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r36_deposit_foreign_amount;
+
+			@Column(name = "R36_TOTAL_NUMBER")
+			private BigDecimal r36_total_number;
+
+			@Column(name = "R36_TOTAL_AMOUNT")
+			private BigDecimal r36_total_amount;
+
+			@Column(name = "R36_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r36_total_deposit_bank;
+
+			@Column(name = "R37_DEPOSIT_SIZE")
+			private String r37_deposit_size;
+
+			@Column(name = "R37_DEPOSIT_TYPE")
+			private String r37_deposit_type;
+
+			@Column(name = "R37_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r37_deposit_excluding_number;
+
+			@Column(name = "R37_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r37_deposit_excluding_amount;
+
+			@Column(name = "R37_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r37_deposit_foreign_number;
+
+			@Column(name = "R37_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r37_deposit_foreign_amount;
+
+			@Column(name = "R37_TOTAL_NUMBER")
+			private BigDecimal r37_total_number;
+
+			@Column(name = "R37_TOTAL_AMOUNT")
+			private BigDecimal r37_total_amount;
+
+			@Column(name = "R37_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r37_total_deposit_bank;
+
+			@Column(name = "R38_DEPOSIT_SIZE")
+			private String r38_deposit_size;
+
+			@Column(name = "R38_DEPOSIT_TYPE")
+			private String r38_deposit_type;
+
+			@Column(name = "R38_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r38_deposit_excluding_number;
+
+			@Column(name = "R38_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r38_deposit_excluding_amount;
+
+			@Column(name = "R38_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r38_deposit_foreign_number;
+
+			@Column(name = "R38_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r38_deposit_foreign_amount;
+
+			@Column(name = "R38_TOTAL_NUMBER")
+			private BigDecimal r38_total_number;
+
+			@Column(name = "R38_TOTAL_AMOUNT")
+			private BigDecimal r38_total_amount;
+
+			@Column(name = "R38_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r38_total_deposit_bank;
+
+			@Column(name = "R39_DEPOSIT_SIZE")
+			private String r39_deposit_size;
+
+			@Column(name = "R39_DEPOSIT_TYPE")
+			private String r39_deposit_type;
+
+			@Column(name = "R39_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r39_deposit_excluding_number;
+
+			@Column(name = "R39_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r39_deposit_excluding_amount;
+
+			@Column(name = "R39_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r39_deposit_foreign_number;
+
+			@Column(name = "R39_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r39_deposit_foreign_amount;
+
+			@Column(name = "R39_TOTAL_NUMBER")
+			private BigDecimal r39_total_number;
+
+			@Column(name = "R39_TOTAL_AMOUNT")
+			private BigDecimal r39_total_amount;
+
+			@Column(name = "R39_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r39_total_deposit_bank;
+
+			@Column(name = "R40_DEPOSIT_SIZE")
+			private String r40_deposit_size;
+
+			@Column(name = "R40_DEPOSIT_TYPE")
+			private String r40_deposit_type;
+
+			@Column(name = "R40_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r40_deposit_excluding_number;
+
+			@Column(name = "R40_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r40_deposit_excluding_amount;
+
+			@Column(name = "R40_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r40_deposit_foreign_number;
+
+			@Column(name = "R40_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r40_deposit_foreign_amount;
+
+			@Column(name = "R40_TOTAL_NUMBER")
+			private BigDecimal r40_total_number;
+
+			@Column(name = "R40_TOTAL_AMOUNT")
+			private BigDecimal r40_total_amount;
+
+			@Column(name = "R40_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r40_total_deposit_bank;
+			
+			@Column(name = "R41_DEPOSIT_SIZE")
+			private String r41_deposit_size;
+
+			@Column(name = "R41_DEPOSIT_TYPE")
+			private String r41_deposit_type;
+
+			@Column(name = "R41_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r41_deposit_excluding_number;
+
+			@Column(name = "R41_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r41_deposit_excluding_amount;
+
+			@Column(name = "R41_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r41_deposit_foreign_number;
+
+			@Column(name = "R41_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r41_deposit_foreign_amount;
+
+			@Column(name = "R41_TOTAL_NUMBER")
+			private BigDecimal r41_total_number;
+
+			@Column(name = "R41_TOTAL_AMOUNT")
+			private BigDecimal r41_total_amount;
+
+			@Column(name = "R41_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r41_total_deposit_bank;
+
+			@Column(name = "R42_DEPOSIT_SIZE")
+			private String r42_deposit_size;
+
+			@Column(name = "R42_DEPOSIT_TYPE")
+			private String r42_deposit_type;
+
+			@Column(name = "R42_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r42_deposit_excluding_number;
+
+			@Column(name = "R42_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r42_deposit_excluding_amount;
+
+			@Column(name = "R42_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r42_deposit_foreign_number;
+
+			@Column(name = "R42_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r42_deposit_foreign_amount;
+
+			@Column(name = "R42_TOTAL_NUMBER")
+			private BigDecimal r42_total_number;
+
+			@Column(name = "R42_TOTAL_AMOUNT")
+			private BigDecimal r42_total_amount;
+
+			@Column(name = "R42_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r42_total_deposit_bank;
+
+			@Column(name = "R43_DEPOSIT_SIZE")
+			private String r43_deposit_size;
+
+			@Column(name = "R43_DEPOSIT_TYPE")
+			private String r43_deposit_type;
+
+			@Column(name = "R43_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r43_deposit_excluding_number;
+
+			@Column(name = "R43_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r43_deposit_excluding_amount;
+
+			@Column(name = "R43_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r43_deposit_foreign_number;
+
+			@Column(name = "R43_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r43_deposit_foreign_amount;
+
+			@Column(name = "R43_TOTAL_NUMBER")
+			private BigDecimal r43_total_number;
+
+			@Column(name = "R43_TOTAL_AMOUNT")
+			private BigDecimal r43_total_amount;
+
+			@Column(name = "R43_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r43_total_deposit_bank;
+
+			@Column(name = "R44_DEPOSIT_SIZE")
+			private String r44_deposit_size;
+
+			@Column(name = "R44_DEPOSIT_TYPE")
+			private String r44_deposit_type;
+
+			@Column(name = "R44_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r44_deposit_excluding_number;
+
+			@Column(name = "R44_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r44_deposit_excluding_amount;
+
+			@Column(name = "R44_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r44_deposit_foreign_number;
+
+			@Column(name = "R44_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r44_deposit_foreign_amount;
+
+			@Column(name = "R44_TOTAL_NUMBER")
+			private BigDecimal r44_total_number;
+
+			@Column(name = "R44_TOTAL_AMOUNT")
+			private BigDecimal r44_total_amount;
+
+			@Column(name = "R44_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r44_total_deposit_bank;
+
+			@Column(name = "R45_DEPOSIT_SIZE")
+			private String r45_deposit_size;
+
+			@Column(name = "R45_DEPOSIT_TYPE")
+			private String r45_deposit_type;
+
+			@Column(name = "R45_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r45_deposit_excluding_number;
+
+			@Column(name = "R45_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r45_deposit_excluding_amount;
+
+			@Column(name = "R45_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r45_deposit_foreign_number;
+
+			@Column(name = "R45_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r45_deposit_foreign_amount;
+
+			@Column(name = "R45_TOTAL_NUMBER")
+			private BigDecimal r45_total_number;
+
+			@Column(name = "R45_TOTAL_AMOUNT")
+			private BigDecimal r45_total_amount;
+
+			@Column(name = "R45_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r45_total_deposit_bank;
+
+			@Column(name = "R46_DEPOSIT_SIZE")
+			private String r46_deposit_size;
+
+			@Column(name = "R46_DEPOSIT_TYPE")
+			private String r46_deposit_type;
+
+			@Column(name = "R46_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r46_deposit_excluding_number;
+
+			@Column(name = "R46_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r46_deposit_excluding_amount;
+
+			@Column(name = "R46_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r46_deposit_foreign_number;
+
+			@Column(name = "R46_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r46_deposit_foreign_amount;
+
+			@Column(name = "R46_TOTAL_NUMBER")
+			private BigDecimal r46_total_number;
+
+			@Column(name = "R46_TOTAL_AMOUNT")
+			private BigDecimal r46_total_amount;
+
+			@Column(name = "R46_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r46_total_deposit_bank;
+
+			@Column(name = "R47_DEPOSIT_SIZE")
+			private String r47_deposit_size;
+
+			@Column(name = "R47_DEPOSIT_TYPE")
+			private String r47_deposit_type;
+
+			@Column(name = "R47_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r47_deposit_excluding_number;
+
+			@Column(name = "R47_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r47_deposit_excluding_amount;
+
+			@Column(name = "R47_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r47_deposit_foreign_number;
+
+			@Column(name = "R47_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r47_deposit_foreign_amount;
+
+			@Column(name = "R47_TOTAL_NUMBER")
+			private BigDecimal r47_total_number;
+
+			@Column(name = "R47_TOTAL_AMOUNT")
+			private BigDecimal r47_total_amount;
+
+			@Column(name = "R47_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r47_total_deposit_bank;
+
+			@Column(name = "R48_DEPOSIT_SIZE")
+			private String r48_deposit_size;
+
+			@Column(name = "R48_DEPOSIT_TYPE")
+			private String r48_deposit_type;
+
+			@Column(name = "R48_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r48_deposit_excluding_number;
+
+			@Column(name = "R48_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r48_deposit_excluding_amount;
+
+			@Column(name = "R48_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r48_deposit_foreign_number;
+
+			@Column(name = "R48_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r48_deposit_foreign_amount;
+
+			@Column(name = "R48_TOTAL_NUMBER")
+			private BigDecimal r48_total_number;
+
+			@Column(name = "R48_TOTAL_AMOUNT")
+			private BigDecimal r48_total_amount;
+
+			@Column(name = "R48_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r48_total_deposit_bank;
+
+			@Column(name = "R49_DEPOSIT_SIZE")
+			private String r49_deposit_size;
+
+			@Column(name = "R49_DEPOSIT_TYPE")
+			private String r49_deposit_type;
+
+			@Column(name = "R49_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r49_deposit_excluding_number;
+
+			@Column(name = "R49_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r49_deposit_excluding_amount;
+
+			@Column(name = "R49_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r49_deposit_foreign_number;
+
+			@Column(name = "R49_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r49_deposit_foreign_amount;
+
+			@Column(name = "R49_TOTAL_NUMBER")
+			private BigDecimal r49_total_number;
+
+			@Column(name = "R49_TOTAL_AMOUNT")
+			private BigDecimal r49_total_amount;
+
+			@Column(name = "R49_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r49_total_deposit_bank;
+
+			@Column(name = "R50_DEPOSIT_SIZE")
+			private String r50_deposit_size;
+
+			@Column(name = "R50_DEPOSIT_TYPE")
+			private String r50_deposit_type;
+
+			@Column(name = "R50_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r50_deposit_excluding_number;
+
+			@Column(name = "R50_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r50_deposit_excluding_amount;
+
+			@Column(name = "R50_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r50_deposit_foreign_number;
+
+			@Column(name = "R50_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r50_deposit_foreign_amount;
+
+			@Column(name = "R50_TOTAL_NUMBER")
+			private BigDecimal r50_total_number;
+
+			@Column(name = "R50_TOTAL_AMOUNT")
+			private BigDecimal r50_total_amount;
+
+			@Column(name = "R50_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r50_total_deposit_bank;
+			
+			@Column(name = "R51_DEPOSIT_SIZE")
+			private String r51_deposit_size;
+
+			@Column(name = "R51_DEPOSIT_TYPE")
+			private String r51_deposit_type;
+
+			@Column(name = "R51_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r51_deposit_excluding_number;
+
+			@Column(name = "R51_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r51_deposit_excluding_amount;
+
+			@Column(name = "R51_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r51_deposit_foreign_number;
+
+			@Column(name = "R51_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r51_deposit_foreign_amount;
+
+			@Column(name = "R51_TOTAL_NUMBER")
+			private BigDecimal r51_total_number;
+
+			@Column(name = "R51_TOTAL_AMOUNT")
+			private BigDecimal r51_total_amount;
+
+			@Column(name = "R51_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r51_total_deposit_bank;
+
+			@Column(name = "R52_DEPOSIT_SIZE")
+			private String r52_deposit_size;
+
+			@Column(name = "R52_DEPOSIT_TYPE")
+			private String r52_deposit_type;
+
+			@Column(name = "R52_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r52_deposit_excluding_number;
+
+			@Column(name = "R52_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r52_deposit_excluding_amount;
+
+			@Column(name = "R52_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r52_deposit_foreign_number;
+
+			@Column(name = "R52_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r52_deposit_foreign_amount;
+
+			@Column(name = "R52_TOTAL_NUMBER")
+			private BigDecimal r52_total_number;
+
+			@Column(name = "R52_TOTAL_AMOUNT")
+			private BigDecimal r52_total_amount;
+
+			@Column(name = "R52_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r52_total_deposit_bank;
+
+			@Column(name = "R53_DEPOSIT_SIZE")
+			private String r53_deposit_size;
+
+			@Column(name = "R53_DEPOSIT_TYPE")
+			private String r53_deposit_type;
+
+			@Column(name = "R53_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r53_deposit_excluding_number;
+
+			@Column(name = "R53_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r53_deposit_excluding_amount;
+
+			@Column(name = "R53_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r53_deposit_foreign_number;
+
+			@Column(name = "R53_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r53_deposit_foreign_amount;
+
+			@Column(name = "R53_TOTAL_NUMBER")
+			private BigDecimal r53_total_number;
+
+			@Column(name = "R53_TOTAL_AMOUNT")
+			private BigDecimal r53_total_amount;
+
+			@Column(name = "R53_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r53_total_deposit_bank;
+
+			@Column(name = "R54_DEPOSIT_SIZE")
+			private String r54_deposit_size;
+
+			@Column(name = "R54_DEPOSIT_TYPE")
+			private String r54_deposit_type;
+
+			@Column(name = "R54_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r54_deposit_excluding_number;
+
+			@Column(name = "R54_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r54_deposit_excluding_amount;
+
+			@Column(name = "R54_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r54_deposit_foreign_number;
+
+			@Column(name = "R54_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r54_deposit_foreign_amount;
+
+			@Column(name = "R54_TOTAL_NUMBER")
+			private BigDecimal r54_total_number;
+
+			@Column(name = "R54_TOTAL_AMOUNT")
+			private BigDecimal r54_total_amount;
+
+			@Column(name = "R54_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r54_total_deposit_bank;
+
+			@Column(name = "R55_DEPOSIT_SIZE")
+			private String r55_deposit_size;
+
+			@Column(name = "R55_DEPOSIT_TYPE")
+			private String r55_deposit_type;
+
+			@Column(name = "R55_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r55_deposit_excluding_number;
+
+			@Column(name = "R55_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r55_deposit_excluding_amount;
+
+			@Column(name = "R55_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r55_deposit_foreign_number;
+
+			@Column(name = "R55_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r55_deposit_foreign_amount;
+
+			@Column(name = "R55_TOTAL_NUMBER")
+			private BigDecimal r55_total_number;
+
+			@Column(name = "R55_TOTAL_AMOUNT")
+			private BigDecimal r55_total_amount;
+
+			@Column(name = "R55_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r55_total_deposit_bank;
+
+			@Column(name = "R56_DEPOSIT_SIZE")
+			private String r56_deposit_size;
+
+			@Column(name = "R56_DEPOSIT_TYPE")
+			private String r56_deposit_type;
+
+			@Column(name = "R56_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r56_deposit_excluding_number;
+
+			@Column(name = "R56_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r56_deposit_excluding_amount;
+
+			@Column(name = "R56_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r56_deposit_foreign_number;
+
+			@Column(name = "R56_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r56_deposit_foreign_amount;
+
+			@Column(name = "R56_TOTAL_NUMBER")
+			private BigDecimal r56_total_number;
+
+			@Column(name = "R56_TOTAL_AMOUNT")
+			private BigDecimal r56_total_amount;
+
+			@Column(name = "R56_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r56_total_deposit_bank;
+
+			@Column(name = "R57_DEPOSIT_SIZE")
+			private String r57_deposit_size;
+
+			@Column(name = "R57_DEPOSIT_TYPE")
+			private String r57_deposit_type;
+
+			@Column(name = "R57_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r57_deposit_excluding_number;
+
+			@Column(name = "R57_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r57_deposit_excluding_amount;
+
+			@Column(name = "R57_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r57_deposit_foreign_number;
+
+			@Column(name = "R57_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r57_deposit_foreign_amount;
+
+			@Column(name = "R57_TOTAL_NUMBER")
+			private BigDecimal r57_total_number;
+
+			@Column(name = "R57_TOTAL_AMOUNT")
+			private BigDecimal r57_total_amount;
+
+			@Column(name = "R57_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r57_total_deposit_bank;
+
+			@Column(name = "R58_DEPOSIT_SIZE")
+			private String r58_deposit_size;
+
+			@Column(name = "R58_DEPOSIT_TYPE")
+			private String r58_deposit_type;
+
+			@Column(name = "R58_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r58_deposit_excluding_number;
+
+			@Column(name = "R58_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r58_deposit_excluding_amount;
+
+			@Column(name = "R58_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r58_deposit_foreign_number;
+
+			@Column(name = "R58_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r58_deposit_foreign_amount;
+
+			@Column(name = "R58_TOTAL_NUMBER")
+			private BigDecimal r58_total_number;
+
+			@Column(name = "R58_TOTAL_AMOUNT")
+			private BigDecimal r58_total_amount;
+
+			@Column(name = "R58_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r58_total_deposit_bank;
+
+			@Column(name = "R59_DEPOSIT_SIZE")
+			private String r59_deposit_size;
+
+			@Column(name = "R59_DEPOSIT_TYPE")
+			private String r59_deposit_type;
+
+			@Column(name = "R59_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r59_deposit_excluding_number;
+
+			@Column(name = "R59_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r59_deposit_excluding_amount;
+
+			@Column(name = "R59_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r59_deposit_foreign_number;
+
+			@Column(name = "R59_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r59_deposit_foreign_amount;
+
+			@Column(name = "R59_TOTAL_NUMBER")
+			private BigDecimal r59_total_number;
+
+			@Column(name = "R59_TOTAL_AMOUNT")
+			private BigDecimal r59_total_amount;
+
+			@Column(name = "R59_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r59_total_deposit_bank;
+
+			@Column(name = "R60_DEPOSIT_SIZE")
+			private String r60_deposit_size;
+
+			@Column(name = "R60_DEPOSIT_TYPE")
+			private String r60_deposit_type;
+
+			@Column(name = "R60_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r60_deposit_excluding_number;
+
+			@Column(name = "R60_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r60_deposit_excluding_amount;
+
+			@Column(name = "R60_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r60_deposit_foreign_number;
+
+			@Column(name = "R60_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r60_deposit_foreign_amount;
+
+			@Column(name = "R60_TOTAL_NUMBER")
+			private BigDecimal r60_total_number;
+
+			@Column(name = "R60_TOTAL_AMOUNT")
+			private BigDecimal r60_total_amount;
+
+			@Column(name = "R60_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r60_total_deposit_bank;
+			
+			@Column(name = "R61_DEPOSIT_SIZE")
+			private String r61_deposit_size;
+
+			@Column(name = "R61_DEPOSIT_TYPE")
+			private String r61_deposit_type;
+
+			@Column(name = "R61_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r61_deposit_excluding_number;
+
+			@Column(name = "R61_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r61_deposit_excluding_amount;
+
+			@Column(name = "R61_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r61_deposit_foreign_number;
+
+			@Column(name = "R61_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r61_deposit_foreign_amount;
+
+			@Column(name = "R61_TOTAL_NUMBER")
+			private BigDecimal r61_total_number;
+
+			@Column(name = "R61_TOTAL_AMOUNT")
+			private BigDecimal r61_total_amount;
+
+			@Column(name = "R61_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r61_total_deposit_bank;
+
+			@Column(name = "R62_DEPOSIT_SIZE")
+			private String r62_deposit_size;
+
+			@Column(name = "R62_DEPOSIT_TYPE")
+			private String r62_deposit_type;
+
+			@Column(name = "R62_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r62_deposit_excluding_number;
+
+			@Column(name = "R62_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r62_deposit_excluding_amount;
+
+			@Column(name = "R62_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r62_deposit_foreign_number;
+
+			@Column(name = "R62_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r62_deposit_foreign_amount;
+
+			@Column(name = "R62_TOTAL_NUMBER")
+			private BigDecimal r62_total_number;
+
+			@Column(name = "R62_TOTAL_AMOUNT")
+			private BigDecimal r62_total_amount;
+
+			@Column(name = "R62_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r62_total_deposit_bank;
+
+			@Column(name = "R63_DEPOSIT_SIZE")
+			private String r63_deposit_size;
+
+			@Column(name = "R63_DEPOSIT_TYPE")
+			private String r63_deposit_type;
+
+			@Column(name = "R63_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r63_deposit_excluding_number;
+
+			@Column(name = "R63_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r63_deposit_excluding_amount;
+
+			@Column(name = "R63_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r63_deposit_foreign_number;
+
+			@Column(name = "R63_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r63_deposit_foreign_amount;
+
+			@Column(name = "R63_TOTAL_NUMBER")
+			private BigDecimal r63_total_number;
+
+			@Column(name = "R63_TOTAL_AMOUNT")
+			private BigDecimal r63_total_amount;
+
+			@Column(name = "R63_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r63_total_deposit_bank;
+
+			@Column(name = "R64_DEPOSIT_SIZE")
+			private String r64_deposit_size;
+
+			@Column(name = "R64_DEPOSIT_TYPE")
+			private String r64_deposit_type;
+
+			@Column(name = "R64_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r64_deposit_excluding_number;
+
+			@Column(name = "R64_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r64_deposit_excluding_amount;
+
+			@Column(name = "R64_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r64_deposit_foreign_number;
+
+			@Column(name = "R64_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r64_deposit_foreign_amount;
+
+			@Column(name = "R64_TOTAL_NUMBER")
+			private BigDecimal r64_total_number;
+
+			@Column(name = "R64_TOTAL_AMOUNT")
+			private BigDecimal r64_total_amount;
+
+			@Column(name = "R64_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r64_total_deposit_bank;
+
+			@Column(name = "R65_DEPOSIT_SIZE")
+			private String r65_deposit_size;
+
+			@Column(name = "R65_DEPOSIT_TYPE")
+			private String r65_deposit_type;
+
+			@Column(name = "R65_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r65_deposit_excluding_number;
+
+			@Column(name = "R65_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r65_deposit_excluding_amount;
+
+			@Column(name = "R65_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r65_deposit_foreign_number;
+
+			@Column(name = "R65_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r65_deposit_foreign_amount;
+
+			@Column(name = "R65_TOTAL_NUMBER")
+			private BigDecimal r65_total_number;
+
+			@Column(name = "R65_TOTAL_AMOUNT")
+			private BigDecimal r65_total_amount;
+
+			@Column(name = "R65_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r65_total_deposit_bank;
+
+			@Column(name = "R66_DEPOSIT_SIZE")
+			private String r66_deposit_size;
+
+			@Column(name = "R66_DEPOSIT_TYPE")
+			private String r66_deposit_type;
+
+			@Column(name = "R66_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r66_deposit_excluding_number;
+
+			@Column(name = "R66_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r66_deposit_excluding_amount;
+
+			@Column(name = "R66_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r66_deposit_foreign_number;
+
+			@Column(name = "R66_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r66_deposit_foreign_amount;
+
+			@Column(name = "R66_TOTAL_NUMBER")
+			private BigDecimal r66_total_number;
+
+			@Column(name = "R66_TOTAL_AMOUNT")
+			private BigDecimal r66_total_amount;
+
+			@Column(name = "R66_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r66_total_deposit_bank;
+
+			@Column(name = "R67_DEPOSIT_SIZE")
+			private String r67_deposit_size;
+
+			@Column(name = "R67_DEPOSIT_TYPE")
+			private String r67_deposit_type;
+
+			@Column(name = "R67_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r67_deposit_excluding_number;
+
+			@Column(name = "R67_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r67_deposit_excluding_amount;
+
+			@Column(name = "R67_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r67_deposit_foreign_number;
+
+			@Column(name = "R67_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r67_deposit_foreign_amount;
+
+			@Column(name = "R67_TOTAL_NUMBER")
+			private BigDecimal r67_total_number;
+
+			@Column(name = "R67_TOTAL_AMOUNT")
+			private BigDecimal r67_total_amount;
+
+			@Column(name = "R67_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r67_total_deposit_bank;
+
+			@Column(name = "R68_DEPOSIT_SIZE")
+			private String r68_deposit_size;
+
+			@Column(name = "R68_DEPOSIT_TYPE")
+			private String r68_deposit_type;
+
+			@Column(name = "R68_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r68_deposit_excluding_number;
+
+			@Column(name = "R68_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r68_deposit_excluding_amount;
+
+			@Column(name = "R68_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r68_deposit_foreign_number;
+
+			@Column(name = "R68_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r68_deposit_foreign_amount;
+
+			@Column(name = "R68_TOTAL_NUMBER")
+			private BigDecimal r68_total_number;
+
+			@Column(name = "R68_TOTAL_AMOUNT")
+			private BigDecimal r68_total_amount;
+
+			@Column(name = "R68_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r68_total_deposit_bank;
+
+			@Column(name = "R69_DEPOSIT_SIZE")
+			private String r69_deposit_size;
+
+			@Column(name = "R69_DEPOSIT_TYPE")
+			private String r69_deposit_type;
+
+			@Column(name = "R69_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r69_deposit_excluding_number;
+
+			@Column(name = "R69_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r69_deposit_excluding_amount;
+
+			@Column(name = "R69_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r69_deposit_foreign_number;
+
+			@Column(name = "R69_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r69_deposit_foreign_amount;
+
+			@Column(name = "R69_TOTAL_NUMBER")
+			private BigDecimal r69_total_number;
+
+			@Column(name = "R69_TOTAL_AMOUNT")
+			private BigDecimal r69_total_amount;
+
+			@Column(name = "R69_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r69_total_deposit_bank;
+
+			@Column(name = "R70_DEPOSIT_SIZE")
+			private String r70_deposit_size;
+
+			@Column(name = "R70_DEPOSIT_TYPE")
+			private String r70_deposit_type;
+
+			@Column(name = "R70_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r70_deposit_excluding_number;
+
+			@Column(name = "R70_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r70_deposit_excluding_amount;
+
+			@Column(name = "R70_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r70_deposit_foreign_number;
+
+			@Column(name = "R70_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r70_deposit_foreign_amount;
+
+			@Column(name = "R70_TOTAL_NUMBER")
+			private BigDecimal r70_total_number;
+
+			@Column(name = "R70_TOTAL_AMOUNT")
+			private BigDecimal r70_total_amount;
+
+			@Column(name = "R70_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r70_total_deposit_bank;
+			
+			// R71
+			@Column(name = "R71_DEPOSIT_SIZE")
+			private String r71_deposit_size;
+
+			@Column(name = "R71_DEPOSIT_TYPE")
+			private String r71_deposit_type;
+
+			@Column(name = "R71_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r71_deposit_excluding_number;
+
+			@Column(name = "R71_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r71_deposit_excluding_amount;
+
+			@Column(name = "R71_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r71_deposit_foreign_number;
+
+			@Column(name = "R71_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r71_deposit_foreign_amount;
+
+			@Column(name = "R71_TOTAL_NUMBER")
+			private BigDecimal r71_total_number;
+
+			@Column(name = "R71_TOTAL_AMOUNT")
+			private BigDecimal r71_total_amount;
+
+			@Column(name = "R71_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r71_total_deposit_bank;
+
+			// R72
+			@Column(name = "R72_DEPOSIT_SIZE")
+			private String r72_deposit_size;
+
+			@Column(name = "R72_DEPOSIT_TYPE")
+			private String r72_deposit_type;
+
+			@Column(name = "R72_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r72_deposit_excluding_number;
+
+			@Column(name = "R72_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r72_deposit_excluding_amount;
+
+			@Column(name = "R72_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r72_deposit_foreign_number;
+
+			@Column(name = "R72_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r72_deposit_foreign_amount;
+
+			@Column(name = "R72_TOTAL_NUMBER")
+			private BigDecimal r72_total_number;
+
+			@Column(name = "R72_TOTAL_AMOUNT")
+			private BigDecimal r72_total_amount;
+
+			@Column(name = "R72_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r72_total_deposit_bank;
+
+			// R73
+			@Column(name = "R73_DEPOSIT_SIZE")
+			private String r73_deposit_size;
+
+			@Column(name = "R73_DEPOSIT_TYPE")
+			private String r73_deposit_type;
+
+			@Column(name = "R73_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r73_deposit_excluding_number;
+
+			@Column(name = "R73_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r73_deposit_excluding_amount;
+
+			@Column(name = "R73_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r73_deposit_foreign_number;
+
+			@Column(name = "R73_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r73_deposit_foreign_amount;
+
+			@Column(name = "R73_TOTAL_NUMBER")
+			private BigDecimal r73_total_number;
+
+			@Column(name = "R73_TOTAL_AMOUNT")
+			private BigDecimal r73_total_amount;
+
+			@Column(name = "R73_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r73_total_deposit_bank;
+
+			// R74
+			@Column(name = "R74_DEPOSIT_SIZE")
+			private String r74_deposit_size;
+
+			@Column(name = "R74_DEPOSIT_TYPE")
+			private String r74_deposit_type;
+
+			@Column(name = "R74_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r74_deposit_excluding_number;
+
+			@Column(name = "R74_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r74_deposit_excluding_amount;
+
+			@Column(name = "R74_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r74_deposit_foreign_number;
+
+			@Column(name = "R74_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r74_deposit_foreign_amount;
+
+			@Column(name = "R74_TOTAL_NUMBER")
+			private BigDecimal r74_total_number;
+
+			@Column(name = "R74_TOTAL_AMOUNT")
+			private BigDecimal r74_total_amount;
+
+			@Column(name = "R74_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r74_total_deposit_bank;
+
+			// R75
+			@Column(name = "R75_DEPOSIT_SIZE")
+			private String r75_deposit_size;
+
+			@Column(name = "R75_DEPOSIT_TYPE")
+			private String r75_deposit_type;
+
+			@Column(name = "R75_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r75_deposit_excluding_number;
+
+			@Column(name = "R75_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r75_deposit_excluding_amount;
+
+			@Column(name = "R75_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r75_deposit_foreign_number;
+
+			@Column(name = "R75_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r75_deposit_foreign_amount;
+
+			@Column(name = "R75_TOTAL_NUMBER")
+			private BigDecimal r75_total_number;
+
+			@Column(name = "R75_TOTAL_AMOUNT")
+			private BigDecimal r75_total_amount;
+
+			@Column(name = "R75_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r75_total_deposit_bank;
+
+			// R76
+			@Column(name = "R76_DEPOSIT_SIZE")
+			private String r76_deposit_size;
+
+			@Column(name = "R76_DEPOSIT_TYPE")
+			private String r76_deposit_type;
+
+			@Column(name = "R76_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r76_deposit_excluding_number;
+
+			@Column(name = "R76_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r76_deposit_excluding_amount;
+
+			@Column(name = "R76_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r76_deposit_foreign_number;
+
+			@Column(name = "R76_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r76_deposit_foreign_amount;
+
+			@Column(name = "R76_TOTAL_NUMBER")
+			private BigDecimal r76_total_number;
+
+			@Column(name = "R76_TOTAL_AMOUNT")
+			private BigDecimal r76_total_amount;
+
+			@Column(name = "R76_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r76_total_deposit_bank;
+
+			// R77
+			@Column(name = "R77_DEPOSIT_SIZE")
+			private String r77_deposit_size;
+
+			@Column(name = "R77_DEPOSIT_TYPE")
+			private String r77_deposit_type;
+
+			@Column(name = "R77_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r77_deposit_excluding_number;
+
+			@Column(name = "R77_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r77_deposit_excluding_amount;
+
+			@Column(name = "R77_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r77_deposit_foreign_number;
+
+			@Column(name = "R77_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r77_deposit_foreign_amount;
+
+			@Column(name = "R77_TOTAL_NUMBER")
+			private BigDecimal r77_total_number;
+
+			@Column(name = "R77_TOTAL_AMOUNT")
+			private BigDecimal r77_total_amount;
+
+			@Column(name = "R77_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r77_total_deposit_bank;
+
+			// R78
+			@Column(name = "R78_DEPOSIT_SIZE")
+			private String r78_deposit_size;
+
+			@Column(name = "R78_DEPOSIT_TYPE")
+			private String r78_deposit_type;
+
+			@Column(name = "R78_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r78_deposit_excluding_number;
+
+			@Column(name = "R78_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r78_deposit_excluding_amount;
+
+			@Column(name = "R78_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r78_deposit_foreign_number;
+
+			@Column(name = "R78_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r78_deposit_foreign_amount;
+
+			@Column(name = "R78_TOTAL_NUMBER")
+			private BigDecimal r78_total_number;
+
+			@Column(name = "R78_TOTAL_AMOUNT")
+			private BigDecimal r78_total_amount;
+
+			@Column(name = "R78_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r78_total_deposit_bank;
+
+			// R79
+			@Column(name = "R79_DEPOSIT_SIZE")
+			private String r79_deposit_size;
+
+			@Column(name = "R79_DEPOSIT_TYPE")
+			private String r79_deposit_type;
+
+			@Column(name = "R79_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r79_deposit_excluding_number;
+
+			@Column(name = "R79_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r79_deposit_excluding_amount;
+
+			@Column(name = "R79_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r79_deposit_foreign_number;
+
+			@Column(name = "R79_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r79_deposit_foreign_amount;
+
+			@Column(name = "R79_TOTAL_NUMBER")
+			private BigDecimal r79_total_number;
+
+			@Column(name = "R79_TOTAL_AMOUNT")
+			private BigDecimal r79_total_amount;
+
+			@Column(name = "R79_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r79_total_deposit_bank;
+
+			// R80
+			@Column(name = "R80_DEPOSIT_SIZE")
+			private String r80_deposit_size;
+
+			@Column(name = "R80_DEPOSIT_TYPE")
+			private String r80_deposit_type;
+
+			@Column(name = "R80_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r80_deposit_excluding_number;
+
+			@Column(name = "R80_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r80_deposit_excluding_amount;
+
+			@Column(name = "R80_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r80_deposit_foreign_number;
+
+			@Column(name = "R80_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r80_deposit_foreign_amount;
+
+			@Column(name = "R80_TOTAL_NUMBER")
+			private BigDecimal r80_total_number;
+
+			@Column(name = "R80_TOTAL_AMOUNT")
+			private BigDecimal r80_total_amount;
+
+			@Column(name = "R80_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r80_total_deposit_bank;
+			
+			// R81
+			@Column(name = "R81_DEPOSIT_SIZE")
+			private String r81_deposit_size;
+
+			@Column(name = "R81_DEPOSIT_TYPE")
+			private String r81_deposit_type;
+
+			@Column(name = "R81_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r81_deposit_excluding_number;
+
+			@Column(name = "R81_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r81_deposit_excluding_amount;
+
+			@Column(name = "R81_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r81_deposit_foreign_number;
+
+			@Column(name = "R81_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r81_deposit_foreign_amount;
+
+			@Column(name = "R81_TOTAL_NUMBER")
+			private BigDecimal r81_total_number;
+
+			@Column(name = "R81_TOTAL_AMOUNT")
+			private BigDecimal r81_total_amount;
+
+			@Column(name = "R81_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r81_total_deposit_bank;
+
+			// R82
+			@Column(name = "R82_DEPOSIT_SIZE")
+			private String r82_deposit_size;
+
+			@Column(name = "R82_DEPOSIT_TYPE")
+			private String r82_deposit_type;
+
+			@Column(name = "R82_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r82_deposit_excluding_number;
+
+			@Column(name = "R82_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r82_deposit_excluding_amount;
+
+			@Column(name = "R82_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r82_deposit_foreign_number;
+
+			@Column(name = "R82_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r82_deposit_foreign_amount;
+
+			@Column(name = "R82_TOTAL_NUMBER")
+			private BigDecimal r82_total_number;
+
+			@Column(name = "R82_TOTAL_AMOUNT")
+			private BigDecimal r82_total_amount;
+
+			@Column(name = "R82_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r82_total_deposit_bank;
+
+			// R83
+			@Column(name = "R83_DEPOSIT_SIZE")
+			private String r83_deposit_size;
+
+			@Column(name = "R83_DEPOSIT_TYPE")
+			private String r83_deposit_type;
+
+			@Column(name = "R83_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r83_deposit_excluding_number;
+
+			@Column(name = "R83_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r83_deposit_excluding_amount;
+
+			@Column(name = "R83_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r83_deposit_foreign_number;
+
+			@Column(name = "R83_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r83_deposit_foreign_amount;
+
+			@Column(name = "R83_TOTAL_NUMBER")
+			private BigDecimal r83_total_number;
+
+			@Column(name = "R83_TOTAL_AMOUNT")
+			private BigDecimal r83_total_amount;
+
+			@Column(name = "R83_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r83_total_deposit_bank;
+
+			// R84
+			@Column(name = "R84_DEPOSIT_SIZE")
+			private String r84_deposit_size;
+
+			@Column(name = "R84_DEPOSIT_TYPE")
+			private String r84_deposit_type;
+
+			@Column(name = "R84_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r84_deposit_excluding_number;
+
+			@Column(name = "R84_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r84_deposit_excluding_amount;
+
+			@Column(name = "R84_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r84_deposit_foreign_number;
+
+			@Column(name = "R84_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r84_deposit_foreign_amount;
+
+			@Column(name = "R84_TOTAL_NUMBER")
+			private BigDecimal r84_total_number;
+
+			@Column(name = "R84_TOTAL_AMOUNT")
+			private BigDecimal r84_total_amount;
+
+			@Column(name = "R84_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r84_total_deposit_bank;
+
+			// R85
+			@Column(name = "R85_DEPOSIT_SIZE")
+			private String r85_deposit_size;
+
+			@Column(name = "R85_DEPOSIT_TYPE")
+			private String r85_deposit_type;
+
+			@Column(name = "R85_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r85_deposit_excluding_number;
+
+			@Column(name = "R85_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r85_deposit_excluding_amount;
+
+			@Column(name = "R85_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r85_deposit_foreign_number;
+
+			@Column(name = "R85_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r85_deposit_foreign_amount;
+
+			@Column(name = "R85_TOTAL_NUMBER")
+			private BigDecimal r85_total_number;
+
+			@Column(name = "R85_TOTAL_AMOUNT")
+			private BigDecimal r85_total_amount;
+
+			@Column(name = "R85_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r85_total_deposit_bank;
+
+			// R86
+			@Column(name = "R86_DEPOSIT_SIZE")
+			private String r86_deposit_size;
+
+			@Column(name = "R86_DEPOSIT_TYPE")
+			private String r86_deposit_type;
+
+			@Column(name = "R86_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r86_deposit_excluding_number;
+
+			@Column(name = "R86_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r86_deposit_excluding_amount;
+
+			@Column(name = "R86_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r86_deposit_foreign_number;
+
+			@Column(name = "R86_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r86_deposit_foreign_amount;
+
+			@Column(name = "R86_TOTAL_NUMBER")
+			private BigDecimal r86_total_number;
+
+			@Column(name = "R86_TOTAL_AMOUNT")
+			private BigDecimal r86_total_amount;
+
+			@Column(name = "R86_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r86_total_deposit_bank;
+			
+			@Id
+			@Temporal(TemporalType.DATE)
+			@Column(name = "REPORT_DATE")
+			private Date REPORT_DATE;
+
+			@Column(name = "REPORT_VERSION", length = 100)
+			private BigDecimal REPORT_VERSION;
+
+			@Column(name = "REPORT_FREQUENCY", length = 100)
+			private String REPORT_FREQUENCY;
+
+			@Column(name = "REPORT_CODE", length = 100)
+			private String REPORT_CODE;
+
+			@Column(name = "REPORT_DESC", length = 100)
+			private String REPORT_DESC;
+
+			@Column(name = "ENTITY_FLG", length = 1)
+			private String ENTITY_FLG;
+
+			@Column(name = "MODIFY_FLG", length = 1)
+			private String MODIFY_FLG;
+
+			@Column(name = "DEL_FLG", length = 1)
+			private String DEL_FLG;
+		
+			public String getR7_deposit_size() {
+				return r7_deposit_size;
+			}
+			public void setR7_deposit_size(String r7_deposit_size) {
+				this.r7_deposit_size = r7_deposit_size;
+			}
+			public String getR7_deposit_type() {
+				return r7_deposit_type;
+			}
+			public void setR7_deposit_type(String r7_deposit_type) {
+				this.r7_deposit_type = r7_deposit_type;
+			}
+			public BigDecimal getR7_deposit_excluding_number() {
+				return r7_deposit_excluding_number;
+			}
+			public void setR7_deposit_excluding_number(BigDecimal r7_deposit_excluding_number) {
+				this.r7_deposit_excluding_number = r7_deposit_excluding_number;
+			}
+			public BigDecimal getR7_deposit_excluding_amount() {
+				return r7_deposit_excluding_amount;
+			}
+			public void setR7_deposit_excluding_amount(BigDecimal r7_deposit_excluding_amount) {
+				this.r7_deposit_excluding_amount = r7_deposit_excluding_amount;
+			}
+			public BigDecimal getR7_deposit_foreign_number() {
+				return r7_deposit_foreign_number;
+			}
+			public void setR7_deposit_foreign_number(BigDecimal r7_deposit_foreign_number) {
+				this.r7_deposit_foreign_number = r7_deposit_foreign_number;
+			}
+			public BigDecimal getR7_deposit_foreign_amount() {
+				return r7_deposit_foreign_amount;
+			}
+			public void setR7_deposit_foreign_amount(BigDecimal r7_deposit_foreign_amount) {
+				this.r7_deposit_foreign_amount = r7_deposit_foreign_amount;
+			}
+			public BigDecimal getR7_total_number() {
+				return r7_total_number;
+			}
+			public void setR7_total_number(BigDecimal r7_total_number) {
+				this.r7_total_number = r7_total_number;
+			}
+			public BigDecimal getR7_total_amount() {
+				return r7_total_amount;
+			}
+			public void setR7_total_amount(BigDecimal r7_total_amount) {
+				this.r7_total_amount = r7_total_amount;
+			}
+			public BigDecimal getR7_total_deposit_bank() {
+				return r7_total_deposit_bank;
+			}
+			public void setR7_total_deposit_bank(BigDecimal r7_total_deposit_bank) {
+				this.r7_total_deposit_bank = r7_total_deposit_bank;
+			}
+			public String getR8_deposit_size() {
+				return r8_deposit_size;
+			}
+			public void setR8_deposit_size(String r8_deposit_size) {
+				this.r8_deposit_size = r8_deposit_size;
+			}
+			public String getR8_deposit_type() {
+				return r8_deposit_type;
+			}
+			public void setR8_deposit_type(String r8_deposit_type) {
+				this.r8_deposit_type = r8_deposit_type;
+			}
+			public BigDecimal getR8_deposit_excluding_number() {
+				return r8_deposit_excluding_number;
+			}
+			public void setR8_deposit_excluding_number(BigDecimal r8_deposit_excluding_number) {
+				this.r8_deposit_excluding_number = r8_deposit_excluding_number;
+			}
+			public BigDecimal getR8_deposit_excluding_amount() {
+				return r8_deposit_excluding_amount;
+			}
+			public void setR8_deposit_excluding_amount(BigDecimal r8_deposit_excluding_amount) {
+				this.r8_deposit_excluding_amount = r8_deposit_excluding_amount;
+			}
+			public BigDecimal getR8_deposit_foreign_number() {
+				return r8_deposit_foreign_number;
+			}
+			public void setR8_deposit_foreign_number(BigDecimal r8_deposit_foreign_number) {
+				this.r8_deposit_foreign_number = r8_deposit_foreign_number;
+			}
+			public BigDecimal getR8_deposit_foreign_amount() {
+				return r8_deposit_foreign_amount;
+			}
+			public void setR8_deposit_foreign_amount(BigDecimal r8_deposit_foreign_amount) {
+				this.r8_deposit_foreign_amount = r8_deposit_foreign_amount;
+			}
+			public BigDecimal getR8_total_number() {
+				return r8_total_number;
+			}
+			public void setR8_total_number(BigDecimal r8_total_number) {
+				this.r8_total_number = r8_total_number;
+			}
+			public BigDecimal getR8_total_amount() {
+				return r8_total_amount;
+			}
+			public void setR8_total_amount(BigDecimal r8_total_amount) {
+				this.r8_total_amount = r8_total_amount;
+			}
+			public BigDecimal getR8_total_deposit_bank() {
+				return r8_total_deposit_bank;
+			}
+			public void setR8_total_deposit_bank(BigDecimal r8_total_deposit_bank) {
+				this.r8_total_deposit_bank = r8_total_deposit_bank;
+			}
+			public String getR9_deposit_size() {
+				return r9_deposit_size;
+			}
+			public void setR9_deposit_size(String r9_deposit_size) {
+				this.r9_deposit_size = r9_deposit_size;
+			}
+			public String getR9_deposit_type() {
+				return r9_deposit_type;
+			}
+			public void setR9_deposit_type(String r9_deposit_type) {
+				this.r9_deposit_type = r9_deposit_type;
+			}
+			public BigDecimal getR9_deposit_excluding_number() {
+				return r9_deposit_excluding_number;
+			}
+			public void setR9_deposit_excluding_number(BigDecimal r9_deposit_excluding_number) {
+				this.r9_deposit_excluding_number = r9_deposit_excluding_number;
+			}
+			public BigDecimal getR9_deposit_excluding_amount() {
+				return r9_deposit_excluding_amount;
+			}
+			public void setR9_deposit_excluding_amount(BigDecimal r9_deposit_excluding_amount) {
+				this.r9_deposit_excluding_amount = r9_deposit_excluding_amount;
+			}
+			public BigDecimal getR9_deposit_foreign_number() {
+				return r9_deposit_foreign_number;
+			}
+			public void setR9_deposit_foreign_number(BigDecimal r9_deposit_foreign_number) {
+				this.r9_deposit_foreign_number = r9_deposit_foreign_number;
+			}
+			public BigDecimal getR9_deposit_foreign_amount() {
+				return r9_deposit_foreign_amount;
+			}
+			public void setR9_deposit_foreign_amount(BigDecimal r9_deposit_foreign_amount) {
+				this.r9_deposit_foreign_amount = r9_deposit_foreign_amount;
+			}
+			public BigDecimal getR9_total_number() {
+				return r9_total_number;
+			}
+			public void setR9_total_number(BigDecimal r9_total_number) {
+				this.r9_total_number = r9_total_number;
+			}
+			public BigDecimal getR9_total_amount() {
+				return r9_total_amount;
+			}
+			public void setR9_total_amount(BigDecimal r9_total_amount) {
+				this.r9_total_amount = r9_total_amount;
+			}
+			public BigDecimal getR9_total_deposit_bank() {
+				return r9_total_deposit_bank;
+			}
+			public void setR9_total_deposit_bank(BigDecimal r9_total_deposit_bank) {
+				this.r9_total_deposit_bank = r9_total_deposit_bank;
+			}
+			public String getR10_deposit_size() {
+				return r10_deposit_size;
+			}
+			public void setR10_deposit_size(String r10_deposit_size) {
+				this.r10_deposit_size = r10_deposit_size;
+			}
+			public String getR10_deposit_type() {
+				return r10_deposit_type;
+			}
+			public void setR10_deposit_type(String r10_deposit_type) {
+				this.r10_deposit_type = r10_deposit_type;
+			}
+			public BigDecimal getR10_deposit_excluding_number() {
+				return r10_deposit_excluding_number;
+			}
+			public void setR10_deposit_excluding_number(BigDecimal r10_deposit_excluding_number) {
+				this.r10_deposit_excluding_number = r10_deposit_excluding_number;
+			}
+			public BigDecimal getR10_deposit_excluding_amount() {
+				return r10_deposit_excluding_amount;
+			}
+			public void setR10_deposit_excluding_amount(BigDecimal r10_deposit_excluding_amount) {
+				this.r10_deposit_excluding_amount = r10_deposit_excluding_amount;
+			}
+			public BigDecimal getR10_deposit_foreign_number() {
+				return r10_deposit_foreign_number;
+			}
+			public void setR10_deposit_foreign_number(BigDecimal r10_deposit_foreign_number) {
+				this.r10_deposit_foreign_number = r10_deposit_foreign_number;
+			}
+			public BigDecimal getR10_deposit_foreign_amount() {
+				return r10_deposit_foreign_amount;
+			}
+			public void setR10_deposit_foreign_amount(BigDecimal r10_deposit_foreign_amount) {
+				this.r10_deposit_foreign_amount = r10_deposit_foreign_amount;
+			}
+			public BigDecimal getR10_total_number() {
+				return r10_total_number;
+			}
+			public void setR10_total_number(BigDecimal r10_total_number) {
+				this.r10_total_number = r10_total_number;
+			}
+			public BigDecimal getR10_total_amount() {
+				return r10_total_amount;
+			}
+			public void setR10_total_amount(BigDecimal r10_total_amount) {
+				this.r10_total_amount = r10_total_amount;
+			}
+			public BigDecimal getR10_total_deposit_bank() {
+				return r10_total_deposit_bank;
+			}
+			public void setR10_total_deposit_bank(BigDecimal r10_total_deposit_bank) {
+				this.r10_total_deposit_bank = r10_total_deposit_bank;
+			}
+			public String getR11_deposit_size() {
+				return r11_deposit_size;
+			}
+			public void setR11_deposit_size(String r11_deposit_size) {
+				this.r11_deposit_size = r11_deposit_size;
+			}
+			public String getR11_deposit_type() {
+				return r11_deposit_type;
+			}
+			public void setR11_deposit_type(String r11_deposit_type) {
+				this.r11_deposit_type = r11_deposit_type;
+			}
+			public BigDecimal getR11_deposit_excluding_number() {
+				return r11_deposit_excluding_number;
+			}
+			public void setR11_deposit_excluding_number(BigDecimal r11_deposit_excluding_number) {
+				this.r11_deposit_excluding_number = r11_deposit_excluding_number;
+			}
+			public BigDecimal getR11_deposit_excluding_amount() {
+				return r11_deposit_excluding_amount;
+			}
+			public void setR11_deposit_excluding_amount(BigDecimal r11_deposit_excluding_amount) {
+				this.r11_deposit_excluding_amount = r11_deposit_excluding_amount;
+			}
+			public BigDecimal getR11_deposit_foreign_number() {
+				return r11_deposit_foreign_number;
+			}
+			public void setR11_deposit_foreign_number(BigDecimal r11_deposit_foreign_number) {
+				this.r11_deposit_foreign_number = r11_deposit_foreign_number;
+			}
+			public BigDecimal getR11_deposit_foreign_amount() {
+				return r11_deposit_foreign_amount;
+			}
+			public void setR11_deposit_foreign_amount(BigDecimal r11_deposit_foreign_amount) {
+				this.r11_deposit_foreign_amount = r11_deposit_foreign_amount;
+			}
+			public BigDecimal getR11_total_number() {
+				return r11_total_number;
+			}
+			public void setR11_total_number(BigDecimal r11_total_number) {
+				this.r11_total_number = r11_total_number;
+			}
+			public BigDecimal getR11_total_amount() {
+				return r11_total_amount;
+			}
+			public void setR11_total_amount(BigDecimal r11_total_amount) {
+				this.r11_total_amount = r11_total_amount;
+			}
+			public BigDecimal getR11_total_deposit_bank() {
+				return r11_total_deposit_bank;
+			}
+			public void setR11_total_deposit_bank(BigDecimal r11_total_deposit_bank) {
+				this.r11_total_deposit_bank = r11_total_deposit_bank;
+			}
+			public String getR12_deposit_size() {
+				return r12_deposit_size;
+			}
+			public void setR12_deposit_size(String r12_deposit_size) {
+				this.r12_deposit_size = r12_deposit_size;
+			}
+			public String getR12_deposit_type() {
+				return r12_deposit_type;
+			}
+			public void setR12_deposit_type(String r12_deposit_type) {
+				this.r12_deposit_type = r12_deposit_type;
+			}
+			public BigDecimal getR12_deposit_excluding_number() {
+				return r12_deposit_excluding_number;
+			}
+			public void setR12_deposit_excluding_number(BigDecimal r12_deposit_excluding_number) {
+				this.r12_deposit_excluding_number = r12_deposit_excluding_number;
+			}
+			public BigDecimal getR12_deposit_excluding_amount() {
+				return r12_deposit_excluding_amount;
+			}
+			public void setR12_deposit_excluding_amount(BigDecimal r12_deposit_excluding_amount) {
+				this.r12_deposit_excluding_amount = r12_deposit_excluding_amount;
+			}
+			public BigDecimal getR12_deposit_foreign_number() {
+				return r12_deposit_foreign_number;
+			}
+			public void setR12_deposit_foreign_number(BigDecimal r12_deposit_foreign_number) {
+				this.r12_deposit_foreign_number = r12_deposit_foreign_number;
+			}
+			public BigDecimal getR12_deposit_foreign_amount() {
+				return r12_deposit_foreign_amount;
+			}
+			public void setR12_deposit_foreign_amount(BigDecimal r12_deposit_foreign_amount) {
+				this.r12_deposit_foreign_amount = r12_deposit_foreign_amount;
+			}
+			public BigDecimal getR12_total_number() {
+				return r12_total_number;
+			}
+			public void setR12_total_number(BigDecimal r12_total_number) {
+				this.r12_total_number = r12_total_number;
+			}
+			public BigDecimal getR12_total_amount() {
+				return r12_total_amount;
+			}
+			public void setR12_total_amount(BigDecimal r12_total_amount) {
+				this.r12_total_amount = r12_total_amount;
+			}
+			public BigDecimal getR12_total_deposit_bank() {
+				return r12_total_deposit_bank;
+			}
+			public void setR12_total_deposit_bank(BigDecimal r12_total_deposit_bank) {
+				this.r12_total_deposit_bank = r12_total_deposit_bank;
+			}
+			public String getR13_deposit_size() {
+				return r13_deposit_size;
+			}
+			public void setR13_deposit_size(String r13_deposit_size) {
+				this.r13_deposit_size = r13_deposit_size;
+			}
+			public String getR13_deposit_type() {
+				return r13_deposit_type;
+			}
+			public void setR13_deposit_type(String r13_deposit_type) {
+				this.r13_deposit_type = r13_deposit_type;
+			}
+			public BigDecimal getR13_deposit_excluding_number() {
+				return r13_deposit_excluding_number;
+			}
+			public void setR13_deposit_excluding_number(BigDecimal r13_deposit_excluding_number) {
+				this.r13_deposit_excluding_number = r13_deposit_excluding_number;
+			}
+			public BigDecimal getR13_deposit_excluding_amount() {
+				return r13_deposit_excluding_amount;
+			}
+			public void setR13_deposit_excluding_amount(BigDecimal r13_deposit_excluding_amount) {
+				this.r13_deposit_excluding_amount = r13_deposit_excluding_amount;
+			}
+			public BigDecimal getR13_deposit_foreign_number() {
+				return r13_deposit_foreign_number;
+			}
+			public void setR13_deposit_foreign_number(BigDecimal r13_deposit_foreign_number) {
+				this.r13_deposit_foreign_number = r13_deposit_foreign_number;
+			}
+			public BigDecimal getR13_deposit_foreign_amount() {
+				return r13_deposit_foreign_amount;
+			}
+			public void setR13_deposit_foreign_amount(BigDecimal r13_deposit_foreign_amount) {
+				this.r13_deposit_foreign_amount = r13_deposit_foreign_amount;
+			}
+			public BigDecimal getR13_total_number() {
+				return r13_total_number;
+			}
+			public void setR13_total_number(BigDecimal r13_total_number) {
+				this.r13_total_number = r13_total_number;
+			}
+			public BigDecimal getR13_total_amount() {
+				return r13_total_amount;
+			}
+			public void setR13_total_amount(BigDecimal r13_total_amount) {
+				this.r13_total_amount = r13_total_amount;
+			}
+			public BigDecimal getR13_total_deposit_bank() {
+				return r13_total_deposit_bank;
+			}
+			public void setR13_total_deposit_bank(BigDecimal r13_total_deposit_bank) {
+				this.r13_total_deposit_bank = r13_total_deposit_bank;
+			}
+			public String getR14_deposit_size() {
+				return r14_deposit_size;
+			}
+			public void setR14_deposit_size(String r14_deposit_size) {
+				this.r14_deposit_size = r14_deposit_size;
+			}
+			public String getR14_deposit_type() {
+				return r14_deposit_type;
+			}
+			public void setR14_deposit_type(String r14_deposit_type) {
+				this.r14_deposit_type = r14_deposit_type;
+			}
+			public BigDecimal getR14_deposit_excluding_number() {
+				return r14_deposit_excluding_number;
+			}
+			public void setR14_deposit_excluding_number(BigDecimal r14_deposit_excluding_number) {
+				this.r14_deposit_excluding_number = r14_deposit_excluding_number;
+			}
+			public BigDecimal getR14_deposit_excluding_amount() {
+				return r14_deposit_excluding_amount;
+			}
+			public void setR14_deposit_excluding_amount(BigDecimal r14_deposit_excluding_amount) {
+				this.r14_deposit_excluding_amount = r14_deposit_excluding_amount;
+			}
+			public BigDecimal getR14_deposit_foreign_number() {
+				return r14_deposit_foreign_number;
+			}
+			public void setR14_deposit_foreign_number(BigDecimal r14_deposit_foreign_number) {
+				this.r14_deposit_foreign_number = r14_deposit_foreign_number;
+			}
+			public BigDecimal getR14_deposit_foreign_amount() {
+				return r14_deposit_foreign_amount;
+			}
+			public void setR14_deposit_foreign_amount(BigDecimal r14_deposit_foreign_amount) {
+				this.r14_deposit_foreign_amount = r14_deposit_foreign_amount;
+			}
+			public BigDecimal getR14_total_number() {
+				return r14_total_number;
+			}
+			public void setR14_total_number(BigDecimal r14_total_number) {
+				this.r14_total_number = r14_total_number;
+			}
+			public BigDecimal getR14_total_amount() {
+				return r14_total_amount;
+			}
+			public void setR14_total_amount(BigDecimal r14_total_amount) {
+				this.r14_total_amount = r14_total_amount;
+			}
+			public BigDecimal getR14_total_deposit_bank() {
+				return r14_total_deposit_bank;
+			}
+			public void setR14_total_deposit_bank(BigDecimal r14_total_deposit_bank) {
+				this.r14_total_deposit_bank = r14_total_deposit_bank;
+			}
+			public String getR15_deposit_size() {
+				return r15_deposit_size;
+			}
+			public void setR15_deposit_size(String r15_deposit_size) {
+				this.r15_deposit_size = r15_deposit_size;
+			}
+			public String getR15_deposit_type() {
+				return r15_deposit_type;
+			}
+			public void setR15_deposit_type(String r15_deposit_type) {
+				this.r15_deposit_type = r15_deposit_type;
+			}
+			public BigDecimal getR15_deposit_excluding_number() {
+				return r15_deposit_excluding_number;
+			}
+			public void setR15_deposit_excluding_number(BigDecimal r15_deposit_excluding_number) {
+				this.r15_deposit_excluding_number = r15_deposit_excluding_number;
+			}
+			public BigDecimal getR15_deposit_excluding_amount() {
+				return r15_deposit_excluding_amount;
+			}
+			public void setR15_deposit_excluding_amount(BigDecimal r15_deposit_excluding_amount) {
+				this.r15_deposit_excluding_amount = r15_deposit_excluding_amount;
+			}
+			public BigDecimal getR15_deposit_foreign_number() {
+				return r15_deposit_foreign_number;
+			}
+			public void setR15_deposit_foreign_number(BigDecimal r15_deposit_foreign_number) {
+				this.r15_deposit_foreign_number = r15_deposit_foreign_number;
+			}
+			public BigDecimal getR15_deposit_foreign_amount() {
+				return r15_deposit_foreign_amount;
+			}
+			public void setR15_deposit_foreign_amount(BigDecimal r15_deposit_foreign_amount) {
+				this.r15_deposit_foreign_amount = r15_deposit_foreign_amount;
+			}
+			public BigDecimal getR15_total_number() {
+				return r15_total_number;
+			}
+			public void setR15_total_number(BigDecimal r15_total_number) {
+				this.r15_total_number = r15_total_number;
+			}
+			public BigDecimal getR15_total_amount() {
+				return r15_total_amount;
+			}
+			public void setR15_total_amount(BigDecimal r15_total_amount) {
+				this.r15_total_amount = r15_total_amount;
+			}
+			public BigDecimal getR15_total_deposit_bank() {
+				return r15_total_deposit_bank;
+			}
+			public void setR15_total_deposit_bank(BigDecimal r15_total_deposit_bank) {
+				this.r15_total_deposit_bank = r15_total_deposit_bank;
+			}
+			public String getR16_deposit_size() {
+				return r16_deposit_size;
+			}
+			public void setR16_deposit_size(String r16_deposit_size) {
+				this.r16_deposit_size = r16_deposit_size;
+			}
+			public String getR16_deposit_type() {
+				return r16_deposit_type;
+			}
+			public void setR16_deposit_type(String r16_deposit_type) {
+				this.r16_deposit_type = r16_deposit_type;
+			}
+			public BigDecimal getR16_deposit_excluding_number() {
+				return r16_deposit_excluding_number;
+			}
+			public void setR16_deposit_excluding_number(BigDecimal r16_deposit_excluding_number) {
+				this.r16_deposit_excluding_number = r16_deposit_excluding_number;
+			}
+			public BigDecimal getR16_deposit_excluding_amount() {
+				return r16_deposit_excluding_amount;
+			}
+			public void setR16_deposit_excluding_amount(BigDecimal r16_deposit_excluding_amount) {
+				this.r16_deposit_excluding_amount = r16_deposit_excluding_amount;
+			}
+			public BigDecimal getR16_deposit_foreign_number() {
+				return r16_deposit_foreign_number;
+			}
+			public void setR16_deposit_foreign_number(BigDecimal r16_deposit_foreign_number) {
+				this.r16_deposit_foreign_number = r16_deposit_foreign_number;
+			}
+			public BigDecimal getR16_deposit_foreign_amount() {
+				return r16_deposit_foreign_amount;
+			}
+			public void setR16_deposit_foreign_amount(BigDecimal r16_deposit_foreign_amount) {
+				this.r16_deposit_foreign_amount = r16_deposit_foreign_amount;
+			}
+			public BigDecimal getR16_total_number() {
+				return r16_total_number;
+			}
+			public void setR16_total_number(BigDecimal r16_total_number) {
+				this.r16_total_number = r16_total_number;
+			}
+			public BigDecimal getR16_total_amount() {
+				return r16_total_amount;
+			}
+			public void setR16_total_amount(BigDecimal r16_total_amount) {
+				this.r16_total_amount = r16_total_amount;
+			}
+			public BigDecimal getR16_total_deposit_bank() {
+				return r16_total_deposit_bank;
+			}
+			public void setR16_total_deposit_bank(BigDecimal r16_total_deposit_bank) {
+				this.r16_total_deposit_bank = r16_total_deposit_bank;
+			}
+			public String getR17_deposit_size() {
+				return r17_deposit_size;
+			}
+			public void setR17_deposit_size(String r17_deposit_size) {
+				this.r17_deposit_size = r17_deposit_size;
+			}
+			public String getR17_deposit_type() {
+				return r17_deposit_type;
+			}
+			public void setR17_deposit_type(String r17_deposit_type) {
+				this.r17_deposit_type = r17_deposit_type;
+			}
+			public BigDecimal getR17_deposit_excluding_number() {
+				return r17_deposit_excluding_number;
+			}
+			public void setR17_deposit_excluding_number(BigDecimal r17_deposit_excluding_number) {
+				this.r17_deposit_excluding_number = r17_deposit_excluding_number;
+			}
+			public BigDecimal getR17_deposit_excluding_amount() {
+				return r17_deposit_excluding_amount;
+			}
+			public void setR17_deposit_excluding_amount(BigDecimal r17_deposit_excluding_amount) {
+				this.r17_deposit_excluding_amount = r17_deposit_excluding_amount;
+			}
+			public BigDecimal getR17_deposit_foreign_number() {
+				return r17_deposit_foreign_number;
+			}
+			public void setR17_deposit_foreign_number(BigDecimal r17_deposit_foreign_number) {
+				this.r17_deposit_foreign_number = r17_deposit_foreign_number;
+			}
+			public BigDecimal getR17_deposit_foreign_amount() {
+				return r17_deposit_foreign_amount;
+			}
+			public void setR17_deposit_foreign_amount(BigDecimal r17_deposit_foreign_amount) {
+				this.r17_deposit_foreign_amount = r17_deposit_foreign_amount;
+			}
+			public BigDecimal getR17_total_number() {
+				return r17_total_number;
+			}
+			public void setR17_total_number(BigDecimal r17_total_number) {
+				this.r17_total_number = r17_total_number;
+			}
+			public BigDecimal getR17_total_amount() {
+				return r17_total_amount;
+			}
+			public void setR17_total_amount(BigDecimal r17_total_amount) {
+				this.r17_total_amount = r17_total_amount;
+			}
+			public BigDecimal getR17_total_deposit_bank() {
+				return r17_total_deposit_bank;
+			}
+			public void setR17_total_deposit_bank(BigDecimal r17_total_deposit_bank) {
+				this.r17_total_deposit_bank = r17_total_deposit_bank;
+			}
+			public String getR18_deposit_size() {
+				return r18_deposit_size;
+			}
+			public void setR18_deposit_size(String r18_deposit_size) {
+				this.r18_deposit_size = r18_deposit_size;
+			}
+			public String getR18_deposit_type() {
+				return r18_deposit_type;
+			}
+			public void setR18_deposit_type(String r18_deposit_type) {
+				this.r18_deposit_type = r18_deposit_type;
+			}
+			public BigDecimal getR18_deposit_excluding_number() {
+				return r18_deposit_excluding_number;
+			}
+			public void setR18_deposit_excluding_number(BigDecimal r18_deposit_excluding_number) {
+				this.r18_deposit_excluding_number = r18_deposit_excluding_number;
+			}
+			public BigDecimal getR18_deposit_excluding_amount() {
+				return r18_deposit_excluding_amount;
+			}
+			public void setR18_deposit_excluding_amount(BigDecimal r18_deposit_excluding_amount) {
+				this.r18_deposit_excluding_amount = r18_deposit_excluding_amount;
+			}
+			public BigDecimal getR18_deposit_foreign_number() {
+				return r18_deposit_foreign_number;
+			}
+			public void setR18_deposit_foreign_number(BigDecimal r18_deposit_foreign_number) {
+				this.r18_deposit_foreign_number = r18_deposit_foreign_number;
+			}
+			public BigDecimal getR18_deposit_foreign_amount() {
+				return r18_deposit_foreign_amount;
+			}
+			public void setR18_deposit_foreign_amount(BigDecimal r18_deposit_foreign_amount) {
+				this.r18_deposit_foreign_amount = r18_deposit_foreign_amount;
+			}
+			public BigDecimal getR18_total_number() {
+				return r18_total_number;
+			}
+			public void setR18_total_number(BigDecimal r18_total_number) {
+				this.r18_total_number = r18_total_number;
+			}
+			public BigDecimal getR18_total_amount() {
+				return r18_total_amount;
+			}
+			public void setR18_total_amount(BigDecimal r18_total_amount) {
+				this.r18_total_amount = r18_total_amount;
+			}
+			public BigDecimal getR18_total_deposit_bank() {
+				return r18_total_deposit_bank;
+			}
+			public void setR18_total_deposit_bank(BigDecimal r18_total_deposit_bank) {
+				this.r18_total_deposit_bank = r18_total_deposit_bank;
+			}
+			public String getR19_deposit_size() {
+				return r19_deposit_size;
+			}
+			public void setR19_deposit_size(String r19_deposit_size) {
+				this.r19_deposit_size = r19_deposit_size;
+			}
+			public String getR19_deposit_type() {
+				return r19_deposit_type;
+			}
+			public void setR19_deposit_type(String r19_deposit_type) {
+				this.r19_deposit_type = r19_deposit_type;
+			}
+			public BigDecimal getR19_deposit_excluding_number() {
+				return r19_deposit_excluding_number;
+			}
+			public void setR19_deposit_excluding_number(BigDecimal r19_deposit_excluding_number) {
+				this.r19_deposit_excluding_number = r19_deposit_excluding_number;
+			}
+			public BigDecimal getR19_deposit_excluding_amount() {
+				return r19_deposit_excluding_amount;
+			}
+			public void setR19_deposit_excluding_amount(BigDecimal r19_deposit_excluding_amount) {
+				this.r19_deposit_excluding_amount = r19_deposit_excluding_amount;
+			}
+			public BigDecimal getR19_deposit_foreign_number() {
+				return r19_deposit_foreign_number;
+			}
+			public void setR19_deposit_foreign_number(BigDecimal r19_deposit_foreign_number) {
+				this.r19_deposit_foreign_number = r19_deposit_foreign_number;
+			}
+			public BigDecimal getR19_deposit_foreign_amount() {
+				return r19_deposit_foreign_amount;
+			}
+			public void setR19_deposit_foreign_amount(BigDecimal r19_deposit_foreign_amount) {
+				this.r19_deposit_foreign_amount = r19_deposit_foreign_amount;
+			}
+			public BigDecimal getR19_total_number() {
+				return r19_total_number;
+			}
+			public void setR19_total_number(BigDecimal r19_total_number) {
+				this.r19_total_number = r19_total_number;
+			}
+			public BigDecimal getR19_total_amount() {
+				return r19_total_amount;
+			}
+			public void setR19_total_amount(BigDecimal r19_total_amount) {
+				this.r19_total_amount = r19_total_amount;
+			}
+			public BigDecimal getR19_total_deposit_bank() {
+				return r19_total_deposit_bank;
+			}
+			public void setR19_total_deposit_bank(BigDecimal r19_total_deposit_bank) {
+				this.r19_total_deposit_bank = r19_total_deposit_bank;
+			}
+			public String getR20_deposit_size() {
+				return r20_deposit_size;
+			}
+			public void setR20_deposit_size(String r20_deposit_size) {
+				this.r20_deposit_size = r20_deposit_size;
+			}
+			public String getR20_deposit_type() {
+				return r20_deposit_type;
+			}
+			public void setR20_deposit_type(String r20_deposit_type) {
+				this.r20_deposit_type = r20_deposit_type;
+			}
+			public BigDecimal getR20_deposit_excluding_number() {
+				return r20_deposit_excluding_number;
+			}
+			public void setR20_deposit_excluding_number(BigDecimal r20_deposit_excluding_number) {
+				this.r20_deposit_excluding_number = r20_deposit_excluding_number;
+			}
+			public BigDecimal getR20_deposit_excluding_amount() {
+				return r20_deposit_excluding_amount;
+			}
+			public void setR20_deposit_excluding_amount(BigDecimal r20_deposit_excluding_amount) {
+				this.r20_deposit_excluding_amount = r20_deposit_excluding_amount;
+			}
+			public BigDecimal getR20_deposit_foreign_number() {
+				return r20_deposit_foreign_number;
+			}
+			public void setR20_deposit_foreign_number(BigDecimal r20_deposit_foreign_number) {
+				this.r20_deposit_foreign_number = r20_deposit_foreign_number;
+			}
+			public BigDecimal getR20_deposit_foreign_amount() {
+				return r20_deposit_foreign_amount;
+			}
+			public void setR20_deposit_foreign_amount(BigDecimal r20_deposit_foreign_amount) {
+				this.r20_deposit_foreign_amount = r20_deposit_foreign_amount;
+			}
+			public BigDecimal getR20_total_number() {
+				return r20_total_number;
+			}
+			public void setR20_total_number(BigDecimal r20_total_number) {
+				this.r20_total_number = r20_total_number;
+			}
+			public BigDecimal getR20_total_amount() {
+				return r20_total_amount;
+			}
+			public void setR20_total_amount(BigDecimal r20_total_amount) {
+				this.r20_total_amount = r20_total_amount;
+			}
+			public BigDecimal getR20_total_deposit_bank() {
+				return r20_total_deposit_bank;
+			}
+			public void setR20_total_deposit_bank(BigDecimal r20_total_deposit_bank) {
+				this.r20_total_deposit_bank = r20_total_deposit_bank;
+			}
+			public String getR21_deposit_size() {
+				return r21_deposit_size;
+			}
+			public void setR21_deposit_size(String r21_deposit_size) {
+				this.r21_deposit_size = r21_deposit_size;
+			}
+			public String getR21_deposit_type() {
+				return r21_deposit_type;
+			}
+			public void setR21_deposit_type(String r21_deposit_type) {
+				this.r21_deposit_type = r21_deposit_type;
+			}
+			public BigDecimal getR21_deposit_excluding_number() {
+				return r21_deposit_excluding_number;
+			}
+			public void setR21_deposit_excluding_number(BigDecimal r21_deposit_excluding_number) {
+				this.r21_deposit_excluding_number = r21_deposit_excluding_number;
+			}
+			public BigDecimal getR21_deposit_excluding_amount() {
+				return r21_deposit_excluding_amount;
+			}
+			public void setR21_deposit_excluding_amount(BigDecimal r21_deposit_excluding_amount) {
+				this.r21_deposit_excluding_amount = r21_deposit_excluding_amount;
+			}
+			public BigDecimal getR21_deposit_foreign_number() {
+				return r21_deposit_foreign_number;
+			}
+			public void setR21_deposit_foreign_number(BigDecimal r21_deposit_foreign_number) {
+				this.r21_deposit_foreign_number = r21_deposit_foreign_number;
+			}
+			public BigDecimal getR21_deposit_foreign_amount() {
+				return r21_deposit_foreign_amount;
+			}
+			public void setR21_deposit_foreign_amount(BigDecimal r21_deposit_foreign_amount) {
+				this.r21_deposit_foreign_amount = r21_deposit_foreign_amount;
+			}
+			public BigDecimal getR21_total_number() {
+				return r21_total_number;
+			}
+			public void setR21_total_number(BigDecimal r21_total_number) {
+				this.r21_total_number = r21_total_number;
+			}
+			public BigDecimal getR21_total_amount() {
+				return r21_total_amount;
+			}
+			public void setR21_total_amount(BigDecimal r21_total_amount) {
+				this.r21_total_amount = r21_total_amount;
+			}
+			public BigDecimal getR21_total_deposit_bank() {
+				return r21_total_deposit_bank;
+			}
+			public void setR21_total_deposit_bank(BigDecimal r21_total_deposit_bank) {
+				this.r21_total_deposit_bank = r21_total_deposit_bank;
+			}
+			public String getR22_deposit_size() {
+				return r22_deposit_size;
+			}
+			public void setR22_deposit_size(String r22_deposit_size) {
+				this.r22_deposit_size = r22_deposit_size;
+			}
+			public String getR22_deposit_type() {
+				return r22_deposit_type;
+			}
+			public void setR22_deposit_type(String r22_deposit_type) {
+				this.r22_deposit_type = r22_deposit_type;
+			}
+			public BigDecimal getR22_deposit_excluding_number() {
+				return r22_deposit_excluding_number;
+			}
+			public void setR22_deposit_excluding_number(BigDecimal r22_deposit_excluding_number) {
+				this.r22_deposit_excluding_number = r22_deposit_excluding_number;
+			}
+			public BigDecimal getR22_deposit_excluding_amount() {
+				return r22_deposit_excluding_amount;
+			}
+			public void setR22_deposit_excluding_amount(BigDecimal r22_deposit_excluding_amount) {
+				this.r22_deposit_excluding_amount = r22_deposit_excluding_amount;
+			}
+			public BigDecimal getR22_deposit_foreign_number() {
+				return r22_deposit_foreign_number;
+			}
+			public void setR22_deposit_foreign_number(BigDecimal r22_deposit_foreign_number) {
+				this.r22_deposit_foreign_number = r22_deposit_foreign_number;
+			}
+			public BigDecimal getR22_deposit_foreign_amount() {
+				return r22_deposit_foreign_amount;
+			}
+			public void setR22_deposit_foreign_amount(BigDecimal r22_deposit_foreign_amount) {
+				this.r22_deposit_foreign_amount = r22_deposit_foreign_amount;
+			}
+			public BigDecimal getR22_total_number() {
+				return r22_total_number;
+			}
+			public void setR22_total_number(BigDecimal r22_total_number) {
+				this.r22_total_number = r22_total_number;
+			}
+			public BigDecimal getR22_total_amount() {
+				return r22_total_amount;
+			}
+			public void setR22_total_amount(BigDecimal r22_total_amount) {
+				this.r22_total_amount = r22_total_amount;
+			}
+			public BigDecimal getR22_total_deposit_bank() {
+				return r22_total_deposit_bank;
+			}
+			public void setR22_total_deposit_bank(BigDecimal r22_total_deposit_bank) {
+				this.r22_total_deposit_bank = r22_total_deposit_bank;
+			}
+			public String getR23_deposit_size() {
+				return r23_deposit_size;
+			}
+			public void setR23_deposit_size(String r23_deposit_size) {
+				this.r23_deposit_size = r23_deposit_size;
+			}
+			public String getR23_deposit_type() {
+				return r23_deposit_type;
+			}
+			public void setR23_deposit_type(String r23_deposit_type) {
+				this.r23_deposit_type = r23_deposit_type;
+			}
+			public BigDecimal getR23_deposit_excluding_number() {
+				return r23_deposit_excluding_number;
+			}
+			public void setR23_deposit_excluding_number(BigDecimal r23_deposit_excluding_number) {
+				this.r23_deposit_excluding_number = r23_deposit_excluding_number;
+			}
+			public BigDecimal getR23_deposit_excluding_amount() {
+				return r23_deposit_excluding_amount;
+			}
+			public void setR23_deposit_excluding_amount(BigDecimal r23_deposit_excluding_amount) {
+				this.r23_deposit_excluding_amount = r23_deposit_excluding_amount;
+			}
+			public BigDecimal getR23_deposit_foreign_number() {
+				return r23_deposit_foreign_number;
+			}
+			public void setR23_deposit_foreign_number(BigDecimal r23_deposit_foreign_number) {
+				this.r23_deposit_foreign_number = r23_deposit_foreign_number;
+			}
+			public BigDecimal getR23_deposit_foreign_amount() {
+				return r23_deposit_foreign_amount;
+			}
+			public void setR23_deposit_foreign_amount(BigDecimal r23_deposit_foreign_amount) {
+				this.r23_deposit_foreign_amount = r23_deposit_foreign_amount;
+			}
+			public BigDecimal getR23_total_number() {
+				return r23_total_number;
+			}
+			public void setR23_total_number(BigDecimal r23_total_number) {
+				this.r23_total_number = r23_total_number;
+			}
+			public BigDecimal getR23_total_amount() {
+				return r23_total_amount;
+			}
+			public void setR23_total_amount(BigDecimal r23_total_amount) {
+				this.r23_total_amount = r23_total_amount;
+			}
+			public BigDecimal getR23_total_deposit_bank() {
+				return r23_total_deposit_bank;
+			}
+			public void setR23_total_deposit_bank(BigDecimal r23_total_deposit_bank) {
+				this.r23_total_deposit_bank = r23_total_deposit_bank;
+			}
+			public String getR24_deposit_size() {
+				return r24_deposit_size;
+			}
+			public void setR24_deposit_size(String r24_deposit_size) {
+				this.r24_deposit_size = r24_deposit_size;
+			}
+			public String getR24_deposit_type() {
+				return r24_deposit_type;
+			}
+			public void setR24_deposit_type(String r24_deposit_type) {
+				this.r24_deposit_type = r24_deposit_type;
+			}
+			public BigDecimal getR24_deposit_excluding_number() {
+				return r24_deposit_excluding_number;
+			}
+			public void setR24_deposit_excluding_number(BigDecimal r24_deposit_excluding_number) {
+				this.r24_deposit_excluding_number = r24_deposit_excluding_number;
+			}
+			public BigDecimal getR24_deposit_excluding_amount() {
+				return r24_deposit_excluding_amount;
+			}
+			public void setR24_deposit_excluding_amount(BigDecimal r24_deposit_excluding_amount) {
+				this.r24_deposit_excluding_amount = r24_deposit_excluding_amount;
+			}
+			public BigDecimal getR24_deposit_foreign_number() {
+				return r24_deposit_foreign_number;
+			}
+			public void setR24_deposit_foreign_number(BigDecimal r24_deposit_foreign_number) {
+				this.r24_deposit_foreign_number = r24_deposit_foreign_number;
+			}
+			public BigDecimal getR24_deposit_foreign_amount() {
+				return r24_deposit_foreign_amount;
+			}
+			public void setR24_deposit_foreign_amount(BigDecimal r24_deposit_foreign_amount) {
+				this.r24_deposit_foreign_amount = r24_deposit_foreign_amount;
+			}
+			public BigDecimal getR24_total_number() {
+				return r24_total_number;
+			}
+			public void setR24_total_number(BigDecimal r24_total_number) {
+				this.r24_total_number = r24_total_number;
+			}
+			public BigDecimal getR24_total_amount() {
+				return r24_total_amount;
+			}
+			public void setR24_total_amount(BigDecimal r24_total_amount) {
+				this.r24_total_amount = r24_total_amount;
+			}
+			public BigDecimal getR24_total_deposit_bank() {
+				return r24_total_deposit_bank;
+			}
+			public void setR24_total_deposit_bank(BigDecimal r24_total_deposit_bank) {
+				this.r24_total_deposit_bank = r24_total_deposit_bank;
+			}
+			public String getR25_deposit_size() {
+				return r25_deposit_size;
+			}
+			public void setR25_deposit_size(String r25_deposit_size) {
+				this.r25_deposit_size = r25_deposit_size;
+			}
+			public String getR25_deposit_type() {
+				return r25_deposit_type;
+			}
+			public void setR25_deposit_type(String r25_deposit_type) {
+				this.r25_deposit_type = r25_deposit_type;
+			}
+			public BigDecimal getR25_deposit_excluding_number() {
+				return r25_deposit_excluding_number;
+			}
+			public void setR25_deposit_excluding_number(BigDecimal r25_deposit_excluding_number) {
+				this.r25_deposit_excluding_number = r25_deposit_excluding_number;
+			}
+			public BigDecimal getR25_deposit_excluding_amount() {
+				return r25_deposit_excluding_amount;
+			}
+			public void setR25_deposit_excluding_amount(BigDecimal r25_deposit_excluding_amount) {
+				this.r25_deposit_excluding_amount = r25_deposit_excluding_amount;
+			}
+			public BigDecimal getR25_deposit_foreign_number() {
+				return r25_deposit_foreign_number;
+			}
+			public void setR25_deposit_foreign_number(BigDecimal r25_deposit_foreign_number) {
+				this.r25_deposit_foreign_number = r25_deposit_foreign_number;
+			}
+			public BigDecimal getR25_deposit_foreign_amount() {
+				return r25_deposit_foreign_amount;
+			}
+			public void setR25_deposit_foreign_amount(BigDecimal r25_deposit_foreign_amount) {
+				this.r25_deposit_foreign_amount = r25_deposit_foreign_amount;
+			}
+			public BigDecimal getR25_total_number() {
+				return r25_total_number;
+			}
+			public void setR25_total_number(BigDecimal r25_total_number) {
+				this.r25_total_number = r25_total_number;
+			}
+			public BigDecimal getR25_total_amount() {
+				return r25_total_amount;
+			}
+			public void setR25_total_amount(BigDecimal r25_total_amount) {
+				this.r25_total_amount = r25_total_amount;
+			}
+			public BigDecimal getR25_total_deposit_bank() {
+				return r25_total_deposit_bank;
+			}
+			public void setR25_total_deposit_bank(BigDecimal r25_total_deposit_bank) {
+				this.r25_total_deposit_bank = r25_total_deposit_bank;
+			}
+			public String getR26_deposit_size() {
+				return r26_deposit_size;
+			}
+			public void setR26_deposit_size(String r26_deposit_size) {
+				this.r26_deposit_size = r26_deposit_size;
+			}
+			public String getR26_deposit_type() {
+				return r26_deposit_type;
+			}
+			public void setR26_deposit_type(String r26_deposit_type) {
+				this.r26_deposit_type = r26_deposit_type;
+			}
+			public BigDecimal getR26_deposit_excluding_number() {
+				return r26_deposit_excluding_number;
+			}
+			public void setR26_deposit_excluding_number(BigDecimal r26_deposit_excluding_number) {
+				this.r26_deposit_excluding_number = r26_deposit_excluding_number;
+			}
+			public BigDecimal getR26_deposit_excluding_amount() {
+				return r26_deposit_excluding_amount;
+			}
+			public void setR26_deposit_excluding_amount(BigDecimal r26_deposit_excluding_amount) {
+				this.r26_deposit_excluding_amount = r26_deposit_excluding_amount;
+			}
+			public BigDecimal getR26_deposit_foreign_number() {
+				return r26_deposit_foreign_number;
+			}
+			public void setR26_deposit_foreign_number(BigDecimal r26_deposit_foreign_number) {
+				this.r26_deposit_foreign_number = r26_deposit_foreign_number;
+			}
+			public BigDecimal getR26_deposit_foreign_amount() {
+				return r26_deposit_foreign_amount;
+			}
+			public void setR26_deposit_foreign_amount(BigDecimal r26_deposit_foreign_amount) {
+				this.r26_deposit_foreign_amount = r26_deposit_foreign_amount;
+			}
+			public BigDecimal getR26_total_number() {
+				return r26_total_number;
+			}
+			public void setR26_total_number(BigDecimal r26_total_number) {
+				this.r26_total_number = r26_total_number;
+			}
+			public BigDecimal getR26_total_amount() {
+				return r26_total_amount;
+			}
+			public void setR26_total_amount(BigDecimal r26_total_amount) {
+				this.r26_total_amount = r26_total_amount;
+			}
+			public BigDecimal getR26_total_deposit_bank() {
+				return r26_total_deposit_bank;
+			}
+			public void setR26_total_deposit_bank(BigDecimal r26_total_deposit_bank) {
+				this.r26_total_deposit_bank = r26_total_deposit_bank;
+			}
+			public String getR27_deposit_size() {
+				return r27_deposit_size;
+			}
+			public void setR27_deposit_size(String r27_deposit_size) {
+				this.r27_deposit_size = r27_deposit_size;
+			}
+			public String getR27_deposit_type() {
+				return r27_deposit_type;
+			}
+			public void setR27_deposit_type(String r27_deposit_type) {
+				this.r27_deposit_type = r27_deposit_type;
+			}
+			public BigDecimal getR27_deposit_excluding_number() {
+				return r27_deposit_excluding_number;
+			}
+			public void setR27_deposit_excluding_number(BigDecimal r27_deposit_excluding_number) {
+				this.r27_deposit_excluding_number = r27_deposit_excluding_number;
+			}
+			public BigDecimal getR27_deposit_excluding_amount() {
+				return r27_deposit_excluding_amount;
+			}
+			public void setR27_deposit_excluding_amount(BigDecimal r27_deposit_excluding_amount) {
+				this.r27_deposit_excluding_amount = r27_deposit_excluding_amount;
+			}
+			public BigDecimal getR27_deposit_foreign_number() {
+				return r27_deposit_foreign_number;
+			}
+			public void setR27_deposit_foreign_number(BigDecimal r27_deposit_foreign_number) {
+				this.r27_deposit_foreign_number = r27_deposit_foreign_number;
+			}
+			public BigDecimal getR27_deposit_foreign_amount() {
+				return r27_deposit_foreign_amount;
+			}
+			public void setR27_deposit_foreign_amount(BigDecimal r27_deposit_foreign_amount) {
+				this.r27_deposit_foreign_amount = r27_deposit_foreign_amount;
+			}
+			public BigDecimal getR27_total_number() {
+				return r27_total_number;
+			}
+			public void setR27_total_number(BigDecimal r27_total_number) {
+				this.r27_total_number = r27_total_number;
+			}
+			public BigDecimal getR27_total_amount() {
+				return r27_total_amount;
+			}
+			public void setR27_total_amount(BigDecimal r27_total_amount) {
+				this.r27_total_amount = r27_total_amount;
+			}
+			public BigDecimal getR27_total_deposit_bank() {
+				return r27_total_deposit_bank;
+			}
+			public void setR27_total_deposit_bank(BigDecimal r27_total_deposit_bank) {
+				this.r27_total_deposit_bank = r27_total_deposit_bank;
+			}
+			public String getR28_deposit_size() {
+				return r28_deposit_size;
+			}
+			public void setR28_deposit_size(String r28_deposit_size) {
+				this.r28_deposit_size = r28_deposit_size;
+			}
+			public String getR28_deposit_type() {
+				return r28_deposit_type;
+			}
+			public void setR28_deposit_type(String r28_deposit_type) {
+				this.r28_deposit_type = r28_deposit_type;
+			}
+			public BigDecimal getR28_deposit_excluding_number() {
+				return r28_deposit_excluding_number;
+			}
+			public void setR28_deposit_excluding_number(BigDecimal r28_deposit_excluding_number) {
+				this.r28_deposit_excluding_number = r28_deposit_excluding_number;
+			}
+			public BigDecimal getR28_deposit_excluding_amount() {
+				return r28_deposit_excluding_amount;
+			}
+			public void setR28_deposit_excluding_amount(BigDecimal r28_deposit_excluding_amount) {
+				this.r28_deposit_excluding_amount = r28_deposit_excluding_amount;
+			}
+			public BigDecimal getR28_deposit_foreign_number() {
+				return r28_deposit_foreign_number;
+			}
+			public void setR28_deposit_foreign_number(BigDecimal r28_deposit_foreign_number) {
+				this.r28_deposit_foreign_number = r28_deposit_foreign_number;
+			}
+			public BigDecimal getR28_deposit_foreign_amount() {
+				return r28_deposit_foreign_amount;
+			}
+			public void setR28_deposit_foreign_amount(BigDecimal r28_deposit_foreign_amount) {
+				this.r28_deposit_foreign_amount = r28_deposit_foreign_amount;
+			}
+			public BigDecimal getR28_total_number() {
+				return r28_total_number;
+			}
+			public void setR28_total_number(BigDecimal r28_total_number) {
+				this.r28_total_number = r28_total_number;
+			}
+			public BigDecimal getR28_total_amount() {
+				return r28_total_amount;
+			}
+			public void setR28_total_amount(BigDecimal r28_total_amount) {
+				this.r28_total_amount = r28_total_amount;
+			}
+			public BigDecimal getR28_total_deposit_bank() {
+				return r28_total_deposit_bank;
+			}
+			public void setR28_total_deposit_bank(BigDecimal r28_total_deposit_bank) {
+				this.r28_total_deposit_bank = r28_total_deposit_bank;
+			}
+			public String getR29_deposit_size() {
+				return r29_deposit_size;
+			}
+			public void setR29_deposit_size(String r29_deposit_size) {
+				this.r29_deposit_size = r29_deposit_size;
+			}
+			public String getR29_deposit_type() {
+				return r29_deposit_type;
+			}
+			public void setR29_deposit_type(String r29_deposit_type) {
+				this.r29_deposit_type = r29_deposit_type;
+			}
+			public BigDecimal getR29_deposit_excluding_number() {
+				return r29_deposit_excluding_number;
+			}
+			public void setR29_deposit_excluding_number(BigDecimal r29_deposit_excluding_number) {
+				this.r29_deposit_excluding_number = r29_deposit_excluding_number;
+			}
+			public BigDecimal getR29_deposit_excluding_amount() {
+				return r29_deposit_excluding_amount;
+			}
+			public void setR29_deposit_excluding_amount(BigDecimal r29_deposit_excluding_amount) {
+				this.r29_deposit_excluding_amount = r29_deposit_excluding_amount;
+			}
+			public BigDecimal getR29_deposit_foreign_number() {
+				return r29_deposit_foreign_number;
+			}
+			public void setR29_deposit_foreign_number(BigDecimal r29_deposit_foreign_number) {
+				this.r29_deposit_foreign_number = r29_deposit_foreign_number;
+			}
+			public BigDecimal getR29_deposit_foreign_amount() {
+				return r29_deposit_foreign_amount;
+			}
+			public void setR29_deposit_foreign_amount(BigDecimal r29_deposit_foreign_amount) {
+				this.r29_deposit_foreign_amount = r29_deposit_foreign_amount;
+			}
+			public BigDecimal getR29_total_number() {
+				return r29_total_number;
+			}
+			public void setR29_total_number(BigDecimal r29_total_number) {
+				this.r29_total_number = r29_total_number;
+			}
+			public BigDecimal getR29_total_amount() {
+				return r29_total_amount;
+			}
+			public void setR29_total_amount(BigDecimal r29_total_amount) {
+				this.r29_total_amount = r29_total_amount;
+			}
+			public BigDecimal getR29_total_deposit_bank() {
+				return r29_total_deposit_bank;
+			}
+			public void setR29_total_deposit_bank(BigDecimal r29_total_deposit_bank) {
+				this.r29_total_deposit_bank = r29_total_deposit_bank;
+			}
+			public String getR30_deposit_size() {
+				return r30_deposit_size;
+			}
+			public void setR30_deposit_size(String r30_deposit_size) {
+				this.r30_deposit_size = r30_deposit_size;
+			}
+			public String getR30_deposit_type() {
+				return r30_deposit_type;
+			}
+			public void setR30_deposit_type(String r30_deposit_type) {
+				this.r30_deposit_type = r30_deposit_type;
+			}
+			public BigDecimal getR30_deposit_excluding_number() {
+				return r30_deposit_excluding_number;
+			}
+			public void setR30_deposit_excluding_number(BigDecimal r30_deposit_excluding_number) {
+				this.r30_deposit_excluding_number = r30_deposit_excluding_number;
+			}
+			public BigDecimal getR30_deposit_excluding_amount() {
+				return r30_deposit_excluding_amount;
+			}
+			public void setR30_deposit_excluding_amount(BigDecimal r30_deposit_excluding_amount) {
+				this.r30_deposit_excluding_amount = r30_deposit_excluding_amount;
+			}
+			public BigDecimal getR30_deposit_foreign_number() {
+				return r30_deposit_foreign_number;
+			}
+			public void setR30_deposit_foreign_number(BigDecimal r30_deposit_foreign_number) {
+				this.r30_deposit_foreign_number = r30_deposit_foreign_number;
+			}
+			public BigDecimal getR30_deposit_foreign_amount() {
+				return r30_deposit_foreign_amount;
+			}
+			public void setR30_deposit_foreign_amount(BigDecimal r30_deposit_foreign_amount) {
+				this.r30_deposit_foreign_amount = r30_deposit_foreign_amount;
+			}
+			public BigDecimal getR30_total_number() {
+				return r30_total_number;
+			}
+			public void setR30_total_number(BigDecimal r30_total_number) {
+				this.r30_total_number = r30_total_number;
+			}
+			public BigDecimal getR30_total_amount() {
+				return r30_total_amount;
+			}
+			public void setR30_total_amount(BigDecimal r30_total_amount) {
+				this.r30_total_amount = r30_total_amount;
+			}
+			public BigDecimal getR30_total_deposit_bank() {
+				return r30_total_deposit_bank;
+			}
+			public void setR30_total_deposit_bank(BigDecimal r30_total_deposit_bank) {
+				this.r30_total_deposit_bank = r30_total_deposit_bank;
+			}
+			public String getR31_deposit_size() {
+				return r31_deposit_size;
+			}
+			public void setR31_deposit_size(String r31_deposit_size) {
+				this.r31_deposit_size = r31_deposit_size;
+			}
+			public String getR31_deposit_type() {
+				return r31_deposit_type;
+			}
+			public void setR31_deposit_type(String r31_deposit_type) {
+				this.r31_deposit_type = r31_deposit_type;
+			}
+			public BigDecimal getR31_deposit_excluding_number() {
+				return r31_deposit_excluding_number;
+			}
+			public void setR31_deposit_excluding_number(BigDecimal r31_deposit_excluding_number) {
+				this.r31_deposit_excluding_number = r31_deposit_excluding_number;
+			}
+			public BigDecimal getR31_deposit_excluding_amount() {
+				return r31_deposit_excluding_amount;
+			}
+			public void setR31_deposit_excluding_amount(BigDecimal r31_deposit_excluding_amount) {
+				this.r31_deposit_excluding_amount = r31_deposit_excluding_amount;
+			}
+			public BigDecimal getR31_deposit_foreign_number() {
+				return r31_deposit_foreign_number;
+			}
+			public void setR31_deposit_foreign_number(BigDecimal r31_deposit_foreign_number) {
+				this.r31_deposit_foreign_number = r31_deposit_foreign_number;
+			}
+			public BigDecimal getR31_deposit_foreign_amount() {
+				return r31_deposit_foreign_amount;
+			}
+			public void setR31_deposit_foreign_amount(BigDecimal r31_deposit_foreign_amount) {
+				this.r31_deposit_foreign_amount = r31_deposit_foreign_amount;
+			}
+			public BigDecimal getR31_total_number() {
+				return r31_total_number;
+			}
+			public void setR31_total_number(BigDecimal r31_total_number) {
+				this.r31_total_number = r31_total_number;
+			}
+			public BigDecimal getR31_total_amount() {
+				return r31_total_amount;
+			}
+			public void setR31_total_amount(BigDecimal r31_total_amount) {
+				this.r31_total_amount = r31_total_amount;
+			}
+			public BigDecimal getR31_total_deposit_bank() {
+				return r31_total_deposit_bank;
+			}
+			public void setR31_total_deposit_bank(BigDecimal r31_total_deposit_bank) {
+				this.r31_total_deposit_bank = r31_total_deposit_bank;
+			}
+			public String getR32_deposit_size() {
+				return r32_deposit_size;
+			}
+			public void setR32_deposit_size(String r32_deposit_size) {
+				this.r32_deposit_size = r32_deposit_size;
+			}
+			public String getR32_deposit_type() {
+				return r32_deposit_type;
+			}
+			public void setR32_deposit_type(String r32_deposit_type) {
+				this.r32_deposit_type = r32_deposit_type;
+			}
+			public BigDecimal getR32_deposit_excluding_number() {
+				return r32_deposit_excluding_number;
+			}
+			public void setR32_deposit_excluding_number(BigDecimal r32_deposit_excluding_number) {
+				this.r32_deposit_excluding_number = r32_deposit_excluding_number;
+			}
+			public BigDecimal getR32_deposit_excluding_amount() {
+				return r32_deposit_excluding_amount;
+			}
+			public void setR32_deposit_excluding_amount(BigDecimal r32_deposit_excluding_amount) {
+				this.r32_deposit_excluding_amount = r32_deposit_excluding_amount;
+			}
+			public BigDecimal getR32_deposit_foreign_number() {
+				return r32_deposit_foreign_number;
+			}
+			public void setR32_deposit_foreign_number(BigDecimal r32_deposit_foreign_number) {
+				this.r32_deposit_foreign_number = r32_deposit_foreign_number;
+			}
+			public BigDecimal getR32_deposit_foreign_amount() {
+				return r32_deposit_foreign_amount;
+			}
+			public void setR32_deposit_foreign_amount(BigDecimal r32_deposit_foreign_amount) {
+				this.r32_deposit_foreign_amount = r32_deposit_foreign_amount;
+			}
+			public BigDecimal getR32_total_number() {
+				return r32_total_number;
+			}
+			public void setR32_total_number(BigDecimal r32_total_number) {
+				this.r32_total_number = r32_total_number;
+			}
+			public BigDecimal getR32_total_amount() {
+				return r32_total_amount;
+			}
+			public void setR32_total_amount(BigDecimal r32_total_amount) {
+				this.r32_total_amount = r32_total_amount;
+			}
+			public BigDecimal getR32_total_deposit_bank() {
+				return r32_total_deposit_bank;
+			}
+			public void setR32_total_deposit_bank(BigDecimal r32_total_deposit_bank) {
+				this.r32_total_deposit_bank = r32_total_deposit_bank;
+			}
+			public String getR33_deposit_size() {
+				return r33_deposit_size;
+			}
+			public void setR33_deposit_size(String r33_deposit_size) {
+				this.r33_deposit_size = r33_deposit_size;
+			}
+			public String getR33_deposit_type() {
+				return r33_deposit_type;
+			}
+			public void setR33_deposit_type(String r33_deposit_type) {
+				this.r33_deposit_type = r33_deposit_type;
+			}
+			public BigDecimal getR33_deposit_excluding_number() {
+				return r33_deposit_excluding_number;
+			}
+			public void setR33_deposit_excluding_number(BigDecimal r33_deposit_excluding_number) {
+				this.r33_deposit_excluding_number = r33_deposit_excluding_number;
+			}
+			public BigDecimal getR33_deposit_excluding_amount() {
+				return r33_deposit_excluding_amount;
+			}
+			public void setR33_deposit_excluding_amount(BigDecimal r33_deposit_excluding_amount) {
+				this.r33_deposit_excluding_amount = r33_deposit_excluding_amount;
+			}
+			public BigDecimal getR33_deposit_foreign_number() {
+				return r33_deposit_foreign_number;
+			}
+			public void setR33_deposit_foreign_number(BigDecimal r33_deposit_foreign_number) {
+				this.r33_deposit_foreign_number = r33_deposit_foreign_number;
+			}
+			public BigDecimal getR33_deposit_foreign_amount() {
+				return r33_deposit_foreign_amount;
+			}
+			public void setR33_deposit_foreign_amount(BigDecimal r33_deposit_foreign_amount) {
+				this.r33_deposit_foreign_amount = r33_deposit_foreign_amount;
+			}
+			public BigDecimal getR33_total_number() {
+				return r33_total_number;
+			}
+			public void setR33_total_number(BigDecimal r33_total_number) {
+				this.r33_total_number = r33_total_number;
+			}
+			public BigDecimal getR33_total_amount() {
+				return r33_total_amount;
+			}
+			public void setR33_total_amount(BigDecimal r33_total_amount) {
+				this.r33_total_amount = r33_total_amount;
+			}
+			public BigDecimal getR33_total_deposit_bank() {
+				return r33_total_deposit_bank;
+			}
+			public void setR33_total_deposit_bank(BigDecimal r33_total_deposit_bank) {
+				this.r33_total_deposit_bank = r33_total_deposit_bank;
+			}
+			public String getR34_deposit_size() {
+				return r34_deposit_size;
+			}
+			public void setR34_deposit_size(String r34_deposit_size) {
+				this.r34_deposit_size = r34_deposit_size;
+			}
+			public String getR34_deposit_type() {
+				return r34_deposit_type;
+			}
+			public void setR34_deposit_type(String r34_deposit_type) {
+				this.r34_deposit_type = r34_deposit_type;
+			}
+			public BigDecimal getR34_deposit_excluding_number() {
+				return r34_deposit_excluding_number;
+			}
+			public void setR34_deposit_excluding_number(BigDecimal r34_deposit_excluding_number) {
+				this.r34_deposit_excluding_number = r34_deposit_excluding_number;
+			}
+			public BigDecimal getR34_deposit_excluding_amount() {
+				return r34_deposit_excluding_amount;
+			}
+			public void setR34_deposit_excluding_amount(BigDecimal r34_deposit_excluding_amount) {
+				this.r34_deposit_excluding_amount = r34_deposit_excluding_amount;
+			}
+			public BigDecimal getR34_deposit_foreign_number() {
+				return r34_deposit_foreign_number;
+			}
+			public void setR34_deposit_foreign_number(BigDecimal r34_deposit_foreign_number) {
+				this.r34_deposit_foreign_number = r34_deposit_foreign_number;
+			}
+			public BigDecimal getR34_deposit_foreign_amount() {
+				return r34_deposit_foreign_amount;
+			}
+			public void setR34_deposit_foreign_amount(BigDecimal r34_deposit_foreign_amount) {
+				this.r34_deposit_foreign_amount = r34_deposit_foreign_amount;
+			}
+			public BigDecimal getR34_total_number() {
+				return r34_total_number;
+			}
+			public void setR34_total_number(BigDecimal r34_total_number) {
+				this.r34_total_number = r34_total_number;
+			}
+			public BigDecimal getR34_total_amount() {
+				return r34_total_amount;
+			}
+			public void setR34_total_amount(BigDecimal r34_total_amount) {
+				this.r34_total_amount = r34_total_amount;
+			}
+			public BigDecimal getR34_total_deposit_bank() {
+				return r34_total_deposit_bank;
+			}
+			public void setR34_total_deposit_bank(BigDecimal r34_total_deposit_bank) {
+				this.r34_total_deposit_bank = r34_total_deposit_bank;
+			}
+			public String getR35_deposit_size() {
+				return r35_deposit_size;
+			}
+			public void setR35_deposit_size(String r35_deposit_size) {
+				this.r35_deposit_size = r35_deposit_size;
+			}
+			public String getR35_deposit_type() {
+				return r35_deposit_type;
+			}
+			public void setR35_deposit_type(String r35_deposit_type) {
+				this.r35_deposit_type = r35_deposit_type;
+			}
+			public BigDecimal getR35_deposit_excluding_number() {
+				return r35_deposit_excluding_number;
+			}
+			public void setR35_deposit_excluding_number(BigDecimal r35_deposit_excluding_number) {
+				this.r35_deposit_excluding_number = r35_deposit_excluding_number;
+			}
+			public BigDecimal getR35_deposit_excluding_amount() {
+				return r35_deposit_excluding_amount;
+			}
+			public void setR35_deposit_excluding_amount(BigDecimal r35_deposit_excluding_amount) {
+				this.r35_deposit_excluding_amount = r35_deposit_excluding_amount;
+			}
+			public BigDecimal getR35_deposit_foreign_number() {
+				return r35_deposit_foreign_number;
+			}
+			public void setR35_deposit_foreign_number(BigDecimal r35_deposit_foreign_number) {
+				this.r35_deposit_foreign_number = r35_deposit_foreign_number;
+			}
+			public BigDecimal getR35_deposit_foreign_amount() {
+				return r35_deposit_foreign_amount;
+			}
+			public void setR35_deposit_foreign_amount(BigDecimal r35_deposit_foreign_amount) {
+				this.r35_deposit_foreign_amount = r35_deposit_foreign_amount;
+			}
+			public BigDecimal getR35_total_number() {
+				return r35_total_number;
+			}
+			public void setR35_total_number(BigDecimal r35_total_number) {
+				this.r35_total_number = r35_total_number;
+			}
+			public BigDecimal getR35_total_amount() {
+				return r35_total_amount;
+			}
+			public void setR35_total_amount(BigDecimal r35_total_amount) {
+				this.r35_total_amount = r35_total_amount;
+			}
+			public BigDecimal getR35_total_deposit_bank() {
+				return r35_total_deposit_bank;
+			}
+			public void setR35_total_deposit_bank(BigDecimal r35_total_deposit_bank) {
+				this.r35_total_deposit_bank = r35_total_deposit_bank;
+			}
+			public String getR36_deposit_size() {
+				return r36_deposit_size;
+			}
+			public void setR36_deposit_size(String r36_deposit_size) {
+				this.r36_deposit_size = r36_deposit_size;
+			}
+			public String getR36_deposit_type() {
+				return r36_deposit_type;
+			}
+			public void setR36_deposit_type(String r36_deposit_type) {
+				this.r36_deposit_type = r36_deposit_type;
+			}
+			public BigDecimal getR36_deposit_excluding_number() {
+				return r36_deposit_excluding_number;
+			}
+			public void setR36_deposit_excluding_number(BigDecimal r36_deposit_excluding_number) {
+				this.r36_deposit_excluding_number = r36_deposit_excluding_number;
+			}
+			public BigDecimal getR36_deposit_excluding_amount() {
+				return r36_deposit_excluding_amount;
+			}
+			public void setR36_deposit_excluding_amount(BigDecimal r36_deposit_excluding_amount) {
+				this.r36_deposit_excluding_amount = r36_deposit_excluding_amount;
+			}
+			public BigDecimal getR36_deposit_foreign_number() {
+				return r36_deposit_foreign_number;
+			}
+			public void setR36_deposit_foreign_number(BigDecimal r36_deposit_foreign_number) {
+				this.r36_deposit_foreign_number = r36_deposit_foreign_number;
+			}
+			public BigDecimal getR36_deposit_foreign_amount() {
+				return r36_deposit_foreign_amount;
+			}
+			public void setR36_deposit_foreign_amount(BigDecimal r36_deposit_foreign_amount) {
+				this.r36_deposit_foreign_amount = r36_deposit_foreign_amount;
+			}
+			public BigDecimal getR36_total_number() {
+				return r36_total_number;
+			}
+			public void setR36_total_number(BigDecimal r36_total_number) {
+				this.r36_total_number = r36_total_number;
+			}
+			public BigDecimal getR36_total_amount() {
+				return r36_total_amount;
+			}
+			public void setR36_total_amount(BigDecimal r36_total_amount) {
+				this.r36_total_amount = r36_total_amount;
+			}
+			public BigDecimal getR36_total_deposit_bank() {
+				return r36_total_deposit_bank;
+			}
+			public void setR36_total_deposit_bank(BigDecimal r36_total_deposit_bank) {
+				this.r36_total_deposit_bank = r36_total_deposit_bank;
+			}
+			public String getR37_deposit_size() {
+				return r37_deposit_size;
+			}
+			public void setR37_deposit_size(String r37_deposit_size) {
+				this.r37_deposit_size = r37_deposit_size;
+			}
+			public String getR37_deposit_type() {
+				return r37_deposit_type;
+			}
+			public void setR37_deposit_type(String r37_deposit_type) {
+				this.r37_deposit_type = r37_deposit_type;
+			}
+			public BigDecimal getR37_deposit_excluding_number() {
+				return r37_deposit_excluding_number;
+			}
+			public void setR37_deposit_excluding_number(BigDecimal r37_deposit_excluding_number) {
+				this.r37_deposit_excluding_number = r37_deposit_excluding_number;
+			}
+			public BigDecimal getR37_deposit_excluding_amount() {
+				return r37_deposit_excluding_amount;
+			}
+			public void setR37_deposit_excluding_amount(BigDecimal r37_deposit_excluding_amount) {
+				this.r37_deposit_excluding_amount = r37_deposit_excluding_amount;
+			}
+			public BigDecimal getR37_deposit_foreign_number() {
+				return r37_deposit_foreign_number;
+			}
+			public void setR37_deposit_foreign_number(BigDecimal r37_deposit_foreign_number) {
+				this.r37_deposit_foreign_number = r37_deposit_foreign_number;
+			}
+			public BigDecimal getR37_deposit_foreign_amount() {
+				return r37_deposit_foreign_amount;
+			}
+			public void setR37_deposit_foreign_amount(BigDecimal r37_deposit_foreign_amount) {
+				this.r37_deposit_foreign_amount = r37_deposit_foreign_amount;
+			}
+			public BigDecimal getR37_total_number() {
+				return r37_total_number;
+			}
+			public void setR37_total_number(BigDecimal r37_total_number) {
+				this.r37_total_number = r37_total_number;
+			}
+			public BigDecimal getR37_total_amount() {
+				return r37_total_amount;
+			}
+			public void setR37_total_amount(BigDecimal r37_total_amount) {
+				this.r37_total_amount = r37_total_amount;
+			}
+			public BigDecimal getR37_total_deposit_bank() {
+				return r37_total_deposit_bank;
+			}
+			public void setR37_total_deposit_bank(BigDecimal r37_total_deposit_bank) {
+				this.r37_total_deposit_bank = r37_total_deposit_bank;
+			}
+			public String getR38_deposit_size() {
+				return r38_deposit_size;
+			}
+			public void setR38_deposit_size(String r38_deposit_size) {
+				this.r38_deposit_size = r38_deposit_size;
+			}
+			public String getR38_deposit_type() {
+				return r38_deposit_type;
+			}
+			public void setR38_deposit_type(String r38_deposit_type) {
+				this.r38_deposit_type = r38_deposit_type;
+			}
+			public BigDecimal getR38_deposit_excluding_number() {
+				return r38_deposit_excluding_number;
+			}
+			public void setR38_deposit_excluding_number(BigDecimal r38_deposit_excluding_number) {
+				this.r38_deposit_excluding_number = r38_deposit_excluding_number;
+			}
+			public BigDecimal getR38_deposit_excluding_amount() {
+				return r38_deposit_excluding_amount;
+			}
+			public void setR38_deposit_excluding_amount(BigDecimal r38_deposit_excluding_amount) {
+				this.r38_deposit_excluding_amount = r38_deposit_excluding_amount;
+			}
+			public BigDecimal getR38_deposit_foreign_number() {
+				return r38_deposit_foreign_number;
+			}
+			public void setR38_deposit_foreign_number(BigDecimal r38_deposit_foreign_number) {
+				this.r38_deposit_foreign_number = r38_deposit_foreign_number;
+			}
+			public BigDecimal getR38_deposit_foreign_amount() {
+				return r38_deposit_foreign_amount;
+			}
+			public void setR38_deposit_foreign_amount(BigDecimal r38_deposit_foreign_amount) {
+				this.r38_deposit_foreign_amount = r38_deposit_foreign_amount;
+			}
+			public BigDecimal getR38_total_number() {
+				return r38_total_number;
+			}
+			public void setR38_total_number(BigDecimal r38_total_number) {
+				this.r38_total_number = r38_total_number;
+			}
+			public BigDecimal getR38_total_amount() {
+				return r38_total_amount;
+			}
+			public void setR38_total_amount(BigDecimal r38_total_amount) {
+				this.r38_total_amount = r38_total_amount;
+			}
+			public BigDecimal getR38_total_deposit_bank() {
+				return r38_total_deposit_bank;
+			}
+			public void setR38_total_deposit_bank(BigDecimal r38_total_deposit_bank) {
+				this.r38_total_deposit_bank = r38_total_deposit_bank;
+			}
+			public String getR39_deposit_size() {
+				return r39_deposit_size;
+			}
+			public void setR39_deposit_size(String r39_deposit_size) {
+				this.r39_deposit_size = r39_deposit_size;
+			}
+			public String getR39_deposit_type() {
+				return r39_deposit_type;
+			}
+			public void setR39_deposit_type(String r39_deposit_type) {
+				this.r39_deposit_type = r39_deposit_type;
+			}
+			public BigDecimal getR39_deposit_excluding_number() {
+				return r39_deposit_excluding_number;
+			}
+			public void setR39_deposit_excluding_number(BigDecimal r39_deposit_excluding_number) {
+				this.r39_deposit_excluding_number = r39_deposit_excluding_number;
+			}
+			public BigDecimal getR39_deposit_excluding_amount() {
+				return r39_deposit_excluding_amount;
+			}
+			public void setR39_deposit_excluding_amount(BigDecimal r39_deposit_excluding_amount) {
+				this.r39_deposit_excluding_amount = r39_deposit_excluding_amount;
+			}
+			public BigDecimal getR39_deposit_foreign_number() {
+				return r39_deposit_foreign_number;
+			}
+			public void setR39_deposit_foreign_number(BigDecimal r39_deposit_foreign_number) {
+				this.r39_deposit_foreign_number = r39_deposit_foreign_number;
+			}
+			public BigDecimal getR39_deposit_foreign_amount() {
+				return r39_deposit_foreign_amount;
+			}
+			public void setR39_deposit_foreign_amount(BigDecimal r39_deposit_foreign_amount) {
+				this.r39_deposit_foreign_amount = r39_deposit_foreign_amount;
+			}
+			public BigDecimal getR39_total_number() {
+				return r39_total_number;
+			}
+			public void setR39_total_number(BigDecimal r39_total_number) {
+				this.r39_total_number = r39_total_number;
+			}
+			public BigDecimal getR39_total_amount() {
+				return r39_total_amount;
+			}
+			public void setR39_total_amount(BigDecimal r39_total_amount) {
+				this.r39_total_amount = r39_total_amount;
+			}
+			public BigDecimal getR39_total_deposit_bank() {
+				return r39_total_deposit_bank;
+			}
+			public void setR39_total_deposit_bank(BigDecimal r39_total_deposit_bank) {
+				this.r39_total_deposit_bank = r39_total_deposit_bank;
+			}
+			public String getR40_deposit_size() {
+				return r40_deposit_size;
+			}
+			public void setR40_deposit_size(String r40_deposit_size) {
+				this.r40_deposit_size = r40_deposit_size;
+			}
+			public String getR40_deposit_type() {
+				return r40_deposit_type;
+			}
+			public void setR40_deposit_type(String r40_deposit_type) {
+				this.r40_deposit_type = r40_deposit_type;
+			}
+			public BigDecimal getR40_deposit_excluding_number() {
+				return r40_deposit_excluding_number;
+			}
+			public void setR40_deposit_excluding_number(BigDecimal r40_deposit_excluding_number) {
+				this.r40_deposit_excluding_number = r40_deposit_excluding_number;
+			}
+			public BigDecimal getR40_deposit_excluding_amount() {
+				return r40_deposit_excluding_amount;
+			}
+			public void setR40_deposit_excluding_amount(BigDecimal r40_deposit_excluding_amount) {
+				this.r40_deposit_excluding_amount = r40_deposit_excluding_amount;
+			}
+			public BigDecimal getR40_deposit_foreign_number() {
+				return r40_deposit_foreign_number;
+			}
+			public void setR40_deposit_foreign_number(BigDecimal r40_deposit_foreign_number) {
+				this.r40_deposit_foreign_number = r40_deposit_foreign_number;
+			}
+			public BigDecimal getR40_deposit_foreign_amount() {
+				return r40_deposit_foreign_amount;
+			}
+			public void setR40_deposit_foreign_amount(BigDecimal r40_deposit_foreign_amount) {
+				this.r40_deposit_foreign_amount = r40_deposit_foreign_amount;
+			}
+			public BigDecimal getR40_total_number() {
+				return r40_total_number;
+			}
+			public void setR40_total_number(BigDecimal r40_total_number) {
+				this.r40_total_number = r40_total_number;
+			}
+			public BigDecimal getR40_total_amount() {
+				return r40_total_amount;
+			}
+			public void setR40_total_amount(BigDecimal r40_total_amount) {
+				this.r40_total_amount = r40_total_amount;
+			}
+			public BigDecimal getR40_total_deposit_bank() {
+				return r40_total_deposit_bank;
+			}
+			public void setR40_total_deposit_bank(BigDecimal r40_total_deposit_bank) {
+				this.r40_total_deposit_bank = r40_total_deposit_bank;
+			}
+			public String getR41_deposit_size() {
+				return r41_deposit_size;
+			}
+			public void setR41_deposit_size(String r41_deposit_size) {
+				this.r41_deposit_size = r41_deposit_size;
+			}
+			public String getR41_deposit_type() {
+				return r41_deposit_type;
+			}
+			public void setR41_deposit_type(String r41_deposit_type) {
+				this.r41_deposit_type = r41_deposit_type;
+			}
+			public BigDecimal getR41_deposit_excluding_number() {
+				return r41_deposit_excluding_number;
+			}
+			public void setR41_deposit_excluding_number(BigDecimal r41_deposit_excluding_number) {
+				this.r41_deposit_excluding_number = r41_deposit_excluding_number;
+			}
+			public BigDecimal getR41_deposit_excluding_amount() {
+				return r41_deposit_excluding_amount;
+			}
+			public void setR41_deposit_excluding_amount(BigDecimal r41_deposit_excluding_amount) {
+				this.r41_deposit_excluding_amount = r41_deposit_excluding_amount;
+			}
+			public BigDecimal getR41_deposit_foreign_number() {
+				return r41_deposit_foreign_number;
+			}
+			public void setR41_deposit_foreign_number(BigDecimal r41_deposit_foreign_number) {
+				this.r41_deposit_foreign_number = r41_deposit_foreign_number;
+			}
+			public BigDecimal getR41_deposit_foreign_amount() {
+				return r41_deposit_foreign_amount;
+			}
+			public void setR41_deposit_foreign_amount(BigDecimal r41_deposit_foreign_amount) {
+				this.r41_deposit_foreign_amount = r41_deposit_foreign_amount;
+			}
+			public BigDecimal getR41_total_number() {
+				return r41_total_number;
+			}
+			public void setR41_total_number(BigDecimal r41_total_number) {
+				this.r41_total_number = r41_total_number;
+			}
+			public BigDecimal getR41_total_amount() {
+				return r41_total_amount;
+			}
+			public void setR41_total_amount(BigDecimal r41_total_amount) {
+				this.r41_total_amount = r41_total_amount;
+			}
+			public BigDecimal getR41_total_deposit_bank() {
+				return r41_total_deposit_bank;
+			}
+			public void setR41_total_deposit_bank(BigDecimal r41_total_deposit_bank) {
+				this.r41_total_deposit_bank = r41_total_deposit_bank;
+			}
+			public String getR42_deposit_size() {
+				return r42_deposit_size;
+			}
+			public void setR42_deposit_size(String r42_deposit_size) {
+				this.r42_deposit_size = r42_deposit_size;
+			}
+			public String getR42_deposit_type() {
+				return r42_deposit_type;
+			}
+			public void setR42_deposit_type(String r42_deposit_type) {
+				this.r42_deposit_type = r42_deposit_type;
+			}
+			public BigDecimal getR42_deposit_excluding_number() {
+				return r42_deposit_excluding_number;
+			}
+			public void setR42_deposit_excluding_number(BigDecimal r42_deposit_excluding_number) {
+				this.r42_deposit_excluding_number = r42_deposit_excluding_number;
+			}
+			public BigDecimal getR42_deposit_excluding_amount() {
+				return r42_deposit_excluding_amount;
+			}
+			public void setR42_deposit_excluding_amount(BigDecimal r42_deposit_excluding_amount) {
+				this.r42_deposit_excluding_amount = r42_deposit_excluding_amount;
+			}
+			public BigDecimal getR42_deposit_foreign_number() {
+				return r42_deposit_foreign_number;
+			}
+			public void setR42_deposit_foreign_number(BigDecimal r42_deposit_foreign_number) {
+				this.r42_deposit_foreign_number = r42_deposit_foreign_number;
+			}
+			public BigDecimal getR42_deposit_foreign_amount() {
+				return r42_deposit_foreign_amount;
+			}
+			public void setR42_deposit_foreign_amount(BigDecimal r42_deposit_foreign_amount) {
+				this.r42_deposit_foreign_amount = r42_deposit_foreign_amount;
+			}
+			public BigDecimal getR42_total_number() {
+				return r42_total_number;
+			}
+			public void setR42_total_number(BigDecimal r42_total_number) {
+				this.r42_total_number = r42_total_number;
+			}
+			public BigDecimal getR42_total_amount() {
+				return r42_total_amount;
+			}
+			public void setR42_total_amount(BigDecimal r42_total_amount) {
+				this.r42_total_amount = r42_total_amount;
+			}
+			public BigDecimal getR42_total_deposit_bank() {
+				return r42_total_deposit_bank;
+			}
+			public void setR42_total_deposit_bank(BigDecimal r42_total_deposit_bank) {
+				this.r42_total_deposit_bank = r42_total_deposit_bank;
+			}
+			public String getR43_deposit_size() {
+				return r43_deposit_size;
+			}
+			public void setR43_deposit_size(String r43_deposit_size) {
+				this.r43_deposit_size = r43_deposit_size;
+			}
+			public String getR43_deposit_type() {
+				return r43_deposit_type;
+			}
+			public void setR43_deposit_type(String r43_deposit_type) {
+				this.r43_deposit_type = r43_deposit_type;
+			}
+			public BigDecimal getR43_deposit_excluding_number() {
+				return r43_deposit_excluding_number;
+			}
+			public void setR43_deposit_excluding_number(BigDecimal r43_deposit_excluding_number) {
+				this.r43_deposit_excluding_number = r43_deposit_excluding_number;
+			}
+			public BigDecimal getR43_deposit_excluding_amount() {
+				return r43_deposit_excluding_amount;
+			}
+			public void setR43_deposit_excluding_amount(BigDecimal r43_deposit_excluding_amount) {
+				this.r43_deposit_excluding_amount = r43_deposit_excluding_amount;
+			}
+			public BigDecimal getR43_deposit_foreign_number() {
+				return r43_deposit_foreign_number;
+			}
+			public void setR43_deposit_foreign_number(BigDecimal r43_deposit_foreign_number) {
+				this.r43_deposit_foreign_number = r43_deposit_foreign_number;
+			}
+			public BigDecimal getR43_deposit_foreign_amount() {
+				return r43_deposit_foreign_amount;
+			}
+			public void setR43_deposit_foreign_amount(BigDecimal r43_deposit_foreign_amount) {
+				this.r43_deposit_foreign_amount = r43_deposit_foreign_amount;
+			}
+			public BigDecimal getR43_total_number() {
+				return r43_total_number;
+			}
+			public void setR43_total_number(BigDecimal r43_total_number) {
+				this.r43_total_number = r43_total_number;
+			}
+			public BigDecimal getR43_total_amount() {
+				return r43_total_amount;
+			}
+			public void setR43_total_amount(BigDecimal r43_total_amount) {
+				this.r43_total_amount = r43_total_amount;
+			}
+			public BigDecimal getR43_total_deposit_bank() {
+				return r43_total_deposit_bank;
+			}
+			public void setR43_total_deposit_bank(BigDecimal r43_total_deposit_bank) {
+				this.r43_total_deposit_bank = r43_total_deposit_bank;
+			}
+			public String getR44_deposit_size() {
+				return r44_deposit_size;
+			}
+			public void setR44_deposit_size(String r44_deposit_size) {
+				this.r44_deposit_size = r44_deposit_size;
+			}
+			public String getR44_deposit_type() {
+				return r44_deposit_type;
+			}
+			public void setR44_deposit_type(String r44_deposit_type) {
+				this.r44_deposit_type = r44_deposit_type;
+			}
+			public BigDecimal getR44_deposit_excluding_number() {
+				return r44_deposit_excluding_number;
+			}
+			public void setR44_deposit_excluding_number(BigDecimal r44_deposit_excluding_number) {
+				this.r44_deposit_excluding_number = r44_deposit_excluding_number;
+			}
+			public BigDecimal getR44_deposit_excluding_amount() {
+				return r44_deposit_excluding_amount;
+			}
+			public void setR44_deposit_excluding_amount(BigDecimal r44_deposit_excluding_amount) {
+				this.r44_deposit_excluding_amount = r44_deposit_excluding_amount;
+			}
+			public BigDecimal getR44_deposit_foreign_number() {
+				return r44_deposit_foreign_number;
+			}
+			public void setR44_deposit_foreign_number(BigDecimal r44_deposit_foreign_number) {
+				this.r44_deposit_foreign_number = r44_deposit_foreign_number;
+			}
+			public BigDecimal getR44_deposit_foreign_amount() {
+				return r44_deposit_foreign_amount;
+			}
+			public void setR44_deposit_foreign_amount(BigDecimal r44_deposit_foreign_amount) {
+				this.r44_deposit_foreign_amount = r44_deposit_foreign_amount;
+			}
+			public BigDecimal getR44_total_number() {
+				return r44_total_number;
+			}
+			public void setR44_total_number(BigDecimal r44_total_number) {
+				this.r44_total_number = r44_total_number;
+			}
+			public BigDecimal getR44_total_amount() {
+				return r44_total_amount;
+			}
+			public void setR44_total_amount(BigDecimal r44_total_amount) {
+				this.r44_total_amount = r44_total_amount;
+			}
+			public BigDecimal getR44_total_deposit_bank() {
+				return r44_total_deposit_bank;
+			}
+			public void setR44_total_deposit_bank(BigDecimal r44_total_deposit_bank) {
+				this.r44_total_deposit_bank = r44_total_deposit_bank;
+			}
+			public String getR45_deposit_size() {
+				return r45_deposit_size;
+			}
+			public void setR45_deposit_size(String r45_deposit_size) {
+				this.r45_deposit_size = r45_deposit_size;
+			}
+			public String getR45_deposit_type() {
+				return r45_deposit_type;
+			}
+			public void setR45_deposit_type(String r45_deposit_type) {
+				this.r45_deposit_type = r45_deposit_type;
+			}
+			public BigDecimal getR45_deposit_excluding_number() {
+				return r45_deposit_excluding_number;
+			}
+			public void setR45_deposit_excluding_number(BigDecimal r45_deposit_excluding_number) {
+				this.r45_deposit_excluding_number = r45_deposit_excluding_number;
+			}
+			public BigDecimal getR45_deposit_excluding_amount() {
+				return r45_deposit_excluding_amount;
+			}
+			public void setR45_deposit_excluding_amount(BigDecimal r45_deposit_excluding_amount) {
+				this.r45_deposit_excluding_amount = r45_deposit_excluding_amount;
+			}
+			public BigDecimal getR45_deposit_foreign_number() {
+				return r45_deposit_foreign_number;
+			}
+			public void setR45_deposit_foreign_number(BigDecimal r45_deposit_foreign_number) {
+				this.r45_deposit_foreign_number = r45_deposit_foreign_number;
+			}
+			public BigDecimal getR45_deposit_foreign_amount() {
+				return r45_deposit_foreign_amount;
+			}
+			public void setR45_deposit_foreign_amount(BigDecimal r45_deposit_foreign_amount) {
+				this.r45_deposit_foreign_amount = r45_deposit_foreign_amount;
+			}
+			public BigDecimal getR45_total_number() {
+				return r45_total_number;
+			}
+			public void setR45_total_number(BigDecimal r45_total_number) {
+				this.r45_total_number = r45_total_number;
+			}
+			public BigDecimal getR45_total_amount() {
+				return r45_total_amount;
+			}
+			public void setR45_total_amount(BigDecimal r45_total_amount) {
+				this.r45_total_amount = r45_total_amount;
+			}
+			public BigDecimal getR45_total_deposit_bank() {
+				return r45_total_deposit_bank;
+			}
+			public void setR45_total_deposit_bank(BigDecimal r45_total_deposit_bank) {
+				this.r45_total_deposit_bank = r45_total_deposit_bank;
+			}
+			public String getR46_deposit_size() {
+				return r46_deposit_size;
+			}
+			public void setR46_deposit_size(String r46_deposit_size) {
+				this.r46_deposit_size = r46_deposit_size;
+			}
+			public String getR46_deposit_type() {
+				return r46_deposit_type;
+			}
+			public void setR46_deposit_type(String r46_deposit_type) {
+				this.r46_deposit_type = r46_deposit_type;
+			}
+			public BigDecimal getR46_deposit_excluding_number() {
+				return r46_deposit_excluding_number;
+			}
+			public void setR46_deposit_excluding_number(BigDecimal r46_deposit_excluding_number) {
+				this.r46_deposit_excluding_number = r46_deposit_excluding_number;
+			}
+			public BigDecimal getR46_deposit_excluding_amount() {
+				return r46_deposit_excluding_amount;
+			}
+			public void setR46_deposit_excluding_amount(BigDecimal r46_deposit_excluding_amount) {
+				this.r46_deposit_excluding_amount = r46_deposit_excluding_amount;
+			}
+			public BigDecimal getR46_deposit_foreign_number() {
+				return r46_deposit_foreign_number;
+			}
+			public void setR46_deposit_foreign_number(BigDecimal r46_deposit_foreign_number) {
+				this.r46_deposit_foreign_number = r46_deposit_foreign_number;
+			}
+			public BigDecimal getR46_deposit_foreign_amount() {
+				return r46_deposit_foreign_amount;
+			}
+			public void setR46_deposit_foreign_amount(BigDecimal r46_deposit_foreign_amount) {
+				this.r46_deposit_foreign_amount = r46_deposit_foreign_amount;
+			}
+			public BigDecimal getR46_total_number() {
+				return r46_total_number;
+			}
+			public void setR46_total_number(BigDecimal r46_total_number) {
+				this.r46_total_number = r46_total_number;
+			}
+			public BigDecimal getR46_total_amount() {
+				return r46_total_amount;
+			}
+			public void setR46_total_amount(BigDecimal r46_total_amount) {
+				this.r46_total_amount = r46_total_amount;
+			}
+			public BigDecimal getR46_total_deposit_bank() {
+				return r46_total_deposit_bank;
+			}
+			public void setR46_total_deposit_bank(BigDecimal r46_total_deposit_bank) {
+				this.r46_total_deposit_bank = r46_total_deposit_bank;
+			}
+			public String getR47_deposit_size() {
+				return r47_deposit_size;
+			}
+			public void setR47_deposit_size(String r47_deposit_size) {
+				this.r47_deposit_size = r47_deposit_size;
+			}
+			public String getR47_deposit_type() {
+				return r47_deposit_type;
+			}
+			public void setR47_deposit_type(String r47_deposit_type) {
+				this.r47_deposit_type = r47_deposit_type;
+			}
+			public BigDecimal getR47_deposit_excluding_number() {
+				return r47_deposit_excluding_number;
+			}
+			public void setR47_deposit_excluding_number(BigDecimal r47_deposit_excluding_number) {
+				this.r47_deposit_excluding_number = r47_deposit_excluding_number;
+			}
+			public BigDecimal getR47_deposit_excluding_amount() {
+				return r47_deposit_excluding_amount;
+			}
+			public void setR47_deposit_excluding_amount(BigDecimal r47_deposit_excluding_amount) {
+				this.r47_deposit_excluding_amount = r47_deposit_excluding_amount;
+			}
+			public BigDecimal getR47_deposit_foreign_number() {
+				return r47_deposit_foreign_number;
+			}
+			public void setR47_deposit_foreign_number(BigDecimal r47_deposit_foreign_number) {
+				this.r47_deposit_foreign_number = r47_deposit_foreign_number;
+			}
+			public BigDecimal getR47_deposit_foreign_amount() {
+				return r47_deposit_foreign_amount;
+			}
+			public void setR47_deposit_foreign_amount(BigDecimal r47_deposit_foreign_amount) {
+				this.r47_deposit_foreign_amount = r47_deposit_foreign_amount;
+			}
+			public BigDecimal getR47_total_number() {
+				return r47_total_number;
+			}
+			public void setR47_total_number(BigDecimal r47_total_number) {
+				this.r47_total_number = r47_total_number;
+			}
+			public BigDecimal getR47_total_amount() {
+				return r47_total_amount;
+			}
+			public void setR47_total_amount(BigDecimal r47_total_amount) {
+				this.r47_total_amount = r47_total_amount;
+			}
+			public BigDecimal getR47_total_deposit_bank() {
+				return r47_total_deposit_bank;
+			}
+			public void setR47_total_deposit_bank(BigDecimal r47_total_deposit_bank) {
+				this.r47_total_deposit_bank = r47_total_deposit_bank;
+			}
+			public String getR48_deposit_size() {
+				return r48_deposit_size;
+			}
+			public void setR48_deposit_size(String r48_deposit_size) {
+				this.r48_deposit_size = r48_deposit_size;
+			}
+			public String getR48_deposit_type() {
+				return r48_deposit_type;
+			}
+			public void setR48_deposit_type(String r48_deposit_type) {
+				this.r48_deposit_type = r48_deposit_type;
+			}
+			public BigDecimal getR48_deposit_excluding_number() {
+				return r48_deposit_excluding_number;
+			}
+			public void setR48_deposit_excluding_number(BigDecimal r48_deposit_excluding_number) {
+				this.r48_deposit_excluding_number = r48_deposit_excluding_number;
+			}
+			public BigDecimal getR48_deposit_excluding_amount() {
+				return r48_deposit_excluding_amount;
+			}
+			public void setR48_deposit_excluding_amount(BigDecimal r48_deposit_excluding_amount) {
+				this.r48_deposit_excluding_amount = r48_deposit_excluding_amount;
+			}
+			public BigDecimal getR48_deposit_foreign_number() {
+				return r48_deposit_foreign_number;
+			}
+			public void setR48_deposit_foreign_number(BigDecimal r48_deposit_foreign_number) {
+				this.r48_deposit_foreign_number = r48_deposit_foreign_number;
+			}
+			public BigDecimal getR48_deposit_foreign_amount() {
+				return r48_deposit_foreign_amount;
+			}
+			public void setR48_deposit_foreign_amount(BigDecimal r48_deposit_foreign_amount) {
+				this.r48_deposit_foreign_amount = r48_deposit_foreign_amount;
+			}
+			public BigDecimal getR48_total_number() {
+				return r48_total_number;
+			}
+			public void setR48_total_number(BigDecimal r48_total_number) {
+				this.r48_total_number = r48_total_number;
+			}
+			public BigDecimal getR48_total_amount() {
+				return r48_total_amount;
+			}
+			public void setR48_total_amount(BigDecimal r48_total_amount) {
+				this.r48_total_amount = r48_total_amount;
+			}
+			public BigDecimal getR48_total_deposit_bank() {
+				return r48_total_deposit_bank;
+			}
+			public void setR48_total_deposit_bank(BigDecimal r48_total_deposit_bank) {
+				this.r48_total_deposit_bank = r48_total_deposit_bank;
+			}
+			public String getR49_deposit_size() {
+				return r49_deposit_size;
+			}
+			public void setR49_deposit_size(String r49_deposit_size) {
+				this.r49_deposit_size = r49_deposit_size;
+			}
+			public String getR49_deposit_type() {
+				return r49_deposit_type;
+			}
+			public void setR49_deposit_type(String r49_deposit_type) {
+				this.r49_deposit_type = r49_deposit_type;
+			}
+			public BigDecimal getR49_deposit_excluding_number() {
+				return r49_deposit_excluding_number;
+			}
+			public void setR49_deposit_excluding_number(BigDecimal r49_deposit_excluding_number) {
+				this.r49_deposit_excluding_number = r49_deposit_excluding_number;
+			}
+			public BigDecimal getR49_deposit_excluding_amount() {
+				return r49_deposit_excluding_amount;
+			}
+			public void setR49_deposit_excluding_amount(BigDecimal r49_deposit_excluding_amount) {
+				this.r49_deposit_excluding_amount = r49_deposit_excluding_amount;
+			}
+			public BigDecimal getR49_deposit_foreign_number() {
+				return r49_deposit_foreign_number;
+			}
+			public void setR49_deposit_foreign_number(BigDecimal r49_deposit_foreign_number) {
+				this.r49_deposit_foreign_number = r49_deposit_foreign_number;
+			}
+			public BigDecimal getR49_deposit_foreign_amount() {
+				return r49_deposit_foreign_amount;
+			}
+			public void setR49_deposit_foreign_amount(BigDecimal r49_deposit_foreign_amount) {
+				this.r49_deposit_foreign_amount = r49_deposit_foreign_amount;
+			}
+			public BigDecimal getR49_total_number() {
+				return r49_total_number;
+			}
+			public void setR49_total_number(BigDecimal r49_total_number) {
+				this.r49_total_number = r49_total_number;
+			}
+			public BigDecimal getR49_total_amount() {
+				return r49_total_amount;
+			}
+			public void setR49_total_amount(BigDecimal r49_total_amount) {
+				this.r49_total_amount = r49_total_amount;
+			}
+			public BigDecimal getR49_total_deposit_bank() {
+				return r49_total_deposit_bank;
+			}
+			public void setR49_total_deposit_bank(BigDecimal r49_total_deposit_bank) {
+				this.r49_total_deposit_bank = r49_total_deposit_bank;
+			}
+			public String getR50_deposit_size() {
+				return r50_deposit_size;
+			}
+			public void setR50_deposit_size(String r50_deposit_size) {
+				this.r50_deposit_size = r50_deposit_size;
+			}
+			public String getR50_deposit_type() {
+				return r50_deposit_type;
+			}
+			public void setR50_deposit_type(String r50_deposit_type) {
+				this.r50_deposit_type = r50_deposit_type;
+			}
+			public BigDecimal getR50_deposit_excluding_number() {
+				return r50_deposit_excluding_number;
+			}
+			public void setR50_deposit_excluding_number(BigDecimal r50_deposit_excluding_number) {
+				this.r50_deposit_excluding_number = r50_deposit_excluding_number;
+			}
+			public BigDecimal getR50_deposit_excluding_amount() {
+				return r50_deposit_excluding_amount;
+			}
+			public void setR50_deposit_excluding_amount(BigDecimal r50_deposit_excluding_amount) {
+				this.r50_deposit_excluding_amount = r50_deposit_excluding_amount;
+			}
+			public BigDecimal getR50_deposit_foreign_number() {
+				return r50_deposit_foreign_number;
+			}
+			public void setR50_deposit_foreign_number(BigDecimal r50_deposit_foreign_number) {
+				this.r50_deposit_foreign_number = r50_deposit_foreign_number;
+			}
+			public BigDecimal getR50_deposit_foreign_amount() {
+				return r50_deposit_foreign_amount;
+			}
+			public void setR50_deposit_foreign_amount(BigDecimal r50_deposit_foreign_amount) {
+				this.r50_deposit_foreign_amount = r50_deposit_foreign_amount;
+			}
+			public BigDecimal getR50_total_number() {
+				return r50_total_number;
+			}
+			public void setR50_total_number(BigDecimal r50_total_number) {
+				this.r50_total_number = r50_total_number;
+			}
+			public BigDecimal getR50_total_amount() {
+				return r50_total_amount;
+			}
+			public void setR50_total_amount(BigDecimal r50_total_amount) {
+				this.r50_total_amount = r50_total_amount;
+			}
+			public BigDecimal getR50_total_deposit_bank() {
+				return r50_total_deposit_bank;
+			}
+			public void setR50_total_deposit_bank(BigDecimal r50_total_deposit_bank) {
+				this.r50_total_deposit_bank = r50_total_deposit_bank;
+			}
+			public String getR51_deposit_size() {
+				return r51_deposit_size;
+			}
+			public void setR51_deposit_size(String r51_deposit_size) {
+				this.r51_deposit_size = r51_deposit_size;
+			}
+			public String getR51_deposit_type() {
+				return r51_deposit_type;
+			}
+			public void setR51_deposit_type(String r51_deposit_type) {
+				this.r51_deposit_type = r51_deposit_type;
+			}
+			public BigDecimal getR51_deposit_excluding_number() {
+				return r51_deposit_excluding_number;
+			}
+			public void setR51_deposit_excluding_number(BigDecimal r51_deposit_excluding_number) {
+				this.r51_deposit_excluding_number = r51_deposit_excluding_number;
+			}
+			public BigDecimal getR51_deposit_excluding_amount() {
+				return r51_deposit_excluding_amount;
+			}
+			public void setR51_deposit_excluding_amount(BigDecimal r51_deposit_excluding_amount) {
+				this.r51_deposit_excluding_amount = r51_deposit_excluding_amount;
+			}
+			public BigDecimal getR51_deposit_foreign_number() {
+				return r51_deposit_foreign_number;
+			}
+			public void setR51_deposit_foreign_number(BigDecimal r51_deposit_foreign_number) {
+				this.r51_deposit_foreign_number = r51_deposit_foreign_number;
+			}
+			public BigDecimal getR51_deposit_foreign_amount() {
+				return r51_deposit_foreign_amount;
+			}
+			public void setR51_deposit_foreign_amount(BigDecimal r51_deposit_foreign_amount) {
+				this.r51_deposit_foreign_amount = r51_deposit_foreign_amount;
+			}
+			public BigDecimal getR51_total_number() {
+				return r51_total_number;
+			}
+			public void setR51_total_number(BigDecimal r51_total_number) {
+				this.r51_total_number = r51_total_number;
+			}
+			public BigDecimal getR51_total_amount() {
+				return r51_total_amount;
+			}
+			public void setR51_total_amount(BigDecimal r51_total_amount) {
+				this.r51_total_amount = r51_total_amount;
+			}
+			public BigDecimal getR51_total_deposit_bank() {
+				return r51_total_deposit_bank;
+			}
+			public void setR51_total_deposit_bank(BigDecimal r51_total_deposit_bank) {
+				this.r51_total_deposit_bank = r51_total_deposit_bank;
+			}
+			public String getR52_deposit_size() {
+				return r52_deposit_size;
+			}
+			public void setR52_deposit_size(String r52_deposit_size) {
+				this.r52_deposit_size = r52_deposit_size;
+			}
+			public String getR52_deposit_type() {
+				return r52_deposit_type;
+			}
+			public void setR52_deposit_type(String r52_deposit_type) {
+				this.r52_deposit_type = r52_deposit_type;
+			}
+			public BigDecimal getR52_deposit_excluding_number() {
+				return r52_deposit_excluding_number;
+			}
+			public void setR52_deposit_excluding_number(BigDecimal r52_deposit_excluding_number) {
+				this.r52_deposit_excluding_number = r52_deposit_excluding_number;
+			}
+			public BigDecimal getR52_deposit_excluding_amount() {
+				return r52_deposit_excluding_amount;
+			}
+			public void setR52_deposit_excluding_amount(BigDecimal r52_deposit_excluding_amount) {
+				this.r52_deposit_excluding_amount = r52_deposit_excluding_amount;
+			}
+			public BigDecimal getR52_deposit_foreign_number() {
+				return r52_deposit_foreign_number;
+			}
+			public void setR52_deposit_foreign_number(BigDecimal r52_deposit_foreign_number) {
+				this.r52_deposit_foreign_number = r52_deposit_foreign_number;
+			}
+			public BigDecimal getR52_deposit_foreign_amount() {
+				return r52_deposit_foreign_amount;
+			}
+			public void setR52_deposit_foreign_amount(BigDecimal r52_deposit_foreign_amount) {
+				this.r52_deposit_foreign_amount = r52_deposit_foreign_amount;
+			}
+			public BigDecimal getR52_total_number() {
+				return r52_total_number;
+			}
+			public void setR52_total_number(BigDecimal r52_total_number) {
+				this.r52_total_number = r52_total_number;
+			}
+			public BigDecimal getR52_total_amount() {
+				return r52_total_amount;
+			}
+			public void setR52_total_amount(BigDecimal r52_total_amount) {
+				this.r52_total_amount = r52_total_amount;
+			}
+			public BigDecimal getR52_total_deposit_bank() {
+				return r52_total_deposit_bank;
+			}
+			public void setR52_total_deposit_bank(BigDecimal r52_total_deposit_bank) {
+				this.r52_total_deposit_bank = r52_total_deposit_bank;
+			}
+			public String getR53_deposit_size() {
+				return r53_deposit_size;
+			}
+			public void setR53_deposit_size(String r53_deposit_size) {
+				this.r53_deposit_size = r53_deposit_size;
+			}
+			public String getR53_deposit_type() {
+				return r53_deposit_type;
+			}
+			public void setR53_deposit_type(String r53_deposit_type) {
+				this.r53_deposit_type = r53_deposit_type;
+			}
+			public BigDecimal getR53_deposit_excluding_number() {
+				return r53_deposit_excluding_number;
+			}
+			public void setR53_deposit_excluding_number(BigDecimal r53_deposit_excluding_number) {
+				this.r53_deposit_excluding_number = r53_deposit_excluding_number;
+			}
+			public BigDecimal getR53_deposit_excluding_amount() {
+				return r53_deposit_excluding_amount;
+			}
+			public void setR53_deposit_excluding_amount(BigDecimal r53_deposit_excluding_amount) {
+				this.r53_deposit_excluding_amount = r53_deposit_excluding_amount;
+			}
+			public BigDecimal getR53_deposit_foreign_number() {
+				return r53_deposit_foreign_number;
+			}
+			public void setR53_deposit_foreign_number(BigDecimal r53_deposit_foreign_number) {
+				this.r53_deposit_foreign_number = r53_deposit_foreign_number;
+			}
+			public BigDecimal getR53_deposit_foreign_amount() {
+				return r53_deposit_foreign_amount;
+			}
+			public void setR53_deposit_foreign_amount(BigDecimal r53_deposit_foreign_amount) {
+				this.r53_deposit_foreign_amount = r53_deposit_foreign_amount;
+			}
+			public BigDecimal getR53_total_number() {
+				return r53_total_number;
+			}
+			public void setR53_total_number(BigDecimal r53_total_number) {
+				this.r53_total_number = r53_total_number;
+			}
+			public BigDecimal getR53_total_amount() {
+				return r53_total_amount;
+			}
+			public void setR53_total_amount(BigDecimal r53_total_amount) {
+				this.r53_total_amount = r53_total_amount;
+			}
+			public BigDecimal getR53_total_deposit_bank() {
+				return r53_total_deposit_bank;
+			}
+			public void setR53_total_deposit_bank(BigDecimal r53_total_deposit_bank) {
+				this.r53_total_deposit_bank = r53_total_deposit_bank;
+			}
+			public String getR54_deposit_size() {
+				return r54_deposit_size;
+			}
+			public void setR54_deposit_size(String r54_deposit_size) {
+				this.r54_deposit_size = r54_deposit_size;
+			}
+			public String getR54_deposit_type() {
+				return r54_deposit_type;
+			}
+			public void setR54_deposit_type(String r54_deposit_type) {
+				this.r54_deposit_type = r54_deposit_type;
+			}
+			public BigDecimal getR54_deposit_excluding_number() {
+				return r54_deposit_excluding_number;
+			}
+			public void setR54_deposit_excluding_number(BigDecimal r54_deposit_excluding_number) {
+				this.r54_deposit_excluding_number = r54_deposit_excluding_number;
+			}
+			public BigDecimal getR54_deposit_excluding_amount() {
+				return r54_deposit_excluding_amount;
+			}
+			public void setR54_deposit_excluding_amount(BigDecimal r54_deposit_excluding_amount) {
+				this.r54_deposit_excluding_amount = r54_deposit_excluding_amount;
+			}
+			public BigDecimal getR54_deposit_foreign_number() {
+				return r54_deposit_foreign_number;
+			}
+			public void setR54_deposit_foreign_number(BigDecimal r54_deposit_foreign_number) {
+				this.r54_deposit_foreign_number = r54_deposit_foreign_number;
+			}
+			public BigDecimal getR54_deposit_foreign_amount() {
+				return r54_deposit_foreign_amount;
+			}
+			public void setR54_deposit_foreign_amount(BigDecimal r54_deposit_foreign_amount) {
+				this.r54_deposit_foreign_amount = r54_deposit_foreign_amount;
+			}
+			public BigDecimal getR54_total_number() {
+				return r54_total_number;
+			}
+			public void setR54_total_number(BigDecimal r54_total_number) {
+				this.r54_total_number = r54_total_number;
+			}
+			public BigDecimal getR54_total_amount() {
+				return r54_total_amount;
+			}
+			public void setR54_total_amount(BigDecimal r54_total_amount) {
+				this.r54_total_amount = r54_total_amount;
+			}
+			public BigDecimal getR54_total_deposit_bank() {
+				return r54_total_deposit_bank;
+			}
+			public void setR54_total_deposit_bank(BigDecimal r54_total_deposit_bank) {
+				this.r54_total_deposit_bank = r54_total_deposit_bank;
+			}
+			public String getR55_deposit_size() {
+				return r55_deposit_size;
+			}
+			public void setR55_deposit_size(String r55_deposit_size) {
+				this.r55_deposit_size = r55_deposit_size;
+			}
+			public String getR55_deposit_type() {
+				return r55_deposit_type;
+			}
+			public void setR55_deposit_type(String r55_deposit_type) {
+				this.r55_deposit_type = r55_deposit_type;
+			}
+			public BigDecimal getR55_deposit_excluding_number() {
+				return r55_deposit_excluding_number;
+			}
+			public void setR55_deposit_excluding_number(BigDecimal r55_deposit_excluding_number) {
+				this.r55_deposit_excluding_number = r55_deposit_excluding_number;
+			}
+			public BigDecimal getR55_deposit_excluding_amount() {
+				return r55_deposit_excluding_amount;
+			}
+			public void setR55_deposit_excluding_amount(BigDecimal r55_deposit_excluding_amount) {
+				this.r55_deposit_excluding_amount = r55_deposit_excluding_amount;
+			}
+			public BigDecimal getR55_deposit_foreign_number() {
+				return r55_deposit_foreign_number;
+			}
+			public void setR55_deposit_foreign_number(BigDecimal r55_deposit_foreign_number) {
+				this.r55_deposit_foreign_number = r55_deposit_foreign_number;
+			}
+			public BigDecimal getR55_deposit_foreign_amount() {
+				return r55_deposit_foreign_amount;
+			}
+			public void setR55_deposit_foreign_amount(BigDecimal r55_deposit_foreign_amount) {
+				this.r55_deposit_foreign_amount = r55_deposit_foreign_amount;
+			}
+			public BigDecimal getR55_total_number() {
+				return r55_total_number;
+			}
+			public void setR55_total_number(BigDecimal r55_total_number) {
+				this.r55_total_number = r55_total_number;
+			}
+			public BigDecimal getR55_total_amount() {
+				return r55_total_amount;
+			}
+			public void setR55_total_amount(BigDecimal r55_total_amount) {
+				this.r55_total_amount = r55_total_amount;
+			}
+			public BigDecimal getR55_total_deposit_bank() {
+				return r55_total_deposit_bank;
+			}
+			public void setR55_total_deposit_bank(BigDecimal r55_total_deposit_bank) {
+				this.r55_total_deposit_bank = r55_total_deposit_bank;
+			}
+			public String getR56_deposit_size() {
+				return r56_deposit_size;
+			}
+			public void setR56_deposit_size(String r56_deposit_size) {
+				this.r56_deposit_size = r56_deposit_size;
+			}
+			public String getR56_deposit_type() {
+				return r56_deposit_type;
+			}
+			public void setR56_deposit_type(String r56_deposit_type) {
+				this.r56_deposit_type = r56_deposit_type;
+			}
+			public BigDecimal getR56_deposit_excluding_number() {
+				return r56_deposit_excluding_number;
+			}
+			public void setR56_deposit_excluding_number(BigDecimal r56_deposit_excluding_number) {
+				this.r56_deposit_excluding_number = r56_deposit_excluding_number;
+			}
+			public BigDecimal getR56_deposit_excluding_amount() {
+				return r56_deposit_excluding_amount;
+			}
+			public void setR56_deposit_excluding_amount(BigDecimal r56_deposit_excluding_amount) {
+				this.r56_deposit_excluding_amount = r56_deposit_excluding_amount;
+			}
+			public BigDecimal getR56_deposit_foreign_number() {
+				return r56_deposit_foreign_number;
+			}
+			public void setR56_deposit_foreign_number(BigDecimal r56_deposit_foreign_number) {
+				this.r56_deposit_foreign_number = r56_deposit_foreign_number;
+			}
+			public BigDecimal getR56_deposit_foreign_amount() {
+				return r56_deposit_foreign_amount;
+			}
+			public void setR56_deposit_foreign_amount(BigDecimal r56_deposit_foreign_amount) {
+				this.r56_deposit_foreign_amount = r56_deposit_foreign_amount;
+			}
+			public BigDecimal getR56_total_number() {
+				return r56_total_number;
+			}
+			public void setR56_total_number(BigDecimal r56_total_number) {
+				this.r56_total_number = r56_total_number;
+			}
+			public BigDecimal getR56_total_amount() {
+				return r56_total_amount;
+			}
+			public void setR56_total_amount(BigDecimal r56_total_amount) {
+				this.r56_total_amount = r56_total_amount;
+			}
+			public BigDecimal getR56_total_deposit_bank() {
+				return r56_total_deposit_bank;
+			}
+			public void setR56_total_deposit_bank(BigDecimal r56_total_deposit_bank) {
+				this.r56_total_deposit_bank = r56_total_deposit_bank;
+			}
+			public String getR57_deposit_size() {
+				return r57_deposit_size;
+			}
+			public void setR57_deposit_size(String r57_deposit_size) {
+				this.r57_deposit_size = r57_deposit_size;
+			}
+			public String getR57_deposit_type() {
+				return r57_deposit_type;
+			}
+			public void setR57_deposit_type(String r57_deposit_type) {
+				this.r57_deposit_type = r57_deposit_type;
+			}
+			public BigDecimal getR57_deposit_excluding_number() {
+				return r57_deposit_excluding_number;
+			}
+			public void setR57_deposit_excluding_number(BigDecimal r57_deposit_excluding_number) {
+				this.r57_deposit_excluding_number = r57_deposit_excluding_number;
+			}
+			public BigDecimal getR57_deposit_excluding_amount() {
+				return r57_deposit_excluding_amount;
+			}
+			public void setR57_deposit_excluding_amount(BigDecimal r57_deposit_excluding_amount) {
+				this.r57_deposit_excluding_amount = r57_deposit_excluding_amount;
+			}
+			public BigDecimal getR57_deposit_foreign_number() {
+				return r57_deposit_foreign_number;
+			}
+			public void setR57_deposit_foreign_number(BigDecimal r57_deposit_foreign_number) {
+				this.r57_deposit_foreign_number = r57_deposit_foreign_number;
+			}
+			public BigDecimal getR57_deposit_foreign_amount() {
+				return r57_deposit_foreign_amount;
+			}
+			public void setR57_deposit_foreign_amount(BigDecimal r57_deposit_foreign_amount) {
+				this.r57_deposit_foreign_amount = r57_deposit_foreign_amount;
+			}
+			public BigDecimal getR57_total_number() {
+				return r57_total_number;
+			}
+			public void setR57_total_number(BigDecimal r57_total_number) {
+				this.r57_total_number = r57_total_number;
+			}
+			public BigDecimal getR57_total_amount() {
+				return r57_total_amount;
+			}
+			public void setR57_total_amount(BigDecimal r57_total_amount) {
+				this.r57_total_amount = r57_total_amount;
+			}
+			public BigDecimal getR57_total_deposit_bank() {
+				return r57_total_deposit_bank;
+			}
+			public void setR57_total_deposit_bank(BigDecimal r57_total_deposit_bank) {
+				this.r57_total_deposit_bank = r57_total_deposit_bank;
+			}
+			public String getR58_deposit_size() {
+				return r58_deposit_size;
+			}
+			public void setR58_deposit_size(String r58_deposit_size) {
+				this.r58_deposit_size = r58_deposit_size;
+			}
+			public String getR58_deposit_type() {
+				return r58_deposit_type;
+			}
+			public void setR58_deposit_type(String r58_deposit_type) {
+				this.r58_deposit_type = r58_deposit_type;
+			}
+			public BigDecimal getR58_deposit_excluding_number() {
+				return r58_deposit_excluding_number;
+			}
+			public void setR58_deposit_excluding_number(BigDecimal r58_deposit_excluding_number) {
+				this.r58_deposit_excluding_number = r58_deposit_excluding_number;
+			}
+			public BigDecimal getR58_deposit_excluding_amount() {
+				return r58_deposit_excluding_amount;
+			}
+			public void setR58_deposit_excluding_amount(BigDecimal r58_deposit_excluding_amount) {
+				this.r58_deposit_excluding_amount = r58_deposit_excluding_amount;
+			}
+			public BigDecimal getR58_deposit_foreign_number() {
+				return r58_deposit_foreign_number;
+			}
+			public void setR58_deposit_foreign_number(BigDecimal r58_deposit_foreign_number) {
+				this.r58_deposit_foreign_number = r58_deposit_foreign_number;
+			}
+			public BigDecimal getR58_deposit_foreign_amount() {
+				return r58_deposit_foreign_amount;
+			}
+			public void setR58_deposit_foreign_amount(BigDecimal r58_deposit_foreign_amount) {
+				this.r58_deposit_foreign_amount = r58_deposit_foreign_amount;
+			}
+			public BigDecimal getR58_total_number() {
+				return r58_total_number;
+			}
+			public void setR58_total_number(BigDecimal r58_total_number) {
+				this.r58_total_number = r58_total_number;
+			}
+			public BigDecimal getR58_total_amount() {
+				return r58_total_amount;
+			}
+			public void setR58_total_amount(BigDecimal r58_total_amount) {
+				this.r58_total_amount = r58_total_amount;
+			}
+			public BigDecimal getR58_total_deposit_bank() {
+				return r58_total_deposit_bank;
+			}
+			public void setR58_total_deposit_bank(BigDecimal r58_total_deposit_bank) {
+				this.r58_total_deposit_bank = r58_total_deposit_bank;
+			}
+			public String getR59_deposit_size() {
+				return r59_deposit_size;
+			}
+			public void setR59_deposit_size(String r59_deposit_size) {
+				this.r59_deposit_size = r59_deposit_size;
+			}
+			public String getR59_deposit_type() {
+				return r59_deposit_type;
+			}
+			public void setR59_deposit_type(String r59_deposit_type) {
+				this.r59_deposit_type = r59_deposit_type;
+			}
+			public BigDecimal getR59_deposit_excluding_number() {
+				return r59_deposit_excluding_number;
+			}
+			public void setR59_deposit_excluding_number(BigDecimal r59_deposit_excluding_number) {
+				this.r59_deposit_excluding_number = r59_deposit_excluding_number;
+			}
+			public BigDecimal getR59_deposit_excluding_amount() {
+				return r59_deposit_excluding_amount;
+			}
+			public void setR59_deposit_excluding_amount(BigDecimal r59_deposit_excluding_amount) {
+				this.r59_deposit_excluding_amount = r59_deposit_excluding_amount;
+			}
+			public BigDecimal getR59_deposit_foreign_number() {
+				return r59_deposit_foreign_number;
+			}
+			public void setR59_deposit_foreign_number(BigDecimal r59_deposit_foreign_number) {
+				this.r59_deposit_foreign_number = r59_deposit_foreign_number;
+			}
+			public BigDecimal getR59_deposit_foreign_amount() {
+				return r59_deposit_foreign_amount;
+			}
+			public void setR59_deposit_foreign_amount(BigDecimal r59_deposit_foreign_amount) {
+				this.r59_deposit_foreign_amount = r59_deposit_foreign_amount;
+			}
+			public BigDecimal getR59_total_number() {
+				return r59_total_number;
+			}
+			public void setR59_total_number(BigDecimal r59_total_number) {
+				this.r59_total_number = r59_total_number;
+			}
+			public BigDecimal getR59_total_amount() {
+				return r59_total_amount;
+			}
+			public void setR59_total_amount(BigDecimal r59_total_amount) {
+				this.r59_total_amount = r59_total_amount;
+			}
+			public BigDecimal getR59_total_deposit_bank() {
+				return r59_total_deposit_bank;
+			}
+			public void setR59_total_deposit_bank(BigDecimal r59_total_deposit_bank) {
+				this.r59_total_deposit_bank = r59_total_deposit_bank;
+			}
+			public String getR60_deposit_size() {
+				return r60_deposit_size;
+			}
+			public void setR60_deposit_size(String r60_deposit_size) {
+				this.r60_deposit_size = r60_deposit_size;
+			}
+			public String getR60_deposit_type() {
+				return r60_deposit_type;
+			}
+			public void setR60_deposit_type(String r60_deposit_type) {
+				this.r60_deposit_type = r60_deposit_type;
+			}
+			public BigDecimal getR60_deposit_excluding_number() {
+				return r60_deposit_excluding_number;
+			}
+			public void setR60_deposit_excluding_number(BigDecimal r60_deposit_excluding_number) {
+				this.r60_deposit_excluding_number = r60_deposit_excluding_number;
+			}
+			public BigDecimal getR60_deposit_excluding_amount() {
+				return r60_deposit_excluding_amount;
+			}
+			public void setR60_deposit_excluding_amount(BigDecimal r60_deposit_excluding_amount) {
+				this.r60_deposit_excluding_amount = r60_deposit_excluding_amount;
+			}
+			public BigDecimal getR60_deposit_foreign_number() {
+				return r60_deposit_foreign_number;
+			}
+			public void setR60_deposit_foreign_number(BigDecimal r60_deposit_foreign_number) {
+				this.r60_deposit_foreign_number = r60_deposit_foreign_number;
+			}
+			public BigDecimal getR60_deposit_foreign_amount() {
+				return r60_deposit_foreign_amount;
+			}
+			public void setR60_deposit_foreign_amount(BigDecimal r60_deposit_foreign_amount) {
+				this.r60_deposit_foreign_amount = r60_deposit_foreign_amount;
+			}
+			public BigDecimal getR60_total_number() {
+				return r60_total_number;
+			}
+			public void setR60_total_number(BigDecimal r60_total_number) {
+				this.r60_total_number = r60_total_number;
+			}
+			public BigDecimal getR60_total_amount() {
+				return r60_total_amount;
+			}
+			public void setR60_total_amount(BigDecimal r60_total_amount) {
+				this.r60_total_amount = r60_total_amount;
+			}
+			public BigDecimal getR60_total_deposit_bank() {
+				return r60_total_deposit_bank;
+			}
+			public void setR60_total_deposit_bank(BigDecimal r60_total_deposit_bank) {
+				this.r60_total_deposit_bank = r60_total_deposit_bank;
+			}
+			public String getR61_deposit_size() {
+				return r61_deposit_size;
+			}
+			public void setR61_deposit_size(String r61_deposit_size) {
+				this.r61_deposit_size = r61_deposit_size;
+			}
+			public String getR61_deposit_type() {
+				return r61_deposit_type;
+			}
+			public void setR61_deposit_type(String r61_deposit_type) {
+				this.r61_deposit_type = r61_deposit_type;
+			}
+			public BigDecimal getR61_deposit_excluding_number() {
+				return r61_deposit_excluding_number;
+			}
+			public void setR61_deposit_excluding_number(BigDecimal r61_deposit_excluding_number) {
+				this.r61_deposit_excluding_number = r61_deposit_excluding_number;
+			}
+			public BigDecimal getR61_deposit_excluding_amount() {
+				return r61_deposit_excluding_amount;
+			}
+			public void setR61_deposit_excluding_amount(BigDecimal r61_deposit_excluding_amount) {
+				this.r61_deposit_excluding_amount = r61_deposit_excluding_amount;
+			}
+			public BigDecimal getR61_deposit_foreign_number() {
+				return r61_deposit_foreign_number;
+			}
+			public void setR61_deposit_foreign_number(BigDecimal r61_deposit_foreign_number) {
+				this.r61_deposit_foreign_number = r61_deposit_foreign_number;
+			}
+			public BigDecimal getR61_deposit_foreign_amount() {
+				return r61_deposit_foreign_amount;
+			}
+			public void setR61_deposit_foreign_amount(BigDecimal r61_deposit_foreign_amount) {
+				this.r61_deposit_foreign_amount = r61_deposit_foreign_amount;
+			}
+			public BigDecimal getR61_total_number() {
+				return r61_total_number;
+			}
+			public void setR61_total_number(BigDecimal r61_total_number) {
+				this.r61_total_number = r61_total_number;
+			}
+			public BigDecimal getR61_total_amount() {
+				return r61_total_amount;
+			}
+			public void setR61_total_amount(BigDecimal r61_total_amount) {
+				this.r61_total_amount = r61_total_amount;
+			}
+			public BigDecimal getR61_total_deposit_bank() {
+				return r61_total_deposit_bank;
+			}
+			public void setR61_total_deposit_bank(BigDecimal r61_total_deposit_bank) {
+				this.r61_total_deposit_bank = r61_total_deposit_bank;
+			}
+			public String getR62_deposit_size() {
+				return r62_deposit_size;
+			}
+			public void setR62_deposit_size(String r62_deposit_size) {
+				this.r62_deposit_size = r62_deposit_size;
+			}
+			public String getR62_deposit_type() {
+				return r62_deposit_type;
+			}
+			public void setR62_deposit_type(String r62_deposit_type) {
+				this.r62_deposit_type = r62_deposit_type;
+			}
+			public BigDecimal getR62_deposit_excluding_number() {
+				return r62_deposit_excluding_number;
+			}
+			public void setR62_deposit_excluding_number(BigDecimal r62_deposit_excluding_number) {
+				this.r62_deposit_excluding_number = r62_deposit_excluding_number;
+			}
+			public BigDecimal getR62_deposit_excluding_amount() {
+				return r62_deposit_excluding_amount;
+			}
+			public void setR62_deposit_excluding_amount(BigDecimal r62_deposit_excluding_amount) {
+				this.r62_deposit_excluding_amount = r62_deposit_excluding_amount;
+			}
+			public BigDecimal getR62_deposit_foreign_number() {
+				return r62_deposit_foreign_number;
+			}
+			public void setR62_deposit_foreign_number(BigDecimal r62_deposit_foreign_number) {
+				this.r62_deposit_foreign_number = r62_deposit_foreign_number;
+			}
+			public BigDecimal getR62_deposit_foreign_amount() {
+				return r62_deposit_foreign_amount;
+			}
+			public void setR62_deposit_foreign_amount(BigDecimal r62_deposit_foreign_amount) {
+				this.r62_deposit_foreign_amount = r62_deposit_foreign_amount;
+			}
+			public BigDecimal getR62_total_number() {
+				return r62_total_number;
+			}
+			public void setR62_total_number(BigDecimal r62_total_number) {
+				this.r62_total_number = r62_total_number;
+			}
+			public BigDecimal getR62_total_amount() {
+				return r62_total_amount;
+			}
+			public void setR62_total_amount(BigDecimal r62_total_amount) {
+				this.r62_total_amount = r62_total_amount;
+			}
+			public BigDecimal getR62_total_deposit_bank() {
+				return r62_total_deposit_bank;
+			}
+			public void setR62_total_deposit_bank(BigDecimal r62_total_deposit_bank) {
+				this.r62_total_deposit_bank = r62_total_deposit_bank;
+			}
+			public String getR63_deposit_size() {
+				return r63_deposit_size;
+			}
+			public void setR63_deposit_size(String r63_deposit_size) {
+				this.r63_deposit_size = r63_deposit_size;
+			}
+			public String getR63_deposit_type() {
+				return r63_deposit_type;
+			}
+			public void setR63_deposit_type(String r63_deposit_type) {
+				this.r63_deposit_type = r63_deposit_type;
+			}
+			public BigDecimal getR63_deposit_excluding_number() {
+				return r63_deposit_excluding_number;
+			}
+			public void setR63_deposit_excluding_number(BigDecimal r63_deposit_excluding_number) {
+				this.r63_deposit_excluding_number = r63_deposit_excluding_number;
+			}
+			public BigDecimal getR63_deposit_excluding_amount() {
+				return r63_deposit_excluding_amount;
+			}
+			public void setR63_deposit_excluding_amount(BigDecimal r63_deposit_excluding_amount) {
+				this.r63_deposit_excluding_amount = r63_deposit_excluding_amount;
+			}
+			public BigDecimal getR63_deposit_foreign_number() {
+				return r63_deposit_foreign_number;
+			}
+			public void setR63_deposit_foreign_number(BigDecimal r63_deposit_foreign_number) {
+				this.r63_deposit_foreign_number = r63_deposit_foreign_number;
+			}
+			public BigDecimal getR63_deposit_foreign_amount() {
+				return r63_deposit_foreign_amount;
+			}
+			public void setR63_deposit_foreign_amount(BigDecimal r63_deposit_foreign_amount) {
+				this.r63_deposit_foreign_amount = r63_deposit_foreign_amount;
+			}
+			public BigDecimal getR63_total_number() {
+				return r63_total_number;
+			}
+			public void setR63_total_number(BigDecimal r63_total_number) {
+				this.r63_total_number = r63_total_number;
+			}
+			public BigDecimal getR63_total_amount() {
+				return r63_total_amount;
+			}
+			public void setR63_total_amount(BigDecimal r63_total_amount) {
+				this.r63_total_amount = r63_total_amount;
+			}
+			public BigDecimal getR63_total_deposit_bank() {
+				return r63_total_deposit_bank;
+			}
+			public void setR63_total_deposit_bank(BigDecimal r63_total_deposit_bank) {
+				this.r63_total_deposit_bank = r63_total_deposit_bank;
+			}
+			public String getR64_deposit_size() {
+				return r64_deposit_size;
+			}
+			public void setR64_deposit_size(String r64_deposit_size) {
+				this.r64_deposit_size = r64_deposit_size;
+			}
+			public String getR64_deposit_type() {
+				return r64_deposit_type;
+			}
+			public void setR64_deposit_type(String r64_deposit_type) {
+				this.r64_deposit_type = r64_deposit_type;
+			}
+			public BigDecimal getR64_deposit_excluding_number() {
+				return r64_deposit_excluding_number;
+			}
+			public void setR64_deposit_excluding_number(BigDecimal r64_deposit_excluding_number) {
+				this.r64_deposit_excluding_number = r64_deposit_excluding_number;
+			}
+			public BigDecimal getR64_deposit_excluding_amount() {
+				return r64_deposit_excluding_amount;
+			}
+			public void setR64_deposit_excluding_amount(BigDecimal r64_deposit_excluding_amount) {
+				this.r64_deposit_excluding_amount = r64_deposit_excluding_amount;
+			}
+			public BigDecimal getR64_deposit_foreign_number() {
+				return r64_deposit_foreign_number;
+			}
+			public void setR64_deposit_foreign_number(BigDecimal r64_deposit_foreign_number) {
+				this.r64_deposit_foreign_number = r64_deposit_foreign_number;
+			}
+			public BigDecimal getR64_deposit_foreign_amount() {
+				return r64_deposit_foreign_amount;
+			}
+			public void setR64_deposit_foreign_amount(BigDecimal r64_deposit_foreign_amount) {
+				this.r64_deposit_foreign_amount = r64_deposit_foreign_amount;
+			}
+			public BigDecimal getR64_total_number() {
+				return r64_total_number;
+			}
+			public void setR64_total_number(BigDecimal r64_total_number) {
+				this.r64_total_number = r64_total_number;
+			}
+			public BigDecimal getR64_total_amount() {
+				return r64_total_amount;
+			}
+			public void setR64_total_amount(BigDecimal r64_total_amount) {
+				this.r64_total_amount = r64_total_amount;
+			}
+			public BigDecimal getR64_total_deposit_bank() {
+				return r64_total_deposit_bank;
+			}
+			public void setR64_total_deposit_bank(BigDecimal r64_total_deposit_bank) {
+				this.r64_total_deposit_bank = r64_total_deposit_bank;
+			}
+			public String getR65_deposit_size() {
+				return r65_deposit_size;
+			}
+			public void setR65_deposit_size(String r65_deposit_size) {
+				this.r65_deposit_size = r65_deposit_size;
+			}
+			public String getR65_deposit_type() {
+				return r65_deposit_type;
+			}
+			public void setR65_deposit_type(String r65_deposit_type) {
+				this.r65_deposit_type = r65_deposit_type;
+			}
+			public BigDecimal getR65_deposit_excluding_number() {
+				return r65_deposit_excluding_number;
+			}
+			public void setR65_deposit_excluding_number(BigDecimal r65_deposit_excluding_number) {
+				this.r65_deposit_excluding_number = r65_deposit_excluding_number;
+			}
+			public BigDecimal getR65_deposit_excluding_amount() {
+				return r65_deposit_excluding_amount;
+			}
+			public void setR65_deposit_excluding_amount(BigDecimal r65_deposit_excluding_amount) {
+				this.r65_deposit_excluding_amount = r65_deposit_excluding_amount;
+			}
+			public BigDecimal getR65_deposit_foreign_number() {
+				return r65_deposit_foreign_number;
+			}
+			public void setR65_deposit_foreign_number(BigDecimal r65_deposit_foreign_number) {
+				this.r65_deposit_foreign_number = r65_deposit_foreign_number;
+			}
+			public BigDecimal getR65_deposit_foreign_amount() {
+				return r65_deposit_foreign_amount;
+			}
+			public void setR65_deposit_foreign_amount(BigDecimal r65_deposit_foreign_amount) {
+				this.r65_deposit_foreign_amount = r65_deposit_foreign_amount;
+			}
+			public BigDecimal getR65_total_number() {
+				return r65_total_number;
+			}
+			public void setR65_total_number(BigDecimal r65_total_number) {
+				this.r65_total_number = r65_total_number;
+			}
+			public BigDecimal getR65_total_amount() {
+				return r65_total_amount;
+			}
+			public void setR65_total_amount(BigDecimal r65_total_amount) {
+				this.r65_total_amount = r65_total_amount;
+			}
+			public BigDecimal getR65_total_deposit_bank() {
+				return r65_total_deposit_bank;
+			}
+			public void setR65_total_deposit_bank(BigDecimal r65_total_deposit_bank) {
+				this.r65_total_deposit_bank = r65_total_deposit_bank;
+			}
+			public String getR66_deposit_size() {
+				return r66_deposit_size;
+			}
+			public void setR66_deposit_size(String r66_deposit_size) {
+				this.r66_deposit_size = r66_deposit_size;
+			}
+			public String getR66_deposit_type() {
+				return r66_deposit_type;
+			}
+			public void setR66_deposit_type(String r66_deposit_type) {
+				this.r66_deposit_type = r66_deposit_type;
+			}
+			public BigDecimal getR66_deposit_excluding_number() {
+				return r66_deposit_excluding_number;
+			}
+			public void setR66_deposit_excluding_number(BigDecimal r66_deposit_excluding_number) {
+				this.r66_deposit_excluding_number = r66_deposit_excluding_number;
+			}
+			public BigDecimal getR66_deposit_excluding_amount() {
+				return r66_deposit_excluding_amount;
+			}
+			public void setR66_deposit_excluding_amount(BigDecimal r66_deposit_excluding_amount) {
+				this.r66_deposit_excluding_amount = r66_deposit_excluding_amount;
+			}
+			public BigDecimal getR66_deposit_foreign_number() {
+				return r66_deposit_foreign_number;
+			}
+			public void setR66_deposit_foreign_number(BigDecimal r66_deposit_foreign_number) {
+				this.r66_deposit_foreign_number = r66_deposit_foreign_number;
+			}
+			public BigDecimal getR66_deposit_foreign_amount() {
+				return r66_deposit_foreign_amount;
+			}
+			public void setR66_deposit_foreign_amount(BigDecimal r66_deposit_foreign_amount) {
+				this.r66_deposit_foreign_amount = r66_deposit_foreign_amount;
+			}
+			public BigDecimal getR66_total_number() {
+				return r66_total_number;
+			}
+			public void setR66_total_number(BigDecimal r66_total_number) {
+				this.r66_total_number = r66_total_number;
+			}
+			public BigDecimal getR66_total_amount() {
+				return r66_total_amount;
+			}
+			public void setR66_total_amount(BigDecimal r66_total_amount) {
+				this.r66_total_amount = r66_total_amount;
+			}
+			public BigDecimal getR66_total_deposit_bank() {
+				return r66_total_deposit_bank;
+			}
+			public void setR66_total_deposit_bank(BigDecimal r66_total_deposit_bank) {
+				this.r66_total_deposit_bank = r66_total_deposit_bank;
+			}
+			public String getR67_deposit_size() {
+				return r67_deposit_size;
+			}
+			public void setR67_deposit_size(String r67_deposit_size) {
+				this.r67_deposit_size = r67_deposit_size;
+			}
+			public String getR67_deposit_type() {
+				return r67_deposit_type;
+			}
+			public void setR67_deposit_type(String r67_deposit_type) {
+				this.r67_deposit_type = r67_deposit_type;
+			}
+			public BigDecimal getR67_deposit_excluding_number() {
+				return r67_deposit_excluding_number;
+			}
+			public void setR67_deposit_excluding_number(BigDecimal r67_deposit_excluding_number) {
+				this.r67_deposit_excluding_number = r67_deposit_excluding_number;
+			}
+			public BigDecimal getR67_deposit_excluding_amount() {
+				return r67_deposit_excluding_amount;
+			}
+			public void setR67_deposit_excluding_amount(BigDecimal r67_deposit_excluding_amount) {
+				this.r67_deposit_excluding_amount = r67_deposit_excluding_amount;
+			}
+			public BigDecimal getR67_deposit_foreign_number() {
+				return r67_deposit_foreign_number;
+			}
+			public void setR67_deposit_foreign_number(BigDecimal r67_deposit_foreign_number) {
+				this.r67_deposit_foreign_number = r67_deposit_foreign_number;
+			}
+			public BigDecimal getR67_deposit_foreign_amount() {
+				return r67_deposit_foreign_amount;
+			}
+			public void setR67_deposit_foreign_amount(BigDecimal r67_deposit_foreign_amount) {
+				this.r67_deposit_foreign_amount = r67_deposit_foreign_amount;
+			}
+			public BigDecimal getR67_total_number() {
+				return r67_total_number;
+			}
+			public void setR67_total_number(BigDecimal r67_total_number) {
+				this.r67_total_number = r67_total_number;
+			}
+			public BigDecimal getR67_total_amount() {
+				return r67_total_amount;
+			}
+			public void setR67_total_amount(BigDecimal r67_total_amount) {
+				this.r67_total_amount = r67_total_amount;
+			}
+			public BigDecimal getR67_total_deposit_bank() {
+				return r67_total_deposit_bank;
+			}
+			public void setR67_total_deposit_bank(BigDecimal r67_total_deposit_bank) {
+				this.r67_total_deposit_bank = r67_total_deposit_bank;
+			}
+			public String getR68_deposit_size() {
+				return r68_deposit_size;
+			}
+			public void setR68_deposit_size(String r68_deposit_size) {
+				this.r68_deposit_size = r68_deposit_size;
+			}
+			public String getR68_deposit_type() {
+				return r68_deposit_type;
+			}
+			public void setR68_deposit_type(String r68_deposit_type) {
+				this.r68_deposit_type = r68_deposit_type;
+			}
+			public BigDecimal getR68_deposit_excluding_number() {
+				return r68_deposit_excluding_number;
+			}
+			public void setR68_deposit_excluding_number(BigDecimal r68_deposit_excluding_number) {
+				this.r68_deposit_excluding_number = r68_deposit_excluding_number;
+			}
+			public BigDecimal getR68_deposit_excluding_amount() {
+				return r68_deposit_excluding_amount;
+			}
+			public void setR68_deposit_excluding_amount(BigDecimal r68_deposit_excluding_amount) {
+				this.r68_deposit_excluding_amount = r68_deposit_excluding_amount;
+			}
+			public BigDecimal getR68_deposit_foreign_number() {
+				return r68_deposit_foreign_number;
+			}
+			public void setR68_deposit_foreign_number(BigDecimal r68_deposit_foreign_number) {
+				this.r68_deposit_foreign_number = r68_deposit_foreign_number;
+			}
+			public BigDecimal getR68_deposit_foreign_amount() {
+				return r68_deposit_foreign_amount;
+			}
+			public void setR68_deposit_foreign_amount(BigDecimal r68_deposit_foreign_amount) {
+				this.r68_deposit_foreign_amount = r68_deposit_foreign_amount;
+			}
+			public BigDecimal getR68_total_number() {
+				return r68_total_number;
+			}
+			public void setR68_total_number(BigDecimal r68_total_number) {
+				this.r68_total_number = r68_total_number;
+			}
+			public BigDecimal getR68_total_amount() {
+				return r68_total_amount;
+			}
+			public void setR68_total_amount(BigDecimal r68_total_amount) {
+				this.r68_total_amount = r68_total_amount;
+			}
+			public BigDecimal getR68_total_deposit_bank() {
+				return r68_total_deposit_bank;
+			}
+			public void setR68_total_deposit_bank(BigDecimal r68_total_deposit_bank) {
+				this.r68_total_deposit_bank = r68_total_deposit_bank;
+			}
+			public String getR69_deposit_size() {
+				return r69_deposit_size;
+			}
+			public void setR69_deposit_size(String r69_deposit_size) {
+				this.r69_deposit_size = r69_deposit_size;
+			}
+			public String getR69_deposit_type() {
+				return r69_deposit_type;
+			}
+			public void setR69_deposit_type(String r69_deposit_type) {
+				this.r69_deposit_type = r69_deposit_type;
+			}
+			public BigDecimal getR69_deposit_excluding_number() {
+				return r69_deposit_excluding_number;
+			}
+			public void setR69_deposit_excluding_number(BigDecimal r69_deposit_excluding_number) {
+				this.r69_deposit_excluding_number = r69_deposit_excluding_number;
+			}
+			public BigDecimal getR69_deposit_excluding_amount() {
+				return r69_deposit_excluding_amount;
+			}
+			public void setR69_deposit_excluding_amount(BigDecimal r69_deposit_excluding_amount) {
+				this.r69_deposit_excluding_amount = r69_deposit_excluding_amount;
+			}
+			public BigDecimal getR69_deposit_foreign_number() {
+				return r69_deposit_foreign_number;
+			}
+			public void setR69_deposit_foreign_number(BigDecimal r69_deposit_foreign_number) {
+				this.r69_deposit_foreign_number = r69_deposit_foreign_number;
+			}
+			public BigDecimal getR69_deposit_foreign_amount() {
+				return r69_deposit_foreign_amount;
+			}
+			public void setR69_deposit_foreign_amount(BigDecimal r69_deposit_foreign_amount) {
+				this.r69_deposit_foreign_amount = r69_deposit_foreign_amount;
+			}
+			public BigDecimal getR69_total_number() {
+				return r69_total_number;
+			}
+			public void setR69_total_number(BigDecimal r69_total_number) {
+				this.r69_total_number = r69_total_number;
+			}
+			public BigDecimal getR69_total_amount() {
+				return r69_total_amount;
+			}
+			public void setR69_total_amount(BigDecimal r69_total_amount) {
+				this.r69_total_amount = r69_total_amount;
+			}
+			public BigDecimal getR69_total_deposit_bank() {
+				return r69_total_deposit_bank;
+			}
+			public void setR69_total_deposit_bank(BigDecimal r69_total_deposit_bank) {
+				this.r69_total_deposit_bank = r69_total_deposit_bank;
+			}
+			public String getR70_deposit_size() {
+				return r70_deposit_size;
+			}
+			public void setR70_deposit_size(String r70_deposit_size) {
+				this.r70_deposit_size = r70_deposit_size;
+			}
+			public String getR70_deposit_type() {
+				return r70_deposit_type;
+			}
+			public void setR70_deposit_type(String r70_deposit_type) {
+				this.r70_deposit_type = r70_deposit_type;
+			}
+			public BigDecimal getR70_deposit_excluding_number() {
+				return r70_deposit_excluding_number;
+			}
+			public void setR70_deposit_excluding_number(BigDecimal r70_deposit_excluding_number) {
+				this.r70_deposit_excluding_number = r70_deposit_excluding_number;
+			}
+			public BigDecimal getR70_deposit_excluding_amount() {
+				return r70_deposit_excluding_amount;
+			}
+			public void setR70_deposit_excluding_amount(BigDecimal r70_deposit_excluding_amount) {
+				this.r70_deposit_excluding_amount = r70_deposit_excluding_amount;
+			}
+			public BigDecimal getR70_deposit_foreign_number() {
+				return r70_deposit_foreign_number;
+			}
+			public void setR70_deposit_foreign_number(BigDecimal r70_deposit_foreign_number) {
+				this.r70_deposit_foreign_number = r70_deposit_foreign_number;
+			}
+			public BigDecimal getR70_deposit_foreign_amount() {
+				return r70_deposit_foreign_amount;
+			}
+			public void setR70_deposit_foreign_amount(BigDecimal r70_deposit_foreign_amount) {
+				this.r70_deposit_foreign_amount = r70_deposit_foreign_amount;
+			}
+			public BigDecimal getR70_total_number() {
+				return r70_total_number;
+			}
+			public void setR70_total_number(BigDecimal r70_total_number) {
+				this.r70_total_number = r70_total_number;
+			}
+			public BigDecimal getR70_total_amount() {
+				return r70_total_amount;
+			}
+			public void setR70_total_amount(BigDecimal r70_total_amount) {
+				this.r70_total_amount = r70_total_amount;
+			}
+			public BigDecimal getR70_total_deposit_bank() {
+				return r70_total_deposit_bank;
+			}
+			public void setR70_total_deposit_bank(BigDecimal r70_total_deposit_bank) {
+				this.r70_total_deposit_bank = r70_total_deposit_bank;
+			}
+			public String getR71_deposit_size() {
+				return r71_deposit_size;
+			}
+			public void setR71_deposit_size(String r71_deposit_size) {
+				this.r71_deposit_size = r71_deposit_size;
+			}
+			public String getR71_deposit_type() {
+				return r71_deposit_type;
+			}
+			public void setR71_deposit_type(String r71_deposit_type) {
+				this.r71_deposit_type = r71_deposit_type;
+			}
+			public BigDecimal getR71_deposit_excluding_number() {
+				return r71_deposit_excluding_number;
+			}
+			public void setR71_deposit_excluding_number(BigDecimal r71_deposit_excluding_number) {
+				this.r71_deposit_excluding_number = r71_deposit_excluding_number;
+			}
+			public BigDecimal getR71_deposit_excluding_amount() {
+				return r71_deposit_excluding_amount;
+			}
+			public void setR71_deposit_excluding_amount(BigDecimal r71_deposit_excluding_amount) {
+				this.r71_deposit_excluding_amount = r71_deposit_excluding_amount;
+			}
+			public BigDecimal getR71_deposit_foreign_number() {
+				return r71_deposit_foreign_number;
+			}
+			public void setR71_deposit_foreign_number(BigDecimal r71_deposit_foreign_number) {
+				this.r71_deposit_foreign_number = r71_deposit_foreign_number;
+			}
+			public BigDecimal getR71_deposit_foreign_amount() {
+				return r71_deposit_foreign_amount;
+			}
+			public void setR71_deposit_foreign_amount(BigDecimal r71_deposit_foreign_amount) {
+				this.r71_deposit_foreign_amount = r71_deposit_foreign_amount;
+			}
+			public BigDecimal getR71_total_number() {
+				return r71_total_number;
+			}
+			public void setR71_total_number(BigDecimal r71_total_number) {
+				this.r71_total_number = r71_total_number;
+			}
+			public BigDecimal getR71_total_amount() {
+				return r71_total_amount;
+			}
+			public void setR71_total_amount(BigDecimal r71_total_amount) {
+				this.r71_total_amount = r71_total_amount;
+			}
+			public BigDecimal getR71_total_deposit_bank() {
+				return r71_total_deposit_bank;
+			}
+			public void setR71_total_deposit_bank(BigDecimal r71_total_deposit_bank) {
+				this.r71_total_deposit_bank = r71_total_deposit_bank;
+			}
+			public String getR72_deposit_size() {
+				return r72_deposit_size;
+			}
+			public void setR72_deposit_size(String r72_deposit_size) {
+				this.r72_deposit_size = r72_deposit_size;
+			}
+			public String getR72_deposit_type() {
+				return r72_deposit_type;
+			}
+			public void setR72_deposit_type(String r72_deposit_type) {
+				this.r72_deposit_type = r72_deposit_type;
+			}
+			public BigDecimal getR72_deposit_excluding_number() {
+				return r72_deposit_excluding_number;
+			}
+			public void setR72_deposit_excluding_number(BigDecimal r72_deposit_excluding_number) {
+				this.r72_deposit_excluding_number = r72_deposit_excluding_number;
+			}
+			public BigDecimal getR72_deposit_excluding_amount() {
+				return r72_deposit_excluding_amount;
+			}
+			public void setR72_deposit_excluding_amount(BigDecimal r72_deposit_excluding_amount) {
+				this.r72_deposit_excluding_amount = r72_deposit_excluding_amount;
+			}
+			public BigDecimal getR72_deposit_foreign_number() {
+				return r72_deposit_foreign_number;
+			}
+			public void setR72_deposit_foreign_number(BigDecimal r72_deposit_foreign_number) {
+				this.r72_deposit_foreign_number = r72_deposit_foreign_number;
+			}
+			public BigDecimal getR72_deposit_foreign_amount() {
+				return r72_deposit_foreign_amount;
+			}
+			public void setR72_deposit_foreign_amount(BigDecimal r72_deposit_foreign_amount) {
+				this.r72_deposit_foreign_amount = r72_deposit_foreign_amount;
+			}
+			public BigDecimal getR72_total_number() {
+				return r72_total_number;
+			}
+			public void setR72_total_number(BigDecimal r72_total_number) {
+				this.r72_total_number = r72_total_number;
+			}
+			public BigDecimal getR72_total_amount() {
+				return r72_total_amount;
+			}
+			public void setR72_total_amount(BigDecimal r72_total_amount) {
+				this.r72_total_amount = r72_total_amount;
+			}
+			public BigDecimal getR72_total_deposit_bank() {
+				return r72_total_deposit_bank;
+			}
+			public void setR72_total_deposit_bank(BigDecimal r72_total_deposit_bank) {
+				this.r72_total_deposit_bank = r72_total_deposit_bank;
+			}
+			public String getR73_deposit_size() {
+				return r73_deposit_size;
+			}
+			public void setR73_deposit_size(String r73_deposit_size) {
+				this.r73_deposit_size = r73_deposit_size;
+			}
+			public String getR73_deposit_type() {
+				return r73_deposit_type;
+			}
+			public void setR73_deposit_type(String r73_deposit_type) {
+				this.r73_deposit_type = r73_deposit_type;
+			}
+			public BigDecimal getR73_deposit_excluding_number() {
+				return r73_deposit_excluding_number;
+			}
+			public void setR73_deposit_excluding_number(BigDecimal r73_deposit_excluding_number) {
+				this.r73_deposit_excluding_number = r73_deposit_excluding_number;
+			}
+			public BigDecimal getR73_deposit_excluding_amount() {
+				return r73_deposit_excluding_amount;
+			}
+			public void setR73_deposit_excluding_amount(BigDecimal r73_deposit_excluding_amount) {
+				this.r73_deposit_excluding_amount = r73_deposit_excluding_amount;
+			}
+			public BigDecimal getR73_deposit_foreign_number() {
+				return r73_deposit_foreign_number;
+			}
+			public void setR73_deposit_foreign_number(BigDecimal r73_deposit_foreign_number) {
+				this.r73_deposit_foreign_number = r73_deposit_foreign_number;
+			}
+			public BigDecimal getR73_deposit_foreign_amount() {
+				return r73_deposit_foreign_amount;
+			}
+			public void setR73_deposit_foreign_amount(BigDecimal r73_deposit_foreign_amount) {
+				this.r73_deposit_foreign_amount = r73_deposit_foreign_amount;
+			}
+			public BigDecimal getR73_total_number() {
+				return r73_total_number;
+			}
+			public void setR73_total_number(BigDecimal r73_total_number) {
+				this.r73_total_number = r73_total_number;
+			}
+			public BigDecimal getR73_total_amount() {
+				return r73_total_amount;
+			}
+			public void setR73_total_amount(BigDecimal r73_total_amount) {
+				this.r73_total_amount = r73_total_amount;
+			}
+			public BigDecimal getR73_total_deposit_bank() {
+				return r73_total_deposit_bank;
+			}
+			public void setR73_total_deposit_bank(BigDecimal r73_total_deposit_bank) {
+				this.r73_total_deposit_bank = r73_total_deposit_bank;
+			}
+			public String getR74_deposit_size() {
+				return r74_deposit_size;
+			}
+			public void setR74_deposit_size(String r74_deposit_size) {
+				this.r74_deposit_size = r74_deposit_size;
+			}
+			public String getR74_deposit_type() {
+				return r74_deposit_type;
+			}
+			public void setR74_deposit_type(String r74_deposit_type) {
+				this.r74_deposit_type = r74_deposit_type;
+			}
+			public BigDecimal getR74_deposit_excluding_number() {
+				return r74_deposit_excluding_number;
+			}
+			public void setR74_deposit_excluding_number(BigDecimal r74_deposit_excluding_number) {
+				this.r74_deposit_excluding_number = r74_deposit_excluding_number;
+			}
+			public BigDecimal getR74_deposit_excluding_amount() {
+				return r74_deposit_excluding_amount;
+			}
+			public void setR74_deposit_excluding_amount(BigDecimal r74_deposit_excluding_amount) {
+				this.r74_deposit_excluding_amount = r74_deposit_excluding_amount;
+			}
+			public BigDecimal getR74_deposit_foreign_number() {
+				return r74_deposit_foreign_number;
+			}
+			public void setR74_deposit_foreign_number(BigDecimal r74_deposit_foreign_number) {
+				this.r74_deposit_foreign_number = r74_deposit_foreign_number;
+			}
+			public BigDecimal getR74_deposit_foreign_amount() {
+				return r74_deposit_foreign_amount;
+			}
+			public void setR74_deposit_foreign_amount(BigDecimal r74_deposit_foreign_amount) {
+				this.r74_deposit_foreign_amount = r74_deposit_foreign_amount;
+			}
+			public BigDecimal getR74_total_number() {
+				return r74_total_number;
+			}
+			public void setR74_total_number(BigDecimal r74_total_number) {
+				this.r74_total_number = r74_total_number;
+			}
+			public BigDecimal getR74_total_amount() {
+				return r74_total_amount;
+			}
+			public void setR74_total_amount(BigDecimal r74_total_amount) {
+				this.r74_total_amount = r74_total_amount;
+			}
+			public BigDecimal getR74_total_deposit_bank() {
+				return r74_total_deposit_bank;
+			}
+			public void setR74_total_deposit_bank(BigDecimal r74_total_deposit_bank) {
+				this.r74_total_deposit_bank = r74_total_deposit_bank;
+			}
+			public String getR75_deposit_size() {
+				return r75_deposit_size;
+			}
+			public void setR75_deposit_size(String r75_deposit_size) {
+				this.r75_deposit_size = r75_deposit_size;
+			}
+			public String getR75_deposit_type() {
+				return r75_deposit_type;
+			}
+			public void setR75_deposit_type(String r75_deposit_type) {
+				this.r75_deposit_type = r75_deposit_type;
+			}
+			public BigDecimal getR75_deposit_excluding_number() {
+				return r75_deposit_excluding_number;
+			}
+			public void setR75_deposit_excluding_number(BigDecimal r75_deposit_excluding_number) {
+				this.r75_deposit_excluding_number = r75_deposit_excluding_number;
+			}
+			public BigDecimal getR75_deposit_excluding_amount() {
+				return r75_deposit_excluding_amount;
+			}
+			public void setR75_deposit_excluding_amount(BigDecimal r75_deposit_excluding_amount) {
+				this.r75_deposit_excluding_amount = r75_deposit_excluding_amount;
+			}
+			public BigDecimal getR75_deposit_foreign_number() {
+				return r75_deposit_foreign_number;
+			}
+			public void setR75_deposit_foreign_number(BigDecimal r75_deposit_foreign_number) {
+				this.r75_deposit_foreign_number = r75_deposit_foreign_number;
+			}
+			public BigDecimal getR75_deposit_foreign_amount() {
+				return r75_deposit_foreign_amount;
+			}
+			public void setR75_deposit_foreign_amount(BigDecimal r75_deposit_foreign_amount) {
+				this.r75_deposit_foreign_amount = r75_deposit_foreign_amount;
+			}
+			public BigDecimal getR75_total_number() {
+				return r75_total_number;
+			}
+			public void setR75_total_number(BigDecimal r75_total_number) {
+				this.r75_total_number = r75_total_number;
+			}
+			public BigDecimal getR75_total_amount() {
+				return r75_total_amount;
+			}
+			public void setR75_total_amount(BigDecimal r75_total_amount) {
+				this.r75_total_amount = r75_total_amount;
+			}
+			public BigDecimal getR75_total_deposit_bank() {
+				return r75_total_deposit_bank;
+			}
+			public void setR75_total_deposit_bank(BigDecimal r75_total_deposit_bank) {
+				this.r75_total_deposit_bank = r75_total_deposit_bank;
+			}
+			public String getR76_deposit_size() {
+				return r76_deposit_size;
+			}
+			public void setR76_deposit_size(String r76_deposit_size) {
+				this.r76_deposit_size = r76_deposit_size;
+			}
+			public String getR76_deposit_type() {
+				return r76_deposit_type;
+			}
+			public void setR76_deposit_type(String r76_deposit_type) {
+				this.r76_deposit_type = r76_deposit_type;
+			}
+			public BigDecimal getR76_deposit_excluding_number() {
+				return r76_deposit_excluding_number;
+			}
+			public void setR76_deposit_excluding_number(BigDecimal r76_deposit_excluding_number) {
+				this.r76_deposit_excluding_number = r76_deposit_excluding_number;
+			}
+			public BigDecimal getR76_deposit_excluding_amount() {
+				return r76_deposit_excluding_amount;
+			}
+			public void setR76_deposit_excluding_amount(BigDecimal r76_deposit_excluding_amount) {
+				this.r76_deposit_excluding_amount = r76_deposit_excluding_amount;
+			}
+			public BigDecimal getR76_deposit_foreign_number() {
+				return r76_deposit_foreign_number;
+			}
+			public void setR76_deposit_foreign_number(BigDecimal r76_deposit_foreign_number) {
+				this.r76_deposit_foreign_number = r76_deposit_foreign_number;
+			}
+			public BigDecimal getR76_deposit_foreign_amount() {
+				return r76_deposit_foreign_amount;
+			}
+			public void setR76_deposit_foreign_amount(BigDecimal r76_deposit_foreign_amount) {
+				this.r76_deposit_foreign_amount = r76_deposit_foreign_amount;
+			}
+			public BigDecimal getR76_total_number() {
+				return r76_total_number;
+			}
+			public void setR76_total_number(BigDecimal r76_total_number) {
+				this.r76_total_number = r76_total_number;
+			}
+			public BigDecimal getR76_total_amount() {
+				return r76_total_amount;
+			}
+			public void setR76_total_amount(BigDecimal r76_total_amount) {
+				this.r76_total_amount = r76_total_amount;
+			}
+			public BigDecimal getR76_total_deposit_bank() {
+				return r76_total_deposit_bank;
+			}
+			public void setR76_total_deposit_bank(BigDecimal r76_total_deposit_bank) {
+				this.r76_total_deposit_bank = r76_total_deposit_bank;
+			}
+			public String getR77_deposit_size() {
+				return r77_deposit_size;
+			}
+			public void setR77_deposit_size(String r77_deposit_size) {
+				this.r77_deposit_size = r77_deposit_size;
+			}
+			public String getR77_deposit_type() {
+				return r77_deposit_type;
+			}
+			public void setR77_deposit_type(String r77_deposit_type) {
+				this.r77_deposit_type = r77_deposit_type;
+			}
+			public BigDecimal getR77_deposit_excluding_number() {
+				return r77_deposit_excluding_number;
+			}
+			public void setR77_deposit_excluding_number(BigDecimal r77_deposit_excluding_number) {
+				this.r77_deposit_excluding_number = r77_deposit_excluding_number;
+			}
+			public BigDecimal getR77_deposit_excluding_amount() {
+				return r77_deposit_excluding_amount;
+			}
+			public void setR77_deposit_excluding_amount(BigDecimal r77_deposit_excluding_amount) {
+				this.r77_deposit_excluding_amount = r77_deposit_excluding_amount;
+			}
+			public BigDecimal getR77_deposit_foreign_number() {
+				return r77_deposit_foreign_number;
+			}
+			public void setR77_deposit_foreign_number(BigDecimal r77_deposit_foreign_number) {
+				this.r77_deposit_foreign_number = r77_deposit_foreign_number;
+			}
+			public BigDecimal getR77_deposit_foreign_amount() {
+				return r77_deposit_foreign_amount;
+			}
+			public void setR77_deposit_foreign_amount(BigDecimal r77_deposit_foreign_amount) {
+				this.r77_deposit_foreign_amount = r77_deposit_foreign_amount;
+			}
+			public BigDecimal getR77_total_number() {
+				return r77_total_number;
+			}
+			public void setR77_total_number(BigDecimal r77_total_number) {
+				this.r77_total_number = r77_total_number;
+			}
+			public BigDecimal getR77_total_amount() {
+				return r77_total_amount;
+			}
+			public void setR77_total_amount(BigDecimal r77_total_amount) {
+				this.r77_total_amount = r77_total_amount;
+			}
+			public BigDecimal getR77_total_deposit_bank() {
+				return r77_total_deposit_bank;
+			}
+			public void setR77_total_deposit_bank(BigDecimal r77_total_deposit_bank) {
+				this.r77_total_deposit_bank = r77_total_deposit_bank;
+			}
+			public String getR78_deposit_size() {
+				return r78_deposit_size;
+			}
+			public void setR78_deposit_size(String r78_deposit_size) {
+				this.r78_deposit_size = r78_deposit_size;
+			}
+			public String getR78_deposit_type() {
+				return r78_deposit_type;
+			}
+			public void setR78_deposit_type(String r78_deposit_type) {
+				this.r78_deposit_type = r78_deposit_type;
+			}
+			public BigDecimal getR78_deposit_excluding_number() {
+				return r78_deposit_excluding_number;
+			}
+			public void setR78_deposit_excluding_number(BigDecimal r78_deposit_excluding_number) {
+				this.r78_deposit_excluding_number = r78_deposit_excluding_number;
+			}
+			public BigDecimal getR78_deposit_excluding_amount() {
+				return r78_deposit_excluding_amount;
+			}
+			public void setR78_deposit_excluding_amount(BigDecimal r78_deposit_excluding_amount) {
+				this.r78_deposit_excluding_amount = r78_deposit_excluding_amount;
+			}
+			public BigDecimal getR78_deposit_foreign_number() {
+				return r78_deposit_foreign_number;
+			}
+			public void setR78_deposit_foreign_number(BigDecimal r78_deposit_foreign_number) {
+				this.r78_deposit_foreign_number = r78_deposit_foreign_number;
+			}
+			public BigDecimal getR78_deposit_foreign_amount() {
+				return r78_deposit_foreign_amount;
+			}
+			public void setR78_deposit_foreign_amount(BigDecimal r78_deposit_foreign_amount) {
+				this.r78_deposit_foreign_amount = r78_deposit_foreign_amount;
+			}
+			public BigDecimal getR78_total_number() {
+				return r78_total_number;
+			}
+			public void setR78_total_number(BigDecimal r78_total_number) {
+				this.r78_total_number = r78_total_number;
+			}
+			public BigDecimal getR78_total_amount() {
+				return r78_total_amount;
+			}
+			public void setR78_total_amount(BigDecimal r78_total_amount) {
+				this.r78_total_amount = r78_total_amount;
+			}
+			public BigDecimal getR78_total_deposit_bank() {
+				return r78_total_deposit_bank;
+			}
+			public void setR78_total_deposit_bank(BigDecimal r78_total_deposit_bank) {
+				this.r78_total_deposit_bank = r78_total_deposit_bank;
+			}
+			public String getR79_deposit_size() {
+				return r79_deposit_size;
+			}
+			public void setR79_deposit_size(String r79_deposit_size) {
+				this.r79_deposit_size = r79_deposit_size;
+			}
+			public String getR79_deposit_type() {
+				return r79_deposit_type;
+			}
+			public void setR79_deposit_type(String r79_deposit_type) {
+				this.r79_deposit_type = r79_deposit_type;
+			}
+			public BigDecimal getR79_deposit_excluding_number() {
+				return r79_deposit_excluding_number;
+			}
+			public void setR79_deposit_excluding_number(BigDecimal r79_deposit_excluding_number) {
+				this.r79_deposit_excluding_number = r79_deposit_excluding_number;
+			}
+			public BigDecimal getR79_deposit_excluding_amount() {
+				return r79_deposit_excluding_amount;
+			}
+			public void setR79_deposit_excluding_amount(BigDecimal r79_deposit_excluding_amount) {
+				this.r79_deposit_excluding_amount = r79_deposit_excluding_amount;
+			}
+			public BigDecimal getR79_deposit_foreign_number() {
+				return r79_deposit_foreign_number;
+			}
+			public void setR79_deposit_foreign_number(BigDecimal r79_deposit_foreign_number) {
+				this.r79_deposit_foreign_number = r79_deposit_foreign_number;
+			}
+			public BigDecimal getR79_deposit_foreign_amount() {
+				return r79_deposit_foreign_amount;
+			}
+			public void setR79_deposit_foreign_amount(BigDecimal r79_deposit_foreign_amount) {
+				this.r79_deposit_foreign_amount = r79_deposit_foreign_amount;
+			}
+			public BigDecimal getR79_total_number() {
+				return r79_total_number;
+			}
+			public void setR79_total_number(BigDecimal r79_total_number) {
+				this.r79_total_number = r79_total_number;
+			}
+			public BigDecimal getR79_total_amount() {
+				return r79_total_amount;
+			}
+			public void setR79_total_amount(BigDecimal r79_total_amount) {
+				this.r79_total_amount = r79_total_amount;
+			}
+			public BigDecimal getR79_total_deposit_bank() {
+				return r79_total_deposit_bank;
+			}
+			public void setR79_total_deposit_bank(BigDecimal r79_total_deposit_bank) {
+				this.r79_total_deposit_bank = r79_total_deposit_bank;
+			}
+			public String getR80_deposit_size() {
+				return r80_deposit_size;
+			}
+			public void setR80_deposit_size(String r80_deposit_size) {
+				this.r80_deposit_size = r80_deposit_size;
+			}
+			public String getR80_deposit_type() {
+				return r80_deposit_type;
+			}
+			public void setR80_deposit_type(String r80_deposit_type) {
+				this.r80_deposit_type = r80_deposit_type;
+			}
+			public BigDecimal getR80_deposit_excluding_number() {
+				return r80_deposit_excluding_number;
+			}
+			public void setR80_deposit_excluding_number(BigDecimal r80_deposit_excluding_number) {
+				this.r80_deposit_excluding_number = r80_deposit_excluding_number;
+			}
+			public BigDecimal getR80_deposit_excluding_amount() {
+				return r80_deposit_excluding_amount;
+			}
+			public void setR80_deposit_excluding_amount(BigDecimal r80_deposit_excluding_amount) {
+				this.r80_deposit_excluding_amount = r80_deposit_excluding_amount;
+			}
+			public BigDecimal getR80_deposit_foreign_number() {
+				return r80_deposit_foreign_number;
+			}
+			public void setR80_deposit_foreign_number(BigDecimal r80_deposit_foreign_number) {
+				this.r80_deposit_foreign_number = r80_deposit_foreign_number;
+			}
+			public BigDecimal getR80_deposit_foreign_amount() {
+				return r80_deposit_foreign_amount;
+			}
+			public void setR80_deposit_foreign_amount(BigDecimal r80_deposit_foreign_amount) {
+				this.r80_deposit_foreign_amount = r80_deposit_foreign_amount;
+			}
+			public BigDecimal getR80_total_number() {
+				return r80_total_number;
+			}
+			public void setR80_total_number(BigDecimal r80_total_number) {
+				this.r80_total_number = r80_total_number;
+			}
+			public BigDecimal getR80_total_amount() {
+				return r80_total_amount;
+			}
+			public void setR80_total_amount(BigDecimal r80_total_amount) {
+				this.r80_total_amount = r80_total_amount;
+			}
+			public BigDecimal getR80_total_deposit_bank() {
+				return r80_total_deposit_bank;
+			}
+			public void setR80_total_deposit_bank(BigDecimal r80_total_deposit_bank) {
+				this.r80_total_deposit_bank = r80_total_deposit_bank;
+			}
+			public String getR81_deposit_size() {
+				return r81_deposit_size;
+			}
+			public void setR81_deposit_size(String r81_deposit_size) {
+				this.r81_deposit_size = r81_deposit_size;
+			}
+			public String getR81_deposit_type() {
+				return r81_deposit_type;
+			}
+			public void setR81_deposit_type(String r81_deposit_type) {
+				this.r81_deposit_type = r81_deposit_type;
+			}
+			public BigDecimal getR81_deposit_excluding_number() {
+				return r81_deposit_excluding_number;
+			}
+			public void setR81_deposit_excluding_number(BigDecimal r81_deposit_excluding_number) {
+				this.r81_deposit_excluding_number = r81_deposit_excluding_number;
+			}
+			public BigDecimal getR81_deposit_excluding_amount() {
+				return r81_deposit_excluding_amount;
+			}
+			public void setR81_deposit_excluding_amount(BigDecimal r81_deposit_excluding_amount) {
+				this.r81_deposit_excluding_amount = r81_deposit_excluding_amount;
+			}
+			public BigDecimal getR81_deposit_foreign_number() {
+				return r81_deposit_foreign_number;
+			}
+			public void setR81_deposit_foreign_number(BigDecimal r81_deposit_foreign_number) {
+				this.r81_deposit_foreign_number = r81_deposit_foreign_number;
+			}
+			public BigDecimal getR81_deposit_foreign_amount() {
+				return r81_deposit_foreign_amount;
+			}
+			public void setR81_deposit_foreign_amount(BigDecimal r81_deposit_foreign_amount) {
+				this.r81_deposit_foreign_amount = r81_deposit_foreign_amount;
+			}
+			public BigDecimal getR81_total_number() {
+				return r81_total_number;
+			}
+			public void setR81_total_number(BigDecimal r81_total_number) {
+				this.r81_total_number = r81_total_number;
+			}
+			public BigDecimal getR81_total_amount() {
+				return r81_total_amount;
+			}
+			public void setR81_total_amount(BigDecimal r81_total_amount) {
+				this.r81_total_amount = r81_total_amount;
+			}
+			public BigDecimal getR81_total_deposit_bank() {
+				return r81_total_deposit_bank;
+			}
+			public void setR81_total_deposit_bank(BigDecimal r81_total_deposit_bank) {
+				this.r81_total_deposit_bank = r81_total_deposit_bank;
+			}
+			public String getR82_deposit_size() {
+				return r82_deposit_size;
+			}
+			public void setR82_deposit_size(String r82_deposit_size) {
+				this.r82_deposit_size = r82_deposit_size;
+			}
+			public String getR82_deposit_type() {
+				return r82_deposit_type;
+			}
+			public void setR82_deposit_type(String r82_deposit_type) {
+				this.r82_deposit_type = r82_deposit_type;
+			}
+			public BigDecimal getR82_deposit_excluding_number() {
+				return r82_deposit_excluding_number;
+			}
+			public void setR82_deposit_excluding_number(BigDecimal r82_deposit_excluding_number) {
+				this.r82_deposit_excluding_number = r82_deposit_excluding_number;
+			}
+			public BigDecimal getR82_deposit_excluding_amount() {
+				return r82_deposit_excluding_amount;
+			}
+			public void setR82_deposit_excluding_amount(BigDecimal r82_deposit_excluding_amount) {
+				this.r82_deposit_excluding_amount = r82_deposit_excluding_amount;
+			}
+			public BigDecimal getR82_deposit_foreign_number() {
+				return r82_deposit_foreign_number;
+			}
+			public void setR82_deposit_foreign_number(BigDecimal r82_deposit_foreign_number) {
+				this.r82_deposit_foreign_number = r82_deposit_foreign_number;
+			}
+			public BigDecimal getR82_deposit_foreign_amount() {
+				return r82_deposit_foreign_amount;
+			}
+			public void setR82_deposit_foreign_amount(BigDecimal r82_deposit_foreign_amount) {
+				this.r82_deposit_foreign_amount = r82_deposit_foreign_amount;
+			}
+			public BigDecimal getR82_total_number() {
+				return r82_total_number;
+			}
+			public void setR82_total_number(BigDecimal r82_total_number) {
+				this.r82_total_number = r82_total_number;
+			}
+			public BigDecimal getR82_total_amount() {
+				return r82_total_amount;
+			}
+			public void setR82_total_amount(BigDecimal r82_total_amount) {
+				this.r82_total_amount = r82_total_amount;
+			}
+			public BigDecimal getR82_total_deposit_bank() {
+				return r82_total_deposit_bank;
+			}
+			public void setR82_total_deposit_bank(BigDecimal r82_total_deposit_bank) {
+				this.r82_total_deposit_bank = r82_total_deposit_bank;
+			}
+			public String getR83_deposit_size() {
+				return r83_deposit_size;
+			}
+			public void setR83_deposit_size(String r83_deposit_size) {
+				this.r83_deposit_size = r83_deposit_size;
+			}
+			public String getR83_deposit_type() {
+				return r83_deposit_type;
+			}
+			public void setR83_deposit_type(String r83_deposit_type) {
+				this.r83_deposit_type = r83_deposit_type;
+			}
+			public BigDecimal getR83_deposit_excluding_number() {
+				return r83_deposit_excluding_number;
+			}
+			public void setR83_deposit_excluding_number(BigDecimal r83_deposit_excluding_number) {
+				this.r83_deposit_excluding_number = r83_deposit_excluding_number;
+			}
+			public BigDecimal getR83_deposit_excluding_amount() {
+				return r83_deposit_excluding_amount;
+			}
+			public void setR83_deposit_excluding_amount(BigDecimal r83_deposit_excluding_amount) {
+				this.r83_deposit_excluding_amount = r83_deposit_excluding_amount;
+			}
+			public BigDecimal getR83_deposit_foreign_number() {
+				return r83_deposit_foreign_number;
+			}
+			public void setR83_deposit_foreign_number(BigDecimal r83_deposit_foreign_number) {
+				this.r83_deposit_foreign_number = r83_deposit_foreign_number;
+			}
+			public BigDecimal getR83_deposit_foreign_amount() {
+				return r83_deposit_foreign_amount;
+			}
+			public void setR83_deposit_foreign_amount(BigDecimal r83_deposit_foreign_amount) {
+				this.r83_deposit_foreign_amount = r83_deposit_foreign_amount;
+			}
+			public BigDecimal getR83_total_number() {
+				return r83_total_number;
+			}
+			public void setR83_total_number(BigDecimal r83_total_number) {
+				this.r83_total_number = r83_total_number;
+			}
+			public BigDecimal getR83_total_amount() {
+				return r83_total_amount;
+			}
+			public void setR83_total_amount(BigDecimal r83_total_amount) {
+				this.r83_total_amount = r83_total_amount;
+			}
+			public BigDecimal getR83_total_deposit_bank() {
+				return r83_total_deposit_bank;
+			}
+			public void setR83_total_deposit_bank(BigDecimal r83_total_deposit_bank) {
+				this.r83_total_deposit_bank = r83_total_deposit_bank;
+			}
+			public String getR84_deposit_size() {
+				return r84_deposit_size;
+			}
+			public void setR84_deposit_size(String r84_deposit_size) {
+				this.r84_deposit_size = r84_deposit_size;
+			}
+			public String getR84_deposit_type() {
+				return r84_deposit_type;
+			}
+			public void setR84_deposit_type(String r84_deposit_type) {
+				this.r84_deposit_type = r84_deposit_type;
+			}
+			public BigDecimal getR84_deposit_excluding_number() {
+				return r84_deposit_excluding_number;
+			}
+			public void setR84_deposit_excluding_number(BigDecimal r84_deposit_excluding_number) {
+				this.r84_deposit_excluding_number = r84_deposit_excluding_number;
+			}
+			public BigDecimal getR84_deposit_excluding_amount() {
+				return r84_deposit_excluding_amount;
+			}
+			public void setR84_deposit_excluding_amount(BigDecimal r84_deposit_excluding_amount) {
+				this.r84_deposit_excluding_amount = r84_deposit_excluding_amount;
+			}
+			public BigDecimal getR84_deposit_foreign_number() {
+				return r84_deposit_foreign_number;
+			}
+			public void setR84_deposit_foreign_number(BigDecimal r84_deposit_foreign_number) {
+				this.r84_deposit_foreign_number = r84_deposit_foreign_number;
+			}
+			public BigDecimal getR84_deposit_foreign_amount() {
+				return r84_deposit_foreign_amount;
+			}
+			public void setR84_deposit_foreign_amount(BigDecimal r84_deposit_foreign_amount) {
+				this.r84_deposit_foreign_amount = r84_deposit_foreign_amount;
+			}
+			public BigDecimal getR84_total_number() {
+				return r84_total_number;
+			}
+			public void setR84_total_number(BigDecimal r84_total_number) {
+				this.r84_total_number = r84_total_number;
+			}
+			public BigDecimal getR84_total_amount() {
+				return r84_total_amount;
+			}
+			public void setR84_total_amount(BigDecimal r84_total_amount) {
+				this.r84_total_amount = r84_total_amount;
+			}
+			public BigDecimal getR84_total_deposit_bank() {
+				return r84_total_deposit_bank;
+			}
+			public void setR84_total_deposit_bank(BigDecimal r84_total_deposit_bank) {
+				this.r84_total_deposit_bank = r84_total_deposit_bank;
+			}
+			public String getR85_deposit_size() {
+				return r85_deposit_size;
+			}
+			public void setR85_deposit_size(String r85_deposit_size) {
+				this.r85_deposit_size = r85_deposit_size;
+			}
+			public String getR85_deposit_type() {
+				return r85_deposit_type;
+			}
+			public void setR85_deposit_type(String r85_deposit_type) {
+				this.r85_deposit_type = r85_deposit_type;
+			}
+			public BigDecimal getR85_deposit_excluding_number() {
+				return r85_deposit_excluding_number;
+			}
+			public void setR85_deposit_excluding_number(BigDecimal r85_deposit_excluding_number) {
+				this.r85_deposit_excluding_number = r85_deposit_excluding_number;
+			}
+			public BigDecimal getR85_deposit_excluding_amount() {
+				return r85_deposit_excluding_amount;
+			}
+			public void setR85_deposit_excluding_amount(BigDecimal r85_deposit_excluding_amount) {
+				this.r85_deposit_excluding_amount = r85_deposit_excluding_amount;
+			}
+			public BigDecimal getR85_deposit_foreign_number() {
+				return r85_deposit_foreign_number;
+			}
+			public void setR85_deposit_foreign_number(BigDecimal r85_deposit_foreign_number) {
+				this.r85_deposit_foreign_number = r85_deposit_foreign_number;
+			}
+			public BigDecimal getR85_deposit_foreign_amount() {
+				return r85_deposit_foreign_amount;
+			}
+			public void setR85_deposit_foreign_amount(BigDecimal r85_deposit_foreign_amount) {
+				this.r85_deposit_foreign_amount = r85_deposit_foreign_amount;
+			}
+			public BigDecimal getR85_total_number() {
+				return r85_total_number;
+			}
+			public void setR85_total_number(BigDecimal r85_total_number) {
+				this.r85_total_number = r85_total_number;
+			}
+			public BigDecimal getR85_total_amount() {
+				return r85_total_amount;
+			}
+			public void setR85_total_amount(BigDecimal r85_total_amount) {
+				this.r85_total_amount = r85_total_amount;
+			}
+			public BigDecimal getR85_total_deposit_bank() {
+				return r85_total_deposit_bank;
+			}
+			public void setR85_total_deposit_bank(BigDecimal r85_total_deposit_bank) {
+				this.r85_total_deposit_bank = r85_total_deposit_bank;
+			}
+			public String getR86_deposit_size() {
+				return r86_deposit_size;
+			}
+			public void setR86_deposit_size(String r86_deposit_size) {
+				this.r86_deposit_size = r86_deposit_size;
+			}
+			public String getR86_deposit_type() {
+				return r86_deposit_type;
+			}
+			public void setR86_deposit_type(String r86_deposit_type) {
+				this.r86_deposit_type = r86_deposit_type;
+			}
+			public BigDecimal getR86_deposit_excluding_number() {
+				return r86_deposit_excluding_number;
+			}
+			public void setR86_deposit_excluding_number(BigDecimal r86_deposit_excluding_number) {
+				this.r86_deposit_excluding_number = r86_deposit_excluding_number;
+			}
+			public BigDecimal getR86_deposit_excluding_amount() {
+				return r86_deposit_excluding_amount;
+			}
+			public void setR86_deposit_excluding_amount(BigDecimal r86_deposit_excluding_amount) {
+				this.r86_deposit_excluding_amount = r86_deposit_excluding_amount;
+			}
+			public BigDecimal getR86_deposit_foreign_number() {
+				return r86_deposit_foreign_number;
+			}
+			public void setR86_deposit_foreign_number(BigDecimal r86_deposit_foreign_number) {
+				this.r86_deposit_foreign_number = r86_deposit_foreign_number;
+			}
+			public BigDecimal getR86_deposit_foreign_amount() {
+				return r86_deposit_foreign_amount;
+			}
+			public void setR86_deposit_foreign_amount(BigDecimal r86_deposit_foreign_amount) {
+				this.r86_deposit_foreign_amount = r86_deposit_foreign_amount;
+			}
+			public BigDecimal getR86_total_number() {
+				return r86_total_number;
+			}
+			public void setR86_total_number(BigDecimal r86_total_number) {
+				this.r86_total_number = r86_total_number;
+			}
+			public BigDecimal getR86_total_amount() {
+				return r86_total_amount;
+			}
+			public void setR86_total_amount(BigDecimal r86_total_amount) {
+				this.r86_total_amount = r86_total_amount;
+			}
+			public BigDecimal getR86_total_deposit_bank() {
+				return r86_total_deposit_bank;
+			}
+			public void setR86_total_deposit_bank(BigDecimal r86_total_deposit_bank) {
+				this.r86_total_deposit_bank = r86_total_deposit_bank;
+			}
+			public Date getREPORT_DATE() {
+				return REPORT_DATE;
+			}
+
+			public void setREPORT_DATE(Date REPORT_DATE) {
+				this.REPORT_DATE = REPORT_DATE;
+			}
+
+			public BigDecimal getREPORT_VERSION() {
+				return REPORT_VERSION;
+			}
+
+			public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
+				this.REPORT_VERSION = REPORT_VERSION;
+			}
+
+			public String getREPORT_FREQUENCY() {
+				return REPORT_FREQUENCY;
+			}
+
+			public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+				REPORT_FREQUENCY = rEPORT_FREQUENCY;
+			}
+
+			public String getREPORT_CODE() {
+				return REPORT_CODE;
+			}
+
+			public void setREPORT_CODE(String rEPORT_CODE) {
+				REPORT_CODE = rEPORT_CODE;
+			}
+
+			public String getREPORT_DESC() {
+				return REPORT_DESC;
+			}
+
+			public void setREPORT_DESC(String rEPORT_DESC) {
+				REPORT_DESC = rEPORT_DESC;
+			}
+
+			public String getENTITY_FLG() {
+				return ENTITY_FLG;
+			}
+
+			public void setENTITY_FLG(String eNTITY_FLG) {
+				ENTITY_FLG = eNTITY_FLG;
+			}
+
+			public String getMODIFY_FLG() {
+				return MODIFY_FLG;
+			}
+
+			public void setMODIFY_FLG(String mODIFY_FLG) {
+				MODIFY_FLG = mODIFY_FLG;
+			}
+
+			public String getDEL_FLG() {
+				return DEL_FLG;
+			}
+
+			public void setDEL_FLG(String dEL_FLG) {
+				DEL_FLG = dEL_FLG;
+			}
+
+		}
+
+	
+//SUMMARY ENTITY 2
+		
+		// ROW MAPPER
+
+				class MDISB1_RowMapper2 implements RowMapper<MDISB1_Summary_Entity2> {
+
+					@Override
+					public MDISB1_Summary_Entity2 mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+						MDISB1_Summary_Entity2 obj = new MDISB1_Summary_Entity2();	
+				
+						obj.setR87_deposit_size(rs.getString("R87_DEPOSIT_SIZE"));
+						obj.setR87_deposit_type(rs.getString("R87_DEPOSIT_TYPE"));
+						obj.setR87_deposit_excluding_number(rs.getBigDecimal("R87_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR87_deposit_excluding_amount(rs.getBigDecimal("R87_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR87_deposit_foreign_number(rs.getBigDecimal("R87_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR87_deposit_foreign_amount(rs.getBigDecimal("R87_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR87_total_number(rs.getBigDecimal("R87_TOTAL_NUMBER"));
+						obj.setR87_total_amount(rs.getBigDecimal("R87_TOTAL_AMOUNT"));
+						obj.setR87_total_deposit_bank(rs.getBigDecimal("R87_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR88_deposit_size(rs.getString("R88_DEPOSIT_SIZE"));
+						obj.setR88_deposit_type(rs.getString("R88_DEPOSIT_TYPE"));
+						obj.setR88_deposit_excluding_number(rs.getBigDecimal("R88_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR88_deposit_excluding_amount(rs.getBigDecimal("R88_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR88_deposit_foreign_number(rs.getBigDecimal("R88_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR88_deposit_foreign_amount(rs.getBigDecimal("R88_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR88_total_number(rs.getBigDecimal("R88_TOTAL_NUMBER"));
+						obj.setR88_total_amount(rs.getBigDecimal("R88_TOTAL_AMOUNT"));
+						obj.setR88_total_deposit_bank(rs.getBigDecimal("R88_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR89_deposit_size(rs.getString("R89_DEPOSIT_SIZE"));
+						obj.setR89_deposit_type(rs.getString("R89_DEPOSIT_TYPE"));
+						obj.setR89_deposit_excluding_number(rs.getBigDecimal("R89_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR89_deposit_excluding_amount(rs.getBigDecimal("R89_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR89_deposit_foreign_number(rs.getBigDecimal("R89_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR89_deposit_foreign_amount(rs.getBigDecimal("R89_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR89_total_number(rs.getBigDecimal("R89_TOTAL_NUMBER"));
+						obj.setR89_total_amount(rs.getBigDecimal("R89_TOTAL_AMOUNT"));
+						obj.setR89_total_deposit_bank(rs.getBigDecimal("R89_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR90_deposit_size(rs.getString("R90_DEPOSIT_SIZE"));
+						obj.setR90_deposit_type(rs.getString("R90_DEPOSIT_TYPE"));
+						obj.setR90_deposit_excluding_number(rs.getBigDecimal("R90_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR90_deposit_excluding_amount(rs.getBigDecimal("R90_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR90_deposit_foreign_number(rs.getBigDecimal("R90_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR90_deposit_foreign_amount(rs.getBigDecimal("R90_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR90_total_number(rs.getBigDecimal("R90_TOTAL_NUMBER"));
+						obj.setR90_total_amount(rs.getBigDecimal("R90_TOTAL_AMOUNT"));
+						obj.setR90_total_deposit_bank(rs.getBigDecimal("R90_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR91_deposit_size(rs.getString("R91_DEPOSIT_SIZE"));
+						obj.setR91_deposit_type(rs.getString("R91_DEPOSIT_TYPE"));
+						obj.setR91_deposit_excluding_number(rs.getBigDecimal("R91_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR91_deposit_excluding_amount(rs.getBigDecimal("R91_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR91_deposit_foreign_number(rs.getBigDecimal("R91_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR91_deposit_foreign_amount(rs.getBigDecimal("R91_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR91_total_number(rs.getBigDecimal("R91_TOTAL_NUMBER"));
+						obj.setR91_total_amount(rs.getBigDecimal("R91_TOTAL_AMOUNT"));
+						obj.setR91_total_deposit_bank(rs.getBigDecimal("R91_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR92_deposit_size(rs.getString("R92_DEPOSIT_SIZE"));
+						obj.setR92_deposit_type(rs.getString("R92_DEPOSIT_TYPE"));
+						obj.setR92_deposit_excluding_number(rs.getBigDecimal("R92_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR92_deposit_excluding_amount(rs.getBigDecimal("R92_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR92_deposit_foreign_number(rs.getBigDecimal("R92_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR92_deposit_foreign_amount(rs.getBigDecimal("R92_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR92_total_number(rs.getBigDecimal("R92_TOTAL_NUMBER"));
+						obj.setR92_total_amount(rs.getBigDecimal("R92_TOTAL_AMOUNT"));
+						obj.setR92_total_deposit_bank(rs.getBigDecimal("R92_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR93_deposit_size(rs.getString("R93_DEPOSIT_SIZE"));
+						obj.setR93_deposit_type(rs.getString("R93_DEPOSIT_TYPE"));
+						obj.setR93_deposit_excluding_number(rs.getBigDecimal("R93_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR93_deposit_excluding_amount(rs.getBigDecimal("R93_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR93_deposit_foreign_number(rs.getBigDecimal("R93_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR93_deposit_foreign_amount(rs.getBigDecimal("R93_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR93_total_number(rs.getBigDecimal("R93_TOTAL_NUMBER"));
+						obj.setR93_total_amount(rs.getBigDecimal("R93_TOTAL_AMOUNT"));
+						obj.setR93_total_deposit_bank(rs.getBigDecimal("R93_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR94_deposit_size(rs.getString("R94_DEPOSIT_SIZE"));
+						obj.setR94_deposit_type(rs.getString("R94_DEPOSIT_TYPE"));
+						obj.setR94_deposit_excluding_number(rs.getBigDecimal("R94_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR94_deposit_excluding_amount(rs.getBigDecimal("R94_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR94_deposit_foreign_number(rs.getBigDecimal("R94_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR94_deposit_foreign_amount(rs.getBigDecimal("R94_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR94_total_number(rs.getBigDecimal("R94_TOTAL_NUMBER"));
+						obj.setR94_total_amount(rs.getBigDecimal("R94_TOTAL_AMOUNT"));
+						obj.setR94_total_deposit_bank(rs.getBigDecimal("R94_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR95_deposit_size(rs.getString("R95_DEPOSIT_SIZE"));
+						obj.setR95_deposit_type(rs.getString("R95_DEPOSIT_TYPE"));
+						obj.setR95_deposit_excluding_number(rs.getBigDecimal("R95_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR95_deposit_excluding_amount(rs.getBigDecimal("R95_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR95_deposit_foreign_number(rs.getBigDecimal("R95_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR95_deposit_foreign_amount(rs.getBigDecimal("R95_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR95_total_number(rs.getBigDecimal("R95_TOTAL_NUMBER"));
+						obj.setR95_total_amount(rs.getBigDecimal("R95_TOTAL_AMOUNT"));
+						obj.setR95_total_deposit_bank(rs.getBigDecimal("R95_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR96_deposit_size(rs.getString("R96_DEPOSIT_SIZE"));
+						obj.setR96_deposit_type(rs.getString("R96_DEPOSIT_TYPE"));
+						obj.setR96_deposit_excluding_number(rs.getBigDecimal("R96_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR96_deposit_excluding_amount(rs.getBigDecimal("R96_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR96_deposit_foreign_number(rs.getBigDecimal("R96_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR96_deposit_foreign_amount(rs.getBigDecimal("R96_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR96_total_number(rs.getBigDecimal("R96_TOTAL_NUMBER"));
+						obj.setR96_total_amount(rs.getBigDecimal("R96_TOTAL_AMOUNT"));
+						obj.setR96_total_deposit_bank(rs.getBigDecimal("R96_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR97_deposit_size(rs.getString("R97_DEPOSIT_SIZE"));
+						obj.setR97_deposit_type(rs.getString("R97_DEPOSIT_TYPE"));
+						obj.setR97_deposit_excluding_number(rs.getBigDecimal("R97_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR97_deposit_excluding_amount(rs.getBigDecimal("R97_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR97_deposit_foreign_number(rs.getBigDecimal("R97_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR97_deposit_foreign_amount(rs.getBigDecimal("R97_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR97_total_number(rs.getBigDecimal("R97_TOTAL_NUMBER"));
+						obj.setR97_total_amount(rs.getBigDecimal("R97_TOTAL_AMOUNT"));
+						obj.setR97_total_deposit_bank(rs.getBigDecimal("R97_TOTAL_DEPOSIT_BANK"));
+						
+						obj.setR98_deposit_size(rs.getString("R98_DEPOSIT_SIZE"));
+						obj.setR98_deposit_type(rs.getString("R98_DEPOSIT_TYPE"));
+						obj.setR98_deposit_excluding_number(rs.getBigDecimal("R98_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR98_deposit_excluding_amount(rs.getBigDecimal("R98_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR98_deposit_foreign_number(rs.getBigDecimal("R98_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR98_deposit_foreign_amount(rs.getBigDecimal("R98_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR98_total_number(rs.getBigDecimal("R98_TOTAL_NUMBER"));
+						obj.setR98_total_amount(rs.getBigDecimal("R98_TOTAL_AMOUNT"));
+						obj.setR98_total_deposit_bank(rs.getBigDecimal("R98_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR99_deposit_size(rs.getString("R99_DEPOSIT_SIZE"));
+						obj.setR99_deposit_type(rs.getString("R99_DEPOSIT_TYPE"));
+						obj.setR99_deposit_excluding_number(rs.getBigDecimal("R99_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR99_deposit_excluding_amount(rs.getBigDecimal("R99_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR99_deposit_foreign_number(rs.getBigDecimal("R99_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR99_deposit_foreign_amount(rs.getBigDecimal("R99_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR99_total_number(rs.getBigDecimal("R99_TOTAL_NUMBER"));
+						obj.setR99_total_amount(rs.getBigDecimal("R99_TOTAL_AMOUNT"));
+						obj.setR99_total_deposit_bank(rs.getBigDecimal("R99_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR100_deposit_size(rs.getString("R100_DEPOSIT_SIZE"));
+						obj.setR100_deposit_type(rs.getString("R100_DEPOSIT_TYPE"));
+						obj.setR100_deposit_excluding_number(rs.getBigDecimal("R100_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR100_deposit_excluding_amount(rs.getBigDecimal("R100_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR100_deposit_foreign_number(rs.getBigDecimal("R100_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR100_deposit_foreign_amount(rs.getBigDecimal("R100_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR100_total_number(rs.getBigDecimal("R100_TOTAL_NUMBER"));
+						obj.setR100_total_amount(rs.getBigDecimal("R100_TOTAL_AMOUNT"));
+						obj.setR100_total_deposit_bank(rs.getBigDecimal("R100_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR101_deposit_size(rs.getString("R101_DEPOSIT_SIZE"));
+						obj.setR101_deposit_type(rs.getString("R101_DEPOSIT_TYPE"));
+						obj.setR101_deposit_excluding_number(rs.getBigDecimal("R101_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR101_deposit_excluding_amount(rs.getBigDecimal("R101_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR101_deposit_foreign_number(rs.getBigDecimal("R101_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR101_deposit_foreign_amount(rs.getBigDecimal("R101_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR101_total_number(rs.getBigDecimal("R101_TOTAL_NUMBER"));
+						obj.setR101_total_amount(rs.getBigDecimal("R101_TOTAL_AMOUNT"));
+						obj.setR101_total_deposit_bank(rs.getBigDecimal("R101_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR102_deposit_size(rs.getString("R102_DEPOSIT_SIZE"));
+						obj.setR102_deposit_type(rs.getString("R102_DEPOSIT_TYPE"));
+						obj.setR102_deposit_excluding_number(rs.getBigDecimal("R102_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR102_deposit_excluding_amount(rs.getBigDecimal("R102_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR102_deposit_foreign_number(rs.getBigDecimal("R102_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR102_deposit_foreign_amount(rs.getBigDecimal("R102_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR102_total_number(rs.getBigDecimal("R102_TOTAL_NUMBER"));
+						obj.setR102_total_amount(rs.getBigDecimal("R102_TOTAL_AMOUNT"));
+						obj.setR102_total_deposit_bank(rs.getBigDecimal("R102_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR103_deposit_size(rs.getString("R103_DEPOSIT_SIZE"));
+						obj.setR103_deposit_type(rs.getString("R103_DEPOSIT_TYPE"));
+						obj.setR103_deposit_excluding_number(rs.getBigDecimal("R103_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR103_deposit_excluding_amount(rs.getBigDecimal("R103_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR103_deposit_foreign_number(rs.getBigDecimal("R103_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR103_deposit_foreign_amount(rs.getBigDecimal("R103_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR103_total_number(rs.getBigDecimal("R103_TOTAL_NUMBER"));
+						obj.setR103_total_amount(rs.getBigDecimal("R103_TOTAL_AMOUNT"));
+						obj.setR103_total_deposit_bank(rs.getBigDecimal("R103_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR104_deposit_size(rs.getString("R104_DEPOSIT_SIZE"));
+						obj.setR104_deposit_type(rs.getString("R104_DEPOSIT_TYPE"));
+						obj.setR104_deposit_excluding_number(rs.getBigDecimal("R104_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR104_deposit_excluding_amount(rs.getBigDecimal("R104_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR104_deposit_foreign_number(rs.getBigDecimal("R104_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR104_deposit_foreign_amount(rs.getBigDecimal("R104_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR104_total_number(rs.getBigDecimal("R104_TOTAL_NUMBER"));
+						obj.setR104_total_amount(rs.getBigDecimal("R104_TOTAL_AMOUNT"));
+						obj.setR104_total_deposit_bank(rs.getBigDecimal("R104_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR105_deposit_size(rs.getString("R105_DEPOSIT_SIZE"));
+						obj.setR105_deposit_type(rs.getString("R105_DEPOSIT_TYPE"));
+						obj.setR105_deposit_excluding_number(rs.getBigDecimal("R105_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR105_deposit_excluding_amount(rs.getBigDecimal("R105_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR105_deposit_foreign_number(rs.getBigDecimal("R105_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR105_deposit_foreign_amount(rs.getBigDecimal("R105_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR105_total_number(rs.getBigDecimal("R105_TOTAL_NUMBER"));
+						obj.setR105_total_amount(rs.getBigDecimal("R105_TOTAL_AMOUNT"));
+						obj.setR105_total_deposit_bank(rs.getBigDecimal("R105_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR106_deposit_size(rs.getString("R106_DEPOSIT_SIZE"));
+						obj.setR106_deposit_type(rs.getString("R106_DEPOSIT_TYPE"));
+						obj.setR106_deposit_excluding_number(rs.getBigDecimal("R106_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR106_deposit_excluding_amount(rs.getBigDecimal("R106_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR106_deposit_foreign_number(rs.getBigDecimal("R106_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR106_deposit_foreign_amount(rs.getBigDecimal("R106_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR106_total_number(rs.getBigDecimal("R106_TOTAL_NUMBER"));
+						obj.setR106_total_amount(rs.getBigDecimal("R106_TOTAL_AMOUNT"));
+						obj.setR106_total_deposit_bank(rs.getBigDecimal("R106_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR107_deposit_size(rs.getString("R107_DEPOSIT_SIZE"));
+						obj.setR107_deposit_type(rs.getString("R107_DEPOSIT_TYPE"));
+						obj.setR107_deposit_excluding_number(rs.getBigDecimal("R107_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR107_deposit_excluding_amount(rs.getBigDecimal("R107_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR107_deposit_foreign_number(rs.getBigDecimal("R107_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR107_deposit_foreign_amount(rs.getBigDecimal("R107_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR107_total_number(rs.getBigDecimal("R107_TOTAL_NUMBER"));
+						obj.setR107_total_amount(rs.getBigDecimal("R107_TOTAL_AMOUNT"));
+						obj.setR107_total_deposit_bank(rs.getBigDecimal("R107_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR108_deposit_size(rs.getString("R108_DEPOSIT_SIZE"));
+						obj.setR108_deposit_type(rs.getString("R108_DEPOSIT_TYPE"));
+						obj.setR108_deposit_excluding_number(rs.getBigDecimal("R108_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR108_deposit_excluding_amount(rs.getBigDecimal("R108_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR108_deposit_foreign_number(rs.getBigDecimal("R108_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR108_deposit_foreign_amount(rs.getBigDecimal("R108_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR108_total_number(rs.getBigDecimal("R108_TOTAL_NUMBER"));
+						obj.setR108_total_amount(rs.getBigDecimal("R108_TOTAL_AMOUNT"));
+						obj.setR108_total_deposit_bank(rs.getBigDecimal("R108_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR109_deposit_size(rs.getString("R109_DEPOSIT_SIZE"));
+						obj.setR109_deposit_type(rs.getString("R109_DEPOSIT_TYPE"));
+						obj.setR109_deposit_excluding_number(rs.getBigDecimal("R109_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR109_deposit_excluding_amount(rs.getBigDecimal("R109_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR109_deposit_foreign_number(rs.getBigDecimal("R109_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR109_deposit_foreign_amount(rs.getBigDecimal("R109_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR109_total_number(rs.getBigDecimal("R109_TOTAL_NUMBER"));
+						obj.setR109_total_amount(rs.getBigDecimal("R109_TOTAL_AMOUNT"));
+						obj.setR109_total_deposit_bank(rs.getBigDecimal("R109_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR110_deposit_size(rs.getString("R110_DEPOSIT_SIZE"));
+						obj.setR110_deposit_type(rs.getString("R110_DEPOSIT_TYPE"));
+						obj.setR110_deposit_excluding_number(rs.getBigDecimal("R110_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR110_deposit_excluding_amount(rs.getBigDecimal("R110_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR110_deposit_foreign_number(rs.getBigDecimal("R110_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR110_deposit_foreign_amount(rs.getBigDecimal("R110_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR110_total_number(rs.getBigDecimal("R110_TOTAL_NUMBER"));
+						obj.setR110_total_amount(rs.getBigDecimal("R110_TOTAL_AMOUNT"));
+						obj.setR110_total_deposit_bank(rs.getBigDecimal("R110_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR111_deposit_size(rs.getString("R111_DEPOSIT_SIZE"));
+						obj.setR111_deposit_type(rs.getString("R111_DEPOSIT_TYPE"));
+						obj.setR111_deposit_excluding_number(rs.getBigDecimal("R111_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR111_deposit_excluding_amount(rs.getBigDecimal("R111_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR111_deposit_foreign_number(rs.getBigDecimal("R111_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR111_deposit_foreign_amount(rs.getBigDecimal("R111_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR111_total_number(rs.getBigDecimal("R111_TOTAL_NUMBER"));
+						obj.setR111_total_amount(rs.getBigDecimal("R111_TOTAL_AMOUNT"));
+						obj.setR111_total_deposit_bank(rs.getBigDecimal("R111_TOTAL_DEPOSIT_BANK"));
+		
+						// =========================
+				        // COMMON FIELDS
+				        // =========================
+				        obj.setREPORT_DATE(rs.getDate("report_date"));
+				        obj.setREPORT_VERSION(rs.getBigDecimal("report_version"));
+				        obj.setREPORT_FREQUENCY(rs.getString("report_frequency"));
+				        obj.setREPORT_CODE(rs.getString("report_code"));
+				        obj.setREPORT_DESC(rs.getString("report_desc"));
+
+				        obj.setENTITY_FLG(rs.getString("entity_flg"));
+				        obj.setMODIFY_FLG(rs.getString("modify_flg"));
+				        obj.setDEL_FLG(rs.getString("del_flg"));
+
+
+				        return obj;
+				    }
+				}
+
+
+		
+		public static class MDISB1_Summary_Entity2 {
+			
+			// R87
+			@Column(name = "R87_DEPOSIT_SIZE")
+			private String r87_deposit_size;
+
+			@Column(name = "R87_DEPOSIT_TYPE")
+			private String r87_deposit_type;
+
+			@Column(name = "R87_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r87_deposit_excluding_number;
+
+			@Column(name = "R87_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r87_deposit_excluding_amount;
+
+			@Column(name = "R87_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r87_deposit_foreign_number;
+
+			@Column(name = "R87_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r87_deposit_foreign_amount;
+
+			@Column(name = "R87_TOTAL_NUMBER")
+			private BigDecimal r87_total_number;
+
+			@Column(name = "R87_TOTAL_AMOUNT")
+			private BigDecimal r87_total_amount;
+
+			@Column(name = "R87_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r87_total_deposit_bank;
+
+			// R88
+			@Column(name = "R88_DEPOSIT_SIZE")
+			private String r88_deposit_size;
+
+			@Column(name = "R88_DEPOSIT_TYPE")
+			private String r88_deposit_type;
+
+			@Column(name = "R88_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r88_deposit_excluding_number;
+
+			@Column(name = "R88_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r88_deposit_excluding_amount;
+
+			@Column(name = "R88_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r88_deposit_foreign_number;
+
+			@Column(name = "R88_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r88_deposit_foreign_amount;
+
+			@Column(name = "R88_TOTAL_NUMBER")
+			private BigDecimal r88_total_number;
+
+			@Column(name = "R88_TOTAL_AMOUNT")
+			private BigDecimal r88_total_amount;
+
+			@Column(name = "R88_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r88_total_deposit_bank;
+
+			// R89
+			@Column(name = "R89_DEPOSIT_SIZE")
+			private String r89_deposit_size;
+
+			@Column(name = "R89_DEPOSIT_TYPE")
+			private String r89_deposit_type;
+
+			@Column(name = "R89_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r89_deposit_excluding_number;
+
+			@Column(name = "R89_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r89_deposit_excluding_amount;
+
+			@Column(name = "R89_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r89_deposit_foreign_number;
+
+			@Column(name = "R89_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r89_deposit_foreign_amount;
+
+			@Column(name = "R89_TOTAL_NUMBER")
+			private BigDecimal r89_total_number;
+
+			@Column(name = "R89_TOTAL_AMOUNT")
+			private BigDecimal r89_total_amount;
+
+			@Column(name = "R89_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r89_total_deposit_bank;
+
+			// R90
+			@Column(name = "R90_DEPOSIT_SIZE")
+			private String r90_deposit_size;
+
+			@Column(name = "R90_DEPOSIT_TYPE")
+			private String r90_deposit_type;
+
+			@Column(name = "R90_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r90_deposit_excluding_number;
+
+			@Column(name = "R90_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r90_deposit_excluding_amount;
+
+			@Column(name = "R90_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r90_deposit_foreign_number;
+
+			@Column(name = "R90_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r90_deposit_foreign_amount;
+
+			@Column(name = "R90_TOTAL_NUMBER")
+			private BigDecimal r90_total_number;
+
+			@Column(name = "R90_TOTAL_AMOUNT")
+			private BigDecimal r90_total_amount;
+
+			@Column(name = "R90_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r90_total_deposit_bank;
+
+			// R91
+			@Column(name = "R91_DEPOSIT_SIZE")
+			private String r91_deposit_size;
+
+			@Column(name = "R91_DEPOSIT_TYPE")
+			private String r91_deposit_type;
+
+			@Column(name = "R91_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r91_deposit_excluding_number;
+
+			@Column(name = "R91_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r91_deposit_excluding_amount;
+
+			@Column(name = "R91_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r91_deposit_foreign_number;
+
+			@Column(name = "R91_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r91_deposit_foreign_amount;
+
+			@Column(name = "R91_TOTAL_NUMBER")
+			private BigDecimal r91_total_number;
+
+			@Column(name = "R91_TOTAL_AMOUNT")
+			private BigDecimal r91_total_amount;
+
+			@Column(name = "R91_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r91_total_deposit_bank;
+
+			// R92
+			@Column(name = "R92_DEPOSIT_SIZE")
+			private String r92_deposit_size;
+
+			@Column(name = "R92_DEPOSIT_TYPE")
+			private String r92_deposit_type;
+
+			@Column(name = "R92_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r92_deposit_excluding_number;
+
+			@Column(name = "R92_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r92_deposit_excluding_amount;
+
+			@Column(name = "R92_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r92_deposit_foreign_number;
+
+			@Column(name = "R92_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r92_deposit_foreign_amount;
+
+			@Column(name = "R92_TOTAL_NUMBER")
+			private BigDecimal r92_total_number;
+
+			@Column(name = "R92_TOTAL_AMOUNT")
+			private BigDecimal r92_total_amount;
+
+			@Column(name = "R92_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r92_total_deposit_bank;
+
+			// R93
+			@Column(name = "R93_DEPOSIT_SIZE")
+			private String r93_deposit_size;
+
+			@Column(name = "R93_DEPOSIT_TYPE")
+			private String r93_deposit_type;
+
+			@Column(name = "R93_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r93_deposit_excluding_number;
+
+			@Column(name = "R93_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r93_deposit_excluding_amount;
+
+			@Column(name = "R93_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r93_deposit_foreign_number;
+
+			@Column(name = "R93_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r93_deposit_foreign_amount;
+
+			@Column(name = "R93_TOTAL_NUMBER")
+			private BigDecimal r93_total_number;
+
+			@Column(name = "R93_TOTAL_AMOUNT")
+			private BigDecimal r93_total_amount;
+
+			@Column(name = "R93_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r93_total_deposit_bank;
+
+			// R94
+			@Column(name = "R94_DEPOSIT_SIZE")
+			private String r94_deposit_size;
+
+			@Column(name = "R94_DEPOSIT_TYPE")
+			private String r94_deposit_type;
+
+			@Column(name = "R94_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r94_deposit_excluding_number;
+
+			@Column(name = "R94_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r94_deposit_excluding_amount;
+
+			@Column(name = "R94_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r94_deposit_foreign_number;
+
+			@Column(name = "R94_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r94_deposit_foreign_amount;
+
+			@Column(name = "R94_TOTAL_NUMBER")
+			private BigDecimal r94_total_number;
+
+			@Column(name = "R94_TOTAL_AMOUNT")
+			private BigDecimal r94_total_amount;
+
+			@Column(name = "R94_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r94_total_deposit_bank;
+
+			// R95
+			@Column(name = "R95_DEPOSIT_SIZE")
+			private String r95_deposit_size;
+
+			@Column(name = "R95_DEPOSIT_TYPE")
+			private String r95_deposit_type;
+
+			@Column(name = "R95_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r95_deposit_excluding_number;
+
+			@Column(name = "R95_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r95_deposit_excluding_amount;
+
+			@Column(name = "R95_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r95_deposit_foreign_number;
+
+			@Column(name = "R95_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r95_deposit_foreign_amount;
+
+			@Column(name = "R95_TOTAL_NUMBER")
+			private BigDecimal r95_total_number;
+
+			@Column(name = "R95_TOTAL_AMOUNT")
+			private BigDecimal r95_total_amount;
+
+			@Column(name = "R95_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r95_total_deposit_bank;
+
+			// R96
+			@Column(name = "R96_DEPOSIT_SIZE")
+			private String r96_deposit_size;
+
+			@Column(name = "R96_DEPOSIT_TYPE")
+			private String r96_deposit_type;
+
+			@Column(name = "R96_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r96_deposit_excluding_number;
+
+			@Column(name = "R96_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r96_deposit_excluding_amount;
+
+			@Column(name = "R96_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r96_deposit_foreign_number;
+
+			@Column(name = "R96_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r96_deposit_foreign_amount;
+
+			@Column(name = "R96_TOTAL_NUMBER")
+			private BigDecimal r96_total_number;
+
+			@Column(name = "R96_TOTAL_AMOUNT")
+			private BigDecimal r96_total_amount;
+
+			@Column(name = "R96_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r96_total_deposit_bank;
+
+			// R97
+			@Column(name = "R97_DEPOSIT_SIZE")
+			private String r97_deposit_size;
+
+			@Column(name = "R97_DEPOSIT_TYPE")
+			private String r97_deposit_type;
+
+			@Column(name = "R97_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r97_deposit_excluding_number;
+
+			@Column(name = "R97_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r97_deposit_excluding_amount;
+
+			@Column(name = "R97_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r97_deposit_foreign_number;
+
+			@Column(name = "R97_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r97_deposit_foreign_amount;
+
+			@Column(name = "R97_TOTAL_NUMBER")
+			private BigDecimal r97_total_number;
+
+			@Column(name = "R97_TOTAL_AMOUNT")
+			private BigDecimal r97_total_amount;
+
+			@Column(name = "R97_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r97_total_deposit_bank;
+			
+			// R98
+			@Column(name = "R98_DEPOSIT_SIZE")
+			private String r98_deposit_size;
+
+			@Column(name = "R98_DEPOSIT_TYPE")
+			private String r98_deposit_type;
+
+			@Column(name = "R98_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r98_deposit_excluding_number;
+
+			@Column(name = "R98_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r98_deposit_excluding_amount;
+
+			@Column(name = "R98_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r98_deposit_foreign_number;
+
+			@Column(name = "R98_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r98_deposit_foreign_amount;
+
+			@Column(name = "R98_TOTAL_NUMBER")
+			private BigDecimal r98_total_number;
+
+			@Column(name = "R98_TOTAL_AMOUNT")
+			private BigDecimal r98_total_amount;
+
+			@Column(name = "R98_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r98_total_deposit_bank;
+
+			// R99
+			@Column(name = "R99_DEPOSIT_SIZE")
+			private String r99_deposit_size;
+
+			@Column(name = "R99_DEPOSIT_TYPE")
+			private String r99_deposit_type;
+
+			@Column(name = "R99_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r99_deposit_excluding_number;
+
+			@Column(name = "R99_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r99_deposit_excluding_amount;
+
+			@Column(name = "R99_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r99_deposit_foreign_number;
+
+			@Column(name = "R99_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r99_deposit_foreign_amount;
+
+			@Column(name = "R99_TOTAL_NUMBER")
+			private BigDecimal r99_total_number;
+
+			@Column(name = "R99_TOTAL_AMOUNT")
+			private BigDecimal r99_total_amount;
+
+			@Column(name = "R99_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r99_total_deposit_bank;
+
+			// R100
+			@Column(name = "R100_DEPOSIT_SIZE")
+			private String r100_deposit_size;
+
+			@Column(name = "R100_DEPOSIT_TYPE")
+			private String r100_deposit_type;
+
+			@Column(name = "R100_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r100_deposit_excluding_number;
+
+			@Column(name = "R100_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r100_deposit_excluding_amount;
+
+			@Column(name = "R100_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r100_deposit_foreign_number;
+
+			@Column(name = "R100_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r100_deposit_foreign_amount;
+
+			@Column(name = "R100_TOTAL_NUMBER")
+			private BigDecimal r100_total_number;
+
+			@Column(name = "R100_TOTAL_AMOUNT")
+			private BigDecimal r100_total_amount;
+
+			@Column(name = "R100_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r100_total_deposit_bank;
+
+			// R101
+			@Column(name = "R101_DEPOSIT_SIZE")
+			private String r101_deposit_size;
+
+			@Column(name = "R101_DEPOSIT_TYPE")
+			private String r101_deposit_type;
+
+			@Column(name = "R101_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r101_deposit_excluding_number;
+
+			@Column(name = "R101_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r101_deposit_excluding_amount;
+
+			@Column(name = "R101_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r101_deposit_foreign_number;
+
+			@Column(name = "R101_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r101_deposit_foreign_amount;
+
+			@Column(name = "R101_TOTAL_NUMBER")
+			private BigDecimal r101_total_number;
+
+			@Column(name = "R101_TOTAL_AMOUNT")
+			private BigDecimal r101_total_amount;
+
+			@Column(name = "R101_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r101_total_deposit_bank;
+
+			// R102
+			@Column(name = "R102_DEPOSIT_SIZE")
+			private String r102_deposit_size;
+
+			@Column(name = "R102_DEPOSIT_TYPE")
+			private String r102_deposit_type;
+
+			@Column(name = "R102_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r102_deposit_excluding_number;
+
+			@Column(name = "R102_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r102_deposit_excluding_amount;
+
+			@Column(name = "R102_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r102_deposit_foreign_number;
+
+			@Column(name = "R102_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r102_deposit_foreign_amount;
+
+			@Column(name = "R102_TOTAL_NUMBER")
+			private BigDecimal r102_total_number;
+
+			@Column(name = "R102_TOTAL_AMOUNT")
+			private BigDecimal r102_total_amount;
+
+			@Column(name = "R102_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r102_total_deposit_bank;
+
+			// R103
+			@Column(name = "R103_DEPOSIT_SIZE")
+			private String r103_deposit_size;
+
+			@Column(name = "R103_DEPOSIT_TYPE")
+			private String r103_deposit_type;
+
+			@Column(name = "R103_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r103_deposit_excluding_number;
+
+			@Column(name = "R103_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r103_deposit_excluding_amount;
+
+			@Column(name = "R103_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r103_deposit_foreign_number;
+
+			@Column(name = "R103_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r103_deposit_foreign_amount;
+
+			@Column(name = "R103_TOTAL_NUMBER")
+			private BigDecimal r103_total_number;
+
+			@Column(name = "R103_TOTAL_AMOUNT")
+			private BigDecimal r103_total_amount;
+
+			@Column(name = "R103_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r103_total_deposit_bank;
+
+			// R104
+			@Column(name = "R104_DEPOSIT_SIZE")
+			private String r104_deposit_size;
+
+			@Column(name = "R104_DEPOSIT_TYPE")
+			private String r104_deposit_type;
+
+			@Column(name = "R104_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r104_deposit_excluding_number;
+
+			@Column(name = "R104_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r104_deposit_excluding_amount;
+
+			@Column(name = "R104_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r104_deposit_foreign_number;
+
+			@Column(name = "R104_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r104_deposit_foreign_amount;
+
+			@Column(name = "R104_TOTAL_NUMBER")
+			private BigDecimal r104_total_number;
+
+			@Column(name = "R104_TOTAL_AMOUNT")
+			private BigDecimal r104_total_amount;
+
+			@Column(name = "R104_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r104_total_deposit_bank;
+
+			// R105
+			@Column(name = "R105_DEPOSIT_SIZE")
+			private String r105_deposit_size;
+
+			@Column(name = "R105_DEPOSIT_TYPE")
+			private String r105_deposit_type;
+
+			@Column(name = "R105_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r105_deposit_excluding_number;
+
+			@Column(name = "R105_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r105_deposit_excluding_amount;
+
+			@Column(name = "R105_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r105_deposit_foreign_number;
+
+			@Column(name = "R105_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r105_deposit_foreign_amount;
+
+			@Column(name = "R105_TOTAL_NUMBER")
+			private BigDecimal r105_total_number;
+
+			@Column(name = "R105_TOTAL_AMOUNT")
+			private BigDecimal r105_total_amount;
+
+			@Column(name = "R105_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r105_total_deposit_bank;
+
+			// R106
+			@Column(name = "R106_DEPOSIT_SIZE")
+			private String r106_deposit_size;
+
+			@Column(name = "R106_DEPOSIT_TYPE")
+			private String r106_deposit_type;
+
+			@Column(name = "R106_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r106_deposit_excluding_number;
+
+			@Column(name = "R106_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r106_deposit_excluding_amount;
+
+			@Column(name = "R106_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r106_deposit_foreign_number;
+
+			@Column(name = "R106_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r106_deposit_foreign_amount;
+
+			@Column(name = "R106_TOTAL_NUMBER")
+			private BigDecimal r106_total_number;
+
+			@Column(name = "R106_TOTAL_AMOUNT")
+			private BigDecimal r106_total_amount;
+
+			@Column(name = "R106_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r106_total_deposit_bank;
+
+			// R107
+			@Column(name = "R107_DEPOSIT_SIZE")
+			private String r107_deposit_size;
+
+			@Column(name = "R107_DEPOSIT_TYPE")
+			private String r107_deposit_type;
+
+			@Column(name = "R107_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r107_deposit_excluding_number;
+
+			@Column(name = "R107_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r107_deposit_excluding_amount;
+
+			@Column(name = "R107_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r107_deposit_foreign_number;
+
+			@Column(name = "R107_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r107_deposit_foreign_amount;
+
+			@Column(name = "R107_TOTAL_NUMBER")
+			private BigDecimal r107_total_number;
+
+			@Column(name = "R107_TOTAL_AMOUNT")
+			private BigDecimal r107_total_amount;
+
+			@Column(name = "R107_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r107_total_deposit_bank;
+
+			// R108
+			@Column(name = "R108_DEPOSIT_SIZE")
+			private String r108_deposit_size;
+
+			@Column(name = "R108_DEPOSIT_TYPE")
+			private String r108_deposit_type;
+
+			@Column(name = "R108_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r108_deposit_excluding_number;
+
+			@Column(name = "R108_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r108_deposit_excluding_amount;
+
+			@Column(name = "R108_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r108_deposit_foreign_number;
+
+			@Column(name = "R108_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r108_deposit_foreign_amount;
+
+			@Column(name = "R108_TOTAL_NUMBER")
+			private BigDecimal r108_total_number;
+
+			@Column(name = "R108_TOTAL_AMOUNT")
+			private BigDecimal r108_total_amount;
+
+			@Column(name = "R108_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r108_total_deposit_bank;
+
+			// R109
+			@Column(name = "R109_DEPOSIT_SIZE")
+			private String r109_deposit_size;
+
+			@Column(name = "R109_DEPOSIT_TYPE")
+			private String r109_deposit_type;
+
+			@Column(name = "R109_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r109_deposit_excluding_number;
+
+			@Column(name = "R109_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r109_deposit_excluding_amount;
+
+			@Column(name = "R109_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r109_deposit_foreign_number;
+
+			@Column(name = "R109_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r109_deposit_foreign_amount;
+
+			@Column(name = "R109_TOTAL_NUMBER")
+			private BigDecimal r109_total_number;
+
+			@Column(name = "R109_TOTAL_AMOUNT")
+			private BigDecimal r109_total_amount;
+
+			@Column(name = "R109_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r109_total_deposit_bank;
+
+			// R110
+			@Column(name = "R110_DEPOSIT_SIZE")
+			private String r110_deposit_size;
+
+			@Column(name = "R110_DEPOSIT_TYPE")
+			private String r110_deposit_type;
+
+			@Column(name = "R110_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r110_deposit_excluding_number;
+
+			@Column(name = "R110_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r110_deposit_excluding_amount;
+
+			@Column(name = "R110_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r110_deposit_foreign_number;
+
+			@Column(name = "R110_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r110_deposit_foreign_amount;
+
+			@Column(name = "R110_TOTAL_NUMBER")
+			private BigDecimal r110_total_number;
+
+			@Column(name = "R110_TOTAL_AMOUNT")
+			private BigDecimal r110_total_amount;
+
+			@Column(name = "R110_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r110_total_deposit_bank;
+
+			// R111
+			@Column(name = "R111_DEPOSIT_SIZE")
+			private String r111_deposit_size;
+
+			@Column(name = "R111_DEPOSIT_TYPE")
+			private String r111_deposit_type;
+
+			@Column(name = "R111_DEPOSIT_EXCLUDING_NUMBER")
+			private BigDecimal r111_deposit_excluding_number;
+
+			@Column(name = "R111_DEPOSIT_EXCLUDING_AMOUNT")
+			private BigDecimal r111_deposit_excluding_amount;
+
+			@Column(name = "R111_DEPOSIT_FOREIGN_NUMBER")
+			private BigDecimal r111_deposit_foreign_number;
+
+			@Column(name = "R111_DEPOSIT_FOREIGN_AMOUNT")
+			private BigDecimal r111_deposit_foreign_amount;
+
+			@Column(name = "R111_TOTAL_NUMBER")
+			private BigDecimal r111_total_number;
+
+			@Column(name = "R111_TOTAL_AMOUNT")
+			private BigDecimal r111_total_amount;
+
+			@Column(name = "R111_TOTAL_DEPOSIT_BANK")
+			private BigDecimal r111_total_deposit_bank;
+		
+			@Id
+			@Temporal(TemporalType.DATE)
+			@Column(name = "REPORT_DATE")
+			private Date REPORT_DATE;
+
+			@Column(name = "REPORT_VERSION", length = 100)
+			private BigDecimal REPORT_VERSION;
+
+			@Column(name = "REPORT_FREQUENCY", length = 100)
+			private String REPORT_FREQUENCY;
+
+			@Column(name = "REPORT_CODE", length = 100)
+			private String REPORT_CODE;
+
+			@Column(name = "REPORT_DESC", length = 100)
+			private String REPORT_DESC;
+
+			@Column(name = "ENTITY_FLG", length = 1)
+			private String ENTITY_FLG;
+
+			@Column(name = "MODIFY_FLG", length = 1)
+			private String MODIFY_FLG;
+
+			@Column(name = "DEL_FLG", length = 1)
+			private String DEL_FLG;
+
+			
+			public String getR87_deposit_size() {
+				return r87_deposit_size;
+			}
+			public void setR87_deposit_size(String r87_deposit_size) {
+				this.r87_deposit_size = r87_deposit_size;
+			}
+			public String getR87_deposit_type() {
+				return r87_deposit_type;
+			}
+			public void setR87_deposit_type(String r87_deposit_type) {
+				this.r87_deposit_type = r87_deposit_type;
+			}
+			public BigDecimal getR87_deposit_excluding_number() {
+				return r87_deposit_excluding_number;
+			}
+			public void setR87_deposit_excluding_number(BigDecimal r87_deposit_excluding_number) {
+				this.r87_deposit_excluding_number = r87_deposit_excluding_number;
+			}
+			public BigDecimal getR87_deposit_excluding_amount() {
+				return r87_deposit_excluding_amount;
+			}
+			public void setR87_deposit_excluding_amount(BigDecimal r87_deposit_excluding_amount) {
+				this.r87_deposit_excluding_amount = r87_deposit_excluding_amount;
+			}
+			public BigDecimal getR87_deposit_foreign_number() {
+				return r87_deposit_foreign_number;
+			}
+			public void setR87_deposit_foreign_number(BigDecimal r87_deposit_foreign_number) {
+				this.r87_deposit_foreign_number = r87_deposit_foreign_number;
+			}
+			public BigDecimal getR87_deposit_foreign_amount() {
+				return r87_deposit_foreign_amount;
+			}
+			public void setR87_deposit_foreign_amount(BigDecimal r87_deposit_foreign_amount) {
+				this.r87_deposit_foreign_amount = r87_deposit_foreign_amount;
+			}
+			public BigDecimal getR87_total_number() {
+				return r87_total_number;
+			}
+			public void setR87_total_number(BigDecimal r87_total_number) {
+				this.r87_total_number = r87_total_number;
+			}
+			public BigDecimal getR87_total_amount() {
+				return r87_total_amount;
+			}
+			public void setR87_total_amount(BigDecimal r87_total_amount) {
+				this.r87_total_amount = r87_total_amount;
+			}
+			public BigDecimal getR87_total_deposit_bank() {
+				return r87_total_deposit_bank;
+			}
+			public void setR87_total_deposit_bank(BigDecimal r87_total_deposit_bank) {
+				this.r87_total_deposit_bank = r87_total_deposit_bank;
+			}
+			public String getR88_deposit_size() {
+				return r88_deposit_size;
+			}
+			public void setR88_deposit_size(String r88_deposit_size) {
+				this.r88_deposit_size = r88_deposit_size;
+			}
+			public String getR88_deposit_type() {
+				return r88_deposit_type;
+			}
+			public void setR88_deposit_type(String r88_deposit_type) {
+				this.r88_deposit_type = r88_deposit_type;
+			}
+			public BigDecimal getR88_deposit_excluding_number() {
+				return r88_deposit_excluding_number;
+			}
+			public void setR88_deposit_excluding_number(BigDecimal r88_deposit_excluding_number) {
+				this.r88_deposit_excluding_number = r88_deposit_excluding_number;
+			}
+			public BigDecimal getR88_deposit_excluding_amount() {
+				return r88_deposit_excluding_amount;
+			}
+			public void setR88_deposit_excluding_amount(BigDecimal r88_deposit_excluding_amount) {
+				this.r88_deposit_excluding_amount = r88_deposit_excluding_amount;
+			}
+			public BigDecimal getR88_deposit_foreign_number() {
+				return r88_deposit_foreign_number;
+			}
+			public void setR88_deposit_foreign_number(BigDecimal r88_deposit_foreign_number) {
+				this.r88_deposit_foreign_number = r88_deposit_foreign_number;
+			}
+			public BigDecimal getR88_deposit_foreign_amount() {
+				return r88_deposit_foreign_amount;
+			}
+			public void setR88_deposit_foreign_amount(BigDecimal r88_deposit_foreign_amount) {
+				this.r88_deposit_foreign_amount = r88_deposit_foreign_amount;
+			}
+			public BigDecimal getR88_total_number() {
+				return r88_total_number;
+			}
+			public void setR88_total_number(BigDecimal r88_total_number) {
+				this.r88_total_number = r88_total_number;
+			}
+			public BigDecimal getR88_total_amount() {
+				return r88_total_amount;
+			}
+			public void setR88_total_amount(BigDecimal r88_total_amount) {
+				this.r88_total_amount = r88_total_amount;
+			}
+			public BigDecimal getR88_total_deposit_bank() {
+				return r88_total_deposit_bank;
+			}
+			public void setR88_total_deposit_bank(BigDecimal r88_total_deposit_bank) {
+				this.r88_total_deposit_bank = r88_total_deposit_bank;
+			}
+			public String getR89_deposit_size() {
+				return r89_deposit_size;
+			}
+			public void setR89_deposit_size(String r89_deposit_size) {
+				this.r89_deposit_size = r89_deposit_size;
+			}
+			public String getR89_deposit_type() {
+				return r89_deposit_type;
+			}
+			public void setR89_deposit_type(String r89_deposit_type) {
+				this.r89_deposit_type = r89_deposit_type;
+			}
+			public BigDecimal getR89_deposit_excluding_number() {
+				return r89_deposit_excluding_number;
+			}
+			public void setR89_deposit_excluding_number(BigDecimal r89_deposit_excluding_number) {
+				this.r89_deposit_excluding_number = r89_deposit_excluding_number;
+			}
+			public BigDecimal getR89_deposit_excluding_amount() {
+				return r89_deposit_excluding_amount;
+			}
+			public void setR89_deposit_excluding_amount(BigDecimal r89_deposit_excluding_amount) {
+				this.r89_deposit_excluding_amount = r89_deposit_excluding_amount;
+			}
+			public BigDecimal getR89_deposit_foreign_number() {
+				return r89_deposit_foreign_number;
+			}
+			public void setR89_deposit_foreign_number(BigDecimal r89_deposit_foreign_number) {
+				this.r89_deposit_foreign_number = r89_deposit_foreign_number;
+			}
+			public BigDecimal getR89_deposit_foreign_amount() {
+				return r89_deposit_foreign_amount;
+			}
+			public void setR89_deposit_foreign_amount(BigDecimal r89_deposit_foreign_amount) {
+				this.r89_deposit_foreign_amount = r89_deposit_foreign_amount;
+			}
+			public BigDecimal getR89_total_number() {
+				return r89_total_number;
+			}
+			public void setR89_total_number(BigDecimal r89_total_number) {
+				this.r89_total_number = r89_total_number;
+			}
+			public BigDecimal getR89_total_amount() {
+				return r89_total_amount;
+			}
+			public void setR89_total_amount(BigDecimal r89_total_amount) {
+				this.r89_total_amount = r89_total_amount;
+			}
+			public BigDecimal getR89_total_deposit_bank() {
+				return r89_total_deposit_bank;
+			}
+			public void setR89_total_deposit_bank(BigDecimal r89_total_deposit_bank) {
+				this.r89_total_deposit_bank = r89_total_deposit_bank;
+			}
+			public String getR90_deposit_size() {
+				return r90_deposit_size;
+			}
+			public void setR90_deposit_size(String r90_deposit_size) {
+				this.r90_deposit_size = r90_deposit_size;
+			}
+			public String getR90_deposit_type() {
+				return r90_deposit_type;
+			}
+			public void setR90_deposit_type(String r90_deposit_type) {
+				this.r90_deposit_type = r90_deposit_type;
+			}
+			public BigDecimal getR90_deposit_excluding_number() {
+				return r90_deposit_excluding_number;
+			}
+			public void setR90_deposit_excluding_number(BigDecimal r90_deposit_excluding_number) {
+				this.r90_deposit_excluding_number = r90_deposit_excluding_number;
+			}
+			public BigDecimal getR90_deposit_excluding_amount() {
+				return r90_deposit_excluding_amount;
+			}
+			public void setR90_deposit_excluding_amount(BigDecimal r90_deposit_excluding_amount) {
+				this.r90_deposit_excluding_amount = r90_deposit_excluding_amount;
+			}
+			public BigDecimal getR90_deposit_foreign_number() {
+				return r90_deposit_foreign_number;
+			}
+			public void setR90_deposit_foreign_number(BigDecimal r90_deposit_foreign_number) {
+				this.r90_deposit_foreign_number = r90_deposit_foreign_number;
+			}
+			public BigDecimal getR90_deposit_foreign_amount() {
+				return r90_deposit_foreign_amount;
+			}
+			public void setR90_deposit_foreign_amount(BigDecimal r90_deposit_foreign_amount) {
+				this.r90_deposit_foreign_amount = r90_deposit_foreign_amount;
+			}
+			public BigDecimal getR90_total_number() {
+				return r90_total_number;
+			}
+			public void setR90_total_number(BigDecimal r90_total_number) {
+				this.r90_total_number = r90_total_number;
+			}
+			public BigDecimal getR90_total_amount() {
+				return r90_total_amount;
+			}
+			public void setR90_total_amount(BigDecimal r90_total_amount) {
+				this.r90_total_amount = r90_total_amount;
+			}
+			public BigDecimal getR90_total_deposit_bank() {
+				return r90_total_deposit_bank;
+			}
+			public void setR90_total_deposit_bank(BigDecimal r90_total_deposit_bank) {
+				this.r90_total_deposit_bank = r90_total_deposit_bank;
+			}
+			public String getR91_deposit_size() {
+				return r91_deposit_size;
+			}
+			public void setR91_deposit_size(String r91_deposit_size) {
+				this.r91_deposit_size = r91_deposit_size;
+			}
+			public String getR91_deposit_type() {
+				return r91_deposit_type;
+			}
+			public void setR91_deposit_type(String r91_deposit_type) {
+				this.r91_deposit_type = r91_deposit_type;
+			}
+			public BigDecimal getR91_deposit_excluding_number() {
+				return r91_deposit_excluding_number;
+			}
+			public void setR91_deposit_excluding_number(BigDecimal r91_deposit_excluding_number) {
+				this.r91_deposit_excluding_number = r91_deposit_excluding_number;
+			}
+			public BigDecimal getR91_deposit_excluding_amount() {
+				return r91_deposit_excluding_amount;
+			}
+			public void setR91_deposit_excluding_amount(BigDecimal r91_deposit_excluding_amount) {
+				this.r91_deposit_excluding_amount = r91_deposit_excluding_amount;
+			}
+			public BigDecimal getR91_deposit_foreign_number() {
+				return r91_deposit_foreign_number;
+			}
+			public void setR91_deposit_foreign_number(BigDecimal r91_deposit_foreign_number) {
+				this.r91_deposit_foreign_number = r91_deposit_foreign_number;
+			}
+			public BigDecimal getR91_deposit_foreign_amount() {
+				return r91_deposit_foreign_amount;
+			}
+			public void setR91_deposit_foreign_amount(BigDecimal r91_deposit_foreign_amount) {
+				this.r91_deposit_foreign_amount = r91_deposit_foreign_amount;
+			}
+			public BigDecimal getR91_total_number() {
+				return r91_total_number;
+			}
+			public void setR91_total_number(BigDecimal r91_total_number) {
+				this.r91_total_number = r91_total_number;
+			}
+			public BigDecimal getR91_total_amount() {
+				return r91_total_amount;
+			}
+			public void setR91_total_amount(BigDecimal r91_total_amount) {
+				this.r91_total_amount = r91_total_amount;
+			}
+			public BigDecimal getR91_total_deposit_bank() {
+				return r91_total_deposit_bank;
+			}
+			public void setR91_total_deposit_bank(BigDecimal r91_total_deposit_bank) {
+				this.r91_total_deposit_bank = r91_total_deposit_bank;
+			}
+			public String getR92_deposit_size() {
+				return r92_deposit_size;
+			}
+			public void setR92_deposit_size(String r92_deposit_size) {
+				this.r92_deposit_size = r92_deposit_size;
+			}
+			public String getR92_deposit_type() {
+				return r92_deposit_type;
+			}
+			public void setR92_deposit_type(String r92_deposit_type) {
+				this.r92_deposit_type = r92_deposit_type;
+			}
+			public BigDecimal getR92_deposit_excluding_number() {
+				return r92_deposit_excluding_number;
+			}
+			public void setR92_deposit_excluding_number(BigDecimal r92_deposit_excluding_number) {
+				this.r92_deposit_excluding_number = r92_deposit_excluding_number;
+			}
+			public BigDecimal getR92_deposit_excluding_amount() {
+				return r92_deposit_excluding_amount;
+			}
+			public void setR92_deposit_excluding_amount(BigDecimal r92_deposit_excluding_amount) {
+				this.r92_deposit_excluding_amount = r92_deposit_excluding_amount;
+			}
+			public BigDecimal getR92_deposit_foreign_number() {
+				return r92_deposit_foreign_number;
+			}
+			public void setR92_deposit_foreign_number(BigDecimal r92_deposit_foreign_number) {
+				this.r92_deposit_foreign_number = r92_deposit_foreign_number;
+			}
+			public BigDecimal getR92_deposit_foreign_amount() {
+				return r92_deposit_foreign_amount;
+			}
+			public void setR92_deposit_foreign_amount(BigDecimal r92_deposit_foreign_amount) {
+				this.r92_deposit_foreign_amount = r92_deposit_foreign_amount;
+			}
+			public BigDecimal getR92_total_number() {
+				return r92_total_number;
+			}
+			public void setR92_total_number(BigDecimal r92_total_number) {
+				this.r92_total_number = r92_total_number;
+			}
+			public BigDecimal getR92_total_amount() {
+				return r92_total_amount;
+			}
+			public void setR92_total_amount(BigDecimal r92_total_amount) {
+				this.r92_total_amount = r92_total_amount;
+			}
+			public BigDecimal getR92_total_deposit_bank() {
+				return r92_total_deposit_bank;
+			}
+			public void setR92_total_deposit_bank(BigDecimal r92_total_deposit_bank) {
+				this.r92_total_deposit_bank = r92_total_deposit_bank;
+			}
+			public String getR93_deposit_size() {
+				return r93_deposit_size;
+			}
+			public void setR93_deposit_size(String r93_deposit_size) {
+				this.r93_deposit_size = r93_deposit_size;
+			}
+			public String getR93_deposit_type() {
+				return r93_deposit_type;
+			}
+			public void setR93_deposit_type(String r93_deposit_type) {
+				this.r93_deposit_type = r93_deposit_type;
+			}
+			public BigDecimal getR93_deposit_excluding_number() {
+				return r93_deposit_excluding_number;
+			}
+			public void setR93_deposit_excluding_number(BigDecimal r93_deposit_excluding_number) {
+				this.r93_deposit_excluding_number = r93_deposit_excluding_number;
+			}
+			public BigDecimal getR93_deposit_excluding_amount() {
+				return r93_deposit_excluding_amount;
+			}
+			public void setR93_deposit_excluding_amount(BigDecimal r93_deposit_excluding_amount) {
+				this.r93_deposit_excluding_amount = r93_deposit_excluding_amount;
+			}
+			public BigDecimal getR93_deposit_foreign_number() {
+				return r93_deposit_foreign_number;
+			}
+			public void setR93_deposit_foreign_number(BigDecimal r93_deposit_foreign_number) {
+				this.r93_deposit_foreign_number = r93_deposit_foreign_number;
+			}
+			public BigDecimal getR93_deposit_foreign_amount() {
+				return r93_deposit_foreign_amount;
+			}
+			public void setR93_deposit_foreign_amount(BigDecimal r93_deposit_foreign_amount) {
+				this.r93_deposit_foreign_amount = r93_deposit_foreign_amount;
+			}
+			public BigDecimal getR93_total_number() {
+				return r93_total_number;
+			}
+			public void setR93_total_number(BigDecimal r93_total_number) {
+				this.r93_total_number = r93_total_number;
+			}
+			public BigDecimal getR93_total_amount() {
+				return r93_total_amount;
+			}
+			public void setR93_total_amount(BigDecimal r93_total_amount) {
+				this.r93_total_amount = r93_total_amount;
+			}
+			public BigDecimal getR93_total_deposit_bank() {
+				return r93_total_deposit_bank;
+			}
+			public void setR93_total_deposit_bank(BigDecimal r93_total_deposit_bank) {
+				this.r93_total_deposit_bank = r93_total_deposit_bank;
+			}
+			public String getR94_deposit_size() {
+				return r94_deposit_size;
+			}
+			public void setR94_deposit_size(String r94_deposit_size) {
+				this.r94_deposit_size = r94_deposit_size;
+			}
+			public String getR94_deposit_type() {
+				return r94_deposit_type;
+			}
+			public void setR94_deposit_type(String r94_deposit_type) {
+				this.r94_deposit_type = r94_deposit_type;
+			}
+			public BigDecimal getR94_deposit_excluding_number() {
+				return r94_deposit_excluding_number;
+			}
+			public void setR94_deposit_excluding_number(BigDecimal r94_deposit_excluding_number) {
+				this.r94_deposit_excluding_number = r94_deposit_excluding_number;
+			}
+			public BigDecimal getR94_deposit_excluding_amount() {
+				return r94_deposit_excluding_amount;
+			}
+			public void setR94_deposit_excluding_amount(BigDecimal r94_deposit_excluding_amount) {
+				this.r94_deposit_excluding_amount = r94_deposit_excluding_amount;
+			}
+			public BigDecimal getR94_deposit_foreign_number() {
+				return r94_deposit_foreign_number;
+			}
+			public void setR94_deposit_foreign_number(BigDecimal r94_deposit_foreign_number) {
+				this.r94_deposit_foreign_number = r94_deposit_foreign_number;
+			}
+			public BigDecimal getR94_deposit_foreign_amount() {
+				return r94_deposit_foreign_amount;
+			}
+			public void setR94_deposit_foreign_amount(BigDecimal r94_deposit_foreign_amount) {
+				this.r94_deposit_foreign_amount = r94_deposit_foreign_amount;
+			}
+			public BigDecimal getR94_total_number() {
+				return r94_total_number;
+			}
+			public void setR94_total_number(BigDecimal r94_total_number) {
+				this.r94_total_number = r94_total_number;
+			}
+			public BigDecimal getR94_total_amount() {
+				return r94_total_amount;
+			}
+			public void setR94_total_amount(BigDecimal r94_total_amount) {
+				this.r94_total_amount = r94_total_amount;
+			}
+			public BigDecimal getR94_total_deposit_bank() {
+				return r94_total_deposit_bank;
+			}
+			public void setR94_total_deposit_bank(BigDecimal r94_total_deposit_bank) {
+				this.r94_total_deposit_bank = r94_total_deposit_bank;
+			}
+			public String getR95_deposit_size() {
+				return r95_deposit_size;
+			}
+			public void setR95_deposit_size(String r95_deposit_size) {
+				this.r95_deposit_size = r95_deposit_size;
+			}
+			public String getR95_deposit_type() {
+				return r95_deposit_type;
+			}
+			public void setR95_deposit_type(String r95_deposit_type) {
+				this.r95_deposit_type = r95_deposit_type;
+			}
+			public BigDecimal getR95_deposit_excluding_number() {
+				return r95_deposit_excluding_number;
+			}
+			public void setR95_deposit_excluding_number(BigDecimal r95_deposit_excluding_number) {
+				this.r95_deposit_excluding_number = r95_deposit_excluding_number;
+			}
+			public BigDecimal getR95_deposit_excluding_amount() {
+				return r95_deposit_excluding_amount;
+			}
+			public void setR95_deposit_excluding_amount(BigDecimal r95_deposit_excluding_amount) {
+				this.r95_deposit_excluding_amount = r95_deposit_excluding_amount;
+			}
+			public BigDecimal getR95_deposit_foreign_number() {
+				return r95_deposit_foreign_number;
+			}
+			public void setR95_deposit_foreign_number(BigDecimal r95_deposit_foreign_number) {
+				this.r95_deposit_foreign_number = r95_deposit_foreign_number;
+			}
+			public BigDecimal getR95_deposit_foreign_amount() {
+				return r95_deposit_foreign_amount;
+			}
+			public void setR95_deposit_foreign_amount(BigDecimal r95_deposit_foreign_amount) {
+				this.r95_deposit_foreign_amount = r95_deposit_foreign_amount;
+			}
+			public BigDecimal getR95_total_number() {
+				return r95_total_number;
+			}
+			public void setR95_total_number(BigDecimal r95_total_number) {
+				this.r95_total_number = r95_total_number;
+			}
+			public BigDecimal getR95_total_amount() {
+				return r95_total_amount;
+			}
+			public void setR95_total_amount(BigDecimal r95_total_amount) {
+				this.r95_total_amount = r95_total_amount;
+			}
+			public BigDecimal getR95_total_deposit_bank() {
+				return r95_total_deposit_bank;
+			}
+			public void setR95_total_deposit_bank(BigDecimal r95_total_deposit_bank) {
+				this.r95_total_deposit_bank = r95_total_deposit_bank;
+			}
+			public String getR96_deposit_size() {
+				return r96_deposit_size;
+			}
+			public void setR96_deposit_size(String r96_deposit_size) {
+				this.r96_deposit_size = r96_deposit_size;
+			}
+			public String getR96_deposit_type() {
+				return r96_deposit_type;
+			}
+			public void setR96_deposit_type(String r96_deposit_type) {
+				this.r96_deposit_type = r96_deposit_type;
+			}
+			public BigDecimal getR96_deposit_excluding_number() {
+				return r96_deposit_excluding_number;
+			}
+			public void setR96_deposit_excluding_number(BigDecimal r96_deposit_excluding_number) {
+				this.r96_deposit_excluding_number = r96_deposit_excluding_number;
+			}
+			public BigDecimal getR96_deposit_excluding_amount() {
+				return r96_deposit_excluding_amount;
+			}
+			public void setR96_deposit_excluding_amount(BigDecimal r96_deposit_excluding_amount) {
+				this.r96_deposit_excluding_amount = r96_deposit_excluding_amount;
+			}
+			public BigDecimal getR96_deposit_foreign_number() {
+				return r96_deposit_foreign_number;
+			}
+			public void setR96_deposit_foreign_number(BigDecimal r96_deposit_foreign_number) {
+				this.r96_deposit_foreign_number = r96_deposit_foreign_number;
+			}
+			public BigDecimal getR96_deposit_foreign_amount() {
+				return r96_deposit_foreign_amount;
+			}
+			public void setR96_deposit_foreign_amount(BigDecimal r96_deposit_foreign_amount) {
+				this.r96_deposit_foreign_amount = r96_deposit_foreign_amount;
+			}
+			public BigDecimal getR96_total_number() {
+				return r96_total_number;
+			}
+			public void setR96_total_number(BigDecimal r96_total_number) {
+				this.r96_total_number = r96_total_number;
+			}
+			public BigDecimal getR96_total_amount() {
+				return r96_total_amount;
+			}
+			public void setR96_total_amount(BigDecimal r96_total_amount) {
+				this.r96_total_amount = r96_total_amount;
+			}
+			public BigDecimal getR96_total_deposit_bank() {
+				return r96_total_deposit_bank;
+			}
+			public void setR96_total_deposit_bank(BigDecimal r96_total_deposit_bank) {
+				this.r96_total_deposit_bank = r96_total_deposit_bank;
+			}
+			public String getR97_deposit_size() {
+				return r97_deposit_size;
+			}
+			public void setR97_deposit_size(String r97_deposit_size) {
+				this.r97_deposit_size = r97_deposit_size;
+			}
+			public String getR97_deposit_type() {
+				return r97_deposit_type;
+			}
+			public void setR97_deposit_type(String r97_deposit_type) {
+				this.r97_deposit_type = r97_deposit_type;
+			}
+			public BigDecimal getR97_deposit_excluding_number() {
+				return r97_deposit_excluding_number;
+			}
+			public void setR97_deposit_excluding_number(BigDecimal r97_deposit_excluding_number) {
+				this.r97_deposit_excluding_number = r97_deposit_excluding_number;
+			}
+			public BigDecimal getR97_deposit_excluding_amount() {
+				return r97_deposit_excluding_amount;
+			}
+			public void setR97_deposit_excluding_amount(BigDecimal r97_deposit_excluding_amount) {
+				this.r97_deposit_excluding_amount = r97_deposit_excluding_amount;
+			}
+			public BigDecimal getR97_deposit_foreign_number() {
+				return r97_deposit_foreign_number;
+			}
+			public void setR97_deposit_foreign_number(BigDecimal r97_deposit_foreign_number) {
+				this.r97_deposit_foreign_number = r97_deposit_foreign_number;
+			}
+			public BigDecimal getR97_deposit_foreign_amount() {
+				return r97_deposit_foreign_amount;
+			}
+			public void setR97_deposit_foreign_amount(BigDecimal r97_deposit_foreign_amount) {
+				this.r97_deposit_foreign_amount = r97_deposit_foreign_amount;
+			}
+			public BigDecimal getR97_total_number() {
+				return r97_total_number;
+			}
+			public void setR97_total_number(BigDecimal r97_total_number) {
+				this.r97_total_number = r97_total_number;
+			}
+			public BigDecimal getR97_total_amount() {
+				return r97_total_amount;
+			}
+			public void setR97_total_amount(BigDecimal r97_total_amount) {
+				this.r97_total_amount = r97_total_amount;
+			}
+			public BigDecimal getR97_total_deposit_bank() {
+				return r97_total_deposit_bank;
+			}
+			public void setR97_total_deposit_bank(BigDecimal r97_total_deposit_bank) {
+				this.r97_total_deposit_bank = r97_total_deposit_bank;
+			}
+			public String getR98_deposit_size() {
+				return r98_deposit_size;
+			}
+			public void setR98_deposit_size(String r98_deposit_size) {
+				this.r98_deposit_size = r98_deposit_size;
+			}
+			public String getR98_deposit_type() {
+				return r98_deposit_type;
+			}
+			public void setR98_deposit_type(String r98_deposit_type) {
+				this.r98_deposit_type = r98_deposit_type;
+			}
+			public BigDecimal getR98_deposit_excluding_number() {
+				return r98_deposit_excluding_number;
+			}
+			public void setR98_deposit_excluding_number(BigDecimal r98_deposit_excluding_number) {
+				this.r98_deposit_excluding_number = r98_deposit_excluding_number;
+			}
+			public BigDecimal getR98_deposit_excluding_amount() {
+				return r98_deposit_excluding_amount;
+			}
+			public void setR98_deposit_excluding_amount(BigDecimal r98_deposit_excluding_amount) {
+				this.r98_deposit_excluding_amount = r98_deposit_excluding_amount;
+			}
+			public BigDecimal getR98_deposit_foreign_number() {
+				return r98_deposit_foreign_number;
+			}
+			public void setR98_deposit_foreign_number(BigDecimal r98_deposit_foreign_number) {
+				this.r98_deposit_foreign_number = r98_deposit_foreign_number;
+			}
+			public BigDecimal getR98_deposit_foreign_amount() {
+				return r98_deposit_foreign_amount;
+			}
+			public void setR98_deposit_foreign_amount(BigDecimal r98_deposit_foreign_amount) {
+				this.r98_deposit_foreign_amount = r98_deposit_foreign_amount;
+			}
+			public BigDecimal getR98_total_number() {
+				return r98_total_number;
+			}
+			public void setR98_total_number(BigDecimal r98_total_number) {
+				this.r98_total_number = r98_total_number;
+			}
+			public BigDecimal getR98_total_amount() {
+				return r98_total_amount;
+			}
+			public void setR98_total_amount(BigDecimal r98_total_amount) {
+				this.r98_total_amount = r98_total_amount;
+			}
+			public BigDecimal getR98_total_deposit_bank() {
+				return r98_total_deposit_bank;
+			}
+			public void setR98_total_deposit_bank(BigDecimal r98_total_deposit_bank) {
+				this.r98_total_deposit_bank = r98_total_deposit_bank;
+			}
+			public String getR99_deposit_size() {
+				return r99_deposit_size;
+			}
+			public void setR99_deposit_size(String r99_deposit_size) {
+				this.r99_deposit_size = r99_deposit_size;
+			}
+			public String getR99_deposit_type() {
+				return r99_deposit_type;
+			}
+			public void setR99_deposit_type(String r99_deposit_type) {
+				this.r99_deposit_type = r99_deposit_type;
+			}
+			public BigDecimal getR99_deposit_excluding_number() {
+				return r99_deposit_excluding_number;
+			}
+			public void setR99_deposit_excluding_number(BigDecimal r99_deposit_excluding_number) {
+				this.r99_deposit_excluding_number = r99_deposit_excluding_number;
+			}
+			public BigDecimal getR99_deposit_excluding_amount() {
+				return r99_deposit_excluding_amount;
+			}
+			public void setR99_deposit_excluding_amount(BigDecimal r99_deposit_excluding_amount) {
+				this.r99_deposit_excluding_amount = r99_deposit_excluding_amount;
+			}
+			public BigDecimal getR99_deposit_foreign_number() {
+				return r99_deposit_foreign_number;
+			}
+			public void setR99_deposit_foreign_number(BigDecimal r99_deposit_foreign_number) {
+				this.r99_deposit_foreign_number = r99_deposit_foreign_number;
+			}
+			public BigDecimal getR99_deposit_foreign_amount() {
+				return r99_deposit_foreign_amount;
+			}
+			public void setR99_deposit_foreign_amount(BigDecimal r99_deposit_foreign_amount) {
+				this.r99_deposit_foreign_amount = r99_deposit_foreign_amount;
+			}
+			public BigDecimal getR99_total_number() {
+				return r99_total_number;
+			}
+			public void setR99_total_number(BigDecimal r99_total_number) {
+				this.r99_total_number = r99_total_number;
+			}
+			public BigDecimal getR99_total_amount() {
+				return r99_total_amount;
+			}
+			public void setR99_total_amount(BigDecimal r99_total_amount) {
+				this.r99_total_amount = r99_total_amount;
+			}
+			public BigDecimal getR99_total_deposit_bank() {
+				return r99_total_deposit_bank;
+			}
+			public void setR99_total_deposit_bank(BigDecimal r99_total_deposit_bank) {
+				this.r99_total_deposit_bank = r99_total_deposit_bank;
+			}
+			public String getR100_deposit_size() {
+				return r100_deposit_size;
+			}
+			public void setR100_deposit_size(String r100_deposit_size) {
+				this.r100_deposit_size = r100_deposit_size;
+			}
+			public String getR100_deposit_type() {
+				return r100_deposit_type;
+			}
+			public void setR100_deposit_type(String r100_deposit_type) {
+				this.r100_deposit_type = r100_deposit_type;
+			}
+			public BigDecimal getR100_deposit_excluding_number() {
+				return r100_deposit_excluding_number;
+			}
+			public void setR100_deposit_excluding_number(BigDecimal r100_deposit_excluding_number) {
+				this.r100_deposit_excluding_number = r100_deposit_excluding_number;
+			}
+			public BigDecimal getR100_deposit_excluding_amount() {
+				return r100_deposit_excluding_amount;
+			}
+			public void setR100_deposit_excluding_amount(BigDecimal r100_deposit_excluding_amount) {
+				this.r100_deposit_excluding_amount = r100_deposit_excluding_amount;
+			}
+			public BigDecimal getR100_deposit_foreign_number() {
+				return r100_deposit_foreign_number;
+			}
+			public void setR100_deposit_foreign_number(BigDecimal r100_deposit_foreign_number) {
+				this.r100_deposit_foreign_number = r100_deposit_foreign_number;
+			}
+			public BigDecimal getR100_deposit_foreign_amount() {
+				return r100_deposit_foreign_amount;
+			}
+			public void setR100_deposit_foreign_amount(BigDecimal r100_deposit_foreign_amount) {
+				this.r100_deposit_foreign_amount = r100_deposit_foreign_amount;
+			}
+			public BigDecimal getR100_total_number() {
+				return r100_total_number;
+			}
+			public void setR100_total_number(BigDecimal r100_total_number) {
+				this.r100_total_number = r100_total_number;
+			}
+			public BigDecimal getR100_total_amount() {
+				return r100_total_amount;
+			}
+			public void setR100_total_amount(BigDecimal r100_total_amount) {
+				this.r100_total_amount = r100_total_amount;
+			}
+			public BigDecimal getR100_total_deposit_bank() {
+				return r100_total_deposit_bank;
+			}
+			public void setR100_total_deposit_bank(BigDecimal r100_total_deposit_bank) {
+				this.r100_total_deposit_bank = r100_total_deposit_bank;
+			}
+			public String getR101_deposit_size() {
+				return r101_deposit_size;
+			}
+			public void setR101_deposit_size(String r101_deposit_size) {
+				this.r101_deposit_size = r101_deposit_size;
+			}
+			public String getR101_deposit_type() {
+				return r101_deposit_type;
+			}
+			public void setR101_deposit_type(String r101_deposit_type) {
+				this.r101_deposit_type = r101_deposit_type;
+			}
+			public BigDecimal getR101_deposit_excluding_number() {
+				return r101_deposit_excluding_number;
+			}
+			public void setR101_deposit_excluding_number(BigDecimal r101_deposit_excluding_number) {
+				this.r101_deposit_excluding_number = r101_deposit_excluding_number;
+			}
+			public BigDecimal getR101_deposit_excluding_amount() {
+				return r101_deposit_excluding_amount;
+			}
+			public void setR101_deposit_excluding_amount(BigDecimal r101_deposit_excluding_amount) {
+				this.r101_deposit_excluding_amount = r101_deposit_excluding_amount;
+			}
+			public BigDecimal getR101_deposit_foreign_number() {
+				return r101_deposit_foreign_number;
+			}
+			public void setR101_deposit_foreign_number(BigDecimal r101_deposit_foreign_number) {
+				this.r101_deposit_foreign_number = r101_deposit_foreign_number;
+			}
+			public BigDecimal getR101_deposit_foreign_amount() {
+				return r101_deposit_foreign_amount;
+			}
+			public void setR101_deposit_foreign_amount(BigDecimal r101_deposit_foreign_amount) {
+				this.r101_deposit_foreign_amount = r101_deposit_foreign_amount;
+			}
+			public BigDecimal getR101_total_number() {
+				return r101_total_number;
+			}
+			public void setR101_total_number(BigDecimal r101_total_number) {
+				this.r101_total_number = r101_total_number;
+			}
+			public BigDecimal getR101_total_amount() {
+				return r101_total_amount;
+			}
+			public void setR101_total_amount(BigDecimal r101_total_amount) {
+				this.r101_total_amount = r101_total_amount;
+			}
+			public BigDecimal getR101_total_deposit_bank() {
+				return r101_total_deposit_bank;
+			}
+			public void setR101_total_deposit_bank(BigDecimal r101_total_deposit_bank) {
+				this.r101_total_deposit_bank = r101_total_deposit_bank;
+			}
+			public String getR102_deposit_size() {
+				return r102_deposit_size;
+			}
+			public void setR102_deposit_size(String r102_deposit_size) {
+				this.r102_deposit_size = r102_deposit_size;
+			}
+			public String getR102_deposit_type() {
+				return r102_deposit_type;
+			}
+			public void setR102_deposit_type(String r102_deposit_type) {
+				this.r102_deposit_type = r102_deposit_type;
+			}
+			public BigDecimal getR102_deposit_excluding_number() {
+				return r102_deposit_excluding_number;
+			}
+			public void setR102_deposit_excluding_number(BigDecimal r102_deposit_excluding_number) {
+				this.r102_deposit_excluding_number = r102_deposit_excluding_number;
+			}
+			public BigDecimal getR102_deposit_excluding_amount() {
+				return r102_deposit_excluding_amount;
+			}
+			public void setR102_deposit_excluding_amount(BigDecimal r102_deposit_excluding_amount) {
+				this.r102_deposit_excluding_amount = r102_deposit_excluding_amount;
+			}
+			public BigDecimal getR102_deposit_foreign_number() {
+				return r102_deposit_foreign_number;
+			}
+			public void setR102_deposit_foreign_number(BigDecimal r102_deposit_foreign_number) {
+				this.r102_deposit_foreign_number = r102_deposit_foreign_number;
+			}
+			public BigDecimal getR102_deposit_foreign_amount() {
+				return r102_deposit_foreign_amount;
+			}
+			public void setR102_deposit_foreign_amount(BigDecimal r102_deposit_foreign_amount) {
+				this.r102_deposit_foreign_amount = r102_deposit_foreign_amount;
+			}
+			public BigDecimal getR102_total_number() {
+				return r102_total_number;
+			}
+			public void setR102_total_number(BigDecimal r102_total_number) {
+				this.r102_total_number = r102_total_number;
+			}
+			public BigDecimal getR102_total_amount() {
+				return r102_total_amount;
+			}
+			public void setR102_total_amount(BigDecimal r102_total_amount) {
+				this.r102_total_amount = r102_total_amount;
+			}
+			public BigDecimal getR102_total_deposit_bank() {
+				return r102_total_deposit_bank;
+			}
+			public void setR102_total_deposit_bank(BigDecimal r102_total_deposit_bank) {
+				this.r102_total_deposit_bank = r102_total_deposit_bank;
+			}
+			public String getR103_deposit_size() {
+				return r103_deposit_size;
+			}
+			public void setR103_deposit_size(String r103_deposit_size) {
+				this.r103_deposit_size = r103_deposit_size;
+			}
+			public String getR103_deposit_type() {
+				return r103_deposit_type;
+			}
+			public void setR103_deposit_type(String r103_deposit_type) {
+				this.r103_deposit_type = r103_deposit_type;
+			}
+			public BigDecimal getR103_deposit_excluding_number() {
+				return r103_deposit_excluding_number;
+			}
+			public void setR103_deposit_excluding_number(BigDecimal r103_deposit_excluding_number) {
+				this.r103_deposit_excluding_number = r103_deposit_excluding_number;
+			}
+			public BigDecimal getR103_deposit_excluding_amount() {
+				return r103_deposit_excluding_amount;
+			}
+			public void setR103_deposit_excluding_amount(BigDecimal r103_deposit_excluding_amount) {
+				this.r103_deposit_excluding_amount = r103_deposit_excluding_amount;
+			}
+			public BigDecimal getR103_deposit_foreign_number() {
+				return r103_deposit_foreign_number;
+			}
+			public void setR103_deposit_foreign_number(BigDecimal r103_deposit_foreign_number) {
+				this.r103_deposit_foreign_number = r103_deposit_foreign_number;
+			}
+			public BigDecimal getR103_deposit_foreign_amount() {
+				return r103_deposit_foreign_amount;
+			}
+			public void setR103_deposit_foreign_amount(BigDecimal r103_deposit_foreign_amount) {
+				this.r103_deposit_foreign_amount = r103_deposit_foreign_amount;
+			}
+			public BigDecimal getR103_total_number() {
+				return r103_total_number;
+			}
+			public void setR103_total_number(BigDecimal r103_total_number) {
+				this.r103_total_number = r103_total_number;
+			}
+			public BigDecimal getR103_total_amount() {
+				return r103_total_amount;
+			}
+			public void setR103_total_amount(BigDecimal r103_total_amount) {
+				this.r103_total_amount = r103_total_amount;
+			}
+			public BigDecimal getR103_total_deposit_bank() {
+				return r103_total_deposit_bank;
+			}
+			public void setR103_total_deposit_bank(BigDecimal r103_total_deposit_bank) {
+				this.r103_total_deposit_bank = r103_total_deposit_bank;
+			}
+			public String getR104_deposit_size() {
+				return r104_deposit_size;
+			}
+			public void setR104_deposit_size(String r104_deposit_size) {
+				this.r104_deposit_size = r104_deposit_size;
+			}
+			public String getR104_deposit_type() {
+				return r104_deposit_type;
+			}
+			public void setR104_deposit_type(String r104_deposit_type) {
+				this.r104_deposit_type = r104_deposit_type;
+			}
+			public BigDecimal getR104_deposit_excluding_number() {
+				return r104_deposit_excluding_number;
+			}
+			public void setR104_deposit_excluding_number(BigDecimal r104_deposit_excluding_number) {
+				this.r104_deposit_excluding_number = r104_deposit_excluding_number;
+			}
+			public BigDecimal getR104_deposit_excluding_amount() {
+				return r104_deposit_excluding_amount;
+			}
+			public void setR104_deposit_excluding_amount(BigDecimal r104_deposit_excluding_amount) {
+				this.r104_deposit_excluding_amount = r104_deposit_excluding_amount;
+			}
+			public BigDecimal getR104_deposit_foreign_number() {
+				return r104_deposit_foreign_number;
+			}
+			public void setR104_deposit_foreign_number(BigDecimal r104_deposit_foreign_number) {
+				this.r104_deposit_foreign_number = r104_deposit_foreign_number;
+			}
+			public BigDecimal getR104_deposit_foreign_amount() {
+				return r104_deposit_foreign_amount;
+			}
+			public void setR104_deposit_foreign_amount(BigDecimal r104_deposit_foreign_amount) {
+				this.r104_deposit_foreign_amount = r104_deposit_foreign_amount;
+			}
+			public BigDecimal getR104_total_number() {
+				return r104_total_number;
+			}
+			public void setR104_total_number(BigDecimal r104_total_number) {
+				this.r104_total_number = r104_total_number;
+			}
+			public BigDecimal getR104_total_amount() {
+				return r104_total_amount;
+			}
+			public void setR104_total_amount(BigDecimal r104_total_amount) {
+				this.r104_total_amount = r104_total_amount;
+			}
+			public BigDecimal getR104_total_deposit_bank() {
+				return r104_total_deposit_bank;
+			}
+			public void setR104_total_deposit_bank(BigDecimal r104_total_deposit_bank) {
+				this.r104_total_deposit_bank = r104_total_deposit_bank;
+			}
+			public String getR105_deposit_size() {
+				return r105_deposit_size;
+			}
+			public void setR105_deposit_size(String r105_deposit_size) {
+				this.r105_deposit_size = r105_deposit_size;
+			}
+			public String getR105_deposit_type() {
+				return r105_deposit_type;
+			}
+			public void setR105_deposit_type(String r105_deposit_type) {
+				this.r105_deposit_type = r105_deposit_type;
+			}
+			public BigDecimal getR105_deposit_excluding_number() {
+				return r105_deposit_excluding_number;
+			}
+			public void setR105_deposit_excluding_number(BigDecimal r105_deposit_excluding_number) {
+				this.r105_deposit_excluding_number = r105_deposit_excluding_number;
+			}
+			public BigDecimal getR105_deposit_excluding_amount() {
+				return r105_deposit_excluding_amount;
+			}
+			public void setR105_deposit_excluding_amount(BigDecimal r105_deposit_excluding_amount) {
+				this.r105_deposit_excluding_amount = r105_deposit_excluding_amount;
+			}
+			public BigDecimal getR105_deposit_foreign_number() {
+				return r105_deposit_foreign_number;
+			}
+			public void setR105_deposit_foreign_number(BigDecimal r105_deposit_foreign_number) {
+				this.r105_deposit_foreign_number = r105_deposit_foreign_number;
+			}
+			public BigDecimal getR105_deposit_foreign_amount() {
+				return r105_deposit_foreign_amount;
+			}
+			public void setR105_deposit_foreign_amount(BigDecimal r105_deposit_foreign_amount) {
+				this.r105_deposit_foreign_amount = r105_deposit_foreign_amount;
+			}
+			public BigDecimal getR105_total_number() {
+				return r105_total_number;
+			}
+			public void setR105_total_number(BigDecimal r105_total_number) {
+				this.r105_total_number = r105_total_number;
+			}
+			public BigDecimal getR105_total_amount() {
+				return r105_total_amount;
+			}
+			public void setR105_total_amount(BigDecimal r105_total_amount) {
+				this.r105_total_amount = r105_total_amount;
+			}
+			public BigDecimal getR105_total_deposit_bank() {
+				return r105_total_deposit_bank;
+			}
+			public void setR105_total_deposit_bank(BigDecimal r105_total_deposit_bank) {
+				this.r105_total_deposit_bank = r105_total_deposit_bank;
+			}
+			public String getR106_deposit_size() {
+				return r106_deposit_size;
+			}
+			public void setR106_deposit_size(String r106_deposit_size) {
+				this.r106_deposit_size = r106_deposit_size;
+			}
+			public String getR106_deposit_type() {
+				return r106_deposit_type;
+			}
+			public void setR106_deposit_type(String r106_deposit_type) {
+				this.r106_deposit_type = r106_deposit_type;
+			}
+			public BigDecimal getR106_deposit_excluding_number() {
+				return r106_deposit_excluding_number;
+			}
+			public void setR106_deposit_excluding_number(BigDecimal r106_deposit_excluding_number) {
+				this.r106_deposit_excluding_number = r106_deposit_excluding_number;
+			}
+			public BigDecimal getR106_deposit_excluding_amount() {
+				return r106_deposit_excluding_amount;
+			}
+			public void setR106_deposit_excluding_amount(BigDecimal r106_deposit_excluding_amount) {
+				this.r106_deposit_excluding_amount = r106_deposit_excluding_amount;
+			}
+			public BigDecimal getR106_deposit_foreign_number() {
+				return r106_deposit_foreign_number;
+			}
+			public void setR106_deposit_foreign_number(BigDecimal r106_deposit_foreign_number) {
+				this.r106_deposit_foreign_number = r106_deposit_foreign_number;
+			}
+			public BigDecimal getR106_deposit_foreign_amount() {
+				return r106_deposit_foreign_amount;
+			}
+			public void setR106_deposit_foreign_amount(BigDecimal r106_deposit_foreign_amount) {
+				this.r106_deposit_foreign_amount = r106_deposit_foreign_amount;
+			}
+			public BigDecimal getR106_total_number() {
+				return r106_total_number;
+			}
+			public void setR106_total_number(BigDecimal r106_total_number) {
+				this.r106_total_number = r106_total_number;
+			}
+			public BigDecimal getR106_total_amount() {
+				return r106_total_amount;
+			}
+			public void setR106_total_amount(BigDecimal r106_total_amount) {
+				this.r106_total_amount = r106_total_amount;
+			}
+			public BigDecimal getR106_total_deposit_bank() {
+				return r106_total_deposit_bank;
+			}
+			public void setR106_total_deposit_bank(BigDecimal r106_total_deposit_bank) {
+				this.r106_total_deposit_bank = r106_total_deposit_bank;
+			}
+			public String getR107_deposit_size() {
+				return r107_deposit_size;
+			}
+			public void setR107_deposit_size(String r107_deposit_size) {
+				this.r107_deposit_size = r107_deposit_size;
+			}
+			public String getR107_deposit_type() {
+				return r107_deposit_type;
+			}
+			public void setR107_deposit_type(String r107_deposit_type) {
+				this.r107_deposit_type = r107_deposit_type;
+			}
+			public BigDecimal getR107_deposit_excluding_number() {
+				return r107_deposit_excluding_number;
+			}
+			public void setR107_deposit_excluding_number(BigDecimal r107_deposit_excluding_number) {
+				this.r107_deposit_excluding_number = r107_deposit_excluding_number;
+			}
+			public BigDecimal getR107_deposit_excluding_amount() {
+				return r107_deposit_excluding_amount;
+			}
+			public void setR107_deposit_excluding_amount(BigDecimal r107_deposit_excluding_amount) {
+				this.r107_deposit_excluding_amount = r107_deposit_excluding_amount;
+			}
+			public BigDecimal getR107_deposit_foreign_number() {
+				return r107_deposit_foreign_number;
+			}
+			public void setR107_deposit_foreign_number(BigDecimal r107_deposit_foreign_number) {
+				this.r107_deposit_foreign_number = r107_deposit_foreign_number;
+			}
+			public BigDecimal getR107_deposit_foreign_amount() {
+				return r107_deposit_foreign_amount;
+			}
+			public void setR107_deposit_foreign_amount(BigDecimal r107_deposit_foreign_amount) {
+				this.r107_deposit_foreign_amount = r107_deposit_foreign_amount;
+			}
+			public BigDecimal getR107_total_number() {
+				return r107_total_number;
+			}
+			public void setR107_total_number(BigDecimal r107_total_number) {
+				this.r107_total_number = r107_total_number;
+			}
+			public BigDecimal getR107_total_amount() {
+				return r107_total_amount;
+			}
+			public void setR107_total_amount(BigDecimal r107_total_amount) {
+				this.r107_total_amount = r107_total_amount;
+			}
+			public BigDecimal getR107_total_deposit_bank() {
+				return r107_total_deposit_bank;
+			}
+			public void setR107_total_deposit_bank(BigDecimal r107_total_deposit_bank) {
+				this.r107_total_deposit_bank = r107_total_deposit_bank;
+			}
+			public String getR108_deposit_size() {
+				return r108_deposit_size;
+			}
+			public void setR108_deposit_size(String r108_deposit_size) {
+				this.r108_deposit_size = r108_deposit_size;
+			}
+			public String getR108_deposit_type() {
+				return r108_deposit_type;
+			}
+			public void setR108_deposit_type(String r108_deposit_type) {
+				this.r108_deposit_type = r108_deposit_type;
+			}
+			public BigDecimal getR108_deposit_excluding_number() {
+				return r108_deposit_excluding_number;
+			}
+			public void setR108_deposit_excluding_number(BigDecimal r108_deposit_excluding_number) {
+				this.r108_deposit_excluding_number = r108_deposit_excluding_number;
+			}
+			public BigDecimal getR108_deposit_excluding_amount() {
+				return r108_deposit_excluding_amount;
+			}
+			public void setR108_deposit_excluding_amount(BigDecimal r108_deposit_excluding_amount) {
+				this.r108_deposit_excluding_amount = r108_deposit_excluding_amount;
+			}
+			public BigDecimal getR108_deposit_foreign_number() {
+				return r108_deposit_foreign_number;
+			}
+			public void setR108_deposit_foreign_number(BigDecimal r108_deposit_foreign_number) {
+				this.r108_deposit_foreign_number = r108_deposit_foreign_number;
+			}
+			public BigDecimal getR108_deposit_foreign_amount() {
+				return r108_deposit_foreign_amount;
+			}
+			public void setR108_deposit_foreign_amount(BigDecimal r108_deposit_foreign_amount) {
+				this.r108_deposit_foreign_amount = r108_deposit_foreign_amount;
+			}
+			public BigDecimal getR108_total_number() {
+				return r108_total_number;
+			}
+			public void setR108_total_number(BigDecimal r108_total_number) {
+				this.r108_total_number = r108_total_number;
+			}
+			public BigDecimal getR108_total_amount() {
+				return r108_total_amount;
+			}
+			public void setR108_total_amount(BigDecimal r108_total_amount) {
+				this.r108_total_amount = r108_total_amount;
+			}
+			public BigDecimal getR108_total_deposit_bank() {
+				return r108_total_deposit_bank;
+			}
+			public void setR108_total_deposit_bank(BigDecimal r108_total_deposit_bank) {
+				this.r108_total_deposit_bank = r108_total_deposit_bank;
+			}
+			public String getR109_deposit_size() {
+				return r109_deposit_size;
+			}
+			public void setR109_deposit_size(String r109_deposit_size) {
+				this.r109_deposit_size = r109_deposit_size;
+			}
+			public String getR109_deposit_type() {
+				return r109_deposit_type;
+			}
+			public void setR109_deposit_type(String r109_deposit_type) {
+				this.r109_deposit_type = r109_deposit_type;
+			}
+			public BigDecimal getR109_deposit_excluding_number() {
+				return r109_deposit_excluding_number;
+			}
+			public void setR109_deposit_excluding_number(BigDecimal r109_deposit_excluding_number) {
+				this.r109_deposit_excluding_number = r109_deposit_excluding_number;
+			}
+			public BigDecimal getR109_deposit_excluding_amount() {
+				return r109_deposit_excluding_amount;
+			}
+			public void setR109_deposit_excluding_amount(BigDecimal r109_deposit_excluding_amount) {
+				this.r109_deposit_excluding_amount = r109_deposit_excluding_amount;
+			}
+			public BigDecimal getR109_deposit_foreign_number() {
+				return r109_deposit_foreign_number;
+			}
+			public void setR109_deposit_foreign_number(BigDecimal r109_deposit_foreign_number) {
+				this.r109_deposit_foreign_number = r109_deposit_foreign_number;
+			}
+			public BigDecimal getR109_deposit_foreign_amount() {
+				return r109_deposit_foreign_amount;
+			}
+			public void setR109_deposit_foreign_amount(BigDecimal r109_deposit_foreign_amount) {
+				this.r109_deposit_foreign_amount = r109_deposit_foreign_amount;
+			}
+			public BigDecimal getR109_total_number() {
+				return r109_total_number;
+			}
+			public void setR109_total_number(BigDecimal r109_total_number) {
+				this.r109_total_number = r109_total_number;
+			}
+			public BigDecimal getR109_total_amount() {
+				return r109_total_amount;
+			}
+			public void setR109_total_amount(BigDecimal r109_total_amount) {
+				this.r109_total_amount = r109_total_amount;
+			}
+			public BigDecimal getR109_total_deposit_bank() {
+				return r109_total_deposit_bank;
+			}
+			public void setR109_total_deposit_bank(BigDecimal r109_total_deposit_bank) {
+				this.r109_total_deposit_bank = r109_total_deposit_bank;
+			}
+			public String getR110_deposit_size() {
+				return r110_deposit_size;
+			}
+			public void setR110_deposit_size(String r110_deposit_size) {
+				this.r110_deposit_size = r110_deposit_size;
+			}
+			public String getR110_deposit_type() {
+				return r110_deposit_type;
+			}
+			public void setR110_deposit_type(String r110_deposit_type) {
+				this.r110_deposit_type = r110_deposit_type;
+			}
+			public BigDecimal getR110_deposit_excluding_number() {
+				return r110_deposit_excluding_number;
+			}
+			public void setR110_deposit_excluding_number(BigDecimal r110_deposit_excluding_number) {
+				this.r110_deposit_excluding_number = r110_deposit_excluding_number;
+			}
+			public BigDecimal getR110_deposit_excluding_amount() {
+				return r110_deposit_excluding_amount;
+			}
+			public void setR110_deposit_excluding_amount(BigDecimal r110_deposit_excluding_amount) {
+				this.r110_deposit_excluding_amount = r110_deposit_excluding_amount;
+			}
+			public BigDecimal getR110_deposit_foreign_number() {
+				return r110_deposit_foreign_number;
+			}
+			public void setR110_deposit_foreign_number(BigDecimal r110_deposit_foreign_number) {
+				this.r110_deposit_foreign_number = r110_deposit_foreign_number;
+			}
+			public BigDecimal getR110_deposit_foreign_amount() {
+				return r110_deposit_foreign_amount;
+			}
+			public void setR110_deposit_foreign_amount(BigDecimal r110_deposit_foreign_amount) {
+				this.r110_deposit_foreign_amount = r110_deposit_foreign_amount;
+			}
+			public BigDecimal getR110_total_number() {
+				return r110_total_number;
+			}
+			public void setR110_total_number(BigDecimal r110_total_number) {
+				this.r110_total_number = r110_total_number;
+			}
+			public BigDecimal getR110_total_amount() {
+				return r110_total_amount;
+			}
+			public void setR110_total_amount(BigDecimal r110_total_amount) {
+				this.r110_total_amount = r110_total_amount;
+			}
+			public BigDecimal getR110_total_deposit_bank() {
+				return r110_total_deposit_bank;
+			}
+			public void setR110_total_deposit_bank(BigDecimal r110_total_deposit_bank) {
+				this.r110_total_deposit_bank = r110_total_deposit_bank;
+			}
+			public String getR111_deposit_size() {
+				return r111_deposit_size;
+			}
+			public void setR111_deposit_size(String r111_deposit_size) {
+				this.r111_deposit_size = r111_deposit_size;
+			}
+			public String getR111_deposit_type() {
+				return r111_deposit_type;
+			}
+			public void setR111_deposit_type(String r111_deposit_type) {
+				this.r111_deposit_type = r111_deposit_type;
+			}
+			public BigDecimal getR111_deposit_excluding_number() {
+				return r111_deposit_excluding_number;
+			}
+			public void setR111_deposit_excluding_number(BigDecimal r111_deposit_excluding_number) {
+				this.r111_deposit_excluding_number = r111_deposit_excluding_number;
+			}
+			public BigDecimal getR111_deposit_excluding_amount() {
+				return r111_deposit_excluding_amount;
+			}
+			public void setR111_deposit_excluding_amount(BigDecimal r111_deposit_excluding_amount) {
+				this.r111_deposit_excluding_amount = r111_deposit_excluding_amount;
+			}
+			public BigDecimal getR111_deposit_foreign_number() {
+				return r111_deposit_foreign_number;
+			}
+			public void setR111_deposit_foreign_number(BigDecimal r111_deposit_foreign_number) {
+				this.r111_deposit_foreign_number = r111_deposit_foreign_number;
+			}
+			public BigDecimal getR111_deposit_foreign_amount() {
+				return r111_deposit_foreign_amount;
+			}
+			public void setR111_deposit_foreign_amount(BigDecimal r111_deposit_foreign_amount) {
+				this.r111_deposit_foreign_amount = r111_deposit_foreign_amount;
+			}
+			public BigDecimal getR111_total_number() {
+				return r111_total_number;
+			}
+			public void setR111_total_number(BigDecimal r111_total_number) {
+				this.r111_total_number = r111_total_number;
+			}
+			public BigDecimal getR111_total_amount() {
+				return r111_total_amount;
+			}
+			public void setR111_total_amount(BigDecimal r111_total_amount) {
+				this.r111_total_amount = r111_total_amount;
+			}
+			public BigDecimal getR111_total_deposit_bank() {
+				return r111_total_deposit_bank;
+			}
+			public void setR111_total_deposit_bank(BigDecimal r111_total_deposit_bank) {
+				this.r111_total_deposit_bank = r111_total_deposit_bank;
+			}
+			
+			public Date getREPORT_DATE() {
+				return REPORT_DATE;
+			}
+
+			public void setREPORT_DATE(Date REPORT_DATE) {
+				this.REPORT_DATE = REPORT_DATE;
+			}
+
+			public BigDecimal getREPORT_VERSION() {
+				return REPORT_VERSION;
+			}
+
+			public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
+				this.REPORT_VERSION = REPORT_VERSION;
+			}
+
+			public String getREPORT_FREQUENCY() {
+				return REPORT_FREQUENCY;
+			}
+
+			public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+				REPORT_FREQUENCY = rEPORT_FREQUENCY;
+			}
+
+			public String getREPORT_CODE() {
+				return REPORT_CODE;
+			}
+
+			public void setREPORT_CODE(String rEPORT_CODE) {
+				REPORT_CODE = rEPORT_CODE;
+			}
+
+			public String getREPORT_DESC() {
+				return REPORT_DESC;
+			}
+
+			public void setREPORT_DESC(String rEPORT_DESC) {
+				REPORT_DESC = rEPORT_DESC;
+			}
+
+			public String getENTITY_FLG() {
+				return ENTITY_FLG;
+			}
+
+			public void setENTITY_FLG(String eNTITY_FLG) {
+				ENTITY_FLG = eNTITY_FLG;
+			}
+
+			public String getMODIFY_FLG() {
+				return MODIFY_FLG;
+			}
+
+			public void setMODIFY_FLG(String mODIFY_FLG) {
+				MODIFY_FLG = mODIFY_FLG;
+			}
+
+			public String getDEL_FLG() {
+				return DEL_FLG;
+			}
+
+			public void setDEL_FLG(String dEL_FLG) {
+				DEL_FLG = dEL_FLG;
+			}
+
+		}
+			
+			
+		// SUMMARY MANUAL 
+		// ROW MAPPER
+
+		class MDISB1_RowMapper_MANUAL implements RowMapper<MDISB1_Summary_Entity_Manual> {
+
+			@Override
+							public MDISB1_Summary_Entity_Manual mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+				MDISB1_Summary_Entity_Manual obj = new MDISB1_Summary_Entity_Manual();
+		
+		
+				obj.setR7_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R7_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR8_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R8_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR9_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R9_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR10_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R10_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR11_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R11_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR12_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R12_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR13_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R13_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR14_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R14_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR15_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R15_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR16_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R16_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR17_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R17_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR18_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R18_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR19_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R19_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR20_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R20_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR21_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R21_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR22_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R22_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR23_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R23_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR24_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R24_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR25_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R25_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR26_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R26_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR27_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R27_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR28_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R28_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR29_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R29_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR30_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R30_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR31_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R31_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR32_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R32_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR33_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R33_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR34_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R34_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR35_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R35_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR36_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R36_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR37_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R37_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR38_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R38_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR39_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R39_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR40_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R40_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR41_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R41_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR42_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R42_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR43_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R43_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR44_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R44_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR45_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R45_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR46_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R46_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR47_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R47_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR48_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R48_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR49_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R49_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR50_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R50_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR51_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R51_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR52_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R52_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR53_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R53_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR54_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R54_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR55_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R55_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR56_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R56_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR57_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R57_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR58_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R58_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR59_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R59_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR60_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R60_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR61_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R61_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR62_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R62_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR63_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R63_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR64_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R64_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR65_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R65_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR66_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R66_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR67_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R67_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR68_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R68_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR69_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R69_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR70_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R70_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR71_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R71_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR72_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R72_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR73_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R73_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR74_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R74_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR75_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R75_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR76_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R76_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR77_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R77_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR78_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R78_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR79_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R79_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR80_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R80_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR81_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R81_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR82_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R82_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR83_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R83_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR84_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R84_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR85_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R85_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR86_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R86_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR87_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R87_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR88_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R88_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR89_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R89_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR90_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R90_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR91_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R91_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR92_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R92_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR93_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R93_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR94_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R94_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR95_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R95_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR96_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R96_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR97_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R97_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR98_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R98_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR99_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R99_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR100_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R100_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR101_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R101_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR102_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R102_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR103_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R103_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR104_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R104_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR105_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R105_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR106_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R106_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR107_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R107_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR108_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R108_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR109_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R109_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR110_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R110_TOTAL_DEPOSIT_EXCEED"));
+				obj.setR111_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R111_TOTAL_DEPOSIT_EXCEED"));
+		
+				// COMMON FIELDS
+				obj.setReport_date(rs.getDate("REPORT_DATE"));
+				obj.setReport_version(rs.getBigDecimal("REPORT_VERSION"));
+				obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+				obj.setReport_code(rs.getString("REPORT_CODE"));
+				obj.setReport_desc(rs.getString("REPORT_DESC"));
+				obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+				obj.setModify_flg(rs.getString("MODIFY_FLG"));
+				obj.setDel_flg(rs.getString("DEL_FLG"));
+
+				return obj;
+			}
+		}
+
+		
+		public static class MDISB1_Summary_Entity_Manual {
+
+			private BigDecimal	R7_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R8_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R9_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R10_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R11_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R12_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R13_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R14_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R15_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R16_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R17_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R18_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R19_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R20_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R21_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R22_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R23_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R24_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R25_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R26_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R27_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R28_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R29_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R30_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R31_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R32_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R33_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R34_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R35_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R36_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R37_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R38_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R39_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R40_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R41_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R42_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R43_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R44_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R45_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R46_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R47_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R48_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R49_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R50_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R51_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R52_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R53_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R54_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R55_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R56_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R57_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R58_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R59_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R60_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R61_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R62_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R63_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R64_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R65_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R66_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R67_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R68_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R69_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R70_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R71_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R72_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R73_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R74_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R75_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R76_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R77_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R78_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R79_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R80_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R81_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R82_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R83_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R84_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R85_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R86_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R87_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R88_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R89_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R90_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R91_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R92_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R93_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R94_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R95_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R96_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R97_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R98_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R99_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R100_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R101_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R102_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R103_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R104_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R105_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R106_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R107_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R108_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R109_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R110_TOTAL_DEPOSIT_EXCEED;
+			private BigDecimal	R111_TOTAL_DEPOSIT_EXCEED;
+			@Id
+			private Date	report_date;
+			private BigDecimal	report_version;
+			private String	report_frequency;
+			private String	report_code;
+			private String	report_desc;
+			private String	entity_flg;
+			private String	modify_flg;
+			private String	del_flg;
+			public BigDecimal getR7_TOTAL_DEPOSIT_EXCEED() {
+				return R7_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR7_TOTAL_DEPOSIT_EXCEED(BigDecimal R7_TOTAL_DEPOSIT_EXCEED) {
+				this.R7_TOTAL_DEPOSIT_EXCEED = R7_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR8_TOTAL_DEPOSIT_EXCEED() {
+				return R8_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR8_TOTAL_DEPOSIT_EXCEED(BigDecimal R8_TOTAL_DEPOSIT_EXCEED) {
+				this.R8_TOTAL_DEPOSIT_EXCEED = R8_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR9_TOTAL_DEPOSIT_EXCEED() {
+				return R9_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR9_TOTAL_DEPOSIT_EXCEED(BigDecimal R9_TOTAL_DEPOSIT_EXCEED) {
+				this.R9_TOTAL_DEPOSIT_EXCEED = R9_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR10_TOTAL_DEPOSIT_EXCEED() {
+				return R10_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR10_TOTAL_DEPOSIT_EXCEED(BigDecimal R10_TOTAL_DEPOSIT_EXCEED) {
+				this.R10_TOTAL_DEPOSIT_EXCEED = R10_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR11_TOTAL_DEPOSIT_EXCEED() {
+				return R11_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR11_TOTAL_DEPOSIT_EXCEED(BigDecimal R11_TOTAL_DEPOSIT_EXCEED) {
+				this.R11_TOTAL_DEPOSIT_EXCEED = R11_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR12_TOTAL_DEPOSIT_EXCEED() {
+				return R12_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR12_TOTAL_DEPOSIT_EXCEED(BigDecimal R12_TOTAL_DEPOSIT_EXCEED) {
+				this.R12_TOTAL_DEPOSIT_EXCEED = R12_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR13_TOTAL_DEPOSIT_EXCEED() {
+				return R13_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR13_TOTAL_DEPOSIT_EXCEED(BigDecimal R13_TOTAL_DEPOSIT_EXCEED) {
+				this.R13_TOTAL_DEPOSIT_EXCEED = R13_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR14_TOTAL_DEPOSIT_EXCEED() {
+				return R14_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR14_TOTAL_DEPOSIT_EXCEED(BigDecimal R14_TOTAL_DEPOSIT_EXCEED) {
+				this.R14_TOTAL_DEPOSIT_EXCEED = R14_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR15_TOTAL_DEPOSIT_EXCEED() {
+				return R15_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR15_TOTAL_DEPOSIT_EXCEED(BigDecimal R15_TOTAL_DEPOSIT_EXCEED) {
+				this.R15_TOTAL_DEPOSIT_EXCEED = R15_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR16_TOTAL_DEPOSIT_EXCEED() {
+				return R16_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR16_TOTAL_DEPOSIT_EXCEED(BigDecimal R16_TOTAL_DEPOSIT_EXCEED) {
+				this.R16_TOTAL_DEPOSIT_EXCEED = R16_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR17_TOTAL_DEPOSIT_EXCEED() {
+				return R17_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR17_TOTAL_DEPOSIT_EXCEED(BigDecimal R17_TOTAL_DEPOSIT_EXCEED) {
+				this.R17_TOTAL_DEPOSIT_EXCEED = R17_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR18_TOTAL_DEPOSIT_EXCEED() {
+				return R18_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR18_TOTAL_DEPOSIT_EXCEED(BigDecimal R18_TOTAL_DEPOSIT_EXCEED) {
+				this.R18_TOTAL_DEPOSIT_EXCEED = R18_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR19_TOTAL_DEPOSIT_EXCEED() {
+				return R19_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR19_TOTAL_DEPOSIT_EXCEED(BigDecimal R19_TOTAL_DEPOSIT_EXCEED) {
+				this.R19_TOTAL_DEPOSIT_EXCEED = R19_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR20_TOTAL_DEPOSIT_EXCEED() {
+				return R20_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR20_TOTAL_DEPOSIT_EXCEED(BigDecimal R20_TOTAL_DEPOSIT_EXCEED) {
+				this.R20_TOTAL_DEPOSIT_EXCEED = R20_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR21_TOTAL_DEPOSIT_EXCEED() {
+				return R21_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR21_TOTAL_DEPOSIT_EXCEED(BigDecimal R21_TOTAL_DEPOSIT_EXCEED) {
+				this.R21_TOTAL_DEPOSIT_EXCEED = R21_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR22_TOTAL_DEPOSIT_EXCEED() {
+				return R22_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR22_TOTAL_DEPOSIT_EXCEED(BigDecimal R22_TOTAL_DEPOSIT_EXCEED) {
+				this.R22_TOTAL_DEPOSIT_EXCEED = R22_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR23_TOTAL_DEPOSIT_EXCEED() {
+				return R23_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR23_TOTAL_DEPOSIT_EXCEED(BigDecimal R23_TOTAL_DEPOSIT_EXCEED) {
+				this.R23_TOTAL_DEPOSIT_EXCEED = R23_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR24_TOTAL_DEPOSIT_EXCEED() {
+				return R24_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR24_TOTAL_DEPOSIT_EXCEED(BigDecimal R24_TOTAL_DEPOSIT_EXCEED) {
+				this.R24_TOTAL_DEPOSIT_EXCEED = R24_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR25_TOTAL_DEPOSIT_EXCEED() {
+				return R25_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR25_TOTAL_DEPOSIT_EXCEED(BigDecimal R25_TOTAL_DEPOSIT_EXCEED) {
+				this.R25_TOTAL_DEPOSIT_EXCEED = R25_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR26_TOTAL_DEPOSIT_EXCEED() {
+				return R26_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR26_TOTAL_DEPOSIT_EXCEED(BigDecimal R26_TOTAL_DEPOSIT_EXCEED) {
+				this.R26_TOTAL_DEPOSIT_EXCEED = R26_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR27_TOTAL_DEPOSIT_EXCEED() {
+				return R27_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR27_TOTAL_DEPOSIT_EXCEED(BigDecimal R27_TOTAL_DEPOSIT_EXCEED) {
+				this.R27_TOTAL_DEPOSIT_EXCEED = R27_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR28_TOTAL_DEPOSIT_EXCEED() {
+				return R28_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR28_TOTAL_DEPOSIT_EXCEED(BigDecimal R28_TOTAL_DEPOSIT_EXCEED) {
+				this.R28_TOTAL_DEPOSIT_EXCEED = R28_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR29_TOTAL_DEPOSIT_EXCEED() {
+				return R29_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR29_TOTAL_DEPOSIT_EXCEED(BigDecimal R29_TOTAL_DEPOSIT_EXCEED) {
+				this.R29_TOTAL_DEPOSIT_EXCEED = R29_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR30_TOTAL_DEPOSIT_EXCEED() {
+				return R30_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR30_TOTAL_DEPOSIT_EXCEED(BigDecimal R30_TOTAL_DEPOSIT_EXCEED) {
+				this.R30_TOTAL_DEPOSIT_EXCEED = R30_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR31_TOTAL_DEPOSIT_EXCEED() {
+				return R31_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR31_TOTAL_DEPOSIT_EXCEED(BigDecimal R31_TOTAL_DEPOSIT_EXCEED) {
+				this.R31_TOTAL_DEPOSIT_EXCEED = R31_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR32_TOTAL_DEPOSIT_EXCEED() {
+				return R32_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR32_TOTAL_DEPOSIT_EXCEED(BigDecimal R32_TOTAL_DEPOSIT_EXCEED) {
+				this.R32_TOTAL_DEPOSIT_EXCEED = R32_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR33_TOTAL_DEPOSIT_EXCEED() {
+				return R33_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR33_TOTAL_DEPOSIT_EXCEED(BigDecimal R33_TOTAL_DEPOSIT_EXCEED) {
+				this.R33_TOTAL_DEPOSIT_EXCEED = R33_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR34_TOTAL_DEPOSIT_EXCEED() {
+				return R34_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR34_TOTAL_DEPOSIT_EXCEED(BigDecimal R34_TOTAL_DEPOSIT_EXCEED) {
+				this.R34_TOTAL_DEPOSIT_EXCEED = R34_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR35_TOTAL_DEPOSIT_EXCEED() {
+				return R35_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR35_TOTAL_DEPOSIT_EXCEED(BigDecimal R35_TOTAL_DEPOSIT_EXCEED) {
+				this.R35_TOTAL_DEPOSIT_EXCEED = R35_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR36_TOTAL_DEPOSIT_EXCEED() {
+				return R36_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR36_TOTAL_DEPOSIT_EXCEED(BigDecimal R36_TOTAL_DEPOSIT_EXCEED) {
+				this.R36_TOTAL_DEPOSIT_EXCEED = R36_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR37_TOTAL_DEPOSIT_EXCEED() {
+				return R37_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR37_TOTAL_DEPOSIT_EXCEED(BigDecimal R37_TOTAL_DEPOSIT_EXCEED) {
+				this.R37_TOTAL_DEPOSIT_EXCEED = R37_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR38_TOTAL_DEPOSIT_EXCEED() {
+				return R38_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR38_TOTAL_DEPOSIT_EXCEED(BigDecimal R38_TOTAL_DEPOSIT_EXCEED) {
+				this.R38_TOTAL_DEPOSIT_EXCEED = R38_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR39_TOTAL_DEPOSIT_EXCEED() {
+				return R39_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR39_TOTAL_DEPOSIT_EXCEED(BigDecimal R39_TOTAL_DEPOSIT_EXCEED) {
+				this.R39_TOTAL_DEPOSIT_EXCEED = R39_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR40_TOTAL_DEPOSIT_EXCEED() {
+				return R40_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR40_TOTAL_DEPOSIT_EXCEED(BigDecimal R40_TOTAL_DEPOSIT_EXCEED) {
+				this.R40_TOTAL_DEPOSIT_EXCEED = R40_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR41_TOTAL_DEPOSIT_EXCEED() {
+				return R41_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR41_TOTAL_DEPOSIT_EXCEED(BigDecimal R41_TOTAL_DEPOSIT_EXCEED) {
+				this.R41_TOTAL_DEPOSIT_EXCEED = R41_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR42_TOTAL_DEPOSIT_EXCEED() {
+				return R42_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR42_TOTAL_DEPOSIT_EXCEED(BigDecimal R42_TOTAL_DEPOSIT_EXCEED) {
+				this.R42_TOTAL_DEPOSIT_EXCEED = R42_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR43_TOTAL_DEPOSIT_EXCEED() {
+				return R43_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR43_TOTAL_DEPOSIT_EXCEED(BigDecimal R43_TOTAL_DEPOSIT_EXCEED) {
+				this.R43_TOTAL_DEPOSIT_EXCEED = R43_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR44_TOTAL_DEPOSIT_EXCEED() {
+				return R44_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR44_TOTAL_DEPOSIT_EXCEED(BigDecimal R44_TOTAL_DEPOSIT_EXCEED) {
+				this.R44_TOTAL_DEPOSIT_EXCEED = R44_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR45_TOTAL_DEPOSIT_EXCEED() {
+				return R45_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR45_TOTAL_DEPOSIT_EXCEED(BigDecimal R45_TOTAL_DEPOSIT_EXCEED) {
+				this.R45_TOTAL_DEPOSIT_EXCEED = R45_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR46_TOTAL_DEPOSIT_EXCEED() {
+				return R46_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR46_TOTAL_DEPOSIT_EXCEED(BigDecimal R46_TOTAL_DEPOSIT_EXCEED) {
+				this.R46_TOTAL_DEPOSIT_EXCEED = R46_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR47_TOTAL_DEPOSIT_EXCEED() {
+				return R47_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR47_TOTAL_DEPOSIT_EXCEED(BigDecimal R47_TOTAL_DEPOSIT_EXCEED) {
+				this.R47_TOTAL_DEPOSIT_EXCEED = R47_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR48_TOTAL_DEPOSIT_EXCEED() {
+				return R48_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR48_TOTAL_DEPOSIT_EXCEED(BigDecimal R48_TOTAL_DEPOSIT_EXCEED) {
+				this.R48_TOTAL_DEPOSIT_EXCEED = R48_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR49_TOTAL_DEPOSIT_EXCEED() {
+				return R49_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR49_TOTAL_DEPOSIT_EXCEED(BigDecimal R49_TOTAL_DEPOSIT_EXCEED) {
+				this.R49_TOTAL_DEPOSIT_EXCEED = R49_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR50_TOTAL_DEPOSIT_EXCEED() {
+				return R50_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR50_TOTAL_DEPOSIT_EXCEED(BigDecimal R50_TOTAL_DEPOSIT_EXCEED) {
+				this.R50_TOTAL_DEPOSIT_EXCEED = R50_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR51_TOTAL_DEPOSIT_EXCEED() {
+				return R51_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR51_TOTAL_DEPOSIT_EXCEED(BigDecimal R51_TOTAL_DEPOSIT_EXCEED) {
+				this.R51_TOTAL_DEPOSIT_EXCEED = R51_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR52_TOTAL_DEPOSIT_EXCEED() {
+				return R52_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR52_TOTAL_DEPOSIT_EXCEED(BigDecimal R52_TOTAL_DEPOSIT_EXCEED) {
+				this.R52_TOTAL_DEPOSIT_EXCEED = R52_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR53_TOTAL_DEPOSIT_EXCEED() {
+				return R53_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR53_TOTAL_DEPOSIT_EXCEED(BigDecimal R53_TOTAL_DEPOSIT_EXCEED) {
+				this.R53_TOTAL_DEPOSIT_EXCEED = R53_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR54_TOTAL_DEPOSIT_EXCEED() {
+				return R54_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR54_TOTAL_DEPOSIT_EXCEED(BigDecimal R54_TOTAL_DEPOSIT_EXCEED) {
+				this.R54_TOTAL_DEPOSIT_EXCEED = R54_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR55_TOTAL_DEPOSIT_EXCEED() {
+				return R55_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR55_TOTAL_DEPOSIT_EXCEED(BigDecimal R55_TOTAL_DEPOSIT_EXCEED) {
+				this.R55_TOTAL_DEPOSIT_EXCEED = R55_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR56_TOTAL_DEPOSIT_EXCEED() {
+				return R56_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR56_TOTAL_DEPOSIT_EXCEED(BigDecimal R56_TOTAL_DEPOSIT_EXCEED) {
+				this.R56_TOTAL_DEPOSIT_EXCEED = R56_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR57_TOTAL_DEPOSIT_EXCEED() {
+				return R57_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR57_TOTAL_DEPOSIT_EXCEED(BigDecimal R57_TOTAL_DEPOSIT_EXCEED) {
+				this.R57_TOTAL_DEPOSIT_EXCEED = R57_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR58_TOTAL_DEPOSIT_EXCEED() {
+				return R58_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR58_TOTAL_DEPOSIT_EXCEED(BigDecimal R58_TOTAL_DEPOSIT_EXCEED) {
+				this.R58_TOTAL_DEPOSIT_EXCEED = R58_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR59_TOTAL_DEPOSIT_EXCEED() {
+				return R59_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR59_TOTAL_DEPOSIT_EXCEED(BigDecimal R59_TOTAL_DEPOSIT_EXCEED) {
+				this.R59_TOTAL_DEPOSIT_EXCEED = R59_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR60_TOTAL_DEPOSIT_EXCEED() {
+				return R60_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR60_TOTAL_DEPOSIT_EXCEED(BigDecimal R60_TOTAL_DEPOSIT_EXCEED) {
+				this.R60_TOTAL_DEPOSIT_EXCEED = R60_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR61_TOTAL_DEPOSIT_EXCEED() {
+				return R61_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR61_TOTAL_DEPOSIT_EXCEED(BigDecimal R61_TOTAL_DEPOSIT_EXCEED) {
+				this.R61_TOTAL_DEPOSIT_EXCEED = R61_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR62_TOTAL_DEPOSIT_EXCEED() {
+				return R62_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR62_TOTAL_DEPOSIT_EXCEED(BigDecimal R62_TOTAL_DEPOSIT_EXCEED) {
+				this.R62_TOTAL_DEPOSIT_EXCEED = R62_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR63_TOTAL_DEPOSIT_EXCEED() {
+				return R63_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR63_TOTAL_DEPOSIT_EXCEED(BigDecimal R63_TOTAL_DEPOSIT_EXCEED) {
+				this.R63_TOTAL_DEPOSIT_EXCEED = R63_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR64_TOTAL_DEPOSIT_EXCEED() {
+				return R64_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR64_TOTAL_DEPOSIT_EXCEED(BigDecimal R64_TOTAL_DEPOSIT_EXCEED) {
+				this.R64_TOTAL_DEPOSIT_EXCEED = R64_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR65_TOTAL_DEPOSIT_EXCEED() {
+				return R65_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR65_TOTAL_DEPOSIT_EXCEED(BigDecimal R65_TOTAL_DEPOSIT_EXCEED) {
+				this.R65_TOTAL_DEPOSIT_EXCEED = R65_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR66_TOTAL_DEPOSIT_EXCEED() {
+				return R66_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR66_TOTAL_DEPOSIT_EXCEED(BigDecimal R66_TOTAL_DEPOSIT_EXCEED) {
+				this.R66_TOTAL_DEPOSIT_EXCEED = R66_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR67_TOTAL_DEPOSIT_EXCEED() {
+				return R67_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR67_TOTAL_DEPOSIT_EXCEED(BigDecimal R67_TOTAL_DEPOSIT_EXCEED) {
+				this.R67_TOTAL_DEPOSIT_EXCEED = R67_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR68_TOTAL_DEPOSIT_EXCEED() {
+				return R68_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR68_TOTAL_DEPOSIT_EXCEED(BigDecimal R68_TOTAL_DEPOSIT_EXCEED) {
+				this.R68_TOTAL_DEPOSIT_EXCEED = R68_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR69_TOTAL_DEPOSIT_EXCEED() {
+				return R69_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR69_TOTAL_DEPOSIT_EXCEED(BigDecimal R69_TOTAL_DEPOSIT_EXCEED) {
+				this.R69_TOTAL_DEPOSIT_EXCEED = R69_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR70_TOTAL_DEPOSIT_EXCEED() {
+				return R70_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR70_TOTAL_DEPOSIT_EXCEED(BigDecimal R70_TOTAL_DEPOSIT_EXCEED) {
+				this.R70_TOTAL_DEPOSIT_EXCEED = R70_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR71_TOTAL_DEPOSIT_EXCEED() {
+				return R71_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR71_TOTAL_DEPOSIT_EXCEED(BigDecimal R71_TOTAL_DEPOSIT_EXCEED) {
+				this.R71_TOTAL_DEPOSIT_EXCEED = R71_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR72_TOTAL_DEPOSIT_EXCEED() {
+				return R72_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR72_TOTAL_DEPOSIT_EXCEED(BigDecimal R72_TOTAL_DEPOSIT_EXCEED) {
+				this.R72_TOTAL_DEPOSIT_EXCEED = R72_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR73_TOTAL_DEPOSIT_EXCEED() {
+				return R73_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR73_TOTAL_DEPOSIT_EXCEED(BigDecimal R73_TOTAL_DEPOSIT_EXCEED) {
+				this.R73_TOTAL_DEPOSIT_EXCEED = R73_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR74_TOTAL_DEPOSIT_EXCEED() {
+				return R74_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR74_TOTAL_DEPOSIT_EXCEED(BigDecimal R74_TOTAL_DEPOSIT_EXCEED) {
+				this.R74_TOTAL_DEPOSIT_EXCEED = R74_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR75_TOTAL_DEPOSIT_EXCEED() {
+				return R75_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR75_TOTAL_DEPOSIT_EXCEED(BigDecimal R75_TOTAL_DEPOSIT_EXCEED) {
+				this.R75_TOTAL_DEPOSIT_EXCEED = R75_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR76_TOTAL_DEPOSIT_EXCEED() {
+				return R76_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR76_TOTAL_DEPOSIT_EXCEED(BigDecimal R76_TOTAL_DEPOSIT_EXCEED) {
+				this.R76_TOTAL_DEPOSIT_EXCEED = R76_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR77_TOTAL_DEPOSIT_EXCEED() {
+				return R77_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR77_TOTAL_DEPOSIT_EXCEED(BigDecimal R77_TOTAL_DEPOSIT_EXCEED) {
+				this.R77_TOTAL_DEPOSIT_EXCEED = R77_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR78_TOTAL_DEPOSIT_EXCEED() {
+				return R78_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR78_TOTAL_DEPOSIT_EXCEED(BigDecimal R78_TOTAL_DEPOSIT_EXCEED) {
+				this.R78_TOTAL_DEPOSIT_EXCEED = R78_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR79_TOTAL_DEPOSIT_EXCEED() {
+				return R79_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR79_TOTAL_DEPOSIT_EXCEED(BigDecimal R79_TOTAL_DEPOSIT_EXCEED) {
+				this.R79_TOTAL_DEPOSIT_EXCEED = R79_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR80_TOTAL_DEPOSIT_EXCEED() {
+				return R80_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR80_TOTAL_DEPOSIT_EXCEED(BigDecimal R80_TOTAL_DEPOSIT_EXCEED) {
+				this.R80_TOTAL_DEPOSIT_EXCEED = R80_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR81_TOTAL_DEPOSIT_EXCEED() {
+				return R81_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR81_TOTAL_DEPOSIT_EXCEED(BigDecimal R81_TOTAL_DEPOSIT_EXCEED) {
+				this.R81_TOTAL_DEPOSIT_EXCEED = R81_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR82_TOTAL_DEPOSIT_EXCEED() {
+				return R82_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR82_TOTAL_DEPOSIT_EXCEED(BigDecimal R82_TOTAL_DEPOSIT_EXCEED) {
+				this.R82_TOTAL_DEPOSIT_EXCEED = R82_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR83_TOTAL_DEPOSIT_EXCEED() {
+				return R83_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR83_TOTAL_DEPOSIT_EXCEED(BigDecimal R83_TOTAL_DEPOSIT_EXCEED) {
+				this.R83_TOTAL_DEPOSIT_EXCEED = R83_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR84_TOTAL_DEPOSIT_EXCEED() {
+				return R84_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR84_TOTAL_DEPOSIT_EXCEED(BigDecimal R84_TOTAL_DEPOSIT_EXCEED) {
+				this.R84_TOTAL_DEPOSIT_EXCEED = R84_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR85_TOTAL_DEPOSIT_EXCEED() {
+				return R85_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR85_TOTAL_DEPOSIT_EXCEED(BigDecimal R85_TOTAL_DEPOSIT_EXCEED) {
+				this.R85_TOTAL_DEPOSIT_EXCEED = R85_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR86_TOTAL_DEPOSIT_EXCEED() {
+				return R86_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR86_TOTAL_DEPOSIT_EXCEED(BigDecimal R86_TOTAL_DEPOSIT_EXCEED) {
+				this.R86_TOTAL_DEPOSIT_EXCEED = R86_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR87_TOTAL_DEPOSIT_EXCEED() {
+				return R87_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR87_TOTAL_DEPOSIT_EXCEED(BigDecimal R87_TOTAL_DEPOSIT_EXCEED) {
+				this.R87_TOTAL_DEPOSIT_EXCEED = R87_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR88_TOTAL_DEPOSIT_EXCEED() {
+				return R88_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR88_TOTAL_DEPOSIT_EXCEED(BigDecimal R88_TOTAL_DEPOSIT_EXCEED) {
+				this.R88_TOTAL_DEPOSIT_EXCEED = R88_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR89_TOTAL_DEPOSIT_EXCEED() {
+				return R89_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR89_TOTAL_DEPOSIT_EXCEED(BigDecimal R89_TOTAL_DEPOSIT_EXCEED) {
+				this.R89_TOTAL_DEPOSIT_EXCEED = R89_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR90_TOTAL_DEPOSIT_EXCEED() {
+				return R90_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR90_TOTAL_DEPOSIT_EXCEED(BigDecimal R90_TOTAL_DEPOSIT_EXCEED) {
+				this.R90_TOTAL_DEPOSIT_EXCEED = R90_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR91_TOTAL_DEPOSIT_EXCEED() {
+				return R91_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR91_TOTAL_DEPOSIT_EXCEED(BigDecimal R91_TOTAL_DEPOSIT_EXCEED) {
+				this.R91_TOTAL_DEPOSIT_EXCEED = R91_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR92_TOTAL_DEPOSIT_EXCEED() {
+				return R92_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR92_TOTAL_DEPOSIT_EXCEED(BigDecimal R92_TOTAL_DEPOSIT_EXCEED) {
+				this.R92_TOTAL_DEPOSIT_EXCEED = R92_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR93_TOTAL_DEPOSIT_EXCEED() {
+				return R93_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR93_TOTAL_DEPOSIT_EXCEED(BigDecimal R93_TOTAL_DEPOSIT_EXCEED) {
+				this.R93_TOTAL_DEPOSIT_EXCEED = R93_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR94_TOTAL_DEPOSIT_EXCEED() {
+				return R94_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR94_TOTAL_DEPOSIT_EXCEED(BigDecimal R94_TOTAL_DEPOSIT_EXCEED) {
+				this.R94_TOTAL_DEPOSIT_EXCEED = R94_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR95_TOTAL_DEPOSIT_EXCEED() {
+				return R95_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR95_TOTAL_DEPOSIT_EXCEED(BigDecimal R95_TOTAL_DEPOSIT_EXCEED) {
+				this.R95_TOTAL_DEPOSIT_EXCEED = R95_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR96_TOTAL_DEPOSIT_EXCEED() {
+				return R96_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR96_TOTAL_DEPOSIT_EXCEED(BigDecimal R96_TOTAL_DEPOSIT_EXCEED) {
+				this.R96_TOTAL_DEPOSIT_EXCEED = R96_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR97_TOTAL_DEPOSIT_EXCEED() {
+				return R97_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR97_TOTAL_DEPOSIT_EXCEED(BigDecimal R97_TOTAL_DEPOSIT_EXCEED) {
+				this.R97_TOTAL_DEPOSIT_EXCEED = R97_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR98_TOTAL_DEPOSIT_EXCEED() {
+				return R98_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR98_TOTAL_DEPOSIT_EXCEED(BigDecimal R98_TOTAL_DEPOSIT_EXCEED) {
+				this.R98_TOTAL_DEPOSIT_EXCEED = R98_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR99_TOTAL_DEPOSIT_EXCEED() {
+				return R99_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR99_TOTAL_DEPOSIT_EXCEED(BigDecimal R99_TOTAL_DEPOSIT_EXCEED) {
+				this.R99_TOTAL_DEPOSIT_EXCEED = R99_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR100_TOTAL_DEPOSIT_EXCEED() {
+				return R100_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR100_TOTAL_DEPOSIT_EXCEED(BigDecimal R100_TOTAL_DEPOSIT_EXCEED) {
+				this.R100_TOTAL_DEPOSIT_EXCEED = R100_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR101_TOTAL_DEPOSIT_EXCEED() {
+				return R101_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR101_TOTAL_DEPOSIT_EXCEED(BigDecimal R101_TOTAL_DEPOSIT_EXCEED) {
+				this.R101_TOTAL_DEPOSIT_EXCEED = R101_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR102_TOTAL_DEPOSIT_EXCEED() {
+				return R102_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR102_TOTAL_DEPOSIT_EXCEED(BigDecimal R102_TOTAL_DEPOSIT_EXCEED) {
+				this.R102_TOTAL_DEPOSIT_EXCEED = R102_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR103_TOTAL_DEPOSIT_EXCEED() {
+				return R103_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR103_TOTAL_DEPOSIT_EXCEED(BigDecimal R103_TOTAL_DEPOSIT_EXCEED) {
+				this.R103_TOTAL_DEPOSIT_EXCEED = R103_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR104_TOTAL_DEPOSIT_EXCEED() {
+				return R104_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR104_TOTAL_DEPOSIT_EXCEED(BigDecimal R104_TOTAL_DEPOSIT_EXCEED) {
+				this.R104_TOTAL_DEPOSIT_EXCEED = R104_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR105_TOTAL_DEPOSIT_EXCEED() {
+				return R105_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR105_TOTAL_DEPOSIT_EXCEED(BigDecimal R105_TOTAL_DEPOSIT_EXCEED) {
+				this.R105_TOTAL_DEPOSIT_EXCEED = R105_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR106_TOTAL_DEPOSIT_EXCEED() {
+				return R106_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR106_TOTAL_DEPOSIT_EXCEED(BigDecimal R106_TOTAL_DEPOSIT_EXCEED) {
+				this.R106_TOTAL_DEPOSIT_EXCEED = R106_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR107_TOTAL_DEPOSIT_EXCEED() {
+				return R107_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR107_TOTAL_DEPOSIT_EXCEED(BigDecimal R107_TOTAL_DEPOSIT_EXCEED) {
+				this.R107_TOTAL_DEPOSIT_EXCEED = R107_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR108_TOTAL_DEPOSIT_EXCEED() {
+				return R108_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR108_TOTAL_DEPOSIT_EXCEED(BigDecimal R108_TOTAL_DEPOSIT_EXCEED) {
+				this.R108_TOTAL_DEPOSIT_EXCEED = R108_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR109_TOTAL_DEPOSIT_EXCEED() {
+				return R109_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR109_TOTAL_DEPOSIT_EXCEED(BigDecimal R109_TOTAL_DEPOSIT_EXCEED) {
+				this.R109_TOTAL_DEPOSIT_EXCEED = R109_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR110_TOTAL_DEPOSIT_EXCEED() {
+				return R110_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR110_TOTAL_DEPOSIT_EXCEED(BigDecimal R110_TOTAL_DEPOSIT_EXCEED) {
+				this.R110_TOTAL_DEPOSIT_EXCEED = R110_TOTAL_DEPOSIT_EXCEED;
+			}
+			public BigDecimal getR111_TOTAL_DEPOSIT_EXCEED() {
+				return R111_TOTAL_DEPOSIT_EXCEED;
+			}
+			public void setR111_TOTAL_DEPOSIT_EXCEED(BigDecimal R111_TOTAL_DEPOSIT_EXCEED) {
+				this.R111_TOTAL_DEPOSIT_EXCEED = R111_TOTAL_DEPOSIT_EXCEED;
+			}
+			public Date getReport_date() {
+				return report_date;
+			}
+			public void setReport_date(Date report_date) {
+				this.report_date = report_date;
+			}
+			public BigDecimal getReport_version() {
+				return report_version;
+			}
+			public void setReport_version(BigDecimal report_version) {
+				this.report_version = report_version;
+			}
+			public String getReport_frequency() {
+				return report_frequency;
+			}
+			public void setReport_frequency(String report_frequency) {
+				this.report_frequency = report_frequency;
+			}
+			public String getReport_code() {
+				return report_code;
+			}
+			public void setReport_code(String report_code) {
+				this.report_code = report_code;
+			}
+			public String getReport_desc() {
+				return report_desc;
+			}
+			public void setReport_desc(String report_desc) {
+				this.report_desc = report_desc;
+			}
+			public String getEntity_flg() {
+				return entity_flg;
+			}
+			public void setEntity_flg(String entity_flg) {
+				this.entity_flg = entity_flg;
+			}
+			public String getModify_flg() {
+				return modify_flg;
+			}
+			public void setModify_flg(String modify_flg) {
+				this.modify_flg = modify_flg;
+			}
+			public String getDel_flg() {
+				return del_flg;
+			}
+			public void setDel_flg(String del_flg) {
+				this.del_flg = del_flg;
+			}
+		}
+		
+		
+		// COMPOSITE KEY CLASS INSIDE SERVICE
+
+		public static class MDISB1_PK implements Serializable {
+
+			private Date REPORT_DATE;
+			private BigDecimal REPORT_VERSION;
+
+			public MDISB1_PK() {
+			}
+
+			public MDISB1_PK(Date REPORT_DATE, BigDecimal REPORT_VERSION) {
+				this.REPORT_DATE = REPORT_DATE;
+				this.REPORT_VERSION = REPORT_VERSION;
+			}
+
+			@Override
+			public boolean equals(Object o) {
+				if (this == o)
+					return true;
+				if (!(o instanceof MDISB1_PK))
+					return false;
+				MDISB1_PK that = (MDISB1_PK) o;
+				return Objects.equals(REPORT_DATE, that.REPORT_DATE) && Objects.equals(REPORT_VERSION, that.REPORT_VERSION);
+			}
+
+			@Override
+			public int hashCode() {
+				return Objects.hash(REPORT_DATE, REPORT_VERSION);
+			}
+
+			public Date getREPORT_DATE() {
+				return REPORT_DATE;
+			}
+
+			public void setREPORT_DATE(Date REPORT_DATE) {
+				this.REPORT_DATE = REPORT_DATE;
+			}
+
+			public BigDecimal getREPORT_VERSION() {
+				return REPORT_VERSION;
+			}
+
+			public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
+				this.REPORT_VERSION = REPORT_VERSION;
+			}
+		}
+
+		
+		
+		
+			
+		//ARCHIVAL ROW MAPPER			
+
+				class MDISB1_RowMapper_Archival1 implements RowMapper<MDISB1_Archival_Summary_Entity1> {
+
+					@Override
+					public MDISB1_Archival_Summary_Entity1 mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+						MDISB1_Archival_Summary_Entity1 obj = new MDISB1_Archival_Summary_Entity1();	
+				
+						obj.setR7_deposit_size(rs.getString("R7_DEPOSIT_SIZE"));
+						obj.setR7_deposit_type(rs.getString("R7_DEPOSIT_TYPE"));
+						obj.setR7_deposit_excluding_number(rs.getBigDecimal("R7_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR7_deposit_excluding_amount(rs.getBigDecimal("R7_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR7_deposit_foreign_number(rs.getBigDecimal("R7_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR7_deposit_foreign_amount(rs.getBigDecimal("R7_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR7_total_number(rs.getBigDecimal("R7_TOTAL_NUMBER"));
+						obj.setR7_total_amount(rs.getBigDecimal("R7_TOTAL_AMOUNT"));
+						obj.setR7_total_deposit_bank(rs.getBigDecimal("R7_TOTAL_DEPOSIT_BANK"));
+						
+						obj.setR8_deposit_size(rs.getString("R8_DEPOSIT_SIZE"));
+						obj.setR8_deposit_type(rs.getString("R8_DEPOSIT_TYPE"));
+						obj.setR8_deposit_excluding_number(rs.getBigDecimal("R8_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR8_deposit_excluding_amount(rs.getBigDecimal("R8_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR8_deposit_foreign_number(rs.getBigDecimal("R8_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR8_deposit_foreign_amount(rs.getBigDecimal("R8_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR8_total_number(rs.getBigDecimal("R8_TOTAL_NUMBER"));
+						obj.setR8_total_amount(rs.getBigDecimal("R8_TOTAL_AMOUNT"));
+						obj.setR8_total_deposit_bank(rs.getBigDecimal("R8_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR9_deposit_size(rs.getString("R9_DEPOSIT_SIZE"));
+						obj.setR9_deposit_type(rs.getString("R9_DEPOSIT_TYPE"));
+						obj.setR9_deposit_excluding_number(rs.getBigDecimal("R9_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR9_deposit_excluding_amount(rs.getBigDecimal("R9_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR9_deposit_foreign_number(rs.getBigDecimal("R9_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR9_deposit_foreign_amount(rs.getBigDecimal("R9_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR9_total_number(rs.getBigDecimal("R9_TOTAL_NUMBER"));
+						obj.setR9_total_amount(rs.getBigDecimal("R9_TOTAL_AMOUNT"));
+						obj.setR9_total_deposit_bank(rs.getBigDecimal("R9_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR10_deposit_size(rs.getString("R10_DEPOSIT_SIZE"));
+						obj.setR10_deposit_type(rs.getString("R10_DEPOSIT_TYPE"));
+						obj.setR10_deposit_excluding_number(rs.getBigDecimal("R10_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR10_deposit_excluding_amount(rs.getBigDecimal("R10_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR10_deposit_foreign_number(rs.getBigDecimal("R10_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR10_deposit_foreign_amount(rs.getBigDecimal("R10_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR10_total_number(rs.getBigDecimal("R10_TOTAL_NUMBER"));
+						obj.setR10_total_amount(rs.getBigDecimal("R10_TOTAL_AMOUNT"));
+						obj.setR10_total_deposit_bank(rs.getBigDecimal("R10_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR11_deposit_size(rs.getString("R11_DEPOSIT_SIZE"));
+						obj.setR11_deposit_type(rs.getString("R11_DEPOSIT_TYPE"));
+						obj.setR11_deposit_excluding_number(rs.getBigDecimal("R11_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR11_deposit_excluding_amount(rs.getBigDecimal("R11_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR11_deposit_foreign_number(rs.getBigDecimal("R11_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR11_deposit_foreign_amount(rs.getBigDecimal("R11_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR11_total_number(rs.getBigDecimal("R11_TOTAL_NUMBER"));
+						obj.setR11_total_amount(rs.getBigDecimal("R11_TOTAL_AMOUNT"));
+						obj.setR11_total_deposit_bank(rs.getBigDecimal("R11_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR12_deposit_size(rs.getString("R12_DEPOSIT_SIZE"));
+						obj.setR12_deposit_type(rs.getString("R12_DEPOSIT_TYPE"));
+						obj.setR12_deposit_excluding_number(rs.getBigDecimal("R12_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR12_deposit_excluding_amount(rs.getBigDecimal("R12_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR12_deposit_foreign_number(rs.getBigDecimal("R12_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR12_deposit_foreign_amount(rs.getBigDecimal("R12_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR12_total_number(rs.getBigDecimal("R12_TOTAL_NUMBER"));
+						obj.setR12_total_amount(rs.getBigDecimal("R12_TOTAL_AMOUNT"));
+						obj.setR12_total_deposit_bank(rs.getBigDecimal("R12_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR13_deposit_size(rs.getString("R13_DEPOSIT_SIZE"));
+						obj.setR13_deposit_type(rs.getString("R13_DEPOSIT_TYPE"));
+						obj.setR13_deposit_excluding_number(rs.getBigDecimal("R13_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR13_deposit_excluding_amount(rs.getBigDecimal("R13_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR13_deposit_foreign_number(rs.getBigDecimal("R13_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR13_deposit_foreign_amount(rs.getBigDecimal("R13_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR13_total_number(rs.getBigDecimal("R13_TOTAL_NUMBER"));
+						obj.setR13_total_amount(rs.getBigDecimal("R13_TOTAL_AMOUNT"));
+						obj.setR13_total_deposit_bank(rs.getBigDecimal("R13_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR14_deposit_size(rs.getString("R14_DEPOSIT_SIZE"));
+						obj.setR14_deposit_type(rs.getString("R14_DEPOSIT_TYPE"));
+						obj.setR14_deposit_excluding_number(rs.getBigDecimal("R14_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR14_deposit_excluding_amount(rs.getBigDecimal("R14_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR14_deposit_foreign_number(rs.getBigDecimal("R14_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR14_deposit_foreign_amount(rs.getBigDecimal("R14_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR14_total_number(rs.getBigDecimal("R14_TOTAL_NUMBER"));
+						obj.setR14_total_amount(rs.getBigDecimal("R14_TOTAL_AMOUNT"));
+						obj.setR14_total_deposit_bank(rs.getBigDecimal("R14_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR15_deposit_size(rs.getString("R15_DEPOSIT_SIZE"));
+						obj.setR15_deposit_type(rs.getString("R15_DEPOSIT_TYPE"));
+						obj.setR15_deposit_excluding_number(rs.getBigDecimal("R15_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR15_deposit_excluding_amount(rs.getBigDecimal("R15_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR15_deposit_foreign_number(rs.getBigDecimal("R15_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR15_deposit_foreign_amount(rs.getBigDecimal("R15_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR15_total_number(rs.getBigDecimal("R15_TOTAL_NUMBER"));
+						obj.setR15_total_amount(rs.getBigDecimal("R15_TOTAL_AMOUNT"));
+						obj.setR15_total_deposit_bank(rs.getBigDecimal("R15_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR16_deposit_size(rs.getString("R16_DEPOSIT_SIZE"));
+						obj.setR16_deposit_type(rs.getString("R16_DEPOSIT_TYPE"));
+						obj.setR16_deposit_excluding_number(rs.getBigDecimal("R16_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR16_deposit_excluding_amount(rs.getBigDecimal("R16_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR16_deposit_foreign_number(rs.getBigDecimal("R16_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR16_deposit_foreign_amount(rs.getBigDecimal("R16_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR16_total_number(rs.getBigDecimal("R16_TOTAL_NUMBER"));
+						obj.setR16_total_amount(rs.getBigDecimal("R16_TOTAL_AMOUNT"));
+						obj.setR16_total_deposit_bank(rs.getBigDecimal("R16_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR17_deposit_size(rs.getString("R17_DEPOSIT_SIZE"));
+						obj.setR17_deposit_type(rs.getString("R17_DEPOSIT_TYPE"));
+						obj.setR17_deposit_excluding_number(rs.getBigDecimal("R17_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR17_deposit_excluding_amount(rs.getBigDecimal("R17_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR17_deposit_foreign_number(rs.getBigDecimal("R17_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR17_deposit_foreign_amount(rs.getBigDecimal("R17_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR17_total_number(rs.getBigDecimal("R17_TOTAL_NUMBER"));
+						obj.setR17_total_amount(rs.getBigDecimal("R17_TOTAL_AMOUNT"));
+						obj.setR17_total_deposit_bank(rs.getBigDecimal("R17_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR18_deposit_size(rs.getString("R18_DEPOSIT_SIZE"));
+						obj.setR18_deposit_type(rs.getString("R18_DEPOSIT_TYPE"));
+						obj.setR18_deposit_excluding_number(rs.getBigDecimal("R18_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR18_deposit_excluding_amount(rs.getBigDecimal("R18_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR18_deposit_foreign_number(rs.getBigDecimal("R18_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR18_deposit_foreign_amount(rs.getBigDecimal("R18_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR18_total_number(rs.getBigDecimal("R18_TOTAL_NUMBER"));
+						obj.setR18_total_amount(rs.getBigDecimal("R18_TOTAL_AMOUNT"));
+						obj.setR18_total_deposit_bank(rs.getBigDecimal("R18_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR19_deposit_size(rs.getString("R19_DEPOSIT_SIZE"));
+						obj.setR19_deposit_type(rs.getString("R19_DEPOSIT_TYPE"));
+						obj.setR19_deposit_excluding_number(rs.getBigDecimal("R19_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR19_deposit_excluding_amount(rs.getBigDecimal("R19_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR19_deposit_foreign_number(rs.getBigDecimal("R19_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR19_deposit_foreign_amount(rs.getBigDecimal("R19_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR19_total_number(rs.getBigDecimal("R19_TOTAL_NUMBER"));
+						obj.setR19_total_amount(rs.getBigDecimal("R19_TOTAL_AMOUNT"));
+						obj.setR19_total_deposit_bank(rs.getBigDecimal("R19_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR20_deposit_size(rs.getString("R20_DEPOSIT_SIZE"));
+						obj.setR20_deposit_type(rs.getString("R20_DEPOSIT_TYPE"));
+						obj.setR20_deposit_excluding_number(rs.getBigDecimal("R20_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR20_deposit_excluding_amount(rs.getBigDecimal("R20_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR20_deposit_foreign_number(rs.getBigDecimal("R20_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR20_deposit_foreign_amount(rs.getBigDecimal("R20_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR20_total_number(rs.getBigDecimal("R20_TOTAL_NUMBER"));
+						obj.setR20_total_amount(rs.getBigDecimal("R20_TOTAL_AMOUNT"));
+						obj.setR20_total_deposit_bank(rs.getBigDecimal("R20_TOTAL_DEPOSIT_BANK"));
+						
+						obj.setR21_deposit_size(rs.getString("R21_DEPOSIT_SIZE"));
+						obj.setR21_deposit_type(rs.getString("R21_DEPOSIT_TYPE"));
+						obj.setR21_deposit_excluding_number(rs.getBigDecimal("R21_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR21_deposit_excluding_amount(rs.getBigDecimal("R21_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR21_deposit_foreign_number(rs.getBigDecimal("R21_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR21_deposit_foreign_amount(rs.getBigDecimal("R21_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR21_total_number(rs.getBigDecimal("R21_TOTAL_NUMBER"));
+						obj.setR21_total_amount(rs.getBigDecimal("R21_TOTAL_AMOUNT"));
+						obj.setR21_total_deposit_bank(rs.getBigDecimal("R21_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR22_deposit_size(rs.getString("R22_DEPOSIT_SIZE"));
+						obj.setR22_deposit_type(rs.getString("R22_DEPOSIT_TYPE"));
+						obj.setR22_deposit_excluding_number(rs.getBigDecimal("R22_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR22_deposit_excluding_amount(rs.getBigDecimal("R22_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR22_deposit_foreign_number(rs.getBigDecimal("R22_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR22_deposit_foreign_amount(rs.getBigDecimal("R22_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR22_total_number(rs.getBigDecimal("R22_TOTAL_NUMBER"));
+						obj.setR22_total_amount(rs.getBigDecimal("R22_TOTAL_AMOUNT"));
+						obj.setR22_total_deposit_bank(rs.getBigDecimal("R22_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR23_deposit_size(rs.getString("R23_DEPOSIT_SIZE"));
+						obj.setR23_deposit_type(rs.getString("R23_DEPOSIT_TYPE"));
+						obj.setR23_deposit_excluding_number(rs.getBigDecimal("R23_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR23_deposit_excluding_amount(rs.getBigDecimal("R23_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR23_deposit_foreign_number(rs.getBigDecimal("R23_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR23_deposit_foreign_amount(rs.getBigDecimal("R23_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR23_total_number(rs.getBigDecimal("R23_TOTAL_NUMBER"));
+						obj.setR23_total_amount(rs.getBigDecimal("R23_TOTAL_AMOUNT"));
+						obj.setR23_total_deposit_bank(rs.getBigDecimal("R23_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR24_deposit_size(rs.getString("R24_DEPOSIT_SIZE"));
+						obj.setR24_deposit_type(rs.getString("R24_DEPOSIT_TYPE"));
+						obj.setR24_deposit_excluding_number(rs.getBigDecimal("R24_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR24_deposit_excluding_amount(rs.getBigDecimal("R24_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR24_deposit_foreign_number(rs.getBigDecimal("R24_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR24_deposit_foreign_amount(rs.getBigDecimal("R24_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR24_total_number(rs.getBigDecimal("R24_TOTAL_NUMBER"));
+						obj.setR24_total_amount(rs.getBigDecimal("R24_TOTAL_AMOUNT"));
+						obj.setR24_total_deposit_bank(rs.getBigDecimal("R24_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR25_deposit_size(rs.getString("R25_DEPOSIT_SIZE"));
+						obj.setR25_deposit_type(rs.getString("R25_DEPOSIT_TYPE"));
+						obj.setR25_deposit_excluding_number(rs.getBigDecimal("R25_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR25_deposit_excluding_amount(rs.getBigDecimal("R25_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR25_deposit_foreign_number(rs.getBigDecimal("R25_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR25_deposit_foreign_amount(rs.getBigDecimal("R25_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR25_total_number(rs.getBigDecimal("R25_TOTAL_NUMBER"));
+						obj.setR25_total_amount(rs.getBigDecimal("R25_TOTAL_AMOUNT"));
+						obj.setR25_total_deposit_bank(rs.getBigDecimal("R25_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR26_deposit_size(rs.getString("R26_DEPOSIT_SIZE"));
+						obj.setR26_deposit_type(rs.getString("R26_DEPOSIT_TYPE"));
+						obj.setR26_deposit_excluding_number(rs.getBigDecimal("R26_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR26_deposit_excluding_amount(rs.getBigDecimal("R26_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR26_deposit_foreign_number(rs.getBigDecimal("R26_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR26_deposit_foreign_amount(rs.getBigDecimal("R26_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR26_total_number(rs.getBigDecimal("R26_TOTAL_NUMBER"));
+						obj.setR26_total_amount(rs.getBigDecimal("R26_TOTAL_AMOUNT"));
+						obj.setR26_total_deposit_bank(rs.getBigDecimal("R26_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR27_deposit_size(rs.getString("R27_DEPOSIT_SIZE"));
+						obj.setR27_deposit_type(rs.getString("R27_DEPOSIT_TYPE"));
+						obj.setR27_deposit_excluding_number(rs.getBigDecimal("R27_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR27_deposit_excluding_amount(rs.getBigDecimal("R27_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR27_deposit_foreign_number(rs.getBigDecimal("R27_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR27_deposit_foreign_amount(rs.getBigDecimal("R27_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR27_total_number(rs.getBigDecimal("R27_TOTAL_NUMBER"));
+						obj.setR27_total_amount(rs.getBigDecimal("R27_TOTAL_AMOUNT"));
+						obj.setR27_total_deposit_bank(rs.getBigDecimal("R27_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR28_deposit_size(rs.getString("R28_DEPOSIT_SIZE"));
+						obj.setR28_deposit_type(rs.getString("R28_DEPOSIT_TYPE"));
+						obj.setR28_deposit_excluding_number(rs.getBigDecimal("R28_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR28_deposit_excluding_amount(rs.getBigDecimal("R28_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR28_deposit_foreign_number(rs.getBigDecimal("R28_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR28_deposit_foreign_amount(rs.getBigDecimal("R28_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR28_total_number(rs.getBigDecimal("R28_TOTAL_NUMBER"));
+						obj.setR28_total_amount(rs.getBigDecimal("R28_TOTAL_AMOUNT"));
+						obj.setR28_total_deposit_bank(rs.getBigDecimal("R28_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR29_deposit_size(rs.getString("R29_DEPOSIT_SIZE"));
+						obj.setR29_deposit_type(rs.getString("R29_DEPOSIT_TYPE"));
+						obj.setR29_deposit_excluding_number(rs.getBigDecimal("R29_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR29_deposit_excluding_amount(rs.getBigDecimal("R29_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR29_deposit_foreign_number(rs.getBigDecimal("R29_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR29_deposit_foreign_amount(rs.getBigDecimal("R29_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR29_total_number(rs.getBigDecimal("R29_TOTAL_NUMBER"));
+						obj.setR29_total_amount(rs.getBigDecimal("R29_TOTAL_AMOUNT"));
+						obj.setR29_total_deposit_bank(rs.getBigDecimal("R29_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR30_deposit_size(rs.getString("R30_DEPOSIT_SIZE"));
+						obj.setR30_deposit_type(rs.getString("R30_DEPOSIT_TYPE"));
+						obj.setR30_deposit_excluding_number(rs.getBigDecimal("R30_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR30_deposit_excluding_amount(rs.getBigDecimal("R30_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR30_deposit_foreign_number(rs.getBigDecimal("R30_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR30_deposit_foreign_amount(rs.getBigDecimal("R30_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR30_total_number(rs.getBigDecimal("R30_TOTAL_NUMBER"));
+						obj.setR30_total_amount(rs.getBigDecimal("R30_TOTAL_AMOUNT"));
+						obj.setR30_total_deposit_bank(rs.getBigDecimal("R30_TOTAL_DEPOSIT_BANK"));
+						
+						obj.setR31_deposit_size(rs.getString("R31_DEPOSIT_SIZE"));
+						obj.setR31_deposit_type(rs.getString("R31_DEPOSIT_TYPE"));
+						obj.setR31_deposit_excluding_number(rs.getBigDecimal("R31_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR31_deposit_excluding_amount(rs.getBigDecimal("R31_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR31_deposit_foreign_number(rs.getBigDecimal("R31_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR31_deposit_foreign_amount(rs.getBigDecimal("R31_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR31_total_number(rs.getBigDecimal("R31_TOTAL_NUMBER"));
+						obj.setR31_total_amount(rs.getBigDecimal("R31_TOTAL_AMOUNT"));
+						obj.setR31_total_deposit_bank(rs.getBigDecimal("R31_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR32_deposit_size(rs.getString("R32_DEPOSIT_SIZE"));
+						obj.setR32_deposit_type(rs.getString("R32_DEPOSIT_TYPE"));
+						obj.setR32_deposit_excluding_number(rs.getBigDecimal("R32_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR32_deposit_excluding_amount(rs.getBigDecimal("R32_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR32_deposit_foreign_number(rs.getBigDecimal("R32_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR32_deposit_foreign_amount(rs.getBigDecimal("R32_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR32_total_number(rs.getBigDecimal("R32_TOTAL_NUMBER"));
+						obj.setR32_total_amount(rs.getBigDecimal("R32_TOTAL_AMOUNT"));
+						obj.setR32_total_deposit_bank(rs.getBigDecimal("R32_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR33_deposit_size(rs.getString("R33_DEPOSIT_SIZE"));
+						obj.setR33_deposit_type(rs.getString("R33_DEPOSIT_TYPE"));
+						obj.setR33_deposit_excluding_number(rs.getBigDecimal("R33_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR33_deposit_excluding_amount(rs.getBigDecimal("R33_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR33_deposit_foreign_number(rs.getBigDecimal("R33_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR33_deposit_foreign_amount(rs.getBigDecimal("R33_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR33_total_number(rs.getBigDecimal("R33_TOTAL_NUMBER"));
+						obj.setR33_total_amount(rs.getBigDecimal("R33_TOTAL_AMOUNT"));
+						obj.setR33_total_deposit_bank(rs.getBigDecimal("R33_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR34_deposit_size(rs.getString("R34_DEPOSIT_SIZE"));
+						obj.setR34_deposit_type(rs.getString("R34_DEPOSIT_TYPE"));
+						obj.setR34_deposit_excluding_number(rs.getBigDecimal("R34_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR34_deposit_excluding_amount(rs.getBigDecimal("R34_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR34_deposit_foreign_number(rs.getBigDecimal("R34_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR34_deposit_foreign_amount(rs.getBigDecimal("R34_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR34_total_number(rs.getBigDecimal("R34_TOTAL_NUMBER"));
+						obj.setR34_total_amount(rs.getBigDecimal("R34_TOTAL_AMOUNT"));
+						obj.setR34_total_deposit_bank(rs.getBigDecimal("R34_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR35_deposit_size(rs.getString("R35_DEPOSIT_SIZE"));
+						obj.setR35_deposit_type(rs.getString("R35_DEPOSIT_TYPE"));
+						obj.setR35_deposit_excluding_number(rs.getBigDecimal("R35_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR35_deposit_excluding_amount(rs.getBigDecimal("R35_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR35_deposit_foreign_number(rs.getBigDecimal("R35_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR35_deposit_foreign_amount(rs.getBigDecimal("R35_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR35_total_number(rs.getBigDecimal("R35_TOTAL_NUMBER"));
+						obj.setR35_total_amount(rs.getBigDecimal("R35_TOTAL_AMOUNT"));
+						obj.setR35_total_deposit_bank(rs.getBigDecimal("R35_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR36_deposit_size(rs.getString("R36_DEPOSIT_SIZE"));
+						obj.setR36_deposit_type(rs.getString("R36_DEPOSIT_TYPE"));
+						obj.setR36_deposit_excluding_number(rs.getBigDecimal("R36_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR36_deposit_excluding_amount(rs.getBigDecimal("R36_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR36_deposit_foreign_number(rs.getBigDecimal("R36_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR36_deposit_foreign_amount(rs.getBigDecimal("R36_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR36_total_number(rs.getBigDecimal("R36_TOTAL_NUMBER"));
+						obj.setR36_total_amount(rs.getBigDecimal("R36_TOTAL_AMOUNT"));
+						obj.setR36_total_deposit_bank(rs.getBigDecimal("R36_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR37_deposit_size(rs.getString("R37_DEPOSIT_SIZE"));
+						obj.setR37_deposit_type(rs.getString("R37_DEPOSIT_TYPE"));
+						obj.setR37_deposit_excluding_number(rs.getBigDecimal("R37_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR37_deposit_excluding_amount(rs.getBigDecimal("R37_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR37_deposit_foreign_number(rs.getBigDecimal("R37_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR37_deposit_foreign_amount(rs.getBigDecimal("R37_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR37_total_number(rs.getBigDecimal("R37_TOTAL_NUMBER"));
+						obj.setR37_total_amount(rs.getBigDecimal("R37_TOTAL_AMOUNT"));
+						obj.setR37_total_deposit_bank(rs.getBigDecimal("R37_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR38_deposit_size(rs.getString("R38_DEPOSIT_SIZE"));
+						obj.setR38_deposit_type(rs.getString("R38_DEPOSIT_TYPE"));
+						obj.setR38_deposit_excluding_number(rs.getBigDecimal("R38_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR38_deposit_excluding_amount(rs.getBigDecimal("R38_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR38_deposit_foreign_number(rs.getBigDecimal("R38_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR38_deposit_foreign_amount(rs.getBigDecimal("R38_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR38_total_number(rs.getBigDecimal("R38_TOTAL_NUMBER"));
+						obj.setR38_total_amount(rs.getBigDecimal("R38_TOTAL_AMOUNT"));
+						obj.setR38_total_deposit_bank(rs.getBigDecimal("R38_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR39_deposit_size(rs.getString("R39_DEPOSIT_SIZE"));
+						obj.setR39_deposit_type(rs.getString("R39_DEPOSIT_TYPE"));
+						obj.setR39_deposit_excluding_number(rs.getBigDecimal("R39_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR39_deposit_excluding_amount(rs.getBigDecimal("R39_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR39_deposit_foreign_number(rs.getBigDecimal("R39_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR39_deposit_foreign_amount(rs.getBigDecimal("R39_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR39_total_number(rs.getBigDecimal("R39_TOTAL_NUMBER"));
+						obj.setR39_total_amount(rs.getBigDecimal("R39_TOTAL_AMOUNT"));
+						obj.setR39_total_deposit_bank(rs.getBigDecimal("R39_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR40_deposit_size(rs.getString("R40_DEPOSIT_SIZE"));
+						obj.setR40_deposit_type(rs.getString("R40_DEPOSIT_TYPE"));
+						obj.setR40_deposit_excluding_number(rs.getBigDecimal("R40_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR40_deposit_excluding_amount(rs.getBigDecimal("R40_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR40_deposit_foreign_number(rs.getBigDecimal("R40_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR40_deposit_foreign_amount(rs.getBigDecimal("R40_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR40_total_number(rs.getBigDecimal("R40_TOTAL_NUMBER"));
+						obj.setR40_total_amount(rs.getBigDecimal("R40_TOTAL_AMOUNT"));
+						obj.setR40_total_deposit_bank(rs.getBigDecimal("R40_TOTAL_DEPOSIT_BANK"));
+						
+						obj.setR41_deposit_size(rs.getString("R41_DEPOSIT_SIZE"));
+						obj.setR41_deposit_type(rs.getString("R41_DEPOSIT_TYPE"));
+						obj.setR41_deposit_excluding_number(rs.getBigDecimal("R41_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR41_deposit_excluding_amount(rs.getBigDecimal("R41_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR41_deposit_foreign_number(rs.getBigDecimal("R41_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR41_deposit_foreign_amount(rs.getBigDecimal("R41_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR41_total_number(rs.getBigDecimal("R41_TOTAL_NUMBER"));
+						obj.setR41_total_amount(rs.getBigDecimal("R41_TOTAL_AMOUNT"));
+						obj.setR41_total_deposit_bank(rs.getBigDecimal("R41_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR42_deposit_size(rs.getString("R42_DEPOSIT_SIZE"));
+						obj.setR42_deposit_type(rs.getString("R42_DEPOSIT_TYPE"));
+						obj.setR42_deposit_excluding_number(rs.getBigDecimal("R42_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR42_deposit_excluding_amount(rs.getBigDecimal("R42_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR42_deposit_foreign_number(rs.getBigDecimal("R42_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR42_deposit_foreign_amount(rs.getBigDecimal("R42_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR42_total_number(rs.getBigDecimal("R42_TOTAL_NUMBER"));
+						obj.setR42_total_amount(rs.getBigDecimal("R42_TOTAL_AMOUNT"));
+						obj.setR42_total_deposit_bank(rs.getBigDecimal("R42_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR43_deposit_size(rs.getString("R43_DEPOSIT_SIZE"));
+						obj.setR43_deposit_type(rs.getString("R43_DEPOSIT_TYPE"));
+						obj.setR43_deposit_excluding_number(rs.getBigDecimal("R43_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR43_deposit_excluding_amount(rs.getBigDecimal("R43_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR43_deposit_foreign_number(rs.getBigDecimal("R43_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR43_deposit_foreign_amount(rs.getBigDecimal("R43_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR43_total_number(rs.getBigDecimal("R43_TOTAL_NUMBER"));
+						obj.setR43_total_amount(rs.getBigDecimal("R43_TOTAL_AMOUNT"));
+						obj.setR43_total_deposit_bank(rs.getBigDecimal("R43_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR44_deposit_size(rs.getString("R44_DEPOSIT_SIZE"));
+						obj.setR44_deposit_type(rs.getString("R44_DEPOSIT_TYPE"));
+						obj.setR44_deposit_excluding_number(rs.getBigDecimal("R44_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR44_deposit_excluding_amount(rs.getBigDecimal("R44_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR44_deposit_foreign_number(rs.getBigDecimal("R44_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR44_deposit_foreign_amount(rs.getBigDecimal("R44_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR44_total_number(rs.getBigDecimal("R44_TOTAL_NUMBER"));
+						obj.setR44_total_amount(rs.getBigDecimal("R44_TOTAL_AMOUNT"));
+						obj.setR44_total_deposit_bank(rs.getBigDecimal("R44_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR45_deposit_size(rs.getString("R45_DEPOSIT_SIZE"));
+						obj.setR45_deposit_type(rs.getString("R45_DEPOSIT_TYPE"));
+						obj.setR45_deposit_excluding_number(rs.getBigDecimal("R45_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR45_deposit_excluding_amount(rs.getBigDecimal("R45_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR45_deposit_foreign_number(rs.getBigDecimal("R45_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR45_deposit_foreign_amount(rs.getBigDecimal("R45_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR45_total_number(rs.getBigDecimal("R45_TOTAL_NUMBER"));
+						obj.setR45_total_amount(rs.getBigDecimal("R45_TOTAL_AMOUNT"));
+						obj.setR45_total_deposit_bank(rs.getBigDecimal("R45_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR46_deposit_size(rs.getString("R46_DEPOSIT_SIZE"));
+						obj.setR46_deposit_type(rs.getString("R46_DEPOSIT_TYPE"));
+						obj.setR46_deposit_excluding_number(rs.getBigDecimal("R46_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR46_deposit_excluding_amount(rs.getBigDecimal("R46_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR46_deposit_foreign_number(rs.getBigDecimal("R46_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR46_deposit_foreign_amount(rs.getBigDecimal("R46_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR46_total_number(rs.getBigDecimal("R46_TOTAL_NUMBER"));
+						obj.setR46_total_amount(rs.getBigDecimal("R46_TOTAL_AMOUNT"));
+						obj.setR46_total_deposit_bank(rs.getBigDecimal("R46_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR47_deposit_size(rs.getString("R47_DEPOSIT_SIZE"));
+						obj.setR47_deposit_type(rs.getString("R47_DEPOSIT_TYPE"));
+						obj.setR47_deposit_excluding_number(rs.getBigDecimal("R47_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR47_deposit_excluding_amount(rs.getBigDecimal("R47_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR47_deposit_foreign_number(rs.getBigDecimal("R47_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR47_deposit_foreign_amount(rs.getBigDecimal("R47_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR47_total_number(rs.getBigDecimal("R47_TOTAL_NUMBER"));
+						obj.setR47_total_amount(rs.getBigDecimal("R47_TOTAL_AMOUNT"));
+						obj.setR47_total_deposit_bank(rs.getBigDecimal("R47_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR48_deposit_size(rs.getString("R48_DEPOSIT_SIZE"));
+						obj.setR48_deposit_type(rs.getString("R48_DEPOSIT_TYPE"));
+						obj.setR48_deposit_excluding_number(rs.getBigDecimal("R48_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR48_deposit_excluding_amount(rs.getBigDecimal("R48_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR48_deposit_foreign_number(rs.getBigDecimal("R48_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR48_deposit_foreign_amount(rs.getBigDecimal("R48_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR48_total_number(rs.getBigDecimal("R48_TOTAL_NUMBER"));
+						obj.setR48_total_amount(rs.getBigDecimal("R48_TOTAL_AMOUNT"));
+						obj.setR48_total_deposit_bank(rs.getBigDecimal("R48_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR49_deposit_size(rs.getString("R49_DEPOSIT_SIZE"));
+						obj.setR49_deposit_type(rs.getString("R49_DEPOSIT_TYPE"));
+						obj.setR49_deposit_excluding_number(rs.getBigDecimal("R49_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR49_deposit_excluding_amount(rs.getBigDecimal("R49_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR49_deposit_foreign_number(rs.getBigDecimal("R49_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR49_deposit_foreign_amount(rs.getBigDecimal("R49_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR49_total_number(rs.getBigDecimal("R49_TOTAL_NUMBER"));
+						obj.setR49_total_amount(rs.getBigDecimal("R49_TOTAL_AMOUNT"));
+						obj.setR49_total_deposit_bank(rs.getBigDecimal("R49_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR50_deposit_size(rs.getString("R50_DEPOSIT_SIZE"));
+						obj.setR50_deposit_type(rs.getString("R50_DEPOSIT_TYPE"));
+						obj.setR50_deposit_excluding_number(rs.getBigDecimal("R50_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR50_deposit_excluding_amount(rs.getBigDecimal("R50_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR50_deposit_foreign_number(rs.getBigDecimal("R50_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR50_deposit_foreign_amount(rs.getBigDecimal("R50_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR50_total_number(rs.getBigDecimal("R50_TOTAL_NUMBER"));
+						obj.setR50_total_amount(rs.getBigDecimal("R50_TOTAL_AMOUNT"));
+						obj.setR50_total_deposit_bank(rs.getBigDecimal("R50_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR51_deposit_size(rs.getString("R51_DEPOSIT_SIZE"));
+						obj.setR51_deposit_type(rs.getString("R51_DEPOSIT_TYPE"));
+						obj.setR51_deposit_excluding_number(rs.getBigDecimal("R51_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR51_deposit_excluding_amount(rs.getBigDecimal("R51_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR51_deposit_foreign_number(rs.getBigDecimal("R51_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR51_deposit_foreign_amount(rs.getBigDecimal("R51_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR51_total_number(rs.getBigDecimal("R51_TOTAL_NUMBER"));
+						obj.setR51_total_amount(rs.getBigDecimal("R51_TOTAL_AMOUNT"));
+						obj.setR51_total_deposit_bank(rs.getBigDecimal("R51_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR52_deposit_size(rs.getString("R52_DEPOSIT_SIZE"));
+						obj.setR52_deposit_type(rs.getString("R52_DEPOSIT_TYPE"));
+						obj.setR52_deposit_excluding_number(rs.getBigDecimal("R52_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR52_deposit_excluding_amount(rs.getBigDecimal("R52_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR52_deposit_foreign_number(rs.getBigDecimal("R52_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR52_deposit_foreign_amount(rs.getBigDecimal("R52_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR52_total_number(rs.getBigDecimal("R52_TOTAL_NUMBER"));
+						obj.setR52_total_amount(rs.getBigDecimal("R52_TOTAL_AMOUNT"));
+						obj.setR52_total_deposit_bank(rs.getBigDecimal("R52_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR53_deposit_size(rs.getString("R53_DEPOSIT_SIZE"));
+						obj.setR53_deposit_type(rs.getString("R53_DEPOSIT_TYPE"));
+						obj.setR53_deposit_excluding_number(rs.getBigDecimal("R53_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR53_deposit_excluding_amount(rs.getBigDecimal("R53_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR53_deposit_foreign_number(rs.getBigDecimal("R53_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR53_deposit_foreign_amount(rs.getBigDecimal("R53_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR53_total_number(rs.getBigDecimal("R53_TOTAL_NUMBER"));
+						obj.setR53_total_amount(rs.getBigDecimal("R53_TOTAL_AMOUNT"));
+						obj.setR53_total_deposit_bank(rs.getBigDecimal("R53_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR54_deposit_size(rs.getString("R54_DEPOSIT_SIZE"));
+						obj.setR54_deposit_type(rs.getString("R54_DEPOSIT_TYPE"));
+						obj.setR54_deposit_excluding_number(rs.getBigDecimal("R54_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR54_deposit_excluding_amount(rs.getBigDecimal("R54_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR54_deposit_foreign_number(rs.getBigDecimal("R54_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR54_deposit_foreign_amount(rs.getBigDecimal("R54_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR54_total_number(rs.getBigDecimal("R54_TOTAL_NUMBER"));
+						obj.setR54_total_amount(rs.getBigDecimal("R54_TOTAL_AMOUNT"));
+						obj.setR54_total_deposit_bank(rs.getBigDecimal("R54_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR55_deposit_size(rs.getString("R55_DEPOSIT_SIZE"));
+						obj.setR55_deposit_type(rs.getString("R55_DEPOSIT_TYPE"));
+						obj.setR55_deposit_excluding_number(rs.getBigDecimal("R55_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR55_deposit_excluding_amount(rs.getBigDecimal("R55_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR55_deposit_foreign_number(rs.getBigDecimal("R55_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR55_deposit_foreign_amount(rs.getBigDecimal("R55_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR55_total_number(rs.getBigDecimal("R55_TOTAL_NUMBER"));
+						obj.setR55_total_amount(rs.getBigDecimal("R55_TOTAL_AMOUNT"));
+						obj.setR55_total_deposit_bank(rs.getBigDecimal("R55_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR56_deposit_size(rs.getString("R56_DEPOSIT_SIZE"));
+						obj.setR56_deposit_type(rs.getString("R56_DEPOSIT_TYPE"));
+						obj.setR56_deposit_excluding_number(rs.getBigDecimal("R56_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR56_deposit_excluding_amount(rs.getBigDecimal("R56_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR56_deposit_foreign_number(rs.getBigDecimal("R56_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR56_deposit_foreign_amount(rs.getBigDecimal("R56_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR56_total_number(rs.getBigDecimal("R56_TOTAL_NUMBER"));
+						obj.setR56_total_amount(rs.getBigDecimal("R56_TOTAL_AMOUNT"));
+						obj.setR56_total_deposit_bank(rs.getBigDecimal("R56_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR57_deposit_size(rs.getString("R57_DEPOSIT_SIZE"));
+						obj.setR57_deposit_type(rs.getString("R57_DEPOSIT_TYPE"));
+						obj.setR57_deposit_excluding_number(rs.getBigDecimal("R57_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR57_deposit_excluding_amount(rs.getBigDecimal("R57_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR57_deposit_foreign_number(rs.getBigDecimal("R57_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR57_deposit_foreign_amount(rs.getBigDecimal("R57_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR57_total_number(rs.getBigDecimal("R57_TOTAL_NUMBER"));
+						obj.setR57_total_amount(rs.getBigDecimal("R57_TOTAL_AMOUNT"));
+						obj.setR57_total_deposit_bank(rs.getBigDecimal("R57_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR58_deposit_size(rs.getString("R58_DEPOSIT_SIZE"));
+						obj.setR58_deposit_type(rs.getString("R58_DEPOSIT_TYPE"));
+						obj.setR58_deposit_excluding_number(rs.getBigDecimal("R58_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR58_deposit_excluding_amount(rs.getBigDecimal("R58_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR58_deposit_foreign_number(rs.getBigDecimal("R58_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR58_deposit_foreign_amount(rs.getBigDecimal("R58_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR58_total_number(rs.getBigDecimal("R58_TOTAL_NUMBER"));
+						obj.setR58_total_amount(rs.getBigDecimal("R58_TOTAL_AMOUNT"));
+						obj.setR58_total_deposit_bank(rs.getBigDecimal("R58_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR59_deposit_size(rs.getString("R59_DEPOSIT_SIZE"));
+						obj.setR59_deposit_type(rs.getString("R59_DEPOSIT_TYPE"));
+						obj.setR59_deposit_excluding_number(rs.getBigDecimal("R59_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR59_deposit_excluding_amount(rs.getBigDecimal("R59_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR59_deposit_foreign_number(rs.getBigDecimal("R59_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR59_deposit_foreign_amount(rs.getBigDecimal("R59_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR59_total_number(rs.getBigDecimal("R59_TOTAL_NUMBER"));
+						obj.setR59_total_amount(rs.getBigDecimal("R59_TOTAL_AMOUNT"));
+						obj.setR59_total_deposit_bank(rs.getBigDecimal("R59_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR60_deposit_size(rs.getString("R60_DEPOSIT_SIZE"));
+						obj.setR60_deposit_type(rs.getString("R60_DEPOSIT_TYPE"));
+						obj.setR60_deposit_excluding_number(rs.getBigDecimal("R60_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR60_deposit_excluding_amount(rs.getBigDecimal("R60_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR60_deposit_foreign_number(rs.getBigDecimal("R60_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR60_deposit_foreign_amount(rs.getBigDecimal("R60_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR60_total_number(rs.getBigDecimal("R60_TOTAL_NUMBER"));
+						obj.setR60_total_amount(rs.getBigDecimal("R60_TOTAL_AMOUNT"));
+						obj.setR60_total_deposit_bank(rs.getBigDecimal("R60_TOTAL_DEPOSIT_BANK"));
+						
+						obj.setR61_deposit_size(rs.getString("R61_DEPOSIT_SIZE"));
+						obj.setR61_deposit_type(rs.getString("R61_DEPOSIT_TYPE"));
+						obj.setR61_deposit_excluding_number(rs.getBigDecimal("R61_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR61_deposit_excluding_amount(rs.getBigDecimal("R61_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR61_deposit_foreign_number(rs.getBigDecimal("R61_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR61_deposit_foreign_amount(rs.getBigDecimal("R61_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR61_total_number(rs.getBigDecimal("R61_TOTAL_NUMBER"));
+						obj.setR61_total_amount(rs.getBigDecimal("R61_TOTAL_AMOUNT"));
+						obj.setR61_total_deposit_bank(rs.getBigDecimal("R61_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR62_deposit_size(rs.getString("R62_DEPOSIT_SIZE"));
+						obj.setR62_deposit_type(rs.getString("R62_DEPOSIT_TYPE"));
+						obj.setR62_deposit_excluding_number(rs.getBigDecimal("R62_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR62_deposit_excluding_amount(rs.getBigDecimal("R62_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR62_deposit_foreign_number(rs.getBigDecimal("R62_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR62_deposit_foreign_amount(rs.getBigDecimal("R62_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR62_total_number(rs.getBigDecimal("R62_TOTAL_NUMBER"));
+						obj.setR62_total_amount(rs.getBigDecimal("R62_TOTAL_AMOUNT"));
+						obj.setR62_total_deposit_bank(rs.getBigDecimal("R62_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR63_deposit_size(rs.getString("R63_DEPOSIT_SIZE"));
+						obj.setR63_deposit_type(rs.getString("R63_DEPOSIT_TYPE"));
+						obj.setR63_deposit_excluding_number(rs.getBigDecimal("R63_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR63_deposit_excluding_amount(rs.getBigDecimal("R63_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR63_deposit_foreign_number(rs.getBigDecimal("R63_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR63_deposit_foreign_amount(rs.getBigDecimal("R63_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR63_total_number(rs.getBigDecimal("R63_TOTAL_NUMBER"));
+						obj.setR63_total_amount(rs.getBigDecimal("R63_TOTAL_AMOUNT"));
+						obj.setR63_total_deposit_bank(rs.getBigDecimal("R63_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR64_deposit_size(rs.getString("R64_DEPOSIT_SIZE"));
+						obj.setR64_deposit_type(rs.getString("R64_DEPOSIT_TYPE"));
+						obj.setR64_deposit_excluding_number(rs.getBigDecimal("R64_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR64_deposit_excluding_amount(rs.getBigDecimal("R64_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR64_deposit_foreign_number(rs.getBigDecimal("R64_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR64_deposit_foreign_amount(rs.getBigDecimal("R64_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR64_total_number(rs.getBigDecimal("R64_TOTAL_NUMBER"));
+						obj.setR64_total_amount(rs.getBigDecimal("R64_TOTAL_AMOUNT"));
+						obj.setR64_total_deposit_bank(rs.getBigDecimal("R64_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR65_deposit_size(rs.getString("R65_DEPOSIT_SIZE"));
+						obj.setR65_deposit_type(rs.getString("R65_DEPOSIT_TYPE"));
+						obj.setR65_deposit_excluding_number(rs.getBigDecimal("R65_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR65_deposit_excluding_amount(rs.getBigDecimal("R65_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR65_deposit_foreign_number(rs.getBigDecimal("R65_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR65_deposit_foreign_amount(rs.getBigDecimal("R65_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR65_total_number(rs.getBigDecimal("R65_TOTAL_NUMBER"));
+						obj.setR65_total_amount(rs.getBigDecimal("R65_TOTAL_AMOUNT"));
+						obj.setR65_total_deposit_bank(rs.getBigDecimal("R65_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR66_deposit_size(rs.getString("R66_DEPOSIT_SIZE"));
+						obj.setR66_deposit_type(rs.getString("R66_DEPOSIT_TYPE"));
+						obj.setR66_deposit_excluding_number(rs.getBigDecimal("R66_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR66_deposit_excluding_amount(rs.getBigDecimal("R66_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR66_deposit_foreign_number(rs.getBigDecimal("R66_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR66_deposit_foreign_amount(rs.getBigDecimal("R66_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR66_total_number(rs.getBigDecimal("R66_TOTAL_NUMBER"));
+						obj.setR66_total_amount(rs.getBigDecimal("R66_TOTAL_AMOUNT"));
+						obj.setR66_total_deposit_bank(rs.getBigDecimal("R66_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR67_deposit_size(rs.getString("R67_DEPOSIT_SIZE"));
+						obj.setR67_deposit_type(rs.getString("R67_DEPOSIT_TYPE"));
+						obj.setR67_deposit_excluding_number(rs.getBigDecimal("R67_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR67_deposit_excluding_amount(rs.getBigDecimal("R67_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR67_deposit_foreign_number(rs.getBigDecimal("R67_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR67_deposit_foreign_amount(rs.getBigDecimal("R67_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR67_total_number(rs.getBigDecimal("R67_TOTAL_NUMBER"));
+						obj.setR67_total_amount(rs.getBigDecimal("R67_TOTAL_AMOUNT"));
+						obj.setR67_total_deposit_bank(rs.getBigDecimal("R67_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR68_deposit_size(rs.getString("R68_DEPOSIT_SIZE"));
+						obj.setR68_deposit_type(rs.getString("R68_DEPOSIT_TYPE"));
+						obj.setR68_deposit_excluding_number(rs.getBigDecimal("R68_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR68_deposit_excluding_amount(rs.getBigDecimal("R68_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR68_deposit_foreign_number(rs.getBigDecimal("R68_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR68_deposit_foreign_amount(rs.getBigDecimal("R68_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR68_total_number(rs.getBigDecimal("R68_TOTAL_NUMBER"));
+						obj.setR68_total_amount(rs.getBigDecimal("R68_TOTAL_AMOUNT"));
+						obj.setR68_total_deposit_bank(rs.getBigDecimal("R68_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR69_deposit_size(rs.getString("R69_DEPOSIT_SIZE"));
+						obj.setR69_deposit_type(rs.getString("R69_DEPOSIT_TYPE"));
+						obj.setR69_deposit_excluding_number(rs.getBigDecimal("R69_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR69_deposit_excluding_amount(rs.getBigDecimal("R69_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR69_deposit_foreign_number(rs.getBigDecimal("R69_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR69_deposit_foreign_amount(rs.getBigDecimal("R69_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR69_total_number(rs.getBigDecimal("R69_TOTAL_NUMBER"));
+						obj.setR69_total_amount(rs.getBigDecimal("R69_TOTAL_AMOUNT"));
+						obj.setR69_total_deposit_bank(rs.getBigDecimal("R69_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR70_deposit_size(rs.getString("R70_DEPOSIT_SIZE"));
+						obj.setR70_deposit_type(rs.getString("R70_DEPOSIT_TYPE"));
+						obj.setR70_deposit_excluding_number(rs.getBigDecimal("R70_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR70_deposit_excluding_amount(rs.getBigDecimal("R70_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR70_deposit_foreign_number(rs.getBigDecimal("R70_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR70_deposit_foreign_amount(rs.getBigDecimal("R70_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR70_total_number(rs.getBigDecimal("R70_TOTAL_NUMBER"));
+						obj.setR70_total_amount(rs.getBigDecimal("R70_TOTAL_AMOUNT"));
+						obj.setR70_total_deposit_bank(rs.getBigDecimal("R70_TOTAL_DEPOSIT_BANK"));
+						
+						obj.setR71_deposit_size(rs.getString("R71_DEPOSIT_SIZE"));
+						obj.setR71_deposit_type(rs.getString("R71_DEPOSIT_TYPE"));
+						obj.setR71_deposit_excluding_number(rs.getBigDecimal("R71_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR71_deposit_excluding_amount(rs.getBigDecimal("R71_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR71_deposit_foreign_number(rs.getBigDecimal("R71_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR71_deposit_foreign_amount(rs.getBigDecimal("R71_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR71_total_number(rs.getBigDecimal("R71_TOTAL_NUMBER"));
+						obj.setR71_total_amount(rs.getBigDecimal("R71_TOTAL_AMOUNT"));
+						obj.setR71_total_deposit_bank(rs.getBigDecimal("R71_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR72_deposit_size(rs.getString("R72_DEPOSIT_SIZE"));
+						obj.setR72_deposit_type(rs.getString("R72_DEPOSIT_TYPE"));
+						obj.setR72_deposit_excluding_number(rs.getBigDecimal("R72_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR72_deposit_excluding_amount(rs.getBigDecimal("R72_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR72_deposit_foreign_number(rs.getBigDecimal("R72_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR72_deposit_foreign_amount(rs.getBigDecimal("R72_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR72_total_number(rs.getBigDecimal("R72_TOTAL_NUMBER"));
+						obj.setR72_total_amount(rs.getBigDecimal("R72_TOTAL_AMOUNT"));
+						obj.setR72_total_deposit_bank(rs.getBigDecimal("R72_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR73_deposit_size(rs.getString("R73_DEPOSIT_SIZE"));
+						obj.setR73_deposit_type(rs.getString("R73_DEPOSIT_TYPE"));
+						obj.setR73_deposit_excluding_number(rs.getBigDecimal("R73_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR73_deposit_excluding_amount(rs.getBigDecimal("R73_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR73_deposit_foreign_number(rs.getBigDecimal("R73_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR73_deposit_foreign_amount(rs.getBigDecimal("R73_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR73_total_number(rs.getBigDecimal("R73_TOTAL_NUMBER"));
+						obj.setR73_total_amount(rs.getBigDecimal("R73_TOTAL_AMOUNT"));
+						obj.setR73_total_deposit_bank(rs.getBigDecimal("R73_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR74_deposit_size(rs.getString("R74_DEPOSIT_SIZE"));
+						obj.setR74_deposit_type(rs.getString("R74_DEPOSIT_TYPE"));
+						obj.setR74_deposit_excluding_number(rs.getBigDecimal("R74_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR74_deposit_excluding_amount(rs.getBigDecimal("R74_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR74_deposit_foreign_number(rs.getBigDecimal("R74_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR74_deposit_foreign_amount(rs.getBigDecimal("R74_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR74_total_number(rs.getBigDecimal("R74_TOTAL_NUMBER"));
+						obj.setR74_total_amount(rs.getBigDecimal("R74_TOTAL_AMOUNT"));
+						obj.setR74_total_deposit_bank(rs.getBigDecimal("R74_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR75_deposit_size(rs.getString("R75_DEPOSIT_SIZE"));
+						obj.setR75_deposit_type(rs.getString("R75_DEPOSIT_TYPE"));
+						obj.setR75_deposit_excluding_number(rs.getBigDecimal("R75_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR75_deposit_excluding_amount(rs.getBigDecimal("R75_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR75_deposit_foreign_number(rs.getBigDecimal("R75_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR75_deposit_foreign_amount(rs.getBigDecimal("R75_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR75_total_number(rs.getBigDecimal("R75_TOTAL_NUMBER"));
+						obj.setR75_total_amount(rs.getBigDecimal("R75_TOTAL_AMOUNT"));
+						obj.setR75_total_deposit_bank(rs.getBigDecimal("R75_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR76_deposit_size(rs.getString("R76_DEPOSIT_SIZE"));
+						obj.setR76_deposit_type(rs.getString("R76_DEPOSIT_TYPE"));
+						obj.setR76_deposit_excluding_number(rs.getBigDecimal("R76_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR76_deposit_excluding_amount(rs.getBigDecimal("R76_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR76_deposit_foreign_number(rs.getBigDecimal("R76_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR76_deposit_foreign_amount(rs.getBigDecimal("R76_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR76_total_number(rs.getBigDecimal("R76_TOTAL_NUMBER"));
+						obj.setR76_total_amount(rs.getBigDecimal("R76_TOTAL_AMOUNT"));
+						obj.setR76_total_deposit_bank(rs.getBigDecimal("R76_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR77_deposit_size(rs.getString("R77_DEPOSIT_SIZE"));
+						obj.setR77_deposit_type(rs.getString("R77_DEPOSIT_TYPE"));
+						obj.setR77_deposit_excluding_number(rs.getBigDecimal("R77_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR77_deposit_excluding_amount(rs.getBigDecimal("R77_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR77_deposit_foreign_number(rs.getBigDecimal("R77_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR77_deposit_foreign_amount(rs.getBigDecimal("R77_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR77_total_number(rs.getBigDecimal("R77_TOTAL_NUMBER"));
+						obj.setR77_total_amount(rs.getBigDecimal("R77_TOTAL_AMOUNT"));
+						obj.setR77_total_deposit_bank(rs.getBigDecimal("R77_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR78_deposit_size(rs.getString("R78_DEPOSIT_SIZE"));
+						obj.setR78_deposit_type(rs.getString("R78_DEPOSIT_TYPE"));
+						obj.setR78_deposit_excluding_number(rs.getBigDecimal("R78_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR78_deposit_excluding_amount(rs.getBigDecimal("R78_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR78_deposit_foreign_number(rs.getBigDecimal("R78_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR78_deposit_foreign_amount(rs.getBigDecimal("R78_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR78_total_number(rs.getBigDecimal("R78_TOTAL_NUMBER"));
+						obj.setR78_total_amount(rs.getBigDecimal("R78_TOTAL_AMOUNT"));
+						obj.setR78_total_deposit_bank(rs.getBigDecimal("R78_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR79_deposit_size(rs.getString("R79_DEPOSIT_SIZE"));
+						obj.setR79_deposit_type(rs.getString("R79_DEPOSIT_TYPE"));
+						obj.setR79_deposit_excluding_number(rs.getBigDecimal("R79_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR79_deposit_excluding_amount(rs.getBigDecimal("R79_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR79_deposit_foreign_number(rs.getBigDecimal("R79_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR79_deposit_foreign_amount(rs.getBigDecimal("R79_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR79_total_number(rs.getBigDecimal("R79_TOTAL_NUMBER"));
+						obj.setR79_total_amount(rs.getBigDecimal("R79_TOTAL_AMOUNT"));
+						obj.setR79_total_deposit_bank(rs.getBigDecimal("R79_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR80_deposit_size(rs.getString("R80_DEPOSIT_SIZE"));
+						obj.setR80_deposit_type(rs.getString("R80_DEPOSIT_TYPE"));
+						obj.setR80_deposit_excluding_number(rs.getBigDecimal("R80_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR80_deposit_excluding_amount(rs.getBigDecimal("R80_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR80_deposit_foreign_number(rs.getBigDecimal("R80_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR80_deposit_foreign_amount(rs.getBigDecimal("R80_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR80_total_number(rs.getBigDecimal("R80_TOTAL_NUMBER"));
+						obj.setR80_total_amount(rs.getBigDecimal("R80_TOTAL_AMOUNT"));
+						obj.setR80_total_deposit_bank(rs.getBigDecimal("R80_TOTAL_DEPOSIT_BANK"));
+						
+						obj.setR81_deposit_size(rs.getString("R81_DEPOSIT_SIZE"));
+						obj.setR81_deposit_type(rs.getString("R81_DEPOSIT_TYPE"));
+						obj.setR81_deposit_excluding_number(rs.getBigDecimal("R81_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR81_deposit_excluding_amount(rs.getBigDecimal("R81_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR81_deposit_foreign_number(rs.getBigDecimal("R81_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR81_deposit_foreign_amount(rs.getBigDecimal("R81_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR81_total_number(rs.getBigDecimal("R81_TOTAL_NUMBER"));
+						obj.setR81_total_amount(rs.getBigDecimal("R81_TOTAL_AMOUNT"));
+						obj.setR81_total_deposit_bank(rs.getBigDecimal("R81_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR82_deposit_size(rs.getString("R82_DEPOSIT_SIZE"));
+						obj.setR82_deposit_type(rs.getString("R82_DEPOSIT_TYPE"));
+						obj.setR82_deposit_excluding_number(rs.getBigDecimal("R82_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR82_deposit_excluding_amount(rs.getBigDecimal("R82_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR82_deposit_foreign_number(rs.getBigDecimal("R82_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR82_deposit_foreign_amount(rs.getBigDecimal("R82_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR82_total_number(rs.getBigDecimal("R82_TOTAL_NUMBER"));
+						obj.setR82_total_amount(rs.getBigDecimal("R82_TOTAL_AMOUNT"));
+						obj.setR82_total_deposit_bank(rs.getBigDecimal("R82_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR83_deposit_size(rs.getString("R83_DEPOSIT_SIZE"));
+						obj.setR83_deposit_type(rs.getString("R83_DEPOSIT_TYPE"));
+						obj.setR83_deposit_excluding_number(rs.getBigDecimal("R83_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR83_deposit_excluding_amount(rs.getBigDecimal("R83_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR83_deposit_foreign_number(rs.getBigDecimal("R83_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR83_deposit_foreign_amount(rs.getBigDecimal("R83_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR83_total_number(rs.getBigDecimal("R83_TOTAL_NUMBER"));
+						obj.setR83_total_amount(rs.getBigDecimal("R83_TOTAL_AMOUNT"));
+						obj.setR83_total_deposit_bank(rs.getBigDecimal("R83_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR84_deposit_size(rs.getString("R84_DEPOSIT_SIZE"));
+						obj.setR84_deposit_type(rs.getString("R84_DEPOSIT_TYPE"));
+						obj.setR84_deposit_excluding_number(rs.getBigDecimal("R84_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR84_deposit_excluding_amount(rs.getBigDecimal("R84_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR84_deposit_foreign_number(rs.getBigDecimal("R84_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR84_deposit_foreign_amount(rs.getBigDecimal("R84_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR84_total_number(rs.getBigDecimal("R84_TOTAL_NUMBER"));
+						obj.setR84_total_amount(rs.getBigDecimal("R84_TOTAL_AMOUNT"));
+						obj.setR84_total_deposit_bank(rs.getBigDecimal("R84_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR85_deposit_size(rs.getString("R85_DEPOSIT_SIZE"));
+						obj.setR85_deposit_type(rs.getString("R85_DEPOSIT_TYPE"));
+						obj.setR85_deposit_excluding_number(rs.getBigDecimal("R85_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR85_deposit_excluding_amount(rs.getBigDecimal("R85_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR85_deposit_foreign_number(rs.getBigDecimal("R85_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR85_deposit_foreign_amount(rs.getBigDecimal("R85_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR85_total_number(rs.getBigDecimal("R85_TOTAL_NUMBER"));
+						obj.setR85_total_amount(rs.getBigDecimal("R85_TOTAL_AMOUNT"));
+						obj.setR85_total_deposit_bank(rs.getBigDecimal("R85_TOTAL_DEPOSIT_BANK"));
+
+						obj.setR86_deposit_size(rs.getString("R86_DEPOSIT_SIZE"));
+						obj.setR86_deposit_type(rs.getString("R86_DEPOSIT_TYPE"));
+						obj.setR86_deposit_excluding_number(rs.getBigDecimal("R86_DEPOSIT_EXCLUDING_NUMBER"));
+						obj.setR86_deposit_excluding_amount(rs.getBigDecimal("R86_DEPOSIT_EXCLUDING_AMOUNT"));
+						obj.setR86_deposit_foreign_number(rs.getBigDecimal("R86_DEPOSIT_FOREIGN_NUMBER"));
+						obj.setR86_deposit_foreign_amount(rs.getBigDecimal("R86_DEPOSIT_FOREIGN_AMOUNT"));
+						obj.setR86_total_number(rs.getBigDecimal("R86_TOTAL_NUMBER"));
+						obj.setR86_total_amount(rs.getBigDecimal("R86_TOTAL_AMOUNT"));
+						obj.setR86_total_deposit_bank(rs.getBigDecimal("R86_TOTAL_DEPOSIT_BANK"));
+				
+						// COMMON FIELDS
+						obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+						obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+						obj.setREPORT_RESUBDATE(rs.getDate("REPORT_RESUBDATE"));
+						obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+						obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+						obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+						obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+						obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+						obj.setDEL_FLG(rs.getString("DEL_FLG"));
+						
+
+						return obj;
+					}
+				}
+				
+				@IdClass(MDISB1_PK.class)
+				public static class MDISB1_Archival_Summary_Entity1 {
+				
+					@Column(name = "R7_DEPOSIT_SIZE")
+					private String r7_deposit_size;
+
+					@Column(name = "R7_DEPOSIT_TYPE")
+					private String r7_deposit_type;
+
+					@Column(name = "R7_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r7_deposit_excluding_number;
+
+					@Column(name = "R7_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r7_deposit_excluding_amount;
+
+					@Column(name = "R7_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r7_deposit_foreign_number;
+
+					@Column(name = "R7_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r7_deposit_foreign_amount;
+
+					@Column(name = "R7_TOTAL_NUMBER")
+					private BigDecimal r7_total_number;
+
+					@Column(name = "R7_TOTAL_AMOUNT")
+					private BigDecimal r7_total_amount;
+
+					@Column(name = "R7_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r7_total_deposit_bank;
+					
+					
+					@Column(name = "R8_DEPOSIT_SIZE")
+					private String r8_deposit_size;
+
+					@Column(name = "R8_DEPOSIT_TYPE")
+					private String r8_deposit_type;
+
+					@Column(name = "R8_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r8_deposit_excluding_number;
+
+					@Column(name = "R8_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r8_deposit_excluding_amount;
+
+					@Column(name = "R8_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r8_deposit_foreign_number;
+
+					@Column(name = "R8_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r8_deposit_foreign_amount;
+
+					@Column(name = "R8_TOTAL_NUMBER")
+					private BigDecimal r8_total_number;
+
+					@Column(name = "R8_TOTAL_AMOUNT")
+					private BigDecimal r8_total_amount;
+
+					@Column(name = "R8_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r8_total_deposit_bank;
+
+					@Column(name = "R9_DEPOSIT_SIZE")
+					private String r9_deposit_size;
+
+					@Column(name = "R9_DEPOSIT_TYPE")
+					private String r9_deposit_type;
+
+					@Column(name = "R9_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r9_deposit_excluding_number;
+
+					@Column(name = "R9_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r9_deposit_excluding_amount;
+
+					@Column(name = "R9_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r9_deposit_foreign_number;
+
+					@Column(name = "R9_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r9_deposit_foreign_amount;
+
+					@Column(name = "R9_TOTAL_NUMBER")
+					private BigDecimal r9_total_number;
+
+					@Column(name = "R9_TOTAL_AMOUNT")
+					private BigDecimal r9_total_amount;
+
+					@Column(name = "R9_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r9_total_deposit_bank;
+
+					@Column(name = "R10_DEPOSIT_SIZE")
+					private String r10_deposit_size;
+
+					@Column(name = "R10_DEPOSIT_TYPE")
+					private String r10_deposit_type;
+
+					@Column(name = "R10_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r10_deposit_excluding_number;
+
+					@Column(name = "R10_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r10_deposit_excluding_amount;
+
+					@Column(name = "R10_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r10_deposit_foreign_number;
+
+					@Column(name = "R10_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r10_deposit_foreign_amount;
+
+					@Column(name = "R10_TOTAL_NUMBER")
+					private BigDecimal r10_total_number;
+
+					@Column(name = "R10_TOTAL_AMOUNT")
+					private BigDecimal r10_total_amount;
+
+					@Column(name = "R10_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r10_total_deposit_bank;
+
+					@Column(name = "R11_DEPOSIT_SIZE")
+					private String r11_deposit_size;
+
+					@Column(name = "R11_DEPOSIT_TYPE")
+					private String r11_deposit_type;
+
+					@Column(name = "R11_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r11_deposit_excluding_number;
+
+					@Column(name = "R11_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r11_deposit_excluding_amount;
+
+					@Column(name = "R11_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r11_deposit_foreign_number;
+
+					@Column(name = "R11_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r11_deposit_foreign_amount;
+
+					@Column(name = "R11_TOTAL_NUMBER")
+					private BigDecimal r11_total_number;
+
+					@Column(name = "R11_TOTAL_AMOUNT")
+					private BigDecimal r11_total_amount;
+
+					@Column(name = "R11_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r11_total_deposit_bank;
+
+					@Column(name = "R12_DEPOSIT_SIZE")
+					private String r12_deposit_size;
+
+					@Column(name = "R12_DEPOSIT_TYPE")
+					private String r12_deposit_type;
+
+					@Column(name = "R12_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r12_deposit_excluding_number;
+
+					@Column(name = "R12_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r12_deposit_excluding_amount;
+
+					@Column(name = "R12_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r12_deposit_foreign_number;
+
+					@Column(name = "R12_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r12_deposit_foreign_amount;
+
+					@Column(name = "R12_TOTAL_NUMBER")
+					private BigDecimal r12_total_number;
+
+					@Column(name = "R12_TOTAL_AMOUNT")
+					private BigDecimal r12_total_amount;
+
+					@Column(name = "R12_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r12_total_deposit_bank;
+
+					@Column(name = "R13_DEPOSIT_SIZE")
+					private String r13_deposit_size;
+
+					@Column(name = "R13_DEPOSIT_TYPE")
+					private String r13_deposit_type;
+
+					@Column(name = "R13_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r13_deposit_excluding_number;
+
+					@Column(name = "R13_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r13_deposit_excluding_amount;
+
+					@Column(name = "R13_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r13_deposit_foreign_number;
+
+					@Column(name = "R13_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r13_deposit_foreign_amount;
+
+					@Column(name = "R13_TOTAL_NUMBER")
+					private BigDecimal r13_total_number;
+
+					@Column(name = "R13_TOTAL_AMOUNT")
+					private BigDecimal r13_total_amount;
+
+					@Column(name = "R13_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r13_total_deposit_bank;
+
+					@Column(name = "R14_DEPOSIT_SIZE")
+					private String r14_deposit_size;
+
+					@Column(name = "R14_DEPOSIT_TYPE")
+					private String r14_deposit_type;
+
+					@Column(name = "R14_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r14_deposit_excluding_number;
+
+					@Column(name = "R14_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r14_deposit_excluding_amount;
+
+					@Column(name = "R14_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r14_deposit_foreign_number;
+
+					@Column(name = "R14_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r14_deposit_foreign_amount;
+
+					@Column(name = "R14_TOTAL_NUMBER")
+					private BigDecimal r14_total_number;
+
+					@Column(name = "R14_TOTAL_AMOUNT")
+					private BigDecimal r14_total_amount;
+
+					@Column(name = "R14_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r14_total_deposit_bank;
+
+					@Column(name = "R15_DEPOSIT_SIZE")
+					private String r15_deposit_size;
+
+					@Column(name = "R15_DEPOSIT_TYPE")
+					private String r15_deposit_type;
+
+					@Column(name = "R15_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r15_deposit_excluding_number;
+
+					@Column(name = "R15_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r15_deposit_excluding_amount;
+
+					@Column(name = "R15_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r15_deposit_foreign_number;
+
+					@Column(name = "R15_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r15_deposit_foreign_amount;
+
+					@Column(name = "R15_TOTAL_NUMBER")
+					private BigDecimal r15_total_number;
+
+					@Column(name = "R15_TOTAL_AMOUNT")
+					private BigDecimal r15_total_amount;
+
+					@Column(name = "R15_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r15_total_deposit_bank;
+
+					@Column(name = "R16_DEPOSIT_SIZE")
+					private String r16_deposit_size;
+
+					@Column(name = "R16_DEPOSIT_TYPE")
+					private String r16_deposit_type;
+
+					@Column(name = "R16_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r16_deposit_excluding_number;
+
+					@Column(name = "R16_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r16_deposit_excluding_amount;
+
+					@Column(name = "R16_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r16_deposit_foreign_number;
+
+					@Column(name = "R16_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r16_deposit_foreign_amount;
+
+					@Column(name = "R16_TOTAL_NUMBER")
+					private BigDecimal r16_total_number;
+
+					@Column(name = "R16_TOTAL_AMOUNT")
+					private BigDecimal r16_total_amount;
+
+					@Column(name = "R16_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r16_total_deposit_bank;
+
+					@Column(name = "R17_DEPOSIT_SIZE")
+					private String r17_deposit_size;
+
+					@Column(name = "R17_DEPOSIT_TYPE")
+					private String r17_deposit_type;
+
+					@Column(name = "R17_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r17_deposit_excluding_number;
+
+					@Column(name = "R17_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r17_deposit_excluding_amount;
+
+					@Column(name = "R17_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r17_deposit_foreign_number;
+
+					@Column(name = "R17_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r17_deposit_foreign_amount;
+
+					@Column(name = "R17_TOTAL_NUMBER")
+					private BigDecimal r17_total_number;
+
+					@Column(name = "R17_TOTAL_AMOUNT")
+					private BigDecimal r17_total_amount;
+
+					@Column(name = "R17_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r17_total_deposit_bank;
+
+					@Column(name = "R18_DEPOSIT_SIZE")
+					private String r18_deposit_size;
+
+					@Column(name = "R18_DEPOSIT_TYPE")
+					private String r18_deposit_type;
+
+					@Column(name = "R18_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r18_deposit_excluding_number;
+
+					@Column(name = "R18_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r18_deposit_excluding_amount;
+
+					@Column(name = "R18_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r18_deposit_foreign_number;
+
+					@Column(name = "R18_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r18_deposit_foreign_amount;
+
+					@Column(name = "R18_TOTAL_NUMBER")
+					private BigDecimal r18_total_number;
+
+					@Column(name = "R18_TOTAL_AMOUNT")
+					private BigDecimal r18_total_amount;
+
+					@Column(name = "R18_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r18_total_deposit_bank;
+
+					@Column(name = "R19_DEPOSIT_SIZE")
+					private String r19_deposit_size;
+
+					@Column(name = "R19_DEPOSIT_TYPE")
+					private String r19_deposit_type;
+
+					@Column(name = "R19_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r19_deposit_excluding_number;
+
+					@Column(name = "R19_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r19_deposit_excluding_amount;
+
+					@Column(name = "R19_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r19_deposit_foreign_number;
+
+					@Column(name = "R19_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r19_deposit_foreign_amount;
+
+					@Column(name = "R19_TOTAL_NUMBER")
+					private BigDecimal r19_total_number;
+
+					@Column(name = "R19_TOTAL_AMOUNT")
+					private BigDecimal r19_total_amount;
+
+					@Column(name = "R19_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r19_total_deposit_bank;
+
+					@Column(name = "R20_DEPOSIT_SIZE")
+					private String r20_deposit_size;
+
+					@Column(name = "R20_DEPOSIT_TYPE")
+					private String r20_deposit_type;
+
+					@Column(name = "R20_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r20_deposit_excluding_number;
+
+					@Column(name = "R20_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r20_deposit_excluding_amount;
+
+					@Column(name = "R20_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r20_deposit_foreign_number;
+
+					@Column(name = "R20_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r20_deposit_foreign_amount;
+
+					@Column(name = "R20_TOTAL_NUMBER")
+					private BigDecimal r20_total_number;
+
+					@Column(name = "R20_TOTAL_AMOUNT")
+					private BigDecimal r20_total_amount;
+
+					@Column(name = "R20_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r20_total_deposit_bank;
+					
+					@Column(name = "R21_DEPOSIT_SIZE")
+					private String r21_deposit_size;
+
+					@Column(name = "R21_DEPOSIT_TYPE")
+					private String r21_deposit_type;
+
+					@Column(name = "R21_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r21_deposit_excluding_number;
+
+					@Column(name = "R21_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r21_deposit_excluding_amount;
+
+					@Column(name = "R21_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r21_deposit_foreign_number;
+
+					@Column(name = "R21_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r21_deposit_foreign_amount;
+
+					@Column(name = "R21_TOTAL_NUMBER")
+					private BigDecimal r21_total_number;
+
+					@Column(name = "R21_TOTAL_AMOUNT")
+					private BigDecimal r21_total_amount;
+
+					@Column(name = "R21_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r21_total_deposit_bank;
+
+					@Column(name = "R22_DEPOSIT_SIZE")
+					private String r22_deposit_size;
+
+					@Column(name = "R22_DEPOSIT_TYPE")
+					private String r22_deposit_type;
+
+					@Column(name = "R22_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r22_deposit_excluding_number;
+
+					@Column(name = "R22_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r22_deposit_excluding_amount;
+
+					@Column(name = "R22_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r22_deposit_foreign_number;
+
+					@Column(name = "R22_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r22_deposit_foreign_amount;
+
+					@Column(name = "R22_TOTAL_NUMBER")
+					private BigDecimal r22_total_number;
+
+					@Column(name = "R22_TOTAL_AMOUNT")
+					private BigDecimal r22_total_amount;
+
+					@Column(name = "R22_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r22_total_deposit_bank;
+
+					@Column(name = "R23_DEPOSIT_SIZE")
+					private String r23_deposit_size;
+
+					@Column(name = "R23_DEPOSIT_TYPE")
+					private String r23_deposit_type;
+
+					@Column(name = "R23_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r23_deposit_excluding_number;
+
+					@Column(name = "R23_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r23_deposit_excluding_amount;
+
+					@Column(name = "R23_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r23_deposit_foreign_number;
+
+					@Column(name = "R23_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r23_deposit_foreign_amount;
+
+					@Column(name = "R23_TOTAL_NUMBER")
+					private BigDecimal r23_total_number;
+
+					@Column(name = "R23_TOTAL_AMOUNT")
+					private BigDecimal r23_total_amount;
+
+					@Column(name = "R23_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r23_total_deposit_bank;
+
+					@Column(name = "R24_DEPOSIT_SIZE")
+					private String r24_deposit_size;
+
+					@Column(name = "R24_DEPOSIT_TYPE")
+					private String r24_deposit_type;
+
+					@Column(name = "R24_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r24_deposit_excluding_number;
+
+					@Column(name = "R24_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r24_deposit_excluding_amount;
+
+					@Column(name = "R24_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r24_deposit_foreign_number;
+
+					@Column(name = "R24_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r24_deposit_foreign_amount;
+
+					@Column(name = "R24_TOTAL_NUMBER")
+					private BigDecimal r24_total_number;
+
+					@Column(name = "R24_TOTAL_AMOUNT")
+					private BigDecimal r24_total_amount;
+
+					@Column(name = "R24_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r24_total_deposit_bank;
+
+					@Column(name = "R25_DEPOSIT_SIZE")
+					private String r25_deposit_size;
+
+					@Column(name = "R25_DEPOSIT_TYPE")
+					private String r25_deposit_type;
+
+					@Column(name = "R25_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r25_deposit_excluding_number;
+
+					@Column(name = "R25_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r25_deposit_excluding_amount;
+
+					@Column(name = "R25_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r25_deposit_foreign_number;
+
+					@Column(name = "R25_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r25_deposit_foreign_amount;
+
+					@Column(name = "R25_TOTAL_NUMBER")
+					private BigDecimal r25_total_number;
+
+					@Column(name = "R25_TOTAL_AMOUNT")
+					private BigDecimal r25_total_amount;
+
+					@Column(name = "R25_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r25_total_deposit_bank;
+
+					@Column(name = "R26_DEPOSIT_SIZE")
+					private String r26_deposit_size;
+
+					@Column(name = "R26_DEPOSIT_TYPE")
+					private String r26_deposit_type;
+
+					@Column(name = "R26_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r26_deposit_excluding_number;
+
+					@Column(name = "R26_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r26_deposit_excluding_amount;
+
+					@Column(name = "R26_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r26_deposit_foreign_number;
+
+					@Column(name = "R26_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r26_deposit_foreign_amount;
+
+					@Column(name = "R26_TOTAL_NUMBER")
+					private BigDecimal r26_total_number;
+
+					@Column(name = "R26_TOTAL_AMOUNT")
+					private BigDecimal r26_total_amount;
+
+					@Column(name = "R26_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r26_total_deposit_bank;
+
+					@Column(name = "R27_DEPOSIT_SIZE")
+					private String r27_deposit_size;
+
+					@Column(name = "R27_DEPOSIT_TYPE")
+					private String r27_deposit_type;
+
+					@Column(name = "R27_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r27_deposit_excluding_number;
+
+					@Column(name = "R27_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r27_deposit_excluding_amount;
+
+					@Column(name = "R27_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r27_deposit_foreign_number;
+
+					@Column(name = "R27_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r27_deposit_foreign_amount;
+
+					@Column(name = "R27_TOTAL_NUMBER")
+					private BigDecimal r27_total_number;
+
+					@Column(name = "R27_TOTAL_AMOUNT")
+					private BigDecimal r27_total_amount;
+
+					@Column(name = "R27_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r27_total_deposit_bank;
+
+					@Column(name = "R28_DEPOSIT_SIZE")
+					private String r28_deposit_size;
+
+					@Column(name = "R28_DEPOSIT_TYPE")
+					private String r28_deposit_type;
+
+					@Column(name = "R28_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r28_deposit_excluding_number;
+
+					@Column(name = "R28_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r28_deposit_excluding_amount;
+
+					@Column(name = "R28_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r28_deposit_foreign_number;
+
+					@Column(name = "R28_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r28_deposit_foreign_amount;
+
+					@Column(name = "R28_TOTAL_NUMBER")
+					private BigDecimal r28_total_number;
+
+					@Column(name = "R28_TOTAL_AMOUNT")
+					private BigDecimal r28_total_amount;
+
+					@Column(name = "R28_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r28_total_deposit_bank;
+
+					@Column(name = "R29_DEPOSIT_SIZE")
+					private String r29_deposit_size;
+
+					@Column(name = "R29_DEPOSIT_TYPE")
+					private String r29_deposit_type;
+
+					@Column(name = "R29_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r29_deposit_excluding_number;
+
+					@Column(name = "R29_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r29_deposit_excluding_amount;
+
+					@Column(name = "R29_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r29_deposit_foreign_number;
+
+					@Column(name = "R29_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r29_deposit_foreign_amount;
+
+					@Column(name = "R29_TOTAL_NUMBER")
+					private BigDecimal r29_total_number;
+
+					@Column(name = "R29_TOTAL_AMOUNT")
+					private BigDecimal r29_total_amount;
+
+					@Column(name = "R29_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r29_total_deposit_bank;
+
+					@Column(name = "R30_DEPOSIT_SIZE")
+					private String r30_deposit_size;
+
+					@Column(name = "R30_DEPOSIT_TYPE")
+					private String r30_deposit_type;
+
+					@Column(name = "R30_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r30_deposit_excluding_number;
+
+					@Column(name = "R30_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r30_deposit_excluding_amount;
+
+					@Column(name = "R30_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r30_deposit_foreign_number;
+
+					@Column(name = "R30_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r30_deposit_foreign_amount;
+
+					@Column(name = "R30_TOTAL_NUMBER")
+					private BigDecimal r30_total_number;
+
+					@Column(name = "R30_TOTAL_AMOUNT")
+					private BigDecimal r30_total_amount;
+
+					@Column(name = "R30_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r30_total_deposit_bank;
+					
+					@Column(name = "R31_DEPOSIT_SIZE")
+					private String r31_deposit_size;
+
+					@Column(name = "R31_DEPOSIT_TYPE")
+					private String r31_deposit_type;
+
+					@Column(name = "R31_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r31_deposit_excluding_number;
+
+					@Column(name = "R31_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r31_deposit_excluding_amount;
+
+					@Column(name = "R31_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r31_deposit_foreign_number;
+
+					@Column(name = "R31_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r31_deposit_foreign_amount;
+
+					@Column(name = "R31_TOTAL_NUMBER")
+					private BigDecimal r31_total_number;
+
+					@Column(name = "R31_TOTAL_AMOUNT")
+					private BigDecimal r31_total_amount;
+
+					@Column(name = "R31_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r31_total_deposit_bank;
+
+					@Column(name = "R32_DEPOSIT_SIZE")
+					private String r32_deposit_size;
+
+					@Column(name = "R32_DEPOSIT_TYPE")
+					private String r32_deposit_type;
+
+					@Column(name = "R32_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r32_deposit_excluding_number;
+
+					@Column(name = "R32_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r32_deposit_excluding_amount;
+
+					@Column(name = "R32_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r32_deposit_foreign_number;
+
+					@Column(name = "R32_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r32_deposit_foreign_amount;
+
+					@Column(name = "R32_TOTAL_NUMBER")
+					private BigDecimal r32_total_number;
+
+					@Column(name = "R32_TOTAL_AMOUNT")
+					private BigDecimal r32_total_amount;
+
+					@Column(name = "R32_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r32_total_deposit_bank;
+
+					@Column(name = "R33_DEPOSIT_SIZE")
+					private String r33_deposit_size;
+
+					@Column(name = "R33_DEPOSIT_TYPE")
+					private String r33_deposit_type;
+
+					@Column(name = "R33_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r33_deposit_excluding_number;
+
+					@Column(name = "R33_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r33_deposit_excluding_amount;
+
+					@Column(name = "R33_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r33_deposit_foreign_number;
+
+					@Column(name = "R33_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r33_deposit_foreign_amount;
+
+					@Column(name = "R33_TOTAL_NUMBER")
+					private BigDecimal r33_total_number;
+
+					@Column(name = "R33_TOTAL_AMOUNT")
+					private BigDecimal r33_total_amount;
+
+					@Column(name = "R33_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r33_total_deposit_bank;
+
+					@Column(name = "R34_DEPOSIT_SIZE")
+					private String r34_deposit_size;
+
+					@Column(name = "R34_DEPOSIT_TYPE")
+					private String r34_deposit_type;
+
+					@Column(name = "R34_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r34_deposit_excluding_number;
+
+					@Column(name = "R34_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r34_deposit_excluding_amount;
+
+					@Column(name = "R34_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r34_deposit_foreign_number;
+
+					@Column(name = "R34_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r34_deposit_foreign_amount;
+
+					@Column(name = "R34_TOTAL_NUMBER")
+					private BigDecimal r34_total_number;
+
+					@Column(name = "R34_TOTAL_AMOUNT")
+					private BigDecimal r34_total_amount;
+
+					@Column(name = "R34_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r34_total_deposit_bank;
+
+					@Column(name = "R35_DEPOSIT_SIZE")
+					private String r35_deposit_size;
+
+					@Column(name = "R35_DEPOSIT_TYPE")
+					private String r35_deposit_type;
+
+					@Column(name = "R35_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r35_deposit_excluding_number;
+
+					@Column(name = "R35_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r35_deposit_excluding_amount;
+
+					@Column(name = "R35_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r35_deposit_foreign_number;
+
+					@Column(name = "R35_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r35_deposit_foreign_amount;
+
+					@Column(name = "R35_TOTAL_NUMBER")
+					private BigDecimal r35_total_number;
+
+					@Column(name = "R35_TOTAL_AMOUNT")
+					private BigDecimal r35_total_amount;
+
+					@Column(name = "R35_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r35_total_deposit_bank;
+
+					@Column(name = "R36_DEPOSIT_SIZE")
+					private String r36_deposit_size;
+
+					@Column(name = "R36_DEPOSIT_TYPE")
+					private String r36_deposit_type;
+
+					@Column(name = "R36_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r36_deposit_excluding_number;
+
+					@Column(name = "R36_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r36_deposit_excluding_amount;
+
+					@Column(name = "R36_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r36_deposit_foreign_number;
+
+					@Column(name = "R36_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r36_deposit_foreign_amount;
+
+					@Column(name = "R36_TOTAL_NUMBER")
+					private BigDecimal r36_total_number;
+
+					@Column(name = "R36_TOTAL_AMOUNT")
+					private BigDecimal r36_total_amount;
+
+					@Column(name = "R36_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r36_total_deposit_bank;
+
+					@Column(name = "R37_DEPOSIT_SIZE")
+					private String r37_deposit_size;
+
+					@Column(name = "R37_DEPOSIT_TYPE")
+					private String r37_deposit_type;
+
+					@Column(name = "R37_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r37_deposit_excluding_number;
+
+					@Column(name = "R37_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r37_deposit_excluding_amount;
+
+					@Column(name = "R37_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r37_deposit_foreign_number;
+
+					@Column(name = "R37_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r37_deposit_foreign_amount;
+
+					@Column(name = "R37_TOTAL_NUMBER")
+					private BigDecimal r37_total_number;
+
+					@Column(name = "R37_TOTAL_AMOUNT")
+					private BigDecimal r37_total_amount;
+
+					@Column(name = "R37_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r37_total_deposit_bank;
+
+					@Column(name = "R38_DEPOSIT_SIZE")
+					private String r38_deposit_size;
+
+					@Column(name = "R38_DEPOSIT_TYPE")
+					private String r38_deposit_type;
+
+					@Column(name = "R38_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r38_deposit_excluding_number;
+
+					@Column(name = "R38_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r38_deposit_excluding_amount;
+
+					@Column(name = "R38_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r38_deposit_foreign_number;
+
+					@Column(name = "R38_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r38_deposit_foreign_amount;
+
+					@Column(name = "R38_TOTAL_NUMBER")
+					private BigDecimal r38_total_number;
+
+					@Column(name = "R38_TOTAL_AMOUNT")
+					private BigDecimal r38_total_amount;
+
+					@Column(name = "R38_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r38_total_deposit_bank;
+
+					@Column(name = "R39_DEPOSIT_SIZE")
+					private String r39_deposit_size;
+
+					@Column(name = "R39_DEPOSIT_TYPE")
+					private String r39_deposit_type;
+
+					@Column(name = "R39_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r39_deposit_excluding_number;
+
+					@Column(name = "R39_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r39_deposit_excluding_amount;
+
+					@Column(name = "R39_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r39_deposit_foreign_number;
+
+					@Column(name = "R39_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r39_deposit_foreign_amount;
+
+					@Column(name = "R39_TOTAL_NUMBER")
+					private BigDecimal r39_total_number;
+
+					@Column(name = "R39_TOTAL_AMOUNT")
+					private BigDecimal r39_total_amount;
+
+					@Column(name = "R39_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r39_total_deposit_bank;
+
+					@Column(name = "R40_DEPOSIT_SIZE")
+					private String r40_deposit_size;
+
+					@Column(name = "R40_DEPOSIT_TYPE")
+					private String r40_deposit_type;
+
+					@Column(name = "R40_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r40_deposit_excluding_number;
+
+					@Column(name = "R40_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r40_deposit_excluding_amount;
+
+					@Column(name = "R40_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r40_deposit_foreign_number;
+
+					@Column(name = "R40_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r40_deposit_foreign_amount;
+
+					@Column(name = "R40_TOTAL_NUMBER")
+					private BigDecimal r40_total_number;
+
+					@Column(name = "R40_TOTAL_AMOUNT")
+					private BigDecimal r40_total_amount;
+
+					@Column(name = "R40_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r40_total_deposit_bank;
+					
+					@Column(name = "R41_DEPOSIT_SIZE")
+					private String r41_deposit_size;
+
+					@Column(name = "R41_DEPOSIT_TYPE")
+					private String r41_deposit_type;
+
+					@Column(name = "R41_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r41_deposit_excluding_number;
+
+					@Column(name = "R41_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r41_deposit_excluding_amount;
+
+					@Column(name = "R41_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r41_deposit_foreign_number;
+
+					@Column(name = "R41_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r41_deposit_foreign_amount;
+
+					@Column(name = "R41_TOTAL_NUMBER")
+					private BigDecimal r41_total_number;
+
+					@Column(name = "R41_TOTAL_AMOUNT")
+					private BigDecimal r41_total_amount;
+
+					@Column(name = "R41_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r41_total_deposit_bank;
+
+					@Column(name = "R42_DEPOSIT_SIZE")
+					private String r42_deposit_size;
+
+					@Column(name = "R42_DEPOSIT_TYPE")
+					private String r42_deposit_type;
+
+					@Column(name = "R42_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r42_deposit_excluding_number;
+
+					@Column(name = "R42_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r42_deposit_excluding_amount;
+
+					@Column(name = "R42_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r42_deposit_foreign_number;
+
+					@Column(name = "R42_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r42_deposit_foreign_amount;
+
+					@Column(name = "R42_TOTAL_NUMBER")
+					private BigDecimal r42_total_number;
+
+					@Column(name = "R42_TOTAL_AMOUNT")
+					private BigDecimal r42_total_amount;
+
+					@Column(name = "R42_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r42_total_deposit_bank;
+
+					@Column(name = "R43_DEPOSIT_SIZE")
+					private String r43_deposit_size;
+
+					@Column(name = "R43_DEPOSIT_TYPE")
+					private String r43_deposit_type;
+
+					@Column(name = "R43_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r43_deposit_excluding_number;
+
+					@Column(name = "R43_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r43_deposit_excluding_amount;
+
+					@Column(name = "R43_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r43_deposit_foreign_number;
+
+					@Column(name = "R43_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r43_deposit_foreign_amount;
+
+					@Column(name = "R43_TOTAL_NUMBER")
+					private BigDecimal r43_total_number;
+
+					@Column(name = "R43_TOTAL_AMOUNT")
+					private BigDecimal r43_total_amount;
+
+					@Column(name = "R43_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r43_total_deposit_bank;
+
+					@Column(name = "R44_DEPOSIT_SIZE")
+					private String r44_deposit_size;
+
+					@Column(name = "R44_DEPOSIT_TYPE")
+					private String r44_deposit_type;
+
+					@Column(name = "R44_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r44_deposit_excluding_number;
+
+					@Column(name = "R44_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r44_deposit_excluding_amount;
+
+					@Column(name = "R44_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r44_deposit_foreign_number;
+
+					@Column(name = "R44_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r44_deposit_foreign_amount;
+
+					@Column(name = "R44_TOTAL_NUMBER")
+					private BigDecimal r44_total_number;
+
+					@Column(name = "R44_TOTAL_AMOUNT")
+					private BigDecimal r44_total_amount;
+
+					@Column(name = "R44_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r44_total_deposit_bank;
+
+					@Column(name = "R45_DEPOSIT_SIZE")
+					private String r45_deposit_size;
+
+					@Column(name = "R45_DEPOSIT_TYPE")
+					private String r45_deposit_type;
+
+					@Column(name = "R45_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r45_deposit_excluding_number;
+
+					@Column(name = "R45_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r45_deposit_excluding_amount;
+
+					@Column(name = "R45_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r45_deposit_foreign_number;
+
+					@Column(name = "R45_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r45_deposit_foreign_amount;
+
+					@Column(name = "R45_TOTAL_NUMBER")
+					private BigDecimal r45_total_number;
+
+					@Column(name = "R45_TOTAL_AMOUNT")
+					private BigDecimal r45_total_amount;
+
+					@Column(name = "R45_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r45_total_deposit_bank;
+
+					@Column(name = "R46_DEPOSIT_SIZE")
+					private String r46_deposit_size;
+
+					@Column(name = "R46_DEPOSIT_TYPE")
+					private String r46_deposit_type;
+
+					@Column(name = "R46_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r46_deposit_excluding_number;
+
+					@Column(name = "R46_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r46_deposit_excluding_amount;
+
+					@Column(name = "R46_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r46_deposit_foreign_number;
+
+					@Column(name = "R46_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r46_deposit_foreign_amount;
+
+					@Column(name = "R46_TOTAL_NUMBER")
+					private BigDecimal r46_total_number;
+
+					@Column(name = "R46_TOTAL_AMOUNT")
+					private BigDecimal r46_total_amount;
+
+					@Column(name = "R46_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r46_total_deposit_bank;
+
+					@Column(name = "R47_DEPOSIT_SIZE")
+					private String r47_deposit_size;
+
+					@Column(name = "R47_DEPOSIT_TYPE")
+					private String r47_deposit_type;
+
+					@Column(name = "R47_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r47_deposit_excluding_number;
+
+					@Column(name = "R47_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r47_deposit_excluding_amount;
+
+					@Column(name = "R47_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r47_deposit_foreign_number;
+
+					@Column(name = "R47_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r47_deposit_foreign_amount;
+
+					@Column(name = "R47_TOTAL_NUMBER")
+					private BigDecimal r47_total_number;
+
+					@Column(name = "R47_TOTAL_AMOUNT")
+					private BigDecimal r47_total_amount;
+
+					@Column(name = "R47_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r47_total_deposit_bank;
+
+					@Column(name = "R48_DEPOSIT_SIZE")
+					private String r48_deposit_size;
+
+					@Column(name = "R48_DEPOSIT_TYPE")
+					private String r48_deposit_type;
+
+					@Column(name = "R48_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r48_deposit_excluding_number;
+
+					@Column(name = "R48_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r48_deposit_excluding_amount;
+
+					@Column(name = "R48_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r48_deposit_foreign_number;
+
+					@Column(name = "R48_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r48_deposit_foreign_amount;
+
+					@Column(name = "R48_TOTAL_NUMBER")
+					private BigDecimal r48_total_number;
+
+					@Column(name = "R48_TOTAL_AMOUNT")
+					private BigDecimal r48_total_amount;
+
+					@Column(name = "R48_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r48_total_deposit_bank;
+
+					@Column(name = "R49_DEPOSIT_SIZE")
+					private String r49_deposit_size;
+
+					@Column(name = "R49_DEPOSIT_TYPE")
+					private String r49_deposit_type;
+
+					@Column(name = "R49_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r49_deposit_excluding_number;
+
+					@Column(name = "R49_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r49_deposit_excluding_amount;
+
+					@Column(name = "R49_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r49_deposit_foreign_number;
+
+					@Column(name = "R49_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r49_deposit_foreign_amount;
+
+					@Column(name = "R49_TOTAL_NUMBER")
+					private BigDecimal r49_total_number;
+
+					@Column(name = "R49_TOTAL_AMOUNT")
+					private BigDecimal r49_total_amount;
+
+					@Column(name = "R49_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r49_total_deposit_bank;
+
+					@Column(name = "R50_DEPOSIT_SIZE")
+					private String r50_deposit_size;
+
+					@Column(name = "R50_DEPOSIT_TYPE")
+					private String r50_deposit_type;
+
+					@Column(name = "R50_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r50_deposit_excluding_number;
+
+					@Column(name = "R50_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r50_deposit_excluding_amount;
+
+					@Column(name = "R50_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r50_deposit_foreign_number;
+
+					@Column(name = "R50_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r50_deposit_foreign_amount;
+
+					@Column(name = "R50_TOTAL_NUMBER")
+					private BigDecimal r50_total_number;
+
+					@Column(name = "R50_TOTAL_AMOUNT")
+					private BigDecimal r50_total_amount;
+
+					@Column(name = "R50_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r50_total_deposit_bank;
+					
+					@Column(name = "R51_DEPOSIT_SIZE")
+					private String r51_deposit_size;
+
+					@Column(name = "R51_DEPOSIT_TYPE")
+					private String r51_deposit_type;
+
+					@Column(name = "R51_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r51_deposit_excluding_number;
+
+					@Column(name = "R51_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r51_deposit_excluding_amount;
+
+					@Column(name = "R51_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r51_deposit_foreign_number;
+
+					@Column(name = "R51_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r51_deposit_foreign_amount;
+
+					@Column(name = "R51_TOTAL_NUMBER")
+					private BigDecimal r51_total_number;
+
+					@Column(name = "R51_TOTAL_AMOUNT")
+					private BigDecimal r51_total_amount;
+
+					@Column(name = "R51_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r51_total_deposit_bank;
+
+					@Column(name = "R52_DEPOSIT_SIZE")
+					private String r52_deposit_size;
+
+					@Column(name = "R52_DEPOSIT_TYPE")
+					private String r52_deposit_type;
+
+					@Column(name = "R52_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r52_deposit_excluding_number;
+
+					@Column(name = "R52_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r52_deposit_excluding_amount;
+
+					@Column(name = "R52_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r52_deposit_foreign_number;
+
+					@Column(name = "R52_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r52_deposit_foreign_amount;
+
+					@Column(name = "R52_TOTAL_NUMBER")
+					private BigDecimal r52_total_number;
+
+					@Column(name = "R52_TOTAL_AMOUNT")
+					private BigDecimal r52_total_amount;
+
+					@Column(name = "R52_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r52_total_deposit_bank;
+
+					@Column(name = "R53_DEPOSIT_SIZE")
+					private String r53_deposit_size;
+
+					@Column(name = "R53_DEPOSIT_TYPE")
+					private String r53_deposit_type;
+
+					@Column(name = "R53_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r53_deposit_excluding_number;
+
+					@Column(name = "R53_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r53_deposit_excluding_amount;
+
+					@Column(name = "R53_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r53_deposit_foreign_number;
+
+					@Column(name = "R53_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r53_deposit_foreign_amount;
+
+					@Column(name = "R53_TOTAL_NUMBER")
+					private BigDecimal r53_total_number;
+
+					@Column(name = "R53_TOTAL_AMOUNT")
+					private BigDecimal r53_total_amount;
+
+					@Column(name = "R53_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r53_total_deposit_bank;
+
+					@Column(name = "R54_DEPOSIT_SIZE")
+					private String r54_deposit_size;
+
+					@Column(name = "R54_DEPOSIT_TYPE")
+					private String r54_deposit_type;
+
+					@Column(name = "R54_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r54_deposit_excluding_number;
+
+					@Column(name = "R54_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r54_deposit_excluding_amount;
+
+					@Column(name = "R54_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r54_deposit_foreign_number;
+
+					@Column(name = "R54_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r54_deposit_foreign_amount;
+
+					@Column(name = "R54_TOTAL_NUMBER")
+					private BigDecimal r54_total_number;
+
+					@Column(name = "R54_TOTAL_AMOUNT")
+					private BigDecimal r54_total_amount;
+
+					@Column(name = "R54_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r54_total_deposit_bank;
+
+					@Column(name = "R55_DEPOSIT_SIZE")
+					private String r55_deposit_size;
+
+					@Column(name = "R55_DEPOSIT_TYPE")
+					private String r55_deposit_type;
+
+					@Column(name = "R55_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r55_deposit_excluding_number;
+
+					@Column(name = "R55_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r55_deposit_excluding_amount;
+
+					@Column(name = "R55_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r55_deposit_foreign_number;
+
+					@Column(name = "R55_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r55_deposit_foreign_amount;
+
+					@Column(name = "R55_TOTAL_NUMBER")
+					private BigDecimal r55_total_number;
+
+					@Column(name = "R55_TOTAL_AMOUNT")
+					private BigDecimal r55_total_amount;
+
+					@Column(name = "R55_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r55_total_deposit_bank;
+
+					@Column(name = "R56_DEPOSIT_SIZE")
+					private String r56_deposit_size;
+
+					@Column(name = "R56_DEPOSIT_TYPE")
+					private String r56_deposit_type;
+
+					@Column(name = "R56_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r56_deposit_excluding_number;
+
+					@Column(name = "R56_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r56_deposit_excluding_amount;
+
+					@Column(name = "R56_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r56_deposit_foreign_number;
+
+					@Column(name = "R56_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r56_deposit_foreign_amount;
+
+					@Column(name = "R56_TOTAL_NUMBER")
+					private BigDecimal r56_total_number;
+
+					@Column(name = "R56_TOTAL_AMOUNT")
+					private BigDecimal r56_total_amount;
+
+					@Column(name = "R56_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r56_total_deposit_bank;
+
+					@Column(name = "R57_DEPOSIT_SIZE")
+					private String r57_deposit_size;
+
+					@Column(name = "R57_DEPOSIT_TYPE")
+					private String r57_deposit_type;
+
+					@Column(name = "R57_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r57_deposit_excluding_number;
+
+					@Column(name = "R57_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r57_deposit_excluding_amount;
+
+					@Column(name = "R57_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r57_deposit_foreign_number;
+
+					@Column(name = "R57_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r57_deposit_foreign_amount;
+
+					@Column(name = "R57_TOTAL_NUMBER")
+					private BigDecimal r57_total_number;
+
+					@Column(name = "R57_TOTAL_AMOUNT")
+					private BigDecimal r57_total_amount;
+
+					@Column(name = "R57_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r57_total_deposit_bank;
+
+					@Column(name = "R58_DEPOSIT_SIZE")
+					private String r58_deposit_size;
+
+					@Column(name = "R58_DEPOSIT_TYPE")
+					private String r58_deposit_type;
+
+					@Column(name = "R58_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r58_deposit_excluding_number;
+
+					@Column(name = "R58_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r58_deposit_excluding_amount;
+
+					@Column(name = "R58_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r58_deposit_foreign_number;
+
+					@Column(name = "R58_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r58_deposit_foreign_amount;
+
+					@Column(name = "R58_TOTAL_NUMBER")
+					private BigDecimal r58_total_number;
+
+					@Column(name = "R58_TOTAL_AMOUNT")
+					private BigDecimal r58_total_amount;
+
+					@Column(name = "R58_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r58_total_deposit_bank;
+
+					@Column(name = "R59_DEPOSIT_SIZE")
+					private String r59_deposit_size;
+
+					@Column(name = "R59_DEPOSIT_TYPE")
+					private String r59_deposit_type;
+
+					@Column(name = "R59_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r59_deposit_excluding_number;
+
+					@Column(name = "R59_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r59_deposit_excluding_amount;
+
+					@Column(name = "R59_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r59_deposit_foreign_number;
+
+					@Column(name = "R59_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r59_deposit_foreign_amount;
+
+					@Column(name = "R59_TOTAL_NUMBER")
+					private BigDecimal r59_total_number;
+
+					@Column(name = "R59_TOTAL_AMOUNT")
+					private BigDecimal r59_total_amount;
+
+					@Column(name = "R59_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r59_total_deposit_bank;
+
+					@Column(name = "R60_DEPOSIT_SIZE")
+					private String r60_deposit_size;
+
+					@Column(name = "R60_DEPOSIT_TYPE")
+					private String r60_deposit_type;
+
+					@Column(name = "R60_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r60_deposit_excluding_number;
+
+					@Column(name = "R60_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r60_deposit_excluding_amount;
+
+					@Column(name = "R60_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r60_deposit_foreign_number;
+
+					@Column(name = "R60_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r60_deposit_foreign_amount;
+
+					@Column(name = "R60_TOTAL_NUMBER")
+					private BigDecimal r60_total_number;
+
+					@Column(name = "R60_TOTAL_AMOUNT")
+					private BigDecimal r60_total_amount;
+
+					@Column(name = "R60_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r60_total_deposit_bank;
+					
+					@Column(name = "R61_DEPOSIT_SIZE")
+					private String r61_deposit_size;
+
+					@Column(name = "R61_DEPOSIT_TYPE")
+					private String r61_deposit_type;
+
+					@Column(name = "R61_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r61_deposit_excluding_number;
+
+					@Column(name = "R61_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r61_deposit_excluding_amount;
+
+					@Column(name = "R61_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r61_deposit_foreign_number;
+
+					@Column(name = "R61_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r61_deposit_foreign_amount;
+
+					@Column(name = "R61_TOTAL_NUMBER")
+					private BigDecimal r61_total_number;
+
+					@Column(name = "R61_TOTAL_AMOUNT")
+					private BigDecimal r61_total_amount;
+
+					@Column(name = "R61_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r61_total_deposit_bank;
+
+					@Column(name = "R62_DEPOSIT_SIZE")
+					private String r62_deposit_size;
+
+					@Column(name = "R62_DEPOSIT_TYPE")
+					private String r62_deposit_type;
+
+					@Column(name = "R62_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r62_deposit_excluding_number;
+
+					@Column(name = "R62_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r62_deposit_excluding_amount;
+
+					@Column(name = "R62_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r62_deposit_foreign_number;
+
+					@Column(name = "R62_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r62_deposit_foreign_amount;
+
+					@Column(name = "R62_TOTAL_NUMBER")
+					private BigDecimal r62_total_number;
+
+					@Column(name = "R62_TOTAL_AMOUNT")
+					private BigDecimal r62_total_amount;
+
+					@Column(name = "R62_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r62_total_deposit_bank;
+
+					@Column(name = "R63_DEPOSIT_SIZE")
+					private String r63_deposit_size;
+
+					@Column(name = "R63_DEPOSIT_TYPE")
+					private String r63_deposit_type;
+
+					@Column(name = "R63_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r63_deposit_excluding_number;
+
+					@Column(name = "R63_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r63_deposit_excluding_amount;
+
+					@Column(name = "R63_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r63_deposit_foreign_number;
+
+					@Column(name = "R63_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r63_deposit_foreign_amount;
+
+					@Column(name = "R63_TOTAL_NUMBER")
+					private BigDecimal r63_total_number;
+
+					@Column(name = "R63_TOTAL_AMOUNT")
+					private BigDecimal r63_total_amount;
+
+					@Column(name = "R63_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r63_total_deposit_bank;
+
+					@Column(name = "R64_DEPOSIT_SIZE")
+					private String r64_deposit_size;
+
+					@Column(name = "R64_DEPOSIT_TYPE")
+					private String r64_deposit_type;
+
+					@Column(name = "R64_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r64_deposit_excluding_number;
+
+					@Column(name = "R64_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r64_deposit_excluding_amount;
+
+					@Column(name = "R64_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r64_deposit_foreign_number;
+
+					@Column(name = "R64_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r64_deposit_foreign_amount;
+
+					@Column(name = "R64_TOTAL_NUMBER")
+					private BigDecimal r64_total_number;
+
+					@Column(name = "R64_TOTAL_AMOUNT")
+					private BigDecimal r64_total_amount;
+
+					@Column(name = "R64_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r64_total_deposit_bank;
+
+					@Column(name = "R65_DEPOSIT_SIZE")
+					private String r65_deposit_size;
+
+					@Column(name = "R65_DEPOSIT_TYPE")
+					private String r65_deposit_type;
+
+					@Column(name = "R65_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r65_deposit_excluding_number;
+
+					@Column(name = "R65_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r65_deposit_excluding_amount;
+
+					@Column(name = "R65_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r65_deposit_foreign_number;
+
+					@Column(name = "R65_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r65_deposit_foreign_amount;
+
+					@Column(name = "R65_TOTAL_NUMBER")
+					private BigDecimal r65_total_number;
+
+					@Column(name = "R65_TOTAL_AMOUNT")
+					private BigDecimal r65_total_amount;
+
+					@Column(name = "R65_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r65_total_deposit_bank;
+
+					@Column(name = "R66_DEPOSIT_SIZE")
+					private String r66_deposit_size;
+
+					@Column(name = "R66_DEPOSIT_TYPE")
+					private String r66_deposit_type;
+
+					@Column(name = "R66_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r66_deposit_excluding_number;
+
+					@Column(name = "R66_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r66_deposit_excluding_amount;
+
+					@Column(name = "R66_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r66_deposit_foreign_number;
+
+					@Column(name = "R66_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r66_deposit_foreign_amount;
+
+					@Column(name = "R66_TOTAL_NUMBER")
+					private BigDecimal r66_total_number;
+
+					@Column(name = "R66_TOTAL_AMOUNT")
+					private BigDecimal r66_total_amount;
+
+					@Column(name = "R66_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r66_total_deposit_bank;
+
+					@Column(name = "R67_DEPOSIT_SIZE")
+					private String r67_deposit_size;
+
+					@Column(name = "R67_DEPOSIT_TYPE")
+					private String r67_deposit_type;
+
+					@Column(name = "R67_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r67_deposit_excluding_number;
+
+					@Column(name = "R67_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r67_deposit_excluding_amount;
+
+					@Column(name = "R67_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r67_deposit_foreign_number;
+
+					@Column(name = "R67_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r67_deposit_foreign_amount;
+
+					@Column(name = "R67_TOTAL_NUMBER")
+					private BigDecimal r67_total_number;
+
+					@Column(name = "R67_TOTAL_AMOUNT")
+					private BigDecimal r67_total_amount;
+
+					@Column(name = "R67_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r67_total_deposit_bank;
+
+					@Column(name = "R68_DEPOSIT_SIZE")
+					private String r68_deposit_size;
+
+					@Column(name = "R68_DEPOSIT_TYPE")
+					private String r68_deposit_type;
+
+					@Column(name = "R68_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r68_deposit_excluding_number;
+
+					@Column(name = "R68_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r68_deposit_excluding_amount;
+
+					@Column(name = "R68_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r68_deposit_foreign_number;
+
+					@Column(name = "R68_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r68_deposit_foreign_amount;
+
+					@Column(name = "R68_TOTAL_NUMBER")
+					private BigDecimal r68_total_number;
+
+					@Column(name = "R68_TOTAL_AMOUNT")
+					private BigDecimal r68_total_amount;
+
+					@Column(name = "R68_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r68_total_deposit_bank;
+
+					@Column(name = "R69_DEPOSIT_SIZE")
+					private String r69_deposit_size;
+
+					@Column(name = "R69_DEPOSIT_TYPE")
+					private String r69_deposit_type;
+
+					@Column(name = "R69_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r69_deposit_excluding_number;
+
+					@Column(name = "R69_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r69_deposit_excluding_amount;
+
+					@Column(name = "R69_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r69_deposit_foreign_number;
+
+					@Column(name = "R69_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r69_deposit_foreign_amount;
+
+					@Column(name = "R69_TOTAL_NUMBER")
+					private BigDecimal r69_total_number;
+
+					@Column(name = "R69_TOTAL_AMOUNT")
+					private BigDecimal r69_total_amount;
+
+					@Column(name = "R69_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r69_total_deposit_bank;
+
+					@Column(name = "R70_DEPOSIT_SIZE")
+					private String r70_deposit_size;
+
+					@Column(name = "R70_DEPOSIT_TYPE")
+					private String r70_deposit_type;
+
+					@Column(name = "R70_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r70_deposit_excluding_number;
+
+					@Column(name = "R70_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r70_deposit_excluding_amount;
+
+					@Column(name = "R70_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r70_deposit_foreign_number;
+
+					@Column(name = "R70_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r70_deposit_foreign_amount;
+
+					@Column(name = "R70_TOTAL_NUMBER")
+					private BigDecimal r70_total_number;
+
+					@Column(name = "R70_TOTAL_AMOUNT")
+					private BigDecimal r70_total_amount;
+
+					@Column(name = "R70_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r70_total_deposit_bank;
+					
+					// R71
+					@Column(name = "R71_DEPOSIT_SIZE")
+					private String r71_deposit_size;
+
+					@Column(name = "R71_DEPOSIT_TYPE")
+					private String r71_deposit_type;
+
+					@Column(name = "R71_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r71_deposit_excluding_number;
+
+					@Column(name = "R71_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r71_deposit_excluding_amount;
+
+					@Column(name = "R71_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r71_deposit_foreign_number;
+
+					@Column(name = "R71_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r71_deposit_foreign_amount;
+
+					@Column(name = "R71_TOTAL_NUMBER")
+					private BigDecimal r71_total_number;
+
+					@Column(name = "R71_TOTAL_AMOUNT")
+					private BigDecimal r71_total_amount;
+
+					@Column(name = "R71_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r71_total_deposit_bank;
+
+					// R72
+					@Column(name = "R72_DEPOSIT_SIZE")
+					private String r72_deposit_size;
+
+					@Column(name = "R72_DEPOSIT_TYPE")
+					private String r72_deposit_type;
+
+					@Column(name = "R72_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r72_deposit_excluding_number;
+
+					@Column(name = "R72_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r72_deposit_excluding_amount;
+
+					@Column(name = "R72_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r72_deposit_foreign_number;
+
+					@Column(name = "R72_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r72_deposit_foreign_amount;
+
+					@Column(name = "R72_TOTAL_NUMBER")
+					private BigDecimal r72_total_number;
+
+					@Column(name = "R72_TOTAL_AMOUNT")
+					private BigDecimal r72_total_amount;
+
+					@Column(name = "R72_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r72_total_deposit_bank;
+
+					// R73
+					@Column(name = "R73_DEPOSIT_SIZE")
+					private String r73_deposit_size;
+
+					@Column(name = "R73_DEPOSIT_TYPE")
+					private String r73_deposit_type;
+
+					@Column(name = "R73_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r73_deposit_excluding_number;
+
+					@Column(name = "R73_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r73_deposit_excluding_amount;
+
+					@Column(name = "R73_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r73_deposit_foreign_number;
+
+					@Column(name = "R73_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r73_deposit_foreign_amount;
+
+					@Column(name = "R73_TOTAL_NUMBER")
+					private BigDecimal r73_total_number;
+
+					@Column(name = "R73_TOTAL_AMOUNT")
+					private BigDecimal r73_total_amount;
+
+					@Column(name = "R73_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r73_total_deposit_bank;
+
+					// R74
+					@Column(name = "R74_DEPOSIT_SIZE")
+					private String r74_deposit_size;
+
+					@Column(name = "R74_DEPOSIT_TYPE")
+					private String r74_deposit_type;
+
+					@Column(name = "R74_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r74_deposit_excluding_number;
+
+					@Column(name = "R74_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r74_deposit_excluding_amount;
+
+					@Column(name = "R74_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r74_deposit_foreign_number;
+
+					@Column(name = "R74_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r74_deposit_foreign_amount;
+
+					@Column(name = "R74_TOTAL_NUMBER")
+					private BigDecimal r74_total_number;
+
+					@Column(name = "R74_TOTAL_AMOUNT")
+					private BigDecimal r74_total_amount;
+
+					@Column(name = "R74_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r74_total_deposit_bank;
+
+					// R75
+					@Column(name = "R75_DEPOSIT_SIZE")
+					private String r75_deposit_size;
+
+					@Column(name = "R75_DEPOSIT_TYPE")
+					private String r75_deposit_type;
+
+					@Column(name = "R75_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r75_deposit_excluding_number;
+
+					@Column(name = "R75_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r75_deposit_excluding_amount;
+
+					@Column(name = "R75_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r75_deposit_foreign_number;
+
+					@Column(name = "R75_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r75_deposit_foreign_amount;
+
+					@Column(name = "R75_TOTAL_NUMBER")
+					private BigDecimal r75_total_number;
+
+					@Column(name = "R75_TOTAL_AMOUNT")
+					private BigDecimal r75_total_amount;
+
+					@Column(name = "R75_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r75_total_deposit_bank;
+
+					// R76
+					@Column(name = "R76_DEPOSIT_SIZE")
+					private String r76_deposit_size;
+
+					@Column(name = "R76_DEPOSIT_TYPE")
+					private String r76_deposit_type;
+
+					@Column(name = "R76_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r76_deposit_excluding_number;
+
+					@Column(name = "R76_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r76_deposit_excluding_amount;
+
+					@Column(name = "R76_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r76_deposit_foreign_number;
+
+					@Column(name = "R76_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r76_deposit_foreign_amount;
+
+					@Column(name = "R76_TOTAL_NUMBER")
+					private BigDecimal r76_total_number;
+
+					@Column(name = "R76_TOTAL_AMOUNT")
+					private BigDecimal r76_total_amount;
+
+					@Column(name = "R76_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r76_total_deposit_bank;
+
+					// R77
+					@Column(name = "R77_DEPOSIT_SIZE")
+					private String r77_deposit_size;
+
+					@Column(name = "R77_DEPOSIT_TYPE")
+					private String r77_deposit_type;
+
+					@Column(name = "R77_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r77_deposit_excluding_number;
+
+					@Column(name = "R77_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r77_deposit_excluding_amount;
+
+					@Column(name = "R77_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r77_deposit_foreign_number;
+
+					@Column(name = "R77_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r77_deposit_foreign_amount;
+
+					@Column(name = "R77_TOTAL_NUMBER")
+					private BigDecimal r77_total_number;
+
+					@Column(name = "R77_TOTAL_AMOUNT")
+					private BigDecimal r77_total_amount;
+
+					@Column(name = "R77_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r77_total_deposit_bank;
+
+					// R78
+					@Column(name = "R78_DEPOSIT_SIZE")
+					private String r78_deposit_size;
+
+					@Column(name = "R78_DEPOSIT_TYPE")
+					private String r78_deposit_type;
+
+					@Column(name = "R78_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r78_deposit_excluding_number;
+
+					@Column(name = "R78_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r78_deposit_excluding_amount;
+
+					@Column(name = "R78_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r78_deposit_foreign_number;
+
+					@Column(name = "R78_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r78_deposit_foreign_amount;
+
+					@Column(name = "R78_TOTAL_NUMBER")
+					private BigDecimal r78_total_number;
+
+					@Column(name = "R78_TOTAL_AMOUNT")
+					private BigDecimal r78_total_amount;
+
+					@Column(name = "R78_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r78_total_deposit_bank;
+
+					// R79
+					@Column(name = "R79_DEPOSIT_SIZE")
+					private String r79_deposit_size;
+
+					@Column(name = "R79_DEPOSIT_TYPE")
+					private String r79_deposit_type;
+
+					@Column(name = "R79_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r79_deposit_excluding_number;
+
+					@Column(name = "R79_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r79_deposit_excluding_amount;
+
+					@Column(name = "R79_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r79_deposit_foreign_number;
+
+					@Column(name = "R79_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r79_deposit_foreign_amount;
+
+					@Column(name = "R79_TOTAL_NUMBER")
+					private BigDecimal r79_total_number;
+
+					@Column(name = "R79_TOTAL_AMOUNT")
+					private BigDecimal r79_total_amount;
+
+					@Column(name = "R79_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r79_total_deposit_bank;
+
+					// R80
+					@Column(name = "R80_DEPOSIT_SIZE")
+					private String r80_deposit_size;
+
+					@Column(name = "R80_DEPOSIT_TYPE")
+					private String r80_deposit_type;
+
+					@Column(name = "R80_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r80_deposit_excluding_number;
+
+					@Column(name = "R80_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r80_deposit_excluding_amount;
+
+					@Column(name = "R80_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r80_deposit_foreign_number;
+
+					@Column(name = "R80_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r80_deposit_foreign_amount;
+
+					@Column(name = "R80_TOTAL_NUMBER")
+					private BigDecimal r80_total_number;
+
+					@Column(name = "R80_TOTAL_AMOUNT")
+					private BigDecimal r80_total_amount;
+
+					@Column(name = "R80_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r80_total_deposit_bank;
+					
+					// R81
+					@Column(name = "R81_DEPOSIT_SIZE")
+					private String r81_deposit_size;
+
+					@Column(name = "R81_DEPOSIT_TYPE")
+					private String r81_deposit_type;
+
+					@Column(name = "R81_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r81_deposit_excluding_number;
+
+					@Column(name = "R81_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r81_deposit_excluding_amount;
+
+					@Column(name = "R81_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r81_deposit_foreign_number;
+
+					@Column(name = "R81_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r81_deposit_foreign_amount;
+
+					@Column(name = "R81_TOTAL_NUMBER")
+					private BigDecimal r81_total_number;
+
+					@Column(name = "R81_TOTAL_AMOUNT")
+					private BigDecimal r81_total_amount;
+
+					@Column(name = "R81_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r81_total_deposit_bank;
+
+					// R82
+					@Column(name = "R82_DEPOSIT_SIZE")
+					private String r82_deposit_size;
+
+					@Column(name = "R82_DEPOSIT_TYPE")
+					private String r82_deposit_type;
+
+					@Column(name = "R82_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r82_deposit_excluding_number;
+
+					@Column(name = "R82_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r82_deposit_excluding_amount;
+
+					@Column(name = "R82_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r82_deposit_foreign_number;
+
+					@Column(name = "R82_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r82_deposit_foreign_amount;
+
+					@Column(name = "R82_TOTAL_NUMBER")
+					private BigDecimal r82_total_number;
+
+					@Column(name = "R82_TOTAL_AMOUNT")
+					private BigDecimal r82_total_amount;
+
+					@Column(name = "R82_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r82_total_deposit_bank;
+
+					// R83
+					@Column(name = "R83_DEPOSIT_SIZE")
+					private String r83_deposit_size;
+
+					@Column(name = "R83_DEPOSIT_TYPE")
+					private String r83_deposit_type;
+
+					@Column(name = "R83_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r83_deposit_excluding_number;
+
+					@Column(name = "R83_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r83_deposit_excluding_amount;
+
+					@Column(name = "R83_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r83_deposit_foreign_number;
+
+					@Column(name = "R83_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r83_deposit_foreign_amount;
+
+					@Column(name = "R83_TOTAL_NUMBER")
+					private BigDecimal r83_total_number;
+
+					@Column(name = "R83_TOTAL_AMOUNT")
+					private BigDecimal r83_total_amount;
+
+					@Column(name = "R83_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r83_total_deposit_bank;
+
+					// R84
+					@Column(name = "R84_DEPOSIT_SIZE")
+					private String r84_deposit_size;
+
+					@Column(name = "R84_DEPOSIT_TYPE")
+					private String r84_deposit_type;
+
+					@Column(name = "R84_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r84_deposit_excluding_number;
+
+					@Column(name = "R84_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r84_deposit_excluding_amount;
+
+					@Column(name = "R84_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r84_deposit_foreign_number;
+
+					@Column(name = "R84_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r84_deposit_foreign_amount;
+
+					@Column(name = "R84_TOTAL_NUMBER")
+					private BigDecimal r84_total_number;
+
+					@Column(name = "R84_TOTAL_AMOUNT")
+					private BigDecimal r84_total_amount;
+
+					@Column(name = "R84_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r84_total_deposit_bank;
+
+					// R85
+					@Column(name = "R85_DEPOSIT_SIZE")
+					private String r85_deposit_size;
+
+					@Column(name = "R85_DEPOSIT_TYPE")
+					private String r85_deposit_type;
+
+					@Column(name = "R85_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r85_deposit_excluding_number;
+
+					@Column(name = "R85_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r85_deposit_excluding_amount;
+
+					@Column(name = "R85_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r85_deposit_foreign_number;
+
+					@Column(name = "R85_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r85_deposit_foreign_amount;
+
+					@Column(name = "R85_TOTAL_NUMBER")
+					private BigDecimal r85_total_number;
+
+					@Column(name = "R85_TOTAL_AMOUNT")
+					private BigDecimal r85_total_amount;
+
+					@Column(name = "R85_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r85_total_deposit_bank;
+
+					// R86
+					@Column(name = "R86_DEPOSIT_SIZE")
+					private String r86_deposit_size;
+
+					@Column(name = "R86_DEPOSIT_TYPE")
+					private String r86_deposit_type;
+
+					@Column(name = "R86_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r86_deposit_excluding_number;
+
+					@Column(name = "R86_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r86_deposit_excluding_amount;
+
+					@Column(name = "R86_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r86_deposit_foreign_number;
+
+					@Column(name = "R86_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r86_deposit_foreign_amount;
+
+					@Column(name = "R86_TOTAL_NUMBER")
+					private BigDecimal r86_total_number;
+
+					@Column(name = "R86_TOTAL_AMOUNT")
+					private BigDecimal r86_total_amount;
+
+					@Column(name = "R86_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r86_total_deposit_bank;
+					
+					@Id
+					@Temporal(TemporalType.DATE)
+					@Column(name = "REPORT_DATE")
+					private Date REPORT_DATE;
+
+					@Column(name = "REPORT_VERSION", length = 100)
+					private BigDecimal REPORT_VERSION;
+					
+					 @Id
+					 @Column(name = "REPORT_RESUBDATE")
+                     private Date	REPORT_RESUBDATE;
+						
+
+					@Column(name = "REPORT_FREQUENCY", length = 100)
+					private String REPORT_FREQUENCY;
+
+					@Column(name = "REPORT_CODE", length = 100)
+					private String REPORT_CODE;
+
+					@Column(name = "REPORT_DESC", length = 100)
+					private String REPORT_DESC;
+
+					@Column(name = "ENTITY_FLG", length = 1)
+					private String ENTITY_FLG;
+
+					@Column(name = "MODIFY_FLG", length = 1)
+					private String MODIFY_FLG;
+
+					@Column(name = "DEL_FLG", length = 1)
+					private String DEL_FLG;
+				
+					public String getR7_deposit_size() {
+						return r7_deposit_size;
+					}
+					public void setR7_deposit_size(String r7_deposit_size) {
+						this.r7_deposit_size = r7_deposit_size;
+					}
+					public String getR7_deposit_type() {
+						return r7_deposit_type;
+					}
+					public void setR7_deposit_type(String r7_deposit_type) {
+						this.r7_deposit_type = r7_deposit_type;
+					}
+					public BigDecimal getR7_deposit_excluding_number() {
+						return r7_deposit_excluding_number;
+					}
+					public void setR7_deposit_excluding_number(BigDecimal r7_deposit_excluding_number) {
+						this.r7_deposit_excluding_number = r7_deposit_excluding_number;
+					}
+					public BigDecimal getR7_deposit_excluding_amount() {
+						return r7_deposit_excluding_amount;
+					}
+					public void setR7_deposit_excluding_amount(BigDecimal r7_deposit_excluding_amount) {
+						this.r7_deposit_excluding_amount = r7_deposit_excluding_amount;
+					}
+					public BigDecimal getR7_deposit_foreign_number() {
+						return r7_deposit_foreign_number;
+					}
+					public void setR7_deposit_foreign_number(BigDecimal r7_deposit_foreign_number) {
+						this.r7_deposit_foreign_number = r7_deposit_foreign_number;
+					}
+					public BigDecimal getR7_deposit_foreign_amount() {
+						return r7_deposit_foreign_amount;
+					}
+					public void setR7_deposit_foreign_amount(BigDecimal r7_deposit_foreign_amount) {
+						this.r7_deposit_foreign_amount = r7_deposit_foreign_amount;
+					}
+					public BigDecimal getR7_total_number() {
+						return r7_total_number;
+					}
+					public void setR7_total_number(BigDecimal r7_total_number) {
+						this.r7_total_number = r7_total_number;
+					}
+					public BigDecimal getR7_total_amount() {
+						return r7_total_amount;
+					}
+					public void setR7_total_amount(BigDecimal r7_total_amount) {
+						this.r7_total_amount = r7_total_amount;
+					}
+					public BigDecimal getR7_total_deposit_bank() {
+						return r7_total_deposit_bank;
+					}
+					public void setR7_total_deposit_bank(BigDecimal r7_total_deposit_bank) {
+						this.r7_total_deposit_bank = r7_total_deposit_bank;
+					}
+					public String getR8_deposit_size() {
+						return r8_deposit_size;
+					}
+					public void setR8_deposit_size(String r8_deposit_size) {
+						this.r8_deposit_size = r8_deposit_size;
+					}
+					public String getR8_deposit_type() {
+						return r8_deposit_type;
+					}
+					public void setR8_deposit_type(String r8_deposit_type) {
+						this.r8_deposit_type = r8_deposit_type;
+					}
+					public BigDecimal getR8_deposit_excluding_number() {
+						return r8_deposit_excluding_number;
+					}
+					public void setR8_deposit_excluding_number(BigDecimal r8_deposit_excluding_number) {
+						this.r8_deposit_excluding_number = r8_deposit_excluding_number;
+					}
+					public BigDecimal getR8_deposit_excluding_amount() {
+						return r8_deposit_excluding_amount;
+					}
+					public void setR8_deposit_excluding_amount(BigDecimal r8_deposit_excluding_amount) {
+						this.r8_deposit_excluding_amount = r8_deposit_excluding_amount;
+					}
+					public BigDecimal getR8_deposit_foreign_number() {
+						return r8_deposit_foreign_number;
+					}
+					public void setR8_deposit_foreign_number(BigDecimal r8_deposit_foreign_number) {
+						this.r8_deposit_foreign_number = r8_deposit_foreign_number;
+					}
+					public BigDecimal getR8_deposit_foreign_amount() {
+						return r8_deposit_foreign_amount;
+					}
+					public void setR8_deposit_foreign_amount(BigDecimal r8_deposit_foreign_amount) {
+						this.r8_deposit_foreign_amount = r8_deposit_foreign_amount;
+					}
+					public BigDecimal getR8_total_number() {
+						return r8_total_number;
+					}
+					public void setR8_total_number(BigDecimal r8_total_number) {
+						this.r8_total_number = r8_total_number;
+					}
+					public BigDecimal getR8_total_amount() {
+						return r8_total_amount;
+					}
+					public void setR8_total_amount(BigDecimal r8_total_amount) {
+						this.r8_total_amount = r8_total_amount;
+					}
+					public BigDecimal getR8_total_deposit_bank() {
+						return r8_total_deposit_bank;
+					}
+					public void setR8_total_deposit_bank(BigDecimal r8_total_deposit_bank) {
+						this.r8_total_deposit_bank = r8_total_deposit_bank;
+					}
+					public String getR9_deposit_size() {
+						return r9_deposit_size;
+					}
+					public void setR9_deposit_size(String r9_deposit_size) {
+						this.r9_deposit_size = r9_deposit_size;
+					}
+					public String getR9_deposit_type() {
+						return r9_deposit_type;
+					}
+					public void setR9_deposit_type(String r9_deposit_type) {
+						this.r9_deposit_type = r9_deposit_type;
+					}
+					public BigDecimal getR9_deposit_excluding_number() {
+						return r9_deposit_excluding_number;
+					}
+					public void setR9_deposit_excluding_number(BigDecimal r9_deposit_excluding_number) {
+						this.r9_deposit_excluding_number = r9_deposit_excluding_number;
+					}
+					public BigDecimal getR9_deposit_excluding_amount() {
+						return r9_deposit_excluding_amount;
+					}
+					public void setR9_deposit_excluding_amount(BigDecimal r9_deposit_excluding_amount) {
+						this.r9_deposit_excluding_amount = r9_deposit_excluding_amount;
+					}
+					public BigDecimal getR9_deposit_foreign_number() {
+						return r9_deposit_foreign_number;
+					}
+					public void setR9_deposit_foreign_number(BigDecimal r9_deposit_foreign_number) {
+						this.r9_deposit_foreign_number = r9_deposit_foreign_number;
+					}
+					public BigDecimal getR9_deposit_foreign_amount() {
+						return r9_deposit_foreign_amount;
+					}
+					public void setR9_deposit_foreign_amount(BigDecimal r9_deposit_foreign_amount) {
+						this.r9_deposit_foreign_amount = r9_deposit_foreign_amount;
+					}
+					public BigDecimal getR9_total_number() {
+						return r9_total_number;
+					}
+					public void setR9_total_number(BigDecimal r9_total_number) {
+						this.r9_total_number = r9_total_number;
+					}
+					public BigDecimal getR9_total_amount() {
+						return r9_total_amount;
+					}
+					public void setR9_total_amount(BigDecimal r9_total_amount) {
+						this.r9_total_amount = r9_total_amount;
+					}
+					public BigDecimal getR9_total_deposit_bank() {
+						return r9_total_deposit_bank;
+					}
+					public void setR9_total_deposit_bank(BigDecimal r9_total_deposit_bank) {
+						this.r9_total_deposit_bank = r9_total_deposit_bank;
+					}
+					public String getR10_deposit_size() {
+						return r10_deposit_size;
+					}
+					public void setR10_deposit_size(String r10_deposit_size) {
+						this.r10_deposit_size = r10_deposit_size;
+					}
+					public String getR10_deposit_type() {
+						return r10_deposit_type;
+					}
+					public void setR10_deposit_type(String r10_deposit_type) {
+						this.r10_deposit_type = r10_deposit_type;
+					}
+					public BigDecimal getR10_deposit_excluding_number() {
+						return r10_deposit_excluding_number;
+					}
+					public void setR10_deposit_excluding_number(BigDecimal r10_deposit_excluding_number) {
+						this.r10_deposit_excluding_number = r10_deposit_excluding_number;
+					}
+					public BigDecimal getR10_deposit_excluding_amount() {
+						return r10_deposit_excluding_amount;
+					}
+					public void setR10_deposit_excluding_amount(BigDecimal r10_deposit_excluding_amount) {
+						this.r10_deposit_excluding_amount = r10_deposit_excluding_amount;
+					}
+					public BigDecimal getR10_deposit_foreign_number() {
+						return r10_deposit_foreign_number;
+					}
+					public void setR10_deposit_foreign_number(BigDecimal r10_deposit_foreign_number) {
+						this.r10_deposit_foreign_number = r10_deposit_foreign_number;
+					}
+					public BigDecimal getR10_deposit_foreign_amount() {
+						return r10_deposit_foreign_amount;
+					}
+					public void setR10_deposit_foreign_amount(BigDecimal r10_deposit_foreign_amount) {
+						this.r10_deposit_foreign_amount = r10_deposit_foreign_amount;
+					}
+					public BigDecimal getR10_total_number() {
+						return r10_total_number;
+					}
+					public void setR10_total_number(BigDecimal r10_total_number) {
+						this.r10_total_number = r10_total_number;
+					}
+					public BigDecimal getR10_total_amount() {
+						return r10_total_amount;
+					}
+					public void setR10_total_amount(BigDecimal r10_total_amount) {
+						this.r10_total_amount = r10_total_amount;
+					}
+					public BigDecimal getR10_total_deposit_bank() {
+						return r10_total_deposit_bank;
+					}
+					public void setR10_total_deposit_bank(BigDecimal r10_total_deposit_bank) {
+						this.r10_total_deposit_bank = r10_total_deposit_bank;
+					}
+					public String getR11_deposit_size() {
+						return r11_deposit_size;
+					}
+					public void setR11_deposit_size(String r11_deposit_size) {
+						this.r11_deposit_size = r11_deposit_size;
+					}
+					public String getR11_deposit_type() {
+						return r11_deposit_type;
+					}
+					public void setR11_deposit_type(String r11_deposit_type) {
+						this.r11_deposit_type = r11_deposit_type;
+					}
+					public BigDecimal getR11_deposit_excluding_number() {
+						return r11_deposit_excluding_number;
+					}
+					public void setR11_deposit_excluding_number(BigDecimal r11_deposit_excluding_number) {
+						this.r11_deposit_excluding_number = r11_deposit_excluding_number;
+					}
+					public BigDecimal getR11_deposit_excluding_amount() {
+						return r11_deposit_excluding_amount;
+					}
+					public void setR11_deposit_excluding_amount(BigDecimal r11_deposit_excluding_amount) {
+						this.r11_deposit_excluding_amount = r11_deposit_excluding_amount;
+					}
+					public BigDecimal getR11_deposit_foreign_number() {
+						return r11_deposit_foreign_number;
+					}
+					public void setR11_deposit_foreign_number(BigDecimal r11_deposit_foreign_number) {
+						this.r11_deposit_foreign_number = r11_deposit_foreign_number;
+					}
+					public BigDecimal getR11_deposit_foreign_amount() {
+						return r11_deposit_foreign_amount;
+					}
+					public void setR11_deposit_foreign_amount(BigDecimal r11_deposit_foreign_amount) {
+						this.r11_deposit_foreign_amount = r11_deposit_foreign_amount;
+					}
+					public BigDecimal getR11_total_number() {
+						return r11_total_number;
+					}
+					public void setR11_total_number(BigDecimal r11_total_number) {
+						this.r11_total_number = r11_total_number;
+					}
+					public BigDecimal getR11_total_amount() {
+						return r11_total_amount;
+					}
+					public void setR11_total_amount(BigDecimal r11_total_amount) {
+						this.r11_total_amount = r11_total_amount;
+					}
+					public BigDecimal getR11_total_deposit_bank() {
+						return r11_total_deposit_bank;
+					}
+					public void setR11_total_deposit_bank(BigDecimal r11_total_deposit_bank) {
+						this.r11_total_deposit_bank = r11_total_deposit_bank;
+					}
+					public String getR12_deposit_size() {
+						return r12_deposit_size;
+					}
+					public void setR12_deposit_size(String r12_deposit_size) {
+						this.r12_deposit_size = r12_deposit_size;
+					}
+					public String getR12_deposit_type() {
+						return r12_deposit_type;
+					}
+					public void setR12_deposit_type(String r12_deposit_type) {
+						this.r12_deposit_type = r12_deposit_type;
+					}
+					public BigDecimal getR12_deposit_excluding_number() {
+						return r12_deposit_excluding_number;
+					}
+					public void setR12_deposit_excluding_number(BigDecimal r12_deposit_excluding_number) {
+						this.r12_deposit_excluding_number = r12_deposit_excluding_number;
+					}
+					public BigDecimal getR12_deposit_excluding_amount() {
+						return r12_deposit_excluding_amount;
+					}
+					public void setR12_deposit_excluding_amount(BigDecimal r12_deposit_excluding_amount) {
+						this.r12_deposit_excluding_amount = r12_deposit_excluding_amount;
+					}
+					public BigDecimal getR12_deposit_foreign_number() {
+						return r12_deposit_foreign_number;
+					}
+					public void setR12_deposit_foreign_number(BigDecimal r12_deposit_foreign_number) {
+						this.r12_deposit_foreign_number = r12_deposit_foreign_number;
+					}
+					public BigDecimal getR12_deposit_foreign_amount() {
+						return r12_deposit_foreign_amount;
+					}
+					public void setR12_deposit_foreign_amount(BigDecimal r12_deposit_foreign_amount) {
+						this.r12_deposit_foreign_amount = r12_deposit_foreign_amount;
+					}
+					public BigDecimal getR12_total_number() {
+						return r12_total_number;
+					}
+					public void setR12_total_number(BigDecimal r12_total_number) {
+						this.r12_total_number = r12_total_number;
+					}
+					public BigDecimal getR12_total_amount() {
+						return r12_total_amount;
+					}
+					public void setR12_total_amount(BigDecimal r12_total_amount) {
+						this.r12_total_amount = r12_total_amount;
+					}
+					public BigDecimal getR12_total_deposit_bank() {
+						return r12_total_deposit_bank;
+					}
+					public void setR12_total_deposit_bank(BigDecimal r12_total_deposit_bank) {
+						this.r12_total_deposit_bank = r12_total_deposit_bank;
+					}
+					public String getR13_deposit_size() {
+						return r13_deposit_size;
+					}
+					public void setR13_deposit_size(String r13_deposit_size) {
+						this.r13_deposit_size = r13_deposit_size;
+					}
+					public String getR13_deposit_type() {
+						return r13_deposit_type;
+					}
+					public void setR13_deposit_type(String r13_deposit_type) {
+						this.r13_deposit_type = r13_deposit_type;
+					}
+					public BigDecimal getR13_deposit_excluding_number() {
+						return r13_deposit_excluding_number;
+					}
+					public void setR13_deposit_excluding_number(BigDecimal r13_deposit_excluding_number) {
+						this.r13_deposit_excluding_number = r13_deposit_excluding_number;
+					}
+					public BigDecimal getR13_deposit_excluding_amount() {
+						return r13_deposit_excluding_amount;
+					}
+					public void setR13_deposit_excluding_amount(BigDecimal r13_deposit_excluding_amount) {
+						this.r13_deposit_excluding_amount = r13_deposit_excluding_amount;
+					}
+					public BigDecimal getR13_deposit_foreign_number() {
+						return r13_deposit_foreign_number;
+					}
+					public void setR13_deposit_foreign_number(BigDecimal r13_deposit_foreign_number) {
+						this.r13_deposit_foreign_number = r13_deposit_foreign_number;
+					}
+					public BigDecimal getR13_deposit_foreign_amount() {
+						return r13_deposit_foreign_amount;
+					}
+					public void setR13_deposit_foreign_amount(BigDecimal r13_deposit_foreign_amount) {
+						this.r13_deposit_foreign_amount = r13_deposit_foreign_amount;
+					}
+					public BigDecimal getR13_total_number() {
+						return r13_total_number;
+					}
+					public void setR13_total_number(BigDecimal r13_total_number) {
+						this.r13_total_number = r13_total_number;
+					}
+					public BigDecimal getR13_total_amount() {
+						return r13_total_amount;
+					}
+					public void setR13_total_amount(BigDecimal r13_total_amount) {
+						this.r13_total_amount = r13_total_amount;
+					}
+					public BigDecimal getR13_total_deposit_bank() {
+						return r13_total_deposit_bank;
+					}
+					public void setR13_total_deposit_bank(BigDecimal r13_total_deposit_bank) {
+						this.r13_total_deposit_bank = r13_total_deposit_bank;
+					}
+					public String getR14_deposit_size() {
+						return r14_deposit_size;
+					}
+					public void setR14_deposit_size(String r14_deposit_size) {
+						this.r14_deposit_size = r14_deposit_size;
+					}
+					public String getR14_deposit_type() {
+						return r14_deposit_type;
+					}
+					public void setR14_deposit_type(String r14_deposit_type) {
+						this.r14_deposit_type = r14_deposit_type;
+					}
+					public BigDecimal getR14_deposit_excluding_number() {
+						return r14_deposit_excluding_number;
+					}
+					public void setR14_deposit_excluding_number(BigDecimal r14_deposit_excluding_number) {
+						this.r14_deposit_excluding_number = r14_deposit_excluding_number;
+					}
+					public BigDecimal getR14_deposit_excluding_amount() {
+						return r14_deposit_excluding_amount;
+					}
+					public void setR14_deposit_excluding_amount(BigDecimal r14_deposit_excluding_amount) {
+						this.r14_deposit_excluding_amount = r14_deposit_excluding_amount;
+					}
+					public BigDecimal getR14_deposit_foreign_number() {
+						return r14_deposit_foreign_number;
+					}
+					public void setR14_deposit_foreign_number(BigDecimal r14_deposit_foreign_number) {
+						this.r14_deposit_foreign_number = r14_deposit_foreign_number;
+					}
+					public BigDecimal getR14_deposit_foreign_amount() {
+						return r14_deposit_foreign_amount;
+					}
+					public void setR14_deposit_foreign_amount(BigDecimal r14_deposit_foreign_amount) {
+						this.r14_deposit_foreign_amount = r14_deposit_foreign_amount;
+					}
+					public BigDecimal getR14_total_number() {
+						return r14_total_number;
+					}
+					public void setR14_total_number(BigDecimal r14_total_number) {
+						this.r14_total_number = r14_total_number;
+					}
+					public BigDecimal getR14_total_amount() {
+						return r14_total_amount;
+					}
+					public void setR14_total_amount(BigDecimal r14_total_amount) {
+						this.r14_total_amount = r14_total_amount;
+					}
+					public BigDecimal getR14_total_deposit_bank() {
+						return r14_total_deposit_bank;
+					}
+					public void setR14_total_deposit_bank(BigDecimal r14_total_deposit_bank) {
+						this.r14_total_deposit_bank = r14_total_deposit_bank;
+					}
+					public String getR15_deposit_size() {
+						return r15_deposit_size;
+					}
+					public void setR15_deposit_size(String r15_deposit_size) {
+						this.r15_deposit_size = r15_deposit_size;
+					}
+					public String getR15_deposit_type() {
+						return r15_deposit_type;
+					}
+					public void setR15_deposit_type(String r15_deposit_type) {
+						this.r15_deposit_type = r15_deposit_type;
+					}
+					public BigDecimal getR15_deposit_excluding_number() {
+						return r15_deposit_excluding_number;
+					}
+					public void setR15_deposit_excluding_number(BigDecimal r15_deposit_excluding_number) {
+						this.r15_deposit_excluding_number = r15_deposit_excluding_number;
+					}
+					public BigDecimal getR15_deposit_excluding_amount() {
+						return r15_deposit_excluding_amount;
+					}
+					public void setR15_deposit_excluding_amount(BigDecimal r15_deposit_excluding_amount) {
+						this.r15_deposit_excluding_amount = r15_deposit_excluding_amount;
+					}
+					public BigDecimal getR15_deposit_foreign_number() {
+						return r15_deposit_foreign_number;
+					}
+					public void setR15_deposit_foreign_number(BigDecimal r15_deposit_foreign_number) {
+						this.r15_deposit_foreign_number = r15_deposit_foreign_number;
+					}
+					public BigDecimal getR15_deposit_foreign_amount() {
+						return r15_deposit_foreign_amount;
+					}
+					public void setR15_deposit_foreign_amount(BigDecimal r15_deposit_foreign_amount) {
+						this.r15_deposit_foreign_amount = r15_deposit_foreign_amount;
+					}
+					public BigDecimal getR15_total_number() {
+						return r15_total_number;
+					}
+					public void setR15_total_number(BigDecimal r15_total_number) {
+						this.r15_total_number = r15_total_number;
+					}
+					public BigDecimal getR15_total_amount() {
+						return r15_total_amount;
+					}
+					public void setR15_total_amount(BigDecimal r15_total_amount) {
+						this.r15_total_amount = r15_total_amount;
+					}
+					public BigDecimal getR15_total_deposit_bank() {
+						return r15_total_deposit_bank;
+					}
+					public void setR15_total_deposit_bank(BigDecimal r15_total_deposit_bank) {
+						this.r15_total_deposit_bank = r15_total_deposit_bank;
+					}
+					public String getR16_deposit_size() {
+						return r16_deposit_size;
+					}
+					public void setR16_deposit_size(String r16_deposit_size) {
+						this.r16_deposit_size = r16_deposit_size;
+					}
+					public String getR16_deposit_type() {
+						return r16_deposit_type;
+					}
+					public void setR16_deposit_type(String r16_deposit_type) {
+						this.r16_deposit_type = r16_deposit_type;
+					}
+					public BigDecimal getR16_deposit_excluding_number() {
+						return r16_deposit_excluding_number;
+					}
+					public void setR16_deposit_excluding_number(BigDecimal r16_deposit_excluding_number) {
+						this.r16_deposit_excluding_number = r16_deposit_excluding_number;
+					}
+					public BigDecimal getR16_deposit_excluding_amount() {
+						return r16_deposit_excluding_amount;
+					}
+					public void setR16_deposit_excluding_amount(BigDecimal r16_deposit_excluding_amount) {
+						this.r16_deposit_excluding_amount = r16_deposit_excluding_amount;
+					}
+					public BigDecimal getR16_deposit_foreign_number() {
+						return r16_deposit_foreign_number;
+					}
+					public void setR16_deposit_foreign_number(BigDecimal r16_deposit_foreign_number) {
+						this.r16_deposit_foreign_number = r16_deposit_foreign_number;
+					}
+					public BigDecimal getR16_deposit_foreign_amount() {
+						return r16_deposit_foreign_amount;
+					}
+					public void setR16_deposit_foreign_amount(BigDecimal r16_deposit_foreign_amount) {
+						this.r16_deposit_foreign_amount = r16_deposit_foreign_amount;
+					}
+					public BigDecimal getR16_total_number() {
+						return r16_total_number;
+					}
+					public void setR16_total_number(BigDecimal r16_total_number) {
+						this.r16_total_number = r16_total_number;
+					}
+					public BigDecimal getR16_total_amount() {
+						return r16_total_amount;
+					}
+					public void setR16_total_amount(BigDecimal r16_total_amount) {
+						this.r16_total_amount = r16_total_amount;
+					}
+					public BigDecimal getR16_total_deposit_bank() {
+						return r16_total_deposit_bank;
+					}
+					public void setR16_total_deposit_bank(BigDecimal r16_total_deposit_bank) {
+						this.r16_total_deposit_bank = r16_total_deposit_bank;
+					}
+					public String getR17_deposit_size() {
+						return r17_deposit_size;
+					}
+					public void setR17_deposit_size(String r17_deposit_size) {
+						this.r17_deposit_size = r17_deposit_size;
+					}
+					public String getR17_deposit_type() {
+						return r17_deposit_type;
+					}
+					public void setR17_deposit_type(String r17_deposit_type) {
+						this.r17_deposit_type = r17_deposit_type;
+					}
+					public BigDecimal getR17_deposit_excluding_number() {
+						return r17_deposit_excluding_number;
+					}
+					public void setR17_deposit_excluding_number(BigDecimal r17_deposit_excluding_number) {
+						this.r17_deposit_excluding_number = r17_deposit_excluding_number;
+					}
+					public BigDecimal getR17_deposit_excluding_amount() {
+						return r17_deposit_excluding_amount;
+					}
+					public void setR17_deposit_excluding_amount(BigDecimal r17_deposit_excluding_amount) {
+						this.r17_deposit_excluding_amount = r17_deposit_excluding_amount;
+					}
+					public BigDecimal getR17_deposit_foreign_number() {
+						return r17_deposit_foreign_number;
+					}
+					public void setR17_deposit_foreign_number(BigDecimal r17_deposit_foreign_number) {
+						this.r17_deposit_foreign_number = r17_deposit_foreign_number;
+					}
+					public BigDecimal getR17_deposit_foreign_amount() {
+						return r17_deposit_foreign_amount;
+					}
+					public void setR17_deposit_foreign_amount(BigDecimal r17_deposit_foreign_amount) {
+						this.r17_deposit_foreign_amount = r17_deposit_foreign_amount;
+					}
+					public BigDecimal getR17_total_number() {
+						return r17_total_number;
+					}
+					public void setR17_total_number(BigDecimal r17_total_number) {
+						this.r17_total_number = r17_total_number;
+					}
+					public BigDecimal getR17_total_amount() {
+						return r17_total_amount;
+					}
+					public void setR17_total_amount(BigDecimal r17_total_amount) {
+						this.r17_total_amount = r17_total_amount;
+					}
+					public BigDecimal getR17_total_deposit_bank() {
+						return r17_total_deposit_bank;
+					}
+					public void setR17_total_deposit_bank(BigDecimal r17_total_deposit_bank) {
+						this.r17_total_deposit_bank = r17_total_deposit_bank;
+					}
+					public String getR18_deposit_size() {
+						return r18_deposit_size;
+					}
+					public void setR18_deposit_size(String r18_deposit_size) {
+						this.r18_deposit_size = r18_deposit_size;
+					}
+					public String getR18_deposit_type() {
+						return r18_deposit_type;
+					}
+					public void setR18_deposit_type(String r18_deposit_type) {
+						this.r18_deposit_type = r18_deposit_type;
+					}
+					public BigDecimal getR18_deposit_excluding_number() {
+						return r18_deposit_excluding_number;
+					}
+					public void setR18_deposit_excluding_number(BigDecimal r18_deposit_excluding_number) {
+						this.r18_deposit_excluding_number = r18_deposit_excluding_number;
+					}
+					public BigDecimal getR18_deposit_excluding_amount() {
+						return r18_deposit_excluding_amount;
+					}
+					public void setR18_deposit_excluding_amount(BigDecimal r18_deposit_excluding_amount) {
+						this.r18_deposit_excluding_amount = r18_deposit_excluding_amount;
+					}
+					public BigDecimal getR18_deposit_foreign_number() {
+						return r18_deposit_foreign_number;
+					}
+					public void setR18_deposit_foreign_number(BigDecimal r18_deposit_foreign_number) {
+						this.r18_deposit_foreign_number = r18_deposit_foreign_number;
+					}
+					public BigDecimal getR18_deposit_foreign_amount() {
+						return r18_deposit_foreign_amount;
+					}
+					public void setR18_deposit_foreign_amount(BigDecimal r18_deposit_foreign_amount) {
+						this.r18_deposit_foreign_amount = r18_deposit_foreign_amount;
+					}
+					public BigDecimal getR18_total_number() {
+						return r18_total_number;
+					}
+					public void setR18_total_number(BigDecimal r18_total_number) {
+						this.r18_total_number = r18_total_number;
+					}
+					public BigDecimal getR18_total_amount() {
+						return r18_total_amount;
+					}
+					public void setR18_total_amount(BigDecimal r18_total_amount) {
+						this.r18_total_amount = r18_total_amount;
+					}
+					public BigDecimal getR18_total_deposit_bank() {
+						return r18_total_deposit_bank;
+					}
+					public void setR18_total_deposit_bank(BigDecimal r18_total_deposit_bank) {
+						this.r18_total_deposit_bank = r18_total_deposit_bank;
+					}
+					public String getR19_deposit_size() {
+						return r19_deposit_size;
+					}
+					public void setR19_deposit_size(String r19_deposit_size) {
+						this.r19_deposit_size = r19_deposit_size;
+					}
+					public String getR19_deposit_type() {
+						return r19_deposit_type;
+					}
+					public void setR19_deposit_type(String r19_deposit_type) {
+						this.r19_deposit_type = r19_deposit_type;
+					}
+					public BigDecimal getR19_deposit_excluding_number() {
+						return r19_deposit_excluding_number;
+					}
+					public void setR19_deposit_excluding_number(BigDecimal r19_deposit_excluding_number) {
+						this.r19_deposit_excluding_number = r19_deposit_excluding_number;
+					}
+					public BigDecimal getR19_deposit_excluding_amount() {
+						return r19_deposit_excluding_amount;
+					}
+					public void setR19_deposit_excluding_amount(BigDecimal r19_deposit_excluding_amount) {
+						this.r19_deposit_excluding_amount = r19_deposit_excluding_amount;
+					}
+					public BigDecimal getR19_deposit_foreign_number() {
+						return r19_deposit_foreign_number;
+					}
+					public void setR19_deposit_foreign_number(BigDecimal r19_deposit_foreign_number) {
+						this.r19_deposit_foreign_number = r19_deposit_foreign_number;
+					}
+					public BigDecimal getR19_deposit_foreign_amount() {
+						return r19_deposit_foreign_amount;
+					}
+					public void setR19_deposit_foreign_amount(BigDecimal r19_deposit_foreign_amount) {
+						this.r19_deposit_foreign_amount = r19_deposit_foreign_amount;
+					}
+					public BigDecimal getR19_total_number() {
+						return r19_total_number;
+					}
+					public void setR19_total_number(BigDecimal r19_total_number) {
+						this.r19_total_number = r19_total_number;
+					}
+					public BigDecimal getR19_total_amount() {
+						return r19_total_amount;
+					}
+					public void setR19_total_amount(BigDecimal r19_total_amount) {
+						this.r19_total_amount = r19_total_amount;
+					}
+					public BigDecimal getR19_total_deposit_bank() {
+						return r19_total_deposit_bank;
+					}
+					public void setR19_total_deposit_bank(BigDecimal r19_total_deposit_bank) {
+						this.r19_total_deposit_bank = r19_total_deposit_bank;
+					}
+					public String getR20_deposit_size() {
+						return r20_deposit_size;
+					}
+					public void setR20_deposit_size(String r20_deposit_size) {
+						this.r20_deposit_size = r20_deposit_size;
+					}
+					public String getR20_deposit_type() {
+						return r20_deposit_type;
+					}
+					public void setR20_deposit_type(String r20_deposit_type) {
+						this.r20_deposit_type = r20_deposit_type;
+					}
+					public BigDecimal getR20_deposit_excluding_number() {
+						return r20_deposit_excluding_number;
+					}
+					public void setR20_deposit_excluding_number(BigDecimal r20_deposit_excluding_number) {
+						this.r20_deposit_excluding_number = r20_deposit_excluding_number;
+					}
+					public BigDecimal getR20_deposit_excluding_amount() {
+						return r20_deposit_excluding_amount;
+					}
+					public void setR20_deposit_excluding_amount(BigDecimal r20_deposit_excluding_amount) {
+						this.r20_deposit_excluding_amount = r20_deposit_excluding_amount;
+					}
+					public BigDecimal getR20_deposit_foreign_number() {
+						return r20_deposit_foreign_number;
+					}
+					public void setR20_deposit_foreign_number(BigDecimal r20_deposit_foreign_number) {
+						this.r20_deposit_foreign_number = r20_deposit_foreign_number;
+					}
+					public BigDecimal getR20_deposit_foreign_amount() {
+						return r20_deposit_foreign_amount;
+					}
+					public void setR20_deposit_foreign_amount(BigDecimal r20_deposit_foreign_amount) {
+						this.r20_deposit_foreign_amount = r20_deposit_foreign_amount;
+					}
+					public BigDecimal getR20_total_number() {
+						return r20_total_number;
+					}
+					public void setR20_total_number(BigDecimal r20_total_number) {
+						this.r20_total_number = r20_total_number;
+					}
+					public BigDecimal getR20_total_amount() {
+						return r20_total_amount;
+					}
+					public void setR20_total_amount(BigDecimal r20_total_amount) {
+						this.r20_total_amount = r20_total_amount;
+					}
+					public BigDecimal getR20_total_deposit_bank() {
+						return r20_total_deposit_bank;
+					}
+					public void setR20_total_deposit_bank(BigDecimal r20_total_deposit_bank) {
+						this.r20_total_deposit_bank = r20_total_deposit_bank;
+					}
+					public String getR21_deposit_size() {
+						return r21_deposit_size;
+					}
+					public void setR21_deposit_size(String r21_deposit_size) {
+						this.r21_deposit_size = r21_deposit_size;
+					}
+					public String getR21_deposit_type() {
+						return r21_deposit_type;
+					}
+					public void setR21_deposit_type(String r21_deposit_type) {
+						this.r21_deposit_type = r21_deposit_type;
+					}
+					public BigDecimal getR21_deposit_excluding_number() {
+						return r21_deposit_excluding_number;
+					}
+					public void setR21_deposit_excluding_number(BigDecimal r21_deposit_excluding_number) {
+						this.r21_deposit_excluding_number = r21_deposit_excluding_number;
+					}
+					public BigDecimal getR21_deposit_excluding_amount() {
+						return r21_deposit_excluding_amount;
+					}
+					public void setR21_deposit_excluding_amount(BigDecimal r21_deposit_excluding_amount) {
+						this.r21_deposit_excluding_amount = r21_deposit_excluding_amount;
+					}
+					public BigDecimal getR21_deposit_foreign_number() {
+						return r21_deposit_foreign_number;
+					}
+					public void setR21_deposit_foreign_number(BigDecimal r21_deposit_foreign_number) {
+						this.r21_deposit_foreign_number = r21_deposit_foreign_number;
+					}
+					public BigDecimal getR21_deposit_foreign_amount() {
+						return r21_deposit_foreign_amount;
+					}
+					public void setR21_deposit_foreign_amount(BigDecimal r21_deposit_foreign_amount) {
+						this.r21_deposit_foreign_amount = r21_deposit_foreign_amount;
+					}
+					public BigDecimal getR21_total_number() {
+						return r21_total_number;
+					}
+					public void setR21_total_number(BigDecimal r21_total_number) {
+						this.r21_total_number = r21_total_number;
+					}
+					public BigDecimal getR21_total_amount() {
+						return r21_total_amount;
+					}
+					public void setR21_total_amount(BigDecimal r21_total_amount) {
+						this.r21_total_amount = r21_total_amount;
+					}
+					public BigDecimal getR21_total_deposit_bank() {
+						return r21_total_deposit_bank;
+					}
+					public void setR21_total_deposit_bank(BigDecimal r21_total_deposit_bank) {
+						this.r21_total_deposit_bank = r21_total_deposit_bank;
+					}
+					public String getR22_deposit_size() {
+						return r22_deposit_size;
+					}
+					public void setR22_deposit_size(String r22_deposit_size) {
+						this.r22_deposit_size = r22_deposit_size;
+					}
+					public String getR22_deposit_type() {
+						return r22_deposit_type;
+					}
+					public void setR22_deposit_type(String r22_deposit_type) {
+						this.r22_deposit_type = r22_deposit_type;
+					}
+					public BigDecimal getR22_deposit_excluding_number() {
+						return r22_deposit_excluding_number;
+					}
+					public void setR22_deposit_excluding_number(BigDecimal r22_deposit_excluding_number) {
+						this.r22_deposit_excluding_number = r22_deposit_excluding_number;
+					}
+					public BigDecimal getR22_deposit_excluding_amount() {
+						return r22_deposit_excluding_amount;
+					}
+					public void setR22_deposit_excluding_amount(BigDecimal r22_deposit_excluding_amount) {
+						this.r22_deposit_excluding_amount = r22_deposit_excluding_amount;
+					}
+					public BigDecimal getR22_deposit_foreign_number() {
+						return r22_deposit_foreign_number;
+					}
+					public void setR22_deposit_foreign_number(BigDecimal r22_deposit_foreign_number) {
+						this.r22_deposit_foreign_number = r22_deposit_foreign_number;
+					}
+					public BigDecimal getR22_deposit_foreign_amount() {
+						return r22_deposit_foreign_amount;
+					}
+					public void setR22_deposit_foreign_amount(BigDecimal r22_deposit_foreign_amount) {
+						this.r22_deposit_foreign_amount = r22_deposit_foreign_amount;
+					}
+					public BigDecimal getR22_total_number() {
+						return r22_total_number;
+					}
+					public void setR22_total_number(BigDecimal r22_total_number) {
+						this.r22_total_number = r22_total_number;
+					}
+					public BigDecimal getR22_total_amount() {
+						return r22_total_amount;
+					}
+					public void setR22_total_amount(BigDecimal r22_total_amount) {
+						this.r22_total_amount = r22_total_amount;
+					}
+					public BigDecimal getR22_total_deposit_bank() {
+						return r22_total_deposit_bank;
+					}
+					public void setR22_total_deposit_bank(BigDecimal r22_total_deposit_bank) {
+						this.r22_total_deposit_bank = r22_total_deposit_bank;
+					}
+					public String getR23_deposit_size() {
+						return r23_deposit_size;
+					}
+					public void setR23_deposit_size(String r23_deposit_size) {
+						this.r23_deposit_size = r23_deposit_size;
+					}
+					public String getR23_deposit_type() {
+						return r23_deposit_type;
+					}
+					public void setR23_deposit_type(String r23_deposit_type) {
+						this.r23_deposit_type = r23_deposit_type;
+					}
+					public BigDecimal getR23_deposit_excluding_number() {
+						return r23_deposit_excluding_number;
+					}
+					public void setR23_deposit_excluding_number(BigDecimal r23_deposit_excluding_number) {
+						this.r23_deposit_excluding_number = r23_deposit_excluding_number;
+					}
+					public BigDecimal getR23_deposit_excluding_amount() {
+						return r23_deposit_excluding_amount;
+					}
+					public void setR23_deposit_excluding_amount(BigDecimal r23_deposit_excluding_amount) {
+						this.r23_deposit_excluding_amount = r23_deposit_excluding_amount;
+					}
+					public BigDecimal getR23_deposit_foreign_number() {
+						return r23_deposit_foreign_number;
+					}
+					public void setR23_deposit_foreign_number(BigDecimal r23_deposit_foreign_number) {
+						this.r23_deposit_foreign_number = r23_deposit_foreign_number;
+					}
+					public BigDecimal getR23_deposit_foreign_amount() {
+						return r23_deposit_foreign_amount;
+					}
+					public void setR23_deposit_foreign_amount(BigDecimal r23_deposit_foreign_amount) {
+						this.r23_deposit_foreign_amount = r23_deposit_foreign_amount;
+					}
+					public BigDecimal getR23_total_number() {
+						return r23_total_number;
+					}
+					public void setR23_total_number(BigDecimal r23_total_number) {
+						this.r23_total_number = r23_total_number;
+					}
+					public BigDecimal getR23_total_amount() {
+						return r23_total_amount;
+					}
+					public void setR23_total_amount(BigDecimal r23_total_amount) {
+						this.r23_total_amount = r23_total_amount;
+					}
+					public BigDecimal getR23_total_deposit_bank() {
+						return r23_total_deposit_bank;
+					}
+					public void setR23_total_deposit_bank(BigDecimal r23_total_deposit_bank) {
+						this.r23_total_deposit_bank = r23_total_deposit_bank;
+					}
+					public String getR24_deposit_size() {
+						return r24_deposit_size;
+					}
+					public void setR24_deposit_size(String r24_deposit_size) {
+						this.r24_deposit_size = r24_deposit_size;
+					}
+					public String getR24_deposit_type() {
+						return r24_deposit_type;
+					}
+					public void setR24_deposit_type(String r24_deposit_type) {
+						this.r24_deposit_type = r24_deposit_type;
+					}
+					public BigDecimal getR24_deposit_excluding_number() {
+						return r24_deposit_excluding_number;
+					}
+					public void setR24_deposit_excluding_number(BigDecimal r24_deposit_excluding_number) {
+						this.r24_deposit_excluding_number = r24_deposit_excluding_number;
+					}
+					public BigDecimal getR24_deposit_excluding_amount() {
+						return r24_deposit_excluding_amount;
+					}
+					public void setR24_deposit_excluding_amount(BigDecimal r24_deposit_excluding_amount) {
+						this.r24_deposit_excluding_amount = r24_deposit_excluding_amount;
+					}
+					public BigDecimal getR24_deposit_foreign_number() {
+						return r24_deposit_foreign_number;
+					}
+					public void setR24_deposit_foreign_number(BigDecimal r24_deposit_foreign_number) {
+						this.r24_deposit_foreign_number = r24_deposit_foreign_number;
+					}
+					public BigDecimal getR24_deposit_foreign_amount() {
+						return r24_deposit_foreign_amount;
+					}
+					public void setR24_deposit_foreign_amount(BigDecimal r24_deposit_foreign_amount) {
+						this.r24_deposit_foreign_amount = r24_deposit_foreign_amount;
+					}
+					public BigDecimal getR24_total_number() {
+						return r24_total_number;
+					}
+					public void setR24_total_number(BigDecimal r24_total_number) {
+						this.r24_total_number = r24_total_number;
+					}
+					public BigDecimal getR24_total_amount() {
+						return r24_total_amount;
+					}
+					public void setR24_total_amount(BigDecimal r24_total_amount) {
+						this.r24_total_amount = r24_total_amount;
+					}
+					public BigDecimal getR24_total_deposit_bank() {
+						return r24_total_deposit_bank;
+					}
+					public void setR24_total_deposit_bank(BigDecimal r24_total_deposit_bank) {
+						this.r24_total_deposit_bank = r24_total_deposit_bank;
+					}
+					public String getR25_deposit_size() {
+						return r25_deposit_size;
+					}
+					public void setR25_deposit_size(String r25_deposit_size) {
+						this.r25_deposit_size = r25_deposit_size;
+					}
+					public String getR25_deposit_type() {
+						return r25_deposit_type;
+					}
+					public void setR25_deposit_type(String r25_deposit_type) {
+						this.r25_deposit_type = r25_deposit_type;
+					}
+					public BigDecimal getR25_deposit_excluding_number() {
+						return r25_deposit_excluding_number;
+					}
+					public void setR25_deposit_excluding_number(BigDecimal r25_deposit_excluding_number) {
+						this.r25_deposit_excluding_number = r25_deposit_excluding_number;
+					}
+					public BigDecimal getR25_deposit_excluding_amount() {
+						return r25_deposit_excluding_amount;
+					}
+					public void setR25_deposit_excluding_amount(BigDecimal r25_deposit_excluding_amount) {
+						this.r25_deposit_excluding_amount = r25_deposit_excluding_amount;
+					}
+					public BigDecimal getR25_deposit_foreign_number() {
+						return r25_deposit_foreign_number;
+					}
+					public void setR25_deposit_foreign_number(BigDecimal r25_deposit_foreign_number) {
+						this.r25_deposit_foreign_number = r25_deposit_foreign_number;
+					}
+					public BigDecimal getR25_deposit_foreign_amount() {
+						return r25_deposit_foreign_amount;
+					}
+					public void setR25_deposit_foreign_amount(BigDecimal r25_deposit_foreign_amount) {
+						this.r25_deposit_foreign_amount = r25_deposit_foreign_amount;
+					}
+					public BigDecimal getR25_total_number() {
+						return r25_total_number;
+					}
+					public void setR25_total_number(BigDecimal r25_total_number) {
+						this.r25_total_number = r25_total_number;
+					}
+					public BigDecimal getR25_total_amount() {
+						return r25_total_amount;
+					}
+					public void setR25_total_amount(BigDecimal r25_total_amount) {
+						this.r25_total_amount = r25_total_amount;
+					}
+					public BigDecimal getR25_total_deposit_bank() {
+						return r25_total_deposit_bank;
+					}
+					public void setR25_total_deposit_bank(BigDecimal r25_total_deposit_bank) {
+						this.r25_total_deposit_bank = r25_total_deposit_bank;
+					}
+					public String getR26_deposit_size() {
+						return r26_deposit_size;
+					}
+					public void setR26_deposit_size(String r26_deposit_size) {
+						this.r26_deposit_size = r26_deposit_size;
+					}
+					public String getR26_deposit_type() {
+						return r26_deposit_type;
+					}
+					public void setR26_deposit_type(String r26_deposit_type) {
+						this.r26_deposit_type = r26_deposit_type;
+					}
+					public BigDecimal getR26_deposit_excluding_number() {
+						return r26_deposit_excluding_number;
+					}
+					public void setR26_deposit_excluding_number(BigDecimal r26_deposit_excluding_number) {
+						this.r26_deposit_excluding_number = r26_deposit_excluding_number;
+					}
+					public BigDecimal getR26_deposit_excluding_amount() {
+						return r26_deposit_excluding_amount;
+					}
+					public void setR26_deposit_excluding_amount(BigDecimal r26_deposit_excluding_amount) {
+						this.r26_deposit_excluding_amount = r26_deposit_excluding_amount;
+					}
+					public BigDecimal getR26_deposit_foreign_number() {
+						return r26_deposit_foreign_number;
+					}
+					public void setR26_deposit_foreign_number(BigDecimal r26_deposit_foreign_number) {
+						this.r26_deposit_foreign_number = r26_deposit_foreign_number;
+					}
+					public BigDecimal getR26_deposit_foreign_amount() {
+						return r26_deposit_foreign_amount;
+					}
+					public void setR26_deposit_foreign_amount(BigDecimal r26_deposit_foreign_amount) {
+						this.r26_deposit_foreign_amount = r26_deposit_foreign_amount;
+					}
+					public BigDecimal getR26_total_number() {
+						return r26_total_number;
+					}
+					public void setR26_total_number(BigDecimal r26_total_number) {
+						this.r26_total_number = r26_total_number;
+					}
+					public BigDecimal getR26_total_amount() {
+						return r26_total_amount;
+					}
+					public void setR26_total_amount(BigDecimal r26_total_amount) {
+						this.r26_total_amount = r26_total_amount;
+					}
+					public BigDecimal getR26_total_deposit_bank() {
+						return r26_total_deposit_bank;
+					}
+					public void setR26_total_deposit_bank(BigDecimal r26_total_deposit_bank) {
+						this.r26_total_deposit_bank = r26_total_deposit_bank;
+					}
+					public String getR27_deposit_size() {
+						return r27_deposit_size;
+					}
+					public void setR27_deposit_size(String r27_deposit_size) {
+						this.r27_deposit_size = r27_deposit_size;
+					}
+					public String getR27_deposit_type() {
+						return r27_deposit_type;
+					}
+					public void setR27_deposit_type(String r27_deposit_type) {
+						this.r27_deposit_type = r27_deposit_type;
+					}
+					public BigDecimal getR27_deposit_excluding_number() {
+						return r27_deposit_excluding_number;
+					}
+					public void setR27_deposit_excluding_number(BigDecimal r27_deposit_excluding_number) {
+						this.r27_deposit_excluding_number = r27_deposit_excluding_number;
+					}
+					public BigDecimal getR27_deposit_excluding_amount() {
+						return r27_deposit_excluding_amount;
+					}
+					public void setR27_deposit_excluding_amount(BigDecimal r27_deposit_excluding_amount) {
+						this.r27_deposit_excluding_amount = r27_deposit_excluding_amount;
+					}
+					public BigDecimal getR27_deposit_foreign_number() {
+						return r27_deposit_foreign_number;
+					}
+					public void setR27_deposit_foreign_number(BigDecimal r27_deposit_foreign_number) {
+						this.r27_deposit_foreign_number = r27_deposit_foreign_number;
+					}
+					public BigDecimal getR27_deposit_foreign_amount() {
+						return r27_deposit_foreign_amount;
+					}
+					public void setR27_deposit_foreign_amount(BigDecimal r27_deposit_foreign_amount) {
+						this.r27_deposit_foreign_amount = r27_deposit_foreign_amount;
+					}
+					public BigDecimal getR27_total_number() {
+						return r27_total_number;
+					}
+					public void setR27_total_number(BigDecimal r27_total_number) {
+						this.r27_total_number = r27_total_number;
+					}
+					public BigDecimal getR27_total_amount() {
+						return r27_total_amount;
+					}
+					public void setR27_total_amount(BigDecimal r27_total_amount) {
+						this.r27_total_amount = r27_total_amount;
+					}
+					public BigDecimal getR27_total_deposit_bank() {
+						return r27_total_deposit_bank;
+					}
+					public void setR27_total_deposit_bank(BigDecimal r27_total_deposit_bank) {
+						this.r27_total_deposit_bank = r27_total_deposit_bank;
+					}
+					public String getR28_deposit_size() {
+						return r28_deposit_size;
+					}
+					public void setR28_deposit_size(String r28_deposit_size) {
+						this.r28_deposit_size = r28_deposit_size;
+					}
+					public String getR28_deposit_type() {
+						return r28_deposit_type;
+					}
+					public void setR28_deposit_type(String r28_deposit_type) {
+						this.r28_deposit_type = r28_deposit_type;
+					}
+					public BigDecimal getR28_deposit_excluding_number() {
+						return r28_deposit_excluding_number;
+					}
+					public void setR28_deposit_excluding_number(BigDecimal r28_deposit_excluding_number) {
+						this.r28_deposit_excluding_number = r28_deposit_excluding_number;
+					}
+					public BigDecimal getR28_deposit_excluding_amount() {
+						return r28_deposit_excluding_amount;
+					}
+					public void setR28_deposit_excluding_amount(BigDecimal r28_deposit_excluding_amount) {
+						this.r28_deposit_excluding_amount = r28_deposit_excluding_amount;
+					}
+					public BigDecimal getR28_deposit_foreign_number() {
+						return r28_deposit_foreign_number;
+					}
+					public void setR28_deposit_foreign_number(BigDecimal r28_deposit_foreign_number) {
+						this.r28_deposit_foreign_number = r28_deposit_foreign_number;
+					}
+					public BigDecimal getR28_deposit_foreign_amount() {
+						return r28_deposit_foreign_amount;
+					}
+					public void setR28_deposit_foreign_amount(BigDecimal r28_deposit_foreign_amount) {
+						this.r28_deposit_foreign_amount = r28_deposit_foreign_amount;
+					}
+					public BigDecimal getR28_total_number() {
+						return r28_total_number;
+					}
+					public void setR28_total_number(BigDecimal r28_total_number) {
+						this.r28_total_number = r28_total_number;
+					}
+					public BigDecimal getR28_total_amount() {
+						return r28_total_amount;
+					}
+					public void setR28_total_amount(BigDecimal r28_total_amount) {
+						this.r28_total_amount = r28_total_amount;
+					}
+					public BigDecimal getR28_total_deposit_bank() {
+						return r28_total_deposit_bank;
+					}
+					public void setR28_total_deposit_bank(BigDecimal r28_total_deposit_bank) {
+						this.r28_total_deposit_bank = r28_total_deposit_bank;
+					}
+					public String getR29_deposit_size() {
+						return r29_deposit_size;
+					}
+					public void setR29_deposit_size(String r29_deposit_size) {
+						this.r29_deposit_size = r29_deposit_size;
+					}
+					public String getR29_deposit_type() {
+						return r29_deposit_type;
+					}
+					public void setR29_deposit_type(String r29_deposit_type) {
+						this.r29_deposit_type = r29_deposit_type;
+					}
+					public BigDecimal getR29_deposit_excluding_number() {
+						return r29_deposit_excluding_number;
+					}
+					public void setR29_deposit_excluding_number(BigDecimal r29_deposit_excluding_number) {
+						this.r29_deposit_excluding_number = r29_deposit_excluding_number;
+					}
+					public BigDecimal getR29_deposit_excluding_amount() {
+						return r29_deposit_excluding_amount;
+					}
+					public void setR29_deposit_excluding_amount(BigDecimal r29_deposit_excluding_amount) {
+						this.r29_deposit_excluding_amount = r29_deposit_excluding_amount;
+					}
+					public BigDecimal getR29_deposit_foreign_number() {
+						return r29_deposit_foreign_number;
+					}
+					public void setR29_deposit_foreign_number(BigDecimal r29_deposit_foreign_number) {
+						this.r29_deposit_foreign_number = r29_deposit_foreign_number;
+					}
+					public BigDecimal getR29_deposit_foreign_amount() {
+						return r29_deposit_foreign_amount;
+					}
+					public void setR29_deposit_foreign_amount(BigDecimal r29_deposit_foreign_amount) {
+						this.r29_deposit_foreign_amount = r29_deposit_foreign_amount;
+					}
+					public BigDecimal getR29_total_number() {
+						return r29_total_number;
+					}
+					public void setR29_total_number(BigDecimal r29_total_number) {
+						this.r29_total_number = r29_total_number;
+					}
+					public BigDecimal getR29_total_amount() {
+						return r29_total_amount;
+					}
+					public void setR29_total_amount(BigDecimal r29_total_amount) {
+						this.r29_total_amount = r29_total_amount;
+					}
+					public BigDecimal getR29_total_deposit_bank() {
+						return r29_total_deposit_bank;
+					}
+					public void setR29_total_deposit_bank(BigDecimal r29_total_deposit_bank) {
+						this.r29_total_deposit_bank = r29_total_deposit_bank;
+					}
+					public String getR30_deposit_size() {
+						return r30_deposit_size;
+					}
+					public void setR30_deposit_size(String r30_deposit_size) {
+						this.r30_deposit_size = r30_deposit_size;
+					}
+					public String getR30_deposit_type() {
+						return r30_deposit_type;
+					}
+					public void setR30_deposit_type(String r30_deposit_type) {
+						this.r30_deposit_type = r30_deposit_type;
+					}
+					public BigDecimal getR30_deposit_excluding_number() {
+						return r30_deposit_excluding_number;
+					}
+					public void setR30_deposit_excluding_number(BigDecimal r30_deposit_excluding_number) {
+						this.r30_deposit_excluding_number = r30_deposit_excluding_number;
+					}
+					public BigDecimal getR30_deposit_excluding_amount() {
+						return r30_deposit_excluding_amount;
+					}
+					public void setR30_deposit_excluding_amount(BigDecimal r30_deposit_excluding_amount) {
+						this.r30_deposit_excluding_amount = r30_deposit_excluding_amount;
+					}
+					public BigDecimal getR30_deposit_foreign_number() {
+						return r30_deposit_foreign_number;
+					}
+					public void setR30_deposit_foreign_number(BigDecimal r30_deposit_foreign_number) {
+						this.r30_deposit_foreign_number = r30_deposit_foreign_number;
+					}
+					public BigDecimal getR30_deposit_foreign_amount() {
+						return r30_deposit_foreign_amount;
+					}
+					public void setR30_deposit_foreign_amount(BigDecimal r30_deposit_foreign_amount) {
+						this.r30_deposit_foreign_amount = r30_deposit_foreign_amount;
+					}
+					public BigDecimal getR30_total_number() {
+						return r30_total_number;
+					}
+					public void setR30_total_number(BigDecimal r30_total_number) {
+						this.r30_total_number = r30_total_number;
+					}
+					public BigDecimal getR30_total_amount() {
+						return r30_total_amount;
+					}
+					public void setR30_total_amount(BigDecimal r30_total_amount) {
+						this.r30_total_amount = r30_total_amount;
+					}
+					public BigDecimal getR30_total_deposit_bank() {
+						return r30_total_deposit_bank;
+					}
+					public void setR30_total_deposit_bank(BigDecimal r30_total_deposit_bank) {
+						this.r30_total_deposit_bank = r30_total_deposit_bank;
+					}
+					public String getR31_deposit_size() {
+						return r31_deposit_size;
+					}
+					public void setR31_deposit_size(String r31_deposit_size) {
+						this.r31_deposit_size = r31_deposit_size;
+					}
+					public String getR31_deposit_type() {
+						return r31_deposit_type;
+					}
+					public void setR31_deposit_type(String r31_deposit_type) {
+						this.r31_deposit_type = r31_deposit_type;
+					}
+					public BigDecimal getR31_deposit_excluding_number() {
+						return r31_deposit_excluding_number;
+					}
+					public void setR31_deposit_excluding_number(BigDecimal r31_deposit_excluding_number) {
+						this.r31_deposit_excluding_number = r31_deposit_excluding_number;
+					}
+					public BigDecimal getR31_deposit_excluding_amount() {
+						return r31_deposit_excluding_amount;
+					}
+					public void setR31_deposit_excluding_amount(BigDecimal r31_deposit_excluding_amount) {
+						this.r31_deposit_excluding_amount = r31_deposit_excluding_amount;
+					}
+					public BigDecimal getR31_deposit_foreign_number() {
+						return r31_deposit_foreign_number;
+					}
+					public void setR31_deposit_foreign_number(BigDecimal r31_deposit_foreign_number) {
+						this.r31_deposit_foreign_number = r31_deposit_foreign_number;
+					}
+					public BigDecimal getR31_deposit_foreign_amount() {
+						return r31_deposit_foreign_amount;
+					}
+					public void setR31_deposit_foreign_amount(BigDecimal r31_deposit_foreign_amount) {
+						this.r31_deposit_foreign_amount = r31_deposit_foreign_amount;
+					}
+					public BigDecimal getR31_total_number() {
+						return r31_total_number;
+					}
+					public void setR31_total_number(BigDecimal r31_total_number) {
+						this.r31_total_number = r31_total_number;
+					}
+					public BigDecimal getR31_total_amount() {
+						return r31_total_amount;
+					}
+					public void setR31_total_amount(BigDecimal r31_total_amount) {
+						this.r31_total_amount = r31_total_amount;
+					}
+					public BigDecimal getR31_total_deposit_bank() {
+						return r31_total_deposit_bank;
+					}
+					public void setR31_total_deposit_bank(BigDecimal r31_total_deposit_bank) {
+						this.r31_total_deposit_bank = r31_total_deposit_bank;
+					}
+					public String getR32_deposit_size() {
+						return r32_deposit_size;
+					}
+					public void setR32_deposit_size(String r32_deposit_size) {
+						this.r32_deposit_size = r32_deposit_size;
+					}
+					public String getR32_deposit_type() {
+						return r32_deposit_type;
+					}
+					public void setR32_deposit_type(String r32_deposit_type) {
+						this.r32_deposit_type = r32_deposit_type;
+					}
+					public BigDecimal getR32_deposit_excluding_number() {
+						return r32_deposit_excluding_number;
+					}
+					public void setR32_deposit_excluding_number(BigDecimal r32_deposit_excluding_number) {
+						this.r32_deposit_excluding_number = r32_deposit_excluding_number;
+					}
+					public BigDecimal getR32_deposit_excluding_amount() {
+						return r32_deposit_excluding_amount;
+					}
+					public void setR32_deposit_excluding_amount(BigDecimal r32_deposit_excluding_amount) {
+						this.r32_deposit_excluding_amount = r32_deposit_excluding_amount;
+					}
+					public BigDecimal getR32_deposit_foreign_number() {
+						return r32_deposit_foreign_number;
+					}
+					public void setR32_deposit_foreign_number(BigDecimal r32_deposit_foreign_number) {
+						this.r32_deposit_foreign_number = r32_deposit_foreign_number;
+					}
+					public BigDecimal getR32_deposit_foreign_amount() {
+						return r32_deposit_foreign_amount;
+					}
+					public void setR32_deposit_foreign_amount(BigDecimal r32_deposit_foreign_amount) {
+						this.r32_deposit_foreign_amount = r32_deposit_foreign_amount;
+					}
+					public BigDecimal getR32_total_number() {
+						return r32_total_number;
+					}
+					public void setR32_total_number(BigDecimal r32_total_number) {
+						this.r32_total_number = r32_total_number;
+					}
+					public BigDecimal getR32_total_amount() {
+						return r32_total_amount;
+					}
+					public void setR32_total_amount(BigDecimal r32_total_amount) {
+						this.r32_total_amount = r32_total_amount;
+					}
+					public BigDecimal getR32_total_deposit_bank() {
+						return r32_total_deposit_bank;
+					}
+					public void setR32_total_deposit_bank(BigDecimal r32_total_deposit_bank) {
+						this.r32_total_deposit_bank = r32_total_deposit_bank;
+					}
+					public String getR33_deposit_size() {
+						return r33_deposit_size;
+					}
+					public void setR33_deposit_size(String r33_deposit_size) {
+						this.r33_deposit_size = r33_deposit_size;
+					}
+					public String getR33_deposit_type() {
+						return r33_deposit_type;
+					}
+					public void setR33_deposit_type(String r33_deposit_type) {
+						this.r33_deposit_type = r33_deposit_type;
+					}
+					public BigDecimal getR33_deposit_excluding_number() {
+						return r33_deposit_excluding_number;
+					}
+					public void setR33_deposit_excluding_number(BigDecimal r33_deposit_excluding_number) {
+						this.r33_deposit_excluding_number = r33_deposit_excluding_number;
+					}
+					public BigDecimal getR33_deposit_excluding_amount() {
+						return r33_deposit_excluding_amount;
+					}
+					public void setR33_deposit_excluding_amount(BigDecimal r33_deposit_excluding_amount) {
+						this.r33_deposit_excluding_amount = r33_deposit_excluding_amount;
+					}
+					public BigDecimal getR33_deposit_foreign_number() {
+						return r33_deposit_foreign_number;
+					}
+					public void setR33_deposit_foreign_number(BigDecimal r33_deposit_foreign_number) {
+						this.r33_deposit_foreign_number = r33_deposit_foreign_number;
+					}
+					public BigDecimal getR33_deposit_foreign_amount() {
+						return r33_deposit_foreign_amount;
+					}
+					public void setR33_deposit_foreign_amount(BigDecimal r33_deposit_foreign_amount) {
+						this.r33_deposit_foreign_amount = r33_deposit_foreign_amount;
+					}
+					public BigDecimal getR33_total_number() {
+						return r33_total_number;
+					}
+					public void setR33_total_number(BigDecimal r33_total_number) {
+						this.r33_total_number = r33_total_number;
+					}
+					public BigDecimal getR33_total_amount() {
+						return r33_total_amount;
+					}
+					public void setR33_total_amount(BigDecimal r33_total_amount) {
+						this.r33_total_amount = r33_total_amount;
+					}
+					public BigDecimal getR33_total_deposit_bank() {
+						return r33_total_deposit_bank;
+					}
+					public void setR33_total_deposit_bank(BigDecimal r33_total_deposit_bank) {
+						this.r33_total_deposit_bank = r33_total_deposit_bank;
+					}
+					public String getR34_deposit_size() {
+						return r34_deposit_size;
+					}
+					public void setR34_deposit_size(String r34_deposit_size) {
+						this.r34_deposit_size = r34_deposit_size;
+					}
+					public String getR34_deposit_type() {
+						return r34_deposit_type;
+					}
+					public void setR34_deposit_type(String r34_deposit_type) {
+						this.r34_deposit_type = r34_deposit_type;
+					}
+					public BigDecimal getR34_deposit_excluding_number() {
+						return r34_deposit_excluding_number;
+					}
+					public void setR34_deposit_excluding_number(BigDecimal r34_deposit_excluding_number) {
+						this.r34_deposit_excluding_number = r34_deposit_excluding_number;
+					}
+					public BigDecimal getR34_deposit_excluding_amount() {
+						return r34_deposit_excluding_amount;
+					}
+					public void setR34_deposit_excluding_amount(BigDecimal r34_deposit_excluding_amount) {
+						this.r34_deposit_excluding_amount = r34_deposit_excluding_amount;
+					}
+					public BigDecimal getR34_deposit_foreign_number() {
+						return r34_deposit_foreign_number;
+					}
+					public void setR34_deposit_foreign_number(BigDecimal r34_deposit_foreign_number) {
+						this.r34_deposit_foreign_number = r34_deposit_foreign_number;
+					}
+					public BigDecimal getR34_deposit_foreign_amount() {
+						return r34_deposit_foreign_amount;
+					}
+					public void setR34_deposit_foreign_amount(BigDecimal r34_deposit_foreign_amount) {
+						this.r34_deposit_foreign_amount = r34_deposit_foreign_amount;
+					}
+					public BigDecimal getR34_total_number() {
+						return r34_total_number;
+					}
+					public void setR34_total_number(BigDecimal r34_total_number) {
+						this.r34_total_number = r34_total_number;
+					}
+					public BigDecimal getR34_total_amount() {
+						return r34_total_amount;
+					}
+					public void setR34_total_amount(BigDecimal r34_total_amount) {
+						this.r34_total_amount = r34_total_amount;
+					}
+					public BigDecimal getR34_total_deposit_bank() {
+						return r34_total_deposit_bank;
+					}
+					public void setR34_total_deposit_bank(BigDecimal r34_total_deposit_bank) {
+						this.r34_total_deposit_bank = r34_total_deposit_bank;
+					}
+					public String getR35_deposit_size() {
+						return r35_deposit_size;
+					}
+					public void setR35_deposit_size(String r35_deposit_size) {
+						this.r35_deposit_size = r35_deposit_size;
+					}
+					public String getR35_deposit_type() {
+						return r35_deposit_type;
+					}
+					public void setR35_deposit_type(String r35_deposit_type) {
+						this.r35_deposit_type = r35_deposit_type;
+					}
+					public BigDecimal getR35_deposit_excluding_number() {
+						return r35_deposit_excluding_number;
+					}
+					public void setR35_deposit_excluding_number(BigDecimal r35_deposit_excluding_number) {
+						this.r35_deposit_excluding_number = r35_deposit_excluding_number;
+					}
+					public BigDecimal getR35_deposit_excluding_amount() {
+						return r35_deposit_excluding_amount;
+					}
+					public void setR35_deposit_excluding_amount(BigDecimal r35_deposit_excluding_amount) {
+						this.r35_deposit_excluding_amount = r35_deposit_excluding_amount;
+					}
+					public BigDecimal getR35_deposit_foreign_number() {
+						return r35_deposit_foreign_number;
+					}
+					public void setR35_deposit_foreign_number(BigDecimal r35_deposit_foreign_number) {
+						this.r35_deposit_foreign_number = r35_deposit_foreign_number;
+					}
+					public BigDecimal getR35_deposit_foreign_amount() {
+						return r35_deposit_foreign_amount;
+					}
+					public void setR35_deposit_foreign_amount(BigDecimal r35_deposit_foreign_amount) {
+						this.r35_deposit_foreign_amount = r35_deposit_foreign_amount;
+					}
+					public BigDecimal getR35_total_number() {
+						return r35_total_number;
+					}
+					public void setR35_total_number(BigDecimal r35_total_number) {
+						this.r35_total_number = r35_total_number;
+					}
+					public BigDecimal getR35_total_amount() {
+						return r35_total_amount;
+					}
+					public void setR35_total_amount(BigDecimal r35_total_amount) {
+						this.r35_total_amount = r35_total_amount;
+					}
+					public BigDecimal getR35_total_deposit_bank() {
+						return r35_total_deposit_bank;
+					}
+					public void setR35_total_deposit_bank(BigDecimal r35_total_deposit_bank) {
+						this.r35_total_deposit_bank = r35_total_deposit_bank;
+					}
+					public String getR36_deposit_size() {
+						return r36_deposit_size;
+					}
+					public void setR36_deposit_size(String r36_deposit_size) {
+						this.r36_deposit_size = r36_deposit_size;
+					}
+					public String getR36_deposit_type() {
+						return r36_deposit_type;
+					}
+					public void setR36_deposit_type(String r36_deposit_type) {
+						this.r36_deposit_type = r36_deposit_type;
+					}
+					public BigDecimal getR36_deposit_excluding_number() {
+						return r36_deposit_excluding_number;
+					}
+					public void setR36_deposit_excluding_number(BigDecimal r36_deposit_excluding_number) {
+						this.r36_deposit_excluding_number = r36_deposit_excluding_number;
+					}
+					public BigDecimal getR36_deposit_excluding_amount() {
+						return r36_deposit_excluding_amount;
+					}
+					public void setR36_deposit_excluding_amount(BigDecimal r36_deposit_excluding_amount) {
+						this.r36_deposit_excluding_amount = r36_deposit_excluding_amount;
+					}
+					public BigDecimal getR36_deposit_foreign_number() {
+						return r36_deposit_foreign_number;
+					}
+					public void setR36_deposit_foreign_number(BigDecimal r36_deposit_foreign_number) {
+						this.r36_deposit_foreign_number = r36_deposit_foreign_number;
+					}
+					public BigDecimal getR36_deposit_foreign_amount() {
+						return r36_deposit_foreign_amount;
+					}
+					public void setR36_deposit_foreign_amount(BigDecimal r36_deposit_foreign_amount) {
+						this.r36_deposit_foreign_amount = r36_deposit_foreign_amount;
+					}
+					public BigDecimal getR36_total_number() {
+						return r36_total_number;
+					}
+					public void setR36_total_number(BigDecimal r36_total_number) {
+						this.r36_total_number = r36_total_number;
+					}
+					public BigDecimal getR36_total_amount() {
+						return r36_total_amount;
+					}
+					public void setR36_total_amount(BigDecimal r36_total_amount) {
+						this.r36_total_amount = r36_total_amount;
+					}
+					public BigDecimal getR36_total_deposit_bank() {
+						return r36_total_deposit_bank;
+					}
+					public void setR36_total_deposit_bank(BigDecimal r36_total_deposit_bank) {
+						this.r36_total_deposit_bank = r36_total_deposit_bank;
+					}
+					public String getR37_deposit_size() {
+						return r37_deposit_size;
+					}
+					public void setR37_deposit_size(String r37_deposit_size) {
+						this.r37_deposit_size = r37_deposit_size;
+					}
+					public String getR37_deposit_type() {
+						return r37_deposit_type;
+					}
+					public void setR37_deposit_type(String r37_deposit_type) {
+						this.r37_deposit_type = r37_deposit_type;
+					}
+					public BigDecimal getR37_deposit_excluding_number() {
+						return r37_deposit_excluding_number;
+					}
+					public void setR37_deposit_excluding_number(BigDecimal r37_deposit_excluding_number) {
+						this.r37_deposit_excluding_number = r37_deposit_excluding_number;
+					}
+					public BigDecimal getR37_deposit_excluding_amount() {
+						return r37_deposit_excluding_amount;
+					}
+					public void setR37_deposit_excluding_amount(BigDecimal r37_deposit_excluding_amount) {
+						this.r37_deposit_excluding_amount = r37_deposit_excluding_amount;
+					}
+					public BigDecimal getR37_deposit_foreign_number() {
+						return r37_deposit_foreign_number;
+					}
+					public void setR37_deposit_foreign_number(BigDecimal r37_deposit_foreign_number) {
+						this.r37_deposit_foreign_number = r37_deposit_foreign_number;
+					}
+					public BigDecimal getR37_deposit_foreign_amount() {
+						return r37_deposit_foreign_amount;
+					}
+					public void setR37_deposit_foreign_amount(BigDecimal r37_deposit_foreign_amount) {
+						this.r37_deposit_foreign_amount = r37_deposit_foreign_amount;
+					}
+					public BigDecimal getR37_total_number() {
+						return r37_total_number;
+					}
+					public void setR37_total_number(BigDecimal r37_total_number) {
+						this.r37_total_number = r37_total_number;
+					}
+					public BigDecimal getR37_total_amount() {
+						return r37_total_amount;
+					}
+					public void setR37_total_amount(BigDecimal r37_total_amount) {
+						this.r37_total_amount = r37_total_amount;
+					}
+					public BigDecimal getR37_total_deposit_bank() {
+						return r37_total_deposit_bank;
+					}
+					public void setR37_total_deposit_bank(BigDecimal r37_total_deposit_bank) {
+						this.r37_total_deposit_bank = r37_total_deposit_bank;
+					}
+					public String getR38_deposit_size() {
+						return r38_deposit_size;
+					}
+					public void setR38_deposit_size(String r38_deposit_size) {
+						this.r38_deposit_size = r38_deposit_size;
+					}
+					public String getR38_deposit_type() {
+						return r38_deposit_type;
+					}
+					public void setR38_deposit_type(String r38_deposit_type) {
+						this.r38_deposit_type = r38_deposit_type;
+					}
+					public BigDecimal getR38_deposit_excluding_number() {
+						return r38_deposit_excluding_number;
+					}
+					public void setR38_deposit_excluding_number(BigDecimal r38_deposit_excluding_number) {
+						this.r38_deposit_excluding_number = r38_deposit_excluding_number;
+					}
+					public BigDecimal getR38_deposit_excluding_amount() {
+						return r38_deposit_excluding_amount;
+					}
+					public void setR38_deposit_excluding_amount(BigDecimal r38_deposit_excluding_amount) {
+						this.r38_deposit_excluding_amount = r38_deposit_excluding_amount;
+					}
+					public BigDecimal getR38_deposit_foreign_number() {
+						return r38_deposit_foreign_number;
+					}
+					public void setR38_deposit_foreign_number(BigDecimal r38_deposit_foreign_number) {
+						this.r38_deposit_foreign_number = r38_deposit_foreign_number;
+					}
+					public BigDecimal getR38_deposit_foreign_amount() {
+						return r38_deposit_foreign_amount;
+					}
+					public void setR38_deposit_foreign_amount(BigDecimal r38_deposit_foreign_amount) {
+						this.r38_deposit_foreign_amount = r38_deposit_foreign_amount;
+					}
+					public BigDecimal getR38_total_number() {
+						return r38_total_number;
+					}
+					public void setR38_total_number(BigDecimal r38_total_number) {
+						this.r38_total_number = r38_total_number;
+					}
+					public BigDecimal getR38_total_amount() {
+						return r38_total_amount;
+					}
+					public void setR38_total_amount(BigDecimal r38_total_amount) {
+						this.r38_total_amount = r38_total_amount;
+					}
+					public BigDecimal getR38_total_deposit_bank() {
+						return r38_total_deposit_bank;
+					}
+					public void setR38_total_deposit_bank(BigDecimal r38_total_deposit_bank) {
+						this.r38_total_deposit_bank = r38_total_deposit_bank;
+					}
+					public String getR39_deposit_size() {
+						return r39_deposit_size;
+					}
+					public void setR39_deposit_size(String r39_deposit_size) {
+						this.r39_deposit_size = r39_deposit_size;
+					}
+					public String getR39_deposit_type() {
+						return r39_deposit_type;
+					}
+					public void setR39_deposit_type(String r39_deposit_type) {
+						this.r39_deposit_type = r39_deposit_type;
+					}
+					public BigDecimal getR39_deposit_excluding_number() {
+						return r39_deposit_excluding_number;
+					}
+					public void setR39_deposit_excluding_number(BigDecimal r39_deposit_excluding_number) {
+						this.r39_deposit_excluding_number = r39_deposit_excluding_number;
+					}
+					public BigDecimal getR39_deposit_excluding_amount() {
+						return r39_deposit_excluding_amount;
+					}
+					public void setR39_deposit_excluding_amount(BigDecimal r39_deposit_excluding_amount) {
+						this.r39_deposit_excluding_amount = r39_deposit_excluding_amount;
+					}
+					public BigDecimal getR39_deposit_foreign_number() {
+						return r39_deposit_foreign_number;
+					}
+					public void setR39_deposit_foreign_number(BigDecimal r39_deposit_foreign_number) {
+						this.r39_deposit_foreign_number = r39_deposit_foreign_number;
+					}
+					public BigDecimal getR39_deposit_foreign_amount() {
+						return r39_deposit_foreign_amount;
+					}
+					public void setR39_deposit_foreign_amount(BigDecimal r39_deposit_foreign_amount) {
+						this.r39_deposit_foreign_amount = r39_deposit_foreign_amount;
+					}
+					public BigDecimal getR39_total_number() {
+						return r39_total_number;
+					}
+					public void setR39_total_number(BigDecimal r39_total_number) {
+						this.r39_total_number = r39_total_number;
+					}
+					public BigDecimal getR39_total_amount() {
+						return r39_total_amount;
+					}
+					public void setR39_total_amount(BigDecimal r39_total_amount) {
+						this.r39_total_amount = r39_total_amount;
+					}
+					public BigDecimal getR39_total_deposit_bank() {
+						return r39_total_deposit_bank;
+					}
+					public void setR39_total_deposit_bank(BigDecimal r39_total_deposit_bank) {
+						this.r39_total_deposit_bank = r39_total_deposit_bank;
+					}
+					public String getR40_deposit_size() {
+						return r40_deposit_size;
+					}
+					public void setR40_deposit_size(String r40_deposit_size) {
+						this.r40_deposit_size = r40_deposit_size;
+					}
+					public String getR40_deposit_type() {
+						return r40_deposit_type;
+					}
+					public void setR40_deposit_type(String r40_deposit_type) {
+						this.r40_deposit_type = r40_deposit_type;
+					}
+					public BigDecimal getR40_deposit_excluding_number() {
+						return r40_deposit_excluding_number;
+					}
+					public void setR40_deposit_excluding_number(BigDecimal r40_deposit_excluding_number) {
+						this.r40_deposit_excluding_number = r40_deposit_excluding_number;
+					}
+					public BigDecimal getR40_deposit_excluding_amount() {
+						return r40_deposit_excluding_amount;
+					}
+					public void setR40_deposit_excluding_amount(BigDecimal r40_deposit_excluding_amount) {
+						this.r40_deposit_excluding_amount = r40_deposit_excluding_amount;
+					}
+					public BigDecimal getR40_deposit_foreign_number() {
+						return r40_deposit_foreign_number;
+					}
+					public void setR40_deposit_foreign_number(BigDecimal r40_deposit_foreign_number) {
+						this.r40_deposit_foreign_number = r40_deposit_foreign_number;
+					}
+					public BigDecimal getR40_deposit_foreign_amount() {
+						return r40_deposit_foreign_amount;
+					}
+					public void setR40_deposit_foreign_amount(BigDecimal r40_deposit_foreign_amount) {
+						this.r40_deposit_foreign_amount = r40_deposit_foreign_amount;
+					}
+					public BigDecimal getR40_total_number() {
+						return r40_total_number;
+					}
+					public void setR40_total_number(BigDecimal r40_total_number) {
+						this.r40_total_number = r40_total_number;
+					}
+					public BigDecimal getR40_total_amount() {
+						return r40_total_amount;
+					}
+					public void setR40_total_amount(BigDecimal r40_total_amount) {
+						this.r40_total_amount = r40_total_amount;
+					}
+					public BigDecimal getR40_total_deposit_bank() {
+						return r40_total_deposit_bank;
+					}
+					public void setR40_total_deposit_bank(BigDecimal r40_total_deposit_bank) {
+						this.r40_total_deposit_bank = r40_total_deposit_bank;
+					}
+					public String getR41_deposit_size() {
+						return r41_deposit_size;
+					}
+					public void setR41_deposit_size(String r41_deposit_size) {
+						this.r41_deposit_size = r41_deposit_size;
+					}
+					public String getR41_deposit_type() {
+						return r41_deposit_type;
+					}
+					public void setR41_deposit_type(String r41_deposit_type) {
+						this.r41_deposit_type = r41_deposit_type;
+					}
+					public BigDecimal getR41_deposit_excluding_number() {
+						return r41_deposit_excluding_number;
+					}
+					public void setR41_deposit_excluding_number(BigDecimal r41_deposit_excluding_number) {
+						this.r41_deposit_excluding_number = r41_deposit_excluding_number;
+					}
+					public BigDecimal getR41_deposit_excluding_amount() {
+						return r41_deposit_excluding_amount;
+					}
+					public void setR41_deposit_excluding_amount(BigDecimal r41_deposit_excluding_amount) {
+						this.r41_deposit_excluding_amount = r41_deposit_excluding_amount;
+					}
+					public BigDecimal getR41_deposit_foreign_number() {
+						return r41_deposit_foreign_number;
+					}
+					public void setR41_deposit_foreign_number(BigDecimal r41_deposit_foreign_number) {
+						this.r41_deposit_foreign_number = r41_deposit_foreign_number;
+					}
+					public BigDecimal getR41_deposit_foreign_amount() {
+						return r41_deposit_foreign_amount;
+					}
+					public void setR41_deposit_foreign_amount(BigDecimal r41_deposit_foreign_amount) {
+						this.r41_deposit_foreign_amount = r41_deposit_foreign_amount;
+					}
+					public BigDecimal getR41_total_number() {
+						return r41_total_number;
+					}
+					public void setR41_total_number(BigDecimal r41_total_number) {
+						this.r41_total_number = r41_total_number;
+					}
+					public BigDecimal getR41_total_amount() {
+						return r41_total_amount;
+					}
+					public void setR41_total_amount(BigDecimal r41_total_amount) {
+						this.r41_total_amount = r41_total_amount;
+					}
+					public BigDecimal getR41_total_deposit_bank() {
+						return r41_total_deposit_bank;
+					}
+					public void setR41_total_deposit_bank(BigDecimal r41_total_deposit_bank) {
+						this.r41_total_deposit_bank = r41_total_deposit_bank;
+					}
+					public String getR42_deposit_size() {
+						return r42_deposit_size;
+					}
+					public void setR42_deposit_size(String r42_deposit_size) {
+						this.r42_deposit_size = r42_deposit_size;
+					}
+					public String getR42_deposit_type() {
+						return r42_deposit_type;
+					}
+					public void setR42_deposit_type(String r42_deposit_type) {
+						this.r42_deposit_type = r42_deposit_type;
+					}
+					public BigDecimal getR42_deposit_excluding_number() {
+						return r42_deposit_excluding_number;
+					}
+					public void setR42_deposit_excluding_number(BigDecimal r42_deposit_excluding_number) {
+						this.r42_deposit_excluding_number = r42_deposit_excluding_number;
+					}
+					public BigDecimal getR42_deposit_excluding_amount() {
+						return r42_deposit_excluding_amount;
+					}
+					public void setR42_deposit_excluding_amount(BigDecimal r42_deposit_excluding_amount) {
+						this.r42_deposit_excluding_amount = r42_deposit_excluding_amount;
+					}
+					public BigDecimal getR42_deposit_foreign_number() {
+						return r42_deposit_foreign_number;
+					}
+					public void setR42_deposit_foreign_number(BigDecimal r42_deposit_foreign_number) {
+						this.r42_deposit_foreign_number = r42_deposit_foreign_number;
+					}
+					public BigDecimal getR42_deposit_foreign_amount() {
+						return r42_deposit_foreign_amount;
+					}
+					public void setR42_deposit_foreign_amount(BigDecimal r42_deposit_foreign_amount) {
+						this.r42_deposit_foreign_amount = r42_deposit_foreign_amount;
+					}
+					public BigDecimal getR42_total_number() {
+						return r42_total_number;
+					}
+					public void setR42_total_number(BigDecimal r42_total_number) {
+						this.r42_total_number = r42_total_number;
+					}
+					public BigDecimal getR42_total_amount() {
+						return r42_total_amount;
+					}
+					public void setR42_total_amount(BigDecimal r42_total_amount) {
+						this.r42_total_amount = r42_total_amount;
+					}
+					public BigDecimal getR42_total_deposit_bank() {
+						return r42_total_deposit_bank;
+					}
+					public void setR42_total_deposit_bank(BigDecimal r42_total_deposit_bank) {
+						this.r42_total_deposit_bank = r42_total_deposit_bank;
+					}
+					public String getR43_deposit_size() {
+						return r43_deposit_size;
+					}
+					public void setR43_deposit_size(String r43_deposit_size) {
+						this.r43_deposit_size = r43_deposit_size;
+					}
+					public String getR43_deposit_type() {
+						return r43_deposit_type;
+					}
+					public void setR43_deposit_type(String r43_deposit_type) {
+						this.r43_deposit_type = r43_deposit_type;
+					}
+					public BigDecimal getR43_deposit_excluding_number() {
+						return r43_deposit_excluding_number;
+					}
+					public void setR43_deposit_excluding_number(BigDecimal r43_deposit_excluding_number) {
+						this.r43_deposit_excluding_number = r43_deposit_excluding_number;
+					}
+					public BigDecimal getR43_deposit_excluding_amount() {
+						return r43_deposit_excluding_amount;
+					}
+					public void setR43_deposit_excluding_amount(BigDecimal r43_deposit_excluding_amount) {
+						this.r43_deposit_excluding_amount = r43_deposit_excluding_amount;
+					}
+					public BigDecimal getR43_deposit_foreign_number() {
+						return r43_deposit_foreign_number;
+					}
+					public void setR43_deposit_foreign_number(BigDecimal r43_deposit_foreign_number) {
+						this.r43_deposit_foreign_number = r43_deposit_foreign_number;
+					}
+					public BigDecimal getR43_deposit_foreign_amount() {
+						return r43_deposit_foreign_amount;
+					}
+					public void setR43_deposit_foreign_amount(BigDecimal r43_deposit_foreign_amount) {
+						this.r43_deposit_foreign_amount = r43_deposit_foreign_amount;
+					}
+					public BigDecimal getR43_total_number() {
+						return r43_total_number;
+					}
+					public void setR43_total_number(BigDecimal r43_total_number) {
+						this.r43_total_number = r43_total_number;
+					}
+					public BigDecimal getR43_total_amount() {
+						return r43_total_amount;
+					}
+					public void setR43_total_amount(BigDecimal r43_total_amount) {
+						this.r43_total_amount = r43_total_amount;
+					}
+					public BigDecimal getR43_total_deposit_bank() {
+						return r43_total_deposit_bank;
+					}
+					public void setR43_total_deposit_bank(BigDecimal r43_total_deposit_bank) {
+						this.r43_total_deposit_bank = r43_total_deposit_bank;
+					}
+					public String getR44_deposit_size() {
+						return r44_deposit_size;
+					}
+					public void setR44_deposit_size(String r44_deposit_size) {
+						this.r44_deposit_size = r44_deposit_size;
+					}
+					public String getR44_deposit_type() {
+						return r44_deposit_type;
+					}
+					public void setR44_deposit_type(String r44_deposit_type) {
+						this.r44_deposit_type = r44_deposit_type;
+					}
+					public BigDecimal getR44_deposit_excluding_number() {
+						return r44_deposit_excluding_number;
+					}
+					public void setR44_deposit_excluding_number(BigDecimal r44_deposit_excluding_number) {
+						this.r44_deposit_excluding_number = r44_deposit_excluding_number;
+					}
+					public BigDecimal getR44_deposit_excluding_amount() {
+						return r44_deposit_excluding_amount;
+					}
+					public void setR44_deposit_excluding_amount(BigDecimal r44_deposit_excluding_amount) {
+						this.r44_deposit_excluding_amount = r44_deposit_excluding_amount;
+					}
+					public BigDecimal getR44_deposit_foreign_number() {
+						return r44_deposit_foreign_number;
+					}
+					public void setR44_deposit_foreign_number(BigDecimal r44_deposit_foreign_number) {
+						this.r44_deposit_foreign_number = r44_deposit_foreign_number;
+					}
+					public BigDecimal getR44_deposit_foreign_amount() {
+						return r44_deposit_foreign_amount;
+					}
+					public void setR44_deposit_foreign_amount(BigDecimal r44_deposit_foreign_amount) {
+						this.r44_deposit_foreign_amount = r44_deposit_foreign_amount;
+					}
+					public BigDecimal getR44_total_number() {
+						return r44_total_number;
+					}
+					public void setR44_total_number(BigDecimal r44_total_number) {
+						this.r44_total_number = r44_total_number;
+					}
+					public BigDecimal getR44_total_amount() {
+						return r44_total_amount;
+					}
+					public void setR44_total_amount(BigDecimal r44_total_amount) {
+						this.r44_total_amount = r44_total_amount;
+					}
+					public BigDecimal getR44_total_deposit_bank() {
+						return r44_total_deposit_bank;
+					}
+					public void setR44_total_deposit_bank(BigDecimal r44_total_deposit_bank) {
+						this.r44_total_deposit_bank = r44_total_deposit_bank;
+					}
+					public String getR45_deposit_size() {
+						return r45_deposit_size;
+					}
+					public void setR45_deposit_size(String r45_deposit_size) {
+						this.r45_deposit_size = r45_deposit_size;
+					}
+					public String getR45_deposit_type() {
+						return r45_deposit_type;
+					}
+					public void setR45_deposit_type(String r45_deposit_type) {
+						this.r45_deposit_type = r45_deposit_type;
+					}
+					public BigDecimal getR45_deposit_excluding_number() {
+						return r45_deposit_excluding_number;
+					}
+					public void setR45_deposit_excluding_number(BigDecimal r45_deposit_excluding_number) {
+						this.r45_deposit_excluding_number = r45_deposit_excluding_number;
+					}
+					public BigDecimal getR45_deposit_excluding_amount() {
+						return r45_deposit_excluding_amount;
+					}
+					public void setR45_deposit_excluding_amount(BigDecimal r45_deposit_excluding_amount) {
+						this.r45_deposit_excluding_amount = r45_deposit_excluding_amount;
+					}
+					public BigDecimal getR45_deposit_foreign_number() {
+						return r45_deposit_foreign_number;
+					}
+					public void setR45_deposit_foreign_number(BigDecimal r45_deposit_foreign_number) {
+						this.r45_deposit_foreign_number = r45_deposit_foreign_number;
+					}
+					public BigDecimal getR45_deposit_foreign_amount() {
+						return r45_deposit_foreign_amount;
+					}
+					public void setR45_deposit_foreign_amount(BigDecimal r45_deposit_foreign_amount) {
+						this.r45_deposit_foreign_amount = r45_deposit_foreign_amount;
+					}
+					public BigDecimal getR45_total_number() {
+						return r45_total_number;
+					}
+					public void setR45_total_number(BigDecimal r45_total_number) {
+						this.r45_total_number = r45_total_number;
+					}
+					public BigDecimal getR45_total_amount() {
+						return r45_total_amount;
+					}
+					public void setR45_total_amount(BigDecimal r45_total_amount) {
+						this.r45_total_amount = r45_total_amount;
+					}
+					public BigDecimal getR45_total_deposit_bank() {
+						return r45_total_deposit_bank;
+					}
+					public void setR45_total_deposit_bank(BigDecimal r45_total_deposit_bank) {
+						this.r45_total_deposit_bank = r45_total_deposit_bank;
+					}
+					public String getR46_deposit_size() {
+						return r46_deposit_size;
+					}
+					public void setR46_deposit_size(String r46_deposit_size) {
+						this.r46_deposit_size = r46_deposit_size;
+					}
+					public String getR46_deposit_type() {
+						return r46_deposit_type;
+					}
+					public void setR46_deposit_type(String r46_deposit_type) {
+						this.r46_deposit_type = r46_deposit_type;
+					}
+					public BigDecimal getR46_deposit_excluding_number() {
+						return r46_deposit_excluding_number;
+					}
+					public void setR46_deposit_excluding_number(BigDecimal r46_deposit_excluding_number) {
+						this.r46_deposit_excluding_number = r46_deposit_excluding_number;
+					}
+					public BigDecimal getR46_deposit_excluding_amount() {
+						return r46_deposit_excluding_amount;
+					}
+					public void setR46_deposit_excluding_amount(BigDecimal r46_deposit_excluding_amount) {
+						this.r46_deposit_excluding_amount = r46_deposit_excluding_amount;
+					}
+					public BigDecimal getR46_deposit_foreign_number() {
+						return r46_deposit_foreign_number;
+					}
+					public void setR46_deposit_foreign_number(BigDecimal r46_deposit_foreign_number) {
+						this.r46_deposit_foreign_number = r46_deposit_foreign_number;
+					}
+					public BigDecimal getR46_deposit_foreign_amount() {
+						return r46_deposit_foreign_amount;
+					}
+					public void setR46_deposit_foreign_amount(BigDecimal r46_deposit_foreign_amount) {
+						this.r46_deposit_foreign_amount = r46_deposit_foreign_amount;
+					}
+					public BigDecimal getR46_total_number() {
+						return r46_total_number;
+					}
+					public void setR46_total_number(BigDecimal r46_total_number) {
+						this.r46_total_number = r46_total_number;
+					}
+					public BigDecimal getR46_total_amount() {
+						return r46_total_amount;
+					}
+					public void setR46_total_amount(BigDecimal r46_total_amount) {
+						this.r46_total_amount = r46_total_amount;
+					}
+					public BigDecimal getR46_total_deposit_bank() {
+						return r46_total_deposit_bank;
+					}
+					public void setR46_total_deposit_bank(BigDecimal r46_total_deposit_bank) {
+						this.r46_total_deposit_bank = r46_total_deposit_bank;
+					}
+					public String getR47_deposit_size() {
+						return r47_deposit_size;
+					}
+					public void setR47_deposit_size(String r47_deposit_size) {
+						this.r47_deposit_size = r47_deposit_size;
+					}
+					public String getR47_deposit_type() {
+						return r47_deposit_type;
+					}
+					public void setR47_deposit_type(String r47_deposit_type) {
+						this.r47_deposit_type = r47_deposit_type;
+					}
+					public BigDecimal getR47_deposit_excluding_number() {
+						return r47_deposit_excluding_number;
+					}
+					public void setR47_deposit_excluding_number(BigDecimal r47_deposit_excluding_number) {
+						this.r47_deposit_excluding_number = r47_deposit_excluding_number;
+					}
+					public BigDecimal getR47_deposit_excluding_amount() {
+						return r47_deposit_excluding_amount;
+					}
+					public void setR47_deposit_excluding_amount(BigDecimal r47_deposit_excluding_amount) {
+						this.r47_deposit_excluding_amount = r47_deposit_excluding_amount;
+					}
+					public BigDecimal getR47_deposit_foreign_number() {
+						return r47_deposit_foreign_number;
+					}
+					public void setR47_deposit_foreign_number(BigDecimal r47_deposit_foreign_number) {
+						this.r47_deposit_foreign_number = r47_deposit_foreign_number;
+					}
+					public BigDecimal getR47_deposit_foreign_amount() {
+						return r47_deposit_foreign_amount;
+					}
+					public void setR47_deposit_foreign_amount(BigDecimal r47_deposit_foreign_amount) {
+						this.r47_deposit_foreign_amount = r47_deposit_foreign_amount;
+					}
+					public BigDecimal getR47_total_number() {
+						return r47_total_number;
+					}
+					public void setR47_total_number(BigDecimal r47_total_number) {
+						this.r47_total_number = r47_total_number;
+					}
+					public BigDecimal getR47_total_amount() {
+						return r47_total_amount;
+					}
+					public void setR47_total_amount(BigDecimal r47_total_amount) {
+						this.r47_total_amount = r47_total_amount;
+					}
+					public BigDecimal getR47_total_deposit_bank() {
+						return r47_total_deposit_bank;
+					}
+					public void setR47_total_deposit_bank(BigDecimal r47_total_deposit_bank) {
+						this.r47_total_deposit_bank = r47_total_deposit_bank;
+					}
+					public String getR48_deposit_size() {
+						return r48_deposit_size;
+					}
+					public void setR48_deposit_size(String r48_deposit_size) {
+						this.r48_deposit_size = r48_deposit_size;
+					}
+					public String getR48_deposit_type() {
+						return r48_deposit_type;
+					}
+					public void setR48_deposit_type(String r48_deposit_type) {
+						this.r48_deposit_type = r48_deposit_type;
+					}
+					public BigDecimal getR48_deposit_excluding_number() {
+						return r48_deposit_excluding_number;
+					}
+					public void setR48_deposit_excluding_number(BigDecimal r48_deposit_excluding_number) {
+						this.r48_deposit_excluding_number = r48_deposit_excluding_number;
+					}
+					public BigDecimal getR48_deposit_excluding_amount() {
+						return r48_deposit_excluding_amount;
+					}
+					public void setR48_deposit_excluding_amount(BigDecimal r48_deposit_excluding_amount) {
+						this.r48_deposit_excluding_amount = r48_deposit_excluding_amount;
+					}
+					public BigDecimal getR48_deposit_foreign_number() {
+						return r48_deposit_foreign_number;
+					}
+					public void setR48_deposit_foreign_number(BigDecimal r48_deposit_foreign_number) {
+						this.r48_deposit_foreign_number = r48_deposit_foreign_number;
+					}
+					public BigDecimal getR48_deposit_foreign_amount() {
+						return r48_deposit_foreign_amount;
+					}
+					public void setR48_deposit_foreign_amount(BigDecimal r48_deposit_foreign_amount) {
+						this.r48_deposit_foreign_amount = r48_deposit_foreign_amount;
+					}
+					public BigDecimal getR48_total_number() {
+						return r48_total_number;
+					}
+					public void setR48_total_number(BigDecimal r48_total_number) {
+						this.r48_total_number = r48_total_number;
+					}
+					public BigDecimal getR48_total_amount() {
+						return r48_total_amount;
+					}
+					public void setR48_total_amount(BigDecimal r48_total_amount) {
+						this.r48_total_amount = r48_total_amount;
+					}
+					public BigDecimal getR48_total_deposit_bank() {
+						return r48_total_deposit_bank;
+					}
+					public void setR48_total_deposit_bank(BigDecimal r48_total_deposit_bank) {
+						this.r48_total_deposit_bank = r48_total_deposit_bank;
+					}
+					public String getR49_deposit_size() {
+						return r49_deposit_size;
+					}
+					public void setR49_deposit_size(String r49_deposit_size) {
+						this.r49_deposit_size = r49_deposit_size;
+					}
+					public String getR49_deposit_type() {
+						return r49_deposit_type;
+					}
+					public void setR49_deposit_type(String r49_deposit_type) {
+						this.r49_deposit_type = r49_deposit_type;
+					}
+					public BigDecimal getR49_deposit_excluding_number() {
+						return r49_deposit_excluding_number;
+					}
+					public void setR49_deposit_excluding_number(BigDecimal r49_deposit_excluding_number) {
+						this.r49_deposit_excluding_number = r49_deposit_excluding_number;
+					}
+					public BigDecimal getR49_deposit_excluding_amount() {
+						return r49_deposit_excluding_amount;
+					}
+					public void setR49_deposit_excluding_amount(BigDecimal r49_deposit_excluding_amount) {
+						this.r49_deposit_excluding_amount = r49_deposit_excluding_amount;
+					}
+					public BigDecimal getR49_deposit_foreign_number() {
+						return r49_deposit_foreign_number;
+					}
+					public void setR49_deposit_foreign_number(BigDecimal r49_deposit_foreign_number) {
+						this.r49_deposit_foreign_number = r49_deposit_foreign_number;
+					}
+					public BigDecimal getR49_deposit_foreign_amount() {
+						return r49_deposit_foreign_amount;
+					}
+					public void setR49_deposit_foreign_amount(BigDecimal r49_deposit_foreign_amount) {
+						this.r49_deposit_foreign_amount = r49_deposit_foreign_amount;
+					}
+					public BigDecimal getR49_total_number() {
+						return r49_total_number;
+					}
+					public void setR49_total_number(BigDecimal r49_total_number) {
+						this.r49_total_number = r49_total_number;
+					}
+					public BigDecimal getR49_total_amount() {
+						return r49_total_amount;
+					}
+					public void setR49_total_amount(BigDecimal r49_total_amount) {
+						this.r49_total_amount = r49_total_amount;
+					}
+					public BigDecimal getR49_total_deposit_bank() {
+						return r49_total_deposit_bank;
+					}
+					public void setR49_total_deposit_bank(BigDecimal r49_total_deposit_bank) {
+						this.r49_total_deposit_bank = r49_total_deposit_bank;
+					}
+					public String getR50_deposit_size() {
+						return r50_deposit_size;
+					}
+					public void setR50_deposit_size(String r50_deposit_size) {
+						this.r50_deposit_size = r50_deposit_size;
+					}
+					public String getR50_deposit_type() {
+						return r50_deposit_type;
+					}
+					public void setR50_deposit_type(String r50_deposit_type) {
+						this.r50_deposit_type = r50_deposit_type;
+					}
+					public BigDecimal getR50_deposit_excluding_number() {
+						return r50_deposit_excluding_number;
+					}
+					public void setR50_deposit_excluding_number(BigDecimal r50_deposit_excluding_number) {
+						this.r50_deposit_excluding_number = r50_deposit_excluding_number;
+					}
+					public BigDecimal getR50_deposit_excluding_amount() {
+						return r50_deposit_excluding_amount;
+					}
+					public void setR50_deposit_excluding_amount(BigDecimal r50_deposit_excluding_amount) {
+						this.r50_deposit_excluding_amount = r50_deposit_excluding_amount;
+					}
+					public BigDecimal getR50_deposit_foreign_number() {
+						return r50_deposit_foreign_number;
+					}
+					public void setR50_deposit_foreign_number(BigDecimal r50_deposit_foreign_number) {
+						this.r50_deposit_foreign_number = r50_deposit_foreign_number;
+					}
+					public BigDecimal getR50_deposit_foreign_amount() {
+						return r50_deposit_foreign_amount;
+					}
+					public void setR50_deposit_foreign_amount(BigDecimal r50_deposit_foreign_amount) {
+						this.r50_deposit_foreign_amount = r50_deposit_foreign_amount;
+					}
+					public BigDecimal getR50_total_number() {
+						return r50_total_number;
+					}
+					public void setR50_total_number(BigDecimal r50_total_number) {
+						this.r50_total_number = r50_total_number;
+					}
+					public BigDecimal getR50_total_amount() {
+						return r50_total_amount;
+					}
+					public void setR50_total_amount(BigDecimal r50_total_amount) {
+						this.r50_total_amount = r50_total_amount;
+					}
+					public BigDecimal getR50_total_deposit_bank() {
+						return r50_total_deposit_bank;
+					}
+					public void setR50_total_deposit_bank(BigDecimal r50_total_deposit_bank) {
+						this.r50_total_deposit_bank = r50_total_deposit_bank;
+					}
+					public String getR51_deposit_size() {
+						return r51_deposit_size;
+					}
+					public void setR51_deposit_size(String r51_deposit_size) {
+						this.r51_deposit_size = r51_deposit_size;
+					}
+					public String getR51_deposit_type() {
+						return r51_deposit_type;
+					}
+					public void setR51_deposit_type(String r51_deposit_type) {
+						this.r51_deposit_type = r51_deposit_type;
+					}
+					public BigDecimal getR51_deposit_excluding_number() {
+						return r51_deposit_excluding_number;
+					}
+					public void setR51_deposit_excluding_number(BigDecimal r51_deposit_excluding_number) {
+						this.r51_deposit_excluding_number = r51_deposit_excluding_number;
+					}
+					public BigDecimal getR51_deposit_excluding_amount() {
+						return r51_deposit_excluding_amount;
+					}
+					public void setR51_deposit_excluding_amount(BigDecimal r51_deposit_excluding_amount) {
+						this.r51_deposit_excluding_amount = r51_deposit_excluding_amount;
+					}
+					public BigDecimal getR51_deposit_foreign_number() {
+						return r51_deposit_foreign_number;
+					}
+					public void setR51_deposit_foreign_number(BigDecimal r51_deposit_foreign_number) {
+						this.r51_deposit_foreign_number = r51_deposit_foreign_number;
+					}
+					public BigDecimal getR51_deposit_foreign_amount() {
+						return r51_deposit_foreign_amount;
+					}
+					public void setR51_deposit_foreign_amount(BigDecimal r51_deposit_foreign_amount) {
+						this.r51_deposit_foreign_amount = r51_deposit_foreign_amount;
+					}
+					public BigDecimal getR51_total_number() {
+						return r51_total_number;
+					}
+					public void setR51_total_number(BigDecimal r51_total_number) {
+						this.r51_total_number = r51_total_number;
+					}
+					public BigDecimal getR51_total_amount() {
+						return r51_total_amount;
+					}
+					public void setR51_total_amount(BigDecimal r51_total_amount) {
+						this.r51_total_amount = r51_total_amount;
+					}
+					public BigDecimal getR51_total_deposit_bank() {
+						return r51_total_deposit_bank;
+					}
+					public void setR51_total_deposit_bank(BigDecimal r51_total_deposit_bank) {
+						this.r51_total_deposit_bank = r51_total_deposit_bank;
+					}
+					public String getR52_deposit_size() {
+						return r52_deposit_size;
+					}
+					public void setR52_deposit_size(String r52_deposit_size) {
+						this.r52_deposit_size = r52_deposit_size;
+					}
+					public String getR52_deposit_type() {
+						return r52_deposit_type;
+					}
+					public void setR52_deposit_type(String r52_deposit_type) {
+						this.r52_deposit_type = r52_deposit_type;
+					}
+					public BigDecimal getR52_deposit_excluding_number() {
+						return r52_deposit_excluding_number;
+					}
+					public void setR52_deposit_excluding_number(BigDecimal r52_deposit_excluding_number) {
+						this.r52_deposit_excluding_number = r52_deposit_excluding_number;
+					}
+					public BigDecimal getR52_deposit_excluding_amount() {
+						return r52_deposit_excluding_amount;
+					}
+					public void setR52_deposit_excluding_amount(BigDecimal r52_deposit_excluding_amount) {
+						this.r52_deposit_excluding_amount = r52_deposit_excluding_amount;
+					}
+					public BigDecimal getR52_deposit_foreign_number() {
+						return r52_deposit_foreign_number;
+					}
+					public void setR52_deposit_foreign_number(BigDecimal r52_deposit_foreign_number) {
+						this.r52_deposit_foreign_number = r52_deposit_foreign_number;
+					}
+					public BigDecimal getR52_deposit_foreign_amount() {
+						return r52_deposit_foreign_amount;
+					}
+					public void setR52_deposit_foreign_amount(BigDecimal r52_deposit_foreign_amount) {
+						this.r52_deposit_foreign_amount = r52_deposit_foreign_amount;
+					}
+					public BigDecimal getR52_total_number() {
+						return r52_total_number;
+					}
+					public void setR52_total_number(BigDecimal r52_total_number) {
+						this.r52_total_number = r52_total_number;
+					}
+					public BigDecimal getR52_total_amount() {
+						return r52_total_amount;
+					}
+					public void setR52_total_amount(BigDecimal r52_total_amount) {
+						this.r52_total_amount = r52_total_amount;
+					}
+					public BigDecimal getR52_total_deposit_bank() {
+						return r52_total_deposit_bank;
+					}
+					public void setR52_total_deposit_bank(BigDecimal r52_total_deposit_bank) {
+						this.r52_total_deposit_bank = r52_total_deposit_bank;
+					}
+					public String getR53_deposit_size() {
+						return r53_deposit_size;
+					}
+					public void setR53_deposit_size(String r53_deposit_size) {
+						this.r53_deposit_size = r53_deposit_size;
+					}
+					public String getR53_deposit_type() {
+						return r53_deposit_type;
+					}
+					public void setR53_deposit_type(String r53_deposit_type) {
+						this.r53_deposit_type = r53_deposit_type;
+					}
+					public BigDecimal getR53_deposit_excluding_number() {
+						return r53_deposit_excluding_number;
+					}
+					public void setR53_deposit_excluding_number(BigDecimal r53_deposit_excluding_number) {
+						this.r53_deposit_excluding_number = r53_deposit_excluding_number;
+					}
+					public BigDecimal getR53_deposit_excluding_amount() {
+						return r53_deposit_excluding_amount;
+					}
+					public void setR53_deposit_excluding_amount(BigDecimal r53_deposit_excluding_amount) {
+						this.r53_deposit_excluding_amount = r53_deposit_excluding_amount;
+					}
+					public BigDecimal getR53_deposit_foreign_number() {
+						return r53_deposit_foreign_number;
+					}
+					public void setR53_deposit_foreign_number(BigDecimal r53_deposit_foreign_number) {
+						this.r53_deposit_foreign_number = r53_deposit_foreign_number;
+					}
+					public BigDecimal getR53_deposit_foreign_amount() {
+						return r53_deposit_foreign_amount;
+					}
+					public void setR53_deposit_foreign_amount(BigDecimal r53_deposit_foreign_amount) {
+						this.r53_deposit_foreign_amount = r53_deposit_foreign_amount;
+					}
+					public BigDecimal getR53_total_number() {
+						return r53_total_number;
+					}
+					public void setR53_total_number(BigDecimal r53_total_number) {
+						this.r53_total_number = r53_total_number;
+					}
+					public BigDecimal getR53_total_amount() {
+						return r53_total_amount;
+					}
+					public void setR53_total_amount(BigDecimal r53_total_amount) {
+						this.r53_total_amount = r53_total_amount;
+					}
+					public BigDecimal getR53_total_deposit_bank() {
+						return r53_total_deposit_bank;
+					}
+					public void setR53_total_deposit_bank(BigDecimal r53_total_deposit_bank) {
+						this.r53_total_deposit_bank = r53_total_deposit_bank;
+					}
+					public String getR54_deposit_size() {
+						return r54_deposit_size;
+					}
+					public void setR54_deposit_size(String r54_deposit_size) {
+						this.r54_deposit_size = r54_deposit_size;
+					}
+					public String getR54_deposit_type() {
+						return r54_deposit_type;
+					}
+					public void setR54_deposit_type(String r54_deposit_type) {
+						this.r54_deposit_type = r54_deposit_type;
+					}
+					public BigDecimal getR54_deposit_excluding_number() {
+						return r54_deposit_excluding_number;
+					}
+					public void setR54_deposit_excluding_number(BigDecimal r54_deposit_excluding_number) {
+						this.r54_deposit_excluding_number = r54_deposit_excluding_number;
+					}
+					public BigDecimal getR54_deposit_excluding_amount() {
+						return r54_deposit_excluding_amount;
+					}
+					public void setR54_deposit_excluding_amount(BigDecimal r54_deposit_excluding_amount) {
+						this.r54_deposit_excluding_amount = r54_deposit_excluding_amount;
+					}
+					public BigDecimal getR54_deposit_foreign_number() {
+						return r54_deposit_foreign_number;
+					}
+					public void setR54_deposit_foreign_number(BigDecimal r54_deposit_foreign_number) {
+						this.r54_deposit_foreign_number = r54_deposit_foreign_number;
+					}
+					public BigDecimal getR54_deposit_foreign_amount() {
+						return r54_deposit_foreign_amount;
+					}
+					public void setR54_deposit_foreign_amount(BigDecimal r54_deposit_foreign_amount) {
+						this.r54_deposit_foreign_amount = r54_deposit_foreign_amount;
+					}
+					public BigDecimal getR54_total_number() {
+						return r54_total_number;
+					}
+					public void setR54_total_number(BigDecimal r54_total_number) {
+						this.r54_total_number = r54_total_number;
+					}
+					public BigDecimal getR54_total_amount() {
+						return r54_total_amount;
+					}
+					public void setR54_total_amount(BigDecimal r54_total_amount) {
+						this.r54_total_amount = r54_total_amount;
+					}
+					public BigDecimal getR54_total_deposit_bank() {
+						return r54_total_deposit_bank;
+					}
+					public void setR54_total_deposit_bank(BigDecimal r54_total_deposit_bank) {
+						this.r54_total_deposit_bank = r54_total_deposit_bank;
+					}
+					public String getR55_deposit_size() {
+						return r55_deposit_size;
+					}
+					public void setR55_deposit_size(String r55_deposit_size) {
+						this.r55_deposit_size = r55_deposit_size;
+					}
+					public String getR55_deposit_type() {
+						return r55_deposit_type;
+					}
+					public void setR55_deposit_type(String r55_deposit_type) {
+						this.r55_deposit_type = r55_deposit_type;
+					}
+					public BigDecimal getR55_deposit_excluding_number() {
+						return r55_deposit_excluding_number;
+					}
+					public void setR55_deposit_excluding_number(BigDecimal r55_deposit_excluding_number) {
+						this.r55_deposit_excluding_number = r55_deposit_excluding_number;
+					}
+					public BigDecimal getR55_deposit_excluding_amount() {
+						return r55_deposit_excluding_amount;
+					}
+					public void setR55_deposit_excluding_amount(BigDecimal r55_deposit_excluding_amount) {
+						this.r55_deposit_excluding_amount = r55_deposit_excluding_amount;
+					}
+					public BigDecimal getR55_deposit_foreign_number() {
+						return r55_deposit_foreign_number;
+					}
+					public void setR55_deposit_foreign_number(BigDecimal r55_deposit_foreign_number) {
+						this.r55_deposit_foreign_number = r55_deposit_foreign_number;
+					}
+					public BigDecimal getR55_deposit_foreign_amount() {
+						return r55_deposit_foreign_amount;
+					}
+					public void setR55_deposit_foreign_amount(BigDecimal r55_deposit_foreign_amount) {
+						this.r55_deposit_foreign_amount = r55_deposit_foreign_amount;
+					}
+					public BigDecimal getR55_total_number() {
+						return r55_total_number;
+					}
+					public void setR55_total_number(BigDecimal r55_total_number) {
+						this.r55_total_number = r55_total_number;
+					}
+					public BigDecimal getR55_total_amount() {
+						return r55_total_amount;
+					}
+					public void setR55_total_amount(BigDecimal r55_total_amount) {
+						this.r55_total_amount = r55_total_amount;
+					}
+					public BigDecimal getR55_total_deposit_bank() {
+						return r55_total_deposit_bank;
+					}
+					public void setR55_total_deposit_bank(BigDecimal r55_total_deposit_bank) {
+						this.r55_total_deposit_bank = r55_total_deposit_bank;
+					}
+					public String getR56_deposit_size() {
+						return r56_deposit_size;
+					}
+					public void setR56_deposit_size(String r56_deposit_size) {
+						this.r56_deposit_size = r56_deposit_size;
+					}
+					public String getR56_deposit_type() {
+						return r56_deposit_type;
+					}
+					public void setR56_deposit_type(String r56_deposit_type) {
+						this.r56_deposit_type = r56_deposit_type;
+					}
+					public BigDecimal getR56_deposit_excluding_number() {
+						return r56_deposit_excluding_number;
+					}
+					public void setR56_deposit_excluding_number(BigDecimal r56_deposit_excluding_number) {
+						this.r56_deposit_excluding_number = r56_deposit_excluding_number;
+					}
+					public BigDecimal getR56_deposit_excluding_amount() {
+						return r56_deposit_excluding_amount;
+					}
+					public void setR56_deposit_excluding_amount(BigDecimal r56_deposit_excluding_amount) {
+						this.r56_deposit_excluding_amount = r56_deposit_excluding_amount;
+					}
+					public BigDecimal getR56_deposit_foreign_number() {
+						return r56_deposit_foreign_number;
+					}
+					public void setR56_deposit_foreign_number(BigDecimal r56_deposit_foreign_number) {
+						this.r56_deposit_foreign_number = r56_deposit_foreign_number;
+					}
+					public BigDecimal getR56_deposit_foreign_amount() {
+						return r56_deposit_foreign_amount;
+					}
+					public void setR56_deposit_foreign_amount(BigDecimal r56_deposit_foreign_amount) {
+						this.r56_deposit_foreign_amount = r56_deposit_foreign_amount;
+					}
+					public BigDecimal getR56_total_number() {
+						return r56_total_number;
+					}
+					public void setR56_total_number(BigDecimal r56_total_number) {
+						this.r56_total_number = r56_total_number;
+					}
+					public BigDecimal getR56_total_amount() {
+						return r56_total_amount;
+					}
+					public void setR56_total_amount(BigDecimal r56_total_amount) {
+						this.r56_total_amount = r56_total_amount;
+					}
+					public BigDecimal getR56_total_deposit_bank() {
+						return r56_total_deposit_bank;
+					}
+					public void setR56_total_deposit_bank(BigDecimal r56_total_deposit_bank) {
+						this.r56_total_deposit_bank = r56_total_deposit_bank;
+					}
+					public String getR57_deposit_size() {
+						return r57_deposit_size;
+					}
+					public void setR57_deposit_size(String r57_deposit_size) {
+						this.r57_deposit_size = r57_deposit_size;
+					}
+					public String getR57_deposit_type() {
+						return r57_deposit_type;
+					}
+					public void setR57_deposit_type(String r57_deposit_type) {
+						this.r57_deposit_type = r57_deposit_type;
+					}
+					public BigDecimal getR57_deposit_excluding_number() {
+						return r57_deposit_excluding_number;
+					}
+					public void setR57_deposit_excluding_number(BigDecimal r57_deposit_excluding_number) {
+						this.r57_deposit_excluding_number = r57_deposit_excluding_number;
+					}
+					public BigDecimal getR57_deposit_excluding_amount() {
+						return r57_deposit_excluding_amount;
+					}
+					public void setR57_deposit_excluding_amount(BigDecimal r57_deposit_excluding_amount) {
+						this.r57_deposit_excluding_amount = r57_deposit_excluding_amount;
+					}
+					public BigDecimal getR57_deposit_foreign_number() {
+						return r57_deposit_foreign_number;
+					}
+					public void setR57_deposit_foreign_number(BigDecimal r57_deposit_foreign_number) {
+						this.r57_deposit_foreign_number = r57_deposit_foreign_number;
+					}
+					public BigDecimal getR57_deposit_foreign_amount() {
+						return r57_deposit_foreign_amount;
+					}
+					public void setR57_deposit_foreign_amount(BigDecimal r57_deposit_foreign_amount) {
+						this.r57_deposit_foreign_amount = r57_deposit_foreign_amount;
+					}
+					public BigDecimal getR57_total_number() {
+						return r57_total_number;
+					}
+					public void setR57_total_number(BigDecimal r57_total_number) {
+						this.r57_total_number = r57_total_number;
+					}
+					public BigDecimal getR57_total_amount() {
+						return r57_total_amount;
+					}
+					public void setR57_total_amount(BigDecimal r57_total_amount) {
+						this.r57_total_amount = r57_total_amount;
+					}
+					public BigDecimal getR57_total_deposit_bank() {
+						return r57_total_deposit_bank;
+					}
+					public void setR57_total_deposit_bank(BigDecimal r57_total_deposit_bank) {
+						this.r57_total_deposit_bank = r57_total_deposit_bank;
+					}
+					public String getR58_deposit_size() {
+						return r58_deposit_size;
+					}
+					public void setR58_deposit_size(String r58_deposit_size) {
+						this.r58_deposit_size = r58_deposit_size;
+					}
+					public String getR58_deposit_type() {
+						return r58_deposit_type;
+					}
+					public void setR58_deposit_type(String r58_deposit_type) {
+						this.r58_deposit_type = r58_deposit_type;
+					}
+					public BigDecimal getR58_deposit_excluding_number() {
+						return r58_deposit_excluding_number;
+					}
+					public void setR58_deposit_excluding_number(BigDecimal r58_deposit_excluding_number) {
+						this.r58_deposit_excluding_number = r58_deposit_excluding_number;
+					}
+					public BigDecimal getR58_deposit_excluding_amount() {
+						return r58_deposit_excluding_amount;
+					}
+					public void setR58_deposit_excluding_amount(BigDecimal r58_deposit_excluding_amount) {
+						this.r58_deposit_excluding_amount = r58_deposit_excluding_amount;
+					}
+					public BigDecimal getR58_deposit_foreign_number() {
+						return r58_deposit_foreign_number;
+					}
+					public void setR58_deposit_foreign_number(BigDecimal r58_deposit_foreign_number) {
+						this.r58_deposit_foreign_number = r58_deposit_foreign_number;
+					}
+					public BigDecimal getR58_deposit_foreign_amount() {
+						return r58_deposit_foreign_amount;
+					}
+					public void setR58_deposit_foreign_amount(BigDecimal r58_deposit_foreign_amount) {
+						this.r58_deposit_foreign_amount = r58_deposit_foreign_amount;
+					}
+					public BigDecimal getR58_total_number() {
+						return r58_total_number;
+					}
+					public void setR58_total_number(BigDecimal r58_total_number) {
+						this.r58_total_number = r58_total_number;
+					}
+					public BigDecimal getR58_total_amount() {
+						return r58_total_amount;
+					}
+					public void setR58_total_amount(BigDecimal r58_total_amount) {
+						this.r58_total_amount = r58_total_amount;
+					}
+					public BigDecimal getR58_total_deposit_bank() {
+						return r58_total_deposit_bank;
+					}
+					public void setR58_total_deposit_bank(BigDecimal r58_total_deposit_bank) {
+						this.r58_total_deposit_bank = r58_total_deposit_bank;
+					}
+					public String getR59_deposit_size() {
+						return r59_deposit_size;
+					}
+					public void setR59_deposit_size(String r59_deposit_size) {
+						this.r59_deposit_size = r59_deposit_size;
+					}
+					public String getR59_deposit_type() {
+						return r59_deposit_type;
+					}
+					public void setR59_deposit_type(String r59_deposit_type) {
+						this.r59_deposit_type = r59_deposit_type;
+					}
+					public BigDecimal getR59_deposit_excluding_number() {
+						return r59_deposit_excluding_number;
+					}
+					public void setR59_deposit_excluding_number(BigDecimal r59_deposit_excluding_number) {
+						this.r59_deposit_excluding_number = r59_deposit_excluding_number;
+					}
+					public BigDecimal getR59_deposit_excluding_amount() {
+						return r59_deposit_excluding_amount;
+					}
+					public void setR59_deposit_excluding_amount(BigDecimal r59_deposit_excluding_amount) {
+						this.r59_deposit_excluding_amount = r59_deposit_excluding_amount;
+					}
+					public BigDecimal getR59_deposit_foreign_number() {
+						return r59_deposit_foreign_number;
+					}
+					public void setR59_deposit_foreign_number(BigDecimal r59_deposit_foreign_number) {
+						this.r59_deposit_foreign_number = r59_deposit_foreign_number;
+					}
+					public BigDecimal getR59_deposit_foreign_amount() {
+						return r59_deposit_foreign_amount;
+					}
+					public void setR59_deposit_foreign_amount(BigDecimal r59_deposit_foreign_amount) {
+						this.r59_deposit_foreign_amount = r59_deposit_foreign_amount;
+					}
+					public BigDecimal getR59_total_number() {
+						return r59_total_number;
+					}
+					public void setR59_total_number(BigDecimal r59_total_number) {
+						this.r59_total_number = r59_total_number;
+					}
+					public BigDecimal getR59_total_amount() {
+						return r59_total_amount;
+					}
+					public void setR59_total_amount(BigDecimal r59_total_amount) {
+						this.r59_total_amount = r59_total_amount;
+					}
+					public BigDecimal getR59_total_deposit_bank() {
+						return r59_total_deposit_bank;
+					}
+					public void setR59_total_deposit_bank(BigDecimal r59_total_deposit_bank) {
+						this.r59_total_deposit_bank = r59_total_deposit_bank;
+					}
+					public String getR60_deposit_size() {
+						return r60_deposit_size;
+					}
+					public void setR60_deposit_size(String r60_deposit_size) {
+						this.r60_deposit_size = r60_deposit_size;
+					}
+					public String getR60_deposit_type() {
+						return r60_deposit_type;
+					}
+					public void setR60_deposit_type(String r60_deposit_type) {
+						this.r60_deposit_type = r60_deposit_type;
+					}
+					public BigDecimal getR60_deposit_excluding_number() {
+						return r60_deposit_excluding_number;
+					}
+					public void setR60_deposit_excluding_number(BigDecimal r60_deposit_excluding_number) {
+						this.r60_deposit_excluding_number = r60_deposit_excluding_number;
+					}
+					public BigDecimal getR60_deposit_excluding_amount() {
+						return r60_deposit_excluding_amount;
+					}
+					public void setR60_deposit_excluding_amount(BigDecimal r60_deposit_excluding_amount) {
+						this.r60_deposit_excluding_amount = r60_deposit_excluding_amount;
+					}
+					public BigDecimal getR60_deposit_foreign_number() {
+						return r60_deposit_foreign_number;
+					}
+					public void setR60_deposit_foreign_number(BigDecimal r60_deposit_foreign_number) {
+						this.r60_deposit_foreign_number = r60_deposit_foreign_number;
+					}
+					public BigDecimal getR60_deposit_foreign_amount() {
+						return r60_deposit_foreign_amount;
+					}
+					public void setR60_deposit_foreign_amount(BigDecimal r60_deposit_foreign_amount) {
+						this.r60_deposit_foreign_amount = r60_deposit_foreign_amount;
+					}
+					public BigDecimal getR60_total_number() {
+						return r60_total_number;
+					}
+					public void setR60_total_number(BigDecimal r60_total_number) {
+						this.r60_total_number = r60_total_number;
+					}
+					public BigDecimal getR60_total_amount() {
+						return r60_total_amount;
+					}
+					public void setR60_total_amount(BigDecimal r60_total_amount) {
+						this.r60_total_amount = r60_total_amount;
+					}
+					public BigDecimal getR60_total_deposit_bank() {
+						return r60_total_deposit_bank;
+					}
+					public void setR60_total_deposit_bank(BigDecimal r60_total_deposit_bank) {
+						this.r60_total_deposit_bank = r60_total_deposit_bank;
+					}
+					public String getR61_deposit_size() {
+						return r61_deposit_size;
+					}
+					public void setR61_deposit_size(String r61_deposit_size) {
+						this.r61_deposit_size = r61_deposit_size;
+					}
+					public String getR61_deposit_type() {
+						return r61_deposit_type;
+					}
+					public void setR61_deposit_type(String r61_deposit_type) {
+						this.r61_deposit_type = r61_deposit_type;
+					}
+					public BigDecimal getR61_deposit_excluding_number() {
+						return r61_deposit_excluding_number;
+					}
+					public void setR61_deposit_excluding_number(BigDecimal r61_deposit_excluding_number) {
+						this.r61_deposit_excluding_number = r61_deposit_excluding_number;
+					}
+					public BigDecimal getR61_deposit_excluding_amount() {
+						return r61_deposit_excluding_amount;
+					}
+					public void setR61_deposit_excluding_amount(BigDecimal r61_deposit_excluding_amount) {
+						this.r61_deposit_excluding_amount = r61_deposit_excluding_amount;
+					}
+					public BigDecimal getR61_deposit_foreign_number() {
+						return r61_deposit_foreign_number;
+					}
+					public void setR61_deposit_foreign_number(BigDecimal r61_deposit_foreign_number) {
+						this.r61_deposit_foreign_number = r61_deposit_foreign_number;
+					}
+					public BigDecimal getR61_deposit_foreign_amount() {
+						return r61_deposit_foreign_amount;
+					}
+					public void setR61_deposit_foreign_amount(BigDecimal r61_deposit_foreign_amount) {
+						this.r61_deposit_foreign_amount = r61_deposit_foreign_amount;
+					}
+					public BigDecimal getR61_total_number() {
+						return r61_total_number;
+					}
+					public void setR61_total_number(BigDecimal r61_total_number) {
+						this.r61_total_number = r61_total_number;
+					}
+					public BigDecimal getR61_total_amount() {
+						return r61_total_amount;
+					}
+					public void setR61_total_amount(BigDecimal r61_total_amount) {
+						this.r61_total_amount = r61_total_amount;
+					}
+					public BigDecimal getR61_total_deposit_bank() {
+						return r61_total_deposit_bank;
+					}
+					public void setR61_total_deposit_bank(BigDecimal r61_total_deposit_bank) {
+						this.r61_total_deposit_bank = r61_total_deposit_bank;
+					}
+					public String getR62_deposit_size() {
+						return r62_deposit_size;
+					}
+					public void setR62_deposit_size(String r62_deposit_size) {
+						this.r62_deposit_size = r62_deposit_size;
+					}
+					public String getR62_deposit_type() {
+						return r62_deposit_type;
+					}
+					public void setR62_deposit_type(String r62_deposit_type) {
+						this.r62_deposit_type = r62_deposit_type;
+					}
+					public BigDecimal getR62_deposit_excluding_number() {
+						return r62_deposit_excluding_number;
+					}
+					public void setR62_deposit_excluding_number(BigDecimal r62_deposit_excluding_number) {
+						this.r62_deposit_excluding_number = r62_deposit_excluding_number;
+					}
+					public BigDecimal getR62_deposit_excluding_amount() {
+						return r62_deposit_excluding_amount;
+					}
+					public void setR62_deposit_excluding_amount(BigDecimal r62_deposit_excluding_amount) {
+						this.r62_deposit_excluding_amount = r62_deposit_excluding_amount;
+					}
+					public BigDecimal getR62_deposit_foreign_number() {
+						return r62_deposit_foreign_number;
+					}
+					public void setR62_deposit_foreign_number(BigDecimal r62_deposit_foreign_number) {
+						this.r62_deposit_foreign_number = r62_deposit_foreign_number;
+					}
+					public BigDecimal getR62_deposit_foreign_amount() {
+						return r62_deposit_foreign_amount;
+					}
+					public void setR62_deposit_foreign_amount(BigDecimal r62_deposit_foreign_amount) {
+						this.r62_deposit_foreign_amount = r62_deposit_foreign_amount;
+					}
+					public BigDecimal getR62_total_number() {
+						return r62_total_number;
+					}
+					public void setR62_total_number(BigDecimal r62_total_number) {
+						this.r62_total_number = r62_total_number;
+					}
+					public BigDecimal getR62_total_amount() {
+						return r62_total_amount;
+					}
+					public void setR62_total_amount(BigDecimal r62_total_amount) {
+						this.r62_total_amount = r62_total_amount;
+					}
+					public BigDecimal getR62_total_deposit_bank() {
+						return r62_total_deposit_bank;
+					}
+					public void setR62_total_deposit_bank(BigDecimal r62_total_deposit_bank) {
+						this.r62_total_deposit_bank = r62_total_deposit_bank;
+					}
+					public String getR63_deposit_size() {
+						return r63_deposit_size;
+					}
+					public void setR63_deposit_size(String r63_deposit_size) {
+						this.r63_deposit_size = r63_deposit_size;
+					}
+					public String getR63_deposit_type() {
+						return r63_deposit_type;
+					}
+					public void setR63_deposit_type(String r63_deposit_type) {
+						this.r63_deposit_type = r63_deposit_type;
+					}
+					public BigDecimal getR63_deposit_excluding_number() {
+						return r63_deposit_excluding_number;
+					}
+					public void setR63_deposit_excluding_number(BigDecimal r63_deposit_excluding_number) {
+						this.r63_deposit_excluding_number = r63_deposit_excluding_number;
+					}
+					public BigDecimal getR63_deposit_excluding_amount() {
+						return r63_deposit_excluding_amount;
+					}
+					public void setR63_deposit_excluding_amount(BigDecimal r63_deposit_excluding_amount) {
+						this.r63_deposit_excluding_amount = r63_deposit_excluding_amount;
+					}
+					public BigDecimal getR63_deposit_foreign_number() {
+						return r63_deposit_foreign_number;
+					}
+					public void setR63_deposit_foreign_number(BigDecimal r63_deposit_foreign_number) {
+						this.r63_deposit_foreign_number = r63_deposit_foreign_number;
+					}
+					public BigDecimal getR63_deposit_foreign_amount() {
+						return r63_deposit_foreign_amount;
+					}
+					public void setR63_deposit_foreign_amount(BigDecimal r63_deposit_foreign_amount) {
+						this.r63_deposit_foreign_amount = r63_deposit_foreign_amount;
+					}
+					public BigDecimal getR63_total_number() {
+						return r63_total_number;
+					}
+					public void setR63_total_number(BigDecimal r63_total_number) {
+						this.r63_total_number = r63_total_number;
+					}
+					public BigDecimal getR63_total_amount() {
+						return r63_total_amount;
+					}
+					public void setR63_total_amount(BigDecimal r63_total_amount) {
+						this.r63_total_amount = r63_total_amount;
+					}
+					public BigDecimal getR63_total_deposit_bank() {
+						return r63_total_deposit_bank;
+					}
+					public void setR63_total_deposit_bank(BigDecimal r63_total_deposit_bank) {
+						this.r63_total_deposit_bank = r63_total_deposit_bank;
+					}
+					public String getR64_deposit_size() {
+						return r64_deposit_size;
+					}
+					public void setR64_deposit_size(String r64_deposit_size) {
+						this.r64_deposit_size = r64_deposit_size;
+					}
+					public String getR64_deposit_type() {
+						return r64_deposit_type;
+					}
+					public void setR64_deposit_type(String r64_deposit_type) {
+						this.r64_deposit_type = r64_deposit_type;
+					}
+					public BigDecimal getR64_deposit_excluding_number() {
+						return r64_deposit_excluding_number;
+					}
+					public void setR64_deposit_excluding_number(BigDecimal r64_deposit_excluding_number) {
+						this.r64_deposit_excluding_number = r64_deposit_excluding_number;
+					}
+					public BigDecimal getR64_deposit_excluding_amount() {
+						return r64_deposit_excluding_amount;
+					}
+					public void setR64_deposit_excluding_amount(BigDecimal r64_deposit_excluding_amount) {
+						this.r64_deposit_excluding_amount = r64_deposit_excluding_amount;
+					}
+					public BigDecimal getR64_deposit_foreign_number() {
+						return r64_deposit_foreign_number;
+					}
+					public void setR64_deposit_foreign_number(BigDecimal r64_deposit_foreign_number) {
+						this.r64_deposit_foreign_number = r64_deposit_foreign_number;
+					}
+					public BigDecimal getR64_deposit_foreign_amount() {
+						return r64_deposit_foreign_amount;
+					}
+					public void setR64_deposit_foreign_amount(BigDecimal r64_deposit_foreign_amount) {
+						this.r64_deposit_foreign_amount = r64_deposit_foreign_amount;
+					}
+					public BigDecimal getR64_total_number() {
+						return r64_total_number;
+					}
+					public void setR64_total_number(BigDecimal r64_total_number) {
+						this.r64_total_number = r64_total_number;
+					}
+					public BigDecimal getR64_total_amount() {
+						return r64_total_amount;
+					}
+					public void setR64_total_amount(BigDecimal r64_total_amount) {
+						this.r64_total_amount = r64_total_amount;
+					}
+					public BigDecimal getR64_total_deposit_bank() {
+						return r64_total_deposit_bank;
+					}
+					public void setR64_total_deposit_bank(BigDecimal r64_total_deposit_bank) {
+						this.r64_total_deposit_bank = r64_total_deposit_bank;
+					}
+					public String getR65_deposit_size() {
+						return r65_deposit_size;
+					}
+					public void setR65_deposit_size(String r65_deposit_size) {
+						this.r65_deposit_size = r65_deposit_size;
+					}
+					public String getR65_deposit_type() {
+						return r65_deposit_type;
+					}
+					public void setR65_deposit_type(String r65_deposit_type) {
+						this.r65_deposit_type = r65_deposit_type;
+					}
+					public BigDecimal getR65_deposit_excluding_number() {
+						return r65_deposit_excluding_number;
+					}
+					public void setR65_deposit_excluding_number(BigDecimal r65_deposit_excluding_number) {
+						this.r65_deposit_excluding_number = r65_deposit_excluding_number;
+					}
+					public BigDecimal getR65_deposit_excluding_amount() {
+						return r65_deposit_excluding_amount;
+					}
+					public void setR65_deposit_excluding_amount(BigDecimal r65_deposit_excluding_amount) {
+						this.r65_deposit_excluding_amount = r65_deposit_excluding_amount;
+					}
+					public BigDecimal getR65_deposit_foreign_number() {
+						return r65_deposit_foreign_number;
+					}
+					public void setR65_deposit_foreign_number(BigDecimal r65_deposit_foreign_number) {
+						this.r65_deposit_foreign_number = r65_deposit_foreign_number;
+					}
+					public BigDecimal getR65_deposit_foreign_amount() {
+						return r65_deposit_foreign_amount;
+					}
+					public void setR65_deposit_foreign_amount(BigDecimal r65_deposit_foreign_amount) {
+						this.r65_deposit_foreign_amount = r65_deposit_foreign_amount;
+					}
+					public BigDecimal getR65_total_number() {
+						return r65_total_number;
+					}
+					public void setR65_total_number(BigDecimal r65_total_number) {
+						this.r65_total_number = r65_total_number;
+					}
+					public BigDecimal getR65_total_amount() {
+						return r65_total_amount;
+					}
+					public void setR65_total_amount(BigDecimal r65_total_amount) {
+						this.r65_total_amount = r65_total_amount;
+					}
+					public BigDecimal getR65_total_deposit_bank() {
+						return r65_total_deposit_bank;
+					}
+					public void setR65_total_deposit_bank(BigDecimal r65_total_deposit_bank) {
+						this.r65_total_deposit_bank = r65_total_deposit_bank;
+					}
+					public String getR66_deposit_size() {
+						return r66_deposit_size;
+					}
+					public void setR66_deposit_size(String r66_deposit_size) {
+						this.r66_deposit_size = r66_deposit_size;
+					}
+					public String getR66_deposit_type() {
+						return r66_deposit_type;
+					}
+					public void setR66_deposit_type(String r66_deposit_type) {
+						this.r66_deposit_type = r66_deposit_type;
+					}
+					public BigDecimal getR66_deposit_excluding_number() {
+						return r66_deposit_excluding_number;
+					}
+					public void setR66_deposit_excluding_number(BigDecimal r66_deposit_excluding_number) {
+						this.r66_deposit_excluding_number = r66_deposit_excluding_number;
+					}
+					public BigDecimal getR66_deposit_excluding_amount() {
+						return r66_deposit_excluding_amount;
+					}
+					public void setR66_deposit_excluding_amount(BigDecimal r66_deposit_excluding_amount) {
+						this.r66_deposit_excluding_amount = r66_deposit_excluding_amount;
+					}
+					public BigDecimal getR66_deposit_foreign_number() {
+						return r66_deposit_foreign_number;
+					}
+					public void setR66_deposit_foreign_number(BigDecimal r66_deposit_foreign_number) {
+						this.r66_deposit_foreign_number = r66_deposit_foreign_number;
+					}
+					public BigDecimal getR66_deposit_foreign_amount() {
+						return r66_deposit_foreign_amount;
+					}
+					public void setR66_deposit_foreign_amount(BigDecimal r66_deposit_foreign_amount) {
+						this.r66_deposit_foreign_amount = r66_deposit_foreign_amount;
+					}
+					public BigDecimal getR66_total_number() {
+						return r66_total_number;
+					}
+					public void setR66_total_number(BigDecimal r66_total_number) {
+						this.r66_total_number = r66_total_number;
+					}
+					public BigDecimal getR66_total_amount() {
+						return r66_total_amount;
+					}
+					public void setR66_total_amount(BigDecimal r66_total_amount) {
+						this.r66_total_amount = r66_total_amount;
+					}
+					public BigDecimal getR66_total_deposit_bank() {
+						return r66_total_deposit_bank;
+					}
+					public void setR66_total_deposit_bank(BigDecimal r66_total_deposit_bank) {
+						this.r66_total_deposit_bank = r66_total_deposit_bank;
+					}
+					public String getR67_deposit_size() {
+						return r67_deposit_size;
+					}
+					public void setR67_deposit_size(String r67_deposit_size) {
+						this.r67_deposit_size = r67_deposit_size;
+					}
+					public String getR67_deposit_type() {
+						return r67_deposit_type;
+					}
+					public void setR67_deposit_type(String r67_deposit_type) {
+						this.r67_deposit_type = r67_deposit_type;
+					}
+					public BigDecimal getR67_deposit_excluding_number() {
+						return r67_deposit_excluding_number;
+					}
+					public void setR67_deposit_excluding_number(BigDecimal r67_deposit_excluding_number) {
+						this.r67_deposit_excluding_number = r67_deposit_excluding_number;
+					}
+					public BigDecimal getR67_deposit_excluding_amount() {
+						return r67_deposit_excluding_amount;
+					}
+					public void setR67_deposit_excluding_amount(BigDecimal r67_deposit_excluding_amount) {
+						this.r67_deposit_excluding_amount = r67_deposit_excluding_amount;
+					}
+					public BigDecimal getR67_deposit_foreign_number() {
+						return r67_deposit_foreign_number;
+					}
+					public void setR67_deposit_foreign_number(BigDecimal r67_deposit_foreign_number) {
+						this.r67_deposit_foreign_number = r67_deposit_foreign_number;
+					}
+					public BigDecimal getR67_deposit_foreign_amount() {
+						return r67_deposit_foreign_amount;
+					}
+					public void setR67_deposit_foreign_amount(BigDecimal r67_deposit_foreign_amount) {
+						this.r67_deposit_foreign_amount = r67_deposit_foreign_amount;
+					}
+					public BigDecimal getR67_total_number() {
+						return r67_total_number;
+					}
+					public void setR67_total_number(BigDecimal r67_total_number) {
+						this.r67_total_number = r67_total_number;
+					}
+					public BigDecimal getR67_total_amount() {
+						return r67_total_amount;
+					}
+					public void setR67_total_amount(BigDecimal r67_total_amount) {
+						this.r67_total_amount = r67_total_amount;
+					}
+					public BigDecimal getR67_total_deposit_bank() {
+						return r67_total_deposit_bank;
+					}
+					public void setR67_total_deposit_bank(BigDecimal r67_total_deposit_bank) {
+						this.r67_total_deposit_bank = r67_total_deposit_bank;
+					}
+					public String getR68_deposit_size() {
+						return r68_deposit_size;
+					}
+					public void setR68_deposit_size(String r68_deposit_size) {
+						this.r68_deposit_size = r68_deposit_size;
+					}
+					public String getR68_deposit_type() {
+						return r68_deposit_type;
+					}
+					public void setR68_deposit_type(String r68_deposit_type) {
+						this.r68_deposit_type = r68_deposit_type;
+					}
+					public BigDecimal getR68_deposit_excluding_number() {
+						return r68_deposit_excluding_number;
+					}
+					public void setR68_deposit_excluding_number(BigDecimal r68_deposit_excluding_number) {
+						this.r68_deposit_excluding_number = r68_deposit_excluding_number;
+					}
+					public BigDecimal getR68_deposit_excluding_amount() {
+						return r68_deposit_excluding_amount;
+					}
+					public void setR68_deposit_excluding_amount(BigDecimal r68_deposit_excluding_amount) {
+						this.r68_deposit_excluding_amount = r68_deposit_excluding_amount;
+					}
+					public BigDecimal getR68_deposit_foreign_number() {
+						return r68_deposit_foreign_number;
+					}
+					public void setR68_deposit_foreign_number(BigDecimal r68_deposit_foreign_number) {
+						this.r68_deposit_foreign_number = r68_deposit_foreign_number;
+					}
+					public BigDecimal getR68_deposit_foreign_amount() {
+						return r68_deposit_foreign_amount;
+					}
+					public void setR68_deposit_foreign_amount(BigDecimal r68_deposit_foreign_amount) {
+						this.r68_deposit_foreign_amount = r68_deposit_foreign_amount;
+					}
+					public BigDecimal getR68_total_number() {
+						return r68_total_number;
+					}
+					public void setR68_total_number(BigDecimal r68_total_number) {
+						this.r68_total_number = r68_total_number;
+					}
+					public BigDecimal getR68_total_amount() {
+						return r68_total_amount;
+					}
+					public void setR68_total_amount(BigDecimal r68_total_amount) {
+						this.r68_total_amount = r68_total_amount;
+					}
+					public BigDecimal getR68_total_deposit_bank() {
+						return r68_total_deposit_bank;
+					}
+					public void setR68_total_deposit_bank(BigDecimal r68_total_deposit_bank) {
+						this.r68_total_deposit_bank = r68_total_deposit_bank;
+					}
+					public String getR69_deposit_size() {
+						return r69_deposit_size;
+					}
+					public void setR69_deposit_size(String r69_deposit_size) {
+						this.r69_deposit_size = r69_deposit_size;
+					}
+					public String getR69_deposit_type() {
+						return r69_deposit_type;
+					}
+					public void setR69_deposit_type(String r69_deposit_type) {
+						this.r69_deposit_type = r69_deposit_type;
+					}
+					public BigDecimal getR69_deposit_excluding_number() {
+						return r69_deposit_excluding_number;
+					}
+					public void setR69_deposit_excluding_number(BigDecimal r69_deposit_excluding_number) {
+						this.r69_deposit_excluding_number = r69_deposit_excluding_number;
+					}
+					public BigDecimal getR69_deposit_excluding_amount() {
+						return r69_deposit_excluding_amount;
+					}
+					public void setR69_deposit_excluding_amount(BigDecimal r69_deposit_excluding_amount) {
+						this.r69_deposit_excluding_amount = r69_deposit_excluding_amount;
+					}
+					public BigDecimal getR69_deposit_foreign_number() {
+						return r69_deposit_foreign_number;
+					}
+					public void setR69_deposit_foreign_number(BigDecimal r69_deposit_foreign_number) {
+						this.r69_deposit_foreign_number = r69_deposit_foreign_number;
+					}
+					public BigDecimal getR69_deposit_foreign_amount() {
+						return r69_deposit_foreign_amount;
+					}
+					public void setR69_deposit_foreign_amount(BigDecimal r69_deposit_foreign_amount) {
+						this.r69_deposit_foreign_amount = r69_deposit_foreign_amount;
+					}
+					public BigDecimal getR69_total_number() {
+						return r69_total_number;
+					}
+					public void setR69_total_number(BigDecimal r69_total_number) {
+						this.r69_total_number = r69_total_number;
+					}
+					public BigDecimal getR69_total_amount() {
+						return r69_total_amount;
+					}
+					public void setR69_total_amount(BigDecimal r69_total_amount) {
+						this.r69_total_amount = r69_total_amount;
+					}
+					public BigDecimal getR69_total_deposit_bank() {
+						return r69_total_deposit_bank;
+					}
+					public void setR69_total_deposit_bank(BigDecimal r69_total_deposit_bank) {
+						this.r69_total_deposit_bank = r69_total_deposit_bank;
+					}
+					public String getR70_deposit_size() {
+						return r70_deposit_size;
+					}
+					public void setR70_deposit_size(String r70_deposit_size) {
+						this.r70_deposit_size = r70_deposit_size;
+					}
+					public String getR70_deposit_type() {
+						return r70_deposit_type;
+					}
+					public void setR70_deposit_type(String r70_deposit_type) {
+						this.r70_deposit_type = r70_deposit_type;
+					}
+					public BigDecimal getR70_deposit_excluding_number() {
+						return r70_deposit_excluding_number;
+					}
+					public void setR70_deposit_excluding_number(BigDecimal r70_deposit_excluding_number) {
+						this.r70_deposit_excluding_number = r70_deposit_excluding_number;
+					}
+					public BigDecimal getR70_deposit_excluding_amount() {
+						return r70_deposit_excluding_amount;
+					}
+					public void setR70_deposit_excluding_amount(BigDecimal r70_deposit_excluding_amount) {
+						this.r70_deposit_excluding_amount = r70_deposit_excluding_amount;
+					}
+					public BigDecimal getR70_deposit_foreign_number() {
+						return r70_deposit_foreign_number;
+					}
+					public void setR70_deposit_foreign_number(BigDecimal r70_deposit_foreign_number) {
+						this.r70_deposit_foreign_number = r70_deposit_foreign_number;
+					}
+					public BigDecimal getR70_deposit_foreign_amount() {
+						return r70_deposit_foreign_amount;
+					}
+					public void setR70_deposit_foreign_amount(BigDecimal r70_deposit_foreign_amount) {
+						this.r70_deposit_foreign_amount = r70_deposit_foreign_amount;
+					}
+					public BigDecimal getR70_total_number() {
+						return r70_total_number;
+					}
+					public void setR70_total_number(BigDecimal r70_total_number) {
+						this.r70_total_number = r70_total_number;
+					}
+					public BigDecimal getR70_total_amount() {
+						return r70_total_amount;
+					}
+					public void setR70_total_amount(BigDecimal r70_total_amount) {
+						this.r70_total_amount = r70_total_amount;
+					}
+					public BigDecimal getR70_total_deposit_bank() {
+						return r70_total_deposit_bank;
+					}
+					public void setR70_total_deposit_bank(BigDecimal r70_total_deposit_bank) {
+						this.r70_total_deposit_bank = r70_total_deposit_bank;
+					}
+					public String getR71_deposit_size() {
+						return r71_deposit_size;
+					}
+					public void setR71_deposit_size(String r71_deposit_size) {
+						this.r71_deposit_size = r71_deposit_size;
+					}
+					public String getR71_deposit_type() {
+						return r71_deposit_type;
+					}
+					public void setR71_deposit_type(String r71_deposit_type) {
+						this.r71_deposit_type = r71_deposit_type;
+					}
+					public BigDecimal getR71_deposit_excluding_number() {
+						return r71_deposit_excluding_number;
+					}
+					public void setR71_deposit_excluding_number(BigDecimal r71_deposit_excluding_number) {
+						this.r71_deposit_excluding_number = r71_deposit_excluding_number;
+					}
+					public BigDecimal getR71_deposit_excluding_amount() {
+						return r71_deposit_excluding_amount;
+					}
+					public void setR71_deposit_excluding_amount(BigDecimal r71_deposit_excluding_amount) {
+						this.r71_deposit_excluding_amount = r71_deposit_excluding_amount;
+					}
+					public BigDecimal getR71_deposit_foreign_number() {
+						return r71_deposit_foreign_number;
+					}
+					public void setR71_deposit_foreign_number(BigDecimal r71_deposit_foreign_number) {
+						this.r71_deposit_foreign_number = r71_deposit_foreign_number;
+					}
+					public BigDecimal getR71_deposit_foreign_amount() {
+						return r71_deposit_foreign_amount;
+					}
+					public void setR71_deposit_foreign_amount(BigDecimal r71_deposit_foreign_amount) {
+						this.r71_deposit_foreign_amount = r71_deposit_foreign_amount;
+					}
+					public BigDecimal getR71_total_number() {
+						return r71_total_number;
+					}
+					public void setR71_total_number(BigDecimal r71_total_number) {
+						this.r71_total_number = r71_total_number;
+					}
+					public BigDecimal getR71_total_amount() {
+						return r71_total_amount;
+					}
+					public void setR71_total_amount(BigDecimal r71_total_amount) {
+						this.r71_total_amount = r71_total_amount;
+					}
+					public BigDecimal getR71_total_deposit_bank() {
+						return r71_total_deposit_bank;
+					}
+					public void setR71_total_deposit_bank(BigDecimal r71_total_deposit_bank) {
+						this.r71_total_deposit_bank = r71_total_deposit_bank;
+					}
+					public String getR72_deposit_size() {
+						return r72_deposit_size;
+					}
+					public void setR72_deposit_size(String r72_deposit_size) {
+						this.r72_deposit_size = r72_deposit_size;
+					}
+					public String getR72_deposit_type() {
+						return r72_deposit_type;
+					}
+					public void setR72_deposit_type(String r72_deposit_type) {
+						this.r72_deposit_type = r72_deposit_type;
+					}
+					public BigDecimal getR72_deposit_excluding_number() {
+						return r72_deposit_excluding_number;
+					}
+					public void setR72_deposit_excluding_number(BigDecimal r72_deposit_excluding_number) {
+						this.r72_deposit_excluding_number = r72_deposit_excluding_number;
+					}
+					public BigDecimal getR72_deposit_excluding_amount() {
+						return r72_deposit_excluding_amount;
+					}
+					public void setR72_deposit_excluding_amount(BigDecimal r72_deposit_excluding_amount) {
+						this.r72_deposit_excluding_amount = r72_deposit_excluding_amount;
+					}
+					public BigDecimal getR72_deposit_foreign_number() {
+						return r72_deposit_foreign_number;
+					}
+					public void setR72_deposit_foreign_number(BigDecimal r72_deposit_foreign_number) {
+						this.r72_deposit_foreign_number = r72_deposit_foreign_number;
+					}
+					public BigDecimal getR72_deposit_foreign_amount() {
+						return r72_deposit_foreign_amount;
+					}
+					public void setR72_deposit_foreign_amount(BigDecimal r72_deposit_foreign_amount) {
+						this.r72_deposit_foreign_amount = r72_deposit_foreign_amount;
+					}
+					public BigDecimal getR72_total_number() {
+						return r72_total_number;
+					}
+					public void setR72_total_number(BigDecimal r72_total_number) {
+						this.r72_total_number = r72_total_number;
+					}
+					public BigDecimal getR72_total_amount() {
+						return r72_total_amount;
+					}
+					public void setR72_total_amount(BigDecimal r72_total_amount) {
+						this.r72_total_amount = r72_total_amount;
+					}
+					public BigDecimal getR72_total_deposit_bank() {
+						return r72_total_deposit_bank;
+					}
+					public void setR72_total_deposit_bank(BigDecimal r72_total_deposit_bank) {
+						this.r72_total_deposit_bank = r72_total_deposit_bank;
+					}
+					public String getR73_deposit_size() {
+						return r73_deposit_size;
+					}
+					public void setR73_deposit_size(String r73_deposit_size) {
+						this.r73_deposit_size = r73_deposit_size;
+					}
+					public String getR73_deposit_type() {
+						return r73_deposit_type;
+					}
+					public void setR73_deposit_type(String r73_deposit_type) {
+						this.r73_deposit_type = r73_deposit_type;
+					}
+					public BigDecimal getR73_deposit_excluding_number() {
+						return r73_deposit_excluding_number;
+					}
+					public void setR73_deposit_excluding_number(BigDecimal r73_deposit_excluding_number) {
+						this.r73_deposit_excluding_number = r73_deposit_excluding_number;
+					}
+					public BigDecimal getR73_deposit_excluding_amount() {
+						return r73_deposit_excluding_amount;
+					}
+					public void setR73_deposit_excluding_amount(BigDecimal r73_deposit_excluding_amount) {
+						this.r73_deposit_excluding_amount = r73_deposit_excluding_amount;
+					}
+					public BigDecimal getR73_deposit_foreign_number() {
+						return r73_deposit_foreign_number;
+					}
+					public void setR73_deposit_foreign_number(BigDecimal r73_deposit_foreign_number) {
+						this.r73_deposit_foreign_number = r73_deposit_foreign_number;
+					}
+					public BigDecimal getR73_deposit_foreign_amount() {
+						return r73_deposit_foreign_amount;
+					}
+					public void setR73_deposit_foreign_amount(BigDecimal r73_deposit_foreign_amount) {
+						this.r73_deposit_foreign_amount = r73_deposit_foreign_amount;
+					}
+					public BigDecimal getR73_total_number() {
+						return r73_total_number;
+					}
+					public void setR73_total_number(BigDecimal r73_total_number) {
+						this.r73_total_number = r73_total_number;
+					}
+					public BigDecimal getR73_total_amount() {
+						return r73_total_amount;
+					}
+					public void setR73_total_amount(BigDecimal r73_total_amount) {
+						this.r73_total_amount = r73_total_amount;
+					}
+					public BigDecimal getR73_total_deposit_bank() {
+						return r73_total_deposit_bank;
+					}
+					public void setR73_total_deposit_bank(BigDecimal r73_total_deposit_bank) {
+						this.r73_total_deposit_bank = r73_total_deposit_bank;
+					}
+					public String getR74_deposit_size() {
+						return r74_deposit_size;
+					}
+					public void setR74_deposit_size(String r74_deposit_size) {
+						this.r74_deposit_size = r74_deposit_size;
+					}
+					public String getR74_deposit_type() {
+						return r74_deposit_type;
+					}
+					public void setR74_deposit_type(String r74_deposit_type) {
+						this.r74_deposit_type = r74_deposit_type;
+					}
+					public BigDecimal getR74_deposit_excluding_number() {
+						return r74_deposit_excluding_number;
+					}
+					public void setR74_deposit_excluding_number(BigDecimal r74_deposit_excluding_number) {
+						this.r74_deposit_excluding_number = r74_deposit_excluding_number;
+					}
+					public BigDecimal getR74_deposit_excluding_amount() {
+						return r74_deposit_excluding_amount;
+					}
+					public void setR74_deposit_excluding_amount(BigDecimal r74_deposit_excluding_amount) {
+						this.r74_deposit_excluding_amount = r74_deposit_excluding_amount;
+					}
+					public BigDecimal getR74_deposit_foreign_number() {
+						return r74_deposit_foreign_number;
+					}
+					public void setR74_deposit_foreign_number(BigDecimal r74_deposit_foreign_number) {
+						this.r74_deposit_foreign_number = r74_deposit_foreign_number;
+					}
+					public BigDecimal getR74_deposit_foreign_amount() {
+						return r74_deposit_foreign_amount;
+					}
+					public void setR74_deposit_foreign_amount(BigDecimal r74_deposit_foreign_amount) {
+						this.r74_deposit_foreign_amount = r74_deposit_foreign_amount;
+					}
+					public BigDecimal getR74_total_number() {
+						return r74_total_number;
+					}
+					public void setR74_total_number(BigDecimal r74_total_number) {
+						this.r74_total_number = r74_total_number;
+					}
+					public BigDecimal getR74_total_amount() {
+						return r74_total_amount;
+					}
+					public void setR74_total_amount(BigDecimal r74_total_amount) {
+						this.r74_total_amount = r74_total_amount;
+					}
+					public BigDecimal getR74_total_deposit_bank() {
+						return r74_total_deposit_bank;
+					}
+					public void setR74_total_deposit_bank(BigDecimal r74_total_deposit_bank) {
+						this.r74_total_deposit_bank = r74_total_deposit_bank;
+					}
+					public String getR75_deposit_size() {
+						return r75_deposit_size;
+					}
+					public void setR75_deposit_size(String r75_deposit_size) {
+						this.r75_deposit_size = r75_deposit_size;
+					}
+					public String getR75_deposit_type() {
+						return r75_deposit_type;
+					}
+					public void setR75_deposit_type(String r75_deposit_type) {
+						this.r75_deposit_type = r75_deposit_type;
+					}
+					public BigDecimal getR75_deposit_excluding_number() {
+						return r75_deposit_excluding_number;
+					}
+					public void setR75_deposit_excluding_number(BigDecimal r75_deposit_excluding_number) {
+						this.r75_deposit_excluding_number = r75_deposit_excluding_number;
+					}
+					public BigDecimal getR75_deposit_excluding_amount() {
+						return r75_deposit_excluding_amount;
+					}
+					public void setR75_deposit_excluding_amount(BigDecimal r75_deposit_excluding_amount) {
+						this.r75_deposit_excluding_amount = r75_deposit_excluding_amount;
+					}
+					public BigDecimal getR75_deposit_foreign_number() {
+						return r75_deposit_foreign_number;
+					}
+					public void setR75_deposit_foreign_number(BigDecimal r75_deposit_foreign_number) {
+						this.r75_deposit_foreign_number = r75_deposit_foreign_number;
+					}
+					public BigDecimal getR75_deposit_foreign_amount() {
+						return r75_deposit_foreign_amount;
+					}
+					public void setR75_deposit_foreign_amount(BigDecimal r75_deposit_foreign_amount) {
+						this.r75_deposit_foreign_amount = r75_deposit_foreign_amount;
+					}
+					public BigDecimal getR75_total_number() {
+						return r75_total_number;
+					}
+					public void setR75_total_number(BigDecimal r75_total_number) {
+						this.r75_total_number = r75_total_number;
+					}
+					public BigDecimal getR75_total_amount() {
+						return r75_total_amount;
+					}
+					public void setR75_total_amount(BigDecimal r75_total_amount) {
+						this.r75_total_amount = r75_total_amount;
+					}
+					public BigDecimal getR75_total_deposit_bank() {
+						return r75_total_deposit_bank;
+					}
+					public void setR75_total_deposit_bank(BigDecimal r75_total_deposit_bank) {
+						this.r75_total_deposit_bank = r75_total_deposit_bank;
+					}
+					public String getR76_deposit_size() {
+						return r76_deposit_size;
+					}
+					public void setR76_deposit_size(String r76_deposit_size) {
+						this.r76_deposit_size = r76_deposit_size;
+					}
+					public String getR76_deposit_type() {
+						return r76_deposit_type;
+					}
+					public void setR76_deposit_type(String r76_deposit_type) {
+						this.r76_deposit_type = r76_deposit_type;
+					}
+					public BigDecimal getR76_deposit_excluding_number() {
+						return r76_deposit_excluding_number;
+					}
+					public void setR76_deposit_excluding_number(BigDecimal r76_deposit_excluding_number) {
+						this.r76_deposit_excluding_number = r76_deposit_excluding_number;
+					}
+					public BigDecimal getR76_deposit_excluding_amount() {
+						return r76_deposit_excluding_amount;
+					}
+					public void setR76_deposit_excluding_amount(BigDecimal r76_deposit_excluding_amount) {
+						this.r76_deposit_excluding_amount = r76_deposit_excluding_amount;
+					}
+					public BigDecimal getR76_deposit_foreign_number() {
+						return r76_deposit_foreign_number;
+					}
+					public void setR76_deposit_foreign_number(BigDecimal r76_deposit_foreign_number) {
+						this.r76_deposit_foreign_number = r76_deposit_foreign_number;
+					}
+					public BigDecimal getR76_deposit_foreign_amount() {
+						return r76_deposit_foreign_amount;
+					}
+					public void setR76_deposit_foreign_amount(BigDecimal r76_deposit_foreign_amount) {
+						this.r76_deposit_foreign_amount = r76_deposit_foreign_amount;
+					}
+					public BigDecimal getR76_total_number() {
+						return r76_total_number;
+					}
+					public void setR76_total_number(BigDecimal r76_total_number) {
+						this.r76_total_number = r76_total_number;
+					}
+					public BigDecimal getR76_total_amount() {
+						return r76_total_amount;
+					}
+					public void setR76_total_amount(BigDecimal r76_total_amount) {
+						this.r76_total_amount = r76_total_amount;
+					}
+					public BigDecimal getR76_total_deposit_bank() {
+						return r76_total_deposit_bank;
+					}
+					public void setR76_total_deposit_bank(BigDecimal r76_total_deposit_bank) {
+						this.r76_total_deposit_bank = r76_total_deposit_bank;
+					}
+					public String getR77_deposit_size() {
+						return r77_deposit_size;
+					}
+					public void setR77_deposit_size(String r77_deposit_size) {
+						this.r77_deposit_size = r77_deposit_size;
+					}
+					public String getR77_deposit_type() {
+						return r77_deposit_type;
+					}
+					public void setR77_deposit_type(String r77_deposit_type) {
+						this.r77_deposit_type = r77_deposit_type;
+					}
+					public BigDecimal getR77_deposit_excluding_number() {
+						return r77_deposit_excluding_number;
+					}
+					public void setR77_deposit_excluding_number(BigDecimal r77_deposit_excluding_number) {
+						this.r77_deposit_excluding_number = r77_deposit_excluding_number;
+					}
+					public BigDecimal getR77_deposit_excluding_amount() {
+						return r77_deposit_excluding_amount;
+					}
+					public void setR77_deposit_excluding_amount(BigDecimal r77_deposit_excluding_amount) {
+						this.r77_deposit_excluding_amount = r77_deposit_excluding_amount;
+					}
+					public BigDecimal getR77_deposit_foreign_number() {
+						return r77_deposit_foreign_number;
+					}
+					public void setR77_deposit_foreign_number(BigDecimal r77_deposit_foreign_number) {
+						this.r77_deposit_foreign_number = r77_deposit_foreign_number;
+					}
+					public BigDecimal getR77_deposit_foreign_amount() {
+						return r77_deposit_foreign_amount;
+					}
+					public void setR77_deposit_foreign_amount(BigDecimal r77_deposit_foreign_amount) {
+						this.r77_deposit_foreign_amount = r77_deposit_foreign_amount;
+					}
+					public BigDecimal getR77_total_number() {
+						return r77_total_number;
+					}
+					public void setR77_total_number(BigDecimal r77_total_number) {
+						this.r77_total_number = r77_total_number;
+					}
+					public BigDecimal getR77_total_amount() {
+						return r77_total_amount;
+					}
+					public void setR77_total_amount(BigDecimal r77_total_amount) {
+						this.r77_total_amount = r77_total_amount;
+					}
+					public BigDecimal getR77_total_deposit_bank() {
+						return r77_total_deposit_bank;
+					}
+					public void setR77_total_deposit_bank(BigDecimal r77_total_deposit_bank) {
+						this.r77_total_deposit_bank = r77_total_deposit_bank;
+					}
+					public String getR78_deposit_size() {
+						return r78_deposit_size;
+					}
+					public void setR78_deposit_size(String r78_deposit_size) {
+						this.r78_deposit_size = r78_deposit_size;
+					}
+					public String getR78_deposit_type() {
+						return r78_deposit_type;
+					}
+					public void setR78_deposit_type(String r78_deposit_type) {
+						this.r78_deposit_type = r78_deposit_type;
+					}
+					public BigDecimal getR78_deposit_excluding_number() {
+						return r78_deposit_excluding_number;
+					}
+					public void setR78_deposit_excluding_number(BigDecimal r78_deposit_excluding_number) {
+						this.r78_deposit_excluding_number = r78_deposit_excluding_number;
+					}
+					public BigDecimal getR78_deposit_excluding_amount() {
+						return r78_deposit_excluding_amount;
+					}
+					public void setR78_deposit_excluding_amount(BigDecimal r78_deposit_excluding_amount) {
+						this.r78_deposit_excluding_amount = r78_deposit_excluding_amount;
+					}
+					public BigDecimal getR78_deposit_foreign_number() {
+						return r78_deposit_foreign_number;
+					}
+					public void setR78_deposit_foreign_number(BigDecimal r78_deposit_foreign_number) {
+						this.r78_deposit_foreign_number = r78_deposit_foreign_number;
+					}
+					public BigDecimal getR78_deposit_foreign_amount() {
+						return r78_deposit_foreign_amount;
+					}
+					public void setR78_deposit_foreign_amount(BigDecimal r78_deposit_foreign_amount) {
+						this.r78_deposit_foreign_amount = r78_deposit_foreign_amount;
+					}
+					public BigDecimal getR78_total_number() {
+						return r78_total_number;
+					}
+					public void setR78_total_number(BigDecimal r78_total_number) {
+						this.r78_total_number = r78_total_number;
+					}
+					public BigDecimal getR78_total_amount() {
+						return r78_total_amount;
+					}
+					public void setR78_total_amount(BigDecimal r78_total_amount) {
+						this.r78_total_amount = r78_total_amount;
+					}
+					public BigDecimal getR78_total_deposit_bank() {
+						return r78_total_deposit_bank;
+					}
+					public void setR78_total_deposit_bank(BigDecimal r78_total_deposit_bank) {
+						this.r78_total_deposit_bank = r78_total_deposit_bank;
+					}
+					public String getR79_deposit_size() {
+						return r79_deposit_size;
+					}
+					public void setR79_deposit_size(String r79_deposit_size) {
+						this.r79_deposit_size = r79_deposit_size;
+					}
+					public String getR79_deposit_type() {
+						return r79_deposit_type;
+					}
+					public void setR79_deposit_type(String r79_deposit_type) {
+						this.r79_deposit_type = r79_deposit_type;
+					}
+					public BigDecimal getR79_deposit_excluding_number() {
+						return r79_deposit_excluding_number;
+					}
+					public void setR79_deposit_excluding_number(BigDecimal r79_deposit_excluding_number) {
+						this.r79_deposit_excluding_number = r79_deposit_excluding_number;
+					}
+					public BigDecimal getR79_deposit_excluding_amount() {
+						return r79_deposit_excluding_amount;
+					}
+					public void setR79_deposit_excluding_amount(BigDecimal r79_deposit_excluding_amount) {
+						this.r79_deposit_excluding_amount = r79_deposit_excluding_amount;
+					}
+					public BigDecimal getR79_deposit_foreign_number() {
+						return r79_deposit_foreign_number;
+					}
+					public void setR79_deposit_foreign_number(BigDecimal r79_deposit_foreign_number) {
+						this.r79_deposit_foreign_number = r79_deposit_foreign_number;
+					}
+					public BigDecimal getR79_deposit_foreign_amount() {
+						return r79_deposit_foreign_amount;
+					}
+					public void setR79_deposit_foreign_amount(BigDecimal r79_deposit_foreign_amount) {
+						this.r79_deposit_foreign_amount = r79_deposit_foreign_amount;
+					}
+					public BigDecimal getR79_total_number() {
+						return r79_total_number;
+					}
+					public void setR79_total_number(BigDecimal r79_total_number) {
+						this.r79_total_number = r79_total_number;
+					}
+					public BigDecimal getR79_total_amount() {
+						return r79_total_amount;
+					}
+					public void setR79_total_amount(BigDecimal r79_total_amount) {
+						this.r79_total_amount = r79_total_amount;
+					}
+					public BigDecimal getR79_total_deposit_bank() {
+						return r79_total_deposit_bank;
+					}
+					public void setR79_total_deposit_bank(BigDecimal r79_total_deposit_bank) {
+						this.r79_total_deposit_bank = r79_total_deposit_bank;
+					}
+					public String getR80_deposit_size() {
+						return r80_deposit_size;
+					}
+					public void setR80_deposit_size(String r80_deposit_size) {
+						this.r80_deposit_size = r80_deposit_size;
+					}
+					public String getR80_deposit_type() {
+						return r80_deposit_type;
+					}
+					public void setR80_deposit_type(String r80_deposit_type) {
+						this.r80_deposit_type = r80_deposit_type;
+					}
+					public BigDecimal getR80_deposit_excluding_number() {
+						return r80_deposit_excluding_number;
+					}
+					public void setR80_deposit_excluding_number(BigDecimal r80_deposit_excluding_number) {
+						this.r80_deposit_excluding_number = r80_deposit_excluding_number;
+					}
+					public BigDecimal getR80_deposit_excluding_amount() {
+						return r80_deposit_excluding_amount;
+					}
+					public void setR80_deposit_excluding_amount(BigDecimal r80_deposit_excluding_amount) {
+						this.r80_deposit_excluding_amount = r80_deposit_excluding_amount;
+					}
+					public BigDecimal getR80_deposit_foreign_number() {
+						return r80_deposit_foreign_number;
+					}
+					public void setR80_deposit_foreign_number(BigDecimal r80_deposit_foreign_number) {
+						this.r80_deposit_foreign_number = r80_deposit_foreign_number;
+					}
+					public BigDecimal getR80_deposit_foreign_amount() {
+						return r80_deposit_foreign_amount;
+					}
+					public void setR80_deposit_foreign_amount(BigDecimal r80_deposit_foreign_amount) {
+						this.r80_deposit_foreign_amount = r80_deposit_foreign_amount;
+					}
+					public BigDecimal getR80_total_number() {
+						return r80_total_number;
+					}
+					public void setR80_total_number(BigDecimal r80_total_number) {
+						this.r80_total_number = r80_total_number;
+					}
+					public BigDecimal getR80_total_amount() {
+						return r80_total_amount;
+					}
+					public void setR80_total_amount(BigDecimal r80_total_amount) {
+						this.r80_total_amount = r80_total_amount;
+					}
+					public BigDecimal getR80_total_deposit_bank() {
+						return r80_total_deposit_bank;
+					}
+					public void setR80_total_deposit_bank(BigDecimal r80_total_deposit_bank) {
+						this.r80_total_deposit_bank = r80_total_deposit_bank;
+					}
+					public String getR81_deposit_size() {
+						return r81_deposit_size;
+					}
+					public void setR81_deposit_size(String r81_deposit_size) {
+						this.r81_deposit_size = r81_deposit_size;
+					}
+					public String getR81_deposit_type() {
+						return r81_deposit_type;
+					}
+					public void setR81_deposit_type(String r81_deposit_type) {
+						this.r81_deposit_type = r81_deposit_type;
+					}
+					public BigDecimal getR81_deposit_excluding_number() {
+						return r81_deposit_excluding_number;
+					}
+					public void setR81_deposit_excluding_number(BigDecimal r81_deposit_excluding_number) {
+						this.r81_deposit_excluding_number = r81_deposit_excluding_number;
+					}
+					public BigDecimal getR81_deposit_excluding_amount() {
+						return r81_deposit_excluding_amount;
+					}
+					public void setR81_deposit_excluding_amount(BigDecimal r81_deposit_excluding_amount) {
+						this.r81_deposit_excluding_amount = r81_deposit_excluding_amount;
+					}
+					public BigDecimal getR81_deposit_foreign_number() {
+						return r81_deposit_foreign_number;
+					}
+					public void setR81_deposit_foreign_number(BigDecimal r81_deposit_foreign_number) {
+						this.r81_deposit_foreign_number = r81_deposit_foreign_number;
+					}
+					public BigDecimal getR81_deposit_foreign_amount() {
+						return r81_deposit_foreign_amount;
+					}
+					public void setR81_deposit_foreign_amount(BigDecimal r81_deposit_foreign_amount) {
+						this.r81_deposit_foreign_amount = r81_deposit_foreign_amount;
+					}
+					public BigDecimal getR81_total_number() {
+						return r81_total_number;
+					}
+					public void setR81_total_number(BigDecimal r81_total_number) {
+						this.r81_total_number = r81_total_number;
+					}
+					public BigDecimal getR81_total_amount() {
+						return r81_total_amount;
+					}
+					public void setR81_total_amount(BigDecimal r81_total_amount) {
+						this.r81_total_amount = r81_total_amount;
+					}
+					public BigDecimal getR81_total_deposit_bank() {
+						return r81_total_deposit_bank;
+					}
+					public void setR81_total_deposit_bank(BigDecimal r81_total_deposit_bank) {
+						this.r81_total_deposit_bank = r81_total_deposit_bank;
+					}
+					public String getR82_deposit_size() {
+						return r82_deposit_size;
+					}
+					public void setR82_deposit_size(String r82_deposit_size) {
+						this.r82_deposit_size = r82_deposit_size;
+					}
+					public String getR82_deposit_type() {
+						return r82_deposit_type;
+					}
+					public void setR82_deposit_type(String r82_deposit_type) {
+						this.r82_deposit_type = r82_deposit_type;
+					}
+					public BigDecimal getR82_deposit_excluding_number() {
+						return r82_deposit_excluding_number;
+					}
+					public void setR82_deposit_excluding_number(BigDecimal r82_deposit_excluding_number) {
+						this.r82_deposit_excluding_number = r82_deposit_excluding_number;
+					}
+					public BigDecimal getR82_deposit_excluding_amount() {
+						return r82_deposit_excluding_amount;
+					}
+					public void setR82_deposit_excluding_amount(BigDecimal r82_deposit_excluding_amount) {
+						this.r82_deposit_excluding_amount = r82_deposit_excluding_amount;
+					}
+					public BigDecimal getR82_deposit_foreign_number() {
+						return r82_deposit_foreign_number;
+					}
+					public void setR82_deposit_foreign_number(BigDecimal r82_deposit_foreign_number) {
+						this.r82_deposit_foreign_number = r82_deposit_foreign_number;
+					}
+					public BigDecimal getR82_deposit_foreign_amount() {
+						return r82_deposit_foreign_amount;
+					}
+					public void setR82_deposit_foreign_amount(BigDecimal r82_deposit_foreign_amount) {
+						this.r82_deposit_foreign_amount = r82_deposit_foreign_amount;
+					}
+					public BigDecimal getR82_total_number() {
+						return r82_total_number;
+					}
+					public void setR82_total_number(BigDecimal r82_total_number) {
+						this.r82_total_number = r82_total_number;
+					}
+					public BigDecimal getR82_total_amount() {
+						return r82_total_amount;
+					}
+					public void setR82_total_amount(BigDecimal r82_total_amount) {
+						this.r82_total_amount = r82_total_amount;
+					}
+					public BigDecimal getR82_total_deposit_bank() {
+						return r82_total_deposit_bank;
+					}
+					public void setR82_total_deposit_bank(BigDecimal r82_total_deposit_bank) {
+						this.r82_total_deposit_bank = r82_total_deposit_bank;
+					}
+					public String getR83_deposit_size() {
+						return r83_deposit_size;
+					}
+					public void setR83_deposit_size(String r83_deposit_size) {
+						this.r83_deposit_size = r83_deposit_size;
+					}
+					public String getR83_deposit_type() {
+						return r83_deposit_type;
+					}
+					public void setR83_deposit_type(String r83_deposit_type) {
+						this.r83_deposit_type = r83_deposit_type;
+					}
+					public BigDecimal getR83_deposit_excluding_number() {
+						return r83_deposit_excluding_number;
+					}
+					public void setR83_deposit_excluding_number(BigDecimal r83_deposit_excluding_number) {
+						this.r83_deposit_excluding_number = r83_deposit_excluding_number;
+					}
+					public BigDecimal getR83_deposit_excluding_amount() {
+						return r83_deposit_excluding_amount;
+					}
+					public void setR83_deposit_excluding_amount(BigDecimal r83_deposit_excluding_amount) {
+						this.r83_deposit_excluding_amount = r83_deposit_excluding_amount;
+					}
+					public BigDecimal getR83_deposit_foreign_number() {
+						return r83_deposit_foreign_number;
+					}
+					public void setR83_deposit_foreign_number(BigDecimal r83_deposit_foreign_number) {
+						this.r83_deposit_foreign_number = r83_deposit_foreign_number;
+					}
+					public BigDecimal getR83_deposit_foreign_amount() {
+						return r83_deposit_foreign_amount;
+					}
+					public void setR83_deposit_foreign_amount(BigDecimal r83_deposit_foreign_amount) {
+						this.r83_deposit_foreign_amount = r83_deposit_foreign_amount;
+					}
+					public BigDecimal getR83_total_number() {
+						return r83_total_number;
+					}
+					public void setR83_total_number(BigDecimal r83_total_number) {
+						this.r83_total_number = r83_total_number;
+					}
+					public BigDecimal getR83_total_amount() {
+						return r83_total_amount;
+					}
+					public void setR83_total_amount(BigDecimal r83_total_amount) {
+						this.r83_total_amount = r83_total_amount;
+					}
+					public BigDecimal getR83_total_deposit_bank() {
+						return r83_total_deposit_bank;
+					}
+					public void setR83_total_deposit_bank(BigDecimal r83_total_deposit_bank) {
+						this.r83_total_deposit_bank = r83_total_deposit_bank;
+					}
+					public String getR84_deposit_size() {
+						return r84_deposit_size;
+					}
+					public void setR84_deposit_size(String r84_deposit_size) {
+						this.r84_deposit_size = r84_deposit_size;
+					}
+					public String getR84_deposit_type() {
+						return r84_deposit_type;
+					}
+					public void setR84_deposit_type(String r84_deposit_type) {
+						this.r84_deposit_type = r84_deposit_type;
+					}
+					public BigDecimal getR84_deposit_excluding_number() {
+						return r84_deposit_excluding_number;
+					}
+					public void setR84_deposit_excluding_number(BigDecimal r84_deposit_excluding_number) {
+						this.r84_deposit_excluding_number = r84_deposit_excluding_number;
+					}
+					public BigDecimal getR84_deposit_excluding_amount() {
+						return r84_deposit_excluding_amount;
+					}
+					public void setR84_deposit_excluding_amount(BigDecimal r84_deposit_excluding_amount) {
+						this.r84_deposit_excluding_amount = r84_deposit_excluding_amount;
+					}
+					public BigDecimal getR84_deposit_foreign_number() {
+						return r84_deposit_foreign_number;
+					}
+					public void setR84_deposit_foreign_number(BigDecimal r84_deposit_foreign_number) {
+						this.r84_deposit_foreign_number = r84_deposit_foreign_number;
+					}
+					public BigDecimal getR84_deposit_foreign_amount() {
+						return r84_deposit_foreign_amount;
+					}
+					public void setR84_deposit_foreign_amount(BigDecimal r84_deposit_foreign_amount) {
+						this.r84_deposit_foreign_amount = r84_deposit_foreign_amount;
+					}
+					public BigDecimal getR84_total_number() {
+						return r84_total_number;
+					}
+					public void setR84_total_number(BigDecimal r84_total_number) {
+						this.r84_total_number = r84_total_number;
+					}
+					public BigDecimal getR84_total_amount() {
+						return r84_total_amount;
+					}
+					public void setR84_total_amount(BigDecimal r84_total_amount) {
+						this.r84_total_amount = r84_total_amount;
+					}
+					public BigDecimal getR84_total_deposit_bank() {
+						return r84_total_deposit_bank;
+					}
+					public void setR84_total_deposit_bank(BigDecimal r84_total_deposit_bank) {
+						this.r84_total_deposit_bank = r84_total_deposit_bank;
+					}
+					public String getR85_deposit_size() {
+						return r85_deposit_size;
+					}
+					public void setR85_deposit_size(String r85_deposit_size) {
+						this.r85_deposit_size = r85_deposit_size;
+					}
+					public String getR85_deposit_type() {
+						return r85_deposit_type;
+					}
+					public void setR85_deposit_type(String r85_deposit_type) {
+						this.r85_deposit_type = r85_deposit_type;
+					}
+					public BigDecimal getR85_deposit_excluding_number() {
+						return r85_deposit_excluding_number;
+					}
+					public void setR85_deposit_excluding_number(BigDecimal r85_deposit_excluding_number) {
+						this.r85_deposit_excluding_number = r85_deposit_excluding_number;
+					}
+					public BigDecimal getR85_deposit_excluding_amount() {
+						return r85_deposit_excluding_amount;
+					}
+					public void setR85_deposit_excluding_amount(BigDecimal r85_deposit_excluding_amount) {
+						this.r85_deposit_excluding_amount = r85_deposit_excluding_amount;
+					}
+					public BigDecimal getR85_deposit_foreign_number() {
+						return r85_deposit_foreign_number;
+					}
+					public void setR85_deposit_foreign_number(BigDecimal r85_deposit_foreign_number) {
+						this.r85_deposit_foreign_number = r85_deposit_foreign_number;
+					}
+					public BigDecimal getR85_deposit_foreign_amount() {
+						return r85_deposit_foreign_amount;
+					}
+					public void setR85_deposit_foreign_amount(BigDecimal r85_deposit_foreign_amount) {
+						this.r85_deposit_foreign_amount = r85_deposit_foreign_amount;
+					}
+					public BigDecimal getR85_total_number() {
+						return r85_total_number;
+					}
+					public void setR85_total_number(BigDecimal r85_total_number) {
+						this.r85_total_number = r85_total_number;
+					}
+					public BigDecimal getR85_total_amount() {
+						return r85_total_amount;
+					}
+					public void setR85_total_amount(BigDecimal r85_total_amount) {
+						this.r85_total_amount = r85_total_amount;
+					}
+					public BigDecimal getR85_total_deposit_bank() {
+						return r85_total_deposit_bank;
+					}
+					public void setR85_total_deposit_bank(BigDecimal r85_total_deposit_bank) {
+						this.r85_total_deposit_bank = r85_total_deposit_bank;
+					}
+					public String getR86_deposit_size() {
+						return r86_deposit_size;
+					}
+					public void setR86_deposit_size(String r86_deposit_size) {
+						this.r86_deposit_size = r86_deposit_size;
+					}
+					public String getR86_deposit_type() {
+						return r86_deposit_type;
+					}
+					public void setR86_deposit_type(String r86_deposit_type) {
+						this.r86_deposit_type = r86_deposit_type;
+					}
+					public BigDecimal getR86_deposit_excluding_number() {
+						return r86_deposit_excluding_number;
+					}
+					public void setR86_deposit_excluding_number(BigDecimal r86_deposit_excluding_number) {
+						this.r86_deposit_excluding_number = r86_deposit_excluding_number;
+					}
+					public BigDecimal getR86_deposit_excluding_amount() {
+						return r86_deposit_excluding_amount;
+					}
+					public void setR86_deposit_excluding_amount(BigDecimal r86_deposit_excluding_amount) {
+						this.r86_deposit_excluding_amount = r86_deposit_excluding_amount;
+					}
+					public BigDecimal getR86_deposit_foreign_number() {
+						return r86_deposit_foreign_number;
+					}
+					public void setR86_deposit_foreign_number(BigDecimal r86_deposit_foreign_number) {
+						this.r86_deposit_foreign_number = r86_deposit_foreign_number;
+					}
+					public BigDecimal getR86_deposit_foreign_amount() {
+						return r86_deposit_foreign_amount;
+					}
+					public void setR86_deposit_foreign_amount(BigDecimal r86_deposit_foreign_amount) {
+						this.r86_deposit_foreign_amount = r86_deposit_foreign_amount;
+					}
+					public BigDecimal getR86_total_number() {
+						return r86_total_number;
+					}
+					public void setR86_total_number(BigDecimal r86_total_number) {
+						this.r86_total_number = r86_total_number;
+					}
+					public BigDecimal getR86_total_amount() {
+						return r86_total_amount;
+					}
+					public void setR86_total_amount(BigDecimal r86_total_amount) {
+						this.r86_total_amount = r86_total_amount;
+					}
+					public BigDecimal getR86_total_deposit_bank() {
+						return r86_total_deposit_bank;
+					}
+					public void setR86_total_deposit_bank(BigDecimal r86_total_deposit_bank) {
+						this.r86_total_deposit_bank = r86_total_deposit_bank;
+					}
+					public Date getREPORT_DATE() {
+						return REPORT_DATE;
+					}
+
+					public void setREPORT_DATE(Date REPORT_DATE) {
+						this.REPORT_DATE = REPORT_DATE;
+					}
+
+					public BigDecimal getREPORT_VERSION() {
+						return REPORT_VERSION;
+					}
+
+					public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
+						this.REPORT_VERSION = REPORT_VERSION;
+					}
+					public Date getREPORT_RESUBDATE() {
+						return REPORT_RESUBDATE;
+					}
+
+					public void setREPORT_RESUBDATE(Date REPORT_RESUBDATE) {
+						this.REPORT_RESUBDATE = REPORT_RESUBDATE;
+					}
+
+					public String getREPORT_FREQUENCY() {
+						return REPORT_FREQUENCY;
+					}
+
+					public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+						REPORT_FREQUENCY = rEPORT_FREQUENCY;
+					}
+
+					public String getREPORT_CODE() {
+						return REPORT_CODE;
+					}
+
+					public void setREPORT_CODE(String rEPORT_CODE) {
+						REPORT_CODE = rEPORT_CODE;
+					}
+
+					public String getREPORT_DESC() {
+						return REPORT_DESC;
+					}
+
+					public void setREPORT_DESC(String rEPORT_DESC) {
+						REPORT_DESC = rEPORT_DESC;
+					}
+
+					public String getENTITY_FLG() {
+						return ENTITY_FLG;
+					}
+
+					public void setENTITY_FLG(String eNTITY_FLG) {
+						ENTITY_FLG = eNTITY_FLG;
+					}
+
+					public String getMODIFY_FLG() {
+						return MODIFY_FLG;
+					}
+
+					public void setMODIFY_FLG(String mODIFY_FLG) {
+						MODIFY_FLG = mODIFY_FLG;
+					}
+
+					public String getDEL_FLG() {
+						return DEL_FLG;
+					}
+
+					public void setDEL_FLG(String dEL_FLG) {
+						DEL_FLG = dEL_FLG;
+					}
+
+				}
+
+	
+				//ARCHIVAL ENTITY 2
+				
+				// ROW MAPPER
+
+						class MDISB1_RowMapper_Archival2 implements RowMapper<MDISB1_Archival_Summary_Entity2> {
+
+							@Override
+							public MDISB1_Archival_Summary_Entity2 mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+								MDISB1_Archival_Summary_Entity2 obj = new MDISB1_Archival_Summary_Entity2();	
+						
+								obj.setR87_deposit_size(rs.getString("R87_DEPOSIT_SIZE"));
+								obj.setR87_deposit_type(rs.getString("R87_DEPOSIT_TYPE"));
+								obj.setR87_deposit_excluding_number(rs.getBigDecimal("R87_DEPOSIT_EXCLUDING_NUMBER"));
+								obj.setR87_deposit_excluding_amount(rs.getBigDecimal("R87_DEPOSIT_EXCLUDING_AMOUNT"));
+								obj.setR87_deposit_foreign_number(rs.getBigDecimal("R87_DEPOSIT_FOREIGN_NUMBER"));
+								obj.setR87_deposit_foreign_amount(rs.getBigDecimal("R87_DEPOSIT_FOREIGN_AMOUNT"));
+								obj.setR87_total_number(rs.getBigDecimal("R87_TOTAL_NUMBER"));
+								obj.setR87_total_amount(rs.getBigDecimal("R87_TOTAL_AMOUNT"));
+								obj.setR87_total_deposit_bank(rs.getBigDecimal("R87_TOTAL_DEPOSIT_BANK"));
+
+								obj.setR88_deposit_size(rs.getString("R88_DEPOSIT_SIZE"));
+								obj.setR88_deposit_type(rs.getString("R88_DEPOSIT_TYPE"));
+								obj.setR88_deposit_excluding_number(rs.getBigDecimal("R88_DEPOSIT_EXCLUDING_NUMBER"));
+								obj.setR88_deposit_excluding_amount(rs.getBigDecimal("R88_DEPOSIT_EXCLUDING_AMOUNT"));
+								obj.setR88_deposit_foreign_number(rs.getBigDecimal("R88_DEPOSIT_FOREIGN_NUMBER"));
+								obj.setR88_deposit_foreign_amount(rs.getBigDecimal("R88_DEPOSIT_FOREIGN_AMOUNT"));
+								obj.setR88_total_number(rs.getBigDecimal("R88_TOTAL_NUMBER"));
+								obj.setR88_total_amount(rs.getBigDecimal("R88_TOTAL_AMOUNT"));
+								obj.setR88_total_deposit_bank(rs.getBigDecimal("R88_TOTAL_DEPOSIT_BANK"));
+
+								obj.setR89_deposit_size(rs.getString("R89_DEPOSIT_SIZE"));
+								obj.setR89_deposit_type(rs.getString("R89_DEPOSIT_TYPE"));
+								obj.setR89_deposit_excluding_number(rs.getBigDecimal("R89_DEPOSIT_EXCLUDING_NUMBER"));
+								obj.setR89_deposit_excluding_amount(rs.getBigDecimal("R89_DEPOSIT_EXCLUDING_AMOUNT"));
+								obj.setR89_deposit_foreign_number(rs.getBigDecimal("R89_DEPOSIT_FOREIGN_NUMBER"));
+								obj.setR89_deposit_foreign_amount(rs.getBigDecimal("R89_DEPOSIT_FOREIGN_AMOUNT"));
+								obj.setR89_total_number(rs.getBigDecimal("R89_TOTAL_NUMBER"));
+								obj.setR89_total_amount(rs.getBigDecimal("R89_TOTAL_AMOUNT"));
+								obj.setR89_total_deposit_bank(rs.getBigDecimal("R89_TOTAL_DEPOSIT_BANK"));
+
+								obj.setR90_deposit_size(rs.getString("R90_DEPOSIT_SIZE"));
+								obj.setR90_deposit_type(rs.getString("R90_DEPOSIT_TYPE"));
+								obj.setR90_deposit_excluding_number(rs.getBigDecimal("R90_DEPOSIT_EXCLUDING_NUMBER"));
+								obj.setR90_deposit_excluding_amount(rs.getBigDecimal("R90_DEPOSIT_EXCLUDING_AMOUNT"));
+								obj.setR90_deposit_foreign_number(rs.getBigDecimal("R90_DEPOSIT_FOREIGN_NUMBER"));
+								obj.setR90_deposit_foreign_amount(rs.getBigDecimal("R90_DEPOSIT_FOREIGN_AMOUNT"));
+								obj.setR90_total_number(rs.getBigDecimal("R90_TOTAL_NUMBER"));
+								obj.setR90_total_amount(rs.getBigDecimal("R90_TOTAL_AMOUNT"));
+								obj.setR90_total_deposit_bank(rs.getBigDecimal("R90_TOTAL_DEPOSIT_BANK"));
+
+								obj.setR91_deposit_size(rs.getString("R91_DEPOSIT_SIZE"));
+								obj.setR91_deposit_type(rs.getString("R91_DEPOSIT_TYPE"));
+								obj.setR91_deposit_excluding_number(rs.getBigDecimal("R91_DEPOSIT_EXCLUDING_NUMBER"));
+								obj.setR91_deposit_excluding_amount(rs.getBigDecimal("R91_DEPOSIT_EXCLUDING_AMOUNT"));
+								obj.setR91_deposit_foreign_number(rs.getBigDecimal("R91_DEPOSIT_FOREIGN_NUMBER"));
+								obj.setR91_deposit_foreign_amount(rs.getBigDecimal("R91_DEPOSIT_FOREIGN_AMOUNT"));
+								obj.setR91_total_number(rs.getBigDecimal("R91_TOTAL_NUMBER"));
+								obj.setR91_total_amount(rs.getBigDecimal("R91_TOTAL_AMOUNT"));
+								obj.setR91_total_deposit_bank(rs.getBigDecimal("R91_TOTAL_DEPOSIT_BANK"));
+
+								obj.setR92_deposit_size(rs.getString("R92_DEPOSIT_SIZE"));
+								obj.setR92_deposit_type(rs.getString("R92_DEPOSIT_TYPE"));
+								obj.setR92_deposit_excluding_number(rs.getBigDecimal("R92_DEPOSIT_EXCLUDING_NUMBER"));
+								obj.setR92_deposit_excluding_amount(rs.getBigDecimal("R92_DEPOSIT_EXCLUDING_AMOUNT"));
+								obj.setR92_deposit_foreign_number(rs.getBigDecimal("R92_DEPOSIT_FOREIGN_NUMBER"));
+								obj.setR92_deposit_foreign_amount(rs.getBigDecimal("R92_DEPOSIT_FOREIGN_AMOUNT"));
+								obj.setR92_total_number(rs.getBigDecimal("R92_TOTAL_NUMBER"));
+								obj.setR92_total_amount(rs.getBigDecimal("R92_TOTAL_AMOUNT"));
+								obj.setR92_total_deposit_bank(rs.getBigDecimal("R92_TOTAL_DEPOSIT_BANK"));
+
+								obj.setR93_deposit_size(rs.getString("R93_DEPOSIT_SIZE"));
+								obj.setR93_deposit_type(rs.getString("R93_DEPOSIT_TYPE"));
+								obj.setR93_deposit_excluding_number(rs.getBigDecimal("R93_DEPOSIT_EXCLUDING_NUMBER"));
+								obj.setR93_deposit_excluding_amount(rs.getBigDecimal("R93_DEPOSIT_EXCLUDING_AMOUNT"));
+								obj.setR93_deposit_foreign_number(rs.getBigDecimal("R93_DEPOSIT_FOREIGN_NUMBER"));
+								obj.setR93_deposit_foreign_amount(rs.getBigDecimal("R93_DEPOSIT_FOREIGN_AMOUNT"));
+								obj.setR93_total_number(rs.getBigDecimal("R93_TOTAL_NUMBER"));
+								obj.setR93_total_amount(rs.getBigDecimal("R93_TOTAL_AMOUNT"));
+								obj.setR93_total_deposit_bank(rs.getBigDecimal("R93_TOTAL_DEPOSIT_BANK"));
+
+								obj.setR94_deposit_size(rs.getString("R94_DEPOSIT_SIZE"));
+								obj.setR94_deposit_type(rs.getString("R94_DEPOSIT_TYPE"));
+								obj.setR94_deposit_excluding_number(rs.getBigDecimal("R94_DEPOSIT_EXCLUDING_NUMBER"));
+								obj.setR94_deposit_excluding_amount(rs.getBigDecimal("R94_DEPOSIT_EXCLUDING_AMOUNT"));
+								obj.setR94_deposit_foreign_number(rs.getBigDecimal("R94_DEPOSIT_FOREIGN_NUMBER"));
+								obj.setR94_deposit_foreign_amount(rs.getBigDecimal("R94_DEPOSIT_FOREIGN_AMOUNT"));
+								obj.setR94_total_number(rs.getBigDecimal("R94_TOTAL_NUMBER"));
+								obj.setR94_total_amount(rs.getBigDecimal("R94_TOTAL_AMOUNT"));
+								obj.setR94_total_deposit_bank(rs.getBigDecimal("R94_TOTAL_DEPOSIT_BANK"));
+
+								obj.setR95_deposit_size(rs.getString("R95_DEPOSIT_SIZE"));
+								obj.setR95_deposit_type(rs.getString("R95_DEPOSIT_TYPE"));
+								obj.setR95_deposit_excluding_number(rs.getBigDecimal("R95_DEPOSIT_EXCLUDING_NUMBER"));
+								obj.setR95_deposit_excluding_amount(rs.getBigDecimal("R95_DEPOSIT_EXCLUDING_AMOUNT"));
+								obj.setR95_deposit_foreign_number(rs.getBigDecimal("R95_DEPOSIT_FOREIGN_NUMBER"));
+								obj.setR95_deposit_foreign_amount(rs.getBigDecimal("R95_DEPOSIT_FOREIGN_AMOUNT"));
+								obj.setR95_total_number(rs.getBigDecimal("R95_TOTAL_NUMBER"));
+								obj.setR95_total_amount(rs.getBigDecimal("R95_TOTAL_AMOUNT"));
+								obj.setR95_total_deposit_bank(rs.getBigDecimal("R95_TOTAL_DEPOSIT_BANK"));
+
+								obj.setR96_deposit_size(rs.getString("R96_DEPOSIT_SIZE"));
+								obj.setR96_deposit_type(rs.getString("R96_DEPOSIT_TYPE"));
+								obj.setR96_deposit_excluding_number(rs.getBigDecimal("R96_DEPOSIT_EXCLUDING_NUMBER"));
+								obj.setR96_deposit_excluding_amount(rs.getBigDecimal("R96_DEPOSIT_EXCLUDING_AMOUNT"));
+								obj.setR96_deposit_foreign_number(rs.getBigDecimal("R96_DEPOSIT_FOREIGN_NUMBER"));
+								obj.setR96_deposit_foreign_amount(rs.getBigDecimal("R96_DEPOSIT_FOREIGN_AMOUNT"));
+								obj.setR96_total_number(rs.getBigDecimal("R96_TOTAL_NUMBER"));
+								obj.setR96_total_amount(rs.getBigDecimal("R96_TOTAL_AMOUNT"));
+								obj.setR96_total_deposit_bank(rs.getBigDecimal("R96_TOTAL_DEPOSIT_BANK"));
+
+								obj.setR97_deposit_size(rs.getString("R97_DEPOSIT_SIZE"));
+								obj.setR97_deposit_type(rs.getString("R97_DEPOSIT_TYPE"));
+								obj.setR97_deposit_excluding_number(rs.getBigDecimal("R97_DEPOSIT_EXCLUDING_NUMBER"));
+								obj.setR97_deposit_excluding_amount(rs.getBigDecimal("R97_DEPOSIT_EXCLUDING_AMOUNT"));
+								obj.setR97_deposit_foreign_number(rs.getBigDecimal("R97_DEPOSIT_FOREIGN_NUMBER"));
+								obj.setR97_deposit_foreign_amount(rs.getBigDecimal("R97_DEPOSIT_FOREIGN_AMOUNT"));
+								obj.setR97_total_number(rs.getBigDecimal("R97_TOTAL_NUMBER"));
+								obj.setR97_total_amount(rs.getBigDecimal("R97_TOTAL_AMOUNT"));
+								obj.setR97_total_deposit_bank(rs.getBigDecimal("R97_TOTAL_DEPOSIT_BANK"));
+								
+								obj.setR98_deposit_size(rs.getString("R98_DEPOSIT_SIZE"));
+								obj.setR98_deposit_type(rs.getString("R98_DEPOSIT_TYPE"));
+								obj.setR98_deposit_excluding_number(rs.getBigDecimal("R98_DEPOSIT_EXCLUDING_NUMBER"));
+								obj.setR98_deposit_excluding_amount(rs.getBigDecimal("R98_DEPOSIT_EXCLUDING_AMOUNT"));
+								obj.setR98_deposit_foreign_number(rs.getBigDecimal("R98_DEPOSIT_FOREIGN_NUMBER"));
+								obj.setR98_deposit_foreign_amount(rs.getBigDecimal("R98_DEPOSIT_FOREIGN_AMOUNT"));
+								obj.setR98_total_number(rs.getBigDecimal("R98_TOTAL_NUMBER"));
+								obj.setR98_total_amount(rs.getBigDecimal("R98_TOTAL_AMOUNT"));
+								obj.setR98_total_deposit_bank(rs.getBigDecimal("R98_TOTAL_DEPOSIT_BANK"));
+
+								obj.setR99_deposit_size(rs.getString("R99_DEPOSIT_SIZE"));
+								obj.setR99_deposit_type(rs.getString("R99_DEPOSIT_TYPE"));
+								obj.setR99_deposit_excluding_number(rs.getBigDecimal("R99_DEPOSIT_EXCLUDING_NUMBER"));
+								obj.setR99_deposit_excluding_amount(rs.getBigDecimal("R99_DEPOSIT_EXCLUDING_AMOUNT"));
+								obj.setR99_deposit_foreign_number(rs.getBigDecimal("R99_DEPOSIT_FOREIGN_NUMBER"));
+								obj.setR99_deposit_foreign_amount(rs.getBigDecimal("R99_DEPOSIT_FOREIGN_AMOUNT"));
+								obj.setR99_total_number(rs.getBigDecimal("R99_TOTAL_NUMBER"));
+								obj.setR99_total_amount(rs.getBigDecimal("R99_TOTAL_AMOUNT"));
+								obj.setR99_total_deposit_bank(rs.getBigDecimal("R99_TOTAL_DEPOSIT_BANK"));
+
+								obj.setR100_deposit_size(rs.getString("R100_DEPOSIT_SIZE"));
+								obj.setR100_deposit_type(rs.getString("R100_DEPOSIT_TYPE"));
+								obj.setR100_deposit_excluding_number(rs.getBigDecimal("R100_DEPOSIT_EXCLUDING_NUMBER"));
+								obj.setR100_deposit_excluding_amount(rs.getBigDecimal("R100_DEPOSIT_EXCLUDING_AMOUNT"));
+								obj.setR100_deposit_foreign_number(rs.getBigDecimal("R100_DEPOSIT_FOREIGN_NUMBER"));
+								obj.setR100_deposit_foreign_amount(rs.getBigDecimal("R100_DEPOSIT_FOREIGN_AMOUNT"));
+								obj.setR100_total_number(rs.getBigDecimal("R100_TOTAL_NUMBER"));
+								obj.setR100_total_amount(rs.getBigDecimal("R100_TOTAL_AMOUNT"));
+								obj.setR100_total_deposit_bank(rs.getBigDecimal("R100_TOTAL_DEPOSIT_BANK"));
+
+								obj.setR101_deposit_size(rs.getString("R101_DEPOSIT_SIZE"));
+								obj.setR101_deposit_type(rs.getString("R101_DEPOSIT_TYPE"));
+								obj.setR101_deposit_excluding_number(rs.getBigDecimal("R101_DEPOSIT_EXCLUDING_NUMBER"));
+								obj.setR101_deposit_excluding_amount(rs.getBigDecimal("R101_DEPOSIT_EXCLUDING_AMOUNT"));
+								obj.setR101_deposit_foreign_number(rs.getBigDecimal("R101_DEPOSIT_FOREIGN_NUMBER"));
+								obj.setR101_deposit_foreign_amount(rs.getBigDecimal("R101_DEPOSIT_FOREIGN_AMOUNT"));
+								obj.setR101_total_number(rs.getBigDecimal("R101_TOTAL_NUMBER"));
+								obj.setR101_total_amount(rs.getBigDecimal("R101_TOTAL_AMOUNT"));
+								obj.setR101_total_deposit_bank(rs.getBigDecimal("R101_TOTAL_DEPOSIT_BANK"));
+
+								obj.setR102_deposit_size(rs.getString("R102_DEPOSIT_SIZE"));
+								obj.setR102_deposit_type(rs.getString("R102_DEPOSIT_TYPE"));
+								obj.setR102_deposit_excluding_number(rs.getBigDecimal("R102_DEPOSIT_EXCLUDING_NUMBER"));
+								obj.setR102_deposit_excluding_amount(rs.getBigDecimal("R102_DEPOSIT_EXCLUDING_AMOUNT"));
+								obj.setR102_deposit_foreign_number(rs.getBigDecimal("R102_DEPOSIT_FOREIGN_NUMBER"));
+								obj.setR102_deposit_foreign_amount(rs.getBigDecimal("R102_DEPOSIT_FOREIGN_AMOUNT"));
+								obj.setR102_total_number(rs.getBigDecimal("R102_TOTAL_NUMBER"));
+								obj.setR102_total_amount(rs.getBigDecimal("R102_TOTAL_AMOUNT"));
+								obj.setR102_total_deposit_bank(rs.getBigDecimal("R102_TOTAL_DEPOSIT_BANK"));
+
+								obj.setR103_deposit_size(rs.getString("R103_DEPOSIT_SIZE"));
+								obj.setR103_deposit_type(rs.getString("R103_DEPOSIT_TYPE"));
+								obj.setR103_deposit_excluding_number(rs.getBigDecimal("R103_DEPOSIT_EXCLUDING_NUMBER"));
+								obj.setR103_deposit_excluding_amount(rs.getBigDecimal("R103_DEPOSIT_EXCLUDING_AMOUNT"));
+								obj.setR103_deposit_foreign_number(rs.getBigDecimal("R103_DEPOSIT_FOREIGN_NUMBER"));
+								obj.setR103_deposit_foreign_amount(rs.getBigDecimal("R103_DEPOSIT_FOREIGN_AMOUNT"));
+								obj.setR103_total_number(rs.getBigDecimal("R103_TOTAL_NUMBER"));
+								obj.setR103_total_amount(rs.getBigDecimal("R103_TOTAL_AMOUNT"));
+								obj.setR103_total_deposit_bank(rs.getBigDecimal("R103_TOTAL_DEPOSIT_BANK"));
+
+								obj.setR104_deposit_size(rs.getString("R104_DEPOSIT_SIZE"));
+								obj.setR104_deposit_type(rs.getString("R104_DEPOSIT_TYPE"));
+								obj.setR104_deposit_excluding_number(rs.getBigDecimal("R104_DEPOSIT_EXCLUDING_NUMBER"));
+								obj.setR104_deposit_excluding_amount(rs.getBigDecimal("R104_DEPOSIT_EXCLUDING_AMOUNT"));
+								obj.setR104_deposit_foreign_number(rs.getBigDecimal("R104_DEPOSIT_FOREIGN_NUMBER"));
+								obj.setR104_deposit_foreign_amount(rs.getBigDecimal("R104_DEPOSIT_FOREIGN_AMOUNT"));
+								obj.setR104_total_number(rs.getBigDecimal("R104_TOTAL_NUMBER"));
+								obj.setR104_total_amount(rs.getBigDecimal("R104_TOTAL_AMOUNT"));
+								obj.setR104_total_deposit_bank(rs.getBigDecimal("R104_TOTAL_DEPOSIT_BANK"));
+
+								obj.setR105_deposit_size(rs.getString("R105_DEPOSIT_SIZE"));
+								obj.setR105_deposit_type(rs.getString("R105_DEPOSIT_TYPE"));
+								obj.setR105_deposit_excluding_number(rs.getBigDecimal("R105_DEPOSIT_EXCLUDING_NUMBER"));
+								obj.setR105_deposit_excluding_amount(rs.getBigDecimal("R105_DEPOSIT_EXCLUDING_AMOUNT"));
+								obj.setR105_deposit_foreign_number(rs.getBigDecimal("R105_DEPOSIT_FOREIGN_NUMBER"));
+								obj.setR105_deposit_foreign_amount(rs.getBigDecimal("R105_DEPOSIT_FOREIGN_AMOUNT"));
+								obj.setR105_total_number(rs.getBigDecimal("R105_TOTAL_NUMBER"));
+								obj.setR105_total_amount(rs.getBigDecimal("R105_TOTAL_AMOUNT"));
+								obj.setR105_total_deposit_bank(rs.getBigDecimal("R105_TOTAL_DEPOSIT_BANK"));
+
+								obj.setR106_deposit_size(rs.getString("R106_DEPOSIT_SIZE"));
+								obj.setR106_deposit_type(rs.getString("R106_DEPOSIT_TYPE"));
+								obj.setR106_deposit_excluding_number(rs.getBigDecimal("R106_DEPOSIT_EXCLUDING_NUMBER"));
+								obj.setR106_deposit_excluding_amount(rs.getBigDecimal("R106_DEPOSIT_EXCLUDING_AMOUNT"));
+								obj.setR106_deposit_foreign_number(rs.getBigDecimal("R106_DEPOSIT_FOREIGN_NUMBER"));
+								obj.setR106_deposit_foreign_amount(rs.getBigDecimal("R106_DEPOSIT_FOREIGN_AMOUNT"));
+								obj.setR106_total_number(rs.getBigDecimal("R106_TOTAL_NUMBER"));
+								obj.setR106_total_amount(rs.getBigDecimal("R106_TOTAL_AMOUNT"));
+								obj.setR106_total_deposit_bank(rs.getBigDecimal("R106_TOTAL_DEPOSIT_BANK"));
+
+								obj.setR107_deposit_size(rs.getString("R107_DEPOSIT_SIZE"));
+								obj.setR107_deposit_type(rs.getString("R107_DEPOSIT_TYPE"));
+								obj.setR107_deposit_excluding_number(rs.getBigDecimal("R107_DEPOSIT_EXCLUDING_NUMBER"));
+								obj.setR107_deposit_excluding_amount(rs.getBigDecimal("R107_DEPOSIT_EXCLUDING_AMOUNT"));
+								obj.setR107_deposit_foreign_number(rs.getBigDecimal("R107_DEPOSIT_FOREIGN_NUMBER"));
+								obj.setR107_deposit_foreign_amount(rs.getBigDecimal("R107_DEPOSIT_FOREIGN_AMOUNT"));
+								obj.setR107_total_number(rs.getBigDecimal("R107_TOTAL_NUMBER"));
+								obj.setR107_total_amount(rs.getBigDecimal("R107_TOTAL_AMOUNT"));
+								obj.setR107_total_deposit_bank(rs.getBigDecimal("R107_TOTAL_DEPOSIT_BANK"));
+
+								obj.setR108_deposit_size(rs.getString("R108_DEPOSIT_SIZE"));
+								obj.setR108_deposit_type(rs.getString("R108_DEPOSIT_TYPE"));
+								obj.setR108_deposit_excluding_number(rs.getBigDecimal("R108_DEPOSIT_EXCLUDING_NUMBER"));
+								obj.setR108_deposit_excluding_amount(rs.getBigDecimal("R108_DEPOSIT_EXCLUDING_AMOUNT"));
+								obj.setR108_deposit_foreign_number(rs.getBigDecimal("R108_DEPOSIT_FOREIGN_NUMBER"));
+								obj.setR108_deposit_foreign_amount(rs.getBigDecimal("R108_DEPOSIT_FOREIGN_AMOUNT"));
+								obj.setR108_total_number(rs.getBigDecimal("R108_TOTAL_NUMBER"));
+								obj.setR108_total_amount(rs.getBigDecimal("R108_TOTAL_AMOUNT"));
+								obj.setR108_total_deposit_bank(rs.getBigDecimal("R108_TOTAL_DEPOSIT_BANK"));
+
+								obj.setR109_deposit_size(rs.getString("R109_DEPOSIT_SIZE"));
+								obj.setR109_deposit_type(rs.getString("R109_DEPOSIT_TYPE"));
+								obj.setR109_deposit_excluding_number(rs.getBigDecimal("R109_DEPOSIT_EXCLUDING_NUMBER"));
+								obj.setR109_deposit_excluding_amount(rs.getBigDecimal("R109_DEPOSIT_EXCLUDING_AMOUNT"));
+								obj.setR109_deposit_foreign_number(rs.getBigDecimal("R109_DEPOSIT_FOREIGN_NUMBER"));
+								obj.setR109_deposit_foreign_amount(rs.getBigDecimal("R109_DEPOSIT_FOREIGN_AMOUNT"));
+								obj.setR109_total_number(rs.getBigDecimal("R109_TOTAL_NUMBER"));
+								obj.setR109_total_amount(rs.getBigDecimal("R109_TOTAL_AMOUNT"));
+								obj.setR109_total_deposit_bank(rs.getBigDecimal("R109_TOTAL_DEPOSIT_BANK"));
+
+								obj.setR110_deposit_size(rs.getString("R110_DEPOSIT_SIZE"));
+								obj.setR110_deposit_type(rs.getString("R110_DEPOSIT_TYPE"));
+								obj.setR110_deposit_excluding_number(rs.getBigDecimal("R110_DEPOSIT_EXCLUDING_NUMBER"));
+								obj.setR110_deposit_excluding_amount(rs.getBigDecimal("R110_DEPOSIT_EXCLUDING_AMOUNT"));
+								obj.setR110_deposit_foreign_number(rs.getBigDecimal("R110_DEPOSIT_FOREIGN_NUMBER"));
+								obj.setR110_deposit_foreign_amount(rs.getBigDecimal("R110_DEPOSIT_FOREIGN_AMOUNT"));
+								obj.setR110_total_number(rs.getBigDecimal("R110_TOTAL_NUMBER"));
+								obj.setR110_total_amount(rs.getBigDecimal("R110_TOTAL_AMOUNT"));
+								obj.setR110_total_deposit_bank(rs.getBigDecimal("R110_TOTAL_DEPOSIT_BANK"));
+
+								obj.setR111_deposit_size(rs.getString("R111_DEPOSIT_SIZE"));
+								obj.setR111_deposit_type(rs.getString("R111_DEPOSIT_TYPE"));
+								obj.setR111_deposit_excluding_number(rs.getBigDecimal("R111_DEPOSIT_EXCLUDING_NUMBER"));
+								obj.setR111_deposit_excluding_amount(rs.getBigDecimal("R111_DEPOSIT_EXCLUDING_AMOUNT"));
+								obj.setR111_deposit_foreign_number(rs.getBigDecimal("R111_DEPOSIT_FOREIGN_NUMBER"));
+								obj.setR111_deposit_foreign_amount(rs.getBigDecimal("R111_DEPOSIT_FOREIGN_AMOUNT"));
+								obj.setR111_total_number(rs.getBigDecimal("R111_TOTAL_NUMBER"));
+								obj.setR111_total_amount(rs.getBigDecimal("R111_TOTAL_AMOUNT"));
+								obj.setR111_total_deposit_bank(rs.getBigDecimal("R111_TOTAL_DEPOSIT_BANK"));
+				
+								// =========================
+						        // COMMON FIELDS
+						        // =========================
+						        obj.setREPORT_DATE(rs.getDate("report_date"));
+						        obj.setREPORT_VERSION(rs.getBigDecimal("report_version"));
+						        obj.setREPORT_RESUBDATE(rs.getDate("REPORT_RESUBDATE"));
+						        obj.setREPORT_FREQUENCY(rs.getString("report_frequency"));
+						        obj.setREPORT_CODE(rs.getString("report_code"));
+						        obj.setREPORT_DESC(rs.getString("report_desc"));
+
+						        obj.setENTITY_FLG(rs.getString("entity_flg"));
+						        obj.setMODIFY_FLG(rs.getString("modify_flg"));
+						        obj.setDEL_FLG(rs.getString("del_flg"));
+
+
+						        return obj;
+						    }
+						}
+
+
+				
+				public static class MDISB1_Archival_Summary_Entity2 {
+					
+					// R87
+					@Column(name = "R87_DEPOSIT_SIZE")
+					private String r87_deposit_size;
+
+					@Column(name = "R87_DEPOSIT_TYPE")
+					private String r87_deposit_type;
+
+					@Column(name = "R87_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r87_deposit_excluding_number;
+
+					@Column(name = "R87_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r87_deposit_excluding_amount;
+
+					@Column(name = "R87_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r87_deposit_foreign_number;
+
+					@Column(name = "R87_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r87_deposit_foreign_amount;
+
+					@Column(name = "R87_TOTAL_NUMBER")
+					private BigDecimal r87_total_number;
+
+					@Column(name = "R87_TOTAL_AMOUNT")
+					private BigDecimal r87_total_amount;
+
+					@Column(name = "R87_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r87_total_deposit_bank;
+
+					// R88
+					@Column(name = "R88_DEPOSIT_SIZE")
+					private String r88_deposit_size;
+
+					@Column(name = "R88_DEPOSIT_TYPE")
+					private String r88_deposit_type;
+
+					@Column(name = "R88_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r88_deposit_excluding_number;
+
+					@Column(name = "R88_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r88_deposit_excluding_amount;
+
+					@Column(name = "R88_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r88_deposit_foreign_number;
+
+					@Column(name = "R88_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r88_deposit_foreign_amount;
+
+					@Column(name = "R88_TOTAL_NUMBER")
+					private BigDecimal r88_total_number;
+
+					@Column(name = "R88_TOTAL_AMOUNT")
+					private BigDecimal r88_total_amount;
+
+					@Column(name = "R88_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r88_total_deposit_bank;
+
+					// R89
+					@Column(name = "R89_DEPOSIT_SIZE")
+					private String r89_deposit_size;
+
+					@Column(name = "R89_DEPOSIT_TYPE")
+					private String r89_deposit_type;
+
+					@Column(name = "R89_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r89_deposit_excluding_number;
+
+					@Column(name = "R89_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r89_deposit_excluding_amount;
+
+					@Column(name = "R89_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r89_deposit_foreign_number;
+
+					@Column(name = "R89_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r89_deposit_foreign_amount;
+
+					@Column(name = "R89_TOTAL_NUMBER")
+					private BigDecimal r89_total_number;
+
+					@Column(name = "R89_TOTAL_AMOUNT")
+					private BigDecimal r89_total_amount;
+
+					@Column(name = "R89_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r89_total_deposit_bank;
+
+					// R90
+					@Column(name = "R90_DEPOSIT_SIZE")
+					private String r90_deposit_size;
+
+					@Column(name = "R90_DEPOSIT_TYPE")
+					private String r90_deposit_type;
+
+					@Column(name = "R90_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r90_deposit_excluding_number;
+
+					@Column(name = "R90_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r90_deposit_excluding_amount;
+
+					@Column(name = "R90_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r90_deposit_foreign_number;
+
+					@Column(name = "R90_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r90_deposit_foreign_amount;
+
+					@Column(name = "R90_TOTAL_NUMBER")
+					private BigDecimal r90_total_number;
+
+					@Column(name = "R90_TOTAL_AMOUNT")
+					private BigDecimal r90_total_amount;
+
+					@Column(name = "R90_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r90_total_deposit_bank;
+
+					// R91
+					@Column(name = "R91_DEPOSIT_SIZE")
+					private String r91_deposit_size;
+
+					@Column(name = "R91_DEPOSIT_TYPE")
+					private String r91_deposit_type;
+
+					@Column(name = "R91_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r91_deposit_excluding_number;
+
+					@Column(name = "R91_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r91_deposit_excluding_amount;
+
+					@Column(name = "R91_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r91_deposit_foreign_number;
+
+					@Column(name = "R91_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r91_deposit_foreign_amount;
+
+					@Column(name = "R91_TOTAL_NUMBER")
+					private BigDecimal r91_total_number;
+
+					@Column(name = "R91_TOTAL_AMOUNT")
+					private BigDecimal r91_total_amount;
+
+					@Column(name = "R91_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r91_total_deposit_bank;
+
+					// R92
+					@Column(name = "R92_DEPOSIT_SIZE")
+					private String r92_deposit_size;
+
+					@Column(name = "R92_DEPOSIT_TYPE")
+					private String r92_deposit_type;
+
+					@Column(name = "R92_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r92_deposit_excluding_number;
+
+					@Column(name = "R92_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r92_deposit_excluding_amount;
+
+					@Column(name = "R92_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r92_deposit_foreign_number;
+
+					@Column(name = "R92_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r92_deposit_foreign_amount;
+
+					@Column(name = "R92_TOTAL_NUMBER")
+					private BigDecimal r92_total_number;
+
+					@Column(name = "R92_TOTAL_AMOUNT")
+					private BigDecimal r92_total_amount;
+
+					@Column(name = "R92_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r92_total_deposit_bank;
+
+					// R93
+					@Column(name = "R93_DEPOSIT_SIZE")
+					private String r93_deposit_size;
+
+					@Column(name = "R93_DEPOSIT_TYPE")
+					private String r93_deposit_type;
+
+					@Column(name = "R93_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r93_deposit_excluding_number;
+
+					@Column(name = "R93_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r93_deposit_excluding_amount;
+
+					@Column(name = "R93_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r93_deposit_foreign_number;
+
+					@Column(name = "R93_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r93_deposit_foreign_amount;
+
+					@Column(name = "R93_TOTAL_NUMBER")
+					private BigDecimal r93_total_number;
+
+					@Column(name = "R93_TOTAL_AMOUNT")
+					private BigDecimal r93_total_amount;
+
+					@Column(name = "R93_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r93_total_deposit_bank;
+
+					// R94
+					@Column(name = "R94_DEPOSIT_SIZE")
+					private String r94_deposit_size;
+
+					@Column(name = "R94_DEPOSIT_TYPE")
+					private String r94_deposit_type;
+
+					@Column(name = "R94_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r94_deposit_excluding_number;
+
+					@Column(name = "R94_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r94_deposit_excluding_amount;
+
+					@Column(name = "R94_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r94_deposit_foreign_number;
+
+					@Column(name = "R94_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r94_deposit_foreign_amount;
+
+					@Column(name = "R94_TOTAL_NUMBER")
+					private BigDecimal r94_total_number;
+
+					@Column(name = "R94_TOTAL_AMOUNT")
+					private BigDecimal r94_total_amount;
+
+					@Column(name = "R94_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r94_total_deposit_bank;
+
+					// R95
+					@Column(name = "R95_DEPOSIT_SIZE")
+					private String r95_deposit_size;
+
+					@Column(name = "R95_DEPOSIT_TYPE")
+					private String r95_deposit_type;
+
+					@Column(name = "R95_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r95_deposit_excluding_number;
+
+					@Column(name = "R95_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r95_deposit_excluding_amount;
+
+					@Column(name = "R95_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r95_deposit_foreign_number;
+
+					@Column(name = "R95_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r95_deposit_foreign_amount;
+
+					@Column(name = "R95_TOTAL_NUMBER")
+					private BigDecimal r95_total_number;
+
+					@Column(name = "R95_TOTAL_AMOUNT")
+					private BigDecimal r95_total_amount;
+
+					@Column(name = "R95_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r95_total_deposit_bank;
+
+					// R96
+					@Column(name = "R96_DEPOSIT_SIZE")
+					private String r96_deposit_size;
+
+					@Column(name = "R96_DEPOSIT_TYPE")
+					private String r96_deposit_type;
+
+					@Column(name = "R96_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r96_deposit_excluding_number;
+
+					@Column(name = "R96_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r96_deposit_excluding_amount;
+
+					@Column(name = "R96_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r96_deposit_foreign_number;
+
+					@Column(name = "R96_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r96_deposit_foreign_amount;
+
+					@Column(name = "R96_TOTAL_NUMBER")
+					private BigDecimal r96_total_number;
+
+					@Column(name = "R96_TOTAL_AMOUNT")
+					private BigDecimal r96_total_amount;
+
+					@Column(name = "R96_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r96_total_deposit_bank;
+
+					// R97
+					@Column(name = "R97_DEPOSIT_SIZE")
+					private String r97_deposit_size;
+
+					@Column(name = "R97_DEPOSIT_TYPE")
+					private String r97_deposit_type;
+
+					@Column(name = "R97_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r97_deposit_excluding_number;
+
+					@Column(name = "R97_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r97_deposit_excluding_amount;
+
+					@Column(name = "R97_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r97_deposit_foreign_number;
+
+					@Column(name = "R97_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r97_deposit_foreign_amount;
+
+					@Column(name = "R97_TOTAL_NUMBER")
+					private BigDecimal r97_total_number;
+
+					@Column(name = "R97_TOTAL_AMOUNT")
+					private BigDecimal r97_total_amount;
+
+					@Column(name = "R97_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r97_total_deposit_bank;
+					
+					// R98
+					@Column(name = "R98_DEPOSIT_SIZE")
+					private String r98_deposit_size;
+
+					@Column(name = "R98_DEPOSIT_TYPE")
+					private String r98_deposit_type;
+
+					@Column(name = "R98_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r98_deposit_excluding_number;
+
+					@Column(name = "R98_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r98_deposit_excluding_amount;
+
+					@Column(name = "R98_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r98_deposit_foreign_number;
+
+					@Column(name = "R98_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r98_deposit_foreign_amount;
+
+					@Column(name = "R98_TOTAL_NUMBER")
+					private BigDecimal r98_total_number;
+
+					@Column(name = "R98_TOTAL_AMOUNT")
+					private BigDecimal r98_total_amount;
+
+					@Column(name = "R98_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r98_total_deposit_bank;
+
+					// R99
+					@Column(name = "R99_DEPOSIT_SIZE")
+					private String r99_deposit_size;
+
+					@Column(name = "R99_DEPOSIT_TYPE")
+					private String r99_deposit_type;
+
+					@Column(name = "R99_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r99_deposit_excluding_number;
+
+					@Column(name = "R99_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r99_deposit_excluding_amount;
+
+					@Column(name = "R99_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r99_deposit_foreign_number;
+
+					@Column(name = "R99_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r99_deposit_foreign_amount;
+
+					@Column(name = "R99_TOTAL_NUMBER")
+					private BigDecimal r99_total_number;
+
+					@Column(name = "R99_TOTAL_AMOUNT")
+					private BigDecimal r99_total_amount;
+
+					@Column(name = "R99_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r99_total_deposit_bank;
+
+					// R100
+					@Column(name = "R100_DEPOSIT_SIZE")
+					private String r100_deposit_size;
+
+					@Column(name = "R100_DEPOSIT_TYPE")
+					private String r100_deposit_type;
+
+					@Column(name = "R100_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r100_deposit_excluding_number;
+
+					@Column(name = "R100_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r100_deposit_excluding_amount;
+
+					@Column(name = "R100_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r100_deposit_foreign_number;
+
+					@Column(name = "R100_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r100_deposit_foreign_amount;
+
+					@Column(name = "R100_TOTAL_NUMBER")
+					private BigDecimal r100_total_number;
+
+					@Column(name = "R100_TOTAL_AMOUNT")
+					private BigDecimal r100_total_amount;
+
+					@Column(name = "R100_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r100_total_deposit_bank;
+
+					// R101
+					@Column(name = "R101_DEPOSIT_SIZE")
+					private String r101_deposit_size;
+
+					@Column(name = "R101_DEPOSIT_TYPE")
+					private String r101_deposit_type;
+
+					@Column(name = "R101_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r101_deposit_excluding_number;
+
+					@Column(name = "R101_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r101_deposit_excluding_amount;
+
+					@Column(name = "R101_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r101_deposit_foreign_number;
+
+					@Column(name = "R101_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r101_deposit_foreign_amount;
+
+					@Column(name = "R101_TOTAL_NUMBER")
+					private BigDecimal r101_total_number;
+
+					@Column(name = "R101_TOTAL_AMOUNT")
+					private BigDecimal r101_total_amount;
+
+					@Column(name = "R101_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r101_total_deposit_bank;
+
+					// R102
+					@Column(name = "R102_DEPOSIT_SIZE")
+					private String r102_deposit_size;
+
+					@Column(name = "R102_DEPOSIT_TYPE")
+					private String r102_deposit_type;
+
+					@Column(name = "R102_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r102_deposit_excluding_number;
+
+					@Column(name = "R102_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r102_deposit_excluding_amount;
+
+					@Column(name = "R102_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r102_deposit_foreign_number;
+
+					@Column(name = "R102_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r102_deposit_foreign_amount;
+
+					@Column(name = "R102_TOTAL_NUMBER")
+					private BigDecimal r102_total_number;
+
+					@Column(name = "R102_TOTAL_AMOUNT")
+					private BigDecimal r102_total_amount;
+
+					@Column(name = "R102_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r102_total_deposit_bank;
+
+					// R103
+					@Column(name = "R103_DEPOSIT_SIZE")
+					private String r103_deposit_size;
+
+					@Column(name = "R103_DEPOSIT_TYPE")
+					private String r103_deposit_type;
+
+					@Column(name = "R103_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r103_deposit_excluding_number;
+
+					@Column(name = "R103_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r103_deposit_excluding_amount;
+
+					@Column(name = "R103_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r103_deposit_foreign_number;
+
+					@Column(name = "R103_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r103_deposit_foreign_amount;
+
+					@Column(name = "R103_TOTAL_NUMBER")
+					private BigDecimal r103_total_number;
+
+					@Column(name = "R103_TOTAL_AMOUNT")
+					private BigDecimal r103_total_amount;
+
+					@Column(name = "R103_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r103_total_deposit_bank;
+
+					// R104
+					@Column(name = "R104_DEPOSIT_SIZE")
+					private String r104_deposit_size;
+
+					@Column(name = "R104_DEPOSIT_TYPE")
+					private String r104_deposit_type;
+
+					@Column(name = "R104_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r104_deposit_excluding_number;
+
+					@Column(name = "R104_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r104_deposit_excluding_amount;
+
+					@Column(name = "R104_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r104_deposit_foreign_number;
+
+					@Column(name = "R104_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r104_deposit_foreign_amount;
+
+					@Column(name = "R104_TOTAL_NUMBER")
+					private BigDecimal r104_total_number;
+
+					@Column(name = "R104_TOTAL_AMOUNT")
+					private BigDecimal r104_total_amount;
+
+					@Column(name = "R104_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r104_total_deposit_bank;
+
+					// R105
+					@Column(name = "R105_DEPOSIT_SIZE")
+					private String r105_deposit_size;
+
+					@Column(name = "R105_DEPOSIT_TYPE")
+					private String r105_deposit_type;
+
+					@Column(name = "R105_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r105_deposit_excluding_number;
+
+					@Column(name = "R105_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r105_deposit_excluding_amount;
+
+					@Column(name = "R105_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r105_deposit_foreign_number;
+
+					@Column(name = "R105_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r105_deposit_foreign_amount;
+
+					@Column(name = "R105_TOTAL_NUMBER")
+					private BigDecimal r105_total_number;
+
+					@Column(name = "R105_TOTAL_AMOUNT")
+					private BigDecimal r105_total_amount;
+
+					@Column(name = "R105_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r105_total_deposit_bank;
+
+					// R106
+					@Column(name = "R106_DEPOSIT_SIZE")
+					private String r106_deposit_size;
+
+					@Column(name = "R106_DEPOSIT_TYPE")
+					private String r106_deposit_type;
+
+					@Column(name = "R106_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r106_deposit_excluding_number;
+
+					@Column(name = "R106_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r106_deposit_excluding_amount;
+
+					@Column(name = "R106_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r106_deposit_foreign_number;
+
+					@Column(name = "R106_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r106_deposit_foreign_amount;
+
+					@Column(name = "R106_TOTAL_NUMBER")
+					private BigDecimal r106_total_number;
+
+					@Column(name = "R106_TOTAL_AMOUNT")
+					private BigDecimal r106_total_amount;
+
+					@Column(name = "R106_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r106_total_deposit_bank;
+
+					// R107
+					@Column(name = "R107_DEPOSIT_SIZE")
+					private String r107_deposit_size;
+
+					@Column(name = "R107_DEPOSIT_TYPE")
+					private String r107_deposit_type;
+
+					@Column(name = "R107_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r107_deposit_excluding_number;
+
+					@Column(name = "R107_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r107_deposit_excluding_amount;
+
+					@Column(name = "R107_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r107_deposit_foreign_number;
+
+					@Column(name = "R107_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r107_deposit_foreign_amount;
+
+					@Column(name = "R107_TOTAL_NUMBER")
+					private BigDecimal r107_total_number;
+
+					@Column(name = "R107_TOTAL_AMOUNT")
+					private BigDecimal r107_total_amount;
+
+					@Column(name = "R107_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r107_total_deposit_bank;
+
+					// R108
+					@Column(name = "R108_DEPOSIT_SIZE")
+					private String r108_deposit_size;
+
+					@Column(name = "R108_DEPOSIT_TYPE")
+					private String r108_deposit_type;
+
+					@Column(name = "R108_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r108_deposit_excluding_number;
+
+					@Column(name = "R108_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r108_deposit_excluding_amount;
+
+					@Column(name = "R108_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r108_deposit_foreign_number;
+
+					@Column(name = "R108_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r108_deposit_foreign_amount;
+
+					@Column(name = "R108_TOTAL_NUMBER")
+					private BigDecimal r108_total_number;
+
+					@Column(name = "R108_TOTAL_AMOUNT")
+					private BigDecimal r108_total_amount;
+
+					@Column(name = "R108_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r108_total_deposit_bank;
+
+					// R109
+					@Column(name = "R109_DEPOSIT_SIZE")
+					private String r109_deposit_size;
+
+					@Column(name = "R109_DEPOSIT_TYPE")
+					private String r109_deposit_type;
+
+					@Column(name = "R109_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r109_deposit_excluding_number;
+
+					@Column(name = "R109_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r109_deposit_excluding_amount;
+
+					@Column(name = "R109_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r109_deposit_foreign_number;
+
+					@Column(name = "R109_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r109_deposit_foreign_amount;
+
+					@Column(name = "R109_TOTAL_NUMBER")
+					private BigDecimal r109_total_number;
+
+					@Column(name = "R109_TOTAL_AMOUNT")
+					private BigDecimal r109_total_amount;
+
+					@Column(name = "R109_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r109_total_deposit_bank;
+
+					// R110
+					@Column(name = "R110_DEPOSIT_SIZE")
+					private String r110_deposit_size;
+
+					@Column(name = "R110_DEPOSIT_TYPE")
+					private String r110_deposit_type;
+
+					@Column(name = "R110_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r110_deposit_excluding_number;
+
+					@Column(name = "R110_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r110_deposit_excluding_amount;
+
+					@Column(name = "R110_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r110_deposit_foreign_number;
+
+					@Column(name = "R110_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r110_deposit_foreign_amount;
+
+					@Column(name = "R110_TOTAL_NUMBER")
+					private BigDecimal r110_total_number;
+
+					@Column(name = "R110_TOTAL_AMOUNT")
+					private BigDecimal r110_total_amount;
+
+					@Column(name = "R110_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r110_total_deposit_bank;
+
+					// R111
+					@Column(name = "R111_DEPOSIT_SIZE")
+					private String r111_deposit_size;
+
+					@Column(name = "R111_DEPOSIT_TYPE")
+					private String r111_deposit_type;
+
+					@Column(name = "R111_DEPOSIT_EXCLUDING_NUMBER")
+					private BigDecimal r111_deposit_excluding_number;
+
+					@Column(name = "R111_DEPOSIT_EXCLUDING_AMOUNT")
+					private BigDecimal r111_deposit_excluding_amount;
+
+					@Column(name = "R111_DEPOSIT_FOREIGN_NUMBER")
+					private BigDecimal r111_deposit_foreign_number;
+
+					@Column(name = "R111_DEPOSIT_FOREIGN_AMOUNT")
+					private BigDecimal r111_deposit_foreign_amount;
+
+					@Column(name = "R111_TOTAL_NUMBER")
+					private BigDecimal r111_total_number;
+
+					@Column(name = "R111_TOTAL_AMOUNT")
+					private BigDecimal r111_total_amount;
+
+					@Column(name = "R111_TOTAL_DEPOSIT_BANK")
+					private BigDecimal r111_total_deposit_bank;
+				
+					@Id
+					@Temporal(TemporalType.DATE)
+					@Column(name = "REPORT_DATE")
+					private Date REPORT_DATE;
+
+					@Column(name = "REPORT_VERSION", length = 100)
+					private BigDecimal REPORT_VERSION;
+					
+					@Id
+					@Column(name = "REPORT_RESUBDATE")
+					private Date REPORT_RESUBDATE;
+
+					@Column(name = "REPORT_FREQUENCY", length = 100)
+					private String REPORT_FREQUENCY;
+
+					@Column(name = "REPORT_CODE", length = 100)
+					private String REPORT_CODE;
+
+					@Column(name = "REPORT_DESC", length = 100)
+					private String REPORT_DESC;
+
+					@Column(name = "ENTITY_FLG", length = 1)
+					private String ENTITY_FLG;
+
+					@Column(name = "MODIFY_FLG", length = 1)
+					private String MODIFY_FLG;
+
+					@Column(name = "DEL_FLG", length = 1)
+					private String DEL_FLG;
+
+					
+					public String getR87_deposit_size() {
+						return r87_deposit_size;
+					}
+					public void setR87_deposit_size(String r87_deposit_size) {
+						this.r87_deposit_size = r87_deposit_size;
+					}
+					public String getR87_deposit_type() {
+						return r87_deposit_type;
+					}
+					public void setR87_deposit_type(String r87_deposit_type) {
+						this.r87_deposit_type = r87_deposit_type;
+					}
+					public BigDecimal getR87_deposit_excluding_number() {
+						return r87_deposit_excluding_number;
+					}
+					public void setR87_deposit_excluding_number(BigDecimal r87_deposit_excluding_number) {
+						this.r87_deposit_excluding_number = r87_deposit_excluding_number;
+					}
+					public BigDecimal getR87_deposit_excluding_amount() {
+						return r87_deposit_excluding_amount;
+					}
+					public void setR87_deposit_excluding_amount(BigDecimal r87_deposit_excluding_amount) {
+						this.r87_deposit_excluding_amount = r87_deposit_excluding_amount;
+					}
+					public BigDecimal getR87_deposit_foreign_number() {
+						return r87_deposit_foreign_number;
+					}
+					public void setR87_deposit_foreign_number(BigDecimal r87_deposit_foreign_number) {
+						this.r87_deposit_foreign_number = r87_deposit_foreign_number;
+					}
+					public BigDecimal getR87_deposit_foreign_amount() {
+						return r87_deposit_foreign_amount;
+					}
+					public void setR87_deposit_foreign_amount(BigDecimal r87_deposit_foreign_amount) {
+						this.r87_deposit_foreign_amount = r87_deposit_foreign_amount;
+					}
+					public BigDecimal getR87_total_number() {
+						return r87_total_number;
+					}
+					public void setR87_total_number(BigDecimal r87_total_number) {
+						this.r87_total_number = r87_total_number;
+					}
+					public BigDecimal getR87_total_amount() {
+						return r87_total_amount;
+					}
+					public void setR87_total_amount(BigDecimal r87_total_amount) {
+						this.r87_total_amount = r87_total_amount;
+					}
+					public BigDecimal getR87_total_deposit_bank() {
+						return r87_total_deposit_bank;
+					}
+					public void setR87_total_deposit_bank(BigDecimal r87_total_deposit_bank) {
+						this.r87_total_deposit_bank = r87_total_deposit_bank;
+					}
+					public String getR88_deposit_size() {
+						return r88_deposit_size;
+					}
+					public void setR88_deposit_size(String r88_deposit_size) {
+						this.r88_deposit_size = r88_deposit_size;
+					}
+					public String getR88_deposit_type() {
+						return r88_deposit_type;
+					}
+					public void setR88_deposit_type(String r88_deposit_type) {
+						this.r88_deposit_type = r88_deposit_type;
+					}
+					public BigDecimal getR88_deposit_excluding_number() {
+						return r88_deposit_excluding_number;
+					}
+					public void setR88_deposit_excluding_number(BigDecimal r88_deposit_excluding_number) {
+						this.r88_deposit_excluding_number = r88_deposit_excluding_number;
+					}
+					public BigDecimal getR88_deposit_excluding_amount() {
+						return r88_deposit_excluding_amount;
+					}
+					public void setR88_deposit_excluding_amount(BigDecimal r88_deposit_excluding_amount) {
+						this.r88_deposit_excluding_amount = r88_deposit_excluding_amount;
+					}
+					public BigDecimal getR88_deposit_foreign_number() {
+						return r88_deposit_foreign_number;
+					}
+					public void setR88_deposit_foreign_number(BigDecimal r88_deposit_foreign_number) {
+						this.r88_deposit_foreign_number = r88_deposit_foreign_number;
+					}
+					public BigDecimal getR88_deposit_foreign_amount() {
+						return r88_deposit_foreign_amount;
+					}
+					public void setR88_deposit_foreign_amount(BigDecimal r88_deposit_foreign_amount) {
+						this.r88_deposit_foreign_amount = r88_deposit_foreign_amount;
+					}
+					public BigDecimal getR88_total_number() {
+						return r88_total_number;
+					}
+					public void setR88_total_number(BigDecimal r88_total_number) {
+						this.r88_total_number = r88_total_number;
+					}
+					public BigDecimal getR88_total_amount() {
+						return r88_total_amount;
+					}
+					public void setR88_total_amount(BigDecimal r88_total_amount) {
+						this.r88_total_amount = r88_total_amount;
+					}
+					public BigDecimal getR88_total_deposit_bank() {
+						return r88_total_deposit_bank;
+					}
+					public void setR88_total_deposit_bank(BigDecimal r88_total_deposit_bank) {
+						this.r88_total_deposit_bank = r88_total_deposit_bank;
+					}
+					public String getR89_deposit_size() {
+						return r89_deposit_size;
+					}
+					public void setR89_deposit_size(String r89_deposit_size) {
+						this.r89_deposit_size = r89_deposit_size;
+					}
+					public String getR89_deposit_type() {
+						return r89_deposit_type;
+					}
+					public void setR89_deposit_type(String r89_deposit_type) {
+						this.r89_deposit_type = r89_deposit_type;
+					}
+					public BigDecimal getR89_deposit_excluding_number() {
+						return r89_deposit_excluding_number;
+					}
+					public void setR89_deposit_excluding_number(BigDecimal r89_deposit_excluding_number) {
+						this.r89_deposit_excluding_number = r89_deposit_excluding_number;
+					}
+					public BigDecimal getR89_deposit_excluding_amount() {
+						return r89_deposit_excluding_amount;
+					}
+					public void setR89_deposit_excluding_amount(BigDecimal r89_deposit_excluding_amount) {
+						this.r89_deposit_excluding_amount = r89_deposit_excluding_amount;
+					}
+					public BigDecimal getR89_deposit_foreign_number() {
+						return r89_deposit_foreign_number;
+					}
+					public void setR89_deposit_foreign_number(BigDecimal r89_deposit_foreign_number) {
+						this.r89_deposit_foreign_number = r89_deposit_foreign_number;
+					}
+					public BigDecimal getR89_deposit_foreign_amount() {
+						return r89_deposit_foreign_amount;
+					}
+					public void setR89_deposit_foreign_amount(BigDecimal r89_deposit_foreign_amount) {
+						this.r89_deposit_foreign_amount = r89_deposit_foreign_amount;
+					}
+					public BigDecimal getR89_total_number() {
+						return r89_total_number;
+					}
+					public void setR89_total_number(BigDecimal r89_total_number) {
+						this.r89_total_number = r89_total_number;
+					}
+					public BigDecimal getR89_total_amount() {
+						return r89_total_amount;
+					}
+					public void setR89_total_amount(BigDecimal r89_total_amount) {
+						this.r89_total_amount = r89_total_amount;
+					}
+					public BigDecimal getR89_total_deposit_bank() {
+						return r89_total_deposit_bank;
+					}
+					public void setR89_total_deposit_bank(BigDecimal r89_total_deposit_bank) {
+						this.r89_total_deposit_bank = r89_total_deposit_bank;
+					}
+					public String getR90_deposit_size() {
+						return r90_deposit_size;
+					}
+					public void setR90_deposit_size(String r90_deposit_size) {
+						this.r90_deposit_size = r90_deposit_size;
+					}
+					public String getR90_deposit_type() {
+						return r90_deposit_type;
+					}
+					public void setR90_deposit_type(String r90_deposit_type) {
+						this.r90_deposit_type = r90_deposit_type;
+					}
+					public BigDecimal getR90_deposit_excluding_number() {
+						return r90_deposit_excluding_number;
+					}
+					public void setR90_deposit_excluding_number(BigDecimal r90_deposit_excluding_number) {
+						this.r90_deposit_excluding_number = r90_deposit_excluding_number;
+					}
+					public BigDecimal getR90_deposit_excluding_amount() {
+						return r90_deposit_excluding_amount;
+					}
+					public void setR90_deposit_excluding_amount(BigDecimal r90_deposit_excluding_amount) {
+						this.r90_deposit_excluding_amount = r90_deposit_excluding_amount;
+					}
+					public BigDecimal getR90_deposit_foreign_number() {
+						return r90_deposit_foreign_number;
+					}
+					public void setR90_deposit_foreign_number(BigDecimal r90_deposit_foreign_number) {
+						this.r90_deposit_foreign_number = r90_deposit_foreign_number;
+					}
+					public BigDecimal getR90_deposit_foreign_amount() {
+						return r90_deposit_foreign_amount;
+					}
+					public void setR90_deposit_foreign_amount(BigDecimal r90_deposit_foreign_amount) {
+						this.r90_deposit_foreign_amount = r90_deposit_foreign_amount;
+					}
+					public BigDecimal getR90_total_number() {
+						return r90_total_number;
+					}
+					public void setR90_total_number(BigDecimal r90_total_number) {
+						this.r90_total_number = r90_total_number;
+					}
+					public BigDecimal getR90_total_amount() {
+						return r90_total_amount;
+					}
+					public void setR90_total_amount(BigDecimal r90_total_amount) {
+						this.r90_total_amount = r90_total_amount;
+					}
+					public BigDecimal getR90_total_deposit_bank() {
+						return r90_total_deposit_bank;
+					}
+					public void setR90_total_deposit_bank(BigDecimal r90_total_deposit_bank) {
+						this.r90_total_deposit_bank = r90_total_deposit_bank;
+					}
+					public String getR91_deposit_size() {
+						return r91_deposit_size;
+					}
+					public void setR91_deposit_size(String r91_deposit_size) {
+						this.r91_deposit_size = r91_deposit_size;
+					}
+					public String getR91_deposit_type() {
+						return r91_deposit_type;
+					}
+					public void setR91_deposit_type(String r91_deposit_type) {
+						this.r91_deposit_type = r91_deposit_type;
+					}
+					public BigDecimal getR91_deposit_excluding_number() {
+						return r91_deposit_excluding_number;
+					}
+					public void setR91_deposit_excluding_number(BigDecimal r91_deposit_excluding_number) {
+						this.r91_deposit_excluding_number = r91_deposit_excluding_number;
+					}
+					public BigDecimal getR91_deposit_excluding_amount() {
+						return r91_deposit_excluding_amount;
+					}
+					public void setR91_deposit_excluding_amount(BigDecimal r91_deposit_excluding_amount) {
+						this.r91_deposit_excluding_amount = r91_deposit_excluding_amount;
+					}
+					public BigDecimal getR91_deposit_foreign_number() {
+						return r91_deposit_foreign_number;
+					}
+					public void setR91_deposit_foreign_number(BigDecimal r91_deposit_foreign_number) {
+						this.r91_deposit_foreign_number = r91_deposit_foreign_number;
+					}
+					public BigDecimal getR91_deposit_foreign_amount() {
+						return r91_deposit_foreign_amount;
+					}
+					public void setR91_deposit_foreign_amount(BigDecimal r91_deposit_foreign_amount) {
+						this.r91_deposit_foreign_amount = r91_deposit_foreign_amount;
+					}
+					public BigDecimal getR91_total_number() {
+						return r91_total_number;
+					}
+					public void setR91_total_number(BigDecimal r91_total_number) {
+						this.r91_total_number = r91_total_number;
+					}
+					public BigDecimal getR91_total_amount() {
+						return r91_total_amount;
+					}
+					public void setR91_total_amount(BigDecimal r91_total_amount) {
+						this.r91_total_amount = r91_total_amount;
+					}
+					public BigDecimal getR91_total_deposit_bank() {
+						return r91_total_deposit_bank;
+					}
+					public void setR91_total_deposit_bank(BigDecimal r91_total_deposit_bank) {
+						this.r91_total_deposit_bank = r91_total_deposit_bank;
+					}
+					public String getR92_deposit_size() {
+						return r92_deposit_size;
+					}
+					public void setR92_deposit_size(String r92_deposit_size) {
+						this.r92_deposit_size = r92_deposit_size;
+					}
+					public String getR92_deposit_type() {
+						return r92_deposit_type;
+					}
+					public void setR92_deposit_type(String r92_deposit_type) {
+						this.r92_deposit_type = r92_deposit_type;
+					}
+					public BigDecimal getR92_deposit_excluding_number() {
+						return r92_deposit_excluding_number;
+					}
+					public void setR92_deposit_excluding_number(BigDecimal r92_deposit_excluding_number) {
+						this.r92_deposit_excluding_number = r92_deposit_excluding_number;
+					}
+					public BigDecimal getR92_deposit_excluding_amount() {
+						return r92_deposit_excluding_amount;
+					}
+					public void setR92_deposit_excluding_amount(BigDecimal r92_deposit_excluding_amount) {
+						this.r92_deposit_excluding_amount = r92_deposit_excluding_amount;
+					}
+					public BigDecimal getR92_deposit_foreign_number() {
+						return r92_deposit_foreign_number;
+					}
+					public void setR92_deposit_foreign_number(BigDecimal r92_deposit_foreign_number) {
+						this.r92_deposit_foreign_number = r92_deposit_foreign_number;
+					}
+					public BigDecimal getR92_deposit_foreign_amount() {
+						return r92_deposit_foreign_amount;
+					}
+					public void setR92_deposit_foreign_amount(BigDecimal r92_deposit_foreign_amount) {
+						this.r92_deposit_foreign_amount = r92_deposit_foreign_amount;
+					}
+					public BigDecimal getR92_total_number() {
+						return r92_total_number;
+					}
+					public void setR92_total_number(BigDecimal r92_total_number) {
+						this.r92_total_number = r92_total_number;
+					}
+					public BigDecimal getR92_total_amount() {
+						return r92_total_amount;
+					}
+					public void setR92_total_amount(BigDecimal r92_total_amount) {
+						this.r92_total_amount = r92_total_amount;
+					}
+					public BigDecimal getR92_total_deposit_bank() {
+						return r92_total_deposit_bank;
+					}
+					public void setR92_total_deposit_bank(BigDecimal r92_total_deposit_bank) {
+						this.r92_total_deposit_bank = r92_total_deposit_bank;
+					}
+					public String getR93_deposit_size() {
+						return r93_deposit_size;
+					}
+					public void setR93_deposit_size(String r93_deposit_size) {
+						this.r93_deposit_size = r93_deposit_size;
+					}
+					public String getR93_deposit_type() {
+						return r93_deposit_type;
+					}
+					public void setR93_deposit_type(String r93_deposit_type) {
+						this.r93_deposit_type = r93_deposit_type;
+					}
+					public BigDecimal getR93_deposit_excluding_number() {
+						return r93_deposit_excluding_number;
+					}
+					public void setR93_deposit_excluding_number(BigDecimal r93_deposit_excluding_number) {
+						this.r93_deposit_excluding_number = r93_deposit_excluding_number;
+					}
+					public BigDecimal getR93_deposit_excluding_amount() {
+						return r93_deposit_excluding_amount;
+					}
+					public void setR93_deposit_excluding_amount(BigDecimal r93_deposit_excluding_amount) {
+						this.r93_deposit_excluding_amount = r93_deposit_excluding_amount;
+					}
+					public BigDecimal getR93_deposit_foreign_number() {
+						return r93_deposit_foreign_number;
+					}
+					public void setR93_deposit_foreign_number(BigDecimal r93_deposit_foreign_number) {
+						this.r93_deposit_foreign_number = r93_deposit_foreign_number;
+					}
+					public BigDecimal getR93_deposit_foreign_amount() {
+						return r93_deposit_foreign_amount;
+					}
+					public void setR93_deposit_foreign_amount(BigDecimal r93_deposit_foreign_amount) {
+						this.r93_deposit_foreign_amount = r93_deposit_foreign_amount;
+					}
+					public BigDecimal getR93_total_number() {
+						return r93_total_number;
+					}
+					public void setR93_total_number(BigDecimal r93_total_number) {
+						this.r93_total_number = r93_total_number;
+					}
+					public BigDecimal getR93_total_amount() {
+						return r93_total_amount;
+					}
+					public void setR93_total_amount(BigDecimal r93_total_amount) {
+						this.r93_total_amount = r93_total_amount;
+					}
+					public BigDecimal getR93_total_deposit_bank() {
+						return r93_total_deposit_bank;
+					}
+					public void setR93_total_deposit_bank(BigDecimal r93_total_deposit_bank) {
+						this.r93_total_deposit_bank = r93_total_deposit_bank;
+					}
+					public String getR94_deposit_size() {
+						return r94_deposit_size;
+					}
+					public void setR94_deposit_size(String r94_deposit_size) {
+						this.r94_deposit_size = r94_deposit_size;
+					}
+					public String getR94_deposit_type() {
+						return r94_deposit_type;
+					}
+					public void setR94_deposit_type(String r94_deposit_type) {
+						this.r94_deposit_type = r94_deposit_type;
+					}
+					public BigDecimal getR94_deposit_excluding_number() {
+						return r94_deposit_excluding_number;
+					}
+					public void setR94_deposit_excluding_number(BigDecimal r94_deposit_excluding_number) {
+						this.r94_deposit_excluding_number = r94_deposit_excluding_number;
+					}
+					public BigDecimal getR94_deposit_excluding_amount() {
+						return r94_deposit_excluding_amount;
+					}
+					public void setR94_deposit_excluding_amount(BigDecimal r94_deposit_excluding_amount) {
+						this.r94_deposit_excluding_amount = r94_deposit_excluding_amount;
+					}
+					public BigDecimal getR94_deposit_foreign_number() {
+						return r94_deposit_foreign_number;
+					}
+					public void setR94_deposit_foreign_number(BigDecimal r94_deposit_foreign_number) {
+						this.r94_deposit_foreign_number = r94_deposit_foreign_number;
+					}
+					public BigDecimal getR94_deposit_foreign_amount() {
+						return r94_deposit_foreign_amount;
+					}
+					public void setR94_deposit_foreign_amount(BigDecimal r94_deposit_foreign_amount) {
+						this.r94_deposit_foreign_amount = r94_deposit_foreign_amount;
+					}
+					public BigDecimal getR94_total_number() {
+						return r94_total_number;
+					}
+					public void setR94_total_number(BigDecimal r94_total_number) {
+						this.r94_total_number = r94_total_number;
+					}
+					public BigDecimal getR94_total_amount() {
+						return r94_total_amount;
+					}
+					public void setR94_total_amount(BigDecimal r94_total_amount) {
+						this.r94_total_amount = r94_total_amount;
+					}
+					public BigDecimal getR94_total_deposit_bank() {
+						return r94_total_deposit_bank;
+					}
+					public void setR94_total_deposit_bank(BigDecimal r94_total_deposit_bank) {
+						this.r94_total_deposit_bank = r94_total_deposit_bank;
+					}
+					public String getR95_deposit_size() {
+						return r95_deposit_size;
+					}
+					public void setR95_deposit_size(String r95_deposit_size) {
+						this.r95_deposit_size = r95_deposit_size;
+					}
+					public String getR95_deposit_type() {
+						return r95_deposit_type;
+					}
+					public void setR95_deposit_type(String r95_deposit_type) {
+						this.r95_deposit_type = r95_deposit_type;
+					}
+					public BigDecimal getR95_deposit_excluding_number() {
+						return r95_deposit_excluding_number;
+					}
+					public void setR95_deposit_excluding_number(BigDecimal r95_deposit_excluding_number) {
+						this.r95_deposit_excluding_number = r95_deposit_excluding_number;
+					}
+					public BigDecimal getR95_deposit_excluding_amount() {
+						return r95_deposit_excluding_amount;
+					}
+					public void setR95_deposit_excluding_amount(BigDecimal r95_deposit_excluding_amount) {
+						this.r95_deposit_excluding_amount = r95_deposit_excluding_amount;
+					}
+					public BigDecimal getR95_deposit_foreign_number() {
+						return r95_deposit_foreign_number;
+					}
+					public void setR95_deposit_foreign_number(BigDecimal r95_deposit_foreign_number) {
+						this.r95_deposit_foreign_number = r95_deposit_foreign_number;
+					}
+					public BigDecimal getR95_deposit_foreign_amount() {
+						return r95_deposit_foreign_amount;
+					}
+					public void setR95_deposit_foreign_amount(BigDecimal r95_deposit_foreign_amount) {
+						this.r95_deposit_foreign_amount = r95_deposit_foreign_amount;
+					}
+					public BigDecimal getR95_total_number() {
+						return r95_total_number;
+					}
+					public void setR95_total_number(BigDecimal r95_total_number) {
+						this.r95_total_number = r95_total_number;
+					}
+					public BigDecimal getR95_total_amount() {
+						return r95_total_amount;
+					}
+					public void setR95_total_amount(BigDecimal r95_total_amount) {
+						this.r95_total_amount = r95_total_amount;
+					}
+					public BigDecimal getR95_total_deposit_bank() {
+						return r95_total_deposit_bank;
+					}
+					public void setR95_total_deposit_bank(BigDecimal r95_total_deposit_bank) {
+						this.r95_total_deposit_bank = r95_total_deposit_bank;
+					}
+					public String getR96_deposit_size() {
+						return r96_deposit_size;
+					}
+					public void setR96_deposit_size(String r96_deposit_size) {
+						this.r96_deposit_size = r96_deposit_size;
+					}
+					public String getR96_deposit_type() {
+						return r96_deposit_type;
+					}
+					public void setR96_deposit_type(String r96_deposit_type) {
+						this.r96_deposit_type = r96_deposit_type;
+					}
+					public BigDecimal getR96_deposit_excluding_number() {
+						return r96_deposit_excluding_number;
+					}
+					public void setR96_deposit_excluding_number(BigDecimal r96_deposit_excluding_number) {
+						this.r96_deposit_excluding_number = r96_deposit_excluding_number;
+					}
+					public BigDecimal getR96_deposit_excluding_amount() {
+						return r96_deposit_excluding_amount;
+					}
+					public void setR96_deposit_excluding_amount(BigDecimal r96_deposit_excluding_amount) {
+						this.r96_deposit_excluding_amount = r96_deposit_excluding_amount;
+					}
+					public BigDecimal getR96_deposit_foreign_number() {
+						return r96_deposit_foreign_number;
+					}
+					public void setR96_deposit_foreign_number(BigDecimal r96_deposit_foreign_number) {
+						this.r96_deposit_foreign_number = r96_deposit_foreign_number;
+					}
+					public BigDecimal getR96_deposit_foreign_amount() {
+						return r96_deposit_foreign_amount;
+					}
+					public void setR96_deposit_foreign_amount(BigDecimal r96_deposit_foreign_amount) {
+						this.r96_deposit_foreign_amount = r96_deposit_foreign_amount;
+					}
+					public BigDecimal getR96_total_number() {
+						return r96_total_number;
+					}
+					public void setR96_total_number(BigDecimal r96_total_number) {
+						this.r96_total_number = r96_total_number;
+					}
+					public BigDecimal getR96_total_amount() {
+						return r96_total_amount;
+					}
+					public void setR96_total_amount(BigDecimal r96_total_amount) {
+						this.r96_total_amount = r96_total_amount;
+					}
+					public BigDecimal getR96_total_deposit_bank() {
+						return r96_total_deposit_bank;
+					}
+					public void setR96_total_deposit_bank(BigDecimal r96_total_deposit_bank) {
+						this.r96_total_deposit_bank = r96_total_deposit_bank;
+					}
+					public String getR97_deposit_size() {
+						return r97_deposit_size;
+					}
+					public void setR97_deposit_size(String r97_deposit_size) {
+						this.r97_deposit_size = r97_deposit_size;
+					}
+					public String getR97_deposit_type() {
+						return r97_deposit_type;
+					}
+					public void setR97_deposit_type(String r97_deposit_type) {
+						this.r97_deposit_type = r97_deposit_type;
+					}
+					public BigDecimal getR97_deposit_excluding_number() {
+						return r97_deposit_excluding_number;
+					}
+					public void setR97_deposit_excluding_number(BigDecimal r97_deposit_excluding_number) {
+						this.r97_deposit_excluding_number = r97_deposit_excluding_number;
+					}
+					public BigDecimal getR97_deposit_excluding_amount() {
+						return r97_deposit_excluding_amount;
+					}
+					public void setR97_deposit_excluding_amount(BigDecimal r97_deposit_excluding_amount) {
+						this.r97_deposit_excluding_amount = r97_deposit_excluding_amount;
+					}
+					public BigDecimal getR97_deposit_foreign_number() {
+						return r97_deposit_foreign_number;
+					}
+					public void setR97_deposit_foreign_number(BigDecimal r97_deposit_foreign_number) {
+						this.r97_deposit_foreign_number = r97_deposit_foreign_number;
+					}
+					public BigDecimal getR97_deposit_foreign_amount() {
+						return r97_deposit_foreign_amount;
+					}
+					public void setR97_deposit_foreign_amount(BigDecimal r97_deposit_foreign_amount) {
+						this.r97_deposit_foreign_amount = r97_deposit_foreign_amount;
+					}
+					public BigDecimal getR97_total_number() {
+						return r97_total_number;
+					}
+					public void setR97_total_number(BigDecimal r97_total_number) {
+						this.r97_total_number = r97_total_number;
+					}
+					public BigDecimal getR97_total_amount() {
+						return r97_total_amount;
+					}
+					public void setR97_total_amount(BigDecimal r97_total_amount) {
+						this.r97_total_amount = r97_total_amount;
+					}
+					public BigDecimal getR97_total_deposit_bank() {
+						return r97_total_deposit_bank;
+					}
+					public void setR97_total_deposit_bank(BigDecimal r97_total_deposit_bank) {
+						this.r97_total_deposit_bank = r97_total_deposit_bank;
+					}
+					public String getR98_deposit_size() {
+						return r98_deposit_size;
+					}
+					public void setR98_deposit_size(String r98_deposit_size) {
+						this.r98_deposit_size = r98_deposit_size;
+					}
+					public String getR98_deposit_type() {
+						return r98_deposit_type;
+					}
+					public void setR98_deposit_type(String r98_deposit_type) {
+						this.r98_deposit_type = r98_deposit_type;
+					}
+					public BigDecimal getR98_deposit_excluding_number() {
+						return r98_deposit_excluding_number;
+					}
+					public void setR98_deposit_excluding_number(BigDecimal r98_deposit_excluding_number) {
+						this.r98_deposit_excluding_number = r98_deposit_excluding_number;
+					}
+					public BigDecimal getR98_deposit_excluding_amount() {
+						return r98_deposit_excluding_amount;
+					}
+					public void setR98_deposit_excluding_amount(BigDecimal r98_deposit_excluding_amount) {
+						this.r98_deposit_excluding_amount = r98_deposit_excluding_amount;
+					}
+					public BigDecimal getR98_deposit_foreign_number() {
+						return r98_deposit_foreign_number;
+					}
+					public void setR98_deposit_foreign_number(BigDecimal r98_deposit_foreign_number) {
+						this.r98_deposit_foreign_number = r98_deposit_foreign_number;
+					}
+					public BigDecimal getR98_deposit_foreign_amount() {
+						return r98_deposit_foreign_amount;
+					}
+					public void setR98_deposit_foreign_amount(BigDecimal r98_deposit_foreign_amount) {
+						this.r98_deposit_foreign_amount = r98_deposit_foreign_amount;
+					}
+					public BigDecimal getR98_total_number() {
+						return r98_total_number;
+					}
+					public void setR98_total_number(BigDecimal r98_total_number) {
+						this.r98_total_number = r98_total_number;
+					}
+					public BigDecimal getR98_total_amount() {
+						return r98_total_amount;
+					}
+					public void setR98_total_amount(BigDecimal r98_total_amount) {
+						this.r98_total_amount = r98_total_amount;
+					}
+					public BigDecimal getR98_total_deposit_bank() {
+						return r98_total_deposit_bank;
+					}
+					public void setR98_total_deposit_bank(BigDecimal r98_total_deposit_bank) {
+						this.r98_total_deposit_bank = r98_total_deposit_bank;
+					}
+					public String getR99_deposit_size() {
+						return r99_deposit_size;
+					}
+					public void setR99_deposit_size(String r99_deposit_size) {
+						this.r99_deposit_size = r99_deposit_size;
+					}
+					public String getR99_deposit_type() {
+						return r99_deposit_type;
+					}
+					public void setR99_deposit_type(String r99_deposit_type) {
+						this.r99_deposit_type = r99_deposit_type;
+					}
+					public BigDecimal getR99_deposit_excluding_number() {
+						return r99_deposit_excluding_number;
+					}
+					public void setR99_deposit_excluding_number(BigDecimal r99_deposit_excluding_number) {
+						this.r99_deposit_excluding_number = r99_deposit_excluding_number;
+					}
+					public BigDecimal getR99_deposit_excluding_amount() {
+						return r99_deposit_excluding_amount;
+					}
+					public void setR99_deposit_excluding_amount(BigDecimal r99_deposit_excluding_amount) {
+						this.r99_deposit_excluding_amount = r99_deposit_excluding_amount;
+					}
+					public BigDecimal getR99_deposit_foreign_number() {
+						return r99_deposit_foreign_number;
+					}
+					public void setR99_deposit_foreign_number(BigDecimal r99_deposit_foreign_number) {
+						this.r99_deposit_foreign_number = r99_deposit_foreign_number;
+					}
+					public BigDecimal getR99_deposit_foreign_amount() {
+						return r99_deposit_foreign_amount;
+					}
+					public void setR99_deposit_foreign_amount(BigDecimal r99_deposit_foreign_amount) {
+						this.r99_deposit_foreign_amount = r99_deposit_foreign_amount;
+					}
+					public BigDecimal getR99_total_number() {
+						return r99_total_number;
+					}
+					public void setR99_total_number(BigDecimal r99_total_number) {
+						this.r99_total_number = r99_total_number;
+					}
+					public BigDecimal getR99_total_amount() {
+						return r99_total_amount;
+					}
+					public void setR99_total_amount(BigDecimal r99_total_amount) {
+						this.r99_total_amount = r99_total_amount;
+					}
+					public BigDecimal getR99_total_deposit_bank() {
+						return r99_total_deposit_bank;
+					}
+					public void setR99_total_deposit_bank(BigDecimal r99_total_deposit_bank) {
+						this.r99_total_deposit_bank = r99_total_deposit_bank;
+					}
+					public String getR100_deposit_size() {
+						return r100_deposit_size;
+					}
+					public void setR100_deposit_size(String r100_deposit_size) {
+						this.r100_deposit_size = r100_deposit_size;
+					}
+					public String getR100_deposit_type() {
+						return r100_deposit_type;
+					}
+					public void setR100_deposit_type(String r100_deposit_type) {
+						this.r100_deposit_type = r100_deposit_type;
+					}
+					public BigDecimal getR100_deposit_excluding_number() {
+						return r100_deposit_excluding_number;
+					}
+					public void setR100_deposit_excluding_number(BigDecimal r100_deposit_excluding_number) {
+						this.r100_deposit_excluding_number = r100_deposit_excluding_number;
+					}
+					public BigDecimal getR100_deposit_excluding_amount() {
+						return r100_deposit_excluding_amount;
+					}
+					public void setR100_deposit_excluding_amount(BigDecimal r100_deposit_excluding_amount) {
+						this.r100_deposit_excluding_amount = r100_deposit_excluding_amount;
+					}
+					public BigDecimal getR100_deposit_foreign_number() {
+						return r100_deposit_foreign_number;
+					}
+					public void setR100_deposit_foreign_number(BigDecimal r100_deposit_foreign_number) {
+						this.r100_deposit_foreign_number = r100_deposit_foreign_number;
+					}
+					public BigDecimal getR100_deposit_foreign_amount() {
+						return r100_deposit_foreign_amount;
+					}
+					public void setR100_deposit_foreign_amount(BigDecimal r100_deposit_foreign_amount) {
+						this.r100_deposit_foreign_amount = r100_deposit_foreign_amount;
+					}
+					public BigDecimal getR100_total_number() {
+						return r100_total_number;
+					}
+					public void setR100_total_number(BigDecimal r100_total_number) {
+						this.r100_total_number = r100_total_number;
+					}
+					public BigDecimal getR100_total_amount() {
+						return r100_total_amount;
+					}
+					public void setR100_total_amount(BigDecimal r100_total_amount) {
+						this.r100_total_amount = r100_total_amount;
+					}
+					public BigDecimal getR100_total_deposit_bank() {
+						return r100_total_deposit_bank;
+					}
+					public void setR100_total_deposit_bank(BigDecimal r100_total_deposit_bank) {
+						this.r100_total_deposit_bank = r100_total_deposit_bank;
+					}
+					public String getR101_deposit_size() {
+						return r101_deposit_size;
+					}
+					public void setR101_deposit_size(String r101_deposit_size) {
+						this.r101_deposit_size = r101_deposit_size;
+					}
+					public String getR101_deposit_type() {
+						return r101_deposit_type;
+					}
+					public void setR101_deposit_type(String r101_deposit_type) {
+						this.r101_deposit_type = r101_deposit_type;
+					}
+					public BigDecimal getR101_deposit_excluding_number() {
+						return r101_deposit_excluding_number;
+					}
+					public void setR101_deposit_excluding_number(BigDecimal r101_deposit_excluding_number) {
+						this.r101_deposit_excluding_number = r101_deposit_excluding_number;
+					}
+					public BigDecimal getR101_deposit_excluding_amount() {
+						return r101_deposit_excluding_amount;
+					}
+					public void setR101_deposit_excluding_amount(BigDecimal r101_deposit_excluding_amount) {
+						this.r101_deposit_excluding_amount = r101_deposit_excluding_amount;
+					}
+					public BigDecimal getR101_deposit_foreign_number() {
+						return r101_deposit_foreign_number;
+					}
+					public void setR101_deposit_foreign_number(BigDecimal r101_deposit_foreign_number) {
+						this.r101_deposit_foreign_number = r101_deposit_foreign_number;
+					}
+					public BigDecimal getR101_deposit_foreign_amount() {
+						return r101_deposit_foreign_amount;
+					}
+					public void setR101_deposit_foreign_amount(BigDecimal r101_deposit_foreign_amount) {
+						this.r101_deposit_foreign_amount = r101_deposit_foreign_amount;
+					}
+					public BigDecimal getR101_total_number() {
+						return r101_total_number;
+					}
+					public void setR101_total_number(BigDecimal r101_total_number) {
+						this.r101_total_number = r101_total_number;
+					}
+					public BigDecimal getR101_total_amount() {
+						return r101_total_amount;
+					}
+					public void setR101_total_amount(BigDecimal r101_total_amount) {
+						this.r101_total_amount = r101_total_amount;
+					}
+					public BigDecimal getR101_total_deposit_bank() {
+						return r101_total_deposit_bank;
+					}
+					public void setR101_total_deposit_bank(BigDecimal r101_total_deposit_bank) {
+						this.r101_total_deposit_bank = r101_total_deposit_bank;
+					}
+					public String getR102_deposit_size() {
+						return r102_deposit_size;
+					}
+					public void setR102_deposit_size(String r102_deposit_size) {
+						this.r102_deposit_size = r102_deposit_size;
+					}
+					public String getR102_deposit_type() {
+						return r102_deposit_type;
+					}
+					public void setR102_deposit_type(String r102_deposit_type) {
+						this.r102_deposit_type = r102_deposit_type;
+					}
+					public BigDecimal getR102_deposit_excluding_number() {
+						return r102_deposit_excluding_number;
+					}
+					public void setR102_deposit_excluding_number(BigDecimal r102_deposit_excluding_number) {
+						this.r102_deposit_excluding_number = r102_deposit_excluding_number;
+					}
+					public BigDecimal getR102_deposit_excluding_amount() {
+						return r102_deposit_excluding_amount;
+					}
+					public void setR102_deposit_excluding_amount(BigDecimal r102_deposit_excluding_amount) {
+						this.r102_deposit_excluding_amount = r102_deposit_excluding_amount;
+					}
+					public BigDecimal getR102_deposit_foreign_number() {
+						return r102_deposit_foreign_number;
+					}
+					public void setR102_deposit_foreign_number(BigDecimal r102_deposit_foreign_number) {
+						this.r102_deposit_foreign_number = r102_deposit_foreign_number;
+					}
+					public BigDecimal getR102_deposit_foreign_amount() {
+						return r102_deposit_foreign_amount;
+					}
+					public void setR102_deposit_foreign_amount(BigDecimal r102_deposit_foreign_amount) {
+						this.r102_deposit_foreign_amount = r102_deposit_foreign_amount;
+					}
+					public BigDecimal getR102_total_number() {
+						return r102_total_number;
+					}
+					public void setR102_total_number(BigDecimal r102_total_number) {
+						this.r102_total_number = r102_total_number;
+					}
+					public BigDecimal getR102_total_amount() {
+						return r102_total_amount;
+					}
+					public void setR102_total_amount(BigDecimal r102_total_amount) {
+						this.r102_total_amount = r102_total_amount;
+					}
+					public BigDecimal getR102_total_deposit_bank() {
+						return r102_total_deposit_bank;
+					}
+					public void setR102_total_deposit_bank(BigDecimal r102_total_deposit_bank) {
+						this.r102_total_deposit_bank = r102_total_deposit_bank;
+					}
+					public String getR103_deposit_size() {
+						return r103_deposit_size;
+					}
+					public void setR103_deposit_size(String r103_deposit_size) {
+						this.r103_deposit_size = r103_deposit_size;
+					}
+					public String getR103_deposit_type() {
+						return r103_deposit_type;
+					}
+					public void setR103_deposit_type(String r103_deposit_type) {
+						this.r103_deposit_type = r103_deposit_type;
+					}
+					public BigDecimal getR103_deposit_excluding_number() {
+						return r103_deposit_excluding_number;
+					}
+					public void setR103_deposit_excluding_number(BigDecimal r103_deposit_excluding_number) {
+						this.r103_deposit_excluding_number = r103_deposit_excluding_number;
+					}
+					public BigDecimal getR103_deposit_excluding_amount() {
+						return r103_deposit_excluding_amount;
+					}
+					public void setR103_deposit_excluding_amount(BigDecimal r103_deposit_excluding_amount) {
+						this.r103_deposit_excluding_amount = r103_deposit_excluding_amount;
+					}
+					public BigDecimal getR103_deposit_foreign_number() {
+						return r103_deposit_foreign_number;
+					}
+					public void setR103_deposit_foreign_number(BigDecimal r103_deposit_foreign_number) {
+						this.r103_deposit_foreign_number = r103_deposit_foreign_number;
+					}
+					public BigDecimal getR103_deposit_foreign_amount() {
+						return r103_deposit_foreign_amount;
+					}
+					public void setR103_deposit_foreign_amount(BigDecimal r103_deposit_foreign_amount) {
+						this.r103_deposit_foreign_amount = r103_deposit_foreign_amount;
+					}
+					public BigDecimal getR103_total_number() {
+						return r103_total_number;
+					}
+					public void setR103_total_number(BigDecimal r103_total_number) {
+						this.r103_total_number = r103_total_number;
+					}
+					public BigDecimal getR103_total_amount() {
+						return r103_total_amount;
+					}
+					public void setR103_total_amount(BigDecimal r103_total_amount) {
+						this.r103_total_amount = r103_total_amount;
+					}
+					public BigDecimal getR103_total_deposit_bank() {
+						return r103_total_deposit_bank;
+					}
+					public void setR103_total_deposit_bank(BigDecimal r103_total_deposit_bank) {
+						this.r103_total_deposit_bank = r103_total_deposit_bank;
+					}
+					public String getR104_deposit_size() {
+						return r104_deposit_size;
+					}
+					public void setR104_deposit_size(String r104_deposit_size) {
+						this.r104_deposit_size = r104_deposit_size;
+					}
+					public String getR104_deposit_type() {
+						return r104_deposit_type;
+					}
+					public void setR104_deposit_type(String r104_deposit_type) {
+						this.r104_deposit_type = r104_deposit_type;
+					}
+					public BigDecimal getR104_deposit_excluding_number() {
+						return r104_deposit_excluding_number;
+					}
+					public void setR104_deposit_excluding_number(BigDecimal r104_deposit_excluding_number) {
+						this.r104_deposit_excluding_number = r104_deposit_excluding_number;
+					}
+					public BigDecimal getR104_deposit_excluding_amount() {
+						return r104_deposit_excluding_amount;
+					}
+					public void setR104_deposit_excluding_amount(BigDecimal r104_deposit_excluding_amount) {
+						this.r104_deposit_excluding_amount = r104_deposit_excluding_amount;
+					}
+					public BigDecimal getR104_deposit_foreign_number() {
+						return r104_deposit_foreign_number;
+					}
+					public void setR104_deposit_foreign_number(BigDecimal r104_deposit_foreign_number) {
+						this.r104_deposit_foreign_number = r104_deposit_foreign_number;
+					}
+					public BigDecimal getR104_deposit_foreign_amount() {
+						return r104_deposit_foreign_amount;
+					}
+					public void setR104_deposit_foreign_amount(BigDecimal r104_deposit_foreign_amount) {
+						this.r104_deposit_foreign_amount = r104_deposit_foreign_amount;
+					}
+					public BigDecimal getR104_total_number() {
+						return r104_total_number;
+					}
+					public void setR104_total_number(BigDecimal r104_total_number) {
+						this.r104_total_number = r104_total_number;
+					}
+					public BigDecimal getR104_total_amount() {
+						return r104_total_amount;
+					}
+					public void setR104_total_amount(BigDecimal r104_total_amount) {
+						this.r104_total_amount = r104_total_amount;
+					}
+					public BigDecimal getR104_total_deposit_bank() {
+						return r104_total_deposit_bank;
+					}
+					public void setR104_total_deposit_bank(BigDecimal r104_total_deposit_bank) {
+						this.r104_total_deposit_bank = r104_total_deposit_bank;
+					}
+					public String getR105_deposit_size() {
+						return r105_deposit_size;
+					}
+					public void setR105_deposit_size(String r105_deposit_size) {
+						this.r105_deposit_size = r105_deposit_size;
+					}
+					public String getR105_deposit_type() {
+						return r105_deposit_type;
+					}
+					public void setR105_deposit_type(String r105_deposit_type) {
+						this.r105_deposit_type = r105_deposit_type;
+					}
+					public BigDecimal getR105_deposit_excluding_number() {
+						return r105_deposit_excluding_number;
+					}
+					public void setR105_deposit_excluding_number(BigDecimal r105_deposit_excluding_number) {
+						this.r105_deposit_excluding_number = r105_deposit_excluding_number;
+					}
+					public BigDecimal getR105_deposit_excluding_amount() {
+						return r105_deposit_excluding_amount;
+					}
+					public void setR105_deposit_excluding_amount(BigDecimal r105_deposit_excluding_amount) {
+						this.r105_deposit_excluding_amount = r105_deposit_excluding_amount;
+					}
+					public BigDecimal getR105_deposit_foreign_number() {
+						return r105_deposit_foreign_number;
+					}
+					public void setR105_deposit_foreign_number(BigDecimal r105_deposit_foreign_number) {
+						this.r105_deposit_foreign_number = r105_deposit_foreign_number;
+					}
+					public BigDecimal getR105_deposit_foreign_amount() {
+						return r105_deposit_foreign_amount;
+					}
+					public void setR105_deposit_foreign_amount(BigDecimal r105_deposit_foreign_amount) {
+						this.r105_deposit_foreign_amount = r105_deposit_foreign_amount;
+					}
+					public BigDecimal getR105_total_number() {
+						return r105_total_number;
+					}
+					public void setR105_total_number(BigDecimal r105_total_number) {
+						this.r105_total_number = r105_total_number;
+					}
+					public BigDecimal getR105_total_amount() {
+						return r105_total_amount;
+					}
+					public void setR105_total_amount(BigDecimal r105_total_amount) {
+						this.r105_total_amount = r105_total_amount;
+					}
+					public BigDecimal getR105_total_deposit_bank() {
+						return r105_total_deposit_bank;
+					}
+					public void setR105_total_deposit_bank(BigDecimal r105_total_deposit_bank) {
+						this.r105_total_deposit_bank = r105_total_deposit_bank;
+					}
+					public String getR106_deposit_size() {
+						return r106_deposit_size;
+					}
+					public void setR106_deposit_size(String r106_deposit_size) {
+						this.r106_deposit_size = r106_deposit_size;
+					}
+					public String getR106_deposit_type() {
+						return r106_deposit_type;
+					}
+					public void setR106_deposit_type(String r106_deposit_type) {
+						this.r106_deposit_type = r106_deposit_type;
+					}
+					public BigDecimal getR106_deposit_excluding_number() {
+						return r106_deposit_excluding_number;
+					}
+					public void setR106_deposit_excluding_number(BigDecimal r106_deposit_excluding_number) {
+						this.r106_deposit_excluding_number = r106_deposit_excluding_number;
+					}
+					public BigDecimal getR106_deposit_excluding_amount() {
+						return r106_deposit_excluding_amount;
+					}
+					public void setR106_deposit_excluding_amount(BigDecimal r106_deposit_excluding_amount) {
+						this.r106_deposit_excluding_amount = r106_deposit_excluding_amount;
+					}
+					public BigDecimal getR106_deposit_foreign_number() {
+						return r106_deposit_foreign_number;
+					}
+					public void setR106_deposit_foreign_number(BigDecimal r106_deposit_foreign_number) {
+						this.r106_deposit_foreign_number = r106_deposit_foreign_number;
+					}
+					public BigDecimal getR106_deposit_foreign_amount() {
+						return r106_deposit_foreign_amount;
+					}
+					public void setR106_deposit_foreign_amount(BigDecimal r106_deposit_foreign_amount) {
+						this.r106_deposit_foreign_amount = r106_deposit_foreign_amount;
+					}
+					public BigDecimal getR106_total_number() {
+						return r106_total_number;
+					}
+					public void setR106_total_number(BigDecimal r106_total_number) {
+						this.r106_total_number = r106_total_number;
+					}
+					public BigDecimal getR106_total_amount() {
+						return r106_total_amount;
+					}
+					public void setR106_total_amount(BigDecimal r106_total_amount) {
+						this.r106_total_amount = r106_total_amount;
+					}
+					public BigDecimal getR106_total_deposit_bank() {
+						return r106_total_deposit_bank;
+					}
+					public void setR106_total_deposit_bank(BigDecimal r106_total_deposit_bank) {
+						this.r106_total_deposit_bank = r106_total_deposit_bank;
+					}
+					public String getR107_deposit_size() {
+						return r107_deposit_size;
+					}
+					public void setR107_deposit_size(String r107_deposit_size) {
+						this.r107_deposit_size = r107_deposit_size;
+					}
+					public String getR107_deposit_type() {
+						return r107_deposit_type;
+					}
+					public void setR107_deposit_type(String r107_deposit_type) {
+						this.r107_deposit_type = r107_deposit_type;
+					}
+					public BigDecimal getR107_deposit_excluding_number() {
+						return r107_deposit_excluding_number;
+					}
+					public void setR107_deposit_excluding_number(BigDecimal r107_deposit_excluding_number) {
+						this.r107_deposit_excluding_number = r107_deposit_excluding_number;
+					}
+					public BigDecimal getR107_deposit_excluding_amount() {
+						return r107_deposit_excluding_amount;
+					}
+					public void setR107_deposit_excluding_amount(BigDecimal r107_deposit_excluding_amount) {
+						this.r107_deposit_excluding_amount = r107_deposit_excluding_amount;
+					}
+					public BigDecimal getR107_deposit_foreign_number() {
+						return r107_deposit_foreign_number;
+					}
+					public void setR107_deposit_foreign_number(BigDecimal r107_deposit_foreign_number) {
+						this.r107_deposit_foreign_number = r107_deposit_foreign_number;
+					}
+					public BigDecimal getR107_deposit_foreign_amount() {
+						return r107_deposit_foreign_amount;
+					}
+					public void setR107_deposit_foreign_amount(BigDecimal r107_deposit_foreign_amount) {
+						this.r107_deposit_foreign_amount = r107_deposit_foreign_amount;
+					}
+					public BigDecimal getR107_total_number() {
+						return r107_total_number;
+					}
+					public void setR107_total_number(BigDecimal r107_total_number) {
+						this.r107_total_number = r107_total_number;
+					}
+					public BigDecimal getR107_total_amount() {
+						return r107_total_amount;
+					}
+					public void setR107_total_amount(BigDecimal r107_total_amount) {
+						this.r107_total_amount = r107_total_amount;
+					}
+					public BigDecimal getR107_total_deposit_bank() {
+						return r107_total_deposit_bank;
+					}
+					public void setR107_total_deposit_bank(BigDecimal r107_total_deposit_bank) {
+						this.r107_total_deposit_bank = r107_total_deposit_bank;
+					}
+					public String getR108_deposit_size() {
+						return r108_deposit_size;
+					}
+					public void setR108_deposit_size(String r108_deposit_size) {
+						this.r108_deposit_size = r108_deposit_size;
+					}
+					public String getR108_deposit_type() {
+						return r108_deposit_type;
+					}
+					public void setR108_deposit_type(String r108_deposit_type) {
+						this.r108_deposit_type = r108_deposit_type;
+					}
+					public BigDecimal getR108_deposit_excluding_number() {
+						return r108_deposit_excluding_number;
+					}
+					public void setR108_deposit_excluding_number(BigDecimal r108_deposit_excluding_number) {
+						this.r108_deposit_excluding_number = r108_deposit_excluding_number;
+					}
+					public BigDecimal getR108_deposit_excluding_amount() {
+						return r108_deposit_excluding_amount;
+					}
+					public void setR108_deposit_excluding_amount(BigDecimal r108_deposit_excluding_amount) {
+						this.r108_deposit_excluding_amount = r108_deposit_excluding_amount;
+					}
+					public BigDecimal getR108_deposit_foreign_number() {
+						return r108_deposit_foreign_number;
+					}
+					public void setR108_deposit_foreign_number(BigDecimal r108_deposit_foreign_number) {
+						this.r108_deposit_foreign_number = r108_deposit_foreign_number;
+					}
+					public BigDecimal getR108_deposit_foreign_amount() {
+						return r108_deposit_foreign_amount;
+					}
+					public void setR108_deposit_foreign_amount(BigDecimal r108_deposit_foreign_amount) {
+						this.r108_deposit_foreign_amount = r108_deposit_foreign_amount;
+					}
+					public BigDecimal getR108_total_number() {
+						return r108_total_number;
+					}
+					public void setR108_total_number(BigDecimal r108_total_number) {
+						this.r108_total_number = r108_total_number;
+					}
+					public BigDecimal getR108_total_amount() {
+						return r108_total_amount;
+					}
+					public void setR108_total_amount(BigDecimal r108_total_amount) {
+						this.r108_total_amount = r108_total_amount;
+					}
+					public BigDecimal getR108_total_deposit_bank() {
+						return r108_total_deposit_bank;
+					}
+					public void setR108_total_deposit_bank(BigDecimal r108_total_deposit_bank) {
+						this.r108_total_deposit_bank = r108_total_deposit_bank;
+					}
+					public String getR109_deposit_size() {
+						return r109_deposit_size;
+					}
+					public void setR109_deposit_size(String r109_deposit_size) {
+						this.r109_deposit_size = r109_deposit_size;
+					}
+					public String getR109_deposit_type() {
+						return r109_deposit_type;
+					}
+					public void setR109_deposit_type(String r109_deposit_type) {
+						this.r109_deposit_type = r109_deposit_type;
+					}
+					public BigDecimal getR109_deposit_excluding_number() {
+						return r109_deposit_excluding_number;
+					}
+					public void setR109_deposit_excluding_number(BigDecimal r109_deposit_excluding_number) {
+						this.r109_deposit_excluding_number = r109_deposit_excluding_number;
+					}
+					public BigDecimal getR109_deposit_excluding_amount() {
+						return r109_deposit_excluding_amount;
+					}
+					public void setR109_deposit_excluding_amount(BigDecimal r109_deposit_excluding_amount) {
+						this.r109_deposit_excluding_amount = r109_deposit_excluding_amount;
+					}
+					public BigDecimal getR109_deposit_foreign_number() {
+						return r109_deposit_foreign_number;
+					}
+					public void setR109_deposit_foreign_number(BigDecimal r109_deposit_foreign_number) {
+						this.r109_deposit_foreign_number = r109_deposit_foreign_number;
+					}
+					public BigDecimal getR109_deposit_foreign_amount() {
+						return r109_deposit_foreign_amount;
+					}
+					public void setR109_deposit_foreign_amount(BigDecimal r109_deposit_foreign_amount) {
+						this.r109_deposit_foreign_amount = r109_deposit_foreign_amount;
+					}
+					public BigDecimal getR109_total_number() {
+						return r109_total_number;
+					}
+					public void setR109_total_number(BigDecimal r109_total_number) {
+						this.r109_total_number = r109_total_number;
+					}
+					public BigDecimal getR109_total_amount() {
+						return r109_total_amount;
+					}
+					public void setR109_total_amount(BigDecimal r109_total_amount) {
+						this.r109_total_amount = r109_total_amount;
+					}
+					public BigDecimal getR109_total_deposit_bank() {
+						return r109_total_deposit_bank;
+					}
+					public void setR109_total_deposit_bank(BigDecimal r109_total_deposit_bank) {
+						this.r109_total_deposit_bank = r109_total_deposit_bank;
+					}
+					public String getR110_deposit_size() {
+						return r110_deposit_size;
+					}
+					public void setR110_deposit_size(String r110_deposit_size) {
+						this.r110_deposit_size = r110_deposit_size;
+					}
+					public String getR110_deposit_type() {
+						return r110_deposit_type;
+					}
+					public void setR110_deposit_type(String r110_deposit_type) {
+						this.r110_deposit_type = r110_deposit_type;
+					}
+					public BigDecimal getR110_deposit_excluding_number() {
+						return r110_deposit_excluding_number;
+					}
+					public void setR110_deposit_excluding_number(BigDecimal r110_deposit_excluding_number) {
+						this.r110_deposit_excluding_number = r110_deposit_excluding_number;
+					}
+					public BigDecimal getR110_deposit_excluding_amount() {
+						return r110_deposit_excluding_amount;
+					}
+					public void setR110_deposit_excluding_amount(BigDecimal r110_deposit_excluding_amount) {
+						this.r110_deposit_excluding_amount = r110_deposit_excluding_amount;
+					}
+					public BigDecimal getR110_deposit_foreign_number() {
+						return r110_deposit_foreign_number;
+					}
+					public void setR110_deposit_foreign_number(BigDecimal r110_deposit_foreign_number) {
+						this.r110_deposit_foreign_number = r110_deposit_foreign_number;
+					}
+					public BigDecimal getR110_deposit_foreign_amount() {
+						return r110_deposit_foreign_amount;
+					}
+					public void setR110_deposit_foreign_amount(BigDecimal r110_deposit_foreign_amount) {
+						this.r110_deposit_foreign_amount = r110_deposit_foreign_amount;
+					}
+					public BigDecimal getR110_total_number() {
+						return r110_total_number;
+					}
+					public void setR110_total_number(BigDecimal r110_total_number) {
+						this.r110_total_number = r110_total_number;
+					}
+					public BigDecimal getR110_total_amount() {
+						return r110_total_amount;
+					}
+					public void setR110_total_amount(BigDecimal r110_total_amount) {
+						this.r110_total_amount = r110_total_amount;
+					}
+					public BigDecimal getR110_total_deposit_bank() {
+						return r110_total_deposit_bank;
+					}
+					public void setR110_total_deposit_bank(BigDecimal r110_total_deposit_bank) {
+						this.r110_total_deposit_bank = r110_total_deposit_bank;
+					}
+					public String getR111_deposit_size() {
+						return r111_deposit_size;
+					}
+					public void setR111_deposit_size(String r111_deposit_size) {
+						this.r111_deposit_size = r111_deposit_size;
+					}
+					public String getR111_deposit_type() {
+						return r111_deposit_type;
+					}
+					public void setR111_deposit_type(String r111_deposit_type) {
+						this.r111_deposit_type = r111_deposit_type;
+					}
+					public BigDecimal getR111_deposit_excluding_number() {
+						return r111_deposit_excluding_number;
+					}
+					public void setR111_deposit_excluding_number(BigDecimal r111_deposit_excluding_number) {
+						this.r111_deposit_excluding_number = r111_deposit_excluding_number;
+					}
+					public BigDecimal getR111_deposit_excluding_amount() {
+						return r111_deposit_excluding_amount;
+					}
+					public void setR111_deposit_excluding_amount(BigDecimal r111_deposit_excluding_amount) {
+						this.r111_deposit_excluding_amount = r111_deposit_excluding_amount;
+					}
+					public BigDecimal getR111_deposit_foreign_number() {
+						return r111_deposit_foreign_number;
+					}
+					public void setR111_deposit_foreign_number(BigDecimal r111_deposit_foreign_number) {
+						this.r111_deposit_foreign_number = r111_deposit_foreign_number;
+					}
+					public BigDecimal getR111_deposit_foreign_amount() {
+						return r111_deposit_foreign_amount;
+					}
+					public void setR111_deposit_foreign_amount(BigDecimal r111_deposit_foreign_amount) {
+						this.r111_deposit_foreign_amount = r111_deposit_foreign_amount;
+					}
+					public BigDecimal getR111_total_number() {
+						return r111_total_number;
+					}
+					public void setR111_total_number(BigDecimal r111_total_number) {
+						this.r111_total_number = r111_total_number;
+					}
+					public BigDecimal getR111_total_amount() {
+						return r111_total_amount;
+					}
+					public void setR111_total_amount(BigDecimal r111_total_amount) {
+						this.r111_total_amount = r111_total_amount;
+					}
+					public BigDecimal getR111_total_deposit_bank() {
+						return r111_total_deposit_bank;
+					}
+					public void setR111_total_deposit_bank(BigDecimal r111_total_deposit_bank) {
+						this.r111_total_deposit_bank = r111_total_deposit_bank;
+					}
+					
+					public Date getREPORT_DATE() {
+						return REPORT_DATE;
+					}
+
+					public void setREPORT_DATE(Date REPORT_DATE) {
+						this.REPORT_DATE = REPORT_DATE;
+					}
+
+					public BigDecimal getREPORT_VERSION() {
+						return REPORT_VERSION;
+					}
+
+					public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
+						this.REPORT_VERSION = REPORT_VERSION;
+					}
+
+					public Date getREPORT_RESUBDATE() {
+						return REPORT_RESUBDATE;
+					}
+
+					public void setREPORT_RESUBDATE(Date REPORT_RESUBDATE) {
+						this.REPORT_RESUBDATE = REPORT_RESUBDATE;
+					}
+					
+					public String getREPORT_FREQUENCY() {
+						return REPORT_FREQUENCY;
+					}
+
+					public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+						REPORT_FREQUENCY = rEPORT_FREQUENCY;
+					}
+
+					public String getREPORT_CODE() {
+						return REPORT_CODE;
+					}
+
+					public void setREPORT_CODE(String rEPORT_CODE) {
+						REPORT_CODE = rEPORT_CODE;
+					}
+
+					public String getREPORT_DESC() {
+						return REPORT_DESC;
+					}
+
+					public void setREPORT_DESC(String rEPORT_DESC) {
+						REPORT_DESC = rEPORT_DESC;
+					}
+
+					public String getENTITY_FLG() {
+						return ENTITY_FLG;
+					}
+
+					public void setENTITY_FLG(String eNTITY_FLG) {
+						ENTITY_FLG = eNTITY_FLG;
+					}
+
+					public String getMODIFY_FLG() {
+						return MODIFY_FLG;
+					}
+
+					public void setMODIFY_FLG(String mODIFY_FLG) {
+						MODIFY_FLG = mODIFY_FLG;
+					}
+
+					public String getDEL_FLG() {
+						return DEL_FLG;
+					}
+
+					public void setDEL_FLG(String dEL_FLG) {
+						DEL_FLG = dEL_FLG;
+					}
+
+				}
+					
+		
+				// SUMMARY MANUAL 
+				// ROW MAPPER
+
+				class MDISB1_RowMapper_Archival_Manual implements RowMapper<MDISB1_Archival_Summary_Manual> {
+
+					@Override
+									public MDISB1_Archival_Summary_Manual mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+						MDISB1_Archival_Summary_Manual obj = new MDISB1_Archival_Summary_Manual();
+				
+				
+						obj.setR7_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R7_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR8_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R8_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR9_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R9_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR10_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R10_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR11_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R11_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR12_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R12_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR13_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R13_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR14_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R14_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR15_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R15_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR16_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R16_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR17_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R17_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR18_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R18_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR19_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R19_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR20_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R20_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR21_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R21_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR22_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R22_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR23_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R23_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR24_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R24_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR25_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R25_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR26_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R26_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR27_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R27_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR28_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R28_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR29_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R29_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR30_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R30_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR31_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R31_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR32_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R32_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR33_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R33_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR34_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R34_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR35_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R35_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR36_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R36_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR37_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R37_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR38_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R38_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR39_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R39_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR40_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R40_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR41_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R41_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR42_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R42_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR43_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R43_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR44_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R44_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR45_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R45_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR46_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R46_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR47_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R47_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR48_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R48_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR49_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R49_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR50_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R50_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR51_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R51_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR52_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R52_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR53_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R53_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR54_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R54_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR55_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R55_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR56_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R56_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR57_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R57_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR58_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R58_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR59_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R59_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR60_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R60_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR61_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R61_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR62_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R62_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR63_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R63_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR64_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R64_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR65_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R65_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR66_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R66_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR67_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R67_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR68_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R68_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR69_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R69_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR70_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R70_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR71_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R71_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR72_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R72_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR73_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R73_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR74_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R74_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR75_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R75_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR76_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R76_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR77_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R77_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR78_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R78_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR79_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R79_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR80_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R80_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR81_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R81_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR82_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R82_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR83_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R83_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR84_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R84_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR85_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R85_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR86_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R86_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR87_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R87_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR88_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R88_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR89_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R89_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR90_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R90_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR91_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R91_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR92_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R92_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR93_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R93_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR94_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R94_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR95_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R95_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR96_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R96_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR97_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R97_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR98_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R98_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR99_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R99_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR100_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R100_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR101_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R101_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR102_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R102_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR103_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R103_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR104_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R104_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR105_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R105_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR106_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R106_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR107_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R107_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR108_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R108_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR109_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R109_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR110_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R110_TOTAL_DEPOSIT_EXCEED"));
+						obj.setR111_TOTAL_DEPOSIT_EXCEED(rs.getBigDecimal("R111_TOTAL_DEPOSIT_EXCEED"));
+				
+						// COMMON FIELDS
+						obj.setReport_date(rs.getDate("REPORT_DATE"));
+						obj.setReport_version(rs.getBigDecimal("REPORT_VERSION"));
+						obj.setReport_resubdate(rs.getDate("REPORT_RESUBDATE"));
+						obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+						obj.setReport_code(rs.getString("REPORT_CODE"));
+						obj.setReport_desc(rs.getString("REPORT_DESC"));
+						obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+						obj.setModify_flg(rs.getString("MODIFY_FLG"));
+						obj.setDel_flg(rs.getString("DEL_FLG"));
+
+						return obj;
+					}
+				}
+
+				
+				public static class MDISB1_Archival_Summary_Manual {
+
+					private BigDecimal	R7_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R8_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R9_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R10_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R11_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R12_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R13_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R14_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R15_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R16_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R17_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R18_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R19_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R20_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R21_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R22_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R23_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R24_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R25_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R26_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R27_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R28_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R29_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R30_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R31_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R32_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R33_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R34_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R35_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R36_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R37_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R38_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R39_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R40_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R41_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R42_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R43_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R44_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R45_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R46_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R47_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R48_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R49_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R50_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R51_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R52_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R53_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R54_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R55_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R56_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R57_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R58_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R59_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R60_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R61_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R62_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R63_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R64_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R65_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R66_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R67_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R68_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R69_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R70_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R71_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R72_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R73_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R74_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R75_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R76_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R77_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R78_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R79_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R80_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R81_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R82_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R83_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R84_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R85_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R86_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R87_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R88_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R89_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R90_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R91_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R92_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R93_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R94_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R95_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R96_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R97_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R98_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R99_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R100_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R101_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R102_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R103_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R104_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R105_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R106_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R107_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R108_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R109_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R110_TOTAL_DEPOSIT_EXCEED;
+					private BigDecimal	R111_TOTAL_DEPOSIT_EXCEED;
+					@Id
+					private Date	report_date;
+					private BigDecimal	report_version;
+					@Id
+					private Date	report_resubdate;
+					private String	report_frequency;
+					private String	report_code;
+					private String	report_desc;
+					private String	entity_flg;
+					private String	modify_flg;
+					private String	del_flg;
+					public BigDecimal getR7_TOTAL_DEPOSIT_EXCEED() {
+						return R7_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR7_TOTAL_DEPOSIT_EXCEED(BigDecimal R7_TOTAL_DEPOSIT_EXCEED) {
+						this.R7_TOTAL_DEPOSIT_EXCEED = R7_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR8_TOTAL_DEPOSIT_EXCEED() {
+						return R8_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR8_TOTAL_DEPOSIT_EXCEED(BigDecimal R8_TOTAL_DEPOSIT_EXCEED) {
+						this.R8_TOTAL_DEPOSIT_EXCEED = R8_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR9_TOTAL_DEPOSIT_EXCEED() {
+						return R9_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR9_TOTAL_DEPOSIT_EXCEED(BigDecimal R9_TOTAL_DEPOSIT_EXCEED) {
+						this.R9_TOTAL_DEPOSIT_EXCEED = R9_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR10_TOTAL_DEPOSIT_EXCEED() {
+						return R10_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR10_TOTAL_DEPOSIT_EXCEED(BigDecimal R10_TOTAL_DEPOSIT_EXCEED) {
+						this.R10_TOTAL_DEPOSIT_EXCEED = R10_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR11_TOTAL_DEPOSIT_EXCEED() {
+						return R11_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR11_TOTAL_DEPOSIT_EXCEED(BigDecimal R11_TOTAL_DEPOSIT_EXCEED) {
+						this.R11_TOTAL_DEPOSIT_EXCEED = R11_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR12_TOTAL_DEPOSIT_EXCEED() {
+						return R12_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR12_TOTAL_DEPOSIT_EXCEED(BigDecimal R12_TOTAL_DEPOSIT_EXCEED) {
+						this.R12_TOTAL_DEPOSIT_EXCEED = R12_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR13_TOTAL_DEPOSIT_EXCEED() {
+						return R13_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR13_TOTAL_DEPOSIT_EXCEED(BigDecimal R13_TOTAL_DEPOSIT_EXCEED) {
+						this.R13_TOTAL_DEPOSIT_EXCEED = R13_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR14_TOTAL_DEPOSIT_EXCEED() {
+						return R14_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR14_TOTAL_DEPOSIT_EXCEED(BigDecimal R14_TOTAL_DEPOSIT_EXCEED) {
+						this.R14_TOTAL_DEPOSIT_EXCEED = R14_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR15_TOTAL_DEPOSIT_EXCEED() {
+						return R15_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR15_TOTAL_DEPOSIT_EXCEED(BigDecimal R15_TOTAL_DEPOSIT_EXCEED) {
+						this.R15_TOTAL_DEPOSIT_EXCEED = R15_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR16_TOTAL_DEPOSIT_EXCEED() {
+						return R16_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR16_TOTAL_DEPOSIT_EXCEED(BigDecimal R16_TOTAL_DEPOSIT_EXCEED) {
+						this.R16_TOTAL_DEPOSIT_EXCEED = R16_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR17_TOTAL_DEPOSIT_EXCEED() {
+						return R17_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR17_TOTAL_DEPOSIT_EXCEED(BigDecimal R17_TOTAL_DEPOSIT_EXCEED) {
+						this.R17_TOTAL_DEPOSIT_EXCEED = R17_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR18_TOTAL_DEPOSIT_EXCEED() {
+						return R18_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR18_TOTAL_DEPOSIT_EXCEED(BigDecimal R18_TOTAL_DEPOSIT_EXCEED) {
+						this.R18_TOTAL_DEPOSIT_EXCEED = R18_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR19_TOTAL_DEPOSIT_EXCEED() {
+						return R19_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR19_TOTAL_DEPOSIT_EXCEED(BigDecimal R19_TOTAL_DEPOSIT_EXCEED) {
+						this.R19_TOTAL_DEPOSIT_EXCEED = R19_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR20_TOTAL_DEPOSIT_EXCEED() {
+						return R20_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR20_TOTAL_DEPOSIT_EXCEED(BigDecimal R20_TOTAL_DEPOSIT_EXCEED) {
+						this.R20_TOTAL_DEPOSIT_EXCEED = R20_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR21_TOTAL_DEPOSIT_EXCEED() {
+						return R21_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR21_TOTAL_DEPOSIT_EXCEED(BigDecimal R21_TOTAL_DEPOSIT_EXCEED) {
+						this.R21_TOTAL_DEPOSIT_EXCEED = R21_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR22_TOTAL_DEPOSIT_EXCEED() {
+						return R22_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR22_TOTAL_DEPOSIT_EXCEED(BigDecimal R22_TOTAL_DEPOSIT_EXCEED) {
+						this.R22_TOTAL_DEPOSIT_EXCEED = R22_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR23_TOTAL_DEPOSIT_EXCEED() {
+						return R23_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR23_TOTAL_DEPOSIT_EXCEED(BigDecimal R23_TOTAL_DEPOSIT_EXCEED) {
+						this.R23_TOTAL_DEPOSIT_EXCEED = R23_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR24_TOTAL_DEPOSIT_EXCEED() {
+						return R24_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR24_TOTAL_DEPOSIT_EXCEED(BigDecimal R24_TOTAL_DEPOSIT_EXCEED) {
+						this.R24_TOTAL_DEPOSIT_EXCEED = R24_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR25_TOTAL_DEPOSIT_EXCEED() {
+						return R25_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR25_TOTAL_DEPOSIT_EXCEED(BigDecimal R25_TOTAL_DEPOSIT_EXCEED) {
+						this.R25_TOTAL_DEPOSIT_EXCEED = R25_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR26_TOTAL_DEPOSIT_EXCEED() {
+						return R26_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR26_TOTAL_DEPOSIT_EXCEED(BigDecimal R26_TOTAL_DEPOSIT_EXCEED) {
+						this.R26_TOTAL_DEPOSIT_EXCEED = R26_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR27_TOTAL_DEPOSIT_EXCEED() {
+						return R27_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR27_TOTAL_DEPOSIT_EXCEED(BigDecimal R27_TOTAL_DEPOSIT_EXCEED) {
+						this.R27_TOTAL_DEPOSIT_EXCEED = R27_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR28_TOTAL_DEPOSIT_EXCEED() {
+						return R28_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR28_TOTAL_DEPOSIT_EXCEED(BigDecimal R28_TOTAL_DEPOSIT_EXCEED) {
+						this.R28_TOTAL_DEPOSIT_EXCEED = R28_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR29_TOTAL_DEPOSIT_EXCEED() {
+						return R29_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR29_TOTAL_DEPOSIT_EXCEED(BigDecimal R29_TOTAL_DEPOSIT_EXCEED) {
+						this.R29_TOTAL_DEPOSIT_EXCEED = R29_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR30_TOTAL_DEPOSIT_EXCEED() {
+						return R30_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR30_TOTAL_DEPOSIT_EXCEED(BigDecimal R30_TOTAL_DEPOSIT_EXCEED) {
+						this.R30_TOTAL_DEPOSIT_EXCEED = R30_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR31_TOTAL_DEPOSIT_EXCEED() {
+						return R31_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR31_TOTAL_DEPOSIT_EXCEED(BigDecimal R31_TOTAL_DEPOSIT_EXCEED) {
+						this.R31_TOTAL_DEPOSIT_EXCEED = R31_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR32_TOTAL_DEPOSIT_EXCEED() {
+						return R32_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR32_TOTAL_DEPOSIT_EXCEED(BigDecimal R32_TOTAL_DEPOSIT_EXCEED) {
+						this.R32_TOTAL_DEPOSIT_EXCEED = R32_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR33_TOTAL_DEPOSIT_EXCEED() {
+						return R33_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR33_TOTAL_DEPOSIT_EXCEED(BigDecimal R33_TOTAL_DEPOSIT_EXCEED) {
+						this.R33_TOTAL_DEPOSIT_EXCEED = R33_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR34_TOTAL_DEPOSIT_EXCEED() {
+						return R34_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR34_TOTAL_DEPOSIT_EXCEED(BigDecimal R34_TOTAL_DEPOSIT_EXCEED) {
+						this.R34_TOTAL_DEPOSIT_EXCEED = R34_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR35_TOTAL_DEPOSIT_EXCEED() {
+						return R35_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR35_TOTAL_DEPOSIT_EXCEED(BigDecimal R35_TOTAL_DEPOSIT_EXCEED) {
+						this.R35_TOTAL_DEPOSIT_EXCEED = R35_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR36_TOTAL_DEPOSIT_EXCEED() {
+						return R36_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR36_TOTAL_DEPOSIT_EXCEED(BigDecimal R36_TOTAL_DEPOSIT_EXCEED) {
+						this.R36_TOTAL_DEPOSIT_EXCEED = R36_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR37_TOTAL_DEPOSIT_EXCEED() {
+						return R37_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR37_TOTAL_DEPOSIT_EXCEED(BigDecimal R37_TOTAL_DEPOSIT_EXCEED) {
+						this.R37_TOTAL_DEPOSIT_EXCEED = R37_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR38_TOTAL_DEPOSIT_EXCEED() {
+						return R38_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR38_TOTAL_DEPOSIT_EXCEED(BigDecimal R38_TOTAL_DEPOSIT_EXCEED) {
+						this.R38_TOTAL_DEPOSIT_EXCEED = R38_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR39_TOTAL_DEPOSIT_EXCEED() {
+						return R39_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR39_TOTAL_DEPOSIT_EXCEED(BigDecimal R39_TOTAL_DEPOSIT_EXCEED) {
+						this.R39_TOTAL_DEPOSIT_EXCEED = R39_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR40_TOTAL_DEPOSIT_EXCEED() {
+						return R40_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR40_TOTAL_DEPOSIT_EXCEED(BigDecimal R40_TOTAL_DEPOSIT_EXCEED) {
+						this.R40_TOTAL_DEPOSIT_EXCEED = R40_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR41_TOTAL_DEPOSIT_EXCEED() {
+						return R41_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR41_TOTAL_DEPOSIT_EXCEED(BigDecimal R41_TOTAL_DEPOSIT_EXCEED) {
+						this.R41_TOTAL_DEPOSIT_EXCEED = R41_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR42_TOTAL_DEPOSIT_EXCEED() {
+						return R42_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR42_TOTAL_DEPOSIT_EXCEED(BigDecimal R42_TOTAL_DEPOSIT_EXCEED) {
+						this.R42_TOTAL_DEPOSIT_EXCEED = R42_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR43_TOTAL_DEPOSIT_EXCEED() {
+						return R43_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR43_TOTAL_DEPOSIT_EXCEED(BigDecimal R43_TOTAL_DEPOSIT_EXCEED) {
+						this.R43_TOTAL_DEPOSIT_EXCEED = R43_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR44_TOTAL_DEPOSIT_EXCEED() {
+						return R44_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR44_TOTAL_DEPOSIT_EXCEED(BigDecimal R44_TOTAL_DEPOSIT_EXCEED) {
+						this.R44_TOTAL_DEPOSIT_EXCEED = R44_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR45_TOTAL_DEPOSIT_EXCEED() {
+						return R45_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR45_TOTAL_DEPOSIT_EXCEED(BigDecimal R45_TOTAL_DEPOSIT_EXCEED) {
+						this.R45_TOTAL_DEPOSIT_EXCEED = R45_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR46_TOTAL_DEPOSIT_EXCEED() {
+						return R46_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR46_TOTAL_DEPOSIT_EXCEED(BigDecimal R46_TOTAL_DEPOSIT_EXCEED) {
+						this.R46_TOTAL_DEPOSIT_EXCEED = R46_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR47_TOTAL_DEPOSIT_EXCEED() {
+						return R47_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR47_TOTAL_DEPOSIT_EXCEED(BigDecimal R47_TOTAL_DEPOSIT_EXCEED) {
+						this.R47_TOTAL_DEPOSIT_EXCEED = R47_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR48_TOTAL_DEPOSIT_EXCEED() {
+						return R48_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR48_TOTAL_DEPOSIT_EXCEED(BigDecimal R48_TOTAL_DEPOSIT_EXCEED) {
+						this.R48_TOTAL_DEPOSIT_EXCEED = R48_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR49_TOTAL_DEPOSIT_EXCEED() {
+						return R49_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR49_TOTAL_DEPOSIT_EXCEED(BigDecimal R49_TOTAL_DEPOSIT_EXCEED) {
+						this.R49_TOTAL_DEPOSIT_EXCEED = R49_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR50_TOTAL_DEPOSIT_EXCEED() {
+						return R50_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR50_TOTAL_DEPOSIT_EXCEED(BigDecimal R50_TOTAL_DEPOSIT_EXCEED) {
+						this.R50_TOTAL_DEPOSIT_EXCEED = R50_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR51_TOTAL_DEPOSIT_EXCEED() {
+						return R51_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR51_TOTAL_DEPOSIT_EXCEED(BigDecimal R51_TOTAL_DEPOSIT_EXCEED) {
+						this.R51_TOTAL_DEPOSIT_EXCEED = R51_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR52_TOTAL_DEPOSIT_EXCEED() {
+						return R52_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR52_TOTAL_DEPOSIT_EXCEED(BigDecimal R52_TOTAL_DEPOSIT_EXCEED) {
+						this.R52_TOTAL_DEPOSIT_EXCEED = R52_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR53_TOTAL_DEPOSIT_EXCEED() {
+						return R53_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR53_TOTAL_DEPOSIT_EXCEED(BigDecimal R53_TOTAL_DEPOSIT_EXCEED) {
+						this.R53_TOTAL_DEPOSIT_EXCEED = R53_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR54_TOTAL_DEPOSIT_EXCEED() {
+						return R54_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR54_TOTAL_DEPOSIT_EXCEED(BigDecimal R54_TOTAL_DEPOSIT_EXCEED) {
+						this.R54_TOTAL_DEPOSIT_EXCEED = R54_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR55_TOTAL_DEPOSIT_EXCEED() {
+						return R55_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR55_TOTAL_DEPOSIT_EXCEED(BigDecimal R55_TOTAL_DEPOSIT_EXCEED) {
+						this.R55_TOTAL_DEPOSIT_EXCEED = R55_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR56_TOTAL_DEPOSIT_EXCEED() {
+						return R56_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR56_TOTAL_DEPOSIT_EXCEED(BigDecimal R56_TOTAL_DEPOSIT_EXCEED) {
+						this.R56_TOTAL_DEPOSIT_EXCEED = R56_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR57_TOTAL_DEPOSIT_EXCEED() {
+						return R57_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR57_TOTAL_DEPOSIT_EXCEED(BigDecimal R57_TOTAL_DEPOSIT_EXCEED) {
+						this.R57_TOTAL_DEPOSIT_EXCEED = R57_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR58_TOTAL_DEPOSIT_EXCEED() {
+						return R58_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR58_TOTAL_DEPOSIT_EXCEED(BigDecimal R58_TOTAL_DEPOSIT_EXCEED) {
+						this.R58_TOTAL_DEPOSIT_EXCEED = R58_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR59_TOTAL_DEPOSIT_EXCEED() {
+						return R59_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR59_TOTAL_DEPOSIT_EXCEED(BigDecimal R59_TOTAL_DEPOSIT_EXCEED) {
+						this.R59_TOTAL_DEPOSIT_EXCEED = R59_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR60_TOTAL_DEPOSIT_EXCEED() {
+						return R60_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR60_TOTAL_DEPOSIT_EXCEED(BigDecimal R60_TOTAL_DEPOSIT_EXCEED) {
+						this.R60_TOTAL_DEPOSIT_EXCEED = R60_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR61_TOTAL_DEPOSIT_EXCEED() {
+						return R61_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR61_TOTAL_DEPOSIT_EXCEED(BigDecimal R61_TOTAL_DEPOSIT_EXCEED) {
+						this.R61_TOTAL_DEPOSIT_EXCEED = R61_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR62_TOTAL_DEPOSIT_EXCEED() {
+						return R62_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR62_TOTAL_DEPOSIT_EXCEED(BigDecimal R62_TOTAL_DEPOSIT_EXCEED) {
+						this.R62_TOTAL_DEPOSIT_EXCEED = R62_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR63_TOTAL_DEPOSIT_EXCEED() {
+						return R63_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR63_TOTAL_DEPOSIT_EXCEED(BigDecimal R63_TOTAL_DEPOSIT_EXCEED) {
+						this.R63_TOTAL_DEPOSIT_EXCEED = R63_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR64_TOTAL_DEPOSIT_EXCEED() {
+						return R64_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR64_TOTAL_DEPOSIT_EXCEED(BigDecimal R64_TOTAL_DEPOSIT_EXCEED) {
+						this.R64_TOTAL_DEPOSIT_EXCEED = R64_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR65_TOTAL_DEPOSIT_EXCEED() {
+						return R65_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR65_TOTAL_DEPOSIT_EXCEED(BigDecimal R65_TOTAL_DEPOSIT_EXCEED) {
+						this.R65_TOTAL_DEPOSIT_EXCEED = R65_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR66_TOTAL_DEPOSIT_EXCEED() {
+						return R66_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR66_TOTAL_DEPOSIT_EXCEED(BigDecimal R66_TOTAL_DEPOSIT_EXCEED) {
+						this.R66_TOTAL_DEPOSIT_EXCEED = R66_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR67_TOTAL_DEPOSIT_EXCEED() {
+						return R67_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR67_TOTAL_DEPOSIT_EXCEED(BigDecimal R67_TOTAL_DEPOSIT_EXCEED) {
+						this.R67_TOTAL_DEPOSIT_EXCEED = R67_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR68_TOTAL_DEPOSIT_EXCEED() {
+						return R68_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR68_TOTAL_DEPOSIT_EXCEED(BigDecimal R68_TOTAL_DEPOSIT_EXCEED) {
+						this.R68_TOTAL_DEPOSIT_EXCEED = R68_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR69_TOTAL_DEPOSIT_EXCEED() {
+						return R69_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR69_TOTAL_DEPOSIT_EXCEED(BigDecimal R69_TOTAL_DEPOSIT_EXCEED) {
+						this.R69_TOTAL_DEPOSIT_EXCEED = R69_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR70_TOTAL_DEPOSIT_EXCEED() {
+						return R70_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR70_TOTAL_DEPOSIT_EXCEED(BigDecimal R70_TOTAL_DEPOSIT_EXCEED) {
+						this.R70_TOTAL_DEPOSIT_EXCEED = R70_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR71_TOTAL_DEPOSIT_EXCEED() {
+						return R71_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR71_TOTAL_DEPOSIT_EXCEED(BigDecimal R71_TOTAL_DEPOSIT_EXCEED) {
+						this.R71_TOTAL_DEPOSIT_EXCEED = R71_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR72_TOTAL_DEPOSIT_EXCEED() {
+						return R72_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR72_TOTAL_DEPOSIT_EXCEED(BigDecimal R72_TOTAL_DEPOSIT_EXCEED) {
+						this.R72_TOTAL_DEPOSIT_EXCEED = R72_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR73_TOTAL_DEPOSIT_EXCEED() {
+						return R73_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR73_TOTAL_DEPOSIT_EXCEED(BigDecimal R73_TOTAL_DEPOSIT_EXCEED) {
+						this.R73_TOTAL_DEPOSIT_EXCEED = R73_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR74_TOTAL_DEPOSIT_EXCEED() {
+						return R74_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR74_TOTAL_DEPOSIT_EXCEED(BigDecimal R74_TOTAL_DEPOSIT_EXCEED) {
+						this.R74_TOTAL_DEPOSIT_EXCEED = R74_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR75_TOTAL_DEPOSIT_EXCEED() {
+						return R75_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR75_TOTAL_DEPOSIT_EXCEED(BigDecimal R75_TOTAL_DEPOSIT_EXCEED) {
+						this.R75_TOTAL_DEPOSIT_EXCEED = R75_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR76_TOTAL_DEPOSIT_EXCEED() {
+						return R76_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR76_TOTAL_DEPOSIT_EXCEED(BigDecimal R76_TOTAL_DEPOSIT_EXCEED) {
+						this.R76_TOTAL_DEPOSIT_EXCEED = R76_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR77_TOTAL_DEPOSIT_EXCEED() {
+						return R77_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR77_TOTAL_DEPOSIT_EXCEED(BigDecimal R77_TOTAL_DEPOSIT_EXCEED) {
+						this.R77_TOTAL_DEPOSIT_EXCEED = R77_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR78_TOTAL_DEPOSIT_EXCEED() {
+						return R78_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR78_TOTAL_DEPOSIT_EXCEED(BigDecimal R78_TOTAL_DEPOSIT_EXCEED) {
+						this.R78_TOTAL_DEPOSIT_EXCEED = R78_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR79_TOTAL_DEPOSIT_EXCEED() {
+						return R79_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR79_TOTAL_DEPOSIT_EXCEED(BigDecimal R79_TOTAL_DEPOSIT_EXCEED) {
+						this.R79_TOTAL_DEPOSIT_EXCEED = R79_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR80_TOTAL_DEPOSIT_EXCEED() {
+						return R80_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR80_TOTAL_DEPOSIT_EXCEED(BigDecimal R80_TOTAL_DEPOSIT_EXCEED) {
+						this.R80_TOTAL_DEPOSIT_EXCEED = R80_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR81_TOTAL_DEPOSIT_EXCEED() {
+						return R81_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR81_TOTAL_DEPOSIT_EXCEED(BigDecimal R81_TOTAL_DEPOSIT_EXCEED) {
+						this.R81_TOTAL_DEPOSIT_EXCEED = R81_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR82_TOTAL_DEPOSIT_EXCEED() {
+						return R82_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR82_TOTAL_DEPOSIT_EXCEED(BigDecimal R82_TOTAL_DEPOSIT_EXCEED) {
+						this.R82_TOTAL_DEPOSIT_EXCEED = R82_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR83_TOTAL_DEPOSIT_EXCEED() {
+						return R83_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR83_TOTAL_DEPOSIT_EXCEED(BigDecimal R83_TOTAL_DEPOSIT_EXCEED) {
+						this.R83_TOTAL_DEPOSIT_EXCEED = R83_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR84_TOTAL_DEPOSIT_EXCEED() {
+						return R84_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR84_TOTAL_DEPOSIT_EXCEED(BigDecimal R84_TOTAL_DEPOSIT_EXCEED) {
+						this.R84_TOTAL_DEPOSIT_EXCEED = R84_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR85_TOTAL_DEPOSIT_EXCEED() {
+						return R85_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR85_TOTAL_DEPOSIT_EXCEED(BigDecimal R85_TOTAL_DEPOSIT_EXCEED) {
+						this.R85_TOTAL_DEPOSIT_EXCEED = R85_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR86_TOTAL_DEPOSIT_EXCEED() {
+						return R86_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR86_TOTAL_DEPOSIT_EXCEED(BigDecimal R86_TOTAL_DEPOSIT_EXCEED) {
+						this.R86_TOTAL_DEPOSIT_EXCEED = R86_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR87_TOTAL_DEPOSIT_EXCEED() {
+						return R87_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR87_TOTAL_DEPOSIT_EXCEED(BigDecimal R87_TOTAL_DEPOSIT_EXCEED) {
+						this.R87_TOTAL_DEPOSIT_EXCEED = R87_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR88_TOTAL_DEPOSIT_EXCEED() {
+						return R88_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR88_TOTAL_DEPOSIT_EXCEED(BigDecimal R88_TOTAL_DEPOSIT_EXCEED) {
+						this.R88_TOTAL_DEPOSIT_EXCEED = R88_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR89_TOTAL_DEPOSIT_EXCEED() {
+						return R89_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR89_TOTAL_DEPOSIT_EXCEED(BigDecimal R89_TOTAL_DEPOSIT_EXCEED) {
+						this.R89_TOTAL_DEPOSIT_EXCEED = R89_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR90_TOTAL_DEPOSIT_EXCEED() {
+						return R90_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR90_TOTAL_DEPOSIT_EXCEED(BigDecimal R90_TOTAL_DEPOSIT_EXCEED) {
+						this.R90_TOTAL_DEPOSIT_EXCEED = R90_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR91_TOTAL_DEPOSIT_EXCEED() {
+						return R91_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR91_TOTAL_DEPOSIT_EXCEED(BigDecimal R91_TOTAL_DEPOSIT_EXCEED) {
+						this.R91_TOTAL_DEPOSIT_EXCEED = R91_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR92_TOTAL_DEPOSIT_EXCEED() {
+						return R92_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR92_TOTAL_DEPOSIT_EXCEED(BigDecimal R92_TOTAL_DEPOSIT_EXCEED) {
+						this.R92_TOTAL_DEPOSIT_EXCEED = R92_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR93_TOTAL_DEPOSIT_EXCEED() {
+						return R93_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR93_TOTAL_DEPOSIT_EXCEED(BigDecimal R93_TOTAL_DEPOSIT_EXCEED) {
+						this.R93_TOTAL_DEPOSIT_EXCEED = R93_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR94_TOTAL_DEPOSIT_EXCEED() {
+						return R94_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR94_TOTAL_DEPOSIT_EXCEED(BigDecimal R94_TOTAL_DEPOSIT_EXCEED) {
+						this.R94_TOTAL_DEPOSIT_EXCEED = R94_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR95_TOTAL_DEPOSIT_EXCEED() {
+						return R95_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR95_TOTAL_DEPOSIT_EXCEED(BigDecimal R95_TOTAL_DEPOSIT_EXCEED) {
+						this.R95_TOTAL_DEPOSIT_EXCEED = R95_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR96_TOTAL_DEPOSIT_EXCEED() {
+						return R96_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR96_TOTAL_DEPOSIT_EXCEED(BigDecimal R96_TOTAL_DEPOSIT_EXCEED) {
+						this.R96_TOTAL_DEPOSIT_EXCEED = R96_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR97_TOTAL_DEPOSIT_EXCEED() {
+						return R97_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR97_TOTAL_DEPOSIT_EXCEED(BigDecimal R97_TOTAL_DEPOSIT_EXCEED) {
+						this.R97_TOTAL_DEPOSIT_EXCEED = R97_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR98_TOTAL_DEPOSIT_EXCEED() {
+						return R98_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR98_TOTAL_DEPOSIT_EXCEED(BigDecimal R98_TOTAL_DEPOSIT_EXCEED) {
+						this.R98_TOTAL_DEPOSIT_EXCEED = R98_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR99_TOTAL_DEPOSIT_EXCEED() {
+						return R99_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR99_TOTAL_DEPOSIT_EXCEED(BigDecimal R99_TOTAL_DEPOSIT_EXCEED) {
+						this.R99_TOTAL_DEPOSIT_EXCEED = R99_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR100_TOTAL_DEPOSIT_EXCEED() {
+						return R100_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR100_TOTAL_DEPOSIT_EXCEED(BigDecimal R100_TOTAL_DEPOSIT_EXCEED) {
+						this.R100_TOTAL_DEPOSIT_EXCEED = R100_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR101_TOTAL_DEPOSIT_EXCEED() {
+						return R101_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR101_TOTAL_DEPOSIT_EXCEED(BigDecimal R101_TOTAL_DEPOSIT_EXCEED) {
+						this.R101_TOTAL_DEPOSIT_EXCEED = R101_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR102_TOTAL_DEPOSIT_EXCEED() {
+						return R102_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR102_TOTAL_DEPOSIT_EXCEED(BigDecimal R102_TOTAL_DEPOSIT_EXCEED) {
+						this.R102_TOTAL_DEPOSIT_EXCEED = R102_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR103_TOTAL_DEPOSIT_EXCEED() {
+						return R103_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR103_TOTAL_DEPOSIT_EXCEED(BigDecimal R103_TOTAL_DEPOSIT_EXCEED) {
+						this.R103_TOTAL_DEPOSIT_EXCEED = R103_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR104_TOTAL_DEPOSIT_EXCEED() {
+						return R104_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR104_TOTAL_DEPOSIT_EXCEED(BigDecimal R104_TOTAL_DEPOSIT_EXCEED) {
+						this.R104_TOTAL_DEPOSIT_EXCEED = R104_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR105_TOTAL_DEPOSIT_EXCEED() {
+						return R105_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR105_TOTAL_DEPOSIT_EXCEED(BigDecimal R105_TOTAL_DEPOSIT_EXCEED) {
+						this.R105_TOTAL_DEPOSIT_EXCEED = R105_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR106_TOTAL_DEPOSIT_EXCEED() {
+						return R106_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR106_TOTAL_DEPOSIT_EXCEED(BigDecimal R106_TOTAL_DEPOSIT_EXCEED) {
+						this.R106_TOTAL_DEPOSIT_EXCEED = R106_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR107_TOTAL_DEPOSIT_EXCEED() {
+						return R107_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR107_TOTAL_DEPOSIT_EXCEED(BigDecimal R107_TOTAL_DEPOSIT_EXCEED) {
+						this.R107_TOTAL_DEPOSIT_EXCEED = R107_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR108_TOTAL_DEPOSIT_EXCEED() {
+						return R108_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR108_TOTAL_DEPOSIT_EXCEED(BigDecimal R108_TOTAL_DEPOSIT_EXCEED) {
+						this.R108_TOTAL_DEPOSIT_EXCEED = R108_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR109_TOTAL_DEPOSIT_EXCEED() {
+						return R109_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR109_TOTAL_DEPOSIT_EXCEED(BigDecimal R109_TOTAL_DEPOSIT_EXCEED) {
+						this.R109_TOTAL_DEPOSIT_EXCEED = R109_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR110_TOTAL_DEPOSIT_EXCEED() {
+						return R110_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR110_TOTAL_DEPOSIT_EXCEED(BigDecimal R110_TOTAL_DEPOSIT_EXCEED) {
+						this.R110_TOTAL_DEPOSIT_EXCEED = R110_TOTAL_DEPOSIT_EXCEED;
+					}
+					public BigDecimal getR111_TOTAL_DEPOSIT_EXCEED() {
+						return R111_TOTAL_DEPOSIT_EXCEED;
+					}
+					public void setR111_TOTAL_DEPOSIT_EXCEED(BigDecimal R111_TOTAL_DEPOSIT_EXCEED) {
+						this.R111_TOTAL_DEPOSIT_EXCEED = R111_TOTAL_DEPOSIT_EXCEED;
+					}
+					public Date getReport_date() {
+						return report_date;
+					}
+					public void setReport_date(Date report_date) {
+						this.report_date = report_date;
+					}
+					public BigDecimal getReport_version() {
+						return report_version;
+					}
+					public void setReport_version(BigDecimal report_version) {
+						this.report_version = report_version;
+					}
+					
+					public Date getReport_resubdate() {
+						return report_resubdate;
+					}
+					public void setReport_resubdate(Date report_resubdate) {
+						this.report_resubdate = report_resubdate;
+					}
+					public String getReport_frequency() {
+						return report_frequency;
+					}
+					public void setReport_frequency(String report_frequency) {
+						this.report_frequency = report_frequency;
+					}
+					public String getReport_code() {
+						return report_code;
+					}
+					public void setReport_code(String report_code) {
+						this.report_code = report_code;
+					}
+					public String getReport_desc() {
+						return report_desc;
+					}
+					public void setReport_desc(String report_desc) {
+						this.report_desc = report_desc;
+					}
+					public String getEntity_flg() {
+						return entity_flg;
+					}
+					public void setEntity_flg(String entity_flg) {
+						this.entity_flg = entity_flg;
+					}
+					public String getModify_flg() {
+						return modify_flg;
+					}
+					public void setModify_flg(String modify_flg) {
+						this.modify_flg = modify_flg;
+					}
+					public String getDel_flg() {
+						return del_flg;
+					}
+					public void setDel_flg(String del_flg) {
+						this.del_flg = del_flg;
+					}
+				}
+				
+				
+
+				// =====================================================
+				// DETAIL ENTITY  
+				// =====================================================	
+
+				
+				public class MDISB1DetailRowMapper implements RowMapper<MDISB1_Detail_Entity> {
+
+				    @Override
+				    public MDISB1_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+				        MDISB1_Detail_Entity obj = new MDISB1_Detail_Entity();
+
+				   				
+				        obj.setSno(rs.getLong("SNO"));
+				        obj.setCust_id(rs.getString("CUST_ID"));
+				        obj.setAcct_number(rs.getString("ACCT_NUMBER"));
+				        obj.setAcct_name(rs.getString("ACCT_NAME"));
+				        obj.setData_type(rs.getString("DATA_TYPE"));
+				        obj.setReport_label(rs.getString("REPORT_LABEL"));
+				        obj.setReport_remarks(rs.getString("REPORT_REMARKS"));
+				        obj.setModification_remarks(rs.getString("MODIFICATION_REMARKS"));
+				        obj.setData_entry_version(rs.getString("DATA_ENTRY_VERSION"));
+				        obj.setAcct_balance_in_pula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+				        obj.setReport_date(rs.getDate("REPORT_DATE"));
+				        obj.setReport_name(rs.getString("REPORT_NAME"));
+				        obj.setCreate_user(rs.getString("CREATE_USER"));
+				        obj.setCreate_time(rs.getDate("CREATE_TIME"));
+				        obj.setModify_user(rs.getString("MODIFY_USER"));
+				        obj.setModify_time(rs.getDate("MODIFY_TIME"));
+				        obj.setVerify_user(rs.getString("VERIFY_USER"));
+				        obj.setVerify_time(rs.getDate("VERIFY_TIME"));
+
+				        obj.setEntity_flg(rs.getString("ENTITY_FLG") != null ? rs.getString("ENTITY_FLG").charAt(0) : ' ');
+				        obj.setModify_flg(rs.getString("MODIFY_FLG") != null ? rs.getString("MODIFY_FLG").charAt(0) : ' ');
+				        obj.setDel_flg(rs.getString("DEL_FLG") != null ? rs.getString("DEL_FLG").charAt(0) : ' ');
+						
+
+				        obj.setReport_addl_criteria_1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+				        obj.setReport_addl_criteria_2(rs.getString("REPORT_ADDL_CRITERIA_2"));
+				        obj.setReport_addl_criteria_3(rs.getString("REPORT_ADDL_CRITERIA_3"));
+		
+				        return obj;
+				    }
+				}
+				
+				public class MDISB1_Detail_Entity {
+					
+					@Id
+					@Column(name = "SNO")
+					private Long sno;
+					
+					 @Column(name = "CUST_ID")
+				     private String cust_id;
+
+				     
+				     @Column(name = "ACCT_NUMBER")
+				     private String acct_number;
+
+				     @Column(name = "ACCT_NAME")
+				     private String acct_name;
+
+				     @Column(name = "DATA_TYPE")
+				     private String data_type;
+
+				     @Column(name = "REPORT_LABEL")
+				     private String report_label;
+
+				     @Column(name = "REPORT_REMARKS")
+				     private String report_remarks;
+
+				     @Column(name = "MODIFICATION_REMARKS")
+				     private String modification_remarks;
+
+				     @Column(name = "DATA_ENTRY_VERSION")
+				     private String data_entry_version;
+
+				     @Column(name = "ACCT_BALANCE_IN_PULA")
+				     private BigDecimal acct_balance_in_pula;
+
+				     @Column(name = "REPORT_DATE")
+				     @DateTimeFormat(pattern = "yyyy-MM-dd")
+				     private Date report_date;
+
+				     @Column(name = "REPORT_NAME")
+				     private String report_name;
+
+				     @Column(name = "CREATE_USER")
+				     private String create_user;
+
+				     @Column(name = "CREATE_TIME")
+				     private Date create_time;
+
+				     @Column(name = "MODIFY_USER")
+				     private String modify_user;
+
+				     @Column(name = "MODIFY_TIME")
+				     private Date modify_time;
+
+				     @Column(name = "VERIFY_USER")
+				     private String verify_user;
+
+				     @Column(name = "VERIFY_TIME")
+				     private Date verify_time;
+
+				     @Column(name = "ENTITY_FLG")
+				     private Character entity_flg;
+
+				     @Column(name = "MODIFY_FLG")
+				     private Character modify_flg;
+
+				     @Column(name = "DEL_FLG")
+				     private Character del_flg;
+
+				     @Column(name = "REPORT_ADDL_CRITERIA_1")
+				     private String report_addl_criteria_1;
+
+				     @Column(name = "REPORT_ADDL_CRITERIA_2")
+				     private String report_addl_criteria_2;
+
+				     @Column(name = "REPORT_ADDL_CRITERIA_3")
+				     private String report_addl_criteria_3;
+
+					 public Long getSno() {
+						 return sno;
+					 }
+
+					 public void setSno(Long sno) {
+						 this.sno = sno;
+					 }
+
+					 public String getCust_id() {
+						 return cust_id;
+					 }
+
+					 public void setCust_id(String cust_id) {
+						 this.cust_id = cust_id;
+					 }
+
+					 public String getAcct_number() {
+						 return acct_number;
+					 }
+
+					 public void setAcct_number(String acct_number) {
+						 this.acct_number = acct_number;
+					 }
+
+					 public String getAcct_name() {
+						 return acct_name;
+					 }
+
+					 public void setAcct_name(String acct_name) {
+						 this.acct_name = acct_name;
+					 }
+
+					 public String getData_type() {
+						 return data_type;
+					 }
+
+					 public void setData_type(String data_type) {
+						 this.data_type = data_type;
+					 }
+
+					 public String getReport_label() {
+						 return report_label;
+					 }
+
+					 public void setReport_label(String report_label) {
+						 this.report_label = report_label;
+					 }
+
+					 public String getReport_remarks() {
+						 return report_remarks;
+					 }
+
+					 public void setReport_remarks(String report_remarks) {
+						 this.report_remarks = report_remarks;
+					 }
+
+					 public String getModification_remarks() {
+						 return modification_remarks;
+					 }
+
+					 public void setModification_remarks(String modification_remarks) {
+						 this.modification_remarks = modification_remarks;
+					 }
+
+					 public String getData_entry_version() {
+						 return data_entry_version;
+					 }
+
+					 public void setData_entry_version(String data_entry_version) {
+						 this.data_entry_version = data_entry_version;
+					 }
+
+					 public BigDecimal getAcct_balance_in_pula() {
+						 return acct_balance_in_pula;
+					 }
+
+					 public void setAcct_balance_in_pula(BigDecimal acct_balance_in_pula) {
+						 this.acct_balance_in_pula = acct_balance_in_pula;
+					 }
+
+					 public Date getReport_date() {
+						 return report_date;
+					 }
+
+					 public void setReport_date(Date report_date) {
+						 this.report_date = report_date;
+					 }
+
+					 public String getReport_name() {
+						 return report_name;
+					 }
+
+					 public void setReport_name(String report_name) {
+						 this.report_name = report_name;
+					 }
+
+					 public String getCreate_user() {
+						 return create_user;
+					 }
+
+					 public void setCreate_user(String create_user) {
+						 this.create_user = create_user;
+					 }
+
+					 public Date getCreate_time() {
+						 return create_time;
+					 }
+
+					 public void setCreate_time(Date create_time) {
+						 this.create_time = create_time;
+					 }
+
+					 public String getModify_user() {
+						 return modify_user;
+					 }
+
+					 public void setModify_user(String modify_user) {
+						 this.modify_user = modify_user;
+					 }
+
+					 public Date getModify_time() {
+						 return modify_time;
+					 }
+
+					 public void setModify_time(Date modify_time) {
+						 this.modify_time = modify_time;
+					 }
+
+					 public String getVerify_user() {
+						 return verify_user;
+					 }
+
+					 public void setVerify_user(String verify_user) {
+						 this.verify_user = verify_user;
+					 }
+
+					 public Date getVerify_time() {
+						 return verify_time;
+					 }
+
+					 public void setVerify_time(Date verify_time) {
+						 this.verify_time = verify_time;
+					 }
+
+					 public Character getEntity_flg() {
+						 return entity_flg;
+					 }
+
+					 public void setEntity_flg(Character entity_flg) {
+						 this.entity_flg = entity_flg;
+					 }
+
+					 public Character getModify_flg() {
+						 return modify_flg;
+					 }
+
+					 public void setModify_flg(Character modify_flg) {
+						 this.modify_flg = modify_flg;
+					 }
+
+					 public Character getDel_flg() {
+						 return del_flg;
+					 }
+
+					 public void setDel_flg(Character del_flg) {
+						 this.del_flg = del_flg;
+					 }
+
+					 public String getReport_addl_criteria_1() {
+						 return report_addl_criteria_1;
+					 }
+
+					 public void setReport_addl_criteria_1(String report_addl_criteria_1) {
+						 this.report_addl_criteria_1 = report_addl_criteria_1;
+					 }
+
+					 public String getReport_addl_criteria_2() {
+						 return report_addl_criteria_2;
+					 }
+
+					 public void setReport_addl_criteria_2(String report_addl_criteria_2) {
+						 this.report_addl_criteria_2 = report_addl_criteria_2;
+					 }
+
+					 public String getReport_addl_criteria_3() {
+						 return report_addl_criteria_3;
+					 }
+
+					 public void setReport_addl_criteria_3(String report_addl_criteria_3) {
+						 this.report_addl_criteria_3 = report_addl_criteria_3;
+					 }
+
+				}
+			
+		
+				// =====================================================
+				// ARCHIVAL  DETAIL ENTITY 
+				// =====================================================
+
+
+				public class MDISB1ArchivalDetailRowMapper 
+				        implements RowMapper<MDISB1_Archival_Detail_Entity> {
+
+				    @Override
+				    public MDISB1_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+				        MDISB1_Archival_Detail_Entity obj = new MDISB1_Archival_Detail_Entity();
+	
+				        obj.setSno(rs.getLong("SNO"));
+				        obj.setCust_id(rs.getString("CUST_ID"));
+				        obj.setAcct_number(rs.getString("ACCT_NUMBER"));
+				        obj.setAcct_name(rs.getString("ACCT_NAME"));
+				        obj.setData_type(rs.getString("DATA_TYPE"));
+				        obj.setReport_label(rs.getString("REPORT_LABEL"));
+				        obj.setReport_remarks(rs.getString("REPORT_REMARKS"));
+				        obj.setModification_remarks(rs.getString("MODIFICATION_REMARKS"));
+				        obj.setData_entry_version(rs.getString("DATA_ENTRY_VERSION"));
+				        obj.setAcct_balance_in_pula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+				        obj.setReport_date(rs.getDate("REPORT_DATE"));
+				        obj.setReport_name(rs.getString("REPORT_NAME"));
+				        obj.setCreate_user(rs.getString("CREATE_USER"));
+				        obj.setCreate_time(rs.getDate("CREATE_TIME"));
+				        obj.setModify_user(rs.getString("MODIFY_USER"));
+				        obj.setModify_time(rs.getDate("MODIFY_TIME"));
+				        obj.setVerify_user(rs.getString("VERIFY_USER"));
+				        obj.setVerify_time(rs.getDate("VERIFY_TIME"));
+
+				        obj.setEntity_flg(rs.getString("ENTITY_FLG") != null ? rs.getString("ENTITY_FLG").charAt(0) : ' ');
+				        obj.setModify_flg(rs.getString("MODIFY_FLG") != null ? rs.getString("MODIFY_FLG").charAt(0) : ' ');
+				        obj.setDel_flg(rs.getString("DEL_FLG") != null ? rs.getString("DEL_FLG").charAt(0) : ' ');
+						
+
+				        obj.setReport_addl_criteria_1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+				        obj.setReport_addl_criteria_2(rs.getString("REPORT_ADDL_CRITERIA_2"));
+				        obj.setReport_addl_criteria_3(rs.getString("REPORT_ADDL_CRITERIA_3"));
+		
+				        return obj;
+				    }
+				}
+				
+				public class MDISB1_Archival_Detail_Entity {
+					
+					@Id
+					@Column(name = "SNO")
+					private Long sno;
+					
+					 @Column(name = "CUST_ID")
+				     private String cust_id;
+
+				     
+				     @Column(name = "ACCT_NUMBER")
+				     private String acct_number;
+
+				     @Column(name = "ACCT_NAME")
+				     private String acct_name;
+
+				     @Column(name = "DATA_TYPE")
+				     private String data_type;
+
+				     @Column(name = "REPORT_LABEL")
+				     private String report_label;
+
+				     @Column(name = "REPORT_REMARKS")
+				     private String report_remarks;
+
+				     @Column(name = "MODIFICATION_REMARKS")
+				     private String modification_remarks;
+
+				     @Column(name = "DATA_ENTRY_VERSION")
+				     private String data_entry_version;
+
+				     @Column(name = "ACCT_BALANCE_IN_PULA")
+				     private BigDecimal acct_balance_in_pula;
+
+				     @Column(name = "REPORT_DATE")
+				     @DateTimeFormat(pattern = "yyyy-MM-dd")
+				     private Date report_date;
+
+				     @Column(name = "REPORT_NAME")
+				     private String report_name;
+
+				     @Column(name = "CREATE_USER")
+				     private String create_user;
+
+				     @Column(name = "CREATE_TIME")
+				     private Date create_time;
+
+				     @Column(name = "MODIFY_USER")
+				     private String modify_user;
+
+				     @Column(name = "MODIFY_TIME")
+				     private Date modify_time;
+
+				     @Column(name = "VERIFY_USER")
+				     private String verify_user;
+
+				     @Column(name = "VERIFY_TIME")
+				     private Date verify_time;
+
+				     @Column(name = "ENTITY_FLG")
+				     private char entity_flg;
+
+				     @Column(name = "MODIFY_FLG")
+				     private char modify_flg;
+
+				     @Column(name = "DEL_FLG")
+				     private char del_flg;
+
+				     @Column(name = "REPORT_ADDL_CRITERIA_1")
+				     private String report_addl_criteria_1;
+
+				     @Column(name = "REPORT_ADDL_CRITERIA_2")
+				     private String report_addl_criteria_2;
+
+				     @Column(name = "REPORT_ADDL_CRITERIA_3")
+				     private String report_addl_criteria_3;
+
+					 public Long getSno() {
+						 return sno;
+					 }
+
+					 public void setSno(Long sno) {
+						 this.sno = sno;
+					 }
+
+					 public String getCust_id() {
+						 return cust_id;
+					 }
+
+					 public void setCust_id(String cust_id) {
+						 this.cust_id = cust_id;
+					 }
+
+					 public String getAcct_number() {
+						 return acct_number;
+					 }
+
+					 public void setAcct_number(String acct_number) {
+						 this.acct_number = acct_number;
+					 }
+
+					 public String getAcct_name() {
+						 return acct_name;
+					 }
+
+					 public void setAcct_name(String acct_name) {
+						 this.acct_name = acct_name;
+					 }
+
+					 public String getData_type() {
+						 return data_type;
+					 }
+
+					 public void setData_type(String data_type) {
+						 this.data_type = data_type;
+					 }
+
+					 public String getReport_label() {
+						 return report_label;
+					 }
+
+					 public void setReport_label(String report_label) {
+						 this.report_label = report_label;
+					 }
+
+					 public String getReport_remarks() {
+						 return report_remarks;
+					 }
+
+					 public void setReport_remarks(String report_remarks) {
+						 this.report_remarks = report_remarks;
+					 }
+
+					 public String getModification_remarks() {
+						 return modification_remarks;
+					 }
+
+					 public void setModification_remarks(String modification_remarks) {
+						 this.modification_remarks = modification_remarks;
+					 }
+
+					 public String getData_entry_version() {
+						 return data_entry_version;
+					 }
+
+					 public void setData_entry_version(String data_entry_version) {
+						 this.data_entry_version = data_entry_version;
+					 }
+
+					 public BigDecimal getAcct_balance_in_pula() {
+						 return acct_balance_in_pula;
+					 }
+
+					 public void setAcct_balance_in_pula(BigDecimal acct_balance_in_pula) {
+						 this.acct_balance_in_pula = acct_balance_in_pula;
+					 }
+
+					 public Date getReport_date() {
+						 return report_date;
+					 }
+
+					 public void setReport_date(Date report_date) {
+						 this.report_date = report_date;
+					 }
+
+					 public String getReport_name() {
+						 return report_name;
+					 }
+
+					 public void setReport_name(String report_name) {
+						 this.report_name = report_name;
+					 }
+
+					 public String getCreate_user() {
+						 return create_user;
+					 }
+
+					 public void setCreate_user(String create_user) {
+						 this.create_user = create_user;
+					 }
+
+					 public Date getCreate_time() {
+						 return create_time;
+					 }
+
+					 public void setCreate_time(Date create_time) {
+						 this.create_time = create_time;
+					 }
+
+					 public String getModify_user() {
+						 return modify_user;
+					 }
+
+					 public void setModify_user(String modify_user) {
+						 this.modify_user = modify_user;
+					 }
+
+					 public Date getModify_time() {
+						 return modify_time;
+					 }
+
+					 public void setModify_time(Date modify_time) {
+						 this.modify_time = modify_time;
+					 }
+
+					 public String getVerify_user() {
+						 return verify_user;
+					 }
+
+					 public void setVerify_user(String verify_user) {
+						 this.verify_user = verify_user;
+					 }
+
+					 public Date getVerify_time() {
+						 return verify_time;
+					 }
+
+					 public void setVerify_time(Date verify_time) {
+						 this.verify_time = verify_time;
+					 }
+
+					 public Character getEntity_flg() {
+						 return entity_flg;
+					 }
+
+					 public void setEntity_flg(Character entity_flg) {
+						 this.entity_flg = entity_flg;
+					 }
+
+					 public Character getModify_flg() {
+						 return modify_flg;
+					 }
+
+					 public void setModify_flg(Character modify_flg) {
+						 this.modify_flg = modify_flg;
+					 }
+
+					 public Character getDel_flg() {
+						 return del_flg;
+					 }
+
+					 public void setDel_flg(Character del_flg) {
+						 this.del_flg = del_flg;
+					 }
+
+					 public String getReport_addl_criteria_1() {
+						 return report_addl_criteria_1;
+					 }
+
+					 public void setReport_addl_criteria_1(String report_addl_criteria_1) {
+						 this.report_addl_criteria_1 = report_addl_criteria_1;
+					 }
+
+					 public String getReport_addl_criteria_2() {
+						 return report_addl_criteria_2;
+					 }
+
+					 public void setReport_addl_criteria_2(String report_addl_criteria_2) {
+						 this.report_addl_criteria_2 = report_addl_criteria_2;
+					 }
+
+					 public String getReport_addl_criteria_3() {
+						 return report_addl_criteria_3;
+					 }
+
+					 public void setReport_addl_criteria_3(String report_addl_criteria_3) {
+						 this.report_addl_criteria_3 = report_addl_criteria_3;
+					 }
+
+				}
+		
+		
+		
+		
+		
+		
+		
+	
+	
+	
+	
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getMDISB1View(String reportId, String fromdate, String todate, String currency, String dtltype,
 			Pageable pageable, String type, BigDecimal version) {
 		ModelAndView mv = new ModelAndView();
-		Session hs = sessionFactory.getCurrentSession();
-		int pageSize = pageable.getPageSize();
-		int currentPage = pageable.getPageNumber();
-		int startItem = currentPage * pageSize;
+		System.out.println("OFF_BS_ITEMS View Called");
+	    System.out.println("Type = " + type);
+	    System.out.println("Version = " + version);
 
-		System.out.println("testing");
-		System.out.println(version);
+		
 
-		if (type.equals("ARCHIVAL") & version != null) {
+	 // =====================================================
+	    // ARCHIVAL MODE
+	    // =====================================================
+
+	    if ("ARCHIVAL".equals(type) && version != null) {
 			System.out.println(type);
-			List<MDISB1_Archival_Summary_Entity1> T1Master = new ArrayList<MDISB1_Archival_Summary_Entity1>();
-			List<MDISB1_Archival_Summary_Entity2> T1Master1 = new ArrayList<MDISB1_Archival_Summary_Entity2>();
-			List<MDISB1_Archival_Summary_Manual> T1Master2 = new ArrayList<MDISB1_Archival_Summary_Manual>();
+			List<MDISB1_Archival_Summary_Entity1> T1Master = new ArrayList<>();
+			List<MDISB1_Archival_Summary_Entity2> T1Master1 = new ArrayList<>();
+			List<MDISB1_Archival_Summary_Manual> T1Master2 = new ArrayList<>();
 			System.out.println(version);
 			try {
-				Date d1 = dateformat.parse(todate);
+				Date dt = dateformat.parse(todate);
 
-				T1Master = brrs_MDISB1_Archival_Summary_Repo1.getdatabydateListarchival(dateformat.parse(todate),
-						version);
+				T1Master = getdatabydateListarchival1(dt, version);
+				T1Master1 = getdatabydateListarchival2(dt, version);
+				T1Master2 = getdatabydateListarchival3(dt, version);
 
-				T1Master1 = brrs_MDISB1_Archival_Summary_Repo2.getdatabydateListarchival(dateformat.parse(todate),
-						version);
-
-				T1Master2 = brrs_MDISB1_Archival_Summary_Repo3.getdatabydateListarchival(dateformat.parse(todate),
-						version);
-
+	            mv.addObject("report_date", dateformat.format(dt));
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
@@ -142,19 +22628,14 @@ public class BRRS_MDISB1_ReportService {
 			mv.addObject("reportsummary2", T1Master2);
 		} else {
 
-			List<MDISB1_Summary_Entity1> T1Master = new ArrayList<MDISB1_Summary_Entity1>();
-			List<MDISB1_Summary_Entity2> T1Master1 = new ArrayList<MDISB1_Summary_Entity2>();
-			List<MDISB1_Summary_Entity_Manual> T1Master2 = new ArrayList<MDISB1_Summary_Entity_Manual>();
+			List<MDISB1_Summary_Entity1> T1Master = new ArrayList<>();
+			List<MDISB1_Summary_Entity2> T1Master1 = new ArrayList<>();
+			List<MDISB1_Summary_Entity_Manual> T1Master2 = new ArrayList<>();
 			try {
-				Date d1 = dateformat.parse(todate);
-				// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
-
-				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
-				// ", BRF1_REPORT_ENTITY.class)
-				// .setParameter(1, df.parse(todate)).getResultList();
-				T1Master = MDISB1_Summary_repo1.getdatabydateList(dateformat.parse(todate));
-				T1Master1 = MDISB1_Summary_repo2.getdatabydateList(dateformat.parse(todate));
-				T1Master2 = MDISB1_Summary_repo3.getdatabydateList(dateformat.parse(todate));
+				Date dt = dateformat.parse(todate);
+				T1Master = getDataByDate1(dt);
+				T1Master1 = getDataByDate2(dt);
+				T1Master2 = getDataByDate3(dt);
 
 			} catch (ParseException e) {
 				e.printStackTrace();
@@ -191,15 +22672,15 @@ public class BRRS_MDISB1_ReportService {
 				parsedDate = dateformat.parse(todate);
 			}
 
-			String rowId = null;
-			String columnId = null;
+			String report_label = null;
+			String report_addl_criteria_1 = null;
 
 			// ✅ Split filter string into rowId & columnId
 			if (Filter != null && Filter.contains(",")) {
 				String[] parts = Filter.split(",");
 				if (parts.length >= 2) {
-					rowId = parts[0];
-					columnId = parts[1];
+					report_label = parts[0];
+					report_addl_criteria_1 = parts[1];
 				}
 			}
 			System.out.println(type);
@@ -207,12 +22688,21 @@ public class BRRS_MDISB1_ReportService {
 				System.out.println(type);
 				// 🔹 Archival branch
 				List<MDISB1_Archival_Detail_Entity> T1Dt1;
-				if (rowId != null && columnId != null) {
-					T1Dt1 = brrs_MDISB1_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate,
-							version);
+				 if (report_label != null && report_addl_criteria_1 != null) {
+					T1Dt1 = GetArchivalDataByRowIdAndColumnId(
+							report_label,
+							report_addl_criteria_1,
+                            parsedDate,
+                            version
+                    );
+					
 				} else {
-					T1Dt1 = brrs_MDISB1_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
-				}
+					T1Dt1 = getArchivalDetaildatabydateList(
+                            parsedDate,
+                            version
+                    );
+        }
+
 
 				mv.addObject("reportdetails", T1Dt1);
 				mv.addObject("reportmaster12", T1Dt1);
@@ -221,11 +22711,11 @@ public class BRRS_MDISB1_ReportService {
 			} else {
 				// 🔹 Current branch
 				List<MDISB1_Detail_Entity> T1Dt1;
-				if (rowId != null && columnId != null) {
-					T1Dt1 = BRRS_MDISB1_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
+				if (report_label != null && report_addl_criteria_1 != null) {
+					T1Dt1 = GetDetailDataByRowIdAndColumnId(report_label, report_addl_criteria_1, parsedDate);
 				} else {
-					T1Dt1 = BRRS_MDISB1_Detail_Repo.getdatabydateList(parsedDate);
-					totalPages = BRRS_MDISB1_Detail_Repo.getdatacount(parsedDate);
+					T1Dt1 = getDetaildatabydateList(parsedDate);
+					
 					mv.addObject("pagination", "YES");
 				}
 
@@ -259,15 +22749,17 @@ public class BRRS_MDISB1_ReportService {
 		logger.info("Service: Starting Excel generation process in memory.");
 
 		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
+		if ("ARCHIVAL".equalsIgnoreCase(type)
+		        && version != null
+		        && version.compareTo(BigDecimal.ZERO) >= 0) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getExcelMDISB1ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
 
 		// Fetch data
-		List<MDISB1_Summary_Entity1> dataList = MDISB1_Summary_repo1.getdatabydateList(dateformat.parse(todate));
-		List<MDISB1_Summary_Entity2> dataList1 = MDISB1_Summary_repo2.getdatabydateList(dateformat.parse(todate));
-		List<MDISB1_Summary_Entity_Manual> dataList2 = MDISB1_Summary_repo3.getdatabydateList(dateformat.parse(todate));
+		List<MDISB1_Summary_Entity1> dataList = getDataByDate1(dateformat.parse(todate));
+		List<MDISB1_Summary_Entity2> dataList1 = getDataByDate2(dateformat.parse(todate));
+		List<MDISB1_Summary_Entity_Manual> dataList2 = getDataByDate3(dateformat.parse(todate));
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for MDISB1 report. Returning empty result.");
@@ -5165,7 +27657,7 @@ public class BRRS_MDISB1_ReportService {
 
 			// Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<MDISB1_Detail_Entity> reportData = BRRS_MDISB1_Detail_Repo.getdatabydateList(parsedToDate);
+			List<MDISB1_Detail_Entity> reportData = getDetaildatabydateList(parsedToDate);
 
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
@@ -5217,22 +27709,23 @@ public class BRRS_MDISB1_ReportService {
 		}
 	}
 
-	public List<Object> getMDISB1Archival() {
-		List<Object> MDISB1Archivallist = new ArrayList<>();
-		// List<Object> MDISB1Archivallist1 = new ArrayList<>();
-		try {
-			MDISB1Archivallist = brrs_MDISB1_Archival_Summary_Repo1.getMDISB1archival();
-			System.out.println("countser" + MDISB1Archivallist.size());
-		} catch (Exception e) {
-			// Log the exception
-			System.err.println("Error fetching MDISB1 Archival data: " + e.getMessage());
-			e.printStackTrace();
+	
+	public List<Object[]> getMDISB1Archival() {
 
-			// Optionally, you can rethrow it or return empty list
-			// throw new RuntimeException("Failed to fetch data", e);
-		}
-		return MDISB1Archivallist;
+	    String sql = "SELECT REPORT_DATE, REPORT_VERSION " +
+	                 "FROM BRRS_MDISB1_ARCHIVALTABLE_SUMMARY2 " +
+	                 "ORDER BY REPORT_VERSION";
+
+	    return jdbcTemplate.query(
+	            sql,
+	            (rs, rowNum) -> new Object[]{
+	                    rs.getDate("REPORT_DATE"),
+	                    rs.getBigDecimal("REPORT_VERSION")
+	            }
+	    );
 	}
+	
+
 
 	public byte[] getMDISB1Archival(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, BigDecimal version) throws Exception {
@@ -5240,14 +27733,11 @@ public class BRRS_MDISB1_ReportService {
 		if (type.equals("ARCHIVAL") & version != null) {
 
 		}
-		List<MDISB1_Archival_Summary_Entity1> dataList = brrs_MDISB1_Archival_Summary_Repo1
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<MDISB1_Archival_Summary_Entity1> dataList = getdatabydateListarchival1(dateformat.parse(todate), version);
 
-		List<MDISB1_Archival_Summary_Entity2> dataList1 = brrs_MDISB1_Archival_Summary_Repo2
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<MDISB1_Archival_Summary_Entity2> dataList1 = getdatabydateListarchival2(dateformat.parse(todate), version);
 
-		List<MDISB1_Archival_Summary_Manual> dataList2 = brrs_MDISB1_Archival_Summary_Repo3
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<MDISB1_Archival_Summary_Manual> dataList2 = getdatabydateListarchival3(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for MDISB1 report. Returning empty result.");
@@ -10143,8 +32633,7 @@ public class BRRS_MDISB1_ReportService {
 
 			// Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<MDISB1_Archival_Detail_Entity> reportData = brrs_MDISB1_Archival_Detail_Repo
-					.getdatabydateList(parsedToDate, version);
+			List<MDISB1_Archival_Detail_Entity> reportData = getArchivalDetaildatabydateList(parsedToDate, version);
 
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
@@ -10208,7 +32697,7 @@ public class BRRS_MDISB1_ReportService {
 		System.out.println("Came to view method");
 
 		if (acctNo != null) {
-			MDISB1_Detail_Entity Entity = MDISB1_Detail_Repo.findByAcctnumber(acctNo);
+			MDISB1_Detail_Entity Entity = findByAcctnumber(acctNo);
 			if (Entity != null && Entity.getReport_date() != null) {
 				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(Entity.getReport_date());
 				mv.addObject("asondate", formattedDate);
@@ -10225,79 +32714,138 @@ public class BRRS_MDISB1_ReportService {
 		return mv;
 	}
 
+	
 	@Transactional
 	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
-		try {
-			String acctNo = request.getParameter("acct_number");
-			String provisionStr = request.getParameter("acct_balance_in_pula");
-			String acctName = request.getParameter("acct_name");
 
-			// Try to get from request (lowercase now)
-			String reportDateStr = request.getParameter("report_date");
+	    try {
 
-			MDISB1_Detail_Entity existing = MDISB1_Detail_Repo.findByAcctnumber(acctNo);
-			if (existing == null) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found.");
-			}
+	        String acctNo = request.getParameter("acct_number");
+	        String acctName = request.getParameter("acct_name");
+	        String acctBalanceInPula = request.getParameter("acct_balance_in_pula");
+	        String reportDateStr = request.getParameter("report_date");
 
-			boolean isChanged = false;
+	        logger.info("Received update for ACCT_NUMBER: {}", acctNo);
 
-			// ... (Your logic for updating acctName and acct_balance_in_pula) ...
-			// Example logic check:
-			if (provisionStr != null && !provisionStr.isEmpty()) {
-				BigDecimal newProv = new BigDecimal(provisionStr);
-				if (existing.getAcct_balance_in_pula() == null
-						|| existing.getAcct_balance_in_pula().compareTo(newProv) != 0) {
-					existing.setAcct_balance_in_pula(newProv);
-					isChanged = true;
-				}
-			}
+	        MDISB1_Detail_Entity existing = findByAcctnumber(acctNo);
 
-			if (isChanged) {
-				MDISB1_Detail_Repo.save(existing);
-				logger.info("Record updated for account: {}", acctNo);
+	        if (existing == null) {
+	            logger.warn("No record found for ACCT_NUMBER: {}", acctNo);
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	                    .body("Record not found for update.");
+	        }
 
-				// --- PROCEDURE TRIGGER LOGIC ---
+	        boolean isChanged = false;
 
-				String finalDateStr = "";
-				SimpleDateFormat procFormat = new SimpleDateFormat("dd-MM-yyyy");
+	        // Update Account Name
+	        if (acctName != null && !acctName.isEmpty()) {
 
-				if (reportDateStr != null && !reportDateStr.isEmpty()) {
-					// Case A: Use the date sent from the form
-					SimpleDateFormat incomingFormat = new SimpleDateFormat("yyyy-MM-dd");
-					finalDateStr = procFormat.format(incomingFormat.parse(reportDateStr));
-				} else if (existing.getReport_date() != null) {
-					// Case B: Fallback - Use the date already in the Database (Existing Entity)
-					finalDateStr = procFormat.format(existing.getReport_date());
-					logger.info("Using fallback date from Database: {}", finalDateStr);
-				}
+	            if (existing.getAcct_name() == null ||
+	                    !existing.getAcct_name().equals(acctName)) {
 
-				if (!finalDateStr.isEmpty()) {
-					final String dateToPass = finalDateStr;
-					TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-						@Override
-						public void afterCommit() {
-							try {
-								logger.info("Triggering Procedure: BRRS_MDISB1_SUMMARY_PROCEDURE({})", dateToPass);
-								jdbcTemplate.update("BEGIN BRRS_MDISB1_SUMMARY_PROCEDURE(?); END;", dateToPass);
-							} catch (Exception e) {
-								logger.error("Procedure Error: ", e);
-							}
-						}
-					});
-				} else {
-					logger.warn("Procedure not triggered: No date found in request or database.");
-				}
+	                existing.setAcct_name(acctName);
+	                isChanged = true;
 
-				return ResponseEntity.ok("Record updated successfully!");
-			} else {
-				return ResponseEntity.ok("No changes detected.");
-			}
-		} catch (Exception e) {
-			logger.error("Update failed", e);
-			return ResponseEntity.status(500).body("Error: " + e.getMessage());
-		}
+	                logger.info("Account Name updated to {}", acctName);
+	            }
+	        }
+
+	        // Update Account Balance
+	        if (acctBalanceInPula != null && !acctBalanceInPula.isEmpty()) {
+
+	            BigDecimal newBalance = new BigDecimal(acctBalanceInPula);
+
+	            if (existing.getAcct_balance_in_pula() == null ||
+	                    existing.getAcct_balance_in_pula().compareTo(newBalance) != 0) {
+
+	                existing.setAcct_balance_in_pula(newBalance);
+	                isChanged = true;
+
+	                logger.info("Account Balance updated to {}", newBalance);
+	            }
+	        }
+
+	        if (isChanged) {
+
+	            String sql =
+	                    "UPDATE BRRS_MDISB1_DETAILTABLE " +
+	                    "SET ACCT_NAME = ?, " +
+	                    "ACCT_BALANCE_IN_PULA = ? " +
+	                    "WHERE ACCT_NUMBER = ?";
+
+	            jdbcTemplate.update(
+	                    sql,
+	                    existing.getAcct_name(),
+	                    existing.getAcct_balance_in_pula(),
+	                    existing.getAcct_number()
+	            );
+
+	            // Format date for procedure
+	            String formattedDate = null;
+
+	            if (reportDateStr != null && !reportDateStr.isEmpty()) {
+
+	                formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+	                        .format(new SimpleDateFormat("yyyy-MM-dd")
+	                                .parse(reportDateStr));
+
+	            } else if (existing.getReport_date() != null) {
+
+	                formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+	                        .format(existing.getReport_date());
+	            }
+
+	            final String procDate = formattedDate;
+
+	            if (procDate != null) {
+
+	                TransactionSynchronizationManager.registerSynchronization(
+	                        new TransactionSynchronizationAdapter() {
+
+	                            @Override
+	                            public void afterCommit() {
+
+	                                try {
+
+	                                    logger.info(
+	                                            "Transaction committed — calling BRRS_MDISB1_SUMMARY_PROCEDURE({})",
+	                                            procDate);
+
+	                                    jdbcTemplate.update(
+	                                            "BEGIN BRRS_MDISB1_SUMMARY_PROCEDURE(?); END;",
+	                                            procDate);
+
+	                                    logger.info(
+	                                            "Procedure executed successfully after commit.");
+
+	                                } catch (Exception e) {
+
+	                                    logger.error(
+	                                            "Error executing procedure after commit",
+	                                            e);
+	                                }
+	                            }
+	                        });
+	            }
+
+	            return ResponseEntity.ok("Record updated successfully!");
+
+	        } else {
+
+	            logger.info("No changes detected for ACCT_NUMBER: {}", acctNo);
+
+	            return ResponseEntity.ok("No changes were made.");
+	        }
+
+	    } catch (Exception e) {
+
+	        logger.error("Error updating MDISB1 record", e);
+
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Error updating record: " + e.getMessage());
+	    }
 	}
+	
 
 	public byte[] getExcelMDISB1ARCHIVAL(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, BigDecimal version) throws Exception {
@@ -10305,12 +32853,9 @@ public class BRRS_MDISB1_ReportService {
 		if (type.equals("ARCHIVAL") & version != null) {
 
 		}
-		List<MDISB1_Archival_Summary_Entity1> dataList = brrs_MDISB1_Archival_Summary_Repo1
-				.getdatabydateListarchival(dateformat.parse(todate), version);
-		List<MDISB1_Archival_Summary_Entity2> dataList1 = brrs_MDISB1_Archival_Summary_Repo2
-				.getdatabydateListarchival(dateformat.parse(todate), version);
-		List<MDISB1_Archival_Summary_Manual> dataList2 = brrs_MDISB1_Archival_Summary_Repo3
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<MDISB1_Archival_Summary_Entity1> dataList = getdatabydateListarchival1(dateformat.parse(todate), version);
+		List<MDISB1_Archival_Summary_Entity2> dataList1 = getdatabydateListarchival2(dateformat.parse(todate), version);
+		List<MDISB1_Archival_Summary_Manual> dataList2 = getdatabydateListarchival3(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_PLL report. Returning empty result.");
@@ -15202,64 +37747,128 @@ public class BRRS_MDISB1_ReportService {
 	 * // 🔹 Save MDISB1_Summary_repo3.save(existing); }
 	 */
 
+	
+	@Transactional
 	public void updateDetailFromForm(Date reportDate, Map<String, String> params) {
 
-		System.out.println("Updating MDISB1 detail table");
+	    try {
 
-		for (Map.Entry<String, String> entry : params.entrySet()) {
+	        logger.info("Updating MDISB1 Detail Table for Report Date : {}", reportDate);
 
-			String key = entry.getKey();
-			String value = entry.getValue();
+	        for (Map.Entry<String, String> entry : params.entrySet()) {
 
-			// Expected: R10_C2_r10_31_3_25_amt
-			if (!key.matches("R\\d+_C\\d+_.*")) {
-				continue;
-			}
+	            String key = entry.getKey();
+	            String value = entry.getValue();
 
-			String[] parts = key.split("_");
-			String reportLabel = parts[0]; // R10
-			String addlCriteria = parts[1]; // C2 or C3
+	            // Expected format: R10_C2_r10_31_3_25_amt
+	            if (!key.matches("R\\d+_C\\d+_.*")) {
+	                continue;
+	            }
 
-			BigDecimal amount = (value == null || value.isEmpty()) ? BigDecimal.ZERO : new BigDecimal(value);
+	            String[] parts = key.split("_");
 
-			List<MDISB1_Detail_Entity> rows = BRRS_MDISB1_Detail_Repo
-					.findByReportDateAndReportLableAndReportAddlCriteria1(reportDate, reportLabel, addlCriteria);
+	            if (parts.length < 2) {
+	                continue;
+	            }
 
-			System.out.println("Rows fetching for Reportdate is : " + reportDate + " Report label is : " + reportLabel
-					+ " Column is : " + addlCriteria);
-			System.out.println("data size is : " + rows.size());
+	            String reportLabel = parts[0];   // R10
+	            String addlCriteria = parts[1];  // C2 / C3
 
-			for (MDISB1_Detail_Entity row : rows) {
+	            BigDecimal amount = BigDecimal.ZERO;
 
-				// System.out.println("Row PK = " + row.getId());
-				System.out.println("Before update acct = " + row.getAcct_balance_in_pula());
-				System.out.println("Before update modifyFlg = " + row.getModify_flg());
+	            if (value != null && !value.trim().isEmpty()) {
+	                amount = new BigDecimal(value.trim());
+	            }
 
-				row.setAcct_balance_in_pula(amount);
-				row.setModify_flg('Y');
-			}
+	            logger.info(
+	                    "Fetching rows for Report Date : {}, Report Label : {}, Criteria : {}",
+	                    reportDate,
+	                    reportLabel,
+	                    addlCriteria);
 
-			BRRS_MDISB1_Detail_Repo.saveAll(rows);
-		}
+	            List<MDISB1_Detail_Entity> rows =
+	                    findByDetailReportDateAndLabelAndCriteria(
+	                            reportDate,
+	                            reportLabel,
+	                            addlCriteria);
 
-		callSummaryProcedure(reportDate);
+	            logger.info("Rows fetched : {}", rows.size());
+
+	            if (rows == null || rows.isEmpty()) {
+	                continue;
+	            }
+
+	            for (MDISB1_Detail_Entity row : rows) {
+
+	                logger.info(
+	                        "Before Update -> Account Number : {}, Balance : {}, Modify Flag : {}",
+	                        row.getAcct_number(),
+	                        row.getAcct_balance_in_pula(),
+	                        row.getModify_flg());
+
+	                String sql =
+	                        "UPDATE BRRS_MDISB1_DETAILTABLE " +
+	                        "SET ACCT_BALANCE_IN_PULA = ?, " +
+	                        "MODIFY_FLG = ? " +
+	                        "WHERE ACCT_NUMBER = ?";
+
+	                int updatedRows = jdbcTemplate.update(
+	                        sql,
+	                        amount,
+	                        "Y",
+	                        row.getAcct_number());
+
+	                logger.info(
+	                        "Updated Rows : {}, Account Number : {}, New Balance : {}",
+	                        updatedRows,
+	                        row.getAcct_number(),
+	                        amount);
+	            }
+	        }
+
+	        // Execute Summary Procedure
+	        callSummaryProcedure(reportDate);
+
+	    } catch (Exception e) {
+
+	        logger.error("Error updating MDISB1 Detail Table", e);
+
+	        throw new RuntimeException(
+	                "Failed to update MDISB1 Detail Table",
+	                e);
+	    }
 	}
+
 
 	private void callSummaryProcedure(Date reportDate) {
 
-		String sql = "{ call BRRS_MDISB1_SUMMARY_PROCEDURE(?) }";
+	    try {
 
-		jdbcTemplate.update(connection -> {
-			CallableStatement cs = connection.prepareCall(sql);
+	        String formattedDate =
+	                new SimpleDateFormat("dd-MM-yyyy")
+	                        .format(reportDate);
 
-			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-			sdf.setLenient(false);
+	        logger.info(
+	                "Executing BRRS_MDISB1_SUMMARY_PROCEDURE for Date : {}",
+	                formattedDate);
 
-			cs.setString(1, sdf.format(reportDate));
-			return cs;
-		});
+	        jdbcTemplate.update(
+	                "BEGIN BRRS_MDISB1_SUMMARY_PROCEDURE(?); END;",
+	                formattedDate);
 
-		System.out.println("✅ MDISB1 Summary procedure executed");
+	        logger.info(
+	                "MDISB1 Summary Procedure executed successfully.");
+
+	    } catch (Exception e) {
+
+	        logger.error(
+	                "Error executing BRRS_MDISB1_SUMMARY_PROCEDURE",
+	                e);
+
+	        throw new RuntimeException(
+	                "Summary Procedure execution failed",
+	                e);
+	    }
 	}
 
 }

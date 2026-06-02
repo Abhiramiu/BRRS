@@ -11,7 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "BRRS_MDISB1_DETAILTABLE")
-public class MDISB1_Detail_Entity {
+public class MDISB1_Detail_Entity_old {
 
 	@Id
 	@Column(name = "SNO")
@@ -280,7 +280,7 @@ public class MDISB1_Detail_Entity {
 		 this.report_addl_criteria_3 = report_addl_criteria_3;
 	 }
 
-	 public MDISB1_Detail_Entity() {
+	 public MDISB1_Detail_Entity_old() {
 		super();
 		// TODO Auto-generated constructor stub
 	 }

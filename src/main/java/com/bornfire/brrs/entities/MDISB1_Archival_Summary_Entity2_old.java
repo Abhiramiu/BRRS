@@ -8,9 +8,9 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "BRRS_MDISB1_SUMMARYTABLE2")
+@Table(name = "BRRS_MDISB1_ARCHIVALTABLE_SUMMARY2")
 
-public class MDISB1_Summary_Entity2 {
+public class MDISB1_Archival_Summary_Entity2_old {
 
 	private String	r87_deposit_size;
 	private String	r87_deposit_type;
@@ -237,7 +237,6 @@ public class MDISB1_Summary_Entity2 {
 	private BigDecimal	r111_total_number;
 	private BigDecimal	r111_total_amount;
 	private BigDecimal	r111_total_deposit_bank;
-
 	@Id
 	private Date	report_date;
 	private BigDecimal	report_version;
@@ -1645,10 +1644,11 @@ public class MDISB1_Summary_Entity2 {
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
 	}
-	public MDISB1_Summary_Entity2() {
+	public MDISB1_Archival_Summary_Entity2_old() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 	
+
 }
 
