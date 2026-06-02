@@ -4152,7 +4152,7 @@ public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-						int startRow = 9;
+						int startRow = 3;
 						
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -4163,6 +4163,23 @@ public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						
+						
+						//row4
+						// Column B
+						Cell cellBdate = row.createCell(8);
+						if (record.getReport_date() != null) {
+							cellBdate.setCellValue(record.getReport_date());
+							cellBdate.setCellStyle(dateStyle);
+						} else {
+							cellBdate.setCellValue("");
+							cellBdate.setCellStyle(textStyle);
+						}
+						
+						
+						
+						//ROW 10
+						row = sheet.getRow(9);
 
 Cell cell1 = row.createCell(8);
 if (record.getR10_VALUE_IN_I_COLUMN() != null) {
@@ -4577,7 +4594,7 @@ if (record.getR53_FOREIGN_RISK_ASSETS() != null) {
 				numberStyle.setFont(font);
 	// --- End of Style Definitions ---
 
-				int startRow = 9;
+				int startRow = 3;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -4588,6 +4605,22 @@ if (record.getR53_FOREIGN_RISK_ASSETS() != null) {
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						
+						//row4
+						// Column B
+						Cell cellBdate = row.createCell(8);
+						if (record.getReport_date() != null) {
+							cellBdate.setCellValue(record.getReport_date());
+							cellBdate.setCellStyle(dateStyle);
+						} else {
+							cellBdate.setCellValue("");
+							cellBdate.setCellStyle(textStyle);
+						}
+						
+						
+						
+						//ROW 10
+						row = sheet.getRow(9);
 
 		
 Cell cell1 = row.createCell(8);

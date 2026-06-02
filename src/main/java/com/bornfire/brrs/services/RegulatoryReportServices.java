@@ -3147,8 +3147,10 @@ public class RegulatoryReportServices {
 						currency, dtltype, type, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
-				break;
+				
 			}
+				break;
+			
 
 		case "RWA":
 			try {
