@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -58,19 +57,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_MDISB1_Archival_Detail_Repo_OLD;
-import com.bornfire.brrs.entities.BRRS_MDISB1_Archival_Summary_Repo1_OLD;
-import com.bornfire.brrs.entities.BRRS_MDISB1_Archival_Summary_Repo2_OLD;
-import com.bornfire.brrs.entities.BRRS_MDISB1_Archival_Summary_Repo3_OLD;
 import com.bornfire.brrs.entities.BRRS_MDISB1_Detail_Repo_OLD;
-import com.bornfire.brrs.entities.MDISB1_Summary_Repo1;
-import com.bornfire.brrs.entities.MDISB1_Summary_Repo2;
-import com.bornfire.brrs.entities.MDISB1_Summary_Repo3;
 @Component
 @Service
 

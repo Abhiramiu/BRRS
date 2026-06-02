@@ -5966,14 +5966,13 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched MDISB2 archival data: " + MDISB2List.size());
 			break;
 
-		case "MDISB3":
-			try {
-				archivalData = brrs_mdisb3_reportservice.getMDISB3Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+case "MDISB3":
+			
+			List<Object[]> MDISB3List = brrs_mdisb3_reportservice.getMDISB3Archival();
+			archivalData.addAll(MDISB3List);
+			System.out.println("Fetched MDISB3 archival data: " + MDISB3List.size());
 			break;
+
 
 		case "MASTER":
 			try {
@@ -8804,238 +8803,9 @@ public class RegulatoryReportServices {
 		return BRRS_SLS_INPUT_SHT_reportservice.getRT_SLSView("SLS", fromdate, todate, currency, dtltype, pageable);
 	}
 
-	// ================= MAIN METHOD =================
-	public byte[] getRBRConsolidatedDownloadFile(String filename, String asondate, String fromdate, String todate,
-			String currency, String type, String format, BigDecimal version, String dtltype) throws ParseException {
+	
 
-		System.out.println("==== RBR Download Started ====");
-		System.out.println("TYPE RECEIVED FROM UI: " + type);
-
-		List<String> reportList = new ArrayList<>();
-
-		// ================= REPORT SELECTION =================
-		if (type != null && (type.toUpperCase().contains("MONTHLY AND QUATERLY"))) {
-
-			reportList = Arrays.asList("MDISB1", "MDISB2", "MDISB3", "MDISB4", "MDISB5");
-
-		} else if (type != null && type.toUpperCase().contains("PULA")) {
-
-			reportList = Arrays.asList("FORMAT_I", "M_P_L", "GL_SCH", "PL_SCHS", "SCH_17_New", "FORMAT_II",
-					"FORMAT_III", "TIER_1_2_CFS", "RWA", "OFF_BS_ITEMS", "CASH_FLOW", "DTAX");
-		}
-
-		// ✅ Fallback safety
-		if (reportList.isEmpty()) {
-			throw new RuntimeException("Invalid report type: " + type);
-		}
-
-		// ================= DATE HANDLING =================
-		String formattedToDate = formatDate(todate);
-		String formattedFromDate = (fromdate != null && !fromdate.isEmpty()) ? formatDate(fromdate) : formattedToDate;
-
-		// ================= WORKBOOK =================
-		XSSFWorkbook workbook = new XSSFWorkbook();
-
-		// ================= STATUS SHEET =================
-		Sheet statusSheet = workbook.createSheet("Status");
-
-		Row header = statusSheet.createRow(0);
-		header.createCell(0).setCellValue("Report Name");
-		header.createCell(1).setCellValue("Status");
-		header.createCell(2).setCellValue("Remarks");
-
-		int rowNum = 1;
-
-		Set<String> sheetNames = new HashSet<>();
-
-		// ================= LOOP REPORTS =================
-		for (String report : reportList) {
-
-			try {
-
-				byte[] fileData = generateRBRReport(report, filename, asondate, formattedFromDate, formattedToDate,
-						currency, dtltype, type, version);
-
-				if (fileData != null && fileData.length > 0) {
-
-					try (Workbook reportWorkbook = new XSSFWorkbook(new ByteArrayInputStream(fileData))) {
-
-						for (int i = 0; i < reportWorkbook.getNumberOfSheets(); i++) {
-
-							Sheet srcSheet = reportWorkbook.getSheetAt(i);
-
-							String sheetName = report;
-							if (reportWorkbook.getNumberOfSheets() > 1) {
-								sheetName = report + "_" + (i + 1);
-							}
-
-							// Unique name
-							sheetName = getUniqueSheetName(sheetName, sheetNames);
-							sheetNames.add(sheetName);
-
-							Sheet destSheet = workbook.createSheet(sheetName);
-
-							copySheet(srcSheet, destSheet);
-						}
-					}
-
-					// SUCCESS
-					Row row = statusSheet.createRow(rowNum++);
-					row.createCell(0).setCellValue(report);
-					row.createCell(1).setCellValue("SUCCESS");
-
-				} else {
-
-					Row row = statusSheet.createRow(rowNum++);
-					row.createCell(0).setCellValue(report);
-					row.createCell(1).setCellValue("FAILED");
-					row.createCell(2).setCellValue("No Data");
-				}
-
-			} catch (Exception e) {
-
-				e.printStackTrace();
-
-				Row row = statusSheet.createRow(rowNum++);
-				row.createCell(0).setCellValue(report);
-				row.createCell(1).setCellValue("FAILED");
-				row.createCell(2).setCellValue("Error: " + e.getMessage());
-			}
-		}
-
-		// Auto-size columns
-		for (int i = 0; i < 3; i++) {
-			statusSheet.autoSizeColumn(i);
-		}
-
-		// ================= OUTPUT =================
-		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-			workbook.write(bos);
-			workbook.close();
-			return bos.toByteArray();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return null;
-	}
-
-	private byte[] generateRBRReport(String reportName, String filename, String asondate, String fromdate,
-			String todate, String currency, String dtltype, String type, BigDecimal version) {
-
-		try {
-
-			switch (reportName) {
-
-			// ===== MDISB =====
-			case "MDISB1":
-				return brrs_mdisb1_reportservice.getMDISB1Excel("MDISB1.xlsx", reportName, fromdate, todate, currency,
-						dtltype, type, version);
-
-			case "MDISB2":
-				return brrs_mdisb2_reportservice.getMDISB2Excel("MDISB2.xlsx", reportName, fromdate, todate, currency,
-						dtltype, type, version);
-
-			case "MDISB3":
-				return brrs_mdisb3_reportservice.getMDISB3Excel("MDISB3.xlsx", reportName, fromdate, todate, currency,
-						dtltype, type, version);
-
-			case "MDISB4":
-				return BRRS_MDISB4_ReportService.getMDISB4Excel("MDISB4.xlsx", reportName, fromdate, todate, currency,
-						dtltype, type, version);
-
-			case "MDISB5":
-				return BRRS_MDISB5_ReportService.getMDISB5Excel("MDISB5.xlsx", reportName, fromdate, todate, currency,
-						dtltype, type, version);
-
-			// ===== PULA =====
-			case "FORMAT_I":
-				return brrs_format_I_reportservice.getFORMAT_IExcel("FORMAT_I.xlsx", reportName, fromdate, todate,
-						currency, dtltype, type, version);
-
-			case "FORMAT_II":
-				return brrs_format_II_reportservice.getFORMAT_IIExcel("FORMAT_II.xlsx", reportName, fromdate, todate,
-						currency, dtltype, type, version);
-
-			case "FORMAT_III":
-				return BRRS_FORMAT_III_ReportService.getFORMAT_IIIExcel("FORMAT_III.xlsx", reportName, fromdate, todate,
-						currency, dtltype, type, version);
-
-			case "M_P_L":
-				return BRRS_M_P_L_ReportService.getM_P_LExcel("M_P_L.xlsx", reportName, fromdate, todate, currency,
-						dtltype, type, version);
-
-			case "GL_SCH":
-				return brrs_gl_sch_reportservice.getGL_SCHExcel("GL_SCH.xlsx", reportName, fromdate, todate, currency,
-						dtltype, type, version);
-
-			case "PL_SCHS":
-				return BRRS_PL_SCHS_Reportservice.getPL_SCHSExcel("PL_SCHS.xlsx", reportName, fromdate, todate,
-						currency, dtltype, type, version);
-
-			case "SCH_17_New":
-				return BRRS_SCH_17_New_Service.getSCH_17_NewExcel("SCH_17_New.xlsx", reportName, fromdate, todate,
-						currency, dtltype, type, version);
-
-			case "TIER_1_2_CFS":
-				return BRRS_TIER_1_2_CFS_ReportService.getTIER_1_2_CFSExcel("TIER_1_2_CFS.xlsx", reportName, fromdate,
-						todate, currency, dtltype, type, version);
-
-			case "RWA":
-				return BRRS_RWA_ReportService.getRWAExcel("RWA.xlsx", reportName, fromdate, todate, currency, dtltype,
-						type, version);
-
-			case "OFF_BS_ITEMS":
-				return BRRS_OFF_BS_ITEMS_ReportService.getOFF_BS_ITEMSExcel("OFF_BS_ITEMS.xlsx", reportName, fromdate,
-						todate, currency, dtltype, type, version);
-
-			case "CASH_FLOW":
-				return BRRS_CASH_FLOW_ReportService.getCASH_FLOWExcel("CASH_FLOW.xlsx", reportName, fromdate, todate,
-						currency, dtltype, type, version);
-
-			case "DTAX":
-				return BRRS_DEFERRED_TAX_ReportService.getDTAXExcel("DTAX.xlsx", reportName, fromdate, todate, currency,
-						dtltype, type, version);
-
-			default:
-				return null;
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	private String formatDate(String inputDate) {
-
-		if (inputDate == null || inputDate.isEmpty())
-			return "";
-
-		List<String> formats = Arrays.asList("yyyy-MM-dd", "dd-MMM-yyyy", "dd/MM/yyyy");
-
-		for (String format : formats) {
-			try {
-				SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.ENGLISH);
-				Date date = sdf.parse(inputDate);
-				return new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH).format(date);
-			} catch (Exception ignored) {
-			}
-		}
-
-		return inputDate;
-	}
-
-	private String getUniqueSheetName(String baseName, Set<String> existingNames) {
-		String name = baseName;
-		int counter = 1;
-
-		while (existingNames.contains(name)) {
-			name = baseName + "_" + counter++;
-		}
-
-		return name;
-	}
+	
 
 	public byte[] getPdfDownloadFile(String reportId, String filename, String asondate, String fromdate, String todate,
 			String currency, String subreportid, String secid, String dtltype, String type, BigDecimal version) {
@@ -9089,6 +8859,284 @@ public class RegulatoryReportServices {
 		return repfile;
 	}
 
+	
+	
+	
+	public byte[] getConsolidatedDownloadMDISBFile(String filename, String asondate, String fromdate, String todate,
+	        String currency, String type, String format, BigDecimal version, String dtltype) throws ParseException {
+
+	    // List of all MDISB reports
+	    List<String> reportList = Arrays.asList(
+	            "MDISB1",
+	            "MDISB2",
+	            "MDISB3",
+	            "MDISB4",
+	            "MDISB5"
+	    );
+
+	    System.out.println(todate);
+
+	    SimpleDateFormat inputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+	    Date date = inputFormat.parse(todate);
+
+	    SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+	    String formattedDate = outputFormat.format(date);
+
+	    XSSFWorkbook workbook = new XSSFWorkbook();
+
+	    Sheet errorSheet = workbook.createSheet("Status");
+
+	    Row headerRow = errorSheet.createRow(0);
+	    headerRow.createCell(0).setCellValue("Report Name");
+	    headerRow.createCell(1).setCellValue("Status");
+	    headerRow.createCell(2).setCellValue("Remarks");
+
+	    int errorRowNum = 1;
+
+	    for (String report : reportList) {
+
+	        try {
+
+	            byte[] fileData = generateMDISBReport(
+	                    report,
+	                    filename,
+	                    asondate,
+	                    fromdate,
+	                    formattedDate,
+	                    currency,
+	                    dtltype,
+	                    type,
+	                    format,
+	                    version);
+
+	            System.out.println(fileData + " fileData");
+
+	            if (fileData != null && fileData.length > 0) {
+
+	                try (Workbook reportWorkbook =
+	                             new XSSFWorkbook(new ByteArrayInputStream(fileData))) {
+
+	                    for (int i = 0; i < reportWorkbook.getNumberOfSheets(); i++) {
+
+	                        Sheet srcSheet = reportWorkbook.getSheetAt(i);
+
+	                        Sheet newSheet;
+
+	                        if (srcSheet.getLastRowNum() == -1
+	                                || srcSheet.getPhysicalNumberOfRows() == 0) {
+
+	                            newSheet = workbook.createSheet(
+	                                    report + "_" + srcSheet.getSheetName());
+
+	                        } else {
+
+	                            String sheetName = report;
+
+	                            if (workbook.getSheet(sheetName) != null) {
+	                                sheetName = report + "_" + (i + 1);
+	                            }
+
+	                            newSheet = workbook.createSheet(sheetName);
+	                        }
+
+	                        copySheet(srcSheet, newSheet);
+	                    }
+	                }
+
+	            } else {
+
+	                Row failRow = errorSheet.createRow(errorRowNum++);
+
+	                failRow.createCell(0).setCellValue(report);
+	                failRow.createCell(1).setCellValue("FAILED");
+	                failRow.createCell(2).setCellValue("No data found");
+	            }
+
+	        } catch (Exception e) {
+
+	            Row failRow = errorSheet.createRow(errorRowNum++);
+
+	            failRow.createCell(0).setCellValue(report);
+	            failRow.createCell(1).setCellValue("FAILED");
+	            failRow.createCell(2).setCellValue("Error: " + e.getMessage());
+
+	            e.printStackTrace();
+	        }
+	    }
+
+	    try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+
+	        workbook.write(bos);
+	        workbook.close();
+
+	        return bos.toByteArray();
+
+	    } catch (Exception e) {
+
+	        e.printStackTrace();
+	    }
+
+	    return null;
+	}
+	
+	private byte[] generateMDISBReport(String reportName, String filename, String asondate,
+	        String fromdate, String todate, String currency,
+	        String dtltype, String type, String format,
+	        BigDecimal version) {
+
+	    try {
+
+	        System.out.println("Service: Generating report for " + reportName);
+	        System.out.println("Converted Dates: From "
+	                + fromdate + " To "
+	                + todate + " Ason "
+	                + asondate);
+
+	        if ("email".equalsIgnoreCase(format) && version == null) {
+
+	            switch (reportName) {
+
+	            case "MDISB1":
+	                return brrs_mdisb1_reportservice.getMDISB1Excel(
+	                        "MDISB1.xlsx",
+	                        reportName,
+	                        fromdate,
+	                        todate,
+	                        currency,
+	                        dtltype,
+	                        type,
+	                        version);
+
+	            case "MDISB2":
+	                return brrs_mdisb2_reportservice.getMDISB2Excel(
+	                        "MDISB2.xlsx",
+	                        reportName,
+	                        fromdate,
+	                        todate,
+	                        currency,
+	                        dtltype,
+	                        type,
+	                        version);
+
+	            case "MDISB3":
+	                return brrs_mdisb3_reportservice.getMDISB3Excel(
+	                        "MDISB3.xlsx",
+	                        reportName,
+	                        fromdate,
+	                        todate,
+	                        currency,
+	                        dtltype,
+	                        type,
+	                        version);
+
+	            case "MDISB4":
+	                return BRRS_MDISB4_ReportService.getMDISB4Excel(
+	                        "MDISB4.xlsx",
+	                        reportName,
+	                        fromdate,
+	                        todate,
+	                        currency,
+	                        dtltype,
+	                        type,
+	                        version);
+
+	            case "MDISB5":
+	                return BRRS_MDISB5_ReportService.getMDISB5Excel(
+	                        "MDISB5.xlsx",
+	                        reportName,
+	                        fromdate,
+	                        todate,
+	                        currency,
+	                        dtltype,
+	                        type,
+	                        version);
+
+	            default:
+	                System.out.println("Unknown report: " + reportName);
+	                return null;
+	            }
+
+	        } else {
+
+	            switch (reportName) {
+
+	            case "MDISB1":
+	                return brrs_mdisb1_reportservice.getMDISB1Excel(
+	                        "MDISB1.xlsx",
+	                        reportName,
+	                        fromdate,
+	                        todate,
+	                        currency,
+	                        dtltype,
+	                        type,
+	                        version);
+
+	            case "MDISB2":
+	                return brrs_mdisb2_reportservice.getMDISB2Excel(
+	                        "MDISB2.xlsx",
+	                        reportName,
+	                        fromdate,
+	                        todate,
+	                        currency,
+	                        dtltype,
+	                        type,
+	                        version);
+
+	            case "MDISB3":
+	                return brrs_mdisb3_reportservice.getMDISB3Excel(
+	                        "MDISB3.xlsx",
+	                        reportName,
+	                        fromdate,
+	                        todate,
+	                        currency,
+	                        dtltype,
+	                        type,
+	                        version);
+
+	            case "MDISB4":
+	                return BRRS_MDISB4_ReportService.getMDISB4Excel(
+	                        "MDISB4.xlsx",
+	                        reportName,
+	                        fromdate,
+	                        todate,
+	                        currency,
+	                        dtltype,
+	                        type,
+	                        version);
+
+	            case "MDISB5":
+	                return BRRS_MDISB5_ReportService.getMDISB5Excel(
+	                        "MDISB5.xlsx",
+	                        reportName,
+	                        fromdate,
+	                        todate,
+	                        currency,
+	                        dtltype,
+	                        type,
+	                        version);
+
+	            default:
+	                System.out.println("Unknown report: " + reportName);
+	                return null;
+	            }
+	        }
+
+	    } catch (FileNotFoundException fe) {
+
+	        System.err.println("Template file not found: " + fe.getMessage());
+	        fe.printStackTrace();
+	        return null;
+
+	    } catch (Exception e) {
+
+	        System.err.println("Error generating report: " + e.getMessage());
+	        e.printStackTrace();
+	        return null;
+	    }
+	}
+
+	
+	
 	public byte[] getConsolidatedDownloadADISBFile(String filename, String asondate, String fromdate, String todate,
 			String currency, String type, String format, BigDecimal version, String dtltype) throws ParseException {
 
