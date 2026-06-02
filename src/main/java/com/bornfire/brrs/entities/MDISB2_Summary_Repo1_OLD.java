@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface MDISB2_Summary_Repo1 extends JpaRepository<MDISB2_Summary_Entity1, Date>{	
+public interface MDISB2_Summary_Repo1_OLD extends JpaRepository<MDISB2_Summary_Entity1_OLD, Date>{	
 	@Query(value = "select * from BRRS_MDISB2_SUMMARYTABLE1 where REPORT_DATE =?1  ", nativeQuery = true)
-    List<MDISB2_Summary_Entity1> getdatabydateList(Date reportdate);
+    List<MDISB2_Summary_Entity1_OLD> getdatabydateList(Date reportdate);
 }

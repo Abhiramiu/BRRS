@@ -10,11 +10,11 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 
 @Repository
-public interface BRRS_MDISB2_Archival_Summary_Repo1 extends JpaRepository<MDISB2_Archival_Summary_Entity1, Date> {
+public interface BRRS_MDISB2_Archival_Summary_Repo1_OLD extends JpaRepository<MDISB2_Archival_Summary_Entity1_OLD, Date> {
 
     @Query(value = "select REPORT_DATE, REPORT_VERSION from BRRS_MDISB2_ARCHIVALTABLE_SUMMARY1 order by REPORT_VERSION", nativeQuery = true)
     List<Object> getMDISB2archival();
 
     @Query(value = "select * from BRRS_MDISB2_ARCHIVALTABLE_SUMMARY1 where REPORT_DATE = ?1 and REPORT_VERSION = ?2", nativeQuery = true)
-    List<MDISB2_Archival_Summary_Entity1> getdatabydateListarchival(Date report_date, BigDecimal report_version);
+    List<MDISB2_Archival_Summary_Entity1_OLD> getdatabydateListarchival(Date report_date, BigDecimal report_version);
 }

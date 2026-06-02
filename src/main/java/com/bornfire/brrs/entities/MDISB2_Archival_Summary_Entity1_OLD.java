@@ -10,7 +10,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "BRRS_MDISB2_ARCHIVALTABLE_SUMMARY1")
 
-public class MDISB2_Archival_Summary_Entity1 {
+public class MDISB2_Archival_Summary_Entity1_OLD {
 
 	private String	r7_deposit_size;
 	private String	r7_deposit_type;
@@ -5109,7 +5109,7 @@ public class MDISB2_Archival_Summary_Entity1 {
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
 	}
-	public MDISB2_Archival_Summary_Entity1() {
+	public MDISB2_Archival_Summary_Entity1_OLD() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

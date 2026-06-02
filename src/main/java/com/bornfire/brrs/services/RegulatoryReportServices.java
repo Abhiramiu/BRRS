@@ -5960,12 +5960,10 @@ public class RegulatoryReportServices {
 			
 			
 		case "MDISB2":
-			try {
-				archivalData = brrs_mdisb2_reportservice.getMDISB2Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			
+			List<Object[]> MDISB2List = brrs_mdisb2_reportservice.getMDISB2Archival();
+			archivalData.addAll(MDISB2List);
+			System.out.println("Fetched MDISB2 archival data: " + MDISB2List.size());
 			break;
 
 		case "MDISB3":

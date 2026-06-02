@@ -9,11 +9,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BRRS_MDISB2_Archival_Summary_Repo3 extends JpaRepository<MDISB2_Archival_Summary_Manual, Date> {
+public interface BRRS_MDISB2_Archival_Summary_Repo3_OLD extends JpaRepository<MDISB2_Archival_Summary_Manual_OLD, Date> {
 
     @Query(value = "select REPORT_DATE, REPORT_VERSION from BRRS_MDISB2_ARCHIVALTABLE_MANUAL order by REPORT_VERSION", nativeQuery = true)
     List<Object> getMDISB2archival();
 
     @Query(value = "select * from BRRS_MDISB2_ARCHIVALTABLE_MANUAL where REPORT_DATE = ?1 and REPORT_VERSION = ?2", nativeQuery = true)
-    List<MDISB2_Archival_Summary_Manual> getdatabydateListarchival(Date report_date, BigDecimal report_version);
+    List<MDISB2_Archival_Summary_Manual_OLD> getdatabydateListarchival(Date report_date, BigDecimal report_version);
 }

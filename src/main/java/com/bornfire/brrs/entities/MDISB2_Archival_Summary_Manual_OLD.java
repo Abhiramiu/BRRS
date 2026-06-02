@@ -11,7 +11,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "BRRS_MDISB2_ARCHIVALTABLE_MANUAL")
 
-public class MDISB2_Archival_Summary_Manual {
+public class MDISB2_Archival_Summary_Manual_OLD {
 	
 		private BigDecimal	R7_TOTAL_DEPOSIT_EXCEED;
 		private BigDecimal	R8_TOTAL_DEPOSIT_EXCEED;
@@ -805,7 +805,7 @@ public class MDISB2_Archival_Summary_Manual {
 		public void setDel_flg(String del_flg) {
 			this.del_flg = del_flg;
 		}
-		public MDISB2_Archival_Summary_Manual() {
+		public MDISB2_Archival_Summary_Manual_OLD() {
 			super();
 			// TODO Auto-generated constructor stub
 		}

@@ -13,7 +13,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "BRRS_MDISB2_ARCHIVALTABLE_DETAIL")
-public class MDISB2_Archival_Detail_Entity {
+public class MDISB2_Archival_Detail_Entity_OLD {
 
        
        @Column(name = "CUST_ID")
@@ -271,7 +271,7 @@ public class MDISB2_Archival_Detail_Entity {
 		   this.report_addl_criteria_3 = report_addl_criteria_3;
 	   }
 
-	   public MDISB2_Archival_Detail_Entity() {
+	   public MDISB2_Archival_Detail_Entity_OLD() {
 		super();
 		// TODO Auto-generated constructor stub
 	   }

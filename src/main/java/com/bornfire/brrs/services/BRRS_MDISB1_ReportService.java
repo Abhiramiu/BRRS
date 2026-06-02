@@ -63,11 +63,11 @@ import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_MDISB1_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_MDISB1_Archival_Summary_Repo1;
-import com.bornfire.brrs.entities.BRRS_MDISB1_Archival_Summary_Repo2;
-import com.bornfire.brrs.entities.BRRS_MDISB1_Archival_Summary_Repo3;
-import com.bornfire.brrs.entities.BRRS_MDISB1_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_MDISB1_Archival_Detail_Repo_OLD;
+import com.bornfire.brrs.entities.BRRS_MDISB1_Archival_Summary_Repo1_OLD;
+import com.bornfire.brrs.entities.BRRS_MDISB1_Archival_Summary_Repo2_OLD;
+import com.bornfire.brrs.entities.BRRS_MDISB1_Archival_Summary_Repo3_OLD;
+import com.bornfire.brrs.entities.BRRS_MDISB1_Detail_Repo_OLD;
 import com.bornfire.brrs.entities.MDISB1_Summary_Repo1;
 import com.bornfire.brrs.entities.MDISB1_Summary_Repo2;
 import com.bornfire.brrs.entities.MDISB1_Summary_Repo3;
@@ -32686,7 +32686,7 @@ public class BRRS_MDISB1_ReportService {
 	}
 
 	@Autowired
-	private BRRS_MDISB1_Detail_Repo MDISB1_Detail_Repo;
+	private BRRS_MDISB1_Detail_Repo_OLD MDISB1_Detail_Repo;
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;

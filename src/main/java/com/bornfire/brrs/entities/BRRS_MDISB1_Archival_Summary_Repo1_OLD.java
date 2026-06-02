@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 
 @Repository
-public interface BRRS_MDISB1_Archival_Summary_Repo1 extends JpaRepository<MDISB1_Archival_Summary_Entity1_old, Date> {
+public interface BRRS_MDISB1_Archival_Summary_Repo1_OLD extends JpaRepository<MDISB1_Archival_Summary_Entity1_old, Date> {
 
     @Query(value = "select REPORT_DATE, REPORT_VERSION from BRRS_MDISB1_ARCHIVALTABLE_SUMMARY1 order by REPORT_VERSION", nativeQuery = true)
     List<Object> getMDISB1archival();
