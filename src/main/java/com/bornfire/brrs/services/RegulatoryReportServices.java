@@ -8861,11 +8861,10 @@ case "MDISB3":
 
 	
 	
-	
-	public byte[] getConsolidatedDownloadMDISBFile(String filename, String asondate, String fromdate, String todate,
-	        String currency, String type, String format, BigDecimal version, String dtltype) throws ParseException {
+	public byte[] getConsolidatedDownloadMDISBFile(String filename, String asondate, String fromdate,
+	        String todate, String currency, String type, String format,
+	        BigDecimal version, String dtltype) throws ParseException {
 
-	    // List of all MDISB reports
 	    List<String> reportList = Arrays.asList(
 	            "MDISB1",
 	            "MDISB2",
@@ -8873,8 +8872,6 @@ case "MDISB3":
 	            "MDISB4",
 	            "MDISB5"
 	    );
-
-	    System.out.println(todate);
 
 	    SimpleDateFormat inputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
 	    Date date = inputFormat.parse(todate);
@@ -8909,44 +8906,40 @@ case "MDISB3":
 	                    format,
 	                    version);
 
-	            System.out.println(fileData + " fileData");
+	            System.out.println(report + " fileData : "
+	                    + (fileData != null ? fileData.length : "NULL"));
 
 	            if (fileData != null && fileData.length > 0) {
 
 	                try (Workbook reportWorkbook =
-	                             new XSSFWorkbook(new ByteArrayInputStream(fileData))) {
+	                        new XSSFWorkbook(new ByteArrayInputStream(fileData))) {
 
 	                    for (int i = 0; i < reportWorkbook.getNumberOfSheets(); i++) {
 
 	                        Sheet srcSheet = reportWorkbook.getSheetAt(i);
 
-	                        Sheet newSheet;
+	                        String sheetName = report;
 
-	                        if (srcSheet.getLastRowNum() == -1
-	                                || srcSheet.getPhysicalNumberOfRows() == 0) {
-
-	                            newSheet = workbook.createSheet(
-	                                    report + "_" + srcSheet.getSheetName());
-
-	                        } else {
-
-	                            String sheetName = report;
-
-	                            if (workbook.getSheet(sheetName) != null) {
-	                                sheetName = report + "_" + (i + 1);
-	                            }
-
-	                            newSheet = workbook.createSheet(sheetName);
+	                        if (workbook.getSheet(sheetName) != null) {
+	                            sheetName = report + "_" + (i + 1);
 	                        }
+
+	                        Sheet newSheet = workbook.createSheet(sheetName);
 
 	                        copySheet(srcSheet, newSheet);
 	                    }
 	                }
 
+	                // SUCCESS ENTRY
+	                Row successRow = errorSheet.createRow(errorRowNum++);
+	                successRow.createCell(0).setCellValue(report);
+	                successRow.createCell(1).setCellValue("SUCCESS");
+	                successRow.createCell(2).setCellValue("Downloaded Successfully");
+
 	            } else {
 
+	                // FAILED ENTRY
 	                Row failRow = errorSheet.createRow(errorRowNum++);
-
 	                failRow.createCell(0).setCellValue(report);
 	                failRow.createCell(1).setCellValue("FAILED");
 	                failRow.createCell(2).setCellValue("No data found");
@@ -8955,7 +8948,6 @@ case "MDISB3":
 	        } catch (Exception e) {
 
 	            Row failRow = errorSheet.createRow(errorRowNum++);
-
 	            failRow.createCell(0).setCellValue(report);
 	            failRow.createCell(1).setCellValue("FAILED");
 	            failRow.createCell(2).setCellValue("Error: " + e.getMessage());
@@ -8972,7 +8964,6 @@ case "MDISB3":
 	        return bos.toByteArray();
 
 	    } catch (Exception e) {
-
 	        e.printStackTrace();
 	    }
 
