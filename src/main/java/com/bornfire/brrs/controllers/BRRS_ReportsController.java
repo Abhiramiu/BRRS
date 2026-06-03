@@ -5430,27 +5430,33 @@ public class BRRS_ReportsController {
 	}
 	
 	
-	
-//Q_LARADV
+	//Q_LARADV
 	//Add screen navigating
 	
 	// CONTROLLER METHOD FOR ADD SCREEN
 
-	@RequestMapping(value = "/BRRS_Q_LARADV/add", method = RequestMethod.GET)
-	public ModelAndView addScreen() {
-		
-		System.out.println("came to add navigation method");
-		ModelAndView mv = new ModelAndView();
-
-	    mv.setViewName("BRRS/Q_LARADV");
-
-	    mv.addObject("displaymode", "add");
-
-	    mv.addObject("qLaradv", new Q_LARADV_Summary_Entity());
-
-	    return mv;
-	}
 	
+	
+@RequestMapping(value = "/BRRS_Q_LARADV/add", method = RequestMethod.GET)
+public ModelAndView addScreen(
+        @RequestParam(required = false)
+        @DateTimeFormat(pattern = "dd/MM/yyyy")
+        Date asondate) {
+
+    System.out.println("asondate = " + asondate);
+
+    ModelAndView mv = new ModelAndView();
+
+    mv.setViewName("BRRS/Q_LARADV");
+    mv.addObject("displaymode", "add");
+
+    Q_LARADV_Summary_Entity entity = new Q_LARADV_Summary_Entity();
+    entity.setReportDate(asondate);
+
+    mv.addObject("qLaradv", entity);
+
+    return mv;
+}
 	
 // CONTROLLER METHOD FOR MODIFY SCREEN
 
@@ -5515,7 +5521,7 @@ public ResponseEntity<String> updateBRRSQlaradv(
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Update Failed : " + e.getMessage());
     }
+
 }
- 
 
 }

@@ -634,31 +634,10 @@ public void updateQlaradv(
     detail.setLimitPercent(
             summary.getLimitPercent());
 
-    detail.setReportDate(
-            summary.getReportDate());
-
-    detail.setReportVersion(
-            summary.getReportVersion());
-
-    detail.setReportFrequency(
-            summary.getReportFrequency());
-
-    detail.setReportCode(
-            summary.getReportCode());
-
-    detail.setReportDesc(
-            summary.getReportDesc());
-
-    detail.setEntityFlg(
-            summary.getEntityFlg());
 
     detail.setModifyFlg("Y");
 
-    detail.setDelFlg(
-            summary.getDelFlg());
-
-    detail.setReportResubdate(
-            summary.getReportResubdate());
+   
 
     Q_LARADV_Detail_Repo.save(detail);
 }

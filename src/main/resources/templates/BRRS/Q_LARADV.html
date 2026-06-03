@@ -582,7 +582,7 @@ function showdetails() {
 		    var srlno = a.getAttribute("id");
 
 		    var url = '/BRRS/Reports/BRRS_Q_LARADV/modify/' + srlno;
-		    alert(url);
+		    //alert(url);
 
 		    location.href = url;
 		}
@@ -597,20 +597,50 @@ function showdetails() {
 
 		function saveQlaradv() {
 
+		    $('#loader').modal('show');
+
 		    $.ajax({
 		        url: './saveBRRSQlaradv',
 		        type: 'POST',
 		        data: $("#qLaradvForm").serialize(),
+
 		        success: function(response) {
-		            alert(response);
+
+		            $('#loader').modal('hide');
+
+		            if (response && response.toLowerCase().includes('success')) {
+		                showResultModal('BRRS', response);
+		            } else {
+		                showResultModal('Information', response || 'No data saved.');
+		            }
+
+		            setTimeout(function() {
+		                window.location.reload();
+		            }, 3500);
+		        },
+
+		        error: function(xhr, status, error) {
+
+		            $('#loader').modal('hide');
+
+		            console.error("Save error:", error);
+
+		            showResultModal(
+		                'Error',
+		                xhr.responseText || 'Failed to save record. Please try again.'
+		            );
+
+		            setTimeout(function() {
+		                window.location.reload();
+		            }, 3500);
 		        }
 		    });
 		}
 		$(function () {
 
-		    $("#reportDate").datepicker({
+	/*	    $("#reportDate").datepicker({
 		        dateFormat: "dd-mm-yy"
-		    });
+		    });*/
 
 		    $("#effectiveDate").datepicker({
 		        dateFormat: "dd-mm-yy"
@@ -620,29 +650,82 @@ function showdetails() {
 		
 		</script>
 <script>
-function updateQlaradv() {
+	function updateQlaradv() {
 
-    $.ajax({
-        url: '/BRRS/Reports/updateBRRSQlaradv',
-        type: 'POST',
-        data: $("#modifyQlaradvForm").serialize(),
+	    const previousUrl = document.referrer;
 
-        success: function(response) {
-            alert(response);
-            window.location.href =
-                '/BRRS/Reports/Q_LARADV?dtltype=report'
-                + '&fromdate=01/01/2025'
-                + '&todate=31/03/2026'
-                + '&type=BRRS'
-                + '&asondate=31/03/2026';
-        },
+	    // Show loader
+	    $('#loader').modal('show');
 
-        error: function(xhr) {
-            console.log(xhr);
-            alert(xhr.responseText);
-        }
-    });
-}
+	    $.ajax({
+	        url: '/BRRS/Reports/updateBRRSQlaradv',
+	        type: 'POST',
+	        data: $("#modifyQlaradvForm").serialize(),
+
+	        success: function(response) {
+
+	            $('#loader').modal('hide');
+
+	            // Show result in modal
+	            if (response && response.toLowerCase().includes('success')) {
+	                showResultModal('BRRS', response);
+	            } else {
+	                showResultModal('Information', response || 'No data updated.');
+	            }
+
+	            // Redirect after delay
+	            setTimeout(function() {
+
+	                if (previousUrl) {
+	                    window.location.href = previousUrl;
+	                } else {
+	                   window.location.reload();
+	                }
+
+	            }, 3500);
+	        },
+
+	        error: function(xhr, status, error) {
+
+	            $('#loader').modal('hide');
+
+	            console.error("Update error:", error);
+
+	            showResultModal(
+	                'Error',
+	                xhr.responseText || 'Failed to update record. Please try again.'
+	            );
+
+	            // Redirect after delay
+	            setTimeout(function() {
+
+	                if (previousUrl) {
+	                    window.location.href = previousUrl;
+	                } else {
+					    window.location.reload();
+					}
+
+	            }, 3500);
+	        }
+	    });
+	}
+	</script>
+		
+	<script>
+		function closemodel() {
+					$('#alert').modal('hide');
+					$('#resultModal').modal('hide');
+
+				}
+
+		function showResultModal(title, message) {
+					// Set the text for the modal elements
+					$('#resultModalLabel').text(title);
+					$('#resultModalBody').text(message);
+
+					// Show the modal
+					$('#resultModal').modal('show');
+				}
 	</script>
 		
 </head>
@@ -735,12 +818,12 @@ function updateQlaradv() {
 
 						</button>
 
-						<button type="button"
-						        class="custom-tab-btn"
-						        onclick="location.href='/BRRS/Reports/BRRS_Q_LARADV/add'">
+						<a th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}"
+						   class="custom-tab-btn"
+						   th:href="@{/Reports/BRRS_Q_LARADV/add(asondate=${asondate})}">
 						    Add New Record
-						</button>
-					</div>
+						</a>
+									</div>
 				</div>
 				
 				<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}"
@@ -805,9 +888,9 @@ function updateQlaradv() {
 							        <tr th:each="data : ${reportsummary}">
 										<!-- MODIFY BUTTON INSIDE TABLE -->
 
-										<td>
+										<td >
 
-										    <a  th:attr="id=${data?.sno}" 
+										    <a th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}" th:attr="id=${data?.sno}" 
 										       class="btn btn-warning btn-sm"
 											   onclick="edit_btn_submit(this)">
 
@@ -904,7 +987,7 @@ function updateQlaradv() {
 				                    </div>
 
 				                    <div class="col-md-4 mb-3">
-				                        <label>Security Details</label>
+				                        <label>Type of Security</label>
 				                        <input type="text" th:field="*{securityDetails}" class="form-control"/>
 				                    </div>
 
@@ -932,10 +1015,13 @@ function updateQlaradv() {
 				                               class="form-control"/>
 				                    </div>
 
-				                    <div class="col-md-4 mb-3">
-				                        <label>Report Date</label>
-				                        <input type="text" id="reportDate" th:field="*{reportDate}" class="form-control"/>
-				                    </div>
+									<div class="col-md-4 mb-3">
+									    <label>Report Date</label>
+									    <input type="text"
+									           th:field="*{reportDate}"
+											   class="form-control"
+									           readonly />
+									</div>
 
 				                    
 
@@ -983,20 +1069,13 @@ function updateQlaradv() {
 
 									<input type="hidden" th:field="*{sno}"/>
 									
-				                    <div class="col-md-4 mb-3">
-				                        <label>Group Name</label>
-				                        <input type="text" th:field="*{groupName}" class="form-control"/>
-				                    </div>
-
+				                  
 				                    <div class="col-md-4 mb-3">
 				                        <label>Customer Group Name</label>
 				                        <input type="text" th:field="*{customerGroupName}" class="form-control"/>
 				                    </div>
 
-				                    <div class="col-md-4 mb-3">
-				                        <label>Sector Type</label>
-				                        <input type="text" th:field="*{sectorType}" class="form-control"/>
-				                    </div>
+				                    
 
 				                    <div class="col-md-4 mb-3">
 				                        <label>Facility Type</label>
@@ -1035,7 +1114,7 @@ function updateQlaradv() {
 				                    </div>
 
 				                    <div class="col-md-4 mb-3">
-				                        <label>Security Details</label>
+				                        <label>Type of Security</label>
 				                        <input type="text" th:field="*{securityDetails}" class="form-control"/>
 				                    </div>
 
@@ -1050,6 +1129,20 @@ function updateQlaradv() {
 				                               th:field="*{interestRate}"
 				                               class="form-control"/>
 				                    </div>
+									
+									<div class="col-md-4 mb-3">
+									 <label>Outstanding Balance %</label>
+								    <input type="number" step="0.01"
+												                               th:field="*{outstandingBalancePercent}"
+												                               class="form-control"/>
+												                    </div>
+
+												                    <div class="col-md-4 mb-3">
+												                        <label>Limit %</label>
+												                        <input type="number" step="0.01"
+												                               th:field="*{limitPercent}"
+												                               class="form-control"/>
+												                    </div>
 
 				                </div>
 
