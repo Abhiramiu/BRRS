@@ -8,10 +8,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BRRS_MDISB5_Detail_Repo extends JpaRepository<MDISB5_Detail_Entity,String> {
+public interface BRRS_MDISB5_Detail_Repo extends JpaRepository<MDISB5_Detail_Entity_old,String> {
 
 	@Query(value = "select * from BRRS_MDISB5_DETAILTABLE where REPORT_DATE = ?1 AND REPORT_LABEL= ?2 AND REPORT_ADDL_CRITERIA_1= ?3", nativeQuery = true)
-    List<MDISB5_Detail_Entity> findByReportDateAndReportLableAndReportAddlCriteria1(
+    List<MDISB5_Detail_Entity_old> findByReportDateAndReportLableAndReportAddlCriteria1(
             Date reportDate,
             String reportLabel,
             String reportAddlCriteria1
@@ -19,7 +19,7 @@ public interface BRRS_MDISB5_Detail_Repo extends JpaRepository<MDISB5_Detail_Ent
     
     // ✅ Pagination fixed → use OFFSET and LIMIT correctly
     @Query(value = "select * from BRRS_MDISB5_DETAILTABLE where REPORT_DATE = ?1 offset ?2 rows fetch next ?3 rows only", nativeQuery = true)
-    List<MDISB5_Detail_Entity> getdatabydateList(Date reportdate,int startpage,int endpage);
+    List<MDISB5_Detail_Entity_old> getdatabydateList(Date reportdate,int startpage,int endpage);
     
  // Count rows by date
     @Query(value = "select count(*) from BRRS_MDISB5_DETAILTABLE where REPORT_DATE = ?1", nativeQuery = true)
@@ -27,10 +27,10 @@ public interface BRRS_MDISB5_Detail_Repo extends JpaRepository<MDISB5_Detail_Ent
     
     @Query(value ="select * from BRRS_MDISB5_DETAILTABLE where REPORT_LABEL =?1 and REPORT_ADDL_CRITERIA_1=?2 AND REPORT_DATE=?3"
     		  , nativeQuery = true) 
-    List<MDISB5_Detail_Entity> GetDataByRowIdAndColumnId(String reportLabel,String reportAddlCriteria_1,Date reportdate);
+    List<MDISB5_Detail_Entity_old> GetDataByRowIdAndColumnId(String reportLabel,String reportAddlCriteria_1,Date reportdate);
  
 	// Fetch all records for a given date
     @Query(value = "select * from BRRS_MDISB5_DETAILTABLE where REPORT_DATE = ?1", nativeQuery = true)
-    List<MDISB5_Detail_Entity> getdatabydateList(Date reportdate);
+    List<MDISB5_Detail_Entity_old> getdatabydateList(Date reportdate);
     
 }

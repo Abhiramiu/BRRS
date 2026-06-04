@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface BRRS_MDISB4_Archival_Summary_Repo extends JpaRepository<MDISB4_Archival_Summary_Entity_OLD, MDISB4_PK> {
+public interface BRRS_MDISB4_Archival_Summary_Repo_old extends JpaRepository<MDISB4_Archival_Summary_Entity_OLD, MDISB4_PK> {
 
 	/*
 	 * @Query(value =

@@ -10,10 +10,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BRRS_MDISB5_RESUB_Summary_Repo2 extends JpaRepository<MDISB5_RESUB_Summary_Entity2, MDISB5_PK> {
+public interface BRRS_MDISB5_RESUB_Summary_Repo2 extends JpaRepository<MDISB5_RESUB_Summary_Entity2_old, MDISB5_PK> {
 
 	@Query(value = "select * from BRRS_MDISB5_RESUB_SUMMARYTABLE2 where REPORT_DATE = ?1 and REPORT_VERSION = ?2", nativeQuery = true)
-	List<MDISB5_RESUB_Summary_Entity2> getdatabydateListarchival(Date report_date, BigDecimal report_version);
+	List<MDISB5_RESUB_Summary_Entity2_old> getdatabydateListarchival(Date report_date, BigDecimal report_version);
 
 	@Query("SELECT MAX(e.reportVersion) FROM MDISB5_RESUB_Summary_Entity1 e WHERE e.reportDate = :date")
 	BigDecimal findMaxVersion(@Param("date") Date date);
@@ -23,6 +23,6 @@ public interface BRRS_MDISB5_RESUB_Summary_Repo2 extends JpaRepository<MDISB5_RE
 
 	// Current Report Version Only Shown
 	@Query(value = "SELECT *  FROM BRRS_MDISB5_RESUB_SUMMARYTABLE2 WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
-	List<MDISB5_RESUB_Summary_Entity2> getdatabydateListWithVersion();
+	List<MDISB5_RESUB_Summary_Entity2_old> getdatabydateListWithVersion();
 
 }

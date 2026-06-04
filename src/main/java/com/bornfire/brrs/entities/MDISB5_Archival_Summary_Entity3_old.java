@@ -1,21 +1,23 @@
 package com.bornfire.brrs.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_MDISB5_SUMMARYTABLE3")
+@Table(name = "BRRS_MDISB5_ARCHIVALTABLE_SUMMARY3")
+@IdClass(MDISB5_Archival_Summary3_PK.class)
 
-public class MDISB5_Summary_Entity3 {
+public class MDISB5_Archival_Summary_Entity3_old  {
 	
 	private String R37_NAME;
     private String R37_DESIGNATION_OR_POSITION;
@@ -56,14 +58,19 @@ public class MDISB5_Summary_Entity3 {
     private String R44_DESIGNATION_OR_POSITION;
     private BigDecimal R44_NUMBER_OF_ACCOUNTS;
     private BigDecimal R44_AMOUNT;
-
+	
     @Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
     @Id
     @Column(name = "REPORT_DATE")
 	private Date reportDate;
+    
 	@Column(name = "REPORT_VERSION")
 	private BigDecimal reportVersion;
+   
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date REPORT_RESUBDATE;
+   
     private String REPORT_FREQUENCY;
     private String REPORT_CODE;
     private String REPORT_DESC;
@@ -345,6 +352,14 @@ public class MDISB5_Summary_Entity3 {
 		this.reportVersion = reportVersion;
 	}
 
+	public Date getREPORT_RESUBDATE() {
+		return REPORT_RESUBDATE;
+	}
+
+	public void setREPORT_RESUBDATE(Date rEPORT_RESUBDATE) {
+		REPORT_RESUBDATE = rEPORT_RESUBDATE;
+	}
+
 	public String getREPORT_FREQUENCY() {
 		return REPORT_FREQUENCY;
 	}
@@ -392,16 +407,15 @@ public class MDISB5_Summary_Entity3 {
 	public void setDELETE_FLG(String dELETE_FLG) {
 		DELETE_FLG = dELETE_FLG;
 	}
-	
-	
-	
 
-	public MDISB5_Summary_Entity3() {
+	
+	
+	public MDISB5_Archival_Summary_Entity3_old() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-    
-    
+	
+	
 	
 
 }

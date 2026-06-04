@@ -17,7 +17,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name = "BRRS_MDISB5_RESUB_DETAILTABLE2")
 @IdClass(MDISB5_PK.class)
 
-public class MDISB5_RESUB_Detail_Entity2 {
+public class MDISB5_RESUB_Detail_Entity2_old {
 	
 	private String R20_NAME_OF_BOARD_MEMBERS;
     private String R20_EXECUTIVE_OR_NONEXECUTIVE;
@@ -633,7 +633,7 @@ public class MDISB5_RESUB_Detail_Entity2 {
 	
 	
 	
-	public MDISB5_RESUB_Detail_Entity2() {
+	public MDISB5_RESUB_Detail_Entity2_old() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
