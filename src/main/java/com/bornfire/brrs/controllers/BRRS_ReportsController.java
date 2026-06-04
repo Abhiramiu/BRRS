@@ -58,9 +58,6 @@ import com.bornfire.brrs.services.BRRS_MDISB1_ReportService;
 import com.bornfire.brrs.services.BRRS_MDISB2_ReportService;
 import com.bornfire.brrs.services.BRRS_MDISB3_ReportService;
 import com.bornfire.brrs.services.BRRS_MDISB5_ReportService;
-import com.bornfire.brrs.services.BRRS_MDISB5_ReportService.MDISB5_RESUB_Summary_Entity1;
-import com.bornfire.brrs.services.BRRS_MDISB5_ReportService.MDISB5_RESUB_Summary_Entity2;
-import com.bornfire.brrs.services.BRRS_MDISB5_ReportService.MDISB5_RESUB_Summary_Entity3;
 import com.bornfire.brrs.services.BRRS_M_AIDP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_BOP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA2_ReportService;
@@ -1790,24 +1787,28 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "/MDISB5updateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
-
-	        @RequestParam(required = false)
-	        @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-
-	        @ModelAttribute BRRS_MDISB5_ReportService.MDISB5_Summary_Entity1 request1,
-
-	        @ModelAttribute BRRS_MDISB5_ReportService.MDISB5_Summary_Entity2 request2,
-
-	        @ModelAttribute BRRS_MDISB5_ReportService.MDISB5_Summary_Entity3 request3) {
+	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @ModelAttribute MDISB5_Summary_Entity1 request1,
+	        @ModelAttribute MDISB5_Summary_Entity2 request2,
+	        @ModelAttribute MDISB5_Summary_Entity3 request3) {
 
 	    try {
 
+	        System.out.println("Controller Hit");
+
+	        // Set date
 	        if (asondate != null) {
-	            request1.setREPORT_DATE(asondate);
-	            request2.setREPORT_DATE(asondate);
-	            request3.setREPORT_DATE(asondate);
+	            request1.setReportDate(asondate);
+	            request2.setReportDate(asondate);
+	            request3.setReportDate(asondate);
 	        }
 
+	        // Debug incoming data
+	        System.out.println("Request1: " + request1);
+	        System.out.println("Request2: " + request2);
+	        System.out.println("Request3: " + request3);
+
+	        // Call services
 	        MDISB5reportService.updateReport(request1);
 	        MDISB5reportService.updateReport2(request2);
 	        MDISB5reportService.updateReport3(request3);
@@ -1817,7 +1818,7 @@ public class BRRS_ReportsController {
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Update Failed : " + e.getMessage());
+	                .body("Update Failed: " + e.getMessage());
 	    }
 	}
 
@@ -1833,9 +1834,9 @@ public class BRRS_ReportsController {
 			System.out.println("Came to MDISB5 Resub Controller");
 
 			if (asondate != null) {
-				request1.setREPORT_DATE(asondate);
-				request2.setREPORT_DATE(asondate);
-				request3.setREPORT_DATE(asondate);
+				request1.setReportDate(asondate);
+				request2.setReportDate(asondate);
+				request3.setReportDate(asondate);
 				System.out.println("Set Report Date: " + asondate);
 			}
 

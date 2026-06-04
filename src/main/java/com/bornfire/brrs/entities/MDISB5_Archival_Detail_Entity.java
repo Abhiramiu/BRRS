@@ -12,7 +12,7 @@ import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "BRRS_MDISB5_ARCHIVALTABLE_DETAIL")
-public class MDISB5_Archival_Detail_Entity_old {
+public class MDISB5_Archival_Detail_Entity {
 
     @Id
     @Column(name = "SNO", length = 10)
@@ -520,7 +520,7 @@ public class MDISB5_Archival_Detail_Entity_old {
 
 
 
-	public MDISB5_Archival_Detail_Entity_old() {
+	public MDISB5_Archival_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

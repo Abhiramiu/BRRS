@@ -14,10 +14,10 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_MDISB5_ARCHIVALTABLE_DETAIL3")
+@Table(name = "BRRS_MDISB5_RESUB_SUMMARYTABLE3")
 @IdClass(MDISB5_PK.class)
 
-public class MDISB5_Archival_Detail_Entity3_old  {
+public class MDISB5_RESUB_Summary_Entity3  {
 	
 	private String R37_NAME;
     private String R37_DESIGNATION_OR_POSITION;
@@ -410,7 +410,7 @@ public class MDISB5_Archival_Detail_Entity3_old  {
 
 	
 	
-	public MDISB5_Archival_Detail_Entity3_old() {
+	public MDISB5_RESUB_Summary_Entity3() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
