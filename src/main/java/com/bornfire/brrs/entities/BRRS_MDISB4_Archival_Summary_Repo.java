@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface BRRS_MDISB4_Archival_Summary_Repo extends JpaRepository<MDISB4_Archival_Summary_Entity, MDISB4_PK> {
+public interface BRRS_MDISB4_Archival_Summary_Repo extends JpaRepository<MDISB4_Archival_Summary_Entity_OLD, MDISB4_PK> {
 
 	/*
 	 * @Query(value =
@@ -35,7 +35,7 @@ List<Object[]> getMDISB4archival();
                    "WHERE REPORT_DATE = ?1 " +
                    "AND REPORT_VERSION = ?2",
            nativeQuery = true)
-    List<MDISB4_Archival_Summary_Entity> 
+    List<MDISB4_Archival_Summary_Entity_OLD> 
         getdatabydateListarchival(Date reportDate, BigDecimal reportVersion);
 
 
@@ -46,7 +46,7 @@ List<Object[]> getMDISB4archival();
                    "WHERE REPORT_VERSION IS NOT NULL " +
                    "ORDER BY REPORT_VERSION ASC",
            nativeQuery = true)
-    List<MDISB4_Archival_Summary_Entity> 
+    List<MDISB4_Archival_Summary_Entity_OLD> 
         getdatabydateListWithVersion();
 
 }

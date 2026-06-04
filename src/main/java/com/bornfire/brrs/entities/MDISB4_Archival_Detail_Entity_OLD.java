@@ -11,9 +11,9 @@ import javax.persistence.Table;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_MDISB4_DETAILTABLE")
+@Table(name = "BRRS_MDISB4_ARCHIVALTABLE_DETAIL")
 
-public class MDISB4_Detail_Entity {
+public class MDISB4_Archival_Detail_Entity_OLD {
 	
 	@Column(name = "CUST_ID", length = 100)
     private String custId;
@@ -97,6 +97,7 @@ public class MDISB4_Detail_Entity {
 
     @Column(name = "DEL_FLG", length = 1)
     private String delFlg;
+    
     
     
     
@@ -313,12 +314,11 @@ public class MDISB4_Detail_Entity {
 	
 	
 
-	public MDISB4_Detail_Entity() {
+	public MDISB4_Archival_Detail_Entity_OLD() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
     
-   
-	
+    
 
 }

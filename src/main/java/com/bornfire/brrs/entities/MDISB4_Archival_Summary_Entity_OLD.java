@@ -16,7 +16,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Entity
 @Table(name = "BRRS_MDISB4_ARCHIVALTABLE_SUMMARY")
 @IdClass(MDISB4_PK.class)
-public class MDISB4_Archival_Summary_Entity {
+public class MDISB4_Archival_Summary_Entity_OLD {
 	
 	
     private String R6_EXCLUSIONS;
@@ -448,7 +448,7 @@ public class MDISB4_Archival_Summary_Entity {
 	public void setDELETE_FLG(String dELETE_FLG) {
 		DELETE_FLG = dELETE_FLG;
 	}
-	public MDISB4_Archival_Summary_Entity() {
+	public MDISB4_Archival_Summary_Entity_OLD() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
