@@ -4961,7 +4961,7 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute GL_SCH_Manual_Summary_Entity request) {
+			@ModelAttribute BRRS_GL_SCH_ReportService.GL_SCH_Manual_Summary_Entity request) {
 
 		try {
 			System.out.println("came to single controller");
