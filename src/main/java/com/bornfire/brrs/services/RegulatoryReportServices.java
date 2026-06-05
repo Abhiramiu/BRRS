@@ -6750,9 +6750,12 @@ case "MDISB3":
 						request.getParameter("formmode"));
 				break;
 			case "COMMON_DISCLOSURE":
-				modelAndView = BRRS_Common_Disclosure_Reportservice.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
-				break;
+			    modelAndView = BRRS_Common_Disclosure_Reportservice.getViewOrEditPage(
+			            request.getParameter("acctNo"),
+			            request.getParameter("formmode"),
+			            request.getParameter("type"),
+			            request.getParameter("version"));
+			    break;
 
 			case "Market_Risk":
 				modelAndView = BRRS_Market_Risk_Reportservice.getViewOrEditPage(request.getParameter("acctNo"),
