@@ -2311,7 +2311,7 @@ public class BRRS_FORMAT_III_ReportService {
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
-			int startRow = 12;
+			int startRow = 3;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -2322,6 +2322,21 @@ public class BRRS_FORMAT_III_ReportService {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					Cell R12Cell = row.createCell(6);
+
+					if (record.getREPORT_DATE() != null) {
+
+						R12Cell.setCellValue(record.getREPORT_DATE());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(12);
 					Cell R13Cell1 = row.createCell(4);
 					if (record.getR13_eff_increase() != null) {
 						R13Cell1.setCellValue(record.getR13_eff_increase().doubleValue());
@@ -2526,7 +2541,7 @@ public class BRRS_FORMAT_III_ReportService {
 			// --- End of Style Definitions ---
 
 			// --- End of Style Definitions ---
-			int startRow = 12;
+			int startRow = 3;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -2537,6 +2552,21 @@ public class BRRS_FORMAT_III_ReportService {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					Cell R12Cell = row.createCell(6);
+
+					if (record.getREPORT_DATE() != null) {
+
+						R12Cell.setCellValue(record.getREPORT_DATE());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(12);
 					Cell R13Cell1 = row.createCell(4);
 					if (record.getR13_eff_increase() != null) {
 						R13Cell1.setCellValue(record.getR13_eff_increase().doubleValue());

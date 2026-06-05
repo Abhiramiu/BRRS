@@ -403,7 +403,70 @@ public class BRRS_PL_SCHS_ReportService {
 			obj.setR26_bal_sub_bwp(rs.getBigDecimal("R26_BAL_SUB_BWP"));
 			obj.setR26_bal_sub_diaries(rs.getBigDecimal("R26_BAL_SUB_DIARIES"));
 			obj.setR26_bal_sub_diaries_bwp(rs.getBigDecimal("R26_BAL_SUB_DIARIES_BWP"));
+			// R27
+			obj.setR27_other_income(rs.getString("R27_OTHER_INCOME"));
+			obj.setR27_fig_bal_sheet(rs.getBigDecimal("R27_FIG_BAL_SHEET"));
+			obj.setR27_fig_bal_sheet_bwp(rs.getBigDecimal("R27_FIG_BAL_SHEET_BWP"));
+			obj.setR27_amt_statement_adj(rs.getBigDecimal("R27_AMT_STATEMENT_ADJ"));
+			obj.setR27_amt_statement_adj_bwp(rs.getBigDecimal("R27_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR27_net_amt(rs.getBigDecimal("R27_NET_AMT"));
+			obj.setR27_net_amt_bwp(rs.getBigDecimal("R27_NET_AMT_BWP"));
+			obj.setR27_bal_sub(rs.getBigDecimal("R27_BAL_SUB"));
+			obj.setR27_bal_sub_bwp(rs.getBigDecimal("R27_BAL_SUB_BWP"));
+			obj.setR27_bal_sub_diaries(rs.getBigDecimal("R27_BAL_SUB_DIARIES"));
+			obj.setR27_bal_sub_diaries_bwp(rs.getBigDecimal("R27_BAL_SUB_DIARIES_BWP"));
 
+			// R28
+			obj.setR28_other_income(rs.getString("R28_OTHER_INCOME"));
+			obj.setR28_fig_bal_sheet(rs.getBigDecimal("R28_FIG_BAL_SHEET"));
+			obj.setR28_fig_bal_sheet_bwp(rs.getBigDecimal("R28_FIG_BAL_SHEET_BWP"));
+			obj.setR28_amt_statement_adj(rs.getBigDecimal("R28_AMT_STATEMENT_ADJ"));
+			obj.setR28_amt_statement_adj_bwp(rs.getBigDecimal("R28_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR28_net_amt(rs.getBigDecimal("R28_NET_AMT"));
+			obj.setR28_net_amt_bwp(rs.getBigDecimal("R28_NET_AMT_BWP"));
+			obj.setR28_bal_sub(rs.getBigDecimal("R28_BAL_SUB"));
+			obj.setR28_bal_sub_bwp(rs.getBigDecimal("R28_BAL_SUB_BWP"));
+			obj.setR28_bal_sub_diaries(rs.getBigDecimal("R28_BAL_SUB_DIARIES"));
+			obj.setR28_bal_sub_diaries_bwp(rs.getBigDecimal("R28_BAL_SUB_DIARIES_BWP"));
+
+			// R29
+			obj.setR29_other_income(rs.getString("R29_OTHER_INCOME"));
+			obj.setR29_fig_bal_sheet(rs.getBigDecimal("R29_FIG_BAL_SHEET"));
+			obj.setR29_fig_bal_sheet_bwp(rs.getBigDecimal("R29_FIG_BAL_SHEET_BWP"));
+			obj.setR29_amt_statement_adj(rs.getBigDecimal("R29_AMT_STATEMENT_ADJ"));
+			obj.setR29_amt_statement_adj_bwp(rs.getBigDecimal("R29_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR29_net_amt(rs.getBigDecimal("R29_NET_AMT"));
+			obj.setR29_net_amt_bwp(rs.getBigDecimal("R29_NET_AMT_BWP"));
+			obj.setR29_bal_sub(rs.getBigDecimal("R29_BAL_SUB"));
+			obj.setR29_bal_sub_bwp(rs.getBigDecimal("R29_BAL_SUB_BWP"));
+			obj.setR29_bal_sub_diaries(rs.getBigDecimal("R29_BAL_SUB_DIARIES"));
+			obj.setR29_bal_sub_diaries_bwp(rs.getBigDecimal("R29_BAL_SUB_DIARIES_BWP"));
+
+			// R30
+			obj.setR30_other_income(rs.getString("R30_OTHER_INCOME"));
+			obj.setR30_fig_bal_sheet(rs.getBigDecimal("R30_FIG_BAL_SHEET"));
+			obj.setR30_fig_bal_sheet_bwp(rs.getBigDecimal("R30_FIG_BAL_SHEET_BWP"));
+			obj.setR30_amt_statement_adj(rs.getBigDecimal("R30_AMT_STATEMENT_ADJ"));
+			obj.setR30_amt_statement_adj_bwp(rs.getBigDecimal("R30_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR30_net_amt(rs.getBigDecimal("R30_NET_AMT"));
+			obj.setR30_net_amt_bwp(rs.getBigDecimal("R30_NET_AMT_BWP"));
+			obj.setR30_bal_sub(rs.getBigDecimal("R30_BAL_SUB"));
+			obj.setR30_bal_sub_bwp(rs.getBigDecimal("R30_BAL_SUB_BWP"));
+			obj.setR30_bal_sub_diaries(rs.getBigDecimal("R30_BAL_SUB_DIARIES"));
+			obj.setR30_bal_sub_diaries_bwp(rs.getBigDecimal("R30_BAL_SUB_DIARIES_BWP"));
+
+			// R31
+			obj.setR31_other_income(rs.getString("R31_OTHER_INCOME"));
+			obj.setR31_fig_bal_sheet(rs.getBigDecimal("R31_FIG_BAL_SHEET"));
+			obj.setR31_fig_bal_sheet_bwp(rs.getBigDecimal("R31_FIG_BAL_SHEET_BWP"));
+			obj.setR31_amt_statement_adj(rs.getBigDecimal("R31_AMT_STATEMENT_ADJ"));
+			obj.setR31_amt_statement_adj_bwp(rs.getBigDecimal("R31_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR31_net_amt(rs.getBigDecimal("R31_NET_AMT"));
+			obj.setR31_net_amt_bwp(rs.getBigDecimal("R31_NET_AMT_BWP"));
+			obj.setR31_bal_sub(rs.getBigDecimal("R31_BAL_SUB"));
+			obj.setR31_bal_sub_bwp(rs.getBigDecimal("R31_BAL_SUB_BWP"));
+			obj.setR31_bal_sub_diaries(rs.getBigDecimal("R31_BAL_SUB_DIARIES"));
+			obj.setR31_bal_sub_diaries_bwp(rs.getBigDecimal("R31_BAL_SUB_DIARIES_BWP"));
 // ================= R40 =================
 			obj.setR40_intrest_expended(rs.getString("R40_INTREST_EXPENDED"));
 			obj.setR40_fig_bal_sheet(rs.getBigDecimal("R40_FIG_BAL_SHEET"));
@@ -5851,6 +5914,71 @@ public class BRRS_PL_SCHS_ReportService {
 			obj.setR26_bal_sub_bwp(rs.getBigDecimal("R26_BAL_SUB_BWP"));
 			obj.setR26_bal_sub_diaries(rs.getBigDecimal("R26_BAL_SUB_DIARIES"));
 			obj.setR26_bal_sub_diaries_bwp(rs.getBigDecimal("R26_BAL_SUB_DIARIES_BWP"));
+
+			// R27
+			obj.setR27_other_income(rs.getString("R27_OTHER_INCOME"));
+			obj.setR27_fig_bal_sheet(rs.getBigDecimal("R27_FIG_BAL_SHEET"));
+			obj.setR27_fig_bal_sheet_bwp(rs.getBigDecimal("R27_FIG_BAL_SHEET_BWP"));
+			obj.setR27_amt_statement_adj(rs.getBigDecimal("R27_AMT_STATEMENT_ADJ"));
+			obj.setR27_amt_statement_adj_bwp(rs.getBigDecimal("R27_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR27_net_amt(rs.getBigDecimal("R27_NET_AMT"));
+			obj.setR27_net_amt_bwp(rs.getBigDecimal("R27_NET_AMT_BWP"));
+			obj.setR27_bal_sub(rs.getBigDecimal("R27_BAL_SUB"));
+			obj.setR27_bal_sub_bwp(rs.getBigDecimal("R27_BAL_SUB_BWP"));
+			obj.setR27_bal_sub_diaries(rs.getBigDecimal("R27_BAL_SUB_DIARIES"));
+			obj.setR27_bal_sub_diaries_bwp(rs.getBigDecimal("R27_BAL_SUB_DIARIES_BWP"));
+
+			// R28
+			obj.setR28_other_income(rs.getString("R28_OTHER_INCOME"));
+			obj.setR28_fig_bal_sheet(rs.getBigDecimal("R28_FIG_BAL_SHEET"));
+			obj.setR28_fig_bal_sheet_bwp(rs.getBigDecimal("R28_FIG_BAL_SHEET_BWP"));
+			obj.setR28_amt_statement_adj(rs.getBigDecimal("R28_AMT_STATEMENT_ADJ"));
+			obj.setR28_amt_statement_adj_bwp(rs.getBigDecimal("R28_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR28_net_amt(rs.getBigDecimal("R28_NET_AMT"));
+			obj.setR28_net_amt_bwp(rs.getBigDecimal("R28_NET_AMT_BWP"));
+			obj.setR28_bal_sub(rs.getBigDecimal("R28_BAL_SUB"));
+			obj.setR28_bal_sub_bwp(rs.getBigDecimal("R28_BAL_SUB_BWP"));
+			obj.setR28_bal_sub_diaries(rs.getBigDecimal("R28_BAL_SUB_DIARIES"));
+			obj.setR28_bal_sub_diaries_bwp(rs.getBigDecimal("R28_BAL_SUB_DIARIES_BWP"));
+
+			// R29
+			obj.setR29_other_income(rs.getString("R29_OTHER_INCOME"));
+			obj.setR29_fig_bal_sheet(rs.getBigDecimal("R29_FIG_BAL_SHEET"));
+			obj.setR29_fig_bal_sheet_bwp(rs.getBigDecimal("R29_FIG_BAL_SHEET_BWP"));
+			obj.setR29_amt_statement_adj(rs.getBigDecimal("R29_AMT_STATEMENT_ADJ"));
+			obj.setR29_amt_statement_adj_bwp(rs.getBigDecimal("R29_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR29_net_amt(rs.getBigDecimal("R29_NET_AMT"));
+			obj.setR29_net_amt_bwp(rs.getBigDecimal("R29_NET_AMT_BWP"));
+			obj.setR29_bal_sub(rs.getBigDecimal("R29_BAL_SUB"));
+			obj.setR29_bal_sub_bwp(rs.getBigDecimal("R29_BAL_SUB_BWP"));
+			obj.setR29_bal_sub_diaries(rs.getBigDecimal("R29_BAL_SUB_DIARIES"));
+			obj.setR29_bal_sub_diaries_bwp(rs.getBigDecimal("R29_BAL_SUB_DIARIES_BWP"));
+
+			// R30
+			obj.setR30_other_income(rs.getString("R30_OTHER_INCOME"));
+			obj.setR30_fig_bal_sheet(rs.getBigDecimal("R30_FIG_BAL_SHEET"));
+			obj.setR30_fig_bal_sheet_bwp(rs.getBigDecimal("R30_FIG_BAL_SHEET_BWP"));
+			obj.setR30_amt_statement_adj(rs.getBigDecimal("R30_AMT_STATEMENT_ADJ"));
+			obj.setR30_amt_statement_adj_bwp(rs.getBigDecimal("R30_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR30_net_amt(rs.getBigDecimal("R30_NET_AMT"));
+			obj.setR30_net_amt_bwp(rs.getBigDecimal("R30_NET_AMT_BWP"));
+			obj.setR30_bal_sub(rs.getBigDecimal("R30_BAL_SUB"));
+			obj.setR30_bal_sub_bwp(rs.getBigDecimal("R30_BAL_SUB_BWP"));
+			obj.setR30_bal_sub_diaries(rs.getBigDecimal("R30_BAL_SUB_DIARIES"));
+			obj.setR30_bal_sub_diaries_bwp(rs.getBigDecimal("R30_BAL_SUB_DIARIES_BWP"));
+
+			// R31
+			obj.setR31_other_income(rs.getString("R31_OTHER_INCOME"));
+			obj.setR31_fig_bal_sheet(rs.getBigDecimal("R31_FIG_BAL_SHEET"));
+			obj.setR31_fig_bal_sheet_bwp(rs.getBigDecimal("R31_FIG_BAL_SHEET_BWP"));
+			obj.setR31_amt_statement_adj(rs.getBigDecimal("R31_AMT_STATEMENT_ADJ"));
+			obj.setR31_amt_statement_adj_bwp(rs.getBigDecimal("R31_AMT_STATEMENT_ADJ_BWP"));
+			obj.setR31_net_amt(rs.getBigDecimal("R31_NET_AMT"));
+			obj.setR31_net_amt_bwp(rs.getBigDecimal("R31_NET_AMT_BWP"));
+			obj.setR31_bal_sub(rs.getBigDecimal("R31_BAL_SUB"));
+			obj.setR31_bal_sub_bwp(rs.getBigDecimal("R31_BAL_SUB_BWP"));
+			obj.setR31_bal_sub_diaries(rs.getBigDecimal("R31_BAL_SUB_DIARIES"));
+			obj.setR31_bal_sub_diaries_bwp(rs.getBigDecimal("R31_BAL_SUB_DIARIES_BWP"));
 
 			// ================= R40 =================
 			obj.setR40_intrest_expended(rs.getString("R40_INTREST_EXPENDED"));
@@ -12392,7 +12520,7 @@ public class BRRS_PL_SCHS_ReportService {
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
-			int startRow = 8;
+			int startRow = 1;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -12403,6 +12531,21 @@ public class BRRS_PL_SCHS_ReportService {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					Cell R12Cell = row.createCell(9);
+
+					if (record.getREPORT_DATE() != null) {
+
+						R12Cell.setCellValue(record.getREPORT_DATE());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(8);
 					Cell R9Cell1 = row.createCell(3);
 					if (record.getR9_fig_bal_sheet() != null) {
 						R9Cell1.setCellValue(record.getR9_fig_bal_sheet().doubleValue());
@@ -16085,7 +16228,7 @@ public class BRRS_PL_SCHS_ReportService {
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
-			int startRow = 8;
+			int startRow = 1;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -16096,6 +16239,21 @@ public class BRRS_PL_SCHS_ReportService {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					Cell R12Cell = row.createCell(9);
+
+					if (record.getREPORT_DATE() != null) {
+
+						R12Cell.setCellValue(record.getREPORT_DATE());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(8);
 					Cell R9Cell1 = row.createCell(3);
 					if (record.getR9_fig_bal_sheet() != null) {
 						R9Cell1.setCellValue(record.getR9_fig_bal_sheet().doubleValue());
@@ -19714,7 +19872,7 @@ public class BRRS_PL_SCHS_ReportService {
 		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
 		// Allowed rows
-		int[] rows = { 12, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29, 42, 54, 61 };
+		int[] rows = { 12,13, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29,31, 42,43, 54, 61,63 };
 
 		try {
 
@@ -19722,21 +19880,9 @@ public class BRRS_PL_SCHS_ReportService {
 			for (int r : rows) {
 
 				// Allowed fields
-				String[] fields = {
-						"intrest_div",
-						"other_income",
-						"operating_expenses",
-						"fig_bal_sheet",
-						"fig_bal_sheet_bwp",
-						"amt_statement_adj",
-						"amt_statement_adj_bwp",
-						"net_amt",
-						"net_amt_bwp",
-						"bal_sub",
-						"bal_sub_bwp",
-						"bal_sub_diaries",
-						"bal_sub_diaries_bwp"
-				};
+				String[] fields = { "intrest_div", "other_income", "operating_expenses", "fig_bal_sheet",
+						"fig_bal_sheet_bwp", "amt_statement_adj", "amt_statement_adj_bwp", "net_amt", "net_amt_bwp",
+						"bal_sub", "bal_sub_bwp", "bal_sub_diaries", "bal_sub_diaries_bwp" };
 
 				for (String field : fields) {
 
@@ -19744,8 +19890,7 @@ public class BRRS_PL_SCHS_ReportService {
 
 					try {
 
-						Method getter =
-								PL_SCHS_Summary_Entity.class.getMethod(getterName);
+						Method getter = PL_SCHS_Summary_Entity.class.getMethod(getterName);
 
 						Object value = getter.invoke(updatedEntity);
 
@@ -19754,24 +19899,14 @@ public class BRRS_PL_SCHS_ReportService {
 							continue;
 
 						// DB Column Name
-						String columnName =
-								"R" + r + "_" + field.toUpperCase();
+						String columnName = "R" + r + "_" + field.toUpperCase();
 
-						String sql =
-								"UPDATE BRRS_PL_SCHS_SUMMARYTABLE " +
-								"SET " + columnName + " = ? " +
-								"WHERE REPORT_DATE = ?";
+						String sql = "UPDATE BRRS_PL_SCHS_SUMMARYTABLE " + "SET " + columnName + " = ? "
+								+ "WHERE REPORT_DATE = ?";
 
-						int updatedRows = jdbcTemplate.update(
-								sql,
-								value,
-								updatedEntity.getREPORT_DATE()
-						);
+						int updatedRows = jdbcTemplate.update(sql, value, updatedEntity.getREPORT_DATE());
 
-						System.out.println(
-								columnName + " Updated -> " +
-								value + " Rows : " + updatedRows
-						);
+						System.out.println(columnName + " Updated -> " + value + " Rows : " + updatedRows);
 
 					} catch (NoSuchMethodException e) {
 						// Skip if getter not exists
@@ -19784,9 +19919,7 @@ public class BRRS_PL_SCHS_ReportService {
 
 		} catch (Exception e) {
 
-			throw new RuntimeException(
-					"Error while updating PL SCHS fields", e
-			);
+			throw new RuntimeException("Error while updating PL SCHS fields", e);
 		}
 	}
 

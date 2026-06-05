@@ -788,7 +788,7 @@ public class BRRS_CASH_FLOW_ReportService {
 		}
 
 		public void setREPORT_DATE(Date REPORT_DATE) {
-			REPORT_DATE = REPORT_DATE;
+			this.REPORT_DATE = REPORT_DATE;
 		}
 
 		public String getR9_product() {
@@ -1828,7 +1828,7 @@ public class BRRS_CASH_FLOW_ReportService {
 		}
 
 		public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
-			REPORT_VERSION = REPORT_VERSION;
+			this.REPORT_VERSION = REPORT_VERSION;
 		}
 
 		public String getREPORT_FREQUENCY() {
@@ -4398,8 +4398,6 @@ public class BRRS_CASH_FLOW_ReportService {
 
 		try {
 
-			String acctNo = request.getParameter("acctNumber");
-
 			String Sno = request.getParameter("sno");
 
 			String acctBalanceInpula = request.getParameter("acctBalanceInpula");
@@ -4855,7 +4853,7 @@ public class BRRS_CASH_FLOW_ReportService {
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
-			int startRow = 8;
+			int startRow = 3;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -4866,6 +4864,21 @@ public class BRRS_CASH_FLOW_ReportService {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					Cell R12Cell = row.createCell(3);
+
+					if (record.getREPORT_DATE() != null) {
+
+						R12Cell.setCellValue(record.getREPORT_DATE());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(8);
 					// R9 Col C
 					Cell R9Cell1 = row.createCell(2);
 					if (record.getR9_lc_as_on_mar() != null) {
@@ -5810,7 +5823,7 @@ public class BRRS_CASH_FLOW_ReportService {
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
-			int startRow = 8;
+			int startRow = 3;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -5821,6 +5834,21 @@ public class BRRS_CASH_FLOW_ReportService {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+					Cell R12Cell = row.createCell(3);
+
+					if (record.getREPORT_DATE() != null) {
+
+						R12Cell.setCellValue(record.getREPORT_DATE());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(8);
 					// R9 Col C
 					Cell R9Cell1 = row.createCell(2);
 					if (record.getR9_lc_as_on_mar() != null) {

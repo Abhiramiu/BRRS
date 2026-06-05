@@ -629,11 +629,9 @@ PURPOSE		: BRRSREPORT
 			const acctNo = elem.getAttribute("data-acctNo");
 			const asondate = elem.getAttribute("data-asondate");
 
-			// Use the 'reportId' variable initialized above
-			// Use backticks (`) for a template literal to easily include the variable
-			location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+			location.href =
+				`/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}&type=${type}`;
 		}
-
 		function downloadDetailfile(jobId, filename) {
 
 			$.ajax({
@@ -743,6 +741,7 @@ PURPOSE		: BRRSREPORT
 				}
 			});
 		}
+
 
 		function showResultModalDU(title, message) {
 			document.getElementById('resultModalLabel1').innerText = title;
@@ -1240,9 +1239,10 @@ PURPOSE		: BRRSREPORT
 								<tr th:each="report, srlno : ${reportdetails}">
 									<td>
 										<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
-											<i class="fas fa-edit" style="color: black; cursor:pointer;" th:attr="data-acctNo=${report.acctNumber},
-														data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
-												onclick="openCommon_DisclosureDetail(this, 'edit')"></i>
+											<i class="fas fa-edit" th:attr="data-acctNo=${report.acctNumber},
+											            data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},
+											            data-type=${type}" onclick="openCommon_DisclosureDetail(this, 'edit')">
+											</i>
 
 										</a>
 									</td>
@@ -1284,6 +1284,8 @@ PURPOSE		: BRRSREPORT
 
 			<div class="card-body">
 				<form th:object="${Common_DisclosureData}" method="post" id="Common_DisclosureDetailForm">
+
+					<input type="hidden" id="type" name="type" th:value="${type}" />
 					<div class="row formline" style="margin-top:10px;">
 						<label class="col-sm-2">Customer ID</label>
 						<div class="col-sm-3">
