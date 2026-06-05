@@ -5659,7 +5659,7 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched M_SRWA_12E archival data: " + srweList1.size());
 			break;
 		case "Q_LARADV":
-			List<Object[]> LAList = brrs_m_laradv_reportservice.getM_LARADVArchival();
+			List<Object[]> LAList = BRRS_Q_LARADV_reportservice.getQ_LARADVArchival();
 			archivalData.addAll(LAList);
 			System.out.println("Fetched M_LARADV archival data: " + LAList.size());
 			break;
@@ -7403,11 +7403,11 @@ case "MDISB3":
 
 		case "Q_LARADV":
 			try {
-				List<Object[]> resubList = brrs_m_laradv_reportservice.getM_LARADVResub();
+				List<Object[]> resubList = BRRS_Q_LARADV_reportservice.getQ_LARADVResub();
 				resubmissionData.addAll(resubList);
-				System.out.println("Resubmission data fetched for M_LARADV: " + resubList.size());
+				System.out.println("Resubmission data fetched for Q_LARADV: " + resubList.size());
 			} catch (Exception e) {
-				System.err.println("Error fetching resubmission data for M_LARADV: " + e.getMessage());
+				System.err.println("Error fetching resubmission data for Q_LARADV: " + e.getMessage());
 				e.printStackTrace();
 			}
 			break;

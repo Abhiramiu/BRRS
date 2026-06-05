@@ -13,4 +13,8 @@ public interface BRRS_Q_LARADV_Resub_Summary_Repo  extends JpaRepository<Q_LARAD
 	            nativeQuery = true)
 	  List<Q_LARADV_Resub_Summary_Entity> getdatabydateList(Date reportDate, BigDecimal version);
 
+	@Query(value = "SELECT REPORT_DATE, report_version, REPORT_RESUBDATE FROM BRRS_Q_LARADV_RESUB_SUMMARYTABLE "
+				+ "WHERE REPORT_VERSION IS NOT NULL " + "ORDER BY REPORT_VERSION", nativeQuery = true)
+	List<Object[]> getResubData();
+	
 }
