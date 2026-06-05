@@ -9767,7 +9767,7 @@ new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate()) : ""
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-						int startRow = 7;
+						int startRow = 2;
 						
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -9778,6 +9778,26 @@ new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate()) : ""
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						
+						
+						
+						//row3
+						// Column B
+						Cell cellBdate = row.createCell(6);
+						if (record.getReport_date() != null) {
+							cellBdate.setCellValue(record.getReport_date());
+							cellBdate.setCellStyle(dateStyle);
+						} else {
+							cellBdate.setCellValue("");
+							cellBdate.setCellStyle(textStyle);
+						}
+						
+						
+						
+						//ROW 8
+						row = sheet.getRow(7);
+						
+						
 						
 						Cell cell2 = row.createCell(2);
 if (record.getR8_BOOK_VALUE() != null) {
@@ -12641,7 +12661,7 @@ if (record.getR130_RW() != null) {
 				numberStyle.setFont(font);
 	// --- End of Style Definitions ---
 
-				int startRow = 7;
+				int startRow = 2;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -12652,6 +12672,25 @@ if (record.getR130_RW() != null) {
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						
+						
+						
+						//row3
+						// Column B
+						Cell cellBdate = row.createCell(6);
+						if (record1.getReport_date() != null) {
+							cellBdate.setCellValue(record1.getReport_date());
+							cellBdate.setCellStyle(dateStyle);
+						} else {
+							cellBdate.setCellValue("");
+							cellBdate.setCellStyle(textStyle);
+						}
+						
+						
+						
+						//ROW 8
+						row = sheet.getRow(7);
+						
 
 		Cell cell2 = row.createCell(2);
 				if (record1.getR8_BOOK_VALUE() != null) {

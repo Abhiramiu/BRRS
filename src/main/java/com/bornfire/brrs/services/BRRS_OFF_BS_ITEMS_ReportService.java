@@ -22911,7 +22911,7 @@ row.createCell(0).setCellValue(item.getCustId());
 				numberStyle.setFont(font);
 				// --- End of Style Definitions ---
 
-						int startRow = 10;
+						int startRow = 7;
 						
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -22924,6 +22924,24 @@ row.createCell(0).setCellValue(item.getCustId());
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+						
+						//row8
+						// Column B
+						Cell cellBdate = row.createCell(5);
+						if (record.getReport_date() != null) {
+							cellBdate.setCellValue(record.getReport_date());
+							cellBdate.setCellStyle(dateStyle);
+						} else {
+							cellBdate.setCellValue("");
+							cellBdate.setCellStyle(textStyle);
+						}
+						
+						
+						
+						//ROW 12
+						row = sheet.getRow(11);
+						
+						
 
 		     Cell  cellC ,cellD , cellE , cellF , cellG , cellH, cellI;
 
@@ -28536,7 +28554,7 @@ if (record1.getR189_rw_obligant() != null) {
 				numberStyle.setFont(font);
 	// --- End of Style Definitions ---
 
-				int startRow = 10;
+				int startRow = 7;
 
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
@@ -28548,6 +28566,23 @@ if (record1.getR189_rw_obligant() != null) {
 							row = sheet.createRow(startRow + i);
 						}
 	  Cell  cellC ,cellD , cellE , cellF , cellG , cellH, cellI;
+	  
+	  
+	//row8
+		// Column B
+		Cell cellBdate = row.createCell(5);
+		if (record.getReport_date() != null) {
+			cellBdate.setCellValue(record.getReport_date());
+			cellBdate.setCellStyle(dateStyle);
+		} else {
+			cellBdate.setCellValue("");
+			cellBdate.setCellStyle(textStyle);
+		}
+		
+		
+		
+		//ROW 12
+		row = sheet.getRow(11);
 
 
 
