@@ -3,18 +3,28 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.ParseException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
+import javax.persistence.Column;
+import javax.persistence.EntityManager;
+import javax.persistence.IdClass;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -31,40 +41,27 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.AS_11_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.AS_11_Archival_Summary_Entity1;
-import com.bornfire.brrs.entities.AS_11_Archival_Summary_Entity2;
-import com.bornfire.brrs.entities.AS_11_Detail_Entity;
-import com.bornfire.brrs.entities.AS_11_Summary_Entity1;
-import com.bornfire.brrs.entities.AS_11_Summary_Entity2;
-import com.bornfire.brrs.entities.BRRS_AS_11_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_AS_11_Archival_Summary_Repo1;
-import com.bornfire.brrs.entities.BRRS_AS_11_Archival_Summary_Repo2;
-import com.bornfire.brrs.entities.BRRS_AS_11_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_AS_11_Summary_Repo1;
-import com.bornfire.brrs.entities.BRRS_AS_11_Summary_Repo2;
-
-@Component
 @Service
-
+@Transactional
 public class BRRS_AS_11_ReportService {
+
 	private static final Logger logger = LoggerFactory.getLogger(BRRS_AS_11_ReportService.class);
 
 	@Autowired
@@ -73,88 +70,24210 @@ public class BRRS_AS_11_ReportService {
 	@Autowired
 	SessionFactory sessionFactory;
 
-	@Autowired
-	BRRS_AS_11_Summary_Repo1 AS_11_summary_repo1;
+	// ENTITY MANAGER (Acts like Repository)
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@Autowired
-	BRRS_AS_11_Archival_Summary_Repo1 AS_11_Archival_Summary_Repo1;
+	private JdbcTemplate jdbcTemplate;
 
-	@Autowired
-	BRRS_AS_11_Summary_Repo2 AS_11_summary_repo2;
+	// Fetch data by report date
+	public List<AS_11_Summary_Entity1> getDataByDate1(Date reportDate) {
 
-	@Autowired
-	BRRS_AS_11_Archival_Summary_Repo2 AS_11_Archival_Summary_Repo2;
+		String sql = "SELECT * FROM BRRS_AS_11_SUMMARYTABLE1 WHERE REPORT_DATE = ?";
 
-	@Autowired
-	BRRS_AS_11_Detail_Repo AS_11_detail_repo;
+		return jdbcTemplate.query(sql, new Object[] { reportDate }, new AS_11RowMapper1());
+	}
 
-	@Autowired
-	BRRS_AS_11_Archival_Detail_Repo AS_11_Archival_Detail_Repo;
+	public List<AS_11_Summary_Entity2> getDataByDate2(Date reportDate) {
+
+		String sql = "SELECT * FROM BRRS_AS_11_SUMMARYTABLE2 WHERE REPORT_DATE = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { reportDate }, new AS_11RowMapper2());
+	}
+	// GET REPORT_DATE + REPORT_VERSION
+
+	public List<Object[]> getAS_11Archival1() {
+
+		String sql = "SELECT REPORT_DATE, REPORT_VERSION " + "FROM BRRS_AS_11_ARCHIVALTABLE_SUMMARY1 "
+				+ "ORDER BY REPORT_VERSION";
+
+		return jdbcTemplate.query(sql,
+				(rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"), rs.getBigDecimal("REPORT_VERSION") });
+	}
+
+//GET ARCHIVAL FULL DATA BY DATE + VERSION
+
+	public List<AS_11_Archival_Summary_Entity1> getdatabydateListarchival1(Date REPORT_DATE,
+			BigDecimal REPORT_VERSION) {
+
+		String sql = "SELECT * FROM BRRS_AS_11_ARCHIVALTABLE_SUMMARY1 " + "WHERE REPORT_DATE = ? "
+				+ "AND REPORT_VERSION = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { REPORT_DATE, REPORT_VERSION }, new AS_11ArchivalRowMapper1());
+	}
+//GET ALL WITH VERSION
+
+	public List<AS_11_Archival_Summary_Entity1> getdatabydateListWithVersion1() {
+
+		String sql = "SELECT * FROM BRRS_AS_11_ARCHIVALTABLE_SUMMARY1 " + "WHERE REPORT_VERSION IS NOT NULL "
+				+ "ORDER BY REPORT_VERSION ASC";
+
+		return jdbcTemplate.query(sql, new AS_11ArchivalRowMapper1());
+	}
+
+//GET ARCHIVAL FULL DATA BY DATE + VERSION
+
+	public List<AS_11_Archival_Summary_Entity2> getdatabydateListarchival2(Date REPORT_DATE,
+			BigDecimal REPORT_VERSION) {
+
+		String sql = "SELECT * FROM BRRS_AS_11_ARCHIVALTABLE_SUMMARY2 " + "WHERE REPORT_DATE = ? "
+				+ "AND REPORT_VERSION = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { REPORT_DATE, REPORT_VERSION }, new AS_11ArchivalRowMapper2());
+	}
+//GET ALL WITH VERSION
+
+	public List<AS_11_Archival_Summary_Entity2> getdatabydateListWithVersion2() {
+
+		String sql = "SELECT * FROM BRRS_AS_11_ARCHIVALTABLE_SUMMARY2 " + "WHERE REPORT_VERSION IS NOT NULL "
+				+ "ORDER BY REPORT_VERSION ASC";
+
+		return jdbcTemplate.query(sql, new AS_11ArchivalRowMapper2());
+	}
+
+//GET MAX VERSION BY DATE
+
+	public BigDecimal findMaxVersion1(Date REPORT_DATE) {
+
+		String sql = "SELECT MAX(REPORT_VERSION) " + "FROM BRRS_AS_11_ARCHIVALTABLE_SUMMARY1 "
+				+ "WHERE REPORT_DATE = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { REPORT_DATE }, BigDecimal.class);
+	}
+
+	public BigDecimal findMaxVersion2(Date REPORT_DATE) {
+
+		String sql = "SELECT MAX(REPORT_VERSION) " + "FROM BRRS_AS_11_ARCHIVALTABLE_SUMMARY2 "
+				+ "WHERE REPORT_DATE = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { REPORT_DATE }, BigDecimal.class);
+	}
+
+// 1. BY DATE + LABEL + CRITERIA
+
+	public List<AS_11_Detail_Entity> findByDetailReportDateAndLabelAndCriteria(Date reportDate, String reportLabel,
+			String reportAddlCriteria1) {
+
+		String sql = "SELECT * FROM BRRS_AS_11_DETAILTABLE "
+				+ "WHERE REPORT_DATE = ? AND REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { reportDate, reportLabel, reportAddlCriteria1 },
+				new AS_11DetailRowMapper());
+	}
+
+// 2. GET ALL (BY DATE - simple)
+
+	public List<AS_11_Detail_Entity> getDetaildatabydateList(Date reportdate) {
+
+		String sql = "SELECT * FROM BRRS_AS_11_DETAILTABLE WHERE REPORT_DATE = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { reportdate }, new AS_11DetailRowMapper());
+	}
+
+// 3. PAGINATION
+
+	public List<AS_11_Detail_Entity> getDetaildatabydateList(Date reportdate, int offset, int limit) {
+
+		String sql = "SELECT * FROM BRRS_AS_11_DETAILTABLE "
+				+ "WHERE REPORT_DATE = ? OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+		return jdbcTemplate.query(sql, new Object[] { reportdate, offset, limit }, new AS_11DetailRowMapper());
+	}
+
+// 4. COUNT
+
+	public int getDetaildatacount(Date reportdate) {
+
+		String sql = "SELECT COUNT(*) FROM BRRS_AS_11_DETAILTABLE WHERE REPORT_DATE = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { reportdate }, Integer.class);
+	}
+
+// 5. BY LABEL + CRITERIA
+
+	public List<AS_11_Detail_Entity> GetDetailDataByRowIdAndColumnId(String reportLabel, String reportAddlCriteria1,
+			Date reportdate) {
+
+		String sql = "SELECT * FROM BRRS_AS_11_DETAILTABLE "
+				+ "WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate },
+				new AS_11DetailRowMapper());
+	}
+// 6. BY ACCOUNT NUMBER
+
+	public AS_11_Detail_Entity findByAcctnumber(String acctNumber) {
+
+		String sql = "SELECT * FROM BRRS_AS_11_DETAILTABLE WHERE ACCT_NUMBER = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { acctNumber }, new AS_11DetailRowMapper());
+	}
+
+// 1. GET BY DATE + VERSION
+
+	public List<AS_11_Archival_Detail_Entity> getArchivalDetaildatabydateList(Date reportdate,
+			String dataEntryVersion) {
+
+		String sql = "SELECT * FROM BRRS_AS_11_ARCHIVALTABLE_DETAIL "
+				+ "WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { reportdate, dataEntryVersion },
+				new AS_11ArchivalDetailRowMapper());
+	}
+
+// 2. FILTER BY LABEL + CRITERIA + DATE + VERSION
+
+	public List<AS_11_Archival_Detail_Entity> GetArchivalDataByRowIdAndColumnId(String reportLabel,
+			String reportAddlCriteria1, Date reportdate, String dataEntryVersion) {
+
+		String sql = "SELECT * FROM BRRS_AS_11_ARCHIVALTABLE_DETAIL " + "WHERE REPORT_LABEL = ? "
+				+ "AND REPORT_ADDL_CRITERIA_1 = ? " + "AND REPORT_DATE = ? " + "AND DATA_ENTRY_VERSION = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate, dataEntryVersion },
+				new AS_11ArchivalDetailRowMapper());
+	}
+
+	// ROW MAPPER
+
+	class AS_11RowMapper1 implements RowMapper<AS_11_Summary_Entity1> {
+
+		@Override
+		public AS_11_Summary_Entity1 mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+			AS_11_Summary_Entity1 obj = new AS_11_Summary_Entity1();
+
+			// R18
+			obj.setR18_product(rs.getString("R18_PRODUCT"));
+
+			obj.setR18_qua_i_lc(rs.getBigDecimal("R18_QUA_I_LC"));
+			obj.setR18_qua_i_qar(rs.getBigDecimal("R18_QUA_I_QAR"));
+			obj.setR18_qua_i_inr(rs.getBigDecimal("R18_QUA_I_INR"));
+
+			obj.setR18_qua_ii_lc(rs.getBigDecimal("R18_QUA_II_LC"));
+			obj.setR18_qua_ii_qar(rs.getBigDecimal("R18_QUA_II_QAR"));
+			obj.setR18_qua_ii_inr(rs.getBigDecimal("R18_QUA_II_INR"));
+
+			obj.setR18_qua_iii_lc(rs.getBigDecimal("R18_QUA_III_LC"));
+			obj.setR18_qua_iii_qar(rs.getBigDecimal("R18_QUA_III_QAR"));
+			obj.setR18_qua_iii_inr(rs.getBigDecimal("R18_QUA_III_INR"));
+
+			obj.setR18_qua_iv_lc(rs.getBigDecimal("R18_QUA_IV_LC"));
+			obj.setR18_qua_iv_qar(rs.getBigDecimal("R18_QUA_IV_QAR"));
+			obj.setR18_qua_iv_inr(rs.getBigDecimal("R18_QUA_IV_INR"));
+
+			obj.setR18_cumm_inr(rs.getBigDecimal("R18_CUMM_INR"));
+			obj.setR18_cumm_bwp(rs.getBigDecimal("R18_CUMM_BWP"));
+
+			obj.setR19_product(rs.getString("R19_PRODUCT"));
+
+			obj.setR19_qua_i_lc(rs.getBigDecimal("R19_QUA_I_LC"));
+			obj.setR19_qua_i_qar(rs.getBigDecimal("R19_QUA_I_QAR"));
+			obj.setR19_qua_i_inr(rs.getBigDecimal("R19_QUA_I_INR"));
+
+			obj.setR19_qua_ii_lc(rs.getBigDecimal("R19_QUA_II_LC"));
+			obj.setR19_qua_ii_qar(rs.getBigDecimal("R19_QUA_II_QAR"));
+			obj.setR19_qua_ii_inr(rs.getBigDecimal("R19_QUA_II_INR"));
+
+			obj.setR19_qua_iii_lc(rs.getBigDecimal("R19_QUA_III_LC"));
+			obj.setR19_qua_iii_qar(rs.getBigDecimal("R19_QUA_III_QAR"));
+			obj.setR19_qua_iii_inr(rs.getBigDecimal("R19_QUA_III_INR"));
+
+			obj.setR19_qua_iv_lc(rs.getBigDecimal("R19_QUA_IV_LC"));
+			obj.setR19_qua_iv_qar(rs.getBigDecimal("R19_QUA_IV_QAR"));
+			obj.setR19_qua_iv_inr(rs.getBigDecimal("R19_QUA_IV_INR"));
+
+			obj.setR19_cumm_inr(rs.getBigDecimal("R19_CUMM_INR"));
+			obj.setR19_cumm_bwp(rs.getBigDecimal("R19_CUMM_BWP"));
+
+			obj.setR20_product(rs.getString("R20_PRODUCT"));
+
+			obj.setR20_qua_i_lc(rs.getBigDecimal("R20_QUA_I_LC"));
+			obj.setR20_qua_i_qar(rs.getBigDecimal("R20_QUA_I_QAR"));
+			obj.setR20_qua_i_inr(rs.getBigDecimal("R20_QUA_I_INR"));
+
+			obj.setR20_qua_ii_lc(rs.getBigDecimal("R20_QUA_II_LC"));
+			obj.setR20_qua_ii_qar(rs.getBigDecimal("R20_QUA_II_QAR"));
+			obj.setR20_qua_ii_inr(rs.getBigDecimal("R20_QUA_II_INR"));
+
+			obj.setR20_qua_iii_lc(rs.getBigDecimal("R20_QUA_III_LC"));
+			obj.setR20_qua_iii_qar(rs.getBigDecimal("R20_QUA_III_QAR"));
+			obj.setR20_qua_iii_inr(rs.getBigDecimal("R20_QUA_III_INR"));
+
+			obj.setR20_qua_iv_lc(rs.getBigDecimal("R20_QUA_IV_LC"));
+			obj.setR20_qua_iv_qar(rs.getBigDecimal("R20_QUA_IV_QAR"));
+			obj.setR20_qua_iv_inr(rs.getBigDecimal("R20_QUA_IV_INR"));
+
+			obj.setR20_cumm_inr(rs.getBigDecimal("R20_CUMM_INR"));
+			obj.setR20_cumm_bwp(rs.getBigDecimal("R20_CUMM_BWP"));
+
+			obj.setR21_product(rs.getString("R21_PRODUCT"));
+
+			obj.setR21_qua_i_lc(rs.getBigDecimal("R21_QUA_I_LC"));
+			obj.setR21_qua_i_qar(rs.getBigDecimal("R21_QUA_I_QAR"));
+			obj.setR21_qua_i_inr(rs.getBigDecimal("R21_QUA_I_INR"));
+
+			obj.setR21_qua_ii_lc(rs.getBigDecimal("R21_QUA_II_LC"));
+			obj.setR21_qua_ii_qar(rs.getBigDecimal("R21_QUA_II_QAR"));
+			obj.setR21_qua_ii_inr(rs.getBigDecimal("R21_QUA_II_INR"));
+
+			obj.setR21_qua_iii_lc(rs.getBigDecimal("R21_QUA_III_LC"));
+			obj.setR21_qua_iii_qar(rs.getBigDecimal("R21_QUA_III_QAR"));
+			obj.setR21_qua_iii_inr(rs.getBigDecimal("R21_QUA_III_INR"));
+
+			obj.setR21_qua_iv_lc(rs.getBigDecimal("R21_QUA_IV_LC"));
+			obj.setR21_qua_iv_qar(rs.getBigDecimal("R21_QUA_IV_QAR"));
+			obj.setR21_qua_iv_inr(rs.getBigDecimal("R21_QUA_IV_INR"));
+
+			obj.setR21_cumm_inr(rs.getBigDecimal("R21_CUMM_INR"));
+			obj.setR21_cumm_bwp(rs.getBigDecimal("R21_CUMM_BWP"));
+
+			obj.setR22_product(rs.getString("R22_PRODUCT"));
+
+			obj.setR22_qua_i_lc(rs.getBigDecimal("R22_QUA_I_LC"));
+			obj.setR22_qua_i_qar(rs.getBigDecimal("R22_QUA_I_QAR"));
+			obj.setR22_qua_i_inr(rs.getBigDecimal("R22_QUA_I_INR"));
+
+			obj.setR22_qua_ii_lc(rs.getBigDecimal("R22_QUA_II_LC"));
+			obj.setR22_qua_ii_qar(rs.getBigDecimal("R22_QUA_II_QAR"));
+			obj.setR22_qua_ii_inr(rs.getBigDecimal("R22_QUA_II_INR"));
+
+			obj.setR22_qua_iii_lc(rs.getBigDecimal("R22_QUA_III_LC"));
+			obj.setR22_qua_iii_qar(rs.getBigDecimal("R22_QUA_III_QAR"));
+			obj.setR22_qua_iii_inr(rs.getBigDecimal("R22_QUA_III_INR"));
+
+			obj.setR22_qua_iv_lc(rs.getBigDecimal("R22_QUA_IV_LC"));
+			obj.setR22_qua_iv_qar(rs.getBigDecimal("R22_QUA_IV_QAR"));
+			obj.setR22_qua_iv_inr(rs.getBigDecimal("R22_QUA_IV_INR"));
+
+			obj.setR22_cumm_inr(rs.getBigDecimal("R22_CUMM_INR"));
+			obj.setR22_cumm_bwp(rs.getBigDecimal("R22_CUMM_BWP"));
+
+			obj.setR23_product(rs.getString("R23_PRODUCT"));
+			obj.setR23_qua_i_lc(rs.getBigDecimal("R23_QUA_I_LC"));
+			obj.setR23_qua_i_qar(rs.getBigDecimal("R23_QUA_I_QAR"));
+			obj.setR23_qua_i_inr(rs.getBigDecimal("R23_QUA_I_INR"));
+			obj.setR23_qua_ii_lc(rs.getBigDecimal("R23_QUA_II_LC"));
+			obj.setR23_qua_ii_qar(rs.getBigDecimal("R23_QUA_II_QAR"));
+			obj.setR23_qua_ii_inr(rs.getBigDecimal("R23_QUA_II_INR"));
+			obj.setR23_qua_iii_lc(rs.getBigDecimal("R23_QUA_III_LC"));
+			obj.setR23_qua_iii_qar(rs.getBigDecimal("R23_QUA_III_QAR"));
+			obj.setR23_qua_iii_inr(rs.getBigDecimal("R23_QUA_III_INR"));
+			obj.setR23_qua_iv_lc(rs.getBigDecimal("R23_QUA_IV_LC"));
+			obj.setR23_qua_iv_qar(rs.getBigDecimal("R23_QUA_IV_QAR"));
+			obj.setR23_qua_iv_inr(rs.getBigDecimal("R23_QUA_IV_INR"));
+			obj.setR23_cumm_inr(rs.getBigDecimal("R23_CUMM_INR"));
+			obj.setR23_cumm_bwp(rs.getBigDecimal("R23_CUMM_BWP"));
+
+			obj.setR24_product(rs.getString("R24_PRODUCT"));
+			obj.setR24_qua_i_lc(rs.getBigDecimal("R24_QUA_I_LC"));
+			obj.setR24_qua_i_qar(rs.getBigDecimal("R24_QUA_I_QAR"));
+			obj.setR24_qua_i_inr(rs.getBigDecimal("R24_QUA_I_INR"));
+			obj.setR24_qua_ii_lc(rs.getBigDecimal("R24_QUA_II_LC"));
+			obj.setR24_qua_ii_qar(rs.getBigDecimal("R24_QUA_II_QAR"));
+			obj.setR24_qua_ii_inr(rs.getBigDecimal("R24_QUA_II_INR"));
+			obj.setR24_qua_iii_lc(rs.getBigDecimal("R24_QUA_III_LC"));
+			obj.setR24_qua_iii_qar(rs.getBigDecimal("R24_QUA_III_QAR"));
+			obj.setR24_qua_iii_inr(rs.getBigDecimal("R24_QUA_III_INR"));
+			obj.setR24_qua_iv_lc(rs.getBigDecimal("R24_QUA_IV_LC"));
+			obj.setR24_qua_iv_qar(rs.getBigDecimal("R24_QUA_IV_QAR"));
+			obj.setR24_qua_iv_inr(rs.getBigDecimal("R24_QUA_IV_INR"));
+			obj.setR24_cumm_inr(rs.getBigDecimal("R24_CUMM_INR"));
+			obj.setR24_cumm_bwp(rs.getBigDecimal("R24_CUMM_BWP"));
+
+			obj.setR25_product(rs.getString("R25_PRODUCT"));
+			obj.setR25_qua_i_lc(rs.getBigDecimal("R25_QUA_I_LC"));
+			obj.setR25_qua_i_qar(rs.getBigDecimal("R25_QUA_I_QAR"));
+			obj.setR25_qua_i_inr(rs.getBigDecimal("R25_QUA_I_INR"));
+			obj.setR25_qua_ii_lc(rs.getBigDecimal("R25_QUA_II_LC"));
+			obj.setR25_qua_ii_qar(rs.getBigDecimal("R25_QUA_II_QAR"));
+			obj.setR25_qua_ii_inr(rs.getBigDecimal("R25_QUA_II_INR"));
+			obj.setR25_qua_iii_lc(rs.getBigDecimal("R25_QUA_III_LC"));
+			obj.setR25_qua_iii_qar(rs.getBigDecimal("R25_QUA_III_QAR"));
+			obj.setR25_qua_iii_inr(rs.getBigDecimal("R25_QUA_III_INR"));
+			obj.setR25_qua_iv_lc(rs.getBigDecimal("R25_QUA_IV_LC"));
+			obj.setR25_qua_iv_qar(rs.getBigDecimal("R25_QUA_IV_QAR"));
+			obj.setR25_qua_iv_inr(rs.getBigDecimal("R25_QUA_IV_INR"));
+			obj.setR25_cumm_inr(rs.getBigDecimal("R25_CUMM_INR"));
+			obj.setR25_cumm_bwp(rs.getBigDecimal("R25_CUMM_BWP"));
+
+// R26
+			obj.setR26_product(rs.getString("R26_PRODUCT"));
+			obj.setR26_qua_i_lc(rs.getBigDecimal("R26_QUA_I_LC"));
+			obj.setR26_qua_i_qar(rs.getBigDecimal("R26_QUA_I_QAR"));
+			obj.setR26_qua_i_inr(rs.getBigDecimal("R26_QUA_I_INR"));
+			obj.setR26_qua_ii_lc(rs.getBigDecimal("R26_QUA_II_LC"));
+			obj.setR26_qua_ii_qar(rs.getBigDecimal("R26_QUA_II_QAR"));
+			obj.setR26_qua_ii_inr(rs.getBigDecimal("R26_QUA_II_INR"));
+			obj.setR26_qua_iii_lc(rs.getBigDecimal("R26_QUA_III_LC"));
+			obj.setR26_qua_iii_qar(rs.getBigDecimal("R26_QUA_III_QAR"));
+			obj.setR26_qua_iii_inr(rs.getBigDecimal("R26_QUA_III_INR"));
+			obj.setR26_qua_iv_lc(rs.getBigDecimal("R26_QUA_IV_LC"));
+			obj.setR26_qua_iv_qar(rs.getBigDecimal("R26_QUA_IV_QAR"));
+			obj.setR26_qua_iv_inr(rs.getBigDecimal("R26_QUA_IV_INR"));
+			obj.setR26_cumm_inr(rs.getBigDecimal("R26_CUMM_INR"));
+			obj.setR26_cumm_bwp(rs.getBigDecimal("R26_CUMM_BWP"));
+
+// R27
+			obj.setR27_product(rs.getString("R27_PRODUCT"));
+			obj.setR27_qua_i_lc(rs.getBigDecimal("R27_QUA_I_LC"));
+			obj.setR27_qua_i_qar(rs.getBigDecimal("R27_QUA_I_QAR"));
+			obj.setR27_qua_i_inr(rs.getBigDecimal("R27_QUA_I_INR"));
+			obj.setR27_qua_ii_lc(rs.getBigDecimal("R27_QUA_II_LC"));
+			obj.setR27_qua_ii_qar(rs.getBigDecimal("R27_QUA_II_QAR"));
+			obj.setR27_qua_ii_inr(rs.getBigDecimal("R27_QUA_II_INR"));
+			obj.setR27_qua_iii_lc(rs.getBigDecimal("R27_QUA_III_LC"));
+			obj.setR27_qua_iii_qar(rs.getBigDecimal("R27_QUA_III_QAR"));
+			obj.setR27_qua_iii_inr(rs.getBigDecimal("R27_QUA_III_INR"));
+			obj.setR27_qua_iv_lc(rs.getBigDecimal("R27_QUA_IV_LC"));
+			obj.setR27_qua_iv_qar(rs.getBigDecimal("R27_QUA_IV_QAR"));
+			obj.setR27_qua_iv_inr(rs.getBigDecimal("R27_QUA_IV_INR"));
+			obj.setR27_cumm_inr(rs.getBigDecimal("R27_CUMM_INR"));
+			obj.setR27_cumm_bwp(rs.getBigDecimal("R27_CUMM_BWP"));
+
+// R28
+			obj.setR28_product(rs.getString("R28_PRODUCT"));
+			obj.setR28_qua_i_lc(rs.getBigDecimal("R28_QUA_I_LC"));
+			obj.setR28_qua_i_qar(rs.getBigDecimal("R28_QUA_I_QAR"));
+			obj.setR28_qua_i_inr(rs.getBigDecimal("R28_QUA_I_INR"));
+			obj.setR28_qua_ii_lc(rs.getBigDecimal("R28_QUA_II_LC"));
+			obj.setR28_qua_ii_qar(rs.getBigDecimal("R28_QUA_II_QAR"));
+			obj.setR28_qua_ii_inr(rs.getBigDecimal("R28_QUA_II_INR"));
+			obj.setR28_qua_iii_lc(rs.getBigDecimal("R28_QUA_III_LC"));
+			obj.setR28_qua_iii_qar(rs.getBigDecimal("R28_QUA_III_QAR"));
+			obj.setR28_qua_iii_inr(rs.getBigDecimal("R28_QUA_III_INR"));
+			obj.setR28_qua_iv_lc(rs.getBigDecimal("R28_QUA_IV_LC"));
+			obj.setR28_qua_iv_qar(rs.getBigDecimal("R28_QUA_IV_QAR"));
+			obj.setR28_qua_iv_inr(rs.getBigDecimal("R28_QUA_IV_INR"));
+			obj.setR28_cumm_inr(rs.getBigDecimal("R28_CUMM_INR"));
+			obj.setR28_cumm_bwp(rs.getBigDecimal("R28_CUMM_BWP"));
+
+// R29
+			obj.setR29_product(rs.getString("R29_PRODUCT"));
+			obj.setR29_qua_i_lc(rs.getBigDecimal("R29_QUA_I_LC"));
+			obj.setR29_qua_i_qar(rs.getBigDecimal("R29_QUA_I_QAR"));
+			obj.setR29_qua_i_inr(rs.getBigDecimal("R29_QUA_I_INR"));
+			obj.setR29_qua_ii_lc(rs.getBigDecimal("R29_QUA_II_LC"));
+			obj.setR29_qua_ii_qar(rs.getBigDecimal("R29_QUA_II_QAR"));
+			obj.setR29_qua_ii_inr(rs.getBigDecimal("R29_QUA_II_INR"));
+			obj.setR29_qua_iii_lc(rs.getBigDecimal("R29_QUA_III_LC"));
+			obj.setR29_qua_iii_qar(rs.getBigDecimal("R29_QUA_III_QAR"));
+			obj.setR29_qua_iii_inr(rs.getBigDecimal("R29_QUA_III_INR"));
+			obj.setR29_qua_iv_lc(rs.getBigDecimal("R29_QUA_IV_LC"));
+			obj.setR29_qua_iv_qar(rs.getBigDecimal("R29_QUA_IV_QAR"));
+			obj.setR29_qua_iv_inr(rs.getBigDecimal("R29_QUA_IV_INR"));
+			obj.setR29_cumm_inr(rs.getBigDecimal("R29_CUMM_INR"));
+			obj.setR29_cumm_bwp(rs.getBigDecimal("R29_CUMM_BWP"));
+
+// R30
+			obj.setR30_product(rs.getString("R30_PRODUCT"));
+			obj.setR30_qua_i_lc(rs.getBigDecimal("R30_QUA_I_LC"));
+			obj.setR30_qua_i_qar(rs.getBigDecimal("R30_QUA_I_QAR"));
+			obj.setR30_qua_i_inr(rs.getBigDecimal("R30_QUA_I_INR"));
+			obj.setR30_qua_ii_lc(rs.getBigDecimal("R30_QUA_II_LC"));
+			obj.setR30_qua_ii_qar(rs.getBigDecimal("R30_QUA_II_QAR"));
+			obj.setR30_qua_ii_inr(rs.getBigDecimal("R30_QUA_II_INR"));
+			obj.setR30_qua_iii_lc(rs.getBigDecimal("R30_QUA_III_LC"));
+			obj.setR30_qua_iii_qar(rs.getBigDecimal("R30_QUA_III_QAR"));
+			obj.setR30_qua_iii_inr(rs.getBigDecimal("R30_QUA_III_INR"));
+			obj.setR30_qua_iv_lc(rs.getBigDecimal("R30_QUA_IV_LC"));
+			obj.setR30_qua_iv_qar(rs.getBigDecimal("R30_QUA_IV_QAR"));
+			obj.setR30_qua_iv_inr(rs.getBigDecimal("R30_QUA_IV_INR"));
+			obj.setR30_cumm_inr(rs.getBigDecimal("R30_CUMM_INR"));
+			obj.setR30_cumm_bwp(rs.getBigDecimal("R30_CUMM_BWP"));
+
+// R31
+			obj.setR31_product(rs.getString("R31_PRODUCT"));
+			obj.setR31_qua_i_lc(rs.getBigDecimal("R31_QUA_I_LC"));
+			obj.setR31_qua_i_qar(rs.getBigDecimal("R31_QUA_I_QAR"));
+			obj.setR31_qua_i_inr(rs.getBigDecimal("R31_QUA_I_INR"));
+			obj.setR31_qua_ii_lc(rs.getBigDecimal("R31_QUA_II_LC"));
+			obj.setR31_qua_ii_qar(rs.getBigDecimal("R31_QUA_II_QAR"));
+			obj.setR31_qua_ii_inr(rs.getBigDecimal("R31_QUA_II_INR"));
+			obj.setR31_qua_iii_lc(rs.getBigDecimal("R31_QUA_III_LC"));
+			obj.setR31_qua_iii_qar(rs.getBigDecimal("R31_QUA_III_QAR"));
+			obj.setR31_qua_iii_inr(rs.getBigDecimal("R31_QUA_III_INR"));
+			obj.setR31_qua_iv_lc(rs.getBigDecimal("R31_QUA_IV_LC"));
+			obj.setR31_qua_iv_qar(rs.getBigDecimal("R31_QUA_IV_QAR"));
+			obj.setR31_qua_iv_inr(rs.getBigDecimal("R31_QUA_IV_INR"));
+			obj.setR31_cumm_inr(rs.getBigDecimal("R31_CUMM_INR"));
+			obj.setR31_cumm_bwp(rs.getBigDecimal("R31_CUMM_BWP"));
+
+// R32
+			obj.setR32_product(rs.getString("R32_PRODUCT"));
+			obj.setR32_qua_i_lc(rs.getBigDecimal("R32_QUA_I_LC"));
+			obj.setR32_qua_i_qar(rs.getBigDecimal("R32_QUA_I_QAR"));
+			obj.setR32_qua_i_inr(rs.getBigDecimal("R32_QUA_I_INR"));
+			obj.setR32_qua_ii_lc(rs.getBigDecimal("R32_QUA_II_LC"));
+			obj.setR32_qua_ii_qar(rs.getBigDecimal("R32_QUA_II_QAR"));
+			obj.setR32_qua_ii_inr(rs.getBigDecimal("R32_QUA_II_INR"));
+			obj.setR32_qua_iii_lc(rs.getBigDecimal("R32_QUA_III_LC"));
+			obj.setR32_qua_iii_qar(rs.getBigDecimal("R32_QUA_III_QAR"));
+			obj.setR32_qua_iii_inr(rs.getBigDecimal("R32_QUA_III_INR"));
+			obj.setR32_qua_iv_lc(rs.getBigDecimal("R32_QUA_IV_LC"));
+			obj.setR32_qua_iv_qar(rs.getBigDecimal("R32_QUA_IV_QAR"));
+			obj.setR32_qua_iv_inr(rs.getBigDecimal("R32_QUA_IV_INR"));
+			obj.setR32_cumm_inr(rs.getBigDecimal("R32_CUMM_INR"));
+			obj.setR32_cumm_bwp(rs.getBigDecimal("R32_CUMM_BWP"));
+
+// R33
+			obj.setR33_product(rs.getString("R33_PRODUCT"));
+			obj.setR33_qua_i_lc(rs.getBigDecimal("R33_QUA_I_LC"));
+			obj.setR33_qua_i_qar(rs.getBigDecimal("R33_QUA_I_QAR"));
+			obj.setR33_qua_i_inr(rs.getBigDecimal("R33_QUA_I_INR"));
+			obj.setR33_qua_ii_lc(rs.getBigDecimal("R33_QUA_II_LC"));
+			obj.setR33_qua_ii_qar(rs.getBigDecimal("R33_QUA_II_QAR"));
+			obj.setR33_qua_ii_inr(rs.getBigDecimal("R33_QUA_II_INR"));
+			obj.setR33_qua_iii_lc(rs.getBigDecimal("R33_QUA_III_LC"));
+			obj.setR33_qua_iii_qar(rs.getBigDecimal("R33_QUA_III_QAR"));
+			obj.setR33_qua_iii_inr(rs.getBigDecimal("R33_QUA_III_INR"));
+			obj.setR33_qua_iv_lc(rs.getBigDecimal("R33_QUA_IV_LC"));
+			obj.setR33_qua_iv_qar(rs.getBigDecimal("R33_QUA_IV_QAR"));
+			obj.setR33_qua_iv_inr(rs.getBigDecimal("R33_QUA_IV_INR"));
+			obj.setR33_cumm_inr(rs.getBigDecimal("R33_CUMM_INR"));
+			obj.setR33_cumm_bwp(rs.getBigDecimal("R33_CUMM_BWP"));
+
+// R34
+			obj.setR34_product(rs.getString("R34_PRODUCT"));
+			obj.setR34_qua_i_lc(rs.getBigDecimal("R34_QUA_I_LC"));
+			obj.setR34_qua_i_qar(rs.getBigDecimal("R34_QUA_I_QAR"));
+			obj.setR34_qua_i_inr(rs.getBigDecimal("R34_QUA_I_INR"));
+			obj.setR34_qua_ii_lc(rs.getBigDecimal("R34_QUA_II_LC"));
+			obj.setR34_qua_ii_qar(rs.getBigDecimal("R34_QUA_II_QAR"));
+			obj.setR34_qua_ii_inr(rs.getBigDecimal("R34_QUA_II_INR"));
+			obj.setR34_qua_iii_lc(rs.getBigDecimal("R34_QUA_III_LC"));
+			obj.setR34_qua_iii_qar(rs.getBigDecimal("R34_QUA_III_QAR"));
+			obj.setR34_qua_iii_inr(rs.getBigDecimal("R34_QUA_III_INR"));
+			obj.setR34_qua_iv_lc(rs.getBigDecimal("R34_QUA_IV_LC"));
+			obj.setR34_qua_iv_qar(rs.getBigDecimal("R34_QUA_IV_QAR"));
+			obj.setR34_qua_iv_inr(rs.getBigDecimal("R34_QUA_IV_INR"));
+			obj.setR34_cumm_inr(rs.getBigDecimal("R34_CUMM_INR"));
+			obj.setR34_cumm_bwp(rs.getBigDecimal("R34_CUMM_BWP"));
+
+// R35
+			obj.setR35_product(rs.getString("R35_PRODUCT"));
+			obj.setR35_qua_i_lc(rs.getBigDecimal("R35_QUA_I_LC"));
+			obj.setR35_qua_i_qar(rs.getBigDecimal("R35_QUA_I_QAR"));
+			obj.setR35_qua_i_inr(rs.getBigDecimal("R35_QUA_I_INR"));
+			obj.setR35_qua_ii_lc(rs.getBigDecimal("R35_QUA_II_LC"));
+			obj.setR35_qua_ii_qar(rs.getBigDecimal("R35_QUA_II_QAR"));
+			obj.setR35_qua_ii_inr(rs.getBigDecimal("R35_QUA_II_INR"));
+			obj.setR35_qua_iii_lc(rs.getBigDecimal("R35_QUA_III_LC"));
+			obj.setR35_qua_iii_qar(rs.getBigDecimal("R35_QUA_III_QAR"));
+			obj.setR35_qua_iii_inr(rs.getBigDecimal("R35_QUA_III_INR"));
+			obj.setR35_qua_iv_lc(rs.getBigDecimal("R35_QUA_IV_LC"));
+			obj.setR35_qua_iv_qar(rs.getBigDecimal("R35_QUA_IV_QAR"));
+			obj.setR35_qua_iv_inr(rs.getBigDecimal("R35_QUA_IV_INR"));
+			obj.setR35_cumm_inr(rs.getBigDecimal("R35_CUMM_INR"));
+			obj.setR35_cumm_bwp(rs.getBigDecimal("R35_CUMM_BWP"));
+
+// R36
+			obj.setR36_product(rs.getString("R36_PRODUCT"));
+			obj.setR36_qua_i_lc(rs.getBigDecimal("R36_QUA_I_LC"));
+			obj.setR36_qua_i_qar(rs.getBigDecimal("R36_QUA_I_QAR"));
+			obj.setR36_qua_i_inr(rs.getBigDecimal("R36_QUA_I_INR"));
+			obj.setR36_qua_ii_lc(rs.getBigDecimal("R36_QUA_II_LC"));
+			obj.setR36_qua_ii_qar(rs.getBigDecimal("R36_QUA_II_QAR"));
+			obj.setR36_qua_ii_inr(rs.getBigDecimal("R36_QUA_II_INR"));
+			obj.setR36_qua_iii_lc(rs.getBigDecimal("R36_QUA_III_LC"));
+			obj.setR36_qua_iii_qar(rs.getBigDecimal("R36_QUA_III_QAR"));
+			obj.setR36_qua_iii_inr(rs.getBigDecimal("R36_QUA_III_INR"));
+			obj.setR36_qua_iv_lc(rs.getBigDecimal("R36_QUA_IV_LC"));
+			obj.setR36_qua_iv_qar(rs.getBigDecimal("R36_QUA_IV_QAR"));
+			obj.setR36_qua_iv_inr(rs.getBigDecimal("R36_QUA_IV_INR"));
+			obj.setR36_cumm_inr(rs.getBigDecimal("R36_CUMM_INR"));
+			obj.setR36_cumm_bwp(rs.getBigDecimal("R36_CUMM_BWP"));
+
+// R37
+			obj.setR37_product(rs.getString("R37_PRODUCT"));
+			obj.setR37_qua_i_lc(rs.getBigDecimal("R37_QUA_I_LC"));
+			obj.setR37_qua_i_qar(rs.getBigDecimal("R37_QUA_I_QAR"));
+			obj.setR37_qua_i_inr(rs.getBigDecimal("R37_QUA_I_INR"));
+			obj.setR37_qua_ii_lc(rs.getBigDecimal("R37_QUA_II_LC"));
+			obj.setR37_qua_ii_qar(rs.getBigDecimal("R37_QUA_II_QAR"));
+			obj.setR37_qua_ii_inr(rs.getBigDecimal("R37_QUA_II_INR"));
+			obj.setR37_qua_iii_lc(rs.getBigDecimal("R37_QUA_III_LC"));
+			obj.setR37_qua_iii_qar(rs.getBigDecimal("R37_QUA_III_QAR"));
+			obj.setR37_qua_iii_inr(rs.getBigDecimal("R37_QUA_III_INR"));
+			obj.setR37_qua_iv_lc(rs.getBigDecimal("R37_QUA_IV_LC"));
+			obj.setR37_qua_iv_qar(rs.getBigDecimal("R37_QUA_IV_QAR"));
+			obj.setR37_qua_iv_inr(rs.getBigDecimal("R37_QUA_IV_INR"));
+			obj.setR37_cumm_inr(rs.getBigDecimal("R37_CUMM_INR"));
+			obj.setR37_cumm_bwp(rs.getBigDecimal("R37_CUMM_BWP"));
+
+// R38
+			obj.setR38_product(rs.getString("R38_PRODUCT"));
+			obj.setR38_qua_i_lc(rs.getBigDecimal("R38_QUA_I_LC"));
+			obj.setR38_qua_i_qar(rs.getBigDecimal("R38_QUA_I_QAR"));
+			obj.setR38_qua_i_inr(rs.getBigDecimal("R38_QUA_I_INR"));
+			obj.setR38_qua_ii_lc(rs.getBigDecimal("R38_QUA_II_LC"));
+			obj.setR38_qua_ii_qar(rs.getBigDecimal("R38_QUA_II_QAR"));
+			obj.setR38_qua_ii_inr(rs.getBigDecimal("R38_QUA_II_INR"));
+			obj.setR38_qua_iii_lc(rs.getBigDecimal("R38_QUA_III_LC"));
+			obj.setR38_qua_iii_qar(rs.getBigDecimal("R38_QUA_III_QAR"));
+			obj.setR38_qua_iii_inr(rs.getBigDecimal("R38_QUA_III_INR"));
+			obj.setR38_qua_iv_lc(rs.getBigDecimal("R38_QUA_IV_LC"));
+			obj.setR38_qua_iv_qar(rs.getBigDecimal("R38_QUA_IV_QAR"));
+			obj.setR38_qua_iv_inr(rs.getBigDecimal("R38_QUA_IV_INR"));
+			obj.setR38_cumm_inr(rs.getBigDecimal("R38_CUMM_INR"));
+			obj.setR38_cumm_bwp(rs.getBigDecimal("R38_CUMM_BWP"));
+
+// R39
+			obj.setR39_product(rs.getString("R39_PRODUCT"));
+			obj.setR39_qua_i_lc(rs.getBigDecimal("R39_QUA_I_LC"));
+			obj.setR39_qua_i_qar(rs.getBigDecimal("R39_QUA_I_QAR"));
+			obj.setR39_qua_i_inr(rs.getBigDecimal("R39_QUA_I_INR"));
+			obj.setR39_qua_ii_lc(rs.getBigDecimal("R39_QUA_II_LC"));
+			obj.setR39_qua_ii_qar(rs.getBigDecimal("R39_QUA_II_QAR"));
+			obj.setR39_qua_ii_inr(rs.getBigDecimal("R39_QUA_II_INR"));
+			obj.setR39_qua_iii_lc(rs.getBigDecimal("R39_QUA_III_LC"));
+			obj.setR39_qua_iii_qar(rs.getBigDecimal("R39_QUA_III_QAR"));
+			obj.setR39_qua_iii_inr(rs.getBigDecimal("R39_QUA_III_INR"));
+			obj.setR39_qua_iv_lc(rs.getBigDecimal("R39_QUA_IV_LC"));
+			obj.setR39_qua_iv_qar(rs.getBigDecimal("R39_QUA_IV_QAR"));
+			obj.setR39_qua_iv_inr(rs.getBigDecimal("R39_QUA_IV_INR"));
+			obj.setR39_cumm_inr(rs.getBigDecimal("R39_CUMM_INR"));
+			obj.setR39_cumm_bwp(rs.getBigDecimal("R39_CUMM_BWP"));
+
+// R40
+			obj.setR40_product(rs.getString("R40_PRODUCT"));
+			obj.setR40_qua_i_lc(rs.getBigDecimal("R40_QUA_I_LC"));
+			obj.setR40_qua_i_qar(rs.getBigDecimal("R40_QUA_I_QAR"));
+			obj.setR40_qua_i_inr(rs.getBigDecimal("R40_QUA_I_INR"));
+			obj.setR40_qua_ii_lc(rs.getBigDecimal("R40_QUA_II_LC"));
+			obj.setR40_qua_ii_qar(rs.getBigDecimal("R40_QUA_II_QAR"));
+			obj.setR40_qua_ii_inr(rs.getBigDecimal("R40_QUA_II_INR"));
+			obj.setR40_qua_iii_lc(rs.getBigDecimal("R40_QUA_III_LC"));
+			obj.setR40_qua_iii_qar(rs.getBigDecimal("R40_QUA_III_QAR"));
+			obj.setR40_qua_iii_inr(rs.getBigDecimal("R40_QUA_III_INR"));
+			obj.setR40_qua_iv_lc(rs.getBigDecimal("R40_QUA_IV_LC"));
+			obj.setR40_qua_iv_qar(rs.getBigDecimal("R40_QUA_IV_QAR"));
+			obj.setR40_qua_iv_inr(rs.getBigDecimal("R40_QUA_IV_INR"));
+			obj.setR40_cumm_inr(rs.getBigDecimal("R40_CUMM_INR"));
+			obj.setR40_cumm_bwp(rs.getBigDecimal("R40_CUMM_BWP"));
+
+// R41
+			obj.setR41_product(rs.getString("R41_PRODUCT"));
+			obj.setR41_qua_i_lc(rs.getBigDecimal("R41_QUA_I_LC"));
+			obj.setR41_qua_i_qar(rs.getBigDecimal("R41_QUA_I_QAR"));
+			obj.setR41_qua_i_inr(rs.getBigDecimal("R41_QUA_I_INR"));
+			obj.setR41_qua_ii_lc(rs.getBigDecimal("R41_QUA_II_LC"));
+			obj.setR41_qua_ii_qar(rs.getBigDecimal("R41_QUA_II_QAR"));
+			obj.setR41_qua_ii_inr(rs.getBigDecimal("R41_QUA_II_INR"));
+			obj.setR41_qua_iii_lc(rs.getBigDecimal("R41_QUA_III_LC"));
+			obj.setR41_qua_iii_qar(rs.getBigDecimal("R41_QUA_III_QAR"));
+			obj.setR41_qua_iii_inr(rs.getBigDecimal("R41_QUA_III_INR"));
+			obj.setR41_qua_iv_lc(rs.getBigDecimal("R41_QUA_IV_LC"));
+			obj.setR41_qua_iv_qar(rs.getBigDecimal("R41_QUA_IV_QAR"));
+			obj.setR41_qua_iv_inr(rs.getBigDecimal("R41_QUA_IV_INR"));
+			obj.setR41_cumm_inr(rs.getBigDecimal("R41_CUMM_INR"));
+			obj.setR41_cumm_bwp(rs.getBigDecimal("R41_CUMM_BWP"));
+
+// R42
+			obj.setR42_product(rs.getString("R42_PRODUCT"));
+			obj.setR42_qua_i_lc(rs.getBigDecimal("R42_QUA_I_LC"));
+			obj.setR42_qua_i_qar(rs.getBigDecimal("R42_QUA_I_QAR"));
+			obj.setR42_qua_i_inr(rs.getBigDecimal("R42_QUA_I_INR"));
+			obj.setR42_qua_ii_lc(rs.getBigDecimal("R42_QUA_II_LC"));
+			obj.setR42_qua_ii_qar(rs.getBigDecimal("R42_QUA_II_QAR"));
+			obj.setR42_qua_ii_inr(rs.getBigDecimal("R42_QUA_II_INR"));
+			obj.setR42_qua_iii_lc(rs.getBigDecimal("R42_QUA_III_LC"));
+			obj.setR42_qua_iii_qar(rs.getBigDecimal("R42_QUA_III_QAR"));
+			obj.setR42_qua_iii_inr(rs.getBigDecimal("R42_QUA_III_INR"));
+			obj.setR42_qua_iv_lc(rs.getBigDecimal("R42_QUA_IV_LC"));
+			obj.setR42_qua_iv_qar(rs.getBigDecimal("R42_QUA_IV_QAR"));
+			obj.setR42_qua_iv_inr(rs.getBigDecimal("R42_QUA_IV_INR"));
+			obj.setR42_cumm_inr(rs.getBigDecimal("R42_CUMM_INR"));
+			obj.setR42_cumm_bwp(rs.getBigDecimal("R42_CUMM_BWP"));
+
+// R43
+			obj.setR43_product(rs.getString("R43_PRODUCT"));
+			obj.setR43_qua_i_lc(rs.getBigDecimal("R43_QUA_I_LC"));
+			obj.setR43_qua_i_qar(rs.getBigDecimal("R43_QUA_I_QAR"));
+			obj.setR43_qua_i_inr(rs.getBigDecimal("R43_QUA_I_INR"));
+			obj.setR43_qua_ii_lc(rs.getBigDecimal("R43_QUA_II_LC"));
+			obj.setR43_qua_ii_qar(rs.getBigDecimal("R43_QUA_II_QAR"));
+			obj.setR43_qua_ii_inr(rs.getBigDecimal("R43_QUA_II_INR"));
+			obj.setR43_qua_iii_lc(rs.getBigDecimal("R43_QUA_III_LC"));
+			obj.setR43_qua_iii_qar(rs.getBigDecimal("R43_QUA_III_QAR"));
+			obj.setR43_qua_iii_inr(rs.getBigDecimal("R43_QUA_III_INR"));
+			obj.setR43_qua_iv_lc(rs.getBigDecimal("R43_QUA_IV_LC"));
+			obj.setR43_qua_iv_qar(rs.getBigDecimal("R43_QUA_IV_QAR"));
+			obj.setR43_qua_iv_inr(rs.getBigDecimal("R43_QUA_IV_INR"));
+			obj.setR43_cumm_inr(rs.getBigDecimal("R43_CUMM_INR"));
+			obj.setR43_cumm_bwp(rs.getBigDecimal("R43_CUMM_BWP"));
+
+// R44
+			obj.setR44_product(rs.getString("R44_PRODUCT"));
+			obj.setR44_qua_i_lc(rs.getBigDecimal("R44_QUA_I_LC"));
+			obj.setR44_qua_i_qar(rs.getBigDecimal("R44_QUA_I_QAR"));
+			obj.setR44_qua_i_inr(rs.getBigDecimal("R44_QUA_I_INR"));
+			obj.setR44_qua_ii_lc(rs.getBigDecimal("R44_QUA_II_LC"));
+			obj.setR44_qua_ii_qar(rs.getBigDecimal("R44_QUA_II_QAR"));
+			obj.setR44_qua_ii_inr(rs.getBigDecimal("R44_QUA_II_INR"));
+			obj.setR44_qua_iii_lc(rs.getBigDecimal("R44_QUA_III_LC"));
+			obj.setR44_qua_iii_qar(rs.getBigDecimal("R44_QUA_III_QAR"));
+			obj.setR44_qua_iii_inr(rs.getBigDecimal("R44_QUA_III_INR"));
+			obj.setR44_qua_iv_lc(rs.getBigDecimal("R44_QUA_IV_LC"));
+			obj.setR44_qua_iv_qar(rs.getBigDecimal("R44_QUA_IV_QAR"));
+			obj.setR44_qua_iv_inr(rs.getBigDecimal("R44_QUA_IV_INR"));
+			obj.setR44_cumm_inr(rs.getBigDecimal("R44_CUMM_INR"));
+			obj.setR44_cumm_bwp(rs.getBigDecimal("R44_CUMM_BWP"));
+
+// R45
+			obj.setR45_product(rs.getString("R45_PRODUCT"));
+			obj.setR45_qua_i_lc(rs.getBigDecimal("R45_QUA_I_LC"));
+			obj.setR45_qua_i_qar(rs.getBigDecimal("R45_QUA_I_QAR"));
+			obj.setR45_qua_i_inr(rs.getBigDecimal("R45_QUA_I_INR"));
+			obj.setR45_qua_ii_lc(rs.getBigDecimal("R45_QUA_II_LC"));
+			obj.setR45_qua_ii_qar(rs.getBigDecimal("R45_QUA_II_QAR"));
+			obj.setR45_qua_ii_inr(rs.getBigDecimal("R45_QUA_II_INR"));
+			obj.setR45_qua_iii_lc(rs.getBigDecimal("R45_QUA_III_LC"));
+			obj.setR45_qua_iii_qar(rs.getBigDecimal("R45_QUA_III_QAR"));
+			obj.setR45_qua_iii_inr(rs.getBigDecimal("R45_QUA_III_INR"));
+			obj.setR45_qua_iv_lc(rs.getBigDecimal("R45_QUA_IV_LC"));
+			obj.setR45_qua_iv_qar(rs.getBigDecimal("R45_QUA_IV_QAR"));
+			obj.setR45_qua_iv_inr(rs.getBigDecimal("R45_QUA_IV_INR"));
+			obj.setR45_cumm_inr(rs.getBigDecimal("R45_CUMM_INR"));
+			obj.setR45_cumm_bwp(rs.getBigDecimal("R45_CUMM_BWP"));
+
+// R46
+			obj.setR46_product(rs.getString("R46_PRODUCT"));
+			obj.setR46_qua_i_lc(rs.getBigDecimal("R46_QUA_I_LC"));
+			obj.setR46_qua_i_qar(rs.getBigDecimal("R46_QUA_I_QAR"));
+			obj.setR46_qua_i_inr(rs.getBigDecimal("R46_QUA_I_INR"));
+			obj.setR46_qua_ii_lc(rs.getBigDecimal("R46_QUA_II_LC"));
+			obj.setR46_qua_ii_qar(rs.getBigDecimal("R46_QUA_II_QAR"));
+			obj.setR46_qua_ii_inr(rs.getBigDecimal("R46_QUA_II_INR"));
+			obj.setR46_qua_iii_lc(rs.getBigDecimal("R46_QUA_III_LC"));
+			obj.setR46_qua_iii_qar(rs.getBigDecimal("R46_QUA_III_QAR"));
+			obj.setR46_qua_iii_inr(rs.getBigDecimal("R46_QUA_III_INR"));
+			obj.setR46_qua_iv_lc(rs.getBigDecimal("R46_QUA_IV_LC"));
+			obj.setR46_qua_iv_qar(rs.getBigDecimal("R46_QUA_IV_QAR"));
+			obj.setR46_qua_iv_inr(rs.getBigDecimal("R46_QUA_IV_INR"));
+			obj.setR46_cumm_inr(rs.getBigDecimal("R46_CUMM_INR"));
+			obj.setR46_cumm_bwp(rs.getBigDecimal("R46_CUMM_BWP"));
+
+// R47
+			obj.setR47_product(rs.getString("R47_PRODUCT"));
+			obj.setR47_qua_i_lc(rs.getBigDecimal("R47_QUA_I_LC"));
+			obj.setR47_qua_i_qar(rs.getBigDecimal("R47_QUA_I_QAR"));
+			obj.setR47_qua_i_inr(rs.getBigDecimal("R47_QUA_I_INR"));
+			obj.setR47_qua_ii_lc(rs.getBigDecimal("R47_QUA_II_LC"));
+			obj.setR47_qua_ii_qar(rs.getBigDecimal("R47_QUA_II_QAR"));
+			obj.setR47_qua_ii_inr(rs.getBigDecimal("R47_QUA_II_INR"));
+			obj.setR47_qua_iii_lc(rs.getBigDecimal("R47_QUA_III_LC"));
+			obj.setR47_qua_iii_qar(rs.getBigDecimal("R47_QUA_III_QAR"));
+			obj.setR47_qua_iii_inr(rs.getBigDecimal("R47_QUA_III_INR"));
+			obj.setR47_qua_iv_lc(rs.getBigDecimal("R47_QUA_IV_LC"));
+			obj.setR47_qua_iv_qar(rs.getBigDecimal("R47_QUA_IV_QAR"));
+			obj.setR47_qua_iv_inr(rs.getBigDecimal("R47_QUA_IV_INR"));
+			obj.setR47_cumm_inr(rs.getBigDecimal("R47_CUMM_INR"));
+			obj.setR47_cumm_bwp(rs.getBigDecimal("R47_CUMM_BWP"));
+
+// R48
+			obj.setR48_product(rs.getString("R48_PRODUCT"));
+			obj.setR48_qua_i_lc(rs.getBigDecimal("R48_QUA_I_LC"));
+			obj.setR48_qua_i_qar(rs.getBigDecimal("R48_QUA_I_QAR"));
+			obj.setR48_qua_i_inr(rs.getBigDecimal("R48_QUA_I_INR"));
+			obj.setR48_qua_ii_lc(rs.getBigDecimal("R48_QUA_II_LC"));
+			obj.setR48_qua_ii_qar(rs.getBigDecimal("R48_QUA_II_QAR"));
+			obj.setR48_qua_ii_inr(rs.getBigDecimal("R48_QUA_II_INR"));
+			obj.setR48_qua_iii_lc(rs.getBigDecimal("R48_QUA_III_LC"));
+			obj.setR48_qua_iii_qar(rs.getBigDecimal("R48_QUA_III_QAR"));
+			obj.setR48_qua_iii_inr(rs.getBigDecimal("R48_QUA_III_INR"));
+			obj.setR48_qua_iv_lc(rs.getBigDecimal("R48_QUA_IV_LC"));
+			obj.setR48_qua_iv_qar(rs.getBigDecimal("R48_QUA_IV_QAR"));
+			obj.setR48_qua_iv_inr(rs.getBigDecimal("R48_QUA_IV_INR"));
+			obj.setR48_cumm_inr(rs.getBigDecimal("R48_CUMM_INR"));
+			obj.setR48_cumm_bwp(rs.getBigDecimal("R48_CUMM_BWP"));
+
+// R49
+			obj.setR49_product(rs.getString("R49_PRODUCT"));
+			obj.setR49_qua_i_lc(rs.getBigDecimal("R49_QUA_I_LC"));
+			obj.setR49_qua_i_qar(rs.getBigDecimal("R49_QUA_I_QAR"));
+			obj.setR49_qua_i_inr(rs.getBigDecimal("R49_QUA_I_INR"));
+			obj.setR49_qua_ii_lc(rs.getBigDecimal("R49_QUA_II_LC"));
+			obj.setR49_qua_ii_qar(rs.getBigDecimal("R49_QUA_II_QAR"));
+			obj.setR49_qua_ii_inr(rs.getBigDecimal("R49_QUA_II_INR"));
+			obj.setR49_qua_iii_lc(rs.getBigDecimal("R49_QUA_III_LC"));
+			obj.setR49_qua_iii_qar(rs.getBigDecimal("R49_QUA_III_QAR"));
+			obj.setR49_qua_iii_inr(rs.getBigDecimal("R49_QUA_III_INR"));
+			obj.setR49_qua_iv_lc(rs.getBigDecimal("R49_QUA_IV_LC"));
+			obj.setR49_qua_iv_qar(rs.getBigDecimal("R49_QUA_IV_QAR"));
+			obj.setR49_qua_iv_inr(rs.getBigDecimal("R49_QUA_IV_INR"));
+			obj.setR49_cumm_inr(rs.getBigDecimal("R49_CUMM_INR"));
+			obj.setR49_cumm_bwp(rs.getBigDecimal("R49_CUMM_BWP"));
+
+// R50
+			obj.setR50_product(rs.getString("R50_PRODUCT"));
+			obj.setR50_qua_i_lc(rs.getBigDecimal("R50_QUA_I_LC"));
+			obj.setR50_qua_i_qar(rs.getBigDecimal("R50_QUA_I_QAR"));
+			obj.setR50_qua_i_inr(rs.getBigDecimal("R50_QUA_I_INR"));
+			obj.setR50_qua_ii_lc(rs.getBigDecimal("R50_QUA_II_LC"));
+			obj.setR50_qua_ii_qar(rs.getBigDecimal("R50_QUA_II_QAR"));
+			obj.setR50_qua_ii_inr(rs.getBigDecimal("R50_QUA_II_INR"));
+			obj.setR50_qua_iii_lc(rs.getBigDecimal("R50_QUA_III_LC"));
+			obj.setR50_qua_iii_qar(rs.getBigDecimal("R50_QUA_III_QAR"));
+			obj.setR50_qua_iii_inr(rs.getBigDecimal("R50_QUA_III_INR"));
+			obj.setR50_qua_iv_lc(rs.getBigDecimal("R50_QUA_IV_LC"));
+			obj.setR50_qua_iv_qar(rs.getBigDecimal("R50_QUA_IV_QAR"));
+			obj.setR50_qua_iv_inr(rs.getBigDecimal("R50_QUA_IV_INR"));
+			obj.setR50_cumm_inr(rs.getBigDecimal("R50_CUMM_INR"));
+			obj.setR50_cumm_bwp(rs.getBigDecimal("R50_CUMM_BWP"));
+
+// R51
+			obj.setR51_product(rs.getString("R51_PRODUCT"));
+			obj.setR51_qua_i_lc(rs.getBigDecimal("R51_QUA_I_LC"));
+			obj.setR51_qua_i_qar(rs.getBigDecimal("R51_QUA_I_QAR"));
+			obj.setR51_qua_i_inr(rs.getBigDecimal("R51_QUA_I_INR"));
+			obj.setR51_qua_ii_lc(rs.getBigDecimal("R51_QUA_II_LC"));
+			obj.setR51_qua_ii_qar(rs.getBigDecimal("R51_QUA_II_QAR"));
+			obj.setR51_qua_ii_inr(rs.getBigDecimal("R51_QUA_II_INR"));
+			obj.setR51_qua_iii_lc(rs.getBigDecimal("R51_QUA_III_LC"));
+			obj.setR51_qua_iii_qar(rs.getBigDecimal("R51_QUA_III_QAR"));
+			obj.setR51_qua_iii_inr(rs.getBigDecimal("R51_QUA_III_INR"));
+			obj.setR51_qua_iv_lc(rs.getBigDecimal("R51_QUA_IV_LC"));
+			obj.setR51_qua_iv_qar(rs.getBigDecimal("R51_QUA_IV_QAR"));
+			obj.setR51_qua_iv_inr(rs.getBigDecimal("R51_QUA_IV_INR"));
+			obj.setR51_cumm_inr(rs.getBigDecimal("R51_CUMM_INR"));
+			obj.setR51_cumm_bwp(rs.getBigDecimal("R51_CUMM_BWP"));
+
+// R52
+			obj.setR52_product(rs.getString("R52_PRODUCT"));
+			obj.setR52_qua_i_lc(rs.getBigDecimal("R52_QUA_I_LC"));
+			obj.setR52_qua_i_qar(rs.getBigDecimal("R52_QUA_I_QAR"));
+			obj.setR52_qua_i_inr(rs.getBigDecimal("R52_QUA_I_INR"));
+			obj.setR52_qua_ii_lc(rs.getBigDecimal("R52_QUA_II_LC"));
+			obj.setR52_qua_ii_qar(rs.getBigDecimal("R52_QUA_II_QAR"));
+			obj.setR52_qua_ii_inr(rs.getBigDecimal("R52_QUA_II_INR"));
+			obj.setR52_qua_iii_lc(rs.getBigDecimal("R52_QUA_III_LC"));
+			obj.setR52_qua_iii_qar(rs.getBigDecimal("R52_QUA_III_QAR"));
+			obj.setR52_qua_iii_inr(rs.getBigDecimal("R52_QUA_III_INR"));
+			obj.setR52_qua_iv_lc(rs.getBigDecimal("R52_QUA_IV_LC"));
+			obj.setR52_qua_iv_qar(rs.getBigDecimal("R52_QUA_IV_QAR"));
+			obj.setR52_qua_iv_inr(rs.getBigDecimal("R52_QUA_IV_INR"));
+			obj.setR52_cumm_inr(rs.getBigDecimal("R52_CUMM_INR"));
+			obj.setR52_cumm_bwp(rs.getBigDecimal("R52_CUMM_BWP"));
+
+// R53
+			obj.setR53_product(rs.getString("R53_PRODUCT"));
+			obj.setR53_qua_i_lc(rs.getBigDecimal("R53_QUA_I_LC"));
+			obj.setR53_qua_i_qar(rs.getBigDecimal("R53_QUA_I_QAR"));
+			obj.setR53_qua_i_inr(rs.getBigDecimal("R53_QUA_I_INR"));
+			obj.setR53_qua_ii_lc(rs.getBigDecimal("R53_QUA_II_LC"));
+			obj.setR53_qua_ii_qar(rs.getBigDecimal("R53_QUA_II_QAR"));
+			obj.setR53_qua_ii_inr(rs.getBigDecimal("R53_QUA_II_INR"));
+			obj.setR53_qua_iii_lc(rs.getBigDecimal("R53_QUA_III_LC"));
+			obj.setR53_qua_iii_qar(rs.getBigDecimal("R53_QUA_III_QAR"));
+			obj.setR53_qua_iii_inr(rs.getBigDecimal("R53_QUA_III_INR"));
+			obj.setR53_qua_iv_lc(rs.getBigDecimal("R53_QUA_IV_LC"));
+			obj.setR53_qua_iv_qar(rs.getBigDecimal("R53_QUA_IV_QAR"));
+			obj.setR53_qua_iv_inr(rs.getBigDecimal("R53_QUA_IV_INR"));
+			obj.setR53_cumm_inr(rs.getBigDecimal("R53_CUMM_INR"));
+			obj.setR53_cumm_bwp(rs.getBigDecimal("R53_CUMM_BWP"));
+
+// R54
+			obj.setR54_product(rs.getString("R54_PRODUCT"));
+			obj.setR54_qua_i_lc(rs.getBigDecimal("R54_QUA_I_LC"));
+			obj.setR54_qua_i_qar(rs.getBigDecimal("R54_QUA_I_QAR"));
+			obj.setR54_qua_i_inr(rs.getBigDecimal("R54_QUA_I_INR"));
+			obj.setR54_qua_ii_lc(rs.getBigDecimal("R54_QUA_II_LC"));
+			obj.setR54_qua_ii_qar(rs.getBigDecimal("R54_QUA_II_QAR"));
+			obj.setR54_qua_ii_inr(rs.getBigDecimal("R54_QUA_II_INR"));
+			obj.setR54_qua_iii_lc(rs.getBigDecimal("R54_QUA_III_LC"));
+			obj.setR54_qua_iii_qar(rs.getBigDecimal("R54_QUA_III_QAR"));
+			obj.setR54_qua_iii_inr(rs.getBigDecimal("R54_QUA_III_INR"));
+			obj.setR54_qua_iv_lc(rs.getBigDecimal("R54_QUA_IV_LC"));
+			obj.setR54_qua_iv_qar(rs.getBigDecimal("R54_QUA_IV_QAR"));
+			obj.setR54_qua_iv_inr(rs.getBigDecimal("R54_QUA_IV_INR"));
+			obj.setR54_cumm_inr(rs.getBigDecimal("R54_CUMM_INR"));
+			obj.setR54_cumm_bwp(rs.getBigDecimal("R54_CUMM_BWP"));
+
+// R55
+			obj.setR55_product(rs.getString("R55_PRODUCT"));
+			obj.setR55_qua_i_lc(rs.getBigDecimal("R55_QUA_I_LC"));
+			obj.setR55_qua_i_qar(rs.getBigDecimal("R55_QUA_I_QAR"));
+			obj.setR55_qua_i_inr(rs.getBigDecimal("R55_QUA_I_INR"));
+			obj.setR55_qua_ii_lc(rs.getBigDecimal("R55_QUA_II_LC"));
+			obj.setR55_qua_ii_qar(rs.getBigDecimal("R55_QUA_II_QAR"));
+			obj.setR55_qua_ii_inr(rs.getBigDecimal("R55_QUA_II_INR"));
+			obj.setR55_qua_iii_lc(rs.getBigDecimal("R55_QUA_III_LC"));
+			obj.setR55_qua_iii_qar(rs.getBigDecimal("R55_QUA_III_QAR"));
+			obj.setR55_qua_iii_inr(rs.getBigDecimal("R55_QUA_III_INR"));
+			obj.setR55_qua_iv_lc(rs.getBigDecimal("R55_QUA_IV_LC"));
+			obj.setR55_qua_iv_qar(rs.getBigDecimal("R55_QUA_IV_QAR"));
+			obj.setR55_qua_iv_inr(rs.getBigDecimal("R55_QUA_IV_INR"));
+			obj.setR55_cumm_inr(rs.getBigDecimal("R55_CUMM_INR"));
+			obj.setR55_cumm_bwp(rs.getBigDecimal("R55_CUMM_BWP"));
+
+// R56
+			obj.setR56_product(rs.getString("R56_PRODUCT"));
+			obj.setR56_qua_i_lc(rs.getBigDecimal("R56_QUA_I_LC"));
+			obj.setR56_qua_i_qar(rs.getBigDecimal("R56_QUA_I_QAR"));
+			obj.setR56_qua_i_inr(rs.getBigDecimal("R56_QUA_I_INR"));
+			obj.setR56_qua_ii_lc(rs.getBigDecimal("R56_QUA_II_LC"));
+			obj.setR56_qua_ii_qar(rs.getBigDecimal("R56_QUA_II_QAR"));
+			obj.setR56_qua_ii_inr(rs.getBigDecimal("R56_QUA_II_INR"));
+			obj.setR56_qua_iii_lc(rs.getBigDecimal("R56_QUA_III_LC"));
+			obj.setR56_qua_iii_qar(rs.getBigDecimal("R56_QUA_III_QAR"));
+			obj.setR56_qua_iii_inr(rs.getBigDecimal("R56_QUA_III_INR"));
+			obj.setR56_qua_iv_lc(rs.getBigDecimal("R56_QUA_IV_LC"));
+			obj.setR56_qua_iv_qar(rs.getBigDecimal("R56_QUA_IV_QAR"));
+			obj.setR56_qua_iv_inr(rs.getBigDecimal("R56_QUA_IV_INR"));
+			obj.setR56_cumm_inr(rs.getBigDecimal("R56_CUMM_INR"));
+			obj.setR56_cumm_bwp(rs.getBigDecimal("R56_CUMM_BWP"));
+
+// R57
+			obj.setR57_product(rs.getString("R57_PRODUCT"));
+			obj.setR57_qua_i_lc(rs.getBigDecimal("R57_QUA_I_LC"));
+			obj.setR57_qua_i_qar(rs.getBigDecimal("R57_QUA_I_QAR"));
+			obj.setR57_qua_i_inr(rs.getBigDecimal("R57_QUA_I_INR"));
+			obj.setR57_qua_ii_lc(rs.getBigDecimal("R57_QUA_II_LC"));
+			obj.setR57_qua_ii_qar(rs.getBigDecimal("R57_QUA_II_QAR"));
+			obj.setR57_qua_ii_inr(rs.getBigDecimal("R57_QUA_II_INR"));
+			obj.setR57_qua_iii_lc(rs.getBigDecimal("R57_QUA_III_LC"));
+			obj.setR57_qua_iii_qar(rs.getBigDecimal("R57_QUA_III_QAR"));
+			obj.setR57_qua_iii_inr(rs.getBigDecimal("R57_QUA_III_INR"));
+			obj.setR57_qua_iv_lc(rs.getBigDecimal("R57_QUA_IV_LC"));
+			obj.setR57_qua_iv_qar(rs.getBigDecimal("R57_QUA_IV_QAR"));
+			obj.setR57_qua_iv_inr(rs.getBigDecimal("R57_QUA_IV_INR"));
+			obj.setR57_cumm_inr(rs.getBigDecimal("R57_CUMM_INR"));
+			obj.setR57_cumm_bwp(rs.getBigDecimal("R57_CUMM_BWP"));
+
+// R58
+			obj.setR58_product(rs.getString("R58_PRODUCT"));
+			obj.setR58_qua_i_lc(rs.getBigDecimal("R58_QUA_I_LC"));
+			obj.setR58_qua_i_qar(rs.getBigDecimal("R58_QUA_I_QAR"));
+			obj.setR58_qua_i_inr(rs.getBigDecimal("R58_QUA_I_INR"));
+			obj.setR58_qua_ii_lc(rs.getBigDecimal("R58_QUA_II_LC"));
+			obj.setR58_qua_ii_qar(rs.getBigDecimal("R58_QUA_II_QAR"));
+			obj.setR58_qua_ii_inr(rs.getBigDecimal("R58_QUA_II_INR"));
+			obj.setR58_qua_iii_lc(rs.getBigDecimal("R58_QUA_III_LC"));
+			obj.setR58_qua_iii_qar(rs.getBigDecimal("R58_QUA_III_QAR"));
+			obj.setR58_qua_iii_inr(rs.getBigDecimal("R58_QUA_III_INR"));
+			obj.setR58_qua_iv_lc(rs.getBigDecimal("R58_QUA_IV_LC"));
+			obj.setR58_qua_iv_qar(rs.getBigDecimal("R58_QUA_IV_QAR"));
+			obj.setR58_qua_iv_inr(rs.getBigDecimal("R58_QUA_IV_INR"));
+			obj.setR58_cumm_inr(rs.getBigDecimal("R58_CUMM_INR"));
+			obj.setR58_cumm_bwp(rs.getBigDecimal("R58_CUMM_BWP"));
+
+// R59
+			obj.setR59_product(rs.getString("R59_PRODUCT"));
+			obj.setR59_qua_i_lc(rs.getBigDecimal("R59_QUA_I_LC"));
+			obj.setR59_qua_i_qar(rs.getBigDecimal("R59_QUA_I_QAR"));
+			obj.setR59_qua_i_inr(rs.getBigDecimal("R59_QUA_I_INR"));
+			obj.setR59_qua_ii_lc(rs.getBigDecimal("R59_QUA_II_LC"));
+			obj.setR59_qua_ii_qar(rs.getBigDecimal("R59_QUA_II_QAR"));
+			obj.setR59_qua_ii_inr(rs.getBigDecimal("R59_QUA_II_INR"));
+			obj.setR59_qua_iii_lc(rs.getBigDecimal("R59_QUA_III_LC"));
+			obj.setR59_qua_iii_qar(rs.getBigDecimal("R59_QUA_III_QAR"));
+			obj.setR59_qua_iii_inr(rs.getBigDecimal("R59_QUA_III_INR"));
+			obj.setR59_qua_iv_lc(rs.getBigDecimal("R59_QUA_IV_LC"));
+			obj.setR59_qua_iv_qar(rs.getBigDecimal("R59_QUA_IV_QAR"));
+			obj.setR59_qua_iv_inr(rs.getBigDecimal("R59_QUA_IV_INR"));
+			obj.setR59_cumm_inr(rs.getBigDecimal("R59_CUMM_INR"));
+			obj.setR59_cumm_bwp(rs.getBigDecimal("R59_CUMM_BWP"));
+
+// R60
+			obj.setR60_product(rs.getString("R60_PRODUCT"));
+			obj.setR60_qua_i_lc(rs.getBigDecimal("R60_QUA_I_LC"));
+			obj.setR60_qua_i_qar(rs.getBigDecimal("R60_QUA_I_QAR"));
+			obj.setR60_qua_i_inr(rs.getBigDecimal("R60_QUA_I_INR"));
+			obj.setR60_qua_ii_lc(rs.getBigDecimal("R60_QUA_II_LC"));
+			obj.setR60_qua_ii_qar(rs.getBigDecimal("R60_QUA_II_QAR"));
+			obj.setR60_qua_ii_inr(rs.getBigDecimal("R60_QUA_II_INR"));
+			obj.setR60_qua_iii_lc(rs.getBigDecimal("R60_QUA_III_LC"));
+			obj.setR60_qua_iii_qar(rs.getBigDecimal("R60_QUA_III_QAR"));
+			obj.setR60_qua_iii_inr(rs.getBigDecimal("R60_QUA_III_INR"));
+			obj.setR60_qua_iv_lc(rs.getBigDecimal("R60_QUA_IV_LC"));
+			obj.setR60_qua_iv_qar(rs.getBigDecimal("R60_QUA_IV_QAR"));
+			obj.setR60_qua_iv_inr(rs.getBigDecimal("R60_QUA_IV_INR"));
+			obj.setR60_cumm_inr(rs.getBigDecimal("R60_CUMM_INR"));
+			obj.setR60_cumm_bwp(rs.getBigDecimal("R60_CUMM_BWP"));
+
+// R61
+			obj.setR61_product(rs.getString("R61_PRODUCT"));
+			obj.setR61_qua_i_lc(rs.getBigDecimal("R61_QUA_I_LC"));
+			obj.setR61_qua_i_qar(rs.getBigDecimal("R61_QUA_I_QAR"));
+			obj.setR61_qua_i_inr(rs.getBigDecimal("R61_QUA_I_INR"));
+			obj.setR61_qua_ii_lc(rs.getBigDecimal("R61_QUA_II_LC"));
+			obj.setR61_qua_ii_qar(rs.getBigDecimal("R61_QUA_II_QAR"));
+			obj.setR61_qua_ii_inr(rs.getBigDecimal("R61_QUA_II_INR"));
+			obj.setR61_qua_iii_lc(rs.getBigDecimal("R61_QUA_III_LC"));
+			obj.setR61_qua_iii_qar(rs.getBigDecimal("R61_QUA_III_QAR"));
+			obj.setR61_qua_iii_inr(rs.getBigDecimal("R61_QUA_III_INR"));
+			obj.setR61_qua_iv_lc(rs.getBigDecimal("R61_QUA_IV_LC"));
+			obj.setR61_qua_iv_qar(rs.getBigDecimal("R61_QUA_IV_QAR"));
+			obj.setR61_qua_iv_inr(rs.getBigDecimal("R61_QUA_IV_INR"));
+			obj.setR61_cumm_inr(rs.getBigDecimal("R61_CUMM_INR"));
+			obj.setR61_cumm_bwp(rs.getBigDecimal("R61_CUMM_BWP"));
+
+// R62
+			obj.setR62_product(rs.getString("R62_PRODUCT"));
+			obj.setR62_qua_i_lc(rs.getBigDecimal("R62_QUA_I_LC"));
+			obj.setR62_qua_i_qar(rs.getBigDecimal("R62_QUA_I_QAR"));
+			obj.setR62_qua_i_inr(rs.getBigDecimal("R62_QUA_I_INR"));
+			obj.setR62_qua_ii_lc(rs.getBigDecimal("R62_QUA_II_LC"));
+			obj.setR62_qua_ii_qar(rs.getBigDecimal("R62_QUA_II_QAR"));
+			obj.setR62_qua_ii_inr(rs.getBigDecimal("R62_QUA_II_INR"));
+			obj.setR62_qua_iii_lc(rs.getBigDecimal("R62_QUA_III_LC"));
+			obj.setR62_qua_iii_qar(rs.getBigDecimal("R62_QUA_III_QAR"));
+			obj.setR62_qua_iii_inr(rs.getBigDecimal("R62_QUA_III_INR"));
+			obj.setR62_qua_iv_lc(rs.getBigDecimal("R62_QUA_IV_LC"));
+			obj.setR62_qua_iv_qar(rs.getBigDecimal("R62_QUA_IV_QAR"));
+			obj.setR62_qua_iv_inr(rs.getBigDecimal("R62_QUA_IV_INR"));
+			obj.setR62_cumm_inr(rs.getBigDecimal("R62_CUMM_INR"));
+			obj.setR62_cumm_bwp(rs.getBigDecimal("R62_CUMM_BWP"));
+
+// R63
+			obj.setR63_product(rs.getString("R63_PRODUCT"));
+			obj.setR63_qua_i_lc(rs.getBigDecimal("R63_QUA_I_LC"));
+			obj.setR63_qua_i_qar(rs.getBigDecimal("R63_QUA_I_QAR"));
+			obj.setR63_qua_i_inr(rs.getBigDecimal("R63_QUA_I_INR"));
+			obj.setR63_qua_ii_lc(rs.getBigDecimal("R63_QUA_II_LC"));
+			obj.setR63_qua_ii_qar(rs.getBigDecimal("R63_QUA_II_QAR"));
+			obj.setR63_qua_ii_inr(rs.getBigDecimal("R63_QUA_II_INR"));
+			obj.setR63_qua_iii_lc(rs.getBigDecimal("R63_QUA_III_LC"));
+			obj.setR63_qua_iii_qar(rs.getBigDecimal("R63_QUA_III_QAR"));
+			obj.setR63_qua_iii_inr(rs.getBigDecimal("R63_QUA_III_INR"));
+			obj.setR63_qua_iv_lc(rs.getBigDecimal("R63_QUA_IV_LC"));
+			obj.setR63_qua_iv_qar(rs.getBigDecimal("R63_QUA_IV_QAR"));
+			obj.setR63_qua_iv_inr(rs.getBigDecimal("R63_QUA_IV_INR"));
+			obj.setR63_cumm_inr(rs.getBigDecimal("R63_CUMM_INR"));
+			obj.setR63_cumm_bwp(rs.getBigDecimal("R63_CUMM_BWP"));
+
+// R64
+			obj.setR64_product(rs.getString("R64_PRODUCT"));
+			obj.setR64_qua_i_lc(rs.getBigDecimal("R64_QUA_I_LC"));
+			obj.setR64_qua_i_qar(rs.getBigDecimal("R64_QUA_I_QAR"));
+			obj.setR64_qua_i_inr(rs.getBigDecimal("R64_QUA_I_INR"));
+			obj.setR64_qua_ii_lc(rs.getBigDecimal("R64_QUA_II_LC"));
+			obj.setR64_qua_ii_qar(rs.getBigDecimal("R64_QUA_II_QAR"));
+			obj.setR64_qua_ii_inr(rs.getBigDecimal("R64_QUA_II_INR"));
+			obj.setR64_qua_iii_lc(rs.getBigDecimal("R64_QUA_III_LC"));
+			obj.setR64_qua_iii_qar(rs.getBigDecimal("R64_QUA_III_QAR"));
+			obj.setR64_qua_iii_inr(rs.getBigDecimal("R64_QUA_III_INR"));
+			obj.setR64_qua_iv_lc(rs.getBigDecimal("R64_QUA_IV_LC"));
+			obj.setR64_qua_iv_qar(rs.getBigDecimal("R64_QUA_IV_QAR"));
+			obj.setR64_qua_iv_inr(rs.getBigDecimal("R64_QUA_IV_INR"));
+			obj.setR64_cumm_inr(rs.getBigDecimal("R64_CUMM_INR"));
+			obj.setR64_cumm_bwp(rs.getBigDecimal("R64_CUMM_BWP"));
+
+// R65
+			obj.setR65_product(rs.getString("R65_PRODUCT"));
+			obj.setR65_qua_i_lc(rs.getBigDecimal("R65_QUA_I_LC"));
+			obj.setR65_qua_i_qar(rs.getBigDecimal("R65_QUA_I_QAR"));
+			obj.setR65_qua_i_inr(rs.getBigDecimal("R65_QUA_I_INR"));
+			obj.setR65_qua_ii_lc(rs.getBigDecimal("R65_QUA_II_LC"));
+			obj.setR65_qua_ii_qar(rs.getBigDecimal("R65_QUA_II_QAR"));
+			obj.setR65_qua_ii_inr(rs.getBigDecimal("R65_QUA_II_INR"));
+			obj.setR65_qua_iii_lc(rs.getBigDecimal("R65_QUA_III_LC"));
+			obj.setR65_qua_iii_qar(rs.getBigDecimal("R65_QUA_III_QAR"));
+			obj.setR65_qua_iii_inr(rs.getBigDecimal("R65_QUA_III_INR"));
+			obj.setR65_qua_iv_lc(rs.getBigDecimal("R65_QUA_IV_LC"));
+			obj.setR65_qua_iv_qar(rs.getBigDecimal("R65_QUA_IV_QAR"));
+			obj.setR65_qua_iv_inr(rs.getBigDecimal("R65_QUA_IV_INR"));
+			obj.setR65_cumm_inr(rs.getBigDecimal("R65_CUMM_INR"));
+			obj.setR65_cumm_bwp(rs.getBigDecimal("R65_CUMM_BWP"));
+
+// R66
+			obj.setR66_product(rs.getString("R66_PRODUCT"));
+			obj.setR66_qua_i_lc(rs.getBigDecimal("R66_QUA_I_LC"));
+			obj.setR66_qua_i_qar(rs.getBigDecimal("R66_QUA_I_QAR"));
+			obj.setR66_qua_i_inr(rs.getBigDecimal("R66_QUA_I_INR"));
+			obj.setR66_qua_ii_lc(rs.getBigDecimal("R66_QUA_II_LC"));
+			obj.setR66_qua_ii_qar(rs.getBigDecimal("R66_QUA_II_QAR"));
+			obj.setR66_qua_ii_inr(rs.getBigDecimal("R66_QUA_II_INR"));
+			obj.setR66_qua_iii_lc(rs.getBigDecimal("R66_QUA_III_LC"));
+			obj.setR66_qua_iii_qar(rs.getBigDecimal("R66_QUA_III_QAR"));
+			obj.setR66_qua_iii_inr(rs.getBigDecimal("R66_QUA_III_INR"));
+			obj.setR66_qua_iv_lc(rs.getBigDecimal("R66_QUA_IV_LC"));
+			obj.setR66_qua_iv_qar(rs.getBigDecimal("R66_QUA_IV_QAR"));
+			obj.setR66_qua_iv_inr(rs.getBigDecimal("R66_QUA_IV_INR"));
+			obj.setR66_cumm_inr(rs.getBigDecimal("R66_CUMM_INR"));
+			obj.setR66_cumm_bwp(rs.getBigDecimal("R66_CUMM_BWP"));
+
+// R67
+			obj.setR67_product(rs.getString("R67_PRODUCT"));
+			obj.setR67_qua_i_lc(rs.getBigDecimal("R67_QUA_I_LC"));
+			obj.setR67_qua_i_qar(rs.getBigDecimal("R67_QUA_I_QAR"));
+			obj.setR67_qua_i_inr(rs.getBigDecimal("R67_QUA_I_INR"));
+			obj.setR67_qua_ii_lc(rs.getBigDecimal("R67_QUA_II_LC"));
+			obj.setR67_qua_ii_qar(rs.getBigDecimal("R67_QUA_II_QAR"));
+			obj.setR67_qua_ii_inr(rs.getBigDecimal("R67_QUA_II_INR"));
+			obj.setR67_qua_iii_lc(rs.getBigDecimal("R67_QUA_III_LC"));
+			obj.setR67_qua_iii_qar(rs.getBigDecimal("R67_QUA_III_QAR"));
+			obj.setR67_qua_iii_inr(rs.getBigDecimal("R67_QUA_III_INR"));
+			obj.setR67_qua_iv_lc(rs.getBigDecimal("R67_QUA_IV_LC"));
+			obj.setR67_qua_iv_qar(rs.getBigDecimal("R67_QUA_IV_QAR"));
+			obj.setR67_qua_iv_inr(rs.getBigDecimal("R67_QUA_IV_INR"));
+			obj.setR67_cumm_inr(rs.getBigDecimal("R67_CUMM_INR"));
+			obj.setR67_cumm_bwp(rs.getBigDecimal("R67_CUMM_BWP"));
+
+// R68
+			obj.setR68_product(rs.getString("R68_PRODUCT"));
+			obj.setR68_qua_i_lc(rs.getBigDecimal("R68_QUA_I_LC"));
+			obj.setR68_qua_i_qar(rs.getBigDecimal("R68_QUA_I_QAR"));
+			obj.setR68_qua_i_inr(rs.getBigDecimal("R68_QUA_I_INR"));
+			obj.setR68_qua_ii_lc(rs.getBigDecimal("R68_QUA_II_LC"));
+			obj.setR68_qua_ii_qar(rs.getBigDecimal("R68_QUA_II_QAR"));
+			obj.setR68_qua_ii_inr(rs.getBigDecimal("R68_QUA_II_INR"));
+			obj.setR68_qua_iii_lc(rs.getBigDecimal("R68_QUA_III_LC"));
+			obj.setR68_qua_iii_qar(rs.getBigDecimal("R68_QUA_III_QAR"));
+			obj.setR68_qua_iii_inr(rs.getBigDecimal("R68_QUA_III_INR"));
+			obj.setR68_qua_iv_lc(rs.getBigDecimal("R68_QUA_IV_LC"));
+			obj.setR68_qua_iv_qar(rs.getBigDecimal("R68_QUA_IV_QAR"));
+			obj.setR68_qua_iv_inr(rs.getBigDecimal("R68_QUA_IV_INR"));
+			obj.setR68_cumm_inr(rs.getBigDecimal("R68_CUMM_INR"));
+			obj.setR68_cumm_bwp(rs.getBigDecimal("R68_CUMM_BWP"));
+
+// R69
+			obj.setR69_product(rs.getString("R69_PRODUCT"));
+			obj.setR69_qua_i_lc(rs.getBigDecimal("R69_QUA_I_LC"));
+			obj.setR69_qua_i_qar(rs.getBigDecimal("R69_QUA_I_QAR"));
+			obj.setR69_qua_i_inr(rs.getBigDecimal("R69_QUA_I_INR"));
+			obj.setR69_qua_ii_lc(rs.getBigDecimal("R69_QUA_II_LC"));
+			obj.setR69_qua_ii_qar(rs.getBigDecimal("R69_QUA_II_QAR"));
+			obj.setR69_qua_ii_inr(rs.getBigDecimal("R69_QUA_II_INR"));
+			obj.setR69_qua_iii_lc(rs.getBigDecimal("R69_QUA_III_LC"));
+			obj.setR69_qua_iii_qar(rs.getBigDecimal("R69_QUA_III_QAR"));
+			obj.setR69_qua_iii_inr(rs.getBigDecimal("R69_QUA_III_INR"));
+			obj.setR69_qua_iv_lc(rs.getBigDecimal("R69_QUA_IV_LC"));
+			obj.setR69_qua_iv_qar(rs.getBigDecimal("R69_QUA_IV_QAR"));
+			obj.setR69_qua_iv_inr(rs.getBigDecimal("R69_QUA_IV_INR"));
+			obj.setR69_cumm_inr(rs.getBigDecimal("R69_CUMM_INR"));
+			obj.setR69_cumm_bwp(rs.getBigDecimal("R69_CUMM_BWP"));
+
+// R70
+			obj.setR70_product(rs.getString("R70_PRODUCT"));
+			obj.setR70_qua_i_lc(rs.getBigDecimal("R70_QUA_I_LC"));
+			obj.setR70_qua_i_qar(rs.getBigDecimal("R70_QUA_I_QAR"));
+			obj.setR70_qua_i_inr(rs.getBigDecimal("R70_QUA_I_INR"));
+			obj.setR70_qua_ii_lc(rs.getBigDecimal("R70_QUA_II_LC"));
+			obj.setR70_qua_ii_qar(rs.getBigDecimal("R70_QUA_II_QAR"));
+			obj.setR70_qua_ii_inr(rs.getBigDecimal("R70_QUA_II_INR"));
+			obj.setR70_qua_iii_lc(rs.getBigDecimal("R70_QUA_III_LC"));
+			obj.setR70_qua_iii_qar(rs.getBigDecimal("R70_QUA_III_QAR"));
+			obj.setR70_qua_iii_inr(rs.getBigDecimal("R70_QUA_III_INR"));
+			obj.setR70_qua_iv_lc(rs.getBigDecimal("R70_QUA_IV_LC"));
+			obj.setR70_qua_iv_qar(rs.getBigDecimal("R70_QUA_IV_QAR"));
+			obj.setR70_qua_iv_inr(rs.getBigDecimal("R70_QUA_IV_INR"));
+			obj.setR70_cumm_inr(rs.getBigDecimal("R70_CUMM_INR"));
+			obj.setR70_cumm_bwp(rs.getBigDecimal("R70_CUMM_BWP"));
+
+// R71
+			obj.setR71_product(rs.getString("R71_PRODUCT"));
+			obj.setR71_qua_i_lc(rs.getBigDecimal("R71_QUA_I_LC"));
+			obj.setR71_qua_i_qar(rs.getBigDecimal("R71_QUA_I_QAR"));
+			obj.setR71_qua_i_inr(rs.getBigDecimal("R71_QUA_I_INR"));
+			obj.setR71_qua_ii_lc(rs.getBigDecimal("R71_QUA_II_LC"));
+			obj.setR71_qua_ii_qar(rs.getBigDecimal("R71_QUA_II_QAR"));
+			obj.setR71_qua_ii_inr(rs.getBigDecimal("R71_QUA_II_INR"));
+			obj.setR71_qua_iii_lc(rs.getBigDecimal("R71_QUA_III_LC"));
+			obj.setR71_qua_iii_qar(rs.getBigDecimal("R71_QUA_III_QAR"));
+			obj.setR71_qua_iii_inr(rs.getBigDecimal("R71_QUA_III_INR"));
+			obj.setR71_qua_iv_lc(rs.getBigDecimal("R71_QUA_IV_LC"));
+			obj.setR71_qua_iv_qar(rs.getBigDecimal("R71_QUA_IV_QAR"));
+			obj.setR71_qua_iv_inr(rs.getBigDecimal("R71_QUA_IV_INR"));
+			obj.setR71_cumm_inr(rs.getBigDecimal("R71_CUMM_INR"));
+			obj.setR71_cumm_bwp(rs.getBigDecimal("R71_CUMM_BWP"));
+
+// R72
+			obj.setR72_product(rs.getString("R72_PRODUCT"));
+			obj.setR72_qua_i_lc(rs.getBigDecimal("R72_QUA_I_LC"));
+			obj.setR72_qua_i_qar(rs.getBigDecimal("R72_QUA_I_QAR"));
+			obj.setR72_qua_i_inr(rs.getBigDecimal("R72_QUA_I_INR"));
+			obj.setR72_qua_ii_lc(rs.getBigDecimal("R72_QUA_II_LC"));
+			obj.setR72_qua_ii_qar(rs.getBigDecimal("R72_QUA_II_QAR"));
+			obj.setR72_qua_ii_inr(rs.getBigDecimal("R72_QUA_II_INR"));
+			obj.setR72_qua_iii_lc(rs.getBigDecimal("R72_QUA_III_LC"));
+			obj.setR72_qua_iii_qar(rs.getBigDecimal("R72_QUA_III_QAR"));
+			obj.setR72_qua_iii_inr(rs.getBigDecimal("R72_QUA_III_INR"));
+			obj.setR72_qua_iv_lc(rs.getBigDecimal("R72_QUA_IV_LC"));
+			obj.setR72_qua_iv_qar(rs.getBigDecimal("R72_QUA_IV_QAR"));
+			obj.setR72_qua_iv_inr(rs.getBigDecimal("R72_QUA_IV_INR"));
+			obj.setR72_cumm_inr(rs.getBigDecimal("R72_CUMM_INR"));
+			obj.setR72_cumm_bwp(rs.getBigDecimal("R72_CUMM_BWP"));
+
+// R73
+			obj.setR73_product(rs.getString("R73_PRODUCT"));
+			obj.setR73_qua_i_lc(rs.getBigDecimal("R73_QUA_I_LC"));
+			obj.setR73_qua_i_qar(rs.getBigDecimal("R73_QUA_I_QAR"));
+			obj.setR73_qua_i_inr(rs.getBigDecimal("R73_QUA_I_INR"));
+			obj.setR73_qua_ii_lc(rs.getBigDecimal("R73_QUA_II_LC"));
+			obj.setR73_qua_ii_qar(rs.getBigDecimal("R73_QUA_II_QAR"));
+			obj.setR73_qua_ii_inr(rs.getBigDecimal("R73_QUA_II_INR"));
+			obj.setR73_qua_iii_lc(rs.getBigDecimal("R73_QUA_III_LC"));
+			obj.setR73_qua_iii_qar(rs.getBigDecimal("R73_QUA_III_QAR"));
+			obj.setR73_qua_iii_inr(rs.getBigDecimal("R73_QUA_III_INR"));
+			obj.setR73_qua_iv_lc(rs.getBigDecimal("R73_QUA_IV_LC"));
+			obj.setR73_qua_iv_qar(rs.getBigDecimal("R73_QUA_IV_QAR"));
+			obj.setR73_qua_iv_inr(rs.getBigDecimal("R73_QUA_IV_INR"));
+			obj.setR73_cumm_inr(rs.getBigDecimal("R73_CUMM_INR"));
+			obj.setR73_cumm_bwp(rs.getBigDecimal("R73_CUMM_BWP"));
+
+// R74
+			obj.setR74_product(rs.getString("R74_PRODUCT"));
+			obj.setR74_qua_i_lc(rs.getBigDecimal("R74_QUA_I_LC"));
+			obj.setR74_qua_i_qar(rs.getBigDecimal("R74_QUA_I_QAR"));
+			obj.setR74_qua_i_inr(rs.getBigDecimal("R74_QUA_I_INR"));
+			obj.setR74_qua_ii_lc(rs.getBigDecimal("R74_QUA_II_LC"));
+			obj.setR74_qua_ii_qar(rs.getBigDecimal("R74_QUA_II_QAR"));
+			obj.setR74_qua_ii_inr(rs.getBigDecimal("R74_QUA_II_INR"));
+			obj.setR74_qua_iii_lc(rs.getBigDecimal("R74_QUA_III_LC"));
+			obj.setR74_qua_iii_qar(rs.getBigDecimal("R74_QUA_III_QAR"));
+			obj.setR74_qua_iii_inr(rs.getBigDecimal("R74_QUA_III_INR"));
+			obj.setR74_qua_iv_lc(rs.getBigDecimal("R74_QUA_IV_LC"));
+			obj.setR74_qua_iv_qar(rs.getBigDecimal("R74_QUA_IV_QAR"));
+			obj.setR74_qua_iv_inr(rs.getBigDecimal("R74_QUA_IV_INR"));
+			obj.setR74_cumm_inr(rs.getBigDecimal("R74_CUMM_INR"));
+			obj.setR74_cumm_bwp(rs.getBigDecimal("R74_CUMM_BWP"));
+
+// R75
+			obj.setR75_product(rs.getString("R75_PRODUCT"));
+			obj.setR75_qua_i_lc(rs.getBigDecimal("R75_QUA_I_LC"));
+			obj.setR75_qua_i_qar(rs.getBigDecimal("R75_QUA_I_QAR"));
+			obj.setR75_qua_i_inr(rs.getBigDecimal("R75_QUA_I_INR"));
+			obj.setR75_qua_ii_lc(rs.getBigDecimal("R75_QUA_II_LC"));
+			obj.setR75_qua_ii_qar(rs.getBigDecimal("R75_QUA_II_QAR"));
+			obj.setR75_qua_ii_inr(rs.getBigDecimal("R75_QUA_II_INR"));
+			obj.setR75_qua_iii_lc(rs.getBigDecimal("R75_QUA_III_LC"));
+			obj.setR75_qua_iii_qar(rs.getBigDecimal("R75_QUA_III_QAR"));
+			obj.setR75_qua_iii_inr(rs.getBigDecimal("R75_QUA_III_INR"));
+			obj.setR75_qua_iv_lc(rs.getBigDecimal("R75_QUA_IV_LC"));
+			obj.setR75_qua_iv_qar(rs.getBigDecimal("R75_QUA_IV_QAR"));
+			obj.setR75_qua_iv_inr(rs.getBigDecimal("R75_QUA_IV_INR"));
+			obj.setR75_cumm_inr(rs.getBigDecimal("R75_CUMM_INR"));
+			obj.setR75_cumm_bwp(rs.getBigDecimal("R75_CUMM_BWP"));
+
+// R76
+			obj.setR76_product(rs.getString("R76_PRODUCT"));
+			obj.setR76_qua_i_lc(rs.getBigDecimal("R76_QUA_I_LC"));
+			obj.setR76_qua_i_qar(rs.getBigDecimal("R76_QUA_I_QAR"));
+			obj.setR76_qua_i_inr(rs.getBigDecimal("R76_QUA_I_INR"));
+			obj.setR76_qua_ii_lc(rs.getBigDecimal("R76_QUA_II_LC"));
+			obj.setR76_qua_ii_qar(rs.getBigDecimal("R76_QUA_II_QAR"));
+			obj.setR76_qua_ii_inr(rs.getBigDecimal("R76_QUA_II_INR"));
+			obj.setR76_qua_iii_lc(rs.getBigDecimal("R76_QUA_III_LC"));
+			obj.setR76_qua_iii_qar(rs.getBigDecimal("R76_QUA_III_QAR"));
+			obj.setR76_qua_iii_inr(rs.getBigDecimal("R76_QUA_III_INR"));
+			obj.setR76_qua_iv_lc(rs.getBigDecimal("R76_QUA_IV_LC"));
+			obj.setR76_qua_iv_qar(rs.getBigDecimal("R76_QUA_IV_QAR"));
+			obj.setR76_qua_iv_inr(rs.getBigDecimal("R76_QUA_IV_INR"));
+			obj.setR76_cumm_inr(rs.getBigDecimal("R76_CUMM_INR"));
+			obj.setR76_cumm_bwp(rs.getBigDecimal("R76_CUMM_BWP"));
+
+// R77
+			obj.setR77_product(rs.getString("R77_PRODUCT"));
+			obj.setR77_qua_i_lc(rs.getBigDecimal("R77_QUA_I_LC"));
+			obj.setR77_qua_i_qar(rs.getBigDecimal("R77_QUA_I_QAR"));
+			obj.setR77_qua_i_inr(rs.getBigDecimal("R77_QUA_I_INR"));
+			obj.setR77_qua_ii_lc(rs.getBigDecimal("R77_QUA_II_LC"));
+			obj.setR77_qua_ii_qar(rs.getBigDecimal("R77_QUA_II_QAR"));
+			obj.setR77_qua_ii_inr(rs.getBigDecimal("R77_QUA_II_INR"));
+			obj.setR77_qua_iii_lc(rs.getBigDecimal("R77_QUA_III_LC"));
+			obj.setR77_qua_iii_qar(rs.getBigDecimal("R77_QUA_III_QAR"));
+			obj.setR77_qua_iii_inr(rs.getBigDecimal("R77_QUA_III_INR"));
+			obj.setR77_qua_iv_lc(rs.getBigDecimal("R77_QUA_IV_LC"));
+			obj.setR77_qua_iv_qar(rs.getBigDecimal("R77_QUA_IV_QAR"));
+			obj.setR77_qua_iv_inr(rs.getBigDecimal("R77_QUA_IV_INR"));
+			obj.setR77_cumm_inr(rs.getBigDecimal("R77_CUMM_INR"));
+			obj.setR77_cumm_bwp(rs.getBigDecimal("R77_CUMM_BWP"));
+
+// R78
+			obj.setR78_product(rs.getString("R78_PRODUCT"));
+			obj.setR78_qua_i_lc(rs.getBigDecimal("R78_QUA_I_LC"));
+			obj.setR78_qua_i_qar(rs.getBigDecimal("R78_QUA_I_QAR"));
+			obj.setR78_qua_i_inr(rs.getBigDecimal("R78_QUA_I_INR"));
+			obj.setR78_qua_ii_lc(rs.getBigDecimal("R78_QUA_II_LC"));
+			obj.setR78_qua_ii_qar(rs.getBigDecimal("R78_QUA_II_QAR"));
+			obj.setR78_qua_ii_inr(rs.getBigDecimal("R78_QUA_II_INR"));
+			obj.setR78_qua_iii_lc(rs.getBigDecimal("R78_QUA_III_LC"));
+			obj.setR78_qua_iii_qar(rs.getBigDecimal("R78_QUA_III_QAR"));
+			obj.setR78_qua_iii_inr(rs.getBigDecimal("R78_QUA_III_INR"));
+			obj.setR78_qua_iv_lc(rs.getBigDecimal("R78_QUA_IV_LC"));
+			obj.setR78_qua_iv_qar(rs.getBigDecimal("R78_QUA_IV_QAR"));
+			obj.setR78_qua_iv_inr(rs.getBigDecimal("R78_QUA_IV_INR"));
+			obj.setR78_cumm_inr(rs.getBigDecimal("R78_CUMM_INR"));
+			obj.setR78_cumm_bwp(rs.getBigDecimal("R78_CUMM_BWP"));
+
+// R79
+			obj.setR79_product(rs.getString("R79_PRODUCT"));
+			obj.setR79_qua_i_lc(rs.getBigDecimal("R79_QUA_I_LC"));
+			obj.setR79_qua_i_qar(rs.getBigDecimal("R79_QUA_I_QAR"));
+			obj.setR79_qua_i_inr(rs.getBigDecimal("R79_QUA_I_INR"));
+			obj.setR79_qua_ii_lc(rs.getBigDecimal("R79_QUA_II_LC"));
+			obj.setR79_qua_ii_qar(rs.getBigDecimal("R79_QUA_II_QAR"));
+			obj.setR79_qua_ii_inr(rs.getBigDecimal("R79_QUA_II_INR"));
+			obj.setR79_qua_iii_lc(rs.getBigDecimal("R79_QUA_III_LC"));
+			obj.setR79_qua_iii_qar(rs.getBigDecimal("R79_QUA_III_QAR"));
+			obj.setR79_qua_iii_inr(rs.getBigDecimal("R79_QUA_III_INR"));
+			obj.setR79_qua_iv_lc(rs.getBigDecimal("R79_QUA_IV_LC"));
+			obj.setR79_qua_iv_qar(rs.getBigDecimal("R79_QUA_IV_QAR"));
+			obj.setR79_qua_iv_inr(rs.getBigDecimal("R79_QUA_IV_INR"));
+			obj.setR79_cumm_inr(rs.getBigDecimal("R79_CUMM_INR"));
+			obj.setR79_cumm_bwp(rs.getBigDecimal("R79_CUMM_BWP"));
+
+// R80
+			obj.setR80_product(rs.getString("R80_PRODUCT"));
+			obj.setR80_qua_i_lc(rs.getBigDecimal("R80_QUA_I_LC"));
+			obj.setR80_qua_i_qar(rs.getBigDecimal("R80_QUA_I_QAR"));
+			obj.setR80_qua_i_inr(rs.getBigDecimal("R80_QUA_I_INR"));
+			obj.setR80_qua_ii_lc(rs.getBigDecimal("R80_QUA_II_LC"));
+			obj.setR80_qua_ii_qar(rs.getBigDecimal("R80_QUA_II_QAR"));
+			obj.setR80_qua_ii_inr(rs.getBigDecimal("R80_QUA_II_INR"));
+			obj.setR80_qua_iii_lc(rs.getBigDecimal("R80_QUA_III_LC"));
+			obj.setR80_qua_iii_qar(rs.getBigDecimal("R80_QUA_III_QAR"));
+			obj.setR80_qua_iii_inr(rs.getBigDecimal("R80_QUA_III_INR"));
+			obj.setR80_qua_iv_lc(rs.getBigDecimal("R80_QUA_IV_LC"));
+			obj.setR80_qua_iv_qar(rs.getBigDecimal("R80_QUA_IV_QAR"));
+			obj.setR80_qua_iv_inr(rs.getBigDecimal("R80_QUA_IV_INR"));
+			obj.setR80_cumm_inr(rs.getBigDecimal("R80_CUMM_INR"));
+			obj.setR80_cumm_bwp(rs.getBigDecimal("R80_CUMM_BWP"));
+
+// R81
+			obj.setR81_product(rs.getString("R81_PRODUCT"));
+			obj.setR81_qua_i_lc(rs.getBigDecimal("R81_QUA_I_LC"));
+			obj.setR81_qua_i_qar(rs.getBigDecimal("R81_QUA_I_QAR"));
+			obj.setR81_qua_i_inr(rs.getBigDecimal("R81_QUA_I_INR"));
+			obj.setR81_qua_ii_lc(rs.getBigDecimal("R81_QUA_II_LC"));
+			obj.setR81_qua_ii_qar(rs.getBigDecimal("R81_QUA_II_QAR"));
+			obj.setR81_qua_ii_inr(rs.getBigDecimal("R81_QUA_II_INR"));
+			obj.setR81_qua_iii_lc(rs.getBigDecimal("R81_QUA_III_LC"));
+			obj.setR81_qua_iii_qar(rs.getBigDecimal("R81_QUA_III_QAR"));
+			obj.setR81_qua_iii_inr(rs.getBigDecimal("R81_QUA_III_INR"));
+			obj.setR81_qua_iv_lc(rs.getBigDecimal("R81_QUA_IV_LC"));
+			obj.setR81_qua_iv_qar(rs.getBigDecimal("R81_QUA_IV_QAR"));
+			obj.setR81_qua_iv_inr(rs.getBigDecimal("R81_QUA_IV_INR"));
+			obj.setR81_cumm_inr(rs.getBigDecimal("R81_CUMM_INR"));
+			obj.setR81_cumm_bwp(rs.getBigDecimal("R81_CUMM_BWP"));
+
+// R82
+			obj.setR82_product(rs.getString("R82_PRODUCT"));
+			obj.setR82_qua_i_lc(rs.getBigDecimal("R82_QUA_I_LC"));
+			obj.setR82_qua_i_qar(rs.getBigDecimal("R82_QUA_I_QAR"));
+			obj.setR82_qua_i_inr(rs.getBigDecimal("R82_QUA_I_INR"));
+			obj.setR82_qua_ii_lc(rs.getBigDecimal("R82_QUA_II_LC"));
+			obj.setR82_qua_ii_qar(rs.getBigDecimal("R82_QUA_II_QAR"));
+			obj.setR82_qua_ii_inr(rs.getBigDecimal("R82_QUA_II_INR"));
+			obj.setR82_qua_iii_lc(rs.getBigDecimal("R82_QUA_III_LC"));
+			obj.setR82_qua_iii_qar(rs.getBigDecimal("R82_QUA_III_QAR"));
+			obj.setR82_qua_iii_inr(rs.getBigDecimal("R82_QUA_III_INR"));
+			obj.setR82_qua_iv_lc(rs.getBigDecimal("R82_QUA_IV_LC"));
+			obj.setR82_qua_iv_qar(rs.getBigDecimal("R82_QUA_IV_QAR"));
+			obj.setR82_qua_iv_inr(rs.getBigDecimal("R82_QUA_IV_INR"));
+			obj.setR82_cumm_inr(rs.getBigDecimal("R82_CUMM_INR"));
+			obj.setR82_cumm_bwp(rs.getBigDecimal("R82_CUMM_BWP"));
+
+// R83
+			obj.setR83_product(rs.getString("R83_PRODUCT"));
+			obj.setR83_qua_i_lc(rs.getBigDecimal("R83_QUA_I_LC"));
+			obj.setR83_qua_i_qar(rs.getBigDecimal("R83_QUA_I_QAR"));
+			obj.setR83_qua_i_inr(rs.getBigDecimal("R83_QUA_I_INR"));
+			obj.setR83_qua_ii_lc(rs.getBigDecimal("R83_QUA_II_LC"));
+			obj.setR83_qua_ii_qar(rs.getBigDecimal("R83_QUA_II_QAR"));
+			obj.setR83_qua_ii_inr(rs.getBigDecimal("R83_QUA_II_INR"));
+			obj.setR83_qua_iii_lc(rs.getBigDecimal("R83_QUA_III_LC"));
+			obj.setR83_qua_iii_qar(rs.getBigDecimal("R83_QUA_III_QAR"));
+			obj.setR83_qua_iii_inr(rs.getBigDecimal("R83_QUA_III_INR"));
+			obj.setR83_qua_iv_lc(rs.getBigDecimal("R83_QUA_IV_LC"));
+			obj.setR83_qua_iv_qar(rs.getBigDecimal("R83_QUA_IV_QAR"));
+			obj.setR83_qua_iv_inr(rs.getBigDecimal("R83_QUA_IV_INR"));
+			obj.setR83_cumm_inr(rs.getBigDecimal("R83_CUMM_INR"));
+			obj.setR83_cumm_bwp(rs.getBigDecimal("R83_CUMM_BWP"));
+			// COMMON FIELDS
+			obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+			obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+			obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+			obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+			obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+			obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+			obj.setDEL_FLG(rs.getString("DEL_FLG"));
+
+			return obj;
+		}
+	}
+
+	public static class AS_11_Summary_Entity1 {
+
+		// R18
+		private String r18_product;
+		private BigDecimal r18_qua_i_lc;
+		private BigDecimal r18_qua_i_qar;
+		private BigDecimal r18_qua_i_inr;
+		private BigDecimal r18_qua_ii_lc;
+		private BigDecimal r18_qua_ii_qar; // Added to match pattern
+		private BigDecimal r18_qua_ii_inr;
+		private BigDecimal r18_qua_iii_lc;
+		private BigDecimal r18_qua_iii_qar;
+		private BigDecimal r18_qua_iii_inr;
+		private BigDecimal r18_qua_iv_lc;
+		private BigDecimal r18_qua_iv_qar;
+		private BigDecimal r18_qua_iv_inr;
+		private BigDecimal r18_cumm_inr;
+		private BigDecimal r18_cumm_bwp;
+
+		// R19
+		private String r19_product;
+		private BigDecimal r19_qua_i_lc;
+		private BigDecimal r19_qua_i_qar;
+		private BigDecimal r19_qua_i_inr;
+		private BigDecimal r19_qua_ii_lc;
+		private BigDecimal r19_qua_ii_qar;
+		private BigDecimal r19_qua_ii_inr;
+		private BigDecimal r19_qua_iii_lc;
+		private BigDecimal r19_qua_iii_qar;
+		private BigDecimal r19_qua_iii_inr;
+		private BigDecimal r19_qua_iv_lc;
+		private BigDecimal r19_qua_iv_qar;
+		private BigDecimal r19_qua_iv_inr;
+		private BigDecimal r19_cumm_inr;
+		private BigDecimal r19_cumm_bwp;
+
+		// R20
+		private String r20_product;
+		private BigDecimal r20_qua_i_lc;
+		private BigDecimal r20_qua_i_qar;
+		private BigDecimal r20_qua_i_inr;
+		private BigDecimal r20_qua_ii_lc;
+		private BigDecimal r20_qua_ii_qar;
+		private BigDecimal r20_qua_ii_inr;
+		private BigDecimal r20_qua_iii_lc;
+		private BigDecimal r20_qua_iii_qar;
+		private BigDecimal r20_qua_iii_inr;
+		private BigDecimal r20_qua_iv_lc;
+		private BigDecimal r20_qua_iv_qar;
+		private BigDecimal r20_qua_iv_inr;
+		private BigDecimal r20_cumm_inr;
+		private BigDecimal r20_cumm_bwp;
+
+		// R21
+		private String r21_product;
+		private BigDecimal r21_qua_i_lc;
+		private BigDecimal r21_qua_i_qar;
+		private BigDecimal r21_qua_i_inr;
+		private BigDecimal r21_qua_ii_lc;
+		private BigDecimal r21_qua_ii_qar;
+		private BigDecimal r21_qua_ii_inr;
+		private BigDecimal r21_qua_iii_lc;
+		private BigDecimal r21_qua_iii_qar;
+		private BigDecimal r21_qua_iii_inr;
+		private BigDecimal r21_qua_iv_lc;
+		private BigDecimal r21_qua_iv_qar;
+		private BigDecimal r21_qua_iv_inr;
+		private BigDecimal r21_cumm_inr;
+		private BigDecimal r21_cumm_bwp;
+
+		// R22
+		private String r22_product;
+		private BigDecimal r22_qua_i_lc;
+		private BigDecimal r22_qua_i_qar;
+		private BigDecimal r22_qua_i_inr;
+		private BigDecimal r22_qua_ii_lc;
+		private BigDecimal r22_qua_ii_qar;
+		private BigDecimal r22_qua_ii_inr;
+		private BigDecimal r22_qua_iii_lc;
+		private BigDecimal r22_qua_iii_qar;
+		private BigDecimal r22_qua_iii_inr;
+		private BigDecimal r22_qua_iv_lc;
+		private BigDecimal r22_qua_iv_qar;
+		private BigDecimal r22_qua_iv_inr;
+		private BigDecimal r22_cumm_inr;
+		private BigDecimal r22_cumm_bwp;
+
+		// R23
+		private String r23_product;
+		private BigDecimal r23_qua_i_lc;
+		private BigDecimal r23_qua_i_qar;
+		private BigDecimal r23_qua_i_inr;
+		private BigDecimal r23_qua_ii_lc;
+		private BigDecimal r23_qua_ii_qar;
+		private BigDecimal r23_qua_ii_inr;
+		private BigDecimal r23_qua_iii_lc;
+		private BigDecimal r23_qua_iii_qar;
+		private BigDecimal r23_qua_iii_inr;
+		private BigDecimal r23_qua_iv_lc;
+		private BigDecimal r23_qua_iv_qar;
+		private BigDecimal r23_qua_iv_inr;
+		private BigDecimal r23_cumm_inr;
+		private BigDecimal r23_cumm_bwp;
+
+		// R24
+		private String r24_product;
+		private BigDecimal r24_qua_i_lc;
+		private BigDecimal r24_qua_i_qar;
+		private BigDecimal r24_qua_i_inr;
+		private BigDecimal r24_qua_ii_lc;
+		private BigDecimal r24_qua_ii_qar;
+		private BigDecimal r24_qua_ii_inr;
+		private BigDecimal r24_qua_iii_lc;
+		private BigDecimal r24_qua_iii_qar;
+		private BigDecimal r24_qua_iii_inr;
+		private BigDecimal r24_qua_iv_lc;
+		private BigDecimal r24_qua_iv_qar;
+		private BigDecimal r24_qua_iv_inr;
+		private BigDecimal r24_cumm_inr;
+		private BigDecimal r24_cumm_bwp;
+
+		// R25
+		private String r25_product;
+		private BigDecimal r25_qua_i_lc;
+		private BigDecimal r25_qua_i_qar;
+		private BigDecimal r25_qua_i_inr;
+		private BigDecimal r25_qua_ii_lc;
+		private BigDecimal r25_qua_ii_qar;
+		private BigDecimal r25_qua_ii_inr;
+		private BigDecimal r25_qua_iii_lc;
+		private BigDecimal r25_qua_iii_qar;
+		private BigDecimal r25_qua_iii_inr;
+		private BigDecimal r25_qua_iv_lc;
+		private BigDecimal r25_qua_iv_qar;
+		private BigDecimal r25_qua_iv_inr;
+		private BigDecimal r25_cumm_inr;
+		private BigDecimal r25_cumm_bwp;
+
+		// R26
+		private String r26_product;
+		private BigDecimal r26_qua_i_lc;
+		private BigDecimal r26_qua_i_qar;
+		private BigDecimal r26_qua_i_inr;
+		private BigDecimal r26_qua_ii_lc;
+		private BigDecimal r26_qua_ii_qar;
+		private BigDecimal r26_qua_ii_inr;
+		private BigDecimal r26_qua_iii_lc;
+		private BigDecimal r26_qua_iii_qar;
+		private BigDecimal r26_qua_iii_inr;
+		private BigDecimal r26_qua_iv_lc;
+		private BigDecimal r26_qua_iv_qar;
+		private BigDecimal r26_qua_iv_inr;
+		private BigDecimal r26_cumm_inr;
+		private BigDecimal r26_cumm_bwp;
+
+		// R27
+		private String r27_product;
+		private BigDecimal r27_qua_i_lc;
+		private BigDecimal r27_qua_i_qar;
+		private BigDecimal r27_qua_i_inr;
+		private BigDecimal r27_qua_ii_lc;
+		private BigDecimal r27_qua_ii_qar;
+		private BigDecimal r27_qua_ii_inr;
+		private BigDecimal r27_qua_iii_lc;
+		private BigDecimal r27_qua_iii_qar;
+		private BigDecimal r27_qua_iii_inr;
+		private BigDecimal r27_qua_iv_lc;
+		private BigDecimal r27_qua_iv_qar;
+		private BigDecimal r27_qua_iv_inr;
+		private BigDecimal r27_cumm_inr;
+		private BigDecimal r27_cumm_bwp;
+
+		// R28
+		private String r28_product;
+		private BigDecimal r28_qua_i_lc;
+		private BigDecimal r28_qua_i_qar;
+		private BigDecimal r28_qua_i_inr;
+		private BigDecimal r28_qua_ii_lc;
+		private BigDecimal r28_qua_ii_qar;
+		private BigDecimal r28_qua_ii_inr;
+		private BigDecimal r28_qua_iii_lc;
+		private BigDecimal r28_qua_iii_qar;
+		private BigDecimal r28_qua_iii_inr;
+		private BigDecimal r28_qua_iv_lc;
+		private BigDecimal r28_qua_iv_qar;
+		private BigDecimal r28_qua_iv_inr;
+		private BigDecimal r28_cumm_inr;
+		private BigDecimal r28_cumm_bwp;
+
+		// R29
+		private String r29_product;
+		private BigDecimal r29_qua_i_lc;
+		private BigDecimal r29_qua_i_qar;
+		private BigDecimal r29_qua_i_inr;
+		private BigDecimal r29_qua_ii_lc;
+		private BigDecimal r29_qua_ii_qar;
+		private BigDecimal r29_qua_ii_inr;
+		private BigDecimal r29_qua_iii_lc;
+		private BigDecimal r29_qua_iii_qar;
+		private BigDecimal r29_qua_iii_inr;
+		private BigDecimal r29_qua_iv_lc;
+		private BigDecimal r29_qua_iv_qar;
+		private BigDecimal r29_qua_iv_inr;
+		private BigDecimal r29_cumm_inr;
+		private BigDecimal r29_cumm_bwp;
+
+		// R30
+		private String r30_product;
+		private BigDecimal r30_qua_i_lc;
+		private BigDecimal r30_qua_i_qar;
+		private BigDecimal r30_qua_i_inr;
+		private BigDecimal r30_qua_ii_lc;
+		private BigDecimal r30_qua_ii_qar;
+		private BigDecimal r30_qua_ii_inr;
+		private BigDecimal r30_qua_iii_lc;
+		private BigDecimal r30_qua_iii_qar;
+		private BigDecimal r30_qua_iii_inr;
+		private BigDecimal r30_qua_iv_lc;
+		private BigDecimal r30_qua_iv_qar;
+		private BigDecimal r30_qua_iv_inr;
+		private BigDecimal r30_cumm_inr;
+		private BigDecimal r30_cumm_bwp;
+
+		// R31
+		private String r31_product;
+		private BigDecimal r31_qua_i_lc;
+		private BigDecimal r31_qua_i_qar;
+		private BigDecimal r31_qua_i_inr;
+		private BigDecimal r31_qua_ii_lc;
+		private BigDecimal r31_qua_ii_qar;
+		private BigDecimal r31_qua_ii_inr;
+		private BigDecimal r31_qua_iii_lc;
+		private BigDecimal r31_qua_iii_qar;
+		private BigDecimal r31_qua_iii_inr;
+		private BigDecimal r31_qua_iv_lc;
+		private BigDecimal r31_qua_iv_qar;
+		private BigDecimal r31_qua_iv_inr;
+		private BigDecimal r31_cumm_inr;
+		private BigDecimal r31_cumm_bwp;
+
+		// R32
+		private String r32_product;
+		private BigDecimal r32_qua_i_lc;
+		private BigDecimal r32_qua_i_qar;
+		private BigDecimal r32_qua_i_inr;
+		private BigDecimal r32_qua_ii_lc;
+		private BigDecimal r32_qua_ii_qar;
+		private BigDecimal r32_qua_ii_inr;
+		private BigDecimal r32_qua_iii_lc;
+		private BigDecimal r32_qua_iii_qar;
+		private BigDecimal r32_qua_iii_inr;
+		private BigDecimal r32_qua_iv_lc;
+		private BigDecimal r32_qua_iv_qar;
+		private BigDecimal r32_qua_iv_inr;
+		private BigDecimal r32_cumm_inr;
+		private BigDecimal r32_cumm_bwp;
+
+		// R33
+		private String r33_product;
+		private BigDecimal r33_qua_i_lc;
+		private BigDecimal r33_qua_i_qar;
+		private BigDecimal r33_qua_i_inr;
+		private BigDecimal r33_qua_ii_lc;
+		private BigDecimal r33_qua_ii_qar;
+		private BigDecimal r33_qua_ii_inr;
+		private BigDecimal r33_qua_iii_lc;
+		private BigDecimal r33_qua_iii_qar;
+		private BigDecimal r33_qua_iii_inr;
+		private BigDecimal r33_qua_iv_lc;
+		private BigDecimal r33_qua_iv_qar;
+		private BigDecimal r33_qua_iv_inr;
+		private BigDecimal r33_cumm_inr;
+		private BigDecimal r33_cumm_bwp;
+
+		// R34
+		private String r34_product;
+		private BigDecimal r34_qua_i_lc;
+		private BigDecimal r34_qua_i_qar;
+		private BigDecimal r34_qua_i_inr;
+		private BigDecimal r34_qua_ii_lc;
+		private BigDecimal r34_qua_ii_qar;
+		private BigDecimal r34_qua_ii_inr;
+		private BigDecimal r34_qua_iii_lc;
+		private BigDecimal r34_qua_iii_qar;
+		private BigDecimal r34_qua_iii_inr;
+		private BigDecimal r34_qua_iv_lc;
+		private BigDecimal r34_qua_iv_qar;
+		private BigDecimal r34_qua_iv_inr;
+		private BigDecimal r34_cumm_inr;
+		private BigDecimal r34_cumm_bwp;
+
+		// R35
+		private String r35_product;
+		private BigDecimal r35_qua_i_lc;
+		private BigDecimal r35_qua_i_qar;
+		private BigDecimal r35_qua_i_inr;
+		private BigDecimal r35_qua_ii_lc;
+		private BigDecimal r35_qua_ii_qar;
+		private BigDecimal r35_qua_ii_inr;
+		private BigDecimal r35_qua_iii_lc;
+		private BigDecimal r35_qua_iii_qar;
+		private BigDecimal r35_qua_iii_inr;
+		private BigDecimal r35_qua_iv_lc;
+		private BigDecimal r35_qua_iv_qar;
+		private BigDecimal r35_qua_iv_inr;
+		private BigDecimal r35_cumm_inr;
+		private BigDecimal r35_cumm_bwp;
+
+		// R36
+		private String r36_product;
+		private BigDecimal r36_qua_i_lc;
+		private BigDecimal r36_qua_i_qar;
+		private BigDecimal r36_qua_i_inr;
+		private BigDecimal r36_qua_ii_lc;
+		private BigDecimal r36_qua_ii_qar;
+		private BigDecimal r36_qua_ii_inr;
+		private BigDecimal r36_qua_iii_lc;
+		private BigDecimal r36_qua_iii_qar;
+		private BigDecimal r36_qua_iii_inr;
+		private BigDecimal r36_qua_iv_lc;
+		private BigDecimal r36_qua_iv_qar;
+		private BigDecimal r36_qua_iv_inr;
+		private BigDecimal r36_cumm_inr;
+		private BigDecimal r36_cumm_bwp;
+
+		// R37
+		private String r37_product;
+		private BigDecimal r37_qua_i_lc;
+		private BigDecimal r37_qua_i_qar;
+		private BigDecimal r37_qua_i_inr;
+		private BigDecimal r37_qua_ii_lc;
+		private BigDecimal r37_qua_ii_qar;
+		private BigDecimal r37_qua_ii_inr;
+		private BigDecimal r37_qua_iii_lc;
+		private BigDecimal r37_qua_iii_qar;
+		private BigDecimal r37_qua_iii_inr;
+		private BigDecimal r37_qua_iv_lc;
+		private BigDecimal r37_qua_iv_qar;
+		private BigDecimal r37_qua_iv_inr;
+		private BigDecimal r37_cumm_inr;
+		private BigDecimal r37_cumm_bwp;
+
+		// R38
+		private String r38_product;
+		private BigDecimal r38_qua_i_lc;
+		private BigDecimal r38_qua_i_qar;
+		private BigDecimal r38_qua_i_inr;
+		private BigDecimal r38_qua_ii_lc;
+		private BigDecimal r38_qua_ii_qar;
+		private BigDecimal r38_qua_ii_inr;
+		private BigDecimal r38_qua_iii_lc;
+		private BigDecimal r38_qua_iii_qar;
+		private BigDecimal r38_qua_iii_inr;
+		private BigDecimal r38_qua_iv_lc;
+		private BigDecimal r38_qua_iv_qar;
+		private BigDecimal r38_qua_iv_inr;
+		private BigDecimal r38_cumm_inr;
+		private BigDecimal r38_cumm_bwp;
+
+		// R39
+		private String r39_product;
+		private BigDecimal r39_qua_i_lc;
+		private BigDecimal r39_qua_i_qar;
+		private BigDecimal r39_qua_i_inr;
+		private BigDecimal r39_qua_ii_lc;
+		private BigDecimal r39_qua_ii_qar;
+		private BigDecimal r39_qua_ii_inr;
+		private BigDecimal r39_qua_iii_lc;
+		private BigDecimal r39_qua_iii_qar;
+		private BigDecimal r39_qua_iii_inr;
+		private BigDecimal r39_qua_iv_lc;
+		private BigDecimal r39_qua_iv_qar;
+		private BigDecimal r39_qua_iv_inr;
+		private BigDecimal r39_cumm_inr;
+		private BigDecimal r39_cumm_bwp;
+
+		// R40
+		private String r40_product;
+		private BigDecimal r40_qua_i_lc;
+		private BigDecimal r40_qua_i_qar;
+		private BigDecimal r40_qua_i_inr;
+		private BigDecimal r40_qua_ii_lc;
+		private BigDecimal r40_qua_ii_qar;
+		private BigDecimal r40_qua_ii_inr;
+		private BigDecimal r40_qua_iii_lc;
+		private BigDecimal r40_qua_iii_qar;
+		private BigDecimal r40_qua_iii_inr;
+		private BigDecimal r40_qua_iv_lc;
+		private BigDecimal r40_qua_iv_qar;
+		private BigDecimal r40_qua_iv_inr;
+		private BigDecimal r40_cumm_inr;
+		private BigDecimal r40_cumm_bwp;
+
+		// R41
+		private String r41_product;
+		private BigDecimal r41_qua_i_lc;
+		private BigDecimal r41_qua_i_qar;
+		private BigDecimal r41_qua_i_inr;
+		private BigDecimal r41_qua_ii_lc;
+		private BigDecimal r41_qua_ii_qar;
+		private BigDecimal r41_qua_ii_inr;
+		private BigDecimal r41_qua_iii_lc;
+		private BigDecimal r41_qua_iii_qar;
+		private BigDecimal r41_qua_iii_inr;
+		private BigDecimal r41_qua_iv_lc;
+		private BigDecimal r41_qua_iv_qar;
+		private BigDecimal r41_qua_iv_inr;
+		private BigDecimal r41_cumm_inr;
+		private BigDecimal r41_cumm_bwp;
+
+		// R42
+		private String r42_product;
+		private BigDecimal r42_qua_i_lc;
+		private BigDecimal r42_qua_i_qar;
+		private BigDecimal r42_qua_i_inr;
+		private BigDecimal r42_qua_ii_lc;
+		private BigDecimal r42_qua_ii_qar;
+		private BigDecimal r42_qua_ii_inr;
+		private BigDecimal r42_qua_iii_lc;
+		private BigDecimal r42_qua_iii_qar;
+		private BigDecimal r42_qua_iii_inr;
+		private BigDecimal r42_qua_iv_lc;
+		private BigDecimal r42_qua_iv_qar;
+		private BigDecimal r42_qua_iv_inr;
+		private BigDecimal r42_cumm_inr;
+		private BigDecimal r42_cumm_bwp;
+
+		// R43
+		private String r43_product;
+		private BigDecimal r43_qua_i_lc;
+		private BigDecimal r43_qua_i_qar;
+		private BigDecimal r43_qua_i_inr;
+		private BigDecimal r43_qua_ii_lc;
+		private BigDecimal r43_qua_ii_qar;
+		private BigDecimal r43_qua_ii_inr;
+		private BigDecimal r43_qua_iii_lc;
+		private BigDecimal r43_qua_iii_qar;
+		private BigDecimal r43_qua_iii_inr;
+		private BigDecimal r43_qua_iv_lc;
+		private BigDecimal r43_qua_iv_qar;
+		private BigDecimal r43_qua_iv_inr;
+		private BigDecimal r43_cumm_inr;
+		private BigDecimal r43_cumm_bwp;
+
+		// R44
+		private String r44_product;
+		private BigDecimal r44_qua_i_lc;
+		private BigDecimal r44_qua_i_qar;
+		private BigDecimal r44_qua_i_inr;
+		private BigDecimal r44_qua_ii_lc;
+		private BigDecimal r44_qua_ii_qar;
+		private BigDecimal r44_qua_ii_inr;
+		private BigDecimal r44_qua_iii_lc;
+		private BigDecimal r44_qua_iii_qar;
+		private BigDecimal r44_qua_iii_inr;
+		private BigDecimal r44_qua_iv_lc;
+		private BigDecimal r44_qua_iv_qar;
+		private BigDecimal r44_qua_iv_inr;
+		private BigDecimal r44_cumm_inr;
+		private BigDecimal r44_cumm_bwp;
+
+		// R45
+		private String r45_product;
+		private BigDecimal r45_qua_i_lc;
+		private BigDecimal r45_qua_i_qar;
+		private BigDecimal r45_qua_i_inr;
+		private BigDecimal r45_qua_ii_lc;
+		private BigDecimal r45_qua_ii_qar;
+		private BigDecimal r45_qua_ii_inr;
+		private BigDecimal r45_qua_iii_lc;
+		private BigDecimal r45_qua_iii_qar;
+		private BigDecimal r45_qua_iii_inr;
+		private BigDecimal r45_qua_iv_lc;
+		private BigDecimal r45_qua_iv_qar;
+		private BigDecimal r45_qua_iv_inr;
+		private BigDecimal r45_cumm_inr;
+		private BigDecimal r45_cumm_bwp;
+
+		// R46
+		private String r46_product;
+		private BigDecimal r46_qua_i_lc;
+		private BigDecimal r46_qua_i_qar;
+		private BigDecimal r46_qua_i_inr;
+		private BigDecimal r46_qua_ii_lc;
+		private BigDecimal r46_qua_ii_qar;
+		private BigDecimal r46_qua_ii_inr;
+		private BigDecimal r46_qua_iii_lc;
+		private BigDecimal r46_qua_iii_qar;
+		private BigDecimal r46_qua_iii_inr;
+		private BigDecimal r46_qua_iv_lc;
+		private BigDecimal r46_qua_iv_qar;
+		private BigDecimal r46_qua_iv_inr;
+		private BigDecimal r46_cumm_inr;
+		private BigDecimal r46_cumm_bwp;
+
+		// R47
+		private String r47_product;
+		private BigDecimal r47_qua_i_lc;
+		private BigDecimal r47_qua_i_qar;
+		private BigDecimal r47_qua_i_inr;
+		private BigDecimal r47_qua_ii_lc;
+		private BigDecimal r47_qua_ii_qar;
+		private BigDecimal r47_qua_ii_inr;
+		private BigDecimal r47_qua_iii_lc;
+		private BigDecimal r47_qua_iii_qar;
+		private BigDecimal r47_qua_iii_inr;
+		private BigDecimal r47_qua_iv_lc;
+		private BigDecimal r47_qua_iv_qar;
+		private BigDecimal r47_qua_iv_inr;
+		private BigDecimal r47_cumm_inr;
+		private BigDecimal r47_cumm_bwp;
+
+		// R48
+		private String r48_product;
+		private BigDecimal r48_qua_i_lc;
+		private BigDecimal r48_qua_i_qar;
+		private BigDecimal r48_qua_i_inr;
+		private BigDecimal r48_qua_ii_lc;
+		private BigDecimal r48_qua_ii_qar;
+		private BigDecimal r48_qua_ii_inr;
+		private BigDecimal r48_qua_iii_lc;
+		private BigDecimal r48_qua_iii_qar;
+		private BigDecimal r48_qua_iii_inr;
+		private BigDecimal r48_qua_iv_lc;
+		private BigDecimal r48_qua_iv_qar;
+		private BigDecimal r48_qua_iv_inr;
+		private BigDecimal r48_cumm_inr;
+		private BigDecimal r48_cumm_bwp;
+
+		// R49
+		private String r49_product;
+		private BigDecimal r49_qua_i_lc;
+		private BigDecimal r49_qua_i_qar;
+		private BigDecimal r49_qua_i_inr;
+		private BigDecimal r49_qua_ii_lc;
+		private BigDecimal r49_qua_ii_qar;
+		private BigDecimal r49_qua_ii_inr;
+		private BigDecimal r49_qua_iii_lc;
+		private BigDecimal r49_qua_iii_qar;
+		private BigDecimal r49_qua_iii_inr;
+		private BigDecimal r49_qua_iv_lc;
+		private BigDecimal r49_qua_iv_qar;
+		private BigDecimal r49_qua_iv_inr;
+		private BigDecimal r49_cumm_inr;
+		private BigDecimal r49_cumm_bwp;
+
+		// R50
+		private String r50_product;
+		private BigDecimal r50_qua_i_lc;
+		private BigDecimal r50_qua_i_qar;
+		private BigDecimal r50_qua_i_inr;
+		private BigDecimal r50_qua_ii_lc;
+		private BigDecimal r50_qua_ii_qar;
+		private BigDecimal r50_qua_ii_inr;
+		private BigDecimal r50_qua_iii_lc;
+		private BigDecimal r50_qua_iii_qar;
+		private BigDecimal r50_qua_iii_inr;
+		private BigDecimal r50_qua_iv_lc;
+		private BigDecimal r50_qua_iv_qar;
+		private BigDecimal r50_qua_iv_inr;
+		private BigDecimal r50_cumm_inr;
+		private BigDecimal r50_cumm_bwp;
+
+		// R51
+		private String r51_product;
+		private BigDecimal r51_qua_i_lc;
+		private BigDecimal r51_qua_i_qar;
+		private BigDecimal r51_qua_i_inr;
+		private BigDecimal r51_qua_ii_lc;
+		private BigDecimal r51_qua_ii_qar;
+		private BigDecimal r51_qua_ii_inr;
+		private BigDecimal r51_qua_iii_lc;
+		private BigDecimal r51_qua_iii_qar;
+		private BigDecimal r51_qua_iii_inr;
+		private BigDecimal r51_qua_iv_lc;
+		private BigDecimal r51_qua_iv_qar;
+		private BigDecimal r51_qua_iv_inr;
+		private BigDecimal r51_cumm_inr;
+		private BigDecimal r51_cumm_bwp;
+
+		// R52
+		private String r52_product;
+		private BigDecimal r52_qua_i_lc;
+		private BigDecimal r52_qua_i_qar;
+		private BigDecimal r52_qua_i_inr;
+		private BigDecimal r52_qua_ii_lc;
+		private BigDecimal r52_qua_ii_qar;
+		private BigDecimal r52_qua_ii_inr;
+		private BigDecimal r52_qua_iii_lc;
+		private BigDecimal r52_qua_iii_qar;
+		private BigDecimal r52_qua_iii_inr;
+		private BigDecimal r52_qua_iv_lc;
+		private BigDecimal r52_qua_iv_qar;
+		private BigDecimal r52_qua_iv_inr;
+		private BigDecimal r52_cumm_inr;
+		private BigDecimal r52_cumm_bwp;
+
+		// R53
+		private String r53_product;
+		private BigDecimal r53_qua_i_lc;
+		private BigDecimal r53_qua_i_qar;
+		private BigDecimal r53_qua_i_inr;
+		private BigDecimal r53_qua_ii_lc;
+		private BigDecimal r53_qua_ii_qar;
+		private BigDecimal r53_qua_ii_inr;
+		private BigDecimal r53_qua_iii_lc;
+		private BigDecimal r53_qua_iii_qar;
+		private BigDecimal r53_qua_iii_inr;
+		private BigDecimal r53_qua_iv_lc;
+		private BigDecimal r53_qua_iv_qar;
+		private BigDecimal r53_qua_iv_inr;
+		private BigDecimal r53_cumm_inr;
+		private BigDecimal r53_cumm_bwp;
+
+		// R54
+		private String r54_product;
+		private BigDecimal r54_qua_i_lc;
+		private BigDecimal r54_qua_i_qar;
+		private BigDecimal r54_qua_i_inr;
+		private BigDecimal r54_qua_ii_lc;
+		private BigDecimal r54_qua_ii_qar;
+		private BigDecimal r54_qua_ii_inr;
+		private BigDecimal r54_qua_iii_lc;
+		private BigDecimal r54_qua_iii_qar;
+		private BigDecimal r54_qua_iii_inr;
+		private BigDecimal r54_qua_iv_lc;
+		private BigDecimal r54_qua_iv_qar;
+		private BigDecimal r54_qua_iv_inr;
+		private BigDecimal r54_cumm_inr;
+		private BigDecimal r54_cumm_bwp;
+
+		// R55
+		private String r55_product;
+		private BigDecimal r55_qua_i_lc;
+		private BigDecimal r55_qua_i_qar;
+		private BigDecimal r55_qua_i_inr;
+		private BigDecimal r55_qua_ii_lc;
+		private BigDecimal r55_qua_ii_qar;
+		private BigDecimal r55_qua_ii_inr;
+		private BigDecimal r55_qua_iii_lc;
+		private BigDecimal r55_qua_iii_qar;
+		private BigDecimal r55_qua_iii_inr;
+		private BigDecimal r55_qua_iv_lc;
+		private BigDecimal r55_qua_iv_qar;
+		private BigDecimal r55_qua_iv_inr;
+		private BigDecimal r55_cumm_inr;
+		private BigDecimal r55_cumm_bwp;
+
+		// R56
+		private String r56_product;
+		private BigDecimal r56_qua_i_lc;
+		private BigDecimal r56_qua_i_qar;
+		private BigDecimal r56_qua_i_inr;
+		private BigDecimal r56_qua_ii_lc;
+		private BigDecimal r56_qua_ii_qar;
+		private BigDecimal r56_qua_ii_inr;
+		private BigDecimal r56_qua_iii_lc;
+		private BigDecimal r56_qua_iii_qar;
+		private BigDecimal r56_qua_iii_inr;
+		private BigDecimal r56_qua_iv_lc;
+		private BigDecimal r56_qua_iv_qar;
+		private BigDecimal r56_qua_iv_inr;
+		private BigDecimal r56_cumm_inr;
+		private BigDecimal r56_cumm_bwp;
+
+		// R57
+		private String r57_product;
+		private BigDecimal r57_qua_i_lc;
+		private BigDecimal r57_qua_i_qar;
+		private BigDecimal r57_qua_i_inr;
+		private BigDecimal r57_qua_ii_lc;
+		private BigDecimal r57_qua_ii_qar;
+		private BigDecimal r57_qua_ii_inr;
+		private BigDecimal r57_qua_iii_lc;
+		private BigDecimal r57_qua_iii_qar;
+		private BigDecimal r57_qua_iii_inr;
+		private BigDecimal r57_qua_iv_lc;
+		private BigDecimal r57_qua_iv_qar;
+		private BigDecimal r57_qua_iv_inr;
+		private BigDecimal r57_cumm_inr;
+		private BigDecimal r57_cumm_bwp;
+
+		// R58
+		private String r58_product;
+		private BigDecimal r58_qua_i_lc;
+		private BigDecimal r58_qua_i_qar;
+		private BigDecimal r58_qua_i_inr;
+		private BigDecimal r58_qua_ii_lc;
+		private BigDecimal r58_qua_ii_qar;
+		private BigDecimal r58_qua_ii_inr;
+		private BigDecimal r58_qua_iii_lc;
+		private BigDecimal r58_qua_iii_qar;
+		private BigDecimal r58_qua_iii_inr;
+		private BigDecimal r58_qua_iv_lc;
+		private BigDecimal r58_qua_iv_qar;
+		private BigDecimal r58_qua_iv_inr;
+		private BigDecimal r58_cumm_inr;
+		private BigDecimal r58_cumm_bwp;
+
+		// R59
+		private String r59_product;
+		private BigDecimal r59_qua_i_lc;
+		private BigDecimal r59_qua_i_qar;
+		private BigDecimal r59_qua_i_inr;
+		private BigDecimal r59_qua_ii_lc;
+		private BigDecimal r59_qua_ii_qar;
+		private BigDecimal r59_qua_ii_inr;
+		private BigDecimal r59_qua_iii_lc;
+		private BigDecimal r59_qua_iii_qar;
+		private BigDecimal r59_qua_iii_inr;
+		private BigDecimal r59_qua_iv_lc;
+		private BigDecimal r59_qua_iv_qar;
+		private BigDecimal r59_qua_iv_inr;
+		private BigDecimal r59_cumm_inr;
+		private BigDecimal r59_cumm_bwp;
+
+		// R60
+		private String r60_product;
+		private BigDecimal r60_qua_i_lc;
+		private BigDecimal r60_qua_i_qar;
+		private BigDecimal r60_qua_i_inr;
+		private BigDecimal r60_qua_ii_lc;
+		private BigDecimal r60_qua_ii_qar;
+		private BigDecimal r60_qua_ii_inr;
+		private BigDecimal r60_qua_iii_lc;
+		private BigDecimal r60_qua_iii_qar;
+		private BigDecimal r60_qua_iii_inr;
+		private BigDecimal r60_qua_iv_lc;
+		private BigDecimal r60_qua_iv_qar;
+		private BigDecimal r60_qua_iv_inr;
+		private BigDecimal r60_cumm_inr;
+		private BigDecimal r60_cumm_bwp;
+
+		// R61
+		private String r61_product;
+		private BigDecimal r61_qua_i_lc;
+		private BigDecimal r61_qua_i_qar;
+		private BigDecimal r61_qua_i_inr;
+		private BigDecimal r61_qua_ii_lc;
+		private BigDecimal r61_qua_ii_qar;
+		private BigDecimal r61_qua_ii_inr;
+		private BigDecimal r61_qua_iii_lc;
+		private BigDecimal r61_qua_iii_qar;
+		private BigDecimal r61_qua_iii_inr;
+		private BigDecimal r61_qua_iv_lc;
+		private BigDecimal r61_qua_iv_qar;
+		private BigDecimal r61_qua_iv_inr;
+		private BigDecimal r61_cumm_inr;
+		private BigDecimal r61_cumm_bwp;
+
+		// R62
+		private String r62_product;
+		private BigDecimal r62_qua_i_lc;
+		private BigDecimal r62_qua_i_qar;
+		private BigDecimal r62_qua_i_inr;
+		private BigDecimal r62_qua_ii_lc;
+		private BigDecimal r62_qua_ii_qar;
+		private BigDecimal r62_qua_ii_inr;
+		private BigDecimal r62_qua_iii_lc;
+		private BigDecimal r62_qua_iii_qar;
+		private BigDecimal r62_qua_iii_inr;
+		private BigDecimal r62_qua_iv_lc;
+		private BigDecimal r62_qua_iv_qar;
+		private BigDecimal r62_qua_iv_inr;
+		private BigDecimal r62_cumm_inr;
+		private BigDecimal r62_cumm_bwp;
+
+		// R63
+		private String r63_product;
+		private BigDecimal r63_qua_i_lc;
+		private BigDecimal r63_qua_i_qar;
+		private BigDecimal r63_qua_i_inr;
+		private BigDecimal r63_qua_ii_lc;
+		private BigDecimal r63_qua_ii_qar;
+		private BigDecimal r63_qua_ii_inr;
+		private BigDecimal r63_qua_iii_lc;
+		private BigDecimal r63_qua_iii_qar;
+		private BigDecimal r63_qua_iii_inr;
+		private BigDecimal r63_qua_iv_lc;
+		private BigDecimal r63_qua_iv_qar;
+		private BigDecimal r63_qua_iv_inr;
+		private BigDecimal r63_cumm_inr;
+		private BigDecimal r63_cumm_bwp;
+
+		// R64
+		private String r64_product;
+		private BigDecimal r64_qua_i_lc;
+		private BigDecimal r64_qua_i_qar;
+		private BigDecimal r64_qua_i_inr;
+		private BigDecimal r64_qua_ii_lc;
+		private BigDecimal r64_qua_ii_qar;
+		private BigDecimal r64_qua_ii_inr;
+		private BigDecimal r64_qua_iii_lc;
+		private BigDecimal r64_qua_iii_qar;
+		private BigDecimal r64_qua_iii_inr;
+		private BigDecimal r64_qua_iv_lc;
+		private BigDecimal r64_qua_iv_qar;
+		private BigDecimal r64_qua_iv_inr;
+		private BigDecimal r64_cumm_inr;
+		private BigDecimal r64_cumm_bwp;
+
+		// R65
+		private String r65_product;
+		private BigDecimal r65_qua_i_lc;
+		private BigDecimal r65_qua_i_qar;
+		private BigDecimal r65_qua_i_inr;
+		private BigDecimal r65_qua_ii_lc;
+		private BigDecimal r65_qua_ii_qar;
+		private BigDecimal r65_qua_ii_inr;
+		private BigDecimal r65_qua_iii_lc;
+		private BigDecimal r65_qua_iii_qar;
+		private BigDecimal r65_qua_iii_inr;
+		private BigDecimal r65_qua_iv_lc;
+		private BigDecimal r65_qua_iv_qar;
+		private BigDecimal r65_qua_iv_inr;
+		private BigDecimal r65_cumm_inr;
+		private BigDecimal r65_cumm_bwp;
+
+		// R66
+		private String r66_product;
+		private BigDecimal r66_qua_i_lc;
+		private BigDecimal r66_qua_i_qar;
+		private BigDecimal r66_qua_i_inr;
+		private BigDecimal r66_qua_ii_lc;
+		private BigDecimal r66_qua_ii_qar;
+		private BigDecimal r66_qua_ii_inr;
+		private BigDecimal r66_qua_iii_lc;
+		private BigDecimal r66_qua_iii_qar;
+		private BigDecimal r66_qua_iii_inr;
+		private BigDecimal r66_qua_iv_lc;
+		private BigDecimal r66_qua_iv_qar;
+		private BigDecimal r66_qua_iv_inr;
+		private BigDecimal r66_cumm_inr;
+		private BigDecimal r66_cumm_bwp;
+
+		// R67
+		private String r67_product;
+		private BigDecimal r67_qua_i_lc;
+		private BigDecimal r67_qua_i_qar;
+		private BigDecimal r67_qua_i_inr;
+		private BigDecimal r67_qua_ii_lc;
+		private BigDecimal r67_qua_ii_qar;
+		private BigDecimal r67_qua_ii_inr;
+		private BigDecimal r67_qua_iii_lc;
+		private BigDecimal r67_qua_iii_qar;
+		private BigDecimal r67_qua_iii_inr;
+		private BigDecimal r67_qua_iv_lc;
+		private BigDecimal r67_qua_iv_qar;
+		private BigDecimal r67_qua_iv_inr;
+		private BigDecimal r67_cumm_inr;
+		private BigDecimal r67_cumm_bwp;
+
+		// R68
+		private String r68_product;
+		private BigDecimal r68_qua_i_lc;
+		private BigDecimal r68_qua_i_qar;
+		private BigDecimal r68_qua_i_inr;
+		private BigDecimal r68_qua_ii_lc;
+		private BigDecimal r68_qua_ii_qar;
+		private BigDecimal r68_qua_ii_inr;
+		private BigDecimal r68_qua_iii_lc;
+		private BigDecimal r68_qua_iii_qar;
+		private BigDecimal r68_qua_iii_inr;
+		private BigDecimal r68_qua_iv_lc;
+		private BigDecimal r68_qua_iv_qar;
+		private BigDecimal r68_qua_iv_inr;
+		private BigDecimal r68_cumm_inr;
+		private BigDecimal r68_cumm_bwp;
+
+		// R69
+		private String r69_product;
+		private BigDecimal r69_qua_i_lc;
+		private BigDecimal r69_qua_i_qar;
+		private BigDecimal r69_qua_i_inr;
+		private BigDecimal r69_qua_ii_lc;
+		private BigDecimal r69_qua_ii_qar;
+		private BigDecimal r69_qua_ii_inr;
+		private BigDecimal r69_qua_iii_lc;
+		private BigDecimal r69_qua_iii_qar;
+		private BigDecimal r69_qua_iii_inr;
+		private BigDecimal r69_qua_iv_lc;
+		private BigDecimal r69_qua_iv_qar;
+		private BigDecimal r69_qua_iv_inr;
+		private BigDecimal r69_cumm_inr;
+		private BigDecimal r69_cumm_bwp;
+
+		// R70
+		private String r70_product;
+		private BigDecimal r70_qua_i_lc;
+		private BigDecimal r70_qua_i_qar;
+		private BigDecimal r70_qua_i_inr;
+		private BigDecimal r70_qua_ii_lc;
+		private BigDecimal r70_qua_ii_qar;
+		private BigDecimal r70_qua_ii_inr;
+		private BigDecimal r70_qua_iii_lc;
+		private BigDecimal r70_qua_iii_qar;
+		private BigDecimal r70_qua_iii_inr;
+		private BigDecimal r70_qua_iv_lc;
+		private BigDecimal r70_qua_iv_qar;
+		private BigDecimal r70_qua_iv_inr;
+		private BigDecimal r70_cumm_inr;
+		private BigDecimal r70_cumm_bwp;
+
+		// R71
+		private String r71_product;
+		private BigDecimal r71_qua_i_lc;
+		private BigDecimal r71_qua_i_qar;
+		private BigDecimal r71_qua_i_inr;
+		private BigDecimal r71_qua_ii_lc;
+		private BigDecimal r71_qua_ii_qar;
+		private BigDecimal r71_qua_ii_inr;
+		private BigDecimal r71_qua_iii_lc;
+		private BigDecimal r71_qua_iii_qar;
+		private BigDecimal r71_qua_iii_inr;
+		private BigDecimal r71_qua_iv_lc;
+		private BigDecimal r71_qua_iv_qar;
+		private BigDecimal r71_qua_iv_inr;
+		private BigDecimal r71_cumm_inr;
+		private BigDecimal r71_cumm_bwp;
+
+		// R72
+		private String r72_product;
+		private BigDecimal r72_qua_i_lc;
+		private BigDecimal r72_qua_i_qar;
+		private BigDecimal r72_qua_i_inr;
+		private BigDecimal r72_qua_ii_lc;
+		private BigDecimal r72_qua_ii_qar;
+		private BigDecimal r72_qua_ii_inr;
+		private BigDecimal r72_qua_iii_lc;
+		private BigDecimal r72_qua_iii_qar;
+		private BigDecimal r72_qua_iii_inr;
+		private BigDecimal r72_qua_iv_lc;
+		private BigDecimal r72_qua_iv_qar;
+		private BigDecimal r72_qua_iv_inr;
+		private BigDecimal r72_cumm_inr;
+		private BigDecimal r72_cumm_bwp;
+
+		// R73
+		private String r73_product;
+		private BigDecimal r73_qua_i_lc;
+		private BigDecimal r73_qua_i_qar;
+		private BigDecimal r73_qua_i_inr;
+		private BigDecimal r73_qua_ii_lc;
+		private BigDecimal r73_qua_ii_qar;
+		private BigDecimal r73_qua_ii_inr;
+		private BigDecimal r73_qua_iii_lc;
+		private BigDecimal r73_qua_iii_qar;
+		private BigDecimal r73_qua_iii_inr;
+		private BigDecimal r73_qua_iv_lc;
+		private BigDecimal r73_qua_iv_qar;
+		private BigDecimal r73_qua_iv_inr;
+		private BigDecimal r73_cumm_inr;
+		private BigDecimal r73_cumm_bwp;
+
+		// R74
+		private String r74_product;
+		private BigDecimal r74_qua_i_lc;
+		private BigDecimal r74_qua_i_qar;
+		private BigDecimal r74_qua_i_inr;
+		private BigDecimal r74_qua_ii_lc;
+		private BigDecimal r74_qua_ii_qar;
+		private BigDecimal r74_qua_ii_inr;
+		private BigDecimal r74_qua_iii_lc;
+		private BigDecimal r74_qua_iii_qar;
+		private BigDecimal r74_qua_iii_inr;
+		private BigDecimal r74_qua_iv_lc;
+		private BigDecimal r74_qua_iv_qar;
+		private BigDecimal r74_qua_iv_inr;
+		private BigDecimal r74_cumm_inr;
+		private BigDecimal r74_cumm_bwp;
+
+		// R75
+		private String r75_product;
+		private BigDecimal r75_qua_i_lc;
+		private BigDecimal r75_qua_i_qar;
+		private BigDecimal r75_qua_i_inr;
+		private BigDecimal r75_qua_ii_lc;
+		private BigDecimal r75_qua_ii_qar;
+		private BigDecimal r75_qua_ii_inr;
+		private BigDecimal r75_qua_iii_lc;
+		private BigDecimal r75_qua_iii_qar;
+		private BigDecimal r75_qua_iii_inr;
+		private BigDecimal r75_qua_iv_lc;
+		private BigDecimal r75_qua_iv_qar;
+		private BigDecimal r75_qua_iv_inr;
+		private BigDecimal r75_cumm_inr;
+		private BigDecimal r75_cumm_bwp;
+
+		// R76
+		private String r76_product;
+		private BigDecimal r76_qua_i_lc;
+		private BigDecimal r76_qua_i_qar;
+		private BigDecimal r76_qua_i_inr;
+		private BigDecimal r76_qua_ii_lc;
+		private BigDecimal r76_qua_ii_qar;
+		private BigDecimal r76_qua_ii_inr;
+		private BigDecimal r76_qua_iii_lc;
+		private BigDecimal r76_qua_iii_qar;
+		private BigDecimal r76_qua_iii_inr;
+		private BigDecimal r76_qua_iv_lc;
+		private BigDecimal r76_qua_iv_qar;
+		private BigDecimal r76_qua_iv_inr;
+		private BigDecimal r76_cumm_inr;
+		private BigDecimal r76_cumm_bwp;
+
+		// R77
+		private String r77_product;
+		private BigDecimal r77_qua_i_lc;
+		private BigDecimal r77_qua_i_qar;
+		private BigDecimal r77_qua_i_inr;
+		private BigDecimal r77_qua_ii_lc;
+		private BigDecimal r77_qua_ii_qar;
+		private BigDecimal r77_qua_ii_inr;
+		private BigDecimal r77_qua_iii_lc;
+		private BigDecimal r77_qua_iii_qar;
+		private BigDecimal r77_qua_iii_inr;
+		private BigDecimal r77_qua_iv_lc;
+		private BigDecimal r77_qua_iv_qar;
+		private BigDecimal r77_qua_iv_inr;
+		private BigDecimal r77_cumm_inr;
+		private BigDecimal r77_cumm_bwp;
+
+		// R78
+		private String r78_product;
+		private BigDecimal r78_qua_i_lc;
+		private BigDecimal r78_qua_i_qar;
+		private BigDecimal r78_qua_i_inr;
+		private BigDecimal r78_qua_ii_lc;
+		private BigDecimal r78_qua_ii_qar;
+		private BigDecimal r78_qua_ii_inr;
+		private BigDecimal r78_qua_iii_lc;
+		private BigDecimal r78_qua_iii_qar;
+		private BigDecimal r78_qua_iii_inr;
+		private BigDecimal r78_qua_iv_lc;
+		private BigDecimal r78_qua_iv_qar;
+		private BigDecimal r78_qua_iv_inr;
+		private BigDecimal r78_cumm_inr;
+		private BigDecimal r78_cumm_bwp;
+
+		// R79
+		private String r79_product;
+		private BigDecimal r79_qua_i_lc;
+		private BigDecimal r79_qua_i_qar;
+		private BigDecimal r79_qua_i_inr;
+		private BigDecimal r79_qua_ii_lc;
+		private BigDecimal r79_qua_ii_qar;
+		private BigDecimal r79_qua_ii_inr;
+		private BigDecimal r79_qua_iii_lc;
+		private BigDecimal r79_qua_iii_qar;
+		private BigDecimal r79_qua_iii_inr;
+		private BigDecimal r79_qua_iv_lc;
+		private BigDecimal r79_qua_iv_qar;
+		private BigDecimal r79_qua_iv_inr;
+		private BigDecimal r79_cumm_inr;
+		private BigDecimal r79_cumm_bwp;
+
+		// R80
+		private String r80_product;
+		private BigDecimal r80_qua_i_lc;
+		private BigDecimal r80_qua_i_qar;
+		private BigDecimal r80_qua_i_inr;
+		private BigDecimal r80_qua_ii_lc;
+		private BigDecimal r80_qua_ii_qar;
+		private BigDecimal r80_qua_ii_inr;
+		private BigDecimal r80_qua_iii_lc;
+		private BigDecimal r80_qua_iii_qar;
+		private BigDecimal r80_qua_iii_inr;
+		private BigDecimal r80_qua_iv_lc;
+		private BigDecimal r80_qua_iv_qar;
+		private BigDecimal r80_qua_iv_inr;
+		private BigDecimal r80_cumm_inr;
+		private BigDecimal r80_cumm_bwp;
+
+		// R81
+		private String r81_product;
+		private BigDecimal r81_qua_i_lc;
+		private BigDecimal r81_qua_i_qar;
+		private BigDecimal r81_qua_i_inr;
+		private BigDecimal r81_qua_ii_lc;
+		private BigDecimal r81_qua_ii_qar;
+		private BigDecimal r81_qua_ii_inr;
+		private BigDecimal r81_qua_iii_lc;
+		private BigDecimal r81_qua_iii_qar;
+		private BigDecimal r81_qua_iii_inr;
+		private BigDecimal r81_qua_iv_lc;
+		private BigDecimal r81_qua_iv_qar;
+		private BigDecimal r81_qua_iv_inr;
+		private BigDecimal r81_cumm_inr;
+		private BigDecimal r81_cumm_bwp;
+
+		// R82
+		private String r82_product;
+		private BigDecimal r82_qua_i_lc;
+		private BigDecimal r82_qua_i_qar;
+		private BigDecimal r82_qua_i_inr;
+		private BigDecimal r82_qua_ii_lc;
+		private BigDecimal r82_qua_ii_qar;
+		private BigDecimal r82_qua_ii_inr;
+		private BigDecimal r82_qua_iii_lc;
+		private BigDecimal r82_qua_iii_qar;
+		private BigDecimal r82_qua_iii_inr;
+		private BigDecimal r82_qua_iv_lc;
+		private BigDecimal r82_qua_iv_qar;
+		private BigDecimal r82_qua_iv_inr;
+		private BigDecimal r82_cumm_inr;
+		private BigDecimal r82_cumm_bwp;
+
+		// R83
+		private String r83_product;
+		private BigDecimal r83_qua_i_lc;
+		private BigDecimal r83_qua_i_qar;
+		private BigDecimal r83_qua_i_inr;
+		private BigDecimal r83_qua_ii_lc;
+		private BigDecimal r83_qua_ii_qar;
+		private BigDecimal r83_qua_ii_inr;
+		private BigDecimal r83_qua_iii_lc;
+		private BigDecimal r83_qua_iii_qar;
+		private BigDecimal r83_qua_iii_inr;
+		private BigDecimal r83_qua_iv_lc;
+		private BigDecimal r83_qua_iv_qar;
+		private BigDecimal r83_qua_iv_inr;
+		private BigDecimal r83_cumm_inr;
+		private BigDecimal r83_cumm_bwp;
+
+		@Id
+		@Temporal(TemporalType.DATE)
+		@Column(name = "REPORT_DATE")
+		private Date REPORT_DATE;
+
+		@Column(name = "REPORT_VERSION", length = 100)
+		private BigDecimal REPORT_VERSION;
+
+		@Column(name = "REPORT_FREQUENCY", length = 100)
+		private String REPORT_FREQUENCY;
+
+		@Column(name = "REPORT_CODE", length = 100)
+		private String REPORT_CODE;
+
+		@Column(name = "REPORT_DESC", length = 100)
+		private String REPORT_DESC;
+
+		@Column(name = "ENTITY_FLG", length = 1)
+		private String ENTITY_FLG;
+
+		@Column(name = "MODIFY_FLG", length = 1)
+		private String MODIFY_FLG;
+
+		@Column(name = "DEL_FLG", length = 1)
+		private String DEL_FLG;
+
+		public String getR18_product() {
+			return r18_product;
+		}
+
+		public void setR18_product(String r18_product) {
+			this.r18_product = r18_product;
+		}
+
+		public BigDecimal getR18_qua_i_lc() {
+			return r18_qua_i_lc;
+		}
+
+		public void setR18_qua_i_lc(BigDecimal r18_qua_i_lc) {
+			this.r18_qua_i_lc = r18_qua_i_lc;
+		}
+
+		public BigDecimal getR18_qua_i_qar() {
+			return r18_qua_i_qar;
+		}
+
+		public void setR18_qua_i_qar(BigDecimal r18_qua_i_qar) {
+			this.r18_qua_i_qar = r18_qua_i_qar;
+		}
+
+		public BigDecimal getR18_qua_i_inr() {
+			return r18_qua_i_inr;
+		}
+
+		public void setR18_qua_i_inr(BigDecimal r18_qua_i_inr) {
+			this.r18_qua_i_inr = r18_qua_i_inr;
+		}
+
+		public BigDecimal getR18_qua_ii_lc() {
+			return r18_qua_ii_lc;
+		}
+
+		public void setR18_qua_ii_lc(BigDecimal r18_qua_ii_lc) {
+			this.r18_qua_ii_lc = r18_qua_ii_lc;
+		}
+
+		public BigDecimal getR18_qua_ii_qar() {
+			return r18_qua_ii_qar;
+		}
+
+		public void setR18_qua_ii_qar(BigDecimal r18_qua_ii_qar) {
+			this.r18_qua_ii_qar = r18_qua_ii_qar;
+		}
+
+		public BigDecimal getR18_qua_ii_inr() {
+			return r18_qua_ii_inr;
+		}
+
+		public void setR18_qua_ii_inr(BigDecimal r18_qua_ii_inr) {
+			this.r18_qua_ii_inr = r18_qua_ii_inr;
+		}
+
+		public BigDecimal getR18_qua_iii_lc() {
+			return r18_qua_iii_lc;
+		}
+
+		public void setR18_qua_iii_lc(BigDecimal r18_qua_iii_lc) {
+			this.r18_qua_iii_lc = r18_qua_iii_lc;
+		}
+
+		public BigDecimal getR18_qua_iii_qar() {
+			return r18_qua_iii_qar;
+		}
+
+		public void setR18_qua_iii_qar(BigDecimal r18_qua_iii_qar) {
+			this.r18_qua_iii_qar = r18_qua_iii_qar;
+		}
+
+		public BigDecimal getR18_qua_iii_inr() {
+			return r18_qua_iii_inr;
+		}
+
+		public void setR18_qua_iii_inr(BigDecimal r18_qua_iii_inr) {
+			this.r18_qua_iii_inr = r18_qua_iii_inr;
+		}
+
+		public BigDecimal getR18_qua_iv_lc() {
+			return r18_qua_iv_lc;
+		}
+
+		public void setR18_qua_iv_lc(BigDecimal r18_qua_iv_lc) {
+			this.r18_qua_iv_lc = r18_qua_iv_lc;
+		}
+
+		public BigDecimal getR18_qua_iv_qar() {
+			return r18_qua_iv_qar;
+		}
+
+		public void setR18_qua_iv_qar(BigDecimal r18_qua_iv_qar) {
+			this.r18_qua_iv_qar = r18_qua_iv_qar;
+		}
+
+		public BigDecimal getR18_qua_iv_inr() {
+			return r18_qua_iv_inr;
+		}
+
+		public void setR18_qua_iv_inr(BigDecimal r18_qua_iv_inr) {
+			this.r18_qua_iv_inr = r18_qua_iv_inr;
+		}
+
+		public BigDecimal getR18_cumm_inr() {
+			return r18_cumm_inr;
+		}
+
+		public void setR18_cumm_inr(BigDecimal r18_cumm_inr) {
+			this.r18_cumm_inr = r18_cumm_inr;
+		}
+
+		public BigDecimal getR18_cumm_bwp() {
+			return r18_cumm_bwp;
+		}
+
+		public void setR18_cumm_bwp(BigDecimal r18_cumm_bwp) {
+			this.r18_cumm_bwp = r18_cumm_bwp;
+		}
+
+		public String getR19_product() {
+			return r19_product;
+		}
+
+		public void setR19_product(String r19_product) {
+			this.r19_product = r19_product;
+		}
+
+		public BigDecimal getR19_qua_i_lc() {
+			return r19_qua_i_lc;
+		}
+
+		public void setR19_qua_i_lc(BigDecimal r19_qua_i_lc) {
+			this.r19_qua_i_lc = r19_qua_i_lc;
+		}
+
+		public BigDecimal getR19_qua_i_qar() {
+			return r19_qua_i_qar;
+		}
+
+		public void setR19_qua_i_qar(BigDecimal r19_qua_i_qar) {
+			this.r19_qua_i_qar = r19_qua_i_qar;
+		}
+
+		public BigDecimal getR19_qua_i_inr() {
+			return r19_qua_i_inr;
+		}
+
+		public void setR19_qua_i_inr(BigDecimal r19_qua_i_inr) {
+			this.r19_qua_i_inr = r19_qua_i_inr;
+		}
+
+		public BigDecimal getR19_qua_ii_lc() {
+			return r19_qua_ii_lc;
+		}
+
+		public void setR19_qua_ii_lc(BigDecimal r19_qua_ii_lc) {
+			this.r19_qua_ii_lc = r19_qua_ii_lc;
+		}
+
+		public BigDecimal getR19_qua_ii_qar() {
+			return r19_qua_ii_qar;
+		}
+
+		public void setR19_qua_ii_qar(BigDecimal r19_qua_ii_qar) {
+			this.r19_qua_ii_qar = r19_qua_ii_qar;
+		}
+
+		public BigDecimal getR19_qua_ii_inr() {
+			return r19_qua_ii_inr;
+		}
+
+		public void setR19_qua_ii_inr(BigDecimal r19_qua_ii_inr) {
+			this.r19_qua_ii_inr = r19_qua_ii_inr;
+		}
+
+		public BigDecimal getR19_qua_iii_lc() {
+			return r19_qua_iii_lc;
+		}
+
+		public void setR19_qua_iii_lc(BigDecimal r19_qua_iii_lc) {
+			this.r19_qua_iii_lc = r19_qua_iii_lc;
+		}
+
+		public BigDecimal getR19_qua_iii_qar() {
+			return r19_qua_iii_qar;
+		}
+
+		public void setR19_qua_iii_qar(BigDecimal r19_qua_iii_qar) {
+			this.r19_qua_iii_qar = r19_qua_iii_qar;
+		}
+
+		public BigDecimal getR19_qua_iii_inr() {
+			return r19_qua_iii_inr;
+		}
+
+		public void setR19_qua_iii_inr(BigDecimal r19_qua_iii_inr) {
+			this.r19_qua_iii_inr = r19_qua_iii_inr;
+		}
+
+		public BigDecimal getR19_qua_iv_lc() {
+			return r19_qua_iv_lc;
+		}
+
+		public void setR19_qua_iv_lc(BigDecimal r19_qua_iv_lc) {
+			this.r19_qua_iv_lc = r19_qua_iv_lc;
+		}
+
+		public BigDecimal getR19_qua_iv_qar() {
+			return r19_qua_iv_qar;
+		}
+
+		public void setR19_qua_iv_qar(BigDecimal r19_qua_iv_qar) {
+			this.r19_qua_iv_qar = r19_qua_iv_qar;
+		}
+
+		public BigDecimal getR19_qua_iv_inr() {
+			return r19_qua_iv_inr;
+		}
+
+		public void setR19_qua_iv_inr(BigDecimal r19_qua_iv_inr) {
+			this.r19_qua_iv_inr = r19_qua_iv_inr;
+		}
+
+		public BigDecimal getR19_cumm_inr() {
+			return r19_cumm_inr;
+		}
+
+		public void setR19_cumm_inr(BigDecimal r19_cumm_inr) {
+			this.r19_cumm_inr = r19_cumm_inr;
+		}
+
+		public BigDecimal getR19_cumm_bwp() {
+			return r19_cumm_bwp;
+		}
+
+		public void setR19_cumm_bwp(BigDecimal r19_cumm_bwp) {
+			this.r19_cumm_bwp = r19_cumm_bwp;
+		}
+
+		public String getR20_product() {
+			return r20_product;
+		}
+
+		public void setR20_product(String r20_product) {
+			this.r20_product = r20_product;
+		}
+
+		public BigDecimal getR20_qua_i_lc() {
+			return r20_qua_i_lc;
+		}
+
+		public void setR20_qua_i_lc(BigDecimal r20_qua_i_lc) {
+			this.r20_qua_i_lc = r20_qua_i_lc;
+		}
+
+		public BigDecimal getR20_qua_i_qar() {
+			return r20_qua_i_qar;
+		}
+
+		public void setR20_qua_i_qar(BigDecimal r20_qua_i_qar) {
+			this.r20_qua_i_qar = r20_qua_i_qar;
+		}
+
+		public BigDecimal getR20_qua_i_inr() {
+			return r20_qua_i_inr;
+		}
+
+		public void setR20_qua_i_inr(BigDecimal r20_qua_i_inr) {
+			this.r20_qua_i_inr = r20_qua_i_inr;
+		}
+
+		public BigDecimal getR20_qua_ii_lc() {
+			return r20_qua_ii_lc;
+		}
+
+		public void setR20_qua_ii_lc(BigDecimal r20_qua_ii_lc) {
+			this.r20_qua_ii_lc = r20_qua_ii_lc;
+		}
+
+		public BigDecimal getR20_qua_ii_qar() {
+			return r20_qua_ii_qar;
+		}
+
+		public void setR20_qua_ii_qar(BigDecimal r20_qua_ii_qar) {
+			this.r20_qua_ii_qar = r20_qua_ii_qar;
+		}
+
+		public BigDecimal getR20_qua_ii_inr() {
+			return r20_qua_ii_inr;
+		}
+
+		public void setR20_qua_ii_inr(BigDecimal r20_qua_ii_inr) {
+			this.r20_qua_ii_inr = r20_qua_ii_inr;
+		}
+
+		public BigDecimal getR20_qua_iii_lc() {
+			return r20_qua_iii_lc;
+		}
+
+		public void setR20_qua_iii_lc(BigDecimal r20_qua_iii_lc) {
+			this.r20_qua_iii_lc = r20_qua_iii_lc;
+		}
+
+		public BigDecimal getR20_qua_iii_qar() {
+			return r20_qua_iii_qar;
+		}
+
+		public void setR20_qua_iii_qar(BigDecimal r20_qua_iii_qar) {
+			this.r20_qua_iii_qar = r20_qua_iii_qar;
+		}
+
+		public BigDecimal getR20_qua_iii_inr() {
+			return r20_qua_iii_inr;
+		}
+
+		public void setR20_qua_iii_inr(BigDecimal r20_qua_iii_inr) {
+			this.r20_qua_iii_inr = r20_qua_iii_inr;
+		}
+
+		public BigDecimal getR20_qua_iv_lc() {
+			return r20_qua_iv_lc;
+		}
+
+		public void setR20_qua_iv_lc(BigDecimal r20_qua_iv_lc) {
+			this.r20_qua_iv_lc = r20_qua_iv_lc;
+		}
+
+		public BigDecimal getR20_qua_iv_qar() {
+			return r20_qua_iv_qar;
+		}
+
+		public void setR20_qua_iv_qar(BigDecimal r20_qua_iv_qar) {
+			this.r20_qua_iv_qar = r20_qua_iv_qar;
+		}
+
+		public BigDecimal getR20_qua_iv_inr() {
+			return r20_qua_iv_inr;
+		}
+
+		public void setR20_qua_iv_inr(BigDecimal r20_qua_iv_inr) {
+			this.r20_qua_iv_inr = r20_qua_iv_inr;
+		}
+
+		public BigDecimal getR20_cumm_inr() {
+			return r20_cumm_inr;
+		}
+
+		public void setR20_cumm_inr(BigDecimal r20_cumm_inr) {
+			this.r20_cumm_inr = r20_cumm_inr;
+		}
+
+		public BigDecimal getR20_cumm_bwp() {
+			return r20_cumm_bwp;
+		}
+
+		public void setR20_cumm_bwp(BigDecimal r20_cumm_bwp) {
+			this.r20_cumm_bwp = r20_cumm_bwp;
+		}
+
+		public String getR21_product() {
+			return r21_product;
+		}
+
+		public void setR21_product(String r21_product) {
+			this.r21_product = r21_product;
+		}
+
+		public BigDecimal getR21_qua_i_lc() {
+			return r21_qua_i_lc;
+		}
+
+		public void setR21_qua_i_lc(BigDecimal r21_qua_i_lc) {
+			this.r21_qua_i_lc = r21_qua_i_lc;
+		}
+
+		public BigDecimal getR21_qua_i_qar() {
+			return r21_qua_i_qar;
+		}
+
+		public void setR21_qua_i_qar(BigDecimal r21_qua_i_qar) {
+			this.r21_qua_i_qar = r21_qua_i_qar;
+		}
+
+		public BigDecimal getR21_qua_i_inr() {
+			return r21_qua_i_inr;
+		}
+
+		public void setR21_qua_i_inr(BigDecimal r21_qua_i_inr) {
+			this.r21_qua_i_inr = r21_qua_i_inr;
+		}
+
+		public BigDecimal getR21_qua_ii_lc() {
+			return r21_qua_ii_lc;
+		}
+
+		public void setR21_qua_ii_lc(BigDecimal r21_qua_ii_lc) {
+			this.r21_qua_ii_lc = r21_qua_ii_lc;
+		}
+
+		public BigDecimal getR21_qua_ii_qar() {
+			return r21_qua_ii_qar;
+		}
+
+		public void setR21_qua_ii_qar(BigDecimal r21_qua_ii_qar) {
+			this.r21_qua_ii_qar = r21_qua_ii_qar;
+		}
+
+		public BigDecimal getR21_qua_ii_inr() {
+			return r21_qua_ii_inr;
+		}
+
+		public void setR21_qua_ii_inr(BigDecimal r21_qua_ii_inr) {
+			this.r21_qua_ii_inr = r21_qua_ii_inr;
+		}
+
+		public BigDecimal getR21_qua_iii_lc() {
+			return r21_qua_iii_lc;
+		}
+
+		public void setR21_qua_iii_lc(BigDecimal r21_qua_iii_lc) {
+			this.r21_qua_iii_lc = r21_qua_iii_lc;
+		}
+
+		public BigDecimal getR21_qua_iii_qar() {
+			return r21_qua_iii_qar;
+		}
+
+		public void setR21_qua_iii_qar(BigDecimal r21_qua_iii_qar) {
+			this.r21_qua_iii_qar = r21_qua_iii_qar;
+		}
+
+		public BigDecimal getR21_qua_iii_inr() {
+			return r21_qua_iii_inr;
+		}
+
+		public void setR21_qua_iii_inr(BigDecimal r21_qua_iii_inr) {
+			this.r21_qua_iii_inr = r21_qua_iii_inr;
+		}
+
+		public BigDecimal getR21_qua_iv_lc() {
+			return r21_qua_iv_lc;
+		}
+
+		public void setR21_qua_iv_lc(BigDecimal r21_qua_iv_lc) {
+			this.r21_qua_iv_lc = r21_qua_iv_lc;
+		}
+
+		public BigDecimal getR21_qua_iv_qar() {
+			return r21_qua_iv_qar;
+		}
+
+		public void setR21_qua_iv_qar(BigDecimal r21_qua_iv_qar) {
+			this.r21_qua_iv_qar = r21_qua_iv_qar;
+		}
+
+		public BigDecimal getR21_qua_iv_inr() {
+			return r21_qua_iv_inr;
+		}
+
+		public void setR21_qua_iv_inr(BigDecimal r21_qua_iv_inr) {
+			this.r21_qua_iv_inr = r21_qua_iv_inr;
+		}
+
+		public BigDecimal getR21_cumm_inr() {
+			return r21_cumm_inr;
+		}
+
+		public void setR21_cumm_inr(BigDecimal r21_cumm_inr) {
+			this.r21_cumm_inr = r21_cumm_inr;
+		}
+
+		public BigDecimal getR21_cumm_bwp() {
+			return r21_cumm_bwp;
+		}
+
+		public void setR21_cumm_bwp(BigDecimal r21_cumm_bwp) {
+			this.r21_cumm_bwp = r21_cumm_bwp;
+		}
+
+		public String getR22_product() {
+			return r22_product;
+		}
+
+		public void setR22_product(String r22_product) {
+			this.r22_product = r22_product;
+		}
+
+		public BigDecimal getR22_qua_i_lc() {
+			return r22_qua_i_lc;
+		}
+
+		public void setR22_qua_i_lc(BigDecimal r22_qua_i_lc) {
+			this.r22_qua_i_lc = r22_qua_i_lc;
+		}
+
+		public BigDecimal getR22_qua_i_qar() {
+			return r22_qua_i_qar;
+		}
+
+		public void setR22_qua_i_qar(BigDecimal r22_qua_i_qar) {
+			this.r22_qua_i_qar = r22_qua_i_qar;
+		}
+
+		public BigDecimal getR22_qua_i_inr() {
+			return r22_qua_i_inr;
+		}
+
+		public void setR22_qua_i_inr(BigDecimal r22_qua_i_inr) {
+			this.r22_qua_i_inr = r22_qua_i_inr;
+		}
+
+		public BigDecimal getR22_qua_ii_lc() {
+			return r22_qua_ii_lc;
+		}
+
+		public void setR22_qua_ii_lc(BigDecimal r22_qua_ii_lc) {
+			this.r22_qua_ii_lc = r22_qua_ii_lc;
+		}
+
+		public BigDecimal getR22_qua_ii_qar() {
+			return r22_qua_ii_qar;
+		}
+
+		public void setR22_qua_ii_qar(BigDecimal r22_qua_ii_qar) {
+			this.r22_qua_ii_qar = r22_qua_ii_qar;
+		}
+
+		public BigDecimal getR22_qua_ii_inr() {
+			return r22_qua_ii_inr;
+		}
+
+		public void setR22_qua_ii_inr(BigDecimal r22_qua_ii_inr) {
+			this.r22_qua_ii_inr = r22_qua_ii_inr;
+		}
+
+		public BigDecimal getR22_qua_iii_lc() {
+			return r22_qua_iii_lc;
+		}
+
+		public void setR22_qua_iii_lc(BigDecimal r22_qua_iii_lc) {
+			this.r22_qua_iii_lc = r22_qua_iii_lc;
+		}
+
+		public BigDecimal getR22_qua_iii_qar() {
+			return r22_qua_iii_qar;
+		}
+
+		public void setR22_qua_iii_qar(BigDecimal r22_qua_iii_qar) {
+			this.r22_qua_iii_qar = r22_qua_iii_qar;
+		}
+
+		public BigDecimal getR22_qua_iii_inr() {
+			return r22_qua_iii_inr;
+		}
+
+		public void setR22_qua_iii_inr(BigDecimal r22_qua_iii_inr) {
+			this.r22_qua_iii_inr = r22_qua_iii_inr;
+		}
+
+		public BigDecimal getR22_qua_iv_lc() {
+			return r22_qua_iv_lc;
+		}
+
+		public void setR22_qua_iv_lc(BigDecimal r22_qua_iv_lc) {
+			this.r22_qua_iv_lc = r22_qua_iv_lc;
+		}
+
+		public BigDecimal getR22_qua_iv_qar() {
+			return r22_qua_iv_qar;
+		}
+
+		public void setR22_qua_iv_qar(BigDecimal r22_qua_iv_qar) {
+			this.r22_qua_iv_qar = r22_qua_iv_qar;
+		}
+
+		public BigDecimal getR22_qua_iv_inr() {
+			return r22_qua_iv_inr;
+		}
+
+		public void setR22_qua_iv_inr(BigDecimal r22_qua_iv_inr) {
+			this.r22_qua_iv_inr = r22_qua_iv_inr;
+		}
+
+		public BigDecimal getR22_cumm_inr() {
+			return r22_cumm_inr;
+		}
+
+		public void setR22_cumm_inr(BigDecimal r22_cumm_inr) {
+			this.r22_cumm_inr = r22_cumm_inr;
+		}
+
+		public BigDecimal getR22_cumm_bwp() {
+			return r22_cumm_bwp;
+		}
+
+		public void setR22_cumm_bwp(BigDecimal r22_cumm_bwp) {
+			this.r22_cumm_bwp = r22_cumm_bwp;
+		}
+
+		public String getR23_product() {
+			return r23_product;
+		}
+
+		public void setR23_product(String r23_product) {
+			this.r23_product = r23_product;
+		}
+
+		public BigDecimal getR23_qua_i_lc() {
+			return r23_qua_i_lc;
+		}
+
+		public void setR23_qua_i_lc(BigDecimal r23_qua_i_lc) {
+			this.r23_qua_i_lc = r23_qua_i_lc;
+		}
+
+		public BigDecimal getR23_qua_i_qar() {
+			return r23_qua_i_qar;
+		}
+
+		public void setR23_qua_i_qar(BigDecimal r23_qua_i_qar) {
+			this.r23_qua_i_qar = r23_qua_i_qar;
+		}
+
+		public BigDecimal getR23_qua_i_inr() {
+			return r23_qua_i_inr;
+		}
+
+		public void setR23_qua_i_inr(BigDecimal r23_qua_i_inr) {
+			this.r23_qua_i_inr = r23_qua_i_inr;
+		}
+
+		public BigDecimal getR23_qua_ii_lc() {
+			return r23_qua_ii_lc;
+		}
+
+		public void setR23_qua_ii_lc(BigDecimal r23_qua_ii_lc) {
+			this.r23_qua_ii_lc = r23_qua_ii_lc;
+		}
+
+		public BigDecimal getR23_qua_ii_qar() {
+			return r23_qua_ii_qar;
+		}
+
+		public void setR23_qua_ii_qar(BigDecimal r23_qua_ii_qar) {
+			this.r23_qua_ii_qar = r23_qua_ii_qar;
+		}
+
+		public BigDecimal getR23_qua_ii_inr() {
+			return r23_qua_ii_inr;
+		}
+
+		public void setR23_qua_ii_inr(BigDecimal r23_qua_ii_inr) {
+			this.r23_qua_ii_inr = r23_qua_ii_inr;
+		}
+
+		public BigDecimal getR23_qua_iii_lc() {
+			return r23_qua_iii_lc;
+		}
+
+		public void setR23_qua_iii_lc(BigDecimal r23_qua_iii_lc) {
+			this.r23_qua_iii_lc = r23_qua_iii_lc;
+		}
+
+		public BigDecimal getR23_qua_iii_qar() {
+			return r23_qua_iii_qar;
+		}
+
+		public void setR23_qua_iii_qar(BigDecimal r23_qua_iii_qar) {
+			this.r23_qua_iii_qar = r23_qua_iii_qar;
+		}
+
+		public BigDecimal getR23_qua_iii_inr() {
+			return r23_qua_iii_inr;
+		}
+
+		public void setR23_qua_iii_inr(BigDecimal r23_qua_iii_inr) {
+			this.r23_qua_iii_inr = r23_qua_iii_inr;
+		}
+
+		public BigDecimal getR23_qua_iv_lc() {
+			return r23_qua_iv_lc;
+		}
+
+		public void setR23_qua_iv_lc(BigDecimal r23_qua_iv_lc) {
+			this.r23_qua_iv_lc = r23_qua_iv_lc;
+		}
+
+		public BigDecimal getR23_qua_iv_qar() {
+			return r23_qua_iv_qar;
+		}
+
+		public void setR23_qua_iv_qar(BigDecimal r23_qua_iv_qar) {
+			this.r23_qua_iv_qar = r23_qua_iv_qar;
+		}
+
+		public BigDecimal getR23_qua_iv_inr() {
+			return r23_qua_iv_inr;
+		}
+
+		public void setR23_qua_iv_inr(BigDecimal r23_qua_iv_inr) {
+			this.r23_qua_iv_inr = r23_qua_iv_inr;
+		}
+
+		public BigDecimal getR23_cumm_inr() {
+			return r23_cumm_inr;
+		}
+
+		public void setR23_cumm_inr(BigDecimal r23_cumm_inr) {
+			this.r23_cumm_inr = r23_cumm_inr;
+		}
+
+		public BigDecimal getR23_cumm_bwp() {
+			return r23_cumm_bwp;
+		}
+
+		public void setR23_cumm_bwp(BigDecimal r23_cumm_bwp) {
+			this.r23_cumm_bwp = r23_cumm_bwp;
+		}
+
+		public String getR24_product() {
+			return r24_product;
+		}
+
+		public void setR24_product(String r24_product) {
+			this.r24_product = r24_product;
+		}
+
+		public BigDecimal getR24_qua_i_lc() {
+			return r24_qua_i_lc;
+		}
+
+		public void setR24_qua_i_lc(BigDecimal r24_qua_i_lc) {
+			this.r24_qua_i_lc = r24_qua_i_lc;
+		}
+
+		public BigDecimal getR24_qua_i_qar() {
+			return r24_qua_i_qar;
+		}
+
+		public void setR24_qua_i_qar(BigDecimal r24_qua_i_qar) {
+			this.r24_qua_i_qar = r24_qua_i_qar;
+		}
+
+		public BigDecimal getR24_qua_i_inr() {
+			return r24_qua_i_inr;
+		}
+
+		public void setR24_qua_i_inr(BigDecimal r24_qua_i_inr) {
+			this.r24_qua_i_inr = r24_qua_i_inr;
+		}
+
+		public BigDecimal getR24_qua_ii_lc() {
+			return r24_qua_ii_lc;
+		}
+
+		public void setR24_qua_ii_lc(BigDecimal r24_qua_ii_lc) {
+			this.r24_qua_ii_lc = r24_qua_ii_lc;
+		}
+
+		public BigDecimal getR24_qua_ii_qar() {
+			return r24_qua_ii_qar;
+		}
+
+		public void setR24_qua_ii_qar(BigDecimal r24_qua_ii_qar) {
+			this.r24_qua_ii_qar = r24_qua_ii_qar;
+		}
+
+		public BigDecimal getR24_qua_ii_inr() {
+			return r24_qua_ii_inr;
+		}
+
+		public void setR24_qua_ii_inr(BigDecimal r24_qua_ii_inr) {
+			this.r24_qua_ii_inr = r24_qua_ii_inr;
+		}
+
+		public BigDecimal getR24_qua_iii_lc() {
+			return r24_qua_iii_lc;
+		}
+
+		public void setR24_qua_iii_lc(BigDecimal r24_qua_iii_lc) {
+			this.r24_qua_iii_lc = r24_qua_iii_lc;
+		}
+
+		public BigDecimal getR24_qua_iii_qar() {
+			return r24_qua_iii_qar;
+		}
+
+		public void setR24_qua_iii_qar(BigDecimal r24_qua_iii_qar) {
+			this.r24_qua_iii_qar = r24_qua_iii_qar;
+		}
+
+		public BigDecimal getR24_qua_iii_inr() {
+			return r24_qua_iii_inr;
+		}
+
+		public void setR24_qua_iii_inr(BigDecimal r24_qua_iii_inr) {
+			this.r24_qua_iii_inr = r24_qua_iii_inr;
+		}
+
+		public BigDecimal getR24_qua_iv_lc() {
+			return r24_qua_iv_lc;
+		}
+
+		public void setR24_qua_iv_lc(BigDecimal r24_qua_iv_lc) {
+			this.r24_qua_iv_lc = r24_qua_iv_lc;
+		}
+
+		public BigDecimal getR24_qua_iv_qar() {
+			return r24_qua_iv_qar;
+		}
+
+		public void setR24_qua_iv_qar(BigDecimal r24_qua_iv_qar) {
+			this.r24_qua_iv_qar = r24_qua_iv_qar;
+		}
+
+		public BigDecimal getR24_qua_iv_inr() {
+			return r24_qua_iv_inr;
+		}
+
+		public void setR24_qua_iv_inr(BigDecimal r24_qua_iv_inr) {
+			this.r24_qua_iv_inr = r24_qua_iv_inr;
+		}
+
+		public BigDecimal getR24_cumm_inr() {
+			return r24_cumm_inr;
+		}
+
+		public void setR24_cumm_inr(BigDecimal r24_cumm_inr) {
+			this.r24_cumm_inr = r24_cumm_inr;
+		}
+
+		public BigDecimal getR24_cumm_bwp() {
+			return r24_cumm_bwp;
+		}
+
+		public void setR24_cumm_bwp(BigDecimal r24_cumm_bwp) {
+			this.r24_cumm_bwp = r24_cumm_bwp;
+		}
+
+		public String getR25_product() {
+			return r25_product;
+		}
+
+		public void setR25_product(String r25_product) {
+			this.r25_product = r25_product;
+		}
+
+		public BigDecimal getR25_qua_i_lc() {
+			return r25_qua_i_lc;
+		}
+
+		public void setR25_qua_i_lc(BigDecimal r25_qua_i_lc) {
+			this.r25_qua_i_lc = r25_qua_i_lc;
+		}
+
+		public BigDecimal getR25_qua_i_qar() {
+			return r25_qua_i_qar;
+		}
+
+		public void setR25_qua_i_qar(BigDecimal r25_qua_i_qar) {
+			this.r25_qua_i_qar = r25_qua_i_qar;
+		}
+
+		public BigDecimal getR25_qua_i_inr() {
+			return r25_qua_i_inr;
+		}
+
+		public void setR25_qua_i_inr(BigDecimal r25_qua_i_inr) {
+			this.r25_qua_i_inr = r25_qua_i_inr;
+		}
+
+		public BigDecimal getR25_qua_ii_lc() {
+			return r25_qua_ii_lc;
+		}
+
+		public void setR25_qua_ii_lc(BigDecimal r25_qua_ii_lc) {
+			this.r25_qua_ii_lc = r25_qua_ii_lc;
+		}
+
+		public BigDecimal getR25_qua_ii_qar() {
+			return r25_qua_ii_qar;
+		}
+
+		public void setR25_qua_ii_qar(BigDecimal r25_qua_ii_qar) {
+			this.r25_qua_ii_qar = r25_qua_ii_qar;
+		}
+
+		public BigDecimal getR25_qua_ii_inr() {
+			return r25_qua_ii_inr;
+		}
+
+		public void setR25_qua_ii_inr(BigDecimal r25_qua_ii_inr) {
+			this.r25_qua_ii_inr = r25_qua_ii_inr;
+		}
+
+		public BigDecimal getR25_qua_iii_lc() {
+			return r25_qua_iii_lc;
+		}
+
+		public void setR25_qua_iii_lc(BigDecimal r25_qua_iii_lc) {
+			this.r25_qua_iii_lc = r25_qua_iii_lc;
+		}
+
+		public BigDecimal getR25_qua_iii_qar() {
+			return r25_qua_iii_qar;
+		}
+
+		public void setR25_qua_iii_qar(BigDecimal r25_qua_iii_qar) {
+			this.r25_qua_iii_qar = r25_qua_iii_qar;
+		}
+
+		public BigDecimal getR25_qua_iii_inr() {
+			return r25_qua_iii_inr;
+		}
+
+		public void setR25_qua_iii_inr(BigDecimal r25_qua_iii_inr) {
+			this.r25_qua_iii_inr = r25_qua_iii_inr;
+		}
+
+		public BigDecimal getR25_qua_iv_lc() {
+			return r25_qua_iv_lc;
+		}
+
+		public void setR25_qua_iv_lc(BigDecimal r25_qua_iv_lc) {
+			this.r25_qua_iv_lc = r25_qua_iv_lc;
+		}
+
+		public BigDecimal getR25_qua_iv_qar() {
+			return r25_qua_iv_qar;
+		}
+
+		public void setR25_qua_iv_qar(BigDecimal r25_qua_iv_qar) {
+			this.r25_qua_iv_qar = r25_qua_iv_qar;
+		}
+
+		public BigDecimal getR25_qua_iv_inr() {
+			return r25_qua_iv_inr;
+		}
+
+		public void setR25_qua_iv_inr(BigDecimal r25_qua_iv_inr) {
+			this.r25_qua_iv_inr = r25_qua_iv_inr;
+		}
+
+		public BigDecimal getR25_cumm_inr() {
+			return r25_cumm_inr;
+		}
+
+		public void setR25_cumm_inr(BigDecimal r25_cumm_inr) {
+			this.r25_cumm_inr = r25_cumm_inr;
+		}
+
+		public BigDecimal getR25_cumm_bwp() {
+			return r25_cumm_bwp;
+		}
+
+		public void setR25_cumm_bwp(BigDecimal r25_cumm_bwp) {
+			this.r25_cumm_bwp = r25_cumm_bwp;
+		}
+
+		public String getR26_product() {
+			return r26_product;
+		}
+
+		public void setR26_product(String r26_product) {
+			this.r26_product = r26_product;
+		}
+
+		public BigDecimal getR26_qua_i_lc() {
+			return r26_qua_i_lc;
+		}
+
+		public void setR26_qua_i_lc(BigDecimal r26_qua_i_lc) {
+			this.r26_qua_i_lc = r26_qua_i_lc;
+		}
+
+		public BigDecimal getR26_qua_i_qar() {
+			return r26_qua_i_qar;
+		}
+
+		public void setR26_qua_i_qar(BigDecimal r26_qua_i_qar) {
+			this.r26_qua_i_qar = r26_qua_i_qar;
+		}
+
+		public BigDecimal getR26_qua_i_inr() {
+			return r26_qua_i_inr;
+		}
+
+		public void setR26_qua_i_inr(BigDecimal r26_qua_i_inr) {
+			this.r26_qua_i_inr = r26_qua_i_inr;
+		}
+
+		public BigDecimal getR26_qua_ii_lc() {
+			return r26_qua_ii_lc;
+		}
+
+		public void setR26_qua_ii_lc(BigDecimal r26_qua_ii_lc) {
+			this.r26_qua_ii_lc = r26_qua_ii_lc;
+		}
+
+		public BigDecimal getR26_qua_ii_qar() {
+			return r26_qua_ii_qar;
+		}
+
+		public void setR26_qua_ii_qar(BigDecimal r26_qua_ii_qar) {
+			this.r26_qua_ii_qar = r26_qua_ii_qar;
+		}
+
+		public BigDecimal getR26_qua_ii_inr() {
+			return r26_qua_ii_inr;
+		}
+
+		public void setR26_qua_ii_inr(BigDecimal r26_qua_ii_inr) {
+			this.r26_qua_ii_inr = r26_qua_ii_inr;
+		}
+
+		public BigDecimal getR26_qua_iii_lc() {
+			return r26_qua_iii_lc;
+		}
+
+		public void setR26_qua_iii_lc(BigDecimal r26_qua_iii_lc) {
+			this.r26_qua_iii_lc = r26_qua_iii_lc;
+		}
+
+		public BigDecimal getR26_qua_iii_qar() {
+			return r26_qua_iii_qar;
+		}
+
+		public void setR26_qua_iii_qar(BigDecimal r26_qua_iii_qar) {
+			this.r26_qua_iii_qar = r26_qua_iii_qar;
+		}
+
+		public BigDecimal getR26_qua_iii_inr() {
+			return r26_qua_iii_inr;
+		}
+
+		public void setR26_qua_iii_inr(BigDecimal r26_qua_iii_inr) {
+			this.r26_qua_iii_inr = r26_qua_iii_inr;
+		}
+
+		public BigDecimal getR26_qua_iv_lc() {
+			return r26_qua_iv_lc;
+		}
+
+		public void setR26_qua_iv_lc(BigDecimal r26_qua_iv_lc) {
+			this.r26_qua_iv_lc = r26_qua_iv_lc;
+		}
+
+		public BigDecimal getR26_qua_iv_qar() {
+			return r26_qua_iv_qar;
+		}
+
+		public void setR26_qua_iv_qar(BigDecimal r26_qua_iv_qar) {
+			this.r26_qua_iv_qar = r26_qua_iv_qar;
+		}
+
+		public BigDecimal getR26_qua_iv_inr() {
+			return r26_qua_iv_inr;
+		}
+
+		public void setR26_qua_iv_inr(BigDecimal r26_qua_iv_inr) {
+			this.r26_qua_iv_inr = r26_qua_iv_inr;
+		}
+
+		public BigDecimal getR26_cumm_inr() {
+			return r26_cumm_inr;
+		}
+
+		public void setR26_cumm_inr(BigDecimal r26_cumm_inr) {
+			this.r26_cumm_inr = r26_cumm_inr;
+		}
+
+		public BigDecimal getR26_cumm_bwp() {
+			return r26_cumm_bwp;
+		}
+
+		public void setR26_cumm_bwp(BigDecimal r26_cumm_bwp) {
+			this.r26_cumm_bwp = r26_cumm_bwp;
+		}
+
+		public String getR27_product() {
+			return r27_product;
+		}
+
+		public void setR27_product(String r27_product) {
+			this.r27_product = r27_product;
+		}
+
+		public BigDecimal getR27_qua_i_lc() {
+			return r27_qua_i_lc;
+		}
+
+		public void setR27_qua_i_lc(BigDecimal r27_qua_i_lc) {
+			this.r27_qua_i_lc = r27_qua_i_lc;
+		}
+
+		public BigDecimal getR27_qua_i_qar() {
+			return r27_qua_i_qar;
+		}
+
+		public void setR27_qua_i_qar(BigDecimal r27_qua_i_qar) {
+			this.r27_qua_i_qar = r27_qua_i_qar;
+		}
+
+		public BigDecimal getR27_qua_i_inr() {
+			return r27_qua_i_inr;
+		}
+
+		public void setR27_qua_i_inr(BigDecimal r27_qua_i_inr) {
+			this.r27_qua_i_inr = r27_qua_i_inr;
+		}
+
+		public BigDecimal getR27_qua_ii_lc() {
+			return r27_qua_ii_lc;
+		}
+
+		public void setR27_qua_ii_lc(BigDecimal r27_qua_ii_lc) {
+			this.r27_qua_ii_lc = r27_qua_ii_lc;
+		}
+
+		public BigDecimal getR27_qua_ii_qar() {
+			return r27_qua_ii_qar;
+		}
+
+		public void setR27_qua_ii_qar(BigDecimal r27_qua_ii_qar) {
+			this.r27_qua_ii_qar = r27_qua_ii_qar;
+		}
+
+		public BigDecimal getR27_qua_ii_inr() {
+			return r27_qua_ii_inr;
+		}
+
+		public void setR27_qua_ii_inr(BigDecimal r27_qua_ii_inr) {
+			this.r27_qua_ii_inr = r27_qua_ii_inr;
+		}
+
+		public BigDecimal getR27_qua_iii_lc() {
+			return r27_qua_iii_lc;
+		}
+
+		public void setR27_qua_iii_lc(BigDecimal r27_qua_iii_lc) {
+			this.r27_qua_iii_lc = r27_qua_iii_lc;
+		}
+
+		public BigDecimal getR27_qua_iii_qar() {
+			return r27_qua_iii_qar;
+		}
+
+		public void setR27_qua_iii_qar(BigDecimal r27_qua_iii_qar) {
+			this.r27_qua_iii_qar = r27_qua_iii_qar;
+		}
+
+		public BigDecimal getR27_qua_iii_inr() {
+			return r27_qua_iii_inr;
+		}
+
+		public void setR27_qua_iii_inr(BigDecimal r27_qua_iii_inr) {
+			this.r27_qua_iii_inr = r27_qua_iii_inr;
+		}
+
+		public BigDecimal getR27_qua_iv_lc() {
+			return r27_qua_iv_lc;
+		}
+
+		public void setR27_qua_iv_lc(BigDecimal r27_qua_iv_lc) {
+			this.r27_qua_iv_lc = r27_qua_iv_lc;
+		}
+
+		public BigDecimal getR27_qua_iv_qar() {
+			return r27_qua_iv_qar;
+		}
+
+		public void setR27_qua_iv_qar(BigDecimal r27_qua_iv_qar) {
+			this.r27_qua_iv_qar = r27_qua_iv_qar;
+		}
+
+		public BigDecimal getR27_qua_iv_inr() {
+			return r27_qua_iv_inr;
+		}
+
+		public void setR27_qua_iv_inr(BigDecimal r27_qua_iv_inr) {
+			this.r27_qua_iv_inr = r27_qua_iv_inr;
+		}
+
+		public BigDecimal getR27_cumm_inr() {
+			return r27_cumm_inr;
+		}
+
+		public void setR27_cumm_inr(BigDecimal r27_cumm_inr) {
+			this.r27_cumm_inr = r27_cumm_inr;
+		}
+
+		public BigDecimal getR27_cumm_bwp() {
+			return r27_cumm_bwp;
+		}
+
+		public void setR27_cumm_bwp(BigDecimal r27_cumm_bwp) {
+			this.r27_cumm_bwp = r27_cumm_bwp;
+		}
+
+		public String getR28_product() {
+			return r28_product;
+		}
+
+		public void setR28_product(String r28_product) {
+			this.r28_product = r28_product;
+		}
+
+		public BigDecimal getR28_qua_i_lc() {
+			return r28_qua_i_lc;
+		}
+
+		public void setR28_qua_i_lc(BigDecimal r28_qua_i_lc) {
+			this.r28_qua_i_lc = r28_qua_i_lc;
+		}
+
+		public BigDecimal getR28_qua_i_qar() {
+			return r28_qua_i_qar;
+		}
+
+		public void setR28_qua_i_qar(BigDecimal r28_qua_i_qar) {
+			this.r28_qua_i_qar = r28_qua_i_qar;
+		}
+
+		public BigDecimal getR28_qua_i_inr() {
+			return r28_qua_i_inr;
+		}
+
+		public void setR28_qua_i_inr(BigDecimal r28_qua_i_inr) {
+			this.r28_qua_i_inr = r28_qua_i_inr;
+		}
+
+		public BigDecimal getR28_qua_ii_lc() {
+			return r28_qua_ii_lc;
+		}
+
+		public void setR28_qua_ii_lc(BigDecimal r28_qua_ii_lc) {
+			this.r28_qua_ii_lc = r28_qua_ii_lc;
+		}
+
+		public BigDecimal getR28_qua_ii_qar() {
+			return r28_qua_ii_qar;
+		}
+
+		public void setR28_qua_ii_qar(BigDecimal r28_qua_ii_qar) {
+			this.r28_qua_ii_qar = r28_qua_ii_qar;
+		}
+
+		public BigDecimal getR28_qua_ii_inr() {
+			return r28_qua_ii_inr;
+		}
+
+		public void setR28_qua_ii_inr(BigDecimal r28_qua_ii_inr) {
+			this.r28_qua_ii_inr = r28_qua_ii_inr;
+		}
+
+		public BigDecimal getR28_qua_iii_lc() {
+			return r28_qua_iii_lc;
+		}
+
+		public void setR28_qua_iii_lc(BigDecimal r28_qua_iii_lc) {
+			this.r28_qua_iii_lc = r28_qua_iii_lc;
+		}
+
+		public BigDecimal getR28_qua_iii_qar() {
+			return r28_qua_iii_qar;
+		}
+
+		public void setR28_qua_iii_qar(BigDecimal r28_qua_iii_qar) {
+			this.r28_qua_iii_qar = r28_qua_iii_qar;
+		}
+
+		public BigDecimal getR28_qua_iii_inr() {
+			return r28_qua_iii_inr;
+		}
+
+		public void setR28_qua_iii_inr(BigDecimal r28_qua_iii_inr) {
+			this.r28_qua_iii_inr = r28_qua_iii_inr;
+		}
+
+		public BigDecimal getR28_qua_iv_lc() {
+			return r28_qua_iv_lc;
+		}
+
+		public void setR28_qua_iv_lc(BigDecimal r28_qua_iv_lc) {
+			this.r28_qua_iv_lc = r28_qua_iv_lc;
+		}
+
+		public BigDecimal getR28_qua_iv_qar() {
+			return r28_qua_iv_qar;
+		}
+
+		public void setR28_qua_iv_qar(BigDecimal r28_qua_iv_qar) {
+			this.r28_qua_iv_qar = r28_qua_iv_qar;
+		}
+
+		public BigDecimal getR28_qua_iv_inr() {
+			return r28_qua_iv_inr;
+		}
+
+		public void setR28_qua_iv_inr(BigDecimal r28_qua_iv_inr) {
+			this.r28_qua_iv_inr = r28_qua_iv_inr;
+		}
+
+		public BigDecimal getR28_cumm_inr() {
+			return r28_cumm_inr;
+		}
+
+		public void setR28_cumm_inr(BigDecimal r28_cumm_inr) {
+			this.r28_cumm_inr = r28_cumm_inr;
+		}
+
+		public BigDecimal getR28_cumm_bwp() {
+			return r28_cumm_bwp;
+		}
+
+		public void setR28_cumm_bwp(BigDecimal r28_cumm_bwp) {
+			this.r28_cumm_bwp = r28_cumm_bwp;
+		}
+
+		public String getR29_product() {
+			return r29_product;
+		}
+
+		public void setR29_product(String r29_product) {
+			this.r29_product = r29_product;
+		}
+
+		public BigDecimal getR29_qua_i_lc() {
+			return r29_qua_i_lc;
+		}
+
+		public void setR29_qua_i_lc(BigDecimal r29_qua_i_lc) {
+			this.r29_qua_i_lc = r29_qua_i_lc;
+		}
+
+		public BigDecimal getR29_qua_i_qar() {
+			return r29_qua_i_qar;
+		}
+
+		public void setR29_qua_i_qar(BigDecimal r29_qua_i_qar) {
+			this.r29_qua_i_qar = r29_qua_i_qar;
+		}
+
+		public BigDecimal getR29_qua_i_inr() {
+			return r29_qua_i_inr;
+		}
+
+		public void setR29_qua_i_inr(BigDecimal r29_qua_i_inr) {
+			this.r29_qua_i_inr = r29_qua_i_inr;
+		}
+
+		public BigDecimal getR29_qua_ii_lc() {
+			return r29_qua_ii_lc;
+		}
+
+		public void setR29_qua_ii_lc(BigDecimal r29_qua_ii_lc) {
+			this.r29_qua_ii_lc = r29_qua_ii_lc;
+		}
+
+		public BigDecimal getR29_qua_ii_qar() {
+			return r29_qua_ii_qar;
+		}
+
+		public void setR29_qua_ii_qar(BigDecimal r29_qua_ii_qar) {
+			this.r29_qua_ii_qar = r29_qua_ii_qar;
+		}
+
+		public BigDecimal getR29_qua_ii_inr() {
+			return r29_qua_ii_inr;
+		}
+
+		public void setR29_qua_ii_inr(BigDecimal r29_qua_ii_inr) {
+			this.r29_qua_ii_inr = r29_qua_ii_inr;
+		}
+
+		public BigDecimal getR29_qua_iii_lc() {
+			return r29_qua_iii_lc;
+		}
+
+		public void setR29_qua_iii_lc(BigDecimal r29_qua_iii_lc) {
+			this.r29_qua_iii_lc = r29_qua_iii_lc;
+		}
+
+		public BigDecimal getR29_qua_iii_qar() {
+			return r29_qua_iii_qar;
+		}
+
+		public void setR29_qua_iii_qar(BigDecimal r29_qua_iii_qar) {
+			this.r29_qua_iii_qar = r29_qua_iii_qar;
+		}
+
+		public BigDecimal getR29_qua_iii_inr() {
+			return r29_qua_iii_inr;
+		}
+
+		public void setR29_qua_iii_inr(BigDecimal r29_qua_iii_inr) {
+			this.r29_qua_iii_inr = r29_qua_iii_inr;
+		}
+
+		public BigDecimal getR29_qua_iv_lc() {
+			return r29_qua_iv_lc;
+		}
+
+		public void setR29_qua_iv_lc(BigDecimal r29_qua_iv_lc) {
+			this.r29_qua_iv_lc = r29_qua_iv_lc;
+		}
+
+		public BigDecimal getR29_qua_iv_qar() {
+			return r29_qua_iv_qar;
+		}
+
+		public void setR29_qua_iv_qar(BigDecimal r29_qua_iv_qar) {
+			this.r29_qua_iv_qar = r29_qua_iv_qar;
+		}
+
+		public BigDecimal getR29_qua_iv_inr() {
+			return r29_qua_iv_inr;
+		}
+
+		public void setR29_qua_iv_inr(BigDecimal r29_qua_iv_inr) {
+			this.r29_qua_iv_inr = r29_qua_iv_inr;
+		}
+
+		public BigDecimal getR29_cumm_inr() {
+			return r29_cumm_inr;
+		}
+
+		public void setR29_cumm_inr(BigDecimal r29_cumm_inr) {
+			this.r29_cumm_inr = r29_cumm_inr;
+		}
+
+		public BigDecimal getR29_cumm_bwp() {
+			return r29_cumm_bwp;
+		}
+
+		public void setR29_cumm_bwp(BigDecimal r29_cumm_bwp) {
+			this.r29_cumm_bwp = r29_cumm_bwp;
+		}
+
+		public String getR30_product() {
+			return r30_product;
+		}
+
+		public void setR30_product(String r30_product) {
+			this.r30_product = r30_product;
+		}
+
+		public BigDecimal getR30_qua_i_lc() {
+			return r30_qua_i_lc;
+		}
+
+		public void setR30_qua_i_lc(BigDecimal r30_qua_i_lc) {
+			this.r30_qua_i_lc = r30_qua_i_lc;
+		}
+
+		public BigDecimal getR30_qua_i_qar() {
+			return r30_qua_i_qar;
+		}
+
+		public void setR30_qua_i_qar(BigDecimal r30_qua_i_qar) {
+			this.r30_qua_i_qar = r30_qua_i_qar;
+		}
+
+		public BigDecimal getR30_qua_i_inr() {
+			return r30_qua_i_inr;
+		}
+
+		public void setR30_qua_i_inr(BigDecimal r30_qua_i_inr) {
+			this.r30_qua_i_inr = r30_qua_i_inr;
+		}
+
+		public BigDecimal getR30_qua_ii_lc() {
+			return r30_qua_ii_lc;
+		}
+
+		public void setR30_qua_ii_lc(BigDecimal r30_qua_ii_lc) {
+			this.r30_qua_ii_lc = r30_qua_ii_lc;
+		}
+
+		public BigDecimal getR30_qua_ii_qar() {
+			return r30_qua_ii_qar;
+		}
+
+		public void setR30_qua_ii_qar(BigDecimal r30_qua_ii_qar) {
+			this.r30_qua_ii_qar = r30_qua_ii_qar;
+		}
+
+		public BigDecimal getR30_qua_ii_inr() {
+			return r30_qua_ii_inr;
+		}
+
+		public void setR30_qua_ii_inr(BigDecimal r30_qua_ii_inr) {
+			this.r30_qua_ii_inr = r30_qua_ii_inr;
+		}
+
+		public BigDecimal getR30_qua_iii_lc() {
+			return r30_qua_iii_lc;
+		}
+
+		public void setR30_qua_iii_lc(BigDecimal r30_qua_iii_lc) {
+			this.r30_qua_iii_lc = r30_qua_iii_lc;
+		}
+
+		public BigDecimal getR30_qua_iii_qar() {
+			return r30_qua_iii_qar;
+		}
+
+		public void setR30_qua_iii_qar(BigDecimal r30_qua_iii_qar) {
+			this.r30_qua_iii_qar = r30_qua_iii_qar;
+		}
+
+		public BigDecimal getR30_qua_iii_inr() {
+			return r30_qua_iii_inr;
+		}
+
+		public void setR30_qua_iii_inr(BigDecimal r30_qua_iii_inr) {
+			this.r30_qua_iii_inr = r30_qua_iii_inr;
+		}
+
+		public BigDecimal getR30_qua_iv_lc() {
+			return r30_qua_iv_lc;
+		}
+
+		public void setR30_qua_iv_lc(BigDecimal r30_qua_iv_lc) {
+			this.r30_qua_iv_lc = r30_qua_iv_lc;
+		}
+
+		public BigDecimal getR30_qua_iv_qar() {
+			return r30_qua_iv_qar;
+		}
+
+		public void setR30_qua_iv_qar(BigDecimal r30_qua_iv_qar) {
+			this.r30_qua_iv_qar = r30_qua_iv_qar;
+		}
+
+		public BigDecimal getR30_qua_iv_inr() {
+			return r30_qua_iv_inr;
+		}
+
+		public void setR30_qua_iv_inr(BigDecimal r30_qua_iv_inr) {
+			this.r30_qua_iv_inr = r30_qua_iv_inr;
+		}
+
+		public BigDecimal getR30_cumm_inr() {
+			return r30_cumm_inr;
+		}
+
+		public void setR30_cumm_inr(BigDecimal r30_cumm_inr) {
+			this.r30_cumm_inr = r30_cumm_inr;
+		}
+
+		public BigDecimal getR30_cumm_bwp() {
+			return r30_cumm_bwp;
+		}
+
+		public void setR30_cumm_bwp(BigDecimal r30_cumm_bwp) {
+			this.r30_cumm_bwp = r30_cumm_bwp;
+		}
+
+		public String getR31_product() {
+			return r31_product;
+		}
+
+		public void setR31_product(String r31_product) {
+			this.r31_product = r31_product;
+		}
+
+		public BigDecimal getR31_qua_i_lc() {
+			return r31_qua_i_lc;
+		}
+
+		public void setR31_qua_i_lc(BigDecimal r31_qua_i_lc) {
+			this.r31_qua_i_lc = r31_qua_i_lc;
+		}
+
+		public BigDecimal getR31_qua_i_qar() {
+			return r31_qua_i_qar;
+		}
+
+		public void setR31_qua_i_qar(BigDecimal r31_qua_i_qar) {
+			this.r31_qua_i_qar = r31_qua_i_qar;
+		}
+
+		public BigDecimal getR31_qua_i_inr() {
+			return r31_qua_i_inr;
+		}
+
+		public void setR31_qua_i_inr(BigDecimal r31_qua_i_inr) {
+			this.r31_qua_i_inr = r31_qua_i_inr;
+		}
+
+		public BigDecimal getR31_qua_ii_lc() {
+			return r31_qua_ii_lc;
+		}
+
+		public void setR31_qua_ii_lc(BigDecimal r31_qua_ii_lc) {
+			this.r31_qua_ii_lc = r31_qua_ii_lc;
+		}
+
+		public BigDecimal getR31_qua_ii_qar() {
+			return r31_qua_ii_qar;
+		}
+
+		public void setR31_qua_ii_qar(BigDecimal r31_qua_ii_qar) {
+			this.r31_qua_ii_qar = r31_qua_ii_qar;
+		}
+
+		public BigDecimal getR31_qua_ii_inr() {
+			return r31_qua_ii_inr;
+		}
+
+		public void setR31_qua_ii_inr(BigDecimal r31_qua_ii_inr) {
+			this.r31_qua_ii_inr = r31_qua_ii_inr;
+		}
+
+		public BigDecimal getR31_qua_iii_lc() {
+			return r31_qua_iii_lc;
+		}
+
+		public void setR31_qua_iii_lc(BigDecimal r31_qua_iii_lc) {
+			this.r31_qua_iii_lc = r31_qua_iii_lc;
+		}
+
+		public BigDecimal getR31_qua_iii_qar() {
+			return r31_qua_iii_qar;
+		}
+
+		public void setR31_qua_iii_qar(BigDecimal r31_qua_iii_qar) {
+			this.r31_qua_iii_qar = r31_qua_iii_qar;
+		}
+
+		public BigDecimal getR31_qua_iii_inr() {
+			return r31_qua_iii_inr;
+		}
+
+		public void setR31_qua_iii_inr(BigDecimal r31_qua_iii_inr) {
+			this.r31_qua_iii_inr = r31_qua_iii_inr;
+		}
+
+		public BigDecimal getR31_qua_iv_lc() {
+			return r31_qua_iv_lc;
+		}
+
+		public void setR31_qua_iv_lc(BigDecimal r31_qua_iv_lc) {
+			this.r31_qua_iv_lc = r31_qua_iv_lc;
+		}
+
+		public BigDecimal getR31_qua_iv_qar() {
+			return r31_qua_iv_qar;
+		}
+
+		public void setR31_qua_iv_qar(BigDecimal r31_qua_iv_qar) {
+			this.r31_qua_iv_qar = r31_qua_iv_qar;
+		}
+
+		public BigDecimal getR31_qua_iv_inr() {
+			return r31_qua_iv_inr;
+		}
+
+		public void setR31_qua_iv_inr(BigDecimal r31_qua_iv_inr) {
+			this.r31_qua_iv_inr = r31_qua_iv_inr;
+		}
+
+		public BigDecimal getR31_cumm_inr() {
+			return r31_cumm_inr;
+		}
+
+		public void setR31_cumm_inr(BigDecimal r31_cumm_inr) {
+			this.r31_cumm_inr = r31_cumm_inr;
+		}
+
+		public BigDecimal getR31_cumm_bwp() {
+			return r31_cumm_bwp;
+		}
+
+		public void setR31_cumm_bwp(BigDecimal r31_cumm_bwp) {
+			this.r31_cumm_bwp = r31_cumm_bwp;
+		}
+
+		public String getR32_product() {
+			return r32_product;
+		}
+
+		public void setR32_product(String r32_product) {
+			this.r32_product = r32_product;
+		}
+
+		public BigDecimal getR32_qua_i_lc() {
+			return r32_qua_i_lc;
+		}
+
+		public void setR32_qua_i_lc(BigDecimal r32_qua_i_lc) {
+			this.r32_qua_i_lc = r32_qua_i_lc;
+		}
+
+		public BigDecimal getR32_qua_i_qar() {
+			return r32_qua_i_qar;
+		}
+
+		public void setR32_qua_i_qar(BigDecimal r32_qua_i_qar) {
+			this.r32_qua_i_qar = r32_qua_i_qar;
+		}
+
+		public BigDecimal getR32_qua_i_inr() {
+			return r32_qua_i_inr;
+		}
+
+		public void setR32_qua_i_inr(BigDecimal r32_qua_i_inr) {
+			this.r32_qua_i_inr = r32_qua_i_inr;
+		}
+
+		public BigDecimal getR32_qua_ii_lc() {
+			return r32_qua_ii_lc;
+		}
+
+		public void setR32_qua_ii_lc(BigDecimal r32_qua_ii_lc) {
+			this.r32_qua_ii_lc = r32_qua_ii_lc;
+		}
+
+		public BigDecimal getR32_qua_ii_qar() {
+			return r32_qua_ii_qar;
+		}
+
+		public void setR32_qua_ii_qar(BigDecimal r32_qua_ii_qar) {
+			this.r32_qua_ii_qar = r32_qua_ii_qar;
+		}
+
+		public BigDecimal getR32_qua_ii_inr() {
+			return r32_qua_ii_inr;
+		}
+
+		public void setR32_qua_ii_inr(BigDecimal r32_qua_ii_inr) {
+			this.r32_qua_ii_inr = r32_qua_ii_inr;
+		}
+
+		public BigDecimal getR32_qua_iii_lc() {
+			return r32_qua_iii_lc;
+		}
+
+		public void setR32_qua_iii_lc(BigDecimal r32_qua_iii_lc) {
+			this.r32_qua_iii_lc = r32_qua_iii_lc;
+		}
+
+		public BigDecimal getR32_qua_iii_qar() {
+			return r32_qua_iii_qar;
+		}
+
+		public void setR32_qua_iii_qar(BigDecimal r32_qua_iii_qar) {
+			this.r32_qua_iii_qar = r32_qua_iii_qar;
+		}
+
+		public BigDecimal getR32_qua_iii_inr() {
+			return r32_qua_iii_inr;
+		}
+
+		public void setR32_qua_iii_inr(BigDecimal r32_qua_iii_inr) {
+			this.r32_qua_iii_inr = r32_qua_iii_inr;
+		}
+
+		public BigDecimal getR32_qua_iv_lc() {
+			return r32_qua_iv_lc;
+		}
+
+		public void setR32_qua_iv_lc(BigDecimal r32_qua_iv_lc) {
+			this.r32_qua_iv_lc = r32_qua_iv_lc;
+		}
+
+		public BigDecimal getR32_qua_iv_qar() {
+			return r32_qua_iv_qar;
+		}
+
+		public void setR32_qua_iv_qar(BigDecimal r32_qua_iv_qar) {
+			this.r32_qua_iv_qar = r32_qua_iv_qar;
+		}
+
+		public BigDecimal getR32_qua_iv_inr() {
+			return r32_qua_iv_inr;
+		}
+
+		public void setR32_qua_iv_inr(BigDecimal r32_qua_iv_inr) {
+			this.r32_qua_iv_inr = r32_qua_iv_inr;
+		}
+
+		public BigDecimal getR32_cumm_inr() {
+			return r32_cumm_inr;
+		}
+
+		public void setR32_cumm_inr(BigDecimal r32_cumm_inr) {
+			this.r32_cumm_inr = r32_cumm_inr;
+		}
+
+		public BigDecimal getR32_cumm_bwp() {
+			return r32_cumm_bwp;
+		}
+
+		public void setR32_cumm_bwp(BigDecimal r32_cumm_bwp) {
+			this.r32_cumm_bwp = r32_cumm_bwp;
+		}
+
+		public String getR33_product() {
+			return r33_product;
+		}
+
+		public void setR33_product(String r33_product) {
+			this.r33_product = r33_product;
+		}
+
+		public BigDecimal getR33_qua_i_lc() {
+			return r33_qua_i_lc;
+		}
+
+		public void setR33_qua_i_lc(BigDecimal r33_qua_i_lc) {
+			this.r33_qua_i_lc = r33_qua_i_lc;
+		}
+
+		public BigDecimal getR33_qua_i_qar() {
+			return r33_qua_i_qar;
+		}
+
+		public void setR33_qua_i_qar(BigDecimal r33_qua_i_qar) {
+			this.r33_qua_i_qar = r33_qua_i_qar;
+		}
+
+		public BigDecimal getR33_qua_i_inr() {
+			return r33_qua_i_inr;
+		}
+
+		public void setR33_qua_i_inr(BigDecimal r33_qua_i_inr) {
+			this.r33_qua_i_inr = r33_qua_i_inr;
+		}
+
+		public BigDecimal getR33_qua_ii_lc() {
+			return r33_qua_ii_lc;
+		}
+
+		public void setR33_qua_ii_lc(BigDecimal r33_qua_ii_lc) {
+			this.r33_qua_ii_lc = r33_qua_ii_lc;
+		}
+
+		public BigDecimal getR33_qua_ii_qar() {
+			return r33_qua_ii_qar;
+		}
+
+		public void setR33_qua_ii_qar(BigDecimal r33_qua_ii_qar) {
+			this.r33_qua_ii_qar = r33_qua_ii_qar;
+		}
+
+		public BigDecimal getR33_qua_ii_inr() {
+			return r33_qua_ii_inr;
+		}
+
+		public void setR33_qua_ii_inr(BigDecimal r33_qua_ii_inr) {
+			this.r33_qua_ii_inr = r33_qua_ii_inr;
+		}
+
+		public BigDecimal getR33_qua_iii_lc() {
+			return r33_qua_iii_lc;
+		}
+
+		public void setR33_qua_iii_lc(BigDecimal r33_qua_iii_lc) {
+			this.r33_qua_iii_lc = r33_qua_iii_lc;
+		}
+
+		public BigDecimal getR33_qua_iii_qar() {
+			return r33_qua_iii_qar;
+		}
+
+		public void setR33_qua_iii_qar(BigDecimal r33_qua_iii_qar) {
+			this.r33_qua_iii_qar = r33_qua_iii_qar;
+		}
+
+		public BigDecimal getR33_qua_iii_inr() {
+			return r33_qua_iii_inr;
+		}
+
+		public void setR33_qua_iii_inr(BigDecimal r33_qua_iii_inr) {
+			this.r33_qua_iii_inr = r33_qua_iii_inr;
+		}
+
+		public BigDecimal getR33_qua_iv_lc() {
+			return r33_qua_iv_lc;
+		}
+
+		public void setR33_qua_iv_lc(BigDecimal r33_qua_iv_lc) {
+			this.r33_qua_iv_lc = r33_qua_iv_lc;
+		}
+
+		public BigDecimal getR33_qua_iv_qar() {
+			return r33_qua_iv_qar;
+		}
+
+		public void setR33_qua_iv_qar(BigDecimal r33_qua_iv_qar) {
+			this.r33_qua_iv_qar = r33_qua_iv_qar;
+		}
+
+		public BigDecimal getR33_qua_iv_inr() {
+			return r33_qua_iv_inr;
+		}
+
+		public void setR33_qua_iv_inr(BigDecimal r33_qua_iv_inr) {
+			this.r33_qua_iv_inr = r33_qua_iv_inr;
+		}
+
+		public BigDecimal getR33_cumm_inr() {
+			return r33_cumm_inr;
+		}
+
+		public void setR33_cumm_inr(BigDecimal r33_cumm_inr) {
+			this.r33_cumm_inr = r33_cumm_inr;
+		}
+
+		public BigDecimal getR33_cumm_bwp() {
+			return r33_cumm_bwp;
+		}
+
+		public void setR33_cumm_bwp(BigDecimal r33_cumm_bwp) {
+			this.r33_cumm_bwp = r33_cumm_bwp;
+		}
+
+		public String getR34_product() {
+			return r34_product;
+		}
+
+		public void setR34_product(String r34_product) {
+			this.r34_product = r34_product;
+		}
+
+		public BigDecimal getR34_qua_i_lc() {
+			return r34_qua_i_lc;
+		}
+
+		public void setR34_qua_i_lc(BigDecimal r34_qua_i_lc) {
+			this.r34_qua_i_lc = r34_qua_i_lc;
+		}
+
+		public BigDecimal getR34_qua_i_qar() {
+			return r34_qua_i_qar;
+		}
+
+		public void setR34_qua_i_qar(BigDecimal r34_qua_i_qar) {
+			this.r34_qua_i_qar = r34_qua_i_qar;
+		}
+
+		public BigDecimal getR34_qua_i_inr() {
+			return r34_qua_i_inr;
+		}
+
+		public void setR34_qua_i_inr(BigDecimal r34_qua_i_inr) {
+			this.r34_qua_i_inr = r34_qua_i_inr;
+		}
+
+		public BigDecimal getR34_qua_ii_lc() {
+			return r34_qua_ii_lc;
+		}
+
+		public void setR34_qua_ii_lc(BigDecimal r34_qua_ii_lc) {
+			this.r34_qua_ii_lc = r34_qua_ii_lc;
+		}
+
+		public BigDecimal getR34_qua_ii_qar() {
+			return r34_qua_ii_qar;
+		}
+
+		public void setR34_qua_ii_qar(BigDecimal r34_qua_ii_qar) {
+			this.r34_qua_ii_qar = r34_qua_ii_qar;
+		}
+
+		public BigDecimal getR34_qua_ii_inr() {
+			return r34_qua_ii_inr;
+		}
+
+		public void setR34_qua_ii_inr(BigDecimal r34_qua_ii_inr) {
+			this.r34_qua_ii_inr = r34_qua_ii_inr;
+		}
+
+		public BigDecimal getR34_qua_iii_lc() {
+			return r34_qua_iii_lc;
+		}
+
+		public void setR34_qua_iii_lc(BigDecimal r34_qua_iii_lc) {
+			this.r34_qua_iii_lc = r34_qua_iii_lc;
+		}
+
+		public BigDecimal getR34_qua_iii_qar() {
+			return r34_qua_iii_qar;
+		}
+
+		public void setR34_qua_iii_qar(BigDecimal r34_qua_iii_qar) {
+			this.r34_qua_iii_qar = r34_qua_iii_qar;
+		}
+
+		public BigDecimal getR34_qua_iii_inr() {
+			return r34_qua_iii_inr;
+		}
+
+		public void setR34_qua_iii_inr(BigDecimal r34_qua_iii_inr) {
+			this.r34_qua_iii_inr = r34_qua_iii_inr;
+		}
+
+		public BigDecimal getR34_qua_iv_lc() {
+			return r34_qua_iv_lc;
+		}
+
+		public void setR34_qua_iv_lc(BigDecimal r34_qua_iv_lc) {
+			this.r34_qua_iv_lc = r34_qua_iv_lc;
+		}
+
+		public BigDecimal getR34_qua_iv_qar() {
+			return r34_qua_iv_qar;
+		}
+
+		public void setR34_qua_iv_qar(BigDecimal r34_qua_iv_qar) {
+			this.r34_qua_iv_qar = r34_qua_iv_qar;
+		}
+
+		public BigDecimal getR34_qua_iv_inr() {
+			return r34_qua_iv_inr;
+		}
+
+		public void setR34_qua_iv_inr(BigDecimal r34_qua_iv_inr) {
+			this.r34_qua_iv_inr = r34_qua_iv_inr;
+		}
+
+		public BigDecimal getR34_cumm_inr() {
+			return r34_cumm_inr;
+		}
+
+		public void setR34_cumm_inr(BigDecimal r34_cumm_inr) {
+			this.r34_cumm_inr = r34_cumm_inr;
+		}
+
+		public BigDecimal getR34_cumm_bwp() {
+			return r34_cumm_bwp;
+		}
+
+		public void setR34_cumm_bwp(BigDecimal r34_cumm_bwp) {
+			this.r34_cumm_bwp = r34_cumm_bwp;
+		}
+
+		public String getR35_product() {
+			return r35_product;
+		}
+
+		public void setR35_product(String r35_product) {
+			this.r35_product = r35_product;
+		}
+
+		public BigDecimal getR35_qua_i_lc() {
+			return r35_qua_i_lc;
+		}
+
+		public void setR35_qua_i_lc(BigDecimal r35_qua_i_lc) {
+			this.r35_qua_i_lc = r35_qua_i_lc;
+		}
+
+		public BigDecimal getR35_qua_i_qar() {
+			return r35_qua_i_qar;
+		}
+
+		public void setR35_qua_i_qar(BigDecimal r35_qua_i_qar) {
+			this.r35_qua_i_qar = r35_qua_i_qar;
+		}
+
+		public BigDecimal getR35_qua_i_inr() {
+			return r35_qua_i_inr;
+		}
+
+		public void setR35_qua_i_inr(BigDecimal r35_qua_i_inr) {
+			this.r35_qua_i_inr = r35_qua_i_inr;
+		}
+
+		public BigDecimal getR35_qua_ii_lc() {
+			return r35_qua_ii_lc;
+		}
+
+		public void setR35_qua_ii_lc(BigDecimal r35_qua_ii_lc) {
+			this.r35_qua_ii_lc = r35_qua_ii_lc;
+		}
+
+		public BigDecimal getR35_qua_ii_qar() {
+			return r35_qua_ii_qar;
+		}
+
+		public void setR35_qua_ii_qar(BigDecimal r35_qua_ii_qar) {
+			this.r35_qua_ii_qar = r35_qua_ii_qar;
+		}
+
+		public BigDecimal getR35_qua_ii_inr() {
+			return r35_qua_ii_inr;
+		}
+
+		public void setR35_qua_ii_inr(BigDecimal r35_qua_ii_inr) {
+			this.r35_qua_ii_inr = r35_qua_ii_inr;
+		}
+
+		public BigDecimal getR35_qua_iii_lc() {
+			return r35_qua_iii_lc;
+		}
+
+		public void setR35_qua_iii_lc(BigDecimal r35_qua_iii_lc) {
+			this.r35_qua_iii_lc = r35_qua_iii_lc;
+		}
+
+		public BigDecimal getR35_qua_iii_qar() {
+			return r35_qua_iii_qar;
+		}
+
+		public void setR35_qua_iii_qar(BigDecimal r35_qua_iii_qar) {
+			this.r35_qua_iii_qar = r35_qua_iii_qar;
+		}
+
+		public BigDecimal getR35_qua_iii_inr() {
+			return r35_qua_iii_inr;
+		}
+
+		public void setR35_qua_iii_inr(BigDecimal r35_qua_iii_inr) {
+			this.r35_qua_iii_inr = r35_qua_iii_inr;
+		}
+
+		public BigDecimal getR35_qua_iv_lc() {
+			return r35_qua_iv_lc;
+		}
+
+		public void setR35_qua_iv_lc(BigDecimal r35_qua_iv_lc) {
+			this.r35_qua_iv_lc = r35_qua_iv_lc;
+		}
+
+		public BigDecimal getR35_qua_iv_qar() {
+			return r35_qua_iv_qar;
+		}
+
+		public void setR35_qua_iv_qar(BigDecimal r35_qua_iv_qar) {
+			this.r35_qua_iv_qar = r35_qua_iv_qar;
+		}
+
+		public BigDecimal getR35_qua_iv_inr() {
+			return r35_qua_iv_inr;
+		}
+
+		public void setR35_qua_iv_inr(BigDecimal r35_qua_iv_inr) {
+			this.r35_qua_iv_inr = r35_qua_iv_inr;
+		}
+
+		public BigDecimal getR35_cumm_inr() {
+			return r35_cumm_inr;
+		}
+
+		public void setR35_cumm_inr(BigDecimal r35_cumm_inr) {
+			this.r35_cumm_inr = r35_cumm_inr;
+		}
+
+		public BigDecimal getR35_cumm_bwp() {
+			return r35_cumm_bwp;
+		}
+
+		public void setR35_cumm_bwp(BigDecimal r35_cumm_bwp) {
+			this.r35_cumm_bwp = r35_cumm_bwp;
+		}
+
+		public String getR36_product() {
+			return r36_product;
+		}
+
+		public void setR36_product(String r36_product) {
+			this.r36_product = r36_product;
+		}
+
+		public BigDecimal getR36_qua_i_lc() {
+			return r36_qua_i_lc;
+		}
+
+		public void setR36_qua_i_lc(BigDecimal r36_qua_i_lc) {
+			this.r36_qua_i_lc = r36_qua_i_lc;
+		}
+
+		public BigDecimal getR36_qua_i_qar() {
+			return r36_qua_i_qar;
+		}
+
+		public void setR36_qua_i_qar(BigDecimal r36_qua_i_qar) {
+			this.r36_qua_i_qar = r36_qua_i_qar;
+		}
+
+		public BigDecimal getR36_qua_i_inr() {
+			return r36_qua_i_inr;
+		}
+
+		public void setR36_qua_i_inr(BigDecimal r36_qua_i_inr) {
+			this.r36_qua_i_inr = r36_qua_i_inr;
+		}
+
+		public BigDecimal getR36_qua_ii_lc() {
+			return r36_qua_ii_lc;
+		}
+
+		public void setR36_qua_ii_lc(BigDecimal r36_qua_ii_lc) {
+			this.r36_qua_ii_lc = r36_qua_ii_lc;
+		}
+
+		public BigDecimal getR36_qua_ii_qar() {
+			return r36_qua_ii_qar;
+		}
+
+		public void setR36_qua_ii_qar(BigDecimal r36_qua_ii_qar) {
+			this.r36_qua_ii_qar = r36_qua_ii_qar;
+		}
+
+		public BigDecimal getR36_qua_ii_inr() {
+			return r36_qua_ii_inr;
+		}
+
+		public void setR36_qua_ii_inr(BigDecimal r36_qua_ii_inr) {
+			this.r36_qua_ii_inr = r36_qua_ii_inr;
+		}
+
+		public BigDecimal getR36_qua_iii_lc() {
+			return r36_qua_iii_lc;
+		}
+
+		public void setR36_qua_iii_lc(BigDecimal r36_qua_iii_lc) {
+			this.r36_qua_iii_lc = r36_qua_iii_lc;
+		}
+
+		public BigDecimal getR36_qua_iii_qar() {
+			return r36_qua_iii_qar;
+		}
+
+		public void setR36_qua_iii_qar(BigDecimal r36_qua_iii_qar) {
+			this.r36_qua_iii_qar = r36_qua_iii_qar;
+		}
+
+		public BigDecimal getR36_qua_iii_inr() {
+			return r36_qua_iii_inr;
+		}
+
+		public void setR36_qua_iii_inr(BigDecimal r36_qua_iii_inr) {
+			this.r36_qua_iii_inr = r36_qua_iii_inr;
+		}
+
+		public BigDecimal getR36_qua_iv_lc() {
+			return r36_qua_iv_lc;
+		}
+
+		public void setR36_qua_iv_lc(BigDecimal r36_qua_iv_lc) {
+			this.r36_qua_iv_lc = r36_qua_iv_lc;
+		}
+
+		public BigDecimal getR36_qua_iv_qar() {
+			return r36_qua_iv_qar;
+		}
+
+		public void setR36_qua_iv_qar(BigDecimal r36_qua_iv_qar) {
+			this.r36_qua_iv_qar = r36_qua_iv_qar;
+		}
+
+		public BigDecimal getR36_qua_iv_inr() {
+			return r36_qua_iv_inr;
+		}
+
+		public void setR36_qua_iv_inr(BigDecimal r36_qua_iv_inr) {
+			this.r36_qua_iv_inr = r36_qua_iv_inr;
+		}
+
+		public BigDecimal getR36_cumm_inr() {
+			return r36_cumm_inr;
+		}
+
+		public void setR36_cumm_inr(BigDecimal r36_cumm_inr) {
+			this.r36_cumm_inr = r36_cumm_inr;
+		}
+
+		public BigDecimal getR36_cumm_bwp() {
+			return r36_cumm_bwp;
+		}
+
+		public void setR36_cumm_bwp(BigDecimal r36_cumm_bwp) {
+			this.r36_cumm_bwp = r36_cumm_bwp;
+		}
+
+		public String getR37_product() {
+			return r37_product;
+		}
+
+		public void setR37_product(String r37_product) {
+			this.r37_product = r37_product;
+		}
+
+		public BigDecimal getR37_qua_i_lc() {
+			return r37_qua_i_lc;
+		}
+
+		public void setR37_qua_i_lc(BigDecimal r37_qua_i_lc) {
+			this.r37_qua_i_lc = r37_qua_i_lc;
+		}
+
+		public BigDecimal getR37_qua_i_qar() {
+			return r37_qua_i_qar;
+		}
+
+		public void setR37_qua_i_qar(BigDecimal r37_qua_i_qar) {
+			this.r37_qua_i_qar = r37_qua_i_qar;
+		}
+
+		public BigDecimal getR37_qua_i_inr() {
+			return r37_qua_i_inr;
+		}
+
+		public void setR37_qua_i_inr(BigDecimal r37_qua_i_inr) {
+			this.r37_qua_i_inr = r37_qua_i_inr;
+		}
+
+		public BigDecimal getR37_qua_ii_lc() {
+			return r37_qua_ii_lc;
+		}
+
+		public void setR37_qua_ii_lc(BigDecimal r37_qua_ii_lc) {
+			this.r37_qua_ii_lc = r37_qua_ii_lc;
+		}
+
+		public BigDecimal getR37_qua_ii_qar() {
+			return r37_qua_ii_qar;
+		}
+
+		public void setR37_qua_ii_qar(BigDecimal r37_qua_ii_qar) {
+			this.r37_qua_ii_qar = r37_qua_ii_qar;
+		}
+
+		public BigDecimal getR37_qua_ii_inr() {
+			return r37_qua_ii_inr;
+		}
+
+		public void setR37_qua_ii_inr(BigDecimal r37_qua_ii_inr) {
+			this.r37_qua_ii_inr = r37_qua_ii_inr;
+		}
+
+		public BigDecimal getR37_qua_iii_lc() {
+			return r37_qua_iii_lc;
+		}
+
+		public void setR37_qua_iii_lc(BigDecimal r37_qua_iii_lc) {
+			this.r37_qua_iii_lc = r37_qua_iii_lc;
+		}
+
+		public BigDecimal getR37_qua_iii_qar() {
+			return r37_qua_iii_qar;
+		}
+
+		public void setR37_qua_iii_qar(BigDecimal r37_qua_iii_qar) {
+			this.r37_qua_iii_qar = r37_qua_iii_qar;
+		}
+
+		public BigDecimal getR37_qua_iii_inr() {
+			return r37_qua_iii_inr;
+		}
+
+		public void setR37_qua_iii_inr(BigDecimal r37_qua_iii_inr) {
+			this.r37_qua_iii_inr = r37_qua_iii_inr;
+		}
+
+		public BigDecimal getR37_qua_iv_lc() {
+			return r37_qua_iv_lc;
+		}
+
+		public void setR37_qua_iv_lc(BigDecimal r37_qua_iv_lc) {
+			this.r37_qua_iv_lc = r37_qua_iv_lc;
+		}
+
+		public BigDecimal getR37_qua_iv_qar() {
+			return r37_qua_iv_qar;
+		}
+
+		public void setR37_qua_iv_qar(BigDecimal r37_qua_iv_qar) {
+			this.r37_qua_iv_qar = r37_qua_iv_qar;
+		}
+
+		public BigDecimal getR37_qua_iv_inr() {
+			return r37_qua_iv_inr;
+		}
+
+		public void setR37_qua_iv_inr(BigDecimal r37_qua_iv_inr) {
+			this.r37_qua_iv_inr = r37_qua_iv_inr;
+		}
+
+		public BigDecimal getR37_cumm_inr() {
+			return r37_cumm_inr;
+		}
+
+		public void setR37_cumm_inr(BigDecimal r37_cumm_inr) {
+			this.r37_cumm_inr = r37_cumm_inr;
+		}
+
+		public BigDecimal getR37_cumm_bwp() {
+			return r37_cumm_bwp;
+		}
+
+		public void setR37_cumm_bwp(BigDecimal r37_cumm_bwp) {
+			this.r37_cumm_bwp = r37_cumm_bwp;
+		}
+
+		public String getR38_product() {
+			return r38_product;
+		}
+
+		public void setR38_product(String r38_product) {
+			this.r38_product = r38_product;
+		}
+
+		public BigDecimal getR38_qua_i_lc() {
+			return r38_qua_i_lc;
+		}
+
+		public void setR38_qua_i_lc(BigDecimal r38_qua_i_lc) {
+			this.r38_qua_i_lc = r38_qua_i_lc;
+		}
+
+		public BigDecimal getR38_qua_i_qar() {
+			return r38_qua_i_qar;
+		}
+
+		public void setR38_qua_i_qar(BigDecimal r38_qua_i_qar) {
+			this.r38_qua_i_qar = r38_qua_i_qar;
+		}
+
+		public BigDecimal getR38_qua_i_inr() {
+			return r38_qua_i_inr;
+		}
+
+		public void setR38_qua_i_inr(BigDecimal r38_qua_i_inr) {
+			this.r38_qua_i_inr = r38_qua_i_inr;
+		}
+
+		public BigDecimal getR38_qua_ii_lc() {
+			return r38_qua_ii_lc;
+		}
+
+		public void setR38_qua_ii_lc(BigDecimal r38_qua_ii_lc) {
+			this.r38_qua_ii_lc = r38_qua_ii_lc;
+		}
+
+		public BigDecimal getR38_qua_ii_qar() {
+			return r38_qua_ii_qar;
+		}
+
+		public void setR38_qua_ii_qar(BigDecimal r38_qua_ii_qar) {
+			this.r38_qua_ii_qar = r38_qua_ii_qar;
+		}
+
+		public BigDecimal getR38_qua_ii_inr() {
+			return r38_qua_ii_inr;
+		}
+
+		public void setR38_qua_ii_inr(BigDecimal r38_qua_ii_inr) {
+			this.r38_qua_ii_inr = r38_qua_ii_inr;
+		}
+
+		public BigDecimal getR38_qua_iii_lc() {
+			return r38_qua_iii_lc;
+		}
+
+		public void setR38_qua_iii_lc(BigDecimal r38_qua_iii_lc) {
+			this.r38_qua_iii_lc = r38_qua_iii_lc;
+		}
+
+		public BigDecimal getR38_qua_iii_qar() {
+			return r38_qua_iii_qar;
+		}
+
+		public void setR38_qua_iii_qar(BigDecimal r38_qua_iii_qar) {
+			this.r38_qua_iii_qar = r38_qua_iii_qar;
+		}
+
+		public BigDecimal getR38_qua_iii_inr() {
+			return r38_qua_iii_inr;
+		}
+
+		public void setR38_qua_iii_inr(BigDecimal r38_qua_iii_inr) {
+			this.r38_qua_iii_inr = r38_qua_iii_inr;
+		}
+
+		public BigDecimal getR38_qua_iv_lc() {
+			return r38_qua_iv_lc;
+		}
+
+		public void setR38_qua_iv_lc(BigDecimal r38_qua_iv_lc) {
+			this.r38_qua_iv_lc = r38_qua_iv_lc;
+		}
+
+		public BigDecimal getR38_qua_iv_qar() {
+			return r38_qua_iv_qar;
+		}
+
+		public void setR38_qua_iv_qar(BigDecimal r38_qua_iv_qar) {
+			this.r38_qua_iv_qar = r38_qua_iv_qar;
+		}
+
+		public BigDecimal getR38_qua_iv_inr() {
+			return r38_qua_iv_inr;
+		}
+
+		public void setR38_qua_iv_inr(BigDecimal r38_qua_iv_inr) {
+			this.r38_qua_iv_inr = r38_qua_iv_inr;
+		}
+
+		public BigDecimal getR38_cumm_inr() {
+			return r38_cumm_inr;
+		}
+
+		public void setR38_cumm_inr(BigDecimal r38_cumm_inr) {
+			this.r38_cumm_inr = r38_cumm_inr;
+		}
+
+		public BigDecimal getR38_cumm_bwp() {
+			return r38_cumm_bwp;
+		}
+
+		public void setR38_cumm_bwp(BigDecimal r38_cumm_bwp) {
+			this.r38_cumm_bwp = r38_cumm_bwp;
+		}
+
+		public String getR39_product() {
+			return r39_product;
+		}
+
+		public void setR39_product(String r39_product) {
+			this.r39_product = r39_product;
+		}
+
+		public BigDecimal getR39_qua_i_lc() {
+			return r39_qua_i_lc;
+		}
+
+		public void setR39_qua_i_lc(BigDecimal r39_qua_i_lc) {
+			this.r39_qua_i_lc = r39_qua_i_lc;
+		}
+
+		public BigDecimal getR39_qua_i_qar() {
+			return r39_qua_i_qar;
+		}
+
+		public void setR39_qua_i_qar(BigDecimal r39_qua_i_qar) {
+			this.r39_qua_i_qar = r39_qua_i_qar;
+		}
+
+		public BigDecimal getR39_qua_i_inr() {
+			return r39_qua_i_inr;
+		}
+
+		public void setR39_qua_i_inr(BigDecimal r39_qua_i_inr) {
+			this.r39_qua_i_inr = r39_qua_i_inr;
+		}
+
+		public BigDecimal getR39_qua_ii_lc() {
+			return r39_qua_ii_lc;
+		}
+
+		public void setR39_qua_ii_lc(BigDecimal r39_qua_ii_lc) {
+			this.r39_qua_ii_lc = r39_qua_ii_lc;
+		}
+
+		public BigDecimal getR39_qua_ii_qar() {
+			return r39_qua_ii_qar;
+		}
+
+		public void setR39_qua_ii_qar(BigDecimal r39_qua_ii_qar) {
+			this.r39_qua_ii_qar = r39_qua_ii_qar;
+		}
+
+		public BigDecimal getR39_qua_ii_inr() {
+			return r39_qua_ii_inr;
+		}
+
+		public void setR39_qua_ii_inr(BigDecimal r39_qua_ii_inr) {
+			this.r39_qua_ii_inr = r39_qua_ii_inr;
+		}
+
+		public BigDecimal getR39_qua_iii_lc() {
+			return r39_qua_iii_lc;
+		}
+
+		public void setR39_qua_iii_lc(BigDecimal r39_qua_iii_lc) {
+			this.r39_qua_iii_lc = r39_qua_iii_lc;
+		}
+
+		public BigDecimal getR39_qua_iii_qar() {
+			return r39_qua_iii_qar;
+		}
+
+		public void setR39_qua_iii_qar(BigDecimal r39_qua_iii_qar) {
+			this.r39_qua_iii_qar = r39_qua_iii_qar;
+		}
+
+		public BigDecimal getR39_qua_iii_inr() {
+			return r39_qua_iii_inr;
+		}
+
+		public void setR39_qua_iii_inr(BigDecimal r39_qua_iii_inr) {
+			this.r39_qua_iii_inr = r39_qua_iii_inr;
+		}
+
+		public BigDecimal getR39_qua_iv_lc() {
+			return r39_qua_iv_lc;
+		}
+
+		public void setR39_qua_iv_lc(BigDecimal r39_qua_iv_lc) {
+			this.r39_qua_iv_lc = r39_qua_iv_lc;
+		}
+
+		public BigDecimal getR39_qua_iv_qar() {
+			return r39_qua_iv_qar;
+		}
+
+		public void setR39_qua_iv_qar(BigDecimal r39_qua_iv_qar) {
+			this.r39_qua_iv_qar = r39_qua_iv_qar;
+		}
+
+		public BigDecimal getR39_qua_iv_inr() {
+			return r39_qua_iv_inr;
+		}
+
+		public void setR39_qua_iv_inr(BigDecimal r39_qua_iv_inr) {
+			this.r39_qua_iv_inr = r39_qua_iv_inr;
+		}
+
+		public BigDecimal getR39_cumm_inr() {
+			return r39_cumm_inr;
+		}
+
+		public void setR39_cumm_inr(BigDecimal r39_cumm_inr) {
+			this.r39_cumm_inr = r39_cumm_inr;
+		}
+
+		public BigDecimal getR39_cumm_bwp() {
+			return r39_cumm_bwp;
+		}
+
+		public void setR39_cumm_bwp(BigDecimal r39_cumm_bwp) {
+			this.r39_cumm_bwp = r39_cumm_bwp;
+		}
+
+		public String getR40_product() {
+			return r40_product;
+		}
+
+		public void setR40_product(String r40_product) {
+			this.r40_product = r40_product;
+		}
+
+		public BigDecimal getR40_qua_i_lc() {
+			return r40_qua_i_lc;
+		}
+
+		public void setR40_qua_i_lc(BigDecimal r40_qua_i_lc) {
+			this.r40_qua_i_lc = r40_qua_i_lc;
+		}
+
+		public BigDecimal getR40_qua_i_qar() {
+			return r40_qua_i_qar;
+		}
+
+		public void setR40_qua_i_qar(BigDecimal r40_qua_i_qar) {
+			this.r40_qua_i_qar = r40_qua_i_qar;
+		}
+
+		public BigDecimal getR40_qua_i_inr() {
+			return r40_qua_i_inr;
+		}
+
+		public void setR40_qua_i_inr(BigDecimal r40_qua_i_inr) {
+			this.r40_qua_i_inr = r40_qua_i_inr;
+		}
+
+		public BigDecimal getR40_qua_ii_lc() {
+			return r40_qua_ii_lc;
+		}
+
+		public void setR40_qua_ii_lc(BigDecimal r40_qua_ii_lc) {
+			this.r40_qua_ii_lc = r40_qua_ii_lc;
+		}
+
+		public BigDecimal getR40_qua_ii_qar() {
+			return r40_qua_ii_qar;
+		}
+
+		public void setR40_qua_ii_qar(BigDecimal r40_qua_ii_qar) {
+			this.r40_qua_ii_qar = r40_qua_ii_qar;
+		}
+
+		public BigDecimal getR40_qua_ii_inr() {
+			return r40_qua_ii_inr;
+		}
+
+		public void setR40_qua_ii_inr(BigDecimal r40_qua_ii_inr) {
+			this.r40_qua_ii_inr = r40_qua_ii_inr;
+		}
+
+		public BigDecimal getR40_qua_iii_lc() {
+			return r40_qua_iii_lc;
+		}
+
+		public void setR40_qua_iii_lc(BigDecimal r40_qua_iii_lc) {
+			this.r40_qua_iii_lc = r40_qua_iii_lc;
+		}
+
+		public BigDecimal getR40_qua_iii_qar() {
+			return r40_qua_iii_qar;
+		}
+
+		public void setR40_qua_iii_qar(BigDecimal r40_qua_iii_qar) {
+			this.r40_qua_iii_qar = r40_qua_iii_qar;
+		}
+
+		public BigDecimal getR40_qua_iii_inr() {
+			return r40_qua_iii_inr;
+		}
+
+		public void setR40_qua_iii_inr(BigDecimal r40_qua_iii_inr) {
+			this.r40_qua_iii_inr = r40_qua_iii_inr;
+		}
+
+		public BigDecimal getR40_qua_iv_lc() {
+			return r40_qua_iv_lc;
+		}
+
+		public void setR40_qua_iv_lc(BigDecimal r40_qua_iv_lc) {
+			this.r40_qua_iv_lc = r40_qua_iv_lc;
+		}
+
+		public BigDecimal getR40_qua_iv_qar() {
+			return r40_qua_iv_qar;
+		}
+
+		public void setR40_qua_iv_qar(BigDecimal r40_qua_iv_qar) {
+			this.r40_qua_iv_qar = r40_qua_iv_qar;
+		}
+
+		public BigDecimal getR40_qua_iv_inr() {
+			return r40_qua_iv_inr;
+		}
+
+		public void setR40_qua_iv_inr(BigDecimal r40_qua_iv_inr) {
+			this.r40_qua_iv_inr = r40_qua_iv_inr;
+		}
+
+		public BigDecimal getR40_cumm_inr() {
+			return r40_cumm_inr;
+		}
+
+		public void setR40_cumm_inr(BigDecimal r40_cumm_inr) {
+			this.r40_cumm_inr = r40_cumm_inr;
+		}
+
+		public BigDecimal getR40_cumm_bwp() {
+			return r40_cumm_bwp;
+		}
+
+		public void setR40_cumm_bwp(BigDecimal r40_cumm_bwp) {
+			this.r40_cumm_bwp = r40_cumm_bwp;
+		}
+
+		public String getR41_product() {
+			return r41_product;
+		}
+
+		public void setR41_product(String r41_product) {
+			this.r41_product = r41_product;
+		}
+
+		public BigDecimal getR41_qua_i_lc() {
+			return r41_qua_i_lc;
+		}
+
+		public void setR41_qua_i_lc(BigDecimal r41_qua_i_lc) {
+			this.r41_qua_i_lc = r41_qua_i_lc;
+		}
+
+		public BigDecimal getR41_qua_i_qar() {
+			return r41_qua_i_qar;
+		}
+
+		public void setR41_qua_i_qar(BigDecimal r41_qua_i_qar) {
+			this.r41_qua_i_qar = r41_qua_i_qar;
+		}
+
+		public BigDecimal getR41_qua_i_inr() {
+			return r41_qua_i_inr;
+		}
+
+		public void setR41_qua_i_inr(BigDecimal r41_qua_i_inr) {
+			this.r41_qua_i_inr = r41_qua_i_inr;
+		}
+
+		public BigDecimal getR41_qua_ii_lc() {
+			return r41_qua_ii_lc;
+		}
+
+		public void setR41_qua_ii_lc(BigDecimal r41_qua_ii_lc) {
+			this.r41_qua_ii_lc = r41_qua_ii_lc;
+		}
+
+		public BigDecimal getR41_qua_ii_qar() {
+			return r41_qua_ii_qar;
+		}
+
+		public void setR41_qua_ii_qar(BigDecimal r41_qua_ii_qar) {
+			this.r41_qua_ii_qar = r41_qua_ii_qar;
+		}
+
+		public BigDecimal getR41_qua_ii_inr() {
+			return r41_qua_ii_inr;
+		}
+
+		public void setR41_qua_ii_inr(BigDecimal r41_qua_ii_inr) {
+			this.r41_qua_ii_inr = r41_qua_ii_inr;
+		}
+
+		public BigDecimal getR41_qua_iii_lc() {
+			return r41_qua_iii_lc;
+		}
+
+		public void setR41_qua_iii_lc(BigDecimal r41_qua_iii_lc) {
+			this.r41_qua_iii_lc = r41_qua_iii_lc;
+		}
+
+		public BigDecimal getR41_qua_iii_qar() {
+			return r41_qua_iii_qar;
+		}
+
+		public void setR41_qua_iii_qar(BigDecimal r41_qua_iii_qar) {
+			this.r41_qua_iii_qar = r41_qua_iii_qar;
+		}
+
+		public BigDecimal getR41_qua_iii_inr() {
+			return r41_qua_iii_inr;
+		}
+
+		public void setR41_qua_iii_inr(BigDecimal r41_qua_iii_inr) {
+			this.r41_qua_iii_inr = r41_qua_iii_inr;
+		}
+
+		public BigDecimal getR41_qua_iv_lc() {
+			return r41_qua_iv_lc;
+		}
+
+		public void setR41_qua_iv_lc(BigDecimal r41_qua_iv_lc) {
+			this.r41_qua_iv_lc = r41_qua_iv_lc;
+		}
+
+		public BigDecimal getR41_qua_iv_qar() {
+			return r41_qua_iv_qar;
+		}
+
+		public void setR41_qua_iv_qar(BigDecimal r41_qua_iv_qar) {
+			this.r41_qua_iv_qar = r41_qua_iv_qar;
+		}
+
+		public BigDecimal getR41_qua_iv_inr() {
+			return r41_qua_iv_inr;
+		}
+
+		public void setR41_qua_iv_inr(BigDecimal r41_qua_iv_inr) {
+			this.r41_qua_iv_inr = r41_qua_iv_inr;
+		}
+
+		public BigDecimal getR41_cumm_inr() {
+			return r41_cumm_inr;
+		}
+
+		public void setR41_cumm_inr(BigDecimal r41_cumm_inr) {
+			this.r41_cumm_inr = r41_cumm_inr;
+		}
+
+		public BigDecimal getR41_cumm_bwp() {
+			return r41_cumm_bwp;
+		}
+
+		public void setR41_cumm_bwp(BigDecimal r41_cumm_bwp) {
+			this.r41_cumm_bwp = r41_cumm_bwp;
+		}
+
+		public String getR42_product() {
+			return r42_product;
+		}
+
+		public void setR42_product(String r42_product) {
+			this.r42_product = r42_product;
+		}
+
+		public BigDecimal getR42_qua_i_lc() {
+			return r42_qua_i_lc;
+		}
+
+		public void setR42_qua_i_lc(BigDecimal r42_qua_i_lc) {
+			this.r42_qua_i_lc = r42_qua_i_lc;
+		}
+
+		public BigDecimal getR42_qua_i_qar() {
+			return r42_qua_i_qar;
+		}
+
+		public void setR42_qua_i_qar(BigDecimal r42_qua_i_qar) {
+			this.r42_qua_i_qar = r42_qua_i_qar;
+		}
+
+		public BigDecimal getR42_qua_i_inr() {
+			return r42_qua_i_inr;
+		}
+
+		public void setR42_qua_i_inr(BigDecimal r42_qua_i_inr) {
+			this.r42_qua_i_inr = r42_qua_i_inr;
+		}
+
+		public BigDecimal getR42_qua_ii_lc() {
+			return r42_qua_ii_lc;
+		}
+
+		public void setR42_qua_ii_lc(BigDecimal r42_qua_ii_lc) {
+			this.r42_qua_ii_lc = r42_qua_ii_lc;
+		}
+
+		public BigDecimal getR42_qua_ii_qar() {
+			return r42_qua_ii_qar;
+		}
+
+		public void setR42_qua_ii_qar(BigDecimal r42_qua_ii_qar) {
+			this.r42_qua_ii_qar = r42_qua_ii_qar;
+		}
+
+		public BigDecimal getR42_qua_ii_inr() {
+			return r42_qua_ii_inr;
+		}
+
+		public void setR42_qua_ii_inr(BigDecimal r42_qua_ii_inr) {
+			this.r42_qua_ii_inr = r42_qua_ii_inr;
+		}
+
+		public BigDecimal getR42_qua_iii_lc() {
+			return r42_qua_iii_lc;
+		}
+
+		public void setR42_qua_iii_lc(BigDecimal r42_qua_iii_lc) {
+			this.r42_qua_iii_lc = r42_qua_iii_lc;
+		}
+
+		public BigDecimal getR42_qua_iii_qar() {
+			return r42_qua_iii_qar;
+		}
+
+		public void setR42_qua_iii_qar(BigDecimal r42_qua_iii_qar) {
+			this.r42_qua_iii_qar = r42_qua_iii_qar;
+		}
+
+		public BigDecimal getR42_qua_iii_inr() {
+			return r42_qua_iii_inr;
+		}
+
+		public void setR42_qua_iii_inr(BigDecimal r42_qua_iii_inr) {
+			this.r42_qua_iii_inr = r42_qua_iii_inr;
+		}
+
+		public BigDecimal getR42_qua_iv_lc() {
+			return r42_qua_iv_lc;
+		}
+
+		public void setR42_qua_iv_lc(BigDecimal r42_qua_iv_lc) {
+			this.r42_qua_iv_lc = r42_qua_iv_lc;
+		}
+
+		public BigDecimal getR42_qua_iv_qar() {
+			return r42_qua_iv_qar;
+		}
+
+		public void setR42_qua_iv_qar(BigDecimal r42_qua_iv_qar) {
+			this.r42_qua_iv_qar = r42_qua_iv_qar;
+		}
+
+		public BigDecimal getR42_qua_iv_inr() {
+			return r42_qua_iv_inr;
+		}
+
+		public void setR42_qua_iv_inr(BigDecimal r42_qua_iv_inr) {
+			this.r42_qua_iv_inr = r42_qua_iv_inr;
+		}
+
+		public BigDecimal getR42_cumm_inr() {
+			return r42_cumm_inr;
+		}
+
+		public void setR42_cumm_inr(BigDecimal r42_cumm_inr) {
+			this.r42_cumm_inr = r42_cumm_inr;
+		}
+
+		public BigDecimal getR42_cumm_bwp() {
+			return r42_cumm_bwp;
+		}
+
+		public void setR42_cumm_bwp(BigDecimal r42_cumm_bwp) {
+			this.r42_cumm_bwp = r42_cumm_bwp;
+		}
+
+		public String getR43_product() {
+			return r43_product;
+		}
+
+		public void setR43_product(String r43_product) {
+			this.r43_product = r43_product;
+		}
+
+		public BigDecimal getR43_qua_i_lc() {
+			return r43_qua_i_lc;
+		}
+
+		public void setR43_qua_i_lc(BigDecimal r43_qua_i_lc) {
+			this.r43_qua_i_lc = r43_qua_i_lc;
+		}
+
+		public BigDecimal getR43_qua_i_qar() {
+			return r43_qua_i_qar;
+		}
+
+		public void setR43_qua_i_qar(BigDecimal r43_qua_i_qar) {
+			this.r43_qua_i_qar = r43_qua_i_qar;
+		}
+
+		public BigDecimal getR43_qua_i_inr() {
+			return r43_qua_i_inr;
+		}
+
+		public void setR43_qua_i_inr(BigDecimal r43_qua_i_inr) {
+			this.r43_qua_i_inr = r43_qua_i_inr;
+		}
+
+		public BigDecimal getR43_qua_ii_lc() {
+			return r43_qua_ii_lc;
+		}
+
+		public void setR43_qua_ii_lc(BigDecimal r43_qua_ii_lc) {
+			this.r43_qua_ii_lc = r43_qua_ii_lc;
+		}
+
+		public BigDecimal getR43_qua_ii_qar() {
+			return r43_qua_ii_qar;
+		}
+
+		public void setR43_qua_ii_qar(BigDecimal r43_qua_ii_qar) {
+			this.r43_qua_ii_qar = r43_qua_ii_qar;
+		}
+
+		public BigDecimal getR43_qua_ii_inr() {
+			return r43_qua_ii_inr;
+		}
+
+		public void setR43_qua_ii_inr(BigDecimal r43_qua_ii_inr) {
+			this.r43_qua_ii_inr = r43_qua_ii_inr;
+		}
+
+		public BigDecimal getR43_qua_iii_lc() {
+			return r43_qua_iii_lc;
+		}
+
+		public void setR43_qua_iii_lc(BigDecimal r43_qua_iii_lc) {
+			this.r43_qua_iii_lc = r43_qua_iii_lc;
+		}
+
+		public BigDecimal getR43_qua_iii_qar() {
+			return r43_qua_iii_qar;
+		}
+
+		public void setR43_qua_iii_qar(BigDecimal r43_qua_iii_qar) {
+			this.r43_qua_iii_qar = r43_qua_iii_qar;
+		}
+
+		public BigDecimal getR43_qua_iii_inr() {
+			return r43_qua_iii_inr;
+		}
+
+		public void setR43_qua_iii_inr(BigDecimal r43_qua_iii_inr) {
+			this.r43_qua_iii_inr = r43_qua_iii_inr;
+		}
+
+		public BigDecimal getR43_qua_iv_lc() {
+			return r43_qua_iv_lc;
+		}
+
+		public void setR43_qua_iv_lc(BigDecimal r43_qua_iv_lc) {
+			this.r43_qua_iv_lc = r43_qua_iv_lc;
+		}
+
+		public BigDecimal getR43_qua_iv_qar() {
+			return r43_qua_iv_qar;
+		}
+
+		public void setR43_qua_iv_qar(BigDecimal r43_qua_iv_qar) {
+			this.r43_qua_iv_qar = r43_qua_iv_qar;
+		}
+
+		public BigDecimal getR43_qua_iv_inr() {
+			return r43_qua_iv_inr;
+		}
+
+		public void setR43_qua_iv_inr(BigDecimal r43_qua_iv_inr) {
+			this.r43_qua_iv_inr = r43_qua_iv_inr;
+		}
+
+		public BigDecimal getR43_cumm_inr() {
+			return r43_cumm_inr;
+		}
+
+		public void setR43_cumm_inr(BigDecimal r43_cumm_inr) {
+			this.r43_cumm_inr = r43_cumm_inr;
+		}
+
+		public BigDecimal getR43_cumm_bwp() {
+			return r43_cumm_bwp;
+		}
+
+		public void setR43_cumm_bwp(BigDecimal r43_cumm_bwp) {
+			this.r43_cumm_bwp = r43_cumm_bwp;
+		}
+
+		public String getR44_product() {
+			return r44_product;
+		}
+
+		public void setR44_product(String r44_product) {
+			this.r44_product = r44_product;
+		}
+
+		public BigDecimal getR44_qua_i_lc() {
+			return r44_qua_i_lc;
+		}
+
+		public void setR44_qua_i_lc(BigDecimal r44_qua_i_lc) {
+			this.r44_qua_i_lc = r44_qua_i_lc;
+		}
+
+		public BigDecimal getR44_qua_i_qar() {
+			return r44_qua_i_qar;
+		}
+
+		public void setR44_qua_i_qar(BigDecimal r44_qua_i_qar) {
+			this.r44_qua_i_qar = r44_qua_i_qar;
+		}
+
+		public BigDecimal getR44_qua_i_inr() {
+			return r44_qua_i_inr;
+		}
+
+		public void setR44_qua_i_inr(BigDecimal r44_qua_i_inr) {
+			this.r44_qua_i_inr = r44_qua_i_inr;
+		}
+
+		public BigDecimal getR44_qua_ii_lc() {
+			return r44_qua_ii_lc;
+		}
+
+		public void setR44_qua_ii_lc(BigDecimal r44_qua_ii_lc) {
+			this.r44_qua_ii_lc = r44_qua_ii_lc;
+		}
+
+		public BigDecimal getR44_qua_ii_qar() {
+			return r44_qua_ii_qar;
+		}
+
+		public void setR44_qua_ii_qar(BigDecimal r44_qua_ii_qar) {
+			this.r44_qua_ii_qar = r44_qua_ii_qar;
+		}
+
+		public BigDecimal getR44_qua_ii_inr() {
+			return r44_qua_ii_inr;
+		}
+
+		public void setR44_qua_ii_inr(BigDecimal r44_qua_ii_inr) {
+			this.r44_qua_ii_inr = r44_qua_ii_inr;
+		}
+
+		public BigDecimal getR44_qua_iii_lc() {
+			return r44_qua_iii_lc;
+		}
+
+		public void setR44_qua_iii_lc(BigDecimal r44_qua_iii_lc) {
+			this.r44_qua_iii_lc = r44_qua_iii_lc;
+		}
+
+		public BigDecimal getR44_qua_iii_qar() {
+			return r44_qua_iii_qar;
+		}
+
+		public void setR44_qua_iii_qar(BigDecimal r44_qua_iii_qar) {
+			this.r44_qua_iii_qar = r44_qua_iii_qar;
+		}
+
+		public BigDecimal getR44_qua_iii_inr() {
+			return r44_qua_iii_inr;
+		}
+
+		public void setR44_qua_iii_inr(BigDecimal r44_qua_iii_inr) {
+			this.r44_qua_iii_inr = r44_qua_iii_inr;
+		}
+
+		public BigDecimal getR44_qua_iv_lc() {
+			return r44_qua_iv_lc;
+		}
+
+		public void setR44_qua_iv_lc(BigDecimal r44_qua_iv_lc) {
+			this.r44_qua_iv_lc = r44_qua_iv_lc;
+		}
+
+		public BigDecimal getR44_qua_iv_qar() {
+			return r44_qua_iv_qar;
+		}
+
+		public void setR44_qua_iv_qar(BigDecimal r44_qua_iv_qar) {
+			this.r44_qua_iv_qar = r44_qua_iv_qar;
+		}
+
+		public BigDecimal getR44_qua_iv_inr() {
+			return r44_qua_iv_inr;
+		}
+
+		public void setR44_qua_iv_inr(BigDecimal r44_qua_iv_inr) {
+			this.r44_qua_iv_inr = r44_qua_iv_inr;
+		}
+
+		public BigDecimal getR44_cumm_inr() {
+			return r44_cumm_inr;
+		}
+
+		public void setR44_cumm_inr(BigDecimal r44_cumm_inr) {
+			this.r44_cumm_inr = r44_cumm_inr;
+		}
+
+		public BigDecimal getR44_cumm_bwp() {
+			return r44_cumm_bwp;
+		}
+
+		public void setR44_cumm_bwp(BigDecimal r44_cumm_bwp) {
+			this.r44_cumm_bwp = r44_cumm_bwp;
+		}
+
+		public String getR45_product() {
+			return r45_product;
+		}
+
+		public void setR45_product(String r45_product) {
+			this.r45_product = r45_product;
+		}
+
+		public BigDecimal getR45_qua_i_lc() {
+			return r45_qua_i_lc;
+		}
+
+		public void setR45_qua_i_lc(BigDecimal r45_qua_i_lc) {
+			this.r45_qua_i_lc = r45_qua_i_lc;
+		}
+
+		public BigDecimal getR45_qua_i_qar() {
+			return r45_qua_i_qar;
+		}
+
+		public void setR45_qua_i_qar(BigDecimal r45_qua_i_qar) {
+			this.r45_qua_i_qar = r45_qua_i_qar;
+		}
+
+		public BigDecimal getR45_qua_i_inr() {
+			return r45_qua_i_inr;
+		}
+
+		public void setR45_qua_i_inr(BigDecimal r45_qua_i_inr) {
+			this.r45_qua_i_inr = r45_qua_i_inr;
+		}
+
+		public BigDecimal getR45_qua_ii_lc() {
+			return r45_qua_ii_lc;
+		}
+
+		public void setR45_qua_ii_lc(BigDecimal r45_qua_ii_lc) {
+			this.r45_qua_ii_lc = r45_qua_ii_lc;
+		}
+
+		public BigDecimal getR45_qua_ii_qar() {
+			return r45_qua_ii_qar;
+		}
+
+		public void setR45_qua_ii_qar(BigDecimal r45_qua_ii_qar) {
+			this.r45_qua_ii_qar = r45_qua_ii_qar;
+		}
+
+		public BigDecimal getR45_qua_ii_inr() {
+			return r45_qua_ii_inr;
+		}
+
+		public void setR45_qua_ii_inr(BigDecimal r45_qua_ii_inr) {
+			this.r45_qua_ii_inr = r45_qua_ii_inr;
+		}
+
+		public BigDecimal getR45_qua_iii_lc() {
+			return r45_qua_iii_lc;
+		}
+
+		public void setR45_qua_iii_lc(BigDecimal r45_qua_iii_lc) {
+			this.r45_qua_iii_lc = r45_qua_iii_lc;
+		}
+
+		public BigDecimal getR45_qua_iii_qar() {
+			return r45_qua_iii_qar;
+		}
+
+		public void setR45_qua_iii_qar(BigDecimal r45_qua_iii_qar) {
+			this.r45_qua_iii_qar = r45_qua_iii_qar;
+		}
+
+		public BigDecimal getR45_qua_iii_inr() {
+			return r45_qua_iii_inr;
+		}
+
+		public void setR45_qua_iii_inr(BigDecimal r45_qua_iii_inr) {
+			this.r45_qua_iii_inr = r45_qua_iii_inr;
+		}
+
+		public BigDecimal getR45_qua_iv_lc() {
+			return r45_qua_iv_lc;
+		}
+
+		public void setR45_qua_iv_lc(BigDecimal r45_qua_iv_lc) {
+			this.r45_qua_iv_lc = r45_qua_iv_lc;
+		}
+
+		public BigDecimal getR45_qua_iv_qar() {
+			return r45_qua_iv_qar;
+		}
+
+		public void setR45_qua_iv_qar(BigDecimal r45_qua_iv_qar) {
+			this.r45_qua_iv_qar = r45_qua_iv_qar;
+		}
+
+		public BigDecimal getR45_qua_iv_inr() {
+			return r45_qua_iv_inr;
+		}
+
+		public void setR45_qua_iv_inr(BigDecimal r45_qua_iv_inr) {
+			this.r45_qua_iv_inr = r45_qua_iv_inr;
+		}
+
+		public BigDecimal getR45_cumm_inr() {
+			return r45_cumm_inr;
+		}
+
+		public void setR45_cumm_inr(BigDecimal r45_cumm_inr) {
+			this.r45_cumm_inr = r45_cumm_inr;
+		}
+
+		public BigDecimal getR45_cumm_bwp() {
+			return r45_cumm_bwp;
+		}
+
+		public void setR45_cumm_bwp(BigDecimal r45_cumm_bwp) {
+			this.r45_cumm_bwp = r45_cumm_bwp;
+		}
+
+		public String getR46_product() {
+			return r46_product;
+		}
+
+		public void setR46_product(String r46_product) {
+			this.r46_product = r46_product;
+		}
+
+		public BigDecimal getR46_qua_i_lc() {
+			return r46_qua_i_lc;
+		}
+
+		public void setR46_qua_i_lc(BigDecimal r46_qua_i_lc) {
+			this.r46_qua_i_lc = r46_qua_i_lc;
+		}
+
+		public BigDecimal getR46_qua_i_qar() {
+			return r46_qua_i_qar;
+		}
+
+		public void setR46_qua_i_qar(BigDecimal r46_qua_i_qar) {
+			this.r46_qua_i_qar = r46_qua_i_qar;
+		}
+
+		public BigDecimal getR46_qua_i_inr() {
+			return r46_qua_i_inr;
+		}
+
+		public void setR46_qua_i_inr(BigDecimal r46_qua_i_inr) {
+			this.r46_qua_i_inr = r46_qua_i_inr;
+		}
+
+		public BigDecimal getR46_qua_ii_lc() {
+			return r46_qua_ii_lc;
+		}
+
+		public void setR46_qua_ii_lc(BigDecimal r46_qua_ii_lc) {
+			this.r46_qua_ii_lc = r46_qua_ii_lc;
+		}
+
+		public BigDecimal getR46_qua_ii_qar() {
+			return r46_qua_ii_qar;
+		}
+
+		public void setR46_qua_ii_qar(BigDecimal r46_qua_ii_qar) {
+			this.r46_qua_ii_qar = r46_qua_ii_qar;
+		}
+
+		public BigDecimal getR46_qua_ii_inr() {
+			return r46_qua_ii_inr;
+		}
+
+		public void setR46_qua_ii_inr(BigDecimal r46_qua_ii_inr) {
+			this.r46_qua_ii_inr = r46_qua_ii_inr;
+		}
+
+		public BigDecimal getR46_qua_iii_lc() {
+			return r46_qua_iii_lc;
+		}
+
+		public void setR46_qua_iii_lc(BigDecimal r46_qua_iii_lc) {
+			this.r46_qua_iii_lc = r46_qua_iii_lc;
+		}
+
+		public BigDecimal getR46_qua_iii_qar() {
+			return r46_qua_iii_qar;
+		}
+
+		public void setR46_qua_iii_qar(BigDecimal r46_qua_iii_qar) {
+			this.r46_qua_iii_qar = r46_qua_iii_qar;
+		}
+
+		public BigDecimal getR46_qua_iii_inr() {
+			return r46_qua_iii_inr;
+		}
+
+		public void setR46_qua_iii_inr(BigDecimal r46_qua_iii_inr) {
+			this.r46_qua_iii_inr = r46_qua_iii_inr;
+		}
+
+		public BigDecimal getR46_qua_iv_lc() {
+			return r46_qua_iv_lc;
+		}
+
+		public void setR46_qua_iv_lc(BigDecimal r46_qua_iv_lc) {
+			this.r46_qua_iv_lc = r46_qua_iv_lc;
+		}
+
+		public BigDecimal getR46_qua_iv_qar() {
+			return r46_qua_iv_qar;
+		}
+
+		public void setR46_qua_iv_qar(BigDecimal r46_qua_iv_qar) {
+			this.r46_qua_iv_qar = r46_qua_iv_qar;
+		}
+
+		public BigDecimal getR46_qua_iv_inr() {
+			return r46_qua_iv_inr;
+		}
+
+		public void setR46_qua_iv_inr(BigDecimal r46_qua_iv_inr) {
+			this.r46_qua_iv_inr = r46_qua_iv_inr;
+		}
+
+		public BigDecimal getR46_cumm_inr() {
+			return r46_cumm_inr;
+		}
+
+		public void setR46_cumm_inr(BigDecimal r46_cumm_inr) {
+			this.r46_cumm_inr = r46_cumm_inr;
+		}
+
+		public BigDecimal getR46_cumm_bwp() {
+			return r46_cumm_bwp;
+		}
+
+		public void setR46_cumm_bwp(BigDecimal r46_cumm_bwp) {
+			this.r46_cumm_bwp = r46_cumm_bwp;
+		}
+
+		public String getR47_product() {
+			return r47_product;
+		}
+
+		public void setR47_product(String r47_product) {
+			this.r47_product = r47_product;
+		}
+
+		public BigDecimal getR47_qua_i_lc() {
+			return r47_qua_i_lc;
+		}
+
+		public void setR47_qua_i_lc(BigDecimal r47_qua_i_lc) {
+			this.r47_qua_i_lc = r47_qua_i_lc;
+		}
+
+		public BigDecimal getR47_qua_i_qar() {
+			return r47_qua_i_qar;
+		}
+
+		public void setR47_qua_i_qar(BigDecimal r47_qua_i_qar) {
+			this.r47_qua_i_qar = r47_qua_i_qar;
+		}
+
+		public BigDecimal getR47_qua_i_inr() {
+			return r47_qua_i_inr;
+		}
+
+		public void setR47_qua_i_inr(BigDecimal r47_qua_i_inr) {
+			this.r47_qua_i_inr = r47_qua_i_inr;
+		}
+
+		public BigDecimal getR47_qua_ii_lc() {
+			return r47_qua_ii_lc;
+		}
+
+		public void setR47_qua_ii_lc(BigDecimal r47_qua_ii_lc) {
+			this.r47_qua_ii_lc = r47_qua_ii_lc;
+		}
+
+		public BigDecimal getR47_qua_ii_qar() {
+			return r47_qua_ii_qar;
+		}
+
+		public void setR47_qua_ii_qar(BigDecimal r47_qua_ii_qar) {
+			this.r47_qua_ii_qar = r47_qua_ii_qar;
+		}
+
+		public BigDecimal getR47_qua_ii_inr() {
+			return r47_qua_ii_inr;
+		}
+
+		public void setR47_qua_ii_inr(BigDecimal r47_qua_ii_inr) {
+			this.r47_qua_ii_inr = r47_qua_ii_inr;
+		}
+
+		public BigDecimal getR47_qua_iii_lc() {
+			return r47_qua_iii_lc;
+		}
+
+		public void setR47_qua_iii_lc(BigDecimal r47_qua_iii_lc) {
+			this.r47_qua_iii_lc = r47_qua_iii_lc;
+		}
+
+		public BigDecimal getR47_qua_iii_qar() {
+			return r47_qua_iii_qar;
+		}
+
+		public void setR47_qua_iii_qar(BigDecimal r47_qua_iii_qar) {
+			this.r47_qua_iii_qar = r47_qua_iii_qar;
+		}
+
+		public BigDecimal getR47_qua_iii_inr() {
+			return r47_qua_iii_inr;
+		}
+
+		public void setR47_qua_iii_inr(BigDecimal r47_qua_iii_inr) {
+			this.r47_qua_iii_inr = r47_qua_iii_inr;
+		}
+
+		public BigDecimal getR47_qua_iv_lc() {
+			return r47_qua_iv_lc;
+		}
+
+		public void setR47_qua_iv_lc(BigDecimal r47_qua_iv_lc) {
+			this.r47_qua_iv_lc = r47_qua_iv_lc;
+		}
+
+		public BigDecimal getR47_qua_iv_qar() {
+			return r47_qua_iv_qar;
+		}
+
+		public void setR47_qua_iv_qar(BigDecimal r47_qua_iv_qar) {
+			this.r47_qua_iv_qar = r47_qua_iv_qar;
+		}
+
+		public BigDecimal getR47_qua_iv_inr() {
+			return r47_qua_iv_inr;
+		}
+
+		public void setR47_qua_iv_inr(BigDecimal r47_qua_iv_inr) {
+			this.r47_qua_iv_inr = r47_qua_iv_inr;
+		}
+
+		public BigDecimal getR47_cumm_inr() {
+			return r47_cumm_inr;
+		}
+
+		public void setR47_cumm_inr(BigDecimal r47_cumm_inr) {
+			this.r47_cumm_inr = r47_cumm_inr;
+		}
+
+		public BigDecimal getR47_cumm_bwp() {
+			return r47_cumm_bwp;
+		}
+
+		public void setR47_cumm_bwp(BigDecimal r47_cumm_bwp) {
+			this.r47_cumm_bwp = r47_cumm_bwp;
+		}
+
+		public String getR48_product() {
+			return r48_product;
+		}
+
+		public void setR48_product(String r48_product) {
+			this.r48_product = r48_product;
+		}
+
+		public BigDecimal getR48_qua_i_lc() {
+			return r48_qua_i_lc;
+		}
+
+		public void setR48_qua_i_lc(BigDecimal r48_qua_i_lc) {
+			this.r48_qua_i_lc = r48_qua_i_lc;
+		}
+
+		public BigDecimal getR48_qua_i_qar() {
+			return r48_qua_i_qar;
+		}
+
+		public void setR48_qua_i_qar(BigDecimal r48_qua_i_qar) {
+			this.r48_qua_i_qar = r48_qua_i_qar;
+		}
+
+		public BigDecimal getR48_qua_i_inr() {
+			return r48_qua_i_inr;
+		}
+
+		public void setR48_qua_i_inr(BigDecimal r48_qua_i_inr) {
+			this.r48_qua_i_inr = r48_qua_i_inr;
+		}
+
+		public BigDecimal getR48_qua_ii_lc() {
+			return r48_qua_ii_lc;
+		}
+
+		public void setR48_qua_ii_lc(BigDecimal r48_qua_ii_lc) {
+			this.r48_qua_ii_lc = r48_qua_ii_lc;
+		}
+
+		public BigDecimal getR48_qua_ii_qar() {
+			return r48_qua_ii_qar;
+		}
+
+		public void setR48_qua_ii_qar(BigDecimal r48_qua_ii_qar) {
+			this.r48_qua_ii_qar = r48_qua_ii_qar;
+		}
+
+		public BigDecimal getR48_qua_ii_inr() {
+			return r48_qua_ii_inr;
+		}
+
+		public void setR48_qua_ii_inr(BigDecimal r48_qua_ii_inr) {
+			this.r48_qua_ii_inr = r48_qua_ii_inr;
+		}
+
+		public BigDecimal getR48_qua_iii_lc() {
+			return r48_qua_iii_lc;
+		}
+
+		public void setR48_qua_iii_lc(BigDecimal r48_qua_iii_lc) {
+			this.r48_qua_iii_lc = r48_qua_iii_lc;
+		}
+
+		public BigDecimal getR48_qua_iii_qar() {
+			return r48_qua_iii_qar;
+		}
+
+		public void setR48_qua_iii_qar(BigDecimal r48_qua_iii_qar) {
+			this.r48_qua_iii_qar = r48_qua_iii_qar;
+		}
+
+		public BigDecimal getR48_qua_iii_inr() {
+			return r48_qua_iii_inr;
+		}
+
+		public void setR48_qua_iii_inr(BigDecimal r48_qua_iii_inr) {
+			this.r48_qua_iii_inr = r48_qua_iii_inr;
+		}
+
+		public BigDecimal getR48_qua_iv_lc() {
+			return r48_qua_iv_lc;
+		}
+
+		public void setR48_qua_iv_lc(BigDecimal r48_qua_iv_lc) {
+			this.r48_qua_iv_lc = r48_qua_iv_lc;
+		}
+
+		public BigDecimal getR48_qua_iv_qar() {
+			return r48_qua_iv_qar;
+		}
+
+		public void setR48_qua_iv_qar(BigDecimal r48_qua_iv_qar) {
+			this.r48_qua_iv_qar = r48_qua_iv_qar;
+		}
+
+		public BigDecimal getR48_qua_iv_inr() {
+			return r48_qua_iv_inr;
+		}
+
+		public void setR48_qua_iv_inr(BigDecimal r48_qua_iv_inr) {
+			this.r48_qua_iv_inr = r48_qua_iv_inr;
+		}
+
+		public BigDecimal getR48_cumm_inr() {
+			return r48_cumm_inr;
+		}
+
+		public void setR48_cumm_inr(BigDecimal r48_cumm_inr) {
+			this.r48_cumm_inr = r48_cumm_inr;
+		}
+
+		public BigDecimal getR48_cumm_bwp() {
+			return r48_cumm_bwp;
+		}
+
+		public void setR48_cumm_bwp(BigDecimal r48_cumm_bwp) {
+			this.r48_cumm_bwp = r48_cumm_bwp;
+		}
+
+		public String getR49_product() {
+			return r49_product;
+		}
+
+		public void setR49_product(String r49_product) {
+			this.r49_product = r49_product;
+		}
+
+		public BigDecimal getR49_qua_i_lc() {
+			return r49_qua_i_lc;
+		}
+
+		public void setR49_qua_i_lc(BigDecimal r49_qua_i_lc) {
+			this.r49_qua_i_lc = r49_qua_i_lc;
+		}
+
+		public BigDecimal getR49_qua_i_qar() {
+			return r49_qua_i_qar;
+		}
+
+		public void setR49_qua_i_qar(BigDecimal r49_qua_i_qar) {
+			this.r49_qua_i_qar = r49_qua_i_qar;
+		}
+
+		public BigDecimal getR49_qua_i_inr() {
+			return r49_qua_i_inr;
+		}
+
+		public void setR49_qua_i_inr(BigDecimal r49_qua_i_inr) {
+			this.r49_qua_i_inr = r49_qua_i_inr;
+		}
+
+		public BigDecimal getR49_qua_ii_lc() {
+			return r49_qua_ii_lc;
+		}
+
+		public void setR49_qua_ii_lc(BigDecimal r49_qua_ii_lc) {
+			this.r49_qua_ii_lc = r49_qua_ii_lc;
+		}
+
+		public BigDecimal getR49_qua_ii_qar() {
+			return r49_qua_ii_qar;
+		}
+
+		public void setR49_qua_ii_qar(BigDecimal r49_qua_ii_qar) {
+			this.r49_qua_ii_qar = r49_qua_ii_qar;
+		}
+
+		public BigDecimal getR49_qua_ii_inr() {
+			return r49_qua_ii_inr;
+		}
+
+		public void setR49_qua_ii_inr(BigDecimal r49_qua_ii_inr) {
+			this.r49_qua_ii_inr = r49_qua_ii_inr;
+		}
+
+		public BigDecimal getR49_qua_iii_lc() {
+			return r49_qua_iii_lc;
+		}
+
+		public void setR49_qua_iii_lc(BigDecimal r49_qua_iii_lc) {
+			this.r49_qua_iii_lc = r49_qua_iii_lc;
+		}
+
+		public BigDecimal getR49_qua_iii_qar() {
+			return r49_qua_iii_qar;
+		}
+
+		public void setR49_qua_iii_qar(BigDecimal r49_qua_iii_qar) {
+			this.r49_qua_iii_qar = r49_qua_iii_qar;
+		}
+
+		public BigDecimal getR49_qua_iii_inr() {
+			return r49_qua_iii_inr;
+		}
+
+		public void setR49_qua_iii_inr(BigDecimal r49_qua_iii_inr) {
+			this.r49_qua_iii_inr = r49_qua_iii_inr;
+		}
+
+		public BigDecimal getR49_qua_iv_lc() {
+			return r49_qua_iv_lc;
+		}
+
+		public void setR49_qua_iv_lc(BigDecimal r49_qua_iv_lc) {
+			this.r49_qua_iv_lc = r49_qua_iv_lc;
+		}
+
+		public BigDecimal getR49_qua_iv_qar() {
+			return r49_qua_iv_qar;
+		}
+
+		public void setR49_qua_iv_qar(BigDecimal r49_qua_iv_qar) {
+			this.r49_qua_iv_qar = r49_qua_iv_qar;
+		}
+
+		public BigDecimal getR49_qua_iv_inr() {
+			return r49_qua_iv_inr;
+		}
+
+		public void setR49_qua_iv_inr(BigDecimal r49_qua_iv_inr) {
+			this.r49_qua_iv_inr = r49_qua_iv_inr;
+		}
+
+		public BigDecimal getR49_cumm_inr() {
+			return r49_cumm_inr;
+		}
+
+		public void setR49_cumm_inr(BigDecimal r49_cumm_inr) {
+			this.r49_cumm_inr = r49_cumm_inr;
+		}
+
+		public BigDecimal getR49_cumm_bwp() {
+			return r49_cumm_bwp;
+		}
+
+		public void setR49_cumm_bwp(BigDecimal r49_cumm_bwp) {
+			this.r49_cumm_bwp = r49_cumm_bwp;
+		}
+
+		public String getR50_product() {
+			return r50_product;
+		}
+
+		public void setR50_product(String r50_product) {
+			this.r50_product = r50_product;
+		}
+
+		public BigDecimal getR50_qua_i_lc() {
+			return r50_qua_i_lc;
+		}
+
+		public void setR50_qua_i_lc(BigDecimal r50_qua_i_lc) {
+			this.r50_qua_i_lc = r50_qua_i_lc;
+		}
+
+		public BigDecimal getR50_qua_i_qar() {
+			return r50_qua_i_qar;
+		}
+
+		public void setR50_qua_i_qar(BigDecimal r50_qua_i_qar) {
+			this.r50_qua_i_qar = r50_qua_i_qar;
+		}
+
+		public BigDecimal getR50_qua_i_inr() {
+			return r50_qua_i_inr;
+		}
+
+		public void setR50_qua_i_inr(BigDecimal r50_qua_i_inr) {
+			this.r50_qua_i_inr = r50_qua_i_inr;
+		}
+
+		public BigDecimal getR50_qua_ii_lc() {
+			return r50_qua_ii_lc;
+		}
+
+		public void setR50_qua_ii_lc(BigDecimal r50_qua_ii_lc) {
+			this.r50_qua_ii_lc = r50_qua_ii_lc;
+		}
+
+		public BigDecimal getR50_qua_ii_qar() {
+			return r50_qua_ii_qar;
+		}
+
+		public void setR50_qua_ii_qar(BigDecimal r50_qua_ii_qar) {
+			this.r50_qua_ii_qar = r50_qua_ii_qar;
+		}
+
+		public BigDecimal getR50_qua_ii_inr() {
+			return r50_qua_ii_inr;
+		}
+
+		public void setR50_qua_ii_inr(BigDecimal r50_qua_ii_inr) {
+			this.r50_qua_ii_inr = r50_qua_ii_inr;
+		}
+
+		public BigDecimal getR50_qua_iii_lc() {
+			return r50_qua_iii_lc;
+		}
+
+		public void setR50_qua_iii_lc(BigDecimal r50_qua_iii_lc) {
+			this.r50_qua_iii_lc = r50_qua_iii_lc;
+		}
+
+		public BigDecimal getR50_qua_iii_qar() {
+			return r50_qua_iii_qar;
+		}
+
+		public void setR50_qua_iii_qar(BigDecimal r50_qua_iii_qar) {
+			this.r50_qua_iii_qar = r50_qua_iii_qar;
+		}
+
+		public BigDecimal getR50_qua_iii_inr() {
+			return r50_qua_iii_inr;
+		}
+
+		public void setR50_qua_iii_inr(BigDecimal r50_qua_iii_inr) {
+			this.r50_qua_iii_inr = r50_qua_iii_inr;
+		}
+
+		public BigDecimal getR50_qua_iv_lc() {
+			return r50_qua_iv_lc;
+		}
+
+		public void setR50_qua_iv_lc(BigDecimal r50_qua_iv_lc) {
+			this.r50_qua_iv_lc = r50_qua_iv_lc;
+		}
+
+		public BigDecimal getR50_qua_iv_qar() {
+			return r50_qua_iv_qar;
+		}
+
+		public void setR50_qua_iv_qar(BigDecimal r50_qua_iv_qar) {
+			this.r50_qua_iv_qar = r50_qua_iv_qar;
+		}
+
+		public BigDecimal getR50_qua_iv_inr() {
+			return r50_qua_iv_inr;
+		}
+
+		public void setR50_qua_iv_inr(BigDecimal r50_qua_iv_inr) {
+			this.r50_qua_iv_inr = r50_qua_iv_inr;
+		}
+
+		public BigDecimal getR50_cumm_inr() {
+			return r50_cumm_inr;
+		}
+
+		public void setR50_cumm_inr(BigDecimal r50_cumm_inr) {
+			this.r50_cumm_inr = r50_cumm_inr;
+		}
+
+		public BigDecimal getR50_cumm_bwp() {
+			return r50_cumm_bwp;
+		}
+
+		public void setR50_cumm_bwp(BigDecimal r50_cumm_bwp) {
+			this.r50_cumm_bwp = r50_cumm_bwp;
+		}
+
+		public String getR51_product() {
+			return r51_product;
+		}
+
+		public void setR51_product(String r51_product) {
+			this.r51_product = r51_product;
+		}
+
+		public BigDecimal getR51_qua_i_lc() {
+			return r51_qua_i_lc;
+		}
+
+		public void setR51_qua_i_lc(BigDecimal r51_qua_i_lc) {
+			this.r51_qua_i_lc = r51_qua_i_lc;
+		}
+
+		public BigDecimal getR51_qua_i_qar() {
+			return r51_qua_i_qar;
+		}
+
+		public void setR51_qua_i_qar(BigDecimal r51_qua_i_qar) {
+			this.r51_qua_i_qar = r51_qua_i_qar;
+		}
+
+		public BigDecimal getR51_qua_i_inr() {
+			return r51_qua_i_inr;
+		}
+
+		public void setR51_qua_i_inr(BigDecimal r51_qua_i_inr) {
+			this.r51_qua_i_inr = r51_qua_i_inr;
+		}
+
+		public BigDecimal getR51_qua_ii_lc() {
+			return r51_qua_ii_lc;
+		}
+
+		public void setR51_qua_ii_lc(BigDecimal r51_qua_ii_lc) {
+			this.r51_qua_ii_lc = r51_qua_ii_lc;
+		}
+
+		public BigDecimal getR51_qua_ii_qar() {
+			return r51_qua_ii_qar;
+		}
+
+		public void setR51_qua_ii_qar(BigDecimal r51_qua_ii_qar) {
+			this.r51_qua_ii_qar = r51_qua_ii_qar;
+		}
+
+		public BigDecimal getR51_qua_ii_inr() {
+			return r51_qua_ii_inr;
+		}
+
+		public void setR51_qua_ii_inr(BigDecimal r51_qua_ii_inr) {
+			this.r51_qua_ii_inr = r51_qua_ii_inr;
+		}
+
+		public BigDecimal getR51_qua_iii_lc() {
+			return r51_qua_iii_lc;
+		}
+
+		public void setR51_qua_iii_lc(BigDecimal r51_qua_iii_lc) {
+			this.r51_qua_iii_lc = r51_qua_iii_lc;
+		}
+
+		public BigDecimal getR51_qua_iii_qar() {
+			return r51_qua_iii_qar;
+		}
+
+		public void setR51_qua_iii_qar(BigDecimal r51_qua_iii_qar) {
+			this.r51_qua_iii_qar = r51_qua_iii_qar;
+		}
+
+		public BigDecimal getR51_qua_iii_inr() {
+			return r51_qua_iii_inr;
+		}
+
+		public void setR51_qua_iii_inr(BigDecimal r51_qua_iii_inr) {
+			this.r51_qua_iii_inr = r51_qua_iii_inr;
+		}
+
+		public BigDecimal getR51_qua_iv_lc() {
+			return r51_qua_iv_lc;
+		}
+
+		public void setR51_qua_iv_lc(BigDecimal r51_qua_iv_lc) {
+			this.r51_qua_iv_lc = r51_qua_iv_lc;
+		}
+
+		public BigDecimal getR51_qua_iv_qar() {
+			return r51_qua_iv_qar;
+		}
+
+		public void setR51_qua_iv_qar(BigDecimal r51_qua_iv_qar) {
+			this.r51_qua_iv_qar = r51_qua_iv_qar;
+		}
+
+		public BigDecimal getR51_qua_iv_inr() {
+			return r51_qua_iv_inr;
+		}
+
+		public void setR51_qua_iv_inr(BigDecimal r51_qua_iv_inr) {
+			this.r51_qua_iv_inr = r51_qua_iv_inr;
+		}
+
+		public BigDecimal getR51_cumm_inr() {
+			return r51_cumm_inr;
+		}
+
+		public void setR51_cumm_inr(BigDecimal r51_cumm_inr) {
+			this.r51_cumm_inr = r51_cumm_inr;
+		}
+
+		public BigDecimal getR51_cumm_bwp() {
+			return r51_cumm_bwp;
+		}
+
+		public void setR51_cumm_bwp(BigDecimal r51_cumm_bwp) {
+			this.r51_cumm_bwp = r51_cumm_bwp;
+		}
+
+		public String getR52_product() {
+			return r52_product;
+		}
+
+		public void setR52_product(String r52_product) {
+			this.r52_product = r52_product;
+		}
+
+		public BigDecimal getR52_qua_i_lc() {
+			return r52_qua_i_lc;
+		}
+
+		public void setR52_qua_i_lc(BigDecimal r52_qua_i_lc) {
+			this.r52_qua_i_lc = r52_qua_i_lc;
+		}
+
+		public BigDecimal getR52_qua_i_qar() {
+			return r52_qua_i_qar;
+		}
+
+		public void setR52_qua_i_qar(BigDecimal r52_qua_i_qar) {
+			this.r52_qua_i_qar = r52_qua_i_qar;
+		}
+
+		public BigDecimal getR52_qua_i_inr() {
+			return r52_qua_i_inr;
+		}
+
+		public void setR52_qua_i_inr(BigDecimal r52_qua_i_inr) {
+			this.r52_qua_i_inr = r52_qua_i_inr;
+		}
+
+		public BigDecimal getR52_qua_ii_lc() {
+			return r52_qua_ii_lc;
+		}
+
+		public void setR52_qua_ii_lc(BigDecimal r52_qua_ii_lc) {
+			this.r52_qua_ii_lc = r52_qua_ii_lc;
+		}
+
+		public BigDecimal getR52_qua_ii_qar() {
+			return r52_qua_ii_qar;
+		}
+
+		public void setR52_qua_ii_qar(BigDecimal r52_qua_ii_qar) {
+			this.r52_qua_ii_qar = r52_qua_ii_qar;
+		}
+
+		public BigDecimal getR52_qua_ii_inr() {
+			return r52_qua_ii_inr;
+		}
+
+		public void setR52_qua_ii_inr(BigDecimal r52_qua_ii_inr) {
+			this.r52_qua_ii_inr = r52_qua_ii_inr;
+		}
+
+		public BigDecimal getR52_qua_iii_lc() {
+			return r52_qua_iii_lc;
+		}
+
+		public void setR52_qua_iii_lc(BigDecimal r52_qua_iii_lc) {
+			this.r52_qua_iii_lc = r52_qua_iii_lc;
+		}
+
+		public BigDecimal getR52_qua_iii_qar() {
+			return r52_qua_iii_qar;
+		}
+
+		public void setR52_qua_iii_qar(BigDecimal r52_qua_iii_qar) {
+			this.r52_qua_iii_qar = r52_qua_iii_qar;
+		}
+
+		public BigDecimal getR52_qua_iii_inr() {
+			return r52_qua_iii_inr;
+		}
+
+		public void setR52_qua_iii_inr(BigDecimal r52_qua_iii_inr) {
+			this.r52_qua_iii_inr = r52_qua_iii_inr;
+		}
+
+		public BigDecimal getR52_qua_iv_lc() {
+			return r52_qua_iv_lc;
+		}
+
+		public void setR52_qua_iv_lc(BigDecimal r52_qua_iv_lc) {
+			this.r52_qua_iv_lc = r52_qua_iv_lc;
+		}
+
+		public BigDecimal getR52_qua_iv_qar() {
+			return r52_qua_iv_qar;
+		}
+
+		public void setR52_qua_iv_qar(BigDecimal r52_qua_iv_qar) {
+			this.r52_qua_iv_qar = r52_qua_iv_qar;
+		}
+
+		public BigDecimal getR52_qua_iv_inr() {
+			return r52_qua_iv_inr;
+		}
+
+		public void setR52_qua_iv_inr(BigDecimal r52_qua_iv_inr) {
+			this.r52_qua_iv_inr = r52_qua_iv_inr;
+		}
+
+		public BigDecimal getR52_cumm_inr() {
+			return r52_cumm_inr;
+		}
+
+		public void setR52_cumm_inr(BigDecimal r52_cumm_inr) {
+			this.r52_cumm_inr = r52_cumm_inr;
+		}
+
+		public BigDecimal getR52_cumm_bwp() {
+			return r52_cumm_bwp;
+		}
+
+		public void setR52_cumm_bwp(BigDecimal r52_cumm_bwp) {
+			this.r52_cumm_bwp = r52_cumm_bwp;
+		}
+
+		public String getR53_product() {
+			return r53_product;
+		}
+
+		public void setR53_product(String r53_product) {
+			this.r53_product = r53_product;
+		}
+
+		public BigDecimal getR53_qua_i_lc() {
+			return r53_qua_i_lc;
+		}
+
+		public void setR53_qua_i_lc(BigDecimal r53_qua_i_lc) {
+			this.r53_qua_i_lc = r53_qua_i_lc;
+		}
+
+		public BigDecimal getR53_qua_i_qar() {
+			return r53_qua_i_qar;
+		}
+
+		public void setR53_qua_i_qar(BigDecimal r53_qua_i_qar) {
+			this.r53_qua_i_qar = r53_qua_i_qar;
+		}
+
+		public BigDecimal getR53_qua_i_inr() {
+			return r53_qua_i_inr;
+		}
+
+		public void setR53_qua_i_inr(BigDecimal r53_qua_i_inr) {
+			this.r53_qua_i_inr = r53_qua_i_inr;
+		}
+
+		public BigDecimal getR53_qua_ii_lc() {
+			return r53_qua_ii_lc;
+		}
+
+		public void setR53_qua_ii_lc(BigDecimal r53_qua_ii_lc) {
+			this.r53_qua_ii_lc = r53_qua_ii_lc;
+		}
+
+		public BigDecimal getR53_qua_ii_qar() {
+			return r53_qua_ii_qar;
+		}
+
+		public void setR53_qua_ii_qar(BigDecimal r53_qua_ii_qar) {
+			this.r53_qua_ii_qar = r53_qua_ii_qar;
+		}
+
+		public BigDecimal getR53_qua_ii_inr() {
+			return r53_qua_ii_inr;
+		}
+
+		public void setR53_qua_ii_inr(BigDecimal r53_qua_ii_inr) {
+			this.r53_qua_ii_inr = r53_qua_ii_inr;
+		}
+
+		public BigDecimal getR53_qua_iii_lc() {
+			return r53_qua_iii_lc;
+		}
+
+		public void setR53_qua_iii_lc(BigDecimal r53_qua_iii_lc) {
+			this.r53_qua_iii_lc = r53_qua_iii_lc;
+		}
+
+		public BigDecimal getR53_qua_iii_qar() {
+			return r53_qua_iii_qar;
+		}
+
+		public void setR53_qua_iii_qar(BigDecimal r53_qua_iii_qar) {
+			this.r53_qua_iii_qar = r53_qua_iii_qar;
+		}
+
+		public BigDecimal getR53_qua_iii_inr() {
+			return r53_qua_iii_inr;
+		}
+
+		public void setR53_qua_iii_inr(BigDecimal r53_qua_iii_inr) {
+			this.r53_qua_iii_inr = r53_qua_iii_inr;
+		}
+
+		public BigDecimal getR53_qua_iv_lc() {
+			return r53_qua_iv_lc;
+		}
+
+		public void setR53_qua_iv_lc(BigDecimal r53_qua_iv_lc) {
+			this.r53_qua_iv_lc = r53_qua_iv_lc;
+		}
+
+		public BigDecimal getR53_qua_iv_qar() {
+			return r53_qua_iv_qar;
+		}
+
+		public void setR53_qua_iv_qar(BigDecimal r53_qua_iv_qar) {
+			this.r53_qua_iv_qar = r53_qua_iv_qar;
+		}
+
+		public BigDecimal getR53_qua_iv_inr() {
+			return r53_qua_iv_inr;
+		}
+
+		public void setR53_qua_iv_inr(BigDecimal r53_qua_iv_inr) {
+			this.r53_qua_iv_inr = r53_qua_iv_inr;
+		}
+
+		public BigDecimal getR53_cumm_inr() {
+			return r53_cumm_inr;
+		}
+
+		public void setR53_cumm_inr(BigDecimal r53_cumm_inr) {
+			this.r53_cumm_inr = r53_cumm_inr;
+		}
+
+		public BigDecimal getR53_cumm_bwp() {
+			return r53_cumm_bwp;
+		}
+
+		public void setR53_cumm_bwp(BigDecimal r53_cumm_bwp) {
+			this.r53_cumm_bwp = r53_cumm_bwp;
+		}
+
+		public String getR54_product() {
+			return r54_product;
+		}
+
+		public void setR54_product(String r54_product) {
+			this.r54_product = r54_product;
+		}
+
+		public BigDecimal getR54_qua_i_lc() {
+			return r54_qua_i_lc;
+		}
+
+		public void setR54_qua_i_lc(BigDecimal r54_qua_i_lc) {
+			this.r54_qua_i_lc = r54_qua_i_lc;
+		}
+
+		public BigDecimal getR54_qua_i_qar() {
+			return r54_qua_i_qar;
+		}
+
+		public void setR54_qua_i_qar(BigDecimal r54_qua_i_qar) {
+			this.r54_qua_i_qar = r54_qua_i_qar;
+		}
+
+		public BigDecimal getR54_qua_i_inr() {
+			return r54_qua_i_inr;
+		}
+
+		public void setR54_qua_i_inr(BigDecimal r54_qua_i_inr) {
+			this.r54_qua_i_inr = r54_qua_i_inr;
+		}
+
+		public BigDecimal getR54_qua_ii_lc() {
+			return r54_qua_ii_lc;
+		}
+
+		public void setR54_qua_ii_lc(BigDecimal r54_qua_ii_lc) {
+			this.r54_qua_ii_lc = r54_qua_ii_lc;
+		}
+
+		public BigDecimal getR54_qua_ii_qar() {
+			return r54_qua_ii_qar;
+		}
+
+		public void setR54_qua_ii_qar(BigDecimal r54_qua_ii_qar) {
+			this.r54_qua_ii_qar = r54_qua_ii_qar;
+		}
+
+		public BigDecimal getR54_qua_ii_inr() {
+			return r54_qua_ii_inr;
+		}
+
+		public void setR54_qua_ii_inr(BigDecimal r54_qua_ii_inr) {
+			this.r54_qua_ii_inr = r54_qua_ii_inr;
+		}
+
+		public BigDecimal getR54_qua_iii_lc() {
+			return r54_qua_iii_lc;
+		}
+
+		public void setR54_qua_iii_lc(BigDecimal r54_qua_iii_lc) {
+			this.r54_qua_iii_lc = r54_qua_iii_lc;
+		}
+
+		public BigDecimal getR54_qua_iii_qar() {
+			return r54_qua_iii_qar;
+		}
+
+		public void setR54_qua_iii_qar(BigDecimal r54_qua_iii_qar) {
+			this.r54_qua_iii_qar = r54_qua_iii_qar;
+		}
+
+		public BigDecimal getR54_qua_iii_inr() {
+			return r54_qua_iii_inr;
+		}
+
+		public void setR54_qua_iii_inr(BigDecimal r54_qua_iii_inr) {
+			this.r54_qua_iii_inr = r54_qua_iii_inr;
+		}
+
+		public BigDecimal getR54_qua_iv_lc() {
+			return r54_qua_iv_lc;
+		}
+
+		public void setR54_qua_iv_lc(BigDecimal r54_qua_iv_lc) {
+			this.r54_qua_iv_lc = r54_qua_iv_lc;
+		}
+
+		public BigDecimal getR54_qua_iv_qar() {
+			return r54_qua_iv_qar;
+		}
+
+		public void setR54_qua_iv_qar(BigDecimal r54_qua_iv_qar) {
+			this.r54_qua_iv_qar = r54_qua_iv_qar;
+		}
+
+		public BigDecimal getR54_qua_iv_inr() {
+			return r54_qua_iv_inr;
+		}
+
+		public void setR54_qua_iv_inr(BigDecimal r54_qua_iv_inr) {
+			this.r54_qua_iv_inr = r54_qua_iv_inr;
+		}
+
+		public BigDecimal getR54_cumm_inr() {
+			return r54_cumm_inr;
+		}
+
+		public void setR54_cumm_inr(BigDecimal r54_cumm_inr) {
+			this.r54_cumm_inr = r54_cumm_inr;
+		}
+
+		public BigDecimal getR54_cumm_bwp() {
+			return r54_cumm_bwp;
+		}
+
+		public void setR54_cumm_bwp(BigDecimal r54_cumm_bwp) {
+			this.r54_cumm_bwp = r54_cumm_bwp;
+		}
+
+		public String getR55_product() {
+			return r55_product;
+		}
+
+		public void setR55_product(String r55_product) {
+			this.r55_product = r55_product;
+		}
+
+		public BigDecimal getR55_qua_i_lc() {
+			return r55_qua_i_lc;
+		}
+
+		public void setR55_qua_i_lc(BigDecimal r55_qua_i_lc) {
+			this.r55_qua_i_lc = r55_qua_i_lc;
+		}
+
+		public BigDecimal getR55_qua_i_qar() {
+			return r55_qua_i_qar;
+		}
+
+		public void setR55_qua_i_qar(BigDecimal r55_qua_i_qar) {
+			this.r55_qua_i_qar = r55_qua_i_qar;
+		}
+
+		public BigDecimal getR55_qua_i_inr() {
+			return r55_qua_i_inr;
+		}
+
+		public void setR55_qua_i_inr(BigDecimal r55_qua_i_inr) {
+			this.r55_qua_i_inr = r55_qua_i_inr;
+		}
+
+		public BigDecimal getR55_qua_ii_lc() {
+			return r55_qua_ii_lc;
+		}
+
+		public void setR55_qua_ii_lc(BigDecimal r55_qua_ii_lc) {
+			this.r55_qua_ii_lc = r55_qua_ii_lc;
+		}
+
+		public BigDecimal getR55_qua_ii_qar() {
+			return r55_qua_ii_qar;
+		}
+
+		public void setR55_qua_ii_qar(BigDecimal r55_qua_ii_qar) {
+			this.r55_qua_ii_qar = r55_qua_ii_qar;
+		}
+
+		public BigDecimal getR55_qua_ii_inr() {
+			return r55_qua_ii_inr;
+		}
+
+		public void setR55_qua_ii_inr(BigDecimal r55_qua_ii_inr) {
+			this.r55_qua_ii_inr = r55_qua_ii_inr;
+		}
+
+		public BigDecimal getR55_qua_iii_lc() {
+			return r55_qua_iii_lc;
+		}
+
+		public void setR55_qua_iii_lc(BigDecimal r55_qua_iii_lc) {
+			this.r55_qua_iii_lc = r55_qua_iii_lc;
+		}
+
+		public BigDecimal getR55_qua_iii_qar() {
+			return r55_qua_iii_qar;
+		}
+
+		public void setR55_qua_iii_qar(BigDecimal r55_qua_iii_qar) {
+			this.r55_qua_iii_qar = r55_qua_iii_qar;
+		}
+
+		public BigDecimal getR55_qua_iii_inr() {
+			return r55_qua_iii_inr;
+		}
+
+		public void setR55_qua_iii_inr(BigDecimal r55_qua_iii_inr) {
+			this.r55_qua_iii_inr = r55_qua_iii_inr;
+		}
+
+		public BigDecimal getR55_qua_iv_lc() {
+			return r55_qua_iv_lc;
+		}
+
+		public void setR55_qua_iv_lc(BigDecimal r55_qua_iv_lc) {
+			this.r55_qua_iv_lc = r55_qua_iv_lc;
+		}
+
+		public BigDecimal getR55_qua_iv_qar() {
+			return r55_qua_iv_qar;
+		}
+
+		public void setR55_qua_iv_qar(BigDecimal r55_qua_iv_qar) {
+			this.r55_qua_iv_qar = r55_qua_iv_qar;
+		}
+
+		public BigDecimal getR55_qua_iv_inr() {
+			return r55_qua_iv_inr;
+		}
+
+		public void setR55_qua_iv_inr(BigDecimal r55_qua_iv_inr) {
+			this.r55_qua_iv_inr = r55_qua_iv_inr;
+		}
+
+		public BigDecimal getR55_cumm_inr() {
+			return r55_cumm_inr;
+		}
+
+		public void setR55_cumm_inr(BigDecimal r55_cumm_inr) {
+			this.r55_cumm_inr = r55_cumm_inr;
+		}
+
+		public BigDecimal getR55_cumm_bwp() {
+			return r55_cumm_bwp;
+		}
+
+		public void setR55_cumm_bwp(BigDecimal r55_cumm_bwp) {
+			this.r55_cumm_bwp = r55_cumm_bwp;
+		}
+
+		public String getR56_product() {
+			return r56_product;
+		}
+
+		public void setR56_product(String r56_product) {
+			this.r56_product = r56_product;
+		}
+
+		public BigDecimal getR56_qua_i_lc() {
+			return r56_qua_i_lc;
+		}
+
+		public void setR56_qua_i_lc(BigDecimal r56_qua_i_lc) {
+			this.r56_qua_i_lc = r56_qua_i_lc;
+		}
+
+		public BigDecimal getR56_qua_i_qar() {
+			return r56_qua_i_qar;
+		}
+
+		public void setR56_qua_i_qar(BigDecimal r56_qua_i_qar) {
+			this.r56_qua_i_qar = r56_qua_i_qar;
+		}
+
+		public BigDecimal getR56_qua_i_inr() {
+			return r56_qua_i_inr;
+		}
+
+		public void setR56_qua_i_inr(BigDecimal r56_qua_i_inr) {
+			this.r56_qua_i_inr = r56_qua_i_inr;
+		}
+
+		public BigDecimal getR56_qua_ii_lc() {
+			return r56_qua_ii_lc;
+		}
+
+		public void setR56_qua_ii_lc(BigDecimal r56_qua_ii_lc) {
+			this.r56_qua_ii_lc = r56_qua_ii_lc;
+		}
+
+		public BigDecimal getR56_qua_ii_qar() {
+			return r56_qua_ii_qar;
+		}
+
+		public void setR56_qua_ii_qar(BigDecimal r56_qua_ii_qar) {
+			this.r56_qua_ii_qar = r56_qua_ii_qar;
+		}
+
+		public BigDecimal getR56_qua_ii_inr() {
+			return r56_qua_ii_inr;
+		}
+
+		public void setR56_qua_ii_inr(BigDecimal r56_qua_ii_inr) {
+			this.r56_qua_ii_inr = r56_qua_ii_inr;
+		}
+
+		public BigDecimal getR56_qua_iii_lc() {
+			return r56_qua_iii_lc;
+		}
+
+		public void setR56_qua_iii_lc(BigDecimal r56_qua_iii_lc) {
+			this.r56_qua_iii_lc = r56_qua_iii_lc;
+		}
+
+		public BigDecimal getR56_qua_iii_qar() {
+			return r56_qua_iii_qar;
+		}
+
+		public void setR56_qua_iii_qar(BigDecimal r56_qua_iii_qar) {
+			this.r56_qua_iii_qar = r56_qua_iii_qar;
+		}
+
+		public BigDecimal getR56_qua_iii_inr() {
+			return r56_qua_iii_inr;
+		}
+
+		public void setR56_qua_iii_inr(BigDecimal r56_qua_iii_inr) {
+			this.r56_qua_iii_inr = r56_qua_iii_inr;
+		}
+
+		public BigDecimal getR56_qua_iv_lc() {
+			return r56_qua_iv_lc;
+		}
+
+		public void setR56_qua_iv_lc(BigDecimal r56_qua_iv_lc) {
+			this.r56_qua_iv_lc = r56_qua_iv_lc;
+		}
+
+		public BigDecimal getR56_qua_iv_qar() {
+			return r56_qua_iv_qar;
+		}
+
+		public void setR56_qua_iv_qar(BigDecimal r56_qua_iv_qar) {
+			this.r56_qua_iv_qar = r56_qua_iv_qar;
+		}
+
+		public BigDecimal getR56_qua_iv_inr() {
+			return r56_qua_iv_inr;
+		}
+
+		public void setR56_qua_iv_inr(BigDecimal r56_qua_iv_inr) {
+			this.r56_qua_iv_inr = r56_qua_iv_inr;
+		}
+
+		public BigDecimal getR56_cumm_inr() {
+			return r56_cumm_inr;
+		}
+
+		public void setR56_cumm_inr(BigDecimal r56_cumm_inr) {
+			this.r56_cumm_inr = r56_cumm_inr;
+		}
+
+		public BigDecimal getR56_cumm_bwp() {
+			return r56_cumm_bwp;
+		}
+
+		public void setR56_cumm_bwp(BigDecimal r56_cumm_bwp) {
+			this.r56_cumm_bwp = r56_cumm_bwp;
+		}
+
+		public String getR57_product() {
+			return r57_product;
+		}
+
+		public void setR57_product(String r57_product) {
+			this.r57_product = r57_product;
+		}
+
+		public BigDecimal getR57_qua_i_lc() {
+			return r57_qua_i_lc;
+		}
+
+		public void setR57_qua_i_lc(BigDecimal r57_qua_i_lc) {
+			this.r57_qua_i_lc = r57_qua_i_lc;
+		}
+
+		public BigDecimal getR57_qua_i_qar() {
+			return r57_qua_i_qar;
+		}
+
+		public void setR57_qua_i_qar(BigDecimal r57_qua_i_qar) {
+			this.r57_qua_i_qar = r57_qua_i_qar;
+		}
+
+		public BigDecimal getR57_qua_i_inr() {
+			return r57_qua_i_inr;
+		}
+
+		public void setR57_qua_i_inr(BigDecimal r57_qua_i_inr) {
+			this.r57_qua_i_inr = r57_qua_i_inr;
+		}
+
+		public BigDecimal getR57_qua_ii_lc() {
+			return r57_qua_ii_lc;
+		}
+
+		public void setR57_qua_ii_lc(BigDecimal r57_qua_ii_lc) {
+			this.r57_qua_ii_lc = r57_qua_ii_lc;
+		}
+
+		public BigDecimal getR57_qua_ii_qar() {
+			return r57_qua_ii_qar;
+		}
+
+		public void setR57_qua_ii_qar(BigDecimal r57_qua_ii_qar) {
+			this.r57_qua_ii_qar = r57_qua_ii_qar;
+		}
+
+		public BigDecimal getR57_qua_ii_inr() {
+			return r57_qua_ii_inr;
+		}
+
+		public void setR57_qua_ii_inr(BigDecimal r57_qua_ii_inr) {
+			this.r57_qua_ii_inr = r57_qua_ii_inr;
+		}
+
+		public BigDecimal getR57_qua_iii_lc() {
+			return r57_qua_iii_lc;
+		}
+
+		public void setR57_qua_iii_lc(BigDecimal r57_qua_iii_lc) {
+			this.r57_qua_iii_lc = r57_qua_iii_lc;
+		}
+
+		public BigDecimal getR57_qua_iii_qar() {
+			return r57_qua_iii_qar;
+		}
+
+		public void setR57_qua_iii_qar(BigDecimal r57_qua_iii_qar) {
+			this.r57_qua_iii_qar = r57_qua_iii_qar;
+		}
+
+		public BigDecimal getR57_qua_iii_inr() {
+			return r57_qua_iii_inr;
+		}
+
+		public void setR57_qua_iii_inr(BigDecimal r57_qua_iii_inr) {
+			this.r57_qua_iii_inr = r57_qua_iii_inr;
+		}
+
+		public BigDecimal getR57_qua_iv_lc() {
+			return r57_qua_iv_lc;
+		}
+
+		public void setR57_qua_iv_lc(BigDecimal r57_qua_iv_lc) {
+			this.r57_qua_iv_lc = r57_qua_iv_lc;
+		}
+
+		public BigDecimal getR57_qua_iv_qar() {
+			return r57_qua_iv_qar;
+		}
+
+		public void setR57_qua_iv_qar(BigDecimal r57_qua_iv_qar) {
+			this.r57_qua_iv_qar = r57_qua_iv_qar;
+		}
+
+		public BigDecimal getR57_qua_iv_inr() {
+			return r57_qua_iv_inr;
+		}
+
+		public void setR57_qua_iv_inr(BigDecimal r57_qua_iv_inr) {
+			this.r57_qua_iv_inr = r57_qua_iv_inr;
+		}
+
+		public BigDecimal getR57_cumm_inr() {
+			return r57_cumm_inr;
+		}
+
+		public void setR57_cumm_inr(BigDecimal r57_cumm_inr) {
+			this.r57_cumm_inr = r57_cumm_inr;
+		}
+
+		public BigDecimal getR57_cumm_bwp() {
+			return r57_cumm_bwp;
+		}
+
+		public void setR57_cumm_bwp(BigDecimal r57_cumm_bwp) {
+			this.r57_cumm_bwp = r57_cumm_bwp;
+		}
+
+		public String getR58_product() {
+			return r58_product;
+		}
+
+		public void setR58_product(String r58_product) {
+			this.r58_product = r58_product;
+		}
+
+		public BigDecimal getR58_qua_i_lc() {
+			return r58_qua_i_lc;
+		}
+
+		public void setR58_qua_i_lc(BigDecimal r58_qua_i_lc) {
+			this.r58_qua_i_lc = r58_qua_i_lc;
+		}
+
+		public BigDecimal getR58_qua_i_qar() {
+			return r58_qua_i_qar;
+		}
+
+		public void setR58_qua_i_qar(BigDecimal r58_qua_i_qar) {
+			this.r58_qua_i_qar = r58_qua_i_qar;
+		}
+
+		public BigDecimal getR58_qua_i_inr() {
+			return r58_qua_i_inr;
+		}
+
+		public void setR58_qua_i_inr(BigDecimal r58_qua_i_inr) {
+			this.r58_qua_i_inr = r58_qua_i_inr;
+		}
+
+		public BigDecimal getR58_qua_ii_lc() {
+			return r58_qua_ii_lc;
+		}
+
+		public void setR58_qua_ii_lc(BigDecimal r58_qua_ii_lc) {
+			this.r58_qua_ii_lc = r58_qua_ii_lc;
+		}
+
+		public BigDecimal getR58_qua_ii_qar() {
+			return r58_qua_ii_qar;
+		}
+
+		public void setR58_qua_ii_qar(BigDecimal r58_qua_ii_qar) {
+			this.r58_qua_ii_qar = r58_qua_ii_qar;
+		}
+
+		public BigDecimal getR58_qua_ii_inr() {
+			return r58_qua_ii_inr;
+		}
+
+		public void setR58_qua_ii_inr(BigDecimal r58_qua_ii_inr) {
+			this.r58_qua_ii_inr = r58_qua_ii_inr;
+		}
+
+		public BigDecimal getR58_qua_iii_lc() {
+			return r58_qua_iii_lc;
+		}
+
+		public void setR58_qua_iii_lc(BigDecimal r58_qua_iii_lc) {
+			this.r58_qua_iii_lc = r58_qua_iii_lc;
+		}
+
+		public BigDecimal getR58_qua_iii_qar() {
+			return r58_qua_iii_qar;
+		}
+
+		public void setR58_qua_iii_qar(BigDecimal r58_qua_iii_qar) {
+			this.r58_qua_iii_qar = r58_qua_iii_qar;
+		}
+
+		public BigDecimal getR58_qua_iii_inr() {
+			return r58_qua_iii_inr;
+		}
+
+		public void setR58_qua_iii_inr(BigDecimal r58_qua_iii_inr) {
+			this.r58_qua_iii_inr = r58_qua_iii_inr;
+		}
+
+		public BigDecimal getR58_qua_iv_lc() {
+			return r58_qua_iv_lc;
+		}
+
+		public void setR58_qua_iv_lc(BigDecimal r58_qua_iv_lc) {
+			this.r58_qua_iv_lc = r58_qua_iv_lc;
+		}
+
+		public BigDecimal getR58_qua_iv_qar() {
+			return r58_qua_iv_qar;
+		}
+
+		public void setR58_qua_iv_qar(BigDecimal r58_qua_iv_qar) {
+			this.r58_qua_iv_qar = r58_qua_iv_qar;
+		}
+
+		public BigDecimal getR58_qua_iv_inr() {
+			return r58_qua_iv_inr;
+		}
+
+		public void setR58_qua_iv_inr(BigDecimal r58_qua_iv_inr) {
+			this.r58_qua_iv_inr = r58_qua_iv_inr;
+		}
+
+		public BigDecimal getR58_cumm_inr() {
+			return r58_cumm_inr;
+		}
+
+		public void setR58_cumm_inr(BigDecimal r58_cumm_inr) {
+			this.r58_cumm_inr = r58_cumm_inr;
+		}
+
+		public BigDecimal getR58_cumm_bwp() {
+			return r58_cumm_bwp;
+		}
+
+		public void setR58_cumm_bwp(BigDecimal r58_cumm_bwp) {
+			this.r58_cumm_bwp = r58_cumm_bwp;
+		}
+
+		public String getR59_product() {
+			return r59_product;
+		}
+
+		public void setR59_product(String r59_product) {
+			this.r59_product = r59_product;
+		}
+
+		public BigDecimal getR59_qua_i_lc() {
+			return r59_qua_i_lc;
+		}
+
+		public void setR59_qua_i_lc(BigDecimal r59_qua_i_lc) {
+			this.r59_qua_i_lc = r59_qua_i_lc;
+		}
+
+		public BigDecimal getR59_qua_i_qar() {
+			return r59_qua_i_qar;
+		}
+
+		public void setR59_qua_i_qar(BigDecimal r59_qua_i_qar) {
+			this.r59_qua_i_qar = r59_qua_i_qar;
+		}
+
+		public BigDecimal getR59_qua_i_inr() {
+			return r59_qua_i_inr;
+		}
+
+		public void setR59_qua_i_inr(BigDecimal r59_qua_i_inr) {
+			this.r59_qua_i_inr = r59_qua_i_inr;
+		}
+
+		public BigDecimal getR59_qua_ii_lc() {
+			return r59_qua_ii_lc;
+		}
+
+		public void setR59_qua_ii_lc(BigDecimal r59_qua_ii_lc) {
+			this.r59_qua_ii_lc = r59_qua_ii_lc;
+		}
+
+		public BigDecimal getR59_qua_ii_qar() {
+			return r59_qua_ii_qar;
+		}
+
+		public void setR59_qua_ii_qar(BigDecimal r59_qua_ii_qar) {
+			this.r59_qua_ii_qar = r59_qua_ii_qar;
+		}
+
+		public BigDecimal getR59_qua_ii_inr() {
+			return r59_qua_ii_inr;
+		}
+
+		public void setR59_qua_ii_inr(BigDecimal r59_qua_ii_inr) {
+			this.r59_qua_ii_inr = r59_qua_ii_inr;
+		}
+
+		public BigDecimal getR59_qua_iii_lc() {
+			return r59_qua_iii_lc;
+		}
+
+		public void setR59_qua_iii_lc(BigDecimal r59_qua_iii_lc) {
+			this.r59_qua_iii_lc = r59_qua_iii_lc;
+		}
+
+		public BigDecimal getR59_qua_iii_qar() {
+			return r59_qua_iii_qar;
+		}
+
+		public void setR59_qua_iii_qar(BigDecimal r59_qua_iii_qar) {
+			this.r59_qua_iii_qar = r59_qua_iii_qar;
+		}
+
+		public BigDecimal getR59_qua_iii_inr() {
+			return r59_qua_iii_inr;
+		}
+
+		public void setR59_qua_iii_inr(BigDecimal r59_qua_iii_inr) {
+			this.r59_qua_iii_inr = r59_qua_iii_inr;
+		}
+
+		public BigDecimal getR59_qua_iv_lc() {
+			return r59_qua_iv_lc;
+		}
+
+		public void setR59_qua_iv_lc(BigDecimal r59_qua_iv_lc) {
+			this.r59_qua_iv_lc = r59_qua_iv_lc;
+		}
+
+		public BigDecimal getR59_qua_iv_qar() {
+			return r59_qua_iv_qar;
+		}
+
+		public void setR59_qua_iv_qar(BigDecimal r59_qua_iv_qar) {
+			this.r59_qua_iv_qar = r59_qua_iv_qar;
+		}
+
+		public BigDecimal getR59_qua_iv_inr() {
+			return r59_qua_iv_inr;
+		}
+
+		public void setR59_qua_iv_inr(BigDecimal r59_qua_iv_inr) {
+			this.r59_qua_iv_inr = r59_qua_iv_inr;
+		}
+
+		public BigDecimal getR59_cumm_inr() {
+			return r59_cumm_inr;
+		}
+
+		public void setR59_cumm_inr(BigDecimal r59_cumm_inr) {
+			this.r59_cumm_inr = r59_cumm_inr;
+		}
+
+		public BigDecimal getR59_cumm_bwp() {
+			return r59_cumm_bwp;
+		}
+
+		public void setR59_cumm_bwp(BigDecimal r59_cumm_bwp) {
+			this.r59_cumm_bwp = r59_cumm_bwp;
+		}
+
+		public String getR60_product() {
+			return r60_product;
+		}
+
+		public void setR60_product(String r60_product) {
+			this.r60_product = r60_product;
+		}
+
+		public BigDecimal getR60_qua_i_lc() {
+			return r60_qua_i_lc;
+		}
+
+		public void setR60_qua_i_lc(BigDecimal r60_qua_i_lc) {
+			this.r60_qua_i_lc = r60_qua_i_lc;
+		}
+
+		public BigDecimal getR60_qua_i_qar() {
+			return r60_qua_i_qar;
+		}
+
+		public void setR60_qua_i_qar(BigDecimal r60_qua_i_qar) {
+			this.r60_qua_i_qar = r60_qua_i_qar;
+		}
+
+		public BigDecimal getR60_qua_i_inr() {
+			return r60_qua_i_inr;
+		}
+
+		public void setR60_qua_i_inr(BigDecimal r60_qua_i_inr) {
+			this.r60_qua_i_inr = r60_qua_i_inr;
+		}
+
+		public BigDecimal getR60_qua_ii_lc() {
+			return r60_qua_ii_lc;
+		}
+
+		public void setR60_qua_ii_lc(BigDecimal r60_qua_ii_lc) {
+			this.r60_qua_ii_lc = r60_qua_ii_lc;
+		}
+
+		public BigDecimal getR60_qua_ii_qar() {
+			return r60_qua_ii_qar;
+		}
+
+		public void setR60_qua_ii_qar(BigDecimal r60_qua_ii_qar) {
+			this.r60_qua_ii_qar = r60_qua_ii_qar;
+		}
+
+		public BigDecimal getR60_qua_ii_inr() {
+			return r60_qua_ii_inr;
+		}
+
+		public void setR60_qua_ii_inr(BigDecimal r60_qua_ii_inr) {
+			this.r60_qua_ii_inr = r60_qua_ii_inr;
+		}
+
+		public BigDecimal getR60_qua_iii_lc() {
+			return r60_qua_iii_lc;
+		}
+
+		public void setR60_qua_iii_lc(BigDecimal r60_qua_iii_lc) {
+			this.r60_qua_iii_lc = r60_qua_iii_lc;
+		}
+
+		public BigDecimal getR60_qua_iii_qar() {
+			return r60_qua_iii_qar;
+		}
+
+		public void setR60_qua_iii_qar(BigDecimal r60_qua_iii_qar) {
+			this.r60_qua_iii_qar = r60_qua_iii_qar;
+		}
+
+		public BigDecimal getR60_qua_iii_inr() {
+			return r60_qua_iii_inr;
+		}
+
+		public void setR60_qua_iii_inr(BigDecimal r60_qua_iii_inr) {
+			this.r60_qua_iii_inr = r60_qua_iii_inr;
+		}
+
+		public BigDecimal getR60_qua_iv_lc() {
+			return r60_qua_iv_lc;
+		}
+
+		public void setR60_qua_iv_lc(BigDecimal r60_qua_iv_lc) {
+			this.r60_qua_iv_lc = r60_qua_iv_lc;
+		}
+
+		public BigDecimal getR60_qua_iv_qar() {
+			return r60_qua_iv_qar;
+		}
+
+		public void setR60_qua_iv_qar(BigDecimal r60_qua_iv_qar) {
+			this.r60_qua_iv_qar = r60_qua_iv_qar;
+		}
+
+		public BigDecimal getR60_qua_iv_inr() {
+			return r60_qua_iv_inr;
+		}
+
+		public void setR60_qua_iv_inr(BigDecimal r60_qua_iv_inr) {
+			this.r60_qua_iv_inr = r60_qua_iv_inr;
+		}
+
+		public BigDecimal getR60_cumm_inr() {
+			return r60_cumm_inr;
+		}
+
+		public void setR60_cumm_inr(BigDecimal r60_cumm_inr) {
+			this.r60_cumm_inr = r60_cumm_inr;
+		}
+
+		public BigDecimal getR60_cumm_bwp() {
+			return r60_cumm_bwp;
+		}
+
+		public void setR60_cumm_bwp(BigDecimal r60_cumm_bwp) {
+			this.r60_cumm_bwp = r60_cumm_bwp;
+		}
+
+		public String getR61_product() {
+			return r61_product;
+		}
+
+		public void setR61_product(String r61_product) {
+			this.r61_product = r61_product;
+		}
+
+		public BigDecimal getR61_qua_i_lc() {
+			return r61_qua_i_lc;
+		}
+
+		public void setR61_qua_i_lc(BigDecimal r61_qua_i_lc) {
+			this.r61_qua_i_lc = r61_qua_i_lc;
+		}
+
+		public BigDecimal getR61_qua_i_qar() {
+			return r61_qua_i_qar;
+		}
+
+		public void setR61_qua_i_qar(BigDecimal r61_qua_i_qar) {
+			this.r61_qua_i_qar = r61_qua_i_qar;
+		}
+
+		public BigDecimal getR61_qua_i_inr() {
+			return r61_qua_i_inr;
+		}
+
+		public void setR61_qua_i_inr(BigDecimal r61_qua_i_inr) {
+			this.r61_qua_i_inr = r61_qua_i_inr;
+		}
+
+		public BigDecimal getR61_qua_ii_lc() {
+			return r61_qua_ii_lc;
+		}
+
+		public void setR61_qua_ii_lc(BigDecimal r61_qua_ii_lc) {
+			this.r61_qua_ii_lc = r61_qua_ii_lc;
+		}
+
+		public BigDecimal getR61_qua_ii_qar() {
+			return r61_qua_ii_qar;
+		}
+
+		public void setR61_qua_ii_qar(BigDecimal r61_qua_ii_qar) {
+			this.r61_qua_ii_qar = r61_qua_ii_qar;
+		}
+
+		public BigDecimal getR61_qua_ii_inr() {
+			return r61_qua_ii_inr;
+		}
+
+		public void setR61_qua_ii_inr(BigDecimal r61_qua_ii_inr) {
+			this.r61_qua_ii_inr = r61_qua_ii_inr;
+		}
+
+		public BigDecimal getR61_qua_iii_lc() {
+			return r61_qua_iii_lc;
+		}
+
+		public void setR61_qua_iii_lc(BigDecimal r61_qua_iii_lc) {
+			this.r61_qua_iii_lc = r61_qua_iii_lc;
+		}
+
+		public BigDecimal getR61_qua_iii_qar() {
+			return r61_qua_iii_qar;
+		}
+
+		public void setR61_qua_iii_qar(BigDecimal r61_qua_iii_qar) {
+			this.r61_qua_iii_qar = r61_qua_iii_qar;
+		}
+
+		public BigDecimal getR61_qua_iii_inr() {
+			return r61_qua_iii_inr;
+		}
+
+		public void setR61_qua_iii_inr(BigDecimal r61_qua_iii_inr) {
+			this.r61_qua_iii_inr = r61_qua_iii_inr;
+		}
+
+		public BigDecimal getR61_qua_iv_lc() {
+			return r61_qua_iv_lc;
+		}
+
+		public void setR61_qua_iv_lc(BigDecimal r61_qua_iv_lc) {
+			this.r61_qua_iv_lc = r61_qua_iv_lc;
+		}
+
+		public BigDecimal getR61_qua_iv_qar() {
+			return r61_qua_iv_qar;
+		}
+
+		public void setR61_qua_iv_qar(BigDecimal r61_qua_iv_qar) {
+			this.r61_qua_iv_qar = r61_qua_iv_qar;
+		}
+
+		public BigDecimal getR61_qua_iv_inr() {
+			return r61_qua_iv_inr;
+		}
+
+		public void setR61_qua_iv_inr(BigDecimal r61_qua_iv_inr) {
+			this.r61_qua_iv_inr = r61_qua_iv_inr;
+		}
+
+		public BigDecimal getR61_cumm_inr() {
+			return r61_cumm_inr;
+		}
+
+		public void setR61_cumm_inr(BigDecimal r61_cumm_inr) {
+			this.r61_cumm_inr = r61_cumm_inr;
+		}
+
+		public BigDecimal getR61_cumm_bwp() {
+			return r61_cumm_bwp;
+		}
+
+		public void setR61_cumm_bwp(BigDecimal r61_cumm_bwp) {
+			this.r61_cumm_bwp = r61_cumm_bwp;
+		}
+
+		public String getR62_product() {
+			return r62_product;
+		}
+
+		public void setR62_product(String r62_product) {
+			this.r62_product = r62_product;
+		}
+
+		public BigDecimal getR62_qua_i_lc() {
+			return r62_qua_i_lc;
+		}
+
+		public void setR62_qua_i_lc(BigDecimal r62_qua_i_lc) {
+			this.r62_qua_i_lc = r62_qua_i_lc;
+		}
+
+		public BigDecimal getR62_qua_i_qar() {
+			return r62_qua_i_qar;
+		}
+
+		public void setR62_qua_i_qar(BigDecimal r62_qua_i_qar) {
+			this.r62_qua_i_qar = r62_qua_i_qar;
+		}
+
+		public BigDecimal getR62_qua_i_inr() {
+			return r62_qua_i_inr;
+		}
+
+		public void setR62_qua_i_inr(BigDecimal r62_qua_i_inr) {
+			this.r62_qua_i_inr = r62_qua_i_inr;
+		}
+
+		public BigDecimal getR62_qua_ii_lc() {
+			return r62_qua_ii_lc;
+		}
+
+		public void setR62_qua_ii_lc(BigDecimal r62_qua_ii_lc) {
+			this.r62_qua_ii_lc = r62_qua_ii_lc;
+		}
+
+		public BigDecimal getR62_qua_ii_qar() {
+			return r62_qua_ii_qar;
+		}
+
+		public void setR62_qua_ii_qar(BigDecimal r62_qua_ii_qar) {
+			this.r62_qua_ii_qar = r62_qua_ii_qar;
+		}
+
+		public BigDecimal getR62_qua_ii_inr() {
+			return r62_qua_ii_inr;
+		}
+
+		public void setR62_qua_ii_inr(BigDecimal r62_qua_ii_inr) {
+			this.r62_qua_ii_inr = r62_qua_ii_inr;
+		}
+
+		public BigDecimal getR62_qua_iii_lc() {
+			return r62_qua_iii_lc;
+		}
+
+		public void setR62_qua_iii_lc(BigDecimal r62_qua_iii_lc) {
+			this.r62_qua_iii_lc = r62_qua_iii_lc;
+		}
+
+		public BigDecimal getR62_qua_iii_qar() {
+			return r62_qua_iii_qar;
+		}
+
+		public void setR62_qua_iii_qar(BigDecimal r62_qua_iii_qar) {
+			this.r62_qua_iii_qar = r62_qua_iii_qar;
+		}
+
+		public BigDecimal getR62_qua_iii_inr() {
+			return r62_qua_iii_inr;
+		}
+
+		public void setR62_qua_iii_inr(BigDecimal r62_qua_iii_inr) {
+			this.r62_qua_iii_inr = r62_qua_iii_inr;
+		}
+
+		public BigDecimal getR62_qua_iv_lc() {
+			return r62_qua_iv_lc;
+		}
+
+		public void setR62_qua_iv_lc(BigDecimal r62_qua_iv_lc) {
+			this.r62_qua_iv_lc = r62_qua_iv_lc;
+		}
+
+		public BigDecimal getR62_qua_iv_qar() {
+			return r62_qua_iv_qar;
+		}
+
+		public void setR62_qua_iv_qar(BigDecimal r62_qua_iv_qar) {
+			this.r62_qua_iv_qar = r62_qua_iv_qar;
+		}
+
+		public BigDecimal getR62_qua_iv_inr() {
+			return r62_qua_iv_inr;
+		}
+
+		public void setR62_qua_iv_inr(BigDecimal r62_qua_iv_inr) {
+			this.r62_qua_iv_inr = r62_qua_iv_inr;
+		}
+
+		public BigDecimal getR62_cumm_inr() {
+			return r62_cumm_inr;
+		}
+
+		public void setR62_cumm_inr(BigDecimal r62_cumm_inr) {
+			this.r62_cumm_inr = r62_cumm_inr;
+		}
+
+		public BigDecimal getR62_cumm_bwp() {
+			return r62_cumm_bwp;
+		}
+
+		public void setR62_cumm_bwp(BigDecimal r62_cumm_bwp) {
+			this.r62_cumm_bwp = r62_cumm_bwp;
+		}
+
+		public String getR63_product() {
+			return r63_product;
+		}
+
+		public void setR63_product(String r63_product) {
+			this.r63_product = r63_product;
+		}
+
+		public BigDecimal getR63_qua_i_lc() {
+			return r63_qua_i_lc;
+		}
+
+		public void setR63_qua_i_lc(BigDecimal r63_qua_i_lc) {
+			this.r63_qua_i_lc = r63_qua_i_lc;
+		}
+
+		public BigDecimal getR63_qua_i_qar() {
+			return r63_qua_i_qar;
+		}
+
+		public void setR63_qua_i_qar(BigDecimal r63_qua_i_qar) {
+			this.r63_qua_i_qar = r63_qua_i_qar;
+		}
+
+		public BigDecimal getR63_qua_i_inr() {
+			return r63_qua_i_inr;
+		}
+
+		public void setR63_qua_i_inr(BigDecimal r63_qua_i_inr) {
+			this.r63_qua_i_inr = r63_qua_i_inr;
+		}
+
+		public BigDecimal getR63_qua_ii_lc() {
+			return r63_qua_ii_lc;
+		}
+
+		public void setR63_qua_ii_lc(BigDecimal r63_qua_ii_lc) {
+			this.r63_qua_ii_lc = r63_qua_ii_lc;
+		}
+
+		public BigDecimal getR63_qua_ii_qar() {
+			return r63_qua_ii_qar;
+		}
+
+		public void setR63_qua_ii_qar(BigDecimal r63_qua_ii_qar) {
+			this.r63_qua_ii_qar = r63_qua_ii_qar;
+		}
+
+		public BigDecimal getR63_qua_ii_inr() {
+			return r63_qua_ii_inr;
+		}
+
+		public void setR63_qua_ii_inr(BigDecimal r63_qua_ii_inr) {
+			this.r63_qua_ii_inr = r63_qua_ii_inr;
+		}
+
+		public BigDecimal getR63_qua_iii_lc() {
+			return r63_qua_iii_lc;
+		}
+
+		public void setR63_qua_iii_lc(BigDecimal r63_qua_iii_lc) {
+			this.r63_qua_iii_lc = r63_qua_iii_lc;
+		}
+
+		public BigDecimal getR63_qua_iii_qar() {
+			return r63_qua_iii_qar;
+		}
+
+		public void setR63_qua_iii_qar(BigDecimal r63_qua_iii_qar) {
+			this.r63_qua_iii_qar = r63_qua_iii_qar;
+		}
+
+		public BigDecimal getR63_qua_iii_inr() {
+			return r63_qua_iii_inr;
+		}
+
+		public void setR63_qua_iii_inr(BigDecimal r63_qua_iii_inr) {
+			this.r63_qua_iii_inr = r63_qua_iii_inr;
+		}
+
+		public BigDecimal getR63_qua_iv_lc() {
+			return r63_qua_iv_lc;
+		}
+
+		public void setR63_qua_iv_lc(BigDecimal r63_qua_iv_lc) {
+			this.r63_qua_iv_lc = r63_qua_iv_lc;
+		}
+
+		public BigDecimal getR63_qua_iv_qar() {
+			return r63_qua_iv_qar;
+		}
+
+		public void setR63_qua_iv_qar(BigDecimal r63_qua_iv_qar) {
+			this.r63_qua_iv_qar = r63_qua_iv_qar;
+		}
+
+		public BigDecimal getR63_qua_iv_inr() {
+			return r63_qua_iv_inr;
+		}
+
+		public void setR63_qua_iv_inr(BigDecimal r63_qua_iv_inr) {
+			this.r63_qua_iv_inr = r63_qua_iv_inr;
+		}
+
+		public BigDecimal getR63_cumm_inr() {
+			return r63_cumm_inr;
+		}
+
+		public void setR63_cumm_inr(BigDecimal r63_cumm_inr) {
+			this.r63_cumm_inr = r63_cumm_inr;
+		}
+
+		public BigDecimal getR63_cumm_bwp() {
+			return r63_cumm_bwp;
+		}
+
+		public void setR63_cumm_bwp(BigDecimal r63_cumm_bwp) {
+			this.r63_cumm_bwp = r63_cumm_bwp;
+		}
+
+		public String getR64_product() {
+			return r64_product;
+		}
+
+		public void setR64_product(String r64_product) {
+			this.r64_product = r64_product;
+		}
+
+		public BigDecimal getR64_qua_i_lc() {
+			return r64_qua_i_lc;
+		}
+
+		public void setR64_qua_i_lc(BigDecimal r64_qua_i_lc) {
+			this.r64_qua_i_lc = r64_qua_i_lc;
+		}
+
+		public BigDecimal getR64_qua_i_qar() {
+			return r64_qua_i_qar;
+		}
+
+		public void setR64_qua_i_qar(BigDecimal r64_qua_i_qar) {
+			this.r64_qua_i_qar = r64_qua_i_qar;
+		}
+
+		public BigDecimal getR64_qua_i_inr() {
+			return r64_qua_i_inr;
+		}
+
+		public void setR64_qua_i_inr(BigDecimal r64_qua_i_inr) {
+			this.r64_qua_i_inr = r64_qua_i_inr;
+		}
+
+		public BigDecimal getR64_qua_ii_lc() {
+			return r64_qua_ii_lc;
+		}
+
+		public void setR64_qua_ii_lc(BigDecimal r64_qua_ii_lc) {
+			this.r64_qua_ii_lc = r64_qua_ii_lc;
+		}
+
+		public BigDecimal getR64_qua_ii_qar() {
+			return r64_qua_ii_qar;
+		}
+
+		public void setR64_qua_ii_qar(BigDecimal r64_qua_ii_qar) {
+			this.r64_qua_ii_qar = r64_qua_ii_qar;
+		}
+
+		public BigDecimal getR64_qua_ii_inr() {
+			return r64_qua_ii_inr;
+		}
+
+		public void setR64_qua_ii_inr(BigDecimal r64_qua_ii_inr) {
+			this.r64_qua_ii_inr = r64_qua_ii_inr;
+		}
+
+		public BigDecimal getR64_qua_iii_lc() {
+			return r64_qua_iii_lc;
+		}
+
+		public void setR64_qua_iii_lc(BigDecimal r64_qua_iii_lc) {
+			this.r64_qua_iii_lc = r64_qua_iii_lc;
+		}
+
+		public BigDecimal getR64_qua_iii_qar() {
+			return r64_qua_iii_qar;
+		}
+
+		public void setR64_qua_iii_qar(BigDecimal r64_qua_iii_qar) {
+			this.r64_qua_iii_qar = r64_qua_iii_qar;
+		}
+
+		public BigDecimal getR64_qua_iii_inr() {
+			return r64_qua_iii_inr;
+		}
+
+		public void setR64_qua_iii_inr(BigDecimal r64_qua_iii_inr) {
+			this.r64_qua_iii_inr = r64_qua_iii_inr;
+		}
+
+		public BigDecimal getR64_qua_iv_lc() {
+			return r64_qua_iv_lc;
+		}
+
+		public void setR64_qua_iv_lc(BigDecimal r64_qua_iv_lc) {
+			this.r64_qua_iv_lc = r64_qua_iv_lc;
+		}
+
+		public BigDecimal getR64_qua_iv_qar() {
+			return r64_qua_iv_qar;
+		}
+
+		public void setR64_qua_iv_qar(BigDecimal r64_qua_iv_qar) {
+			this.r64_qua_iv_qar = r64_qua_iv_qar;
+		}
+
+		public BigDecimal getR64_qua_iv_inr() {
+			return r64_qua_iv_inr;
+		}
+
+		public void setR64_qua_iv_inr(BigDecimal r64_qua_iv_inr) {
+			this.r64_qua_iv_inr = r64_qua_iv_inr;
+		}
+
+		public BigDecimal getR64_cumm_inr() {
+			return r64_cumm_inr;
+		}
+
+		public void setR64_cumm_inr(BigDecimal r64_cumm_inr) {
+			this.r64_cumm_inr = r64_cumm_inr;
+		}
+
+		public BigDecimal getR64_cumm_bwp() {
+			return r64_cumm_bwp;
+		}
+
+		public void setR64_cumm_bwp(BigDecimal r64_cumm_bwp) {
+			this.r64_cumm_bwp = r64_cumm_bwp;
+		}
+
+		public String getR65_product() {
+			return r65_product;
+		}
+
+		public void setR65_product(String r65_product) {
+			this.r65_product = r65_product;
+		}
+
+		public BigDecimal getR65_qua_i_lc() {
+			return r65_qua_i_lc;
+		}
+
+		public void setR65_qua_i_lc(BigDecimal r65_qua_i_lc) {
+			this.r65_qua_i_lc = r65_qua_i_lc;
+		}
+
+		public BigDecimal getR65_qua_i_qar() {
+			return r65_qua_i_qar;
+		}
+
+		public void setR65_qua_i_qar(BigDecimal r65_qua_i_qar) {
+			this.r65_qua_i_qar = r65_qua_i_qar;
+		}
+
+		public BigDecimal getR65_qua_i_inr() {
+			return r65_qua_i_inr;
+		}
+
+		public void setR65_qua_i_inr(BigDecimal r65_qua_i_inr) {
+			this.r65_qua_i_inr = r65_qua_i_inr;
+		}
+
+		public BigDecimal getR65_qua_ii_lc() {
+			return r65_qua_ii_lc;
+		}
+
+		public void setR65_qua_ii_lc(BigDecimal r65_qua_ii_lc) {
+			this.r65_qua_ii_lc = r65_qua_ii_lc;
+		}
+
+		public BigDecimal getR65_qua_ii_qar() {
+			return r65_qua_ii_qar;
+		}
+
+		public void setR65_qua_ii_qar(BigDecimal r65_qua_ii_qar) {
+			this.r65_qua_ii_qar = r65_qua_ii_qar;
+		}
+
+		public BigDecimal getR65_qua_ii_inr() {
+			return r65_qua_ii_inr;
+		}
+
+		public void setR65_qua_ii_inr(BigDecimal r65_qua_ii_inr) {
+			this.r65_qua_ii_inr = r65_qua_ii_inr;
+		}
+
+		public BigDecimal getR65_qua_iii_lc() {
+			return r65_qua_iii_lc;
+		}
+
+		public void setR65_qua_iii_lc(BigDecimal r65_qua_iii_lc) {
+			this.r65_qua_iii_lc = r65_qua_iii_lc;
+		}
+
+		public BigDecimal getR65_qua_iii_qar() {
+			return r65_qua_iii_qar;
+		}
+
+		public void setR65_qua_iii_qar(BigDecimal r65_qua_iii_qar) {
+			this.r65_qua_iii_qar = r65_qua_iii_qar;
+		}
+
+		public BigDecimal getR65_qua_iii_inr() {
+			return r65_qua_iii_inr;
+		}
+
+		public void setR65_qua_iii_inr(BigDecimal r65_qua_iii_inr) {
+			this.r65_qua_iii_inr = r65_qua_iii_inr;
+		}
+
+		public BigDecimal getR65_qua_iv_lc() {
+			return r65_qua_iv_lc;
+		}
+
+		public void setR65_qua_iv_lc(BigDecimal r65_qua_iv_lc) {
+			this.r65_qua_iv_lc = r65_qua_iv_lc;
+		}
+
+		public BigDecimal getR65_qua_iv_qar() {
+			return r65_qua_iv_qar;
+		}
+
+		public void setR65_qua_iv_qar(BigDecimal r65_qua_iv_qar) {
+			this.r65_qua_iv_qar = r65_qua_iv_qar;
+		}
+
+		public BigDecimal getR65_qua_iv_inr() {
+			return r65_qua_iv_inr;
+		}
+
+		public void setR65_qua_iv_inr(BigDecimal r65_qua_iv_inr) {
+			this.r65_qua_iv_inr = r65_qua_iv_inr;
+		}
+
+		public BigDecimal getR65_cumm_inr() {
+			return r65_cumm_inr;
+		}
+
+		public void setR65_cumm_inr(BigDecimal r65_cumm_inr) {
+			this.r65_cumm_inr = r65_cumm_inr;
+		}
+
+		public BigDecimal getR65_cumm_bwp() {
+			return r65_cumm_bwp;
+		}
+
+		public void setR65_cumm_bwp(BigDecimal r65_cumm_bwp) {
+			this.r65_cumm_bwp = r65_cumm_bwp;
+		}
+
+		public String getR66_product() {
+			return r66_product;
+		}
+
+		public void setR66_product(String r66_product) {
+			this.r66_product = r66_product;
+		}
+
+		public BigDecimal getR66_qua_i_lc() {
+			return r66_qua_i_lc;
+		}
+
+		public void setR66_qua_i_lc(BigDecimal r66_qua_i_lc) {
+			this.r66_qua_i_lc = r66_qua_i_lc;
+		}
+
+		public BigDecimal getR66_qua_i_qar() {
+			return r66_qua_i_qar;
+		}
+
+		public void setR66_qua_i_qar(BigDecimal r66_qua_i_qar) {
+			this.r66_qua_i_qar = r66_qua_i_qar;
+		}
+
+		public BigDecimal getR66_qua_i_inr() {
+			return r66_qua_i_inr;
+		}
+
+		public void setR66_qua_i_inr(BigDecimal r66_qua_i_inr) {
+			this.r66_qua_i_inr = r66_qua_i_inr;
+		}
+
+		public BigDecimal getR66_qua_ii_lc() {
+			return r66_qua_ii_lc;
+		}
+
+		public void setR66_qua_ii_lc(BigDecimal r66_qua_ii_lc) {
+			this.r66_qua_ii_lc = r66_qua_ii_lc;
+		}
+
+		public BigDecimal getR66_qua_ii_qar() {
+			return r66_qua_ii_qar;
+		}
+
+		public void setR66_qua_ii_qar(BigDecimal r66_qua_ii_qar) {
+			this.r66_qua_ii_qar = r66_qua_ii_qar;
+		}
+
+		public BigDecimal getR66_qua_ii_inr() {
+			return r66_qua_ii_inr;
+		}
+
+		public void setR66_qua_ii_inr(BigDecimal r66_qua_ii_inr) {
+			this.r66_qua_ii_inr = r66_qua_ii_inr;
+		}
+
+		public BigDecimal getR66_qua_iii_lc() {
+			return r66_qua_iii_lc;
+		}
+
+		public void setR66_qua_iii_lc(BigDecimal r66_qua_iii_lc) {
+			this.r66_qua_iii_lc = r66_qua_iii_lc;
+		}
+
+		public BigDecimal getR66_qua_iii_qar() {
+			return r66_qua_iii_qar;
+		}
+
+		public void setR66_qua_iii_qar(BigDecimal r66_qua_iii_qar) {
+			this.r66_qua_iii_qar = r66_qua_iii_qar;
+		}
+
+		public BigDecimal getR66_qua_iii_inr() {
+			return r66_qua_iii_inr;
+		}
+
+		public void setR66_qua_iii_inr(BigDecimal r66_qua_iii_inr) {
+			this.r66_qua_iii_inr = r66_qua_iii_inr;
+		}
+
+		public BigDecimal getR66_qua_iv_lc() {
+			return r66_qua_iv_lc;
+		}
+
+		public void setR66_qua_iv_lc(BigDecimal r66_qua_iv_lc) {
+			this.r66_qua_iv_lc = r66_qua_iv_lc;
+		}
+
+		public BigDecimal getR66_qua_iv_qar() {
+			return r66_qua_iv_qar;
+		}
+
+		public void setR66_qua_iv_qar(BigDecimal r66_qua_iv_qar) {
+			this.r66_qua_iv_qar = r66_qua_iv_qar;
+		}
+
+		public BigDecimal getR66_qua_iv_inr() {
+			return r66_qua_iv_inr;
+		}
+
+		public void setR66_qua_iv_inr(BigDecimal r66_qua_iv_inr) {
+			this.r66_qua_iv_inr = r66_qua_iv_inr;
+		}
+
+		public BigDecimal getR66_cumm_inr() {
+			return r66_cumm_inr;
+		}
+
+		public void setR66_cumm_inr(BigDecimal r66_cumm_inr) {
+			this.r66_cumm_inr = r66_cumm_inr;
+		}
+
+		public BigDecimal getR66_cumm_bwp() {
+			return r66_cumm_bwp;
+		}
+
+		public void setR66_cumm_bwp(BigDecimal r66_cumm_bwp) {
+			this.r66_cumm_bwp = r66_cumm_bwp;
+		}
+
+		public String getR67_product() {
+			return r67_product;
+		}
+
+		public void setR67_product(String r67_product) {
+			this.r67_product = r67_product;
+		}
+
+		public BigDecimal getR67_qua_i_lc() {
+			return r67_qua_i_lc;
+		}
+
+		public void setR67_qua_i_lc(BigDecimal r67_qua_i_lc) {
+			this.r67_qua_i_lc = r67_qua_i_lc;
+		}
+
+		public BigDecimal getR67_qua_i_qar() {
+			return r67_qua_i_qar;
+		}
+
+		public void setR67_qua_i_qar(BigDecimal r67_qua_i_qar) {
+			this.r67_qua_i_qar = r67_qua_i_qar;
+		}
+
+		public BigDecimal getR67_qua_i_inr() {
+			return r67_qua_i_inr;
+		}
+
+		public void setR67_qua_i_inr(BigDecimal r67_qua_i_inr) {
+			this.r67_qua_i_inr = r67_qua_i_inr;
+		}
+
+		public BigDecimal getR67_qua_ii_lc() {
+			return r67_qua_ii_lc;
+		}
+
+		public void setR67_qua_ii_lc(BigDecimal r67_qua_ii_lc) {
+			this.r67_qua_ii_lc = r67_qua_ii_lc;
+		}
+
+		public BigDecimal getR67_qua_ii_qar() {
+			return r67_qua_ii_qar;
+		}
+
+		public void setR67_qua_ii_qar(BigDecimal r67_qua_ii_qar) {
+			this.r67_qua_ii_qar = r67_qua_ii_qar;
+		}
+
+		public BigDecimal getR67_qua_ii_inr() {
+			return r67_qua_ii_inr;
+		}
+
+		public void setR67_qua_ii_inr(BigDecimal r67_qua_ii_inr) {
+			this.r67_qua_ii_inr = r67_qua_ii_inr;
+		}
+
+		public BigDecimal getR67_qua_iii_lc() {
+			return r67_qua_iii_lc;
+		}
+
+		public void setR67_qua_iii_lc(BigDecimal r67_qua_iii_lc) {
+			this.r67_qua_iii_lc = r67_qua_iii_lc;
+		}
+
+		public BigDecimal getR67_qua_iii_qar() {
+			return r67_qua_iii_qar;
+		}
+
+		public void setR67_qua_iii_qar(BigDecimal r67_qua_iii_qar) {
+			this.r67_qua_iii_qar = r67_qua_iii_qar;
+		}
+
+		public BigDecimal getR67_qua_iii_inr() {
+			return r67_qua_iii_inr;
+		}
+
+		public void setR67_qua_iii_inr(BigDecimal r67_qua_iii_inr) {
+			this.r67_qua_iii_inr = r67_qua_iii_inr;
+		}
+
+		public BigDecimal getR67_qua_iv_lc() {
+			return r67_qua_iv_lc;
+		}
+
+		public void setR67_qua_iv_lc(BigDecimal r67_qua_iv_lc) {
+			this.r67_qua_iv_lc = r67_qua_iv_lc;
+		}
+
+		public BigDecimal getR67_qua_iv_qar() {
+			return r67_qua_iv_qar;
+		}
+
+		public void setR67_qua_iv_qar(BigDecimal r67_qua_iv_qar) {
+			this.r67_qua_iv_qar = r67_qua_iv_qar;
+		}
+
+		public BigDecimal getR67_qua_iv_inr() {
+			return r67_qua_iv_inr;
+		}
+
+		public void setR67_qua_iv_inr(BigDecimal r67_qua_iv_inr) {
+			this.r67_qua_iv_inr = r67_qua_iv_inr;
+		}
+
+		public BigDecimal getR67_cumm_inr() {
+			return r67_cumm_inr;
+		}
+
+		public void setR67_cumm_inr(BigDecimal r67_cumm_inr) {
+			this.r67_cumm_inr = r67_cumm_inr;
+		}
+
+		public BigDecimal getR67_cumm_bwp() {
+			return r67_cumm_bwp;
+		}
+
+		public void setR67_cumm_bwp(BigDecimal r67_cumm_bwp) {
+			this.r67_cumm_bwp = r67_cumm_bwp;
+		}
+
+		public String getR68_product() {
+			return r68_product;
+		}
+
+		public void setR68_product(String r68_product) {
+			this.r68_product = r68_product;
+		}
+
+		public BigDecimal getR68_qua_i_lc() {
+			return r68_qua_i_lc;
+		}
+
+		public void setR68_qua_i_lc(BigDecimal r68_qua_i_lc) {
+			this.r68_qua_i_lc = r68_qua_i_lc;
+		}
+
+		public BigDecimal getR68_qua_i_qar() {
+			return r68_qua_i_qar;
+		}
+
+		public void setR68_qua_i_qar(BigDecimal r68_qua_i_qar) {
+			this.r68_qua_i_qar = r68_qua_i_qar;
+		}
+
+		public BigDecimal getR68_qua_i_inr() {
+			return r68_qua_i_inr;
+		}
+
+		public void setR68_qua_i_inr(BigDecimal r68_qua_i_inr) {
+			this.r68_qua_i_inr = r68_qua_i_inr;
+		}
+
+		public BigDecimal getR68_qua_ii_lc() {
+			return r68_qua_ii_lc;
+		}
+
+		public void setR68_qua_ii_lc(BigDecimal r68_qua_ii_lc) {
+			this.r68_qua_ii_lc = r68_qua_ii_lc;
+		}
+
+		public BigDecimal getR68_qua_ii_qar() {
+			return r68_qua_ii_qar;
+		}
+
+		public void setR68_qua_ii_qar(BigDecimal r68_qua_ii_qar) {
+			this.r68_qua_ii_qar = r68_qua_ii_qar;
+		}
+
+		public BigDecimal getR68_qua_ii_inr() {
+			return r68_qua_ii_inr;
+		}
+
+		public void setR68_qua_ii_inr(BigDecimal r68_qua_ii_inr) {
+			this.r68_qua_ii_inr = r68_qua_ii_inr;
+		}
+
+		public BigDecimal getR68_qua_iii_lc() {
+			return r68_qua_iii_lc;
+		}
+
+		public void setR68_qua_iii_lc(BigDecimal r68_qua_iii_lc) {
+			this.r68_qua_iii_lc = r68_qua_iii_lc;
+		}
+
+		public BigDecimal getR68_qua_iii_qar() {
+			return r68_qua_iii_qar;
+		}
+
+		public void setR68_qua_iii_qar(BigDecimal r68_qua_iii_qar) {
+			this.r68_qua_iii_qar = r68_qua_iii_qar;
+		}
+
+		public BigDecimal getR68_qua_iii_inr() {
+			return r68_qua_iii_inr;
+		}
+
+		public void setR68_qua_iii_inr(BigDecimal r68_qua_iii_inr) {
+			this.r68_qua_iii_inr = r68_qua_iii_inr;
+		}
+
+		public BigDecimal getR68_qua_iv_lc() {
+			return r68_qua_iv_lc;
+		}
+
+		public void setR68_qua_iv_lc(BigDecimal r68_qua_iv_lc) {
+			this.r68_qua_iv_lc = r68_qua_iv_lc;
+		}
+
+		public BigDecimal getR68_qua_iv_qar() {
+			return r68_qua_iv_qar;
+		}
+
+		public void setR68_qua_iv_qar(BigDecimal r68_qua_iv_qar) {
+			this.r68_qua_iv_qar = r68_qua_iv_qar;
+		}
+
+		public BigDecimal getR68_qua_iv_inr() {
+			return r68_qua_iv_inr;
+		}
+
+		public void setR68_qua_iv_inr(BigDecimal r68_qua_iv_inr) {
+			this.r68_qua_iv_inr = r68_qua_iv_inr;
+		}
+
+		public BigDecimal getR68_cumm_inr() {
+			return r68_cumm_inr;
+		}
+
+		public void setR68_cumm_inr(BigDecimal r68_cumm_inr) {
+			this.r68_cumm_inr = r68_cumm_inr;
+		}
+
+		public BigDecimal getR68_cumm_bwp() {
+			return r68_cumm_bwp;
+		}
+
+		public void setR68_cumm_bwp(BigDecimal r68_cumm_bwp) {
+			this.r68_cumm_bwp = r68_cumm_bwp;
+		}
+
+		public String getR69_product() {
+			return r69_product;
+		}
+
+		public void setR69_product(String r69_product) {
+			this.r69_product = r69_product;
+		}
+
+		public BigDecimal getR69_qua_i_lc() {
+			return r69_qua_i_lc;
+		}
+
+		public void setR69_qua_i_lc(BigDecimal r69_qua_i_lc) {
+			this.r69_qua_i_lc = r69_qua_i_lc;
+		}
+
+		public BigDecimal getR69_qua_i_qar() {
+			return r69_qua_i_qar;
+		}
+
+		public void setR69_qua_i_qar(BigDecimal r69_qua_i_qar) {
+			this.r69_qua_i_qar = r69_qua_i_qar;
+		}
+
+		public BigDecimal getR69_qua_i_inr() {
+			return r69_qua_i_inr;
+		}
+
+		public void setR69_qua_i_inr(BigDecimal r69_qua_i_inr) {
+			this.r69_qua_i_inr = r69_qua_i_inr;
+		}
+
+		public BigDecimal getR69_qua_ii_lc() {
+			return r69_qua_ii_lc;
+		}
+
+		public void setR69_qua_ii_lc(BigDecimal r69_qua_ii_lc) {
+			this.r69_qua_ii_lc = r69_qua_ii_lc;
+		}
+
+		public BigDecimal getR69_qua_ii_qar() {
+			return r69_qua_ii_qar;
+		}
+
+		public void setR69_qua_ii_qar(BigDecimal r69_qua_ii_qar) {
+			this.r69_qua_ii_qar = r69_qua_ii_qar;
+		}
+
+		public BigDecimal getR69_qua_ii_inr() {
+			return r69_qua_ii_inr;
+		}
+
+		public void setR69_qua_ii_inr(BigDecimal r69_qua_ii_inr) {
+			this.r69_qua_ii_inr = r69_qua_ii_inr;
+		}
+
+		public BigDecimal getR69_qua_iii_lc() {
+			return r69_qua_iii_lc;
+		}
+
+		public void setR69_qua_iii_lc(BigDecimal r69_qua_iii_lc) {
+			this.r69_qua_iii_lc = r69_qua_iii_lc;
+		}
+
+		public BigDecimal getR69_qua_iii_qar() {
+			return r69_qua_iii_qar;
+		}
+
+		public void setR69_qua_iii_qar(BigDecimal r69_qua_iii_qar) {
+			this.r69_qua_iii_qar = r69_qua_iii_qar;
+		}
+
+		public BigDecimal getR69_qua_iii_inr() {
+			return r69_qua_iii_inr;
+		}
+
+		public void setR69_qua_iii_inr(BigDecimal r69_qua_iii_inr) {
+			this.r69_qua_iii_inr = r69_qua_iii_inr;
+		}
+
+		public BigDecimal getR69_qua_iv_lc() {
+			return r69_qua_iv_lc;
+		}
+
+		public void setR69_qua_iv_lc(BigDecimal r69_qua_iv_lc) {
+			this.r69_qua_iv_lc = r69_qua_iv_lc;
+		}
+
+		public BigDecimal getR69_qua_iv_qar() {
+			return r69_qua_iv_qar;
+		}
+
+		public void setR69_qua_iv_qar(BigDecimal r69_qua_iv_qar) {
+			this.r69_qua_iv_qar = r69_qua_iv_qar;
+		}
+
+		public BigDecimal getR69_qua_iv_inr() {
+			return r69_qua_iv_inr;
+		}
+
+		public void setR69_qua_iv_inr(BigDecimal r69_qua_iv_inr) {
+			this.r69_qua_iv_inr = r69_qua_iv_inr;
+		}
+
+		public BigDecimal getR69_cumm_inr() {
+			return r69_cumm_inr;
+		}
+
+		public void setR69_cumm_inr(BigDecimal r69_cumm_inr) {
+			this.r69_cumm_inr = r69_cumm_inr;
+		}
+
+		public BigDecimal getR69_cumm_bwp() {
+			return r69_cumm_bwp;
+		}
+
+		public void setR69_cumm_bwp(BigDecimal r69_cumm_bwp) {
+			this.r69_cumm_bwp = r69_cumm_bwp;
+		}
+
+		public String getR70_product() {
+			return r70_product;
+		}
+
+		public void setR70_product(String r70_product) {
+			this.r70_product = r70_product;
+		}
+
+		public BigDecimal getR70_qua_i_lc() {
+			return r70_qua_i_lc;
+		}
+
+		public void setR70_qua_i_lc(BigDecimal r70_qua_i_lc) {
+			this.r70_qua_i_lc = r70_qua_i_lc;
+		}
+
+		public BigDecimal getR70_qua_i_qar() {
+			return r70_qua_i_qar;
+		}
+
+		public void setR70_qua_i_qar(BigDecimal r70_qua_i_qar) {
+			this.r70_qua_i_qar = r70_qua_i_qar;
+		}
+
+		public BigDecimal getR70_qua_i_inr() {
+			return r70_qua_i_inr;
+		}
+
+		public void setR70_qua_i_inr(BigDecimal r70_qua_i_inr) {
+			this.r70_qua_i_inr = r70_qua_i_inr;
+		}
+
+		public BigDecimal getR70_qua_ii_lc() {
+			return r70_qua_ii_lc;
+		}
+
+		public void setR70_qua_ii_lc(BigDecimal r70_qua_ii_lc) {
+			this.r70_qua_ii_lc = r70_qua_ii_lc;
+		}
+
+		public BigDecimal getR70_qua_ii_qar() {
+			return r70_qua_ii_qar;
+		}
+
+		public void setR70_qua_ii_qar(BigDecimal r70_qua_ii_qar) {
+			this.r70_qua_ii_qar = r70_qua_ii_qar;
+		}
+
+		public BigDecimal getR70_qua_ii_inr() {
+			return r70_qua_ii_inr;
+		}
+
+		public void setR70_qua_ii_inr(BigDecimal r70_qua_ii_inr) {
+			this.r70_qua_ii_inr = r70_qua_ii_inr;
+		}
+
+		public BigDecimal getR70_qua_iii_lc() {
+			return r70_qua_iii_lc;
+		}
+
+		public void setR70_qua_iii_lc(BigDecimal r70_qua_iii_lc) {
+			this.r70_qua_iii_lc = r70_qua_iii_lc;
+		}
+
+		public BigDecimal getR70_qua_iii_qar() {
+			return r70_qua_iii_qar;
+		}
+
+		public void setR70_qua_iii_qar(BigDecimal r70_qua_iii_qar) {
+			this.r70_qua_iii_qar = r70_qua_iii_qar;
+		}
+
+		public BigDecimal getR70_qua_iii_inr() {
+			return r70_qua_iii_inr;
+		}
+
+		public void setR70_qua_iii_inr(BigDecimal r70_qua_iii_inr) {
+			this.r70_qua_iii_inr = r70_qua_iii_inr;
+		}
+
+		public BigDecimal getR70_qua_iv_lc() {
+			return r70_qua_iv_lc;
+		}
+
+		public void setR70_qua_iv_lc(BigDecimal r70_qua_iv_lc) {
+			this.r70_qua_iv_lc = r70_qua_iv_lc;
+		}
+
+		public BigDecimal getR70_qua_iv_qar() {
+			return r70_qua_iv_qar;
+		}
+
+		public void setR70_qua_iv_qar(BigDecimal r70_qua_iv_qar) {
+			this.r70_qua_iv_qar = r70_qua_iv_qar;
+		}
+
+		public BigDecimal getR70_qua_iv_inr() {
+			return r70_qua_iv_inr;
+		}
+
+		public void setR70_qua_iv_inr(BigDecimal r70_qua_iv_inr) {
+			this.r70_qua_iv_inr = r70_qua_iv_inr;
+		}
+
+		public BigDecimal getR70_cumm_inr() {
+			return r70_cumm_inr;
+		}
+
+		public void setR70_cumm_inr(BigDecimal r70_cumm_inr) {
+			this.r70_cumm_inr = r70_cumm_inr;
+		}
+
+		public BigDecimal getR70_cumm_bwp() {
+			return r70_cumm_bwp;
+		}
+
+		public void setR70_cumm_bwp(BigDecimal r70_cumm_bwp) {
+			this.r70_cumm_bwp = r70_cumm_bwp;
+		}
+
+		public String getR71_product() {
+			return r71_product;
+		}
+
+		public void setR71_product(String r71_product) {
+			this.r71_product = r71_product;
+		}
+
+		public BigDecimal getR71_qua_i_lc() {
+			return r71_qua_i_lc;
+		}
+
+		public void setR71_qua_i_lc(BigDecimal r71_qua_i_lc) {
+			this.r71_qua_i_lc = r71_qua_i_lc;
+		}
+
+		public BigDecimal getR71_qua_i_qar() {
+			return r71_qua_i_qar;
+		}
+
+		public void setR71_qua_i_qar(BigDecimal r71_qua_i_qar) {
+			this.r71_qua_i_qar = r71_qua_i_qar;
+		}
+
+		public BigDecimal getR71_qua_i_inr() {
+			return r71_qua_i_inr;
+		}
+
+		public void setR71_qua_i_inr(BigDecimal r71_qua_i_inr) {
+			this.r71_qua_i_inr = r71_qua_i_inr;
+		}
+
+		public BigDecimal getR71_qua_ii_lc() {
+			return r71_qua_ii_lc;
+		}
+
+		public void setR71_qua_ii_lc(BigDecimal r71_qua_ii_lc) {
+			this.r71_qua_ii_lc = r71_qua_ii_lc;
+		}
+
+		public BigDecimal getR71_qua_ii_qar() {
+			return r71_qua_ii_qar;
+		}
+
+		public void setR71_qua_ii_qar(BigDecimal r71_qua_ii_qar) {
+			this.r71_qua_ii_qar = r71_qua_ii_qar;
+		}
+
+		public BigDecimal getR71_qua_ii_inr() {
+			return r71_qua_ii_inr;
+		}
+
+		public void setR71_qua_ii_inr(BigDecimal r71_qua_ii_inr) {
+			this.r71_qua_ii_inr = r71_qua_ii_inr;
+		}
+
+		public BigDecimal getR71_qua_iii_lc() {
+			return r71_qua_iii_lc;
+		}
+
+		public void setR71_qua_iii_lc(BigDecimal r71_qua_iii_lc) {
+			this.r71_qua_iii_lc = r71_qua_iii_lc;
+		}
+
+		public BigDecimal getR71_qua_iii_qar() {
+			return r71_qua_iii_qar;
+		}
+
+		public void setR71_qua_iii_qar(BigDecimal r71_qua_iii_qar) {
+			this.r71_qua_iii_qar = r71_qua_iii_qar;
+		}
+
+		public BigDecimal getR71_qua_iii_inr() {
+			return r71_qua_iii_inr;
+		}
+
+		public void setR71_qua_iii_inr(BigDecimal r71_qua_iii_inr) {
+			this.r71_qua_iii_inr = r71_qua_iii_inr;
+		}
+
+		public BigDecimal getR71_qua_iv_lc() {
+			return r71_qua_iv_lc;
+		}
+
+		public void setR71_qua_iv_lc(BigDecimal r71_qua_iv_lc) {
+			this.r71_qua_iv_lc = r71_qua_iv_lc;
+		}
+
+		public BigDecimal getR71_qua_iv_qar() {
+			return r71_qua_iv_qar;
+		}
+
+		public void setR71_qua_iv_qar(BigDecimal r71_qua_iv_qar) {
+			this.r71_qua_iv_qar = r71_qua_iv_qar;
+		}
+
+		public BigDecimal getR71_qua_iv_inr() {
+			return r71_qua_iv_inr;
+		}
+
+		public void setR71_qua_iv_inr(BigDecimal r71_qua_iv_inr) {
+			this.r71_qua_iv_inr = r71_qua_iv_inr;
+		}
+
+		public BigDecimal getR71_cumm_inr() {
+			return r71_cumm_inr;
+		}
+
+		public void setR71_cumm_inr(BigDecimal r71_cumm_inr) {
+			this.r71_cumm_inr = r71_cumm_inr;
+		}
+
+		public BigDecimal getR71_cumm_bwp() {
+			return r71_cumm_bwp;
+		}
+
+		public void setR71_cumm_bwp(BigDecimal r71_cumm_bwp) {
+			this.r71_cumm_bwp = r71_cumm_bwp;
+		}
+
+		public String getR72_product() {
+			return r72_product;
+		}
+
+		public void setR72_product(String r72_product) {
+			this.r72_product = r72_product;
+		}
+
+		public BigDecimal getR72_qua_i_lc() {
+			return r72_qua_i_lc;
+		}
+
+		public void setR72_qua_i_lc(BigDecimal r72_qua_i_lc) {
+			this.r72_qua_i_lc = r72_qua_i_lc;
+		}
+
+		public BigDecimal getR72_qua_i_qar() {
+			return r72_qua_i_qar;
+		}
+
+		public void setR72_qua_i_qar(BigDecimal r72_qua_i_qar) {
+			this.r72_qua_i_qar = r72_qua_i_qar;
+		}
+
+		public BigDecimal getR72_qua_i_inr() {
+			return r72_qua_i_inr;
+		}
+
+		public void setR72_qua_i_inr(BigDecimal r72_qua_i_inr) {
+			this.r72_qua_i_inr = r72_qua_i_inr;
+		}
+
+		public BigDecimal getR72_qua_ii_lc() {
+			return r72_qua_ii_lc;
+		}
+
+		public void setR72_qua_ii_lc(BigDecimal r72_qua_ii_lc) {
+			this.r72_qua_ii_lc = r72_qua_ii_lc;
+		}
+
+		public BigDecimal getR72_qua_ii_qar() {
+			return r72_qua_ii_qar;
+		}
+
+		public void setR72_qua_ii_qar(BigDecimal r72_qua_ii_qar) {
+			this.r72_qua_ii_qar = r72_qua_ii_qar;
+		}
+
+		public BigDecimal getR72_qua_ii_inr() {
+			return r72_qua_ii_inr;
+		}
+
+		public void setR72_qua_ii_inr(BigDecimal r72_qua_ii_inr) {
+			this.r72_qua_ii_inr = r72_qua_ii_inr;
+		}
+
+		public BigDecimal getR72_qua_iii_lc() {
+			return r72_qua_iii_lc;
+		}
+
+		public void setR72_qua_iii_lc(BigDecimal r72_qua_iii_lc) {
+			this.r72_qua_iii_lc = r72_qua_iii_lc;
+		}
+
+		public BigDecimal getR72_qua_iii_qar() {
+			return r72_qua_iii_qar;
+		}
+
+		public void setR72_qua_iii_qar(BigDecimal r72_qua_iii_qar) {
+			this.r72_qua_iii_qar = r72_qua_iii_qar;
+		}
+
+		public BigDecimal getR72_qua_iii_inr() {
+			return r72_qua_iii_inr;
+		}
+
+		public void setR72_qua_iii_inr(BigDecimal r72_qua_iii_inr) {
+			this.r72_qua_iii_inr = r72_qua_iii_inr;
+		}
+
+		public BigDecimal getR72_qua_iv_lc() {
+			return r72_qua_iv_lc;
+		}
+
+		public void setR72_qua_iv_lc(BigDecimal r72_qua_iv_lc) {
+			this.r72_qua_iv_lc = r72_qua_iv_lc;
+		}
+
+		public BigDecimal getR72_qua_iv_qar() {
+			return r72_qua_iv_qar;
+		}
+
+		public void setR72_qua_iv_qar(BigDecimal r72_qua_iv_qar) {
+			this.r72_qua_iv_qar = r72_qua_iv_qar;
+		}
+
+		public BigDecimal getR72_qua_iv_inr() {
+			return r72_qua_iv_inr;
+		}
+
+		public void setR72_qua_iv_inr(BigDecimal r72_qua_iv_inr) {
+			this.r72_qua_iv_inr = r72_qua_iv_inr;
+		}
+
+		public BigDecimal getR72_cumm_inr() {
+			return r72_cumm_inr;
+		}
+
+		public void setR72_cumm_inr(BigDecimal r72_cumm_inr) {
+			this.r72_cumm_inr = r72_cumm_inr;
+		}
+
+		public BigDecimal getR72_cumm_bwp() {
+			return r72_cumm_bwp;
+		}
+
+		public void setR72_cumm_bwp(BigDecimal r72_cumm_bwp) {
+			this.r72_cumm_bwp = r72_cumm_bwp;
+		}
+
+		public String getR73_product() {
+			return r73_product;
+		}
+
+		public void setR73_product(String r73_product) {
+			this.r73_product = r73_product;
+		}
+
+		public BigDecimal getR73_qua_i_lc() {
+			return r73_qua_i_lc;
+		}
+
+		public void setR73_qua_i_lc(BigDecimal r73_qua_i_lc) {
+			this.r73_qua_i_lc = r73_qua_i_lc;
+		}
+
+		public BigDecimal getR73_qua_i_qar() {
+			return r73_qua_i_qar;
+		}
+
+		public void setR73_qua_i_qar(BigDecimal r73_qua_i_qar) {
+			this.r73_qua_i_qar = r73_qua_i_qar;
+		}
+
+		public BigDecimal getR73_qua_i_inr() {
+			return r73_qua_i_inr;
+		}
+
+		public void setR73_qua_i_inr(BigDecimal r73_qua_i_inr) {
+			this.r73_qua_i_inr = r73_qua_i_inr;
+		}
+
+		public BigDecimal getR73_qua_ii_lc() {
+			return r73_qua_ii_lc;
+		}
+
+		public void setR73_qua_ii_lc(BigDecimal r73_qua_ii_lc) {
+			this.r73_qua_ii_lc = r73_qua_ii_lc;
+		}
+
+		public BigDecimal getR73_qua_ii_qar() {
+			return r73_qua_ii_qar;
+		}
+
+		public void setR73_qua_ii_qar(BigDecimal r73_qua_ii_qar) {
+			this.r73_qua_ii_qar = r73_qua_ii_qar;
+		}
+
+		public BigDecimal getR73_qua_ii_inr() {
+			return r73_qua_ii_inr;
+		}
+
+		public void setR73_qua_ii_inr(BigDecimal r73_qua_ii_inr) {
+			this.r73_qua_ii_inr = r73_qua_ii_inr;
+		}
+
+		public BigDecimal getR73_qua_iii_lc() {
+			return r73_qua_iii_lc;
+		}
+
+		public void setR73_qua_iii_lc(BigDecimal r73_qua_iii_lc) {
+			this.r73_qua_iii_lc = r73_qua_iii_lc;
+		}
+
+		public BigDecimal getR73_qua_iii_qar() {
+			return r73_qua_iii_qar;
+		}
+
+		public void setR73_qua_iii_qar(BigDecimal r73_qua_iii_qar) {
+			this.r73_qua_iii_qar = r73_qua_iii_qar;
+		}
+
+		public BigDecimal getR73_qua_iii_inr() {
+			return r73_qua_iii_inr;
+		}
+
+		public void setR73_qua_iii_inr(BigDecimal r73_qua_iii_inr) {
+			this.r73_qua_iii_inr = r73_qua_iii_inr;
+		}
+
+		public BigDecimal getR73_qua_iv_lc() {
+			return r73_qua_iv_lc;
+		}
+
+		public void setR73_qua_iv_lc(BigDecimal r73_qua_iv_lc) {
+			this.r73_qua_iv_lc = r73_qua_iv_lc;
+		}
+
+		public BigDecimal getR73_qua_iv_qar() {
+			return r73_qua_iv_qar;
+		}
+
+		public void setR73_qua_iv_qar(BigDecimal r73_qua_iv_qar) {
+			this.r73_qua_iv_qar = r73_qua_iv_qar;
+		}
+
+		public BigDecimal getR73_qua_iv_inr() {
+			return r73_qua_iv_inr;
+		}
+
+		public void setR73_qua_iv_inr(BigDecimal r73_qua_iv_inr) {
+			this.r73_qua_iv_inr = r73_qua_iv_inr;
+		}
+
+		public BigDecimal getR73_cumm_inr() {
+			return r73_cumm_inr;
+		}
+
+		public void setR73_cumm_inr(BigDecimal r73_cumm_inr) {
+			this.r73_cumm_inr = r73_cumm_inr;
+		}
+
+		public BigDecimal getR73_cumm_bwp() {
+			return r73_cumm_bwp;
+		}
+
+		public void setR73_cumm_bwp(BigDecimal r73_cumm_bwp) {
+			this.r73_cumm_bwp = r73_cumm_bwp;
+		}
+
+		public String getR74_product() {
+			return r74_product;
+		}
+
+		public void setR74_product(String r74_product) {
+			this.r74_product = r74_product;
+		}
+
+		public BigDecimal getR74_qua_i_lc() {
+			return r74_qua_i_lc;
+		}
+
+		public void setR74_qua_i_lc(BigDecimal r74_qua_i_lc) {
+			this.r74_qua_i_lc = r74_qua_i_lc;
+		}
+
+		public BigDecimal getR74_qua_i_qar() {
+			return r74_qua_i_qar;
+		}
+
+		public void setR74_qua_i_qar(BigDecimal r74_qua_i_qar) {
+			this.r74_qua_i_qar = r74_qua_i_qar;
+		}
+
+		public BigDecimal getR74_qua_i_inr() {
+			return r74_qua_i_inr;
+		}
+
+		public void setR74_qua_i_inr(BigDecimal r74_qua_i_inr) {
+			this.r74_qua_i_inr = r74_qua_i_inr;
+		}
+
+		public BigDecimal getR74_qua_ii_lc() {
+			return r74_qua_ii_lc;
+		}
+
+		public void setR74_qua_ii_lc(BigDecimal r74_qua_ii_lc) {
+			this.r74_qua_ii_lc = r74_qua_ii_lc;
+		}
+
+		public BigDecimal getR74_qua_ii_qar() {
+			return r74_qua_ii_qar;
+		}
+
+		public void setR74_qua_ii_qar(BigDecimal r74_qua_ii_qar) {
+			this.r74_qua_ii_qar = r74_qua_ii_qar;
+		}
+
+		public BigDecimal getR74_qua_ii_inr() {
+			return r74_qua_ii_inr;
+		}
+
+		public void setR74_qua_ii_inr(BigDecimal r74_qua_ii_inr) {
+			this.r74_qua_ii_inr = r74_qua_ii_inr;
+		}
+
+		public BigDecimal getR74_qua_iii_lc() {
+			return r74_qua_iii_lc;
+		}
+
+		public void setR74_qua_iii_lc(BigDecimal r74_qua_iii_lc) {
+			this.r74_qua_iii_lc = r74_qua_iii_lc;
+		}
+
+		public BigDecimal getR74_qua_iii_qar() {
+			return r74_qua_iii_qar;
+		}
+
+		public void setR74_qua_iii_qar(BigDecimal r74_qua_iii_qar) {
+			this.r74_qua_iii_qar = r74_qua_iii_qar;
+		}
+
+		public BigDecimal getR74_qua_iii_inr() {
+			return r74_qua_iii_inr;
+		}
+
+		public void setR74_qua_iii_inr(BigDecimal r74_qua_iii_inr) {
+			this.r74_qua_iii_inr = r74_qua_iii_inr;
+		}
+
+		public BigDecimal getR74_qua_iv_lc() {
+			return r74_qua_iv_lc;
+		}
+
+		public void setR74_qua_iv_lc(BigDecimal r74_qua_iv_lc) {
+			this.r74_qua_iv_lc = r74_qua_iv_lc;
+		}
+
+		public BigDecimal getR74_qua_iv_qar() {
+			return r74_qua_iv_qar;
+		}
+
+		public void setR74_qua_iv_qar(BigDecimal r74_qua_iv_qar) {
+			this.r74_qua_iv_qar = r74_qua_iv_qar;
+		}
+
+		public BigDecimal getR74_qua_iv_inr() {
+			return r74_qua_iv_inr;
+		}
+
+		public void setR74_qua_iv_inr(BigDecimal r74_qua_iv_inr) {
+			this.r74_qua_iv_inr = r74_qua_iv_inr;
+		}
+
+		public BigDecimal getR74_cumm_inr() {
+			return r74_cumm_inr;
+		}
+
+		public void setR74_cumm_inr(BigDecimal r74_cumm_inr) {
+			this.r74_cumm_inr = r74_cumm_inr;
+		}
+
+		public BigDecimal getR74_cumm_bwp() {
+			return r74_cumm_bwp;
+		}
+
+		public void setR74_cumm_bwp(BigDecimal r74_cumm_bwp) {
+			this.r74_cumm_bwp = r74_cumm_bwp;
+		}
+
+		public String getR75_product() {
+			return r75_product;
+		}
+
+		public void setR75_product(String r75_product) {
+			this.r75_product = r75_product;
+		}
+
+		public BigDecimal getR75_qua_i_lc() {
+			return r75_qua_i_lc;
+		}
+
+		public void setR75_qua_i_lc(BigDecimal r75_qua_i_lc) {
+			this.r75_qua_i_lc = r75_qua_i_lc;
+		}
+
+		public BigDecimal getR75_qua_i_qar() {
+			return r75_qua_i_qar;
+		}
+
+		public void setR75_qua_i_qar(BigDecimal r75_qua_i_qar) {
+			this.r75_qua_i_qar = r75_qua_i_qar;
+		}
+
+		public BigDecimal getR75_qua_i_inr() {
+			return r75_qua_i_inr;
+		}
+
+		public void setR75_qua_i_inr(BigDecimal r75_qua_i_inr) {
+			this.r75_qua_i_inr = r75_qua_i_inr;
+		}
+
+		public BigDecimal getR75_qua_ii_lc() {
+			return r75_qua_ii_lc;
+		}
+
+		public void setR75_qua_ii_lc(BigDecimal r75_qua_ii_lc) {
+			this.r75_qua_ii_lc = r75_qua_ii_lc;
+		}
+
+		public BigDecimal getR75_qua_ii_qar() {
+			return r75_qua_ii_qar;
+		}
+
+		public void setR75_qua_ii_qar(BigDecimal r75_qua_ii_qar) {
+			this.r75_qua_ii_qar = r75_qua_ii_qar;
+		}
+
+		public BigDecimal getR75_qua_ii_inr() {
+			return r75_qua_ii_inr;
+		}
+
+		public void setR75_qua_ii_inr(BigDecimal r75_qua_ii_inr) {
+			this.r75_qua_ii_inr = r75_qua_ii_inr;
+		}
+
+		public BigDecimal getR75_qua_iii_lc() {
+			return r75_qua_iii_lc;
+		}
+
+		public void setR75_qua_iii_lc(BigDecimal r75_qua_iii_lc) {
+			this.r75_qua_iii_lc = r75_qua_iii_lc;
+		}
+
+		public BigDecimal getR75_qua_iii_qar() {
+			return r75_qua_iii_qar;
+		}
+
+		public void setR75_qua_iii_qar(BigDecimal r75_qua_iii_qar) {
+			this.r75_qua_iii_qar = r75_qua_iii_qar;
+		}
+
+		public BigDecimal getR75_qua_iii_inr() {
+			return r75_qua_iii_inr;
+		}
+
+		public void setR75_qua_iii_inr(BigDecimal r75_qua_iii_inr) {
+			this.r75_qua_iii_inr = r75_qua_iii_inr;
+		}
+
+		public BigDecimal getR75_qua_iv_lc() {
+			return r75_qua_iv_lc;
+		}
+
+		public void setR75_qua_iv_lc(BigDecimal r75_qua_iv_lc) {
+			this.r75_qua_iv_lc = r75_qua_iv_lc;
+		}
+
+		public BigDecimal getR75_qua_iv_qar() {
+			return r75_qua_iv_qar;
+		}
+
+		public void setR75_qua_iv_qar(BigDecimal r75_qua_iv_qar) {
+			this.r75_qua_iv_qar = r75_qua_iv_qar;
+		}
+
+		public BigDecimal getR75_qua_iv_inr() {
+			return r75_qua_iv_inr;
+		}
+
+		public void setR75_qua_iv_inr(BigDecimal r75_qua_iv_inr) {
+			this.r75_qua_iv_inr = r75_qua_iv_inr;
+		}
+
+		public BigDecimal getR75_cumm_inr() {
+			return r75_cumm_inr;
+		}
+
+		public void setR75_cumm_inr(BigDecimal r75_cumm_inr) {
+			this.r75_cumm_inr = r75_cumm_inr;
+		}
+
+		public BigDecimal getR75_cumm_bwp() {
+			return r75_cumm_bwp;
+		}
+
+		public void setR75_cumm_bwp(BigDecimal r75_cumm_bwp) {
+			this.r75_cumm_bwp = r75_cumm_bwp;
+		}
+
+		public String getR76_product() {
+			return r76_product;
+		}
+
+		public void setR76_product(String r76_product) {
+			this.r76_product = r76_product;
+		}
+
+		public BigDecimal getR76_qua_i_lc() {
+			return r76_qua_i_lc;
+		}
+
+		public void setR76_qua_i_lc(BigDecimal r76_qua_i_lc) {
+			this.r76_qua_i_lc = r76_qua_i_lc;
+		}
+
+		public BigDecimal getR76_qua_i_qar() {
+			return r76_qua_i_qar;
+		}
+
+		public void setR76_qua_i_qar(BigDecimal r76_qua_i_qar) {
+			this.r76_qua_i_qar = r76_qua_i_qar;
+		}
+
+		public BigDecimal getR76_qua_i_inr() {
+			return r76_qua_i_inr;
+		}
+
+		public void setR76_qua_i_inr(BigDecimal r76_qua_i_inr) {
+			this.r76_qua_i_inr = r76_qua_i_inr;
+		}
+
+		public BigDecimal getR76_qua_ii_lc() {
+			return r76_qua_ii_lc;
+		}
+
+		public void setR76_qua_ii_lc(BigDecimal r76_qua_ii_lc) {
+			this.r76_qua_ii_lc = r76_qua_ii_lc;
+		}
+
+		public BigDecimal getR76_qua_ii_qar() {
+			return r76_qua_ii_qar;
+		}
+
+		public void setR76_qua_ii_qar(BigDecimal r76_qua_ii_qar) {
+			this.r76_qua_ii_qar = r76_qua_ii_qar;
+		}
+
+		public BigDecimal getR76_qua_ii_inr() {
+			return r76_qua_ii_inr;
+		}
+
+		public void setR76_qua_ii_inr(BigDecimal r76_qua_ii_inr) {
+			this.r76_qua_ii_inr = r76_qua_ii_inr;
+		}
+
+		public BigDecimal getR76_qua_iii_lc() {
+			return r76_qua_iii_lc;
+		}
+
+		public void setR76_qua_iii_lc(BigDecimal r76_qua_iii_lc) {
+			this.r76_qua_iii_lc = r76_qua_iii_lc;
+		}
+
+		public BigDecimal getR76_qua_iii_qar() {
+			return r76_qua_iii_qar;
+		}
+
+		public void setR76_qua_iii_qar(BigDecimal r76_qua_iii_qar) {
+			this.r76_qua_iii_qar = r76_qua_iii_qar;
+		}
+
+		public BigDecimal getR76_qua_iii_inr() {
+			return r76_qua_iii_inr;
+		}
+
+		public void setR76_qua_iii_inr(BigDecimal r76_qua_iii_inr) {
+			this.r76_qua_iii_inr = r76_qua_iii_inr;
+		}
+
+		public BigDecimal getR76_qua_iv_lc() {
+			return r76_qua_iv_lc;
+		}
+
+		public void setR76_qua_iv_lc(BigDecimal r76_qua_iv_lc) {
+			this.r76_qua_iv_lc = r76_qua_iv_lc;
+		}
+
+		public BigDecimal getR76_qua_iv_qar() {
+			return r76_qua_iv_qar;
+		}
+
+		public void setR76_qua_iv_qar(BigDecimal r76_qua_iv_qar) {
+			this.r76_qua_iv_qar = r76_qua_iv_qar;
+		}
+
+		public BigDecimal getR76_qua_iv_inr() {
+			return r76_qua_iv_inr;
+		}
+
+		public void setR76_qua_iv_inr(BigDecimal r76_qua_iv_inr) {
+			this.r76_qua_iv_inr = r76_qua_iv_inr;
+		}
+
+		public BigDecimal getR76_cumm_inr() {
+			return r76_cumm_inr;
+		}
+
+		public void setR76_cumm_inr(BigDecimal r76_cumm_inr) {
+			this.r76_cumm_inr = r76_cumm_inr;
+		}
+
+		public BigDecimal getR76_cumm_bwp() {
+			return r76_cumm_bwp;
+		}
+
+		public void setR76_cumm_bwp(BigDecimal r76_cumm_bwp) {
+			this.r76_cumm_bwp = r76_cumm_bwp;
+		}
+
+		public String getR77_product() {
+			return r77_product;
+		}
+
+		public void setR77_product(String r77_product) {
+			this.r77_product = r77_product;
+		}
+
+		public BigDecimal getR77_qua_i_lc() {
+			return r77_qua_i_lc;
+		}
+
+		public void setR77_qua_i_lc(BigDecimal r77_qua_i_lc) {
+			this.r77_qua_i_lc = r77_qua_i_lc;
+		}
+
+		public BigDecimal getR77_qua_i_qar() {
+			return r77_qua_i_qar;
+		}
+
+		public void setR77_qua_i_qar(BigDecimal r77_qua_i_qar) {
+			this.r77_qua_i_qar = r77_qua_i_qar;
+		}
+
+		public BigDecimal getR77_qua_i_inr() {
+			return r77_qua_i_inr;
+		}
+
+		public void setR77_qua_i_inr(BigDecimal r77_qua_i_inr) {
+			this.r77_qua_i_inr = r77_qua_i_inr;
+		}
+
+		public BigDecimal getR77_qua_ii_lc() {
+			return r77_qua_ii_lc;
+		}
+
+		public void setR77_qua_ii_lc(BigDecimal r77_qua_ii_lc) {
+			this.r77_qua_ii_lc = r77_qua_ii_lc;
+		}
+
+		public BigDecimal getR77_qua_ii_qar() {
+			return r77_qua_ii_qar;
+		}
+
+		public void setR77_qua_ii_qar(BigDecimal r77_qua_ii_qar) {
+			this.r77_qua_ii_qar = r77_qua_ii_qar;
+		}
+
+		public BigDecimal getR77_qua_ii_inr() {
+			return r77_qua_ii_inr;
+		}
+
+		public void setR77_qua_ii_inr(BigDecimal r77_qua_ii_inr) {
+			this.r77_qua_ii_inr = r77_qua_ii_inr;
+		}
+
+		public BigDecimal getR77_qua_iii_lc() {
+			return r77_qua_iii_lc;
+		}
+
+		public void setR77_qua_iii_lc(BigDecimal r77_qua_iii_lc) {
+			this.r77_qua_iii_lc = r77_qua_iii_lc;
+		}
+
+		public BigDecimal getR77_qua_iii_qar() {
+			return r77_qua_iii_qar;
+		}
+
+		public void setR77_qua_iii_qar(BigDecimal r77_qua_iii_qar) {
+			this.r77_qua_iii_qar = r77_qua_iii_qar;
+		}
+
+		public BigDecimal getR77_qua_iii_inr() {
+			return r77_qua_iii_inr;
+		}
+
+		public void setR77_qua_iii_inr(BigDecimal r77_qua_iii_inr) {
+			this.r77_qua_iii_inr = r77_qua_iii_inr;
+		}
+
+		public BigDecimal getR77_qua_iv_lc() {
+			return r77_qua_iv_lc;
+		}
+
+		public void setR77_qua_iv_lc(BigDecimal r77_qua_iv_lc) {
+			this.r77_qua_iv_lc = r77_qua_iv_lc;
+		}
+
+		public BigDecimal getR77_qua_iv_qar() {
+			return r77_qua_iv_qar;
+		}
+
+		public void setR77_qua_iv_qar(BigDecimal r77_qua_iv_qar) {
+			this.r77_qua_iv_qar = r77_qua_iv_qar;
+		}
+
+		public BigDecimal getR77_qua_iv_inr() {
+			return r77_qua_iv_inr;
+		}
+
+		public void setR77_qua_iv_inr(BigDecimal r77_qua_iv_inr) {
+			this.r77_qua_iv_inr = r77_qua_iv_inr;
+		}
+
+		public BigDecimal getR77_cumm_inr() {
+			return r77_cumm_inr;
+		}
+
+		public void setR77_cumm_inr(BigDecimal r77_cumm_inr) {
+			this.r77_cumm_inr = r77_cumm_inr;
+		}
+
+		public BigDecimal getR77_cumm_bwp() {
+			return r77_cumm_bwp;
+		}
+
+		public void setR77_cumm_bwp(BigDecimal r77_cumm_bwp) {
+			this.r77_cumm_bwp = r77_cumm_bwp;
+		}
+
+		public String getR78_product() {
+			return r78_product;
+		}
+
+		public void setR78_product(String r78_product) {
+			this.r78_product = r78_product;
+		}
+
+		public BigDecimal getR78_qua_i_lc() {
+			return r78_qua_i_lc;
+		}
+
+		public void setR78_qua_i_lc(BigDecimal r78_qua_i_lc) {
+			this.r78_qua_i_lc = r78_qua_i_lc;
+		}
+
+		public BigDecimal getR78_qua_i_qar() {
+			return r78_qua_i_qar;
+		}
+
+		public void setR78_qua_i_qar(BigDecimal r78_qua_i_qar) {
+			this.r78_qua_i_qar = r78_qua_i_qar;
+		}
+
+		public BigDecimal getR78_qua_i_inr() {
+			return r78_qua_i_inr;
+		}
+
+		public void setR78_qua_i_inr(BigDecimal r78_qua_i_inr) {
+			this.r78_qua_i_inr = r78_qua_i_inr;
+		}
+
+		public BigDecimal getR78_qua_ii_lc() {
+			return r78_qua_ii_lc;
+		}
+
+		public void setR78_qua_ii_lc(BigDecimal r78_qua_ii_lc) {
+			this.r78_qua_ii_lc = r78_qua_ii_lc;
+		}
+
+		public BigDecimal getR78_qua_ii_qar() {
+			return r78_qua_ii_qar;
+		}
+
+		public void setR78_qua_ii_qar(BigDecimal r78_qua_ii_qar) {
+			this.r78_qua_ii_qar = r78_qua_ii_qar;
+		}
+
+		public BigDecimal getR78_qua_ii_inr() {
+			return r78_qua_ii_inr;
+		}
+
+		public void setR78_qua_ii_inr(BigDecimal r78_qua_ii_inr) {
+			this.r78_qua_ii_inr = r78_qua_ii_inr;
+		}
+
+		public BigDecimal getR78_qua_iii_lc() {
+			return r78_qua_iii_lc;
+		}
+
+		public void setR78_qua_iii_lc(BigDecimal r78_qua_iii_lc) {
+			this.r78_qua_iii_lc = r78_qua_iii_lc;
+		}
+
+		public BigDecimal getR78_qua_iii_qar() {
+			return r78_qua_iii_qar;
+		}
+
+		public void setR78_qua_iii_qar(BigDecimal r78_qua_iii_qar) {
+			this.r78_qua_iii_qar = r78_qua_iii_qar;
+		}
+
+		public BigDecimal getR78_qua_iii_inr() {
+			return r78_qua_iii_inr;
+		}
+
+		public void setR78_qua_iii_inr(BigDecimal r78_qua_iii_inr) {
+			this.r78_qua_iii_inr = r78_qua_iii_inr;
+		}
+
+		public BigDecimal getR78_qua_iv_lc() {
+			return r78_qua_iv_lc;
+		}
+
+		public void setR78_qua_iv_lc(BigDecimal r78_qua_iv_lc) {
+			this.r78_qua_iv_lc = r78_qua_iv_lc;
+		}
+
+		public BigDecimal getR78_qua_iv_qar() {
+			return r78_qua_iv_qar;
+		}
+
+		public void setR78_qua_iv_qar(BigDecimal r78_qua_iv_qar) {
+			this.r78_qua_iv_qar = r78_qua_iv_qar;
+		}
+
+		public BigDecimal getR78_qua_iv_inr() {
+			return r78_qua_iv_inr;
+		}
+
+		public void setR78_qua_iv_inr(BigDecimal r78_qua_iv_inr) {
+			this.r78_qua_iv_inr = r78_qua_iv_inr;
+		}
+
+		public BigDecimal getR78_cumm_inr() {
+			return r78_cumm_inr;
+		}
+
+		public void setR78_cumm_inr(BigDecimal r78_cumm_inr) {
+			this.r78_cumm_inr = r78_cumm_inr;
+		}
+
+		public BigDecimal getR78_cumm_bwp() {
+			return r78_cumm_bwp;
+		}
+
+		public void setR78_cumm_bwp(BigDecimal r78_cumm_bwp) {
+			this.r78_cumm_bwp = r78_cumm_bwp;
+		}
+
+		public String getR79_product() {
+			return r79_product;
+		}
+
+		public void setR79_product(String r79_product) {
+			this.r79_product = r79_product;
+		}
+
+		public BigDecimal getR79_qua_i_lc() {
+			return r79_qua_i_lc;
+		}
+
+		public void setR79_qua_i_lc(BigDecimal r79_qua_i_lc) {
+			this.r79_qua_i_lc = r79_qua_i_lc;
+		}
+
+		public BigDecimal getR79_qua_i_qar() {
+			return r79_qua_i_qar;
+		}
+
+		public void setR79_qua_i_qar(BigDecimal r79_qua_i_qar) {
+			this.r79_qua_i_qar = r79_qua_i_qar;
+		}
+
+		public BigDecimal getR79_qua_i_inr() {
+			return r79_qua_i_inr;
+		}
+
+		public void setR79_qua_i_inr(BigDecimal r79_qua_i_inr) {
+			this.r79_qua_i_inr = r79_qua_i_inr;
+		}
+
+		public BigDecimal getR79_qua_ii_lc() {
+			return r79_qua_ii_lc;
+		}
+
+		public void setR79_qua_ii_lc(BigDecimal r79_qua_ii_lc) {
+			this.r79_qua_ii_lc = r79_qua_ii_lc;
+		}
+
+		public BigDecimal getR79_qua_ii_qar() {
+			return r79_qua_ii_qar;
+		}
+
+		public void setR79_qua_ii_qar(BigDecimal r79_qua_ii_qar) {
+			this.r79_qua_ii_qar = r79_qua_ii_qar;
+		}
+
+		public BigDecimal getR79_qua_ii_inr() {
+			return r79_qua_ii_inr;
+		}
+
+		public void setR79_qua_ii_inr(BigDecimal r79_qua_ii_inr) {
+			this.r79_qua_ii_inr = r79_qua_ii_inr;
+		}
+
+		public BigDecimal getR79_qua_iii_lc() {
+			return r79_qua_iii_lc;
+		}
+
+		public void setR79_qua_iii_lc(BigDecimal r79_qua_iii_lc) {
+			this.r79_qua_iii_lc = r79_qua_iii_lc;
+		}
+
+		public BigDecimal getR79_qua_iii_qar() {
+			return r79_qua_iii_qar;
+		}
+
+		public void setR79_qua_iii_qar(BigDecimal r79_qua_iii_qar) {
+			this.r79_qua_iii_qar = r79_qua_iii_qar;
+		}
+
+		public BigDecimal getR79_qua_iii_inr() {
+			return r79_qua_iii_inr;
+		}
+
+		public void setR79_qua_iii_inr(BigDecimal r79_qua_iii_inr) {
+			this.r79_qua_iii_inr = r79_qua_iii_inr;
+		}
+
+		public BigDecimal getR79_qua_iv_lc() {
+			return r79_qua_iv_lc;
+		}
+
+		public void setR79_qua_iv_lc(BigDecimal r79_qua_iv_lc) {
+			this.r79_qua_iv_lc = r79_qua_iv_lc;
+		}
+
+		public BigDecimal getR79_qua_iv_qar() {
+			return r79_qua_iv_qar;
+		}
+
+		public void setR79_qua_iv_qar(BigDecimal r79_qua_iv_qar) {
+			this.r79_qua_iv_qar = r79_qua_iv_qar;
+		}
+
+		public BigDecimal getR79_qua_iv_inr() {
+			return r79_qua_iv_inr;
+		}
+
+		public void setR79_qua_iv_inr(BigDecimal r79_qua_iv_inr) {
+			this.r79_qua_iv_inr = r79_qua_iv_inr;
+		}
+
+		public BigDecimal getR79_cumm_inr() {
+			return r79_cumm_inr;
+		}
+
+		public void setR79_cumm_inr(BigDecimal r79_cumm_inr) {
+			this.r79_cumm_inr = r79_cumm_inr;
+		}
+
+		public BigDecimal getR79_cumm_bwp() {
+			return r79_cumm_bwp;
+		}
+
+		public void setR79_cumm_bwp(BigDecimal r79_cumm_bwp) {
+			this.r79_cumm_bwp = r79_cumm_bwp;
+		}
+
+		public String getR80_product() {
+			return r80_product;
+		}
+
+		public void setR80_product(String r80_product) {
+			this.r80_product = r80_product;
+		}
+
+		public BigDecimal getR80_qua_i_lc() {
+			return r80_qua_i_lc;
+		}
+
+		public void setR80_qua_i_lc(BigDecimal r80_qua_i_lc) {
+			this.r80_qua_i_lc = r80_qua_i_lc;
+		}
+
+		public BigDecimal getR80_qua_i_qar() {
+			return r80_qua_i_qar;
+		}
+
+		public void setR80_qua_i_qar(BigDecimal r80_qua_i_qar) {
+			this.r80_qua_i_qar = r80_qua_i_qar;
+		}
+
+		public BigDecimal getR80_qua_i_inr() {
+			return r80_qua_i_inr;
+		}
+
+		public void setR80_qua_i_inr(BigDecimal r80_qua_i_inr) {
+			this.r80_qua_i_inr = r80_qua_i_inr;
+		}
+
+		public BigDecimal getR80_qua_ii_lc() {
+			return r80_qua_ii_lc;
+		}
+
+		public void setR80_qua_ii_lc(BigDecimal r80_qua_ii_lc) {
+			this.r80_qua_ii_lc = r80_qua_ii_lc;
+		}
+
+		public BigDecimal getR80_qua_ii_qar() {
+			return r80_qua_ii_qar;
+		}
+
+		public void setR80_qua_ii_qar(BigDecimal r80_qua_ii_qar) {
+			this.r80_qua_ii_qar = r80_qua_ii_qar;
+		}
+
+		public BigDecimal getR80_qua_ii_inr() {
+			return r80_qua_ii_inr;
+		}
+
+		public void setR80_qua_ii_inr(BigDecimal r80_qua_ii_inr) {
+			this.r80_qua_ii_inr = r80_qua_ii_inr;
+		}
+
+		public BigDecimal getR80_qua_iii_lc() {
+			return r80_qua_iii_lc;
+		}
+
+		public void setR80_qua_iii_lc(BigDecimal r80_qua_iii_lc) {
+			this.r80_qua_iii_lc = r80_qua_iii_lc;
+		}
+
+		public BigDecimal getR80_qua_iii_qar() {
+			return r80_qua_iii_qar;
+		}
+
+		public void setR80_qua_iii_qar(BigDecimal r80_qua_iii_qar) {
+			this.r80_qua_iii_qar = r80_qua_iii_qar;
+		}
+
+		public BigDecimal getR80_qua_iii_inr() {
+			return r80_qua_iii_inr;
+		}
+
+		public void setR80_qua_iii_inr(BigDecimal r80_qua_iii_inr) {
+			this.r80_qua_iii_inr = r80_qua_iii_inr;
+		}
+
+		public BigDecimal getR80_qua_iv_lc() {
+			return r80_qua_iv_lc;
+		}
+
+		public void setR80_qua_iv_lc(BigDecimal r80_qua_iv_lc) {
+			this.r80_qua_iv_lc = r80_qua_iv_lc;
+		}
+
+		public BigDecimal getR80_qua_iv_qar() {
+			return r80_qua_iv_qar;
+		}
+
+		public void setR80_qua_iv_qar(BigDecimal r80_qua_iv_qar) {
+			this.r80_qua_iv_qar = r80_qua_iv_qar;
+		}
+
+		public BigDecimal getR80_qua_iv_inr() {
+			return r80_qua_iv_inr;
+		}
+
+		public void setR80_qua_iv_inr(BigDecimal r80_qua_iv_inr) {
+			this.r80_qua_iv_inr = r80_qua_iv_inr;
+		}
+
+		public BigDecimal getR80_cumm_inr() {
+			return r80_cumm_inr;
+		}
+
+		public void setR80_cumm_inr(BigDecimal r80_cumm_inr) {
+			this.r80_cumm_inr = r80_cumm_inr;
+		}
+
+		public BigDecimal getR80_cumm_bwp() {
+			return r80_cumm_bwp;
+		}
+
+		public void setR80_cumm_bwp(BigDecimal r80_cumm_bwp) {
+			this.r80_cumm_bwp = r80_cumm_bwp;
+		}
+
+		public String getR81_product() {
+			return r81_product;
+		}
+
+		public void setR81_product(String r81_product) {
+			this.r81_product = r81_product;
+		}
+
+		public BigDecimal getR81_qua_i_lc() {
+			return r81_qua_i_lc;
+		}
+
+		public void setR81_qua_i_lc(BigDecimal r81_qua_i_lc) {
+			this.r81_qua_i_lc = r81_qua_i_lc;
+		}
+
+		public BigDecimal getR81_qua_i_qar() {
+			return r81_qua_i_qar;
+		}
+
+		public void setR81_qua_i_qar(BigDecimal r81_qua_i_qar) {
+			this.r81_qua_i_qar = r81_qua_i_qar;
+		}
+
+		public BigDecimal getR81_qua_i_inr() {
+			return r81_qua_i_inr;
+		}
+
+		public void setR81_qua_i_inr(BigDecimal r81_qua_i_inr) {
+			this.r81_qua_i_inr = r81_qua_i_inr;
+		}
+
+		public BigDecimal getR81_qua_ii_lc() {
+			return r81_qua_ii_lc;
+		}
+
+		public void setR81_qua_ii_lc(BigDecimal r81_qua_ii_lc) {
+			this.r81_qua_ii_lc = r81_qua_ii_lc;
+		}
+
+		public BigDecimal getR81_qua_ii_qar() {
+			return r81_qua_ii_qar;
+		}
+
+		public void setR81_qua_ii_qar(BigDecimal r81_qua_ii_qar) {
+			this.r81_qua_ii_qar = r81_qua_ii_qar;
+		}
+
+		public BigDecimal getR81_qua_ii_inr() {
+			return r81_qua_ii_inr;
+		}
+
+		public void setR81_qua_ii_inr(BigDecimal r81_qua_ii_inr) {
+			this.r81_qua_ii_inr = r81_qua_ii_inr;
+		}
+
+		public BigDecimal getR81_qua_iii_lc() {
+			return r81_qua_iii_lc;
+		}
+
+		public void setR81_qua_iii_lc(BigDecimal r81_qua_iii_lc) {
+			this.r81_qua_iii_lc = r81_qua_iii_lc;
+		}
+
+		public BigDecimal getR81_qua_iii_qar() {
+			return r81_qua_iii_qar;
+		}
+
+		public void setR81_qua_iii_qar(BigDecimal r81_qua_iii_qar) {
+			this.r81_qua_iii_qar = r81_qua_iii_qar;
+		}
+
+		public BigDecimal getR81_qua_iii_inr() {
+			return r81_qua_iii_inr;
+		}
+
+		public void setR81_qua_iii_inr(BigDecimal r81_qua_iii_inr) {
+			this.r81_qua_iii_inr = r81_qua_iii_inr;
+		}
+
+		public BigDecimal getR81_qua_iv_lc() {
+			return r81_qua_iv_lc;
+		}
+
+		public void setR81_qua_iv_lc(BigDecimal r81_qua_iv_lc) {
+			this.r81_qua_iv_lc = r81_qua_iv_lc;
+		}
+
+		public BigDecimal getR81_qua_iv_qar() {
+			return r81_qua_iv_qar;
+		}
+
+		public void setR81_qua_iv_qar(BigDecimal r81_qua_iv_qar) {
+			this.r81_qua_iv_qar = r81_qua_iv_qar;
+		}
+
+		public BigDecimal getR81_qua_iv_inr() {
+			return r81_qua_iv_inr;
+		}
+
+		public void setR81_qua_iv_inr(BigDecimal r81_qua_iv_inr) {
+			this.r81_qua_iv_inr = r81_qua_iv_inr;
+		}
+
+		public BigDecimal getR81_cumm_inr() {
+			return r81_cumm_inr;
+		}
+
+		public void setR81_cumm_inr(BigDecimal r81_cumm_inr) {
+			this.r81_cumm_inr = r81_cumm_inr;
+		}
+
+		public BigDecimal getR81_cumm_bwp() {
+			return r81_cumm_bwp;
+		}
+
+		public void setR81_cumm_bwp(BigDecimal r81_cumm_bwp) {
+			this.r81_cumm_bwp = r81_cumm_bwp;
+		}
+
+		public String getR82_product() {
+			return r82_product;
+		}
+
+		public void setR82_product(String r82_product) {
+			this.r82_product = r82_product;
+		}
+
+		public BigDecimal getR82_qua_i_lc() {
+			return r82_qua_i_lc;
+		}
+
+		public void setR82_qua_i_lc(BigDecimal r82_qua_i_lc) {
+			this.r82_qua_i_lc = r82_qua_i_lc;
+		}
+
+		public BigDecimal getR82_qua_i_qar() {
+			return r82_qua_i_qar;
+		}
+
+		public void setR82_qua_i_qar(BigDecimal r82_qua_i_qar) {
+			this.r82_qua_i_qar = r82_qua_i_qar;
+		}
+
+		public BigDecimal getR82_qua_i_inr() {
+			return r82_qua_i_inr;
+		}
+
+		public void setR82_qua_i_inr(BigDecimal r82_qua_i_inr) {
+			this.r82_qua_i_inr = r82_qua_i_inr;
+		}
+
+		public BigDecimal getR82_qua_ii_lc() {
+			return r82_qua_ii_lc;
+		}
+
+		public void setR82_qua_ii_lc(BigDecimal r82_qua_ii_lc) {
+			this.r82_qua_ii_lc = r82_qua_ii_lc;
+		}
+
+		public BigDecimal getR82_qua_ii_qar() {
+			return r82_qua_ii_qar;
+		}
+
+		public void setR82_qua_ii_qar(BigDecimal r82_qua_ii_qar) {
+			this.r82_qua_ii_qar = r82_qua_ii_qar;
+		}
+
+		public BigDecimal getR82_qua_ii_inr() {
+			return r82_qua_ii_inr;
+		}
+
+		public void setR82_qua_ii_inr(BigDecimal r82_qua_ii_inr) {
+			this.r82_qua_ii_inr = r82_qua_ii_inr;
+		}
+
+		public BigDecimal getR82_qua_iii_lc() {
+			return r82_qua_iii_lc;
+		}
+
+		public void setR82_qua_iii_lc(BigDecimal r82_qua_iii_lc) {
+			this.r82_qua_iii_lc = r82_qua_iii_lc;
+		}
+
+		public BigDecimal getR82_qua_iii_qar() {
+			return r82_qua_iii_qar;
+		}
+
+		public void setR82_qua_iii_qar(BigDecimal r82_qua_iii_qar) {
+			this.r82_qua_iii_qar = r82_qua_iii_qar;
+		}
+
+		public BigDecimal getR82_qua_iii_inr() {
+			return r82_qua_iii_inr;
+		}
+
+		public void setR82_qua_iii_inr(BigDecimal r82_qua_iii_inr) {
+			this.r82_qua_iii_inr = r82_qua_iii_inr;
+		}
+
+		public BigDecimal getR82_qua_iv_lc() {
+			return r82_qua_iv_lc;
+		}
+
+		public void setR82_qua_iv_lc(BigDecimal r82_qua_iv_lc) {
+			this.r82_qua_iv_lc = r82_qua_iv_lc;
+		}
+
+		public BigDecimal getR82_qua_iv_qar() {
+			return r82_qua_iv_qar;
+		}
+
+		public void setR82_qua_iv_qar(BigDecimal r82_qua_iv_qar) {
+			this.r82_qua_iv_qar = r82_qua_iv_qar;
+		}
+
+		public BigDecimal getR82_qua_iv_inr() {
+			return r82_qua_iv_inr;
+		}
+
+		public void setR82_qua_iv_inr(BigDecimal r82_qua_iv_inr) {
+			this.r82_qua_iv_inr = r82_qua_iv_inr;
+		}
+
+		public BigDecimal getR82_cumm_inr() {
+			return r82_cumm_inr;
+		}
+
+		public void setR82_cumm_inr(BigDecimal r82_cumm_inr) {
+			this.r82_cumm_inr = r82_cumm_inr;
+		}
+
+		public BigDecimal getR82_cumm_bwp() {
+			return r82_cumm_bwp;
+		}
+
+		public void setR82_cumm_bwp(BigDecimal r82_cumm_bwp) {
+			this.r82_cumm_bwp = r82_cumm_bwp;
+		}
+
+		public String getR83_product() {
+			return r83_product;
+		}
+
+		public void setR83_product(String r83_product) {
+			this.r83_product = r83_product;
+		}
+
+		public BigDecimal getR83_qua_i_lc() {
+			return r83_qua_i_lc;
+		}
+
+		public void setR83_qua_i_lc(BigDecimal r83_qua_i_lc) {
+			this.r83_qua_i_lc = r83_qua_i_lc;
+		}
+
+		public BigDecimal getR83_qua_i_qar() {
+			return r83_qua_i_qar;
+		}
+
+		public void setR83_qua_i_qar(BigDecimal r83_qua_i_qar) {
+			this.r83_qua_i_qar = r83_qua_i_qar;
+		}
+
+		public BigDecimal getR83_qua_i_inr() {
+			return r83_qua_i_inr;
+		}
+
+		public void setR83_qua_i_inr(BigDecimal r83_qua_i_inr) {
+			this.r83_qua_i_inr = r83_qua_i_inr;
+		}
+
+		public BigDecimal getR83_qua_ii_lc() {
+			return r83_qua_ii_lc;
+		}
+
+		public void setR83_qua_ii_lc(BigDecimal r83_qua_ii_lc) {
+			this.r83_qua_ii_lc = r83_qua_ii_lc;
+		}
+
+		public BigDecimal getR83_qua_ii_qar() {
+			return r83_qua_ii_qar;
+		}
+
+		public void setR83_qua_ii_qar(BigDecimal r83_qua_ii_qar) {
+			this.r83_qua_ii_qar = r83_qua_ii_qar;
+		}
+
+		public BigDecimal getR83_qua_ii_inr() {
+			return r83_qua_ii_inr;
+		}
+
+		public void setR83_qua_ii_inr(BigDecimal r83_qua_ii_inr) {
+			this.r83_qua_ii_inr = r83_qua_ii_inr;
+		}
+
+		public BigDecimal getR83_qua_iii_lc() {
+			return r83_qua_iii_lc;
+		}
+
+		public void setR83_qua_iii_lc(BigDecimal r83_qua_iii_lc) {
+			this.r83_qua_iii_lc = r83_qua_iii_lc;
+		}
+
+		public BigDecimal getR83_qua_iii_qar() {
+			return r83_qua_iii_qar;
+		}
+
+		public void setR83_qua_iii_qar(BigDecimal r83_qua_iii_qar) {
+			this.r83_qua_iii_qar = r83_qua_iii_qar;
+		}
+
+		public BigDecimal getR83_qua_iii_inr() {
+			return r83_qua_iii_inr;
+		}
+
+		public void setR83_qua_iii_inr(BigDecimal r83_qua_iii_inr) {
+			this.r83_qua_iii_inr = r83_qua_iii_inr;
+		}
+
+		public BigDecimal getR83_qua_iv_lc() {
+			return r83_qua_iv_lc;
+		}
+
+		public void setR83_qua_iv_lc(BigDecimal r83_qua_iv_lc) {
+			this.r83_qua_iv_lc = r83_qua_iv_lc;
+		}
+
+		public BigDecimal getR83_qua_iv_qar() {
+			return r83_qua_iv_qar;
+		}
+
+		public void setR83_qua_iv_qar(BigDecimal r83_qua_iv_qar) {
+			this.r83_qua_iv_qar = r83_qua_iv_qar;
+		}
+
+		public BigDecimal getR83_qua_iv_inr() {
+			return r83_qua_iv_inr;
+		}
+
+		public void setR83_qua_iv_inr(BigDecimal r83_qua_iv_inr) {
+			this.r83_qua_iv_inr = r83_qua_iv_inr;
+		}
+
+		public BigDecimal getR83_cumm_inr() {
+			return r83_cumm_inr;
+		}
+
+		public void setR83_cumm_inr(BigDecimal r83_cumm_inr) {
+			this.r83_cumm_inr = r83_cumm_inr;
+		}
+
+		public BigDecimal getR83_cumm_bwp() {
+			return r83_cumm_bwp;
+		}
+
+		public void setR83_cumm_bwp(BigDecimal r83_cumm_bwp) {
+			this.r83_cumm_bwp = r83_cumm_bwp;
+		}
+
+		public Date getREPORT_DATE() {
+			return REPORT_DATE;
+		}
+
+		public void setREPORT_DATE(Date REPORT_DATE) {
+			this.REPORT_DATE = REPORT_DATE;
+		}
+
+		public BigDecimal getREPORT_VERSION() {
+			return REPORT_VERSION;
+		}
+
+		public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
+			this.REPORT_VERSION = REPORT_VERSION;
+		}
+
+		public String getREPORT_FREQUENCY() {
+			return REPORT_FREQUENCY;
+		}
+
+		public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+			REPORT_FREQUENCY = rEPORT_FREQUENCY;
+		}
+
+		public String getREPORT_CODE() {
+			return REPORT_CODE;
+		}
+
+		public void setREPORT_CODE(String rEPORT_CODE) {
+			REPORT_CODE = rEPORT_CODE;
+		}
+
+		public String getREPORT_DESC() {
+			return REPORT_DESC;
+		}
+
+		public void setREPORT_DESC(String rEPORT_DESC) {
+			REPORT_DESC = rEPORT_DESC;
+		}
+
+		public String getENTITY_FLG() {
+			return ENTITY_FLG;
+		}
+
+		public void setENTITY_FLG(String eNTITY_FLG) {
+			ENTITY_FLG = eNTITY_FLG;
+		}
+
+		public String getMODIFY_FLG() {
+			return MODIFY_FLG;
+		}
+
+		public void setMODIFY_FLG(String mODIFY_FLG) {
+			MODIFY_FLG = mODIFY_FLG;
+		}
+
+		public String getDEL_FLG() {
+			return DEL_FLG;
+		}
+
+		public void setDEL_FLG(String dEL_FLG) {
+			DEL_FLG = dEL_FLG;
+		}
+
+	}
+
+	class AS_11RowMapper2 implements RowMapper<AS_11_Summary_Entity2> {
+
+		@Override
+		public AS_11_Summary_Entity2 mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+			AS_11_Summary_Entity2 obj = new AS_11_Summary_Entity2();
+
+// R84
+			obj.setR84_product(rs.getString("R84_PRODUCT"));
+			obj.setR84_qua_i_lc(rs.getBigDecimal("R84_QUA_I_LC"));
+			obj.setR84_qua_i_qar(rs.getBigDecimal("R84_QUA_I_QAR"));
+			obj.setR84_qua_i_inr(rs.getBigDecimal("R84_QUA_I_INR"));
+			obj.setR84_qua_ii_lc(rs.getBigDecimal("R84_QUA_II_LC"));
+			obj.setR84_qua_ii_qar(rs.getBigDecimal("R84_QUA_II_QAR"));
+			obj.setR84_qua_ii_inr(rs.getBigDecimal("R84_QUA_II_INR"));
+			obj.setR84_qua_iii_lc(rs.getBigDecimal("R84_QUA_III_LC"));
+			obj.setR84_qua_iii_qar(rs.getBigDecimal("R84_QUA_III_QAR"));
+			obj.setR84_qua_iii_inr(rs.getBigDecimal("R84_QUA_III_INR"));
+			obj.setR84_qua_iv_lc(rs.getBigDecimal("R84_QUA_IV_LC"));
+			obj.setR84_qua_iv_qar(rs.getBigDecimal("R84_QUA_IV_QAR"));
+			obj.setR84_qua_iv_inr(rs.getBigDecimal("R84_QUA_IV_INR"));
+			obj.setR84_cumm_inr(rs.getBigDecimal("R84_CUMM_INR"));
+			obj.setR84_cumm_bwp(rs.getBigDecimal("R84_CUMM_BWP"));
+
+// R85
+			obj.setR85_product(rs.getString("R85_PRODUCT"));
+			obj.setR85_qua_i_lc(rs.getBigDecimal("R85_QUA_I_LC"));
+			obj.setR85_qua_i_qar(rs.getBigDecimal("R85_QUA_I_QAR"));
+			obj.setR85_qua_i_inr(rs.getBigDecimal("R85_QUA_I_INR"));
+			obj.setR85_qua_ii_lc(rs.getBigDecimal("R85_QUA_II_LC"));
+			obj.setR85_qua_ii_qar(rs.getBigDecimal("R85_QUA_II_QAR"));
+			obj.setR85_qua_ii_inr(rs.getBigDecimal("R85_QUA_II_INR"));
+			obj.setR85_qua_iii_lc(rs.getBigDecimal("R85_QUA_III_LC"));
+			obj.setR85_qua_iii_qar(rs.getBigDecimal("R85_QUA_III_QAR"));
+			obj.setR85_qua_iii_inr(rs.getBigDecimal("R85_QUA_III_INR"));
+			obj.setR85_qua_iv_lc(rs.getBigDecimal("R85_QUA_IV_LC"));
+			obj.setR85_qua_iv_qar(rs.getBigDecimal("R85_QUA_IV_QAR"));
+			obj.setR85_qua_iv_inr(rs.getBigDecimal("R85_QUA_IV_INR"));
+			obj.setR85_cumm_inr(rs.getBigDecimal("R85_CUMM_INR"));
+			obj.setR85_cumm_bwp(rs.getBigDecimal("R85_CUMM_BWP"));
+
+// R86
+			obj.setR86_product(rs.getString("R86_PRODUCT"));
+			obj.setR86_qua_i_lc(rs.getBigDecimal("R86_QUA_I_LC"));
+			obj.setR86_qua_i_qar(rs.getBigDecimal("R86_QUA_I_QAR"));
+			obj.setR86_qua_i_inr(rs.getBigDecimal("R86_QUA_I_INR"));
+			obj.setR86_qua_ii_lc(rs.getBigDecimal("R86_QUA_II_LC"));
+			obj.setR86_qua_ii_qar(rs.getBigDecimal("R86_QUA_II_QAR"));
+			obj.setR86_qua_ii_inr(rs.getBigDecimal("R86_QUA_II_INR"));
+			obj.setR86_qua_iii_lc(rs.getBigDecimal("R86_QUA_III_LC"));
+			obj.setR86_qua_iii_qar(rs.getBigDecimal("R86_QUA_III_QAR"));
+			obj.setR86_qua_iii_inr(rs.getBigDecimal("R86_QUA_III_INR"));
+			obj.setR86_qua_iv_lc(rs.getBigDecimal("R86_QUA_IV_LC"));
+			obj.setR86_qua_iv_qar(rs.getBigDecimal("R86_QUA_IV_QAR"));
+			obj.setR86_qua_iv_inr(rs.getBigDecimal("R86_QUA_IV_INR"));
+			obj.setR86_cumm_inr(rs.getBigDecimal("R86_CUMM_INR"));
+			obj.setR86_cumm_bwp(rs.getBigDecimal("R86_CUMM_BWP"));
+
+// R87
+			obj.setR87_product(rs.getString("R87_PRODUCT"));
+			obj.setR87_qua_i_lc(rs.getBigDecimal("R87_QUA_I_LC"));
+			obj.setR87_qua_i_qar(rs.getBigDecimal("R87_QUA_I_QAR"));
+			obj.setR87_qua_i_inr(rs.getBigDecimal("R87_QUA_I_INR"));
+			obj.setR87_qua_ii_lc(rs.getBigDecimal("R87_QUA_II_LC"));
+			obj.setR87_qua_ii_qar(rs.getBigDecimal("R87_QUA_II_QAR"));
+			obj.setR87_qua_ii_inr(rs.getBigDecimal("R87_QUA_II_INR"));
+			obj.setR87_qua_iii_lc(rs.getBigDecimal("R87_QUA_III_LC"));
+			obj.setR87_qua_iii_qar(rs.getBigDecimal("R87_QUA_III_QAR"));
+			obj.setR87_qua_iii_inr(rs.getBigDecimal("R87_QUA_III_INR"));
+			obj.setR87_qua_iv_lc(rs.getBigDecimal("R87_QUA_IV_LC"));
+			obj.setR87_qua_iv_qar(rs.getBigDecimal("R87_QUA_IV_QAR"));
+			obj.setR87_qua_iv_inr(rs.getBigDecimal("R87_QUA_IV_INR"));
+			obj.setR87_cumm_inr(rs.getBigDecimal("R87_CUMM_INR"));
+			obj.setR87_cumm_bwp(rs.getBigDecimal("R87_CUMM_BWP"));
+
+// R88
+			obj.setR88_product(rs.getString("R88_PRODUCT"));
+			obj.setR88_qua_i_lc(rs.getBigDecimal("R88_QUA_I_LC"));
+			obj.setR88_qua_i_qar(rs.getBigDecimal("R88_QUA_I_QAR"));
+			obj.setR88_qua_i_inr(rs.getBigDecimal("R88_QUA_I_INR"));
+			obj.setR88_qua_ii_lc(rs.getBigDecimal("R88_QUA_II_LC"));
+			obj.setR88_qua_ii_qar(rs.getBigDecimal("R88_QUA_II_QAR"));
+			obj.setR88_qua_ii_inr(rs.getBigDecimal("R88_QUA_II_INR"));
+			obj.setR88_qua_iii_lc(rs.getBigDecimal("R88_QUA_III_LC"));
+			obj.setR88_qua_iii_qar(rs.getBigDecimal("R88_QUA_III_QAR"));
+			obj.setR88_qua_iii_inr(rs.getBigDecimal("R88_QUA_III_INR"));
+			obj.setR88_qua_iv_lc(rs.getBigDecimal("R88_QUA_IV_LC"));
+			obj.setR88_qua_iv_qar(rs.getBigDecimal("R88_QUA_IV_QAR"));
+			obj.setR88_qua_iv_inr(rs.getBigDecimal("R88_QUA_IV_INR"));
+			obj.setR88_cumm_inr(rs.getBigDecimal("R88_CUMM_INR"));
+			obj.setR88_cumm_bwp(rs.getBigDecimal("R88_CUMM_BWP"));
+
+// R89
+			obj.setR89_product(rs.getString("R89_PRODUCT"));
+			obj.setR89_qua_i_lc(rs.getBigDecimal("R89_QUA_I_LC"));
+			obj.setR89_qua_i_qar(rs.getBigDecimal("R89_QUA_I_QAR"));
+			obj.setR89_qua_i_inr(rs.getBigDecimal("R89_QUA_I_INR"));
+			obj.setR89_qua_ii_lc(rs.getBigDecimal("R89_QUA_II_LC"));
+			obj.setR89_qua_ii_qar(rs.getBigDecimal("R89_QUA_II_QAR"));
+			obj.setR89_qua_ii_inr(rs.getBigDecimal("R89_QUA_II_INR"));
+			obj.setR89_qua_iii_lc(rs.getBigDecimal("R89_QUA_III_LC"));
+			obj.setR89_qua_iii_qar(rs.getBigDecimal("R89_QUA_III_QAR"));
+			obj.setR89_qua_iii_inr(rs.getBigDecimal("R89_QUA_III_INR"));
+			obj.setR89_qua_iv_lc(rs.getBigDecimal("R89_QUA_IV_LC"));
+			obj.setR89_qua_iv_qar(rs.getBigDecimal("R89_QUA_IV_QAR"));
+			obj.setR89_qua_iv_inr(rs.getBigDecimal("R89_QUA_IV_INR"));
+			obj.setR89_cumm_inr(rs.getBigDecimal("R89_CUMM_INR"));
+			obj.setR89_cumm_bwp(rs.getBigDecimal("R89_CUMM_BWP"));
+
+// R90
+			obj.setR90_product(rs.getString("R90_PRODUCT"));
+			obj.setR90_qua_i_lc(rs.getBigDecimal("R90_QUA_I_LC"));
+			obj.setR90_qua_i_qar(rs.getBigDecimal("R90_QUA_I_QAR"));
+			obj.setR90_qua_i_inr(rs.getBigDecimal("R90_QUA_I_INR"));
+			obj.setR90_qua_ii_lc(rs.getBigDecimal("R90_QUA_II_LC"));
+			obj.setR90_qua_ii_qar(rs.getBigDecimal("R90_QUA_II_QAR"));
+			obj.setR90_qua_ii_inr(rs.getBigDecimal("R90_QUA_II_INR"));
+			obj.setR90_qua_iii_lc(rs.getBigDecimal("R90_QUA_III_LC"));
+			obj.setR90_qua_iii_qar(rs.getBigDecimal("R90_QUA_III_QAR"));
+			obj.setR90_qua_iii_inr(rs.getBigDecimal("R90_QUA_III_INR"));
+			obj.setR90_qua_iv_lc(rs.getBigDecimal("R90_QUA_IV_LC"));
+			obj.setR90_qua_iv_qar(rs.getBigDecimal("R90_QUA_IV_QAR"));
+			obj.setR90_qua_iv_inr(rs.getBigDecimal("R90_QUA_IV_INR"));
+			obj.setR90_cumm_inr(rs.getBigDecimal("R90_CUMM_INR"));
+			obj.setR90_cumm_bwp(rs.getBigDecimal("R90_CUMM_BWP"));
+
+// R91
+			obj.setR91_product(rs.getString("R91_PRODUCT"));
+			obj.setR91_qua_i_lc(rs.getBigDecimal("R91_QUA_I_LC"));
+			obj.setR91_qua_i_qar(rs.getBigDecimal("R91_QUA_I_QAR"));
+			obj.setR91_qua_i_inr(rs.getBigDecimal("R91_QUA_I_INR"));
+			obj.setR91_qua_ii_lc(rs.getBigDecimal("R91_QUA_II_LC"));
+			obj.setR91_qua_ii_qar(rs.getBigDecimal("R91_QUA_II_QAR"));
+			obj.setR91_qua_ii_inr(rs.getBigDecimal("R91_QUA_II_INR"));
+			obj.setR91_qua_iii_lc(rs.getBigDecimal("R91_QUA_III_LC"));
+			obj.setR91_qua_iii_qar(rs.getBigDecimal("R91_QUA_III_QAR"));
+			obj.setR91_qua_iii_inr(rs.getBigDecimal("R91_QUA_III_INR"));
+			obj.setR91_qua_iv_lc(rs.getBigDecimal("R91_QUA_IV_LC"));
+			obj.setR91_qua_iv_qar(rs.getBigDecimal("R91_QUA_IV_QAR"));
+			obj.setR91_qua_iv_inr(rs.getBigDecimal("R91_QUA_IV_INR"));
+			obj.setR91_cumm_inr(rs.getBigDecimal("R91_CUMM_INR"));
+			obj.setR91_cumm_bwp(rs.getBigDecimal("R91_CUMM_BWP"));
+
+			// COMMON FIELDS
+			obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+			obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+			obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+			obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+			obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+			obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+			obj.setDEL_FLG(rs.getString("DEL_FLG"));
+
+			return obj;
+		}
+	}
+
+	public static class AS_11_Summary_Entity2 {
+		// R84
+		private String r84_product;
+		private BigDecimal r84_qua_i_lc;
+		private BigDecimal r84_qua_i_qar;
+		private BigDecimal r84_qua_i_inr;
+		private BigDecimal r84_qua_ii_lc;
+		private BigDecimal r84_qua_ii_qar;
+		private BigDecimal r84_qua_ii_inr;
+		private BigDecimal r84_qua_iii_lc;
+		private BigDecimal r84_qua_iii_qar;
+		private BigDecimal r84_qua_iii_inr;
+		private BigDecimal r84_qua_iv_lc;
+		private BigDecimal r84_qua_iv_qar;
+		private BigDecimal r84_qua_iv_inr;
+		private BigDecimal r84_cumm_inr;
+		private BigDecimal r84_cumm_bwp;
+
+		// R85
+		private String r85_product;
+		private BigDecimal r85_qua_i_lc;
+		private BigDecimal r85_qua_i_qar;
+		private BigDecimal r85_qua_i_inr;
+		private BigDecimal r85_qua_ii_lc;
+		private BigDecimal r85_qua_ii_qar;
+		private BigDecimal r85_qua_ii_inr;
+		private BigDecimal r85_qua_iii_lc;
+		private BigDecimal r85_qua_iii_qar;
+		private BigDecimal r85_qua_iii_inr;
+		private BigDecimal r85_qua_iv_lc;
+		private BigDecimal r85_qua_iv_qar;
+		private BigDecimal r85_qua_iv_inr;
+		private BigDecimal r85_cumm_inr;
+		private BigDecimal r85_cumm_bwp;
+
+		// R86
+		private String r86_product;
+		private BigDecimal r86_qua_i_lc;
+		private BigDecimal r86_qua_i_qar;
+		private BigDecimal r86_qua_i_inr;
+		private BigDecimal r86_qua_ii_lc;
+		private BigDecimal r86_qua_ii_qar;
+		private BigDecimal r86_qua_ii_inr;
+		private BigDecimal r86_qua_iii_lc;
+		private BigDecimal r86_qua_iii_qar;
+		private BigDecimal r86_qua_iii_inr;
+		private BigDecimal r86_qua_iv_lc;
+		private BigDecimal r86_qua_iv_qar;
+		private BigDecimal r86_qua_iv_inr;
+		private BigDecimal r86_cumm_inr;
+		private BigDecimal r86_cumm_bwp;
+
+		// R87
+		private String r87_product;
+		private BigDecimal r87_qua_i_lc;
+		private BigDecimal r87_qua_i_qar;
+		private BigDecimal r87_qua_i_inr;
+		private BigDecimal r87_qua_ii_lc;
+		private BigDecimal r87_qua_ii_qar;
+		private BigDecimal r87_qua_ii_inr;
+		private BigDecimal r87_qua_iii_lc;
+		private BigDecimal r87_qua_iii_qar;
+		private BigDecimal r87_qua_iii_inr;
+		private BigDecimal r87_qua_iv_lc;
+		private BigDecimal r87_qua_iv_qar;
+		private BigDecimal r87_qua_iv_inr;
+		private BigDecimal r87_cumm_inr;
+		private BigDecimal r87_cumm_bwp;
+
+		// R88
+		private String r88_product;
+		private BigDecimal r88_qua_i_lc;
+		private BigDecimal r88_qua_i_qar;
+		private BigDecimal r88_qua_i_inr;
+		private BigDecimal r88_qua_ii_lc;
+		private BigDecimal r88_qua_ii_qar;
+		private BigDecimal r88_qua_ii_inr;
+		private BigDecimal r88_qua_iii_lc;
+		private BigDecimal r88_qua_iii_qar;
+		private BigDecimal r88_qua_iii_inr;
+		private BigDecimal r88_qua_iv_lc;
+		private BigDecimal r88_qua_iv_qar;
+		private BigDecimal r88_qua_iv_inr;
+		private BigDecimal r88_cumm_inr;
+		private BigDecimal r88_cumm_bwp;
+
+		// R89
+		private String r89_product;
+		private BigDecimal r89_qua_i_lc;
+		private BigDecimal r89_qua_i_qar;
+		private BigDecimal r89_qua_i_inr;
+		private BigDecimal r89_qua_ii_lc;
+		private BigDecimal r89_qua_ii_qar;
+		private BigDecimal r89_qua_ii_inr;
+		private BigDecimal r89_qua_iii_lc;
+		private BigDecimal r89_qua_iii_qar;
+		private BigDecimal r89_qua_iii_inr;
+		private BigDecimal r89_qua_iv_lc;
+		private BigDecimal r89_qua_iv_qar;
+		private BigDecimal r89_qua_iv_inr;
+		private BigDecimal r89_cumm_inr;
+		private BigDecimal r89_cumm_bwp;
+
+		// R90
+		private String r90_product;
+		private BigDecimal r90_qua_i_lc;
+		private BigDecimal r90_qua_i_qar;
+		private BigDecimal r90_qua_i_inr;
+		private BigDecimal r90_qua_ii_lc;
+		private BigDecimal r90_qua_ii_qar;
+		private BigDecimal r90_qua_ii_inr;
+		private BigDecimal r90_qua_iii_lc;
+		private BigDecimal r90_qua_iii_qar;
+		private BigDecimal r90_qua_iii_inr;
+		private BigDecimal r90_qua_iv_lc;
+		private BigDecimal r90_qua_iv_qar;
+		private BigDecimal r90_qua_iv_inr;
+		private BigDecimal r90_cumm_inr;
+		private BigDecimal r90_cumm_bwp;
+
+		// R91
+		private String r91_product;
+		private BigDecimal r91_qua_i_lc;
+		private BigDecimal r91_qua_i_qar;
+		private BigDecimal r91_qua_i_inr;
+		private BigDecimal r91_qua_ii_lc;
+		private BigDecimal r91_qua_ii_qar;
+		private BigDecimal r91_qua_ii_inr;
+		private BigDecimal r91_qua_iii_lc;
+		private BigDecimal r91_qua_iii_qar;
+		private BigDecimal r91_qua_iii_inr;
+		private BigDecimal r91_qua_iv_lc;
+		private BigDecimal r91_qua_iv_qar;
+		private BigDecimal r91_qua_iv_inr;
+		private BigDecimal r91_cumm_inr;
+		private BigDecimal r91_cumm_bwp;
+		@Id
+		@Temporal(TemporalType.DATE)
+		@Column(name = "REPORT_DATE")
+		private Date REPORT_DATE;
+
+		@Column(name = "REPORT_VERSION", length = 100)
+		private BigDecimal REPORT_VERSION;
+
+		@Column(name = "REPORT_FREQUENCY", length = 100)
+		private String REPORT_FREQUENCY;
+
+		@Column(name = "REPORT_CODE", length = 100)
+		private String REPORT_CODE;
+
+		@Column(name = "REPORT_DESC", length = 100)
+		private String REPORT_DESC;
+
+		@Column(name = "ENTITY_FLG", length = 1)
+		private String ENTITY_FLG;
+
+		@Column(name = "MODIFY_FLG", length = 1)
+		private String MODIFY_FLG;
+
+		@Column(name = "DEL_FLG", length = 1)
+		private String DEL_FLG;
+
+		public String getR84_product() {
+			return r84_product;
+		}
+
+		public void setR84_product(String r84_product) {
+			this.r84_product = r84_product;
+		}
+
+		public BigDecimal getR84_qua_i_lc() {
+			return r84_qua_i_lc;
+		}
+
+		public void setR84_qua_i_lc(BigDecimal r84_qua_i_lc) {
+			this.r84_qua_i_lc = r84_qua_i_lc;
+		}
+
+		public BigDecimal getR84_qua_i_qar() {
+			return r84_qua_i_qar;
+		}
+
+		public void setR84_qua_i_qar(BigDecimal r84_qua_i_qar) {
+			this.r84_qua_i_qar = r84_qua_i_qar;
+		}
+
+		public BigDecimal getR84_qua_i_inr() {
+			return r84_qua_i_inr;
+		}
+
+		public void setR84_qua_i_inr(BigDecimal r84_qua_i_inr) {
+			this.r84_qua_i_inr = r84_qua_i_inr;
+		}
+
+		public BigDecimal getR84_qua_ii_lc() {
+			return r84_qua_ii_lc;
+		}
+
+		public void setR84_qua_ii_lc(BigDecimal r84_qua_ii_lc) {
+			this.r84_qua_ii_lc = r84_qua_ii_lc;
+		}
+
+		public BigDecimal getR84_qua_ii_qar() {
+			return r84_qua_ii_qar;
+		}
+
+		public void setR84_qua_ii_qar(BigDecimal r84_qua_ii_qar) {
+			this.r84_qua_ii_qar = r84_qua_ii_qar;
+		}
+
+		public BigDecimal getR84_qua_ii_inr() {
+			return r84_qua_ii_inr;
+		}
+
+		public void setR84_qua_ii_inr(BigDecimal r84_qua_ii_inr) {
+			this.r84_qua_ii_inr = r84_qua_ii_inr;
+		}
+
+		public BigDecimal getR84_qua_iii_lc() {
+			return r84_qua_iii_lc;
+		}
+
+		public void setR84_qua_iii_lc(BigDecimal r84_qua_iii_lc) {
+			this.r84_qua_iii_lc = r84_qua_iii_lc;
+		}
+
+		public BigDecimal getR84_qua_iii_qar() {
+			return r84_qua_iii_qar;
+		}
+
+		public void setR84_qua_iii_qar(BigDecimal r84_qua_iii_qar) {
+			this.r84_qua_iii_qar = r84_qua_iii_qar;
+		}
+
+		public BigDecimal getR84_qua_iii_inr() {
+			return r84_qua_iii_inr;
+		}
+
+		public void setR84_qua_iii_inr(BigDecimal r84_qua_iii_inr) {
+			this.r84_qua_iii_inr = r84_qua_iii_inr;
+		}
+
+		public BigDecimal getR84_qua_iv_lc() {
+			return r84_qua_iv_lc;
+		}
+
+		public void setR84_qua_iv_lc(BigDecimal r84_qua_iv_lc) {
+			this.r84_qua_iv_lc = r84_qua_iv_lc;
+		}
+
+		public BigDecimal getR84_qua_iv_qar() {
+			return r84_qua_iv_qar;
+		}
+
+		public void setR84_qua_iv_qar(BigDecimal r84_qua_iv_qar) {
+			this.r84_qua_iv_qar = r84_qua_iv_qar;
+		}
+
+		public BigDecimal getR84_qua_iv_inr() {
+			return r84_qua_iv_inr;
+		}
+
+		public void setR84_qua_iv_inr(BigDecimal r84_qua_iv_inr) {
+			this.r84_qua_iv_inr = r84_qua_iv_inr;
+		}
+
+		public BigDecimal getR84_cumm_inr() {
+			return r84_cumm_inr;
+		}
+
+		public void setR84_cumm_inr(BigDecimal r84_cumm_inr) {
+			this.r84_cumm_inr = r84_cumm_inr;
+		}
+
+		public BigDecimal getR84_cumm_bwp() {
+			return r84_cumm_bwp;
+		}
+
+		public void setR84_cumm_bwp(BigDecimal r84_cumm_bwp) {
+			this.r84_cumm_bwp = r84_cumm_bwp;
+		}
+
+		public String getR85_product() {
+			return r85_product;
+		}
+
+		public void setR85_product(String r85_product) {
+			this.r85_product = r85_product;
+		}
+
+		public BigDecimal getR85_qua_i_lc() {
+			return r85_qua_i_lc;
+		}
+
+		public void setR85_qua_i_lc(BigDecimal r85_qua_i_lc) {
+			this.r85_qua_i_lc = r85_qua_i_lc;
+		}
+
+		public BigDecimal getR85_qua_i_qar() {
+			return r85_qua_i_qar;
+		}
+
+		public void setR85_qua_i_qar(BigDecimal r85_qua_i_qar) {
+			this.r85_qua_i_qar = r85_qua_i_qar;
+		}
+
+		public BigDecimal getR85_qua_i_inr() {
+			return r85_qua_i_inr;
+		}
+
+		public void setR85_qua_i_inr(BigDecimal r85_qua_i_inr) {
+			this.r85_qua_i_inr = r85_qua_i_inr;
+		}
+
+		public BigDecimal getR85_qua_ii_lc() {
+			return r85_qua_ii_lc;
+		}
+
+		public void setR85_qua_ii_lc(BigDecimal r85_qua_ii_lc) {
+			this.r85_qua_ii_lc = r85_qua_ii_lc;
+		}
+
+		public BigDecimal getR85_qua_ii_qar() {
+			return r85_qua_ii_qar;
+		}
+
+		public void setR85_qua_ii_qar(BigDecimal r85_qua_ii_qar) {
+			this.r85_qua_ii_qar = r85_qua_ii_qar;
+		}
+
+		public BigDecimal getR85_qua_ii_inr() {
+			return r85_qua_ii_inr;
+		}
+
+		public void setR85_qua_ii_inr(BigDecimal r85_qua_ii_inr) {
+			this.r85_qua_ii_inr = r85_qua_ii_inr;
+		}
+
+		public BigDecimal getR85_qua_iii_lc() {
+			return r85_qua_iii_lc;
+		}
+
+		public void setR85_qua_iii_lc(BigDecimal r85_qua_iii_lc) {
+			this.r85_qua_iii_lc = r85_qua_iii_lc;
+		}
+
+		public BigDecimal getR85_qua_iii_qar() {
+			return r85_qua_iii_qar;
+		}
+
+		public void setR85_qua_iii_qar(BigDecimal r85_qua_iii_qar) {
+			this.r85_qua_iii_qar = r85_qua_iii_qar;
+		}
+
+		public BigDecimal getR85_qua_iii_inr() {
+			return r85_qua_iii_inr;
+		}
+
+		public void setR85_qua_iii_inr(BigDecimal r85_qua_iii_inr) {
+			this.r85_qua_iii_inr = r85_qua_iii_inr;
+		}
+
+		public BigDecimal getR85_qua_iv_lc() {
+			return r85_qua_iv_lc;
+		}
+
+		public void setR85_qua_iv_lc(BigDecimal r85_qua_iv_lc) {
+			this.r85_qua_iv_lc = r85_qua_iv_lc;
+		}
+
+		public BigDecimal getR85_qua_iv_qar() {
+			return r85_qua_iv_qar;
+		}
+
+		public void setR85_qua_iv_qar(BigDecimal r85_qua_iv_qar) {
+			this.r85_qua_iv_qar = r85_qua_iv_qar;
+		}
+
+		public BigDecimal getR85_qua_iv_inr() {
+			return r85_qua_iv_inr;
+		}
+
+		public void setR85_qua_iv_inr(BigDecimal r85_qua_iv_inr) {
+			this.r85_qua_iv_inr = r85_qua_iv_inr;
+		}
+
+		public BigDecimal getR85_cumm_inr() {
+			return r85_cumm_inr;
+		}
+
+		public void setR85_cumm_inr(BigDecimal r85_cumm_inr) {
+			this.r85_cumm_inr = r85_cumm_inr;
+		}
+
+		public BigDecimal getR85_cumm_bwp() {
+			return r85_cumm_bwp;
+		}
+
+		public void setR85_cumm_bwp(BigDecimal r85_cumm_bwp) {
+			this.r85_cumm_bwp = r85_cumm_bwp;
+		}
+
+		public String getR86_product() {
+			return r86_product;
+		}
+
+		public void setR86_product(String r86_product) {
+			this.r86_product = r86_product;
+		}
+
+		public BigDecimal getR86_qua_i_lc() {
+			return r86_qua_i_lc;
+		}
+
+		public void setR86_qua_i_lc(BigDecimal r86_qua_i_lc) {
+			this.r86_qua_i_lc = r86_qua_i_lc;
+		}
+
+		public BigDecimal getR86_qua_i_qar() {
+			return r86_qua_i_qar;
+		}
+
+		public void setR86_qua_i_qar(BigDecimal r86_qua_i_qar) {
+			this.r86_qua_i_qar = r86_qua_i_qar;
+		}
+
+		public BigDecimal getR86_qua_i_inr() {
+			return r86_qua_i_inr;
+		}
+
+		public void setR86_qua_i_inr(BigDecimal r86_qua_i_inr) {
+			this.r86_qua_i_inr = r86_qua_i_inr;
+		}
+
+		public BigDecimal getR86_qua_ii_lc() {
+			return r86_qua_ii_lc;
+		}
+
+		public void setR86_qua_ii_lc(BigDecimal r86_qua_ii_lc) {
+			this.r86_qua_ii_lc = r86_qua_ii_lc;
+		}
+
+		public BigDecimal getR86_qua_ii_qar() {
+			return r86_qua_ii_qar;
+		}
+
+		public void setR86_qua_ii_qar(BigDecimal r86_qua_ii_qar) {
+			this.r86_qua_ii_qar = r86_qua_ii_qar;
+		}
+
+		public BigDecimal getR86_qua_ii_inr() {
+			return r86_qua_ii_inr;
+		}
+
+		public void setR86_qua_ii_inr(BigDecimal r86_qua_ii_inr) {
+			this.r86_qua_ii_inr = r86_qua_ii_inr;
+		}
+
+		public BigDecimal getR86_qua_iii_lc() {
+			return r86_qua_iii_lc;
+		}
+
+		public void setR86_qua_iii_lc(BigDecimal r86_qua_iii_lc) {
+			this.r86_qua_iii_lc = r86_qua_iii_lc;
+		}
+
+		public BigDecimal getR86_qua_iii_qar() {
+			return r86_qua_iii_qar;
+		}
+
+		public void setR86_qua_iii_qar(BigDecimal r86_qua_iii_qar) {
+			this.r86_qua_iii_qar = r86_qua_iii_qar;
+		}
+
+		public BigDecimal getR86_qua_iii_inr() {
+			return r86_qua_iii_inr;
+		}
+
+		public void setR86_qua_iii_inr(BigDecimal r86_qua_iii_inr) {
+			this.r86_qua_iii_inr = r86_qua_iii_inr;
+		}
+
+		public BigDecimal getR86_qua_iv_lc() {
+			return r86_qua_iv_lc;
+		}
+
+		public void setR86_qua_iv_lc(BigDecimal r86_qua_iv_lc) {
+			this.r86_qua_iv_lc = r86_qua_iv_lc;
+		}
+
+		public BigDecimal getR86_qua_iv_qar() {
+			return r86_qua_iv_qar;
+		}
+
+		public void setR86_qua_iv_qar(BigDecimal r86_qua_iv_qar) {
+			this.r86_qua_iv_qar = r86_qua_iv_qar;
+		}
+
+		public BigDecimal getR86_qua_iv_inr() {
+			return r86_qua_iv_inr;
+		}
+
+		public void setR86_qua_iv_inr(BigDecimal r86_qua_iv_inr) {
+			this.r86_qua_iv_inr = r86_qua_iv_inr;
+		}
+
+		public BigDecimal getR86_cumm_inr() {
+			return r86_cumm_inr;
+		}
+
+		public void setR86_cumm_inr(BigDecimal r86_cumm_inr) {
+			this.r86_cumm_inr = r86_cumm_inr;
+		}
+
+		public BigDecimal getR86_cumm_bwp() {
+			return r86_cumm_bwp;
+		}
+
+		public void setR86_cumm_bwp(BigDecimal r86_cumm_bwp) {
+			this.r86_cumm_bwp = r86_cumm_bwp;
+		}
+
+		public String getR87_product() {
+			return r87_product;
+		}
+
+		public void setR87_product(String r87_product) {
+			this.r87_product = r87_product;
+		}
+
+		public BigDecimal getR87_qua_i_lc() {
+			return r87_qua_i_lc;
+		}
+
+		public void setR87_qua_i_lc(BigDecimal r87_qua_i_lc) {
+			this.r87_qua_i_lc = r87_qua_i_lc;
+		}
+
+		public BigDecimal getR87_qua_i_qar() {
+			return r87_qua_i_qar;
+		}
+
+		public void setR87_qua_i_qar(BigDecimal r87_qua_i_qar) {
+			this.r87_qua_i_qar = r87_qua_i_qar;
+		}
+
+		public BigDecimal getR87_qua_i_inr() {
+			return r87_qua_i_inr;
+		}
+
+		public void setR87_qua_i_inr(BigDecimal r87_qua_i_inr) {
+			this.r87_qua_i_inr = r87_qua_i_inr;
+		}
+
+		public BigDecimal getR87_qua_ii_lc() {
+			return r87_qua_ii_lc;
+		}
+
+		public void setR87_qua_ii_lc(BigDecimal r87_qua_ii_lc) {
+			this.r87_qua_ii_lc = r87_qua_ii_lc;
+		}
+
+		public BigDecimal getR87_qua_ii_qar() {
+			return r87_qua_ii_qar;
+		}
+
+		public void setR87_qua_ii_qar(BigDecimal r87_qua_ii_qar) {
+			this.r87_qua_ii_qar = r87_qua_ii_qar;
+		}
+
+		public BigDecimal getR87_qua_ii_inr() {
+			return r87_qua_ii_inr;
+		}
+
+		public void setR87_qua_ii_inr(BigDecimal r87_qua_ii_inr) {
+			this.r87_qua_ii_inr = r87_qua_ii_inr;
+		}
+
+		public BigDecimal getR87_qua_iii_lc() {
+			return r87_qua_iii_lc;
+		}
+
+		public void setR87_qua_iii_lc(BigDecimal r87_qua_iii_lc) {
+			this.r87_qua_iii_lc = r87_qua_iii_lc;
+		}
+
+		public BigDecimal getR87_qua_iii_qar() {
+			return r87_qua_iii_qar;
+		}
+
+		public void setR87_qua_iii_qar(BigDecimal r87_qua_iii_qar) {
+			this.r87_qua_iii_qar = r87_qua_iii_qar;
+		}
+
+		public BigDecimal getR87_qua_iii_inr() {
+			return r87_qua_iii_inr;
+		}
+
+		public void setR87_qua_iii_inr(BigDecimal r87_qua_iii_inr) {
+			this.r87_qua_iii_inr = r87_qua_iii_inr;
+		}
+
+		public BigDecimal getR87_qua_iv_lc() {
+			return r87_qua_iv_lc;
+		}
+
+		public void setR87_qua_iv_lc(BigDecimal r87_qua_iv_lc) {
+			this.r87_qua_iv_lc = r87_qua_iv_lc;
+		}
+
+		public BigDecimal getR87_qua_iv_qar() {
+			return r87_qua_iv_qar;
+		}
+
+		public void setR87_qua_iv_qar(BigDecimal r87_qua_iv_qar) {
+			this.r87_qua_iv_qar = r87_qua_iv_qar;
+		}
+
+		public BigDecimal getR87_qua_iv_inr() {
+			return r87_qua_iv_inr;
+		}
+
+		public void setR87_qua_iv_inr(BigDecimal r87_qua_iv_inr) {
+			this.r87_qua_iv_inr = r87_qua_iv_inr;
+		}
+
+		public BigDecimal getR87_cumm_inr() {
+			return r87_cumm_inr;
+		}
+
+		public void setR87_cumm_inr(BigDecimal r87_cumm_inr) {
+			this.r87_cumm_inr = r87_cumm_inr;
+		}
+
+		public BigDecimal getR87_cumm_bwp() {
+			return r87_cumm_bwp;
+		}
+
+		public void setR87_cumm_bwp(BigDecimal r87_cumm_bwp) {
+			this.r87_cumm_bwp = r87_cumm_bwp;
+		}
+
+		public String getR88_product() {
+			return r88_product;
+		}
+
+		public void setR88_product(String r88_product) {
+			this.r88_product = r88_product;
+		}
+
+		public BigDecimal getR88_qua_i_lc() {
+			return r88_qua_i_lc;
+		}
+
+		public void setR88_qua_i_lc(BigDecimal r88_qua_i_lc) {
+			this.r88_qua_i_lc = r88_qua_i_lc;
+		}
+
+		public BigDecimal getR88_qua_i_qar() {
+			return r88_qua_i_qar;
+		}
+
+		public void setR88_qua_i_qar(BigDecimal r88_qua_i_qar) {
+			this.r88_qua_i_qar = r88_qua_i_qar;
+		}
+
+		public BigDecimal getR88_qua_i_inr() {
+			return r88_qua_i_inr;
+		}
+
+		public void setR88_qua_i_inr(BigDecimal r88_qua_i_inr) {
+			this.r88_qua_i_inr = r88_qua_i_inr;
+		}
+
+		public BigDecimal getR88_qua_ii_lc() {
+			return r88_qua_ii_lc;
+		}
+
+		public void setR88_qua_ii_lc(BigDecimal r88_qua_ii_lc) {
+			this.r88_qua_ii_lc = r88_qua_ii_lc;
+		}
+
+		public BigDecimal getR88_qua_ii_qar() {
+			return r88_qua_ii_qar;
+		}
+
+		public void setR88_qua_ii_qar(BigDecimal r88_qua_ii_qar) {
+			this.r88_qua_ii_qar = r88_qua_ii_qar;
+		}
+
+		public BigDecimal getR88_qua_ii_inr() {
+			return r88_qua_ii_inr;
+		}
+
+		public void setR88_qua_ii_inr(BigDecimal r88_qua_ii_inr) {
+			this.r88_qua_ii_inr = r88_qua_ii_inr;
+		}
+
+		public BigDecimal getR88_qua_iii_lc() {
+			return r88_qua_iii_lc;
+		}
+
+		public void setR88_qua_iii_lc(BigDecimal r88_qua_iii_lc) {
+			this.r88_qua_iii_lc = r88_qua_iii_lc;
+		}
+
+		public BigDecimal getR88_qua_iii_qar() {
+			return r88_qua_iii_qar;
+		}
+
+		public void setR88_qua_iii_qar(BigDecimal r88_qua_iii_qar) {
+			this.r88_qua_iii_qar = r88_qua_iii_qar;
+		}
+
+		public BigDecimal getR88_qua_iii_inr() {
+			return r88_qua_iii_inr;
+		}
+
+		public void setR88_qua_iii_inr(BigDecimal r88_qua_iii_inr) {
+			this.r88_qua_iii_inr = r88_qua_iii_inr;
+		}
+
+		public BigDecimal getR88_qua_iv_lc() {
+			return r88_qua_iv_lc;
+		}
+
+		public void setR88_qua_iv_lc(BigDecimal r88_qua_iv_lc) {
+			this.r88_qua_iv_lc = r88_qua_iv_lc;
+		}
+
+		public BigDecimal getR88_qua_iv_qar() {
+			return r88_qua_iv_qar;
+		}
+
+		public void setR88_qua_iv_qar(BigDecimal r88_qua_iv_qar) {
+			this.r88_qua_iv_qar = r88_qua_iv_qar;
+		}
+
+		public BigDecimal getR88_qua_iv_inr() {
+			return r88_qua_iv_inr;
+		}
+
+		public void setR88_qua_iv_inr(BigDecimal r88_qua_iv_inr) {
+			this.r88_qua_iv_inr = r88_qua_iv_inr;
+		}
+
+		public BigDecimal getR88_cumm_inr() {
+			return r88_cumm_inr;
+		}
+
+		public void setR88_cumm_inr(BigDecimal r88_cumm_inr) {
+			this.r88_cumm_inr = r88_cumm_inr;
+		}
+
+		public BigDecimal getR88_cumm_bwp() {
+			return r88_cumm_bwp;
+		}
+
+		public void setR88_cumm_bwp(BigDecimal r88_cumm_bwp) {
+			this.r88_cumm_bwp = r88_cumm_bwp;
+		}
+
+		public String getR89_product() {
+			return r89_product;
+		}
+
+		public void setR89_product(String r89_product) {
+			this.r89_product = r89_product;
+		}
+
+		public BigDecimal getR89_qua_i_lc() {
+			return r89_qua_i_lc;
+		}
+
+		public void setR89_qua_i_lc(BigDecimal r89_qua_i_lc) {
+			this.r89_qua_i_lc = r89_qua_i_lc;
+		}
+
+		public BigDecimal getR89_qua_i_qar() {
+			return r89_qua_i_qar;
+		}
+
+		public void setR89_qua_i_qar(BigDecimal r89_qua_i_qar) {
+			this.r89_qua_i_qar = r89_qua_i_qar;
+		}
+
+		public BigDecimal getR89_qua_i_inr() {
+			return r89_qua_i_inr;
+		}
+
+		public void setR89_qua_i_inr(BigDecimal r89_qua_i_inr) {
+			this.r89_qua_i_inr = r89_qua_i_inr;
+		}
+
+		public BigDecimal getR89_qua_ii_lc() {
+			return r89_qua_ii_lc;
+		}
+
+		public void setR89_qua_ii_lc(BigDecimal r89_qua_ii_lc) {
+			this.r89_qua_ii_lc = r89_qua_ii_lc;
+		}
+
+		public BigDecimal getR89_qua_ii_qar() {
+			return r89_qua_ii_qar;
+		}
+
+		public void setR89_qua_ii_qar(BigDecimal r89_qua_ii_qar) {
+			this.r89_qua_ii_qar = r89_qua_ii_qar;
+		}
+
+		public BigDecimal getR89_qua_ii_inr() {
+			return r89_qua_ii_inr;
+		}
+
+		public void setR89_qua_ii_inr(BigDecimal r89_qua_ii_inr) {
+			this.r89_qua_ii_inr = r89_qua_ii_inr;
+		}
+
+		public BigDecimal getR89_qua_iii_lc() {
+			return r89_qua_iii_lc;
+		}
+
+		public void setR89_qua_iii_lc(BigDecimal r89_qua_iii_lc) {
+			this.r89_qua_iii_lc = r89_qua_iii_lc;
+		}
+
+		public BigDecimal getR89_qua_iii_qar() {
+			return r89_qua_iii_qar;
+		}
+
+		public void setR89_qua_iii_qar(BigDecimal r89_qua_iii_qar) {
+			this.r89_qua_iii_qar = r89_qua_iii_qar;
+		}
+
+		public BigDecimal getR89_qua_iii_inr() {
+			return r89_qua_iii_inr;
+		}
+
+		public void setR89_qua_iii_inr(BigDecimal r89_qua_iii_inr) {
+			this.r89_qua_iii_inr = r89_qua_iii_inr;
+		}
+
+		public BigDecimal getR89_qua_iv_lc() {
+			return r89_qua_iv_lc;
+		}
+
+		public void setR89_qua_iv_lc(BigDecimal r89_qua_iv_lc) {
+			this.r89_qua_iv_lc = r89_qua_iv_lc;
+		}
+
+		public BigDecimal getR89_qua_iv_qar() {
+			return r89_qua_iv_qar;
+		}
+
+		public void setR89_qua_iv_qar(BigDecimal r89_qua_iv_qar) {
+			this.r89_qua_iv_qar = r89_qua_iv_qar;
+		}
+
+		public BigDecimal getR89_qua_iv_inr() {
+			return r89_qua_iv_inr;
+		}
+
+		public void setR89_qua_iv_inr(BigDecimal r89_qua_iv_inr) {
+			this.r89_qua_iv_inr = r89_qua_iv_inr;
+		}
+
+		public BigDecimal getR89_cumm_inr() {
+			return r89_cumm_inr;
+		}
+
+		public void setR89_cumm_inr(BigDecimal r89_cumm_inr) {
+			this.r89_cumm_inr = r89_cumm_inr;
+		}
+
+		public BigDecimal getR89_cumm_bwp() {
+			return r89_cumm_bwp;
+		}
+
+		public void setR89_cumm_bwp(BigDecimal r89_cumm_bwp) {
+			this.r89_cumm_bwp = r89_cumm_bwp;
+		}
+
+		public String getR90_product() {
+			return r90_product;
+		}
+
+		public void setR90_product(String r90_product) {
+			this.r90_product = r90_product;
+		}
+
+		public BigDecimal getR90_qua_i_lc() {
+			return r90_qua_i_lc;
+		}
+
+		public void setR90_qua_i_lc(BigDecimal r90_qua_i_lc) {
+			this.r90_qua_i_lc = r90_qua_i_lc;
+		}
+
+		public BigDecimal getR90_qua_i_qar() {
+			return r90_qua_i_qar;
+		}
+
+		public void setR90_qua_i_qar(BigDecimal r90_qua_i_qar) {
+			this.r90_qua_i_qar = r90_qua_i_qar;
+		}
+
+		public BigDecimal getR90_qua_i_inr() {
+			return r90_qua_i_inr;
+		}
+
+		public void setR90_qua_i_inr(BigDecimal r90_qua_i_inr) {
+			this.r90_qua_i_inr = r90_qua_i_inr;
+		}
+
+		public BigDecimal getR90_qua_ii_lc() {
+			return r90_qua_ii_lc;
+		}
+
+		public void setR90_qua_ii_lc(BigDecimal r90_qua_ii_lc) {
+			this.r90_qua_ii_lc = r90_qua_ii_lc;
+		}
+
+		public BigDecimal getR90_qua_ii_qar() {
+			return r90_qua_ii_qar;
+		}
+
+		public void setR90_qua_ii_qar(BigDecimal r90_qua_ii_qar) {
+			this.r90_qua_ii_qar = r90_qua_ii_qar;
+		}
+
+		public BigDecimal getR90_qua_ii_inr() {
+			return r90_qua_ii_inr;
+		}
+
+		public void setR90_qua_ii_inr(BigDecimal r90_qua_ii_inr) {
+			this.r90_qua_ii_inr = r90_qua_ii_inr;
+		}
+
+		public BigDecimal getR90_qua_iii_lc() {
+			return r90_qua_iii_lc;
+		}
+
+		public void setR90_qua_iii_lc(BigDecimal r90_qua_iii_lc) {
+			this.r90_qua_iii_lc = r90_qua_iii_lc;
+		}
+
+		public BigDecimal getR90_qua_iii_qar() {
+			return r90_qua_iii_qar;
+		}
+
+		public void setR90_qua_iii_qar(BigDecimal r90_qua_iii_qar) {
+			this.r90_qua_iii_qar = r90_qua_iii_qar;
+		}
+
+		public BigDecimal getR90_qua_iii_inr() {
+			return r90_qua_iii_inr;
+		}
+
+		public void setR90_qua_iii_inr(BigDecimal r90_qua_iii_inr) {
+			this.r90_qua_iii_inr = r90_qua_iii_inr;
+		}
+
+		public BigDecimal getR90_qua_iv_lc() {
+			return r90_qua_iv_lc;
+		}
+
+		public void setR90_qua_iv_lc(BigDecimal r90_qua_iv_lc) {
+			this.r90_qua_iv_lc = r90_qua_iv_lc;
+		}
+
+		public BigDecimal getR90_qua_iv_qar() {
+			return r90_qua_iv_qar;
+		}
+
+		public void setR90_qua_iv_qar(BigDecimal r90_qua_iv_qar) {
+			this.r90_qua_iv_qar = r90_qua_iv_qar;
+		}
+
+		public BigDecimal getR90_qua_iv_inr() {
+			return r90_qua_iv_inr;
+		}
+
+		public void setR90_qua_iv_inr(BigDecimal r90_qua_iv_inr) {
+			this.r90_qua_iv_inr = r90_qua_iv_inr;
+		}
+
+		public BigDecimal getR90_cumm_inr() {
+			return r90_cumm_inr;
+		}
+
+		public void setR90_cumm_inr(BigDecimal r90_cumm_inr) {
+			this.r90_cumm_inr = r90_cumm_inr;
+		}
+
+		public BigDecimal getR90_cumm_bwp() {
+			return r90_cumm_bwp;
+		}
+
+		public void setR90_cumm_bwp(BigDecimal r90_cumm_bwp) {
+			this.r90_cumm_bwp = r90_cumm_bwp;
+		}
+
+		public String getR91_product() {
+			return r91_product;
+		}
+
+		public void setR91_product(String r91_product) {
+			this.r91_product = r91_product;
+		}
+
+		public BigDecimal getR91_qua_i_lc() {
+			return r91_qua_i_lc;
+		}
+
+		public void setR91_qua_i_lc(BigDecimal r91_qua_i_lc) {
+			this.r91_qua_i_lc = r91_qua_i_lc;
+		}
+
+		public BigDecimal getR91_qua_i_qar() {
+			return r91_qua_i_qar;
+		}
+
+		public void setR91_qua_i_qar(BigDecimal r91_qua_i_qar) {
+			this.r91_qua_i_qar = r91_qua_i_qar;
+		}
+
+		public BigDecimal getR91_qua_i_inr() {
+			return r91_qua_i_inr;
+		}
+
+		public void setR91_qua_i_inr(BigDecimal r91_qua_i_inr) {
+			this.r91_qua_i_inr = r91_qua_i_inr;
+		}
+
+		public BigDecimal getR91_qua_ii_lc() {
+			return r91_qua_ii_lc;
+		}
+
+		public void setR91_qua_ii_lc(BigDecimal r91_qua_ii_lc) {
+			this.r91_qua_ii_lc = r91_qua_ii_lc;
+		}
+
+		public BigDecimal getR91_qua_ii_qar() {
+			return r91_qua_ii_qar;
+		}
+
+		public void setR91_qua_ii_qar(BigDecimal r91_qua_ii_qar) {
+			this.r91_qua_ii_qar = r91_qua_ii_qar;
+		}
+
+		public BigDecimal getR91_qua_ii_inr() {
+			return r91_qua_ii_inr;
+		}
+
+		public void setR91_qua_ii_inr(BigDecimal r91_qua_ii_inr) {
+			this.r91_qua_ii_inr = r91_qua_ii_inr;
+		}
+
+		public BigDecimal getR91_qua_iii_lc() {
+			return r91_qua_iii_lc;
+		}
+
+		public void setR91_qua_iii_lc(BigDecimal r91_qua_iii_lc) {
+			this.r91_qua_iii_lc = r91_qua_iii_lc;
+		}
+
+		public BigDecimal getR91_qua_iii_qar() {
+			return r91_qua_iii_qar;
+		}
+
+		public void setR91_qua_iii_qar(BigDecimal r91_qua_iii_qar) {
+			this.r91_qua_iii_qar = r91_qua_iii_qar;
+		}
+
+		public BigDecimal getR91_qua_iii_inr() {
+			return r91_qua_iii_inr;
+		}
+
+		public void setR91_qua_iii_inr(BigDecimal r91_qua_iii_inr) {
+			this.r91_qua_iii_inr = r91_qua_iii_inr;
+		}
+
+		public BigDecimal getR91_qua_iv_lc() {
+			return r91_qua_iv_lc;
+		}
+
+		public void setR91_qua_iv_lc(BigDecimal r91_qua_iv_lc) {
+			this.r91_qua_iv_lc = r91_qua_iv_lc;
+		}
+
+		public BigDecimal getR91_qua_iv_qar() {
+			return r91_qua_iv_qar;
+		}
+
+		public void setR91_qua_iv_qar(BigDecimal r91_qua_iv_qar) {
+			this.r91_qua_iv_qar = r91_qua_iv_qar;
+		}
+
+		public BigDecimal getR91_qua_iv_inr() {
+			return r91_qua_iv_inr;
+		}
+
+		public void setR91_qua_iv_inr(BigDecimal r91_qua_iv_inr) {
+			this.r91_qua_iv_inr = r91_qua_iv_inr;
+		}
+
+		public BigDecimal getR91_cumm_inr() {
+			return r91_cumm_inr;
+		}
+
+		public void setR91_cumm_inr(BigDecimal r91_cumm_inr) {
+			this.r91_cumm_inr = r91_cumm_inr;
+		}
+
+		public BigDecimal getR91_cumm_bwp() {
+			return r91_cumm_bwp;
+		}
+
+		public void setR91_cumm_bwp(BigDecimal r91_cumm_bwp) {
+			this.r91_cumm_bwp = r91_cumm_bwp;
+		}
+
+		public Date getREPORT_DATE() {
+			return REPORT_DATE;
+		}
+
+		public void setREPORT_DATE(Date REPORT_DATE) {
+			this.REPORT_DATE = REPORT_DATE;
+		}
+
+		public BigDecimal getREPORT_VERSION() {
+			return REPORT_VERSION;
+		}
+
+		public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
+			this.REPORT_VERSION = REPORT_VERSION;
+		}
+
+		public String getREPORT_FREQUENCY() {
+			return REPORT_FREQUENCY;
+		}
+
+		public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+			REPORT_FREQUENCY = rEPORT_FREQUENCY;
+		}
+
+		public String getREPORT_CODE() {
+			return REPORT_CODE;
+		}
+
+		public void setREPORT_CODE(String rEPORT_CODE) {
+			REPORT_CODE = rEPORT_CODE;
+		}
+
+		public String getREPORT_DESC() {
+			return REPORT_DESC;
+		}
+
+		public void setREPORT_DESC(String rEPORT_DESC) {
+			REPORT_DESC = rEPORT_DESC;
+		}
+
+		public String getENTITY_FLG() {
+			return ENTITY_FLG;
+		}
+
+		public void setENTITY_FLG(String eNTITY_FLG) {
+			ENTITY_FLG = eNTITY_FLG;
+		}
+
+		public String getMODIFY_FLG() {
+			return MODIFY_FLG;
+		}
+
+		public void setMODIFY_FLG(String mODIFY_FLG) {
+			MODIFY_FLG = mODIFY_FLG;
+		}
+
+		public String getDEL_FLG() {
+			return DEL_FLG;
+		}
+
+		public void setDEL_FLG(String dEL_FLG) {
+			DEL_FLG = dEL_FLG;
+		}
+
+	}
+
+//ARCHIVAL ROW MAPPER
+
+	class AS_11ArchivalRowMapper1 implements RowMapper<AS_11_Archival_Summary_Entity1> {
+
+		@Override
+		public AS_11_Archival_Summary_Entity1 mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+			AS_11_Archival_Summary_Entity1 obj = new AS_11_Archival_Summary_Entity1();
+
+			// R18
+			obj.setR18_product(rs.getString("R18_PRODUCT"));
+
+			obj.setR18_qua_i_lc(rs.getBigDecimal("R18_QUA_I_LC"));
+			obj.setR18_qua_i_qar(rs.getBigDecimal("R18_QUA_I_QAR"));
+			obj.setR18_qua_i_inr(rs.getBigDecimal("R18_QUA_I_INR"));
+
+			obj.setR18_qua_ii_lc(rs.getBigDecimal("R18_QUA_II_LC"));
+			obj.setR18_qua_ii_qar(rs.getBigDecimal("R18_QUA_II_QAR"));
+			obj.setR18_qua_ii_inr(rs.getBigDecimal("R18_QUA_II_INR"));
+
+			obj.setR18_qua_iii_lc(rs.getBigDecimal("R18_QUA_III_LC"));
+			obj.setR18_qua_iii_qar(rs.getBigDecimal("R18_QUA_III_QAR"));
+			obj.setR18_qua_iii_inr(rs.getBigDecimal("R18_QUA_III_INR"));
+
+			obj.setR18_qua_iv_lc(rs.getBigDecimal("R18_QUA_IV_LC"));
+			obj.setR18_qua_iv_qar(rs.getBigDecimal("R18_QUA_IV_QAR"));
+			obj.setR18_qua_iv_inr(rs.getBigDecimal("R18_QUA_IV_INR"));
+
+			obj.setR18_cumm_inr(rs.getBigDecimal("R18_CUMM_INR"));
+			obj.setR18_cumm_bwp(rs.getBigDecimal("R18_CUMM_BWP"));
+
+			obj.setR19_product(rs.getString("R19_PRODUCT"));
+
+			obj.setR19_qua_i_lc(rs.getBigDecimal("R19_QUA_I_LC"));
+			obj.setR19_qua_i_qar(rs.getBigDecimal("R19_QUA_I_QAR"));
+			obj.setR19_qua_i_inr(rs.getBigDecimal("R19_QUA_I_INR"));
+
+			obj.setR19_qua_ii_lc(rs.getBigDecimal("R19_QUA_II_LC"));
+			obj.setR19_qua_ii_qar(rs.getBigDecimal("R19_QUA_II_QAR"));
+			obj.setR19_qua_ii_inr(rs.getBigDecimal("R19_QUA_II_INR"));
+
+			obj.setR19_qua_iii_lc(rs.getBigDecimal("R19_QUA_III_LC"));
+			obj.setR19_qua_iii_qar(rs.getBigDecimal("R19_QUA_III_QAR"));
+			obj.setR19_qua_iii_inr(rs.getBigDecimal("R19_QUA_III_INR"));
+
+			obj.setR19_qua_iv_lc(rs.getBigDecimal("R19_QUA_IV_LC"));
+			obj.setR19_qua_iv_qar(rs.getBigDecimal("R19_QUA_IV_QAR"));
+			obj.setR19_qua_iv_inr(rs.getBigDecimal("R19_QUA_IV_INR"));
+
+			obj.setR19_cumm_inr(rs.getBigDecimal("R19_CUMM_INR"));
+			obj.setR19_cumm_bwp(rs.getBigDecimal("R19_CUMM_BWP"));
+
+			obj.setR20_product(rs.getString("R20_PRODUCT"));
+
+			obj.setR20_qua_i_lc(rs.getBigDecimal("R20_QUA_I_LC"));
+			obj.setR20_qua_i_qar(rs.getBigDecimal("R20_QUA_I_QAR"));
+			obj.setR20_qua_i_inr(rs.getBigDecimal("R20_QUA_I_INR"));
+
+			obj.setR20_qua_ii_lc(rs.getBigDecimal("R20_QUA_II_LC"));
+			obj.setR20_qua_ii_qar(rs.getBigDecimal("R20_QUA_II_QAR"));
+			obj.setR20_qua_ii_inr(rs.getBigDecimal("R20_QUA_II_INR"));
+
+			obj.setR20_qua_iii_lc(rs.getBigDecimal("R20_QUA_III_LC"));
+			obj.setR20_qua_iii_qar(rs.getBigDecimal("R20_QUA_III_QAR"));
+			obj.setR20_qua_iii_inr(rs.getBigDecimal("R20_QUA_III_INR"));
+
+			obj.setR20_qua_iv_lc(rs.getBigDecimal("R20_QUA_IV_LC"));
+			obj.setR20_qua_iv_qar(rs.getBigDecimal("R20_QUA_IV_QAR"));
+			obj.setR20_qua_iv_inr(rs.getBigDecimal("R20_QUA_IV_INR"));
+
+			obj.setR20_cumm_inr(rs.getBigDecimal("R20_CUMM_INR"));
+			obj.setR20_cumm_bwp(rs.getBigDecimal("R20_CUMM_BWP"));
+
+			obj.setR21_product(rs.getString("R21_PRODUCT"));
+
+			obj.setR21_qua_i_lc(rs.getBigDecimal("R21_QUA_I_LC"));
+			obj.setR21_qua_i_qar(rs.getBigDecimal("R21_QUA_I_QAR"));
+			obj.setR21_qua_i_inr(rs.getBigDecimal("R21_QUA_I_INR"));
+
+			obj.setR21_qua_ii_lc(rs.getBigDecimal("R21_QUA_II_LC"));
+			obj.setR21_qua_ii_qar(rs.getBigDecimal("R21_QUA_II_QAR"));
+			obj.setR21_qua_ii_inr(rs.getBigDecimal("R21_QUA_II_INR"));
+
+			obj.setR21_qua_iii_lc(rs.getBigDecimal("R21_QUA_III_LC"));
+			obj.setR21_qua_iii_qar(rs.getBigDecimal("R21_QUA_III_QAR"));
+			obj.setR21_qua_iii_inr(rs.getBigDecimal("R21_QUA_III_INR"));
+
+			obj.setR21_qua_iv_lc(rs.getBigDecimal("R21_QUA_IV_LC"));
+			obj.setR21_qua_iv_qar(rs.getBigDecimal("R21_QUA_IV_QAR"));
+			obj.setR21_qua_iv_inr(rs.getBigDecimal("R21_QUA_IV_INR"));
+
+			obj.setR21_cumm_inr(rs.getBigDecimal("R21_CUMM_INR"));
+			obj.setR21_cumm_bwp(rs.getBigDecimal("R21_CUMM_BWP"));
+
+			obj.setR22_product(rs.getString("R22_PRODUCT"));
+
+			obj.setR22_qua_i_lc(rs.getBigDecimal("R22_QUA_I_LC"));
+			obj.setR22_qua_i_qar(rs.getBigDecimal("R22_QUA_I_QAR"));
+			obj.setR22_qua_i_inr(rs.getBigDecimal("R22_QUA_I_INR"));
+
+			obj.setR22_qua_ii_lc(rs.getBigDecimal("R22_QUA_II_LC"));
+			obj.setR22_qua_ii_qar(rs.getBigDecimal("R22_QUA_II_QAR"));
+			obj.setR22_qua_ii_inr(rs.getBigDecimal("R22_QUA_II_INR"));
+
+			obj.setR22_qua_iii_lc(rs.getBigDecimal("R22_QUA_III_LC"));
+			obj.setR22_qua_iii_qar(rs.getBigDecimal("R22_QUA_III_QAR"));
+			obj.setR22_qua_iii_inr(rs.getBigDecimal("R22_QUA_III_INR"));
+
+			obj.setR22_qua_iv_lc(rs.getBigDecimal("R22_QUA_IV_LC"));
+			obj.setR22_qua_iv_qar(rs.getBigDecimal("R22_QUA_IV_QAR"));
+			obj.setR22_qua_iv_inr(rs.getBigDecimal("R22_QUA_IV_INR"));
+
+			obj.setR22_cumm_inr(rs.getBigDecimal("R22_CUMM_INR"));
+			obj.setR22_cumm_bwp(rs.getBigDecimal("R22_CUMM_BWP"));
+
+			obj.setR23_product(rs.getString("R23_PRODUCT"));
+			obj.setR23_qua_i_lc(rs.getBigDecimal("R23_QUA_I_LC"));
+			obj.setR23_qua_i_qar(rs.getBigDecimal("R23_QUA_I_QAR"));
+			obj.setR23_qua_i_inr(rs.getBigDecimal("R23_QUA_I_INR"));
+			obj.setR23_qua_ii_lc(rs.getBigDecimal("R23_QUA_II_LC"));
+			obj.setR23_qua_ii_qar(rs.getBigDecimal("R23_QUA_II_QAR"));
+			obj.setR23_qua_ii_inr(rs.getBigDecimal("R23_QUA_II_INR"));
+			obj.setR23_qua_iii_lc(rs.getBigDecimal("R23_QUA_III_LC"));
+			obj.setR23_qua_iii_qar(rs.getBigDecimal("R23_QUA_III_QAR"));
+			obj.setR23_qua_iii_inr(rs.getBigDecimal("R23_QUA_III_INR"));
+			obj.setR23_qua_iv_lc(rs.getBigDecimal("R23_QUA_IV_LC"));
+			obj.setR23_qua_iv_qar(rs.getBigDecimal("R23_QUA_IV_QAR"));
+			obj.setR23_qua_iv_inr(rs.getBigDecimal("R23_QUA_IV_INR"));
+			obj.setR23_cumm_inr(rs.getBigDecimal("R23_CUMM_INR"));
+			obj.setR23_cumm_bwp(rs.getBigDecimal("R23_CUMM_BWP"));
+
+			obj.setR24_product(rs.getString("R24_PRODUCT"));
+			obj.setR24_qua_i_lc(rs.getBigDecimal("R24_QUA_I_LC"));
+			obj.setR24_qua_i_qar(rs.getBigDecimal("R24_QUA_I_QAR"));
+			obj.setR24_qua_i_inr(rs.getBigDecimal("R24_QUA_I_INR"));
+			obj.setR24_qua_ii_lc(rs.getBigDecimal("R24_QUA_II_LC"));
+			obj.setR24_qua_ii_qar(rs.getBigDecimal("R24_QUA_II_QAR"));
+			obj.setR24_qua_ii_inr(rs.getBigDecimal("R24_QUA_II_INR"));
+			obj.setR24_qua_iii_lc(rs.getBigDecimal("R24_QUA_III_LC"));
+			obj.setR24_qua_iii_qar(rs.getBigDecimal("R24_QUA_III_QAR"));
+			obj.setR24_qua_iii_inr(rs.getBigDecimal("R24_QUA_III_INR"));
+			obj.setR24_qua_iv_lc(rs.getBigDecimal("R24_QUA_IV_LC"));
+			obj.setR24_qua_iv_qar(rs.getBigDecimal("R24_QUA_IV_QAR"));
+			obj.setR24_qua_iv_inr(rs.getBigDecimal("R24_QUA_IV_INR"));
+			obj.setR24_cumm_inr(rs.getBigDecimal("R24_CUMM_INR"));
+			obj.setR24_cumm_bwp(rs.getBigDecimal("R24_CUMM_BWP"));
+
+			obj.setR25_product(rs.getString("R25_PRODUCT"));
+			obj.setR25_qua_i_lc(rs.getBigDecimal("R25_QUA_I_LC"));
+			obj.setR25_qua_i_qar(rs.getBigDecimal("R25_QUA_I_QAR"));
+			obj.setR25_qua_i_inr(rs.getBigDecimal("R25_QUA_I_INR"));
+			obj.setR25_qua_ii_lc(rs.getBigDecimal("R25_QUA_II_LC"));
+			obj.setR25_qua_ii_qar(rs.getBigDecimal("R25_QUA_II_QAR"));
+			obj.setR25_qua_ii_inr(rs.getBigDecimal("R25_QUA_II_INR"));
+			obj.setR25_qua_iii_lc(rs.getBigDecimal("R25_QUA_III_LC"));
+			obj.setR25_qua_iii_qar(rs.getBigDecimal("R25_QUA_III_QAR"));
+			obj.setR25_qua_iii_inr(rs.getBigDecimal("R25_QUA_III_INR"));
+			obj.setR25_qua_iv_lc(rs.getBigDecimal("R25_QUA_IV_LC"));
+			obj.setR25_qua_iv_qar(rs.getBigDecimal("R25_QUA_IV_QAR"));
+			obj.setR25_qua_iv_inr(rs.getBigDecimal("R25_QUA_IV_INR"));
+			obj.setR25_cumm_inr(rs.getBigDecimal("R25_CUMM_INR"));
+			obj.setR25_cumm_bwp(rs.getBigDecimal("R25_CUMM_BWP"));
+
+// R26
+			obj.setR26_product(rs.getString("R26_PRODUCT"));
+			obj.setR26_qua_i_lc(rs.getBigDecimal("R26_QUA_I_LC"));
+			obj.setR26_qua_i_qar(rs.getBigDecimal("R26_QUA_I_QAR"));
+			obj.setR26_qua_i_inr(rs.getBigDecimal("R26_QUA_I_INR"));
+			obj.setR26_qua_ii_lc(rs.getBigDecimal("R26_QUA_II_LC"));
+			obj.setR26_qua_ii_qar(rs.getBigDecimal("R26_QUA_II_QAR"));
+			obj.setR26_qua_ii_inr(rs.getBigDecimal("R26_QUA_II_INR"));
+			obj.setR26_qua_iii_lc(rs.getBigDecimal("R26_QUA_III_LC"));
+			obj.setR26_qua_iii_qar(rs.getBigDecimal("R26_QUA_III_QAR"));
+			obj.setR26_qua_iii_inr(rs.getBigDecimal("R26_QUA_III_INR"));
+			obj.setR26_qua_iv_lc(rs.getBigDecimal("R26_QUA_IV_LC"));
+			obj.setR26_qua_iv_qar(rs.getBigDecimal("R26_QUA_IV_QAR"));
+			obj.setR26_qua_iv_inr(rs.getBigDecimal("R26_QUA_IV_INR"));
+			obj.setR26_cumm_inr(rs.getBigDecimal("R26_CUMM_INR"));
+			obj.setR26_cumm_bwp(rs.getBigDecimal("R26_CUMM_BWP"));
+
+// R27
+			obj.setR27_product(rs.getString("R27_PRODUCT"));
+			obj.setR27_qua_i_lc(rs.getBigDecimal("R27_QUA_I_LC"));
+			obj.setR27_qua_i_qar(rs.getBigDecimal("R27_QUA_I_QAR"));
+			obj.setR27_qua_i_inr(rs.getBigDecimal("R27_QUA_I_INR"));
+			obj.setR27_qua_ii_lc(rs.getBigDecimal("R27_QUA_II_LC"));
+			obj.setR27_qua_ii_qar(rs.getBigDecimal("R27_QUA_II_QAR"));
+			obj.setR27_qua_ii_inr(rs.getBigDecimal("R27_QUA_II_INR"));
+			obj.setR27_qua_iii_lc(rs.getBigDecimal("R27_QUA_III_LC"));
+			obj.setR27_qua_iii_qar(rs.getBigDecimal("R27_QUA_III_QAR"));
+			obj.setR27_qua_iii_inr(rs.getBigDecimal("R27_QUA_III_INR"));
+			obj.setR27_qua_iv_lc(rs.getBigDecimal("R27_QUA_IV_LC"));
+			obj.setR27_qua_iv_qar(rs.getBigDecimal("R27_QUA_IV_QAR"));
+			obj.setR27_qua_iv_inr(rs.getBigDecimal("R27_QUA_IV_INR"));
+			obj.setR27_cumm_inr(rs.getBigDecimal("R27_CUMM_INR"));
+			obj.setR27_cumm_bwp(rs.getBigDecimal("R27_CUMM_BWP"));
+
+// R28
+			obj.setR28_product(rs.getString("R28_PRODUCT"));
+			obj.setR28_qua_i_lc(rs.getBigDecimal("R28_QUA_I_LC"));
+			obj.setR28_qua_i_qar(rs.getBigDecimal("R28_QUA_I_QAR"));
+			obj.setR28_qua_i_inr(rs.getBigDecimal("R28_QUA_I_INR"));
+			obj.setR28_qua_ii_lc(rs.getBigDecimal("R28_QUA_II_LC"));
+			obj.setR28_qua_ii_qar(rs.getBigDecimal("R28_QUA_II_QAR"));
+			obj.setR28_qua_ii_inr(rs.getBigDecimal("R28_QUA_II_INR"));
+			obj.setR28_qua_iii_lc(rs.getBigDecimal("R28_QUA_III_LC"));
+			obj.setR28_qua_iii_qar(rs.getBigDecimal("R28_QUA_III_QAR"));
+			obj.setR28_qua_iii_inr(rs.getBigDecimal("R28_QUA_III_INR"));
+			obj.setR28_qua_iv_lc(rs.getBigDecimal("R28_QUA_IV_LC"));
+			obj.setR28_qua_iv_qar(rs.getBigDecimal("R28_QUA_IV_QAR"));
+			obj.setR28_qua_iv_inr(rs.getBigDecimal("R28_QUA_IV_INR"));
+			obj.setR28_cumm_inr(rs.getBigDecimal("R28_CUMM_INR"));
+			obj.setR28_cumm_bwp(rs.getBigDecimal("R28_CUMM_BWP"));
+
+// R29
+			obj.setR29_product(rs.getString("R29_PRODUCT"));
+			obj.setR29_qua_i_lc(rs.getBigDecimal("R29_QUA_I_LC"));
+			obj.setR29_qua_i_qar(rs.getBigDecimal("R29_QUA_I_QAR"));
+			obj.setR29_qua_i_inr(rs.getBigDecimal("R29_QUA_I_INR"));
+			obj.setR29_qua_ii_lc(rs.getBigDecimal("R29_QUA_II_LC"));
+			obj.setR29_qua_ii_qar(rs.getBigDecimal("R29_QUA_II_QAR"));
+			obj.setR29_qua_ii_inr(rs.getBigDecimal("R29_QUA_II_INR"));
+			obj.setR29_qua_iii_lc(rs.getBigDecimal("R29_QUA_III_LC"));
+			obj.setR29_qua_iii_qar(rs.getBigDecimal("R29_QUA_III_QAR"));
+			obj.setR29_qua_iii_inr(rs.getBigDecimal("R29_QUA_III_INR"));
+			obj.setR29_qua_iv_lc(rs.getBigDecimal("R29_QUA_IV_LC"));
+			obj.setR29_qua_iv_qar(rs.getBigDecimal("R29_QUA_IV_QAR"));
+			obj.setR29_qua_iv_inr(rs.getBigDecimal("R29_QUA_IV_INR"));
+			obj.setR29_cumm_inr(rs.getBigDecimal("R29_CUMM_INR"));
+			obj.setR29_cumm_bwp(rs.getBigDecimal("R29_CUMM_BWP"));
+
+// R30
+			obj.setR30_product(rs.getString("R30_PRODUCT"));
+			obj.setR30_qua_i_lc(rs.getBigDecimal("R30_QUA_I_LC"));
+			obj.setR30_qua_i_qar(rs.getBigDecimal("R30_QUA_I_QAR"));
+			obj.setR30_qua_i_inr(rs.getBigDecimal("R30_QUA_I_INR"));
+			obj.setR30_qua_ii_lc(rs.getBigDecimal("R30_QUA_II_LC"));
+			obj.setR30_qua_ii_qar(rs.getBigDecimal("R30_QUA_II_QAR"));
+			obj.setR30_qua_ii_inr(rs.getBigDecimal("R30_QUA_II_INR"));
+			obj.setR30_qua_iii_lc(rs.getBigDecimal("R30_QUA_III_LC"));
+			obj.setR30_qua_iii_qar(rs.getBigDecimal("R30_QUA_III_QAR"));
+			obj.setR30_qua_iii_inr(rs.getBigDecimal("R30_QUA_III_INR"));
+			obj.setR30_qua_iv_lc(rs.getBigDecimal("R30_QUA_IV_LC"));
+			obj.setR30_qua_iv_qar(rs.getBigDecimal("R30_QUA_IV_QAR"));
+			obj.setR30_qua_iv_inr(rs.getBigDecimal("R30_QUA_IV_INR"));
+			obj.setR30_cumm_inr(rs.getBigDecimal("R30_CUMM_INR"));
+			obj.setR30_cumm_bwp(rs.getBigDecimal("R30_CUMM_BWP"));
+
+// R31
+			obj.setR31_product(rs.getString("R31_PRODUCT"));
+			obj.setR31_qua_i_lc(rs.getBigDecimal("R31_QUA_I_LC"));
+			obj.setR31_qua_i_qar(rs.getBigDecimal("R31_QUA_I_QAR"));
+			obj.setR31_qua_i_inr(rs.getBigDecimal("R31_QUA_I_INR"));
+			obj.setR31_qua_ii_lc(rs.getBigDecimal("R31_QUA_II_LC"));
+			obj.setR31_qua_ii_qar(rs.getBigDecimal("R31_QUA_II_QAR"));
+			obj.setR31_qua_ii_inr(rs.getBigDecimal("R31_QUA_II_INR"));
+			obj.setR31_qua_iii_lc(rs.getBigDecimal("R31_QUA_III_LC"));
+			obj.setR31_qua_iii_qar(rs.getBigDecimal("R31_QUA_III_QAR"));
+			obj.setR31_qua_iii_inr(rs.getBigDecimal("R31_QUA_III_INR"));
+			obj.setR31_qua_iv_lc(rs.getBigDecimal("R31_QUA_IV_LC"));
+			obj.setR31_qua_iv_qar(rs.getBigDecimal("R31_QUA_IV_QAR"));
+			obj.setR31_qua_iv_inr(rs.getBigDecimal("R31_QUA_IV_INR"));
+			obj.setR31_cumm_inr(rs.getBigDecimal("R31_CUMM_INR"));
+			obj.setR31_cumm_bwp(rs.getBigDecimal("R31_CUMM_BWP"));
+
+// R32
+			obj.setR32_product(rs.getString("R32_PRODUCT"));
+			obj.setR32_qua_i_lc(rs.getBigDecimal("R32_QUA_I_LC"));
+			obj.setR32_qua_i_qar(rs.getBigDecimal("R32_QUA_I_QAR"));
+			obj.setR32_qua_i_inr(rs.getBigDecimal("R32_QUA_I_INR"));
+			obj.setR32_qua_ii_lc(rs.getBigDecimal("R32_QUA_II_LC"));
+			obj.setR32_qua_ii_qar(rs.getBigDecimal("R32_QUA_II_QAR"));
+			obj.setR32_qua_ii_inr(rs.getBigDecimal("R32_QUA_II_INR"));
+			obj.setR32_qua_iii_lc(rs.getBigDecimal("R32_QUA_III_LC"));
+			obj.setR32_qua_iii_qar(rs.getBigDecimal("R32_QUA_III_QAR"));
+			obj.setR32_qua_iii_inr(rs.getBigDecimal("R32_QUA_III_INR"));
+			obj.setR32_qua_iv_lc(rs.getBigDecimal("R32_QUA_IV_LC"));
+			obj.setR32_qua_iv_qar(rs.getBigDecimal("R32_QUA_IV_QAR"));
+			obj.setR32_qua_iv_inr(rs.getBigDecimal("R32_QUA_IV_INR"));
+			obj.setR32_cumm_inr(rs.getBigDecimal("R32_CUMM_INR"));
+			obj.setR32_cumm_bwp(rs.getBigDecimal("R32_CUMM_BWP"));
+
+// R33
+			obj.setR33_product(rs.getString("R33_PRODUCT"));
+			obj.setR33_qua_i_lc(rs.getBigDecimal("R33_QUA_I_LC"));
+			obj.setR33_qua_i_qar(rs.getBigDecimal("R33_QUA_I_QAR"));
+			obj.setR33_qua_i_inr(rs.getBigDecimal("R33_QUA_I_INR"));
+			obj.setR33_qua_ii_lc(rs.getBigDecimal("R33_QUA_II_LC"));
+			obj.setR33_qua_ii_qar(rs.getBigDecimal("R33_QUA_II_QAR"));
+			obj.setR33_qua_ii_inr(rs.getBigDecimal("R33_QUA_II_INR"));
+			obj.setR33_qua_iii_lc(rs.getBigDecimal("R33_QUA_III_LC"));
+			obj.setR33_qua_iii_qar(rs.getBigDecimal("R33_QUA_III_QAR"));
+			obj.setR33_qua_iii_inr(rs.getBigDecimal("R33_QUA_III_INR"));
+			obj.setR33_qua_iv_lc(rs.getBigDecimal("R33_QUA_IV_LC"));
+			obj.setR33_qua_iv_qar(rs.getBigDecimal("R33_QUA_IV_QAR"));
+			obj.setR33_qua_iv_inr(rs.getBigDecimal("R33_QUA_IV_INR"));
+			obj.setR33_cumm_inr(rs.getBigDecimal("R33_CUMM_INR"));
+			obj.setR33_cumm_bwp(rs.getBigDecimal("R33_CUMM_BWP"));
+
+// R34
+			obj.setR34_product(rs.getString("R34_PRODUCT"));
+			obj.setR34_qua_i_lc(rs.getBigDecimal("R34_QUA_I_LC"));
+			obj.setR34_qua_i_qar(rs.getBigDecimal("R34_QUA_I_QAR"));
+			obj.setR34_qua_i_inr(rs.getBigDecimal("R34_QUA_I_INR"));
+			obj.setR34_qua_ii_lc(rs.getBigDecimal("R34_QUA_II_LC"));
+			obj.setR34_qua_ii_qar(rs.getBigDecimal("R34_QUA_II_QAR"));
+			obj.setR34_qua_ii_inr(rs.getBigDecimal("R34_QUA_II_INR"));
+			obj.setR34_qua_iii_lc(rs.getBigDecimal("R34_QUA_III_LC"));
+			obj.setR34_qua_iii_qar(rs.getBigDecimal("R34_QUA_III_QAR"));
+			obj.setR34_qua_iii_inr(rs.getBigDecimal("R34_QUA_III_INR"));
+			obj.setR34_qua_iv_lc(rs.getBigDecimal("R34_QUA_IV_LC"));
+			obj.setR34_qua_iv_qar(rs.getBigDecimal("R34_QUA_IV_QAR"));
+			obj.setR34_qua_iv_inr(rs.getBigDecimal("R34_QUA_IV_INR"));
+			obj.setR34_cumm_inr(rs.getBigDecimal("R34_CUMM_INR"));
+			obj.setR34_cumm_bwp(rs.getBigDecimal("R34_CUMM_BWP"));
+
+// R35
+			obj.setR35_product(rs.getString("R35_PRODUCT"));
+			obj.setR35_qua_i_lc(rs.getBigDecimal("R35_QUA_I_LC"));
+			obj.setR35_qua_i_qar(rs.getBigDecimal("R35_QUA_I_QAR"));
+			obj.setR35_qua_i_inr(rs.getBigDecimal("R35_QUA_I_INR"));
+			obj.setR35_qua_ii_lc(rs.getBigDecimal("R35_QUA_II_LC"));
+			obj.setR35_qua_ii_qar(rs.getBigDecimal("R35_QUA_II_QAR"));
+			obj.setR35_qua_ii_inr(rs.getBigDecimal("R35_QUA_II_INR"));
+			obj.setR35_qua_iii_lc(rs.getBigDecimal("R35_QUA_III_LC"));
+			obj.setR35_qua_iii_qar(rs.getBigDecimal("R35_QUA_III_QAR"));
+			obj.setR35_qua_iii_inr(rs.getBigDecimal("R35_QUA_III_INR"));
+			obj.setR35_qua_iv_lc(rs.getBigDecimal("R35_QUA_IV_LC"));
+			obj.setR35_qua_iv_qar(rs.getBigDecimal("R35_QUA_IV_QAR"));
+			obj.setR35_qua_iv_inr(rs.getBigDecimal("R35_QUA_IV_INR"));
+			obj.setR35_cumm_inr(rs.getBigDecimal("R35_CUMM_INR"));
+			obj.setR35_cumm_bwp(rs.getBigDecimal("R35_CUMM_BWP"));
+
+// R36
+			obj.setR36_product(rs.getString("R36_PRODUCT"));
+			obj.setR36_qua_i_lc(rs.getBigDecimal("R36_QUA_I_LC"));
+			obj.setR36_qua_i_qar(rs.getBigDecimal("R36_QUA_I_QAR"));
+			obj.setR36_qua_i_inr(rs.getBigDecimal("R36_QUA_I_INR"));
+			obj.setR36_qua_ii_lc(rs.getBigDecimal("R36_QUA_II_LC"));
+			obj.setR36_qua_ii_qar(rs.getBigDecimal("R36_QUA_II_QAR"));
+			obj.setR36_qua_ii_inr(rs.getBigDecimal("R36_QUA_II_INR"));
+			obj.setR36_qua_iii_lc(rs.getBigDecimal("R36_QUA_III_LC"));
+			obj.setR36_qua_iii_qar(rs.getBigDecimal("R36_QUA_III_QAR"));
+			obj.setR36_qua_iii_inr(rs.getBigDecimal("R36_QUA_III_INR"));
+			obj.setR36_qua_iv_lc(rs.getBigDecimal("R36_QUA_IV_LC"));
+			obj.setR36_qua_iv_qar(rs.getBigDecimal("R36_QUA_IV_QAR"));
+			obj.setR36_qua_iv_inr(rs.getBigDecimal("R36_QUA_IV_INR"));
+			obj.setR36_cumm_inr(rs.getBigDecimal("R36_CUMM_INR"));
+			obj.setR36_cumm_bwp(rs.getBigDecimal("R36_CUMM_BWP"));
+
+// R37
+			obj.setR37_product(rs.getString("R37_PRODUCT"));
+			obj.setR37_qua_i_lc(rs.getBigDecimal("R37_QUA_I_LC"));
+			obj.setR37_qua_i_qar(rs.getBigDecimal("R37_QUA_I_QAR"));
+			obj.setR37_qua_i_inr(rs.getBigDecimal("R37_QUA_I_INR"));
+			obj.setR37_qua_ii_lc(rs.getBigDecimal("R37_QUA_II_LC"));
+			obj.setR37_qua_ii_qar(rs.getBigDecimal("R37_QUA_II_QAR"));
+			obj.setR37_qua_ii_inr(rs.getBigDecimal("R37_QUA_II_INR"));
+			obj.setR37_qua_iii_lc(rs.getBigDecimal("R37_QUA_III_LC"));
+			obj.setR37_qua_iii_qar(rs.getBigDecimal("R37_QUA_III_QAR"));
+			obj.setR37_qua_iii_inr(rs.getBigDecimal("R37_QUA_III_INR"));
+			obj.setR37_qua_iv_lc(rs.getBigDecimal("R37_QUA_IV_LC"));
+			obj.setR37_qua_iv_qar(rs.getBigDecimal("R37_QUA_IV_QAR"));
+			obj.setR37_qua_iv_inr(rs.getBigDecimal("R37_QUA_IV_INR"));
+			obj.setR37_cumm_inr(rs.getBigDecimal("R37_CUMM_INR"));
+			obj.setR37_cumm_bwp(rs.getBigDecimal("R37_CUMM_BWP"));
+
+// R38
+			obj.setR38_product(rs.getString("R38_PRODUCT"));
+			obj.setR38_qua_i_lc(rs.getBigDecimal("R38_QUA_I_LC"));
+			obj.setR38_qua_i_qar(rs.getBigDecimal("R38_QUA_I_QAR"));
+			obj.setR38_qua_i_inr(rs.getBigDecimal("R38_QUA_I_INR"));
+			obj.setR38_qua_ii_lc(rs.getBigDecimal("R38_QUA_II_LC"));
+			obj.setR38_qua_ii_qar(rs.getBigDecimal("R38_QUA_II_QAR"));
+			obj.setR38_qua_ii_inr(rs.getBigDecimal("R38_QUA_II_INR"));
+			obj.setR38_qua_iii_lc(rs.getBigDecimal("R38_QUA_III_LC"));
+			obj.setR38_qua_iii_qar(rs.getBigDecimal("R38_QUA_III_QAR"));
+			obj.setR38_qua_iii_inr(rs.getBigDecimal("R38_QUA_III_INR"));
+			obj.setR38_qua_iv_lc(rs.getBigDecimal("R38_QUA_IV_LC"));
+			obj.setR38_qua_iv_qar(rs.getBigDecimal("R38_QUA_IV_QAR"));
+			obj.setR38_qua_iv_inr(rs.getBigDecimal("R38_QUA_IV_INR"));
+			obj.setR38_cumm_inr(rs.getBigDecimal("R38_CUMM_INR"));
+			obj.setR38_cumm_bwp(rs.getBigDecimal("R38_CUMM_BWP"));
+
+// R39
+			obj.setR39_product(rs.getString("R39_PRODUCT"));
+			obj.setR39_qua_i_lc(rs.getBigDecimal("R39_QUA_I_LC"));
+			obj.setR39_qua_i_qar(rs.getBigDecimal("R39_QUA_I_QAR"));
+			obj.setR39_qua_i_inr(rs.getBigDecimal("R39_QUA_I_INR"));
+			obj.setR39_qua_ii_lc(rs.getBigDecimal("R39_QUA_II_LC"));
+			obj.setR39_qua_ii_qar(rs.getBigDecimal("R39_QUA_II_QAR"));
+			obj.setR39_qua_ii_inr(rs.getBigDecimal("R39_QUA_II_INR"));
+			obj.setR39_qua_iii_lc(rs.getBigDecimal("R39_QUA_III_LC"));
+			obj.setR39_qua_iii_qar(rs.getBigDecimal("R39_QUA_III_QAR"));
+			obj.setR39_qua_iii_inr(rs.getBigDecimal("R39_QUA_III_INR"));
+			obj.setR39_qua_iv_lc(rs.getBigDecimal("R39_QUA_IV_LC"));
+			obj.setR39_qua_iv_qar(rs.getBigDecimal("R39_QUA_IV_QAR"));
+			obj.setR39_qua_iv_inr(rs.getBigDecimal("R39_QUA_IV_INR"));
+			obj.setR39_cumm_inr(rs.getBigDecimal("R39_CUMM_INR"));
+			obj.setR39_cumm_bwp(rs.getBigDecimal("R39_CUMM_BWP"));
+
+// R40
+			obj.setR40_product(rs.getString("R40_PRODUCT"));
+			obj.setR40_qua_i_lc(rs.getBigDecimal("R40_QUA_I_LC"));
+			obj.setR40_qua_i_qar(rs.getBigDecimal("R40_QUA_I_QAR"));
+			obj.setR40_qua_i_inr(rs.getBigDecimal("R40_QUA_I_INR"));
+			obj.setR40_qua_ii_lc(rs.getBigDecimal("R40_QUA_II_LC"));
+			obj.setR40_qua_ii_qar(rs.getBigDecimal("R40_QUA_II_QAR"));
+			obj.setR40_qua_ii_inr(rs.getBigDecimal("R40_QUA_II_INR"));
+			obj.setR40_qua_iii_lc(rs.getBigDecimal("R40_QUA_III_LC"));
+			obj.setR40_qua_iii_qar(rs.getBigDecimal("R40_QUA_III_QAR"));
+			obj.setR40_qua_iii_inr(rs.getBigDecimal("R40_QUA_III_INR"));
+			obj.setR40_qua_iv_lc(rs.getBigDecimal("R40_QUA_IV_LC"));
+			obj.setR40_qua_iv_qar(rs.getBigDecimal("R40_QUA_IV_QAR"));
+			obj.setR40_qua_iv_inr(rs.getBigDecimal("R40_QUA_IV_INR"));
+			obj.setR40_cumm_inr(rs.getBigDecimal("R40_CUMM_INR"));
+			obj.setR40_cumm_bwp(rs.getBigDecimal("R40_CUMM_BWP"));
+
+// R41
+			obj.setR41_product(rs.getString("R41_PRODUCT"));
+			obj.setR41_qua_i_lc(rs.getBigDecimal("R41_QUA_I_LC"));
+			obj.setR41_qua_i_qar(rs.getBigDecimal("R41_QUA_I_QAR"));
+			obj.setR41_qua_i_inr(rs.getBigDecimal("R41_QUA_I_INR"));
+			obj.setR41_qua_ii_lc(rs.getBigDecimal("R41_QUA_II_LC"));
+			obj.setR41_qua_ii_qar(rs.getBigDecimal("R41_QUA_II_QAR"));
+			obj.setR41_qua_ii_inr(rs.getBigDecimal("R41_QUA_II_INR"));
+			obj.setR41_qua_iii_lc(rs.getBigDecimal("R41_QUA_III_LC"));
+			obj.setR41_qua_iii_qar(rs.getBigDecimal("R41_QUA_III_QAR"));
+			obj.setR41_qua_iii_inr(rs.getBigDecimal("R41_QUA_III_INR"));
+			obj.setR41_qua_iv_lc(rs.getBigDecimal("R41_QUA_IV_LC"));
+			obj.setR41_qua_iv_qar(rs.getBigDecimal("R41_QUA_IV_QAR"));
+			obj.setR41_qua_iv_inr(rs.getBigDecimal("R41_QUA_IV_INR"));
+			obj.setR41_cumm_inr(rs.getBigDecimal("R41_CUMM_INR"));
+			obj.setR41_cumm_bwp(rs.getBigDecimal("R41_CUMM_BWP"));
+
+// R42
+			obj.setR42_product(rs.getString("R42_PRODUCT"));
+			obj.setR42_qua_i_lc(rs.getBigDecimal("R42_QUA_I_LC"));
+			obj.setR42_qua_i_qar(rs.getBigDecimal("R42_QUA_I_QAR"));
+			obj.setR42_qua_i_inr(rs.getBigDecimal("R42_QUA_I_INR"));
+			obj.setR42_qua_ii_lc(rs.getBigDecimal("R42_QUA_II_LC"));
+			obj.setR42_qua_ii_qar(rs.getBigDecimal("R42_QUA_II_QAR"));
+			obj.setR42_qua_ii_inr(rs.getBigDecimal("R42_QUA_II_INR"));
+			obj.setR42_qua_iii_lc(rs.getBigDecimal("R42_QUA_III_LC"));
+			obj.setR42_qua_iii_qar(rs.getBigDecimal("R42_QUA_III_QAR"));
+			obj.setR42_qua_iii_inr(rs.getBigDecimal("R42_QUA_III_INR"));
+			obj.setR42_qua_iv_lc(rs.getBigDecimal("R42_QUA_IV_LC"));
+			obj.setR42_qua_iv_qar(rs.getBigDecimal("R42_QUA_IV_QAR"));
+			obj.setR42_qua_iv_inr(rs.getBigDecimal("R42_QUA_IV_INR"));
+			obj.setR42_cumm_inr(rs.getBigDecimal("R42_CUMM_INR"));
+			obj.setR42_cumm_bwp(rs.getBigDecimal("R42_CUMM_BWP"));
+
+// R43
+			obj.setR43_product(rs.getString("R43_PRODUCT"));
+			obj.setR43_qua_i_lc(rs.getBigDecimal("R43_QUA_I_LC"));
+			obj.setR43_qua_i_qar(rs.getBigDecimal("R43_QUA_I_QAR"));
+			obj.setR43_qua_i_inr(rs.getBigDecimal("R43_QUA_I_INR"));
+			obj.setR43_qua_ii_lc(rs.getBigDecimal("R43_QUA_II_LC"));
+			obj.setR43_qua_ii_qar(rs.getBigDecimal("R43_QUA_II_QAR"));
+			obj.setR43_qua_ii_inr(rs.getBigDecimal("R43_QUA_II_INR"));
+			obj.setR43_qua_iii_lc(rs.getBigDecimal("R43_QUA_III_LC"));
+			obj.setR43_qua_iii_qar(rs.getBigDecimal("R43_QUA_III_QAR"));
+			obj.setR43_qua_iii_inr(rs.getBigDecimal("R43_QUA_III_INR"));
+			obj.setR43_qua_iv_lc(rs.getBigDecimal("R43_QUA_IV_LC"));
+			obj.setR43_qua_iv_qar(rs.getBigDecimal("R43_QUA_IV_QAR"));
+			obj.setR43_qua_iv_inr(rs.getBigDecimal("R43_QUA_IV_INR"));
+			obj.setR43_cumm_inr(rs.getBigDecimal("R43_CUMM_INR"));
+			obj.setR43_cumm_bwp(rs.getBigDecimal("R43_CUMM_BWP"));
+
+// R44
+			obj.setR44_product(rs.getString("R44_PRODUCT"));
+			obj.setR44_qua_i_lc(rs.getBigDecimal("R44_QUA_I_LC"));
+			obj.setR44_qua_i_qar(rs.getBigDecimal("R44_QUA_I_QAR"));
+			obj.setR44_qua_i_inr(rs.getBigDecimal("R44_QUA_I_INR"));
+			obj.setR44_qua_ii_lc(rs.getBigDecimal("R44_QUA_II_LC"));
+			obj.setR44_qua_ii_qar(rs.getBigDecimal("R44_QUA_II_QAR"));
+			obj.setR44_qua_ii_inr(rs.getBigDecimal("R44_QUA_II_INR"));
+			obj.setR44_qua_iii_lc(rs.getBigDecimal("R44_QUA_III_LC"));
+			obj.setR44_qua_iii_qar(rs.getBigDecimal("R44_QUA_III_QAR"));
+			obj.setR44_qua_iii_inr(rs.getBigDecimal("R44_QUA_III_INR"));
+			obj.setR44_qua_iv_lc(rs.getBigDecimal("R44_QUA_IV_LC"));
+			obj.setR44_qua_iv_qar(rs.getBigDecimal("R44_QUA_IV_QAR"));
+			obj.setR44_qua_iv_inr(rs.getBigDecimal("R44_QUA_IV_INR"));
+			obj.setR44_cumm_inr(rs.getBigDecimal("R44_CUMM_INR"));
+			obj.setR44_cumm_bwp(rs.getBigDecimal("R44_CUMM_BWP"));
+
+// R45
+			obj.setR45_product(rs.getString("R45_PRODUCT"));
+			obj.setR45_qua_i_lc(rs.getBigDecimal("R45_QUA_I_LC"));
+			obj.setR45_qua_i_qar(rs.getBigDecimal("R45_QUA_I_QAR"));
+			obj.setR45_qua_i_inr(rs.getBigDecimal("R45_QUA_I_INR"));
+			obj.setR45_qua_ii_lc(rs.getBigDecimal("R45_QUA_II_LC"));
+			obj.setR45_qua_ii_qar(rs.getBigDecimal("R45_QUA_II_QAR"));
+			obj.setR45_qua_ii_inr(rs.getBigDecimal("R45_QUA_II_INR"));
+			obj.setR45_qua_iii_lc(rs.getBigDecimal("R45_QUA_III_LC"));
+			obj.setR45_qua_iii_qar(rs.getBigDecimal("R45_QUA_III_QAR"));
+			obj.setR45_qua_iii_inr(rs.getBigDecimal("R45_QUA_III_INR"));
+			obj.setR45_qua_iv_lc(rs.getBigDecimal("R45_QUA_IV_LC"));
+			obj.setR45_qua_iv_qar(rs.getBigDecimal("R45_QUA_IV_QAR"));
+			obj.setR45_qua_iv_inr(rs.getBigDecimal("R45_QUA_IV_INR"));
+			obj.setR45_cumm_inr(rs.getBigDecimal("R45_CUMM_INR"));
+			obj.setR45_cumm_bwp(rs.getBigDecimal("R45_CUMM_BWP"));
+
+// R46
+			obj.setR46_product(rs.getString("R46_PRODUCT"));
+			obj.setR46_qua_i_lc(rs.getBigDecimal("R46_QUA_I_LC"));
+			obj.setR46_qua_i_qar(rs.getBigDecimal("R46_QUA_I_QAR"));
+			obj.setR46_qua_i_inr(rs.getBigDecimal("R46_QUA_I_INR"));
+			obj.setR46_qua_ii_lc(rs.getBigDecimal("R46_QUA_II_LC"));
+			obj.setR46_qua_ii_qar(rs.getBigDecimal("R46_QUA_II_QAR"));
+			obj.setR46_qua_ii_inr(rs.getBigDecimal("R46_QUA_II_INR"));
+			obj.setR46_qua_iii_lc(rs.getBigDecimal("R46_QUA_III_LC"));
+			obj.setR46_qua_iii_qar(rs.getBigDecimal("R46_QUA_III_QAR"));
+			obj.setR46_qua_iii_inr(rs.getBigDecimal("R46_QUA_III_INR"));
+			obj.setR46_qua_iv_lc(rs.getBigDecimal("R46_QUA_IV_LC"));
+			obj.setR46_qua_iv_qar(rs.getBigDecimal("R46_QUA_IV_QAR"));
+			obj.setR46_qua_iv_inr(rs.getBigDecimal("R46_QUA_IV_INR"));
+			obj.setR46_cumm_inr(rs.getBigDecimal("R46_CUMM_INR"));
+			obj.setR46_cumm_bwp(rs.getBigDecimal("R46_CUMM_BWP"));
+
+// R47
+			obj.setR47_product(rs.getString("R47_PRODUCT"));
+			obj.setR47_qua_i_lc(rs.getBigDecimal("R47_QUA_I_LC"));
+			obj.setR47_qua_i_qar(rs.getBigDecimal("R47_QUA_I_QAR"));
+			obj.setR47_qua_i_inr(rs.getBigDecimal("R47_QUA_I_INR"));
+			obj.setR47_qua_ii_lc(rs.getBigDecimal("R47_QUA_II_LC"));
+			obj.setR47_qua_ii_qar(rs.getBigDecimal("R47_QUA_II_QAR"));
+			obj.setR47_qua_ii_inr(rs.getBigDecimal("R47_QUA_II_INR"));
+			obj.setR47_qua_iii_lc(rs.getBigDecimal("R47_QUA_III_LC"));
+			obj.setR47_qua_iii_qar(rs.getBigDecimal("R47_QUA_III_QAR"));
+			obj.setR47_qua_iii_inr(rs.getBigDecimal("R47_QUA_III_INR"));
+			obj.setR47_qua_iv_lc(rs.getBigDecimal("R47_QUA_IV_LC"));
+			obj.setR47_qua_iv_qar(rs.getBigDecimal("R47_QUA_IV_QAR"));
+			obj.setR47_qua_iv_inr(rs.getBigDecimal("R47_QUA_IV_INR"));
+			obj.setR47_cumm_inr(rs.getBigDecimal("R47_CUMM_INR"));
+			obj.setR47_cumm_bwp(rs.getBigDecimal("R47_CUMM_BWP"));
+
+// R48
+			obj.setR48_product(rs.getString("R48_PRODUCT"));
+			obj.setR48_qua_i_lc(rs.getBigDecimal("R48_QUA_I_LC"));
+			obj.setR48_qua_i_qar(rs.getBigDecimal("R48_QUA_I_QAR"));
+			obj.setR48_qua_i_inr(rs.getBigDecimal("R48_QUA_I_INR"));
+			obj.setR48_qua_ii_lc(rs.getBigDecimal("R48_QUA_II_LC"));
+			obj.setR48_qua_ii_qar(rs.getBigDecimal("R48_QUA_II_QAR"));
+			obj.setR48_qua_ii_inr(rs.getBigDecimal("R48_QUA_II_INR"));
+			obj.setR48_qua_iii_lc(rs.getBigDecimal("R48_QUA_III_LC"));
+			obj.setR48_qua_iii_qar(rs.getBigDecimal("R48_QUA_III_QAR"));
+			obj.setR48_qua_iii_inr(rs.getBigDecimal("R48_QUA_III_INR"));
+			obj.setR48_qua_iv_lc(rs.getBigDecimal("R48_QUA_IV_LC"));
+			obj.setR48_qua_iv_qar(rs.getBigDecimal("R48_QUA_IV_QAR"));
+			obj.setR48_qua_iv_inr(rs.getBigDecimal("R48_QUA_IV_INR"));
+			obj.setR48_cumm_inr(rs.getBigDecimal("R48_CUMM_INR"));
+			obj.setR48_cumm_bwp(rs.getBigDecimal("R48_CUMM_BWP"));
+
+// R49
+			obj.setR49_product(rs.getString("R49_PRODUCT"));
+			obj.setR49_qua_i_lc(rs.getBigDecimal("R49_QUA_I_LC"));
+			obj.setR49_qua_i_qar(rs.getBigDecimal("R49_QUA_I_QAR"));
+			obj.setR49_qua_i_inr(rs.getBigDecimal("R49_QUA_I_INR"));
+			obj.setR49_qua_ii_lc(rs.getBigDecimal("R49_QUA_II_LC"));
+			obj.setR49_qua_ii_qar(rs.getBigDecimal("R49_QUA_II_QAR"));
+			obj.setR49_qua_ii_inr(rs.getBigDecimal("R49_QUA_II_INR"));
+			obj.setR49_qua_iii_lc(rs.getBigDecimal("R49_QUA_III_LC"));
+			obj.setR49_qua_iii_qar(rs.getBigDecimal("R49_QUA_III_QAR"));
+			obj.setR49_qua_iii_inr(rs.getBigDecimal("R49_QUA_III_INR"));
+			obj.setR49_qua_iv_lc(rs.getBigDecimal("R49_QUA_IV_LC"));
+			obj.setR49_qua_iv_qar(rs.getBigDecimal("R49_QUA_IV_QAR"));
+			obj.setR49_qua_iv_inr(rs.getBigDecimal("R49_QUA_IV_INR"));
+			obj.setR49_cumm_inr(rs.getBigDecimal("R49_CUMM_INR"));
+			obj.setR49_cumm_bwp(rs.getBigDecimal("R49_CUMM_BWP"));
+
+// R50
+			obj.setR50_product(rs.getString("R50_PRODUCT"));
+			obj.setR50_qua_i_lc(rs.getBigDecimal("R50_QUA_I_LC"));
+			obj.setR50_qua_i_qar(rs.getBigDecimal("R50_QUA_I_QAR"));
+			obj.setR50_qua_i_inr(rs.getBigDecimal("R50_QUA_I_INR"));
+			obj.setR50_qua_ii_lc(rs.getBigDecimal("R50_QUA_II_LC"));
+			obj.setR50_qua_ii_qar(rs.getBigDecimal("R50_QUA_II_QAR"));
+			obj.setR50_qua_ii_inr(rs.getBigDecimal("R50_QUA_II_INR"));
+			obj.setR50_qua_iii_lc(rs.getBigDecimal("R50_QUA_III_LC"));
+			obj.setR50_qua_iii_qar(rs.getBigDecimal("R50_QUA_III_QAR"));
+			obj.setR50_qua_iii_inr(rs.getBigDecimal("R50_QUA_III_INR"));
+			obj.setR50_qua_iv_lc(rs.getBigDecimal("R50_QUA_IV_LC"));
+			obj.setR50_qua_iv_qar(rs.getBigDecimal("R50_QUA_IV_QAR"));
+			obj.setR50_qua_iv_inr(rs.getBigDecimal("R50_QUA_IV_INR"));
+			obj.setR50_cumm_inr(rs.getBigDecimal("R50_CUMM_INR"));
+			obj.setR50_cumm_bwp(rs.getBigDecimal("R50_CUMM_BWP"));
+
+// R51
+			obj.setR51_product(rs.getString("R51_PRODUCT"));
+			obj.setR51_qua_i_lc(rs.getBigDecimal("R51_QUA_I_LC"));
+			obj.setR51_qua_i_qar(rs.getBigDecimal("R51_QUA_I_QAR"));
+			obj.setR51_qua_i_inr(rs.getBigDecimal("R51_QUA_I_INR"));
+			obj.setR51_qua_ii_lc(rs.getBigDecimal("R51_QUA_II_LC"));
+			obj.setR51_qua_ii_qar(rs.getBigDecimal("R51_QUA_II_QAR"));
+			obj.setR51_qua_ii_inr(rs.getBigDecimal("R51_QUA_II_INR"));
+			obj.setR51_qua_iii_lc(rs.getBigDecimal("R51_QUA_III_LC"));
+			obj.setR51_qua_iii_qar(rs.getBigDecimal("R51_QUA_III_QAR"));
+			obj.setR51_qua_iii_inr(rs.getBigDecimal("R51_QUA_III_INR"));
+			obj.setR51_qua_iv_lc(rs.getBigDecimal("R51_QUA_IV_LC"));
+			obj.setR51_qua_iv_qar(rs.getBigDecimal("R51_QUA_IV_QAR"));
+			obj.setR51_qua_iv_inr(rs.getBigDecimal("R51_QUA_IV_INR"));
+			obj.setR51_cumm_inr(rs.getBigDecimal("R51_CUMM_INR"));
+			obj.setR51_cumm_bwp(rs.getBigDecimal("R51_CUMM_BWP"));
+
+// R52
+			obj.setR52_product(rs.getString("R52_PRODUCT"));
+			obj.setR52_qua_i_lc(rs.getBigDecimal("R52_QUA_I_LC"));
+			obj.setR52_qua_i_qar(rs.getBigDecimal("R52_QUA_I_QAR"));
+			obj.setR52_qua_i_inr(rs.getBigDecimal("R52_QUA_I_INR"));
+			obj.setR52_qua_ii_lc(rs.getBigDecimal("R52_QUA_II_LC"));
+			obj.setR52_qua_ii_qar(rs.getBigDecimal("R52_QUA_II_QAR"));
+			obj.setR52_qua_ii_inr(rs.getBigDecimal("R52_QUA_II_INR"));
+			obj.setR52_qua_iii_lc(rs.getBigDecimal("R52_QUA_III_LC"));
+			obj.setR52_qua_iii_qar(rs.getBigDecimal("R52_QUA_III_QAR"));
+			obj.setR52_qua_iii_inr(rs.getBigDecimal("R52_QUA_III_INR"));
+			obj.setR52_qua_iv_lc(rs.getBigDecimal("R52_QUA_IV_LC"));
+			obj.setR52_qua_iv_qar(rs.getBigDecimal("R52_QUA_IV_QAR"));
+			obj.setR52_qua_iv_inr(rs.getBigDecimal("R52_QUA_IV_INR"));
+			obj.setR52_cumm_inr(rs.getBigDecimal("R52_CUMM_INR"));
+			obj.setR52_cumm_bwp(rs.getBigDecimal("R52_CUMM_BWP"));
+
+// R53
+			obj.setR53_product(rs.getString("R53_PRODUCT"));
+			obj.setR53_qua_i_lc(rs.getBigDecimal("R53_QUA_I_LC"));
+			obj.setR53_qua_i_qar(rs.getBigDecimal("R53_QUA_I_QAR"));
+			obj.setR53_qua_i_inr(rs.getBigDecimal("R53_QUA_I_INR"));
+			obj.setR53_qua_ii_lc(rs.getBigDecimal("R53_QUA_II_LC"));
+			obj.setR53_qua_ii_qar(rs.getBigDecimal("R53_QUA_II_QAR"));
+			obj.setR53_qua_ii_inr(rs.getBigDecimal("R53_QUA_II_INR"));
+			obj.setR53_qua_iii_lc(rs.getBigDecimal("R53_QUA_III_LC"));
+			obj.setR53_qua_iii_qar(rs.getBigDecimal("R53_QUA_III_QAR"));
+			obj.setR53_qua_iii_inr(rs.getBigDecimal("R53_QUA_III_INR"));
+			obj.setR53_qua_iv_lc(rs.getBigDecimal("R53_QUA_IV_LC"));
+			obj.setR53_qua_iv_qar(rs.getBigDecimal("R53_QUA_IV_QAR"));
+			obj.setR53_qua_iv_inr(rs.getBigDecimal("R53_QUA_IV_INR"));
+			obj.setR53_cumm_inr(rs.getBigDecimal("R53_CUMM_INR"));
+			obj.setR53_cumm_bwp(rs.getBigDecimal("R53_CUMM_BWP"));
+
+// R54
+			obj.setR54_product(rs.getString("R54_PRODUCT"));
+			obj.setR54_qua_i_lc(rs.getBigDecimal("R54_QUA_I_LC"));
+			obj.setR54_qua_i_qar(rs.getBigDecimal("R54_QUA_I_QAR"));
+			obj.setR54_qua_i_inr(rs.getBigDecimal("R54_QUA_I_INR"));
+			obj.setR54_qua_ii_lc(rs.getBigDecimal("R54_QUA_II_LC"));
+			obj.setR54_qua_ii_qar(rs.getBigDecimal("R54_QUA_II_QAR"));
+			obj.setR54_qua_ii_inr(rs.getBigDecimal("R54_QUA_II_INR"));
+			obj.setR54_qua_iii_lc(rs.getBigDecimal("R54_QUA_III_LC"));
+			obj.setR54_qua_iii_qar(rs.getBigDecimal("R54_QUA_III_QAR"));
+			obj.setR54_qua_iii_inr(rs.getBigDecimal("R54_QUA_III_INR"));
+			obj.setR54_qua_iv_lc(rs.getBigDecimal("R54_QUA_IV_LC"));
+			obj.setR54_qua_iv_qar(rs.getBigDecimal("R54_QUA_IV_QAR"));
+			obj.setR54_qua_iv_inr(rs.getBigDecimal("R54_QUA_IV_INR"));
+			obj.setR54_cumm_inr(rs.getBigDecimal("R54_CUMM_INR"));
+			obj.setR54_cumm_bwp(rs.getBigDecimal("R54_CUMM_BWP"));
+
+// R55
+			obj.setR55_product(rs.getString("R55_PRODUCT"));
+			obj.setR55_qua_i_lc(rs.getBigDecimal("R55_QUA_I_LC"));
+			obj.setR55_qua_i_qar(rs.getBigDecimal("R55_QUA_I_QAR"));
+			obj.setR55_qua_i_inr(rs.getBigDecimal("R55_QUA_I_INR"));
+			obj.setR55_qua_ii_lc(rs.getBigDecimal("R55_QUA_II_LC"));
+			obj.setR55_qua_ii_qar(rs.getBigDecimal("R55_QUA_II_QAR"));
+			obj.setR55_qua_ii_inr(rs.getBigDecimal("R55_QUA_II_INR"));
+			obj.setR55_qua_iii_lc(rs.getBigDecimal("R55_QUA_III_LC"));
+			obj.setR55_qua_iii_qar(rs.getBigDecimal("R55_QUA_III_QAR"));
+			obj.setR55_qua_iii_inr(rs.getBigDecimal("R55_QUA_III_INR"));
+			obj.setR55_qua_iv_lc(rs.getBigDecimal("R55_QUA_IV_LC"));
+			obj.setR55_qua_iv_qar(rs.getBigDecimal("R55_QUA_IV_QAR"));
+			obj.setR55_qua_iv_inr(rs.getBigDecimal("R55_QUA_IV_INR"));
+			obj.setR55_cumm_inr(rs.getBigDecimal("R55_CUMM_INR"));
+			obj.setR55_cumm_bwp(rs.getBigDecimal("R55_CUMM_BWP"));
+
+// R56
+			obj.setR56_product(rs.getString("R56_PRODUCT"));
+			obj.setR56_qua_i_lc(rs.getBigDecimal("R56_QUA_I_LC"));
+			obj.setR56_qua_i_qar(rs.getBigDecimal("R56_QUA_I_QAR"));
+			obj.setR56_qua_i_inr(rs.getBigDecimal("R56_QUA_I_INR"));
+			obj.setR56_qua_ii_lc(rs.getBigDecimal("R56_QUA_II_LC"));
+			obj.setR56_qua_ii_qar(rs.getBigDecimal("R56_QUA_II_QAR"));
+			obj.setR56_qua_ii_inr(rs.getBigDecimal("R56_QUA_II_INR"));
+			obj.setR56_qua_iii_lc(rs.getBigDecimal("R56_QUA_III_LC"));
+			obj.setR56_qua_iii_qar(rs.getBigDecimal("R56_QUA_III_QAR"));
+			obj.setR56_qua_iii_inr(rs.getBigDecimal("R56_QUA_III_INR"));
+			obj.setR56_qua_iv_lc(rs.getBigDecimal("R56_QUA_IV_LC"));
+			obj.setR56_qua_iv_qar(rs.getBigDecimal("R56_QUA_IV_QAR"));
+			obj.setR56_qua_iv_inr(rs.getBigDecimal("R56_QUA_IV_INR"));
+			obj.setR56_cumm_inr(rs.getBigDecimal("R56_CUMM_INR"));
+			obj.setR56_cumm_bwp(rs.getBigDecimal("R56_CUMM_BWP"));
+
+// R57
+			obj.setR57_product(rs.getString("R57_PRODUCT"));
+			obj.setR57_qua_i_lc(rs.getBigDecimal("R57_QUA_I_LC"));
+			obj.setR57_qua_i_qar(rs.getBigDecimal("R57_QUA_I_QAR"));
+			obj.setR57_qua_i_inr(rs.getBigDecimal("R57_QUA_I_INR"));
+			obj.setR57_qua_ii_lc(rs.getBigDecimal("R57_QUA_II_LC"));
+			obj.setR57_qua_ii_qar(rs.getBigDecimal("R57_QUA_II_QAR"));
+			obj.setR57_qua_ii_inr(rs.getBigDecimal("R57_QUA_II_INR"));
+			obj.setR57_qua_iii_lc(rs.getBigDecimal("R57_QUA_III_LC"));
+			obj.setR57_qua_iii_qar(rs.getBigDecimal("R57_QUA_III_QAR"));
+			obj.setR57_qua_iii_inr(rs.getBigDecimal("R57_QUA_III_INR"));
+			obj.setR57_qua_iv_lc(rs.getBigDecimal("R57_QUA_IV_LC"));
+			obj.setR57_qua_iv_qar(rs.getBigDecimal("R57_QUA_IV_QAR"));
+			obj.setR57_qua_iv_inr(rs.getBigDecimal("R57_QUA_IV_INR"));
+			obj.setR57_cumm_inr(rs.getBigDecimal("R57_CUMM_INR"));
+			obj.setR57_cumm_bwp(rs.getBigDecimal("R57_CUMM_BWP"));
+
+// R58
+			obj.setR58_product(rs.getString("R58_PRODUCT"));
+			obj.setR58_qua_i_lc(rs.getBigDecimal("R58_QUA_I_LC"));
+			obj.setR58_qua_i_qar(rs.getBigDecimal("R58_QUA_I_QAR"));
+			obj.setR58_qua_i_inr(rs.getBigDecimal("R58_QUA_I_INR"));
+			obj.setR58_qua_ii_lc(rs.getBigDecimal("R58_QUA_II_LC"));
+			obj.setR58_qua_ii_qar(rs.getBigDecimal("R58_QUA_II_QAR"));
+			obj.setR58_qua_ii_inr(rs.getBigDecimal("R58_QUA_II_INR"));
+			obj.setR58_qua_iii_lc(rs.getBigDecimal("R58_QUA_III_LC"));
+			obj.setR58_qua_iii_qar(rs.getBigDecimal("R58_QUA_III_QAR"));
+			obj.setR58_qua_iii_inr(rs.getBigDecimal("R58_QUA_III_INR"));
+			obj.setR58_qua_iv_lc(rs.getBigDecimal("R58_QUA_IV_LC"));
+			obj.setR58_qua_iv_qar(rs.getBigDecimal("R58_QUA_IV_QAR"));
+			obj.setR58_qua_iv_inr(rs.getBigDecimal("R58_QUA_IV_INR"));
+			obj.setR58_cumm_inr(rs.getBigDecimal("R58_CUMM_INR"));
+			obj.setR58_cumm_bwp(rs.getBigDecimal("R58_CUMM_BWP"));
+
+// R59
+			obj.setR59_product(rs.getString("R59_PRODUCT"));
+			obj.setR59_qua_i_lc(rs.getBigDecimal("R59_QUA_I_LC"));
+			obj.setR59_qua_i_qar(rs.getBigDecimal("R59_QUA_I_QAR"));
+			obj.setR59_qua_i_inr(rs.getBigDecimal("R59_QUA_I_INR"));
+			obj.setR59_qua_ii_lc(rs.getBigDecimal("R59_QUA_II_LC"));
+			obj.setR59_qua_ii_qar(rs.getBigDecimal("R59_QUA_II_QAR"));
+			obj.setR59_qua_ii_inr(rs.getBigDecimal("R59_QUA_II_INR"));
+			obj.setR59_qua_iii_lc(rs.getBigDecimal("R59_QUA_III_LC"));
+			obj.setR59_qua_iii_qar(rs.getBigDecimal("R59_QUA_III_QAR"));
+			obj.setR59_qua_iii_inr(rs.getBigDecimal("R59_QUA_III_INR"));
+			obj.setR59_qua_iv_lc(rs.getBigDecimal("R59_QUA_IV_LC"));
+			obj.setR59_qua_iv_qar(rs.getBigDecimal("R59_QUA_IV_QAR"));
+			obj.setR59_qua_iv_inr(rs.getBigDecimal("R59_QUA_IV_INR"));
+			obj.setR59_cumm_inr(rs.getBigDecimal("R59_CUMM_INR"));
+			obj.setR59_cumm_bwp(rs.getBigDecimal("R59_CUMM_BWP"));
+
+// R60
+			obj.setR60_product(rs.getString("R60_PRODUCT"));
+			obj.setR60_qua_i_lc(rs.getBigDecimal("R60_QUA_I_LC"));
+			obj.setR60_qua_i_qar(rs.getBigDecimal("R60_QUA_I_QAR"));
+			obj.setR60_qua_i_inr(rs.getBigDecimal("R60_QUA_I_INR"));
+			obj.setR60_qua_ii_lc(rs.getBigDecimal("R60_QUA_II_LC"));
+			obj.setR60_qua_ii_qar(rs.getBigDecimal("R60_QUA_II_QAR"));
+			obj.setR60_qua_ii_inr(rs.getBigDecimal("R60_QUA_II_INR"));
+			obj.setR60_qua_iii_lc(rs.getBigDecimal("R60_QUA_III_LC"));
+			obj.setR60_qua_iii_qar(rs.getBigDecimal("R60_QUA_III_QAR"));
+			obj.setR60_qua_iii_inr(rs.getBigDecimal("R60_QUA_III_INR"));
+			obj.setR60_qua_iv_lc(rs.getBigDecimal("R60_QUA_IV_LC"));
+			obj.setR60_qua_iv_qar(rs.getBigDecimal("R60_QUA_IV_QAR"));
+			obj.setR60_qua_iv_inr(rs.getBigDecimal("R60_QUA_IV_INR"));
+			obj.setR60_cumm_inr(rs.getBigDecimal("R60_CUMM_INR"));
+			obj.setR60_cumm_bwp(rs.getBigDecimal("R60_CUMM_BWP"));
+
+// R61
+			obj.setR61_product(rs.getString("R61_PRODUCT"));
+			obj.setR61_qua_i_lc(rs.getBigDecimal("R61_QUA_I_LC"));
+			obj.setR61_qua_i_qar(rs.getBigDecimal("R61_QUA_I_QAR"));
+			obj.setR61_qua_i_inr(rs.getBigDecimal("R61_QUA_I_INR"));
+			obj.setR61_qua_ii_lc(rs.getBigDecimal("R61_QUA_II_LC"));
+			obj.setR61_qua_ii_qar(rs.getBigDecimal("R61_QUA_II_QAR"));
+			obj.setR61_qua_ii_inr(rs.getBigDecimal("R61_QUA_II_INR"));
+			obj.setR61_qua_iii_lc(rs.getBigDecimal("R61_QUA_III_LC"));
+			obj.setR61_qua_iii_qar(rs.getBigDecimal("R61_QUA_III_QAR"));
+			obj.setR61_qua_iii_inr(rs.getBigDecimal("R61_QUA_III_INR"));
+			obj.setR61_qua_iv_lc(rs.getBigDecimal("R61_QUA_IV_LC"));
+			obj.setR61_qua_iv_qar(rs.getBigDecimal("R61_QUA_IV_QAR"));
+			obj.setR61_qua_iv_inr(rs.getBigDecimal("R61_QUA_IV_INR"));
+			obj.setR61_cumm_inr(rs.getBigDecimal("R61_CUMM_INR"));
+			obj.setR61_cumm_bwp(rs.getBigDecimal("R61_CUMM_BWP"));
+
+// R62
+			obj.setR62_product(rs.getString("R62_PRODUCT"));
+			obj.setR62_qua_i_lc(rs.getBigDecimal("R62_QUA_I_LC"));
+			obj.setR62_qua_i_qar(rs.getBigDecimal("R62_QUA_I_QAR"));
+			obj.setR62_qua_i_inr(rs.getBigDecimal("R62_QUA_I_INR"));
+			obj.setR62_qua_ii_lc(rs.getBigDecimal("R62_QUA_II_LC"));
+			obj.setR62_qua_ii_qar(rs.getBigDecimal("R62_QUA_II_QAR"));
+			obj.setR62_qua_ii_inr(rs.getBigDecimal("R62_QUA_II_INR"));
+			obj.setR62_qua_iii_lc(rs.getBigDecimal("R62_QUA_III_LC"));
+			obj.setR62_qua_iii_qar(rs.getBigDecimal("R62_QUA_III_QAR"));
+			obj.setR62_qua_iii_inr(rs.getBigDecimal("R62_QUA_III_INR"));
+			obj.setR62_qua_iv_lc(rs.getBigDecimal("R62_QUA_IV_LC"));
+			obj.setR62_qua_iv_qar(rs.getBigDecimal("R62_QUA_IV_QAR"));
+			obj.setR62_qua_iv_inr(rs.getBigDecimal("R62_QUA_IV_INR"));
+			obj.setR62_cumm_inr(rs.getBigDecimal("R62_CUMM_INR"));
+			obj.setR62_cumm_bwp(rs.getBigDecimal("R62_CUMM_BWP"));
+
+// R63
+			obj.setR63_product(rs.getString("R63_PRODUCT"));
+			obj.setR63_qua_i_lc(rs.getBigDecimal("R63_QUA_I_LC"));
+			obj.setR63_qua_i_qar(rs.getBigDecimal("R63_QUA_I_QAR"));
+			obj.setR63_qua_i_inr(rs.getBigDecimal("R63_QUA_I_INR"));
+			obj.setR63_qua_ii_lc(rs.getBigDecimal("R63_QUA_II_LC"));
+			obj.setR63_qua_ii_qar(rs.getBigDecimal("R63_QUA_II_QAR"));
+			obj.setR63_qua_ii_inr(rs.getBigDecimal("R63_QUA_II_INR"));
+			obj.setR63_qua_iii_lc(rs.getBigDecimal("R63_QUA_III_LC"));
+			obj.setR63_qua_iii_qar(rs.getBigDecimal("R63_QUA_III_QAR"));
+			obj.setR63_qua_iii_inr(rs.getBigDecimal("R63_QUA_III_INR"));
+			obj.setR63_qua_iv_lc(rs.getBigDecimal("R63_QUA_IV_LC"));
+			obj.setR63_qua_iv_qar(rs.getBigDecimal("R63_QUA_IV_QAR"));
+			obj.setR63_qua_iv_inr(rs.getBigDecimal("R63_QUA_IV_INR"));
+			obj.setR63_cumm_inr(rs.getBigDecimal("R63_CUMM_INR"));
+			obj.setR63_cumm_bwp(rs.getBigDecimal("R63_CUMM_BWP"));
+
+// R64
+			obj.setR64_product(rs.getString("R64_PRODUCT"));
+			obj.setR64_qua_i_lc(rs.getBigDecimal("R64_QUA_I_LC"));
+			obj.setR64_qua_i_qar(rs.getBigDecimal("R64_QUA_I_QAR"));
+			obj.setR64_qua_i_inr(rs.getBigDecimal("R64_QUA_I_INR"));
+			obj.setR64_qua_ii_lc(rs.getBigDecimal("R64_QUA_II_LC"));
+			obj.setR64_qua_ii_qar(rs.getBigDecimal("R64_QUA_II_QAR"));
+			obj.setR64_qua_ii_inr(rs.getBigDecimal("R64_QUA_II_INR"));
+			obj.setR64_qua_iii_lc(rs.getBigDecimal("R64_QUA_III_LC"));
+			obj.setR64_qua_iii_qar(rs.getBigDecimal("R64_QUA_III_QAR"));
+			obj.setR64_qua_iii_inr(rs.getBigDecimal("R64_QUA_III_INR"));
+			obj.setR64_qua_iv_lc(rs.getBigDecimal("R64_QUA_IV_LC"));
+			obj.setR64_qua_iv_qar(rs.getBigDecimal("R64_QUA_IV_QAR"));
+			obj.setR64_qua_iv_inr(rs.getBigDecimal("R64_QUA_IV_INR"));
+			obj.setR64_cumm_inr(rs.getBigDecimal("R64_CUMM_INR"));
+			obj.setR64_cumm_bwp(rs.getBigDecimal("R64_CUMM_BWP"));
+
+// R65
+			obj.setR65_product(rs.getString("R65_PRODUCT"));
+			obj.setR65_qua_i_lc(rs.getBigDecimal("R65_QUA_I_LC"));
+			obj.setR65_qua_i_qar(rs.getBigDecimal("R65_QUA_I_QAR"));
+			obj.setR65_qua_i_inr(rs.getBigDecimal("R65_QUA_I_INR"));
+			obj.setR65_qua_ii_lc(rs.getBigDecimal("R65_QUA_II_LC"));
+			obj.setR65_qua_ii_qar(rs.getBigDecimal("R65_QUA_II_QAR"));
+			obj.setR65_qua_ii_inr(rs.getBigDecimal("R65_QUA_II_INR"));
+			obj.setR65_qua_iii_lc(rs.getBigDecimal("R65_QUA_III_LC"));
+			obj.setR65_qua_iii_qar(rs.getBigDecimal("R65_QUA_III_QAR"));
+			obj.setR65_qua_iii_inr(rs.getBigDecimal("R65_QUA_III_INR"));
+			obj.setR65_qua_iv_lc(rs.getBigDecimal("R65_QUA_IV_LC"));
+			obj.setR65_qua_iv_qar(rs.getBigDecimal("R65_QUA_IV_QAR"));
+			obj.setR65_qua_iv_inr(rs.getBigDecimal("R65_QUA_IV_INR"));
+			obj.setR65_cumm_inr(rs.getBigDecimal("R65_CUMM_INR"));
+			obj.setR65_cumm_bwp(rs.getBigDecimal("R65_CUMM_BWP"));
+
+// R66
+			obj.setR66_product(rs.getString("R66_PRODUCT"));
+			obj.setR66_qua_i_lc(rs.getBigDecimal("R66_QUA_I_LC"));
+			obj.setR66_qua_i_qar(rs.getBigDecimal("R66_QUA_I_QAR"));
+			obj.setR66_qua_i_inr(rs.getBigDecimal("R66_QUA_I_INR"));
+			obj.setR66_qua_ii_lc(rs.getBigDecimal("R66_QUA_II_LC"));
+			obj.setR66_qua_ii_qar(rs.getBigDecimal("R66_QUA_II_QAR"));
+			obj.setR66_qua_ii_inr(rs.getBigDecimal("R66_QUA_II_INR"));
+			obj.setR66_qua_iii_lc(rs.getBigDecimal("R66_QUA_III_LC"));
+			obj.setR66_qua_iii_qar(rs.getBigDecimal("R66_QUA_III_QAR"));
+			obj.setR66_qua_iii_inr(rs.getBigDecimal("R66_QUA_III_INR"));
+			obj.setR66_qua_iv_lc(rs.getBigDecimal("R66_QUA_IV_LC"));
+			obj.setR66_qua_iv_qar(rs.getBigDecimal("R66_QUA_IV_QAR"));
+			obj.setR66_qua_iv_inr(rs.getBigDecimal("R66_QUA_IV_INR"));
+			obj.setR66_cumm_inr(rs.getBigDecimal("R66_CUMM_INR"));
+			obj.setR66_cumm_bwp(rs.getBigDecimal("R66_CUMM_BWP"));
+
+// R67
+			obj.setR67_product(rs.getString("R67_PRODUCT"));
+			obj.setR67_qua_i_lc(rs.getBigDecimal("R67_QUA_I_LC"));
+			obj.setR67_qua_i_qar(rs.getBigDecimal("R67_QUA_I_QAR"));
+			obj.setR67_qua_i_inr(rs.getBigDecimal("R67_QUA_I_INR"));
+			obj.setR67_qua_ii_lc(rs.getBigDecimal("R67_QUA_II_LC"));
+			obj.setR67_qua_ii_qar(rs.getBigDecimal("R67_QUA_II_QAR"));
+			obj.setR67_qua_ii_inr(rs.getBigDecimal("R67_QUA_II_INR"));
+			obj.setR67_qua_iii_lc(rs.getBigDecimal("R67_QUA_III_LC"));
+			obj.setR67_qua_iii_qar(rs.getBigDecimal("R67_QUA_III_QAR"));
+			obj.setR67_qua_iii_inr(rs.getBigDecimal("R67_QUA_III_INR"));
+			obj.setR67_qua_iv_lc(rs.getBigDecimal("R67_QUA_IV_LC"));
+			obj.setR67_qua_iv_qar(rs.getBigDecimal("R67_QUA_IV_QAR"));
+			obj.setR67_qua_iv_inr(rs.getBigDecimal("R67_QUA_IV_INR"));
+			obj.setR67_cumm_inr(rs.getBigDecimal("R67_CUMM_INR"));
+			obj.setR67_cumm_bwp(rs.getBigDecimal("R67_CUMM_BWP"));
+
+// R68
+			obj.setR68_product(rs.getString("R68_PRODUCT"));
+			obj.setR68_qua_i_lc(rs.getBigDecimal("R68_QUA_I_LC"));
+			obj.setR68_qua_i_qar(rs.getBigDecimal("R68_QUA_I_QAR"));
+			obj.setR68_qua_i_inr(rs.getBigDecimal("R68_QUA_I_INR"));
+			obj.setR68_qua_ii_lc(rs.getBigDecimal("R68_QUA_II_LC"));
+			obj.setR68_qua_ii_qar(rs.getBigDecimal("R68_QUA_II_QAR"));
+			obj.setR68_qua_ii_inr(rs.getBigDecimal("R68_QUA_II_INR"));
+			obj.setR68_qua_iii_lc(rs.getBigDecimal("R68_QUA_III_LC"));
+			obj.setR68_qua_iii_qar(rs.getBigDecimal("R68_QUA_III_QAR"));
+			obj.setR68_qua_iii_inr(rs.getBigDecimal("R68_QUA_III_INR"));
+			obj.setR68_qua_iv_lc(rs.getBigDecimal("R68_QUA_IV_LC"));
+			obj.setR68_qua_iv_qar(rs.getBigDecimal("R68_QUA_IV_QAR"));
+			obj.setR68_qua_iv_inr(rs.getBigDecimal("R68_QUA_IV_INR"));
+			obj.setR68_cumm_inr(rs.getBigDecimal("R68_CUMM_INR"));
+			obj.setR68_cumm_bwp(rs.getBigDecimal("R68_CUMM_BWP"));
+
+// R69
+			obj.setR69_product(rs.getString("R69_PRODUCT"));
+			obj.setR69_qua_i_lc(rs.getBigDecimal("R69_QUA_I_LC"));
+			obj.setR69_qua_i_qar(rs.getBigDecimal("R69_QUA_I_QAR"));
+			obj.setR69_qua_i_inr(rs.getBigDecimal("R69_QUA_I_INR"));
+			obj.setR69_qua_ii_lc(rs.getBigDecimal("R69_QUA_II_LC"));
+			obj.setR69_qua_ii_qar(rs.getBigDecimal("R69_QUA_II_QAR"));
+			obj.setR69_qua_ii_inr(rs.getBigDecimal("R69_QUA_II_INR"));
+			obj.setR69_qua_iii_lc(rs.getBigDecimal("R69_QUA_III_LC"));
+			obj.setR69_qua_iii_qar(rs.getBigDecimal("R69_QUA_III_QAR"));
+			obj.setR69_qua_iii_inr(rs.getBigDecimal("R69_QUA_III_INR"));
+			obj.setR69_qua_iv_lc(rs.getBigDecimal("R69_QUA_IV_LC"));
+			obj.setR69_qua_iv_qar(rs.getBigDecimal("R69_QUA_IV_QAR"));
+			obj.setR69_qua_iv_inr(rs.getBigDecimal("R69_QUA_IV_INR"));
+			obj.setR69_cumm_inr(rs.getBigDecimal("R69_CUMM_INR"));
+			obj.setR69_cumm_bwp(rs.getBigDecimal("R69_CUMM_BWP"));
+
+// R70
+			obj.setR70_product(rs.getString("R70_PRODUCT"));
+			obj.setR70_qua_i_lc(rs.getBigDecimal("R70_QUA_I_LC"));
+			obj.setR70_qua_i_qar(rs.getBigDecimal("R70_QUA_I_QAR"));
+			obj.setR70_qua_i_inr(rs.getBigDecimal("R70_QUA_I_INR"));
+			obj.setR70_qua_ii_lc(rs.getBigDecimal("R70_QUA_II_LC"));
+			obj.setR70_qua_ii_qar(rs.getBigDecimal("R70_QUA_II_QAR"));
+			obj.setR70_qua_ii_inr(rs.getBigDecimal("R70_QUA_II_INR"));
+			obj.setR70_qua_iii_lc(rs.getBigDecimal("R70_QUA_III_LC"));
+			obj.setR70_qua_iii_qar(rs.getBigDecimal("R70_QUA_III_QAR"));
+			obj.setR70_qua_iii_inr(rs.getBigDecimal("R70_QUA_III_INR"));
+			obj.setR70_qua_iv_lc(rs.getBigDecimal("R70_QUA_IV_LC"));
+			obj.setR70_qua_iv_qar(rs.getBigDecimal("R70_QUA_IV_QAR"));
+			obj.setR70_qua_iv_inr(rs.getBigDecimal("R70_QUA_IV_INR"));
+			obj.setR70_cumm_inr(rs.getBigDecimal("R70_CUMM_INR"));
+			obj.setR70_cumm_bwp(rs.getBigDecimal("R70_CUMM_BWP"));
+
+// R71
+			obj.setR71_product(rs.getString("R71_PRODUCT"));
+			obj.setR71_qua_i_lc(rs.getBigDecimal("R71_QUA_I_LC"));
+			obj.setR71_qua_i_qar(rs.getBigDecimal("R71_QUA_I_QAR"));
+			obj.setR71_qua_i_inr(rs.getBigDecimal("R71_QUA_I_INR"));
+			obj.setR71_qua_ii_lc(rs.getBigDecimal("R71_QUA_II_LC"));
+			obj.setR71_qua_ii_qar(rs.getBigDecimal("R71_QUA_II_QAR"));
+			obj.setR71_qua_ii_inr(rs.getBigDecimal("R71_QUA_II_INR"));
+			obj.setR71_qua_iii_lc(rs.getBigDecimal("R71_QUA_III_LC"));
+			obj.setR71_qua_iii_qar(rs.getBigDecimal("R71_QUA_III_QAR"));
+			obj.setR71_qua_iii_inr(rs.getBigDecimal("R71_QUA_III_INR"));
+			obj.setR71_qua_iv_lc(rs.getBigDecimal("R71_QUA_IV_LC"));
+			obj.setR71_qua_iv_qar(rs.getBigDecimal("R71_QUA_IV_QAR"));
+			obj.setR71_qua_iv_inr(rs.getBigDecimal("R71_QUA_IV_INR"));
+			obj.setR71_cumm_inr(rs.getBigDecimal("R71_CUMM_INR"));
+			obj.setR71_cumm_bwp(rs.getBigDecimal("R71_CUMM_BWP"));
+
+// R72
+			obj.setR72_product(rs.getString("R72_PRODUCT"));
+			obj.setR72_qua_i_lc(rs.getBigDecimal("R72_QUA_I_LC"));
+			obj.setR72_qua_i_qar(rs.getBigDecimal("R72_QUA_I_QAR"));
+			obj.setR72_qua_i_inr(rs.getBigDecimal("R72_QUA_I_INR"));
+			obj.setR72_qua_ii_lc(rs.getBigDecimal("R72_QUA_II_LC"));
+			obj.setR72_qua_ii_qar(rs.getBigDecimal("R72_QUA_II_QAR"));
+			obj.setR72_qua_ii_inr(rs.getBigDecimal("R72_QUA_II_INR"));
+			obj.setR72_qua_iii_lc(rs.getBigDecimal("R72_QUA_III_LC"));
+			obj.setR72_qua_iii_qar(rs.getBigDecimal("R72_QUA_III_QAR"));
+			obj.setR72_qua_iii_inr(rs.getBigDecimal("R72_QUA_III_INR"));
+			obj.setR72_qua_iv_lc(rs.getBigDecimal("R72_QUA_IV_LC"));
+			obj.setR72_qua_iv_qar(rs.getBigDecimal("R72_QUA_IV_QAR"));
+			obj.setR72_qua_iv_inr(rs.getBigDecimal("R72_QUA_IV_INR"));
+			obj.setR72_cumm_inr(rs.getBigDecimal("R72_CUMM_INR"));
+			obj.setR72_cumm_bwp(rs.getBigDecimal("R72_CUMM_BWP"));
+
+// R73
+			obj.setR73_product(rs.getString("R73_PRODUCT"));
+			obj.setR73_qua_i_lc(rs.getBigDecimal("R73_QUA_I_LC"));
+			obj.setR73_qua_i_qar(rs.getBigDecimal("R73_QUA_I_QAR"));
+			obj.setR73_qua_i_inr(rs.getBigDecimal("R73_QUA_I_INR"));
+			obj.setR73_qua_ii_lc(rs.getBigDecimal("R73_QUA_II_LC"));
+			obj.setR73_qua_ii_qar(rs.getBigDecimal("R73_QUA_II_QAR"));
+			obj.setR73_qua_ii_inr(rs.getBigDecimal("R73_QUA_II_INR"));
+			obj.setR73_qua_iii_lc(rs.getBigDecimal("R73_QUA_III_LC"));
+			obj.setR73_qua_iii_qar(rs.getBigDecimal("R73_QUA_III_QAR"));
+			obj.setR73_qua_iii_inr(rs.getBigDecimal("R73_QUA_III_INR"));
+			obj.setR73_qua_iv_lc(rs.getBigDecimal("R73_QUA_IV_LC"));
+			obj.setR73_qua_iv_qar(rs.getBigDecimal("R73_QUA_IV_QAR"));
+			obj.setR73_qua_iv_inr(rs.getBigDecimal("R73_QUA_IV_INR"));
+			obj.setR73_cumm_inr(rs.getBigDecimal("R73_CUMM_INR"));
+			obj.setR73_cumm_bwp(rs.getBigDecimal("R73_CUMM_BWP"));
+
+// R74
+			obj.setR74_product(rs.getString("R74_PRODUCT"));
+			obj.setR74_qua_i_lc(rs.getBigDecimal("R74_QUA_I_LC"));
+			obj.setR74_qua_i_qar(rs.getBigDecimal("R74_QUA_I_QAR"));
+			obj.setR74_qua_i_inr(rs.getBigDecimal("R74_QUA_I_INR"));
+			obj.setR74_qua_ii_lc(rs.getBigDecimal("R74_QUA_II_LC"));
+			obj.setR74_qua_ii_qar(rs.getBigDecimal("R74_QUA_II_QAR"));
+			obj.setR74_qua_ii_inr(rs.getBigDecimal("R74_QUA_II_INR"));
+			obj.setR74_qua_iii_lc(rs.getBigDecimal("R74_QUA_III_LC"));
+			obj.setR74_qua_iii_qar(rs.getBigDecimal("R74_QUA_III_QAR"));
+			obj.setR74_qua_iii_inr(rs.getBigDecimal("R74_QUA_III_INR"));
+			obj.setR74_qua_iv_lc(rs.getBigDecimal("R74_QUA_IV_LC"));
+			obj.setR74_qua_iv_qar(rs.getBigDecimal("R74_QUA_IV_QAR"));
+			obj.setR74_qua_iv_inr(rs.getBigDecimal("R74_QUA_IV_INR"));
+			obj.setR74_cumm_inr(rs.getBigDecimal("R74_CUMM_INR"));
+			obj.setR74_cumm_bwp(rs.getBigDecimal("R74_CUMM_BWP"));
+
+// R75
+			obj.setR75_product(rs.getString("R75_PRODUCT"));
+			obj.setR75_qua_i_lc(rs.getBigDecimal("R75_QUA_I_LC"));
+			obj.setR75_qua_i_qar(rs.getBigDecimal("R75_QUA_I_QAR"));
+			obj.setR75_qua_i_inr(rs.getBigDecimal("R75_QUA_I_INR"));
+			obj.setR75_qua_ii_lc(rs.getBigDecimal("R75_QUA_II_LC"));
+			obj.setR75_qua_ii_qar(rs.getBigDecimal("R75_QUA_II_QAR"));
+			obj.setR75_qua_ii_inr(rs.getBigDecimal("R75_QUA_II_INR"));
+			obj.setR75_qua_iii_lc(rs.getBigDecimal("R75_QUA_III_LC"));
+			obj.setR75_qua_iii_qar(rs.getBigDecimal("R75_QUA_III_QAR"));
+			obj.setR75_qua_iii_inr(rs.getBigDecimal("R75_QUA_III_INR"));
+			obj.setR75_qua_iv_lc(rs.getBigDecimal("R75_QUA_IV_LC"));
+			obj.setR75_qua_iv_qar(rs.getBigDecimal("R75_QUA_IV_QAR"));
+			obj.setR75_qua_iv_inr(rs.getBigDecimal("R75_QUA_IV_INR"));
+			obj.setR75_cumm_inr(rs.getBigDecimal("R75_CUMM_INR"));
+			obj.setR75_cumm_bwp(rs.getBigDecimal("R75_CUMM_BWP"));
+
+// R76
+			obj.setR76_product(rs.getString("R76_PRODUCT"));
+			obj.setR76_qua_i_lc(rs.getBigDecimal("R76_QUA_I_LC"));
+			obj.setR76_qua_i_qar(rs.getBigDecimal("R76_QUA_I_QAR"));
+			obj.setR76_qua_i_inr(rs.getBigDecimal("R76_QUA_I_INR"));
+			obj.setR76_qua_ii_lc(rs.getBigDecimal("R76_QUA_II_LC"));
+			obj.setR76_qua_ii_qar(rs.getBigDecimal("R76_QUA_II_QAR"));
+			obj.setR76_qua_ii_inr(rs.getBigDecimal("R76_QUA_II_INR"));
+			obj.setR76_qua_iii_lc(rs.getBigDecimal("R76_QUA_III_LC"));
+			obj.setR76_qua_iii_qar(rs.getBigDecimal("R76_QUA_III_QAR"));
+			obj.setR76_qua_iii_inr(rs.getBigDecimal("R76_QUA_III_INR"));
+			obj.setR76_qua_iv_lc(rs.getBigDecimal("R76_QUA_IV_LC"));
+			obj.setR76_qua_iv_qar(rs.getBigDecimal("R76_QUA_IV_QAR"));
+			obj.setR76_qua_iv_inr(rs.getBigDecimal("R76_QUA_IV_INR"));
+			obj.setR76_cumm_inr(rs.getBigDecimal("R76_CUMM_INR"));
+			obj.setR76_cumm_bwp(rs.getBigDecimal("R76_CUMM_BWP"));
+
+// R77
+			obj.setR77_product(rs.getString("R77_PRODUCT"));
+			obj.setR77_qua_i_lc(rs.getBigDecimal("R77_QUA_I_LC"));
+			obj.setR77_qua_i_qar(rs.getBigDecimal("R77_QUA_I_QAR"));
+			obj.setR77_qua_i_inr(rs.getBigDecimal("R77_QUA_I_INR"));
+			obj.setR77_qua_ii_lc(rs.getBigDecimal("R77_QUA_II_LC"));
+			obj.setR77_qua_ii_qar(rs.getBigDecimal("R77_QUA_II_QAR"));
+			obj.setR77_qua_ii_inr(rs.getBigDecimal("R77_QUA_II_INR"));
+			obj.setR77_qua_iii_lc(rs.getBigDecimal("R77_QUA_III_LC"));
+			obj.setR77_qua_iii_qar(rs.getBigDecimal("R77_QUA_III_QAR"));
+			obj.setR77_qua_iii_inr(rs.getBigDecimal("R77_QUA_III_INR"));
+			obj.setR77_qua_iv_lc(rs.getBigDecimal("R77_QUA_IV_LC"));
+			obj.setR77_qua_iv_qar(rs.getBigDecimal("R77_QUA_IV_QAR"));
+			obj.setR77_qua_iv_inr(rs.getBigDecimal("R77_QUA_IV_INR"));
+			obj.setR77_cumm_inr(rs.getBigDecimal("R77_CUMM_INR"));
+			obj.setR77_cumm_bwp(rs.getBigDecimal("R77_CUMM_BWP"));
+
+// R78
+			obj.setR78_product(rs.getString("R78_PRODUCT"));
+			obj.setR78_qua_i_lc(rs.getBigDecimal("R78_QUA_I_LC"));
+			obj.setR78_qua_i_qar(rs.getBigDecimal("R78_QUA_I_QAR"));
+			obj.setR78_qua_i_inr(rs.getBigDecimal("R78_QUA_I_INR"));
+			obj.setR78_qua_ii_lc(rs.getBigDecimal("R78_QUA_II_LC"));
+			obj.setR78_qua_ii_qar(rs.getBigDecimal("R78_QUA_II_QAR"));
+			obj.setR78_qua_ii_inr(rs.getBigDecimal("R78_QUA_II_INR"));
+			obj.setR78_qua_iii_lc(rs.getBigDecimal("R78_QUA_III_LC"));
+			obj.setR78_qua_iii_qar(rs.getBigDecimal("R78_QUA_III_QAR"));
+			obj.setR78_qua_iii_inr(rs.getBigDecimal("R78_QUA_III_INR"));
+			obj.setR78_qua_iv_lc(rs.getBigDecimal("R78_QUA_IV_LC"));
+			obj.setR78_qua_iv_qar(rs.getBigDecimal("R78_QUA_IV_QAR"));
+			obj.setR78_qua_iv_inr(rs.getBigDecimal("R78_QUA_IV_INR"));
+			obj.setR78_cumm_inr(rs.getBigDecimal("R78_CUMM_INR"));
+			obj.setR78_cumm_bwp(rs.getBigDecimal("R78_CUMM_BWP"));
+
+// R79
+			obj.setR79_product(rs.getString("R79_PRODUCT"));
+			obj.setR79_qua_i_lc(rs.getBigDecimal("R79_QUA_I_LC"));
+			obj.setR79_qua_i_qar(rs.getBigDecimal("R79_QUA_I_QAR"));
+			obj.setR79_qua_i_inr(rs.getBigDecimal("R79_QUA_I_INR"));
+			obj.setR79_qua_ii_lc(rs.getBigDecimal("R79_QUA_II_LC"));
+			obj.setR79_qua_ii_qar(rs.getBigDecimal("R79_QUA_II_QAR"));
+			obj.setR79_qua_ii_inr(rs.getBigDecimal("R79_QUA_II_INR"));
+			obj.setR79_qua_iii_lc(rs.getBigDecimal("R79_QUA_III_LC"));
+			obj.setR79_qua_iii_qar(rs.getBigDecimal("R79_QUA_III_QAR"));
+			obj.setR79_qua_iii_inr(rs.getBigDecimal("R79_QUA_III_INR"));
+			obj.setR79_qua_iv_lc(rs.getBigDecimal("R79_QUA_IV_LC"));
+			obj.setR79_qua_iv_qar(rs.getBigDecimal("R79_QUA_IV_QAR"));
+			obj.setR79_qua_iv_inr(rs.getBigDecimal("R79_QUA_IV_INR"));
+			obj.setR79_cumm_inr(rs.getBigDecimal("R79_CUMM_INR"));
+			obj.setR79_cumm_bwp(rs.getBigDecimal("R79_CUMM_BWP"));
+
+// R80
+			obj.setR80_product(rs.getString("R80_PRODUCT"));
+			obj.setR80_qua_i_lc(rs.getBigDecimal("R80_QUA_I_LC"));
+			obj.setR80_qua_i_qar(rs.getBigDecimal("R80_QUA_I_QAR"));
+			obj.setR80_qua_i_inr(rs.getBigDecimal("R80_QUA_I_INR"));
+			obj.setR80_qua_ii_lc(rs.getBigDecimal("R80_QUA_II_LC"));
+			obj.setR80_qua_ii_qar(rs.getBigDecimal("R80_QUA_II_QAR"));
+			obj.setR80_qua_ii_inr(rs.getBigDecimal("R80_QUA_II_INR"));
+			obj.setR80_qua_iii_lc(rs.getBigDecimal("R80_QUA_III_LC"));
+			obj.setR80_qua_iii_qar(rs.getBigDecimal("R80_QUA_III_QAR"));
+			obj.setR80_qua_iii_inr(rs.getBigDecimal("R80_QUA_III_INR"));
+			obj.setR80_qua_iv_lc(rs.getBigDecimal("R80_QUA_IV_LC"));
+			obj.setR80_qua_iv_qar(rs.getBigDecimal("R80_QUA_IV_QAR"));
+			obj.setR80_qua_iv_inr(rs.getBigDecimal("R80_QUA_IV_INR"));
+			obj.setR80_cumm_inr(rs.getBigDecimal("R80_CUMM_INR"));
+			obj.setR80_cumm_bwp(rs.getBigDecimal("R80_CUMM_BWP"));
+
+// R81
+			obj.setR81_product(rs.getString("R81_PRODUCT"));
+			obj.setR81_qua_i_lc(rs.getBigDecimal("R81_QUA_I_LC"));
+			obj.setR81_qua_i_qar(rs.getBigDecimal("R81_QUA_I_QAR"));
+			obj.setR81_qua_i_inr(rs.getBigDecimal("R81_QUA_I_INR"));
+			obj.setR81_qua_ii_lc(rs.getBigDecimal("R81_QUA_II_LC"));
+			obj.setR81_qua_ii_qar(rs.getBigDecimal("R81_QUA_II_QAR"));
+			obj.setR81_qua_ii_inr(rs.getBigDecimal("R81_QUA_II_INR"));
+			obj.setR81_qua_iii_lc(rs.getBigDecimal("R81_QUA_III_LC"));
+			obj.setR81_qua_iii_qar(rs.getBigDecimal("R81_QUA_III_QAR"));
+			obj.setR81_qua_iii_inr(rs.getBigDecimal("R81_QUA_III_INR"));
+			obj.setR81_qua_iv_lc(rs.getBigDecimal("R81_QUA_IV_LC"));
+			obj.setR81_qua_iv_qar(rs.getBigDecimal("R81_QUA_IV_QAR"));
+			obj.setR81_qua_iv_inr(rs.getBigDecimal("R81_QUA_IV_INR"));
+			obj.setR81_cumm_inr(rs.getBigDecimal("R81_CUMM_INR"));
+			obj.setR81_cumm_bwp(rs.getBigDecimal("R81_CUMM_BWP"));
+
+// R82
+			obj.setR82_product(rs.getString("R82_PRODUCT"));
+			obj.setR82_qua_i_lc(rs.getBigDecimal("R82_QUA_I_LC"));
+			obj.setR82_qua_i_qar(rs.getBigDecimal("R82_QUA_I_QAR"));
+			obj.setR82_qua_i_inr(rs.getBigDecimal("R82_QUA_I_INR"));
+			obj.setR82_qua_ii_lc(rs.getBigDecimal("R82_QUA_II_LC"));
+			obj.setR82_qua_ii_qar(rs.getBigDecimal("R82_QUA_II_QAR"));
+			obj.setR82_qua_ii_inr(rs.getBigDecimal("R82_QUA_II_INR"));
+			obj.setR82_qua_iii_lc(rs.getBigDecimal("R82_QUA_III_LC"));
+			obj.setR82_qua_iii_qar(rs.getBigDecimal("R82_QUA_III_QAR"));
+			obj.setR82_qua_iii_inr(rs.getBigDecimal("R82_QUA_III_INR"));
+			obj.setR82_qua_iv_lc(rs.getBigDecimal("R82_QUA_IV_LC"));
+			obj.setR82_qua_iv_qar(rs.getBigDecimal("R82_QUA_IV_QAR"));
+			obj.setR82_qua_iv_inr(rs.getBigDecimal("R82_QUA_IV_INR"));
+			obj.setR82_cumm_inr(rs.getBigDecimal("R82_CUMM_INR"));
+			obj.setR82_cumm_bwp(rs.getBigDecimal("R82_CUMM_BWP"));
+
+// R83
+			obj.setR83_product(rs.getString("R83_PRODUCT"));
+			obj.setR83_qua_i_lc(rs.getBigDecimal("R83_QUA_I_LC"));
+			obj.setR83_qua_i_qar(rs.getBigDecimal("R83_QUA_I_QAR"));
+			obj.setR83_qua_i_inr(rs.getBigDecimal("R83_QUA_I_INR"));
+			obj.setR83_qua_ii_lc(rs.getBigDecimal("R83_QUA_II_LC"));
+			obj.setR83_qua_ii_qar(rs.getBigDecimal("R83_QUA_II_QAR"));
+			obj.setR83_qua_ii_inr(rs.getBigDecimal("R83_QUA_II_INR"));
+			obj.setR83_qua_iii_lc(rs.getBigDecimal("R83_QUA_III_LC"));
+			obj.setR83_qua_iii_qar(rs.getBigDecimal("R83_QUA_III_QAR"));
+			obj.setR83_qua_iii_inr(rs.getBigDecimal("R83_QUA_III_INR"));
+			obj.setR83_qua_iv_lc(rs.getBigDecimal("R83_QUA_IV_LC"));
+			obj.setR83_qua_iv_qar(rs.getBigDecimal("R83_QUA_IV_QAR"));
+			obj.setR83_qua_iv_inr(rs.getBigDecimal("R83_QUA_IV_INR"));
+			obj.setR83_cumm_inr(rs.getBigDecimal("R83_CUMM_INR"));
+			obj.setR83_cumm_bwp(rs.getBigDecimal("R83_CUMM_BWP"));
+
+			// COMMON FIELDS
+			obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+			obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setREPORT_RESUBDATE(rs.getDate("REPORT_RESUBDATE"));
+			obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+			obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+			obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+			obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+			obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+			obj.setDEL_FLG(rs.getString("DEL_FLG"));
+
+			return obj;
+		}
+	}
+
+	@IdClass(AS_11_PK.class)
+	public class AS_11_Archival_Summary_Entity1 {
+
+		@Id
+		@Temporal(TemporalType.DATE)
+		@Column(name = "REPORT_DATE")
+		private Date REPORT_DATE;
+
+		@Id
+		@Column(name = "REPORT_VERSION", length = 100)
+		private BigDecimal REPORT_VERSION;
+
+		@Column(name = "REPORT_FREQUENCY", length = 100)
+		private String REPORT_FREQUENCY;
+
+		@Column(name = "REPORT_CODE", length = 100)
+		private String REPORT_CODE;
+
+		@Column(name = "REPORT_DESC", length = 100)
+		private String REPORT_DESC;
+
+		@Column(name = "ENTITY_FLG", length = 1)
+		private String ENTITY_FLG;
+
+		@Column(name = "MODIFY_FLG", length = 1)
+		private String MODIFY_FLG;
+
+		@Column(name = "DEL_FLG", length = 1)
+		private String DEL_FLG;
+
+		private Date REPORT_RESUBDATE;
+
+		// R18
+		private String r18_product;
+		private BigDecimal r18_qua_i_lc;
+		private BigDecimal r18_qua_i_qar;
+		private BigDecimal r18_qua_i_inr;
+		private BigDecimal r18_qua_ii_lc;
+		private BigDecimal r18_qua_ii_qar; // Added to match pattern
+		private BigDecimal r18_qua_ii_inr;
+		private BigDecimal r18_qua_iii_lc;
+		private BigDecimal r18_qua_iii_qar;
+		private BigDecimal r18_qua_iii_inr;
+		private BigDecimal r18_qua_iv_lc;
+		private BigDecimal r18_qua_iv_qar;
+		private BigDecimal r18_qua_iv_inr;
+		private BigDecimal r18_cumm_inr;
+		private BigDecimal r18_cumm_bwp;
+
+		// R19
+		private String r19_product;
+		private BigDecimal r19_qua_i_lc;
+		private BigDecimal r19_qua_i_qar;
+		private BigDecimal r19_qua_i_inr;
+		private BigDecimal r19_qua_ii_lc;
+		private BigDecimal r19_qua_ii_qar;
+		private BigDecimal r19_qua_ii_inr;
+		private BigDecimal r19_qua_iii_lc;
+		private BigDecimal r19_qua_iii_qar;
+		private BigDecimal r19_qua_iii_inr;
+		private BigDecimal r19_qua_iv_lc;
+		private BigDecimal r19_qua_iv_qar;
+		private BigDecimal r19_qua_iv_inr;
+		private BigDecimal r19_cumm_inr;
+		private BigDecimal r19_cumm_bwp;
+
+		// R20
+		private String r20_product;
+		private BigDecimal r20_qua_i_lc;
+		private BigDecimal r20_qua_i_qar;
+		private BigDecimal r20_qua_i_inr;
+		private BigDecimal r20_qua_ii_lc;
+		private BigDecimal r20_qua_ii_qar;
+		private BigDecimal r20_qua_ii_inr;
+		private BigDecimal r20_qua_iii_lc;
+		private BigDecimal r20_qua_iii_qar;
+		private BigDecimal r20_qua_iii_inr;
+		private BigDecimal r20_qua_iv_lc;
+		private BigDecimal r20_qua_iv_qar;
+		private BigDecimal r20_qua_iv_inr;
+		private BigDecimal r20_cumm_inr;
+		private BigDecimal r20_cumm_bwp;
+
+		// R21
+		private String r21_product;
+		private BigDecimal r21_qua_i_lc;
+		private BigDecimal r21_qua_i_qar;
+		private BigDecimal r21_qua_i_inr;
+		private BigDecimal r21_qua_ii_lc;
+		private BigDecimal r21_qua_ii_qar;
+		private BigDecimal r21_qua_ii_inr;
+		private BigDecimal r21_qua_iii_lc;
+		private BigDecimal r21_qua_iii_qar;
+		private BigDecimal r21_qua_iii_inr;
+		private BigDecimal r21_qua_iv_lc;
+		private BigDecimal r21_qua_iv_qar;
+		private BigDecimal r21_qua_iv_inr;
+		private BigDecimal r21_cumm_inr;
+		private BigDecimal r21_cumm_bwp;
+
+		// R22
+		private String r22_product;
+		private BigDecimal r22_qua_i_lc;
+		private BigDecimal r22_qua_i_qar;
+		private BigDecimal r22_qua_i_inr;
+		private BigDecimal r22_qua_ii_lc;
+		private BigDecimal r22_qua_ii_qar;
+		private BigDecimal r22_qua_ii_inr;
+		private BigDecimal r22_qua_iii_lc;
+		private BigDecimal r22_qua_iii_qar;
+		private BigDecimal r22_qua_iii_inr;
+		private BigDecimal r22_qua_iv_lc;
+		private BigDecimal r22_qua_iv_qar;
+		private BigDecimal r22_qua_iv_inr;
+		private BigDecimal r22_cumm_inr;
+		private BigDecimal r22_cumm_bwp;
+
+		// R23
+		private String r23_product;
+		private BigDecimal r23_qua_i_lc;
+		private BigDecimal r23_qua_i_qar;
+		private BigDecimal r23_qua_i_inr;
+		private BigDecimal r23_qua_ii_lc;
+		private BigDecimal r23_qua_ii_qar;
+		private BigDecimal r23_qua_ii_inr;
+		private BigDecimal r23_qua_iii_lc;
+		private BigDecimal r23_qua_iii_qar;
+		private BigDecimal r23_qua_iii_inr;
+		private BigDecimal r23_qua_iv_lc;
+		private BigDecimal r23_qua_iv_qar;
+		private BigDecimal r23_qua_iv_inr;
+		private BigDecimal r23_cumm_inr;
+		private BigDecimal r23_cumm_bwp;
+
+		// R24
+		private String r24_product;
+		private BigDecimal r24_qua_i_lc;
+		private BigDecimal r24_qua_i_qar;
+		private BigDecimal r24_qua_i_inr;
+		private BigDecimal r24_qua_ii_lc;
+		private BigDecimal r24_qua_ii_qar;
+		private BigDecimal r24_qua_ii_inr;
+		private BigDecimal r24_qua_iii_lc;
+		private BigDecimal r24_qua_iii_qar;
+		private BigDecimal r24_qua_iii_inr;
+		private BigDecimal r24_qua_iv_lc;
+		private BigDecimal r24_qua_iv_qar;
+		private BigDecimal r24_qua_iv_inr;
+		private BigDecimal r24_cumm_inr;
+		private BigDecimal r24_cumm_bwp;
+
+		// R25
+		private String r25_product;
+		private BigDecimal r25_qua_i_lc;
+		private BigDecimal r25_qua_i_qar;
+		private BigDecimal r25_qua_i_inr;
+		private BigDecimal r25_qua_ii_lc;
+		private BigDecimal r25_qua_ii_qar;
+		private BigDecimal r25_qua_ii_inr;
+		private BigDecimal r25_qua_iii_lc;
+		private BigDecimal r25_qua_iii_qar;
+		private BigDecimal r25_qua_iii_inr;
+		private BigDecimal r25_qua_iv_lc;
+		private BigDecimal r25_qua_iv_qar;
+		private BigDecimal r25_qua_iv_inr;
+		private BigDecimal r25_cumm_inr;
+		private BigDecimal r25_cumm_bwp;
+
+		// R26
+		private String r26_product;
+		private BigDecimal r26_qua_i_lc;
+		private BigDecimal r26_qua_i_qar;
+		private BigDecimal r26_qua_i_inr;
+		private BigDecimal r26_qua_ii_lc;
+		private BigDecimal r26_qua_ii_qar;
+		private BigDecimal r26_qua_ii_inr;
+		private BigDecimal r26_qua_iii_lc;
+		private BigDecimal r26_qua_iii_qar;
+		private BigDecimal r26_qua_iii_inr;
+		private BigDecimal r26_qua_iv_lc;
+		private BigDecimal r26_qua_iv_qar;
+		private BigDecimal r26_qua_iv_inr;
+		private BigDecimal r26_cumm_inr;
+		private BigDecimal r26_cumm_bwp;
+
+		// R27
+		private String r27_product;
+		private BigDecimal r27_qua_i_lc;
+		private BigDecimal r27_qua_i_qar;
+		private BigDecimal r27_qua_i_inr;
+		private BigDecimal r27_qua_ii_lc;
+		private BigDecimal r27_qua_ii_qar;
+		private BigDecimal r27_qua_ii_inr;
+		private BigDecimal r27_qua_iii_lc;
+		private BigDecimal r27_qua_iii_qar;
+		private BigDecimal r27_qua_iii_inr;
+		private BigDecimal r27_qua_iv_lc;
+		private BigDecimal r27_qua_iv_qar;
+		private BigDecimal r27_qua_iv_inr;
+		private BigDecimal r27_cumm_inr;
+		private BigDecimal r27_cumm_bwp;
+
+		// R28
+		private String r28_product;
+		private BigDecimal r28_qua_i_lc;
+		private BigDecimal r28_qua_i_qar;
+		private BigDecimal r28_qua_i_inr;
+		private BigDecimal r28_qua_ii_lc;
+		private BigDecimal r28_qua_ii_qar;
+		private BigDecimal r28_qua_ii_inr;
+		private BigDecimal r28_qua_iii_lc;
+		private BigDecimal r28_qua_iii_qar;
+		private BigDecimal r28_qua_iii_inr;
+		private BigDecimal r28_qua_iv_lc;
+		private BigDecimal r28_qua_iv_qar;
+		private BigDecimal r28_qua_iv_inr;
+		private BigDecimal r28_cumm_inr;
+		private BigDecimal r28_cumm_bwp;
+
+		// R29
+		private String r29_product;
+		private BigDecimal r29_qua_i_lc;
+		private BigDecimal r29_qua_i_qar;
+		private BigDecimal r29_qua_i_inr;
+		private BigDecimal r29_qua_ii_lc;
+		private BigDecimal r29_qua_ii_qar;
+		private BigDecimal r29_qua_ii_inr;
+		private BigDecimal r29_qua_iii_lc;
+		private BigDecimal r29_qua_iii_qar;
+		private BigDecimal r29_qua_iii_inr;
+		private BigDecimal r29_qua_iv_lc;
+		private BigDecimal r29_qua_iv_qar;
+		private BigDecimal r29_qua_iv_inr;
+		private BigDecimal r29_cumm_inr;
+		private BigDecimal r29_cumm_bwp;
+
+		// R30
+		private String r30_product;
+		private BigDecimal r30_qua_i_lc;
+		private BigDecimal r30_qua_i_qar;
+		private BigDecimal r30_qua_i_inr;
+		private BigDecimal r30_qua_ii_lc;
+		private BigDecimal r30_qua_ii_qar;
+		private BigDecimal r30_qua_ii_inr;
+		private BigDecimal r30_qua_iii_lc;
+		private BigDecimal r30_qua_iii_qar;
+		private BigDecimal r30_qua_iii_inr;
+		private BigDecimal r30_qua_iv_lc;
+		private BigDecimal r30_qua_iv_qar;
+		private BigDecimal r30_qua_iv_inr;
+		private BigDecimal r30_cumm_inr;
+		private BigDecimal r30_cumm_bwp;
+
+		// R31
+		private String r31_product;
+		private BigDecimal r31_qua_i_lc;
+		private BigDecimal r31_qua_i_qar;
+		private BigDecimal r31_qua_i_inr;
+		private BigDecimal r31_qua_ii_lc;
+		private BigDecimal r31_qua_ii_qar;
+		private BigDecimal r31_qua_ii_inr;
+		private BigDecimal r31_qua_iii_lc;
+		private BigDecimal r31_qua_iii_qar;
+		private BigDecimal r31_qua_iii_inr;
+		private BigDecimal r31_qua_iv_lc;
+		private BigDecimal r31_qua_iv_qar;
+		private BigDecimal r31_qua_iv_inr;
+		private BigDecimal r31_cumm_inr;
+		private BigDecimal r31_cumm_bwp;
+
+		// R32
+		private String r32_product;
+		private BigDecimal r32_qua_i_lc;
+		private BigDecimal r32_qua_i_qar;
+		private BigDecimal r32_qua_i_inr;
+		private BigDecimal r32_qua_ii_lc;
+		private BigDecimal r32_qua_ii_qar;
+		private BigDecimal r32_qua_ii_inr;
+		private BigDecimal r32_qua_iii_lc;
+		private BigDecimal r32_qua_iii_qar;
+		private BigDecimal r32_qua_iii_inr;
+		private BigDecimal r32_qua_iv_lc;
+		private BigDecimal r32_qua_iv_qar;
+		private BigDecimal r32_qua_iv_inr;
+		private BigDecimal r32_cumm_inr;
+		private BigDecimal r32_cumm_bwp;
+
+		// R33
+		private String r33_product;
+		private BigDecimal r33_qua_i_lc;
+		private BigDecimal r33_qua_i_qar;
+		private BigDecimal r33_qua_i_inr;
+		private BigDecimal r33_qua_ii_lc;
+		private BigDecimal r33_qua_ii_qar;
+		private BigDecimal r33_qua_ii_inr;
+		private BigDecimal r33_qua_iii_lc;
+		private BigDecimal r33_qua_iii_qar;
+		private BigDecimal r33_qua_iii_inr;
+		private BigDecimal r33_qua_iv_lc;
+		private BigDecimal r33_qua_iv_qar;
+		private BigDecimal r33_qua_iv_inr;
+		private BigDecimal r33_cumm_inr;
+		private BigDecimal r33_cumm_bwp;
+
+		// R34
+		private String r34_product;
+		private BigDecimal r34_qua_i_lc;
+		private BigDecimal r34_qua_i_qar;
+		private BigDecimal r34_qua_i_inr;
+		private BigDecimal r34_qua_ii_lc;
+		private BigDecimal r34_qua_ii_qar;
+		private BigDecimal r34_qua_ii_inr;
+		private BigDecimal r34_qua_iii_lc;
+		private BigDecimal r34_qua_iii_qar;
+		private BigDecimal r34_qua_iii_inr;
+		private BigDecimal r34_qua_iv_lc;
+		private BigDecimal r34_qua_iv_qar;
+		private BigDecimal r34_qua_iv_inr;
+		private BigDecimal r34_cumm_inr;
+		private BigDecimal r34_cumm_bwp;
+
+		// R35
+		private String r35_product;
+		private BigDecimal r35_qua_i_lc;
+		private BigDecimal r35_qua_i_qar;
+		private BigDecimal r35_qua_i_inr;
+		private BigDecimal r35_qua_ii_lc;
+		private BigDecimal r35_qua_ii_qar;
+		private BigDecimal r35_qua_ii_inr;
+		private BigDecimal r35_qua_iii_lc;
+		private BigDecimal r35_qua_iii_qar;
+		private BigDecimal r35_qua_iii_inr;
+		private BigDecimal r35_qua_iv_lc;
+		private BigDecimal r35_qua_iv_qar;
+		private BigDecimal r35_qua_iv_inr;
+		private BigDecimal r35_cumm_inr;
+		private BigDecimal r35_cumm_bwp;
+
+		// R36
+		private String r36_product;
+		private BigDecimal r36_qua_i_lc;
+		private BigDecimal r36_qua_i_qar;
+		private BigDecimal r36_qua_i_inr;
+		private BigDecimal r36_qua_ii_lc;
+		private BigDecimal r36_qua_ii_qar;
+		private BigDecimal r36_qua_ii_inr;
+		private BigDecimal r36_qua_iii_lc;
+		private BigDecimal r36_qua_iii_qar;
+		private BigDecimal r36_qua_iii_inr;
+		private BigDecimal r36_qua_iv_lc;
+		private BigDecimal r36_qua_iv_qar;
+		private BigDecimal r36_qua_iv_inr;
+		private BigDecimal r36_cumm_inr;
+		private BigDecimal r36_cumm_bwp;
+
+		// R37
+		private String r37_product;
+		private BigDecimal r37_qua_i_lc;
+		private BigDecimal r37_qua_i_qar;
+		private BigDecimal r37_qua_i_inr;
+		private BigDecimal r37_qua_ii_lc;
+		private BigDecimal r37_qua_ii_qar;
+		private BigDecimal r37_qua_ii_inr;
+		private BigDecimal r37_qua_iii_lc;
+		private BigDecimal r37_qua_iii_qar;
+		private BigDecimal r37_qua_iii_inr;
+		private BigDecimal r37_qua_iv_lc;
+		private BigDecimal r37_qua_iv_qar;
+		private BigDecimal r37_qua_iv_inr;
+		private BigDecimal r37_cumm_inr;
+		private BigDecimal r37_cumm_bwp;
+
+		// R38
+		private String r38_product;
+		private BigDecimal r38_qua_i_lc;
+		private BigDecimal r38_qua_i_qar;
+		private BigDecimal r38_qua_i_inr;
+		private BigDecimal r38_qua_ii_lc;
+		private BigDecimal r38_qua_ii_qar;
+		private BigDecimal r38_qua_ii_inr;
+		private BigDecimal r38_qua_iii_lc;
+		private BigDecimal r38_qua_iii_qar;
+		private BigDecimal r38_qua_iii_inr;
+		private BigDecimal r38_qua_iv_lc;
+		private BigDecimal r38_qua_iv_qar;
+		private BigDecimal r38_qua_iv_inr;
+		private BigDecimal r38_cumm_inr;
+		private BigDecimal r38_cumm_bwp;
+
+		// R39
+		private String r39_product;
+		private BigDecimal r39_qua_i_lc;
+		private BigDecimal r39_qua_i_qar;
+		private BigDecimal r39_qua_i_inr;
+		private BigDecimal r39_qua_ii_lc;
+		private BigDecimal r39_qua_ii_qar;
+		private BigDecimal r39_qua_ii_inr;
+		private BigDecimal r39_qua_iii_lc;
+		private BigDecimal r39_qua_iii_qar;
+		private BigDecimal r39_qua_iii_inr;
+		private BigDecimal r39_qua_iv_lc;
+		private BigDecimal r39_qua_iv_qar;
+		private BigDecimal r39_qua_iv_inr;
+		private BigDecimal r39_cumm_inr;
+		private BigDecimal r39_cumm_bwp;
+
+		// R40
+		private String r40_product;
+		private BigDecimal r40_qua_i_lc;
+		private BigDecimal r40_qua_i_qar;
+		private BigDecimal r40_qua_i_inr;
+		private BigDecimal r40_qua_ii_lc;
+		private BigDecimal r40_qua_ii_qar;
+		private BigDecimal r40_qua_ii_inr;
+		private BigDecimal r40_qua_iii_lc;
+		private BigDecimal r40_qua_iii_qar;
+		private BigDecimal r40_qua_iii_inr;
+		private BigDecimal r40_qua_iv_lc;
+		private BigDecimal r40_qua_iv_qar;
+		private BigDecimal r40_qua_iv_inr;
+		private BigDecimal r40_cumm_inr;
+		private BigDecimal r40_cumm_bwp;
+
+		// R41
+		private String r41_product;
+		private BigDecimal r41_qua_i_lc;
+		private BigDecimal r41_qua_i_qar;
+		private BigDecimal r41_qua_i_inr;
+		private BigDecimal r41_qua_ii_lc;
+		private BigDecimal r41_qua_ii_qar;
+		private BigDecimal r41_qua_ii_inr;
+		private BigDecimal r41_qua_iii_lc;
+		private BigDecimal r41_qua_iii_qar;
+		private BigDecimal r41_qua_iii_inr;
+		private BigDecimal r41_qua_iv_lc;
+		private BigDecimal r41_qua_iv_qar;
+		private BigDecimal r41_qua_iv_inr;
+		private BigDecimal r41_cumm_inr;
+		private BigDecimal r41_cumm_bwp;
+
+		// R42
+		private String r42_product;
+		private BigDecimal r42_qua_i_lc;
+		private BigDecimal r42_qua_i_qar;
+		private BigDecimal r42_qua_i_inr;
+		private BigDecimal r42_qua_ii_lc;
+		private BigDecimal r42_qua_ii_qar;
+		private BigDecimal r42_qua_ii_inr;
+		private BigDecimal r42_qua_iii_lc;
+		private BigDecimal r42_qua_iii_qar;
+		private BigDecimal r42_qua_iii_inr;
+		private BigDecimal r42_qua_iv_lc;
+		private BigDecimal r42_qua_iv_qar;
+		private BigDecimal r42_qua_iv_inr;
+		private BigDecimal r42_cumm_inr;
+		private BigDecimal r42_cumm_bwp;
+
+		// R43
+		private String r43_product;
+		private BigDecimal r43_qua_i_lc;
+		private BigDecimal r43_qua_i_qar;
+		private BigDecimal r43_qua_i_inr;
+		private BigDecimal r43_qua_ii_lc;
+		private BigDecimal r43_qua_ii_qar;
+		private BigDecimal r43_qua_ii_inr;
+		private BigDecimal r43_qua_iii_lc;
+		private BigDecimal r43_qua_iii_qar;
+		private BigDecimal r43_qua_iii_inr;
+		private BigDecimal r43_qua_iv_lc;
+		private BigDecimal r43_qua_iv_qar;
+		private BigDecimal r43_qua_iv_inr;
+		private BigDecimal r43_cumm_inr;
+		private BigDecimal r43_cumm_bwp;
+
+		// R44
+		private String r44_product;
+		private BigDecimal r44_qua_i_lc;
+		private BigDecimal r44_qua_i_qar;
+		private BigDecimal r44_qua_i_inr;
+		private BigDecimal r44_qua_ii_lc;
+		private BigDecimal r44_qua_ii_qar;
+		private BigDecimal r44_qua_ii_inr;
+		private BigDecimal r44_qua_iii_lc;
+		private BigDecimal r44_qua_iii_qar;
+		private BigDecimal r44_qua_iii_inr;
+		private BigDecimal r44_qua_iv_lc;
+		private BigDecimal r44_qua_iv_qar;
+		private BigDecimal r44_qua_iv_inr;
+		private BigDecimal r44_cumm_inr;
+		private BigDecimal r44_cumm_bwp;
+
+		// R45
+		private String r45_product;
+		private BigDecimal r45_qua_i_lc;
+		private BigDecimal r45_qua_i_qar;
+		private BigDecimal r45_qua_i_inr;
+		private BigDecimal r45_qua_ii_lc;
+		private BigDecimal r45_qua_ii_qar;
+		private BigDecimal r45_qua_ii_inr;
+		private BigDecimal r45_qua_iii_lc;
+		private BigDecimal r45_qua_iii_qar;
+		private BigDecimal r45_qua_iii_inr;
+		private BigDecimal r45_qua_iv_lc;
+		private BigDecimal r45_qua_iv_qar;
+		private BigDecimal r45_qua_iv_inr;
+		private BigDecimal r45_cumm_inr;
+		private BigDecimal r45_cumm_bwp;
+
+		// R46
+		private String r46_product;
+		private BigDecimal r46_qua_i_lc;
+		private BigDecimal r46_qua_i_qar;
+		private BigDecimal r46_qua_i_inr;
+		private BigDecimal r46_qua_ii_lc;
+		private BigDecimal r46_qua_ii_qar;
+		private BigDecimal r46_qua_ii_inr;
+		private BigDecimal r46_qua_iii_lc;
+		private BigDecimal r46_qua_iii_qar;
+		private BigDecimal r46_qua_iii_inr;
+		private BigDecimal r46_qua_iv_lc;
+		private BigDecimal r46_qua_iv_qar;
+		private BigDecimal r46_qua_iv_inr;
+		private BigDecimal r46_cumm_inr;
+		private BigDecimal r46_cumm_bwp;
+
+		// R47
+		private String r47_product;
+		private BigDecimal r47_qua_i_lc;
+		private BigDecimal r47_qua_i_qar;
+		private BigDecimal r47_qua_i_inr;
+		private BigDecimal r47_qua_ii_lc;
+		private BigDecimal r47_qua_ii_qar;
+		private BigDecimal r47_qua_ii_inr;
+		private BigDecimal r47_qua_iii_lc;
+		private BigDecimal r47_qua_iii_qar;
+		private BigDecimal r47_qua_iii_inr;
+		private BigDecimal r47_qua_iv_lc;
+		private BigDecimal r47_qua_iv_qar;
+		private BigDecimal r47_qua_iv_inr;
+		private BigDecimal r47_cumm_inr;
+		private BigDecimal r47_cumm_bwp;
+
+		// R48
+		private String r48_product;
+		private BigDecimal r48_qua_i_lc;
+		private BigDecimal r48_qua_i_qar;
+		private BigDecimal r48_qua_i_inr;
+		private BigDecimal r48_qua_ii_lc;
+		private BigDecimal r48_qua_ii_qar;
+		private BigDecimal r48_qua_ii_inr;
+		private BigDecimal r48_qua_iii_lc;
+		private BigDecimal r48_qua_iii_qar;
+		private BigDecimal r48_qua_iii_inr;
+		private BigDecimal r48_qua_iv_lc;
+		private BigDecimal r48_qua_iv_qar;
+		private BigDecimal r48_qua_iv_inr;
+		private BigDecimal r48_cumm_inr;
+		private BigDecimal r48_cumm_bwp;
+
+		// R49
+		private String r49_product;
+		private BigDecimal r49_qua_i_lc;
+		private BigDecimal r49_qua_i_qar;
+		private BigDecimal r49_qua_i_inr;
+		private BigDecimal r49_qua_ii_lc;
+		private BigDecimal r49_qua_ii_qar;
+		private BigDecimal r49_qua_ii_inr;
+		private BigDecimal r49_qua_iii_lc;
+		private BigDecimal r49_qua_iii_qar;
+		private BigDecimal r49_qua_iii_inr;
+		private BigDecimal r49_qua_iv_lc;
+		private BigDecimal r49_qua_iv_qar;
+		private BigDecimal r49_qua_iv_inr;
+		private BigDecimal r49_cumm_inr;
+		private BigDecimal r49_cumm_bwp;
+
+		// R50
+		private String r50_product;
+		private BigDecimal r50_qua_i_lc;
+		private BigDecimal r50_qua_i_qar;
+		private BigDecimal r50_qua_i_inr;
+		private BigDecimal r50_qua_ii_lc;
+		private BigDecimal r50_qua_ii_qar;
+		private BigDecimal r50_qua_ii_inr;
+		private BigDecimal r50_qua_iii_lc;
+		private BigDecimal r50_qua_iii_qar;
+		private BigDecimal r50_qua_iii_inr;
+		private BigDecimal r50_qua_iv_lc;
+		private BigDecimal r50_qua_iv_qar;
+		private BigDecimal r50_qua_iv_inr;
+		private BigDecimal r50_cumm_inr;
+		private BigDecimal r50_cumm_bwp;
+
+		// R51
+		private String r51_product;
+		private BigDecimal r51_qua_i_lc;
+		private BigDecimal r51_qua_i_qar;
+		private BigDecimal r51_qua_i_inr;
+		private BigDecimal r51_qua_ii_lc;
+		private BigDecimal r51_qua_ii_qar;
+		private BigDecimal r51_qua_ii_inr;
+		private BigDecimal r51_qua_iii_lc;
+		private BigDecimal r51_qua_iii_qar;
+		private BigDecimal r51_qua_iii_inr;
+		private BigDecimal r51_qua_iv_lc;
+		private BigDecimal r51_qua_iv_qar;
+		private BigDecimal r51_qua_iv_inr;
+		private BigDecimal r51_cumm_inr;
+		private BigDecimal r51_cumm_bwp;
+
+		// R52
+		private String r52_product;
+		private BigDecimal r52_qua_i_lc;
+		private BigDecimal r52_qua_i_qar;
+		private BigDecimal r52_qua_i_inr;
+		private BigDecimal r52_qua_ii_lc;
+		private BigDecimal r52_qua_ii_qar;
+		private BigDecimal r52_qua_ii_inr;
+		private BigDecimal r52_qua_iii_lc;
+		private BigDecimal r52_qua_iii_qar;
+		private BigDecimal r52_qua_iii_inr;
+		private BigDecimal r52_qua_iv_lc;
+		private BigDecimal r52_qua_iv_qar;
+		private BigDecimal r52_qua_iv_inr;
+		private BigDecimal r52_cumm_inr;
+		private BigDecimal r52_cumm_bwp;
+
+		// R53
+		private String r53_product;
+		private BigDecimal r53_qua_i_lc;
+		private BigDecimal r53_qua_i_qar;
+		private BigDecimal r53_qua_i_inr;
+		private BigDecimal r53_qua_ii_lc;
+		private BigDecimal r53_qua_ii_qar;
+		private BigDecimal r53_qua_ii_inr;
+		private BigDecimal r53_qua_iii_lc;
+		private BigDecimal r53_qua_iii_qar;
+		private BigDecimal r53_qua_iii_inr;
+		private BigDecimal r53_qua_iv_lc;
+		private BigDecimal r53_qua_iv_qar;
+		private BigDecimal r53_qua_iv_inr;
+		private BigDecimal r53_cumm_inr;
+		private BigDecimal r53_cumm_bwp;
+
+		// R54
+		private String r54_product;
+		private BigDecimal r54_qua_i_lc;
+		private BigDecimal r54_qua_i_qar;
+		private BigDecimal r54_qua_i_inr;
+		private BigDecimal r54_qua_ii_lc;
+		private BigDecimal r54_qua_ii_qar;
+		private BigDecimal r54_qua_ii_inr;
+		private BigDecimal r54_qua_iii_lc;
+		private BigDecimal r54_qua_iii_qar;
+		private BigDecimal r54_qua_iii_inr;
+		private BigDecimal r54_qua_iv_lc;
+		private BigDecimal r54_qua_iv_qar;
+		private BigDecimal r54_qua_iv_inr;
+		private BigDecimal r54_cumm_inr;
+		private BigDecimal r54_cumm_bwp;
+
+		// R55
+		private String r55_product;
+		private BigDecimal r55_qua_i_lc;
+		private BigDecimal r55_qua_i_qar;
+		private BigDecimal r55_qua_i_inr;
+		private BigDecimal r55_qua_ii_lc;
+		private BigDecimal r55_qua_ii_qar;
+		private BigDecimal r55_qua_ii_inr;
+		private BigDecimal r55_qua_iii_lc;
+		private BigDecimal r55_qua_iii_qar;
+		private BigDecimal r55_qua_iii_inr;
+		private BigDecimal r55_qua_iv_lc;
+		private BigDecimal r55_qua_iv_qar;
+		private BigDecimal r55_qua_iv_inr;
+		private BigDecimal r55_cumm_inr;
+		private BigDecimal r55_cumm_bwp;
+
+		// R56
+		private String r56_product;
+		private BigDecimal r56_qua_i_lc;
+		private BigDecimal r56_qua_i_qar;
+		private BigDecimal r56_qua_i_inr;
+		private BigDecimal r56_qua_ii_lc;
+		private BigDecimal r56_qua_ii_qar;
+		private BigDecimal r56_qua_ii_inr;
+		private BigDecimal r56_qua_iii_lc;
+		private BigDecimal r56_qua_iii_qar;
+		private BigDecimal r56_qua_iii_inr;
+		private BigDecimal r56_qua_iv_lc;
+		private BigDecimal r56_qua_iv_qar;
+		private BigDecimal r56_qua_iv_inr;
+		private BigDecimal r56_cumm_inr;
+		private BigDecimal r56_cumm_bwp;
+
+		// R57
+		private String r57_product;
+		private BigDecimal r57_qua_i_lc;
+		private BigDecimal r57_qua_i_qar;
+		private BigDecimal r57_qua_i_inr;
+		private BigDecimal r57_qua_ii_lc;
+		private BigDecimal r57_qua_ii_qar;
+		private BigDecimal r57_qua_ii_inr;
+		private BigDecimal r57_qua_iii_lc;
+		private BigDecimal r57_qua_iii_qar;
+		private BigDecimal r57_qua_iii_inr;
+		private BigDecimal r57_qua_iv_lc;
+		private BigDecimal r57_qua_iv_qar;
+		private BigDecimal r57_qua_iv_inr;
+		private BigDecimal r57_cumm_inr;
+		private BigDecimal r57_cumm_bwp;
+
+		// R58
+		private String r58_product;
+		private BigDecimal r58_qua_i_lc;
+		private BigDecimal r58_qua_i_qar;
+		private BigDecimal r58_qua_i_inr;
+		private BigDecimal r58_qua_ii_lc;
+		private BigDecimal r58_qua_ii_qar;
+		private BigDecimal r58_qua_ii_inr;
+		private BigDecimal r58_qua_iii_lc;
+		private BigDecimal r58_qua_iii_qar;
+		private BigDecimal r58_qua_iii_inr;
+		private BigDecimal r58_qua_iv_lc;
+		private BigDecimal r58_qua_iv_qar;
+		private BigDecimal r58_qua_iv_inr;
+		private BigDecimal r58_cumm_inr;
+		private BigDecimal r58_cumm_bwp;
+
+		// R59
+		private String r59_product;
+		private BigDecimal r59_qua_i_lc;
+		private BigDecimal r59_qua_i_qar;
+		private BigDecimal r59_qua_i_inr;
+		private BigDecimal r59_qua_ii_lc;
+		private BigDecimal r59_qua_ii_qar;
+		private BigDecimal r59_qua_ii_inr;
+		private BigDecimal r59_qua_iii_lc;
+		private BigDecimal r59_qua_iii_qar;
+		private BigDecimal r59_qua_iii_inr;
+		private BigDecimal r59_qua_iv_lc;
+		private BigDecimal r59_qua_iv_qar;
+		private BigDecimal r59_qua_iv_inr;
+		private BigDecimal r59_cumm_inr;
+		private BigDecimal r59_cumm_bwp;
+
+		// R60
+		private String r60_product;
+		private BigDecimal r60_qua_i_lc;
+		private BigDecimal r60_qua_i_qar;
+		private BigDecimal r60_qua_i_inr;
+		private BigDecimal r60_qua_ii_lc;
+		private BigDecimal r60_qua_ii_qar;
+		private BigDecimal r60_qua_ii_inr;
+		private BigDecimal r60_qua_iii_lc;
+		private BigDecimal r60_qua_iii_qar;
+		private BigDecimal r60_qua_iii_inr;
+		private BigDecimal r60_qua_iv_lc;
+		private BigDecimal r60_qua_iv_qar;
+		private BigDecimal r60_qua_iv_inr;
+		private BigDecimal r60_cumm_inr;
+		private BigDecimal r60_cumm_bwp;
+
+		// R61
+		private String r61_product;
+		private BigDecimal r61_qua_i_lc;
+		private BigDecimal r61_qua_i_qar;
+		private BigDecimal r61_qua_i_inr;
+		private BigDecimal r61_qua_ii_lc;
+		private BigDecimal r61_qua_ii_qar;
+		private BigDecimal r61_qua_ii_inr;
+		private BigDecimal r61_qua_iii_lc;
+		private BigDecimal r61_qua_iii_qar;
+		private BigDecimal r61_qua_iii_inr;
+		private BigDecimal r61_qua_iv_lc;
+		private BigDecimal r61_qua_iv_qar;
+		private BigDecimal r61_qua_iv_inr;
+		private BigDecimal r61_cumm_inr;
+		private BigDecimal r61_cumm_bwp;
+
+		// R62
+		private String r62_product;
+		private BigDecimal r62_qua_i_lc;
+		private BigDecimal r62_qua_i_qar;
+		private BigDecimal r62_qua_i_inr;
+		private BigDecimal r62_qua_ii_lc;
+		private BigDecimal r62_qua_ii_qar;
+		private BigDecimal r62_qua_ii_inr;
+		private BigDecimal r62_qua_iii_lc;
+		private BigDecimal r62_qua_iii_qar;
+		private BigDecimal r62_qua_iii_inr;
+		private BigDecimal r62_qua_iv_lc;
+		private BigDecimal r62_qua_iv_qar;
+		private BigDecimal r62_qua_iv_inr;
+		private BigDecimal r62_cumm_inr;
+		private BigDecimal r62_cumm_bwp;
+
+		// R63
+		private String r63_product;
+		private BigDecimal r63_qua_i_lc;
+		private BigDecimal r63_qua_i_qar;
+		private BigDecimal r63_qua_i_inr;
+		private BigDecimal r63_qua_ii_lc;
+		private BigDecimal r63_qua_ii_qar;
+		private BigDecimal r63_qua_ii_inr;
+		private BigDecimal r63_qua_iii_lc;
+		private BigDecimal r63_qua_iii_qar;
+		private BigDecimal r63_qua_iii_inr;
+		private BigDecimal r63_qua_iv_lc;
+		private BigDecimal r63_qua_iv_qar;
+		private BigDecimal r63_qua_iv_inr;
+		private BigDecimal r63_cumm_inr;
+		private BigDecimal r63_cumm_bwp;
+
+		// R64
+		private String r64_product;
+		private BigDecimal r64_qua_i_lc;
+		private BigDecimal r64_qua_i_qar;
+		private BigDecimal r64_qua_i_inr;
+		private BigDecimal r64_qua_ii_lc;
+		private BigDecimal r64_qua_ii_qar;
+		private BigDecimal r64_qua_ii_inr;
+		private BigDecimal r64_qua_iii_lc;
+		private BigDecimal r64_qua_iii_qar;
+		private BigDecimal r64_qua_iii_inr;
+		private BigDecimal r64_qua_iv_lc;
+		private BigDecimal r64_qua_iv_qar;
+		private BigDecimal r64_qua_iv_inr;
+		private BigDecimal r64_cumm_inr;
+		private BigDecimal r64_cumm_bwp;
+
+		// R65
+		private String r65_product;
+		private BigDecimal r65_qua_i_lc;
+		private BigDecimal r65_qua_i_qar;
+		private BigDecimal r65_qua_i_inr;
+		private BigDecimal r65_qua_ii_lc;
+		private BigDecimal r65_qua_ii_qar;
+		private BigDecimal r65_qua_ii_inr;
+		private BigDecimal r65_qua_iii_lc;
+		private BigDecimal r65_qua_iii_qar;
+		private BigDecimal r65_qua_iii_inr;
+		private BigDecimal r65_qua_iv_lc;
+		private BigDecimal r65_qua_iv_qar;
+		private BigDecimal r65_qua_iv_inr;
+		private BigDecimal r65_cumm_inr;
+		private BigDecimal r65_cumm_bwp;
+
+		// R66
+		private String r66_product;
+		private BigDecimal r66_qua_i_lc;
+		private BigDecimal r66_qua_i_qar;
+		private BigDecimal r66_qua_i_inr;
+		private BigDecimal r66_qua_ii_lc;
+		private BigDecimal r66_qua_ii_qar;
+		private BigDecimal r66_qua_ii_inr;
+		private BigDecimal r66_qua_iii_lc;
+		private BigDecimal r66_qua_iii_qar;
+		private BigDecimal r66_qua_iii_inr;
+		private BigDecimal r66_qua_iv_lc;
+		private BigDecimal r66_qua_iv_qar;
+		private BigDecimal r66_qua_iv_inr;
+		private BigDecimal r66_cumm_inr;
+		private BigDecimal r66_cumm_bwp;
+
+		// R67
+		private String r67_product;
+		private BigDecimal r67_qua_i_lc;
+		private BigDecimal r67_qua_i_qar;
+		private BigDecimal r67_qua_i_inr;
+		private BigDecimal r67_qua_ii_lc;
+		private BigDecimal r67_qua_ii_qar;
+		private BigDecimal r67_qua_ii_inr;
+		private BigDecimal r67_qua_iii_lc;
+		private BigDecimal r67_qua_iii_qar;
+		private BigDecimal r67_qua_iii_inr;
+		private BigDecimal r67_qua_iv_lc;
+		private BigDecimal r67_qua_iv_qar;
+		private BigDecimal r67_qua_iv_inr;
+		private BigDecimal r67_cumm_inr;
+		private BigDecimal r67_cumm_bwp;
+
+		// R68
+		private String r68_product;
+		private BigDecimal r68_qua_i_lc;
+		private BigDecimal r68_qua_i_qar;
+		private BigDecimal r68_qua_i_inr;
+		private BigDecimal r68_qua_ii_lc;
+		private BigDecimal r68_qua_ii_qar;
+		private BigDecimal r68_qua_ii_inr;
+		private BigDecimal r68_qua_iii_lc;
+		private BigDecimal r68_qua_iii_qar;
+		private BigDecimal r68_qua_iii_inr;
+		private BigDecimal r68_qua_iv_lc;
+		private BigDecimal r68_qua_iv_qar;
+		private BigDecimal r68_qua_iv_inr;
+		private BigDecimal r68_cumm_inr;
+		private BigDecimal r68_cumm_bwp;
+
+		// R69
+		private String r69_product;
+		private BigDecimal r69_qua_i_lc;
+		private BigDecimal r69_qua_i_qar;
+		private BigDecimal r69_qua_i_inr;
+		private BigDecimal r69_qua_ii_lc;
+		private BigDecimal r69_qua_ii_qar;
+		private BigDecimal r69_qua_ii_inr;
+		private BigDecimal r69_qua_iii_lc;
+		private BigDecimal r69_qua_iii_qar;
+		private BigDecimal r69_qua_iii_inr;
+		private BigDecimal r69_qua_iv_lc;
+		private BigDecimal r69_qua_iv_qar;
+		private BigDecimal r69_qua_iv_inr;
+		private BigDecimal r69_cumm_inr;
+		private BigDecimal r69_cumm_bwp;
+
+		// R70
+		private String r70_product;
+		private BigDecimal r70_qua_i_lc;
+		private BigDecimal r70_qua_i_qar;
+		private BigDecimal r70_qua_i_inr;
+		private BigDecimal r70_qua_ii_lc;
+		private BigDecimal r70_qua_ii_qar;
+		private BigDecimal r70_qua_ii_inr;
+		private BigDecimal r70_qua_iii_lc;
+		private BigDecimal r70_qua_iii_qar;
+		private BigDecimal r70_qua_iii_inr;
+		private BigDecimal r70_qua_iv_lc;
+		private BigDecimal r70_qua_iv_qar;
+		private BigDecimal r70_qua_iv_inr;
+		private BigDecimal r70_cumm_inr;
+		private BigDecimal r70_cumm_bwp;
+
+		// R71
+		private String r71_product;
+		private BigDecimal r71_qua_i_lc;
+		private BigDecimal r71_qua_i_qar;
+		private BigDecimal r71_qua_i_inr;
+		private BigDecimal r71_qua_ii_lc;
+		private BigDecimal r71_qua_ii_qar;
+		private BigDecimal r71_qua_ii_inr;
+		private BigDecimal r71_qua_iii_lc;
+		private BigDecimal r71_qua_iii_qar;
+		private BigDecimal r71_qua_iii_inr;
+		private BigDecimal r71_qua_iv_lc;
+		private BigDecimal r71_qua_iv_qar;
+		private BigDecimal r71_qua_iv_inr;
+		private BigDecimal r71_cumm_inr;
+		private BigDecimal r71_cumm_bwp;
+
+		// R72
+		private String r72_product;
+		private BigDecimal r72_qua_i_lc;
+		private BigDecimal r72_qua_i_qar;
+		private BigDecimal r72_qua_i_inr;
+		private BigDecimal r72_qua_ii_lc;
+		private BigDecimal r72_qua_ii_qar;
+		private BigDecimal r72_qua_ii_inr;
+		private BigDecimal r72_qua_iii_lc;
+		private BigDecimal r72_qua_iii_qar;
+		private BigDecimal r72_qua_iii_inr;
+		private BigDecimal r72_qua_iv_lc;
+		private BigDecimal r72_qua_iv_qar;
+		private BigDecimal r72_qua_iv_inr;
+		private BigDecimal r72_cumm_inr;
+		private BigDecimal r72_cumm_bwp;
+
+		// R73
+		private String r73_product;
+		private BigDecimal r73_qua_i_lc;
+		private BigDecimal r73_qua_i_qar;
+		private BigDecimal r73_qua_i_inr;
+		private BigDecimal r73_qua_ii_lc;
+		private BigDecimal r73_qua_ii_qar;
+		private BigDecimal r73_qua_ii_inr;
+		private BigDecimal r73_qua_iii_lc;
+		private BigDecimal r73_qua_iii_qar;
+		private BigDecimal r73_qua_iii_inr;
+		private BigDecimal r73_qua_iv_lc;
+		private BigDecimal r73_qua_iv_qar;
+		private BigDecimal r73_qua_iv_inr;
+		private BigDecimal r73_cumm_inr;
+		private BigDecimal r73_cumm_bwp;
+
+		// R74
+		private String r74_product;
+		private BigDecimal r74_qua_i_lc;
+		private BigDecimal r74_qua_i_qar;
+		private BigDecimal r74_qua_i_inr;
+		private BigDecimal r74_qua_ii_lc;
+		private BigDecimal r74_qua_ii_qar;
+		private BigDecimal r74_qua_ii_inr;
+		private BigDecimal r74_qua_iii_lc;
+		private BigDecimal r74_qua_iii_qar;
+		private BigDecimal r74_qua_iii_inr;
+		private BigDecimal r74_qua_iv_lc;
+		private BigDecimal r74_qua_iv_qar;
+		private BigDecimal r74_qua_iv_inr;
+		private BigDecimal r74_cumm_inr;
+		private BigDecimal r74_cumm_bwp;
+
+		// R75
+		private String r75_product;
+		private BigDecimal r75_qua_i_lc;
+		private BigDecimal r75_qua_i_qar;
+		private BigDecimal r75_qua_i_inr;
+		private BigDecimal r75_qua_ii_lc;
+		private BigDecimal r75_qua_ii_qar;
+		private BigDecimal r75_qua_ii_inr;
+		private BigDecimal r75_qua_iii_lc;
+		private BigDecimal r75_qua_iii_qar;
+		private BigDecimal r75_qua_iii_inr;
+		private BigDecimal r75_qua_iv_lc;
+		private BigDecimal r75_qua_iv_qar;
+		private BigDecimal r75_qua_iv_inr;
+		private BigDecimal r75_cumm_inr;
+		private BigDecimal r75_cumm_bwp;
+
+		// R76
+		private String r76_product;
+		private BigDecimal r76_qua_i_lc;
+		private BigDecimal r76_qua_i_qar;
+		private BigDecimal r76_qua_i_inr;
+		private BigDecimal r76_qua_ii_lc;
+		private BigDecimal r76_qua_ii_qar;
+		private BigDecimal r76_qua_ii_inr;
+		private BigDecimal r76_qua_iii_lc;
+		private BigDecimal r76_qua_iii_qar;
+		private BigDecimal r76_qua_iii_inr;
+		private BigDecimal r76_qua_iv_lc;
+		private BigDecimal r76_qua_iv_qar;
+		private BigDecimal r76_qua_iv_inr;
+		private BigDecimal r76_cumm_inr;
+		private BigDecimal r76_cumm_bwp;
+
+		// R77
+		private String r77_product;
+		private BigDecimal r77_qua_i_lc;
+		private BigDecimal r77_qua_i_qar;
+		private BigDecimal r77_qua_i_inr;
+		private BigDecimal r77_qua_ii_lc;
+		private BigDecimal r77_qua_ii_qar;
+		private BigDecimal r77_qua_ii_inr;
+		private BigDecimal r77_qua_iii_lc;
+		private BigDecimal r77_qua_iii_qar;
+		private BigDecimal r77_qua_iii_inr;
+		private BigDecimal r77_qua_iv_lc;
+		private BigDecimal r77_qua_iv_qar;
+		private BigDecimal r77_qua_iv_inr;
+		private BigDecimal r77_cumm_inr;
+		private BigDecimal r77_cumm_bwp;
+
+		// R78
+		private String r78_product;
+		private BigDecimal r78_qua_i_lc;
+		private BigDecimal r78_qua_i_qar;
+		private BigDecimal r78_qua_i_inr;
+		private BigDecimal r78_qua_ii_lc;
+		private BigDecimal r78_qua_ii_qar;
+		private BigDecimal r78_qua_ii_inr;
+		private BigDecimal r78_qua_iii_lc;
+		private BigDecimal r78_qua_iii_qar;
+		private BigDecimal r78_qua_iii_inr;
+		private BigDecimal r78_qua_iv_lc;
+		private BigDecimal r78_qua_iv_qar;
+		private BigDecimal r78_qua_iv_inr;
+		private BigDecimal r78_cumm_inr;
+		private BigDecimal r78_cumm_bwp;
+
+		// R79
+		private String r79_product;
+		private BigDecimal r79_qua_i_lc;
+		private BigDecimal r79_qua_i_qar;
+		private BigDecimal r79_qua_i_inr;
+		private BigDecimal r79_qua_ii_lc;
+		private BigDecimal r79_qua_ii_qar;
+		private BigDecimal r79_qua_ii_inr;
+		private BigDecimal r79_qua_iii_lc;
+		private BigDecimal r79_qua_iii_qar;
+		private BigDecimal r79_qua_iii_inr;
+		private BigDecimal r79_qua_iv_lc;
+		private BigDecimal r79_qua_iv_qar;
+		private BigDecimal r79_qua_iv_inr;
+		private BigDecimal r79_cumm_inr;
+		private BigDecimal r79_cumm_bwp;
+
+		// R80
+		private String r80_product;
+		private BigDecimal r80_qua_i_lc;
+		private BigDecimal r80_qua_i_qar;
+		private BigDecimal r80_qua_i_inr;
+		private BigDecimal r80_qua_ii_lc;
+		private BigDecimal r80_qua_ii_qar;
+		private BigDecimal r80_qua_ii_inr;
+		private BigDecimal r80_qua_iii_lc;
+		private BigDecimal r80_qua_iii_qar;
+		private BigDecimal r80_qua_iii_inr;
+		private BigDecimal r80_qua_iv_lc;
+		private BigDecimal r80_qua_iv_qar;
+		private BigDecimal r80_qua_iv_inr;
+		private BigDecimal r80_cumm_inr;
+		private BigDecimal r80_cumm_bwp;
+
+		// R81
+		private String r81_product;
+		private BigDecimal r81_qua_i_lc;
+		private BigDecimal r81_qua_i_qar;
+		private BigDecimal r81_qua_i_inr;
+		private BigDecimal r81_qua_ii_lc;
+		private BigDecimal r81_qua_ii_qar;
+		private BigDecimal r81_qua_ii_inr;
+		private BigDecimal r81_qua_iii_lc;
+		private BigDecimal r81_qua_iii_qar;
+		private BigDecimal r81_qua_iii_inr;
+		private BigDecimal r81_qua_iv_lc;
+		private BigDecimal r81_qua_iv_qar;
+		private BigDecimal r81_qua_iv_inr;
+		private BigDecimal r81_cumm_inr;
+		private BigDecimal r81_cumm_bwp;
+
+		// R82
+		private String r82_product;
+		private BigDecimal r82_qua_i_lc;
+		private BigDecimal r82_qua_i_qar;
+		private BigDecimal r82_qua_i_inr;
+		private BigDecimal r82_qua_ii_lc;
+		private BigDecimal r82_qua_ii_qar;
+		private BigDecimal r82_qua_ii_inr;
+		private BigDecimal r82_qua_iii_lc;
+		private BigDecimal r82_qua_iii_qar;
+		private BigDecimal r82_qua_iii_inr;
+		private BigDecimal r82_qua_iv_lc;
+		private BigDecimal r82_qua_iv_qar;
+		private BigDecimal r82_qua_iv_inr;
+		private BigDecimal r82_cumm_inr;
+		private BigDecimal r82_cumm_bwp;
+
+		// R83
+		private String r83_product;
+		private BigDecimal r83_qua_i_lc;
+		private BigDecimal r83_qua_i_qar;
+		private BigDecimal r83_qua_i_inr;
+		private BigDecimal r83_qua_ii_lc;
+		private BigDecimal r83_qua_ii_qar;
+		private BigDecimal r83_qua_ii_inr;
+		private BigDecimal r83_qua_iii_lc;
+		private BigDecimal r83_qua_iii_qar;
+		private BigDecimal r83_qua_iii_inr;
+		private BigDecimal r83_qua_iv_lc;
+		private BigDecimal r83_qua_iv_qar;
+		private BigDecimal r83_qua_iv_inr;
+		private BigDecimal r83_cumm_inr;
+		private BigDecimal r83_cumm_bwp;
+
+		public String getR18_product() {
+			return r18_product;
+		}
+
+		public void setR18_product(String r18_product) {
+			this.r18_product = r18_product;
+		}
+
+		public BigDecimal getR18_qua_i_lc() {
+			return r18_qua_i_lc;
+		}
+
+		public void setR18_qua_i_lc(BigDecimal r18_qua_i_lc) {
+			this.r18_qua_i_lc = r18_qua_i_lc;
+		}
+
+		public BigDecimal getR18_qua_i_qar() {
+			return r18_qua_i_qar;
+		}
+
+		public void setR18_qua_i_qar(BigDecimal r18_qua_i_qar) {
+			this.r18_qua_i_qar = r18_qua_i_qar;
+		}
+
+		public BigDecimal getR18_qua_i_inr() {
+			return r18_qua_i_inr;
+		}
+
+		public void setR18_qua_i_inr(BigDecimal r18_qua_i_inr) {
+			this.r18_qua_i_inr = r18_qua_i_inr;
+		}
+
+		public BigDecimal getR18_qua_ii_lc() {
+			return r18_qua_ii_lc;
+		}
+
+		public void setR18_qua_ii_lc(BigDecimal r18_qua_ii_lc) {
+			this.r18_qua_ii_lc = r18_qua_ii_lc;
+		}
+
+		public BigDecimal getR18_qua_ii_qar() {
+			return r18_qua_ii_qar;
+		}
+
+		public void setR18_qua_ii_qar(BigDecimal r18_qua_ii_qar) {
+			this.r18_qua_ii_qar = r18_qua_ii_qar;
+		}
+
+		public BigDecimal getR18_qua_ii_inr() {
+			return r18_qua_ii_inr;
+		}
+
+		public void setR18_qua_ii_inr(BigDecimal r18_qua_ii_inr) {
+			this.r18_qua_ii_inr = r18_qua_ii_inr;
+		}
+
+		public BigDecimal getR18_qua_iii_lc() {
+			return r18_qua_iii_lc;
+		}
+
+		public void setR18_qua_iii_lc(BigDecimal r18_qua_iii_lc) {
+			this.r18_qua_iii_lc = r18_qua_iii_lc;
+		}
+
+		public BigDecimal getR18_qua_iii_qar() {
+			return r18_qua_iii_qar;
+		}
+
+		public void setR18_qua_iii_qar(BigDecimal r18_qua_iii_qar) {
+			this.r18_qua_iii_qar = r18_qua_iii_qar;
+		}
+
+		public BigDecimal getR18_qua_iii_inr() {
+			return r18_qua_iii_inr;
+		}
+
+		public void setR18_qua_iii_inr(BigDecimal r18_qua_iii_inr) {
+			this.r18_qua_iii_inr = r18_qua_iii_inr;
+		}
+
+		public BigDecimal getR18_qua_iv_lc() {
+			return r18_qua_iv_lc;
+		}
+
+		public void setR18_qua_iv_lc(BigDecimal r18_qua_iv_lc) {
+			this.r18_qua_iv_lc = r18_qua_iv_lc;
+		}
+
+		public BigDecimal getR18_qua_iv_qar() {
+			return r18_qua_iv_qar;
+		}
+
+		public void setR18_qua_iv_qar(BigDecimal r18_qua_iv_qar) {
+			this.r18_qua_iv_qar = r18_qua_iv_qar;
+		}
+
+		public BigDecimal getR18_qua_iv_inr() {
+			return r18_qua_iv_inr;
+		}
+
+		public void setR18_qua_iv_inr(BigDecimal r18_qua_iv_inr) {
+			this.r18_qua_iv_inr = r18_qua_iv_inr;
+		}
+
+		public BigDecimal getR18_cumm_inr() {
+			return r18_cumm_inr;
+		}
+
+		public void setR18_cumm_inr(BigDecimal r18_cumm_inr) {
+			this.r18_cumm_inr = r18_cumm_inr;
+		}
+
+		public BigDecimal getR18_cumm_bwp() {
+			return r18_cumm_bwp;
+		}
+
+		public void setR18_cumm_bwp(BigDecimal r18_cumm_bwp) {
+			this.r18_cumm_bwp = r18_cumm_bwp;
+		}
+
+		public String getR19_product() {
+			return r19_product;
+		}
+
+		public void setR19_product(String r19_product) {
+			this.r19_product = r19_product;
+		}
+
+		public BigDecimal getR19_qua_i_lc() {
+			return r19_qua_i_lc;
+		}
+
+		public void setR19_qua_i_lc(BigDecimal r19_qua_i_lc) {
+			this.r19_qua_i_lc = r19_qua_i_lc;
+		}
+
+		public BigDecimal getR19_qua_i_qar() {
+			return r19_qua_i_qar;
+		}
+
+		public void setR19_qua_i_qar(BigDecimal r19_qua_i_qar) {
+			this.r19_qua_i_qar = r19_qua_i_qar;
+		}
+
+		public BigDecimal getR19_qua_i_inr() {
+			return r19_qua_i_inr;
+		}
+
+		public void setR19_qua_i_inr(BigDecimal r19_qua_i_inr) {
+			this.r19_qua_i_inr = r19_qua_i_inr;
+		}
+
+		public BigDecimal getR19_qua_ii_lc() {
+			return r19_qua_ii_lc;
+		}
+
+		public void setR19_qua_ii_lc(BigDecimal r19_qua_ii_lc) {
+			this.r19_qua_ii_lc = r19_qua_ii_lc;
+		}
+
+		public BigDecimal getR19_qua_ii_qar() {
+			return r19_qua_ii_qar;
+		}
+
+		public void setR19_qua_ii_qar(BigDecimal r19_qua_ii_qar) {
+			this.r19_qua_ii_qar = r19_qua_ii_qar;
+		}
+
+		public BigDecimal getR19_qua_ii_inr() {
+			return r19_qua_ii_inr;
+		}
+
+		public void setR19_qua_ii_inr(BigDecimal r19_qua_ii_inr) {
+			this.r19_qua_ii_inr = r19_qua_ii_inr;
+		}
+
+		public BigDecimal getR19_qua_iii_lc() {
+			return r19_qua_iii_lc;
+		}
+
+		public void setR19_qua_iii_lc(BigDecimal r19_qua_iii_lc) {
+			this.r19_qua_iii_lc = r19_qua_iii_lc;
+		}
+
+		public BigDecimal getR19_qua_iii_qar() {
+			return r19_qua_iii_qar;
+		}
+
+		public void setR19_qua_iii_qar(BigDecimal r19_qua_iii_qar) {
+			this.r19_qua_iii_qar = r19_qua_iii_qar;
+		}
+
+		public BigDecimal getR19_qua_iii_inr() {
+			return r19_qua_iii_inr;
+		}
+
+		public void setR19_qua_iii_inr(BigDecimal r19_qua_iii_inr) {
+			this.r19_qua_iii_inr = r19_qua_iii_inr;
+		}
+
+		public BigDecimal getR19_qua_iv_lc() {
+			return r19_qua_iv_lc;
+		}
+
+		public void setR19_qua_iv_lc(BigDecimal r19_qua_iv_lc) {
+			this.r19_qua_iv_lc = r19_qua_iv_lc;
+		}
+
+		public BigDecimal getR19_qua_iv_qar() {
+			return r19_qua_iv_qar;
+		}
+
+		public void setR19_qua_iv_qar(BigDecimal r19_qua_iv_qar) {
+			this.r19_qua_iv_qar = r19_qua_iv_qar;
+		}
+
+		public BigDecimal getR19_qua_iv_inr() {
+			return r19_qua_iv_inr;
+		}
+
+		public void setR19_qua_iv_inr(BigDecimal r19_qua_iv_inr) {
+			this.r19_qua_iv_inr = r19_qua_iv_inr;
+		}
+
+		public BigDecimal getR19_cumm_inr() {
+			return r19_cumm_inr;
+		}
+
+		public void setR19_cumm_inr(BigDecimal r19_cumm_inr) {
+			this.r19_cumm_inr = r19_cumm_inr;
+		}
+
+		public BigDecimal getR19_cumm_bwp() {
+			return r19_cumm_bwp;
+		}
+
+		public void setR19_cumm_bwp(BigDecimal r19_cumm_bwp) {
+			this.r19_cumm_bwp = r19_cumm_bwp;
+		}
+
+		public String getR20_product() {
+			return r20_product;
+		}
+
+		public void setR20_product(String r20_product) {
+			this.r20_product = r20_product;
+		}
+
+		public BigDecimal getR20_qua_i_lc() {
+			return r20_qua_i_lc;
+		}
+
+		public void setR20_qua_i_lc(BigDecimal r20_qua_i_lc) {
+			this.r20_qua_i_lc = r20_qua_i_lc;
+		}
+
+		public BigDecimal getR20_qua_i_qar() {
+			return r20_qua_i_qar;
+		}
+
+		public void setR20_qua_i_qar(BigDecimal r20_qua_i_qar) {
+			this.r20_qua_i_qar = r20_qua_i_qar;
+		}
+
+		public BigDecimal getR20_qua_i_inr() {
+			return r20_qua_i_inr;
+		}
+
+		public void setR20_qua_i_inr(BigDecimal r20_qua_i_inr) {
+			this.r20_qua_i_inr = r20_qua_i_inr;
+		}
+
+		public BigDecimal getR20_qua_ii_lc() {
+			return r20_qua_ii_lc;
+		}
+
+		public void setR20_qua_ii_lc(BigDecimal r20_qua_ii_lc) {
+			this.r20_qua_ii_lc = r20_qua_ii_lc;
+		}
+
+		public BigDecimal getR20_qua_ii_qar() {
+			return r20_qua_ii_qar;
+		}
+
+		public void setR20_qua_ii_qar(BigDecimal r20_qua_ii_qar) {
+			this.r20_qua_ii_qar = r20_qua_ii_qar;
+		}
+
+		public BigDecimal getR20_qua_ii_inr() {
+			return r20_qua_ii_inr;
+		}
+
+		public void setR20_qua_ii_inr(BigDecimal r20_qua_ii_inr) {
+			this.r20_qua_ii_inr = r20_qua_ii_inr;
+		}
+
+		public BigDecimal getR20_qua_iii_lc() {
+			return r20_qua_iii_lc;
+		}
+
+		public void setR20_qua_iii_lc(BigDecimal r20_qua_iii_lc) {
+			this.r20_qua_iii_lc = r20_qua_iii_lc;
+		}
+
+		public BigDecimal getR20_qua_iii_qar() {
+			return r20_qua_iii_qar;
+		}
+
+		public void setR20_qua_iii_qar(BigDecimal r20_qua_iii_qar) {
+			this.r20_qua_iii_qar = r20_qua_iii_qar;
+		}
+
+		public BigDecimal getR20_qua_iii_inr() {
+			return r20_qua_iii_inr;
+		}
+
+		public void setR20_qua_iii_inr(BigDecimal r20_qua_iii_inr) {
+			this.r20_qua_iii_inr = r20_qua_iii_inr;
+		}
+
+		public BigDecimal getR20_qua_iv_lc() {
+			return r20_qua_iv_lc;
+		}
+
+		public void setR20_qua_iv_lc(BigDecimal r20_qua_iv_lc) {
+			this.r20_qua_iv_lc = r20_qua_iv_lc;
+		}
+
+		public BigDecimal getR20_qua_iv_qar() {
+			return r20_qua_iv_qar;
+		}
+
+		public void setR20_qua_iv_qar(BigDecimal r20_qua_iv_qar) {
+			this.r20_qua_iv_qar = r20_qua_iv_qar;
+		}
+
+		public BigDecimal getR20_qua_iv_inr() {
+			return r20_qua_iv_inr;
+		}
+
+		public void setR20_qua_iv_inr(BigDecimal r20_qua_iv_inr) {
+			this.r20_qua_iv_inr = r20_qua_iv_inr;
+		}
+
+		public BigDecimal getR20_cumm_inr() {
+			return r20_cumm_inr;
+		}
+
+		public void setR20_cumm_inr(BigDecimal r20_cumm_inr) {
+			this.r20_cumm_inr = r20_cumm_inr;
+		}
+
+		public BigDecimal getR20_cumm_bwp() {
+			return r20_cumm_bwp;
+		}
+
+		public void setR20_cumm_bwp(BigDecimal r20_cumm_bwp) {
+			this.r20_cumm_bwp = r20_cumm_bwp;
+		}
+
+		public String getR21_product() {
+			return r21_product;
+		}
+
+		public void setR21_product(String r21_product) {
+			this.r21_product = r21_product;
+		}
+
+		public BigDecimal getR21_qua_i_lc() {
+			return r21_qua_i_lc;
+		}
+
+		public void setR21_qua_i_lc(BigDecimal r21_qua_i_lc) {
+			this.r21_qua_i_lc = r21_qua_i_lc;
+		}
+
+		public BigDecimal getR21_qua_i_qar() {
+			return r21_qua_i_qar;
+		}
+
+		public void setR21_qua_i_qar(BigDecimal r21_qua_i_qar) {
+			this.r21_qua_i_qar = r21_qua_i_qar;
+		}
+
+		public BigDecimal getR21_qua_i_inr() {
+			return r21_qua_i_inr;
+		}
+
+		public void setR21_qua_i_inr(BigDecimal r21_qua_i_inr) {
+			this.r21_qua_i_inr = r21_qua_i_inr;
+		}
+
+		public BigDecimal getR21_qua_ii_lc() {
+			return r21_qua_ii_lc;
+		}
+
+		public void setR21_qua_ii_lc(BigDecimal r21_qua_ii_lc) {
+			this.r21_qua_ii_lc = r21_qua_ii_lc;
+		}
+
+		public BigDecimal getR21_qua_ii_qar() {
+			return r21_qua_ii_qar;
+		}
+
+		public void setR21_qua_ii_qar(BigDecimal r21_qua_ii_qar) {
+			this.r21_qua_ii_qar = r21_qua_ii_qar;
+		}
+
+		public BigDecimal getR21_qua_ii_inr() {
+			return r21_qua_ii_inr;
+		}
+
+		public void setR21_qua_ii_inr(BigDecimal r21_qua_ii_inr) {
+			this.r21_qua_ii_inr = r21_qua_ii_inr;
+		}
+
+		public BigDecimal getR21_qua_iii_lc() {
+			return r21_qua_iii_lc;
+		}
+
+		public void setR21_qua_iii_lc(BigDecimal r21_qua_iii_lc) {
+			this.r21_qua_iii_lc = r21_qua_iii_lc;
+		}
+
+		public BigDecimal getR21_qua_iii_qar() {
+			return r21_qua_iii_qar;
+		}
+
+		public void setR21_qua_iii_qar(BigDecimal r21_qua_iii_qar) {
+			this.r21_qua_iii_qar = r21_qua_iii_qar;
+		}
+
+		public BigDecimal getR21_qua_iii_inr() {
+			return r21_qua_iii_inr;
+		}
+
+		public void setR21_qua_iii_inr(BigDecimal r21_qua_iii_inr) {
+			this.r21_qua_iii_inr = r21_qua_iii_inr;
+		}
+
+		public BigDecimal getR21_qua_iv_lc() {
+			return r21_qua_iv_lc;
+		}
+
+		public void setR21_qua_iv_lc(BigDecimal r21_qua_iv_lc) {
+			this.r21_qua_iv_lc = r21_qua_iv_lc;
+		}
+
+		public BigDecimal getR21_qua_iv_qar() {
+			return r21_qua_iv_qar;
+		}
+
+		public void setR21_qua_iv_qar(BigDecimal r21_qua_iv_qar) {
+			this.r21_qua_iv_qar = r21_qua_iv_qar;
+		}
+
+		public BigDecimal getR21_qua_iv_inr() {
+			return r21_qua_iv_inr;
+		}
+
+		public void setR21_qua_iv_inr(BigDecimal r21_qua_iv_inr) {
+			this.r21_qua_iv_inr = r21_qua_iv_inr;
+		}
+
+		public BigDecimal getR21_cumm_inr() {
+			return r21_cumm_inr;
+		}
+
+		public void setR21_cumm_inr(BigDecimal r21_cumm_inr) {
+			this.r21_cumm_inr = r21_cumm_inr;
+		}
+
+		public BigDecimal getR21_cumm_bwp() {
+			return r21_cumm_bwp;
+		}
+
+		public void setR21_cumm_bwp(BigDecimal r21_cumm_bwp) {
+			this.r21_cumm_bwp = r21_cumm_bwp;
+		}
+
+		public String getR22_product() {
+			return r22_product;
+		}
+
+		public void setR22_product(String r22_product) {
+			this.r22_product = r22_product;
+		}
+
+		public BigDecimal getR22_qua_i_lc() {
+			return r22_qua_i_lc;
+		}
+
+		public void setR22_qua_i_lc(BigDecimal r22_qua_i_lc) {
+			this.r22_qua_i_lc = r22_qua_i_lc;
+		}
+
+		public BigDecimal getR22_qua_i_qar() {
+			return r22_qua_i_qar;
+		}
+
+		public void setR22_qua_i_qar(BigDecimal r22_qua_i_qar) {
+			this.r22_qua_i_qar = r22_qua_i_qar;
+		}
+
+		public BigDecimal getR22_qua_i_inr() {
+			return r22_qua_i_inr;
+		}
+
+		public void setR22_qua_i_inr(BigDecimal r22_qua_i_inr) {
+			this.r22_qua_i_inr = r22_qua_i_inr;
+		}
+
+		public BigDecimal getR22_qua_ii_lc() {
+			return r22_qua_ii_lc;
+		}
+
+		public void setR22_qua_ii_lc(BigDecimal r22_qua_ii_lc) {
+			this.r22_qua_ii_lc = r22_qua_ii_lc;
+		}
+
+		public BigDecimal getR22_qua_ii_qar() {
+			return r22_qua_ii_qar;
+		}
+
+		public void setR22_qua_ii_qar(BigDecimal r22_qua_ii_qar) {
+			this.r22_qua_ii_qar = r22_qua_ii_qar;
+		}
+
+		public BigDecimal getR22_qua_ii_inr() {
+			return r22_qua_ii_inr;
+		}
+
+		public void setR22_qua_ii_inr(BigDecimal r22_qua_ii_inr) {
+			this.r22_qua_ii_inr = r22_qua_ii_inr;
+		}
+
+		public BigDecimal getR22_qua_iii_lc() {
+			return r22_qua_iii_lc;
+		}
+
+		public void setR22_qua_iii_lc(BigDecimal r22_qua_iii_lc) {
+			this.r22_qua_iii_lc = r22_qua_iii_lc;
+		}
+
+		public BigDecimal getR22_qua_iii_qar() {
+			return r22_qua_iii_qar;
+		}
+
+		public void setR22_qua_iii_qar(BigDecimal r22_qua_iii_qar) {
+			this.r22_qua_iii_qar = r22_qua_iii_qar;
+		}
+
+		public BigDecimal getR22_qua_iii_inr() {
+			return r22_qua_iii_inr;
+		}
+
+		public void setR22_qua_iii_inr(BigDecimal r22_qua_iii_inr) {
+			this.r22_qua_iii_inr = r22_qua_iii_inr;
+		}
+
+		public BigDecimal getR22_qua_iv_lc() {
+			return r22_qua_iv_lc;
+		}
+
+		public void setR22_qua_iv_lc(BigDecimal r22_qua_iv_lc) {
+			this.r22_qua_iv_lc = r22_qua_iv_lc;
+		}
+
+		public BigDecimal getR22_qua_iv_qar() {
+			return r22_qua_iv_qar;
+		}
+
+		public void setR22_qua_iv_qar(BigDecimal r22_qua_iv_qar) {
+			this.r22_qua_iv_qar = r22_qua_iv_qar;
+		}
+
+		public BigDecimal getR22_qua_iv_inr() {
+			return r22_qua_iv_inr;
+		}
+
+		public void setR22_qua_iv_inr(BigDecimal r22_qua_iv_inr) {
+			this.r22_qua_iv_inr = r22_qua_iv_inr;
+		}
+
+		public BigDecimal getR22_cumm_inr() {
+			return r22_cumm_inr;
+		}
+
+		public void setR22_cumm_inr(BigDecimal r22_cumm_inr) {
+			this.r22_cumm_inr = r22_cumm_inr;
+		}
+
+		public BigDecimal getR22_cumm_bwp() {
+			return r22_cumm_bwp;
+		}
+
+		public void setR22_cumm_bwp(BigDecimal r22_cumm_bwp) {
+			this.r22_cumm_bwp = r22_cumm_bwp;
+		}
+
+		public String getR23_product() {
+			return r23_product;
+		}
+
+		public void setR23_product(String r23_product) {
+			this.r23_product = r23_product;
+		}
+
+		public BigDecimal getR23_qua_i_lc() {
+			return r23_qua_i_lc;
+		}
+
+		public void setR23_qua_i_lc(BigDecimal r23_qua_i_lc) {
+			this.r23_qua_i_lc = r23_qua_i_lc;
+		}
+
+		public BigDecimal getR23_qua_i_qar() {
+			return r23_qua_i_qar;
+		}
+
+		public void setR23_qua_i_qar(BigDecimal r23_qua_i_qar) {
+			this.r23_qua_i_qar = r23_qua_i_qar;
+		}
+
+		public BigDecimal getR23_qua_i_inr() {
+			return r23_qua_i_inr;
+		}
+
+		public void setR23_qua_i_inr(BigDecimal r23_qua_i_inr) {
+			this.r23_qua_i_inr = r23_qua_i_inr;
+		}
+
+		public BigDecimal getR23_qua_ii_lc() {
+			return r23_qua_ii_lc;
+		}
+
+		public void setR23_qua_ii_lc(BigDecimal r23_qua_ii_lc) {
+			this.r23_qua_ii_lc = r23_qua_ii_lc;
+		}
+
+		public BigDecimal getR23_qua_ii_qar() {
+			return r23_qua_ii_qar;
+		}
+
+		public void setR23_qua_ii_qar(BigDecimal r23_qua_ii_qar) {
+			this.r23_qua_ii_qar = r23_qua_ii_qar;
+		}
+
+		public BigDecimal getR23_qua_ii_inr() {
+			return r23_qua_ii_inr;
+		}
+
+		public void setR23_qua_ii_inr(BigDecimal r23_qua_ii_inr) {
+			this.r23_qua_ii_inr = r23_qua_ii_inr;
+		}
+
+		public BigDecimal getR23_qua_iii_lc() {
+			return r23_qua_iii_lc;
+		}
+
+		public void setR23_qua_iii_lc(BigDecimal r23_qua_iii_lc) {
+			this.r23_qua_iii_lc = r23_qua_iii_lc;
+		}
+
+		public BigDecimal getR23_qua_iii_qar() {
+			return r23_qua_iii_qar;
+		}
+
+		public void setR23_qua_iii_qar(BigDecimal r23_qua_iii_qar) {
+			this.r23_qua_iii_qar = r23_qua_iii_qar;
+		}
+
+		public BigDecimal getR23_qua_iii_inr() {
+			return r23_qua_iii_inr;
+		}
+
+		public void setR23_qua_iii_inr(BigDecimal r23_qua_iii_inr) {
+			this.r23_qua_iii_inr = r23_qua_iii_inr;
+		}
+
+		public BigDecimal getR23_qua_iv_lc() {
+			return r23_qua_iv_lc;
+		}
+
+		public void setR23_qua_iv_lc(BigDecimal r23_qua_iv_lc) {
+			this.r23_qua_iv_lc = r23_qua_iv_lc;
+		}
+
+		public BigDecimal getR23_qua_iv_qar() {
+			return r23_qua_iv_qar;
+		}
+
+		public void setR23_qua_iv_qar(BigDecimal r23_qua_iv_qar) {
+			this.r23_qua_iv_qar = r23_qua_iv_qar;
+		}
+
+		public BigDecimal getR23_qua_iv_inr() {
+			return r23_qua_iv_inr;
+		}
+
+		public void setR23_qua_iv_inr(BigDecimal r23_qua_iv_inr) {
+			this.r23_qua_iv_inr = r23_qua_iv_inr;
+		}
+
+		public BigDecimal getR23_cumm_inr() {
+			return r23_cumm_inr;
+		}
+
+		public void setR23_cumm_inr(BigDecimal r23_cumm_inr) {
+			this.r23_cumm_inr = r23_cumm_inr;
+		}
+
+		public BigDecimal getR23_cumm_bwp() {
+			return r23_cumm_bwp;
+		}
+
+		public void setR23_cumm_bwp(BigDecimal r23_cumm_bwp) {
+			this.r23_cumm_bwp = r23_cumm_bwp;
+		}
+
+		public String getR24_product() {
+			return r24_product;
+		}
+
+		public void setR24_product(String r24_product) {
+			this.r24_product = r24_product;
+		}
+
+		public BigDecimal getR24_qua_i_lc() {
+			return r24_qua_i_lc;
+		}
+
+		public void setR24_qua_i_lc(BigDecimal r24_qua_i_lc) {
+			this.r24_qua_i_lc = r24_qua_i_lc;
+		}
+
+		public BigDecimal getR24_qua_i_qar() {
+			return r24_qua_i_qar;
+		}
+
+		public void setR24_qua_i_qar(BigDecimal r24_qua_i_qar) {
+			this.r24_qua_i_qar = r24_qua_i_qar;
+		}
+
+		public BigDecimal getR24_qua_i_inr() {
+			return r24_qua_i_inr;
+		}
+
+		public void setR24_qua_i_inr(BigDecimal r24_qua_i_inr) {
+			this.r24_qua_i_inr = r24_qua_i_inr;
+		}
+
+		public BigDecimal getR24_qua_ii_lc() {
+			return r24_qua_ii_lc;
+		}
+
+		public void setR24_qua_ii_lc(BigDecimal r24_qua_ii_lc) {
+			this.r24_qua_ii_lc = r24_qua_ii_lc;
+		}
+
+		public BigDecimal getR24_qua_ii_qar() {
+			return r24_qua_ii_qar;
+		}
+
+		public void setR24_qua_ii_qar(BigDecimal r24_qua_ii_qar) {
+			this.r24_qua_ii_qar = r24_qua_ii_qar;
+		}
+
+		public BigDecimal getR24_qua_ii_inr() {
+			return r24_qua_ii_inr;
+		}
+
+		public void setR24_qua_ii_inr(BigDecimal r24_qua_ii_inr) {
+			this.r24_qua_ii_inr = r24_qua_ii_inr;
+		}
+
+		public BigDecimal getR24_qua_iii_lc() {
+			return r24_qua_iii_lc;
+		}
+
+		public void setR24_qua_iii_lc(BigDecimal r24_qua_iii_lc) {
+			this.r24_qua_iii_lc = r24_qua_iii_lc;
+		}
+
+		public BigDecimal getR24_qua_iii_qar() {
+			return r24_qua_iii_qar;
+		}
+
+		public void setR24_qua_iii_qar(BigDecimal r24_qua_iii_qar) {
+			this.r24_qua_iii_qar = r24_qua_iii_qar;
+		}
+
+		public BigDecimal getR24_qua_iii_inr() {
+			return r24_qua_iii_inr;
+		}
+
+		public void setR24_qua_iii_inr(BigDecimal r24_qua_iii_inr) {
+			this.r24_qua_iii_inr = r24_qua_iii_inr;
+		}
+
+		public BigDecimal getR24_qua_iv_lc() {
+			return r24_qua_iv_lc;
+		}
+
+		public void setR24_qua_iv_lc(BigDecimal r24_qua_iv_lc) {
+			this.r24_qua_iv_lc = r24_qua_iv_lc;
+		}
+
+		public BigDecimal getR24_qua_iv_qar() {
+			return r24_qua_iv_qar;
+		}
+
+		public void setR24_qua_iv_qar(BigDecimal r24_qua_iv_qar) {
+			this.r24_qua_iv_qar = r24_qua_iv_qar;
+		}
+
+		public BigDecimal getR24_qua_iv_inr() {
+			return r24_qua_iv_inr;
+		}
+
+		public void setR24_qua_iv_inr(BigDecimal r24_qua_iv_inr) {
+			this.r24_qua_iv_inr = r24_qua_iv_inr;
+		}
+
+		public BigDecimal getR24_cumm_inr() {
+			return r24_cumm_inr;
+		}
+
+		public void setR24_cumm_inr(BigDecimal r24_cumm_inr) {
+			this.r24_cumm_inr = r24_cumm_inr;
+		}
+
+		public BigDecimal getR24_cumm_bwp() {
+			return r24_cumm_bwp;
+		}
+
+		public void setR24_cumm_bwp(BigDecimal r24_cumm_bwp) {
+			this.r24_cumm_bwp = r24_cumm_bwp;
+		}
+
+		public String getR25_product() {
+			return r25_product;
+		}
+
+		public void setR25_product(String r25_product) {
+			this.r25_product = r25_product;
+		}
+
+		public BigDecimal getR25_qua_i_lc() {
+			return r25_qua_i_lc;
+		}
+
+		public void setR25_qua_i_lc(BigDecimal r25_qua_i_lc) {
+			this.r25_qua_i_lc = r25_qua_i_lc;
+		}
+
+		public BigDecimal getR25_qua_i_qar() {
+			return r25_qua_i_qar;
+		}
+
+		public void setR25_qua_i_qar(BigDecimal r25_qua_i_qar) {
+			this.r25_qua_i_qar = r25_qua_i_qar;
+		}
+
+		public BigDecimal getR25_qua_i_inr() {
+			return r25_qua_i_inr;
+		}
+
+		public void setR25_qua_i_inr(BigDecimal r25_qua_i_inr) {
+			this.r25_qua_i_inr = r25_qua_i_inr;
+		}
+
+		public BigDecimal getR25_qua_ii_lc() {
+			return r25_qua_ii_lc;
+		}
+
+		public void setR25_qua_ii_lc(BigDecimal r25_qua_ii_lc) {
+			this.r25_qua_ii_lc = r25_qua_ii_lc;
+		}
+
+		public BigDecimal getR25_qua_ii_qar() {
+			return r25_qua_ii_qar;
+		}
+
+		public void setR25_qua_ii_qar(BigDecimal r25_qua_ii_qar) {
+			this.r25_qua_ii_qar = r25_qua_ii_qar;
+		}
+
+		public BigDecimal getR25_qua_ii_inr() {
+			return r25_qua_ii_inr;
+		}
+
+		public void setR25_qua_ii_inr(BigDecimal r25_qua_ii_inr) {
+			this.r25_qua_ii_inr = r25_qua_ii_inr;
+		}
+
+		public BigDecimal getR25_qua_iii_lc() {
+			return r25_qua_iii_lc;
+		}
+
+		public void setR25_qua_iii_lc(BigDecimal r25_qua_iii_lc) {
+			this.r25_qua_iii_lc = r25_qua_iii_lc;
+		}
+
+		public BigDecimal getR25_qua_iii_qar() {
+			return r25_qua_iii_qar;
+		}
+
+		public void setR25_qua_iii_qar(BigDecimal r25_qua_iii_qar) {
+			this.r25_qua_iii_qar = r25_qua_iii_qar;
+		}
+
+		public BigDecimal getR25_qua_iii_inr() {
+			return r25_qua_iii_inr;
+		}
+
+		public void setR25_qua_iii_inr(BigDecimal r25_qua_iii_inr) {
+			this.r25_qua_iii_inr = r25_qua_iii_inr;
+		}
+
+		public BigDecimal getR25_qua_iv_lc() {
+			return r25_qua_iv_lc;
+		}
+
+		public void setR25_qua_iv_lc(BigDecimal r25_qua_iv_lc) {
+			this.r25_qua_iv_lc = r25_qua_iv_lc;
+		}
+
+		public BigDecimal getR25_qua_iv_qar() {
+			return r25_qua_iv_qar;
+		}
+
+		public void setR25_qua_iv_qar(BigDecimal r25_qua_iv_qar) {
+			this.r25_qua_iv_qar = r25_qua_iv_qar;
+		}
+
+		public BigDecimal getR25_qua_iv_inr() {
+			return r25_qua_iv_inr;
+		}
+
+		public void setR25_qua_iv_inr(BigDecimal r25_qua_iv_inr) {
+			this.r25_qua_iv_inr = r25_qua_iv_inr;
+		}
+
+		public BigDecimal getR25_cumm_inr() {
+			return r25_cumm_inr;
+		}
+
+		public void setR25_cumm_inr(BigDecimal r25_cumm_inr) {
+			this.r25_cumm_inr = r25_cumm_inr;
+		}
+
+		public BigDecimal getR25_cumm_bwp() {
+			return r25_cumm_bwp;
+		}
+
+		public void setR25_cumm_bwp(BigDecimal r25_cumm_bwp) {
+			this.r25_cumm_bwp = r25_cumm_bwp;
+		}
+
+		public String getR26_product() {
+			return r26_product;
+		}
+
+		public void setR26_product(String r26_product) {
+			this.r26_product = r26_product;
+		}
+
+		public BigDecimal getR26_qua_i_lc() {
+			return r26_qua_i_lc;
+		}
+
+		public void setR26_qua_i_lc(BigDecimal r26_qua_i_lc) {
+			this.r26_qua_i_lc = r26_qua_i_lc;
+		}
+
+		public BigDecimal getR26_qua_i_qar() {
+			return r26_qua_i_qar;
+		}
+
+		public void setR26_qua_i_qar(BigDecimal r26_qua_i_qar) {
+			this.r26_qua_i_qar = r26_qua_i_qar;
+		}
+
+		public BigDecimal getR26_qua_i_inr() {
+			return r26_qua_i_inr;
+		}
+
+		public void setR26_qua_i_inr(BigDecimal r26_qua_i_inr) {
+			this.r26_qua_i_inr = r26_qua_i_inr;
+		}
+
+		public BigDecimal getR26_qua_ii_lc() {
+			return r26_qua_ii_lc;
+		}
+
+		public void setR26_qua_ii_lc(BigDecimal r26_qua_ii_lc) {
+			this.r26_qua_ii_lc = r26_qua_ii_lc;
+		}
+
+		public BigDecimal getR26_qua_ii_qar() {
+			return r26_qua_ii_qar;
+		}
+
+		public void setR26_qua_ii_qar(BigDecimal r26_qua_ii_qar) {
+			this.r26_qua_ii_qar = r26_qua_ii_qar;
+		}
+
+		public BigDecimal getR26_qua_ii_inr() {
+			return r26_qua_ii_inr;
+		}
+
+		public void setR26_qua_ii_inr(BigDecimal r26_qua_ii_inr) {
+			this.r26_qua_ii_inr = r26_qua_ii_inr;
+		}
+
+		public BigDecimal getR26_qua_iii_lc() {
+			return r26_qua_iii_lc;
+		}
+
+		public void setR26_qua_iii_lc(BigDecimal r26_qua_iii_lc) {
+			this.r26_qua_iii_lc = r26_qua_iii_lc;
+		}
+
+		public BigDecimal getR26_qua_iii_qar() {
+			return r26_qua_iii_qar;
+		}
+
+		public void setR26_qua_iii_qar(BigDecimal r26_qua_iii_qar) {
+			this.r26_qua_iii_qar = r26_qua_iii_qar;
+		}
+
+		public BigDecimal getR26_qua_iii_inr() {
+			return r26_qua_iii_inr;
+		}
+
+		public void setR26_qua_iii_inr(BigDecimal r26_qua_iii_inr) {
+			this.r26_qua_iii_inr = r26_qua_iii_inr;
+		}
+
+		public BigDecimal getR26_qua_iv_lc() {
+			return r26_qua_iv_lc;
+		}
+
+		public void setR26_qua_iv_lc(BigDecimal r26_qua_iv_lc) {
+			this.r26_qua_iv_lc = r26_qua_iv_lc;
+		}
+
+		public BigDecimal getR26_qua_iv_qar() {
+			return r26_qua_iv_qar;
+		}
+
+		public void setR26_qua_iv_qar(BigDecimal r26_qua_iv_qar) {
+			this.r26_qua_iv_qar = r26_qua_iv_qar;
+		}
+
+		public BigDecimal getR26_qua_iv_inr() {
+			return r26_qua_iv_inr;
+		}
+
+		public void setR26_qua_iv_inr(BigDecimal r26_qua_iv_inr) {
+			this.r26_qua_iv_inr = r26_qua_iv_inr;
+		}
+
+		public BigDecimal getR26_cumm_inr() {
+			return r26_cumm_inr;
+		}
+
+		public void setR26_cumm_inr(BigDecimal r26_cumm_inr) {
+			this.r26_cumm_inr = r26_cumm_inr;
+		}
+
+		public BigDecimal getR26_cumm_bwp() {
+			return r26_cumm_bwp;
+		}
+
+		public void setR26_cumm_bwp(BigDecimal r26_cumm_bwp) {
+			this.r26_cumm_bwp = r26_cumm_bwp;
+		}
+
+		public String getR27_product() {
+			return r27_product;
+		}
+
+		public void setR27_product(String r27_product) {
+			this.r27_product = r27_product;
+		}
+
+		public BigDecimal getR27_qua_i_lc() {
+			return r27_qua_i_lc;
+		}
+
+		public void setR27_qua_i_lc(BigDecimal r27_qua_i_lc) {
+			this.r27_qua_i_lc = r27_qua_i_lc;
+		}
+
+		public BigDecimal getR27_qua_i_qar() {
+			return r27_qua_i_qar;
+		}
+
+		public void setR27_qua_i_qar(BigDecimal r27_qua_i_qar) {
+			this.r27_qua_i_qar = r27_qua_i_qar;
+		}
+
+		public BigDecimal getR27_qua_i_inr() {
+			return r27_qua_i_inr;
+		}
+
+		public void setR27_qua_i_inr(BigDecimal r27_qua_i_inr) {
+			this.r27_qua_i_inr = r27_qua_i_inr;
+		}
+
+		public BigDecimal getR27_qua_ii_lc() {
+			return r27_qua_ii_lc;
+		}
+
+		public void setR27_qua_ii_lc(BigDecimal r27_qua_ii_lc) {
+			this.r27_qua_ii_lc = r27_qua_ii_lc;
+		}
+
+		public BigDecimal getR27_qua_ii_qar() {
+			return r27_qua_ii_qar;
+		}
+
+		public void setR27_qua_ii_qar(BigDecimal r27_qua_ii_qar) {
+			this.r27_qua_ii_qar = r27_qua_ii_qar;
+		}
+
+		public BigDecimal getR27_qua_ii_inr() {
+			return r27_qua_ii_inr;
+		}
+
+		public void setR27_qua_ii_inr(BigDecimal r27_qua_ii_inr) {
+			this.r27_qua_ii_inr = r27_qua_ii_inr;
+		}
+
+		public BigDecimal getR27_qua_iii_lc() {
+			return r27_qua_iii_lc;
+		}
+
+		public void setR27_qua_iii_lc(BigDecimal r27_qua_iii_lc) {
+			this.r27_qua_iii_lc = r27_qua_iii_lc;
+		}
+
+		public BigDecimal getR27_qua_iii_qar() {
+			return r27_qua_iii_qar;
+		}
+
+		public void setR27_qua_iii_qar(BigDecimal r27_qua_iii_qar) {
+			this.r27_qua_iii_qar = r27_qua_iii_qar;
+		}
+
+		public BigDecimal getR27_qua_iii_inr() {
+			return r27_qua_iii_inr;
+		}
+
+		public void setR27_qua_iii_inr(BigDecimal r27_qua_iii_inr) {
+			this.r27_qua_iii_inr = r27_qua_iii_inr;
+		}
+
+		public BigDecimal getR27_qua_iv_lc() {
+			return r27_qua_iv_lc;
+		}
+
+		public void setR27_qua_iv_lc(BigDecimal r27_qua_iv_lc) {
+			this.r27_qua_iv_lc = r27_qua_iv_lc;
+		}
+
+		public BigDecimal getR27_qua_iv_qar() {
+			return r27_qua_iv_qar;
+		}
+
+		public void setR27_qua_iv_qar(BigDecimal r27_qua_iv_qar) {
+			this.r27_qua_iv_qar = r27_qua_iv_qar;
+		}
+
+		public BigDecimal getR27_qua_iv_inr() {
+			return r27_qua_iv_inr;
+		}
+
+		public void setR27_qua_iv_inr(BigDecimal r27_qua_iv_inr) {
+			this.r27_qua_iv_inr = r27_qua_iv_inr;
+		}
+
+		public BigDecimal getR27_cumm_inr() {
+			return r27_cumm_inr;
+		}
+
+		public void setR27_cumm_inr(BigDecimal r27_cumm_inr) {
+			this.r27_cumm_inr = r27_cumm_inr;
+		}
+
+		public BigDecimal getR27_cumm_bwp() {
+			return r27_cumm_bwp;
+		}
+
+		public void setR27_cumm_bwp(BigDecimal r27_cumm_bwp) {
+			this.r27_cumm_bwp = r27_cumm_bwp;
+		}
+
+		public String getR28_product() {
+			return r28_product;
+		}
+
+		public void setR28_product(String r28_product) {
+			this.r28_product = r28_product;
+		}
+
+		public BigDecimal getR28_qua_i_lc() {
+			return r28_qua_i_lc;
+		}
+
+		public void setR28_qua_i_lc(BigDecimal r28_qua_i_lc) {
+			this.r28_qua_i_lc = r28_qua_i_lc;
+		}
+
+		public BigDecimal getR28_qua_i_qar() {
+			return r28_qua_i_qar;
+		}
+
+		public void setR28_qua_i_qar(BigDecimal r28_qua_i_qar) {
+			this.r28_qua_i_qar = r28_qua_i_qar;
+		}
+
+		public BigDecimal getR28_qua_i_inr() {
+			return r28_qua_i_inr;
+		}
+
+		public void setR28_qua_i_inr(BigDecimal r28_qua_i_inr) {
+			this.r28_qua_i_inr = r28_qua_i_inr;
+		}
+
+		public BigDecimal getR28_qua_ii_lc() {
+			return r28_qua_ii_lc;
+		}
+
+		public void setR28_qua_ii_lc(BigDecimal r28_qua_ii_lc) {
+			this.r28_qua_ii_lc = r28_qua_ii_lc;
+		}
+
+		public BigDecimal getR28_qua_ii_qar() {
+			return r28_qua_ii_qar;
+		}
+
+		public void setR28_qua_ii_qar(BigDecimal r28_qua_ii_qar) {
+			this.r28_qua_ii_qar = r28_qua_ii_qar;
+		}
+
+		public BigDecimal getR28_qua_ii_inr() {
+			return r28_qua_ii_inr;
+		}
+
+		public void setR28_qua_ii_inr(BigDecimal r28_qua_ii_inr) {
+			this.r28_qua_ii_inr = r28_qua_ii_inr;
+		}
+
+		public BigDecimal getR28_qua_iii_lc() {
+			return r28_qua_iii_lc;
+		}
+
+		public void setR28_qua_iii_lc(BigDecimal r28_qua_iii_lc) {
+			this.r28_qua_iii_lc = r28_qua_iii_lc;
+		}
+
+		public BigDecimal getR28_qua_iii_qar() {
+			return r28_qua_iii_qar;
+		}
+
+		public void setR28_qua_iii_qar(BigDecimal r28_qua_iii_qar) {
+			this.r28_qua_iii_qar = r28_qua_iii_qar;
+		}
+
+		public BigDecimal getR28_qua_iii_inr() {
+			return r28_qua_iii_inr;
+		}
+
+		public void setR28_qua_iii_inr(BigDecimal r28_qua_iii_inr) {
+			this.r28_qua_iii_inr = r28_qua_iii_inr;
+		}
+
+		public BigDecimal getR28_qua_iv_lc() {
+			return r28_qua_iv_lc;
+		}
+
+		public void setR28_qua_iv_lc(BigDecimal r28_qua_iv_lc) {
+			this.r28_qua_iv_lc = r28_qua_iv_lc;
+		}
+
+		public BigDecimal getR28_qua_iv_qar() {
+			return r28_qua_iv_qar;
+		}
+
+		public void setR28_qua_iv_qar(BigDecimal r28_qua_iv_qar) {
+			this.r28_qua_iv_qar = r28_qua_iv_qar;
+		}
+
+		public BigDecimal getR28_qua_iv_inr() {
+			return r28_qua_iv_inr;
+		}
+
+		public void setR28_qua_iv_inr(BigDecimal r28_qua_iv_inr) {
+			this.r28_qua_iv_inr = r28_qua_iv_inr;
+		}
+
+		public BigDecimal getR28_cumm_inr() {
+			return r28_cumm_inr;
+		}
+
+		public void setR28_cumm_inr(BigDecimal r28_cumm_inr) {
+			this.r28_cumm_inr = r28_cumm_inr;
+		}
+
+		public BigDecimal getR28_cumm_bwp() {
+			return r28_cumm_bwp;
+		}
+
+		public void setR28_cumm_bwp(BigDecimal r28_cumm_bwp) {
+			this.r28_cumm_bwp = r28_cumm_bwp;
+		}
+
+		public String getR29_product() {
+			return r29_product;
+		}
+
+		public void setR29_product(String r29_product) {
+			this.r29_product = r29_product;
+		}
+
+		public BigDecimal getR29_qua_i_lc() {
+			return r29_qua_i_lc;
+		}
+
+		public void setR29_qua_i_lc(BigDecimal r29_qua_i_lc) {
+			this.r29_qua_i_lc = r29_qua_i_lc;
+		}
+
+		public BigDecimal getR29_qua_i_qar() {
+			return r29_qua_i_qar;
+		}
+
+		public void setR29_qua_i_qar(BigDecimal r29_qua_i_qar) {
+			this.r29_qua_i_qar = r29_qua_i_qar;
+		}
+
+		public BigDecimal getR29_qua_i_inr() {
+			return r29_qua_i_inr;
+		}
+
+		public void setR29_qua_i_inr(BigDecimal r29_qua_i_inr) {
+			this.r29_qua_i_inr = r29_qua_i_inr;
+		}
+
+		public BigDecimal getR29_qua_ii_lc() {
+			return r29_qua_ii_lc;
+		}
+
+		public void setR29_qua_ii_lc(BigDecimal r29_qua_ii_lc) {
+			this.r29_qua_ii_lc = r29_qua_ii_lc;
+		}
+
+		public BigDecimal getR29_qua_ii_qar() {
+			return r29_qua_ii_qar;
+		}
+
+		public void setR29_qua_ii_qar(BigDecimal r29_qua_ii_qar) {
+			this.r29_qua_ii_qar = r29_qua_ii_qar;
+		}
+
+		public BigDecimal getR29_qua_ii_inr() {
+			return r29_qua_ii_inr;
+		}
+
+		public void setR29_qua_ii_inr(BigDecimal r29_qua_ii_inr) {
+			this.r29_qua_ii_inr = r29_qua_ii_inr;
+		}
+
+		public BigDecimal getR29_qua_iii_lc() {
+			return r29_qua_iii_lc;
+		}
+
+		public void setR29_qua_iii_lc(BigDecimal r29_qua_iii_lc) {
+			this.r29_qua_iii_lc = r29_qua_iii_lc;
+		}
+
+		public BigDecimal getR29_qua_iii_qar() {
+			return r29_qua_iii_qar;
+		}
+
+		public void setR29_qua_iii_qar(BigDecimal r29_qua_iii_qar) {
+			this.r29_qua_iii_qar = r29_qua_iii_qar;
+		}
+
+		public BigDecimal getR29_qua_iii_inr() {
+			return r29_qua_iii_inr;
+		}
+
+		public void setR29_qua_iii_inr(BigDecimal r29_qua_iii_inr) {
+			this.r29_qua_iii_inr = r29_qua_iii_inr;
+		}
+
+		public BigDecimal getR29_qua_iv_lc() {
+			return r29_qua_iv_lc;
+		}
+
+		public void setR29_qua_iv_lc(BigDecimal r29_qua_iv_lc) {
+			this.r29_qua_iv_lc = r29_qua_iv_lc;
+		}
+
+		public BigDecimal getR29_qua_iv_qar() {
+			return r29_qua_iv_qar;
+		}
+
+		public void setR29_qua_iv_qar(BigDecimal r29_qua_iv_qar) {
+			this.r29_qua_iv_qar = r29_qua_iv_qar;
+		}
+
+		public BigDecimal getR29_qua_iv_inr() {
+			return r29_qua_iv_inr;
+		}
+
+		public void setR29_qua_iv_inr(BigDecimal r29_qua_iv_inr) {
+			this.r29_qua_iv_inr = r29_qua_iv_inr;
+		}
+
+		public BigDecimal getR29_cumm_inr() {
+			return r29_cumm_inr;
+		}
+
+		public void setR29_cumm_inr(BigDecimal r29_cumm_inr) {
+			this.r29_cumm_inr = r29_cumm_inr;
+		}
+
+		public BigDecimal getR29_cumm_bwp() {
+			return r29_cumm_bwp;
+		}
+
+		public void setR29_cumm_bwp(BigDecimal r29_cumm_bwp) {
+			this.r29_cumm_bwp = r29_cumm_bwp;
+		}
+
+		public String getR30_product() {
+			return r30_product;
+		}
+
+		public void setR30_product(String r30_product) {
+			this.r30_product = r30_product;
+		}
+
+		public BigDecimal getR30_qua_i_lc() {
+			return r30_qua_i_lc;
+		}
+
+		public void setR30_qua_i_lc(BigDecimal r30_qua_i_lc) {
+			this.r30_qua_i_lc = r30_qua_i_lc;
+		}
+
+		public BigDecimal getR30_qua_i_qar() {
+			return r30_qua_i_qar;
+		}
+
+		public void setR30_qua_i_qar(BigDecimal r30_qua_i_qar) {
+			this.r30_qua_i_qar = r30_qua_i_qar;
+		}
+
+		public BigDecimal getR30_qua_i_inr() {
+			return r30_qua_i_inr;
+		}
+
+		public void setR30_qua_i_inr(BigDecimal r30_qua_i_inr) {
+			this.r30_qua_i_inr = r30_qua_i_inr;
+		}
+
+		public BigDecimal getR30_qua_ii_lc() {
+			return r30_qua_ii_lc;
+		}
+
+		public void setR30_qua_ii_lc(BigDecimal r30_qua_ii_lc) {
+			this.r30_qua_ii_lc = r30_qua_ii_lc;
+		}
+
+		public BigDecimal getR30_qua_ii_qar() {
+			return r30_qua_ii_qar;
+		}
+
+		public void setR30_qua_ii_qar(BigDecimal r30_qua_ii_qar) {
+			this.r30_qua_ii_qar = r30_qua_ii_qar;
+		}
+
+		public BigDecimal getR30_qua_ii_inr() {
+			return r30_qua_ii_inr;
+		}
+
+		public void setR30_qua_ii_inr(BigDecimal r30_qua_ii_inr) {
+			this.r30_qua_ii_inr = r30_qua_ii_inr;
+		}
+
+		public BigDecimal getR30_qua_iii_lc() {
+			return r30_qua_iii_lc;
+		}
+
+		public void setR30_qua_iii_lc(BigDecimal r30_qua_iii_lc) {
+			this.r30_qua_iii_lc = r30_qua_iii_lc;
+		}
+
+		public BigDecimal getR30_qua_iii_qar() {
+			return r30_qua_iii_qar;
+		}
+
+		public void setR30_qua_iii_qar(BigDecimal r30_qua_iii_qar) {
+			this.r30_qua_iii_qar = r30_qua_iii_qar;
+		}
+
+		public BigDecimal getR30_qua_iii_inr() {
+			return r30_qua_iii_inr;
+		}
+
+		public void setR30_qua_iii_inr(BigDecimal r30_qua_iii_inr) {
+			this.r30_qua_iii_inr = r30_qua_iii_inr;
+		}
+
+		public BigDecimal getR30_qua_iv_lc() {
+			return r30_qua_iv_lc;
+		}
+
+		public void setR30_qua_iv_lc(BigDecimal r30_qua_iv_lc) {
+			this.r30_qua_iv_lc = r30_qua_iv_lc;
+		}
+
+		public BigDecimal getR30_qua_iv_qar() {
+			return r30_qua_iv_qar;
+		}
+
+		public void setR30_qua_iv_qar(BigDecimal r30_qua_iv_qar) {
+			this.r30_qua_iv_qar = r30_qua_iv_qar;
+		}
+
+		public BigDecimal getR30_qua_iv_inr() {
+			return r30_qua_iv_inr;
+		}
+
+		public void setR30_qua_iv_inr(BigDecimal r30_qua_iv_inr) {
+			this.r30_qua_iv_inr = r30_qua_iv_inr;
+		}
+
+		public BigDecimal getR30_cumm_inr() {
+			return r30_cumm_inr;
+		}
+
+		public void setR30_cumm_inr(BigDecimal r30_cumm_inr) {
+			this.r30_cumm_inr = r30_cumm_inr;
+		}
+
+		public BigDecimal getR30_cumm_bwp() {
+			return r30_cumm_bwp;
+		}
+
+		public void setR30_cumm_bwp(BigDecimal r30_cumm_bwp) {
+			this.r30_cumm_bwp = r30_cumm_bwp;
+		}
+
+		public String getR31_product() {
+			return r31_product;
+		}
+
+		public void setR31_product(String r31_product) {
+			this.r31_product = r31_product;
+		}
+
+		public BigDecimal getR31_qua_i_lc() {
+			return r31_qua_i_lc;
+		}
+
+		public void setR31_qua_i_lc(BigDecimal r31_qua_i_lc) {
+			this.r31_qua_i_lc = r31_qua_i_lc;
+		}
+
+		public BigDecimal getR31_qua_i_qar() {
+			return r31_qua_i_qar;
+		}
+
+		public void setR31_qua_i_qar(BigDecimal r31_qua_i_qar) {
+			this.r31_qua_i_qar = r31_qua_i_qar;
+		}
+
+		public BigDecimal getR31_qua_i_inr() {
+			return r31_qua_i_inr;
+		}
+
+		public void setR31_qua_i_inr(BigDecimal r31_qua_i_inr) {
+			this.r31_qua_i_inr = r31_qua_i_inr;
+		}
+
+		public BigDecimal getR31_qua_ii_lc() {
+			return r31_qua_ii_lc;
+		}
+
+		public void setR31_qua_ii_lc(BigDecimal r31_qua_ii_lc) {
+			this.r31_qua_ii_lc = r31_qua_ii_lc;
+		}
+
+		public BigDecimal getR31_qua_ii_qar() {
+			return r31_qua_ii_qar;
+		}
+
+		public void setR31_qua_ii_qar(BigDecimal r31_qua_ii_qar) {
+			this.r31_qua_ii_qar = r31_qua_ii_qar;
+		}
+
+		public BigDecimal getR31_qua_ii_inr() {
+			return r31_qua_ii_inr;
+		}
+
+		public void setR31_qua_ii_inr(BigDecimal r31_qua_ii_inr) {
+			this.r31_qua_ii_inr = r31_qua_ii_inr;
+		}
+
+		public BigDecimal getR31_qua_iii_lc() {
+			return r31_qua_iii_lc;
+		}
+
+		public void setR31_qua_iii_lc(BigDecimal r31_qua_iii_lc) {
+			this.r31_qua_iii_lc = r31_qua_iii_lc;
+		}
+
+		public BigDecimal getR31_qua_iii_qar() {
+			return r31_qua_iii_qar;
+		}
+
+		public void setR31_qua_iii_qar(BigDecimal r31_qua_iii_qar) {
+			this.r31_qua_iii_qar = r31_qua_iii_qar;
+		}
+
+		public BigDecimal getR31_qua_iii_inr() {
+			return r31_qua_iii_inr;
+		}
+
+		public void setR31_qua_iii_inr(BigDecimal r31_qua_iii_inr) {
+			this.r31_qua_iii_inr = r31_qua_iii_inr;
+		}
+
+		public BigDecimal getR31_qua_iv_lc() {
+			return r31_qua_iv_lc;
+		}
+
+		public void setR31_qua_iv_lc(BigDecimal r31_qua_iv_lc) {
+			this.r31_qua_iv_lc = r31_qua_iv_lc;
+		}
+
+		public BigDecimal getR31_qua_iv_qar() {
+			return r31_qua_iv_qar;
+		}
+
+		public void setR31_qua_iv_qar(BigDecimal r31_qua_iv_qar) {
+			this.r31_qua_iv_qar = r31_qua_iv_qar;
+		}
+
+		public BigDecimal getR31_qua_iv_inr() {
+			return r31_qua_iv_inr;
+		}
+
+		public void setR31_qua_iv_inr(BigDecimal r31_qua_iv_inr) {
+			this.r31_qua_iv_inr = r31_qua_iv_inr;
+		}
+
+		public BigDecimal getR31_cumm_inr() {
+			return r31_cumm_inr;
+		}
+
+		public void setR31_cumm_inr(BigDecimal r31_cumm_inr) {
+			this.r31_cumm_inr = r31_cumm_inr;
+		}
+
+		public BigDecimal getR31_cumm_bwp() {
+			return r31_cumm_bwp;
+		}
+
+		public void setR31_cumm_bwp(BigDecimal r31_cumm_bwp) {
+			this.r31_cumm_bwp = r31_cumm_bwp;
+		}
+
+		public String getR32_product() {
+			return r32_product;
+		}
+
+		public void setR32_product(String r32_product) {
+			this.r32_product = r32_product;
+		}
+
+		public BigDecimal getR32_qua_i_lc() {
+			return r32_qua_i_lc;
+		}
+
+		public void setR32_qua_i_lc(BigDecimal r32_qua_i_lc) {
+			this.r32_qua_i_lc = r32_qua_i_lc;
+		}
+
+		public BigDecimal getR32_qua_i_qar() {
+			return r32_qua_i_qar;
+		}
+
+		public void setR32_qua_i_qar(BigDecimal r32_qua_i_qar) {
+			this.r32_qua_i_qar = r32_qua_i_qar;
+		}
+
+		public BigDecimal getR32_qua_i_inr() {
+			return r32_qua_i_inr;
+		}
+
+		public void setR32_qua_i_inr(BigDecimal r32_qua_i_inr) {
+			this.r32_qua_i_inr = r32_qua_i_inr;
+		}
+
+		public BigDecimal getR32_qua_ii_lc() {
+			return r32_qua_ii_lc;
+		}
+
+		public void setR32_qua_ii_lc(BigDecimal r32_qua_ii_lc) {
+			this.r32_qua_ii_lc = r32_qua_ii_lc;
+		}
+
+		public BigDecimal getR32_qua_ii_qar() {
+			return r32_qua_ii_qar;
+		}
+
+		public void setR32_qua_ii_qar(BigDecimal r32_qua_ii_qar) {
+			this.r32_qua_ii_qar = r32_qua_ii_qar;
+		}
+
+		public BigDecimal getR32_qua_ii_inr() {
+			return r32_qua_ii_inr;
+		}
+
+		public void setR32_qua_ii_inr(BigDecimal r32_qua_ii_inr) {
+			this.r32_qua_ii_inr = r32_qua_ii_inr;
+		}
+
+		public BigDecimal getR32_qua_iii_lc() {
+			return r32_qua_iii_lc;
+		}
+
+		public void setR32_qua_iii_lc(BigDecimal r32_qua_iii_lc) {
+			this.r32_qua_iii_lc = r32_qua_iii_lc;
+		}
+
+		public BigDecimal getR32_qua_iii_qar() {
+			return r32_qua_iii_qar;
+		}
+
+		public void setR32_qua_iii_qar(BigDecimal r32_qua_iii_qar) {
+			this.r32_qua_iii_qar = r32_qua_iii_qar;
+		}
+
+		public BigDecimal getR32_qua_iii_inr() {
+			return r32_qua_iii_inr;
+		}
+
+		public void setR32_qua_iii_inr(BigDecimal r32_qua_iii_inr) {
+			this.r32_qua_iii_inr = r32_qua_iii_inr;
+		}
+
+		public BigDecimal getR32_qua_iv_lc() {
+			return r32_qua_iv_lc;
+		}
+
+		public void setR32_qua_iv_lc(BigDecimal r32_qua_iv_lc) {
+			this.r32_qua_iv_lc = r32_qua_iv_lc;
+		}
+
+		public BigDecimal getR32_qua_iv_qar() {
+			return r32_qua_iv_qar;
+		}
+
+		public void setR32_qua_iv_qar(BigDecimal r32_qua_iv_qar) {
+			this.r32_qua_iv_qar = r32_qua_iv_qar;
+		}
+
+		public BigDecimal getR32_qua_iv_inr() {
+			return r32_qua_iv_inr;
+		}
+
+		public void setR32_qua_iv_inr(BigDecimal r32_qua_iv_inr) {
+			this.r32_qua_iv_inr = r32_qua_iv_inr;
+		}
+
+		public BigDecimal getR32_cumm_inr() {
+			return r32_cumm_inr;
+		}
+
+		public void setR32_cumm_inr(BigDecimal r32_cumm_inr) {
+			this.r32_cumm_inr = r32_cumm_inr;
+		}
+
+		public BigDecimal getR32_cumm_bwp() {
+			return r32_cumm_bwp;
+		}
+
+		public void setR32_cumm_bwp(BigDecimal r32_cumm_bwp) {
+			this.r32_cumm_bwp = r32_cumm_bwp;
+		}
+
+		public String getR33_product() {
+			return r33_product;
+		}
+
+		public void setR33_product(String r33_product) {
+			this.r33_product = r33_product;
+		}
+
+		public BigDecimal getR33_qua_i_lc() {
+			return r33_qua_i_lc;
+		}
+
+		public void setR33_qua_i_lc(BigDecimal r33_qua_i_lc) {
+			this.r33_qua_i_lc = r33_qua_i_lc;
+		}
+
+		public BigDecimal getR33_qua_i_qar() {
+			return r33_qua_i_qar;
+		}
+
+		public void setR33_qua_i_qar(BigDecimal r33_qua_i_qar) {
+			this.r33_qua_i_qar = r33_qua_i_qar;
+		}
+
+		public BigDecimal getR33_qua_i_inr() {
+			return r33_qua_i_inr;
+		}
+
+		public void setR33_qua_i_inr(BigDecimal r33_qua_i_inr) {
+			this.r33_qua_i_inr = r33_qua_i_inr;
+		}
+
+		public BigDecimal getR33_qua_ii_lc() {
+			return r33_qua_ii_lc;
+		}
+
+		public void setR33_qua_ii_lc(BigDecimal r33_qua_ii_lc) {
+			this.r33_qua_ii_lc = r33_qua_ii_lc;
+		}
+
+		public BigDecimal getR33_qua_ii_qar() {
+			return r33_qua_ii_qar;
+		}
+
+		public void setR33_qua_ii_qar(BigDecimal r33_qua_ii_qar) {
+			this.r33_qua_ii_qar = r33_qua_ii_qar;
+		}
+
+		public BigDecimal getR33_qua_ii_inr() {
+			return r33_qua_ii_inr;
+		}
+
+		public void setR33_qua_ii_inr(BigDecimal r33_qua_ii_inr) {
+			this.r33_qua_ii_inr = r33_qua_ii_inr;
+		}
+
+		public BigDecimal getR33_qua_iii_lc() {
+			return r33_qua_iii_lc;
+		}
+
+		public void setR33_qua_iii_lc(BigDecimal r33_qua_iii_lc) {
+			this.r33_qua_iii_lc = r33_qua_iii_lc;
+		}
+
+		public BigDecimal getR33_qua_iii_qar() {
+			return r33_qua_iii_qar;
+		}
+
+		public void setR33_qua_iii_qar(BigDecimal r33_qua_iii_qar) {
+			this.r33_qua_iii_qar = r33_qua_iii_qar;
+		}
+
+		public BigDecimal getR33_qua_iii_inr() {
+			return r33_qua_iii_inr;
+		}
+
+		public void setR33_qua_iii_inr(BigDecimal r33_qua_iii_inr) {
+			this.r33_qua_iii_inr = r33_qua_iii_inr;
+		}
+
+		public BigDecimal getR33_qua_iv_lc() {
+			return r33_qua_iv_lc;
+		}
+
+		public void setR33_qua_iv_lc(BigDecimal r33_qua_iv_lc) {
+			this.r33_qua_iv_lc = r33_qua_iv_lc;
+		}
+
+		public BigDecimal getR33_qua_iv_qar() {
+			return r33_qua_iv_qar;
+		}
+
+		public void setR33_qua_iv_qar(BigDecimal r33_qua_iv_qar) {
+			this.r33_qua_iv_qar = r33_qua_iv_qar;
+		}
+
+		public BigDecimal getR33_qua_iv_inr() {
+			return r33_qua_iv_inr;
+		}
+
+		public void setR33_qua_iv_inr(BigDecimal r33_qua_iv_inr) {
+			this.r33_qua_iv_inr = r33_qua_iv_inr;
+		}
+
+		public BigDecimal getR33_cumm_inr() {
+			return r33_cumm_inr;
+		}
+
+		public void setR33_cumm_inr(BigDecimal r33_cumm_inr) {
+			this.r33_cumm_inr = r33_cumm_inr;
+		}
+
+		public BigDecimal getR33_cumm_bwp() {
+			return r33_cumm_bwp;
+		}
+
+		public void setR33_cumm_bwp(BigDecimal r33_cumm_bwp) {
+			this.r33_cumm_bwp = r33_cumm_bwp;
+		}
+
+		public String getR34_product() {
+			return r34_product;
+		}
+
+		public void setR34_product(String r34_product) {
+			this.r34_product = r34_product;
+		}
+
+		public BigDecimal getR34_qua_i_lc() {
+			return r34_qua_i_lc;
+		}
+
+		public void setR34_qua_i_lc(BigDecimal r34_qua_i_lc) {
+			this.r34_qua_i_lc = r34_qua_i_lc;
+		}
+
+		public BigDecimal getR34_qua_i_qar() {
+			return r34_qua_i_qar;
+		}
+
+		public void setR34_qua_i_qar(BigDecimal r34_qua_i_qar) {
+			this.r34_qua_i_qar = r34_qua_i_qar;
+		}
+
+		public BigDecimal getR34_qua_i_inr() {
+			return r34_qua_i_inr;
+		}
+
+		public void setR34_qua_i_inr(BigDecimal r34_qua_i_inr) {
+			this.r34_qua_i_inr = r34_qua_i_inr;
+		}
+
+		public BigDecimal getR34_qua_ii_lc() {
+			return r34_qua_ii_lc;
+		}
+
+		public void setR34_qua_ii_lc(BigDecimal r34_qua_ii_lc) {
+			this.r34_qua_ii_lc = r34_qua_ii_lc;
+		}
+
+		public BigDecimal getR34_qua_ii_qar() {
+			return r34_qua_ii_qar;
+		}
+
+		public void setR34_qua_ii_qar(BigDecimal r34_qua_ii_qar) {
+			this.r34_qua_ii_qar = r34_qua_ii_qar;
+		}
+
+		public BigDecimal getR34_qua_ii_inr() {
+			return r34_qua_ii_inr;
+		}
+
+		public void setR34_qua_ii_inr(BigDecimal r34_qua_ii_inr) {
+			this.r34_qua_ii_inr = r34_qua_ii_inr;
+		}
+
+		public BigDecimal getR34_qua_iii_lc() {
+			return r34_qua_iii_lc;
+		}
+
+		public void setR34_qua_iii_lc(BigDecimal r34_qua_iii_lc) {
+			this.r34_qua_iii_lc = r34_qua_iii_lc;
+		}
+
+		public BigDecimal getR34_qua_iii_qar() {
+			return r34_qua_iii_qar;
+		}
+
+		public void setR34_qua_iii_qar(BigDecimal r34_qua_iii_qar) {
+			this.r34_qua_iii_qar = r34_qua_iii_qar;
+		}
+
+		public BigDecimal getR34_qua_iii_inr() {
+			return r34_qua_iii_inr;
+		}
+
+		public void setR34_qua_iii_inr(BigDecimal r34_qua_iii_inr) {
+			this.r34_qua_iii_inr = r34_qua_iii_inr;
+		}
+
+		public BigDecimal getR34_qua_iv_lc() {
+			return r34_qua_iv_lc;
+		}
+
+		public void setR34_qua_iv_lc(BigDecimal r34_qua_iv_lc) {
+			this.r34_qua_iv_lc = r34_qua_iv_lc;
+		}
+
+		public BigDecimal getR34_qua_iv_qar() {
+			return r34_qua_iv_qar;
+		}
+
+		public void setR34_qua_iv_qar(BigDecimal r34_qua_iv_qar) {
+			this.r34_qua_iv_qar = r34_qua_iv_qar;
+		}
+
+		public BigDecimal getR34_qua_iv_inr() {
+			return r34_qua_iv_inr;
+		}
+
+		public void setR34_qua_iv_inr(BigDecimal r34_qua_iv_inr) {
+			this.r34_qua_iv_inr = r34_qua_iv_inr;
+		}
+
+		public BigDecimal getR34_cumm_inr() {
+			return r34_cumm_inr;
+		}
+
+		public void setR34_cumm_inr(BigDecimal r34_cumm_inr) {
+			this.r34_cumm_inr = r34_cumm_inr;
+		}
+
+		public BigDecimal getR34_cumm_bwp() {
+			return r34_cumm_bwp;
+		}
+
+		public void setR34_cumm_bwp(BigDecimal r34_cumm_bwp) {
+			this.r34_cumm_bwp = r34_cumm_bwp;
+		}
+
+		public String getR35_product() {
+			return r35_product;
+		}
+
+		public void setR35_product(String r35_product) {
+			this.r35_product = r35_product;
+		}
+
+		public BigDecimal getR35_qua_i_lc() {
+			return r35_qua_i_lc;
+		}
+
+		public void setR35_qua_i_lc(BigDecimal r35_qua_i_lc) {
+			this.r35_qua_i_lc = r35_qua_i_lc;
+		}
+
+		public BigDecimal getR35_qua_i_qar() {
+			return r35_qua_i_qar;
+		}
+
+		public void setR35_qua_i_qar(BigDecimal r35_qua_i_qar) {
+			this.r35_qua_i_qar = r35_qua_i_qar;
+		}
+
+		public BigDecimal getR35_qua_i_inr() {
+			return r35_qua_i_inr;
+		}
+
+		public void setR35_qua_i_inr(BigDecimal r35_qua_i_inr) {
+			this.r35_qua_i_inr = r35_qua_i_inr;
+		}
+
+		public BigDecimal getR35_qua_ii_lc() {
+			return r35_qua_ii_lc;
+		}
+
+		public void setR35_qua_ii_lc(BigDecimal r35_qua_ii_lc) {
+			this.r35_qua_ii_lc = r35_qua_ii_lc;
+		}
+
+		public BigDecimal getR35_qua_ii_qar() {
+			return r35_qua_ii_qar;
+		}
+
+		public void setR35_qua_ii_qar(BigDecimal r35_qua_ii_qar) {
+			this.r35_qua_ii_qar = r35_qua_ii_qar;
+		}
+
+		public BigDecimal getR35_qua_ii_inr() {
+			return r35_qua_ii_inr;
+		}
+
+		public void setR35_qua_ii_inr(BigDecimal r35_qua_ii_inr) {
+			this.r35_qua_ii_inr = r35_qua_ii_inr;
+		}
+
+		public BigDecimal getR35_qua_iii_lc() {
+			return r35_qua_iii_lc;
+		}
+
+		public void setR35_qua_iii_lc(BigDecimal r35_qua_iii_lc) {
+			this.r35_qua_iii_lc = r35_qua_iii_lc;
+		}
+
+		public BigDecimal getR35_qua_iii_qar() {
+			return r35_qua_iii_qar;
+		}
+
+		public void setR35_qua_iii_qar(BigDecimal r35_qua_iii_qar) {
+			this.r35_qua_iii_qar = r35_qua_iii_qar;
+		}
+
+		public BigDecimal getR35_qua_iii_inr() {
+			return r35_qua_iii_inr;
+		}
+
+		public void setR35_qua_iii_inr(BigDecimal r35_qua_iii_inr) {
+			this.r35_qua_iii_inr = r35_qua_iii_inr;
+		}
+
+		public BigDecimal getR35_qua_iv_lc() {
+			return r35_qua_iv_lc;
+		}
+
+		public void setR35_qua_iv_lc(BigDecimal r35_qua_iv_lc) {
+			this.r35_qua_iv_lc = r35_qua_iv_lc;
+		}
+
+		public BigDecimal getR35_qua_iv_qar() {
+			return r35_qua_iv_qar;
+		}
+
+		public void setR35_qua_iv_qar(BigDecimal r35_qua_iv_qar) {
+			this.r35_qua_iv_qar = r35_qua_iv_qar;
+		}
+
+		public BigDecimal getR35_qua_iv_inr() {
+			return r35_qua_iv_inr;
+		}
+
+		public void setR35_qua_iv_inr(BigDecimal r35_qua_iv_inr) {
+			this.r35_qua_iv_inr = r35_qua_iv_inr;
+		}
+
+		public BigDecimal getR35_cumm_inr() {
+			return r35_cumm_inr;
+		}
+
+		public void setR35_cumm_inr(BigDecimal r35_cumm_inr) {
+			this.r35_cumm_inr = r35_cumm_inr;
+		}
+
+		public BigDecimal getR35_cumm_bwp() {
+			return r35_cumm_bwp;
+		}
+
+		public void setR35_cumm_bwp(BigDecimal r35_cumm_bwp) {
+			this.r35_cumm_bwp = r35_cumm_bwp;
+		}
+
+		public String getR36_product() {
+			return r36_product;
+		}
+
+		public void setR36_product(String r36_product) {
+			this.r36_product = r36_product;
+		}
+
+		public BigDecimal getR36_qua_i_lc() {
+			return r36_qua_i_lc;
+		}
+
+		public void setR36_qua_i_lc(BigDecimal r36_qua_i_lc) {
+			this.r36_qua_i_lc = r36_qua_i_lc;
+		}
+
+		public BigDecimal getR36_qua_i_qar() {
+			return r36_qua_i_qar;
+		}
+
+		public void setR36_qua_i_qar(BigDecimal r36_qua_i_qar) {
+			this.r36_qua_i_qar = r36_qua_i_qar;
+		}
+
+		public BigDecimal getR36_qua_i_inr() {
+			return r36_qua_i_inr;
+		}
+
+		public void setR36_qua_i_inr(BigDecimal r36_qua_i_inr) {
+			this.r36_qua_i_inr = r36_qua_i_inr;
+		}
+
+		public BigDecimal getR36_qua_ii_lc() {
+			return r36_qua_ii_lc;
+		}
+
+		public void setR36_qua_ii_lc(BigDecimal r36_qua_ii_lc) {
+			this.r36_qua_ii_lc = r36_qua_ii_lc;
+		}
+
+		public BigDecimal getR36_qua_ii_qar() {
+			return r36_qua_ii_qar;
+		}
+
+		public void setR36_qua_ii_qar(BigDecimal r36_qua_ii_qar) {
+			this.r36_qua_ii_qar = r36_qua_ii_qar;
+		}
+
+		public BigDecimal getR36_qua_ii_inr() {
+			return r36_qua_ii_inr;
+		}
+
+		public void setR36_qua_ii_inr(BigDecimal r36_qua_ii_inr) {
+			this.r36_qua_ii_inr = r36_qua_ii_inr;
+		}
+
+		public BigDecimal getR36_qua_iii_lc() {
+			return r36_qua_iii_lc;
+		}
+
+		public void setR36_qua_iii_lc(BigDecimal r36_qua_iii_lc) {
+			this.r36_qua_iii_lc = r36_qua_iii_lc;
+		}
+
+		public BigDecimal getR36_qua_iii_qar() {
+			return r36_qua_iii_qar;
+		}
+
+		public void setR36_qua_iii_qar(BigDecimal r36_qua_iii_qar) {
+			this.r36_qua_iii_qar = r36_qua_iii_qar;
+		}
+
+		public BigDecimal getR36_qua_iii_inr() {
+			return r36_qua_iii_inr;
+		}
+
+		public void setR36_qua_iii_inr(BigDecimal r36_qua_iii_inr) {
+			this.r36_qua_iii_inr = r36_qua_iii_inr;
+		}
+
+		public BigDecimal getR36_qua_iv_lc() {
+			return r36_qua_iv_lc;
+		}
+
+		public void setR36_qua_iv_lc(BigDecimal r36_qua_iv_lc) {
+			this.r36_qua_iv_lc = r36_qua_iv_lc;
+		}
+
+		public BigDecimal getR36_qua_iv_qar() {
+			return r36_qua_iv_qar;
+		}
+
+		public void setR36_qua_iv_qar(BigDecimal r36_qua_iv_qar) {
+			this.r36_qua_iv_qar = r36_qua_iv_qar;
+		}
+
+		public BigDecimal getR36_qua_iv_inr() {
+			return r36_qua_iv_inr;
+		}
+
+		public void setR36_qua_iv_inr(BigDecimal r36_qua_iv_inr) {
+			this.r36_qua_iv_inr = r36_qua_iv_inr;
+		}
+
+		public BigDecimal getR36_cumm_inr() {
+			return r36_cumm_inr;
+		}
+
+		public void setR36_cumm_inr(BigDecimal r36_cumm_inr) {
+			this.r36_cumm_inr = r36_cumm_inr;
+		}
+
+		public BigDecimal getR36_cumm_bwp() {
+			return r36_cumm_bwp;
+		}
+
+		public void setR36_cumm_bwp(BigDecimal r36_cumm_bwp) {
+			this.r36_cumm_bwp = r36_cumm_bwp;
+		}
+
+		public String getR37_product() {
+			return r37_product;
+		}
+
+		public void setR37_product(String r37_product) {
+			this.r37_product = r37_product;
+		}
+
+		public BigDecimal getR37_qua_i_lc() {
+			return r37_qua_i_lc;
+		}
+
+		public void setR37_qua_i_lc(BigDecimal r37_qua_i_lc) {
+			this.r37_qua_i_lc = r37_qua_i_lc;
+		}
+
+		public BigDecimal getR37_qua_i_qar() {
+			return r37_qua_i_qar;
+		}
+
+		public void setR37_qua_i_qar(BigDecimal r37_qua_i_qar) {
+			this.r37_qua_i_qar = r37_qua_i_qar;
+		}
+
+		public BigDecimal getR37_qua_i_inr() {
+			return r37_qua_i_inr;
+		}
+
+		public void setR37_qua_i_inr(BigDecimal r37_qua_i_inr) {
+			this.r37_qua_i_inr = r37_qua_i_inr;
+		}
+
+		public BigDecimal getR37_qua_ii_lc() {
+			return r37_qua_ii_lc;
+		}
+
+		public void setR37_qua_ii_lc(BigDecimal r37_qua_ii_lc) {
+			this.r37_qua_ii_lc = r37_qua_ii_lc;
+		}
+
+		public BigDecimal getR37_qua_ii_qar() {
+			return r37_qua_ii_qar;
+		}
+
+		public void setR37_qua_ii_qar(BigDecimal r37_qua_ii_qar) {
+			this.r37_qua_ii_qar = r37_qua_ii_qar;
+		}
+
+		public BigDecimal getR37_qua_ii_inr() {
+			return r37_qua_ii_inr;
+		}
+
+		public void setR37_qua_ii_inr(BigDecimal r37_qua_ii_inr) {
+			this.r37_qua_ii_inr = r37_qua_ii_inr;
+		}
+
+		public BigDecimal getR37_qua_iii_lc() {
+			return r37_qua_iii_lc;
+		}
+
+		public void setR37_qua_iii_lc(BigDecimal r37_qua_iii_lc) {
+			this.r37_qua_iii_lc = r37_qua_iii_lc;
+		}
+
+		public BigDecimal getR37_qua_iii_qar() {
+			return r37_qua_iii_qar;
+		}
+
+		public void setR37_qua_iii_qar(BigDecimal r37_qua_iii_qar) {
+			this.r37_qua_iii_qar = r37_qua_iii_qar;
+		}
+
+		public BigDecimal getR37_qua_iii_inr() {
+			return r37_qua_iii_inr;
+		}
+
+		public void setR37_qua_iii_inr(BigDecimal r37_qua_iii_inr) {
+			this.r37_qua_iii_inr = r37_qua_iii_inr;
+		}
+
+		public BigDecimal getR37_qua_iv_lc() {
+			return r37_qua_iv_lc;
+		}
+
+		public void setR37_qua_iv_lc(BigDecimal r37_qua_iv_lc) {
+			this.r37_qua_iv_lc = r37_qua_iv_lc;
+		}
+
+		public BigDecimal getR37_qua_iv_qar() {
+			return r37_qua_iv_qar;
+		}
+
+		public void setR37_qua_iv_qar(BigDecimal r37_qua_iv_qar) {
+			this.r37_qua_iv_qar = r37_qua_iv_qar;
+		}
+
+		public BigDecimal getR37_qua_iv_inr() {
+			return r37_qua_iv_inr;
+		}
+
+		public void setR37_qua_iv_inr(BigDecimal r37_qua_iv_inr) {
+			this.r37_qua_iv_inr = r37_qua_iv_inr;
+		}
+
+		public BigDecimal getR37_cumm_inr() {
+			return r37_cumm_inr;
+		}
+
+		public void setR37_cumm_inr(BigDecimal r37_cumm_inr) {
+			this.r37_cumm_inr = r37_cumm_inr;
+		}
+
+		public BigDecimal getR37_cumm_bwp() {
+			return r37_cumm_bwp;
+		}
+
+		public void setR37_cumm_bwp(BigDecimal r37_cumm_bwp) {
+			this.r37_cumm_bwp = r37_cumm_bwp;
+		}
+
+		public String getR38_product() {
+			return r38_product;
+		}
+
+		public void setR38_product(String r38_product) {
+			this.r38_product = r38_product;
+		}
+
+		public BigDecimal getR38_qua_i_lc() {
+			return r38_qua_i_lc;
+		}
+
+		public void setR38_qua_i_lc(BigDecimal r38_qua_i_lc) {
+			this.r38_qua_i_lc = r38_qua_i_lc;
+		}
+
+		public BigDecimal getR38_qua_i_qar() {
+			return r38_qua_i_qar;
+		}
+
+		public void setR38_qua_i_qar(BigDecimal r38_qua_i_qar) {
+			this.r38_qua_i_qar = r38_qua_i_qar;
+		}
+
+		public BigDecimal getR38_qua_i_inr() {
+			return r38_qua_i_inr;
+		}
+
+		public void setR38_qua_i_inr(BigDecimal r38_qua_i_inr) {
+			this.r38_qua_i_inr = r38_qua_i_inr;
+		}
+
+		public BigDecimal getR38_qua_ii_lc() {
+			return r38_qua_ii_lc;
+		}
+
+		public void setR38_qua_ii_lc(BigDecimal r38_qua_ii_lc) {
+			this.r38_qua_ii_lc = r38_qua_ii_lc;
+		}
+
+		public BigDecimal getR38_qua_ii_qar() {
+			return r38_qua_ii_qar;
+		}
+
+		public void setR38_qua_ii_qar(BigDecimal r38_qua_ii_qar) {
+			this.r38_qua_ii_qar = r38_qua_ii_qar;
+		}
+
+		public BigDecimal getR38_qua_ii_inr() {
+			return r38_qua_ii_inr;
+		}
+
+		public void setR38_qua_ii_inr(BigDecimal r38_qua_ii_inr) {
+			this.r38_qua_ii_inr = r38_qua_ii_inr;
+		}
+
+		public BigDecimal getR38_qua_iii_lc() {
+			return r38_qua_iii_lc;
+		}
+
+		public void setR38_qua_iii_lc(BigDecimal r38_qua_iii_lc) {
+			this.r38_qua_iii_lc = r38_qua_iii_lc;
+		}
+
+		public BigDecimal getR38_qua_iii_qar() {
+			return r38_qua_iii_qar;
+		}
+
+		public void setR38_qua_iii_qar(BigDecimal r38_qua_iii_qar) {
+			this.r38_qua_iii_qar = r38_qua_iii_qar;
+		}
+
+		public BigDecimal getR38_qua_iii_inr() {
+			return r38_qua_iii_inr;
+		}
+
+		public void setR38_qua_iii_inr(BigDecimal r38_qua_iii_inr) {
+			this.r38_qua_iii_inr = r38_qua_iii_inr;
+		}
+
+		public BigDecimal getR38_qua_iv_lc() {
+			return r38_qua_iv_lc;
+		}
+
+		public void setR38_qua_iv_lc(BigDecimal r38_qua_iv_lc) {
+			this.r38_qua_iv_lc = r38_qua_iv_lc;
+		}
+
+		public BigDecimal getR38_qua_iv_qar() {
+			return r38_qua_iv_qar;
+		}
+
+		public void setR38_qua_iv_qar(BigDecimal r38_qua_iv_qar) {
+			this.r38_qua_iv_qar = r38_qua_iv_qar;
+		}
+
+		public BigDecimal getR38_qua_iv_inr() {
+			return r38_qua_iv_inr;
+		}
+
+		public void setR38_qua_iv_inr(BigDecimal r38_qua_iv_inr) {
+			this.r38_qua_iv_inr = r38_qua_iv_inr;
+		}
+
+		public BigDecimal getR38_cumm_inr() {
+			return r38_cumm_inr;
+		}
+
+		public void setR38_cumm_inr(BigDecimal r38_cumm_inr) {
+			this.r38_cumm_inr = r38_cumm_inr;
+		}
+
+		public BigDecimal getR38_cumm_bwp() {
+			return r38_cumm_bwp;
+		}
+
+		public void setR38_cumm_bwp(BigDecimal r38_cumm_bwp) {
+			this.r38_cumm_bwp = r38_cumm_bwp;
+		}
+
+		public String getR39_product() {
+			return r39_product;
+		}
+
+		public void setR39_product(String r39_product) {
+			this.r39_product = r39_product;
+		}
+
+		public BigDecimal getR39_qua_i_lc() {
+			return r39_qua_i_lc;
+		}
+
+		public void setR39_qua_i_lc(BigDecimal r39_qua_i_lc) {
+			this.r39_qua_i_lc = r39_qua_i_lc;
+		}
+
+		public BigDecimal getR39_qua_i_qar() {
+			return r39_qua_i_qar;
+		}
+
+		public void setR39_qua_i_qar(BigDecimal r39_qua_i_qar) {
+			this.r39_qua_i_qar = r39_qua_i_qar;
+		}
+
+		public BigDecimal getR39_qua_i_inr() {
+			return r39_qua_i_inr;
+		}
+
+		public void setR39_qua_i_inr(BigDecimal r39_qua_i_inr) {
+			this.r39_qua_i_inr = r39_qua_i_inr;
+		}
+
+		public BigDecimal getR39_qua_ii_lc() {
+			return r39_qua_ii_lc;
+		}
+
+		public void setR39_qua_ii_lc(BigDecimal r39_qua_ii_lc) {
+			this.r39_qua_ii_lc = r39_qua_ii_lc;
+		}
+
+		public BigDecimal getR39_qua_ii_qar() {
+			return r39_qua_ii_qar;
+		}
+
+		public void setR39_qua_ii_qar(BigDecimal r39_qua_ii_qar) {
+			this.r39_qua_ii_qar = r39_qua_ii_qar;
+		}
+
+		public BigDecimal getR39_qua_ii_inr() {
+			return r39_qua_ii_inr;
+		}
+
+		public void setR39_qua_ii_inr(BigDecimal r39_qua_ii_inr) {
+			this.r39_qua_ii_inr = r39_qua_ii_inr;
+		}
+
+		public BigDecimal getR39_qua_iii_lc() {
+			return r39_qua_iii_lc;
+		}
+
+		public void setR39_qua_iii_lc(BigDecimal r39_qua_iii_lc) {
+			this.r39_qua_iii_lc = r39_qua_iii_lc;
+		}
+
+		public BigDecimal getR39_qua_iii_qar() {
+			return r39_qua_iii_qar;
+		}
+
+		public void setR39_qua_iii_qar(BigDecimal r39_qua_iii_qar) {
+			this.r39_qua_iii_qar = r39_qua_iii_qar;
+		}
+
+		public BigDecimal getR39_qua_iii_inr() {
+			return r39_qua_iii_inr;
+		}
+
+		public void setR39_qua_iii_inr(BigDecimal r39_qua_iii_inr) {
+			this.r39_qua_iii_inr = r39_qua_iii_inr;
+		}
+
+		public BigDecimal getR39_qua_iv_lc() {
+			return r39_qua_iv_lc;
+		}
+
+		public void setR39_qua_iv_lc(BigDecimal r39_qua_iv_lc) {
+			this.r39_qua_iv_lc = r39_qua_iv_lc;
+		}
+
+		public BigDecimal getR39_qua_iv_qar() {
+			return r39_qua_iv_qar;
+		}
+
+		public void setR39_qua_iv_qar(BigDecimal r39_qua_iv_qar) {
+			this.r39_qua_iv_qar = r39_qua_iv_qar;
+		}
+
+		public BigDecimal getR39_qua_iv_inr() {
+			return r39_qua_iv_inr;
+		}
+
+		public void setR39_qua_iv_inr(BigDecimal r39_qua_iv_inr) {
+			this.r39_qua_iv_inr = r39_qua_iv_inr;
+		}
+
+		public BigDecimal getR39_cumm_inr() {
+			return r39_cumm_inr;
+		}
+
+		public void setR39_cumm_inr(BigDecimal r39_cumm_inr) {
+			this.r39_cumm_inr = r39_cumm_inr;
+		}
+
+		public BigDecimal getR39_cumm_bwp() {
+			return r39_cumm_bwp;
+		}
+
+		public void setR39_cumm_bwp(BigDecimal r39_cumm_bwp) {
+			this.r39_cumm_bwp = r39_cumm_bwp;
+		}
+
+		public String getR40_product() {
+			return r40_product;
+		}
+
+		public void setR40_product(String r40_product) {
+			this.r40_product = r40_product;
+		}
+
+		public BigDecimal getR40_qua_i_lc() {
+			return r40_qua_i_lc;
+		}
+
+		public void setR40_qua_i_lc(BigDecimal r40_qua_i_lc) {
+			this.r40_qua_i_lc = r40_qua_i_lc;
+		}
+
+		public BigDecimal getR40_qua_i_qar() {
+			return r40_qua_i_qar;
+		}
+
+		public void setR40_qua_i_qar(BigDecimal r40_qua_i_qar) {
+			this.r40_qua_i_qar = r40_qua_i_qar;
+		}
+
+		public BigDecimal getR40_qua_i_inr() {
+			return r40_qua_i_inr;
+		}
+
+		public void setR40_qua_i_inr(BigDecimal r40_qua_i_inr) {
+			this.r40_qua_i_inr = r40_qua_i_inr;
+		}
+
+		public BigDecimal getR40_qua_ii_lc() {
+			return r40_qua_ii_lc;
+		}
+
+		public void setR40_qua_ii_lc(BigDecimal r40_qua_ii_lc) {
+			this.r40_qua_ii_lc = r40_qua_ii_lc;
+		}
+
+		public BigDecimal getR40_qua_ii_qar() {
+			return r40_qua_ii_qar;
+		}
+
+		public void setR40_qua_ii_qar(BigDecimal r40_qua_ii_qar) {
+			this.r40_qua_ii_qar = r40_qua_ii_qar;
+		}
+
+		public BigDecimal getR40_qua_ii_inr() {
+			return r40_qua_ii_inr;
+		}
+
+		public void setR40_qua_ii_inr(BigDecimal r40_qua_ii_inr) {
+			this.r40_qua_ii_inr = r40_qua_ii_inr;
+		}
+
+		public BigDecimal getR40_qua_iii_lc() {
+			return r40_qua_iii_lc;
+		}
+
+		public void setR40_qua_iii_lc(BigDecimal r40_qua_iii_lc) {
+			this.r40_qua_iii_lc = r40_qua_iii_lc;
+		}
+
+		public BigDecimal getR40_qua_iii_qar() {
+			return r40_qua_iii_qar;
+		}
+
+		public void setR40_qua_iii_qar(BigDecimal r40_qua_iii_qar) {
+			this.r40_qua_iii_qar = r40_qua_iii_qar;
+		}
+
+		public BigDecimal getR40_qua_iii_inr() {
+			return r40_qua_iii_inr;
+		}
+
+		public void setR40_qua_iii_inr(BigDecimal r40_qua_iii_inr) {
+			this.r40_qua_iii_inr = r40_qua_iii_inr;
+		}
+
+		public BigDecimal getR40_qua_iv_lc() {
+			return r40_qua_iv_lc;
+		}
+
+		public void setR40_qua_iv_lc(BigDecimal r40_qua_iv_lc) {
+			this.r40_qua_iv_lc = r40_qua_iv_lc;
+		}
+
+		public BigDecimal getR40_qua_iv_qar() {
+			return r40_qua_iv_qar;
+		}
+
+		public void setR40_qua_iv_qar(BigDecimal r40_qua_iv_qar) {
+			this.r40_qua_iv_qar = r40_qua_iv_qar;
+		}
+
+		public BigDecimal getR40_qua_iv_inr() {
+			return r40_qua_iv_inr;
+		}
+
+		public void setR40_qua_iv_inr(BigDecimal r40_qua_iv_inr) {
+			this.r40_qua_iv_inr = r40_qua_iv_inr;
+		}
+
+		public BigDecimal getR40_cumm_inr() {
+			return r40_cumm_inr;
+		}
+
+		public void setR40_cumm_inr(BigDecimal r40_cumm_inr) {
+			this.r40_cumm_inr = r40_cumm_inr;
+		}
+
+		public BigDecimal getR40_cumm_bwp() {
+			return r40_cumm_bwp;
+		}
+
+		public void setR40_cumm_bwp(BigDecimal r40_cumm_bwp) {
+			this.r40_cumm_bwp = r40_cumm_bwp;
+		}
+
+		public String getR41_product() {
+			return r41_product;
+		}
+
+		public void setR41_product(String r41_product) {
+			this.r41_product = r41_product;
+		}
+
+		public BigDecimal getR41_qua_i_lc() {
+			return r41_qua_i_lc;
+		}
+
+		public void setR41_qua_i_lc(BigDecimal r41_qua_i_lc) {
+			this.r41_qua_i_lc = r41_qua_i_lc;
+		}
+
+		public BigDecimal getR41_qua_i_qar() {
+			return r41_qua_i_qar;
+		}
+
+		public void setR41_qua_i_qar(BigDecimal r41_qua_i_qar) {
+			this.r41_qua_i_qar = r41_qua_i_qar;
+		}
+
+		public BigDecimal getR41_qua_i_inr() {
+			return r41_qua_i_inr;
+		}
+
+		public void setR41_qua_i_inr(BigDecimal r41_qua_i_inr) {
+			this.r41_qua_i_inr = r41_qua_i_inr;
+		}
+
+		public BigDecimal getR41_qua_ii_lc() {
+			return r41_qua_ii_lc;
+		}
+
+		public void setR41_qua_ii_lc(BigDecimal r41_qua_ii_lc) {
+			this.r41_qua_ii_lc = r41_qua_ii_lc;
+		}
+
+		public BigDecimal getR41_qua_ii_qar() {
+			return r41_qua_ii_qar;
+		}
+
+		public void setR41_qua_ii_qar(BigDecimal r41_qua_ii_qar) {
+			this.r41_qua_ii_qar = r41_qua_ii_qar;
+		}
+
+		public BigDecimal getR41_qua_ii_inr() {
+			return r41_qua_ii_inr;
+		}
+
+		public void setR41_qua_ii_inr(BigDecimal r41_qua_ii_inr) {
+			this.r41_qua_ii_inr = r41_qua_ii_inr;
+		}
+
+		public BigDecimal getR41_qua_iii_lc() {
+			return r41_qua_iii_lc;
+		}
+
+		public void setR41_qua_iii_lc(BigDecimal r41_qua_iii_lc) {
+			this.r41_qua_iii_lc = r41_qua_iii_lc;
+		}
+
+		public BigDecimal getR41_qua_iii_qar() {
+			return r41_qua_iii_qar;
+		}
+
+		public void setR41_qua_iii_qar(BigDecimal r41_qua_iii_qar) {
+			this.r41_qua_iii_qar = r41_qua_iii_qar;
+		}
+
+		public BigDecimal getR41_qua_iii_inr() {
+			return r41_qua_iii_inr;
+		}
+
+		public void setR41_qua_iii_inr(BigDecimal r41_qua_iii_inr) {
+			this.r41_qua_iii_inr = r41_qua_iii_inr;
+		}
+
+		public BigDecimal getR41_qua_iv_lc() {
+			return r41_qua_iv_lc;
+		}
+
+		public void setR41_qua_iv_lc(BigDecimal r41_qua_iv_lc) {
+			this.r41_qua_iv_lc = r41_qua_iv_lc;
+		}
+
+		public BigDecimal getR41_qua_iv_qar() {
+			return r41_qua_iv_qar;
+		}
+
+		public void setR41_qua_iv_qar(BigDecimal r41_qua_iv_qar) {
+			this.r41_qua_iv_qar = r41_qua_iv_qar;
+		}
+
+		public BigDecimal getR41_qua_iv_inr() {
+			return r41_qua_iv_inr;
+		}
+
+		public void setR41_qua_iv_inr(BigDecimal r41_qua_iv_inr) {
+			this.r41_qua_iv_inr = r41_qua_iv_inr;
+		}
+
+		public BigDecimal getR41_cumm_inr() {
+			return r41_cumm_inr;
+		}
+
+		public void setR41_cumm_inr(BigDecimal r41_cumm_inr) {
+			this.r41_cumm_inr = r41_cumm_inr;
+		}
+
+		public BigDecimal getR41_cumm_bwp() {
+			return r41_cumm_bwp;
+		}
+
+		public void setR41_cumm_bwp(BigDecimal r41_cumm_bwp) {
+			this.r41_cumm_bwp = r41_cumm_bwp;
+		}
+
+		public String getR42_product() {
+			return r42_product;
+		}
+
+		public void setR42_product(String r42_product) {
+			this.r42_product = r42_product;
+		}
+
+		public BigDecimal getR42_qua_i_lc() {
+			return r42_qua_i_lc;
+		}
+
+		public void setR42_qua_i_lc(BigDecimal r42_qua_i_lc) {
+			this.r42_qua_i_lc = r42_qua_i_lc;
+		}
+
+		public BigDecimal getR42_qua_i_qar() {
+			return r42_qua_i_qar;
+		}
+
+		public void setR42_qua_i_qar(BigDecimal r42_qua_i_qar) {
+			this.r42_qua_i_qar = r42_qua_i_qar;
+		}
+
+		public BigDecimal getR42_qua_i_inr() {
+			return r42_qua_i_inr;
+		}
+
+		public void setR42_qua_i_inr(BigDecimal r42_qua_i_inr) {
+			this.r42_qua_i_inr = r42_qua_i_inr;
+		}
+
+		public BigDecimal getR42_qua_ii_lc() {
+			return r42_qua_ii_lc;
+		}
+
+		public void setR42_qua_ii_lc(BigDecimal r42_qua_ii_lc) {
+			this.r42_qua_ii_lc = r42_qua_ii_lc;
+		}
+
+		public BigDecimal getR42_qua_ii_qar() {
+			return r42_qua_ii_qar;
+		}
+
+		public void setR42_qua_ii_qar(BigDecimal r42_qua_ii_qar) {
+			this.r42_qua_ii_qar = r42_qua_ii_qar;
+		}
+
+		public BigDecimal getR42_qua_ii_inr() {
+			return r42_qua_ii_inr;
+		}
+
+		public void setR42_qua_ii_inr(BigDecimal r42_qua_ii_inr) {
+			this.r42_qua_ii_inr = r42_qua_ii_inr;
+		}
+
+		public BigDecimal getR42_qua_iii_lc() {
+			return r42_qua_iii_lc;
+		}
+
+		public void setR42_qua_iii_lc(BigDecimal r42_qua_iii_lc) {
+			this.r42_qua_iii_lc = r42_qua_iii_lc;
+		}
+
+		public BigDecimal getR42_qua_iii_qar() {
+			return r42_qua_iii_qar;
+		}
+
+		public void setR42_qua_iii_qar(BigDecimal r42_qua_iii_qar) {
+			this.r42_qua_iii_qar = r42_qua_iii_qar;
+		}
+
+		public BigDecimal getR42_qua_iii_inr() {
+			return r42_qua_iii_inr;
+		}
+
+		public void setR42_qua_iii_inr(BigDecimal r42_qua_iii_inr) {
+			this.r42_qua_iii_inr = r42_qua_iii_inr;
+		}
+
+		public BigDecimal getR42_qua_iv_lc() {
+			return r42_qua_iv_lc;
+		}
+
+		public void setR42_qua_iv_lc(BigDecimal r42_qua_iv_lc) {
+			this.r42_qua_iv_lc = r42_qua_iv_lc;
+		}
+
+		public BigDecimal getR42_qua_iv_qar() {
+			return r42_qua_iv_qar;
+		}
+
+		public void setR42_qua_iv_qar(BigDecimal r42_qua_iv_qar) {
+			this.r42_qua_iv_qar = r42_qua_iv_qar;
+		}
+
+		public BigDecimal getR42_qua_iv_inr() {
+			return r42_qua_iv_inr;
+		}
+
+		public void setR42_qua_iv_inr(BigDecimal r42_qua_iv_inr) {
+			this.r42_qua_iv_inr = r42_qua_iv_inr;
+		}
+
+		public BigDecimal getR42_cumm_inr() {
+			return r42_cumm_inr;
+		}
+
+		public void setR42_cumm_inr(BigDecimal r42_cumm_inr) {
+			this.r42_cumm_inr = r42_cumm_inr;
+		}
+
+		public BigDecimal getR42_cumm_bwp() {
+			return r42_cumm_bwp;
+		}
+
+		public void setR42_cumm_bwp(BigDecimal r42_cumm_bwp) {
+			this.r42_cumm_bwp = r42_cumm_bwp;
+		}
+
+		public String getR43_product() {
+			return r43_product;
+		}
+
+		public void setR43_product(String r43_product) {
+			this.r43_product = r43_product;
+		}
+
+		public BigDecimal getR43_qua_i_lc() {
+			return r43_qua_i_lc;
+		}
+
+		public void setR43_qua_i_lc(BigDecimal r43_qua_i_lc) {
+			this.r43_qua_i_lc = r43_qua_i_lc;
+		}
+
+		public BigDecimal getR43_qua_i_qar() {
+			return r43_qua_i_qar;
+		}
+
+		public void setR43_qua_i_qar(BigDecimal r43_qua_i_qar) {
+			this.r43_qua_i_qar = r43_qua_i_qar;
+		}
+
+		public BigDecimal getR43_qua_i_inr() {
+			return r43_qua_i_inr;
+		}
+
+		public void setR43_qua_i_inr(BigDecimal r43_qua_i_inr) {
+			this.r43_qua_i_inr = r43_qua_i_inr;
+		}
+
+		public BigDecimal getR43_qua_ii_lc() {
+			return r43_qua_ii_lc;
+		}
+
+		public void setR43_qua_ii_lc(BigDecimal r43_qua_ii_lc) {
+			this.r43_qua_ii_lc = r43_qua_ii_lc;
+		}
+
+		public BigDecimal getR43_qua_ii_qar() {
+			return r43_qua_ii_qar;
+		}
+
+		public void setR43_qua_ii_qar(BigDecimal r43_qua_ii_qar) {
+			this.r43_qua_ii_qar = r43_qua_ii_qar;
+		}
+
+		public BigDecimal getR43_qua_ii_inr() {
+			return r43_qua_ii_inr;
+		}
+
+		public void setR43_qua_ii_inr(BigDecimal r43_qua_ii_inr) {
+			this.r43_qua_ii_inr = r43_qua_ii_inr;
+		}
+
+		public BigDecimal getR43_qua_iii_lc() {
+			return r43_qua_iii_lc;
+		}
+
+		public void setR43_qua_iii_lc(BigDecimal r43_qua_iii_lc) {
+			this.r43_qua_iii_lc = r43_qua_iii_lc;
+		}
+
+		public BigDecimal getR43_qua_iii_qar() {
+			return r43_qua_iii_qar;
+		}
+
+		public void setR43_qua_iii_qar(BigDecimal r43_qua_iii_qar) {
+			this.r43_qua_iii_qar = r43_qua_iii_qar;
+		}
+
+		public BigDecimal getR43_qua_iii_inr() {
+			return r43_qua_iii_inr;
+		}
+
+		public void setR43_qua_iii_inr(BigDecimal r43_qua_iii_inr) {
+			this.r43_qua_iii_inr = r43_qua_iii_inr;
+		}
+
+		public BigDecimal getR43_qua_iv_lc() {
+			return r43_qua_iv_lc;
+		}
+
+		public void setR43_qua_iv_lc(BigDecimal r43_qua_iv_lc) {
+			this.r43_qua_iv_lc = r43_qua_iv_lc;
+		}
+
+		public BigDecimal getR43_qua_iv_qar() {
+			return r43_qua_iv_qar;
+		}
+
+		public void setR43_qua_iv_qar(BigDecimal r43_qua_iv_qar) {
+			this.r43_qua_iv_qar = r43_qua_iv_qar;
+		}
+
+		public BigDecimal getR43_qua_iv_inr() {
+			return r43_qua_iv_inr;
+		}
+
+		public void setR43_qua_iv_inr(BigDecimal r43_qua_iv_inr) {
+			this.r43_qua_iv_inr = r43_qua_iv_inr;
+		}
+
+		public BigDecimal getR43_cumm_inr() {
+			return r43_cumm_inr;
+		}
+
+		public void setR43_cumm_inr(BigDecimal r43_cumm_inr) {
+			this.r43_cumm_inr = r43_cumm_inr;
+		}
+
+		public BigDecimal getR43_cumm_bwp() {
+			return r43_cumm_bwp;
+		}
+
+		public void setR43_cumm_bwp(BigDecimal r43_cumm_bwp) {
+			this.r43_cumm_bwp = r43_cumm_bwp;
+		}
+
+		public String getR44_product() {
+			return r44_product;
+		}
+
+		public void setR44_product(String r44_product) {
+			this.r44_product = r44_product;
+		}
+
+		public BigDecimal getR44_qua_i_lc() {
+			return r44_qua_i_lc;
+		}
+
+		public void setR44_qua_i_lc(BigDecimal r44_qua_i_lc) {
+			this.r44_qua_i_lc = r44_qua_i_lc;
+		}
+
+		public BigDecimal getR44_qua_i_qar() {
+			return r44_qua_i_qar;
+		}
+
+		public void setR44_qua_i_qar(BigDecimal r44_qua_i_qar) {
+			this.r44_qua_i_qar = r44_qua_i_qar;
+		}
+
+		public BigDecimal getR44_qua_i_inr() {
+			return r44_qua_i_inr;
+		}
+
+		public void setR44_qua_i_inr(BigDecimal r44_qua_i_inr) {
+			this.r44_qua_i_inr = r44_qua_i_inr;
+		}
+
+		public BigDecimal getR44_qua_ii_lc() {
+			return r44_qua_ii_lc;
+		}
+
+		public void setR44_qua_ii_lc(BigDecimal r44_qua_ii_lc) {
+			this.r44_qua_ii_lc = r44_qua_ii_lc;
+		}
+
+		public BigDecimal getR44_qua_ii_qar() {
+			return r44_qua_ii_qar;
+		}
+
+		public void setR44_qua_ii_qar(BigDecimal r44_qua_ii_qar) {
+			this.r44_qua_ii_qar = r44_qua_ii_qar;
+		}
+
+		public BigDecimal getR44_qua_ii_inr() {
+			return r44_qua_ii_inr;
+		}
+
+		public void setR44_qua_ii_inr(BigDecimal r44_qua_ii_inr) {
+			this.r44_qua_ii_inr = r44_qua_ii_inr;
+		}
+
+		public BigDecimal getR44_qua_iii_lc() {
+			return r44_qua_iii_lc;
+		}
+
+		public void setR44_qua_iii_lc(BigDecimal r44_qua_iii_lc) {
+			this.r44_qua_iii_lc = r44_qua_iii_lc;
+		}
+
+		public BigDecimal getR44_qua_iii_qar() {
+			return r44_qua_iii_qar;
+		}
+
+		public void setR44_qua_iii_qar(BigDecimal r44_qua_iii_qar) {
+			this.r44_qua_iii_qar = r44_qua_iii_qar;
+		}
+
+		public BigDecimal getR44_qua_iii_inr() {
+			return r44_qua_iii_inr;
+		}
+
+		public void setR44_qua_iii_inr(BigDecimal r44_qua_iii_inr) {
+			this.r44_qua_iii_inr = r44_qua_iii_inr;
+		}
+
+		public BigDecimal getR44_qua_iv_lc() {
+			return r44_qua_iv_lc;
+		}
+
+		public void setR44_qua_iv_lc(BigDecimal r44_qua_iv_lc) {
+			this.r44_qua_iv_lc = r44_qua_iv_lc;
+		}
+
+		public BigDecimal getR44_qua_iv_qar() {
+			return r44_qua_iv_qar;
+		}
+
+		public void setR44_qua_iv_qar(BigDecimal r44_qua_iv_qar) {
+			this.r44_qua_iv_qar = r44_qua_iv_qar;
+		}
+
+		public BigDecimal getR44_qua_iv_inr() {
+			return r44_qua_iv_inr;
+		}
+
+		public void setR44_qua_iv_inr(BigDecimal r44_qua_iv_inr) {
+			this.r44_qua_iv_inr = r44_qua_iv_inr;
+		}
+
+		public BigDecimal getR44_cumm_inr() {
+			return r44_cumm_inr;
+		}
+
+		public void setR44_cumm_inr(BigDecimal r44_cumm_inr) {
+			this.r44_cumm_inr = r44_cumm_inr;
+		}
+
+		public BigDecimal getR44_cumm_bwp() {
+			return r44_cumm_bwp;
+		}
+
+		public void setR44_cumm_bwp(BigDecimal r44_cumm_bwp) {
+			this.r44_cumm_bwp = r44_cumm_bwp;
+		}
+
+		public String getR45_product() {
+			return r45_product;
+		}
+
+		public void setR45_product(String r45_product) {
+			this.r45_product = r45_product;
+		}
+
+		public BigDecimal getR45_qua_i_lc() {
+			return r45_qua_i_lc;
+		}
+
+		public void setR45_qua_i_lc(BigDecimal r45_qua_i_lc) {
+			this.r45_qua_i_lc = r45_qua_i_lc;
+		}
+
+		public BigDecimal getR45_qua_i_qar() {
+			return r45_qua_i_qar;
+		}
+
+		public void setR45_qua_i_qar(BigDecimal r45_qua_i_qar) {
+			this.r45_qua_i_qar = r45_qua_i_qar;
+		}
+
+		public BigDecimal getR45_qua_i_inr() {
+			return r45_qua_i_inr;
+		}
+
+		public void setR45_qua_i_inr(BigDecimal r45_qua_i_inr) {
+			this.r45_qua_i_inr = r45_qua_i_inr;
+		}
+
+		public BigDecimal getR45_qua_ii_lc() {
+			return r45_qua_ii_lc;
+		}
+
+		public void setR45_qua_ii_lc(BigDecimal r45_qua_ii_lc) {
+			this.r45_qua_ii_lc = r45_qua_ii_lc;
+		}
+
+		public BigDecimal getR45_qua_ii_qar() {
+			return r45_qua_ii_qar;
+		}
+
+		public void setR45_qua_ii_qar(BigDecimal r45_qua_ii_qar) {
+			this.r45_qua_ii_qar = r45_qua_ii_qar;
+		}
+
+		public BigDecimal getR45_qua_ii_inr() {
+			return r45_qua_ii_inr;
+		}
+
+		public void setR45_qua_ii_inr(BigDecimal r45_qua_ii_inr) {
+			this.r45_qua_ii_inr = r45_qua_ii_inr;
+		}
+
+		public BigDecimal getR45_qua_iii_lc() {
+			return r45_qua_iii_lc;
+		}
+
+		public void setR45_qua_iii_lc(BigDecimal r45_qua_iii_lc) {
+			this.r45_qua_iii_lc = r45_qua_iii_lc;
+		}
+
+		public BigDecimal getR45_qua_iii_qar() {
+			return r45_qua_iii_qar;
+		}
+
+		public void setR45_qua_iii_qar(BigDecimal r45_qua_iii_qar) {
+			this.r45_qua_iii_qar = r45_qua_iii_qar;
+		}
+
+		public BigDecimal getR45_qua_iii_inr() {
+			return r45_qua_iii_inr;
+		}
+
+		public void setR45_qua_iii_inr(BigDecimal r45_qua_iii_inr) {
+			this.r45_qua_iii_inr = r45_qua_iii_inr;
+		}
+
+		public BigDecimal getR45_qua_iv_lc() {
+			return r45_qua_iv_lc;
+		}
+
+		public void setR45_qua_iv_lc(BigDecimal r45_qua_iv_lc) {
+			this.r45_qua_iv_lc = r45_qua_iv_lc;
+		}
+
+		public BigDecimal getR45_qua_iv_qar() {
+			return r45_qua_iv_qar;
+		}
+
+		public void setR45_qua_iv_qar(BigDecimal r45_qua_iv_qar) {
+			this.r45_qua_iv_qar = r45_qua_iv_qar;
+		}
+
+		public BigDecimal getR45_qua_iv_inr() {
+			return r45_qua_iv_inr;
+		}
+
+		public void setR45_qua_iv_inr(BigDecimal r45_qua_iv_inr) {
+			this.r45_qua_iv_inr = r45_qua_iv_inr;
+		}
+
+		public BigDecimal getR45_cumm_inr() {
+			return r45_cumm_inr;
+		}
+
+		public void setR45_cumm_inr(BigDecimal r45_cumm_inr) {
+			this.r45_cumm_inr = r45_cumm_inr;
+		}
+
+		public BigDecimal getR45_cumm_bwp() {
+			return r45_cumm_bwp;
+		}
+
+		public void setR45_cumm_bwp(BigDecimal r45_cumm_bwp) {
+			this.r45_cumm_bwp = r45_cumm_bwp;
+		}
+
+		public String getR46_product() {
+			return r46_product;
+		}
+
+		public void setR46_product(String r46_product) {
+			this.r46_product = r46_product;
+		}
+
+		public BigDecimal getR46_qua_i_lc() {
+			return r46_qua_i_lc;
+		}
+
+		public void setR46_qua_i_lc(BigDecimal r46_qua_i_lc) {
+			this.r46_qua_i_lc = r46_qua_i_lc;
+		}
+
+		public BigDecimal getR46_qua_i_qar() {
+			return r46_qua_i_qar;
+		}
+
+		public void setR46_qua_i_qar(BigDecimal r46_qua_i_qar) {
+			this.r46_qua_i_qar = r46_qua_i_qar;
+		}
+
+		public BigDecimal getR46_qua_i_inr() {
+			return r46_qua_i_inr;
+		}
+
+		public void setR46_qua_i_inr(BigDecimal r46_qua_i_inr) {
+			this.r46_qua_i_inr = r46_qua_i_inr;
+		}
+
+		public BigDecimal getR46_qua_ii_lc() {
+			return r46_qua_ii_lc;
+		}
+
+		public void setR46_qua_ii_lc(BigDecimal r46_qua_ii_lc) {
+			this.r46_qua_ii_lc = r46_qua_ii_lc;
+		}
+
+		public BigDecimal getR46_qua_ii_qar() {
+			return r46_qua_ii_qar;
+		}
+
+		public void setR46_qua_ii_qar(BigDecimal r46_qua_ii_qar) {
+			this.r46_qua_ii_qar = r46_qua_ii_qar;
+		}
+
+		public BigDecimal getR46_qua_ii_inr() {
+			return r46_qua_ii_inr;
+		}
+
+		public void setR46_qua_ii_inr(BigDecimal r46_qua_ii_inr) {
+			this.r46_qua_ii_inr = r46_qua_ii_inr;
+		}
+
+		public BigDecimal getR46_qua_iii_lc() {
+			return r46_qua_iii_lc;
+		}
+
+		public void setR46_qua_iii_lc(BigDecimal r46_qua_iii_lc) {
+			this.r46_qua_iii_lc = r46_qua_iii_lc;
+		}
+
+		public BigDecimal getR46_qua_iii_qar() {
+			return r46_qua_iii_qar;
+		}
+
+		public void setR46_qua_iii_qar(BigDecimal r46_qua_iii_qar) {
+			this.r46_qua_iii_qar = r46_qua_iii_qar;
+		}
+
+		public BigDecimal getR46_qua_iii_inr() {
+			return r46_qua_iii_inr;
+		}
+
+		public void setR46_qua_iii_inr(BigDecimal r46_qua_iii_inr) {
+			this.r46_qua_iii_inr = r46_qua_iii_inr;
+		}
+
+		public BigDecimal getR46_qua_iv_lc() {
+			return r46_qua_iv_lc;
+		}
+
+		public void setR46_qua_iv_lc(BigDecimal r46_qua_iv_lc) {
+			this.r46_qua_iv_lc = r46_qua_iv_lc;
+		}
+
+		public BigDecimal getR46_qua_iv_qar() {
+			return r46_qua_iv_qar;
+		}
+
+		public void setR46_qua_iv_qar(BigDecimal r46_qua_iv_qar) {
+			this.r46_qua_iv_qar = r46_qua_iv_qar;
+		}
+
+		public BigDecimal getR46_qua_iv_inr() {
+			return r46_qua_iv_inr;
+		}
+
+		public void setR46_qua_iv_inr(BigDecimal r46_qua_iv_inr) {
+			this.r46_qua_iv_inr = r46_qua_iv_inr;
+		}
+
+		public BigDecimal getR46_cumm_inr() {
+			return r46_cumm_inr;
+		}
+
+		public void setR46_cumm_inr(BigDecimal r46_cumm_inr) {
+			this.r46_cumm_inr = r46_cumm_inr;
+		}
+
+		public BigDecimal getR46_cumm_bwp() {
+			return r46_cumm_bwp;
+		}
+
+		public void setR46_cumm_bwp(BigDecimal r46_cumm_bwp) {
+			this.r46_cumm_bwp = r46_cumm_bwp;
+		}
+
+		public String getR47_product() {
+			return r47_product;
+		}
+
+		public void setR47_product(String r47_product) {
+			this.r47_product = r47_product;
+		}
+
+		public BigDecimal getR47_qua_i_lc() {
+			return r47_qua_i_lc;
+		}
+
+		public void setR47_qua_i_lc(BigDecimal r47_qua_i_lc) {
+			this.r47_qua_i_lc = r47_qua_i_lc;
+		}
+
+		public BigDecimal getR47_qua_i_qar() {
+			return r47_qua_i_qar;
+		}
+
+		public void setR47_qua_i_qar(BigDecimal r47_qua_i_qar) {
+			this.r47_qua_i_qar = r47_qua_i_qar;
+		}
+
+		public BigDecimal getR47_qua_i_inr() {
+			return r47_qua_i_inr;
+		}
+
+		public void setR47_qua_i_inr(BigDecimal r47_qua_i_inr) {
+			this.r47_qua_i_inr = r47_qua_i_inr;
+		}
+
+		public BigDecimal getR47_qua_ii_lc() {
+			return r47_qua_ii_lc;
+		}
+
+		public void setR47_qua_ii_lc(BigDecimal r47_qua_ii_lc) {
+			this.r47_qua_ii_lc = r47_qua_ii_lc;
+		}
+
+		public BigDecimal getR47_qua_ii_qar() {
+			return r47_qua_ii_qar;
+		}
+
+		public void setR47_qua_ii_qar(BigDecimal r47_qua_ii_qar) {
+			this.r47_qua_ii_qar = r47_qua_ii_qar;
+		}
+
+		public BigDecimal getR47_qua_ii_inr() {
+			return r47_qua_ii_inr;
+		}
+
+		public void setR47_qua_ii_inr(BigDecimal r47_qua_ii_inr) {
+			this.r47_qua_ii_inr = r47_qua_ii_inr;
+		}
+
+		public BigDecimal getR47_qua_iii_lc() {
+			return r47_qua_iii_lc;
+		}
+
+		public void setR47_qua_iii_lc(BigDecimal r47_qua_iii_lc) {
+			this.r47_qua_iii_lc = r47_qua_iii_lc;
+		}
+
+		public BigDecimal getR47_qua_iii_qar() {
+			return r47_qua_iii_qar;
+		}
+
+		public void setR47_qua_iii_qar(BigDecimal r47_qua_iii_qar) {
+			this.r47_qua_iii_qar = r47_qua_iii_qar;
+		}
+
+		public BigDecimal getR47_qua_iii_inr() {
+			return r47_qua_iii_inr;
+		}
+
+		public void setR47_qua_iii_inr(BigDecimal r47_qua_iii_inr) {
+			this.r47_qua_iii_inr = r47_qua_iii_inr;
+		}
+
+		public BigDecimal getR47_qua_iv_lc() {
+			return r47_qua_iv_lc;
+		}
+
+		public void setR47_qua_iv_lc(BigDecimal r47_qua_iv_lc) {
+			this.r47_qua_iv_lc = r47_qua_iv_lc;
+		}
+
+		public BigDecimal getR47_qua_iv_qar() {
+			return r47_qua_iv_qar;
+		}
+
+		public void setR47_qua_iv_qar(BigDecimal r47_qua_iv_qar) {
+			this.r47_qua_iv_qar = r47_qua_iv_qar;
+		}
+
+		public BigDecimal getR47_qua_iv_inr() {
+			return r47_qua_iv_inr;
+		}
+
+		public void setR47_qua_iv_inr(BigDecimal r47_qua_iv_inr) {
+			this.r47_qua_iv_inr = r47_qua_iv_inr;
+		}
+
+		public BigDecimal getR47_cumm_inr() {
+			return r47_cumm_inr;
+		}
+
+		public void setR47_cumm_inr(BigDecimal r47_cumm_inr) {
+			this.r47_cumm_inr = r47_cumm_inr;
+		}
+
+		public BigDecimal getR47_cumm_bwp() {
+			return r47_cumm_bwp;
+		}
+
+		public void setR47_cumm_bwp(BigDecimal r47_cumm_bwp) {
+			this.r47_cumm_bwp = r47_cumm_bwp;
+		}
+
+		public String getR48_product() {
+			return r48_product;
+		}
+
+		public void setR48_product(String r48_product) {
+			this.r48_product = r48_product;
+		}
+
+		public BigDecimal getR48_qua_i_lc() {
+			return r48_qua_i_lc;
+		}
+
+		public void setR48_qua_i_lc(BigDecimal r48_qua_i_lc) {
+			this.r48_qua_i_lc = r48_qua_i_lc;
+		}
+
+		public BigDecimal getR48_qua_i_qar() {
+			return r48_qua_i_qar;
+		}
+
+		public void setR48_qua_i_qar(BigDecimal r48_qua_i_qar) {
+			this.r48_qua_i_qar = r48_qua_i_qar;
+		}
+
+		public BigDecimal getR48_qua_i_inr() {
+			return r48_qua_i_inr;
+		}
+
+		public void setR48_qua_i_inr(BigDecimal r48_qua_i_inr) {
+			this.r48_qua_i_inr = r48_qua_i_inr;
+		}
+
+		public BigDecimal getR48_qua_ii_lc() {
+			return r48_qua_ii_lc;
+		}
+
+		public void setR48_qua_ii_lc(BigDecimal r48_qua_ii_lc) {
+			this.r48_qua_ii_lc = r48_qua_ii_lc;
+		}
+
+		public BigDecimal getR48_qua_ii_qar() {
+			return r48_qua_ii_qar;
+		}
+
+		public void setR48_qua_ii_qar(BigDecimal r48_qua_ii_qar) {
+			this.r48_qua_ii_qar = r48_qua_ii_qar;
+		}
+
+		public BigDecimal getR48_qua_ii_inr() {
+			return r48_qua_ii_inr;
+		}
+
+		public void setR48_qua_ii_inr(BigDecimal r48_qua_ii_inr) {
+			this.r48_qua_ii_inr = r48_qua_ii_inr;
+		}
+
+		public BigDecimal getR48_qua_iii_lc() {
+			return r48_qua_iii_lc;
+		}
+
+		public void setR48_qua_iii_lc(BigDecimal r48_qua_iii_lc) {
+			this.r48_qua_iii_lc = r48_qua_iii_lc;
+		}
+
+		public BigDecimal getR48_qua_iii_qar() {
+			return r48_qua_iii_qar;
+		}
+
+		public void setR48_qua_iii_qar(BigDecimal r48_qua_iii_qar) {
+			this.r48_qua_iii_qar = r48_qua_iii_qar;
+		}
+
+		public BigDecimal getR48_qua_iii_inr() {
+			return r48_qua_iii_inr;
+		}
+
+		public void setR48_qua_iii_inr(BigDecimal r48_qua_iii_inr) {
+			this.r48_qua_iii_inr = r48_qua_iii_inr;
+		}
+
+		public BigDecimal getR48_qua_iv_lc() {
+			return r48_qua_iv_lc;
+		}
+
+		public void setR48_qua_iv_lc(BigDecimal r48_qua_iv_lc) {
+			this.r48_qua_iv_lc = r48_qua_iv_lc;
+		}
+
+		public BigDecimal getR48_qua_iv_qar() {
+			return r48_qua_iv_qar;
+		}
+
+		public void setR48_qua_iv_qar(BigDecimal r48_qua_iv_qar) {
+			this.r48_qua_iv_qar = r48_qua_iv_qar;
+		}
+
+		public BigDecimal getR48_qua_iv_inr() {
+			return r48_qua_iv_inr;
+		}
+
+		public void setR48_qua_iv_inr(BigDecimal r48_qua_iv_inr) {
+			this.r48_qua_iv_inr = r48_qua_iv_inr;
+		}
+
+		public BigDecimal getR48_cumm_inr() {
+			return r48_cumm_inr;
+		}
+
+		public void setR48_cumm_inr(BigDecimal r48_cumm_inr) {
+			this.r48_cumm_inr = r48_cumm_inr;
+		}
+
+		public BigDecimal getR48_cumm_bwp() {
+			return r48_cumm_bwp;
+		}
+
+		public void setR48_cumm_bwp(BigDecimal r48_cumm_bwp) {
+			this.r48_cumm_bwp = r48_cumm_bwp;
+		}
+
+		public String getR49_product() {
+			return r49_product;
+		}
+
+		public void setR49_product(String r49_product) {
+			this.r49_product = r49_product;
+		}
+
+		public BigDecimal getR49_qua_i_lc() {
+			return r49_qua_i_lc;
+		}
+
+		public void setR49_qua_i_lc(BigDecimal r49_qua_i_lc) {
+			this.r49_qua_i_lc = r49_qua_i_lc;
+		}
+
+		public BigDecimal getR49_qua_i_qar() {
+			return r49_qua_i_qar;
+		}
+
+		public void setR49_qua_i_qar(BigDecimal r49_qua_i_qar) {
+			this.r49_qua_i_qar = r49_qua_i_qar;
+		}
+
+		public BigDecimal getR49_qua_i_inr() {
+			return r49_qua_i_inr;
+		}
+
+		public void setR49_qua_i_inr(BigDecimal r49_qua_i_inr) {
+			this.r49_qua_i_inr = r49_qua_i_inr;
+		}
+
+		public BigDecimal getR49_qua_ii_lc() {
+			return r49_qua_ii_lc;
+		}
+
+		public void setR49_qua_ii_lc(BigDecimal r49_qua_ii_lc) {
+			this.r49_qua_ii_lc = r49_qua_ii_lc;
+		}
+
+		public BigDecimal getR49_qua_ii_qar() {
+			return r49_qua_ii_qar;
+		}
+
+		public void setR49_qua_ii_qar(BigDecimal r49_qua_ii_qar) {
+			this.r49_qua_ii_qar = r49_qua_ii_qar;
+		}
+
+		public BigDecimal getR49_qua_ii_inr() {
+			return r49_qua_ii_inr;
+		}
+
+		public void setR49_qua_ii_inr(BigDecimal r49_qua_ii_inr) {
+			this.r49_qua_ii_inr = r49_qua_ii_inr;
+		}
+
+		public BigDecimal getR49_qua_iii_lc() {
+			return r49_qua_iii_lc;
+		}
+
+		public void setR49_qua_iii_lc(BigDecimal r49_qua_iii_lc) {
+			this.r49_qua_iii_lc = r49_qua_iii_lc;
+		}
+
+		public BigDecimal getR49_qua_iii_qar() {
+			return r49_qua_iii_qar;
+		}
+
+		public void setR49_qua_iii_qar(BigDecimal r49_qua_iii_qar) {
+			this.r49_qua_iii_qar = r49_qua_iii_qar;
+		}
+
+		public BigDecimal getR49_qua_iii_inr() {
+			return r49_qua_iii_inr;
+		}
+
+		public void setR49_qua_iii_inr(BigDecimal r49_qua_iii_inr) {
+			this.r49_qua_iii_inr = r49_qua_iii_inr;
+		}
+
+		public BigDecimal getR49_qua_iv_lc() {
+			return r49_qua_iv_lc;
+		}
+
+		public void setR49_qua_iv_lc(BigDecimal r49_qua_iv_lc) {
+			this.r49_qua_iv_lc = r49_qua_iv_lc;
+		}
+
+		public BigDecimal getR49_qua_iv_qar() {
+			return r49_qua_iv_qar;
+		}
+
+		public void setR49_qua_iv_qar(BigDecimal r49_qua_iv_qar) {
+			this.r49_qua_iv_qar = r49_qua_iv_qar;
+		}
+
+		public BigDecimal getR49_qua_iv_inr() {
+			return r49_qua_iv_inr;
+		}
+
+		public void setR49_qua_iv_inr(BigDecimal r49_qua_iv_inr) {
+			this.r49_qua_iv_inr = r49_qua_iv_inr;
+		}
+
+		public BigDecimal getR49_cumm_inr() {
+			return r49_cumm_inr;
+		}
+
+		public void setR49_cumm_inr(BigDecimal r49_cumm_inr) {
+			this.r49_cumm_inr = r49_cumm_inr;
+		}
+
+		public BigDecimal getR49_cumm_bwp() {
+			return r49_cumm_bwp;
+		}
+
+		public void setR49_cumm_bwp(BigDecimal r49_cumm_bwp) {
+			this.r49_cumm_bwp = r49_cumm_bwp;
+		}
+
+		public String getR50_product() {
+			return r50_product;
+		}
+
+		public void setR50_product(String r50_product) {
+			this.r50_product = r50_product;
+		}
+
+		public BigDecimal getR50_qua_i_lc() {
+			return r50_qua_i_lc;
+		}
+
+		public void setR50_qua_i_lc(BigDecimal r50_qua_i_lc) {
+			this.r50_qua_i_lc = r50_qua_i_lc;
+		}
+
+		public BigDecimal getR50_qua_i_qar() {
+			return r50_qua_i_qar;
+		}
+
+		public void setR50_qua_i_qar(BigDecimal r50_qua_i_qar) {
+			this.r50_qua_i_qar = r50_qua_i_qar;
+		}
+
+		public BigDecimal getR50_qua_i_inr() {
+			return r50_qua_i_inr;
+		}
+
+		public void setR50_qua_i_inr(BigDecimal r50_qua_i_inr) {
+			this.r50_qua_i_inr = r50_qua_i_inr;
+		}
+
+		public BigDecimal getR50_qua_ii_lc() {
+			return r50_qua_ii_lc;
+		}
+
+		public void setR50_qua_ii_lc(BigDecimal r50_qua_ii_lc) {
+			this.r50_qua_ii_lc = r50_qua_ii_lc;
+		}
+
+		public BigDecimal getR50_qua_ii_qar() {
+			return r50_qua_ii_qar;
+		}
+
+		public void setR50_qua_ii_qar(BigDecimal r50_qua_ii_qar) {
+			this.r50_qua_ii_qar = r50_qua_ii_qar;
+		}
+
+		public BigDecimal getR50_qua_ii_inr() {
+			return r50_qua_ii_inr;
+		}
+
+		public void setR50_qua_ii_inr(BigDecimal r50_qua_ii_inr) {
+			this.r50_qua_ii_inr = r50_qua_ii_inr;
+		}
+
+		public BigDecimal getR50_qua_iii_lc() {
+			return r50_qua_iii_lc;
+		}
+
+		public void setR50_qua_iii_lc(BigDecimal r50_qua_iii_lc) {
+			this.r50_qua_iii_lc = r50_qua_iii_lc;
+		}
+
+		public BigDecimal getR50_qua_iii_qar() {
+			return r50_qua_iii_qar;
+		}
+
+		public void setR50_qua_iii_qar(BigDecimal r50_qua_iii_qar) {
+			this.r50_qua_iii_qar = r50_qua_iii_qar;
+		}
+
+		public BigDecimal getR50_qua_iii_inr() {
+			return r50_qua_iii_inr;
+		}
+
+		public void setR50_qua_iii_inr(BigDecimal r50_qua_iii_inr) {
+			this.r50_qua_iii_inr = r50_qua_iii_inr;
+		}
+
+		public BigDecimal getR50_qua_iv_lc() {
+			return r50_qua_iv_lc;
+		}
+
+		public void setR50_qua_iv_lc(BigDecimal r50_qua_iv_lc) {
+			this.r50_qua_iv_lc = r50_qua_iv_lc;
+		}
+
+		public BigDecimal getR50_qua_iv_qar() {
+			return r50_qua_iv_qar;
+		}
+
+		public void setR50_qua_iv_qar(BigDecimal r50_qua_iv_qar) {
+			this.r50_qua_iv_qar = r50_qua_iv_qar;
+		}
+
+		public BigDecimal getR50_qua_iv_inr() {
+			return r50_qua_iv_inr;
+		}
+
+		public void setR50_qua_iv_inr(BigDecimal r50_qua_iv_inr) {
+			this.r50_qua_iv_inr = r50_qua_iv_inr;
+		}
+
+		public BigDecimal getR50_cumm_inr() {
+			return r50_cumm_inr;
+		}
+
+		public void setR50_cumm_inr(BigDecimal r50_cumm_inr) {
+			this.r50_cumm_inr = r50_cumm_inr;
+		}
+
+		public BigDecimal getR50_cumm_bwp() {
+			return r50_cumm_bwp;
+		}
+
+		public void setR50_cumm_bwp(BigDecimal r50_cumm_bwp) {
+			this.r50_cumm_bwp = r50_cumm_bwp;
+		}
+
+		public String getR51_product() {
+			return r51_product;
+		}
+
+		public void setR51_product(String r51_product) {
+			this.r51_product = r51_product;
+		}
+
+		public BigDecimal getR51_qua_i_lc() {
+			return r51_qua_i_lc;
+		}
+
+		public void setR51_qua_i_lc(BigDecimal r51_qua_i_lc) {
+			this.r51_qua_i_lc = r51_qua_i_lc;
+		}
+
+		public BigDecimal getR51_qua_i_qar() {
+			return r51_qua_i_qar;
+		}
+
+		public void setR51_qua_i_qar(BigDecimal r51_qua_i_qar) {
+			this.r51_qua_i_qar = r51_qua_i_qar;
+		}
+
+		public BigDecimal getR51_qua_i_inr() {
+			return r51_qua_i_inr;
+		}
+
+		public void setR51_qua_i_inr(BigDecimal r51_qua_i_inr) {
+			this.r51_qua_i_inr = r51_qua_i_inr;
+		}
+
+		public BigDecimal getR51_qua_ii_lc() {
+			return r51_qua_ii_lc;
+		}
+
+		public void setR51_qua_ii_lc(BigDecimal r51_qua_ii_lc) {
+			this.r51_qua_ii_lc = r51_qua_ii_lc;
+		}
+
+		public BigDecimal getR51_qua_ii_qar() {
+			return r51_qua_ii_qar;
+		}
+
+		public void setR51_qua_ii_qar(BigDecimal r51_qua_ii_qar) {
+			this.r51_qua_ii_qar = r51_qua_ii_qar;
+		}
+
+		public BigDecimal getR51_qua_ii_inr() {
+			return r51_qua_ii_inr;
+		}
+
+		public void setR51_qua_ii_inr(BigDecimal r51_qua_ii_inr) {
+			this.r51_qua_ii_inr = r51_qua_ii_inr;
+		}
+
+		public BigDecimal getR51_qua_iii_lc() {
+			return r51_qua_iii_lc;
+		}
+
+		public void setR51_qua_iii_lc(BigDecimal r51_qua_iii_lc) {
+			this.r51_qua_iii_lc = r51_qua_iii_lc;
+		}
+
+		public BigDecimal getR51_qua_iii_qar() {
+			return r51_qua_iii_qar;
+		}
+
+		public void setR51_qua_iii_qar(BigDecimal r51_qua_iii_qar) {
+			this.r51_qua_iii_qar = r51_qua_iii_qar;
+		}
+
+		public BigDecimal getR51_qua_iii_inr() {
+			return r51_qua_iii_inr;
+		}
+
+		public void setR51_qua_iii_inr(BigDecimal r51_qua_iii_inr) {
+			this.r51_qua_iii_inr = r51_qua_iii_inr;
+		}
+
+		public BigDecimal getR51_qua_iv_lc() {
+			return r51_qua_iv_lc;
+		}
+
+		public void setR51_qua_iv_lc(BigDecimal r51_qua_iv_lc) {
+			this.r51_qua_iv_lc = r51_qua_iv_lc;
+		}
+
+		public BigDecimal getR51_qua_iv_qar() {
+			return r51_qua_iv_qar;
+		}
+
+		public void setR51_qua_iv_qar(BigDecimal r51_qua_iv_qar) {
+			this.r51_qua_iv_qar = r51_qua_iv_qar;
+		}
+
+		public BigDecimal getR51_qua_iv_inr() {
+			return r51_qua_iv_inr;
+		}
+
+		public void setR51_qua_iv_inr(BigDecimal r51_qua_iv_inr) {
+			this.r51_qua_iv_inr = r51_qua_iv_inr;
+		}
+
+		public BigDecimal getR51_cumm_inr() {
+			return r51_cumm_inr;
+		}
+
+		public void setR51_cumm_inr(BigDecimal r51_cumm_inr) {
+			this.r51_cumm_inr = r51_cumm_inr;
+		}
+
+		public BigDecimal getR51_cumm_bwp() {
+			return r51_cumm_bwp;
+		}
+
+		public void setR51_cumm_bwp(BigDecimal r51_cumm_bwp) {
+			this.r51_cumm_bwp = r51_cumm_bwp;
+		}
+
+		public String getR52_product() {
+			return r52_product;
+		}
+
+		public void setR52_product(String r52_product) {
+			this.r52_product = r52_product;
+		}
+
+		public BigDecimal getR52_qua_i_lc() {
+			return r52_qua_i_lc;
+		}
+
+		public void setR52_qua_i_lc(BigDecimal r52_qua_i_lc) {
+			this.r52_qua_i_lc = r52_qua_i_lc;
+		}
+
+		public BigDecimal getR52_qua_i_qar() {
+			return r52_qua_i_qar;
+		}
+
+		public void setR52_qua_i_qar(BigDecimal r52_qua_i_qar) {
+			this.r52_qua_i_qar = r52_qua_i_qar;
+		}
+
+		public BigDecimal getR52_qua_i_inr() {
+			return r52_qua_i_inr;
+		}
+
+		public void setR52_qua_i_inr(BigDecimal r52_qua_i_inr) {
+			this.r52_qua_i_inr = r52_qua_i_inr;
+		}
+
+		public BigDecimal getR52_qua_ii_lc() {
+			return r52_qua_ii_lc;
+		}
+
+		public void setR52_qua_ii_lc(BigDecimal r52_qua_ii_lc) {
+			this.r52_qua_ii_lc = r52_qua_ii_lc;
+		}
+
+		public BigDecimal getR52_qua_ii_qar() {
+			return r52_qua_ii_qar;
+		}
+
+		public void setR52_qua_ii_qar(BigDecimal r52_qua_ii_qar) {
+			this.r52_qua_ii_qar = r52_qua_ii_qar;
+		}
+
+		public BigDecimal getR52_qua_ii_inr() {
+			return r52_qua_ii_inr;
+		}
+
+		public void setR52_qua_ii_inr(BigDecimal r52_qua_ii_inr) {
+			this.r52_qua_ii_inr = r52_qua_ii_inr;
+		}
+
+		public BigDecimal getR52_qua_iii_lc() {
+			return r52_qua_iii_lc;
+		}
+
+		public void setR52_qua_iii_lc(BigDecimal r52_qua_iii_lc) {
+			this.r52_qua_iii_lc = r52_qua_iii_lc;
+		}
+
+		public BigDecimal getR52_qua_iii_qar() {
+			return r52_qua_iii_qar;
+		}
+
+		public void setR52_qua_iii_qar(BigDecimal r52_qua_iii_qar) {
+			this.r52_qua_iii_qar = r52_qua_iii_qar;
+		}
+
+		public BigDecimal getR52_qua_iii_inr() {
+			return r52_qua_iii_inr;
+		}
+
+		public void setR52_qua_iii_inr(BigDecimal r52_qua_iii_inr) {
+			this.r52_qua_iii_inr = r52_qua_iii_inr;
+		}
+
+		public BigDecimal getR52_qua_iv_lc() {
+			return r52_qua_iv_lc;
+		}
+
+		public void setR52_qua_iv_lc(BigDecimal r52_qua_iv_lc) {
+			this.r52_qua_iv_lc = r52_qua_iv_lc;
+		}
+
+		public BigDecimal getR52_qua_iv_qar() {
+			return r52_qua_iv_qar;
+		}
+
+		public void setR52_qua_iv_qar(BigDecimal r52_qua_iv_qar) {
+			this.r52_qua_iv_qar = r52_qua_iv_qar;
+		}
+
+		public BigDecimal getR52_qua_iv_inr() {
+			return r52_qua_iv_inr;
+		}
+
+		public void setR52_qua_iv_inr(BigDecimal r52_qua_iv_inr) {
+			this.r52_qua_iv_inr = r52_qua_iv_inr;
+		}
+
+		public BigDecimal getR52_cumm_inr() {
+			return r52_cumm_inr;
+		}
+
+		public void setR52_cumm_inr(BigDecimal r52_cumm_inr) {
+			this.r52_cumm_inr = r52_cumm_inr;
+		}
+
+		public BigDecimal getR52_cumm_bwp() {
+			return r52_cumm_bwp;
+		}
+
+		public void setR52_cumm_bwp(BigDecimal r52_cumm_bwp) {
+			this.r52_cumm_bwp = r52_cumm_bwp;
+		}
+
+		public String getR53_product() {
+			return r53_product;
+		}
+
+		public void setR53_product(String r53_product) {
+			this.r53_product = r53_product;
+		}
+
+		public BigDecimal getR53_qua_i_lc() {
+			return r53_qua_i_lc;
+		}
+
+		public void setR53_qua_i_lc(BigDecimal r53_qua_i_lc) {
+			this.r53_qua_i_lc = r53_qua_i_lc;
+		}
+
+		public BigDecimal getR53_qua_i_qar() {
+			return r53_qua_i_qar;
+		}
+
+		public void setR53_qua_i_qar(BigDecimal r53_qua_i_qar) {
+			this.r53_qua_i_qar = r53_qua_i_qar;
+		}
+
+		public BigDecimal getR53_qua_i_inr() {
+			return r53_qua_i_inr;
+		}
+
+		public void setR53_qua_i_inr(BigDecimal r53_qua_i_inr) {
+			this.r53_qua_i_inr = r53_qua_i_inr;
+		}
+
+		public BigDecimal getR53_qua_ii_lc() {
+			return r53_qua_ii_lc;
+		}
+
+		public void setR53_qua_ii_lc(BigDecimal r53_qua_ii_lc) {
+			this.r53_qua_ii_lc = r53_qua_ii_lc;
+		}
+
+		public BigDecimal getR53_qua_ii_qar() {
+			return r53_qua_ii_qar;
+		}
+
+		public void setR53_qua_ii_qar(BigDecimal r53_qua_ii_qar) {
+			this.r53_qua_ii_qar = r53_qua_ii_qar;
+		}
+
+		public BigDecimal getR53_qua_ii_inr() {
+			return r53_qua_ii_inr;
+		}
+
+		public void setR53_qua_ii_inr(BigDecimal r53_qua_ii_inr) {
+			this.r53_qua_ii_inr = r53_qua_ii_inr;
+		}
+
+		public BigDecimal getR53_qua_iii_lc() {
+			return r53_qua_iii_lc;
+		}
+
+		public void setR53_qua_iii_lc(BigDecimal r53_qua_iii_lc) {
+			this.r53_qua_iii_lc = r53_qua_iii_lc;
+		}
+
+		public BigDecimal getR53_qua_iii_qar() {
+			return r53_qua_iii_qar;
+		}
+
+		public void setR53_qua_iii_qar(BigDecimal r53_qua_iii_qar) {
+			this.r53_qua_iii_qar = r53_qua_iii_qar;
+		}
+
+		public BigDecimal getR53_qua_iii_inr() {
+			return r53_qua_iii_inr;
+		}
+
+		public void setR53_qua_iii_inr(BigDecimal r53_qua_iii_inr) {
+			this.r53_qua_iii_inr = r53_qua_iii_inr;
+		}
+
+		public BigDecimal getR53_qua_iv_lc() {
+			return r53_qua_iv_lc;
+		}
+
+		public void setR53_qua_iv_lc(BigDecimal r53_qua_iv_lc) {
+			this.r53_qua_iv_lc = r53_qua_iv_lc;
+		}
+
+		public BigDecimal getR53_qua_iv_qar() {
+			return r53_qua_iv_qar;
+		}
+
+		public void setR53_qua_iv_qar(BigDecimal r53_qua_iv_qar) {
+			this.r53_qua_iv_qar = r53_qua_iv_qar;
+		}
+
+		public BigDecimal getR53_qua_iv_inr() {
+			return r53_qua_iv_inr;
+		}
+
+		public void setR53_qua_iv_inr(BigDecimal r53_qua_iv_inr) {
+			this.r53_qua_iv_inr = r53_qua_iv_inr;
+		}
+
+		public BigDecimal getR53_cumm_inr() {
+			return r53_cumm_inr;
+		}
+
+		public void setR53_cumm_inr(BigDecimal r53_cumm_inr) {
+			this.r53_cumm_inr = r53_cumm_inr;
+		}
+
+		public BigDecimal getR53_cumm_bwp() {
+			return r53_cumm_bwp;
+		}
+
+		public void setR53_cumm_bwp(BigDecimal r53_cumm_bwp) {
+			this.r53_cumm_bwp = r53_cumm_bwp;
+		}
+
+		public String getR54_product() {
+			return r54_product;
+		}
+
+		public void setR54_product(String r54_product) {
+			this.r54_product = r54_product;
+		}
+
+		public BigDecimal getR54_qua_i_lc() {
+			return r54_qua_i_lc;
+		}
+
+		public void setR54_qua_i_lc(BigDecimal r54_qua_i_lc) {
+			this.r54_qua_i_lc = r54_qua_i_lc;
+		}
+
+		public BigDecimal getR54_qua_i_qar() {
+			return r54_qua_i_qar;
+		}
+
+		public void setR54_qua_i_qar(BigDecimal r54_qua_i_qar) {
+			this.r54_qua_i_qar = r54_qua_i_qar;
+		}
+
+		public BigDecimal getR54_qua_i_inr() {
+			return r54_qua_i_inr;
+		}
+
+		public void setR54_qua_i_inr(BigDecimal r54_qua_i_inr) {
+			this.r54_qua_i_inr = r54_qua_i_inr;
+		}
+
+		public BigDecimal getR54_qua_ii_lc() {
+			return r54_qua_ii_lc;
+		}
+
+		public void setR54_qua_ii_lc(BigDecimal r54_qua_ii_lc) {
+			this.r54_qua_ii_lc = r54_qua_ii_lc;
+		}
+
+		public BigDecimal getR54_qua_ii_qar() {
+			return r54_qua_ii_qar;
+		}
+
+		public void setR54_qua_ii_qar(BigDecimal r54_qua_ii_qar) {
+			this.r54_qua_ii_qar = r54_qua_ii_qar;
+		}
+
+		public BigDecimal getR54_qua_ii_inr() {
+			return r54_qua_ii_inr;
+		}
+
+		public void setR54_qua_ii_inr(BigDecimal r54_qua_ii_inr) {
+			this.r54_qua_ii_inr = r54_qua_ii_inr;
+		}
+
+		public BigDecimal getR54_qua_iii_lc() {
+			return r54_qua_iii_lc;
+		}
+
+		public void setR54_qua_iii_lc(BigDecimal r54_qua_iii_lc) {
+			this.r54_qua_iii_lc = r54_qua_iii_lc;
+		}
+
+		public BigDecimal getR54_qua_iii_qar() {
+			return r54_qua_iii_qar;
+		}
+
+		public void setR54_qua_iii_qar(BigDecimal r54_qua_iii_qar) {
+			this.r54_qua_iii_qar = r54_qua_iii_qar;
+		}
+
+		public BigDecimal getR54_qua_iii_inr() {
+			return r54_qua_iii_inr;
+		}
+
+		public void setR54_qua_iii_inr(BigDecimal r54_qua_iii_inr) {
+			this.r54_qua_iii_inr = r54_qua_iii_inr;
+		}
+
+		public BigDecimal getR54_qua_iv_lc() {
+			return r54_qua_iv_lc;
+		}
+
+		public void setR54_qua_iv_lc(BigDecimal r54_qua_iv_lc) {
+			this.r54_qua_iv_lc = r54_qua_iv_lc;
+		}
+
+		public BigDecimal getR54_qua_iv_qar() {
+			return r54_qua_iv_qar;
+		}
+
+		public void setR54_qua_iv_qar(BigDecimal r54_qua_iv_qar) {
+			this.r54_qua_iv_qar = r54_qua_iv_qar;
+		}
+
+		public BigDecimal getR54_qua_iv_inr() {
+			return r54_qua_iv_inr;
+		}
+
+		public void setR54_qua_iv_inr(BigDecimal r54_qua_iv_inr) {
+			this.r54_qua_iv_inr = r54_qua_iv_inr;
+		}
+
+		public BigDecimal getR54_cumm_inr() {
+			return r54_cumm_inr;
+		}
+
+		public void setR54_cumm_inr(BigDecimal r54_cumm_inr) {
+			this.r54_cumm_inr = r54_cumm_inr;
+		}
+
+		public BigDecimal getR54_cumm_bwp() {
+			return r54_cumm_bwp;
+		}
+
+		public void setR54_cumm_bwp(BigDecimal r54_cumm_bwp) {
+			this.r54_cumm_bwp = r54_cumm_bwp;
+		}
+
+		public String getR55_product() {
+			return r55_product;
+		}
+
+		public void setR55_product(String r55_product) {
+			this.r55_product = r55_product;
+		}
+
+		public BigDecimal getR55_qua_i_lc() {
+			return r55_qua_i_lc;
+		}
+
+		public void setR55_qua_i_lc(BigDecimal r55_qua_i_lc) {
+			this.r55_qua_i_lc = r55_qua_i_lc;
+		}
+
+		public BigDecimal getR55_qua_i_qar() {
+			return r55_qua_i_qar;
+		}
+
+		public void setR55_qua_i_qar(BigDecimal r55_qua_i_qar) {
+			this.r55_qua_i_qar = r55_qua_i_qar;
+		}
+
+		public BigDecimal getR55_qua_i_inr() {
+			return r55_qua_i_inr;
+		}
+
+		public void setR55_qua_i_inr(BigDecimal r55_qua_i_inr) {
+			this.r55_qua_i_inr = r55_qua_i_inr;
+		}
+
+		public BigDecimal getR55_qua_ii_lc() {
+			return r55_qua_ii_lc;
+		}
+
+		public void setR55_qua_ii_lc(BigDecimal r55_qua_ii_lc) {
+			this.r55_qua_ii_lc = r55_qua_ii_lc;
+		}
+
+		public BigDecimal getR55_qua_ii_qar() {
+			return r55_qua_ii_qar;
+		}
+
+		public void setR55_qua_ii_qar(BigDecimal r55_qua_ii_qar) {
+			this.r55_qua_ii_qar = r55_qua_ii_qar;
+		}
+
+		public BigDecimal getR55_qua_ii_inr() {
+			return r55_qua_ii_inr;
+		}
+
+		public void setR55_qua_ii_inr(BigDecimal r55_qua_ii_inr) {
+			this.r55_qua_ii_inr = r55_qua_ii_inr;
+		}
+
+		public BigDecimal getR55_qua_iii_lc() {
+			return r55_qua_iii_lc;
+		}
+
+		public void setR55_qua_iii_lc(BigDecimal r55_qua_iii_lc) {
+			this.r55_qua_iii_lc = r55_qua_iii_lc;
+		}
+
+		public BigDecimal getR55_qua_iii_qar() {
+			return r55_qua_iii_qar;
+		}
+
+		public void setR55_qua_iii_qar(BigDecimal r55_qua_iii_qar) {
+			this.r55_qua_iii_qar = r55_qua_iii_qar;
+		}
+
+		public BigDecimal getR55_qua_iii_inr() {
+			return r55_qua_iii_inr;
+		}
+
+		public void setR55_qua_iii_inr(BigDecimal r55_qua_iii_inr) {
+			this.r55_qua_iii_inr = r55_qua_iii_inr;
+		}
+
+		public BigDecimal getR55_qua_iv_lc() {
+			return r55_qua_iv_lc;
+		}
+
+		public void setR55_qua_iv_lc(BigDecimal r55_qua_iv_lc) {
+			this.r55_qua_iv_lc = r55_qua_iv_lc;
+		}
+
+		public BigDecimal getR55_qua_iv_qar() {
+			return r55_qua_iv_qar;
+		}
+
+		public void setR55_qua_iv_qar(BigDecimal r55_qua_iv_qar) {
+			this.r55_qua_iv_qar = r55_qua_iv_qar;
+		}
+
+		public BigDecimal getR55_qua_iv_inr() {
+			return r55_qua_iv_inr;
+		}
+
+		public void setR55_qua_iv_inr(BigDecimal r55_qua_iv_inr) {
+			this.r55_qua_iv_inr = r55_qua_iv_inr;
+		}
+
+		public BigDecimal getR55_cumm_inr() {
+			return r55_cumm_inr;
+		}
+
+		public void setR55_cumm_inr(BigDecimal r55_cumm_inr) {
+			this.r55_cumm_inr = r55_cumm_inr;
+		}
+
+		public BigDecimal getR55_cumm_bwp() {
+			return r55_cumm_bwp;
+		}
+
+		public void setR55_cumm_bwp(BigDecimal r55_cumm_bwp) {
+			this.r55_cumm_bwp = r55_cumm_bwp;
+		}
+
+		public String getR56_product() {
+			return r56_product;
+		}
+
+		public void setR56_product(String r56_product) {
+			this.r56_product = r56_product;
+		}
+
+		public BigDecimal getR56_qua_i_lc() {
+			return r56_qua_i_lc;
+		}
+
+		public void setR56_qua_i_lc(BigDecimal r56_qua_i_lc) {
+			this.r56_qua_i_lc = r56_qua_i_lc;
+		}
+
+		public BigDecimal getR56_qua_i_qar() {
+			return r56_qua_i_qar;
+		}
+
+		public void setR56_qua_i_qar(BigDecimal r56_qua_i_qar) {
+			this.r56_qua_i_qar = r56_qua_i_qar;
+		}
+
+		public BigDecimal getR56_qua_i_inr() {
+			return r56_qua_i_inr;
+		}
+
+		public void setR56_qua_i_inr(BigDecimal r56_qua_i_inr) {
+			this.r56_qua_i_inr = r56_qua_i_inr;
+		}
+
+		public BigDecimal getR56_qua_ii_lc() {
+			return r56_qua_ii_lc;
+		}
+
+		public void setR56_qua_ii_lc(BigDecimal r56_qua_ii_lc) {
+			this.r56_qua_ii_lc = r56_qua_ii_lc;
+		}
+
+		public BigDecimal getR56_qua_ii_qar() {
+			return r56_qua_ii_qar;
+		}
+
+		public void setR56_qua_ii_qar(BigDecimal r56_qua_ii_qar) {
+			this.r56_qua_ii_qar = r56_qua_ii_qar;
+		}
+
+		public BigDecimal getR56_qua_ii_inr() {
+			return r56_qua_ii_inr;
+		}
+
+		public void setR56_qua_ii_inr(BigDecimal r56_qua_ii_inr) {
+			this.r56_qua_ii_inr = r56_qua_ii_inr;
+		}
+
+		public BigDecimal getR56_qua_iii_lc() {
+			return r56_qua_iii_lc;
+		}
+
+		public void setR56_qua_iii_lc(BigDecimal r56_qua_iii_lc) {
+			this.r56_qua_iii_lc = r56_qua_iii_lc;
+		}
+
+		public BigDecimal getR56_qua_iii_qar() {
+			return r56_qua_iii_qar;
+		}
+
+		public void setR56_qua_iii_qar(BigDecimal r56_qua_iii_qar) {
+			this.r56_qua_iii_qar = r56_qua_iii_qar;
+		}
+
+		public BigDecimal getR56_qua_iii_inr() {
+			return r56_qua_iii_inr;
+		}
+
+		public void setR56_qua_iii_inr(BigDecimal r56_qua_iii_inr) {
+			this.r56_qua_iii_inr = r56_qua_iii_inr;
+		}
+
+		public BigDecimal getR56_qua_iv_lc() {
+			return r56_qua_iv_lc;
+		}
+
+		public void setR56_qua_iv_lc(BigDecimal r56_qua_iv_lc) {
+			this.r56_qua_iv_lc = r56_qua_iv_lc;
+		}
+
+		public BigDecimal getR56_qua_iv_qar() {
+			return r56_qua_iv_qar;
+		}
+
+		public void setR56_qua_iv_qar(BigDecimal r56_qua_iv_qar) {
+			this.r56_qua_iv_qar = r56_qua_iv_qar;
+		}
+
+		public BigDecimal getR56_qua_iv_inr() {
+			return r56_qua_iv_inr;
+		}
+
+		public void setR56_qua_iv_inr(BigDecimal r56_qua_iv_inr) {
+			this.r56_qua_iv_inr = r56_qua_iv_inr;
+		}
+
+		public BigDecimal getR56_cumm_inr() {
+			return r56_cumm_inr;
+		}
+
+		public void setR56_cumm_inr(BigDecimal r56_cumm_inr) {
+			this.r56_cumm_inr = r56_cumm_inr;
+		}
+
+		public BigDecimal getR56_cumm_bwp() {
+			return r56_cumm_bwp;
+		}
+
+		public void setR56_cumm_bwp(BigDecimal r56_cumm_bwp) {
+			this.r56_cumm_bwp = r56_cumm_bwp;
+		}
+
+		public String getR57_product() {
+			return r57_product;
+		}
+
+		public void setR57_product(String r57_product) {
+			this.r57_product = r57_product;
+		}
+
+		public BigDecimal getR57_qua_i_lc() {
+			return r57_qua_i_lc;
+		}
+
+		public void setR57_qua_i_lc(BigDecimal r57_qua_i_lc) {
+			this.r57_qua_i_lc = r57_qua_i_lc;
+		}
+
+		public BigDecimal getR57_qua_i_qar() {
+			return r57_qua_i_qar;
+		}
+
+		public void setR57_qua_i_qar(BigDecimal r57_qua_i_qar) {
+			this.r57_qua_i_qar = r57_qua_i_qar;
+		}
+
+		public BigDecimal getR57_qua_i_inr() {
+			return r57_qua_i_inr;
+		}
+
+		public void setR57_qua_i_inr(BigDecimal r57_qua_i_inr) {
+			this.r57_qua_i_inr = r57_qua_i_inr;
+		}
+
+		public BigDecimal getR57_qua_ii_lc() {
+			return r57_qua_ii_lc;
+		}
+
+		public void setR57_qua_ii_lc(BigDecimal r57_qua_ii_lc) {
+			this.r57_qua_ii_lc = r57_qua_ii_lc;
+		}
+
+		public BigDecimal getR57_qua_ii_qar() {
+			return r57_qua_ii_qar;
+		}
+
+		public void setR57_qua_ii_qar(BigDecimal r57_qua_ii_qar) {
+			this.r57_qua_ii_qar = r57_qua_ii_qar;
+		}
+
+		public BigDecimal getR57_qua_ii_inr() {
+			return r57_qua_ii_inr;
+		}
+
+		public void setR57_qua_ii_inr(BigDecimal r57_qua_ii_inr) {
+			this.r57_qua_ii_inr = r57_qua_ii_inr;
+		}
+
+		public BigDecimal getR57_qua_iii_lc() {
+			return r57_qua_iii_lc;
+		}
+
+		public void setR57_qua_iii_lc(BigDecimal r57_qua_iii_lc) {
+			this.r57_qua_iii_lc = r57_qua_iii_lc;
+		}
+
+		public BigDecimal getR57_qua_iii_qar() {
+			return r57_qua_iii_qar;
+		}
+
+		public void setR57_qua_iii_qar(BigDecimal r57_qua_iii_qar) {
+			this.r57_qua_iii_qar = r57_qua_iii_qar;
+		}
+
+		public BigDecimal getR57_qua_iii_inr() {
+			return r57_qua_iii_inr;
+		}
+
+		public void setR57_qua_iii_inr(BigDecimal r57_qua_iii_inr) {
+			this.r57_qua_iii_inr = r57_qua_iii_inr;
+		}
+
+		public BigDecimal getR57_qua_iv_lc() {
+			return r57_qua_iv_lc;
+		}
+
+		public void setR57_qua_iv_lc(BigDecimal r57_qua_iv_lc) {
+			this.r57_qua_iv_lc = r57_qua_iv_lc;
+		}
+
+		public BigDecimal getR57_qua_iv_qar() {
+			return r57_qua_iv_qar;
+		}
+
+		public void setR57_qua_iv_qar(BigDecimal r57_qua_iv_qar) {
+			this.r57_qua_iv_qar = r57_qua_iv_qar;
+		}
+
+		public BigDecimal getR57_qua_iv_inr() {
+			return r57_qua_iv_inr;
+		}
+
+		public void setR57_qua_iv_inr(BigDecimal r57_qua_iv_inr) {
+			this.r57_qua_iv_inr = r57_qua_iv_inr;
+		}
+
+		public BigDecimal getR57_cumm_inr() {
+			return r57_cumm_inr;
+		}
+
+		public void setR57_cumm_inr(BigDecimal r57_cumm_inr) {
+			this.r57_cumm_inr = r57_cumm_inr;
+		}
+
+		public BigDecimal getR57_cumm_bwp() {
+			return r57_cumm_bwp;
+		}
+
+		public void setR57_cumm_bwp(BigDecimal r57_cumm_bwp) {
+			this.r57_cumm_bwp = r57_cumm_bwp;
+		}
+
+		public String getR58_product() {
+			return r58_product;
+		}
+
+		public void setR58_product(String r58_product) {
+			this.r58_product = r58_product;
+		}
+
+		public BigDecimal getR58_qua_i_lc() {
+			return r58_qua_i_lc;
+		}
+
+		public void setR58_qua_i_lc(BigDecimal r58_qua_i_lc) {
+			this.r58_qua_i_lc = r58_qua_i_lc;
+		}
+
+		public BigDecimal getR58_qua_i_qar() {
+			return r58_qua_i_qar;
+		}
+
+		public void setR58_qua_i_qar(BigDecimal r58_qua_i_qar) {
+			this.r58_qua_i_qar = r58_qua_i_qar;
+		}
+
+		public BigDecimal getR58_qua_i_inr() {
+			return r58_qua_i_inr;
+		}
+
+		public void setR58_qua_i_inr(BigDecimal r58_qua_i_inr) {
+			this.r58_qua_i_inr = r58_qua_i_inr;
+		}
+
+		public BigDecimal getR58_qua_ii_lc() {
+			return r58_qua_ii_lc;
+		}
+
+		public void setR58_qua_ii_lc(BigDecimal r58_qua_ii_lc) {
+			this.r58_qua_ii_lc = r58_qua_ii_lc;
+		}
+
+		public BigDecimal getR58_qua_ii_qar() {
+			return r58_qua_ii_qar;
+		}
+
+		public void setR58_qua_ii_qar(BigDecimal r58_qua_ii_qar) {
+			this.r58_qua_ii_qar = r58_qua_ii_qar;
+		}
+
+		public BigDecimal getR58_qua_ii_inr() {
+			return r58_qua_ii_inr;
+		}
+
+		public void setR58_qua_ii_inr(BigDecimal r58_qua_ii_inr) {
+			this.r58_qua_ii_inr = r58_qua_ii_inr;
+		}
+
+		public BigDecimal getR58_qua_iii_lc() {
+			return r58_qua_iii_lc;
+		}
+
+		public void setR58_qua_iii_lc(BigDecimal r58_qua_iii_lc) {
+			this.r58_qua_iii_lc = r58_qua_iii_lc;
+		}
+
+		public BigDecimal getR58_qua_iii_qar() {
+			return r58_qua_iii_qar;
+		}
+
+		public void setR58_qua_iii_qar(BigDecimal r58_qua_iii_qar) {
+			this.r58_qua_iii_qar = r58_qua_iii_qar;
+		}
+
+		public BigDecimal getR58_qua_iii_inr() {
+			return r58_qua_iii_inr;
+		}
+
+		public void setR58_qua_iii_inr(BigDecimal r58_qua_iii_inr) {
+			this.r58_qua_iii_inr = r58_qua_iii_inr;
+		}
+
+		public BigDecimal getR58_qua_iv_lc() {
+			return r58_qua_iv_lc;
+		}
+
+		public void setR58_qua_iv_lc(BigDecimal r58_qua_iv_lc) {
+			this.r58_qua_iv_lc = r58_qua_iv_lc;
+		}
+
+		public BigDecimal getR58_qua_iv_qar() {
+			return r58_qua_iv_qar;
+		}
+
+		public void setR58_qua_iv_qar(BigDecimal r58_qua_iv_qar) {
+			this.r58_qua_iv_qar = r58_qua_iv_qar;
+		}
+
+		public BigDecimal getR58_qua_iv_inr() {
+			return r58_qua_iv_inr;
+		}
+
+		public void setR58_qua_iv_inr(BigDecimal r58_qua_iv_inr) {
+			this.r58_qua_iv_inr = r58_qua_iv_inr;
+		}
+
+		public BigDecimal getR58_cumm_inr() {
+			return r58_cumm_inr;
+		}
+
+		public void setR58_cumm_inr(BigDecimal r58_cumm_inr) {
+			this.r58_cumm_inr = r58_cumm_inr;
+		}
+
+		public BigDecimal getR58_cumm_bwp() {
+			return r58_cumm_bwp;
+		}
+
+		public void setR58_cumm_bwp(BigDecimal r58_cumm_bwp) {
+			this.r58_cumm_bwp = r58_cumm_bwp;
+		}
+
+		public String getR59_product() {
+			return r59_product;
+		}
+
+		public void setR59_product(String r59_product) {
+			this.r59_product = r59_product;
+		}
+
+		public BigDecimal getR59_qua_i_lc() {
+			return r59_qua_i_lc;
+		}
+
+		public void setR59_qua_i_lc(BigDecimal r59_qua_i_lc) {
+			this.r59_qua_i_lc = r59_qua_i_lc;
+		}
+
+		public BigDecimal getR59_qua_i_qar() {
+			return r59_qua_i_qar;
+		}
+
+		public void setR59_qua_i_qar(BigDecimal r59_qua_i_qar) {
+			this.r59_qua_i_qar = r59_qua_i_qar;
+		}
+
+		public BigDecimal getR59_qua_i_inr() {
+			return r59_qua_i_inr;
+		}
+
+		public void setR59_qua_i_inr(BigDecimal r59_qua_i_inr) {
+			this.r59_qua_i_inr = r59_qua_i_inr;
+		}
+
+		public BigDecimal getR59_qua_ii_lc() {
+			return r59_qua_ii_lc;
+		}
+
+		public void setR59_qua_ii_lc(BigDecimal r59_qua_ii_lc) {
+			this.r59_qua_ii_lc = r59_qua_ii_lc;
+		}
+
+		public BigDecimal getR59_qua_ii_qar() {
+			return r59_qua_ii_qar;
+		}
+
+		public void setR59_qua_ii_qar(BigDecimal r59_qua_ii_qar) {
+			this.r59_qua_ii_qar = r59_qua_ii_qar;
+		}
+
+		public BigDecimal getR59_qua_ii_inr() {
+			return r59_qua_ii_inr;
+		}
+
+		public void setR59_qua_ii_inr(BigDecimal r59_qua_ii_inr) {
+			this.r59_qua_ii_inr = r59_qua_ii_inr;
+		}
+
+		public BigDecimal getR59_qua_iii_lc() {
+			return r59_qua_iii_lc;
+		}
+
+		public void setR59_qua_iii_lc(BigDecimal r59_qua_iii_lc) {
+			this.r59_qua_iii_lc = r59_qua_iii_lc;
+		}
+
+		public BigDecimal getR59_qua_iii_qar() {
+			return r59_qua_iii_qar;
+		}
+
+		public void setR59_qua_iii_qar(BigDecimal r59_qua_iii_qar) {
+			this.r59_qua_iii_qar = r59_qua_iii_qar;
+		}
+
+		public BigDecimal getR59_qua_iii_inr() {
+			return r59_qua_iii_inr;
+		}
+
+		public void setR59_qua_iii_inr(BigDecimal r59_qua_iii_inr) {
+			this.r59_qua_iii_inr = r59_qua_iii_inr;
+		}
+
+		public BigDecimal getR59_qua_iv_lc() {
+			return r59_qua_iv_lc;
+		}
+
+		public void setR59_qua_iv_lc(BigDecimal r59_qua_iv_lc) {
+			this.r59_qua_iv_lc = r59_qua_iv_lc;
+		}
+
+		public BigDecimal getR59_qua_iv_qar() {
+			return r59_qua_iv_qar;
+		}
+
+		public void setR59_qua_iv_qar(BigDecimal r59_qua_iv_qar) {
+			this.r59_qua_iv_qar = r59_qua_iv_qar;
+		}
+
+		public BigDecimal getR59_qua_iv_inr() {
+			return r59_qua_iv_inr;
+		}
+
+		public void setR59_qua_iv_inr(BigDecimal r59_qua_iv_inr) {
+			this.r59_qua_iv_inr = r59_qua_iv_inr;
+		}
+
+		public BigDecimal getR59_cumm_inr() {
+			return r59_cumm_inr;
+		}
+
+		public void setR59_cumm_inr(BigDecimal r59_cumm_inr) {
+			this.r59_cumm_inr = r59_cumm_inr;
+		}
+
+		public BigDecimal getR59_cumm_bwp() {
+			return r59_cumm_bwp;
+		}
+
+		public void setR59_cumm_bwp(BigDecimal r59_cumm_bwp) {
+			this.r59_cumm_bwp = r59_cumm_bwp;
+		}
+
+		public String getR60_product() {
+			return r60_product;
+		}
+
+		public void setR60_product(String r60_product) {
+			this.r60_product = r60_product;
+		}
+
+		public BigDecimal getR60_qua_i_lc() {
+			return r60_qua_i_lc;
+		}
+
+		public void setR60_qua_i_lc(BigDecimal r60_qua_i_lc) {
+			this.r60_qua_i_lc = r60_qua_i_lc;
+		}
+
+		public BigDecimal getR60_qua_i_qar() {
+			return r60_qua_i_qar;
+		}
+
+		public void setR60_qua_i_qar(BigDecimal r60_qua_i_qar) {
+			this.r60_qua_i_qar = r60_qua_i_qar;
+		}
+
+		public BigDecimal getR60_qua_i_inr() {
+			return r60_qua_i_inr;
+		}
+
+		public void setR60_qua_i_inr(BigDecimal r60_qua_i_inr) {
+			this.r60_qua_i_inr = r60_qua_i_inr;
+		}
+
+		public BigDecimal getR60_qua_ii_lc() {
+			return r60_qua_ii_lc;
+		}
+
+		public void setR60_qua_ii_lc(BigDecimal r60_qua_ii_lc) {
+			this.r60_qua_ii_lc = r60_qua_ii_lc;
+		}
+
+		public BigDecimal getR60_qua_ii_qar() {
+			return r60_qua_ii_qar;
+		}
+
+		public void setR60_qua_ii_qar(BigDecimal r60_qua_ii_qar) {
+			this.r60_qua_ii_qar = r60_qua_ii_qar;
+		}
+
+		public BigDecimal getR60_qua_ii_inr() {
+			return r60_qua_ii_inr;
+		}
+
+		public void setR60_qua_ii_inr(BigDecimal r60_qua_ii_inr) {
+			this.r60_qua_ii_inr = r60_qua_ii_inr;
+		}
+
+		public BigDecimal getR60_qua_iii_lc() {
+			return r60_qua_iii_lc;
+		}
+
+		public void setR60_qua_iii_lc(BigDecimal r60_qua_iii_lc) {
+			this.r60_qua_iii_lc = r60_qua_iii_lc;
+		}
+
+		public BigDecimal getR60_qua_iii_qar() {
+			return r60_qua_iii_qar;
+		}
+
+		public void setR60_qua_iii_qar(BigDecimal r60_qua_iii_qar) {
+			this.r60_qua_iii_qar = r60_qua_iii_qar;
+		}
+
+		public BigDecimal getR60_qua_iii_inr() {
+			return r60_qua_iii_inr;
+		}
+
+		public void setR60_qua_iii_inr(BigDecimal r60_qua_iii_inr) {
+			this.r60_qua_iii_inr = r60_qua_iii_inr;
+		}
+
+		public BigDecimal getR60_qua_iv_lc() {
+			return r60_qua_iv_lc;
+		}
+
+		public void setR60_qua_iv_lc(BigDecimal r60_qua_iv_lc) {
+			this.r60_qua_iv_lc = r60_qua_iv_lc;
+		}
+
+		public BigDecimal getR60_qua_iv_qar() {
+			return r60_qua_iv_qar;
+		}
+
+		public void setR60_qua_iv_qar(BigDecimal r60_qua_iv_qar) {
+			this.r60_qua_iv_qar = r60_qua_iv_qar;
+		}
+
+		public BigDecimal getR60_qua_iv_inr() {
+			return r60_qua_iv_inr;
+		}
+
+		public void setR60_qua_iv_inr(BigDecimal r60_qua_iv_inr) {
+			this.r60_qua_iv_inr = r60_qua_iv_inr;
+		}
+
+		public BigDecimal getR60_cumm_inr() {
+			return r60_cumm_inr;
+		}
+
+		public void setR60_cumm_inr(BigDecimal r60_cumm_inr) {
+			this.r60_cumm_inr = r60_cumm_inr;
+		}
+
+		public BigDecimal getR60_cumm_bwp() {
+			return r60_cumm_bwp;
+		}
+
+		public void setR60_cumm_bwp(BigDecimal r60_cumm_bwp) {
+			this.r60_cumm_bwp = r60_cumm_bwp;
+		}
+
+		public String getR61_product() {
+			return r61_product;
+		}
+
+		public void setR61_product(String r61_product) {
+			this.r61_product = r61_product;
+		}
+
+		public BigDecimal getR61_qua_i_lc() {
+			return r61_qua_i_lc;
+		}
+
+		public void setR61_qua_i_lc(BigDecimal r61_qua_i_lc) {
+			this.r61_qua_i_lc = r61_qua_i_lc;
+		}
+
+		public BigDecimal getR61_qua_i_qar() {
+			return r61_qua_i_qar;
+		}
+
+		public void setR61_qua_i_qar(BigDecimal r61_qua_i_qar) {
+			this.r61_qua_i_qar = r61_qua_i_qar;
+		}
+
+		public BigDecimal getR61_qua_i_inr() {
+			return r61_qua_i_inr;
+		}
+
+		public void setR61_qua_i_inr(BigDecimal r61_qua_i_inr) {
+			this.r61_qua_i_inr = r61_qua_i_inr;
+		}
+
+		public BigDecimal getR61_qua_ii_lc() {
+			return r61_qua_ii_lc;
+		}
+
+		public void setR61_qua_ii_lc(BigDecimal r61_qua_ii_lc) {
+			this.r61_qua_ii_lc = r61_qua_ii_lc;
+		}
+
+		public BigDecimal getR61_qua_ii_qar() {
+			return r61_qua_ii_qar;
+		}
+
+		public void setR61_qua_ii_qar(BigDecimal r61_qua_ii_qar) {
+			this.r61_qua_ii_qar = r61_qua_ii_qar;
+		}
+
+		public BigDecimal getR61_qua_ii_inr() {
+			return r61_qua_ii_inr;
+		}
+
+		public void setR61_qua_ii_inr(BigDecimal r61_qua_ii_inr) {
+			this.r61_qua_ii_inr = r61_qua_ii_inr;
+		}
+
+		public BigDecimal getR61_qua_iii_lc() {
+			return r61_qua_iii_lc;
+		}
+
+		public void setR61_qua_iii_lc(BigDecimal r61_qua_iii_lc) {
+			this.r61_qua_iii_lc = r61_qua_iii_lc;
+		}
+
+		public BigDecimal getR61_qua_iii_qar() {
+			return r61_qua_iii_qar;
+		}
+
+		public void setR61_qua_iii_qar(BigDecimal r61_qua_iii_qar) {
+			this.r61_qua_iii_qar = r61_qua_iii_qar;
+		}
+
+		public BigDecimal getR61_qua_iii_inr() {
+			return r61_qua_iii_inr;
+		}
+
+		public void setR61_qua_iii_inr(BigDecimal r61_qua_iii_inr) {
+			this.r61_qua_iii_inr = r61_qua_iii_inr;
+		}
+
+		public BigDecimal getR61_qua_iv_lc() {
+			return r61_qua_iv_lc;
+		}
+
+		public void setR61_qua_iv_lc(BigDecimal r61_qua_iv_lc) {
+			this.r61_qua_iv_lc = r61_qua_iv_lc;
+		}
+
+		public BigDecimal getR61_qua_iv_qar() {
+			return r61_qua_iv_qar;
+		}
+
+		public void setR61_qua_iv_qar(BigDecimal r61_qua_iv_qar) {
+			this.r61_qua_iv_qar = r61_qua_iv_qar;
+		}
+
+		public BigDecimal getR61_qua_iv_inr() {
+			return r61_qua_iv_inr;
+		}
+
+		public void setR61_qua_iv_inr(BigDecimal r61_qua_iv_inr) {
+			this.r61_qua_iv_inr = r61_qua_iv_inr;
+		}
+
+		public BigDecimal getR61_cumm_inr() {
+			return r61_cumm_inr;
+		}
+
+		public void setR61_cumm_inr(BigDecimal r61_cumm_inr) {
+			this.r61_cumm_inr = r61_cumm_inr;
+		}
+
+		public BigDecimal getR61_cumm_bwp() {
+			return r61_cumm_bwp;
+		}
+
+		public void setR61_cumm_bwp(BigDecimal r61_cumm_bwp) {
+			this.r61_cumm_bwp = r61_cumm_bwp;
+		}
+
+		public String getR62_product() {
+			return r62_product;
+		}
+
+		public void setR62_product(String r62_product) {
+			this.r62_product = r62_product;
+		}
+
+		public BigDecimal getR62_qua_i_lc() {
+			return r62_qua_i_lc;
+		}
+
+		public void setR62_qua_i_lc(BigDecimal r62_qua_i_lc) {
+			this.r62_qua_i_lc = r62_qua_i_lc;
+		}
+
+		public BigDecimal getR62_qua_i_qar() {
+			return r62_qua_i_qar;
+		}
+
+		public void setR62_qua_i_qar(BigDecimal r62_qua_i_qar) {
+			this.r62_qua_i_qar = r62_qua_i_qar;
+		}
+
+		public BigDecimal getR62_qua_i_inr() {
+			return r62_qua_i_inr;
+		}
+
+		public void setR62_qua_i_inr(BigDecimal r62_qua_i_inr) {
+			this.r62_qua_i_inr = r62_qua_i_inr;
+		}
+
+		public BigDecimal getR62_qua_ii_lc() {
+			return r62_qua_ii_lc;
+		}
+
+		public void setR62_qua_ii_lc(BigDecimal r62_qua_ii_lc) {
+			this.r62_qua_ii_lc = r62_qua_ii_lc;
+		}
+
+		public BigDecimal getR62_qua_ii_qar() {
+			return r62_qua_ii_qar;
+		}
+
+		public void setR62_qua_ii_qar(BigDecimal r62_qua_ii_qar) {
+			this.r62_qua_ii_qar = r62_qua_ii_qar;
+		}
+
+		public BigDecimal getR62_qua_ii_inr() {
+			return r62_qua_ii_inr;
+		}
+
+		public void setR62_qua_ii_inr(BigDecimal r62_qua_ii_inr) {
+			this.r62_qua_ii_inr = r62_qua_ii_inr;
+		}
+
+		public BigDecimal getR62_qua_iii_lc() {
+			return r62_qua_iii_lc;
+		}
+
+		public void setR62_qua_iii_lc(BigDecimal r62_qua_iii_lc) {
+			this.r62_qua_iii_lc = r62_qua_iii_lc;
+		}
+
+		public BigDecimal getR62_qua_iii_qar() {
+			return r62_qua_iii_qar;
+		}
+
+		public void setR62_qua_iii_qar(BigDecimal r62_qua_iii_qar) {
+			this.r62_qua_iii_qar = r62_qua_iii_qar;
+		}
+
+		public BigDecimal getR62_qua_iii_inr() {
+			return r62_qua_iii_inr;
+		}
+
+		public void setR62_qua_iii_inr(BigDecimal r62_qua_iii_inr) {
+			this.r62_qua_iii_inr = r62_qua_iii_inr;
+		}
+
+		public BigDecimal getR62_qua_iv_lc() {
+			return r62_qua_iv_lc;
+		}
+
+		public void setR62_qua_iv_lc(BigDecimal r62_qua_iv_lc) {
+			this.r62_qua_iv_lc = r62_qua_iv_lc;
+		}
+
+		public BigDecimal getR62_qua_iv_qar() {
+			return r62_qua_iv_qar;
+		}
+
+		public void setR62_qua_iv_qar(BigDecimal r62_qua_iv_qar) {
+			this.r62_qua_iv_qar = r62_qua_iv_qar;
+		}
+
+		public BigDecimal getR62_qua_iv_inr() {
+			return r62_qua_iv_inr;
+		}
+
+		public void setR62_qua_iv_inr(BigDecimal r62_qua_iv_inr) {
+			this.r62_qua_iv_inr = r62_qua_iv_inr;
+		}
+
+		public BigDecimal getR62_cumm_inr() {
+			return r62_cumm_inr;
+		}
+
+		public void setR62_cumm_inr(BigDecimal r62_cumm_inr) {
+			this.r62_cumm_inr = r62_cumm_inr;
+		}
+
+		public BigDecimal getR62_cumm_bwp() {
+			return r62_cumm_bwp;
+		}
+
+		public void setR62_cumm_bwp(BigDecimal r62_cumm_bwp) {
+			this.r62_cumm_bwp = r62_cumm_bwp;
+		}
+
+		public String getR63_product() {
+			return r63_product;
+		}
+
+		public void setR63_product(String r63_product) {
+			this.r63_product = r63_product;
+		}
+
+		public BigDecimal getR63_qua_i_lc() {
+			return r63_qua_i_lc;
+		}
+
+		public void setR63_qua_i_lc(BigDecimal r63_qua_i_lc) {
+			this.r63_qua_i_lc = r63_qua_i_lc;
+		}
+
+		public BigDecimal getR63_qua_i_qar() {
+			return r63_qua_i_qar;
+		}
+
+		public void setR63_qua_i_qar(BigDecimal r63_qua_i_qar) {
+			this.r63_qua_i_qar = r63_qua_i_qar;
+		}
+
+		public BigDecimal getR63_qua_i_inr() {
+			return r63_qua_i_inr;
+		}
+
+		public void setR63_qua_i_inr(BigDecimal r63_qua_i_inr) {
+			this.r63_qua_i_inr = r63_qua_i_inr;
+		}
+
+		public BigDecimal getR63_qua_ii_lc() {
+			return r63_qua_ii_lc;
+		}
+
+		public void setR63_qua_ii_lc(BigDecimal r63_qua_ii_lc) {
+			this.r63_qua_ii_lc = r63_qua_ii_lc;
+		}
+
+		public BigDecimal getR63_qua_ii_qar() {
+			return r63_qua_ii_qar;
+		}
+
+		public void setR63_qua_ii_qar(BigDecimal r63_qua_ii_qar) {
+			this.r63_qua_ii_qar = r63_qua_ii_qar;
+		}
+
+		public BigDecimal getR63_qua_ii_inr() {
+			return r63_qua_ii_inr;
+		}
+
+		public void setR63_qua_ii_inr(BigDecimal r63_qua_ii_inr) {
+			this.r63_qua_ii_inr = r63_qua_ii_inr;
+		}
+
+		public BigDecimal getR63_qua_iii_lc() {
+			return r63_qua_iii_lc;
+		}
+
+		public void setR63_qua_iii_lc(BigDecimal r63_qua_iii_lc) {
+			this.r63_qua_iii_lc = r63_qua_iii_lc;
+		}
+
+		public BigDecimal getR63_qua_iii_qar() {
+			return r63_qua_iii_qar;
+		}
+
+		public void setR63_qua_iii_qar(BigDecimal r63_qua_iii_qar) {
+			this.r63_qua_iii_qar = r63_qua_iii_qar;
+		}
+
+		public BigDecimal getR63_qua_iii_inr() {
+			return r63_qua_iii_inr;
+		}
+
+		public void setR63_qua_iii_inr(BigDecimal r63_qua_iii_inr) {
+			this.r63_qua_iii_inr = r63_qua_iii_inr;
+		}
+
+		public BigDecimal getR63_qua_iv_lc() {
+			return r63_qua_iv_lc;
+		}
+
+		public void setR63_qua_iv_lc(BigDecimal r63_qua_iv_lc) {
+			this.r63_qua_iv_lc = r63_qua_iv_lc;
+		}
+
+		public BigDecimal getR63_qua_iv_qar() {
+			return r63_qua_iv_qar;
+		}
+
+		public void setR63_qua_iv_qar(BigDecimal r63_qua_iv_qar) {
+			this.r63_qua_iv_qar = r63_qua_iv_qar;
+		}
+
+		public BigDecimal getR63_qua_iv_inr() {
+			return r63_qua_iv_inr;
+		}
+
+		public void setR63_qua_iv_inr(BigDecimal r63_qua_iv_inr) {
+			this.r63_qua_iv_inr = r63_qua_iv_inr;
+		}
+
+		public BigDecimal getR63_cumm_inr() {
+			return r63_cumm_inr;
+		}
+
+		public void setR63_cumm_inr(BigDecimal r63_cumm_inr) {
+			this.r63_cumm_inr = r63_cumm_inr;
+		}
+
+		public BigDecimal getR63_cumm_bwp() {
+			return r63_cumm_bwp;
+		}
+
+		public void setR63_cumm_bwp(BigDecimal r63_cumm_bwp) {
+			this.r63_cumm_bwp = r63_cumm_bwp;
+		}
+
+		public String getR64_product() {
+			return r64_product;
+		}
+
+		public void setR64_product(String r64_product) {
+			this.r64_product = r64_product;
+		}
+
+		public BigDecimal getR64_qua_i_lc() {
+			return r64_qua_i_lc;
+		}
+
+		public void setR64_qua_i_lc(BigDecimal r64_qua_i_lc) {
+			this.r64_qua_i_lc = r64_qua_i_lc;
+		}
+
+		public BigDecimal getR64_qua_i_qar() {
+			return r64_qua_i_qar;
+		}
+
+		public void setR64_qua_i_qar(BigDecimal r64_qua_i_qar) {
+			this.r64_qua_i_qar = r64_qua_i_qar;
+		}
+
+		public BigDecimal getR64_qua_i_inr() {
+			return r64_qua_i_inr;
+		}
+
+		public void setR64_qua_i_inr(BigDecimal r64_qua_i_inr) {
+			this.r64_qua_i_inr = r64_qua_i_inr;
+		}
+
+		public BigDecimal getR64_qua_ii_lc() {
+			return r64_qua_ii_lc;
+		}
+
+		public void setR64_qua_ii_lc(BigDecimal r64_qua_ii_lc) {
+			this.r64_qua_ii_lc = r64_qua_ii_lc;
+		}
+
+		public BigDecimal getR64_qua_ii_qar() {
+			return r64_qua_ii_qar;
+		}
+
+		public void setR64_qua_ii_qar(BigDecimal r64_qua_ii_qar) {
+			this.r64_qua_ii_qar = r64_qua_ii_qar;
+		}
+
+		public BigDecimal getR64_qua_ii_inr() {
+			return r64_qua_ii_inr;
+		}
+
+		public void setR64_qua_ii_inr(BigDecimal r64_qua_ii_inr) {
+			this.r64_qua_ii_inr = r64_qua_ii_inr;
+		}
+
+		public BigDecimal getR64_qua_iii_lc() {
+			return r64_qua_iii_lc;
+		}
+
+		public void setR64_qua_iii_lc(BigDecimal r64_qua_iii_lc) {
+			this.r64_qua_iii_lc = r64_qua_iii_lc;
+		}
+
+		public BigDecimal getR64_qua_iii_qar() {
+			return r64_qua_iii_qar;
+		}
+
+		public void setR64_qua_iii_qar(BigDecimal r64_qua_iii_qar) {
+			this.r64_qua_iii_qar = r64_qua_iii_qar;
+		}
+
+		public BigDecimal getR64_qua_iii_inr() {
+			return r64_qua_iii_inr;
+		}
+
+		public void setR64_qua_iii_inr(BigDecimal r64_qua_iii_inr) {
+			this.r64_qua_iii_inr = r64_qua_iii_inr;
+		}
+
+		public BigDecimal getR64_qua_iv_lc() {
+			return r64_qua_iv_lc;
+		}
+
+		public void setR64_qua_iv_lc(BigDecimal r64_qua_iv_lc) {
+			this.r64_qua_iv_lc = r64_qua_iv_lc;
+		}
+
+		public BigDecimal getR64_qua_iv_qar() {
+			return r64_qua_iv_qar;
+		}
+
+		public void setR64_qua_iv_qar(BigDecimal r64_qua_iv_qar) {
+			this.r64_qua_iv_qar = r64_qua_iv_qar;
+		}
+
+		public BigDecimal getR64_qua_iv_inr() {
+			return r64_qua_iv_inr;
+		}
+
+		public void setR64_qua_iv_inr(BigDecimal r64_qua_iv_inr) {
+			this.r64_qua_iv_inr = r64_qua_iv_inr;
+		}
+
+		public BigDecimal getR64_cumm_inr() {
+			return r64_cumm_inr;
+		}
+
+		public void setR64_cumm_inr(BigDecimal r64_cumm_inr) {
+			this.r64_cumm_inr = r64_cumm_inr;
+		}
+
+		public BigDecimal getR64_cumm_bwp() {
+			return r64_cumm_bwp;
+		}
+
+		public void setR64_cumm_bwp(BigDecimal r64_cumm_bwp) {
+			this.r64_cumm_bwp = r64_cumm_bwp;
+		}
+
+		public String getR65_product() {
+			return r65_product;
+		}
+
+		public void setR65_product(String r65_product) {
+			this.r65_product = r65_product;
+		}
+
+		public BigDecimal getR65_qua_i_lc() {
+			return r65_qua_i_lc;
+		}
+
+		public void setR65_qua_i_lc(BigDecimal r65_qua_i_lc) {
+			this.r65_qua_i_lc = r65_qua_i_lc;
+		}
+
+		public BigDecimal getR65_qua_i_qar() {
+			return r65_qua_i_qar;
+		}
+
+		public void setR65_qua_i_qar(BigDecimal r65_qua_i_qar) {
+			this.r65_qua_i_qar = r65_qua_i_qar;
+		}
+
+		public BigDecimal getR65_qua_i_inr() {
+			return r65_qua_i_inr;
+		}
+
+		public void setR65_qua_i_inr(BigDecimal r65_qua_i_inr) {
+			this.r65_qua_i_inr = r65_qua_i_inr;
+		}
+
+		public BigDecimal getR65_qua_ii_lc() {
+			return r65_qua_ii_lc;
+		}
+
+		public void setR65_qua_ii_lc(BigDecimal r65_qua_ii_lc) {
+			this.r65_qua_ii_lc = r65_qua_ii_lc;
+		}
+
+		public BigDecimal getR65_qua_ii_qar() {
+			return r65_qua_ii_qar;
+		}
+
+		public void setR65_qua_ii_qar(BigDecimal r65_qua_ii_qar) {
+			this.r65_qua_ii_qar = r65_qua_ii_qar;
+		}
+
+		public BigDecimal getR65_qua_ii_inr() {
+			return r65_qua_ii_inr;
+		}
+
+		public void setR65_qua_ii_inr(BigDecimal r65_qua_ii_inr) {
+			this.r65_qua_ii_inr = r65_qua_ii_inr;
+		}
+
+		public BigDecimal getR65_qua_iii_lc() {
+			return r65_qua_iii_lc;
+		}
+
+		public void setR65_qua_iii_lc(BigDecimal r65_qua_iii_lc) {
+			this.r65_qua_iii_lc = r65_qua_iii_lc;
+		}
+
+		public BigDecimal getR65_qua_iii_qar() {
+			return r65_qua_iii_qar;
+		}
+
+		public void setR65_qua_iii_qar(BigDecimal r65_qua_iii_qar) {
+			this.r65_qua_iii_qar = r65_qua_iii_qar;
+		}
+
+		public BigDecimal getR65_qua_iii_inr() {
+			return r65_qua_iii_inr;
+		}
+
+		public void setR65_qua_iii_inr(BigDecimal r65_qua_iii_inr) {
+			this.r65_qua_iii_inr = r65_qua_iii_inr;
+		}
+
+		public BigDecimal getR65_qua_iv_lc() {
+			return r65_qua_iv_lc;
+		}
+
+		public void setR65_qua_iv_lc(BigDecimal r65_qua_iv_lc) {
+			this.r65_qua_iv_lc = r65_qua_iv_lc;
+		}
+
+		public BigDecimal getR65_qua_iv_qar() {
+			return r65_qua_iv_qar;
+		}
+
+		public void setR65_qua_iv_qar(BigDecimal r65_qua_iv_qar) {
+			this.r65_qua_iv_qar = r65_qua_iv_qar;
+		}
+
+		public BigDecimal getR65_qua_iv_inr() {
+			return r65_qua_iv_inr;
+		}
+
+		public void setR65_qua_iv_inr(BigDecimal r65_qua_iv_inr) {
+			this.r65_qua_iv_inr = r65_qua_iv_inr;
+		}
+
+		public BigDecimal getR65_cumm_inr() {
+			return r65_cumm_inr;
+		}
+
+		public void setR65_cumm_inr(BigDecimal r65_cumm_inr) {
+			this.r65_cumm_inr = r65_cumm_inr;
+		}
+
+		public BigDecimal getR65_cumm_bwp() {
+			return r65_cumm_bwp;
+		}
+
+		public void setR65_cumm_bwp(BigDecimal r65_cumm_bwp) {
+			this.r65_cumm_bwp = r65_cumm_bwp;
+		}
+
+		public String getR66_product() {
+			return r66_product;
+		}
+
+		public void setR66_product(String r66_product) {
+			this.r66_product = r66_product;
+		}
+
+		public BigDecimal getR66_qua_i_lc() {
+			return r66_qua_i_lc;
+		}
+
+		public void setR66_qua_i_lc(BigDecimal r66_qua_i_lc) {
+			this.r66_qua_i_lc = r66_qua_i_lc;
+		}
+
+		public BigDecimal getR66_qua_i_qar() {
+			return r66_qua_i_qar;
+		}
+
+		public void setR66_qua_i_qar(BigDecimal r66_qua_i_qar) {
+			this.r66_qua_i_qar = r66_qua_i_qar;
+		}
+
+		public BigDecimal getR66_qua_i_inr() {
+			return r66_qua_i_inr;
+		}
+
+		public void setR66_qua_i_inr(BigDecimal r66_qua_i_inr) {
+			this.r66_qua_i_inr = r66_qua_i_inr;
+		}
+
+		public BigDecimal getR66_qua_ii_lc() {
+			return r66_qua_ii_lc;
+		}
+
+		public void setR66_qua_ii_lc(BigDecimal r66_qua_ii_lc) {
+			this.r66_qua_ii_lc = r66_qua_ii_lc;
+		}
+
+		public BigDecimal getR66_qua_ii_qar() {
+			return r66_qua_ii_qar;
+		}
+
+		public void setR66_qua_ii_qar(BigDecimal r66_qua_ii_qar) {
+			this.r66_qua_ii_qar = r66_qua_ii_qar;
+		}
+
+		public BigDecimal getR66_qua_ii_inr() {
+			return r66_qua_ii_inr;
+		}
+
+		public void setR66_qua_ii_inr(BigDecimal r66_qua_ii_inr) {
+			this.r66_qua_ii_inr = r66_qua_ii_inr;
+		}
+
+		public BigDecimal getR66_qua_iii_lc() {
+			return r66_qua_iii_lc;
+		}
+
+		public void setR66_qua_iii_lc(BigDecimal r66_qua_iii_lc) {
+			this.r66_qua_iii_lc = r66_qua_iii_lc;
+		}
+
+		public BigDecimal getR66_qua_iii_qar() {
+			return r66_qua_iii_qar;
+		}
+
+		public void setR66_qua_iii_qar(BigDecimal r66_qua_iii_qar) {
+			this.r66_qua_iii_qar = r66_qua_iii_qar;
+		}
+
+		public BigDecimal getR66_qua_iii_inr() {
+			return r66_qua_iii_inr;
+		}
+
+		public void setR66_qua_iii_inr(BigDecimal r66_qua_iii_inr) {
+			this.r66_qua_iii_inr = r66_qua_iii_inr;
+		}
+
+		public BigDecimal getR66_qua_iv_lc() {
+			return r66_qua_iv_lc;
+		}
+
+		public void setR66_qua_iv_lc(BigDecimal r66_qua_iv_lc) {
+			this.r66_qua_iv_lc = r66_qua_iv_lc;
+		}
+
+		public BigDecimal getR66_qua_iv_qar() {
+			return r66_qua_iv_qar;
+		}
+
+		public void setR66_qua_iv_qar(BigDecimal r66_qua_iv_qar) {
+			this.r66_qua_iv_qar = r66_qua_iv_qar;
+		}
+
+		public BigDecimal getR66_qua_iv_inr() {
+			return r66_qua_iv_inr;
+		}
+
+		public void setR66_qua_iv_inr(BigDecimal r66_qua_iv_inr) {
+			this.r66_qua_iv_inr = r66_qua_iv_inr;
+		}
+
+		public BigDecimal getR66_cumm_inr() {
+			return r66_cumm_inr;
+		}
+
+		public void setR66_cumm_inr(BigDecimal r66_cumm_inr) {
+			this.r66_cumm_inr = r66_cumm_inr;
+		}
+
+		public BigDecimal getR66_cumm_bwp() {
+			return r66_cumm_bwp;
+		}
+
+		public void setR66_cumm_bwp(BigDecimal r66_cumm_bwp) {
+			this.r66_cumm_bwp = r66_cumm_bwp;
+		}
+
+		public String getR67_product() {
+			return r67_product;
+		}
+
+		public void setR67_product(String r67_product) {
+			this.r67_product = r67_product;
+		}
+
+		public BigDecimal getR67_qua_i_lc() {
+			return r67_qua_i_lc;
+		}
+
+		public void setR67_qua_i_lc(BigDecimal r67_qua_i_lc) {
+			this.r67_qua_i_lc = r67_qua_i_lc;
+		}
+
+		public BigDecimal getR67_qua_i_qar() {
+			return r67_qua_i_qar;
+		}
+
+		public void setR67_qua_i_qar(BigDecimal r67_qua_i_qar) {
+			this.r67_qua_i_qar = r67_qua_i_qar;
+		}
+
+		public BigDecimal getR67_qua_i_inr() {
+			return r67_qua_i_inr;
+		}
+
+		public void setR67_qua_i_inr(BigDecimal r67_qua_i_inr) {
+			this.r67_qua_i_inr = r67_qua_i_inr;
+		}
+
+		public BigDecimal getR67_qua_ii_lc() {
+			return r67_qua_ii_lc;
+		}
+
+		public void setR67_qua_ii_lc(BigDecimal r67_qua_ii_lc) {
+			this.r67_qua_ii_lc = r67_qua_ii_lc;
+		}
+
+		public BigDecimal getR67_qua_ii_qar() {
+			return r67_qua_ii_qar;
+		}
+
+		public void setR67_qua_ii_qar(BigDecimal r67_qua_ii_qar) {
+			this.r67_qua_ii_qar = r67_qua_ii_qar;
+		}
+
+		public BigDecimal getR67_qua_ii_inr() {
+			return r67_qua_ii_inr;
+		}
+
+		public void setR67_qua_ii_inr(BigDecimal r67_qua_ii_inr) {
+			this.r67_qua_ii_inr = r67_qua_ii_inr;
+		}
+
+		public BigDecimal getR67_qua_iii_lc() {
+			return r67_qua_iii_lc;
+		}
+
+		public void setR67_qua_iii_lc(BigDecimal r67_qua_iii_lc) {
+			this.r67_qua_iii_lc = r67_qua_iii_lc;
+		}
+
+		public BigDecimal getR67_qua_iii_qar() {
+			return r67_qua_iii_qar;
+		}
+
+		public void setR67_qua_iii_qar(BigDecimal r67_qua_iii_qar) {
+			this.r67_qua_iii_qar = r67_qua_iii_qar;
+		}
+
+		public BigDecimal getR67_qua_iii_inr() {
+			return r67_qua_iii_inr;
+		}
+
+		public void setR67_qua_iii_inr(BigDecimal r67_qua_iii_inr) {
+			this.r67_qua_iii_inr = r67_qua_iii_inr;
+		}
+
+		public BigDecimal getR67_qua_iv_lc() {
+			return r67_qua_iv_lc;
+		}
+
+		public void setR67_qua_iv_lc(BigDecimal r67_qua_iv_lc) {
+			this.r67_qua_iv_lc = r67_qua_iv_lc;
+		}
+
+		public BigDecimal getR67_qua_iv_qar() {
+			return r67_qua_iv_qar;
+		}
+
+		public void setR67_qua_iv_qar(BigDecimal r67_qua_iv_qar) {
+			this.r67_qua_iv_qar = r67_qua_iv_qar;
+		}
+
+		public BigDecimal getR67_qua_iv_inr() {
+			return r67_qua_iv_inr;
+		}
+
+		public void setR67_qua_iv_inr(BigDecimal r67_qua_iv_inr) {
+			this.r67_qua_iv_inr = r67_qua_iv_inr;
+		}
+
+		public BigDecimal getR67_cumm_inr() {
+			return r67_cumm_inr;
+		}
+
+		public void setR67_cumm_inr(BigDecimal r67_cumm_inr) {
+			this.r67_cumm_inr = r67_cumm_inr;
+		}
+
+		public BigDecimal getR67_cumm_bwp() {
+			return r67_cumm_bwp;
+		}
+
+		public void setR67_cumm_bwp(BigDecimal r67_cumm_bwp) {
+			this.r67_cumm_bwp = r67_cumm_bwp;
+		}
+
+		public String getR68_product() {
+			return r68_product;
+		}
+
+		public void setR68_product(String r68_product) {
+			this.r68_product = r68_product;
+		}
+
+		public BigDecimal getR68_qua_i_lc() {
+			return r68_qua_i_lc;
+		}
+
+		public void setR68_qua_i_lc(BigDecimal r68_qua_i_lc) {
+			this.r68_qua_i_lc = r68_qua_i_lc;
+		}
+
+		public BigDecimal getR68_qua_i_qar() {
+			return r68_qua_i_qar;
+		}
+
+		public void setR68_qua_i_qar(BigDecimal r68_qua_i_qar) {
+			this.r68_qua_i_qar = r68_qua_i_qar;
+		}
+
+		public BigDecimal getR68_qua_i_inr() {
+			return r68_qua_i_inr;
+		}
+
+		public void setR68_qua_i_inr(BigDecimal r68_qua_i_inr) {
+			this.r68_qua_i_inr = r68_qua_i_inr;
+		}
+
+		public BigDecimal getR68_qua_ii_lc() {
+			return r68_qua_ii_lc;
+		}
+
+		public void setR68_qua_ii_lc(BigDecimal r68_qua_ii_lc) {
+			this.r68_qua_ii_lc = r68_qua_ii_lc;
+		}
+
+		public BigDecimal getR68_qua_ii_qar() {
+			return r68_qua_ii_qar;
+		}
+
+		public void setR68_qua_ii_qar(BigDecimal r68_qua_ii_qar) {
+			this.r68_qua_ii_qar = r68_qua_ii_qar;
+		}
+
+		public BigDecimal getR68_qua_ii_inr() {
+			return r68_qua_ii_inr;
+		}
+
+		public void setR68_qua_ii_inr(BigDecimal r68_qua_ii_inr) {
+			this.r68_qua_ii_inr = r68_qua_ii_inr;
+		}
+
+		public BigDecimal getR68_qua_iii_lc() {
+			return r68_qua_iii_lc;
+		}
+
+		public void setR68_qua_iii_lc(BigDecimal r68_qua_iii_lc) {
+			this.r68_qua_iii_lc = r68_qua_iii_lc;
+		}
+
+		public BigDecimal getR68_qua_iii_qar() {
+			return r68_qua_iii_qar;
+		}
+
+		public void setR68_qua_iii_qar(BigDecimal r68_qua_iii_qar) {
+			this.r68_qua_iii_qar = r68_qua_iii_qar;
+		}
+
+		public BigDecimal getR68_qua_iii_inr() {
+			return r68_qua_iii_inr;
+		}
+
+		public void setR68_qua_iii_inr(BigDecimal r68_qua_iii_inr) {
+			this.r68_qua_iii_inr = r68_qua_iii_inr;
+		}
+
+		public BigDecimal getR68_qua_iv_lc() {
+			return r68_qua_iv_lc;
+		}
+
+		public void setR68_qua_iv_lc(BigDecimal r68_qua_iv_lc) {
+			this.r68_qua_iv_lc = r68_qua_iv_lc;
+		}
+
+		public BigDecimal getR68_qua_iv_qar() {
+			return r68_qua_iv_qar;
+		}
+
+		public void setR68_qua_iv_qar(BigDecimal r68_qua_iv_qar) {
+			this.r68_qua_iv_qar = r68_qua_iv_qar;
+		}
+
+		public BigDecimal getR68_qua_iv_inr() {
+			return r68_qua_iv_inr;
+		}
+
+		public void setR68_qua_iv_inr(BigDecimal r68_qua_iv_inr) {
+			this.r68_qua_iv_inr = r68_qua_iv_inr;
+		}
+
+		public BigDecimal getR68_cumm_inr() {
+			return r68_cumm_inr;
+		}
+
+		public void setR68_cumm_inr(BigDecimal r68_cumm_inr) {
+			this.r68_cumm_inr = r68_cumm_inr;
+		}
+
+		public BigDecimal getR68_cumm_bwp() {
+			return r68_cumm_bwp;
+		}
+
+		public void setR68_cumm_bwp(BigDecimal r68_cumm_bwp) {
+			this.r68_cumm_bwp = r68_cumm_bwp;
+		}
+
+		public String getR69_product() {
+			return r69_product;
+		}
+
+		public void setR69_product(String r69_product) {
+			this.r69_product = r69_product;
+		}
+
+		public BigDecimal getR69_qua_i_lc() {
+			return r69_qua_i_lc;
+		}
+
+		public void setR69_qua_i_lc(BigDecimal r69_qua_i_lc) {
+			this.r69_qua_i_lc = r69_qua_i_lc;
+		}
+
+		public BigDecimal getR69_qua_i_qar() {
+			return r69_qua_i_qar;
+		}
+
+		public void setR69_qua_i_qar(BigDecimal r69_qua_i_qar) {
+			this.r69_qua_i_qar = r69_qua_i_qar;
+		}
+
+		public BigDecimal getR69_qua_i_inr() {
+			return r69_qua_i_inr;
+		}
+
+		public void setR69_qua_i_inr(BigDecimal r69_qua_i_inr) {
+			this.r69_qua_i_inr = r69_qua_i_inr;
+		}
+
+		public BigDecimal getR69_qua_ii_lc() {
+			return r69_qua_ii_lc;
+		}
+
+		public void setR69_qua_ii_lc(BigDecimal r69_qua_ii_lc) {
+			this.r69_qua_ii_lc = r69_qua_ii_lc;
+		}
+
+		public BigDecimal getR69_qua_ii_qar() {
+			return r69_qua_ii_qar;
+		}
+
+		public void setR69_qua_ii_qar(BigDecimal r69_qua_ii_qar) {
+			this.r69_qua_ii_qar = r69_qua_ii_qar;
+		}
+
+		public BigDecimal getR69_qua_ii_inr() {
+			return r69_qua_ii_inr;
+		}
+
+		public void setR69_qua_ii_inr(BigDecimal r69_qua_ii_inr) {
+			this.r69_qua_ii_inr = r69_qua_ii_inr;
+		}
+
+		public BigDecimal getR69_qua_iii_lc() {
+			return r69_qua_iii_lc;
+		}
+
+		public void setR69_qua_iii_lc(BigDecimal r69_qua_iii_lc) {
+			this.r69_qua_iii_lc = r69_qua_iii_lc;
+		}
+
+		public BigDecimal getR69_qua_iii_qar() {
+			return r69_qua_iii_qar;
+		}
+
+		public void setR69_qua_iii_qar(BigDecimal r69_qua_iii_qar) {
+			this.r69_qua_iii_qar = r69_qua_iii_qar;
+		}
+
+		public BigDecimal getR69_qua_iii_inr() {
+			return r69_qua_iii_inr;
+		}
+
+		public void setR69_qua_iii_inr(BigDecimal r69_qua_iii_inr) {
+			this.r69_qua_iii_inr = r69_qua_iii_inr;
+		}
+
+		public BigDecimal getR69_qua_iv_lc() {
+			return r69_qua_iv_lc;
+		}
+
+		public void setR69_qua_iv_lc(BigDecimal r69_qua_iv_lc) {
+			this.r69_qua_iv_lc = r69_qua_iv_lc;
+		}
+
+		public BigDecimal getR69_qua_iv_qar() {
+			return r69_qua_iv_qar;
+		}
+
+		public void setR69_qua_iv_qar(BigDecimal r69_qua_iv_qar) {
+			this.r69_qua_iv_qar = r69_qua_iv_qar;
+		}
+
+		public BigDecimal getR69_qua_iv_inr() {
+			return r69_qua_iv_inr;
+		}
+
+		public void setR69_qua_iv_inr(BigDecimal r69_qua_iv_inr) {
+			this.r69_qua_iv_inr = r69_qua_iv_inr;
+		}
+
+		public BigDecimal getR69_cumm_inr() {
+			return r69_cumm_inr;
+		}
+
+		public void setR69_cumm_inr(BigDecimal r69_cumm_inr) {
+			this.r69_cumm_inr = r69_cumm_inr;
+		}
+
+		public BigDecimal getR69_cumm_bwp() {
+			return r69_cumm_bwp;
+		}
+
+		public void setR69_cumm_bwp(BigDecimal r69_cumm_bwp) {
+			this.r69_cumm_bwp = r69_cumm_bwp;
+		}
+
+		public String getR70_product() {
+			return r70_product;
+		}
+
+		public void setR70_product(String r70_product) {
+			this.r70_product = r70_product;
+		}
+
+		public BigDecimal getR70_qua_i_lc() {
+			return r70_qua_i_lc;
+		}
+
+		public void setR70_qua_i_lc(BigDecimal r70_qua_i_lc) {
+			this.r70_qua_i_lc = r70_qua_i_lc;
+		}
+
+		public BigDecimal getR70_qua_i_qar() {
+			return r70_qua_i_qar;
+		}
+
+		public void setR70_qua_i_qar(BigDecimal r70_qua_i_qar) {
+			this.r70_qua_i_qar = r70_qua_i_qar;
+		}
+
+		public BigDecimal getR70_qua_i_inr() {
+			return r70_qua_i_inr;
+		}
+
+		public void setR70_qua_i_inr(BigDecimal r70_qua_i_inr) {
+			this.r70_qua_i_inr = r70_qua_i_inr;
+		}
+
+		public BigDecimal getR70_qua_ii_lc() {
+			return r70_qua_ii_lc;
+		}
+
+		public void setR70_qua_ii_lc(BigDecimal r70_qua_ii_lc) {
+			this.r70_qua_ii_lc = r70_qua_ii_lc;
+		}
+
+		public BigDecimal getR70_qua_ii_qar() {
+			return r70_qua_ii_qar;
+		}
+
+		public void setR70_qua_ii_qar(BigDecimal r70_qua_ii_qar) {
+			this.r70_qua_ii_qar = r70_qua_ii_qar;
+		}
+
+		public BigDecimal getR70_qua_ii_inr() {
+			return r70_qua_ii_inr;
+		}
+
+		public void setR70_qua_ii_inr(BigDecimal r70_qua_ii_inr) {
+			this.r70_qua_ii_inr = r70_qua_ii_inr;
+		}
+
+		public BigDecimal getR70_qua_iii_lc() {
+			return r70_qua_iii_lc;
+		}
+
+		public void setR70_qua_iii_lc(BigDecimal r70_qua_iii_lc) {
+			this.r70_qua_iii_lc = r70_qua_iii_lc;
+		}
+
+		public BigDecimal getR70_qua_iii_qar() {
+			return r70_qua_iii_qar;
+		}
+
+		public void setR70_qua_iii_qar(BigDecimal r70_qua_iii_qar) {
+			this.r70_qua_iii_qar = r70_qua_iii_qar;
+		}
+
+		public BigDecimal getR70_qua_iii_inr() {
+			return r70_qua_iii_inr;
+		}
+
+		public void setR70_qua_iii_inr(BigDecimal r70_qua_iii_inr) {
+			this.r70_qua_iii_inr = r70_qua_iii_inr;
+		}
+
+		public BigDecimal getR70_qua_iv_lc() {
+			return r70_qua_iv_lc;
+		}
+
+		public void setR70_qua_iv_lc(BigDecimal r70_qua_iv_lc) {
+			this.r70_qua_iv_lc = r70_qua_iv_lc;
+		}
+
+		public BigDecimal getR70_qua_iv_qar() {
+			return r70_qua_iv_qar;
+		}
+
+		public void setR70_qua_iv_qar(BigDecimal r70_qua_iv_qar) {
+			this.r70_qua_iv_qar = r70_qua_iv_qar;
+		}
+
+		public BigDecimal getR70_qua_iv_inr() {
+			return r70_qua_iv_inr;
+		}
+
+		public void setR70_qua_iv_inr(BigDecimal r70_qua_iv_inr) {
+			this.r70_qua_iv_inr = r70_qua_iv_inr;
+		}
+
+		public BigDecimal getR70_cumm_inr() {
+			return r70_cumm_inr;
+		}
+
+		public void setR70_cumm_inr(BigDecimal r70_cumm_inr) {
+			this.r70_cumm_inr = r70_cumm_inr;
+		}
+
+		public BigDecimal getR70_cumm_bwp() {
+			return r70_cumm_bwp;
+		}
+
+		public void setR70_cumm_bwp(BigDecimal r70_cumm_bwp) {
+			this.r70_cumm_bwp = r70_cumm_bwp;
+		}
+
+		public String getR71_product() {
+			return r71_product;
+		}
+
+		public void setR71_product(String r71_product) {
+			this.r71_product = r71_product;
+		}
+
+		public BigDecimal getR71_qua_i_lc() {
+			return r71_qua_i_lc;
+		}
+
+		public void setR71_qua_i_lc(BigDecimal r71_qua_i_lc) {
+			this.r71_qua_i_lc = r71_qua_i_lc;
+		}
+
+		public BigDecimal getR71_qua_i_qar() {
+			return r71_qua_i_qar;
+		}
+
+		public void setR71_qua_i_qar(BigDecimal r71_qua_i_qar) {
+			this.r71_qua_i_qar = r71_qua_i_qar;
+		}
+
+		public BigDecimal getR71_qua_i_inr() {
+			return r71_qua_i_inr;
+		}
+
+		public void setR71_qua_i_inr(BigDecimal r71_qua_i_inr) {
+			this.r71_qua_i_inr = r71_qua_i_inr;
+		}
+
+		public BigDecimal getR71_qua_ii_lc() {
+			return r71_qua_ii_lc;
+		}
+
+		public void setR71_qua_ii_lc(BigDecimal r71_qua_ii_lc) {
+			this.r71_qua_ii_lc = r71_qua_ii_lc;
+		}
+
+		public BigDecimal getR71_qua_ii_qar() {
+			return r71_qua_ii_qar;
+		}
+
+		public void setR71_qua_ii_qar(BigDecimal r71_qua_ii_qar) {
+			this.r71_qua_ii_qar = r71_qua_ii_qar;
+		}
+
+		public BigDecimal getR71_qua_ii_inr() {
+			return r71_qua_ii_inr;
+		}
+
+		public void setR71_qua_ii_inr(BigDecimal r71_qua_ii_inr) {
+			this.r71_qua_ii_inr = r71_qua_ii_inr;
+		}
+
+		public BigDecimal getR71_qua_iii_lc() {
+			return r71_qua_iii_lc;
+		}
+
+		public void setR71_qua_iii_lc(BigDecimal r71_qua_iii_lc) {
+			this.r71_qua_iii_lc = r71_qua_iii_lc;
+		}
+
+		public BigDecimal getR71_qua_iii_qar() {
+			return r71_qua_iii_qar;
+		}
+
+		public void setR71_qua_iii_qar(BigDecimal r71_qua_iii_qar) {
+			this.r71_qua_iii_qar = r71_qua_iii_qar;
+		}
+
+		public BigDecimal getR71_qua_iii_inr() {
+			return r71_qua_iii_inr;
+		}
+
+		public void setR71_qua_iii_inr(BigDecimal r71_qua_iii_inr) {
+			this.r71_qua_iii_inr = r71_qua_iii_inr;
+		}
+
+		public BigDecimal getR71_qua_iv_lc() {
+			return r71_qua_iv_lc;
+		}
+
+		public void setR71_qua_iv_lc(BigDecimal r71_qua_iv_lc) {
+			this.r71_qua_iv_lc = r71_qua_iv_lc;
+		}
+
+		public BigDecimal getR71_qua_iv_qar() {
+			return r71_qua_iv_qar;
+		}
+
+		public void setR71_qua_iv_qar(BigDecimal r71_qua_iv_qar) {
+			this.r71_qua_iv_qar = r71_qua_iv_qar;
+		}
+
+		public BigDecimal getR71_qua_iv_inr() {
+			return r71_qua_iv_inr;
+		}
+
+		public void setR71_qua_iv_inr(BigDecimal r71_qua_iv_inr) {
+			this.r71_qua_iv_inr = r71_qua_iv_inr;
+		}
+
+		public BigDecimal getR71_cumm_inr() {
+			return r71_cumm_inr;
+		}
+
+		public void setR71_cumm_inr(BigDecimal r71_cumm_inr) {
+			this.r71_cumm_inr = r71_cumm_inr;
+		}
+
+		public BigDecimal getR71_cumm_bwp() {
+			return r71_cumm_bwp;
+		}
+
+		public void setR71_cumm_bwp(BigDecimal r71_cumm_bwp) {
+			this.r71_cumm_bwp = r71_cumm_bwp;
+		}
+
+		public String getR72_product() {
+			return r72_product;
+		}
+
+		public void setR72_product(String r72_product) {
+			this.r72_product = r72_product;
+		}
+
+		public BigDecimal getR72_qua_i_lc() {
+			return r72_qua_i_lc;
+		}
+
+		public void setR72_qua_i_lc(BigDecimal r72_qua_i_lc) {
+			this.r72_qua_i_lc = r72_qua_i_lc;
+		}
+
+		public BigDecimal getR72_qua_i_qar() {
+			return r72_qua_i_qar;
+		}
+
+		public void setR72_qua_i_qar(BigDecimal r72_qua_i_qar) {
+			this.r72_qua_i_qar = r72_qua_i_qar;
+		}
+
+		public BigDecimal getR72_qua_i_inr() {
+			return r72_qua_i_inr;
+		}
+
+		public void setR72_qua_i_inr(BigDecimal r72_qua_i_inr) {
+			this.r72_qua_i_inr = r72_qua_i_inr;
+		}
+
+		public BigDecimal getR72_qua_ii_lc() {
+			return r72_qua_ii_lc;
+		}
+
+		public void setR72_qua_ii_lc(BigDecimal r72_qua_ii_lc) {
+			this.r72_qua_ii_lc = r72_qua_ii_lc;
+		}
+
+		public BigDecimal getR72_qua_ii_qar() {
+			return r72_qua_ii_qar;
+		}
+
+		public void setR72_qua_ii_qar(BigDecimal r72_qua_ii_qar) {
+			this.r72_qua_ii_qar = r72_qua_ii_qar;
+		}
+
+		public BigDecimal getR72_qua_ii_inr() {
+			return r72_qua_ii_inr;
+		}
+
+		public void setR72_qua_ii_inr(BigDecimal r72_qua_ii_inr) {
+			this.r72_qua_ii_inr = r72_qua_ii_inr;
+		}
+
+		public BigDecimal getR72_qua_iii_lc() {
+			return r72_qua_iii_lc;
+		}
+
+		public void setR72_qua_iii_lc(BigDecimal r72_qua_iii_lc) {
+			this.r72_qua_iii_lc = r72_qua_iii_lc;
+		}
+
+		public BigDecimal getR72_qua_iii_qar() {
+			return r72_qua_iii_qar;
+		}
+
+		public void setR72_qua_iii_qar(BigDecimal r72_qua_iii_qar) {
+			this.r72_qua_iii_qar = r72_qua_iii_qar;
+		}
+
+		public BigDecimal getR72_qua_iii_inr() {
+			return r72_qua_iii_inr;
+		}
+
+		public void setR72_qua_iii_inr(BigDecimal r72_qua_iii_inr) {
+			this.r72_qua_iii_inr = r72_qua_iii_inr;
+		}
+
+		public BigDecimal getR72_qua_iv_lc() {
+			return r72_qua_iv_lc;
+		}
+
+		public void setR72_qua_iv_lc(BigDecimal r72_qua_iv_lc) {
+			this.r72_qua_iv_lc = r72_qua_iv_lc;
+		}
+
+		public BigDecimal getR72_qua_iv_qar() {
+			return r72_qua_iv_qar;
+		}
+
+		public void setR72_qua_iv_qar(BigDecimal r72_qua_iv_qar) {
+			this.r72_qua_iv_qar = r72_qua_iv_qar;
+		}
+
+		public BigDecimal getR72_qua_iv_inr() {
+			return r72_qua_iv_inr;
+		}
+
+		public void setR72_qua_iv_inr(BigDecimal r72_qua_iv_inr) {
+			this.r72_qua_iv_inr = r72_qua_iv_inr;
+		}
+
+		public BigDecimal getR72_cumm_inr() {
+			return r72_cumm_inr;
+		}
+
+		public void setR72_cumm_inr(BigDecimal r72_cumm_inr) {
+			this.r72_cumm_inr = r72_cumm_inr;
+		}
+
+		public BigDecimal getR72_cumm_bwp() {
+			return r72_cumm_bwp;
+		}
+
+		public void setR72_cumm_bwp(BigDecimal r72_cumm_bwp) {
+			this.r72_cumm_bwp = r72_cumm_bwp;
+		}
+
+		public String getR73_product() {
+			return r73_product;
+		}
+
+		public void setR73_product(String r73_product) {
+			this.r73_product = r73_product;
+		}
+
+		public BigDecimal getR73_qua_i_lc() {
+			return r73_qua_i_lc;
+		}
+
+		public void setR73_qua_i_lc(BigDecimal r73_qua_i_lc) {
+			this.r73_qua_i_lc = r73_qua_i_lc;
+		}
+
+		public BigDecimal getR73_qua_i_qar() {
+			return r73_qua_i_qar;
+		}
+
+		public void setR73_qua_i_qar(BigDecimal r73_qua_i_qar) {
+			this.r73_qua_i_qar = r73_qua_i_qar;
+		}
+
+		public BigDecimal getR73_qua_i_inr() {
+			return r73_qua_i_inr;
+		}
+
+		public void setR73_qua_i_inr(BigDecimal r73_qua_i_inr) {
+			this.r73_qua_i_inr = r73_qua_i_inr;
+		}
+
+		public BigDecimal getR73_qua_ii_lc() {
+			return r73_qua_ii_lc;
+		}
+
+		public void setR73_qua_ii_lc(BigDecimal r73_qua_ii_lc) {
+			this.r73_qua_ii_lc = r73_qua_ii_lc;
+		}
+
+		public BigDecimal getR73_qua_ii_qar() {
+			return r73_qua_ii_qar;
+		}
+
+		public void setR73_qua_ii_qar(BigDecimal r73_qua_ii_qar) {
+			this.r73_qua_ii_qar = r73_qua_ii_qar;
+		}
+
+		public BigDecimal getR73_qua_ii_inr() {
+			return r73_qua_ii_inr;
+		}
+
+		public void setR73_qua_ii_inr(BigDecimal r73_qua_ii_inr) {
+			this.r73_qua_ii_inr = r73_qua_ii_inr;
+		}
+
+		public BigDecimal getR73_qua_iii_lc() {
+			return r73_qua_iii_lc;
+		}
+
+		public void setR73_qua_iii_lc(BigDecimal r73_qua_iii_lc) {
+			this.r73_qua_iii_lc = r73_qua_iii_lc;
+		}
+
+		public BigDecimal getR73_qua_iii_qar() {
+			return r73_qua_iii_qar;
+		}
+
+		public void setR73_qua_iii_qar(BigDecimal r73_qua_iii_qar) {
+			this.r73_qua_iii_qar = r73_qua_iii_qar;
+		}
+
+		public BigDecimal getR73_qua_iii_inr() {
+			return r73_qua_iii_inr;
+		}
+
+		public void setR73_qua_iii_inr(BigDecimal r73_qua_iii_inr) {
+			this.r73_qua_iii_inr = r73_qua_iii_inr;
+		}
+
+		public BigDecimal getR73_qua_iv_lc() {
+			return r73_qua_iv_lc;
+		}
+
+		public void setR73_qua_iv_lc(BigDecimal r73_qua_iv_lc) {
+			this.r73_qua_iv_lc = r73_qua_iv_lc;
+		}
+
+		public BigDecimal getR73_qua_iv_qar() {
+			return r73_qua_iv_qar;
+		}
+
+		public void setR73_qua_iv_qar(BigDecimal r73_qua_iv_qar) {
+			this.r73_qua_iv_qar = r73_qua_iv_qar;
+		}
+
+		public BigDecimal getR73_qua_iv_inr() {
+			return r73_qua_iv_inr;
+		}
+
+		public void setR73_qua_iv_inr(BigDecimal r73_qua_iv_inr) {
+			this.r73_qua_iv_inr = r73_qua_iv_inr;
+		}
+
+		public BigDecimal getR73_cumm_inr() {
+			return r73_cumm_inr;
+		}
+
+		public void setR73_cumm_inr(BigDecimal r73_cumm_inr) {
+			this.r73_cumm_inr = r73_cumm_inr;
+		}
+
+		public BigDecimal getR73_cumm_bwp() {
+			return r73_cumm_bwp;
+		}
+
+		public void setR73_cumm_bwp(BigDecimal r73_cumm_bwp) {
+			this.r73_cumm_bwp = r73_cumm_bwp;
+		}
+
+		public String getR74_product() {
+			return r74_product;
+		}
+
+		public void setR74_product(String r74_product) {
+			this.r74_product = r74_product;
+		}
+
+		public BigDecimal getR74_qua_i_lc() {
+			return r74_qua_i_lc;
+		}
+
+		public void setR74_qua_i_lc(BigDecimal r74_qua_i_lc) {
+			this.r74_qua_i_lc = r74_qua_i_lc;
+		}
+
+		public BigDecimal getR74_qua_i_qar() {
+			return r74_qua_i_qar;
+		}
+
+		public void setR74_qua_i_qar(BigDecimal r74_qua_i_qar) {
+			this.r74_qua_i_qar = r74_qua_i_qar;
+		}
+
+		public BigDecimal getR74_qua_i_inr() {
+			return r74_qua_i_inr;
+		}
+
+		public void setR74_qua_i_inr(BigDecimal r74_qua_i_inr) {
+			this.r74_qua_i_inr = r74_qua_i_inr;
+		}
+
+		public BigDecimal getR74_qua_ii_lc() {
+			return r74_qua_ii_lc;
+		}
+
+		public void setR74_qua_ii_lc(BigDecimal r74_qua_ii_lc) {
+			this.r74_qua_ii_lc = r74_qua_ii_lc;
+		}
+
+		public BigDecimal getR74_qua_ii_qar() {
+			return r74_qua_ii_qar;
+		}
+
+		public void setR74_qua_ii_qar(BigDecimal r74_qua_ii_qar) {
+			this.r74_qua_ii_qar = r74_qua_ii_qar;
+		}
+
+		public BigDecimal getR74_qua_ii_inr() {
+			return r74_qua_ii_inr;
+		}
+
+		public void setR74_qua_ii_inr(BigDecimal r74_qua_ii_inr) {
+			this.r74_qua_ii_inr = r74_qua_ii_inr;
+		}
+
+		public BigDecimal getR74_qua_iii_lc() {
+			return r74_qua_iii_lc;
+		}
+
+		public void setR74_qua_iii_lc(BigDecimal r74_qua_iii_lc) {
+			this.r74_qua_iii_lc = r74_qua_iii_lc;
+		}
+
+		public BigDecimal getR74_qua_iii_qar() {
+			return r74_qua_iii_qar;
+		}
+
+		public void setR74_qua_iii_qar(BigDecimal r74_qua_iii_qar) {
+			this.r74_qua_iii_qar = r74_qua_iii_qar;
+		}
+
+		public BigDecimal getR74_qua_iii_inr() {
+			return r74_qua_iii_inr;
+		}
+
+		public void setR74_qua_iii_inr(BigDecimal r74_qua_iii_inr) {
+			this.r74_qua_iii_inr = r74_qua_iii_inr;
+		}
+
+		public BigDecimal getR74_qua_iv_lc() {
+			return r74_qua_iv_lc;
+		}
+
+		public void setR74_qua_iv_lc(BigDecimal r74_qua_iv_lc) {
+			this.r74_qua_iv_lc = r74_qua_iv_lc;
+		}
+
+		public BigDecimal getR74_qua_iv_qar() {
+			return r74_qua_iv_qar;
+		}
+
+		public void setR74_qua_iv_qar(BigDecimal r74_qua_iv_qar) {
+			this.r74_qua_iv_qar = r74_qua_iv_qar;
+		}
+
+		public BigDecimal getR74_qua_iv_inr() {
+			return r74_qua_iv_inr;
+		}
+
+		public void setR74_qua_iv_inr(BigDecimal r74_qua_iv_inr) {
+			this.r74_qua_iv_inr = r74_qua_iv_inr;
+		}
+
+		public BigDecimal getR74_cumm_inr() {
+			return r74_cumm_inr;
+		}
+
+		public void setR74_cumm_inr(BigDecimal r74_cumm_inr) {
+			this.r74_cumm_inr = r74_cumm_inr;
+		}
+
+		public BigDecimal getR74_cumm_bwp() {
+			return r74_cumm_bwp;
+		}
+
+		public void setR74_cumm_bwp(BigDecimal r74_cumm_bwp) {
+			this.r74_cumm_bwp = r74_cumm_bwp;
+		}
+
+		public String getR75_product() {
+			return r75_product;
+		}
+
+		public void setR75_product(String r75_product) {
+			this.r75_product = r75_product;
+		}
+
+		public BigDecimal getR75_qua_i_lc() {
+			return r75_qua_i_lc;
+		}
+
+		public void setR75_qua_i_lc(BigDecimal r75_qua_i_lc) {
+			this.r75_qua_i_lc = r75_qua_i_lc;
+		}
+
+		public BigDecimal getR75_qua_i_qar() {
+			return r75_qua_i_qar;
+		}
+
+		public void setR75_qua_i_qar(BigDecimal r75_qua_i_qar) {
+			this.r75_qua_i_qar = r75_qua_i_qar;
+		}
+
+		public BigDecimal getR75_qua_i_inr() {
+			return r75_qua_i_inr;
+		}
+
+		public void setR75_qua_i_inr(BigDecimal r75_qua_i_inr) {
+			this.r75_qua_i_inr = r75_qua_i_inr;
+		}
+
+		public BigDecimal getR75_qua_ii_lc() {
+			return r75_qua_ii_lc;
+		}
+
+		public void setR75_qua_ii_lc(BigDecimal r75_qua_ii_lc) {
+			this.r75_qua_ii_lc = r75_qua_ii_lc;
+		}
+
+		public BigDecimal getR75_qua_ii_qar() {
+			return r75_qua_ii_qar;
+		}
+
+		public void setR75_qua_ii_qar(BigDecimal r75_qua_ii_qar) {
+			this.r75_qua_ii_qar = r75_qua_ii_qar;
+		}
+
+		public BigDecimal getR75_qua_ii_inr() {
+			return r75_qua_ii_inr;
+		}
+
+		public void setR75_qua_ii_inr(BigDecimal r75_qua_ii_inr) {
+			this.r75_qua_ii_inr = r75_qua_ii_inr;
+		}
+
+		public BigDecimal getR75_qua_iii_lc() {
+			return r75_qua_iii_lc;
+		}
+
+		public void setR75_qua_iii_lc(BigDecimal r75_qua_iii_lc) {
+			this.r75_qua_iii_lc = r75_qua_iii_lc;
+		}
+
+		public BigDecimal getR75_qua_iii_qar() {
+			return r75_qua_iii_qar;
+		}
+
+		public void setR75_qua_iii_qar(BigDecimal r75_qua_iii_qar) {
+			this.r75_qua_iii_qar = r75_qua_iii_qar;
+		}
+
+		public BigDecimal getR75_qua_iii_inr() {
+			return r75_qua_iii_inr;
+		}
+
+		public void setR75_qua_iii_inr(BigDecimal r75_qua_iii_inr) {
+			this.r75_qua_iii_inr = r75_qua_iii_inr;
+		}
+
+		public BigDecimal getR75_qua_iv_lc() {
+			return r75_qua_iv_lc;
+		}
+
+		public void setR75_qua_iv_lc(BigDecimal r75_qua_iv_lc) {
+			this.r75_qua_iv_lc = r75_qua_iv_lc;
+		}
+
+		public BigDecimal getR75_qua_iv_qar() {
+			return r75_qua_iv_qar;
+		}
+
+		public void setR75_qua_iv_qar(BigDecimal r75_qua_iv_qar) {
+			this.r75_qua_iv_qar = r75_qua_iv_qar;
+		}
+
+		public BigDecimal getR75_qua_iv_inr() {
+			return r75_qua_iv_inr;
+		}
+
+		public void setR75_qua_iv_inr(BigDecimal r75_qua_iv_inr) {
+			this.r75_qua_iv_inr = r75_qua_iv_inr;
+		}
+
+		public BigDecimal getR75_cumm_inr() {
+			return r75_cumm_inr;
+		}
+
+		public void setR75_cumm_inr(BigDecimal r75_cumm_inr) {
+			this.r75_cumm_inr = r75_cumm_inr;
+		}
+
+		public BigDecimal getR75_cumm_bwp() {
+			return r75_cumm_bwp;
+		}
+
+		public void setR75_cumm_bwp(BigDecimal r75_cumm_bwp) {
+			this.r75_cumm_bwp = r75_cumm_bwp;
+		}
+
+		public String getR76_product() {
+			return r76_product;
+		}
+
+		public void setR76_product(String r76_product) {
+			this.r76_product = r76_product;
+		}
+
+		public BigDecimal getR76_qua_i_lc() {
+			return r76_qua_i_lc;
+		}
+
+		public void setR76_qua_i_lc(BigDecimal r76_qua_i_lc) {
+			this.r76_qua_i_lc = r76_qua_i_lc;
+		}
+
+		public BigDecimal getR76_qua_i_qar() {
+			return r76_qua_i_qar;
+		}
+
+		public void setR76_qua_i_qar(BigDecimal r76_qua_i_qar) {
+			this.r76_qua_i_qar = r76_qua_i_qar;
+		}
+
+		public BigDecimal getR76_qua_i_inr() {
+			return r76_qua_i_inr;
+		}
+
+		public void setR76_qua_i_inr(BigDecimal r76_qua_i_inr) {
+			this.r76_qua_i_inr = r76_qua_i_inr;
+		}
+
+		public BigDecimal getR76_qua_ii_lc() {
+			return r76_qua_ii_lc;
+		}
+
+		public void setR76_qua_ii_lc(BigDecimal r76_qua_ii_lc) {
+			this.r76_qua_ii_lc = r76_qua_ii_lc;
+		}
+
+		public BigDecimal getR76_qua_ii_qar() {
+			return r76_qua_ii_qar;
+		}
+
+		public void setR76_qua_ii_qar(BigDecimal r76_qua_ii_qar) {
+			this.r76_qua_ii_qar = r76_qua_ii_qar;
+		}
+
+		public BigDecimal getR76_qua_ii_inr() {
+			return r76_qua_ii_inr;
+		}
+
+		public void setR76_qua_ii_inr(BigDecimal r76_qua_ii_inr) {
+			this.r76_qua_ii_inr = r76_qua_ii_inr;
+		}
+
+		public BigDecimal getR76_qua_iii_lc() {
+			return r76_qua_iii_lc;
+		}
+
+		public void setR76_qua_iii_lc(BigDecimal r76_qua_iii_lc) {
+			this.r76_qua_iii_lc = r76_qua_iii_lc;
+		}
+
+		public BigDecimal getR76_qua_iii_qar() {
+			return r76_qua_iii_qar;
+		}
+
+		public void setR76_qua_iii_qar(BigDecimal r76_qua_iii_qar) {
+			this.r76_qua_iii_qar = r76_qua_iii_qar;
+		}
+
+		public BigDecimal getR76_qua_iii_inr() {
+			return r76_qua_iii_inr;
+		}
+
+		public void setR76_qua_iii_inr(BigDecimal r76_qua_iii_inr) {
+			this.r76_qua_iii_inr = r76_qua_iii_inr;
+		}
+
+		public BigDecimal getR76_qua_iv_lc() {
+			return r76_qua_iv_lc;
+		}
+
+		public void setR76_qua_iv_lc(BigDecimal r76_qua_iv_lc) {
+			this.r76_qua_iv_lc = r76_qua_iv_lc;
+		}
+
+		public BigDecimal getR76_qua_iv_qar() {
+			return r76_qua_iv_qar;
+		}
+
+		public void setR76_qua_iv_qar(BigDecimal r76_qua_iv_qar) {
+			this.r76_qua_iv_qar = r76_qua_iv_qar;
+		}
+
+		public BigDecimal getR76_qua_iv_inr() {
+			return r76_qua_iv_inr;
+		}
+
+		public void setR76_qua_iv_inr(BigDecimal r76_qua_iv_inr) {
+			this.r76_qua_iv_inr = r76_qua_iv_inr;
+		}
+
+		public BigDecimal getR76_cumm_inr() {
+			return r76_cumm_inr;
+		}
+
+		public void setR76_cumm_inr(BigDecimal r76_cumm_inr) {
+			this.r76_cumm_inr = r76_cumm_inr;
+		}
+
+		public BigDecimal getR76_cumm_bwp() {
+			return r76_cumm_bwp;
+		}
+
+		public void setR76_cumm_bwp(BigDecimal r76_cumm_bwp) {
+			this.r76_cumm_bwp = r76_cumm_bwp;
+		}
+
+		public String getR77_product() {
+			return r77_product;
+		}
+
+		public void setR77_product(String r77_product) {
+			this.r77_product = r77_product;
+		}
+
+		public BigDecimal getR77_qua_i_lc() {
+			return r77_qua_i_lc;
+		}
+
+		public void setR77_qua_i_lc(BigDecimal r77_qua_i_lc) {
+			this.r77_qua_i_lc = r77_qua_i_lc;
+		}
+
+		public BigDecimal getR77_qua_i_qar() {
+			return r77_qua_i_qar;
+		}
+
+		public void setR77_qua_i_qar(BigDecimal r77_qua_i_qar) {
+			this.r77_qua_i_qar = r77_qua_i_qar;
+		}
+
+		public BigDecimal getR77_qua_i_inr() {
+			return r77_qua_i_inr;
+		}
+
+		public void setR77_qua_i_inr(BigDecimal r77_qua_i_inr) {
+			this.r77_qua_i_inr = r77_qua_i_inr;
+		}
+
+		public BigDecimal getR77_qua_ii_lc() {
+			return r77_qua_ii_lc;
+		}
+
+		public void setR77_qua_ii_lc(BigDecimal r77_qua_ii_lc) {
+			this.r77_qua_ii_lc = r77_qua_ii_lc;
+		}
+
+		public BigDecimal getR77_qua_ii_qar() {
+			return r77_qua_ii_qar;
+		}
+
+		public void setR77_qua_ii_qar(BigDecimal r77_qua_ii_qar) {
+			this.r77_qua_ii_qar = r77_qua_ii_qar;
+		}
+
+		public BigDecimal getR77_qua_ii_inr() {
+			return r77_qua_ii_inr;
+		}
+
+		public void setR77_qua_ii_inr(BigDecimal r77_qua_ii_inr) {
+			this.r77_qua_ii_inr = r77_qua_ii_inr;
+		}
+
+		public BigDecimal getR77_qua_iii_lc() {
+			return r77_qua_iii_lc;
+		}
+
+		public void setR77_qua_iii_lc(BigDecimal r77_qua_iii_lc) {
+			this.r77_qua_iii_lc = r77_qua_iii_lc;
+		}
+
+		public BigDecimal getR77_qua_iii_qar() {
+			return r77_qua_iii_qar;
+		}
+
+		public void setR77_qua_iii_qar(BigDecimal r77_qua_iii_qar) {
+			this.r77_qua_iii_qar = r77_qua_iii_qar;
+		}
+
+		public BigDecimal getR77_qua_iii_inr() {
+			return r77_qua_iii_inr;
+		}
+
+		public void setR77_qua_iii_inr(BigDecimal r77_qua_iii_inr) {
+			this.r77_qua_iii_inr = r77_qua_iii_inr;
+		}
+
+		public BigDecimal getR77_qua_iv_lc() {
+			return r77_qua_iv_lc;
+		}
+
+		public void setR77_qua_iv_lc(BigDecimal r77_qua_iv_lc) {
+			this.r77_qua_iv_lc = r77_qua_iv_lc;
+		}
+
+		public BigDecimal getR77_qua_iv_qar() {
+			return r77_qua_iv_qar;
+		}
+
+		public void setR77_qua_iv_qar(BigDecimal r77_qua_iv_qar) {
+			this.r77_qua_iv_qar = r77_qua_iv_qar;
+		}
+
+		public BigDecimal getR77_qua_iv_inr() {
+			return r77_qua_iv_inr;
+		}
+
+		public void setR77_qua_iv_inr(BigDecimal r77_qua_iv_inr) {
+			this.r77_qua_iv_inr = r77_qua_iv_inr;
+		}
+
+		public BigDecimal getR77_cumm_inr() {
+			return r77_cumm_inr;
+		}
+
+		public void setR77_cumm_inr(BigDecimal r77_cumm_inr) {
+			this.r77_cumm_inr = r77_cumm_inr;
+		}
+
+		public BigDecimal getR77_cumm_bwp() {
+			return r77_cumm_bwp;
+		}
+
+		public void setR77_cumm_bwp(BigDecimal r77_cumm_bwp) {
+			this.r77_cumm_bwp = r77_cumm_bwp;
+		}
+
+		public String getR78_product() {
+			return r78_product;
+		}
+
+		public void setR78_product(String r78_product) {
+			this.r78_product = r78_product;
+		}
+
+		public BigDecimal getR78_qua_i_lc() {
+			return r78_qua_i_lc;
+		}
+
+		public void setR78_qua_i_lc(BigDecimal r78_qua_i_lc) {
+			this.r78_qua_i_lc = r78_qua_i_lc;
+		}
+
+		public BigDecimal getR78_qua_i_qar() {
+			return r78_qua_i_qar;
+		}
+
+		public void setR78_qua_i_qar(BigDecimal r78_qua_i_qar) {
+			this.r78_qua_i_qar = r78_qua_i_qar;
+		}
+
+		public BigDecimal getR78_qua_i_inr() {
+			return r78_qua_i_inr;
+		}
+
+		public void setR78_qua_i_inr(BigDecimal r78_qua_i_inr) {
+			this.r78_qua_i_inr = r78_qua_i_inr;
+		}
+
+		public BigDecimal getR78_qua_ii_lc() {
+			return r78_qua_ii_lc;
+		}
+
+		public void setR78_qua_ii_lc(BigDecimal r78_qua_ii_lc) {
+			this.r78_qua_ii_lc = r78_qua_ii_lc;
+		}
+
+		public BigDecimal getR78_qua_ii_qar() {
+			return r78_qua_ii_qar;
+		}
+
+		public void setR78_qua_ii_qar(BigDecimal r78_qua_ii_qar) {
+			this.r78_qua_ii_qar = r78_qua_ii_qar;
+		}
+
+		public BigDecimal getR78_qua_ii_inr() {
+			return r78_qua_ii_inr;
+		}
+
+		public void setR78_qua_ii_inr(BigDecimal r78_qua_ii_inr) {
+			this.r78_qua_ii_inr = r78_qua_ii_inr;
+		}
+
+		public BigDecimal getR78_qua_iii_lc() {
+			return r78_qua_iii_lc;
+		}
+
+		public void setR78_qua_iii_lc(BigDecimal r78_qua_iii_lc) {
+			this.r78_qua_iii_lc = r78_qua_iii_lc;
+		}
+
+		public BigDecimal getR78_qua_iii_qar() {
+			return r78_qua_iii_qar;
+		}
+
+		public void setR78_qua_iii_qar(BigDecimal r78_qua_iii_qar) {
+			this.r78_qua_iii_qar = r78_qua_iii_qar;
+		}
+
+		public BigDecimal getR78_qua_iii_inr() {
+			return r78_qua_iii_inr;
+		}
+
+		public void setR78_qua_iii_inr(BigDecimal r78_qua_iii_inr) {
+			this.r78_qua_iii_inr = r78_qua_iii_inr;
+		}
+
+		public BigDecimal getR78_qua_iv_lc() {
+			return r78_qua_iv_lc;
+		}
+
+		public void setR78_qua_iv_lc(BigDecimal r78_qua_iv_lc) {
+			this.r78_qua_iv_lc = r78_qua_iv_lc;
+		}
+
+		public BigDecimal getR78_qua_iv_qar() {
+			return r78_qua_iv_qar;
+		}
+
+		public void setR78_qua_iv_qar(BigDecimal r78_qua_iv_qar) {
+			this.r78_qua_iv_qar = r78_qua_iv_qar;
+		}
+
+		public BigDecimal getR78_qua_iv_inr() {
+			return r78_qua_iv_inr;
+		}
+
+		public void setR78_qua_iv_inr(BigDecimal r78_qua_iv_inr) {
+			this.r78_qua_iv_inr = r78_qua_iv_inr;
+		}
+
+		public BigDecimal getR78_cumm_inr() {
+			return r78_cumm_inr;
+		}
+
+		public void setR78_cumm_inr(BigDecimal r78_cumm_inr) {
+			this.r78_cumm_inr = r78_cumm_inr;
+		}
+
+		public BigDecimal getR78_cumm_bwp() {
+			return r78_cumm_bwp;
+		}
+
+		public void setR78_cumm_bwp(BigDecimal r78_cumm_bwp) {
+			this.r78_cumm_bwp = r78_cumm_bwp;
+		}
+
+		public String getR79_product() {
+			return r79_product;
+		}
+
+		public void setR79_product(String r79_product) {
+			this.r79_product = r79_product;
+		}
+
+		public BigDecimal getR79_qua_i_lc() {
+			return r79_qua_i_lc;
+		}
+
+		public void setR79_qua_i_lc(BigDecimal r79_qua_i_lc) {
+			this.r79_qua_i_lc = r79_qua_i_lc;
+		}
+
+		public BigDecimal getR79_qua_i_qar() {
+			return r79_qua_i_qar;
+		}
+
+		public void setR79_qua_i_qar(BigDecimal r79_qua_i_qar) {
+			this.r79_qua_i_qar = r79_qua_i_qar;
+		}
+
+		public BigDecimal getR79_qua_i_inr() {
+			return r79_qua_i_inr;
+		}
+
+		public void setR79_qua_i_inr(BigDecimal r79_qua_i_inr) {
+			this.r79_qua_i_inr = r79_qua_i_inr;
+		}
+
+		public BigDecimal getR79_qua_ii_lc() {
+			return r79_qua_ii_lc;
+		}
+
+		public void setR79_qua_ii_lc(BigDecimal r79_qua_ii_lc) {
+			this.r79_qua_ii_lc = r79_qua_ii_lc;
+		}
+
+		public BigDecimal getR79_qua_ii_qar() {
+			return r79_qua_ii_qar;
+		}
+
+		public void setR79_qua_ii_qar(BigDecimal r79_qua_ii_qar) {
+			this.r79_qua_ii_qar = r79_qua_ii_qar;
+		}
+
+		public BigDecimal getR79_qua_ii_inr() {
+			return r79_qua_ii_inr;
+		}
+
+		public void setR79_qua_ii_inr(BigDecimal r79_qua_ii_inr) {
+			this.r79_qua_ii_inr = r79_qua_ii_inr;
+		}
+
+		public BigDecimal getR79_qua_iii_lc() {
+			return r79_qua_iii_lc;
+		}
+
+		public void setR79_qua_iii_lc(BigDecimal r79_qua_iii_lc) {
+			this.r79_qua_iii_lc = r79_qua_iii_lc;
+		}
+
+		public BigDecimal getR79_qua_iii_qar() {
+			return r79_qua_iii_qar;
+		}
+
+		public void setR79_qua_iii_qar(BigDecimal r79_qua_iii_qar) {
+			this.r79_qua_iii_qar = r79_qua_iii_qar;
+		}
+
+		public BigDecimal getR79_qua_iii_inr() {
+			return r79_qua_iii_inr;
+		}
+
+		public void setR79_qua_iii_inr(BigDecimal r79_qua_iii_inr) {
+			this.r79_qua_iii_inr = r79_qua_iii_inr;
+		}
+
+		public BigDecimal getR79_qua_iv_lc() {
+			return r79_qua_iv_lc;
+		}
+
+		public void setR79_qua_iv_lc(BigDecimal r79_qua_iv_lc) {
+			this.r79_qua_iv_lc = r79_qua_iv_lc;
+		}
+
+		public BigDecimal getR79_qua_iv_qar() {
+			return r79_qua_iv_qar;
+		}
+
+		public void setR79_qua_iv_qar(BigDecimal r79_qua_iv_qar) {
+			this.r79_qua_iv_qar = r79_qua_iv_qar;
+		}
+
+		public BigDecimal getR79_qua_iv_inr() {
+			return r79_qua_iv_inr;
+		}
+
+		public void setR79_qua_iv_inr(BigDecimal r79_qua_iv_inr) {
+			this.r79_qua_iv_inr = r79_qua_iv_inr;
+		}
+
+		public BigDecimal getR79_cumm_inr() {
+			return r79_cumm_inr;
+		}
+
+		public void setR79_cumm_inr(BigDecimal r79_cumm_inr) {
+			this.r79_cumm_inr = r79_cumm_inr;
+		}
+
+		public BigDecimal getR79_cumm_bwp() {
+			return r79_cumm_bwp;
+		}
+
+		public void setR79_cumm_bwp(BigDecimal r79_cumm_bwp) {
+			this.r79_cumm_bwp = r79_cumm_bwp;
+		}
+
+		public String getR80_product() {
+			return r80_product;
+		}
+
+		public void setR80_product(String r80_product) {
+			this.r80_product = r80_product;
+		}
+
+		public BigDecimal getR80_qua_i_lc() {
+			return r80_qua_i_lc;
+		}
+
+		public void setR80_qua_i_lc(BigDecimal r80_qua_i_lc) {
+			this.r80_qua_i_lc = r80_qua_i_lc;
+		}
+
+		public BigDecimal getR80_qua_i_qar() {
+			return r80_qua_i_qar;
+		}
+
+		public void setR80_qua_i_qar(BigDecimal r80_qua_i_qar) {
+			this.r80_qua_i_qar = r80_qua_i_qar;
+		}
+
+		public BigDecimal getR80_qua_i_inr() {
+			return r80_qua_i_inr;
+		}
+
+		public void setR80_qua_i_inr(BigDecimal r80_qua_i_inr) {
+			this.r80_qua_i_inr = r80_qua_i_inr;
+		}
+
+		public BigDecimal getR80_qua_ii_lc() {
+			return r80_qua_ii_lc;
+		}
+
+		public void setR80_qua_ii_lc(BigDecimal r80_qua_ii_lc) {
+			this.r80_qua_ii_lc = r80_qua_ii_lc;
+		}
+
+		public BigDecimal getR80_qua_ii_qar() {
+			return r80_qua_ii_qar;
+		}
+
+		public void setR80_qua_ii_qar(BigDecimal r80_qua_ii_qar) {
+			this.r80_qua_ii_qar = r80_qua_ii_qar;
+		}
+
+		public BigDecimal getR80_qua_ii_inr() {
+			return r80_qua_ii_inr;
+		}
+
+		public void setR80_qua_ii_inr(BigDecimal r80_qua_ii_inr) {
+			this.r80_qua_ii_inr = r80_qua_ii_inr;
+		}
+
+		public BigDecimal getR80_qua_iii_lc() {
+			return r80_qua_iii_lc;
+		}
+
+		public void setR80_qua_iii_lc(BigDecimal r80_qua_iii_lc) {
+			this.r80_qua_iii_lc = r80_qua_iii_lc;
+		}
+
+		public BigDecimal getR80_qua_iii_qar() {
+			return r80_qua_iii_qar;
+		}
+
+		public void setR80_qua_iii_qar(BigDecimal r80_qua_iii_qar) {
+			this.r80_qua_iii_qar = r80_qua_iii_qar;
+		}
+
+		public BigDecimal getR80_qua_iii_inr() {
+			return r80_qua_iii_inr;
+		}
+
+		public void setR80_qua_iii_inr(BigDecimal r80_qua_iii_inr) {
+			this.r80_qua_iii_inr = r80_qua_iii_inr;
+		}
+
+		public BigDecimal getR80_qua_iv_lc() {
+			return r80_qua_iv_lc;
+		}
+
+		public void setR80_qua_iv_lc(BigDecimal r80_qua_iv_lc) {
+			this.r80_qua_iv_lc = r80_qua_iv_lc;
+		}
+
+		public BigDecimal getR80_qua_iv_qar() {
+			return r80_qua_iv_qar;
+		}
+
+		public void setR80_qua_iv_qar(BigDecimal r80_qua_iv_qar) {
+			this.r80_qua_iv_qar = r80_qua_iv_qar;
+		}
+
+		public BigDecimal getR80_qua_iv_inr() {
+			return r80_qua_iv_inr;
+		}
+
+		public void setR80_qua_iv_inr(BigDecimal r80_qua_iv_inr) {
+			this.r80_qua_iv_inr = r80_qua_iv_inr;
+		}
+
+		public BigDecimal getR80_cumm_inr() {
+			return r80_cumm_inr;
+		}
+
+		public void setR80_cumm_inr(BigDecimal r80_cumm_inr) {
+			this.r80_cumm_inr = r80_cumm_inr;
+		}
+
+		public BigDecimal getR80_cumm_bwp() {
+			return r80_cumm_bwp;
+		}
+
+		public void setR80_cumm_bwp(BigDecimal r80_cumm_bwp) {
+			this.r80_cumm_bwp = r80_cumm_bwp;
+		}
+
+		public String getR81_product() {
+			return r81_product;
+		}
+
+		public void setR81_product(String r81_product) {
+			this.r81_product = r81_product;
+		}
+
+		public BigDecimal getR81_qua_i_lc() {
+			return r81_qua_i_lc;
+		}
+
+		public void setR81_qua_i_lc(BigDecimal r81_qua_i_lc) {
+			this.r81_qua_i_lc = r81_qua_i_lc;
+		}
+
+		public BigDecimal getR81_qua_i_qar() {
+			return r81_qua_i_qar;
+		}
+
+		public void setR81_qua_i_qar(BigDecimal r81_qua_i_qar) {
+			this.r81_qua_i_qar = r81_qua_i_qar;
+		}
+
+		public BigDecimal getR81_qua_i_inr() {
+			return r81_qua_i_inr;
+		}
+
+		public void setR81_qua_i_inr(BigDecimal r81_qua_i_inr) {
+			this.r81_qua_i_inr = r81_qua_i_inr;
+		}
+
+		public BigDecimal getR81_qua_ii_lc() {
+			return r81_qua_ii_lc;
+		}
+
+		public void setR81_qua_ii_lc(BigDecimal r81_qua_ii_lc) {
+			this.r81_qua_ii_lc = r81_qua_ii_lc;
+		}
+
+		public BigDecimal getR81_qua_ii_qar() {
+			return r81_qua_ii_qar;
+		}
+
+		public void setR81_qua_ii_qar(BigDecimal r81_qua_ii_qar) {
+			this.r81_qua_ii_qar = r81_qua_ii_qar;
+		}
+
+		public BigDecimal getR81_qua_ii_inr() {
+			return r81_qua_ii_inr;
+		}
+
+		public void setR81_qua_ii_inr(BigDecimal r81_qua_ii_inr) {
+			this.r81_qua_ii_inr = r81_qua_ii_inr;
+		}
+
+		public BigDecimal getR81_qua_iii_lc() {
+			return r81_qua_iii_lc;
+		}
+
+		public void setR81_qua_iii_lc(BigDecimal r81_qua_iii_lc) {
+			this.r81_qua_iii_lc = r81_qua_iii_lc;
+		}
+
+		public BigDecimal getR81_qua_iii_qar() {
+			return r81_qua_iii_qar;
+		}
+
+		public void setR81_qua_iii_qar(BigDecimal r81_qua_iii_qar) {
+			this.r81_qua_iii_qar = r81_qua_iii_qar;
+		}
+
+		public BigDecimal getR81_qua_iii_inr() {
+			return r81_qua_iii_inr;
+		}
+
+		public void setR81_qua_iii_inr(BigDecimal r81_qua_iii_inr) {
+			this.r81_qua_iii_inr = r81_qua_iii_inr;
+		}
+
+		public BigDecimal getR81_qua_iv_lc() {
+			return r81_qua_iv_lc;
+		}
+
+		public void setR81_qua_iv_lc(BigDecimal r81_qua_iv_lc) {
+			this.r81_qua_iv_lc = r81_qua_iv_lc;
+		}
+
+		public BigDecimal getR81_qua_iv_qar() {
+			return r81_qua_iv_qar;
+		}
+
+		public void setR81_qua_iv_qar(BigDecimal r81_qua_iv_qar) {
+			this.r81_qua_iv_qar = r81_qua_iv_qar;
+		}
+
+		public BigDecimal getR81_qua_iv_inr() {
+			return r81_qua_iv_inr;
+		}
+
+		public void setR81_qua_iv_inr(BigDecimal r81_qua_iv_inr) {
+			this.r81_qua_iv_inr = r81_qua_iv_inr;
+		}
+
+		public BigDecimal getR81_cumm_inr() {
+			return r81_cumm_inr;
+		}
+
+		public void setR81_cumm_inr(BigDecimal r81_cumm_inr) {
+			this.r81_cumm_inr = r81_cumm_inr;
+		}
+
+		public BigDecimal getR81_cumm_bwp() {
+			return r81_cumm_bwp;
+		}
+
+		public void setR81_cumm_bwp(BigDecimal r81_cumm_bwp) {
+			this.r81_cumm_bwp = r81_cumm_bwp;
+		}
+
+		public String getR82_product() {
+			return r82_product;
+		}
+
+		public void setR82_product(String r82_product) {
+			this.r82_product = r82_product;
+		}
+
+		public BigDecimal getR82_qua_i_lc() {
+			return r82_qua_i_lc;
+		}
+
+		public void setR82_qua_i_lc(BigDecimal r82_qua_i_lc) {
+			this.r82_qua_i_lc = r82_qua_i_lc;
+		}
+
+		public BigDecimal getR82_qua_i_qar() {
+			return r82_qua_i_qar;
+		}
+
+		public void setR82_qua_i_qar(BigDecimal r82_qua_i_qar) {
+			this.r82_qua_i_qar = r82_qua_i_qar;
+		}
+
+		public BigDecimal getR82_qua_i_inr() {
+			return r82_qua_i_inr;
+		}
+
+		public void setR82_qua_i_inr(BigDecimal r82_qua_i_inr) {
+			this.r82_qua_i_inr = r82_qua_i_inr;
+		}
+
+		public BigDecimal getR82_qua_ii_lc() {
+			return r82_qua_ii_lc;
+		}
+
+		public void setR82_qua_ii_lc(BigDecimal r82_qua_ii_lc) {
+			this.r82_qua_ii_lc = r82_qua_ii_lc;
+		}
+
+		public BigDecimal getR82_qua_ii_qar() {
+			return r82_qua_ii_qar;
+		}
+
+		public void setR82_qua_ii_qar(BigDecimal r82_qua_ii_qar) {
+			this.r82_qua_ii_qar = r82_qua_ii_qar;
+		}
+
+		public BigDecimal getR82_qua_ii_inr() {
+			return r82_qua_ii_inr;
+		}
+
+		public void setR82_qua_ii_inr(BigDecimal r82_qua_ii_inr) {
+			this.r82_qua_ii_inr = r82_qua_ii_inr;
+		}
+
+		public BigDecimal getR82_qua_iii_lc() {
+			return r82_qua_iii_lc;
+		}
+
+		public void setR82_qua_iii_lc(BigDecimal r82_qua_iii_lc) {
+			this.r82_qua_iii_lc = r82_qua_iii_lc;
+		}
+
+		public BigDecimal getR82_qua_iii_qar() {
+			return r82_qua_iii_qar;
+		}
+
+		public void setR82_qua_iii_qar(BigDecimal r82_qua_iii_qar) {
+			this.r82_qua_iii_qar = r82_qua_iii_qar;
+		}
+
+		public BigDecimal getR82_qua_iii_inr() {
+			return r82_qua_iii_inr;
+		}
+
+		public void setR82_qua_iii_inr(BigDecimal r82_qua_iii_inr) {
+			this.r82_qua_iii_inr = r82_qua_iii_inr;
+		}
+
+		public BigDecimal getR82_qua_iv_lc() {
+			return r82_qua_iv_lc;
+		}
+
+		public void setR82_qua_iv_lc(BigDecimal r82_qua_iv_lc) {
+			this.r82_qua_iv_lc = r82_qua_iv_lc;
+		}
+
+		public BigDecimal getR82_qua_iv_qar() {
+			return r82_qua_iv_qar;
+		}
+
+		public void setR82_qua_iv_qar(BigDecimal r82_qua_iv_qar) {
+			this.r82_qua_iv_qar = r82_qua_iv_qar;
+		}
+
+		public BigDecimal getR82_qua_iv_inr() {
+			return r82_qua_iv_inr;
+		}
+
+		public void setR82_qua_iv_inr(BigDecimal r82_qua_iv_inr) {
+			this.r82_qua_iv_inr = r82_qua_iv_inr;
+		}
+
+		public BigDecimal getR82_cumm_inr() {
+			return r82_cumm_inr;
+		}
+
+		public void setR82_cumm_inr(BigDecimal r82_cumm_inr) {
+			this.r82_cumm_inr = r82_cumm_inr;
+		}
+
+		public BigDecimal getR82_cumm_bwp() {
+			return r82_cumm_bwp;
+		}
+
+		public void setR82_cumm_bwp(BigDecimal r82_cumm_bwp) {
+			this.r82_cumm_bwp = r82_cumm_bwp;
+		}
+
+		public String getR83_product() {
+			return r83_product;
+		}
+
+		public void setR83_product(String r83_product) {
+			this.r83_product = r83_product;
+		}
+
+		public BigDecimal getR83_qua_i_lc() {
+			return r83_qua_i_lc;
+		}
+
+		public void setR83_qua_i_lc(BigDecimal r83_qua_i_lc) {
+			this.r83_qua_i_lc = r83_qua_i_lc;
+		}
+
+		public BigDecimal getR83_qua_i_qar() {
+			return r83_qua_i_qar;
+		}
+
+		public void setR83_qua_i_qar(BigDecimal r83_qua_i_qar) {
+			this.r83_qua_i_qar = r83_qua_i_qar;
+		}
+
+		public BigDecimal getR83_qua_i_inr() {
+			return r83_qua_i_inr;
+		}
+
+		public void setR83_qua_i_inr(BigDecimal r83_qua_i_inr) {
+			this.r83_qua_i_inr = r83_qua_i_inr;
+		}
+
+		public BigDecimal getR83_qua_ii_lc() {
+			return r83_qua_ii_lc;
+		}
+
+		public void setR83_qua_ii_lc(BigDecimal r83_qua_ii_lc) {
+			this.r83_qua_ii_lc = r83_qua_ii_lc;
+		}
+
+		public BigDecimal getR83_qua_ii_qar() {
+			return r83_qua_ii_qar;
+		}
+
+		public void setR83_qua_ii_qar(BigDecimal r83_qua_ii_qar) {
+			this.r83_qua_ii_qar = r83_qua_ii_qar;
+		}
+
+		public BigDecimal getR83_qua_ii_inr() {
+			return r83_qua_ii_inr;
+		}
+
+		public void setR83_qua_ii_inr(BigDecimal r83_qua_ii_inr) {
+			this.r83_qua_ii_inr = r83_qua_ii_inr;
+		}
+
+		public BigDecimal getR83_qua_iii_lc() {
+			return r83_qua_iii_lc;
+		}
+
+		public void setR83_qua_iii_lc(BigDecimal r83_qua_iii_lc) {
+			this.r83_qua_iii_lc = r83_qua_iii_lc;
+		}
+
+		public BigDecimal getR83_qua_iii_qar() {
+			return r83_qua_iii_qar;
+		}
+
+		public void setR83_qua_iii_qar(BigDecimal r83_qua_iii_qar) {
+			this.r83_qua_iii_qar = r83_qua_iii_qar;
+		}
+
+		public BigDecimal getR83_qua_iii_inr() {
+			return r83_qua_iii_inr;
+		}
+
+		public void setR83_qua_iii_inr(BigDecimal r83_qua_iii_inr) {
+			this.r83_qua_iii_inr = r83_qua_iii_inr;
+		}
+
+		public BigDecimal getR83_qua_iv_lc() {
+			return r83_qua_iv_lc;
+		}
+
+		public void setR83_qua_iv_lc(BigDecimal r83_qua_iv_lc) {
+			this.r83_qua_iv_lc = r83_qua_iv_lc;
+		}
+
+		public BigDecimal getR83_qua_iv_qar() {
+			return r83_qua_iv_qar;
+		}
+
+		public void setR83_qua_iv_qar(BigDecimal r83_qua_iv_qar) {
+			this.r83_qua_iv_qar = r83_qua_iv_qar;
+		}
+
+		public BigDecimal getR83_qua_iv_inr() {
+			return r83_qua_iv_inr;
+		}
+
+		public void setR83_qua_iv_inr(BigDecimal r83_qua_iv_inr) {
+			this.r83_qua_iv_inr = r83_qua_iv_inr;
+		}
+
+		public BigDecimal getR83_cumm_inr() {
+			return r83_cumm_inr;
+		}
+
+		public void setR83_cumm_inr(BigDecimal r83_cumm_inr) {
+			this.r83_cumm_inr = r83_cumm_inr;
+		}
+
+		public BigDecimal getR83_cumm_bwp() {
+			return r83_cumm_bwp;
+		}
+
+		public void setR83_cumm_bwp(BigDecimal r83_cumm_bwp) {
+			this.r83_cumm_bwp = r83_cumm_bwp;
+		}
+
+		public Date getREPORT_DATE() {
+			return REPORT_DATE;
+		}
+
+		public void setREPORT_DATE(Date REPORT_DATE) {
+			this.REPORT_DATE = REPORT_DATE;
+		}
+
+		public BigDecimal getREPORT_VERSION() {
+			return REPORT_VERSION;
+		}
+
+		public void setREPORT_VERSION(BigDecimal rEPORT_VERSION) {
+			REPORT_VERSION = rEPORT_VERSION;
+		}
+
+		public String getREPORT_FREQUENCY() {
+			return REPORT_FREQUENCY;
+		}
+
+		public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+			REPORT_FREQUENCY = rEPORT_FREQUENCY;
+		}
+
+		public String getREPORT_CODE() {
+			return REPORT_CODE;
+		}
+
+		public void setREPORT_CODE(String rEPORT_CODE) {
+			REPORT_CODE = rEPORT_CODE;
+		}
+
+		public String getREPORT_DESC() {
+			return REPORT_DESC;
+		}
+
+		public void setREPORT_DESC(String rEPORT_DESC) {
+			REPORT_DESC = rEPORT_DESC;
+		}
+
+		public String getENTITY_FLG() {
+			return ENTITY_FLG;
+		}
+
+		public void setENTITY_FLG(String eNTITY_FLG) {
+			ENTITY_FLG = eNTITY_FLG;
+		}
+
+		public String getMODIFY_FLG() {
+			return MODIFY_FLG;
+		}
+
+		public void setMODIFY_FLG(String mODIFY_FLG) {
+			MODIFY_FLG = mODIFY_FLG;
+		}
+
+		public String getDEL_FLG() {
+			return DEL_FLG;
+		}
+
+		public void setDEL_FLG(String dEL_FLG) {
+			DEL_FLG = dEL_FLG;
+		}
+
+		public Date getREPORT_RESUBDATE() {
+			return REPORT_RESUBDATE;
+		}
+
+		public void setREPORT_RESUBDATE(Date rEPORT_RESUBDATE) {
+			REPORT_RESUBDATE = rEPORT_RESUBDATE;
+		}
+	}
+
+	class AS_11ArchivalRowMapper2 implements RowMapper<AS_11_Archival_Summary_Entity2> {
+
+		@Override
+		public AS_11_Archival_Summary_Entity2 mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+			AS_11_Archival_Summary_Entity2 obj = new AS_11_Archival_Summary_Entity2();
+
+// R84
+			obj.setR84_product(rs.getString("R84_PRODUCT"));
+			obj.setR84_qua_i_lc(rs.getBigDecimal("R84_QUA_I_LC"));
+			obj.setR84_qua_i_qar(rs.getBigDecimal("R84_QUA_I_QAR"));
+			obj.setR84_qua_i_inr(rs.getBigDecimal("R84_QUA_I_INR"));
+			obj.setR84_qua_ii_lc(rs.getBigDecimal("R84_QUA_II_LC"));
+			obj.setR84_qua_ii_qar(rs.getBigDecimal("R84_QUA_II_QAR"));
+			obj.setR84_qua_ii_inr(rs.getBigDecimal("R84_QUA_II_INR"));
+			obj.setR84_qua_iii_lc(rs.getBigDecimal("R84_QUA_III_LC"));
+			obj.setR84_qua_iii_qar(rs.getBigDecimal("R84_QUA_III_QAR"));
+			obj.setR84_qua_iii_inr(rs.getBigDecimal("R84_QUA_III_INR"));
+			obj.setR84_qua_iv_lc(rs.getBigDecimal("R84_QUA_IV_LC"));
+			obj.setR84_qua_iv_qar(rs.getBigDecimal("R84_QUA_IV_QAR"));
+			obj.setR84_qua_iv_inr(rs.getBigDecimal("R84_QUA_IV_INR"));
+			obj.setR84_cumm_inr(rs.getBigDecimal("R84_CUMM_INR"));
+			obj.setR84_cumm_bwp(rs.getBigDecimal("R84_CUMM_BWP"));
+
+// R85
+			obj.setR85_product(rs.getString("R85_PRODUCT"));
+			obj.setR85_qua_i_lc(rs.getBigDecimal("R85_QUA_I_LC"));
+			obj.setR85_qua_i_qar(rs.getBigDecimal("R85_QUA_I_QAR"));
+			obj.setR85_qua_i_inr(rs.getBigDecimal("R85_QUA_I_INR"));
+			obj.setR85_qua_ii_lc(rs.getBigDecimal("R85_QUA_II_LC"));
+			obj.setR85_qua_ii_qar(rs.getBigDecimal("R85_QUA_II_QAR"));
+			obj.setR85_qua_ii_inr(rs.getBigDecimal("R85_QUA_II_INR"));
+			obj.setR85_qua_iii_lc(rs.getBigDecimal("R85_QUA_III_LC"));
+			obj.setR85_qua_iii_qar(rs.getBigDecimal("R85_QUA_III_QAR"));
+			obj.setR85_qua_iii_inr(rs.getBigDecimal("R85_QUA_III_INR"));
+			obj.setR85_qua_iv_lc(rs.getBigDecimal("R85_QUA_IV_LC"));
+			obj.setR85_qua_iv_qar(rs.getBigDecimal("R85_QUA_IV_QAR"));
+			obj.setR85_qua_iv_inr(rs.getBigDecimal("R85_QUA_IV_INR"));
+			obj.setR85_cumm_inr(rs.getBigDecimal("R85_CUMM_INR"));
+			obj.setR85_cumm_bwp(rs.getBigDecimal("R85_CUMM_BWP"));
+
+// R86
+			obj.setR86_product(rs.getString("R86_PRODUCT"));
+			obj.setR86_qua_i_lc(rs.getBigDecimal("R86_QUA_I_LC"));
+			obj.setR86_qua_i_qar(rs.getBigDecimal("R86_QUA_I_QAR"));
+			obj.setR86_qua_i_inr(rs.getBigDecimal("R86_QUA_I_INR"));
+			obj.setR86_qua_ii_lc(rs.getBigDecimal("R86_QUA_II_LC"));
+			obj.setR86_qua_ii_qar(rs.getBigDecimal("R86_QUA_II_QAR"));
+			obj.setR86_qua_ii_inr(rs.getBigDecimal("R86_QUA_II_INR"));
+			obj.setR86_qua_iii_lc(rs.getBigDecimal("R86_QUA_III_LC"));
+			obj.setR86_qua_iii_qar(rs.getBigDecimal("R86_QUA_III_QAR"));
+			obj.setR86_qua_iii_inr(rs.getBigDecimal("R86_QUA_III_INR"));
+			obj.setR86_qua_iv_lc(rs.getBigDecimal("R86_QUA_IV_LC"));
+			obj.setR86_qua_iv_qar(rs.getBigDecimal("R86_QUA_IV_QAR"));
+			obj.setR86_qua_iv_inr(rs.getBigDecimal("R86_QUA_IV_INR"));
+			obj.setR86_cumm_inr(rs.getBigDecimal("R86_CUMM_INR"));
+			obj.setR86_cumm_bwp(rs.getBigDecimal("R86_CUMM_BWP"));
+
+// R87
+			obj.setR87_product(rs.getString("R87_PRODUCT"));
+			obj.setR87_qua_i_lc(rs.getBigDecimal("R87_QUA_I_LC"));
+			obj.setR87_qua_i_qar(rs.getBigDecimal("R87_QUA_I_QAR"));
+			obj.setR87_qua_i_inr(rs.getBigDecimal("R87_QUA_I_INR"));
+			obj.setR87_qua_ii_lc(rs.getBigDecimal("R87_QUA_II_LC"));
+			obj.setR87_qua_ii_qar(rs.getBigDecimal("R87_QUA_II_QAR"));
+			obj.setR87_qua_ii_inr(rs.getBigDecimal("R87_QUA_II_INR"));
+			obj.setR87_qua_iii_lc(rs.getBigDecimal("R87_QUA_III_LC"));
+			obj.setR87_qua_iii_qar(rs.getBigDecimal("R87_QUA_III_QAR"));
+			obj.setR87_qua_iii_inr(rs.getBigDecimal("R87_QUA_III_INR"));
+			obj.setR87_qua_iv_lc(rs.getBigDecimal("R87_QUA_IV_LC"));
+			obj.setR87_qua_iv_qar(rs.getBigDecimal("R87_QUA_IV_QAR"));
+			obj.setR87_qua_iv_inr(rs.getBigDecimal("R87_QUA_IV_INR"));
+			obj.setR87_cumm_inr(rs.getBigDecimal("R87_CUMM_INR"));
+			obj.setR87_cumm_bwp(rs.getBigDecimal("R87_CUMM_BWP"));
+
+// R88
+			obj.setR88_product(rs.getString("R88_PRODUCT"));
+			obj.setR88_qua_i_lc(rs.getBigDecimal("R88_QUA_I_LC"));
+			obj.setR88_qua_i_qar(rs.getBigDecimal("R88_QUA_I_QAR"));
+			obj.setR88_qua_i_inr(rs.getBigDecimal("R88_QUA_I_INR"));
+			obj.setR88_qua_ii_lc(rs.getBigDecimal("R88_QUA_II_LC"));
+			obj.setR88_qua_ii_qar(rs.getBigDecimal("R88_QUA_II_QAR"));
+			obj.setR88_qua_ii_inr(rs.getBigDecimal("R88_QUA_II_INR"));
+			obj.setR88_qua_iii_lc(rs.getBigDecimal("R88_QUA_III_LC"));
+			obj.setR88_qua_iii_qar(rs.getBigDecimal("R88_QUA_III_QAR"));
+			obj.setR88_qua_iii_inr(rs.getBigDecimal("R88_QUA_III_INR"));
+			obj.setR88_qua_iv_lc(rs.getBigDecimal("R88_QUA_IV_LC"));
+			obj.setR88_qua_iv_qar(rs.getBigDecimal("R88_QUA_IV_QAR"));
+			obj.setR88_qua_iv_inr(rs.getBigDecimal("R88_QUA_IV_INR"));
+			obj.setR88_cumm_inr(rs.getBigDecimal("R88_CUMM_INR"));
+			obj.setR88_cumm_bwp(rs.getBigDecimal("R88_CUMM_BWP"));
+
+// R89
+			obj.setR89_product(rs.getString("R89_PRODUCT"));
+			obj.setR89_qua_i_lc(rs.getBigDecimal("R89_QUA_I_LC"));
+			obj.setR89_qua_i_qar(rs.getBigDecimal("R89_QUA_I_QAR"));
+			obj.setR89_qua_i_inr(rs.getBigDecimal("R89_QUA_I_INR"));
+			obj.setR89_qua_ii_lc(rs.getBigDecimal("R89_QUA_II_LC"));
+			obj.setR89_qua_ii_qar(rs.getBigDecimal("R89_QUA_II_QAR"));
+			obj.setR89_qua_ii_inr(rs.getBigDecimal("R89_QUA_II_INR"));
+			obj.setR89_qua_iii_lc(rs.getBigDecimal("R89_QUA_III_LC"));
+			obj.setR89_qua_iii_qar(rs.getBigDecimal("R89_QUA_III_QAR"));
+			obj.setR89_qua_iii_inr(rs.getBigDecimal("R89_QUA_III_INR"));
+			obj.setR89_qua_iv_lc(rs.getBigDecimal("R89_QUA_IV_LC"));
+			obj.setR89_qua_iv_qar(rs.getBigDecimal("R89_QUA_IV_QAR"));
+			obj.setR89_qua_iv_inr(rs.getBigDecimal("R89_QUA_IV_INR"));
+			obj.setR89_cumm_inr(rs.getBigDecimal("R89_CUMM_INR"));
+			obj.setR89_cumm_bwp(rs.getBigDecimal("R89_CUMM_BWP"));
+
+// R90
+			obj.setR90_product(rs.getString("R90_PRODUCT"));
+			obj.setR90_qua_i_lc(rs.getBigDecimal("R90_QUA_I_LC"));
+			obj.setR90_qua_i_qar(rs.getBigDecimal("R90_QUA_I_QAR"));
+			obj.setR90_qua_i_inr(rs.getBigDecimal("R90_QUA_I_INR"));
+			obj.setR90_qua_ii_lc(rs.getBigDecimal("R90_QUA_II_LC"));
+			obj.setR90_qua_ii_qar(rs.getBigDecimal("R90_QUA_II_QAR"));
+			obj.setR90_qua_ii_inr(rs.getBigDecimal("R90_QUA_II_INR"));
+			obj.setR90_qua_iii_lc(rs.getBigDecimal("R90_QUA_III_LC"));
+			obj.setR90_qua_iii_qar(rs.getBigDecimal("R90_QUA_III_QAR"));
+			obj.setR90_qua_iii_inr(rs.getBigDecimal("R90_QUA_III_INR"));
+			obj.setR90_qua_iv_lc(rs.getBigDecimal("R90_QUA_IV_LC"));
+			obj.setR90_qua_iv_qar(rs.getBigDecimal("R90_QUA_IV_QAR"));
+			obj.setR90_qua_iv_inr(rs.getBigDecimal("R90_QUA_IV_INR"));
+			obj.setR90_cumm_inr(rs.getBigDecimal("R90_CUMM_INR"));
+			obj.setR90_cumm_bwp(rs.getBigDecimal("R90_CUMM_BWP"));
+
+// R91
+			obj.setR91_product(rs.getString("R91_PRODUCT"));
+			obj.setR91_qua_i_lc(rs.getBigDecimal("R91_QUA_I_LC"));
+			obj.setR91_qua_i_qar(rs.getBigDecimal("R91_QUA_I_QAR"));
+			obj.setR91_qua_i_inr(rs.getBigDecimal("R91_QUA_I_INR"));
+			obj.setR91_qua_ii_lc(rs.getBigDecimal("R91_QUA_II_LC"));
+			obj.setR91_qua_ii_qar(rs.getBigDecimal("R91_QUA_II_QAR"));
+			obj.setR91_qua_ii_inr(rs.getBigDecimal("R91_QUA_II_INR"));
+			obj.setR91_qua_iii_lc(rs.getBigDecimal("R91_QUA_III_LC"));
+			obj.setR91_qua_iii_qar(rs.getBigDecimal("R91_QUA_III_QAR"));
+			obj.setR91_qua_iii_inr(rs.getBigDecimal("R91_QUA_III_INR"));
+			obj.setR91_qua_iv_lc(rs.getBigDecimal("R91_QUA_IV_LC"));
+			obj.setR91_qua_iv_qar(rs.getBigDecimal("R91_QUA_IV_QAR"));
+			obj.setR91_qua_iv_inr(rs.getBigDecimal("R91_QUA_IV_INR"));
+			obj.setR91_cumm_inr(rs.getBigDecimal("R91_CUMM_INR"));
+			obj.setR91_cumm_bwp(rs.getBigDecimal("R91_CUMM_BWP"));
+
+			// COMMON FIELDS
+			obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+			obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setREPORT_RESUBDATE(rs.getDate("REPORT_RESUBDATE"));
+			obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+			obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+			obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+			obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+			obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+			obj.setDEL_FLG(rs.getString("DEL_FLG"));
+
+			return obj;
+		}
+	}
+
+	@IdClass(AS_11_PK.class)
+	public class AS_11_Archival_Summary_Entity2 {
+		// R84
+		private String r84_product;
+		private BigDecimal r84_qua_i_lc;
+		private BigDecimal r84_qua_i_qar;
+		private BigDecimal r84_qua_i_inr;
+		private BigDecimal r84_qua_ii_lc;
+		private BigDecimal r84_qua_ii_qar;
+		private BigDecimal r84_qua_ii_inr;
+		private BigDecimal r84_qua_iii_lc;
+		private BigDecimal r84_qua_iii_qar;
+		private BigDecimal r84_qua_iii_inr;
+		private BigDecimal r84_qua_iv_lc;
+		private BigDecimal r84_qua_iv_qar;
+		private BigDecimal r84_qua_iv_inr;
+		private BigDecimal r84_cumm_inr;
+		private BigDecimal r84_cumm_bwp;
+
+		// R85
+		private String r85_product;
+		private BigDecimal r85_qua_i_lc;
+		private BigDecimal r85_qua_i_qar;
+		private BigDecimal r85_qua_i_inr;
+		private BigDecimal r85_qua_ii_lc;
+		private BigDecimal r85_qua_ii_qar;
+		private BigDecimal r85_qua_ii_inr;
+		private BigDecimal r85_qua_iii_lc;
+		private BigDecimal r85_qua_iii_qar;
+		private BigDecimal r85_qua_iii_inr;
+		private BigDecimal r85_qua_iv_lc;
+		private BigDecimal r85_qua_iv_qar;
+		private BigDecimal r85_qua_iv_inr;
+		private BigDecimal r85_cumm_inr;
+		private BigDecimal r85_cumm_bwp;
+
+		// R86
+		private String r86_product;
+		private BigDecimal r86_qua_i_lc;
+		private BigDecimal r86_qua_i_qar;
+		private BigDecimal r86_qua_i_inr;
+		private BigDecimal r86_qua_ii_lc;
+		private BigDecimal r86_qua_ii_qar;
+		private BigDecimal r86_qua_ii_inr;
+		private BigDecimal r86_qua_iii_lc;
+		private BigDecimal r86_qua_iii_qar;
+		private BigDecimal r86_qua_iii_inr;
+		private BigDecimal r86_qua_iv_lc;
+		private BigDecimal r86_qua_iv_qar;
+		private BigDecimal r86_qua_iv_inr;
+		private BigDecimal r86_cumm_inr;
+		private BigDecimal r86_cumm_bwp;
+
+		// R87
+		private String r87_product;
+		private BigDecimal r87_qua_i_lc;
+		private BigDecimal r87_qua_i_qar;
+		private BigDecimal r87_qua_i_inr;
+		private BigDecimal r87_qua_ii_lc;
+		private BigDecimal r87_qua_ii_qar;
+		private BigDecimal r87_qua_ii_inr;
+		private BigDecimal r87_qua_iii_lc;
+		private BigDecimal r87_qua_iii_qar;
+		private BigDecimal r87_qua_iii_inr;
+		private BigDecimal r87_qua_iv_lc;
+		private BigDecimal r87_qua_iv_qar;
+		private BigDecimal r87_qua_iv_inr;
+		private BigDecimal r87_cumm_inr;
+		private BigDecimal r87_cumm_bwp;
+
+		// R88
+		private String r88_product;
+		private BigDecimal r88_qua_i_lc;
+		private BigDecimal r88_qua_i_qar;
+		private BigDecimal r88_qua_i_inr;
+		private BigDecimal r88_qua_ii_lc;
+		private BigDecimal r88_qua_ii_qar;
+		private BigDecimal r88_qua_ii_inr;
+		private BigDecimal r88_qua_iii_lc;
+		private BigDecimal r88_qua_iii_qar;
+		private BigDecimal r88_qua_iii_inr;
+		private BigDecimal r88_qua_iv_lc;
+		private BigDecimal r88_qua_iv_qar;
+		private BigDecimal r88_qua_iv_inr;
+		private BigDecimal r88_cumm_inr;
+		private BigDecimal r88_cumm_bwp;
+
+		// R89
+		private String r89_product;
+		private BigDecimal r89_qua_i_lc;
+		private BigDecimal r89_qua_i_qar;
+		private BigDecimal r89_qua_i_inr;
+		private BigDecimal r89_qua_ii_lc;
+		private BigDecimal r89_qua_ii_qar;
+		private BigDecimal r89_qua_ii_inr;
+		private BigDecimal r89_qua_iii_lc;
+		private BigDecimal r89_qua_iii_qar;
+		private BigDecimal r89_qua_iii_inr;
+		private BigDecimal r89_qua_iv_lc;
+		private BigDecimal r89_qua_iv_qar;
+		private BigDecimal r89_qua_iv_inr;
+		private BigDecimal r89_cumm_inr;
+		private BigDecimal r89_cumm_bwp;
+
+		// R90
+		private String r90_product;
+		private BigDecimal r90_qua_i_lc;
+		private BigDecimal r90_qua_i_qar;
+		private BigDecimal r90_qua_i_inr;
+		private BigDecimal r90_qua_ii_lc;
+		private BigDecimal r90_qua_ii_qar;
+		private BigDecimal r90_qua_ii_inr;
+		private BigDecimal r90_qua_iii_lc;
+		private BigDecimal r90_qua_iii_qar;
+		private BigDecimal r90_qua_iii_inr;
+		private BigDecimal r90_qua_iv_lc;
+		private BigDecimal r90_qua_iv_qar;
+		private BigDecimal r90_qua_iv_inr;
+		private BigDecimal r90_cumm_inr;
+		private BigDecimal r90_cumm_bwp;
+
+		// R91
+		private String r91_product;
+		private BigDecimal r91_qua_i_lc;
+		private BigDecimal r91_qua_i_qar;
+		private BigDecimal r91_qua_i_inr;
+		private BigDecimal r91_qua_ii_lc;
+		private BigDecimal r91_qua_ii_qar;
+		private BigDecimal r91_qua_ii_inr;
+		private BigDecimal r91_qua_iii_lc;
+		private BigDecimal r91_qua_iii_qar;
+		private BigDecimal r91_qua_iii_inr;
+		private BigDecimal r91_qua_iv_lc;
+		private BigDecimal r91_qua_iv_qar;
+		private BigDecimal r91_qua_iv_inr;
+		private BigDecimal r91_cumm_inr;
+		private BigDecimal r91_cumm_bwp;
+		@Id
+		@Temporal(TemporalType.DATE)
+		@Column(name = "REPORT_DATE")
+		private Date REPORT_DATE;
+
+		@Id
+		@Column(name = "REPORT_VERSION", length = 100)
+		private BigDecimal REPORT_VERSION;
+
+		@Column(name = "REPORT_FREQUENCY", length = 100)
+		private String REPORT_FREQUENCY;
+
+		@Column(name = "REPORT_CODE", length = 100)
+		private String REPORT_CODE;
+
+		@Column(name = "REPORT_DESC", length = 100)
+		private String REPORT_DESC;
+
+		@Column(name = "ENTITY_FLG", length = 1)
+		private String ENTITY_FLG;
+
+		@Column(name = "MODIFY_FLG", length = 1)
+		private String MODIFY_FLG;
+
+		@Column(name = "DEL_FLG", length = 1)
+		private String DEL_FLG;
+
+		private Date REPORT_RESUBDATE;
+
+		public String getR84_product() {
+			return r84_product;
+		}
+
+		public void setR84_product(String r84_product) {
+			this.r84_product = r84_product;
+		}
+
+		public BigDecimal getR84_qua_i_lc() {
+			return r84_qua_i_lc;
+		}
+
+		public void setR84_qua_i_lc(BigDecimal r84_qua_i_lc) {
+			this.r84_qua_i_lc = r84_qua_i_lc;
+		}
+
+		public BigDecimal getR84_qua_i_qar() {
+			return r84_qua_i_qar;
+		}
+
+		public void setR84_qua_i_qar(BigDecimal r84_qua_i_qar) {
+			this.r84_qua_i_qar = r84_qua_i_qar;
+		}
+
+		public BigDecimal getR84_qua_i_inr() {
+			return r84_qua_i_inr;
+		}
+
+		public void setR84_qua_i_inr(BigDecimal r84_qua_i_inr) {
+			this.r84_qua_i_inr = r84_qua_i_inr;
+		}
+
+		public BigDecimal getR84_qua_ii_lc() {
+			return r84_qua_ii_lc;
+		}
+
+		public void setR84_qua_ii_lc(BigDecimal r84_qua_ii_lc) {
+			this.r84_qua_ii_lc = r84_qua_ii_lc;
+		}
+
+		public BigDecimal getR84_qua_ii_qar() {
+			return r84_qua_ii_qar;
+		}
+
+		public void setR84_qua_ii_qar(BigDecimal r84_qua_ii_qar) {
+			this.r84_qua_ii_qar = r84_qua_ii_qar;
+		}
+
+		public BigDecimal getR84_qua_ii_inr() {
+			return r84_qua_ii_inr;
+		}
+
+		public void setR84_qua_ii_inr(BigDecimal r84_qua_ii_inr) {
+			this.r84_qua_ii_inr = r84_qua_ii_inr;
+		}
+
+		public BigDecimal getR84_qua_iii_lc() {
+			return r84_qua_iii_lc;
+		}
+
+		public void setR84_qua_iii_lc(BigDecimal r84_qua_iii_lc) {
+			this.r84_qua_iii_lc = r84_qua_iii_lc;
+		}
+
+		public BigDecimal getR84_qua_iii_qar() {
+			return r84_qua_iii_qar;
+		}
+
+		public void setR84_qua_iii_qar(BigDecimal r84_qua_iii_qar) {
+			this.r84_qua_iii_qar = r84_qua_iii_qar;
+		}
+
+		public BigDecimal getR84_qua_iii_inr() {
+			return r84_qua_iii_inr;
+		}
+
+		public void setR84_qua_iii_inr(BigDecimal r84_qua_iii_inr) {
+			this.r84_qua_iii_inr = r84_qua_iii_inr;
+		}
+
+		public BigDecimal getR84_qua_iv_lc() {
+			return r84_qua_iv_lc;
+		}
+
+		public void setR84_qua_iv_lc(BigDecimal r84_qua_iv_lc) {
+			this.r84_qua_iv_lc = r84_qua_iv_lc;
+		}
+
+		public BigDecimal getR84_qua_iv_qar() {
+			return r84_qua_iv_qar;
+		}
+
+		public void setR84_qua_iv_qar(BigDecimal r84_qua_iv_qar) {
+			this.r84_qua_iv_qar = r84_qua_iv_qar;
+		}
+
+		public BigDecimal getR84_qua_iv_inr() {
+			return r84_qua_iv_inr;
+		}
+
+		public void setR84_qua_iv_inr(BigDecimal r84_qua_iv_inr) {
+			this.r84_qua_iv_inr = r84_qua_iv_inr;
+		}
+
+		public BigDecimal getR84_cumm_inr() {
+			return r84_cumm_inr;
+		}
+
+		public void setR84_cumm_inr(BigDecimal r84_cumm_inr) {
+			this.r84_cumm_inr = r84_cumm_inr;
+		}
+
+		public BigDecimal getR84_cumm_bwp() {
+			return r84_cumm_bwp;
+		}
+
+		public void setR84_cumm_bwp(BigDecimal r84_cumm_bwp) {
+			this.r84_cumm_bwp = r84_cumm_bwp;
+		}
+
+		public String getR85_product() {
+			return r85_product;
+		}
+
+		public void setR85_product(String r85_product) {
+			this.r85_product = r85_product;
+		}
+
+		public BigDecimal getR85_qua_i_lc() {
+			return r85_qua_i_lc;
+		}
+
+		public void setR85_qua_i_lc(BigDecimal r85_qua_i_lc) {
+			this.r85_qua_i_lc = r85_qua_i_lc;
+		}
+
+		public BigDecimal getR85_qua_i_qar() {
+			return r85_qua_i_qar;
+		}
+
+		public void setR85_qua_i_qar(BigDecimal r85_qua_i_qar) {
+			this.r85_qua_i_qar = r85_qua_i_qar;
+		}
+
+		public BigDecimal getR85_qua_i_inr() {
+			return r85_qua_i_inr;
+		}
+
+		public void setR85_qua_i_inr(BigDecimal r85_qua_i_inr) {
+			this.r85_qua_i_inr = r85_qua_i_inr;
+		}
+
+		public BigDecimal getR85_qua_ii_lc() {
+			return r85_qua_ii_lc;
+		}
+
+		public void setR85_qua_ii_lc(BigDecimal r85_qua_ii_lc) {
+			this.r85_qua_ii_lc = r85_qua_ii_lc;
+		}
+
+		public BigDecimal getR85_qua_ii_qar() {
+			return r85_qua_ii_qar;
+		}
+
+		public void setR85_qua_ii_qar(BigDecimal r85_qua_ii_qar) {
+			this.r85_qua_ii_qar = r85_qua_ii_qar;
+		}
+
+		public BigDecimal getR85_qua_ii_inr() {
+			return r85_qua_ii_inr;
+		}
+
+		public void setR85_qua_ii_inr(BigDecimal r85_qua_ii_inr) {
+			this.r85_qua_ii_inr = r85_qua_ii_inr;
+		}
+
+		public BigDecimal getR85_qua_iii_lc() {
+			return r85_qua_iii_lc;
+		}
+
+		public void setR85_qua_iii_lc(BigDecimal r85_qua_iii_lc) {
+			this.r85_qua_iii_lc = r85_qua_iii_lc;
+		}
+
+		public BigDecimal getR85_qua_iii_qar() {
+			return r85_qua_iii_qar;
+		}
+
+		public void setR85_qua_iii_qar(BigDecimal r85_qua_iii_qar) {
+			this.r85_qua_iii_qar = r85_qua_iii_qar;
+		}
+
+		public BigDecimal getR85_qua_iii_inr() {
+			return r85_qua_iii_inr;
+		}
+
+		public void setR85_qua_iii_inr(BigDecimal r85_qua_iii_inr) {
+			this.r85_qua_iii_inr = r85_qua_iii_inr;
+		}
+
+		public BigDecimal getR85_qua_iv_lc() {
+			return r85_qua_iv_lc;
+		}
+
+		public void setR85_qua_iv_lc(BigDecimal r85_qua_iv_lc) {
+			this.r85_qua_iv_lc = r85_qua_iv_lc;
+		}
+
+		public BigDecimal getR85_qua_iv_qar() {
+			return r85_qua_iv_qar;
+		}
+
+		public void setR85_qua_iv_qar(BigDecimal r85_qua_iv_qar) {
+			this.r85_qua_iv_qar = r85_qua_iv_qar;
+		}
+
+		public BigDecimal getR85_qua_iv_inr() {
+			return r85_qua_iv_inr;
+		}
+
+		public void setR85_qua_iv_inr(BigDecimal r85_qua_iv_inr) {
+			this.r85_qua_iv_inr = r85_qua_iv_inr;
+		}
+
+		public BigDecimal getR85_cumm_inr() {
+			return r85_cumm_inr;
+		}
+
+		public void setR85_cumm_inr(BigDecimal r85_cumm_inr) {
+			this.r85_cumm_inr = r85_cumm_inr;
+		}
+
+		public BigDecimal getR85_cumm_bwp() {
+			return r85_cumm_bwp;
+		}
+
+		public void setR85_cumm_bwp(BigDecimal r85_cumm_bwp) {
+			this.r85_cumm_bwp = r85_cumm_bwp;
+		}
+
+		public String getR86_product() {
+			return r86_product;
+		}
+
+		public void setR86_product(String r86_product) {
+			this.r86_product = r86_product;
+		}
+
+		public BigDecimal getR86_qua_i_lc() {
+			return r86_qua_i_lc;
+		}
+
+		public void setR86_qua_i_lc(BigDecimal r86_qua_i_lc) {
+			this.r86_qua_i_lc = r86_qua_i_lc;
+		}
+
+		public BigDecimal getR86_qua_i_qar() {
+			return r86_qua_i_qar;
+		}
+
+		public void setR86_qua_i_qar(BigDecimal r86_qua_i_qar) {
+			this.r86_qua_i_qar = r86_qua_i_qar;
+		}
+
+		public BigDecimal getR86_qua_i_inr() {
+			return r86_qua_i_inr;
+		}
+
+		public void setR86_qua_i_inr(BigDecimal r86_qua_i_inr) {
+			this.r86_qua_i_inr = r86_qua_i_inr;
+		}
+
+		public BigDecimal getR86_qua_ii_lc() {
+			return r86_qua_ii_lc;
+		}
+
+		public void setR86_qua_ii_lc(BigDecimal r86_qua_ii_lc) {
+			this.r86_qua_ii_lc = r86_qua_ii_lc;
+		}
+
+		public BigDecimal getR86_qua_ii_qar() {
+			return r86_qua_ii_qar;
+		}
+
+		public void setR86_qua_ii_qar(BigDecimal r86_qua_ii_qar) {
+			this.r86_qua_ii_qar = r86_qua_ii_qar;
+		}
+
+		public BigDecimal getR86_qua_ii_inr() {
+			return r86_qua_ii_inr;
+		}
+
+		public void setR86_qua_ii_inr(BigDecimal r86_qua_ii_inr) {
+			this.r86_qua_ii_inr = r86_qua_ii_inr;
+		}
+
+		public BigDecimal getR86_qua_iii_lc() {
+			return r86_qua_iii_lc;
+		}
+
+		public void setR86_qua_iii_lc(BigDecimal r86_qua_iii_lc) {
+			this.r86_qua_iii_lc = r86_qua_iii_lc;
+		}
+
+		public BigDecimal getR86_qua_iii_qar() {
+			return r86_qua_iii_qar;
+		}
+
+		public void setR86_qua_iii_qar(BigDecimal r86_qua_iii_qar) {
+			this.r86_qua_iii_qar = r86_qua_iii_qar;
+		}
+
+		public BigDecimal getR86_qua_iii_inr() {
+			return r86_qua_iii_inr;
+		}
+
+		public void setR86_qua_iii_inr(BigDecimal r86_qua_iii_inr) {
+			this.r86_qua_iii_inr = r86_qua_iii_inr;
+		}
+
+		public BigDecimal getR86_qua_iv_lc() {
+			return r86_qua_iv_lc;
+		}
+
+		public void setR86_qua_iv_lc(BigDecimal r86_qua_iv_lc) {
+			this.r86_qua_iv_lc = r86_qua_iv_lc;
+		}
+
+		public BigDecimal getR86_qua_iv_qar() {
+			return r86_qua_iv_qar;
+		}
+
+		public void setR86_qua_iv_qar(BigDecimal r86_qua_iv_qar) {
+			this.r86_qua_iv_qar = r86_qua_iv_qar;
+		}
+
+		public BigDecimal getR86_qua_iv_inr() {
+			return r86_qua_iv_inr;
+		}
+
+		public void setR86_qua_iv_inr(BigDecimal r86_qua_iv_inr) {
+			this.r86_qua_iv_inr = r86_qua_iv_inr;
+		}
+
+		public BigDecimal getR86_cumm_inr() {
+			return r86_cumm_inr;
+		}
+
+		public void setR86_cumm_inr(BigDecimal r86_cumm_inr) {
+			this.r86_cumm_inr = r86_cumm_inr;
+		}
+
+		public BigDecimal getR86_cumm_bwp() {
+			return r86_cumm_bwp;
+		}
+
+		public void setR86_cumm_bwp(BigDecimal r86_cumm_bwp) {
+			this.r86_cumm_bwp = r86_cumm_bwp;
+		}
+
+		public String getR87_product() {
+			return r87_product;
+		}
+
+		public void setR87_product(String r87_product) {
+			this.r87_product = r87_product;
+		}
+
+		public BigDecimal getR87_qua_i_lc() {
+			return r87_qua_i_lc;
+		}
+
+		public void setR87_qua_i_lc(BigDecimal r87_qua_i_lc) {
+			this.r87_qua_i_lc = r87_qua_i_lc;
+		}
+
+		public BigDecimal getR87_qua_i_qar() {
+			return r87_qua_i_qar;
+		}
+
+		public void setR87_qua_i_qar(BigDecimal r87_qua_i_qar) {
+			this.r87_qua_i_qar = r87_qua_i_qar;
+		}
+
+		public BigDecimal getR87_qua_i_inr() {
+			return r87_qua_i_inr;
+		}
+
+		public void setR87_qua_i_inr(BigDecimal r87_qua_i_inr) {
+			this.r87_qua_i_inr = r87_qua_i_inr;
+		}
+
+		public BigDecimal getR87_qua_ii_lc() {
+			return r87_qua_ii_lc;
+		}
+
+		public void setR87_qua_ii_lc(BigDecimal r87_qua_ii_lc) {
+			this.r87_qua_ii_lc = r87_qua_ii_lc;
+		}
+
+		public BigDecimal getR87_qua_ii_qar() {
+			return r87_qua_ii_qar;
+		}
+
+		public void setR87_qua_ii_qar(BigDecimal r87_qua_ii_qar) {
+			this.r87_qua_ii_qar = r87_qua_ii_qar;
+		}
+
+		public BigDecimal getR87_qua_ii_inr() {
+			return r87_qua_ii_inr;
+		}
+
+		public void setR87_qua_ii_inr(BigDecimal r87_qua_ii_inr) {
+			this.r87_qua_ii_inr = r87_qua_ii_inr;
+		}
+
+		public BigDecimal getR87_qua_iii_lc() {
+			return r87_qua_iii_lc;
+		}
+
+		public void setR87_qua_iii_lc(BigDecimal r87_qua_iii_lc) {
+			this.r87_qua_iii_lc = r87_qua_iii_lc;
+		}
+
+		public BigDecimal getR87_qua_iii_qar() {
+			return r87_qua_iii_qar;
+		}
+
+		public void setR87_qua_iii_qar(BigDecimal r87_qua_iii_qar) {
+			this.r87_qua_iii_qar = r87_qua_iii_qar;
+		}
+
+		public BigDecimal getR87_qua_iii_inr() {
+			return r87_qua_iii_inr;
+		}
+
+		public void setR87_qua_iii_inr(BigDecimal r87_qua_iii_inr) {
+			this.r87_qua_iii_inr = r87_qua_iii_inr;
+		}
+
+		public BigDecimal getR87_qua_iv_lc() {
+			return r87_qua_iv_lc;
+		}
+
+		public void setR87_qua_iv_lc(BigDecimal r87_qua_iv_lc) {
+			this.r87_qua_iv_lc = r87_qua_iv_lc;
+		}
+
+		public BigDecimal getR87_qua_iv_qar() {
+			return r87_qua_iv_qar;
+		}
+
+		public void setR87_qua_iv_qar(BigDecimal r87_qua_iv_qar) {
+			this.r87_qua_iv_qar = r87_qua_iv_qar;
+		}
+
+		public BigDecimal getR87_qua_iv_inr() {
+			return r87_qua_iv_inr;
+		}
+
+		public void setR87_qua_iv_inr(BigDecimal r87_qua_iv_inr) {
+			this.r87_qua_iv_inr = r87_qua_iv_inr;
+		}
+
+		public BigDecimal getR87_cumm_inr() {
+			return r87_cumm_inr;
+		}
+
+		public void setR87_cumm_inr(BigDecimal r87_cumm_inr) {
+			this.r87_cumm_inr = r87_cumm_inr;
+		}
+
+		public BigDecimal getR87_cumm_bwp() {
+			return r87_cumm_bwp;
+		}
+
+		public void setR87_cumm_bwp(BigDecimal r87_cumm_bwp) {
+			this.r87_cumm_bwp = r87_cumm_bwp;
+		}
+
+		public String getR88_product() {
+			return r88_product;
+		}
+
+		public void setR88_product(String r88_product) {
+			this.r88_product = r88_product;
+		}
+
+		public BigDecimal getR88_qua_i_lc() {
+			return r88_qua_i_lc;
+		}
+
+		public void setR88_qua_i_lc(BigDecimal r88_qua_i_lc) {
+			this.r88_qua_i_lc = r88_qua_i_lc;
+		}
+
+		public BigDecimal getR88_qua_i_qar() {
+			return r88_qua_i_qar;
+		}
+
+		public void setR88_qua_i_qar(BigDecimal r88_qua_i_qar) {
+			this.r88_qua_i_qar = r88_qua_i_qar;
+		}
+
+		public BigDecimal getR88_qua_i_inr() {
+			return r88_qua_i_inr;
+		}
+
+		public void setR88_qua_i_inr(BigDecimal r88_qua_i_inr) {
+			this.r88_qua_i_inr = r88_qua_i_inr;
+		}
+
+		public BigDecimal getR88_qua_ii_lc() {
+			return r88_qua_ii_lc;
+		}
+
+		public void setR88_qua_ii_lc(BigDecimal r88_qua_ii_lc) {
+			this.r88_qua_ii_lc = r88_qua_ii_lc;
+		}
+
+		public BigDecimal getR88_qua_ii_qar() {
+			return r88_qua_ii_qar;
+		}
+
+		public void setR88_qua_ii_qar(BigDecimal r88_qua_ii_qar) {
+			this.r88_qua_ii_qar = r88_qua_ii_qar;
+		}
+
+		public BigDecimal getR88_qua_ii_inr() {
+			return r88_qua_ii_inr;
+		}
+
+		public void setR88_qua_ii_inr(BigDecimal r88_qua_ii_inr) {
+			this.r88_qua_ii_inr = r88_qua_ii_inr;
+		}
+
+		public BigDecimal getR88_qua_iii_lc() {
+			return r88_qua_iii_lc;
+		}
+
+		public void setR88_qua_iii_lc(BigDecimal r88_qua_iii_lc) {
+			this.r88_qua_iii_lc = r88_qua_iii_lc;
+		}
+
+		public BigDecimal getR88_qua_iii_qar() {
+			return r88_qua_iii_qar;
+		}
+
+		public void setR88_qua_iii_qar(BigDecimal r88_qua_iii_qar) {
+			this.r88_qua_iii_qar = r88_qua_iii_qar;
+		}
+
+		public BigDecimal getR88_qua_iii_inr() {
+			return r88_qua_iii_inr;
+		}
+
+		public void setR88_qua_iii_inr(BigDecimal r88_qua_iii_inr) {
+			this.r88_qua_iii_inr = r88_qua_iii_inr;
+		}
+
+		public BigDecimal getR88_qua_iv_lc() {
+			return r88_qua_iv_lc;
+		}
+
+		public void setR88_qua_iv_lc(BigDecimal r88_qua_iv_lc) {
+			this.r88_qua_iv_lc = r88_qua_iv_lc;
+		}
+
+		public BigDecimal getR88_qua_iv_qar() {
+			return r88_qua_iv_qar;
+		}
+
+		public void setR88_qua_iv_qar(BigDecimal r88_qua_iv_qar) {
+			this.r88_qua_iv_qar = r88_qua_iv_qar;
+		}
+
+		public BigDecimal getR88_qua_iv_inr() {
+			return r88_qua_iv_inr;
+		}
+
+		public void setR88_qua_iv_inr(BigDecimal r88_qua_iv_inr) {
+			this.r88_qua_iv_inr = r88_qua_iv_inr;
+		}
+
+		public BigDecimal getR88_cumm_inr() {
+			return r88_cumm_inr;
+		}
+
+		public void setR88_cumm_inr(BigDecimal r88_cumm_inr) {
+			this.r88_cumm_inr = r88_cumm_inr;
+		}
+
+		public BigDecimal getR88_cumm_bwp() {
+			return r88_cumm_bwp;
+		}
+
+		public void setR88_cumm_bwp(BigDecimal r88_cumm_bwp) {
+			this.r88_cumm_bwp = r88_cumm_bwp;
+		}
+
+		public String getR89_product() {
+			return r89_product;
+		}
+
+		public void setR89_product(String r89_product) {
+			this.r89_product = r89_product;
+		}
+
+		public BigDecimal getR89_qua_i_lc() {
+			return r89_qua_i_lc;
+		}
+
+		public void setR89_qua_i_lc(BigDecimal r89_qua_i_lc) {
+			this.r89_qua_i_lc = r89_qua_i_lc;
+		}
+
+		public BigDecimal getR89_qua_i_qar() {
+			return r89_qua_i_qar;
+		}
+
+		public void setR89_qua_i_qar(BigDecimal r89_qua_i_qar) {
+			this.r89_qua_i_qar = r89_qua_i_qar;
+		}
+
+		public BigDecimal getR89_qua_i_inr() {
+			return r89_qua_i_inr;
+		}
+
+		public void setR89_qua_i_inr(BigDecimal r89_qua_i_inr) {
+			this.r89_qua_i_inr = r89_qua_i_inr;
+		}
+
+		public BigDecimal getR89_qua_ii_lc() {
+			return r89_qua_ii_lc;
+		}
+
+		public void setR89_qua_ii_lc(BigDecimal r89_qua_ii_lc) {
+			this.r89_qua_ii_lc = r89_qua_ii_lc;
+		}
+
+		public BigDecimal getR89_qua_ii_qar() {
+			return r89_qua_ii_qar;
+		}
+
+		public void setR89_qua_ii_qar(BigDecimal r89_qua_ii_qar) {
+			this.r89_qua_ii_qar = r89_qua_ii_qar;
+		}
+
+		public BigDecimal getR89_qua_ii_inr() {
+			return r89_qua_ii_inr;
+		}
+
+		public void setR89_qua_ii_inr(BigDecimal r89_qua_ii_inr) {
+			this.r89_qua_ii_inr = r89_qua_ii_inr;
+		}
+
+		public BigDecimal getR89_qua_iii_lc() {
+			return r89_qua_iii_lc;
+		}
+
+		public void setR89_qua_iii_lc(BigDecimal r89_qua_iii_lc) {
+			this.r89_qua_iii_lc = r89_qua_iii_lc;
+		}
+
+		public BigDecimal getR89_qua_iii_qar() {
+			return r89_qua_iii_qar;
+		}
+
+		public void setR89_qua_iii_qar(BigDecimal r89_qua_iii_qar) {
+			this.r89_qua_iii_qar = r89_qua_iii_qar;
+		}
+
+		public BigDecimal getR89_qua_iii_inr() {
+			return r89_qua_iii_inr;
+		}
+
+		public void setR89_qua_iii_inr(BigDecimal r89_qua_iii_inr) {
+			this.r89_qua_iii_inr = r89_qua_iii_inr;
+		}
+
+		public BigDecimal getR89_qua_iv_lc() {
+			return r89_qua_iv_lc;
+		}
+
+		public void setR89_qua_iv_lc(BigDecimal r89_qua_iv_lc) {
+			this.r89_qua_iv_lc = r89_qua_iv_lc;
+		}
+
+		public BigDecimal getR89_qua_iv_qar() {
+			return r89_qua_iv_qar;
+		}
+
+		public void setR89_qua_iv_qar(BigDecimal r89_qua_iv_qar) {
+			this.r89_qua_iv_qar = r89_qua_iv_qar;
+		}
+
+		public BigDecimal getR89_qua_iv_inr() {
+			return r89_qua_iv_inr;
+		}
+
+		public void setR89_qua_iv_inr(BigDecimal r89_qua_iv_inr) {
+			this.r89_qua_iv_inr = r89_qua_iv_inr;
+		}
+
+		public BigDecimal getR89_cumm_inr() {
+			return r89_cumm_inr;
+		}
+
+		public void setR89_cumm_inr(BigDecimal r89_cumm_inr) {
+			this.r89_cumm_inr = r89_cumm_inr;
+		}
+
+		public BigDecimal getR89_cumm_bwp() {
+			return r89_cumm_bwp;
+		}
+
+		public void setR89_cumm_bwp(BigDecimal r89_cumm_bwp) {
+			this.r89_cumm_bwp = r89_cumm_bwp;
+		}
+
+		public String getR90_product() {
+			return r90_product;
+		}
+
+		public void setR90_product(String r90_product) {
+			this.r90_product = r90_product;
+		}
+
+		public BigDecimal getR90_qua_i_lc() {
+			return r90_qua_i_lc;
+		}
+
+		public void setR90_qua_i_lc(BigDecimal r90_qua_i_lc) {
+			this.r90_qua_i_lc = r90_qua_i_lc;
+		}
+
+		public BigDecimal getR90_qua_i_qar() {
+			return r90_qua_i_qar;
+		}
+
+		public void setR90_qua_i_qar(BigDecimal r90_qua_i_qar) {
+			this.r90_qua_i_qar = r90_qua_i_qar;
+		}
+
+		public BigDecimal getR90_qua_i_inr() {
+			return r90_qua_i_inr;
+		}
+
+		public void setR90_qua_i_inr(BigDecimal r90_qua_i_inr) {
+			this.r90_qua_i_inr = r90_qua_i_inr;
+		}
+
+		public BigDecimal getR90_qua_ii_lc() {
+			return r90_qua_ii_lc;
+		}
+
+		public void setR90_qua_ii_lc(BigDecimal r90_qua_ii_lc) {
+			this.r90_qua_ii_lc = r90_qua_ii_lc;
+		}
+
+		public BigDecimal getR90_qua_ii_qar() {
+			return r90_qua_ii_qar;
+		}
+
+		public void setR90_qua_ii_qar(BigDecimal r90_qua_ii_qar) {
+			this.r90_qua_ii_qar = r90_qua_ii_qar;
+		}
+
+		public BigDecimal getR90_qua_ii_inr() {
+			return r90_qua_ii_inr;
+		}
+
+		public void setR90_qua_ii_inr(BigDecimal r90_qua_ii_inr) {
+			this.r90_qua_ii_inr = r90_qua_ii_inr;
+		}
+
+		public BigDecimal getR90_qua_iii_lc() {
+			return r90_qua_iii_lc;
+		}
+
+		public void setR90_qua_iii_lc(BigDecimal r90_qua_iii_lc) {
+			this.r90_qua_iii_lc = r90_qua_iii_lc;
+		}
+
+		public BigDecimal getR90_qua_iii_qar() {
+			return r90_qua_iii_qar;
+		}
+
+		public void setR90_qua_iii_qar(BigDecimal r90_qua_iii_qar) {
+			this.r90_qua_iii_qar = r90_qua_iii_qar;
+		}
+
+		public BigDecimal getR90_qua_iii_inr() {
+			return r90_qua_iii_inr;
+		}
+
+		public void setR90_qua_iii_inr(BigDecimal r90_qua_iii_inr) {
+			this.r90_qua_iii_inr = r90_qua_iii_inr;
+		}
+
+		public BigDecimal getR90_qua_iv_lc() {
+			return r90_qua_iv_lc;
+		}
+
+		public void setR90_qua_iv_lc(BigDecimal r90_qua_iv_lc) {
+			this.r90_qua_iv_lc = r90_qua_iv_lc;
+		}
+
+		public BigDecimal getR90_qua_iv_qar() {
+			return r90_qua_iv_qar;
+		}
+
+		public void setR90_qua_iv_qar(BigDecimal r90_qua_iv_qar) {
+			this.r90_qua_iv_qar = r90_qua_iv_qar;
+		}
+
+		public BigDecimal getR90_qua_iv_inr() {
+			return r90_qua_iv_inr;
+		}
+
+		public void setR90_qua_iv_inr(BigDecimal r90_qua_iv_inr) {
+			this.r90_qua_iv_inr = r90_qua_iv_inr;
+		}
+
+		public BigDecimal getR90_cumm_inr() {
+			return r90_cumm_inr;
+		}
+
+		public void setR90_cumm_inr(BigDecimal r90_cumm_inr) {
+			this.r90_cumm_inr = r90_cumm_inr;
+		}
+
+		public BigDecimal getR90_cumm_bwp() {
+			return r90_cumm_bwp;
+		}
+
+		public void setR90_cumm_bwp(BigDecimal r90_cumm_bwp) {
+			this.r90_cumm_bwp = r90_cumm_bwp;
+		}
+
+		public String getR91_product() {
+			return r91_product;
+		}
+
+		public void setR91_product(String r91_product) {
+			this.r91_product = r91_product;
+		}
+
+		public BigDecimal getR91_qua_i_lc() {
+			return r91_qua_i_lc;
+		}
+
+		public void setR91_qua_i_lc(BigDecimal r91_qua_i_lc) {
+			this.r91_qua_i_lc = r91_qua_i_lc;
+		}
+
+		public BigDecimal getR91_qua_i_qar() {
+			return r91_qua_i_qar;
+		}
+
+		public void setR91_qua_i_qar(BigDecimal r91_qua_i_qar) {
+			this.r91_qua_i_qar = r91_qua_i_qar;
+		}
+
+		public BigDecimal getR91_qua_i_inr() {
+			return r91_qua_i_inr;
+		}
+
+		public void setR91_qua_i_inr(BigDecimal r91_qua_i_inr) {
+			this.r91_qua_i_inr = r91_qua_i_inr;
+		}
+
+		public BigDecimal getR91_qua_ii_lc() {
+			return r91_qua_ii_lc;
+		}
+
+		public void setR91_qua_ii_lc(BigDecimal r91_qua_ii_lc) {
+			this.r91_qua_ii_lc = r91_qua_ii_lc;
+		}
+
+		public BigDecimal getR91_qua_ii_qar() {
+			return r91_qua_ii_qar;
+		}
+
+		public void setR91_qua_ii_qar(BigDecimal r91_qua_ii_qar) {
+			this.r91_qua_ii_qar = r91_qua_ii_qar;
+		}
+
+		public BigDecimal getR91_qua_ii_inr() {
+			return r91_qua_ii_inr;
+		}
+
+		public void setR91_qua_ii_inr(BigDecimal r91_qua_ii_inr) {
+			this.r91_qua_ii_inr = r91_qua_ii_inr;
+		}
+
+		public BigDecimal getR91_qua_iii_lc() {
+			return r91_qua_iii_lc;
+		}
+
+		public void setR91_qua_iii_lc(BigDecimal r91_qua_iii_lc) {
+			this.r91_qua_iii_lc = r91_qua_iii_lc;
+		}
+
+		public BigDecimal getR91_qua_iii_qar() {
+			return r91_qua_iii_qar;
+		}
+
+		public void setR91_qua_iii_qar(BigDecimal r91_qua_iii_qar) {
+			this.r91_qua_iii_qar = r91_qua_iii_qar;
+		}
+
+		public BigDecimal getR91_qua_iii_inr() {
+			return r91_qua_iii_inr;
+		}
+
+		public void setR91_qua_iii_inr(BigDecimal r91_qua_iii_inr) {
+			this.r91_qua_iii_inr = r91_qua_iii_inr;
+		}
+
+		public BigDecimal getR91_qua_iv_lc() {
+			return r91_qua_iv_lc;
+		}
+
+		public void setR91_qua_iv_lc(BigDecimal r91_qua_iv_lc) {
+			this.r91_qua_iv_lc = r91_qua_iv_lc;
+		}
+
+		public BigDecimal getR91_qua_iv_qar() {
+			return r91_qua_iv_qar;
+		}
+
+		public void setR91_qua_iv_qar(BigDecimal r91_qua_iv_qar) {
+			this.r91_qua_iv_qar = r91_qua_iv_qar;
+		}
+
+		public BigDecimal getR91_qua_iv_inr() {
+			return r91_qua_iv_inr;
+		}
+
+		public void setR91_qua_iv_inr(BigDecimal r91_qua_iv_inr) {
+			this.r91_qua_iv_inr = r91_qua_iv_inr;
+		}
+
+		public BigDecimal getR91_cumm_inr() {
+			return r91_cumm_inr;
+		}
+
+		public void setR91_cumm_inr(BigDecimal r91_cumm_inr) {
+			this.r91_cumm_inr = r91_cumm_inr;
+		}
+
+		public BigDecimal getR91_cumm_bwp() {
+			return r91_cumm_bwp;
+		}
+
+		public void setR91_cumm_bwp(BigDecimal r91_cumm_bwp) {
+			this.r91_cumm_bwp = r91_cumm_bwp;
+		}
+
+		public Date getREPORT_DATE() {
+			return REPORT_DATE;
+		}
+
+		public void setREPORT_DATE(Date REPORT_DATE) {
+			this.REPORT_DATE = REPORT_DATE;
+		}
+
+		public BigDecimal getREPORT_VERSION() {
+			return REPORT_VERSION;
+		}
+
+		public void setREPORT_VERSION(BigDecimal rEPORT_VERSION) {
+			REPORT_VERSION = rEPORT_VERSION;
+		}
+
+		public String getREPORT_FREQUENCY() {
+			return REPORT_FREQUENCY;
+		}
+
+		public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+			REPORT_FREQUENCY = rEPORT_FREQUENCY;
+		}
+
+		public String getREPORT_CODE() {
+			return REPORT_CODE;
+		}
+
+		public void setREPORT_CODE(String rEPORT_CODE) {
+			REPORT_CODE = rEPORT_CODE;
+		}
+
+		public String getREPORT_DESC() {
+			return REPORT_DESC;
+		}
+
+		public void setREPORT_DESC(String rEPORT_DESC) {
+			REPORT_DESC = rEPORT_DESC;
+		}
+
+		public String getENTITY_FLG() {
+			return ENTITY_FLG;
+		}
+
+		public void setENTITY_FLG(String eNTITY_FLG) {
+			ENTITY_FLG = eNTITY_FLG;
+		}
+
+		public String getMODIFY_FLG() {
+			return MODIFY_FLG;
+		}
+
+		public void setMODIFY_FLG(String mODIFY_FLG) {
+			MODIFY_FLG = mODIFY_FLG;
+		}
+
+		public String getDEL_FLG() {
+			return DEL_FLG;
+		}
+
+		public void setDEL_FLG(String dEL_FLG) {
+			DEL_FLG = dEL_FLG;
+		}
+
+		public Date getREPORT_RESUBDATE() {
+			return REPORT_RESUBDATE;
+		}
+
+		public void setREPORT_RESUBDATE(Date rEPORT_RESUBDATE) {
+			REPORT_RESUBDATE = rEPORT_RESUBDATE;
+		}
+	}
+// COMPOSITE KEY CLASS INSIDE SERVICE
+
+	public static class AS_11_PK implements Serializable {
+
+		private Date REPORT_DATE;
+		private BigDecimal REPORT_VERSION;
+
+		public AS_11_PK() {
+		}
+
+		public AS_11_PK(Date REPORT_DATE, BigDecimal REPORT_VERSION) {
+			this.REPORT_DATE = REPORT_DATE;
+			this.REPORT_VERSION = REPORT_VERSION;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o)
+				return true;
+			if (!(o instanceof AS_11_PK))
+				return false;
+			AS_11_PK that = (AS_11_PK) o;
+			return Objects.equals(REPORT_DATE, that.REPORT_DATE) && Objects.equals(REPORT_VERSION, that.REPORT_VERSION);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(REPORT_DATE, REPORT_VERSION);
+		}
+
+		public Date getREPORT_DATE() {
+			return REPORT_DATE;
+		}
+
+		public void setREPORT_DATE(Date REPORT_DATE) {
+			this.REPORT_DATE = REPORT_DATE;
+		}
+
+		public BigDecimal getREPORT_VERSION() {
+			return REPORT_VERSION;
+		}
+
+		public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
+			this.REPORT_VERSION = REPORT_VERSION;
+		}
+	}
+
+	public class AS_11_Detail_Entity {
+
+		@Column(name = "CUST_ID")
+		private String custId;
+		@Id
+		@Column(name = "ACCT_NUMBER")
+		private String acctNumber;
+
+		@Column(name = "ACCT_NAME")
+		private String acctName;
+
+		@Column(name = "DATA_TYPE")
+		private String dataType;
+
+		@Column(name = "REPORT_NAME")
+		private String reportName;
+
+		@Column(name = "REPORT_LABEL")
+		private String reportLabel;
+
+		@Column(name = "REPORT_ADDL_CRITERIA_1")
+		private String reportAddlCriteria1;
+
+		@Column(name = "REPORT_REMARKS")
+		private String reportRemarks;
+
+		@Column(name = "MODIFICATION_REMARKS")
+		private String modificationRemarks;
+
+		@Column(name = "DATA_ENTRY_VERSION")
+		private String dataEntryVersion;
+
+		@Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
+		private BigDecimal acctBalanceInpula;
+
+		@Column(name = "AVERAGE", precision = 24, scale = 3)
+		private BigDecimal average;
+
+		@Column(name = "REPORT_DATE")
+		@DateTimeFormat(pattern = "dd-MM-yyyy")
+		private Date reportDate;
+
+		@Column(name = "CREATE_USER")
+		private String createUser;
+
+		@Column(name = "CREATE_TIME")
+		@DateTimeFormat(pattern = "dd-MM-yyyy")
+		private Date createTime;
+
+		@Column(name = "MODIFY_USER")
+		private String modifyUser;
+
+		@Column(name = "MODIFY_TIME")
+		@DateTimeFormat(pattern = "dd-MM-yyyy")
+		private Date modifyTime;
+
+		@Column(name = "VERIFY_USER")
+		private String verifyUser;
+
+		@Column(name = "VERIFY_TIME")
+		@DateTimeFormat(pattern = "dd-MM-yyyy")
+		private Date verifyTime;
+
+		@Column(name = "ENTITY_FLG")
+		private char entityFlg;
+
+		@Column(name = "MODIFY_FLG")
+		private char modifyFlg;
+
+		@Column(name = "DEL_FLG")
+		private char delFlg;
+
+		public String getCustId() {
+			return custId;
+		}
+
+		public void setCustId(String custId) {
+			this.custId = custId;
+		}
+
+		public String getAcctNumber() {
+			return acctNumber;
+		}
+
+		public void setAcctNumber(String acctNumber) {
+			this.acctNumber = acctNumber;
+		}
+
+		public String getAcctName() {
+			return acctName;
+		}
+
+		public void setAcctName(String acctName) {
+			this.acctName = acctName;
+		}
+
+		public String getDataType() {
+			return dataType;
+		}
+
+		public void setDataType(String dataType) {
+			this.dataType = dataType;
+		}
+
+		public String getReportName() {
+			return reportName;
+		}
+
+		public void setReportName(String reportName) {
+			this.reportName = reportName;
+		}
+
+		public String getReportLabel() {
+			return reportLabel;
+		}
+
+		public void setReportLabel(String reportLabel) {
+			this.reportLabel = reportLabel;
+		}
+
+		public String getReportAddlCriteria1() {
+			return reportAddlCriteria1;
+		}
+
+		public void setReportAddlCriteria1(String reportAddlCriteria1) {
+			this.reportAddlCriteria1 = reportAddlCriteria1;
+		}
+
+		public String getReportRemarks() {
+			return reportRemarks;
+		}
+
+		public void setReportRemarks(String reportRemarks) {
+			this.reportRemarks = reportRemarks;
+		}
+
+		public String getModificationRemarks() {
+			return modificationRemarks;
+		}
+
+		public void setModificationRemarks(String modificationRemarks) {
+			this.modificationRemarks = modificationRemarks;
+		}
+
+		public String getDataEntryVersion() {
+			return dataEntryVersion;
+		}
+
+		public void setDataEntryVersion(String dataEntryVersion) {
+			this.dataEntryVersion = dataEntryVersion;
+		}
+
+		public BigDecimal getAcctBalanceInpula() {
+			return acctBalanceInpula;
+		}
+
+		public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
+			this.acctBalanceInpula = acctBalanceInpula;
+		}
+
+		public Date getReportDate() {
+			return reportDate;
+		}
+
+		public void setReportDate(Date reportDate) {
+			this.reportDate = reportDate;
+		}
+
+		public String getCreateUser() {
+			return createUser;
+		}
+
+		public void setCreateUser(String createUser) {
+			this.createUser = createUser;
+		}
+
+		public Date getCreateTime() {
+			return createTime;
+		}
+
+		public void setCreateTime(Date createTime) {
+			this.createTime = createTime;
+		}
+
+		public String getModifyUser() {
+			return modifyUser;
+		}
+
+		public void setModifyUser(String modifyUser) {
+			this.modifyUser = modifyUser;
+		}
+
+		public Date getModifyTime() {
+			return modifyTime;
+		}
+
+		public void setModifyTime(Date modifyTime) {
+			this.modifyTime = modifyTime;
+		}
+
+		public String getVerifyUser() {
+			return verifyUser;
+		}
+
+		public void setVerifyUser(String verifyUser) {
+			this.verifyUser = verifyUser;
+		}
+
+		public Date getVerifyTime() {
+			return verifyTime;
+		}
+
+		public void setVerifyTime(Date verifyTime) {
+			this.verifyTime = verifyTime;
+		}
+
+		public char getEntityFlg() {
+			return entityFlg;
+		}
+
+		public void setEntityFlg(char entityFlg) {
+			this.entityFlg = entityFlg;
+		}
+
+		public char getModifyFlg() {
+			return modifyFlg;
+		}
+
+		public void setModifyFlg(char modifyFlg) {
+			this.modifyFlg = modifyFlg;
+		}
+
+		public char getDelFlg() {
+			return delFlg;
+		}
+
+		public void setDelFlg(char delFlg) {
+			this.delFlg = delFlg;
+		}
+
+		public BigDecimal getAverage() {
+			return average;
+		}
+
+		public void setAverage(BigDecimal average) {
+			this.average = average;
+		}
+	}
+
+	class AS_11DetailRowMapper implements RowMapper<AS_11_Detail_Entity> {
+
+		@Override
+		public AS_11_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+			AS_11_Detail_Entity obj = new AS_11_Detail_Entity();
+
+			obj.setCustId(rs.getString("CUST_ID"));
+			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
+			obj.setAcctName(rs.getString("ACCT_NAME"));
+			obj.setDataType(rs.getString("DATA_TYPE"));
+			obj.setReportName(rs.getString("REPORT_NAME"));
+			obj.setReportLabel(rs.getString("REPORT_LABEL"));
+			obj.setReportAddlCriteria1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+			obj.setReportRemarks(rs.getString("REPORT_REMARKS"));
+			obj.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
+			obj.setDataEntryVersion(rs.getString("DATA_ENTRY_VERSION"));
+			obj.setAcctBalanceInpula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+			obj.setAverage(rs.getBigDecimal("AVERAGE"));
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setCreateUser(rs.getString("CREATE_USER"));
+			obj.setCreateTime(rs.getDate("CREATE_TIME"));
+			obj.setModifyUser(rs.getString("MODIFY_USER"));
+			obj.setModifyTime(rs.getDate("MODIFY_TIME"));
+			obj.setVerifyUser(rs.getString("VERIFY_USER"));
+			obj.setVerifyTime(rs.getDate("VERIFY_TIME"));
+			obj.setEntityFlg(rs.getString("ENTITY_FLG") != null ? rs.getString("ENTITY_FLG").charAt(0) : ' ');
+
+			obj.setModifyFlg(rs.getString("MODIFY_FLG") != null ? rs.getString("MODIFY_FLG").charAt(0) : ' ');
+
+			obj.setDelFlg(rs.getString("DEL_FLG") != null ? rs.getString("DEL_FLG").charAt(0) : ' ');
+
+			return obj;
+		}
+	}
+
+	class AS_11ArchivalDetailRowMapper implements RowMapper<AS_11_Archival_Detail_Entity> {
+
+		@Override
+		public AS_11_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+			AS_11_Archival_Detail_Entity obj = new AS_11_Archival_Detail_Entity();
+
+			obj.setCustId(rs.getString("CUST_ID"));
+			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
+			obj.setAcctName(rs.getString("ACCT_NAME"));
+			obj.setDataType(rs.getString("DATA_TYPE"));
+			obj.setReportName(rs.getString("REPORT_NAME"));
+			obj.setReportLabel(rs.getString("REPORT_LABEL"));
+			obj.setReportAddlCriteria1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+			obj.setReportRemarks(rs.getString("REPORT_REMARKS"));
+			obj.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
+			obj.setDataEntryVersion(rs.getString("DATA_ENTRY_VERSION"));
+			obj.setAcctBalanceInpula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+			obj.setAverage(rs.getBigDecimal("AVERAGE"));
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setCreateUser(rs.getString("CREATE_USER"));
+			obj.setCreateTime(rs.getDate("CREATE_TIME"));
+			obj.setModifyUser(rs.getString("MODIFY_USER"));
+			obj.setModifyTime(rs.getDate("MODIFY_TIME"));
+			obj.setVerifyUser(rs.getString("VERIFY_USER"));
+			obj.setVerifyTime(rs.getDate("VERIFY_TIME"));
+			obj.setEntityFlg(rs.getString("ENTITY_FLG") != null ? rs.getString("ENTITY_FLG").charAt(0) : ' ');
+
+			obj.setModifyFlg(rs.getString("MODIFY_FLG") != null ? rs.getString("MODIFY_FLG").charAt(0) : ' ');
+
+			obj.setDelFlg(rs.getString("DEL_FLG") != null ? rs.getString("DEL_FLG").charAt(0) : ' ');
+
+			return obj;
+		}
+	}
+
+	public class AS_11_Archival_Detail_Entity {
+
+		@Column(name = "CUST_ID")
+		private String custId;
+		@Id
+		@Column(name = "ACCT_NUMBER")
+		private String acctNumber;
+
+		@Column(name = "ACCT_NAME")
+		private String acctName;
+
+		@Column(name = "DATA_TYPE")
+		private String dataType;
+
+		@Column(name = "REPORT_NAME")
+		private String reportName;
+
+		@Column(name = "REPORT_LABEL")
+		private String reportLabel;
+
+		@Column(name = "REPORT_ADDL_CRITERIA_1")
+		private String reportAddlCriteria1;
+
+		@Column(name = "REPORT_REMARKS")
+		private String reportRemarks;
+
+		@Column(name = "MODIFICATION_REMARKS")
+		private String modificationRemarks;
+
+		@Column(name = "DATA_ENTRY_VERSION")
+		private String dataEntryVersion;
+
+		@Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
+		private BigDecimal acctBalanceInpula;
+
+		@Column(name = "AVERAGE", precision = 24, scale = 3)
+		private BigDecimal average;
+
+		@Column(name = "REPORT_DATE")
+		@DateTimeFormat(pattern = "dd-MM-yyyy")
+		private Date reportDate;
+
+		@Column(name = "CREATE_USER")
+		private String createUser;
+
+		@Column(name = "CREATE_TIME")
+		@DateTimeFormat(pattern = "dd-MM-yyyy")
+		private Date createTime;
+
+		@Column(name = "MODIFY_USER")
+		private String modifyUser;
+
+		@Column(name = "MODIFY_TIME")
+		@DateTimeFormat(pattern = "dd-MM-yyyy")
+		private Date modifyTime;
+
+		@Column(name = "VERIFY_USER")
+		private String verifyUser;
+
+		@Column(name = "VERIFY_TIME")
+		@DateTimeFormat(pattern = "dd-MM-yyyy")
+		private Date verifyTime;
+
+		@Column(name = "ENTITY_FLG")
+		private char entityFlg;
+
+		@Column(name = "MODIFY_FLG")
+		private char modifyFlg;
+
+		@Column(name = "DEL_FLG")
+		private char delFlg;
+
+		public String getCustId() {
+			return custId;
+		}
+
+		public void setCustId(String custId) {
+			this.custId = custId;
+		}
+
+		public String getAcctNumber() {
+			return acctNumber;
+		}
+
+		public void setAcctNumber(String acctNumber) {
+			this.acctNumber = acctNumber;
+		}
+
+		public String getAcctName() {
+			return acctName;
+		}
+
+		public void setAcctName(String acctName) {
+			this.acctName = acctName;
+		}
+
+		public String getDataType() {
+			return dataType;
+		}
+
+		public void setDataType(String dataType) {
+			this.dataType = dataType;
+		}
+
+		public String getReportName() {
+			return reportName;
+		}
+
+		public void setReportName(String reportName) {
+			this.reportName = reportName;
+		}
+
+		public String getReportLabel() {
+			return reportLabel;
+		}
+
+		public void setReportLabel(String reportLabel) {
+			this.reportLabel = reportLabel;
+		}
+
+		public String getReportAddlCriteria1() {
+			return reportAddlCriteria1;
+		}
+
+		public void setReportAddlCriteria1(String reportAddlCriteria1) {
+			this.reportAddlCriteria1 = reportAddlCriteria1;
+		}
+
+		public String getReportRemarks() {
+			return reportRemarks;
+		}
+
+		public void setReportRemarks(String reportRemarks) {
+			this.reportRemarks = reportRemarks;
+		}
+
+		public String getModificationRemarks() {
+			return modificationRemarks;
+		}
+
+		public void setModificationRemarks(String modificationRemarks) {
+			this.modificationRemarks = modificationRemarks;
+		}
+
+		public String getDataEntryVersion() {
+			return dataEntryVersion;
+		}
+
+		public void setDataEntryVersion(String dataEntryVersion) {
+			this.dataEntryVersion = dataEntryVersion;
+		}
+
+		public BigDecimal getAcctBalanceInpula() {
+			return acctBalanceInpula;
+		}
+
+		public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
+			this.acctBalanceInpula = acctBalanceInpula;
+		}
+
+		public Date getReportDate() {
+			return reportDate;
+		}
+
+		public void setReportDate(Date reportDate) {
+			this.reportDate = reportDate;
+		}
+
+		public String getCreateUser() {
+			return createUser;
+		}
+
+		public void setCreateUser(String createUser) {
+			this.createUser = createUser;
+		}
+
+		public Date getCreateTime() {
+			return createTime;
+		}
+
+		public void setCreateTime(Date createTime) {
+			this.createTime = createTime;
+		}
+
+		public String getModifyUser() {
+			return modifyUser;
+		}
+
+		public void setModifyUser(String modifyUser) {
+			this.modifyUser = modifyUser;
+		}
+
+		public Date getModifyTime() {
+			return modifyTime;
+		}
+
+		public void setModifyTime(Date modifyTime) {
+			this.modifyTime = modifyTime;
+		}
+
+		public String getVerifyUser() {
+			return verifyUser;
+		}
+
+		public void setVerifyUser(String verifyUser) {
+			this.verifyUser = verifyUser;
+		}
+
+		public Date getVerifyTime() {
+			return verifyTime;
+		}
+
+		public void setVerifyTime(Date verifyTime) {
+			this.verifyTime = verifyTime;
+		}
+
+		public char getEntityFlg() {
+			return entityFlg;
+		}
+
+		public void setEntityFlg(char entityFlg) {
+			this.entityFlg = entityFlg;
+		}
+
+		public char getModifyFlg() {
+			return modifyFlg;
+		}
+
+		public void setModifyFlg(char modifyFlg) {
+			this.modifyFlg = modifyFlg;
+		}
+
+		public char getDelFlg() {
+			return delFlg;
+		}
+
+		public void setDelFlg(char delFlg) {
+			this.delFlg = delFlg;
+		}
+
+		public BigDecimal getAverage() {
+			return average;
+		}
+
+		public void setAverage(BigDecimal average) {
+			this.average = average;
+		}
+	}
+
+	// MODEL AND VIEW METHOD summary
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getAS_11View(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, BigDecimal version) {
+	public ModelAndView getAS_11View(
+
+			String reportId, String fromdate, String todate, String currency, String dtltype, Pageable pageable,
+			String type, BigDecimal version) {
 
 		ModelAndView mv = new ModelAndView();
-		Session hs = sessionFactory.getCurrentSession();
 
-		int pageSize = pageable.getPageSize();
-		int currentPage = pageable.getPageNumber();
-		int startItem = currentPage * pageSize;
+		System.out.println("AS_11 View Called");
+		System.out.println("Type = " + type);
+		System.out.println("Version = " + version);
 
-		try {
-			Date d1 = dateformat.parse(todate);
+		// =====================================================
+		// ARCHIVAL MODE
+		// =====================================================
 
-			// ---------- CASE 1: ARCHIVAL ----------
-			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
-				List<AS_11_Archival_Summary_Entity1> T1Master = AS_11_Archival_Summary_Repo1
-						.getdatabydateListarchival(d1, version);
-				List<AS_11_Archival_Summary_Entity2> T2Master = AS_11_Archival_Summary_Repo2
-						.getdatabydateListarchival(d1, version);
+		if ("ARCHIVAL".equals(type) && version != null) {
 
-				mv.addObject("reportsummary", T1Master);
-				mv.addObject("reportsummary1", T2Master);
+			List<AS_11_Archival_Summary_Entity1> T1Master = new ArrayList<>();
+			List<AS_11_Archival_Summary_Entity2> T2Master = new ArrayList<>();
 
-				System.out.println("T1Master Size " + T1Master.size());
-				System.out.println("T2Master Size " + T2Master.size());
+			try {
+				Date dt = dateformat.parse(todate);
 
+				// ============================
+				// SUMMARY ARCHIVAL
+				// ============================
+				T1Master = getdatabydateListarchival1(dt, version);
+
+				System.out.println("Archival Summary size = " + T1Master.size());
+
+				T2Master = getdatabydateListarchival2(dt, version);
+
+				System.out.println("Archival Summary size = " + T2Master.size());
+
+				mv.addObject("report_date", dateformat.format(dt));
+
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 
-			// ---------- CASE 3: NORMAL ----------
-			else {
-				List<AS_11_Summary_Entity1> T1Master = AS_11_summary_repo1.getdatabydateList(dateformat.parse(todate));
-				List<AS_11_Summary_Entity2> T2Master = AS_11_summary_repo2.getdatabydateList(dateformat.parse(todate));
+			mv.addObject("reportsummary1", T1Master);
+			mv.addObject("reportsummary2", T2Master);
 
-				mv.addObject("reportsummary", T1Master);
-				mv.addObject("reportsummary1", T2Master);
-
-				System.out.println("T1Master Size " + T1Master.size());
-				System.out.println("T2Master Size " + T2Master.size());
-			}
-
-		} catch (ParseException e) {
-			e.printStackTrace();
 		}
+		// =====================================================
+		// NORMAL MODE
+		// =====================================================
+
+		else {
+
+			List<AS_11_Summary_Entity1> T1Master = new ArrayList<>();
+			List<AS_11_Summary_Entity2> T2Master = new ArrayList<>();
+
+			try {
+				Date dt = dateformat.parse(todate);
+
+				// SUMMARY NORMAL
+				T1Master = getDataByDate1(dt);
+
+				System.out.println("Summary size = " + T1Master.size());
+
+				T2Master = getDataByDate2(dt);
+
+				System.out.println("Summary size = " + T2Master.size());
+
+				mv.addObject("report_date", dateformat.format(dt));
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			mv.addObject("reportsummary1", T1Master);
+			mv.addObject("reportsummary2", T2Master);
+
+		}
+
+		// =====================================================
+		// VIEW SETTINGS
+		// =====================================================
 
 		mv.setViewName("BRRS/AS_11");
 		mv.addObject("displaymode", "summary");
-		System.out.println("View set to: " + mv.getViewName());
+
+		System.out.println("View Loaded: " + mv.getViewName());
+
 		return mv;
 	}
+
+	// =========================
+// MODEL AND VIEW METHOD detail
+//=========================
 
 	public ModelAndView getAS_11currentDtl(String reportId, String fromdate, String todate, String currency,
 			String dtltype, Pageable pageable, String filter, String type, String version) {
 
-		int pageSize = pageable != null ? pageable.getPageSize() : 10;
-		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
-		int totalPages = 0;
-
 		ModelAndView mv = new ModelAndView();
 
-		// Session hs = sessionFactory.getCurrentSession();
-
 		try {
+
 			Date parsedDate = null;
 
 			if (todate != null && !todate.isEmpty()) {
@@ -163,7 +24282,7 @@ public class BRRS_AS_11_ReportService {
 
 			String reportLabel = null;
 			String reportAddlCriteria1 = null;
-			// ? Split filter string into rowId & columnId
+
 			if (filter != null && filter.contains(",")) {
 				String[] parts = filter.split(",");
 				if (parts.length >= 2) {
@@ -172,77 +24291,513 @@ public class BRRS_AS_11_ReportService {
 				}
 			}
 
-			System.out.println(type);
+			// ARCHIVAL MODE
+
 			if ("ARCHIVAL".equals(type) && version != null) {
-				System.out.println(type);
-				// ?? Archival branch
-				List<AS_11_Archival_Detail_Entity> T1Dt1;
-				if (reportLabel != null && reportAddlCriteria1 != null) {
-					T1Dt1 = AS_11_Archival_Detail_Repo.GetDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1,
-							parsedDate, version);
-				} else {
-					T1Dt1 = AS_11_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
-				}
 
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+				System.out.println("ARCHIVAL DETAIL MODE");
 
-			} else {
-				// ?? Current branch
-				List<AS_11_Detail_Entity> T1Dt1;
+				List<AS_11_Archival_Detail_Entity> archivalDetailList;
 
 				if (reportLabel != null && reportAddlCriteria1 != null) {
-					T1Dt1 = AS_11_detail_repo.GetDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1, parsedDate);
-				} else {
-					T1Dt1 = AS_11_detail_repo.getdatabydateList(parsedDate);
-					totalPages = AS_11_detail_repo.getdatacount(parsedDate);
-					mv.addObject("pagination", "YES");
 
+					archivalDetailList = GetArchivalDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1, parsedDate,
+							version);
+
+				} else {
+
+					archivalDetailList = getArchivalDetaildatabydateList(parsedDate, version);
 				}
 
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
+				mv.addObject("reportdetails", archivalDetailList);
+				mv.addObject("reportmaster12", archivalDetailList);
 
-				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+				System.out.println("ARCHIVAL DETAIL COUNT: " + archivalDetailList.size());
+
 			}
-		} catch (ParseException e) {
-			e.printStackTrace();
-			mv.addObject("errorMessage", "Invalid date format: " + todate);
+
+			// CURRENT MODE
+
+			else {
+
+				List<AS_11_Detail_Entity> currentDetailList;
+
+				if (reportLabel != null && reportAddlCriteria1 != null) {
+
+					currentDetailList = GetDetailDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1, parsedDate);
+
+				} else {
+
+					currentDetailList = getDetaildatabydateList(parsedDate);
+
+				}
+
+				mv.addObject("reportdetails", currentDetailList);
+				mv.addObject("reportmaster12", currentDetailList);
+
+				System.out.println("CURRENT DETAIL COUNT: " + currentDetailList.size());
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
-			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
+			mv.addObject("errorMessage", e.getMessage());
 		}
 
 		mv.setViewName("BRRS/AS_11");
 		mv.addObject("displaymode", "Details");
-		mv.addObject("currentPage", currentPage);
-		System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
-		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
-		mv.addObject("reportsflag", "reportsflag");
 		mv.addObject("menu", reportId);
+		mv.addObject("currency", currency);
+		mv.addObject("reportId", reportId);
+
 		return mv;
+	}
+
+//Archival View
+	public List<Object[]> getAS_11Archival() {
+		List<Object[]> archivalList = new ArrayList<>();
+
+		try {
+
+			List<AS_11_Archival_Summary_Entity1> repoData = getdatabydateListWithVersion1();
+
+			if (repoData != null && !repoData.isEmpty()) {
+				for (AS_11_Archival_Summary_Entity1 entity : repoData) {
+					Object[] row = new Object[] { entity.getREPORT_DATE(), entity.getREPORT_VERSION(),
+							entity.getREPORT_RESUBDATE() };
+					archivalList.add(row);
+				}
+
+				System.out.println("Fetched " + archivalList.size() + " archival records");
+				AS_11_Archival_Summary_Entity1 first = repoData.get(0);
+				System.out.println("Latest archival version: " + first.getREPORT_VERSION());
+			} else {
+				System.out.println("No archival data found.");
+			}
+
+		} catch (Exception e) {
+			System.err.println("Error fetching  AS_11  Archival data: " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		return archivalList;
+	}
+
+	public ModelAndView getViewOrEditPage(String acct_number, String formMode) {
+		ModelAndView mv = new ModelAndView("BRRS/AS_11");
+
+		if (acct_number != null) {
+			AS_11_Detail_Entity AS_11Entity = findByAcctnumber(acct_number);
+			if (AS_11Entity != null && AS_11Entity.getReportDate() != null) {
+				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(AS_11Entity.getReportDate());
+				mv.addObject("asondate", formattedDate);
+			}
+			mv.addObject("AS_11Data", AS_11Entity);
+		}
+
+		mv.addObject("displaymode", "edit");
+		mv.addObject("formmode", formMode != null ? formMode : "edit");
+		return mv;
+	}
+
+	@Transactional
+	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
+
+		try {
+
+			String acctNo = request.getParameter("acctNumber");
+
+			String acctBalanceInpulaStr = request.getParameter("acctBalanceInpula");
+
+			String averageStr = request.getParameter("average");
+
+			String acctName = request.getParameter("acctName");
+
+			String reportDateStr = request.getParameter("reportDate");
+
+			// Existing Record
+			AS_11_Detail_Entity existing = findByAcctnumber(acctNo);
+
+			if (existing == null) {
+
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+			}
+
+			boolean isChanged = false;
+
+			// ACCOUNT NAME
+			if (acctName != null && !acctName.isEmpty()) {
+
+				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
+
+					existing.setAcctName(acctName);
+
+					isChanged = true;
+				}
+			}
+
+			// ACCOUNT BALANCE
+			if (acctBalanceInpulaStr != null && !acctBalanceInpulaStr.isEmpty()) {
+
+				BigDecimal newBalance = new BigDecimal(acctBalanceInpulaStr);
+
+				if (existing.getAcctBalanceInpula() == null
+						|| existing.getAcctBalanceInpula().compareTo(newBalance) != 0) {
+
+					existing.setAcctBalanceInpula(newBalance);
+
+					isChanged = true;
+				}
+			}
+
+			// AVERAGE
+			if (averageStr != null && !averageStr.isEmpty()) {
+
+				BigDecimal newAverage = new BigDecimal(averageStr);
+
+				if (existing.getAverage() == null || existing.getAverage().compareTo(newAverage) != 0) {
+
+					existing.setAverage(newAverage);
+
+					isChanged = true;
+				}
+			}
+
+			// UPDATE
+			if (isChanged) {
+
+				String sql = "UPDATE BRRS_AS_11_DETAILTABLE " + "SET ACCT_NAME = ?, " + "ACCT_BALANCE_IN_PULA = ?, "
+						+ "AVERAGE = ? " + "WHERE ACCT_NUMBER = ?";
+
+				jdbcTemplate.update(sql, existing.getAcctName(), existing.getAcctBalanceInpula(), existing.getAverage(),
+						acctNo);
+
+				System.out.println("Record updated successfully");
+
+				// DATE FORMAT
+				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+
+				// PROCEDURE CALL
+				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+
+					@Override
+					public void afterCommit() {
+
+						try {
+
+							jdbcTemplate.update("BEGIN BRRS_AS_11_SUMMARY_PROCEDURE(?); END;", formattedDate);
+
+							System.out.println("Procedure executed");
+
+						} catch (Exception e) {
+
+							e.printStackTrace();
+						}
+					}
+				});
+
+				return ResponseEntity.ok("Record updated successfully!");
+			}
+
+			else {
+
+				return ResponseEntity.ok("No changes were made.");
+			}
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error updating record: " + e.getMessage());
+		}
+	}
+
+	public byte[] getAS_11DetailExcel(String filename, String fromdate, String todate, String currency, String dtltype,
+			String type, String version) {
+		try {
+			logger.info("Generating Excel for  AS_11 Details...");
+			System.out.println("came to Detail download service");
+
+			if (type.equals("ARCHIVAL") & version != null) {
+				byte[] ARCHIVALreport = getAS_11DetailNewExcelARCHIVAL(filename, fromdate, todate, currency, dtltype,
+						type, version);
+				return ARCHIVALreport;
+			}
+
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			XSSFSheet sheet = workbook.createSheet("AS_11DetailsDetail");
+
+			// Common border style
+			BorderStyle border = BorderStyle.THIN;
+
+			// Header style (left aligned)
+
+			CellStyle headerStyle = workbook.createCellStyle();
+
+			Font headerFont = workbook.createFont();
+			headerFont.setBold(true);
+			headerFont.setFontHeightInPoints((short) 10);
+			headerStyle.setFont(headerFont);
+			headerStyle.setAlignment(HorizontalAlignment.LEFT);
+			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+			headerStyle.setBorderTop(border);
+			headerStyle.setBorderBottom(border);
+			headerStyle.setBorderLeft(border);
+			headerStyle.setBorderRight(border);
+
+			// Right-aligned header style for ACCT BALANCE
+			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
+			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
+			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+			// Default data style (left aligned)
+			CellStyle dataStyle = workbook.createCellStyle();
+			dataStyle.setAlignment(HorizontalAlignment.LEFT);
+			dataStyle.setBorderTop(border);
+			dataStyle.setBorderBottom(border);
+			dataStyle.setBorderLeft(border);
+			dataStyle.setBorderRight(border);
+
+			// ACCT BALANCE style (right aligned with 3 decimals)
+			CellStyle balanceStyle = workbook.createCellStyle();
+			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
+			balanceStyle.setBorderTop(border);
+			balanceStyle.setBorderBottom(border);
+			balanceStyle.setBorderLeft(border);
+			balanceStyle.setBorderRight(border);
+
+			// Header row
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "AVERAGE", "REPORT LABEL",
+					"REPORT ADDL CRITERIA1", "REPORT_DATE" };
+
+			XSSFRow headerRow = sheet.createRow(0);
+			for (int i = 0; i < headers.length; i++) {
+				Cell cell = headerRow.createCell(i);
+				cell.setCellValue(headers[i]);
+
+				if (i == 3 || i == 4) {
+					cell.setCellStyle(rightAlignedHeaderStyle);
+				} else {
+					cell.setCellStyle(headerStyle);
+				}
+
+				sheet.setColumnWidth(i, 5000);
+			}
+
+			// Get data
+			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+			List<AS_11_Detail_Entity> reportData = getDetaildatabydateList(parsedToDate);
+
+			if (reportData != null && !reportData.isEmpty()) {
+				int rowIndex = 1;
+				for (AS_11_Detail_Entity item : reportData) {
+					XSSFRow row = sheet.createRow(rowIndex++);
+
+					row.createCell(0).setCellValue(item.getCustId());
+					row.createCell(1).setCellValue(item.getAcctNumber());
+					row.createCell(2).setCellValue(item.getAcctName());
+
+					// ACCT BALANCE (right aligned, 3 decimal places)
+					Cell balanceCell = row.createCell(3);
+					if (item.getAcctBalanceInpula() != null) {
+						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
+					} else {
+						balanceCell.setCellValue(0);
+					}
+					balanceCell.setCellStyle(balanceStyle);
+
+					// AVERAGE (right aligned, 3 decimal places)
+					Cell balanceCell1 = row.createCell(4);
+					if (item.getAverage() != null) {
+						balanceCell1.setCellValue(item.getAverage().doubleValue());
+					} else {
+						balanceCell1.setCellValue(0);
+					}
+					balanceCell1.setCellStyle(balanceStyle);
+
+					row.createCell(5).setCellValue(item.getReportLabel());
+					row.createCell(6).setCellValue(item.getReportAddlCriteria1());
+					row.createCell(7)
+							.setCellValue(item.getReportDate() != null
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+									: "");
+
+					// Apply data style for all other cells
+					for (int j = 0; j < 8; j++) {
+						if (j != 3 && j != 4) {
+							row.getCell(j).setCellStyle(dataStyle);
+						}
+					}
+				}
+			} else {
+				logger.info("No data found for AS_11 — only header will be written.");
+			}
+
+			// Write to byte[]
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			workbook.write(bos);
+			workbook.close();
+
+			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
+			return bos.toByteArray();
+
+		} catch (Exception e) {
+			logger.error("Error generating AS_11 Excel", e);
+			return new byte[0];
+		}
+	}
+
+	public byte[] getAS_11DetailNewExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
+			String dtltype, String type, String version) {
+		try {
+			logger.info("Generating Excel for AS_11 ARCHIVAL Details...");
+			System.out.println("came to ARCHIVAL Detail download service");
+			if (type.equals("ARCHIVAL") & version != null) {
+
+			}
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			XSSFSheet sheet = workbook.createSheet("AS_11 Detail NEW");
+
+			// Common border style
+			BorderStyle border = BorderStyle.THIN;
+
+			// Header style (left aligned)
+			CellStyle headerStyle = workbook.createCellStyle();
+			Font headerFont = workbook.createFont();
+			headerFont.setBold(true);
+			headerFont.setFontHeightInPoints((short) 10);
+			headerStyle.setFont(headerFont);
+			headerStyle.setAlignment(HorizontalAlignment.LEFT);
+			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+			headerStyle.setBorderTop(border);
+			headerStyle.setBorderBottom(border);
+			headerStyle.setBorderLeft(border);
+			headerStyle.setBorderRight(border);
+
+			// Right-aligned header style for ACCT BALANCE
+			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
+			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
+			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+			// Default data style (left aligned)
+			CellStyle dataStyle = workbook.createCellStyle();
+			dataStyle.setAlignment(HorizontalAlignment.LEFT);
+			dataStyle.setBorderTop(border);
+			dataStyle.setBorderBottom(border);
+			dataStyle.setBorderLeft(border);
+			dataStyle.setBorderRight(border);
+
+			// ACCT BALANCE style (right aligned with 3 decimals)
+			CellStyle balanceStyle = workbook.createCellStyle();
+			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
+			balanceStyle.setBorderTop(border);
+			balanceStyle.setBorderBottom(border);
+			balanceStyle.setBorderLeft(border);
+			balanceStyle.setBorderRight(border);
+
+			// Header row
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "AVERAGE", "REPORT LABEL",
+					"REPORT ADDL CRITERIA1", "REPORT_DATE" };
+			XSSFRow headerRow = sheet.createRow(0);
+			for (int i = 0; i < headers.length; i++) {
+				Cell cell = headerRow.createCell(i);
+				cell.setCellValue(headers[i]);
+
+				if (i == 3 || i == 4) {
+					cell.setCellStyle(rightAlignedHeaderStyle);
+				} else {
+					cell.setCellStyle(headerStyle);
+				}
+
+				sheet.setColumnWidth(i, 5000);
+			}
+
+			// Get data
+			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+			List<AS_11_Archival_Detail_Entity> reportData = getArchivalDetaildatabydateList(parsedToDate, version);
+
+			if (reportData != null && !reportData.isEmpty()) {
+				int rowIndex = 1;
+				for (AS_11_Archival_Detail_Entity item : reportData) {
+					XSSFRow row = sheet.createRow(rowIndex++);
+
+					row.createCell(0).setCellValue(item.getCustId());
+					row.createCell(1).setCellValue(item.getAcctNumber());
+					row.createCell(2).setCellValue(item.getAcctName());
+
+					// ACCT BALANCE (right aligned, 3 decimal places)
+					Cell balanceCell = row.createCell(3);
+					if (item.getAcctBalanceInpula() != null) {
+						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
+					} else {
+						balanceCell.setCellValue(0);
+					}
+					balanceCell.setCellStyle(balanceStyle);
+
+					// AVERAGE (right aligned, 3 decimal places)
+					Cell balanceCell1 = row.createCell(4);
+					if (item.getAverage() != null) {
+						balanceCell1.setCellValue(item.getAverage().doubleValue());
+					} else {
+						balanceCell1.setCellValue(0);
+					}
+					balanceCell1.setCellStyle(balanceStyle);
+
+					row.createCell(5).setCellValue(item.getReportLabel());
+					row.createCell(6).setCellValue(item.getReportAddlCriteria1());
+					row.createCell(7)
+							.setCellValue(item.getReportDate() != null
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+									: "");
+
+					// Apply data style for all other cells
+					for (int j = 0; j < 8; j++) {
+						if (j != 3) {
+							row.getCell(j).setCellStyle(dataStyle);
+						}
+					}
+				}
+			} else {
+				logger.info("No data found for AS_11 — only header will be written.");
+			}
+
+			// Write to byte[]
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			workbook.write(bos);
+			workbook.close();
+
+			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
+			return bos.toByteArray();
+
+		} catch (Exception e) {
+			logger.error("Error generating AS_11 NEW Excel", e);
+			return new byte[0];
+		}
 	}
 
 	public byte[] getAS_11Excel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, BigDecimal version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.");
-		System.out.println(type);
-		System.out.println(version);
-		Date reportDate = dateformat.parse(todate);
+		logger.info("Service: Starting Excel generation process in memory.AS_11");
 
 		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version.compareTo(BigDecimal.ZERO) >= 0) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getExcelAS_11ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
-
 		}
 
-		List<AS_11_Summary_Entity1> dataList = AS_11_summary_repo1.getdatabydateList(dateformat.parse(todate));
-		List<AS_11_Summary_Entity2> dataList1 = AS_11_summary_repo2.getdatabydateList(dateformat.parse(todate));
+		// Fetch data
 
+		List<AS_11_Summary_Entity1> dataList = getDataByDate1(dateformat.parse(todate));
+		List<AS_11_Summary_Entity2> dataList1 = getDataByDate2(dateformat.parse(todate));
+
+		System.out.println("DATA SIZE IS : " + dataList.size());
 		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for brrs2.4 report. Returning empty result.");
+			logger.warn("Service: No data found for  AS_11 report. Returning empty result.");
 			return new byte[0];
 		}
 
@@ -300,15 +24855,8 @@ public class BRRS_AS_11_ReportService {
 			numberStyle.setBorderLeft(BorderStyle.THIN);
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
-
-			CellStyle percentStyle = workbook.createCellStyle();
-			percentStyle.cloneStyleFrom(numberStyle);
-			percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
-			percentStyle.setAlignment(HorizontalAlignment.RIGHT);
 			// --- End of Style Definitions ---
-
-			// --- End of Style Definitions ---
-			int startRow = 17;
+			int startRow = 3;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -320,6 +24868,22 @@ public class BRRS_AS_11_ReportService {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+
+					Cell R12Cell = row.createCell(4);
+
+					if (record.getREPORT_DATE() != null) {
+
+						R12Cell.setCellValue(record.getREPORT_DATE());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(17);
 					Cell R18Cell = row.createCell(2);
 					if (record.getR18_qua_i_lc() != null) {
 						R18Cell.setCellValue(record.getR18_qua_i_lc().doubleValue());
@@ -8194,13 +32758,10 @@ public class BRRS_AS_11_ReportService {
 
 		}
 
-		List<AS_11_Archival_Summary_Entity1> dataList = AS_11_Archival_Summary_Repo1
-				.getdatabydateListarchival(dateformat.parse(todate), version);
-		List<AS_11_Archival_Summary_Entity2> dataList1 = AS_11_Archival_Summary_Repo2
-				.getdatabydateListarchival(dateformat.parse(todate), version);
-
+		List<AS_11_Archival_Summary_Entity1> dataList = getdatabydateListarchival1(dateformat.parse(todate), version);
+		List<AS_11_Archival_Summary_Entity2> dataList1 = getdatabydateListarchival2(dateformat.parse(todate), version);
 		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for AS_11 report. Returning empty result.");
+			logger.warn("Service: No data found for AS_11 new report. Returning empty result.");
 			return new byte[0];
 		}
 
@@ -8259,30 +32820,7885 @@ public class BRRS_AS_11_ReportService {
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
-
-			int startRow = 8;
+			int startRow = 3;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
+
 					AS_11_Archival_Summary_Entity1 record = dataList.get(i);
 					AS_11_Archival_Summary_Entity2 record1 = dataList1.get(i);
-
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
-					// Cell R9Cell1 = row.createCell(3);
-					// if (record.getR9_fig_bal_sheet() != null) {
-					// R9Cell1.setCellValue(record.getR9_fig_bal_sheet().doubleValue());
-					// R9Cell1.setCellStyle(numberStyle);
-					// } else {
-					// R9Cell1.setCellValue("");
-					// R9Cell1.setCellStyle(textStyle);
-					// }
-				}
 
+					Cell R12Cell = row.createCell(4);
+
+					if (record.getREPORT_DATE() != null) {
+
+						R12Cell.setCellValue(record.getREPORT_DATE());
+
+						R12Cell.setCellStyle(dateStyle);
+
+					} else {
+
+						R12Cell.setCellValue("");
+
+						R12Cell.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(17);
+					Cell R18Cell = row.createCell(2);
+					if (record.getR18_qua_i_lc() != null) {
+						R18Cell.setCellValue(record.getR18_qua_i_lc().doubleValue());
+						R18Cell.setCellStyle(numberStyle);
+					} else {
+						R18Cell.setCellValue("");
+						R18Cell.setCellStyle(textStyle);
+					}
+
+					Cell R18Cell1 = row.createCell(3);
+					if (record.getR18_qua_i_qar() != null) {
+						R18Cell1.setCellValue(record.getR18_qua_i_qar().doubleValue());
+						R18Cell1.setCellStyle(numberStyle);
+					} else {
+						R18Cell1.setCellValue("");
+						R18Cell1.setCellStyle(textStyle);
+					}
+
+					// R18 Col E
+					Cell R18Cell2 = row.createCell(4);
+					if (record.getR18_qua_i_inr() != null) {
+						R18Cell2.setCellValue(record.getR18_qua_i_inr().doubleValue());
+						R18Cell2.setCellStyle(numberStyle);
+					} else {
+						R18Cell2.setCellValue("");
+						R18Cell2.setCellStyle(textStyle);
+					}
+
+					// R18 Col F
+					Cell R18Cell3 = row.createCell(5);
+					if (record.getR18_qua_ii_lc() != null) {
+						R18Cell3.setCellValue(record.getR18_qua_ii_lc().doubleValue());
+						R18Cell3.setCellStyle(numberStyle);
+					} else {
+						R18Cell3.setCellValue("");
+						R18Cell3.setCellStyle(textStyle);
+					}
+					// R18 Col G
+					Cell R18Cell4 = row.createCell(6);
+					if (record.getR18_qua_ii_qar() != null) {
+						R18Cell4.setCellValue(record.getR18_qua_ii_qar().doubleValue());
+						R18Cell4.setCellStyle(numberStyle);
+					} else {
+						R18Cell4.setCellValue("");
+						R18Cell4.setCellStyle(textStyle);
+					}
+					// R18 Col H
+					Cell R18Cell5 = row.createCell(7);
+					if (record.getR18_qua_ii_inr() != null) {
+						R18Cell5.setCellValue(record.getR18_qua_ii_inr().doubleValue());
+						R18Cell5.setCellStyle(numberStyle);
+					} else {
+						R18Cell5.setCellValue("");
+						R18Cell5.setCellStyle(textStyle);
+					}
+					// R18 Col I
+					Cell R18Cell6 = row.createCell(8);
+					if (record.getR18_qua_iii_lc() != null) {
+						R18Cell6.setCellValue(record.getR18_qua_iii_lc().doubleValue());
+						R18Cell6.setCellStyle(numberStyle);
+					} else {
+						R18Cell6.setCellValue("");
+						R18Cell6.setCellStyle(textStyle);
+					}
+					// R18 Col J
+					Cell R18Cell7 = row.createCell(9);
+					if (record.getR18_qua_iii_qar() != null) {
+						R18Cell7.setCellValue(record.getR18_qua_iii_qar().doubleValue());
+						R18Cell7.setCellStyle(numberStyle);
+					} else {
+						R18Cell7.setCellValue("");
+						R18Cell7.setCellStyle(textStyle);
+					}
+					// R18 Col K
+					Cell R18Cell8 = row.createCell(10);
+					if (record.getR18_qua_iii_inr() != null) {
+						R18Cell8.setCellValue(record.getR18_qua_iii_inr().doubleValue());
+						R18Cell8.setCellStyle(numberStyle);
+					} else {
+						R18Cell8.setCellValue("");
+						R18Cell8.setCellStyle(textStyle);
+					}
+					// R18 Col L
+					Cell R18Cell9 = row.createCell(11);
+					if (record.getR18_qua_iv_lc() != null) {
+						R18Cell9.setCellValue(record.getR18_qua_iv_lc().doubleValue());
+						R18Cell9.setCellStyle(numberStyle);
+					} else {
+						R18Cell9.setCellValue("");
+						R18Cell9.setCellStyle(textStyle);
+					}
+					// R18 Col M
+					Cell R18Cell10 = row.createCell(12);
+					if (record.getR18_qua_iv_qar() != null) {
+						R18Cell10.setCellValue(record.getR18_qua_iv_qar().doubleValue());
+						R18Cell10.setCellStyle(numberStyle);
+					} else {
+						R18Cell10.setCellValue("");
+						R18Cell10.setCellStyle(textStyle);
+					}
+
+					// R18 Col N
+					Cell R18Cell11 = row.createCell(13);
+					if (record.getR18_qua_iv_inr() != null) {
+						R18Cell11.setCellValue(record.getR18_qua_iv_inr().doubleValue());
+						R18Cell11.setCellStyle(numberStyle);
+					} else {
+						R18Cell11.setCellValue("");
+						R18Cell11.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(18);
+					Cell R19Cell = row.createCell(2);
+					if (record.getR19_qua_i_lc() != null) {
+						R19Cell.setCellValue(record.getR19_qua_i_lc().doubleValue());
+						R19Cell.setCellStyle(numberStyle);
+					} else {
+						R19Cell.setCellValue("");
+						R19Cell.setCellStyle(textStyle);
+					}
+
+					Cell R19Cell1 = row.createCell(3);
+					if (record.getR19_qua_i_qar() != null) {
+						R19Cell1.setCellValue(record.getR19_qua_i_qar().doubleValue());
+						R19Cell1.setCellStyle(numberStyle);
+					} else {
+						R19Cell1.setCellValue("");
+						R19Cell1.setCellStyle(textStyle);
+					}
+
+					// R19 Col E
+					Cell R19Cell2 = row.createCell(4);
+					if (record.getR19_qua_i_inr() != null) {
+						R19Cell2.setCellValue(record.getR19_qua_i_inr().doubleValue());
+						R19Cell2.setCellStyle(numberStyle);
+					} else {
+						R19Cell2.setCellValue("");
+						R19Cell2.setCellStyle(textStyle);
+					}
+
+					// R19 Col F
+					Cell R19Cell3 = row.createCell(5);
+					if (record.getR19_qua_ii_lc() != null) {
+						R19Cell3.setCellValue(record.getR19_qua_ii_lc().doubleValue());
+						R19Cell3.setCellStyle(numberStyle);
+					} else {
+						R19Cell3.setCellValue("");
+						R19Cell3.setCellStyle(textStyle);
+					}
+					// R19 Col G
+					Cell R19Cell4 = row.createCell(6);
+					if (record.getR19_qua_ii_qar() != null) {
+						R19Cell4.setCellValue(record.getR19_qua_ii_qar().doubleValue());
+						R19Cell4.setCellStyle(numberStyle);
+					} else {
+						R19Cell4.setCellValue("");
+						R19Cell4.setCellStyle(textStyle);
+					}
+					// R19 Col H
+					Cell R19Cell5 = row.createCell(7);
+					if (record.getR19_qua_ii_inr() != null) {
+						R19Cell5.setCellValue(record.getR19_qua_ii_inr().doubleValue());
+						R19Cell5.setCellStyle(numberStyle);
+					} else {
+						R19Cell5.setCellValue("");
+						R19Cell5.setCellStyle(textStyle);
+					}
+					// R19 Col I
+					Cell R19Cell6 = row.createCell(8);
+					if (record.getR19_qua_iii_lc() != null) {
+						R19Cell6.setCellValue(record.getR19_qua_iii_lc().doubleValue());
+						R19Cell6.setCellStyle(numberStyle);
+					} else {
+						R19Cell6.setCellValue("");
+						R19Cell6.setCellStyle(textStyle);
+					}
+					// R19 Col J
+					Cell R19Cell7 = row.createCell(9);
+					if (record.getR19_qua_iii_qar() != null) {
+						R19Cell7.setCellValue(record.getR19_qua_iii_qar().doubleValue());
+						R19Cell7.setCellStyle(numberStyle);
+					} else {
+						R19Cell7.setCellValue("");
+						R19Cell7.setCellStyle(textStyle);
+					}
+					// R19 Col K
+					Cell R19Cell8 = row.createCell(10);
+					if (record.getR19_qua_iii_inr() != null) {
+						R19Cell8.setCellValue(record.getR19_qua_iii_inr().doubleValue());
+						R19Cell8.setCellStyle(numberStyle);
+					} else {
+						R19Cell8.setCellValue("");
+						R19Cell8.setCellStyle(textStyle);
+					}
+					// R19 Col L
+					Cell R19Cell9 = row.createCell(11);
+					if (record.getR19_qua_iv_lc() != null) {
+						R19Cell9.setCellValue(record.getR19_qua_iv_lc().doubleValue());
+						R19Cell9.setCellStyle(numberStyle);
+					} else {
+						R19Cell9.setCellValue("");
+						R19Cell9.setCellStyle(textStyle);
+					}
+					// R19 Col M
+					Cell R19Cell10 = row.createCell(12);
+					if (record.getR19_qua_iv_qar() != null) {
+						R19Cell10.setCellValue(record.getR19_qua_iv_qar().doubleValue());
+						R19Cell10.setCellStyle(numberStyle);
+					} else {
+						R19Cell10.setCellValue("");
+						R19Cell10.setCellStyle(textStyle);
+					}
+
+					// R19 Col N
+					Cell R19Cell11 = row.createCell(13);
+					if (record.getR19_qua_iv_inr() != null) {
+						R19Cell11.setCellValue(record.getR19_qua_iv_inr().doubleValue());
+						R19Cell11.setCellStyle(numberStyle);
+					} else {
+						R19Cell11.setCellValue("");
+						R19Cell11.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(19);
+					Cell R20Cell = row.createCell(2);
+					if (record.getR20_qua_i_lc() != null) {
+						R20Cell.setCellValue(record.getR20_qua_i_lc().doubleValue());
+						R20Cell.setCellStyle(numberStyle);
+					} else {
+						R20Cell.setCellValue("");
+						R20Cell.setCellStyle(textStyle);
+					}
+
+					Cell R20Cell1 = row.createCell(3);
+					if (record.getR20_qua_i_qar() != null) {
+						R20Cell1.setCellValue(record.getR20_qua_i_qar().doubleValue());
+						R20Cell1.setCellStyle(numberStyle);
+					} else {
+						R20Cell1.setCellValue("");
+						R20Cell1.setCellStyle(textStyle);
+					}
+
+					// R20 Col E
+					Cell R20Cell2 = row.createCell(4);
+					if (record.getR20_qua_i_inr() != null) {
+						R20Cell2.setCellValue(record.getR20_qua_i_inr().doubleValue());
+						R20Cell2.setCellStyle(numberStyle);
+					} else {
+						R20Cell2.setCellValue("");
+						R20Cell2.setCellStyle(textStyle);
+					}
+
+					// R20 Col F
+					Cell R20Cell3 = row.createCell(5);
+					if (record.getR20_qua_ii_lc() != null) {
+						R20Cell3.setCellValue(record.getR20_qua_ii_lc().doubleValue());
+						R20Cell3.setCellStyle(numberStyle);
+					} else {
+						R20Cell3.setCellValue("");
+						R20Cell3.setCellStyle(textStyle);
+					}
+					// R20 Col G
+					Cell R20Cell4 = row.createCell(6);
+					if (record.getR20_qua_ii_qar() != null) {
+						R20Cell4.setCellValue(record.getR20_qua_ii_qar().doubleValue());
+						R20Cell4.setCellStyle(numberStyle);
+					} else {
+						R20Cell4.setCellValue("");
+						R20Cell4.setCellStyle(textStyle);
+					}
+					// R20 Col H
+					Cell R20Cell5 = row.createCell(7);
+					if (record.getR20_qua_ii_inr() != null) {
+						R20Cell5.setCellValue(record.getR20_qua_ii_inr().doubleValue());
+						R20Cell5.setCellStyle(numberStyle);
+					} else {
+						R20Cell5.setCellValue("");
+						R20Cell5.setCellStyle(textStyle);
+					}
+					// R20 Col I
+					Cell R20Cell6 = row.createCell(8);
+					if (record.getR20_qua_iii_lc() != null) {
+						R20Cell6.setCellValue(record.getR20_qua_iii_lc().doubleValue());
+						R20Cell6.setCellStyle(numberStyle);
+					} else {
+						R20Cell6.setCellValue("");
+						R20Cell6.setCellStyle(textStyle);
+					}
+					// R20 Col J
+					Cell R20Cell7 = row.createCell(9);
+					if (record.getR20_qua_iii_qar() != null) {
+						R20Cell7.setCellValue(record.getR20_qua_iii_qar().doubleValue());
+						R20Cell7.setCellStyle(numberStyle);
+					} else {
+						R20Cell7.setCellValue("");
+						R20Cell7.setCellStyle(textStyle);
+					}
+					// R20 Col K
+					Cell R20Cell8 = row.createCell(10);
+					if (record.getR20_qua_iii_inr() != null) {
+						R20Cell8.setCellValue(record.getR20_qua_iii_inr().doubleValue());
+						R20Cell8.setCellStyle(numberStyle);
+					} else {
+						R20Cell8.setCellValue("");
+						R20Cell8.setCellStyle(textStyle);
+					}
+					// R20 Col L
+					Cell R20Cell9 = row.createCell(11);
+					if (record.getR20_qua_iv_lc() != null) {
+						R20Cell9.setCellValue(record.getR20_qua_iv_lc().doubleValue());
+						R20Cell9.setCellStyle(numberStyle);
+					} else {
+						R20Cell9.setCellValue("");
+						R20Cell9.setCellStyle(textStyle);
+					}
+					// R20 Col M
+					Cell R20Cell10 = row.createCell(12);
+					if (record.getR20_qua_iv_qar() != null) {
+						R20Cell10.setCellValue(record.getR20_qua_iv_qar().doubleValue());
+						R20Cell10.setCellStyle(numberStyle);
+					} else {
+						R20Cell10.setCellValue("");
+						R20Cell10.setCellStyle(textStyle);
+					}
+
+					// R20 Col N
+					Cell R20Cell11 = row.createCell(13);
+					if (record.getR20_qua_iv_inr() != null) {
+						R20Cell11.setCellValue(record.getR20_qua_iv_inr().doubleValue());
+						R20Cell11.setCellStyle(numberStyle);
+					} else {
+						R20Cell11.setCellValue("");
+						R20Cell11.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(20);
+					Cell R21Cell = row.createCell(2);
+					if (record.getR21_qua_i_lc() != null) {
+						R21Cell.setCellValue(record.getR21_qua_i_lc().doubleValue());
+						R21Cell.setCellStyle(numberStyle);
+					} else {
+						R21Cell.setCellValue("");
+						R21Cell.setCellStyle(textStyle);
+					}
+
+					Cell R21Cell1 = row.createCell(3);
+					if (record.getR21_qua_i_qar() != null) {
+						R21Cell1.setCellValue(record.getR21_qua_i_qar().doubleValue());
+						R21Cell1.setCellStyle(numberStyle);
+					} else {
+						R21Cell1.setCellValue("");
+						R21Cell1.setCellStyle(textStyle);
+					}
+
+					// R21 Col E
+					Cell R21Cell2 = row.createCell(4);
+					if (record.getR21_qua_i_inr() != null) {
+						R21Cell2.setCellValue(record.getR21_qua_i_inr().doubleValue());
+						R21Cell2.setCellStyle(numberStyle);
+					} else {
+						R21Cell2.setCellValue("");
+						R21Cell2.setCellStyle(textStyle);
+					}
+
+					// R21 Col F
+					Cell R21Cell3 = row.createCell(5);
+					if (record.getR21_qua_ii_lc() != null) {
+						R21Cell3.setCellValue(record.getR21_qua_ii_lc().doubleValue());
+						R21Cell3.setCellStyle(numberStyle);
+					} else {
+						R21Cell3.setCellValue("");
+						R21Cell3.setCellStyle(textStyle);
+					}
+					// R21 Col G
+					Cell R21Cell4 = row.createCell(6);
+					if (record.getR21_qua_ii_qar() != null) {
+						R21Cell4.setCellValue(record.getR21_qua_ii_qar().doubleValue());
+						R21Cell4.setCellStyle(numberStyle);
+					} else {
+						R21Cell4.setCellValue("");
+						R21Cell4.setCellStyle(textStyle);
+					}
+					// R21 Col H
+					Cell R21Cell5 = row.createCell(7);
+					if (record.getR21_qua_ii_inr() != null) {
+						R21Cell5.setCellValue(record.getR21_qua_ii_inr().doubleValue());
+						R21Cell5.setCellStyle(numberStyle);
+					} else {
+						R21Cell5.setCellValue("");
+						R21Cell5.setCellStyle(textStyle);
+					}
+					// R21 Col I
+					Cell R21Cell6 = row.createCell(8);
+					if (record.getR21_qua_iii_lc() != null) {
+						R21Cell6.setCellValue(record.getR21_qua_iii_lc().doubleValue());
+						R21Cell6.setCellStyle(numberStyle);
+					} else {
+						R21Cell6.setCellValue("");
+						R21Cell6.setCellStyle(textStyle);
+					}
+					// R21 Col J
+					Cell R21Cell7 = row.createCell(9);
+					if (record.getR21_qua_iii_qar() != null) {
+						R21Cell7.setCellValue(record.getR21_qua_iii_qar().doubleValue());
+						R21Cell7.setCellStyle(numberStyle);
+					} else {
+						R21Cell7.setCellValue("");
+						R21Cell7.setCellStyle(textStyle);
+					}
+					// R21 Col K
+					Cell R21Cell8 = row.createCell(10);
+					if (record.getR21_qua_iii_inr() != null) {
+						R21Cell8.setCellValue(record.getR21_qua_iii_inr().doubleValue());
+						R21Cell8.setCellStyle(numberStyle);
+					} else {
+						R21Cell8.setCellValue("");
+						R21Cell8.setCellStyle(textStyle);
+					}
+					// R21 Col L
+					Cell R21Cell9 = row.createCell(11);
+					if (record.getR21_qua_iv_lc() != null) {
+						R21Cell9.setCellValue(record.getR21_qua_iv_lc().doubleValue());
+						R21Cell9.setCellStyle(numberStyle);
+					} else {
+						R21Cell9.setCellValue("");
+						R21Cell9.setCellStyle(textStyle);
+					}
+					// R21 Col M
+					Cell R21Cell10 = row.createCell(12);
+					if (record.getR21_qua_iv_qar() != null) {
+						R21Cell10.setCellValue(record.getR21_qua_iv_qar().doubleValue());
+						R21Cell10.setCellStyle(numberStyle);
+					} else {
+						R21Cell10.setCellValue("");
+						R21Cell10.setCellStyle(textStyle);
+					}
+
+					// R21 Col N
+					Cell R21Cell11 = row.createCell(13);
+					if (record.getR21_qua_iv_inr() != null) {
+						R21Cell11.setCellValue(record.getR21_qua_iv_inr().doubleValue());
+						R21Cell11.setCellStyle(numberStyle);
+					} else {
+						R21Cell11.setCellValue("");
+						R21Cell11.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(21);
+					Cell R22Cell1 = row.createCell(3);
+
+					if (record.getR22_qua_i_qar() != null) {
+						R22Cell1.setCellValue(record.getR22_qua_i_qar().doubleValue());
+					} else {
+						// ✅ Default 0
+						R22Cell1.setCellValue(0);
+					}
+
+					// Always apply number style
+					R22Cell1.setCellStyle(numberStyle);
+					row = sheet.getRow(22);
+					Cell R23Cell = row.createCell(2);
+					if (record.getR23_qua_i_lc() != null) {
+						R23Cell.setCellValue(record.getR23_qua_i_lc().doubleValue());
+						R23Cell.setCellStyle(numberStyle);
+					} else {
+						R23Cell.setCellValue("");
+						R23Cell.setCellStyle(textStyle);
+					}
+
+					Cell R23Cell1 = row.createCell(3);
+					if (record.getR23_qua_i_qar() != null) {
+						R23Cell1.setCellValue(record.getR23_qua_i_qar().doubleValue());
+						R23Cell1.setCellStyle(numberStyle);
+					} else {
+						R23Cell1.setCellValue("");
+						R23Cell1.setCellStyle(textStyle);
+					}
+
+					// R23 Col E
+					Cell R23Cell2 = row.createCell(4);
+					if (record.getR23_qua_i_inr() != null) {
+						R23Cell2.setCellValue(record.getR23_qua_i_inr().doubleValue());
+						R23Cell2.setCellStyle(numberStyle);
+					} else {
+						R23Cell2.setCellValue("");
+						R23Cell2.setCellStyle(textStyle);
+					}
+
+					// R23 Col F
+					Cell R23Cell3 = row.createCell(5);
+					if (record.getR23_qua_ii_lc() != null) {
+						R23Cell3.setCellValue(record.getR23_qua_ii_lc().doubleValue());
+						R23Cell3.setCellStyle(numberStyle);
+					} else {
+						R23Cell3.setCellValue("");
+						R23Cell3.setCellStyle(textStyle);
+					}
+					// R23 Col G
+					Cell R23Cell4 = row.createCell(6);
+					if (record.getR23_qua_ii_qar() != null) {
+						R23Cell4.setCellValue(record.getR23_qua_ii_qar().doubleValue());
+						R23Cell4.setCellStyle(numberStyle);
+					} else {
+						R23Cell4.setCellValue("");
+						R23Cell4.setCellStyle(textStyle);
+					}
+					// R23 Col H
+					Cell R23Cell5 = row.createCell(7);
+					if (record.getR23_qua_ii_inr() != null) {
+						R23Cell5.setCellValue(record.getR23_qua_ii_inr().doubleValue());
+						R23Cell5.setCellStyle(numberStyle);
+					} else {
+						R23Cell5.setCellValue("");
+						R23Cell5.setCellStyle(textStyle);
+					}
+					// R23 Col I
+					Cell R23Cell6 = row.createCell(8);
+					if (record.getR23_qua_iii_lc() != null) {
+						R23Cell6.setCellValue(record.getR23_qua_iii_lc().doubleValue());
+						R23Cell6.setCellStyle(numberStyle);
+					} else {
+						R23Cell6.setCellValue("");
+						R23Cell6.setCellStyle(textStyle);
+					}
+					// R23 Col J
+					Cell R23Cell7 = row.createCell(9);
+					if (record.getR23_qua_iii_qar() != null) {
+						R23Cell7.setCellValue(record.getR23_qua_iii_qar().doubleValue());
+						R23Cell7.setCellStyle(numberStyle);
+					} else {
+						R23Cell7.setCellValue("");
+						R23Cell7.setCellStyle(textStyle);
+					}
+					// R23 Col K
+					Cell R23Cell8 = row.createCell(10);
+					if (record.getR23_qua_iii_inr() != null) {
+						R23Cell8.setCellValue(record.getR23_qua_iii_inr().doubleValue());
+						R23Cell8.setCellStyle(numberStyle);
+					} else {
+						R23Cell8.setCellValue("");
+						R23Cell8.setCellStyle(textStyle);
+					}
+					// R23 Col L
+					Cell R23Cell9 = row.createCell(11);
+					if (record.getR23_qua_iv_lc() != null) {
+						R23Cell9.setCellValue(record.getR23_qua_iv_lc().doubleValue());
+						R23Cell9.setCellStyle(numberStyle);
+					} else {
+						R23Cell9.setCellValue("");
+						R23Cell9.setCellStyle(textStyle);
+					}
+					// R23 Col M
+					Cell R23Cell10 = row.createCell(12);
+					if (record.getR23_qua_iv_qar() != null) {
+						R23Cell10.setCellValue(record.getR23_qua_iv_qar().doubleValue());
+						R23Cell10.setCellStyle(numberStyle);
+					} else {
+						R23Cell10.setCellValue("");
+						R23Cell10.setCellStyle(textStyle);
+					}
+
+					// R23 Col N
+					Cell R23Cell11 = row.createCell(13);
+					if (record.getR23_qua_iv_inr() != null) {
+						R23Cell11.setCellValue(record.getR23_qua_iv_inr().doubleValue());
+						R23Cell11.setCellStyle(numberStyle);
+					} else {
+						R23Cell11.setCellValue("");
+						R23Cell11.setCellStyle(textStyle);
+					}
+					// R23 Col O
+					Cell R23Cell12 = row.createCell(14);
+					if (record.getR23_cumm_inr() != null) {
+						R23Cell12.setCellValue(record.getR23_cumm_inr().doubleValue());
+						R23Cell12.setCellStyle(numberStyle);
+					} else {
+						R23Cell12.setCellValue("");
+						R23Cell12.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(23);
+					Cell R24Cell = row.createCell(2);
+					if (record.getR24_qua_i_lc() != null) {
+						R24Cell.setCellValue(record.getR24_qua_i_lc().doubleValue());
+						R24Cell.setCellStyle(numberStyle);
+					} else {
+						R24Cell.setCellValue("");
+						R24Cell.setCellStyle(textStyle);
+					}
+
+					Cell R24Cell1 = row.createCell(3);
+					if (record.getR24_qua_i_qar() != null) {
+						R24Cell1.setCellValue(record.getR24_qua_i_qar().doubleValue());
+						R24Cell1.setCellStyle(numberStyle);
+					} else {
+						R24Cell1.setCellValue("");
+						R24Cell1.setCellStyle(textStyle);
+					}
+
+					// R24 Col E
+					Cell R24Cell2 = row.createCell(4);
+					if (record.getR24_qua_i_inr() != null) {
+						R24Cell2.setCellValue(record.getR24_qua_i_inr().doubleValue());
+						R24Cell2.setCellStyle(numberStyle);
+					} else {
+						R24Cell2.setCellValue("");
+						R24Cell2.setCellStyle(textStyle);
+					}
+
+					// R24 Col F
+					Cell R24Cell3 = row.createCell(5);
+					if (record.getR24_qua_ii_lc() != null) {
+						R24Cell3.setCellValue(record.getR24_qua_ii_lc().doubleValue());
+						R24Cell3.setCellStyle(numberStyle);
+					} else {
+						R24Cell3.setCellValue("");
+						R24Cell3.setCellStyle(textStyle);
+					}
+					// R24 Col G
+					Cell R24Cell4 = row.createCell(6);
+					if (record.getR24_qua_ii_qar() != null) {
+						R24Cell4.setCellValue(record.getR24_qua_ii_qar().doubleValue());
+						R24Cell4.setCellStyle(numberStyle);
+					} else {
+						R24Cell4.setCellValue("");
+						R24Cell4.setCellStyle(textStyle);
+					}
+					// R24 Col H
+					Cell R24Cell5 = row.createCell(7);
+					if (record.getR24_qua_ii_inr() != null) {
+						R24Cell5.setCellValue(record.getR24_qua_ii_inr().doubleValue());
+						R24Cell5.setCellStyle(numberStyle);
+					} else {
+						R24Cell5.setCellValue("");
+						R24Cell5.setCellStyle(textStyle);
+					}
+					// R24 Col I
+					Cell R24Cell6 = row.createCell(8);
+					if (record.getR24_qua_iii_lc() != null) {
+						R24Cell6.setCellValue(record.getR24_qua_iii_lc().doubleValue());
+						R24Cell6.setCellStyle(numberStyle);
+					} else {
+						R24Cell6.setCellValue("");
+						R24Cell6.setCellStyle(textStyle);
+					}
+					// R24 Col J
+					Cell R24Cell7 = row.createCell(9);
+					if (record.getR24_qua_iii_qar() != null) {
+						R24Cell7.setCellValue(record.getR24_qua_iii_qar().doubleValue());
+						R24Cell7.setCellStyle(numberStyle);
+					} else {
+						R24Cell7.setCellValue("");
+						R24Cell7.setCellStyle(textStyle);
+					}
+					// R24 Col K
+					Cell R24Cell8 = row.createCell(10);
+					if (record.getR24_qua_iii_inr() != null) {
+						R24Cell8.setCellValue(record.getR24_qua_iii_inr().doubleValue());
+						R24Cell8.setCellStyle(numberStyle);
+					} else {
+						R24Cell8.setCellValue("");
+						R24Cell8.setCellStyle(textStyle);
+					}
+					// R24 Col L
+					Cell R24Cell9 = row.createCell(11);
+					if (record.getR24_qua_iv_lc() != null) {
+						R24Cell9.setCellValue(record.getR24_qua_iv_lc().doubleValue());
+						R24Cell9.setCellStyle(numberStyle);
+					} else {
+						R24Cell9.setCellValue("");
+						R24Cell9.setCellStyle(textStyle);
+					}
+					// R24 Col M
+					Cell R24Cell10 = row.createCell(12);
+					if (record.getR24_qua_iv_qar() != null) {
+						R24Cell10.setCellValue(record.getR24_qua_iv_qar().doubleValue());
+						R24Cell10.setCellStyle(numberStyle);
+					} else {
+						R24Cell10.setCellValue("");
+						R24Cell10.setCellStyle(textStyle);
+					}
+
+					// R24 Col N
+					Cell R24Cell11 = row.createCell(13);
+					if (record.getR24_qua_iv_inr() != null) {
+						R24Cell11.setCellValue(record.getR24_qua_iv_inr().doubleValue());
+						R24Cell11.setCellStyle(numberStyle);
+					} else {
+						R24Cell11.setCellValue("");
+						R24Cell11.setCellStyle(textStyle);
+					}
+					// R24 Col O
+					Cell R24Cell12 = row.createCell(14);
+					if (record.getR24_cumm_inr() != null) {
+						R24Cell12.setCellValue(record.getR24_cumm_inr().doubleValue());
+						R24Cell12.setCellStyle(numberStyle);
+					} else {
+						R24Cell12.setCellValue("");
+						R24Cell12.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(24);
+					Cell R25Cell = row.createCell(2);
+					if (record.getR25_qua_i_lc() != null) {
+						R25Cell.setCellValue(record.getR25_qua_i_lc().doubleValue());
+						R25Cell.setCellStyle(numberStyle);
+					} else {
+						R25Cell.setCellValue("");
+						R25Cell.setCellStyle(textStyle);
+					}
+
+					Cell R25Cell1 = row.createCell(3);
+					if (record.getR25_qua_i_qar() != null) {
+						R25Cell1.setCellValue(record.getR25_qua_i_qar().doubleValue());
+						R25Cell1.setCellStyle(numberStyle);
+					} else {
+						R25Cell1.setCellValue("");
+						R25Cell1.setCellStyle(textStyle);
+					}
+
+					// R25 Col E
+					Cell R25Cell2 = row.createCell(4);
+					if (record.getR25_qua_i_inr() != null) {
+						R25Cell2.setCellValue(record.getR25_qua_i_inr().doubleValue());
+						R25Cell2.setCellStyle(numberStyle);
+					} else {
+						R25Cell2.setCellValue("");
+						R25Cell2.setCellStyle(textStyle);
+					}
+
+					// R25 Col F
+					Cell R25Cell3 = row.createCell(5);
+					if (record.getR25_qua_ii_lc() != null) {
+						R25Cell3.setCellValue(record.getR25_qua_ii_lc().doubleValue());
+						R25Cell3.setCellStyle(numberStyle);
+					} else {
+						R25Cell3.setCellValue("");
+						R25Cell3.setCellStyle(textStyle);
+					}
+					// R25 Col G
+					Cell R25Cell4 = row.createCell(6);
+					if (record.getR25_qua_ii_qar() != null) {
+						R25Cell4.setCellValue(record.getR25_qua_ii_qar().doubleValue());
+						R25Cell4.setCellStyle(numberStyle);
+					} else {
+						R25Cell4.setCellValue("");
+						R25Cell4.setCellStyle(textStyle);
+					}
+					// R25 Col H
+					Cell R25Cell5 = row.createCell(7);
+					if (record.getR25_qua_ii_inr() != null) {
+						R25Cell5.setCellValue(record.getR25_qua_ii_inr().doubleValue());
+						R25Cell5.setCellStyle(numberStyle);
+					} else {
+						R25Cell5.setCellValue("");
+						R25Cell5.setCellStyle(textStyle);
+					}
+					// R25 Col I
+					Cell R25Cell6 = row.createCell(8);
+					if (record.getR25_qua_iii_lc() != null) {
+						R25Cell6.setCellValue(record.getR25_qua_iii_lc().doubleValue());
+						R25Cell6.setCellStyle(numberStyle);
+					} else {
+						R25Cell6.setCellValue("");
+						R25Cell6.setCellStyle(textStyle);
+					}
+					// R25 Col J
+					Cell R25Cell7 = row.createCell(9);
+					if (record.getR25_qua_iii_qar() != null) {
+						R25Cell7.setCellValue(record.getR25_qua_iii_qar().doubleValue());
+						R25Cell7.setCellStyle(numberStyle);
+					} else {
+						R25Cell7.setCellValue("");
+						R25Cell7.setCellStyle(textStyle);
+					}
+					// R25 Col K
+					Cell R25Cell8 = row.createCell(10);
+					if (record.getR25_qua_iii_inr() != null) {
+						R25Cell8.setCellValue(record.getR25_qua_iii_inr().doubleValue());
+						R25Cell8.setCellStyle(numberStyle);
+					} else {
+						R25Cell8.setCellValue("");
+						R25Cell8.setCellStyle(textStyle);
+					}
+					// R25 Col L
+					Cell R25Cell9 = row.createCell(11);
+					if (record.getR25_qua_iv_lc() != null) {
+						R25Cell9.setCellValue(record.getR25_qua_iv_lc().doubleValue());
+						R25Cell9.setCellStyle(numberStyle);
+					} else {
+						R25Cell9.setCellValue("");
+						R25Cell9.setCellStyle(textStyle);
+					}
+					// R25 Col M
+					Cell R25Cell10 = row.createCell(12);
+					if (record.getR25_qua_iv_qar() != null) {
+						R25Cell10.setCellValue(record.getR25_qua_iv_qar().doubleValue());
+						R25Cell10.setCellStyle(numberStyle);
+					} else {
+						R25Cell10.setCellValue("");
+						R25Cell10.setCellStyle(textStyle);
+					}
+
+					// R25 Col N
+					Cell R25Cell11 = row.createCell(13);
+					if (record.getR25_qua_iv_inr() != null) {
+						R25Cell11.setCellValue(record.getR25_qua_iv_inr().doubleValue());
+						R25Cell11.setCellStyle(numberStyle);
+					} else {
+						R25Cell11.setCellValue("");
+						R25Cell11.setCellStyle(textStyle);
+					}
+
+					// R25 Col O
+					Cell R25Cell12 = row.createCell(14);
+					if (record.getR25_cumm_inr() != null) {
+						R25Cell12.setCellValue(record.getR25_cumm_inr().doubleValue());
+						R25Cell12.setCellStyle(numberStyle);
+					} else {
+						R25Cell12.setCellValue("");
+						R25Cell12.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(25);
+					Cell R26Cell = row.createCell(2);
+					if (record.getR26_qua_i_lc() != null) {
+						R26Cell.setCellValue(record.getR26_qua_i_lc().doubleValue());
+						R26Cell.setCellStyle(numberStyle);
+					} else {
+						R26Cell.setCellValue("");
+						R26Cell.setCellStyle(textStyle);
+					}
+
+					Cell R26Cell1 = row.createCell(3);
+					if (record.getR26_qua_i_qar() != null) {
+						R26Cell1.setCellValue(record.getR26_qua_i_qar().doubleValue());
+						R26Cell1.setCellStyle(numberStyle);
+					} else {
+						R26Cell1.setCellValue("");
+						R26Cell1.setCellStyle(textStyle);
+					}
+
+					// R26 Col E
+					Cell R26Cell2 = row.createCell(4);
+					if (record.getR26_qua_i_inr() != null) {
+						R26Cell2.setCellValue(record.getR26_qua_i_inr().doubleValue());
+						R26Cell2.setCellStyle(numberStyle);
+					} else {
+						R26Cell2.setCellValue("");
+						R26Cell2.setCellStyle(textStyle);
+					}
+
+					// R26 Col F
+					Cell R26Cell3 = row.createCell(5);
+					if (record.getR26_qua_ii_lc() != null) {
+						R26Cell3.setCellValue(record.getR26_qua_ii_lc().doubleValue());
+						R26Cell3.setCellStyle(numberStyle);
+					} else {
+						R26Cell3.setCellValue("");
+						R26Cell3.setCellStyle(textStyle);
+					}
+					// R26 Col G
+					Cell R26Cell4 = row.createCell(6);
+					if (record.getR26_qua_ii_qar() != null) {
+						R26Cell4.setCellValue(record.getR26_qua_ii_qar().doubleValue());
+						R26Cell4.setCellStyle(numberStyle);
+					} else {
+						R26Cell4.setCellValue("");
+						R26Cell4.setCellStyle(textStyle);
+					}
+					// R26 Col H
+					Cell R26Cell5 = row.createCell(7);
+					if (record.getR26_qua_ii_inr() != null) {
+						R26Cell5.setCellValue(record.getR26_qua_ii_inr().doubleValue());
+						R26Cell5.setCellStyle(numberStyle);
+					} else {
+						R26Cell5.setCellValue("");
+						R26Cell5.setCellStyle(textStyle);
+					}
+					// R26 Col I
+					Cell R26Cell6 = row.createCell(8);
+					if (record.getR26_qua_iii_lc() != null) {
+						R26Cell6.setCellValue(record.getR26_qua_iii_lc().doubleValue());
+						R26Cell6.setCellStyle(numberStyle);
+					} else {
+						R26Cell6.setCellValue("");
+						R26Cell6.setCellStyle(textStyle);
+					}
+					// R26 Col J
+					Cell R26Cell7 = row.createCell(9);
+					if (record.getR26_qua_iii_qar() != null) {
+						R26Cell7.setCellValue(record.getR26_qua_iii_qar().doubleValue());
+						R26Cell7.setCellStyle(numberStyle);
+					} else {
+						R26Cell7.setCellValue("");
+						R26Cell7.setCellStyle(textStyle);
+					}
+					// R26 Col K
+					Cell R26Cell8 = row.createCell(10);
+					if (record.getR26_qua_iii_inr() != null) {
+						R26Cell8.setCellValue(record.getR26_qua_iii_inr().doubleValue());
+						R26Cell8.setCellStyle(numberStyle);
+					} else {
+						R26Cell8.setCellValue("");
+						R26Cell8.setCellStyle(textStyle);
+					}
+					// R26 Col L
+					Cell R26Cell9 = row.createCell(11);
+					if (record.getR26_qua_iv_lc() != null) {
+						R26Cell9.setCellValue(record.getR26_qua_iv_lc().doubleValue());
+						R26Cell9.setCellStyle(numberStyle);
+					} else {
+						R26Cell9.setCellValue("");
+						R26Cell9.setCellStyle(textStyle);
+					}
+					// R26 Col M
+					Cell R26Cell10 = row.createCell(12);
+					if (record.getR26_qua_iv_qar() != null) {
+						R26Cell10.setCellValue(record.getR26_qua_iv_qar().doubleValue());
+						R26Cell10.setCellStyle(numberStyle);
+					} else {
+						R26Cell10.setCellValue("");
+						R26Cell10.setCellStyle(textStyle);
+					}
+
+					// R26 Col N
+					Cell R26Cell11 = row.createCell(13);
+					if (record.getR26_qua_iv_inr() != null) {
+						R26Cell11.setCellValue(record.getR26_qua_iv_inr().doubleValue());
+						R26Cell11.setCellStyle(numberStyle);
+					} else {
+						R26Cell11.setCellValue("");
+						R26Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(26);
+					Cell R27Cell = row.createCell(2);
+					if (record.getR27_qua_i_lc() != null) {
+						R27Cell.setCellValue(record.getR27_qua_i_lc().doubleValue());
+						R27Cell.setCellStyle(numberStyle);
+					} else {
+						R27Cell.setCellValue("");
+						R27Cell.setCellStyle(textStyle);
+					}
+
+					Cell R27Cell1 = row.createCell(3);
+					if (record.getR27_qua_i_qar() != null) {
+						R27Cell1.setCellValue(record.getR27_qua_i_qar().doubleValue());
+						R27Cell1.setCellStyle(numberStyle);
+					} else {
+						R27Cell1.setCellValue("");
+						R27Cell1.setCellStyle(textStyle);
+					}
+
+					// R27 Col E
+					Cell R27Cell2 = row.createCell(4);
+					if (record.getR27_qua_i_inr() != null) {
+						R27Cell2.setCellValue(record.getR27_qua_i_inr().doubleValue());
+						R27Cell2.setCellStyle(numberStyle);
+					} else {
+						R27Cell2.setCellValue("");
+						R27Cell2.setCellStyle(textStyle);
+					}
+
+					// R27 Col F
+					Cell R27Cell3 = row.createCell(5);
+					if (record.getR27_qua_ii_lc() != null) {
+						R27Cell3.setCellValue(record.getR27_qua_ii_lc().doubleValue());
+						R27Cell3.setCellStyle(numberStyle);
+					} else {
+						R27Cell3.setCellValue("");
+						R27Cell3.setCellStyle(textStyle);
+					}
+					// R27 Col G
+					Cell R27Cell4 = row.createCell(6);
+					if (record.getR27_qua_ii_qar() != null) {
+						R27Cell4.setCellValue(record.getR27_qua_ii_qar().doubleValue());
+						R27Cell4.setCellStyle(numberStyle);
+					} else {
+						R27Cell4.setCellValue("");
+						R27Cell4.setCellStyle(textStyle);
+					}
+					// R27 Col H
+					Cell R27Cell5 = row.createCell(7);
+					if (record.getR27_qua_ii_inr() != null) {
+						R27Cell5.setCellValue(record.getR27_qua_ii_inr().doubleValue());
+						R27Cell5.setCellStyle(numberStyle);
+					} else {
+						R27Cell5.setCellValue("");
+						R27Cell5.setCellStyle(textStyle);
+					}
+					// R27 Col I
+					Cell R27Cell6 = row.createCell(8);
+					if (record.getR27_qua_iii_lc() != null) {
+						R27Cell6.setCellValue(record.getR27_qua_iii_lc().doubleValue());
+						R27Cell6.setCellStyle(numberStyle);
+					} else {
+						R27Cell6.setCellValue("");
+						R27Cell6.setCellStyle(textStyle);
+					}
+					// R27 Col J
+					Cell R27Cell7 = row.createCell(9);
+					if (record.getR27_qua_iii_qar() != null) {
+						R27Cell7.setCellValue(record.getR27_qua_iii_qar().doubleValue());
+						R27Cell7.setCellStyle(numberStyle);
+					} else {
+						R27Cell7.setCellValue("");
+						R27Cell7.setCellStyle(textStyle);
+					}
+					// R27 Col K
+					Cell R27Cell8 = row.createCell(10);
+					if (record.getR27_qua_iii_inr() != null) {
+						R27Cell8.setCellValue(record.getR27_qua_iii_inr().doubleValue());
+						R27Cell8.setCellStyle(numberStyle);
+					} else {
+						R27Cell8.setCellValue("");
+						R27Cell8.setCellStyle(textStyle);
+					}
+					// R27 Col L
+					Cell R27Cell9 = row.createCell(11);
+					if (record.getR27_qua_iv_lc() != null) {
+						R27Cell9.setCellValue(record.getR27_qua_iv_lc().doubleValue());
+						R27Cell9.setCellStyle(numberStyle);
+					} else {
+						R27Cell9.setCellValue("");
+						R27Cell9.setCellStyle(textStyle);
+					}
+					// R27 Col M
+					Cell R27Cell10 = row.createCell(12);
+					if (record.getR27_qua_iv_qar() != null) {
+						R27Cell10.setCellValue(record.getR27_qua_iv_qar().doubleValue());
+						R27Cell10.setCellStyle(numberStyle);
+					} else {
+						R27Cell10.setCellValue("");
+						R27Cell10.setCellStyle(textStyle);
+					}
+
+					// R27 Col N
+					Cell R27Cell11 = row.createCell(13);
+					if (record.getR27_qua_iv_inr() != null) {
+						R27Cell11.setCellValue(record.getR27_qua_iv_inr().doubleValue());
+						R27Cell11.setCellStyle(numberStyle);
+					} else {
+						R27Cell11.setCellValue("");
+						R27Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(27);
+					Cell R28Cell = row.createCell(2);
+					if (record.getR28_qua_i_lc() != null) {
+						R28Cell.setCellValue(record.getR28_qua_i_lc().doubleValue());
+						R28Cell.setCellStyle(numberStyle);
+					} else {
+						R28Cell.setCellValue("");
+						R28Cell.setCellStyle(textStyle);
+					}
+
+					Cell R28Cell1 = row.createCell(3);
+					if (record.getR28_qua_i_qar() != null) {
+						R28Cell1.setCellValue(record.getR28_qua_i_qar().doubleValue());
+						R28Cell1.setCellStyle(numberStyle);
+					} else {
+						R28Cell1.setCellValue("");
+						R28Cell1.setCellStyle(textStyle);
+					}
+
+					// R28 Col E
+					Cell R28Cell2 = row.createCell(4);
+					if (record.getR28_qua_i_inr() != null) {
+						R28Cell2.setCellValue(record.getR28_qua_i_inr().doubleValue());
+						R28Cell2.setCellStyle(numberStyle);
+					} else {
+						R28Cell2.setCellValue("");
+						R28Cell2.setCellStyle(textStyle);
+					}
+
+					// R28 Col F
+					Cell R28Cell3 = row.createCell(5);
+					if (record.getR28_qua_ii_lc() != null) {
+						R28Cell3.setCellValue(record.getR28_qua_ii_lc().doubleValue());
+						R28Cell3.setCellStyle(numberStyle);
+					} else {
+						R28Cell3.setCellValue("");
+						R28Cell3.setCellStyle(textStyle);
+					}
+					// R28 Col G
+					Cell R28Cell4 = row.createCell(6);
+					if (record.getR28_qua_ii_qar() != null) {
+						R28Cell4.setCellValue(record.getR28_qua_ii_qar().doubleValue());
+						R28Cell4.setCellStyle(numberStyle);
+					} else {
+						R28Cell4.setCellValue("");
+						R28Cell4.setCellStyle(textStyle);
+					}
+					// R28 Col H
+					Cell R28Cell5 = row.createCell(7);
+					if (record.getR28_qua_ii_inr() != null) {
+						R28Cell5.setCellValue(record.getR28_qua_ii_inr().doubleValue());
+						R28Cell5.setCellStyle(numberStyle);
+					} else {
+						R28Cell5.setCellValue("");
+						R28Cell5.setCellStyle(textStyle);
+					}
+					// R28 Col I
+					Cell R28Cell6 = row.createCell(8);
+					if (record.getR28_qua_iii_lc() != null) {
+						R28Cell6.setCellValue(record.getR28_qua_iii_lc().doubleValue());
+						R28Cell6.setCellStyle(numberStyle);
+					} else {
+						R28Cell6.setCellValue("");
+						R28Cell6.setCellStyle(textStyle);
+					}
+					// R28 Col J
+					Cell R28Cell7 = row.createCell(9);
+					if (record.getR28_qua_iii_qar() != null) {
+						R28Cell7.setCellValue(record.getR28_qua_iii_qar().doubleValue());
+						R28Cell7.setCellStyle(numberStyle);
+					} else {
+						R28Cell7.setCellValue("");
+						R28Cell7.setCellStyle(textStyle);
+					}
+					// R28 Col K
+					Cell R28Cell8 = row.createCell(10);
+					if (record.getR28_qua_iii_inr() != null) {
+						R28Cell8.setCellValue(record.getR28_qua_iii_inr().doubleValue());
+						R28Cell8.setCellStyle(numberStyle);
+					} else {
+						R28Cell8.setCellValue("");
+						R28Cell8.setCellStyle(textStyle);
+					}
+					// R28 Col L
+					Cell R28Cell9 = row.createCell(11);
+					if (record.getR28_qua_iv_lc() != null) {
+						R28Cell9.setCellValue(record.getR28_qua_iv_lc().doubleValue());
+						R28Cell9.setCellStyle(numberStyle);
+					} else {
+						R28Cell9.setCellValue("");
+						R28Cell9.setCellStyle(textStyle);
+					}
+					// R28 Col M
+					Cell R28Cell10 = row.createCell(12);
+					if (record.getR28_qua_iv_qar() != null) {
+						R28Cell10.setCellValue(record.getR28_qua_iv_qar().doubleValue());
+						R28Cell10.setCellStyle(numberStyle);
+					} else {
+						R28Cell10.setCellValue("");
+						R28Cell10.setCellStyle(textStyle);
+					}
+
+					// R28 Col N
+					Cell R28Cell11 = row.createCell(13);
+					if (record.getR28_qua_iv_inr() != null) {
+						R28Cell11.setCellValue(record.getR28_qua_iv_inr().doubleValue());
+						R28Cell11.setCellStyle(numberStyle);
+					} else {
+						R28Cell11.setCellValue("");
+						R28Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(28);
+					Cell R29Cell = row.createCell(2);
+					if (record.getR29_qua_i_lc() != null) {
+						R29Cell.setCellValue(record.getR29_qua_i_lc().doubleValue());
+						R29Cell.setCellStyle(numberStyle);
+					} else {
+						R29Cell.setCellValue("");
+						R29Cell.setCellStyle(textStyle);
+					}
+
+					Cell R29Cell1 = row.createCell(3);
+					if (record.getR29_qua_i_qar() != null) {
+						R29Cell1.setCellValue(record.getR29_qua_i_qar().doubleValue());
+						R29Cell1.setCellStyle(numberStyle);
+					} else {
+						R29Cell1.setCellValue("");
+						R29Cell1.setCellStyle(textStyle);
+					}
+
+					// R29 Col E
+					Cell R29Cell2 = row.createCell(4);
+					if (record.getR29_qua_i_inr() != null) {
+						R29Cell2.setCellValue(record.getR29_qua_i_inr().doubleValue());
+						R29Cell2.setCellStyle(numberStyle);
+					} else {
+						R29Cell2.setCellValue("");
+						R29Cell2.setCellStyle(textStyle);
+					}
+
+					// R29 Col F
+					Cell R29Cell3 = row.createCell(5);
+					if (record.getR29_qua_ii_lc() != null) {
+						R29Cell3.setCellValue(record.getR29_qua_ii_lc().doubleValue());
+						R29Cell3.setCellStyle(numberStyle);
+					} else {
+						R29Cell3.setCellValue("");
+						R29Cell3.setCellStyle(textStyle);
+					}
+					// R29 Col G
+					Cell R29Cell4 = row.createCell(6);
+					if (record.getR29_qua_ii_qar() != null) {
+						R29Cell4.setCellValue(record.getR29_qua_ii_qar().doubleValue());
+						R29Cell4.setCellStyle(numberStyle);
+					} else {
+						R29Cell4.setCellValue("");
+						R29Cell4.setCellStyle(textStyle);
+					}
+					// R29 Col H
+					Cell R29Cell5 = row.createCell(7);
+					if (record.getR29_qua_ii_inr() != null) {
+						R29Cell5.setCellValue(record.getR29_qua_ii_inr().doubleValue());
+						R29Cell5.setCellStyle(numberStyle);
+					} else {
+						R29Cell5.setCellValue("");
+						R29Cell5.setCellStyle(textStyle);
+					}
+					// R29 Col I
+					Cell R29Cell6 = row.createCell(8);
+					if (record.getR29_qua_iii_lc() != null) {
+						R29Cell6.setCellValue(record.getR29_qua_iii_lc().doubleValue());
+						R29Cell6.setCellStyle(numberStyle);
+					} else {
+						R29Cell6.setCellValue("");
+						R29Cell6.setCellStyle(textStyle);
+					}
+					// R29 Col J
+					Cell R29Cell7 = row.createCell(9);
+					if (record.getR29_qua_iii_qar() != null) {
+						R29Cell7.setCellValue(record.getR29_qua_iii_qar().doubleValue());
+						R29Cell7.setCellStyle(numberStyle);
+					} else {
+						R29Cell7.setCellValue("");
+						R29Cell7.setCellStyle(textStyle);
+					}
+					// R29 Col K
+					Cell R29Cell8 = row.createCell(10);
+					if (record.getR29_qua_iii_inr() != null) {
+						R29Cell8.setCellValue(record.getR29_qua_iii_inr().doubleValue());
+						R29Cell8.setCellStyle(numberStyle);
+					} else {
+						R29Cell8.setCellValue("");
+						R29Cell8.setCellStyle(textStyle);
+					}
+					// R29 Col L
+					Cell R29Cell9 = row.createCell(11);
+					if (record.getR29_qua_iv_lc() != null) {
+						R29Cell9.setCellValue(record.getR29_qua_iv_lc().doubleValue());
+						R29Cell9.setCellStyle(numberStyle);
+					} else {
+						R29Cell9.setCellValue("");
+						R29Cell9.setCellStyle(textStyle);
+					}
+					// R29 Col M
+					Cell R29Cell10 = row.createCell(12);
+					if (record.getR29_qua_iv_qar() != null) {
+						R29Cell10.setCellValue(record.getR29_qua_iv_qar().doubleValue());
+						R29Cell10.setCellStyle(numberStyle);
+					} else {
+						R29Cell10.setCellValue("");
+						R29Cell10.setCellStyle(textStyle);
+					}
+
+					// R29 Col N
+					Cell R29Cell11 = row.createCell(13);
+					if (record.getR29_qua_iv_inr() != null) {
+						R29Cell11.setCellValue(record.getR29_qua_iv_inr().doubleValue());
+						R29Cell11.setCellStyle(numberStyle);
+					} else {
+						R29Cell11.setCellValue("");
+						R29Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(29);
+					// R30 Col C
+					Cell R30Cell = row.createCell(2);
+					if (record.getR30_qua_i_lc() != null) {
+						R30Cell.setCellValue(record.getR30_qua_i_lc().doubleValue());
+						R30Cell.setCellStyle(numberStyle);
+					} else {
+						R30Cell.setCellValue("");
+						R30Cell.setCellStyle(textStyle);
+					}
+
+// R30 Col D
+					Cell R30Cell1 = row.createCell(3);
+					if (record.getR30_qua_i_qar() != null) {
+						R30Cell1.setCellValue(record.getR30_qua_i_qar().doubleValue());
+						R30Cell1.setCellStyle(numberStyle);
+					} else {
+						R30Cell1.setCellValue("");
+						R30Cell1.setCellStyle(textStyle);
+					}
+
+// R30 Col E
+					Cell R30Cell2 = row.createCell(4);
+					if (record.getR30_qua_i_inr() != null) {
+						R30Cell2.setCellValue(record.getR30_qua_i_inr().doubleValue());
+						R30Cell2.setCellStyle(numberStyle);
+					} else {
+						R30Cell2.setCellValue("");
+						R30Cell2.setCellStyle(textStyle);
+					}
+
+// R30 Col F
+					Cell R30Cell3 = row.createCell(5);
+					if (record.getR30_qua_ii_lc() != null) {
+						R30Cell3.setCellValue(record.getR30_qua_ii_lc().doubleValue());
+						R30Cell3.setCellStyle(numberStyle);
+					} else {
+						R30Cell3.setCellValue("");
+						R30Cell3.setCellStyle(textStyle);
+					}
+
+// R30 Col G
+					Cell R30Cell4 = row.createCell(6);
+					if (record.getR30_qua_ii_qar() != null) {
+						R30Cell4.setCellValue(record.getR30_qua_ii_qar().doubleValue());
+						R30Cell4.setCellStyle(numberStyle);
+					} else {
+						R30Cell4.setCellValue("");
+						R30Cell4.setCellStyle(textStyle);
+					}
+
+// R30 Col H
+					Cell R30Cell5 = row.createCell(7);
+					if (record.getR30_qua_ii_inr() != null) {
+						R30Cell5.setCellValue(record.getR30_qua_ii_inr().doubleValue());
+						R30Cell5.setCellStyle(numberStyle);
+					} else {
+						R30Cell5.setCellValue("");
+						R30Cell5.setCellStyle(textStyle);
+					}
+
+// R30 Col I
+					Cell R30Cell6 = row.createCell(8);
+					if (record.getR30_qua_iii_lc() != null) {
+						R30Cell6.setCellValue(record.getR30_qua_iii_lc().doubleValue());
+						R30Cell6.setCellStyle(numberStyle);
+					} else {
+						R30Cell6.setCellValue("");
+						R30Cell6.setCellStyle(textStyle);
+					}
+
+// R30 Col J
+					Cell R30Cell7 = row.createCell(9);
+					if (record.getR30_qua_iii_qar() != null) {
+						R30Cell7.setCellValue(record.getR30_qua_iii_qar().doubleValue());
+						R30Cell7.setCellStyle(numberStyle);
+					} else {
+						R30Cell7.setCellValue("");
+						R30Cell7.setCellStyle(textStyle);
+					}
+
+// R30 Col K
+					Cell R30Cell8 = row.createCell(10);
+					if (record.getR30_qua_iii_inr() != null) {
+						R30Cell8.setCellValue(record.getR30_qua_iii_inr().doubleValue());
+						R30Cell8.setCellStyle(numberStyle);
+					} else {
+						R30Cell8.setCellValue("");
+						R30Cell8.setCellStyle(textStyle);
+					}
+
+// R30 Col L
+					Cell R30Cell9 = row.createCell(11);
+					if (record.getR30_qua_iv_lc() != null) {
+						R30Cell9.setCellValue(record.getR30_qua_iv_lc().doubleValue());
+						R30Cell9.setCellStyle(numberStyle);
+					} else {
+						R30Cell9.setCellValue("");
+						R30Cell9.setCellStyle(textStyle);
+					}
+
+// R30 Col M
+					Cell R30Cell10 = row.createCell(12);
+					if (record.getR30_qua_iv_qar() != null) {
+						R30Cell10.setCellValue(record.getR30_qua_iv_qar().doubleValue());
+						R30Cell10.setCellStyle(numberStyle);
+					} else {
+						R30Cell10.setCellValue("");
+						R30Cell10.setCellStyle(textStyle);
+					}
+
+// R30 Col N
+					Cell R30Cell11 = row.createCell(13);
+					if (record.getR30_qua_iv_inr() != null) {
+						R30Cell11.setCellValue(record.getR30_qua_iv_inr().doubleValue());
+						R30Cell11.setCellStyle(numberStyle);
+					} else {
+						R30Cell11.setCellValue("");
+						R30Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(30);
+// R31 Col C
+					Cell R31Cell = row.createCell(2);
+					if (record.getR31_qua_i_lc() != null) {
+						R31Cell.setCellValue(record.getR31_qua_i_lc().doubleValue());
+						R31Cell.setCellStyle(numberStyle);
+					} else {
+						R31Cell.setCellValue("");
+						R31Cell.setCellStyle(textStyle);
+					}
+
+// R31 Col D
+					Cell R31Cell1 = row.createCell(3);
+					if (record.getR31_qua_i_qar() != null) {
+						R31Cell1.setCellValue(record.getR31_qua_i_qar().doubleValue());
+						R31Cell1.setCellStyle(numberStyle);
+					} else {
+						R31Cell1.setCellValue("");
+						R31Cell1.setCellStyle(textStyle);
+					}
+
+// R31 Col E
+					Cell R31Cell2 = row.createCell(4);
+					if (record.getR31_qua_i_inr() != null) {
+						R31Cell2.setCellValue(record.getR31_qua_i_inr().doubleValue());
+						R31Cell2.setCellStyle(numberStyle);
+					} else {
+						R31Cell2.setCellValue("");
+						R31Cell2.setCellStyle(textStyle);
+					}
+
+// R31 Col F
+					Cell R31Cell3 = row.createCell(5);
+					if (record.getR31_qua_ii_lc() != null) {
+						R31Cell3.setCellValue(record.getR31_qua_ii_lc().doubleValue());
+						R31Cell3.setCellStyle(numberStyle);
+					} else {
+						R31Cell3.setCellValue("");
+						R31Cell3.setCellStyle(textStyle);
+					}
+
+// R31 Col G
+					Cell R31Cell4 = row.createCell(6);
+					if (record.getR31_qua_ii_qar() != null) {
+						R31Cell4.setCellValue(record.getR31_qua_ii_qar().doubleValue());
+						R31Cell4.setCellStyle(numberStyle);
+					} else {
+						R31Cell4.setCellValue("");
+						R31Cell4.setCellStyle(textStyle);
+					}
+
+// R31 Col H
+					Cell R31Cell5 = row.createCell(7);
+					if (record.getR31_qua_ii_inr() != null) {
+						R31Cell5.setCellValue(record.getR31_qua_ii_inr().doubleValue());
+						R31Cell5.setCellStyle(numberStyle);
+					} else {
+						R31Cell5.setCellValue("");
+						R31Cell5.setCellStyle(textStyle);
+					}
+
+// R31 Col I
+					Cell R31Cell6 = row.createCell(8);
+					if (record.getR31_qua_iii_lc() != null) {
+						R31Cell6.setCellValue(record.getR31_qua_iii_lc().doubleValue());
+						R31Cell6.setCellStyle(numberStyle);
+					} else {
+						R31Cell6.setCellValue("");
+						R31Cell6.setCellStyle(textStyle);
+					}
+
+// R31 Col J
+					Cell R31Cell7 = row.createCell(9);
+					if (record.getR31_qua_iii_qar() != null) {
+						R31Cell7.setCellValue(record.getR31_qua_iii_qar().doubleValue());
+						R31Cell7.setCellStyle(numberStyle);
+					} else {
+						R31Cell7.setCellValue("");
+						R31Cell7.setCellStyle(textStyle);
+					}
+
+// R31 Col K
+					Cell R31Cell8 = row.createCell(10);
+					if (record.getR31_qua_iii_inr() != null) {
+						R31Cell8.setCellValue(record.getR31_qua_iii_inr().doubleValue());
+						R31Cell8.setCellStyle(numberStyle);
+					} else {
+						R31Cell8.setCellValue("");
+						R31Cell8.setCellStyle(textStyle);
+					}
+
+// R31 Col L
+					Cell R31Cell9 = row.createCell(11);
+					if (record.getR31_qua_iv_lc() != null) {
+						R31Cell9.setCellValue(record.getR31_qua_iv_lc().doubleValue());
+						R31Cell9.setCellStyle(numberStyle);
+					} else {
+						R31Cell9.setCellValue("");
+						R31Cell9.setCellStyle(textStyle);
+					}
+
+// R31 Col M
+					Cell R31Cell10 = row.createCell(12);
+					if (record.getR31_qua_iv_qar() != null) {
+						R31Cell10.setCellValue(record.getR31_qua_iv_qar().doubleValue());
+						R31Cell10.setCellStyle(numberStyle);
+					} else {
+						R31Cell10.setCellValue("");
+						R31Cell10.setCellStyle(textStyle);
+					}
+
+// R31 Col N
+					Cell R31Cell11 = row.createCell(13);
+					if (record.getR31_qua_iv_inr() != null) {
+						R31Cell11.setCellValue(record.getR31_qua_iv_inr().doubleValue());
+						R31Cell11.setCellStyle(numberStyle);
+					} else {
+						R31Cell11.setCellValue("");
+						R31Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(31);
+// R32 Col C
+					Cell R32Cell = row.createCell(2);
+					if (record.getR32_qua_i_lc() != null) {
+						R32Cell.setCellValue(record.getR32_qua_i_lc().doubleValue());
+						R32Cell.setCellStyle(numberStyle);
+					} else {
+						R32Cell.setCellValue("");
+						R32Cell.setCellStyle(textStyle);
+					}
+
+// R32 Col D
+					Cell R32Cell1 = row.createCell(3);
+					if (record.getR32_qua_i_qar() != null) {
+						R32Cell1.setCellValue(record.getR32_qua_i_qar().doubleValue());
+						R32Cell1.setCellStyle(numberStyle);
+					} else {
+						R32Cell1.setCellValue("");
+						R32Cell1.setCellStyle(textStyle);
+					}
+
+// R32 Col E
+					Cell R32Cell2 = row.createCell(4);
+					if (record.getR32_qua_i_inr() != null) {
+						R32Cell2.setCellValue(record.getR32_qua_i_inr().doubleValue());
+						R32Cell2.setCellStyle(numberStyle);
+					} else {
+						R32Cell2.setCellValue("");
+						R32Cell2.setCellStyle(textStyle);
+					}
+
+// R32 Col F
+					Cell R32Cell3 = row.createCell(5);
+					if (record.getR32_qua_ii_lc() != null) {
+						R32Cell3.setCellValue(record.getR32_qua_ii_lc().doubleValue());
+						R32Cell3.setCellStyle(numberStyle);
+					} else {
+						R32Cell3.setCellValue("");
+						R32Cell3.setCellStyle(textStyle);
+					}
+
+// R32 Col G
+					Cell R32Cell4 = row.createCell(6);
+					if (record.getR32_qua_ii_qar() != null) {
+						R32Cell4.setCellValue(record.getR32_qua_ii_qar().doubleValue());
+						R32Cell4.setCellStyle(numberStyle);
+					} else {
+						R32Cell4.setCellValue("");
+						R32Cell4.setCellStyle(textStyle);
+					}
+
+// R32 Col H
+					Cell R32Cell5 = row.createCell(7);
+					if (record.getR32_qua_ii_inr() != null) {
+						R32Cell5.setCellValue(record.getR32_qua_ii_inr().doubleValue());
+						R32Cell5.setCellStyle(numberStyle);
+					} else {
+						R32Cell5.setCellValue("");
+						R32Cell5.setCellStyle(textStyle);
+					}
+
+// R32 Col I
+					Cell R32Cell6 = row.createCell(8);
+					if (record.getR32_qua_iii_lc() != null) {
+						R32Cell6.setCellValue(record.getR32_qua_iii_lc().doubleValue());
+						R32Cell6.setCellStyle(numberStyle);
+					} else {
+						R32Cell6.setCellValue("");
+						R32Cell6.setCellStyle(textStyle);
+					}
+
+// R32 Col J
+					Cell R32Cell7 = row.createCell(9);
+					if (record.getR32_qua_iii_qar() != null) {
+						R32Cell7.setCellValue(record.getR32_qua_iii_qar().doubleValue());
+						R32Cell7.setCellStyle(numberStyle);
+					} else {
+						R32Cell7.setCellValue("");
+						R32Cell7.setCellStyle(textStyle);
+					}
+
+// R32 Col K
+					Cell R32Cell8 = row.createCell(10);
+					if (record.getR32_qua_iii_inr() != null) {
+						R32Cell8.setCellValue(record.getR32_qua_iii_inr().doubleValue());
+						R32Cell8.setCellStyle(numberStyle);
+					} else {
+						R32Cell8.setCellValue("");
+						R32Cell8.setCellStyle(textStyle);
+					}
+
+// R32 Col L
+					Cell R32Cell9 = row.createCell(11);
+					if (record.getR32_qua_iv_lc() != null) {
+						R32Cell9.setCellValue(record.getR32_qua_iv_lc().doubleValue());
+						R32Cell9.setCellStyle(numberStyle);
+					} else {
+						R32Cell9.setCellValue("");
+						R32Cell9.setCellStyle(textStyle);
+					}
+
+// R32 Col M
+					Cell R32Cell10 = row.createCell(12);
+					if (record.getR32_qua_iv_qar() != null) {
+						R32Cell10.setCellValue(record.getR32_qua_iv_qar().doubleValue());
+						R32Cell10.setCellStyle(numberStyle);
+					} else {
+						R32Cell10.setCellValue("");
+						R32Cell10.setCellStyle(textStyle);
+					}
+
+// R32 Col N
+					Cell R32Cell11 = row.createCell(13);
+					if (record.getR32_qua_iv_inr() != null) {
+						R32Cell11.setCellValue(record.getR32_qua_iv_inr().doubleValue());
+						R32Cell11.setCellStyle(numberStyle);
+					} else {
+						R32Cell11.setCellValue("");
+						R32Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(32);
+// R33 Col C
+					Cell R33Cell = row.createCell(2);
+					if (record.getR33_qua_i_lc() != null) {
+						R33Cell.setCellValue(record.getR33_qua_i_lc().doubleValue());
+						R33Cell.setCellStyle(numberStyle);
+					} else {
+						R33Cell.setCellValue("");
+						R33Cell.setCellStyle(textStyle);
+					}
+
+// R33 Col D
+					Cell R33Cell1 = row.createCell(3);
+					if (record.getR33_qua_i_qar() != null) {
+						R33Cell1.setCellValue(record.getR33_qua_i_qar().doubleValue());
+						R33Cell1.setCellStyle(numberStyle);
+					} else {
+						R33Cell1.setCellValue("");
+						R33Cell1.setCellStyle(textStyle);
+					}
+
+// R33 Col E
+					Cell R33Cell2 = row.createCell(4);
+					if (record.getR33_qua_i_inr() != null) {
+						R33Cell2.setCellValue(record.getR33_qua_i_inr().doubleValue());
+						R33Cell2.setCellStyle(numberStyle);
+					} else {
+						R33Cell2.setCellValue("");
+						R33Cell2.setCellStyle(textStyle);
+					}
+
+// R33 Col F
+					Cell R33Cell3 = row.createCell(5);
+					if (record.getR33_qua_ii_lc() != null) {
+						R33Cell3.setCellValue(record.getR33_qua_ii_lc().doubleValue());
+						R33Cell3.setCellStyle(numberStyle);
+					} else {
+						R33Cell3.setCellValue("");
+						R33Cell3.setCellStyle(textStyle);
+					}
+
+// R33 Col G
+					Cell R33Cell4 = row.createCell(6);
+					if (record.getR33_qua_ii_qar() != null) {
+						R33Cell4.setCellValue(record.getR33_qua_ii_qar().doubleValue());
+						R33Cell4.setCellStyle(numberStyle);
+					} else {
+						R33Cell4.setCellValue("");
+						R33Cell4.setCellStyle(textStyle);
+					}
+
+// R33 Col H
+					Cell R33Cell5 = row.createCell(7);
+					if (record.getR33_qua_ii_inr() != null) {
+						R33Cell5.setCellValue(record.getR33_qua_ii_inr().doubleValue());
+						R33Cell5.setCellStyle(numberStyle);
+					} else {
+						R33Cell5.setCellValue("");
+						R33Cell5.setCellStyle(textStyle);
+					}
+
+// R33 Col I
+					Cell R33Cell6 = row.createCell(8);
+					if (record.getR33_qua_iii_lc() != null) {
+						R33Cell6.setCellValue(record.getR33_qua_iii_lc().doubleValue());
+						R33Cell6.setCellStyle(numberStyle);
+					} else {
+						R33Cell6.setCellValue("");
+						R33Cell6.setCellStyle(textStyle);
+					}
+
+// R33 Col J
+					Cell R33Cell7 = row.createCell(9);
+					if (record.getR33_qua_iii_qar() != null) {
+						R33Cell7.setCellValue(record.getR33_qua_iii_qar().doubleValue());
+						R33Cell7.setCellStyle(numberStyle);
+					} else {
+						R33Cell7.setCellValue("");
+						R33Cell7.setCellStyle(textStyle);
+					}
+
+// R33 Col K
+					Cell R33Cell8 = row.createCell(10);
+					if (record.getR33_qua_iii_inr() != null) {
+						R33Cell8.setCellValue(record.getR33_qua_iii_inr().doubleValue());
+						R33Cell8.setCellStyle(numberStyle);
+					} else {
+						R33Cell8.setCellValue("");
+						R33Cell8.setCellStyle(textStyle);
+					}
+
+// R33 Col L
+					Cell R33Cell9 = row.createCell(11);
+					if (record.getR33_qua_iv_lc() != null) {
+						R33Cell9.setCellValue(record.getR33_qua_iv_lc().doubleValue());
+						R33Cell9.setCellStyle(numberStyle);
+					} else {
+						R33Cell9.setCellValue("");
+						R33Cell9.setCellStyle(textStyle);
+					}
+
+// R33 Col M
+					Cell R33Cell10 = row.createCell(12);
+					if (record.getR33_qua_iv_qar() != null) {
+						R33Cell10.setCellValue(record.getR33_qua_iv_qar().doubleValue());
+						R33Cell10.setCellStyle(numberStyle);
+					} else {
+						R33Cell10.setCellValue("");
+						R33Cell10.setCellStyle(textStyle);
+					}
+
+// R33 Col N
+					Cell R33Cell11 = row.createCell(13);
+					if (record.getR33_qua_iv_inr() != null) {
+						R33Cell11.setCellValue(record.getR33_qua_iv_inr().doubleValue());
+						R33Cell11.setCellStyle(numberStyle);
+					} else {
+						R33Cell11.setCellValue("");
+						R33Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(33);
+// R34 Col C
+					Cell R34Cell = row.createCell(2);
+					if (record.getR34_qua_i_lc() != null) {
+						R34Cell.setCellValue(record.getR34_qua_i_lc().doubleValue());
+						R34Cell.setCellStyle(numberStyle);
+					} else {
+						R34Cell.setCellValue("");
+						R34Cell.setCellStyle(textStyle);
+					}
+
+// R34 Col D
+					Cell R34Cell1 = row.createCell(3);
+					if (record.getR34_qua_i_qar() != null) {
+						R34Cell1.setCellValue(record.getR34_qua_i_qar().doubleValue());
+						R34Cell1.setCellStyle(numberStyle);
+					} else {
+						R34Cell1.setCellValue("");
+						R34Cell1.setCellStyle(textStyle);
+					}
+
+// R34 Col E
+					Cell R34Cell2 = row.createCell(4);
+					if (record.getR34_qua_i_inr() != null) {
+						R34Cell2.setCellValue(record.getR34_qua_i_inr().doubleValue());
+						R34Cell2.setCellStyle(numberStyle);
+					} else {
+						R34Cell2.setCellValue("");
+						R34Cell2.setCellStyle(textStyle);
+					}
+
+// R34 Col F
+					Cell R34Cell3 = row.createCell(5);
+					if (record.getR34_qua_ii_lc() != null) {
+						R34Cell3.setCellValue(record.getR34_qua_ii_lc().doubleValue());
+						R34Cell3.setCellStyle(numberStyle);
+					} else {
+						R34Cell3.setCellValue("");
+						R34Cell3.setCellStyle(textStyle);
+					}
+
+// R34 Col G
+					Cell R34Cell4 = row.createCell(6);
+					if (record.getR34_qua_ii_qar() != null) {
+						R34Cell4.setCellValue(record.getR34_qua_ii_qar().doubleValue());
+						R34Cell4.setCellStyle(numberStyle);
+					} else {
+						R34Cell4.setCellValue("");
+						R34Cell4.setCellStyle(textStyle);
+					}
+
+// R34 Col H
+					Cell R34Cell5 = row.createCell(7);
+					if (record.getR34_qua_ii_inr() != null) {
+						R34Cell5.setCellValue(record.getR34_qua_ii_inr().doubleValue());
+						R34Cell5.setCellStyle(numberStyle);
+					} else {
+						R34Cell5.setCellValue("");
+						R34Cell5.setCellStyle(textStyle);
+					}
+
+// R34 Col I
+					Cell R34Cell6 = row.createCell(8);
+					if (record.getR34_qua_iii_lc() != null) {
+						R34Cell6.setCellValue(record.getR34_qua_iii_lc().doubleValue());
+						R34Cell6.setCellStyle(numberStyle);
+					} else {
+						R34Cell6.setCellValue("");
+						R34Cell6.setCellStyle(textStyle);
+					}
+
+// R34 Col J
+					Cell R34Cell7 = row.createCell(9);
+					if (record.getR34_qua_iii_qar() != null) {
+						R34Cell7.setCellValue(record.getR34_qua_iii_qar().doubleValue());
+						R34Cell7.setCellStyle(numberStyle);
+					} else {
+						R34Cell7.setCellValue("");
+						R34Cell7.setCellStyle(textStyle);
+					}
+
+// R34 Col K
+					Cell R34Cell8 = row.createCell(10);
+					if (record.getR34_qua_iii_inr() != null) {
+						R34Cell8.setCellValue(record.getR34_qua_iii_inr().doubleValue());
+						R34Cell8.setCellStyle(numberStyle);
+					} else {
+						R34Cell8.setCellValue("");
+						R34Cell8.setCellStyle(textStyle);
+					}
+
+// R34 Col L
+					Cell R34Cell9 = row.createCell(11);
+					if (record.getR34_qua_iv_lc() != null) {
+						R34Cell9.setCellValue(record.getR34_qua_iv_lc().doubleValue());
+						R34Cell9.setCellStyle(numberStyle);
+					} else {
+						R34Cell9.setCellValue("");
+						R34Cell9.setCellStyle(textStyle);
+					}
+
+// R34 Col M
+					Cell R34Cell10 = row.createCell(12);
+					if (record.getR34_qua_iv_qar() != null) {
+						R34Cell10.setCellValue(record.getR34_qua_iv_qar().doubleValue());
+						R34Cell10.setCellStyle(numberStyle);
+					} else {
+						R34Cell10.setCellValue("");
+						R34Cell10.setCellStyle(textStyle);
+					}
+
+// R34 Col N
+					Cell R34Cell11 = row.createCell(13);
+					if (record.getR34_qua_iv_inr() != null) {
+						R34Cell11.setCellValue(record.getR34_qua_iv_inr().doubleValue());
+						R34Cell11.setCellStyle(numberStyle);
+					} else {
+						R34Cell11.setCellValue("");
+						R34Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(34);
+// R35 Col C
+					Cell R35Cell = row.createCell(2);
+					if (record.getR35_qua_i_lc() != null) {
+						R35Cell.setCellValue(record.getR35_qua_i_lc().doubleValue());
+						R35Cell.setCellStyle(numberStyle);
+					} else {
+						R35Cell.setCellValue("");
+						R35Cell.setCellStyle(textStyle);
+					}
+
+// R35 Col D
+					Cell R35Cell1 = row.createCell(3);
+					if (record.getR35_qua_i_qar() != null) {
+						R35Cell1.setCellValue(record.getR35_qua_i_qar().doubleValue());
+						R35Cell1.setCellStyle(numberStyle);
+					} else {
+						R35Cell1.setCellValue("");
+						R35Cell1.setCellStyle(textStyle);
+					}
+
+// R35 Col E
+					Cell R35Cell2 = row.createCell(4);
+					if (record.getR35_qua_i_inr() != null) {
+						R35Cell2.setCellValue(record.getR35_qua_i_inr().doubleValue());
+						R35Cell2.setCellStyle(numberStyle);
+					} else {
+						R35Cell2.setCellValue("");
+						R35Cell2.setCellStyle(textStyle);
+					}
+
+// R35 Col F
+					Cell R35Cell3 = row.createCell(5);
+					if (record.getR35_qua_ii_lc() != null) {
+						R35Cell3.setCellValue(record.getR35_qua_ii_lc().doubleValue());
+						R35Cell3.setCellStyle(numberStyle);
+					} else {
+						R35Cell3.setCellValue("");
+						R35Cell3.setCellStyle(textStyle);
+					}
+
+// R35 Col G
+					Cell R35Cell4 = row.createCell(6);
+					if (record.getR35_qua_ii_qar() != null) {
+						R35Cell4.setCellValue(record.getR35_qua_ii_qar().doubleValue());
+						R35Cell4.setCellStyle(numberStyle);
+					} else {
+						R35Cell4.setCellValue("");
+						R35Cell4.setCellStyle(textStyle);
+					}
+
+// R35 Col H
+					Cell R35Cell5 = row.createCell(7);
+					if (record.getR35_qua_ii_inr() != null) {
+						R35Cell5.setCellValue(record.getR35_qua_ii_inr().doubleValue());
+						R35Cell5.setCellStyle(numberStyle);
+					} else {
+						R35Cell5.setCellValue("");
+						R35Cell5.setCellStyle(textStyle);
+					}
+
+// R35 Col I
+					Cell R35Cell6 = row.createCell(8);
+					if (record.getR35_qua_iii_lc() != null) {
+						R35Cell6.setCellValue(record.getR35_qua_iii_lc().doubleValue());
+						R35Cell6.setCellStyle(numberStyle);
+					} else {
+						R35Cell6.setCellValue("");
+						R35Cell6.setCellStyle(textStyle);
+					}
+
+// R35 Col J
+					Cell R35Cell7 = row.createCell(9);
+					if (record.getR35_qua_iii_qar() != null) {
+						R35Cell7.setCellValue(record.getR35_qua_iii_qar().doubleValue());
+						R35Cell7.setCellStyle(numberStyle);
+					} else {
+						R35Cell7.setCellValue("");
+						R35Cell7.setCellStyle(textStyle);
+					}
+
+// R35 Col K
+					Cell R35Cell8 = row.createCell(10);
+					if (record.getR35_qua_iii_inr() != null) {
+						R35Cell8.setCellValue(record.getR35_qua_iii_inr().doubleValue());
+						R35Cell8.setCellStyle(numberStyle);
+					} else {
+						R35Cell8.setCellValue("");
+						R35Cell8.setCellStyle(textStyle);
+					}
+
+// R35 Col L
+					Cell R35Cell9 = row.createCell(11);
+					if (record.getR35_qua_iv_lc() != null) {
+						R35Cell9.setCellValue(record.getR35_qua_iv_lc().doubleValue());
+						R35Cell9.setCellStyle(numberStyle);
+					} else {
+						R35Cell9.setCellValue("");
+						R35Cell9.setCellStyle(textStyle);
+					}
+
+// R35 Col M
+					Cell R35Cell10 = row.createCell(12);
+					if (record.getR35_qua_iv_qar() != null) {
+						R35Cell10.setCellValue(record.getR35_qua_iv_qar().doubleValue());
+						R35Cell10.setCellStyle(numberStyle);
+					} else {
+						R35Cell10.setCellValue("");
+						R35Cell10.setCellStyle(textStyle);
+					}
+
+// R35 Col N
+					Cell R35Cell11 = row.createCell(13);
+					if (record.getR35_qua_iv_inr() != null) {
+						R35Cell11.setCellValue(record.getR35_qua_iv_inr().doubleValue());
+						R35Cell11.setCellStyle(numberStyle);
+					} else {
+						R35Cell11.setCellValue("");
+						R35Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(35);
+// R36 Col C
+					Cell R36Cell = row.createCell(2);
+					if (record.getR36_qua_i_lc() != null) {
+						R36Cell.setCellValue(record.getR36_qua_i_lc().doubleValue());
+						R36Cell.setCellStyle(numberStyle);
+					} else {
+						R36Cell.setCellValue("");
+						R36Cell.setCellStyle(textStyle);
+					}
+
+// R36 Col D
+					Cell R36Cell1 = row.createCell(3);
+					if (record.getR36_qua_i_qar() != null) {
+						R36Cell1.setCellValue(record.getR36_qua_i_qar().doubleValue());
+						R36Cell1.setCellStyle(numberStyle);
+					} else {
+						R36Cell1.setCellValue("");
+						R36Cell1.setCellStyle(textStyle);
+					}
+
+// R36 Col E
+					Cell R36Cell2 = row.createCell(4);
+					if (record.getR36_qua_i_inr() != null) {
+						R36Cell2.setCellValue(record.getR36_qua_i_inr().doubleValue());
+						R36Cell2.setCellStyle(numberStyle);
+					} else {
+						R36Cell2.setCellValue("");
+						R36Cell2.setCellStyle(textStyle);
+					}
+
+// R36 Col F
+					Cell R36Cell3 = row.createCell(5);
+					if (record.getR36_qua_ii_lc() != null) {
+						R36Cell3.setCellValue(record.getR36_qua_ii_lc().doubleValue());
+						R36Cell3.setCellStyle(numberStyle);
+					} else {
+						R36Cell3.setCellValue("");
+						R36Cell3.setCellStyle(textStyle);
+					}
+
+// R36 Col G
+					Cell R36Cell4 = row.createCell(6);
+					if (record.getR36_qua_ii_qar() != null) {
+						R36Cell4.setCellValue(record.getR36_qua_ii_qar().doubleValue());
+						R36Cell4.setCellStyle(numberStyle);
+					} else {
+						R36Cell4.setCellValue("");
+						R36Cell4.setCellStyle(textStyle);
+					}
+
+// R36 Col H
+					Cell R36Cell5 = row.createCell(7);
+					if (record.getR36_qua_ii_inr() != null) {
+						R36Cell5.setCellValue(record.getR36_qua_ii_inr().doubleValue());
+						R36Cell5.setCellStyle(numberStyle);
+					} else {
+						R36Cell5.setCellValue("");
+						R36Cell5.setCellStyle(textStyle);
+					}
+
+// R36 Col I
+					Cell R36Cell6 = row.createCell(8);
+					if (record.getR36_qua_iii_lc() != null) {
+						R36Cell6.setCellValue(record.getR36_qua_iii_lc().doubleValue());
+						R36Cell6.setCellStyle(numberStyle);
+					} else {
+						R36Cell6.setCellValue("");
+						R36Cell6.setCellStyle(textStyle);
+					}
+
+// R36 Col J
+					Cell R36Cell7 = row.createCell(9);
+					if (record.getR36_qua_iii_qar() != null) {
+						R36Cell7.setCellValue(record.getR36_qua_iii_qar().doubleValue());
+						R36Cell7.setCellStyle(numberStyle);
+					} else {
+						R36Cell7.setCellValue("");
+						R36Cell7.setCellStyle(textStyle);
+					}
+
+// R36 Col K
+					Cell R36Cell8 = row.createCell(10);
+					if (record.getR36_qua_iii_inr() != null) {
+						R36Cell8.setCellValue(record.getR36_qua_iii_inr().doubleValue());
+						R36Cell8.setCellStyle(numberStyle);
+					} else {
+						R36Cell8.setCellValue("");
+						R36Cell8.setCellStyle(textStyle);
+					}
+
+// R36 Col L
+					Cell R36Cell9 = row.createCell(11);
+					if (record.getR36_qua_iv_lc() != null) {
+						R36Cell9.setCellValue(record.getR36_qua_iv_lc().doubleValue());
+						R36Cell9.setCellStyle(numberStyle);
+					} else {
+						R36Cell9.setCellValue("");
+						R36Cell9.setCellStyle(textStyle);
+					}
+
+// R36 Col M
+					Cell R36Cell10 = row.createCell(12);
+					if (record.getR36_qua_iv_qar() != null) {
+						R36Cell10.setCellValue(record.getR36_qua_iv_qar().doubleValue());
+						R36Cell10.setCellStyle(numberStyle);
+					} else {
+						R36Cell10.setCellValue("");
+						R36Cell10.setCellStyle(textStyle);
+					}
+
+// R36 Col N
+					Cell R36Cell11 = row.createCell(13);
+					if (record.getR36_qua_iv_inr() != null) {
+						R36Cell11.setCellValue(record.getR36_qua_iv_inr().doubleValue());
+						R36Cell11.setCellStyle(numberStyle);
+					} else {
+						R36Cell11.setCellValue("");
+						R36Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(36);
+// R37 Col C
+					Cell R37Cell = row.createCell(2);
+					if (record.getR37_qua_i_lc() != null) {
+						R37Cell.setCellValue(record.getR37_qua_i_lc().doubleValue());
+						R37Cell.setCellStyle(numberStyle);
+					} else {
+						R37Cell.setCellValue("");
+						R37Cell.setCellStyle(textStyle);
+					}
+
+// R37 Col D
+					Cell R37Cell1 = row.createCell(3);
+					if (record.getR37_qua_i_qar() != null) {
+						R37Cell1.setCellValue(record.getR37_qua_i_qar().doubleValue());
+						R37Cell1.setCellStyle(numberStyle);
+					} else {
+						R37Cell1.setCellValue("");
+						R37Cell1.setCellStyle(textStyle);
+					}
+
+// R37 Col E
+					Cell R37Cell2 = row.createCell(4);
+					if (record.getR37_qua_i_inr() != null) {
+						R37Cell2.setCellValue(record.getR37_qua_i_inr().doubleValue());
+						R37Cell2.setCellStyle(numberStyle);
+					} else {
+						R37Cell2.setCellValue("");
+						R37Cell2.setCellStyle(textStyle);
+					}
+
+// R37 Col F
+					Cell R37Cell3 = row.createCell(5);
+					if (record.getR37_qua_ii_lc() != null) {
+						R37Cell3.setCellValue(record.getR37_qua_ii_lc().doubleValue());
+						R37Cell3.setCellStyle(numberStyle);
+					} else {
+						R37Cell3.setCellValue("");
+						R37Cell3.setCellStyle(textStyle);
+					}
+
+// R37 Col G
+					Cell R37Cell4 = row.createCell(6);
+					if (record.getR37_qua_ii_qar() != null) {
+						R37Cell4.setCellValue(record.getR37_qua_ii_qar().doubleValue());
+						R37Cell4.setCellStyle(numberStyle);
+					} else {
+						R37Cell4.setCellValue("");
+						R37Cell4.setCellStyle(textStyle);
+					}
+
+// R37 Col H
+					Cell R37Cell5 = row.createCell(7);
+					if (record.getR37_qua_ii_inr() != null) {
+						R37Cell5.setCellValue(record.getR37_qua_ii_inr().doubleValue());
+						R37Cell5.setCellStyle(numberStyle);
+					} else {
+						R37Cell5.setCellValue("");
+						R37Cell5.setCellStyle(textStyle);
+					}
+
+// R37 Col I
+					Cell R37Cell6 = row.createCell(8);
+					if (record.getR37_qua_iii_lc() != null) {
+						R37Cell6.setCellValue(record.getR37_qua_iii_lc().doubleValue());
+						R37Cell6.setCellStyle(numberStyle);
+					} else {
+						R37Cell6.setCellValue("");
+						R37Cell6.setCellStyle(textStyle);
+					}
+
+// R37 Col J
+					Cell R37Cell7 = row.createCell(9);
+					if (record.getR37_qua_iii_qar() != null) {
+						R37Cell7.setCellValue(record.getR37_qua_iii_qar().doubleValue());
+						R37Cell7.setCellStyle(numberStyle);
+					} else {
+						R37Cell7.setCellValue("");
+						R37Cell7.setCellStyle(textStyle);
+					}
+
+// R37 Col K
+					Cell R37Cell8 = row.createCell(10);
+					if (record.getR37_qua_iii_inr() != null) {
+						R37Cell8.setCellValue(record.getR37_qua_iii_inr().doubleValue());
+						R37Cell8.setCellStyle(numberStyle);
+					} else {
+						R37Cell8.setCellValue("");
+						R37Cell8.setCellStyle(textStyle);
+					}
+
+// R37 Col L
+					Cell R37Cell9 = row.createCell(11);
+					if (record.getR37_qua_iv_lc() != null) {
+						R37Cell9.setCellValue(record.getR37_qua_iv_lc().doubleValue());
+						R37Cell9.setCellStyle(numberStyle);
+					} else {
+						R37Cell9.setCellValue("");
+						R37Cell9.setCellStyle(textStyle);
+					}
+
+// R37 Col M
+					Cell R37Cell10 = row.createCell(12);
+					if (record.getR37_qua_iv_qar() != null) {
+						R37Cell10.setCellValue(record.getR37_qua_iv_qar().doubleValue());
+						R37Cell10.setCellStyle(numberStyle);
+					} else {
+						R37Cell10.setCellValue("");
+						R37Cell10.setCellStyle(textStyle);
+					}
+
+// R37 Col N
+					Cell R37Cell11 = row.createCell(13);
+					if (record.getR37_qua_iv_inr() != null) {
+						R37Cell11.setCellValue(record.getR37_qua_iv_inr().doubleValue());
+						R37Cell11.setCellStyle(numberStyle);
+					} else {
+						R37Cell11.setCellValue("");
+						R37Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(37);
+// R38 Col C
+					Cell R38Cell = row.createCell(2);
+					if (record.getR38_qua_i_lc() != null) {
+						R38Cell.setCellValue(record.getR38_qua_i_lc().doubleValue());
+						R38Cell.setCellStyle(numberStyle);
+					} else {
+						R38Cell.setCellValue("");
+						R38Cell.setCellStyle(textStyle);
+					}
+
+// R38 Col D
+					Cell R38Cell1 = row.createCell(3);
+					if (record.getR38_qua_i_qar() != null) {
+						R38Cell1.setCellValue(record.getR38_qua_i_qar().doubleValue());
+						R38Cell1.setCellStyle(numberStyle);
+					} else {
+						R38Cell1.setCellValue("");
+						R38Cell1.setCellStyle(textStyle);
+					}
+
+// R38 Col E
+					Cell R38Cell2 = row.createCell(4);
+					if (record.getR38_qua_i_inr() != null) {
+						R38Cell2.setCellValue(record.getR38_qua_i_inr().doubleValue());
+						R38Cell2.setCellStyle(numberStyle);
+					} else {
+						R38Cell2.setCellValue("");
+						R38Cell2.setCellStyle(textStyle);
+					}
+
+// R38 Col F
+					Cell R38Cell3 = row.createCell(5);
+					if (record.getR38_qua_ii_lc() != null) {
+						R38Cell3.setCellValue(record.getR38_qua_ii_lc().doubleValue());
+						R38Cell3.setCellStyle(numberStyle);
+					} else {
+						R38Cell3.setCellValue("");
+						R38Cell3.setCellStyle(textStyle);
+					}
+
+// R38 Col G
+					Cell R38Cell4 = row.createCell(6);
+					if (record.getR38_qua_ii_qar() != null) {
+						R38Cell4.setCellValue(record.getR38_qua_ii_qar().doubleValue());
+						R38Cell4.setCellStyle(numberStyle);
+					} else {
+						R38Cell4.setCellValue("");
+						R38Cell4.setCellStyle(textStyle);
+					}
+
+// R38 Col H
+					Cell R38Cell5 = row.createCell(7);
+					if (record.getR38_qua_ii_inr() != null) {
+						R38Cell5.setCellValue(record.getR38_qua_ii_inr().doubleValue());
+						R38Cell5.setCellStyle(numberStyle);
+					} else {
+						R38Cell5.setCellValue("");
+						R38Cell5.setCellStyle(textStyle);
+					}
+
+// R38 Col I
+					Cell R38Cell6 = row.createCell(8);
+					if (record.getR38_qua_iii_lc() != null) {
+						R38Cell6.setCellValue(record.getR38_qua_iii_lc().doubleValue());
+						R38Cell6.setCellStyle(numberStyle);
+					} else {
+						R38Cell6.setCellValue("");
+						R38Cell6.setCellStyle(textStyle);
+					}
+
+// R38 Col J
+					Cell R38Cell7 = row.createCell(9);
+					if (record.getR38_qua_iii_qar() != null) {
+						R38Cell7.setCellValue(record.getR38_qua_iii_qar().doubleValue());
+						R38Cell7.setCellStyle(numberStyle);
+					} else {
+						R38Cell7.setCellValue("");
+						R38Cell7.setCellStyle(textStyle);
+					}
+
+// R38 Col K
+					Cell R38Cell8 = row.createCell(10);
+					if (record.getR38_qua_iii_inr() != null) {
+						R38Cell8.setCellValue(record.getR38_qua_iii_inr().doubleValue());
+						R38Cell8.setCellStyle(numberStyle);
+					} else {
+						R38Cell8.setCellValue("");
+						R38Cell8.setCellStyle(textStyle);
+					}
+
+// R38 Col L
+					Cell R38Cell9 = row.createCell(11);
+					if (record.getR38_qua_iv_lc() != null) {
+						R38Cell9.setCellValue(record.getR38_qua_iv_lc().doubleValue());
+						R38Cell9.setCellStyle(numberStyle);
+					} else {
+						R38Cell9.setCellValue("");
+						R38Cell9.setCellStyle(textStyle);
+					}
+
+// R38 Col M
+					Cell R38Cell10 = row.createCell(12);
+					if (record.getR38_qua_iv_qar() != null) {
+						R38Cell10.setCellValue(record.getR38_qua_iv_qar().doubleValue());
+						R38Cell10.setCellStyle(numberStyle);
+					} else {
+						R38Cell10.setCellValue("");
+						R38Cell10.setCellStyle(textStyle);
+					}
+
+// R38 Col N
+					Cell R38Cell11 = row.createCell(13);
+					if (record.getR38_qua_iv_inr() != null) {
+						R38Cell11.setCellValue(record.getR38_qua_iv_inr().doubleValue());
+						R38Cell11.setCellStyle(numberStyle);
+					} else {
+						R38Cell11.setCellValue("");
+						R38Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(38);
+// R39 Col C
+					Cell R39Cell = row.createCell(2);
+					if (record.getR39_qua_i_lc() != null) {
+						R39Cell.setCellValue(record.getR39_qua_i_lc().doubleValue());
+						R39Cell.setCellStyle(numberStyle);
+					} else {
+						R39Cell.setCellValue("");
+						R39Cell.setCellStyle(textStyle);
+					}
+
+// R39 Col D
+					Cell R39Cell1 = row.createCell(3);
+					if (record.getR39_qua_i_qar() != null) {
+						R39Cell1.setCellValue(record.getR39_qua_i_qar().doubleValue());
+						R39Cell1.setCellStyle(numberStyle);
+					} else {
+						R39Cell1.setCellValue("");
+						R39Cell1.setCellStyle(textStyle);
+					}
+
+// R39 Col E
+					Cell R39Cell2 = row.createCell(4);
+					if (record.getR39_qua_i_inr() != null) {
+						R39Cell2.setCellValue(record.getR39_qua_i_inr().doubleValue());
+						R39Cell2.setCellStyle(numberStyle);
+					} else {
+						R39Cell2.setCellValue("");
+						R39Cell2.setCellStyle(textStyle);
+					}
+
+// R39 Col F
+					Cell R39Cell3 = row.createCell(5);
+					if (record.getR39_qua_ii_lc() != null) {
+						R39Cell3.setCellValue(record.getR39_qua_ii_lc().doubleValue());
+						R39Cell3.setCellStyle(numberStyle);
+					} else {
+						R39Cell3.setCellValue("");
+						R39Cell3.setCellStyle(textStyle);
+					}
+
+// R39 Col G
+					Cell R39Cell4 = row.createCell(6);
+					if (record.getR39_qua_ii_qar() != null) {
+						R39Cell4.setCellValue(record.getR39_qua_ii_qar().doubleValue());
+						R39Cell4.setCellStyle(numberStyle);
+					} else {
+						R39Cell4.setCellValue("");
+						R39Cell4.setCellStyle(textStyle);
+					}
+
+// R39 Col H
+					Cell R39Cell5 = row.createCell(7);
+					if (record.getR39_qua_ii_inr() != null) {
+						R39Cell5.setCellValue(record.getR39_qua_ii_inr().doubleValue());
+						R39Cell5.setCellStyle(numberStyle);
+					} else {
+						R39Cell5.setCellValue("");
+						R39Cell5.setCellStyle(textStyle);
+					}
+
+// R39 Col I
+					Cell R39Cell6 = row.createCell(8);
+					if (record.getR39_qua_iii_lc() != null) {
+						R39Cell6.setCellValue(record.getR39_qua_iii_lc().doubleValue());
+						R39Cell6.setCellStyle(numberStyle);
+					} else {
+						R39Cell6.setCellValue("");
+						R39Cell6.setCellStyle(textStyle);
+					}
+
+// R39 Col J
+					Cell R39Cell7 = row.createCell(9);
+					if (record.getR39_qua_iii_qar() != null) {
+						R39Cell7.setCellValue(record.getR39_qua_iii_qar().doubleValue());
+						R39Cell7.setCellStyle(numberStyle);
+					} else {
+						R39Cell7.setCellValue("");
+						R39Cell7.setCellStyle(textStyle);
+					}
+
+// R39 Col K
+					Cell R39Cell8 = row.createCell(10);
+					if (record.getR39_qua_iii_inr() != null) {
+						R39Cell8.setCellValue(record.getR39_qua_iii_inr().doubleValue());
+						R39Cell8.setCellStyle(numberStyle);
+					} else {
+						R39Cell8.setCellValue("");
+						R39Cell8.setCellStyle(textStyle);
+					}
+
+// R39 Col L
+					Cell R39Cell9 = row.createCell(11);
+					if (record.getR39_qua_iv_lc() != null) {
+						R39Cell9.setCellValue(record.getR39_qua_iv_lc().doubleValue());
+						R39Cell9.setCellStyle(numberStyle);
+					} else {
+						R39Cell9.setCellValue("");
+						R39Cell9.setCellStyle(textStyle);
+					}
+
+// R39 Col M
+					Cell R39Cell10 = row.createCell(12);
+					if (record.getR39_qua_iv_qar() != null) {
+						R39Cell10.setCellValue(record.getR39_qua_iv_qar().doubleValue());
+						R39Cell10.setCellStyle(numberStyle);
+					} else {
+						R39Cell10.setCellValue("");
+						R39Cell10.setCellStyle(textStyle);
+					}
+
+// R39 Col N
+					Cell R39Cell11 = row.createCell(13);
+					if (record.getR39_qua_iv_inr() != null) {
+						R39Cell11.setCellValue(record.getR39_qua_iv_inr().doubleValue());
+						R39Cell11.setCellStyle(numberStyle);
+					} else {
+						R39Cell11.setCellValue("");
+						R39Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(40);
+					Cell R41Cell = row.createCell(2);
+					if (record.getR41_qua_i_lc() != null) {
+						R41Cell.setCellValue(record.getR41_qua_i_lc().doubleValue());
+						R41Cell.setCellStyle(numberStyle);
+					} else {
+						R41Cell.setCellValue("");
+						R41Cell.setCellStyle(textStyle);
+					}
+
+					Cell R41Cell1 = row.createCell(3);
+					if (record.getR41_qua_i_qar() != null) {
+						R41Cell1.setCellValue(record.getR41_qua_i_qar().doubleValue());
+						R41Cell1.setCellStyle(numberStyle);
+					} else {
+						R41Cell1.setCellValue("");
+						R41Cell1.setCellStyle(textStyle);
+					}
+
+					// R41 Col E
+					Cell R41Cell2 = row.createCell(4);
+					if (record.getR41_qua_i_inr() != null) {
+						R41Cell2.setCellValue(record.getR41_qua_i_inr().doubleValue());
+						R41Cell2.setCellStyle(numberStyle);
+					} else {
+						R41Cell2.setCellValue("");
+						R41Cell2.setCellStyle(textStyle);
+					}
+
+					// R41 Col F
+					Cell R41Cell3 = row.createCell(5);
+					if (record.getR41_qua_ii_lc() != null) {
+						R41Cell3.setCellValue(record.getR41_qua_ii_lc().doubleValue());
+						R41Cell3.setCellStyle(numberStyle);
+					} else {
+						R41Cell3.setCellValue("");
+						R41Cell3.setCellStyle(textStyle);
+					}
+					// R41 Col G
+					Cell R41Cell4 = row.createCell(6);
+					if (record.getR41_qua_ii_qar() != null) {
+						R41Cell4.setCellValue(record.getR41_qua_ii_qar().doubleValue());
+						R41Cell4.setCellStyle(numberStyle);
+					} else {
+						R41Cell4.setCellValue("");
+						R41Cell4.setCellStyle(textStyle);
+					}
+					// R41 Col H
+					Cell R41Cell5 = row.createCell(7);
+					if (record.getR41_qua_ii_inr() != null) {
+						R41Cell5.setCellValue(record.getR41_qua_ii_inr().doubleValue());
+						R41Cell5.setCellStyle(numberStyle);
+					} else {
+						R41Cell5.setCellValue("");
+						R41Cell5.setCellStyle(textStyle);
+					}
+					// R41 Col I
+					Cell R41Cell6 = row.createCell(8);
+					if (record.getR41_qua_iii_lc() != null) {
+						R41Cell6.setCellValue(record.getR41_qua_iii_lc().doubleValue());
+						R41Cell6.setCellStyle(numberStyle);
+					} else {
+						R41Cell6.setCellValue("");
+						R41Cell6.setCellStyle(textStyle);
+					}
+					// R41 Col J
+					Cell R41Cell7 = row.createCell(9);
+					if (record.getR41_qua_iii_qar() != null) {
+						R41Cell7.setCellValue(record.getR41_qua_iii_qar().doubleValue());
+						R41Cell7.setCellStyle(numberStyle);
+					} else {
+						R41Cell7.setCellValue("");
+						R41Cell7.setCellStyle(textStyle);
+					}
+					// R41 Col K
+					Cell R41Cell8 = row.createCell(10);
+					if (record.getR41_qua_iii_inr() != null) {
+						R41Cell8.setCellValue(record.getR41_qua_iii_inr().doubleValue());
+						R41Cell8.setCellStyle(numberStyle);
+					} else {
+						R41Cell8.setCellValue("");
+						R41Cell8.setCellStyle(textStyle);
+					}
+					// R41 Col L
+					Cell R41Cell9 = row.createCell(11);
+					if (record.getR41_qua_iv_lc() != null) {
+						R41Cell9.setCellValue(record.getR41_qua_iv_lc().doubleValue());
+						R41Cell9.setCellStyle(numberStyle);
+					} else {
+						R41Cell9.setCellValue("");
+						R41Cell9.setCellStyle(textStyle);
+					}
+					// R41 Col M
+					Cell R41Cell10 = row.createCell(12);
+					if (record.getR41_qua_iv_qar() != null) {
+						R41Cell10.setCellValue(record.getR41_qua_iv_qar().doubleValue());
+						R41Cell10.setCellStyle(numberStyle);
+					} else {
+						R41Cell10.setCellValue("");
+						R41Cell10.setCellStyle(textStyle);
+					}
+
+					// R41 Col N
+					Cell R41Cell11 = row.createCell(13);
+					if (record.getR41_qua_iv_inr() != null) {
+						R41Cell11.setCellValue(record.getR41_qua_iv_inr().doubleValue());
+						R41Cell11.setCellStyle(numberStyle);
+					} else {
+						R41Cell11.setCellValue("");
+						R41Cell11.setCellStyle(textStyle);
+					}
+					// R41 Col O
+					Cell R41Cell12 = row.createCell(14);
+					if (record.getR41_cumm_inr() != null) {
+						R41Cell12.setCellValue(record.getR41_cumm_inr().doubleValue());
+						R41Cell12.setCellStyle(numberStyle);
+					} else {
+						R41Cell12.setCellValue("");
+						R41Cell12.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(41);
+					Cell R42Cell = row.createCell(2);
+					if (record.getR42_qua_i_lc() != null) {
+						R42Cell.setCellValue(record.getR42_qua_i_lc().doubleValue());
+						R42Cell.setCellStyle(numberStyle);
+					} else {
+						R42Cell.setCellValue("");
+						R42Cell.setCellStyle(textStyle);
+					}
+
+					Cell R42Cell1 = row.createCell(3);
+					if (record.getR42_qua_i_qar() != null) {
+						R42Cell1.setCellValue(record.getR42_qua_i_qar().doubleValue());
+						R42Cell1.setCellStyle(numberStyle);
+					} else {
+						R42Cell1.setCellValue("");
+						R42Cell1.setCellStyle(textStyle);
+					}
+
+					// R42 Col E
+					Cell R42Cell2 = row.createCell(4);
+					if (record.getR42_qua_i_inr() != null) {
+						R42Cell2.setCellValue(record.getR42_qua_i_inr().doubleValue());
+						R42Cell2.setCellStyle(numberStyle);
+					} else {
+						R42Cell2.setCellValue("");
+						R42Cell2.setCellStyle(textStyle);
+					}
+
+					// R42 Col F
+					Cell R42Cell3 = row.createCell(5);
+					if (record.getR42_qua_ii_lc() != null) {
+						R42Cell3.setCellValue(record.getR42_qua_ii_lc().doubleValue());
+						R42Cell3.setCellStyle(numberStyle);
+					} else {
+						R42Cell3.setCellValue("");
+						R42Cell3.setCellStyle(textStyle);
+					}
+					// R42 Col G
+					Cell R42Cell4 = row.createCell(6);
+					if (record.getR42_qua_ii_qar() != null) {
+						R42Cell4.setCellValue(record.getR42_qua_ii_qar().doubleValue());
+						R42Cell4.setCellStyle(numberStyle);
+					} else {
+						R42Cell4.setCellValue("");
+						R42Cell4.setCellStyle(textStyle);
+					}
+					// R42 Col H
+					Cell R42Cell5 = row.createCell(7);
+					if (record.getR42_qua_ii_inr() != null) {
+						R42Cell5.setCellValue(record.getR42_qua_ii_inr().doubleValue());
+						R42Cell5.setCellStyle(numberStyle);
+					} else {
+						R42Cell5.setCellValue("");
+						R42Cell5.setCellStyle(textStyle);
+					}
+					// R42 Col I
+					Cell R42Cell6 = row.createCell(8);
+					if (record.getR42_qua_iii_lc() != null) {
+						R42Cell6.setCellValue(record.getR42_qua_iii_lc().doubleValue());
+						R42Cell6.setCellStyle(numberStyle);
+					} else {
+						R42Cell6.setCellValue("");
+						R42Cell6.setCellStyle(textStyle);
+					}
+					// R42 Col J
+					Cell R42Cell7 = row.createCell(9);
+					if (record.getR42_qua_iii_qar() != null) {
+						R42Cell7.setCellValue(record.getR42_qua_iii_qar().doubleValue());
+						R42Cell7.setCellStyle(numberStyle);
+					} else {
+						R42Cell7.setCellValue("");
+						R42Cell7.setCellStyle(textStyle);
+					}
+					// R42 Col K
+					Cell R42Cell8 = row.createCell(10);
+					if (record.getR42_qua_iii_inr() != null) {
+						R42Cell8.setCellValue(record.getR42_qua_iii_inr().doubleValue());
+						R42Cell8.setCellStyle(numberStyle);
+					} else {
+						R42Cell8.setCellValue("");
+						R42Cell8.setCellStyle(textStyle);
+					}
+					// R42 Col L
+					Cell R42Cell9 = row.createCell(11);
+					if (record.getR42_qua_iv_lc() != null) {
+						R42Cell9.setCellValue(record.getR42_qua_iv_lc().doubleValue());
+						R42Cell9.setCellStyle(numberStyle);
+					} else {
+						R42Cell9.setCellValue("");
+						R42Cell9.setCellStyle(textStyle);
+					}
+					// R42 Col M
+					Cell R42Cell10 = row.createCell(12);
+					if (record.getR42_qua_iv_qar() != null) {
+						R42Cell10.setCellValue(record.getR42_qua_iv_qar().doubleValue());
+						R42Cell10.setCellStyle(numberStyle);
+					} else {
+						R42Cell10.setCellValue("");
+						R42Cell10.setCellStyle(textStyle);
+					}
+
+					// R42 Col N
+					Cell R42Cell11 = row.createCell(13);
+					if (record.getR42_qua_iv_inr() != null) {
+						R42Cell11.setCellValue(record.getR42_qua_iv_inr().doubleValue());
+						R42Cell11.setCellStyle(numberStyle);
+					} else {
+						R42Cell11.setCellValue("");
+						R42Cell11.setCellStyle(textStyle);
+					}
+					// R42 Col O
+					Cell R42Cell12 = row.createCell(14);
+					if (record.getR42_cumm_inr() != null) {
+						R42Cell12.setCellValue(record.getR42_cumm_inr().doubleValue());
+						R42Cell12.setCellStyle(numberStyle);
+					} else {
+						R42Cell12.setCellValue("");
+						R42Cell12.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(42);
+					Cell R43Cell = row.createCell(2);
+					if (record.getR43_qua_i_lc() != null) {
+						R43Cell.setCellValue(record.getR43_qua_i_lc().doubleValue());
+						R43Cell.setCellStyle(numberStyle);
+					} else {
+						R43Cell.setCellValue("");
+						R43Cell.setCellStyle(textStyle);
+					}
+
+					Cell R43Cell1 = row.createCell(3);
+					if (record.getR43_qua_i_qar() != null) {
+						R43Cell1.setCellValue(record.getR43_qua_i_qar().doubleValue());
+						R43Cell1.setCellStyle(numberStyle);
+					} else {
+						R43Cell1.setCellValue("");
+						R43Cell1.setCellStyle(textStyle);
+					}
+
+					// R43 Col E
+					Cell R43Cell2 = row.createCell(4);
+					if (record.getR43_qua_i_inr() != null) {
+						R43Cell2.setCellValue(record.getR43_qua_i_inr().doubleValue());
+						R43Cell2.setCellStyle(numberStyle);
+					} else {
+						R43Cell2.setCellValue("");
+						R43Cell2.setCellStyle(textStyle);
+					}
+
+					// R43 Col F
+					Cell R43Cell3 = row.createCell(5);
+					if (record.getR43_qua_ii_lc() != null) {
+						R43Cell3.setCellValue(record.getR43_qua_ii_lc().doubleValue());
+						R43Cell3.setCellStyle(numberStyle);
+					} else {
+						R43Cell3.setCellValue("");
+						R43Cell3.setCellStyle(textStyle);
+					}
+					// R43 Col G
+					Cell R43Cell4 = row.createCell(6);
+					if (record.getR43_qua_ii_qar() != null) {
+						R43Cell4.setCellValue(record.getR43_qua_ii_qar().doubleValue());
+						R43Cell4.setCellStyle(numberStyle);
+					} else {
+						R43Cell4.setCellValue("");
+						R43Cell4.setCellStyle(textStyle);
+					}
+					// R43 Col H
+					Cell R43Cell5 = row.createCell(7);
+					if (record.getR43_qua_ii_inr() != null) {
+						R43Cell5.setCellValue(record.getR43_qua_ii_inr().doubleValue());
+						R43Cell5.setCellStyle(numberStyle);
+					} else {
+						R43Cell5.setCellValue("");
+						R43Cell5.setCellStyle(textStyle);
+					}
+					// R43 Col I
+					Cell R43Cell6 = row.createCell(8);
+					if (record.getR43_qua_iii_lc() != null) {
+						R43Cell6.setCellValue(record.getR43_qua_iii_lc().doubleValue());
+						R43Cell6.setCellStyle(numberStyle);
+					} else {
+						R43Cell6.setCellValue("");
+						R43Cell6.setCellStyle(textStyle);
+					}
+					// R43 Col J
+					Cell R43Cell7 = row.createCell(9);
+					if (record.getR43_qua_iii_qar() != null) {
+						R43Cell7.setCellValue(record.getR43_qua_iii_qar().doubleValue());
+						R43Cell7.setCellStyle(numberStyle);
+					} else {
+						R43Cell7.setCellValue("");
+						R43Cell7.setCellStyle(textStyle);
+					}
+					// R43 Col K
+					Cell R43Cell8 = row.createCell(10);
+					if (record.getR43_qua_iii_inr() != null) {
+						R43Cell8.setCellValue(record.getR43_qua_iii_inr().doubleValue());
+						R43Cell8.setCellStyle(numberStyle);
+					} else {
+						R43Cell8.setCellValue("");
+						R43Cell8.setCellStyle(textStyle);
+					}
+					// R43 Col L
+					Cell R43Cell9 = row.createCell(11);
+					if (record.getR43_qua_iv_lc() != null) {
+						R43Cell9.setCellValue(record.getR43_qua_iv_lc().doubleValue());
+						R43Cell9.setCellStyle(numberStyle);
+					} else {
+						R43Cell9.setCellValue("");
+						R43Cell9.setCellStyle(textStyle);
+					}
+					// R43 Col M
+					Cell R43Cell10 = row.createCell(12);
+					if (record.getR43_qua_iv_qar() != null) {
+						R43Cell10.setCellValue(record.getR43_qua_iv_qar().doubleValue());
+						R43Cell10.setCellStyle(numberStyle);
+					} else {
+						R43Cell10.setCellValue("");
+						R43Cell10.setCellStyle(textStyle);
+					}
+
+					// R43 Col N
+					Cell R43Cell11 = row.createCell(13);
+					if (record.getR43_qua_iv_inr() != null) {
+						R43Cell11.setCellValue(record.getR43_qua_iv_inr().doubleValue());
+						R43Cell11.setCellStyle(numberStyle);
+					} else {
+						R43Cell11.setCellValue("");
+						R43Cell11.setCellStyle(textStyle);
+					}
+
+					// R43 Col O
+					Cell R43Cell12 = row.createCell(14);
+					if (record.getR43_cumm_inr() != null) {
+						R43Cell12.setCellValue(record.getR43_cumm_inr().doubleValue());
+						R43Cell12.setCellStyle(numberStyle);
+					} else {
+						R43Cell12.setCellValue("");
+						R43Cell12.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(43);
+					// R44 Col C
+					Cell R44Cell = row.createCell(2);
+					if (record.getR44_qua_i_lc() != null) {
+						R44Cell.setCellValue(record.getR44_qua_i_lc().doubleValue());
+						R44Cell.setCellStyle(numberStyle);
+					} else {
+						R44Cell.setCellValue("");
+						R44Cell.setCellStyle(textStyle);
+					}
+
+// R44 Col D
+					Cell R44Cell1 = row.createCell(3);
+					if (record.getR44_qua_i_qar() != null) {
+						R44Cell1.setCellValue(record.getR44_qua_i_qar().doubleValue());
+						R44Cell1.setCellStyle(numberStyle);
+					} else {
+						R44Cell1.setCellValue("");
+						R44Cell1.setCellStyle(textStyle);
+					}
+
+// R44 Col E
+					Cell R44Cell2 = row.createCell(4);
+					if (record.getR44_qua_i_inr() != null) {
+						R44Cell2.setCellValue(record.getR44_qua_i_inr().doubleValue());
+						R44Cell2.setCellStyle(numberStyle);
+					} else {
+						R44Cell2.setCellValue("");
+						R44Cell2.setCellStyle(textStyle);
+					}
+
+// R44 Col F
+					Cell R44Cell3 = row.createCell(5);
+					if (record.getR44_qua_ii_lc() != null) {
+						R44Cell3.setCellValue(record.getR44_qua_ii_lc().doubleValue());
+						R44Cell3.setCellStyle(numberStyle);
+					} else {
+						R44Cell3.setCellValue("");
+						R44Cell3.setCellStyle(textStyle);
+					}
+
+// R44 Col G
+					Cell R44Cell4 = row.createCell(6);
+					if (record.getR44_qua_ii_qar() != null) {
+						R44Cell4.setCellValue(record.getR44_qua_ii_qar().doubleValue());
+						R44Cell4.setCellStyle(numberStyle);
+					} else {
+						R44Cell4.setCellValue("");
+						R44Cell4.setCellStyle(textStyle);
+					}
+
+// R44 Col H
+					Cell R44Cell5 = row.createCell(7);
+					if (record.getR44_qua_ii_inr() != null) {
+						R44Cell5.setCellValue(record.getR44_qua_ii_inr().doubleValue());
+						R44Cell5.setCellStyle(numberStyle);
+					} else {
+						R44Cell5.setCellValue("");
+						R44Cell5.setCellStyle(textStyle);
+					}
+
+// R44 Col I
+					Cell R44Cell6 = row.createCell(8);
+					if (record.getR44_qua_iii_lc() != null) {
+						R44Cell6.setCellValue(record.getR44_qua_iii_lc().doubleValue());
+						R44Cell6.setCellStyle(numberStyle);
+					} else {
+						R44Cell6.setCellValue("");
+						R44Cell6.setCellStyle(textStyle);
+					}
+
+// R44 Col J
+					Cell R44Cell7 = row.createCell(9);
+					if (record.getR44_qua_iii_qar() != null) {
+						R44Cell7.setCellValue(record.getR44_qua_iii_qar().doubleValue());
+						R44Cell7.setCellStyle(numberStyle);
+					} else {
+						R44Cell7.setCellValue("");
+						R44Cell7.setCellStyle(textStyle);
+					}
+
+// R44 Col K
+					Cell R44Cell8 = row.createCell(10);
+					if (record.getR44_qua_iii_inr() != null) {
+						R44Cell8.setCellValue(record.getR44_qua_iii_inr().doubleValue());
+						R44Cell8.setCellStyle(numberStyle);
+					} else {
+						R44Cell8.setCellValue("");
+						R44Cell8.setCellStyle(textStyle);
+					}
+
+// R44 Col L
+					Cell R44Cell9 = row.createCell(11);
+					if (record.getR44_qua_iv_lc() != null) {
+						R44Cell9.setCellValue(record.getR44_qua_iv_lc().doubleValue());
+						R44Cell9.setCellStyle(numberStyle);
+					} else {
+						R44Cell9.setCellValue("");
+						R44Cell9.setCellStyle(textStyle);
+					}
+
+// R44 Col M
+					Cell R44Cell10 = row.createCell(12);
+					if (record.getR44_qua_iv_qar() != null) {
+						R44Cell10.setCellValue(record.getR44_qua_iv_qar().doubleValue());
+						R44Cell10.setCellStyle(numberStyle);
+					} else {
+						R44Cell10.setCellValue("");
+						R44Cell10.setCellStyle(textStyle);
+					}
+
+// R44 Col N
+					Cell R44Cell11 = row.createCell(13);
+					if (record.getR44_qua_iv_inr() != null) {
+						R44Cell11.setCellValue(record.getR44_qua_iv_inr().doubleValue());
+						R44Cell11.setCellStyle(numberStyle);
+					} else {
+						R44Cell11.setCellValue("");
+						R44Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(44);
+// R45 Col C
+					Cell R45Cell = row.createCell(2);
+					if (record.getR45_qua_i_lc() != null) {
+						R45Cell.setCellValue(record.getR45_qua_i_lc().doubleValue());
+						R45Cell.setCellStyle(numberStyle);
+					} else {
+						R45Cell.setCellValue("");
+						R45Cell.setCellStyle(textStyle);
+					}
+
+// R45 Col D
+					Cell R45Cell1 = row.createCell(3);
+					if (record.getR45_qua_i_qar() != null) {
+						R45Cell1.setCellValue(record.getR45_qua_i_qar().doubleValue());
+						R45Cell1.setCellStyle(numberStyle);
+					} else {
+						R45Cell1.setCellValue("");
+						R45Cell1.setCellStyle(textStyle);
+					}
+
+// R45 Col E
+					Cell R45Cell2 = row.createCell(4);
+					if (record.getR45_qua_i_inr() != null) {
+						R45Cell2.setCellValue(record.getR45_qua_i_inr().doubleValue());
+						R45Cell2.setCellStyle(numberStyle);
+					} else {
+						R45Cell2.setCellValue("");
+						R45Cell2.setCellStyle(textStyle);
+					}
+
+// R45 Col F
+					Cell R45Cell3 = row.createCell(5);
+					if (record.getR45_qua_ii_lc() != null) {
+						R45Cell3.setCellValue(record.getR45_qua_ii_lc().doubleValue());
+						R45Cell3.setCellStyle(numberStyle);
+					} else {
+						R45Cell3.setCellValue("");
+						R45Cell3.setCellStyle(textStyle);
+					}
+
+// R45 Col G
+					Cell R45Cell4 = row.createCell(6);
+					if (record.getR45_qua_ii_qar() != null) {
+						R45Cell4.setCellValue(record.getR45_qua_ii_qar().doubleValue());
+						R45Cell4.setCellStyle(numberStyle);
+					} else {
+						R45Cell4.setCellValue("");
+						R45Cell4.setCellStyle(textStyle);
+					}
+
+// R45 Col H
+					Cell R45Cell5 = row.createCell(7);
+					if (record.getR45_qua_ii_inr() != null) {
+						R45Cell5.setCellValue(record.getR45_qua_ii_inr().doubleValue());
+						R45Cell5.setCellStyle(numberStyle);
+					} else {
+						R45Cell5.setCellValue("");
+						R45Cell5.setCellStyle(textStyle);
+					}
+
+// R45 Col I
+					Cell R45Cell6 = row.createCell(8);
+					if (record.getR45_qua_iii_lc() != null) {
+						R45Cell6.setCellValue(record.getR45_qua_iii_lc().doubleValue());
+						R45Cell6.setCellStyle(numberStyle);
+					} else {
+						R45Cell6.setCellValue("");
+						R45Cell6.setCellStyle(textStyle);
+					}
+
+// R45 Col J
+					Cell R45Cell7 = row.createCell(9);
+					if (record.getR45_qua_iii_qar() != null) {
+						R45Cell7.setCellValue(record.getR45_qua_iii_qar().doubleValue());
+						R45Cell7.setCellStyle(numberStyle);
+					} else {
+						R45Cell7.setCellValue("");
+						R45Cell7.setCellStyle(textStyle);
+					}
+
+// R45 Col K
+					Cell R45Cell8 = row.createCell(10);
+					if (record.getR45_qua_iii_inr() != null) {
+						R45Cell8.setCellValue(record.getR45_qua_iii_inr().doubleValue());
+						R45Cell8.setCellStyle(numberStyle);
+					} else {
+						R45Cell8.setCellValue("");
+						R45Cell8.setCellStyle(textStyle);
+					}
+
+// R45 Col L
+					Cell R45Cell9 = row.createCell(11);
+					if (record.getR45_qua_iv_lc() != null) {
+						R45Cell9.setCellValue(record.getR45_qua_iv_lc().doubleValue());
+						R45Cell9.setCellStyle(numberStyle);
+					} else {
+						R45Cell9.setCellValue("");
+						R45Cell9.setCellStyle(textStyle);
+					}
+
+// R45 Col M
+					Cell R45Cell10 = row.createCell(12);
+					if (record.getR45_qua_iv_qar() != null) {
+						R45Cell10.setCellValue(record.getR45_qua_iv_qar().doubleValue());
+						R45Cell10.setCellStyle(numberStyle);
+					} else {
+						R45Cell10.setCellValue("");
+						R45Cell10.setCellStyle(textStyle);
+					}
+
+// R45 Col N
+					Cell R45Cell11 = row.createCell(13);
+					if (record.getR45_qua_iv_inr() != null) {
+						R45Cell11.setCellValue(record.getR45_qua_iv_inr().doubleValue());
+						R45Cell11.setCellStyle(numberStyle);
+					} else {
+						R45Cell11.setCellValue("");
+						R45Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(45);
+// R46 Col C
+					Cell R46Cell = row.createCell(2);
+					if (record.getR46_qua_i_lc() != null) {
+						R46Cell.setCellValue(record.getR46_qua_i_lc().doubleValue());
+						R46Cell.setCellStyle(numberStyle);
+					} else {
+						R46Cell.setCellValue("");
+						R46Cell.setCellStyle(textStyle);
+					}
+
+// R46 Col D
+					Cell R46Cell1 = row.createCell(3);
+					if (record.getR46_qua_i_qar() != null) {
+						R46Cell1.setCellValue(record.getR46_qua_i_qar().doubleValue());
+						R46Cell1.setCellStyle(numberStyle);
+					} else {
+						R46Cell1.setCellValue("");
+						R46Cell1.setCellStyle(textStyle);
+					}
+
+// R46 Col E
+					Cell R46Cell2 = row.createCell(4);
+					if (record.getR46_qua_i_inr() != null) {
+						R46Cell2.setCellValue(record.getR46_qua_i_inr().doubleValue());
+						R46Cell2.setCellStyle(numberStyle);
+					} else {
+						R46Cell2.setCellValue("");
+						R46Cell2.setCellStyle(textStyle);
+					}
+
+// R46 Col F
+					Cell R46Cell3 = row.createCell(5);
+					if (record.getR46_qua_ii_lc() != null) {
+						R46Cell3.setCellValue(record.getR46_qua_ii_lc().doubleValue());
+						R46Cell3.setCellStyle(numberStyle);
+					} else {
+						R46Cell3.setCellValue("");
+						R46Cell3.setCellStyle(textStyle);
+					}
+
+// R46 Col G
+					Cell R46Cell4 = row.createCell(6);
+					if (record.getR46_qua_ii_qar() != null) {
+						R46Cell4.setCellValue(record.getR46_qua_ii_qar().doubleValue());
+						R46Cell4.setCellStyle(numberStyle);
+					} else {
+						R46Cell4.setCellValue("");
+						R46Cell4.setCellStyle(textStyle);
+					}
+
+// R46 Col H
+					Cell R46Cell5 = row.createCell(7);
+					if (record.getR46_qua_ii_inr() != null) {
+						R46Cell5.setCellValue(record.getR46_qua_ii_inr().doubleValue());
+						R46Cell5.setCellStyle(numberStyle);
+					} else {
+						R46Cell5.setCellValue("");
+						R46Cell5.setCellStyle(textStyle);
+					}
+
+// R46 Col I
+					Cell R46Cell6 = row.createCell(8);
+					if (record.getR46_qua_iii_lc() != null) {
+						R46Cell6.setCellValue(record.getR46_qua_iii_lc().doubleValue());
+						R46Cell6.setCellStyle(numberStyle);
+					} else {
+						R46Cell6.setCellValue("");
+						R46Cell6.setCellStyle(textStyle);
+					}
+
+// R46 Col J
+					Cell R46Cell7 = row.createCell(9);
+					if (record.getR46_qua_iii_qar() != null) {
+						R46Cell7.setCellValue(record.getR46_qua_iii_qar().doubleValue());
+						R46Cell7.setCellStyle(numberStyle);
+					} else {
+						R46Cell7.setCellValue("");
+						R46Cell7.setCellStyle(textStyle);
+					}
+
+// R46 Col K
+					Cell R46Cell8 = row.createCell(10);
+					if (record.getR46_qua_iii_inr() != null) {
+						R46Cell8.setCellValue(record.getR46_qua_iii_inr().doubleValue());
+						R46Cell8.setCellStyle(numberStyle);
+					} else {
+						R46Cell8.setCellValue("");
+						R46Cell8.setCellStyle(textStyle);
+					}
+
+// R46 Col L
+					Cell R46Cell9 = row.createCell(11);
+					if (record.getR46_qua_iv_lc() != null) {
+						R46Cell9.setCellValue(record.getR46_qua_iv_lc().doubleValue());
+						R46Cell9.setCellStyle(numberStyle);
+					} else {
+						R46Cell9.setCellValue("");
+						R46Cell9.setCellStyle(textStyle);
+					}
+
+// R46 Col M
+					Cell R46Cell10 = row.createCell(12);
+					if (record.getR46_qua_iv_qar() != null) {
+						R46Cell10.setCellValue(record.getR46_qua_iv_qar().doubleValue());
+						R46Cell10.setCellStyle(numberStyle);
+					} else {
+						R46Cell10.setCellValue("");
+						R46Cell10.setCellStyle(textStyle);
+					}
+
+// R46 Col N
+					Cell R46Cell11 = row.createCell(13);
+					if (record.getR46_qua_iv_inr() != null) {
+						R46Cell11.setCellValue(record.getR46_qua_iv_inr().doubleValue());
+						R46Cell11.setCellStyle(numberStyle);
+					} else {
+						R46Cell11.setCellValue("");
+						R46Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(47);
+					Cell R48Cell = row.createCell(2);
+					if (record.getR48_qua_i_lc() != null) {
+						R48Cell.setCellValue(record.getR48_qua_i_lc().doubleValue());
+						R48Cell.setCellStyle(numberStyle);
+					} else {
+						R48Cell.setCellValue("");
+						R48Cell.setCellStyle(textStyle);
+					}
+
+					Cell R48Cell1 = row.createCell(3);
+					if (record.getR48_qua_i_qar() != null) {
+						R48Cell1.setCellValue(record.getR48_qua_i_qar().doubleValue());
+						R48Cell1.setCellStyle(numberStyle);
+					} else {
+						R48Cell1.setCellValue("");
+						R48Cell1.setCellStyle(textStyle);
+					}
+
+					// R48 Col E
+					Cell R48Cell2 = row.createCell(4);
+					if (record.getR48_qua_i_inr() != null) {
+						R48Cell2.setCellValue(record.getR48_qua_i_inr().doubleValue());
+						R48Cell2.setCellStyle(numberStyle);
+					} else {
+						R48Cell2.setCellValue("");
+						R48Cell2.setCellStyle(textStyle);
+					}
+
+					// R48 Col F
+					Cell R48Cell3 = row.createCell(5);
+					if (record.getR48_qua_ii_lc() != null) {
+						R48Cell3.setCellValue(record.getR48_qua_ii_lc().doubleValue());
+						R48Cell3.setCellStyle(numberStyle);
+					} else {
+						R48Cell3.setCellValue("");
+						R48Cell3.setCellStyle(textStyle);
+					}
+					// R48 Col G
+					Cell R48Cell4 = row.createCell(6);
+					if (record.getR48_qua_ii_qar() != null) {
+						R48Cell4.setCellValue(record.getR48_qua_ii_qar().doubleValue());
+						R48Cell4.setCellStyle(numberStyle);
+					} else {
+						R48Cell4.setCellValue("");
+						R48Cell4.setCellStyle(textStyle);
+					}
+					// R48 Col H
+					Cell R48Cell5 = row.createCell(7);
+					if (record.getR48_qua_ii_inr() != null) {
+						R48Cell5.setCellValue(record.getR48_qua_ii_inr().doubleValue());
+						R48Cell5.setCellStyle(numberStyle);
+					} else {
+						R48Cell5.setCellValue("");
+						R48Cell5.setCellStyle(textStyle);
+					}
+					// R48 Col I
+					Cell R48Cell6 = row.createCell(8);
+					if (record.getR48_qua_iii_lc() != null) {
+						R48Cell6.setCellValue(record.getR48_qua_iii_lc().doubleValue());
+						R48Cell6.setCellStyle(numberStyle);
+					} else {
+						R48Cell6.setCellValue("");
+						R48Cell6.setCellStyle(textStyle);
+					}
+					// R48 Col J
+					Cell R48Cell7 = row.createCell(9);
+					if (record.getR48_qua_iii_qar() != null) {
+						R48Cell7.setCellValue(record.getR48_qua_iii_qar().doubleValue());
+						R48Cell7.setCellStyle(numberStyle);
+					} else {
+						R48Cell7.setCellValue("");
+						R48Cell7.setCellStyle(textStyle);
+					}
+					// R48 Col K
+					Cell R48Cell8 = row.createCell(10);
+					if (record.getR48_qua_iii_inr() != null) {
+						R48Cell8.setCellValue(record.getR48_qua_iii_inr().doubleValue());
+						R48Cell8.setCellStyle(numberStyle);
+					} else {
+						R48Cell8.setCellValue("");
+						R48Cell8.setCellStyle(textStyle);
+					}
+					// R48 Col L
+					Cell R48Cell9 = row.createCell(11);
+					if (record.getR48_qua_iv_lc() != null) {
+						R48Cell9.setCellValue(record.getR48_qua_iv_lc().doubleValue());
+						R48Cell9.setCellStyle(numberStyle);
+					} else {
+						R48Cell9.setCellValue("");
+						R48Cell9.setCellStyle(textStyle);
+					}
+					// R48 Col M
+					Cell R48Cell10 = row.createCell(12);
+					if (record.getR48_qua_iv_qar() != null) {
+						R48Cell10.setCellValue(record.getR48_qua_iv_qar().doubleValue());
+						R48Cell10.setCellStyle(numberStyle);
+					} else {
+						R48Cell10.setCellValue("");
+						R48Cell10.setCellStyle(textStyle);
+					}
+
+					// R48 Col N
+					Cell R48Cell11 = row.createCell(13);
+					if (record.getR48_qua_iv_inr() != null) {
+						R48Cell11.setCellValue(record.getR48_qua_iv_inr().doubleValue());
+						R48Cell11.setCellStyle(numberStyle);
+					} else {
+						R48Cell11.setCellValue("");
+						R48Cell11.setCellStyle(textStyle);
+					}
+					// R48 Col O
+					Cell R48Cell12 = row.createCell(14);
+					if (record.getR48_cumm_inr() != null) {
+						R48Cell12.setCellValue(record.getR48_cumm_inr().doubleValue());
+						R48Cell12.setCellStyle(numberStyle);
+					} else {
+						R48Cell12.setCellValue("");
+						R48Cell12.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(48);
+					Cell R49Cell = row.createCell(2);
+					if (record.getR49_qua_i_lc() != null) {
+						R49Cell.setCellValue(record.getR49_qua_i_lc().doubleValue());
+						R49Cell.setCellStyle(numberStyle);
+					} else {
+						R49Cell.setCellValue("");
+						R49Cell.setCellStyle(textStyle);
+					}
+
+					Cell R49Cell1 = row.createCell(3);
+					if (record.getR49_qua_i_qar() != null) {
+						R49Cell1.setCellValue(record.getR49_qua_i_qar().doubleValue());
+						R49Cell1.setCellStyle(numberStyle);
+					} else {
+						R49Cell1.setCellValue("");
+						R49Cell1.setCellStyle(textStyle);
+					}
+
+					// R49 Col E
+					Cell R49Cell2 = row.createCell(4);
+					if (record.getR49_qua_i_inr() != null) {
+						R49Cell2.setCellValue(record.getR49_qua_i_inr().doubleValue());
+						R49Cell2.setCellStyle(numberStyle);
+					} else {
+						R49Cell2.setCellValue("");
+						R49Cell2.setCellStyle(textStyle);
+					}
+
+					// R49 Col F
+					Cell R49Cell3 = row.createCell(5);
+					if (record.getR49_qua_ii_lc() != null) {
+						R49Cell3.setCellValue(record.getR49_qua_ii_lc().doubleValue());
+						R49Cell3.setCellStyle(numberStyle);
+					} else {
+						R49Cell3.setCellValue("");
+						R49Cell3.setCellStyle(textStyle);
+					}
+					// R49 Col G
+					Cell R49Cell4 = row.createCell(6);
+					if (record.getR49_qua_ii_qar() != null) {
+						R49Cell4.setCellValue(record.getR49_qua_ii_qar().doubleValue());
+						R49Cell4.setCellStyle(numberStyle);
+					} else {
+						R49Cell4.setCellValue("");
+						R49Cell4.setCellStyle(textStyle);
+					}
+					// R49 Col H
+					Cell R49Cell5 = row.createCell(7);
+					if (record.getR49_qua_ii_inr() != null) {
+						R49Cell5.setCellValue(record.getR49_qua_ii_inr().doubleValue());
+						R49Cell5.setCellStyle(numberStyle);
+					} else {
+						R49Cell5.setCellValue("");
+						R49Cell5.setCellStyle(textStyle);
+					}
+					// R49 Col I
+					Cell R49Cell6 = row.createCell(8);
+					if (record.getR49_qua_iii_lc() != null) {
+						R49Cell6.setCellValue(record.getR49_qua_iii_lc().doubleValue());
+						R49Cell6.setCellStyle(numberStyle);
+					} else {
+						R49Cell6.setCellValue("");
+						R49Cell6.setCellStyle(textStyle);
+					}
+					// R49 Col J
+					Cell R49Cell7 = row.createCell(9);
+					if (record.getR49_qua_iii_qar() != null) {
+						R49Cell7.setCellValue(record.getR49_qua_iii_qar().doubleValue());
+						R49Cell7.setCellStyle(numberStyle);
+					} else {
+						R49Cell7.setCellValue("");
+						R49Cell7.setCellStyle(textStyle);
+					}
+					// R49 Col K
+					Cell R49Cell8 = row.createCell(10);
+					if (record.getR49_qua_iii_inr() != null) {
+						R49Cell8.setCellValue(record.getR49_qua_iii_inr().doubleValue());
+						R49Cell8.setCellStyle(numberStyle);
+					} else {
+						R49Cell8.setCellValue("");
+						R49Cell8.setCellStyle(textStyle);
+					}
+					// R49 Col L
+					Cell R49Cell9 = row.createCell(11);
+					if (record.getR49_qua_iv_lc() != null) {
+						R49Cell9.setCellValue(record.getR49_qua_iv_lc().doubleValue());
+						R49Cell9.setCellStyle(numberStyle);
+					} else {
+						R49Cell9.setCellValue("");
+						R49Cell9.setCellStyle(textStyle);
+					}
+					// R49 Col M
+					Cell R49Cell10 = row.createCell(12);
+					if (record.getR49_qua_iv_qar() != null) {
+						R49Cell10.setCellValue(record.getR49_qua_iv_qar().doubleValue());
+						R49Cell10.setCellStyle(numberStyle);
+					} else {
+						R49Cell10.setCellValue("");
+						R49Cell10.setCellStyle(textStyle);
+					}
+
+					// R49 Col N
+					Cell R49Cell11 = row.createCell(13);
+					if (record.getR49_qua_iv_inr() != null) {
+						R49Cell11.setCellValue(record.getR49_qua_iv_inr().doubleValue());
+						R49Cell11.setCellStyle(numberStyle);
+					} else {
+						R49Cell11.setCellValue("");
+						R49Cell11.setCellStyle(textStyle);
+					}
+					// R49 Col O
+					Cell R49Cell12 = row.createCell(14);
+					if (record.getR49_cumm_inr() != null) {
+						R49Cell12.setCellValue(record.getR49_cumm_inr().doubleValue());
+						R49Cell12.setCellStyle(numberStyle);
+					} else {
+						R49Cell12.setCellValue("");
+						R49Cell12.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(49);
+					Cell R50Cell = row.createCell(2);
+					if (record.getR50_qua_i_lc() != null) {
+						R50Cell.setCellValue(record.getR50_qua_i_lc().doubleValue());
+						R50Cell.setCellStyle(numberStyle);
+					} else {
+						R50Cell.setCellValue("");
+						R50Cell.setCellStyle(textStyle);
+					}
+
+					Cell R50Cell1 = row.createCell(3);
+					if (record.getR50_qua_i_qar() != null) {
+						R50Cell1.setCellValue(record.getR50_qua_i_qar().doubleValue());
+						R50Cell1.setCellStyle(numberStyle);
+					} else {
+						R50Cell1.setCellValue("");
+						R50Cell1.setCellStyle(textStyle);
+					}
+
+					// R50 Col E
+					Cell R50Cell2 = row.createCell(4);
+					if (record.getR50_qua_i_inr() != null) {
+						R50Cell2.setCellValue(record.getR50_qua_i_inr().doubleValue());
+						R50Cell2.setCellStyle(numberStyle);
+					} else {
+						R50Cell2.setCellValue("");
+						R50Cell2.setCellStyle(textStyle);
+					}
+
+					// R50 Col F
+					Cell R50Cell3 = row.createCell(5);
+					if (record.getR50_qua_ii_lc() != null) {
+						R50Cell3.setCellValue(record.getR50_qua_ii_lc().doubleValue());
+						R50Cell3.setCellStyle(numberStyle);
+					} else {
+						R50Cell3.setCellValue("");
+						R50Cell3.setCellStyle(textStyle);
+					}
+					// R50 Col G
+					Cell R50Cell4 = row.createCell(6);
+					if (record.getR50_qua_ii_qar() != null) {
+						R50Cell4.setCellValue(record.getR50_qua_ii_qar().doubleValue());
+						R50Cell4.setCellStyle(numberStyle);
+					} else {
+						R50Cell4.setCellValue("");
+						R50Cell4.setCellStyle(textStyle);
+					}
+					// R50 Col H
+					Cell R50Cell5 = row.createCell(7);
+					if (record.getR50_qua_ii_inr() != null) {
+						R50Cell5.setCellValue(record.getR50_qua_ii_inr().doubleValue());
+						R50Cell5.setCellStyle(numberStyle);
+					} else {
+						R50Cell5.setCellValue("");
+						R50Cell5.setCellStyle(textStyle);
+					}
+					// R50 Col I
+					Cell R50Cell6 = row.createCell(8);
+					if (record.getR50_qua_iii_lc() != null) {
+						R50Cell6.setCellValue(record.getR50_qua_iii_lc().doubleValue());
+						R50Cell6.setCellStyle(numberStyle);
+					} else {
+						R50Cell6.setCellValue("");
+						R50Cell6.setCellStyle(textStyle);
+					}
+					// R50 Col J
+					Cell R50Cell7 = row.createCell(9);
+					if (record.getR50_qua_iii_qar() != null) {
+						R50Cell7.setCellValue(record.getR50_qua_iii_qar().doubleValue());
+						R50Cell7.setCellStyle(numberStyle);
+					} else {
+						R50Cell7.setCellValue("");
+						R50Cell7.setCellStyle(textStyle);
+					}
+					// R50 Col K
+					Cell R50Cell8 = row.createCell(10);
+					if (record.getR50_qua_iii_inr() != null) {
+						R50Cell8.setCellValue(record.getR50_qua_iii_inr().doubleValue());
+						R50Cell8.setCellStyle(numberStyle);
+					} else {
+						R50Cell8.setCellValue("");
+						R50Cell8.setCellStyle(textStyle);
+					}
+					// R50 Col L
+					Cell R50Cell9 = row.createCell(11);
+					if (record.getR50_qua_iv_lc() != null) {
+						R50Cell9.setCellValue(record.getR50_qua_iv_lc().doubleValue());
+						R50Cell9.setCellStyle(numberStyle);
+					} else {
+						R50Cell9.setCellValue("");
+						R50Cell9.setCellStyle(textStyle);
+					}
+					// R50 Col M
+					Cell R50Cell10 = row.createCell(12);
+					if (record.getR50_qua_iv_qar() != null) {
+						R50Cell10.setCellValue(record.getR50_qua_iv_qar().doubleValue());
+						R50Cell10.setCellStyle(numberStyle);
+					} else {
+						R50Cell10.setCellValue("");
+						R50Cell10.setCellStyle(textStyle);
+					}
+
+					// R50 Col N
+					Cell R50Cell11 = row.createCell(13);
+					if (record.getR50_qua_iv_inr() != null) {
+						R50Cell11.setCellValue(record.getR50_qua_iv_inr().doubleValue());
+						R50Cell11.setCellStyle(numberStyle);
+					} else {
+						R50Cell11.setCellValue("");
+						R50Cell11.setCellStyle(textStyle);
+					}
+
+					// R50 Col O
+					Cell R50Cell12 = row.createCell(14);
+					if (record.getR50_cumm_inr() != null) {
+						R50Cell12.setCellValue(record.getR50_cumm_inr().doubleValue());
+						R50Cell12.setCellStyle(numberStyle);
+					} else {
+						R50Cell12.setCellValue("");
+						R50Cell12.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(50);
+					Cell R51Cell = row.createCell(2);
+					if (record.getR51_qua_i_lc() != null) {
+						R51Cell.setCellValue(record.getR51_qua_i_lc().doubleValue());
+						R51Cell.setCellStyle(numberStyle);
+					} else {
+						R51Cell.setCellValue("");
+						R51Cell.setCellStyle(textStyle);
+					}
+
+					Cell R51Cell1 = row.createCell(3);
+					if (record.getR51_qua_i_qar() != null) {
+						R51Cell1.setCellValue(record.getR51_qua_i_qar().doubleValue());
+						R51Cell1.setCellStyle(numberStyle);
+					} else {
+						R51Cell1.setCellValue("");
+						R51Cell1.setCellStyle(textStyle);
+					}
+
+					// R51 Col E
+					Cell R51Cell2 = row.createCell(4);
+					if (record.getR51_qua_i_inr() != null) {
+						R51Cell2.setCellValue(record.getR51_qua_i_inr().doubleValue());
+						R51Cell2.setCellStyle(numberStyle);
+					} else {
+						R51Cell2.setCellValue("");
+						R51Cell2.setCellStyle(textStyle);
+					}
+
+					// R51 Col F
+					Cell R51Cell3 = row.createCell(5);
+					if (record.getR51_qua_ii_lc() != null) {
+						R51Cell3.setCellValue(record.getR51_qua_ii_lc().doubleValue());
+						R51Cell3.setCellStyle(numberStyle);
+					} else {
+						R51Cell3.setCellValue("");
+						R51Cell3.setCellStyle(textStyle);
+					}
+					// R51 Col G
+					Cell R51Cell4 = row.createCell(6);
+					if (record.getR51_qua_ii_qar() != null) {
+						R51Cell4.setCellValue(record.getR51_qua_ii_qar().doubleValue());
+						R51Cell4.setCellStyle(numberStyle);
+					} else {
+						R51Cell4.setCellValue("");
+						R51Cell4.setCellStyle(textStyle);
+					}
+					// R51 Col H
+					Cell R51Cell5 = row.createCell(7);
+					if (record.getR51_qua_ii_inr() != null) {
+						R51Cell5.setCellValue(record.getR51_qua_ii_inr().doubleValue());
+						R51Cell5.setCellStyle(numberStyle);
+					} else {
+						R51Cell5.setCellValue("");
+						R51Cell5.setCellStyle(textStyle);
+					}
+					// R51 Col I
+					Cell R51Cell6 = row.createCell(8);
+					if (record.getR51_qua_iii_lc() != null) {
+						R51Cell6.setCellValue(record.getR51_qua_iii_lc().doubleValue());
+						R51Cell6.setCellStyle(numberStyle);
+					} else {
+						R51Cell6.setCellValue("");
+						R51Cell6.setCellStyle(textStyle);
+					}
+					// R51 Col J
+					Cell R51Cell7 = row.createCell(9);
+					if (record.getR51_qua_iii_qar() != null) {
+						R51Cell7.setCellValue(record.getR51_qua_iii_qar().doubleValue());
+						R51Cell7.setCellStyle(numberStyle);
+					} else {
+						R51Cell7.setCellValue("");
+						R51Cell7.setCellStyle(textStyle);
+					}
+					// R51 Col K
+					Cell R51Cell8 = row.createCell(10);
+					if (record.getR51_qua_iii_inr() != null) {
+						R51Cell8.setCellValue(record.getR51_qua_iii_inr().doubleValue());
+						R51Cell8.setCellStyle(numberStyle);
+					} else {
+						R51Cell8.setCellValue("");
+						R51Cell8.setCellStyle(textStyle);
+					}
+					// R51 Col L
+					Cell R51Cell9 = row.createCell(11);
+					if (record.getR51_qua_iv_lc() != null) {
+						R51Cell9.setCellValue(record.getR51_qua_iv_lc().doubleValue());
+						R51Cell9.setCellStyle(numberStyle);
+					} else {
+						R51Cell9.setCellValue("");
+						R51Cell9.setCellStyle(textStyle);
+					}
+					// R51 Col M
+					Cell R51Cell10 = row.createCell(12);
+					if (record.getR51_qua_iv_qar() != null) {
+						R51Cell10.setCellValue(record.getR51_qua_iv_qar().doubleValue());
+						R51Cell10.setCellStyle(numberStyle);
+					} else {
+						R51Cell10.setCellValue("");
+						R51Cell10.setCellStyle(textStyle);
+					}
+
+					// R51 Col N
+					Cell R51Cell11 = row.createCell(13);
+					if (record.getR51_qua_iv_inr() != null) {
+						R51Cell11.setCellValue(record.getR51_qua_iv_inr().doubleValue());
+						R51Cell11.setCellStyle(numberStyle);
+					} else {
+						R51Cell11.setCellValue("");
+						R51Cell11.setCellStyle(textStyle);
+					}
+
+					// R51 Col O
+					Cell R51Cell12 = row.createCell(14);
+					if (record.getR51_cumm_inr() != null) {
+						R51Cell12.setCellValue(record.getR51_cumm_inr().doubleValue());
+						R51Cell12.setCellStyle(numberStyle);
+					} else {
+						R51Cell12.setCellValue("");
+						R51Cell12.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(51);
+					// R52 Col C
+					Cell R52Cell = row.createCell(2);
+					if (record.getR52_qua_i_lc() != null) {
+						R52Cell.setCellValue(record.getR52_qua_i_lc().doubleValue());
+						R52Cell.setCellStyle(numberStyle);
+					} else {
+						R52Cell.setCellValue("");
+						R52Cell.setCellStyle(textStyle);
+					}
+
+// R52 Col D
+					Cell R52Cell1 = row.createCell(3);
+					if (record.getR52_qua_i_qar() != null) {
+						R52Cell1.setCellValue(record.getR52_qua_i_qar().doubleValue());
+						R52Cell1.setCellStyle(numberStyle);
+					} else {
+						R52Cell1.setCellValue("");
+						R52Cell1.setCellStyle(textStyle);
+					}
+
+// R52 Col E
+					Cell R52Cell2 = row.createCell(4);
+					if (record.getR52_qua_i_inr() != null) {
+						R52Cell2.setCellValue(record.getR52_qua_i_inr().doubleValue());
+						R52Cell2.setCellStyle(numberStyle);
+					} else {
+						R52Cell2.setCellValue("");
+						R52Cell2.setCellStyle(textStyle);
+					}
+
+// R52 Col F
+					Cell R52Cell3 = row.createCell(5);
+					if (record.getR52_qua_ii_lc() != null) {
+						R52Cell3.setCellValue(record.getR52_qua_ii_lc().doubleValue());
+						R52Cell3.setCellStyle(numberStyle);
+					} else {
+						R52Cell3.setCellValue("");
+						R52Cell3.setCellStyle(textStyle);
+					}
+
+// R52 Col G
+					Cell R52Cell4 = row.createCell(6);
+					if (record.getR52_qua_ii_qar() != null) {
+						R52Cell4.setCellValue(record.getR52_qua_ii_qar().doubleValue());
+						R52Cell4.setCellStyle(numberStyle);
+					} else {
+						R52Cell4.setCellValue("");
+						R52Cell4.setCellStyle(textStyle);
+					}
+
+// R52 Col H
+					Cell R52Cell5 = row.createCell(7);
+					if (record.getR52_qua_ii_inr() != null) {
+						R52Cell5.setCellValue(record.getR52_qua_ii_inr().doubleValue());
+						R52Cell5.setCellStyle(numberStyle);
+					} else {
+						R52Cell5.setCellValue("");
+						R52Cell5.setCellStyle(textStyle);
+					}
+
+// R52 Col I
+					Cell R52Cell6 = row.createCell(8);
+					if (record.getR52_qua_iii_lc() != null) {
+						R52Cell6.setCellValue(record.getR52_qua_iii_lc().doubleValue());
+						R52Cell6.setCellStyle(numberStyle);
+					} else {
+						R52Cell6.setCellValue("");
+						R52Cell6.setCellStyle(textStyle);
+					}
+
+// R52 Col J
+					Cell R52Cell7 = row.createCell(9);
+					if (record.getR52_qua_iii_qar() != null) {
+						R52Cell7.setCellValue(record.getR52_qua_iii_qar().doubleValue());
+						R52Cell7.setCellStyle(numberStyle);
+					} else {
+						R52Cell7.setCellValue("");
+						R52Cell7.setCellStyle(textStyle);
+					}
+
+// R52 Col K
+					Cell R52Cell8 = row.createCell(10);
+					if (record.getR52_qua_iii_inr() != null) {
+						R52Cell8.setCellValue(record.getR52_qua_iii_inr().doubleValue());
+						R52Cell8.setCellStyle(numberStyle);
+					} else {
+						R52Cell8.setCellValue("");
+						R52Cell8.setCellStyle(textStyle);
+					}
+
+// R52 Col L
+					Cell R52Cell9 = row.createCell(11);
+					if (record.getR52_qua_iv_lc() != null) {
+						R52Cell9.setCellValue(record.getR52_qua_iv_lc().doubleValue());
+						R52Cell9.setCellStyle(numberStyle);
+					} else {
+						R52Cell9.setCellValue("");
+						R52Cell9.setCellStyle(textStyle);
+					}
+
+// R52 Col M
+					Cell R52Cell10 = row.createCell(12);
+					if (record.getR52_qua_iv_qar() != null) {
+						R52Cell10.setCellValue(record.getR52_qua_iv_qar().doubleValue());
+						R52Cell10.setCellStyle(numberStyle);
+					} else {
+						R52Cell10.setCellValue("");
+						R52Cell10.setCellStyle(textStyle);
+					}
+
+// R52 Col N
+					Cell R52Cell11 = row.createCell(13);
+					if (record.getR52_qua_iv_inr() != null) {
+						R52Cell11.setCellValue(record.getR52_qua_iv_inr().doubleValue());
+						R52Cell11.setCellStyle(numberStyle);
+					} else {
+						R52Cell11.setCellValue("");
+						R52Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(52);
+// R53 Col C
+					Cell R53Cell = row.createCell(2);
+					if (record.getR53_qua_i_lc() != null) {
+						R53Cell.setCellValue(record.getR53_qua_i_lc().doubleValue());
+						R53Cell.setCellStyle(numberStyle);
+					} else {
+						R53Cell.setCellValue("");
+						R53Cell.setCellStyle(textStyle);
+					}
+
+// R53 Col D
+					Cell R53Cell1 = row.createCell(3);
+					if (record.getR53_qua_i_qar() != null) {
+						R53Cell1.setCellValue(record.getR53_qua_i_qar().doubleValue());
+						R53Cell1.setCellStyle(numberStyle);
+					} else {
+						R53Cell1.setCellValue("");
+						R53Cell1.setCellStyle(textStyle);
+					}
+
+// R53 Col E
+					Cell R53Cell2 = row.createCell(4);
+					if (record.getR53_qua_i_inr() != null) {
+						R53Cell2.setCellValue(record.getR53_qua_i_inr().doubleValue());
+						R53Cell2.setCellStyle(numberStyle);
+					} else {
+						R53Cell2.setCellValue("");
+						R53Cell2.setCellStyle(textStyle);
+					}
+
+// R53 Col F
+					Cell R53Cell3 = row.createCell(5);
+					if (record.getR53_qua_ii_lc() != null) {
+						R53Cell3.setCellValue(record.getR53_qua_ii_lc().doubleValue());
+						R53Cell3.setCellStyle(numberStyle);
+					} else {
+						R53Cell3.setCellValue("");
+						R53Cell3.setCellStyle(textStyle);
+					}
+
+// R53 Col G
+					Cell R53Cell4 = row.createCell(6);
+					if (record.getR53_qua_ii_qar() != null) {
+						R53Cell4.setCellValue(record.getR53_qua_ii_qar().doubleValue());
+						R53Cell4.setCellStyle(numberStyle);
+					} else {
+						R53Cell4.setCellValue("");
+						R53Cell4.setCellStyle(textStyle);
+					}
+
+// R53 Col H
+					Cell R53Cell5 = row.createCell(7);
+					if (record.getR53_qua_ii_inr() != null) {
+						R53Cell5.setCellValue(record.getR53_qua_ii_inr().doubleValue());
+						R53Cell5.setCellStyle(numberStyle);
+					} else {
+						R53Cell5.setCellValue("");
+						R53Cell5.setCellStyle(textStyle);
+					}
+
+// R53 Col I
+					Cell R53Cell6 = row.createCell(8);
+					if (record.getR53_qua_iii_lc() != null) {
+						R53Cell6.setCellValue(record.getR53_qua_iii_lc().doubleValue());
+						R53Cell6.setCellStyle(numberStyle);
+					} else {
+						R53Cell6.setCellValue("");
+						R53Cell6.setCellStyle(textStyle);
+					}
+
+// R53 Col J
+					Cell R53Cell7 = row.createCell(9);
+					if (record.getR53_qua_iii_qar() != null) {
+						R53Cell7.setCellValue(record.getR53_qua_iii_qar().doubleValue());
+						R53Cell7.setCellStyle(numberStyle);
+					} else {
+						R53Cell7.setCellValue("");
+						R53Cell7.setCellStyle(textStyle);
+					}
+
+// R53 Col K
+					Cell R53Cell8 = row.createCell(10);
+					if (record.getR53_qua_iii_inr() != null) {
+						R53Cell8.setCellValue(record.getR53_qua_iii_inr().doubleValue());
+						R53Cell8.setCellStyle(numberStyle);
+					} else {
+						R53Cell8.setCellValue("");
+						R53Cell8.setCellStyle(textStyle);
+					}
+
+// R53 Col L
+					Cell R53Cell9 = row.createCell(11);
+					if (record.getR53_qua_iv_lc() != null) {
+						R53Cell9.setCellValue(record.getR53_qua_iv_lc().doubleValue());
+						R53Cell9.setCellStyle(numberStyle);
+					} else {
+						R53Cell9.setCellValue("");
+						R53Cell9.setCellStyle(textStyle);
+					}
+
+// R53 Col M
+					Cell R53Cell10 = row.createCell(12);
+					if (record.getR53_qua_iv_qar() != null) {
+						R53Cell10.setCellValue(record.getR53_qua_iv_qar().doubleValue());
+						R53Cell10.setCellStyle(numberStyle);
+					} else {
+						R53Cell10.setCellValue("");
+						R53Cell10.setCellStyle(textStyle);
+					}
+
+// R53 Col N
+					Cell R53Cell11 = row.createCell(13);
+					if (record.getR53_qua_iv_inr() != null) {
+						R53Cell11.setCellValue(record.getR53_qua_iv_inr().doubleValue());
+						R53Cell11.setCellStyle(numberStyle);
+					} else {
+						R53Cell11.setCellValue("");
+						R53Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(53);
+// R54 Col C
+					Cell R54Cell = row.createCell(2);
+					if (record.getR54_qua_i_lc() != null) {
+						R54Cell.setCellValue(record.getR54_qua_i_lc().doubleValue());
+						R54Cell.setCellStyle(numberStyle);
+					} else {
+						R54Cell.setCellValue("");
+						R54Cell.setCellStyle(textStyle);
+					}
+
+// R54 Col D
+					Cell R54Cell1 = row.createCell(3);
+					if (record.getR54_qua_i_qar() != null) {
+						R54Cell1.setCellValue(record.getR54_qua_i_qar().doubleValue());
+						R54Cell1.setCellStyle(numberStyle);
+					} else {
+						R54Cell1.setCellValue("");
+						R54Cell1.setCellStyle(textStyle);
+					}
+
+// R54 Col E
+					Cell R54Cell2 = row.createCell(4);
+					if (record.getR54_qua_i_inr() != null) {
+						R54Cell2.setCellValue(record.getR54_qua_i_inr().doubleValue());
+						R54Cell2.setCellStyle(numberStyle);
+					} else {
+						R54Cell2.setCellValue("");
+						R54Cell2.setCellStyle(textStyle);
+					}
+
+// R54 Col F
+					Cell R54Cell3 = row.createCell(5);
+					if (record.getR54_qua_ii_lc() != null) {
+						R54Cell3.setCellValue(record.getR54_qua_ii_lc().doubleValue());
+						R54Cell3.setCellStyle(numberStyle);
+					} else {
+						R54Cell3.setCellValue("");
+						R54Cell3.setCellStyle(textStyle);
+					}
+
+// R54 Col G
+					Cell R54Cell4 = row.createCell(6);
+					if (record.getR54_qua_ii_qar() != null) {
+						R54Cell4.setCellValue(record.getR54_qua_ii_qar().doubleValue());
+						R54Cell4.setCellStyle(numberStyle);
+					} else {
+						R54Cell4.setCellValue("");
+						R54Cell4.setCellStyle(textStyle);
+					}
+
+// R54 Col H
+					Cell R54Cell5 = row.createCell(7);
+					if (record.getR54_qua_ii_inr() != null) {
+						R54Cell5.setCellValue(record.getR54_qua_ii_inr().doubleValue());
+						R54Cell5.setCellStyle(numberStyle);
+					} else {
+						R54Cell5.setCellValue("");
+						R54Cell5.setCellStyle(textStyle);
+					}
+
+// R54 Col I
+					Cell R54Cell6 = row.createCell(8);
+					if (record.getR54_qua_iii_lc() != null) {
+						R54Cell6.setCellValue(record.getR54_qua_iii_lc().doubleValue());
+						R54Cell6.setCellStyle(numberStyle);
+					} else {
+						R54Cell6.setCellValue("");
+						R54Cell6.setCellStyle(textStyle);
+					}
+
+// R54 Col J
+					Cell R54Cell7 = row.createCell(9);
+					if (record.getR54_qua_iii_qar() != null) {
+						R54Cell7.setCellValue(record.getR54_qua_iii_qar().doubleValue());
+						R54Cell7.setCellStyle(numberStyle);
+					} else {
+						R54Cell7.setCellValue("");
+						R54Cell7.setCellStyle(textStyle);
+					}
+
+// R54 Col K
+					Cell R54Cell8 = row.createCell(10);
+					if (record.getR54_qua_iii_inr() != null) {
+						R54Cell8.setCellValue(record.getR54_qua_iii_inr().doubleValue());
+						R54Cell8.setCellStyle(numberStyle);
+					} else {
+						R54Cell8.setCellValue("");
+						R54Cell8.setCellStyle(textStyle);
+					}
+
+// R54 Col L
+					Cell R54Cell9 = row.createCell(11);
+					if (record.getR54_qua_iv_lc() != null) {
+						R54Cell9.setCellValue(record.getR54_qua_iv_lc().doubleValue());
+						R54Cell9.setCellStyle(numberStyle);
+					} else {
+						R54Cell9.setCellValue("");
+						R54Cell9.setCellStyle(textStyle);
+					}
+
+// R54 Col M
+					Cell R54Cell10 = row.createCell(12);
+					if (record.getR54_qua_iv_qar() != null) {
+						R54Cell10.setCellValue(record.getR54_qua_iv_qar().doubleValue());
+						R54Cell10.setCellStyle(numberStyle);
+					} else {
+						R54Cell10.setCellValue("");
+						R54Cell10.setCellStyle(textStyle);
+					}
+
+// R54 Col N
+					Cell R54Cell11 = row.createCell(13);
+					if (record.getR54_qua_iv_inr() != null) {
+						R54Cell11.setCellValue(record.getR54_qua_iv_inr().doubleValue());
+						R54Cell11.setCellStyle(numberStyle);
+					} else {
+						R54Cell11.setCellValue("");
+						R54Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(54);
+// R55 Col C
+					Cell R55Cell = row.createCell(2);
+					if (record.getR55_qua_i_lc() != null) {
+						R55Cell.setCellValue(record.getR55_qua_i_lc().doubleValue());
+						R55Cell.setCellStyle(numberStyle);
+					} else {
+						R55Cell.setCellValue("");
+						R55Cell.setCellStyle(textStyle);
+					}
+
+// R55 Col D
+					Cell R55Cell1 = row.createCell(3);
+					if (record.getR55_qua_i_qar() != null) {
+						R55Cell1.setCellValue(record.getR55_qua_i_qar().doubleValue());
+						R55Cell1.setCellStyle(numberStyle);
+					} else {
+						R55Cell1.setCellValue("");
+						R55Cell1.setCellStyle(textStyle);
+					}
+
+// R55 Col E
+					Cell R55Cell2 = row.createCell(4);
+					if (record.getR55_qua_i_inr() != null) {
+						R55Cell2.setCellValue(record.getR55_qua_i_inr().doubleValue());
+						R55Cell2.setCellStyle(numberStyle);
+					} else {
+						R55Cell2.setCellValue("");
+						R55Cell2.setCellStyle(textStyle);
+					}
+
+// R55 Col F
+					Cell R55Cell3 = row.createCell(5);
+					if (record.getR55_qua_ii_lc() != null) {
+						R55Cell3.setCellValue(record.getR55_qua_ii_lc().doubleValue());
+						R55Cell3.setCellStyle(numberStyle);
+					} else {
+						R55Cell3.setCellValue("");
+						R55Cell3.setCellStyle(textStyle);
+					}
+
+// R55 Col G
+					Cell R55Cell4 = row.createCell(6);
+					if (record.getR55_qua_ii_qar() != null) {
+						R55Cell4.setCellValue(record.getR55_qua_ii_qar().doubleValue());
+						R55Cell4.setCellStyle(numberStyle);
+					} else {
+						R55Cell4.setCellValue("");
+						R55Cell4.setCellStyle(textStyle);
+					}
+
+// R55 Col H
+					Cell R55Cell5 = row.createCell(7);
+					if (record.getR55_qua_ii_inr() != null) {
+						R55Cell5.setCellValue(record.getR55_qua_ii_inr().doubleValue());
+						R55Cell5.setCellStyle(numberStyle);
+					} else {
+						R55Cell5.setCellValue("");
+						R55Cell5.setCellStyle(textStyle);
+					}
+
+// R55 Col I
+					Cell R55Cell6 = row.createCell(8);
+					if (record.getR55_qua_iii_lc() != null) {
+						R55Cell6.setCellValue(record.getR55_qua_iii_lc().doubleValue());
+						R55Cell6.setCellStyle(numberStyle);
+					} else {
+						R55Cell6.setCellValue("");
+						R55Cell6.setCellStyle(textStyle);
+					}
+
+// R55 Col J
+					Cell R55Cell7 = row.createCell(9);
+					if (record.getR55_qua_iii_qar() != null) {
+						R55Cell7.setCellValue(record.getR55_qua_iii_qar().doubleValue());
+						R55Cell7.setCellStyle(numberStyle);
+					} else {
+						R55Cell7.setCellValue("");
+						R55Cell7.setCellStyle(textStyle);
+					}
+
+// R55 Col K
+					Cell R55Cell8 = row.createCell(10);
+					if (record.getR55_qua_iii_inr() != null) {
+						R55Cell8.setCellValue(record.getR55_qua_iii_inr().doubleValue());
+						R55Cell8.setCellStyle(numberStyle);
+					} else {
+						R55Cell8.setCellValue("");
+						R55Cell8.setCellStyle(textStyle);
+					}
+
+// R55 Col L
+					Cell R55Cell9 = row.createCell(11);
+					if (record.getR55_qua_iv_lc() != null) {
+						R55Cell9.setCellValue(record.getR55_qua_iv_lc().doubleValue());
+						R55Cell9.setCellStyle(numberStyle);
+					} else {
+						R55Cell9.setCellValue("");
+						R55Cell9.setCellStyle(textStyle);
+					}
+
+// R55 Col M
+					Cell R55Cell10 = row.createCell(12);
+					if (record.getR55_qua_iv_qar() != null) {
+						R55Cell10.setCellValue(record.getR55_qua_iv_qar().doubleValue());
+						R55Cell10.setCellStyle(numberStyle);
+					} else {
+						R55Cell10.setCellValue("");
+						R55Cell10.setCellStyle(textStyle);
+					}
+
+// R55 Col N
+					Cell R55Cell11 = row.createCell(13);
+					if (record.getR55_qua_iv_inr() != null) {
+						R55Cell11.setCellValue(record.getR55_qua_iv_inr().doubleValue());
+						R55Cell11.setCellStyle(numberStyle);
+					} else {
+						R55Cell11.setCellValue("");
+						R55Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(55);
+// R56 Col C
+					Cell R56Cell = row.createCell(2);
+					if (record.getR56_qua_i_lc() != null) {
+						R56Cell.setCellValue(record.getR56_qua_i_lc().doubleValue());
+						R56Cell.setCellStyle(numberStyle);
+					} else {
+						R56Cell.setCellValue("");
+						R56Cell.setCellStyle(textStyle);
+					}
+
+// R56 Col D
+					Cell R56Cell1 = row.createCell(3);
+					if (record.getR56_qua_i_qar() != null) {
+						R56Cell1.setCellValue(record.getR56_qua_i_qar().doubleValue());
+						R56Cell1.setCellStyle(numberStyle);
+					} else {
+						R56Cell1.setCellValue("");
+						R56Cell1.setCellStyle(textStyle);
+					}
+
+// R56 Col E
+					Cell R56Cell2 = row.createCell(4);
+					if (record.getR56_qua_i_inr() != null) {
+						R56Cell2.setCellValue(record.getR56_qua_i_inr().doubleValue());
+						R56Cell2.setCellStyle(numberStyle);
+					} else {
+						R56Cell2.setCellValue("");
+						R56Cell2.setCellStyle(textStyle);
+					}
+
+// R56 Col F
+					Cell R56Cell3 = row.createCell(5);
+					if (record.getR56_qua_ii_lc() != null) {
+						R56Cell3.setCellValue(record.getR56_qua_ii_lc().doubleValue());
+						R56Cell3.setCellStyle(numberStyle);
+					} else {
+						R56Cell3.setCellValue("");
+						R56Cell3.setCellStyle(textStyle);
+					}
+
+// R56 Col G
+					Cell R56Cell4 = row.createCell(6);
+					if (record.getR56_qua_ii_qar() != null) {
+						R56Cell4.setCellValue(record.getR56_qua_ii_qar().doubleValue());
+						R56Cell4.setCellStyle(numberStyle);
+					} else {
+						R56Cell4.setCellValue("");
+						R56Cell4.setCellStyle(textStyle);
+					}
+
+// R56 Col H
+					Cell R56Cell5 = row.createCell(7);
+					if (record.getR56_qua_ii_inr() != null) {
+						R56Cell5.setCellValue(record.getR56_qua_ii_inr().doubleValue());
+						R56Cell5.setCellStyle(numberStyle);
+					} else {
+						R56Cell5.setCellValue("");
+						R56Cell5.setCellStyle(textStyle);
+					}
+
+// R56 Col I
+					Cell R56Cell6 = row.createCell(8);
+					if (record.getR56_qua_iii_lc() != null) {
+						R56Cell6.setCellValue(record.getR56_qua_iii_lc().doubleValue());
+						R56Cell6.setCellStyle(numberStyle);
+					} else {
+						R56Cell6.setCellValue("");
+						R56Cell6.setCellStyle(textStyle);
+					}
+
+// R56 Col J
+					Cell R56Cell7 = row.createCell(9);
+					if (record.getR56_qua_iii_qar() != null) {
+						R56Cell7.setCellValue(record.getR56_qua_iii_qar().doubleValue());
+						R56Cell7.setCellStyle(numberStyle);
+					} else {
+						R56Cell7.setCellValue("");
+						R56Cell7.setCellStyle(textStyle);
+					}
+
+// R56 Col K
+					Cell R56Cell8 = row.createCell(10);
+					if (record.getR56_qua_iii_inr() != null) {
+						R56Cell8.setCellValue(record.getR56_qua_iii_inr().doubleValue());
+						R56Cell8.setCellStyle(numberStyle);
+					} else {
+						R56Cell8.setCellValue("");
+						R56Cell8.setCellStyle(textStyle);
+					}
+
+// R56 Col L
+					Cell R56Cell9 = row.createCell(11);
+					if (record.getR56_qua_iv_lc() != null) {
+						R56Cell9.setCellValue(record.getR56_qua_iv_lc().doubleValue());
+						R56Cell9.setCellStyle(numberStyle);
+					} else {
+						R56Cell9.setCellValue("");
+						R56Cell9.setCellStyle(textStyle);
+					}
+
+// R56 Col M
+					Cell R56Cell10 = row.createCell(12);
+					if (record.getR56_qua_iv_qar() != null) {
+						R56Cell10.setCellValue(record.getR56_qua_iv_qar().doubleValue());
+						R56Cell10.setCellStyle(numberStyle);
+					} else {
+						R56Cell10.setCellValue("");
+						R56Cell10.setCellStyle(textStyle);
+					}
+
+// R56 Col N
+					Cell R56Cell11 = row.createCell(13);
+					if (record.getR56_qua_iv_inr() != null) {
+						R56Cell11.setCellValue(record.getR56_qua_iv_inr().doubleValue());
+						R56Cell11.setCellStyle(numberStyle);
+					} else {
+						R56Cell11.setCellValue("");
+						R56Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(56);
+// R57 Col C
+					Cell R57Cell = row.createCell(2);
+					if (record.getR57_qua_i_lc() != null) {
+						R57Cell.setCellValue(record.getR57_qua_i_lc().doubleValue());
+						R57Cell.setCellStyle(numberStyle);
+					} else {
+						R57Cell.setCellValue("");
+						R57Cell.setCellStyle(textStyle);
+					}
+
+// R57 Col D
+					Cell R57Cell1 = row.createCell(3);
+					if (record.getR57_qua_i_qar() != null) {
+						R57Cell1.setCellValue(record.getR57_qua_i_qar().doubleValue());
+						R57Cell1.setCellStyle(numberStyle);
+					} else {
+						R57Cell1.setCellValue("");
+						R57Cell1.setCellStyle(textStyle);
+					}
+
+// R57 Col E
+					Cell R57Cell2 = row.createCell(4);
+					if (record.getR57_qua_i_inr() != null) {
+						R57Cell2.setCellValue(record.getR57_qua_i_inr().doubleValue());
+						R57Cell2.setCellStyle(numberStyle);
+					} else {
+						R57Cell2.setCellValue("");
+						R57Cell2.setCellStyle(textStyle);
+					}
+
+// R57 Col F
+					Cell R57Cell3 = row.createCell(5);
+					if (record.getR57_qua_ii_lc() != null) {
+						R57Cell3.setCellValue(record.getR57_qua_ii_lc().doubleValue());
+						R57Cell3.setCellStyle(numberStyle);
+					} else {
+						R57Cell3.setCellValue("");
+						R57Cell3.setCellStyle(textStyle);
+					}
+
+// R57 Col G
+					Cell R57Cell4 = row.createCell(6);
+					if (record.getR57_qua_ii_qar() != null) {
+						R57Cell4.setCellValue(record.getR57_qua_ii_qar().doubleValue());
+						R57Cell4.setCellStyle(numberStyle);
+					} else {
+						R57Cell4.setCellValue("");
+						R57Cell4.setCellStyle(textStyle);
+					}
+
+// R57 Col H
+					Cell R57Cell5 = row.createCell(7);
+					if (record.getR57_qua_ii_inr() != null) {
+						R57Cell5.setCellValue(record.getR57_qua_ii_inr().doubleValue());
+						R57Cell5.setCellStyle(numberStyle);
+					} else {
+						R57Cell5.setCellValue("");
+						R57Cell5.setCellStyle(textStyle);
+					}
+
+// R57 Col I
+					Cell R57Cell6 = row.createCell(8);
+					if (record.getR57_qua_iii_lc() != null) {
+						R57Cell6.setCellValue(record.getR57_qua_iii_lc().doubleValue());
+						R57Cell6.setCellStyle(numberStyle);
+					} else {
+						R57Cell6.setCellValue("");
+						R57Cell6.setCellStyle(textStyle);
+					}
+
+// R57 Col J
+					Cell R57Cell7 = row.createCell(9);
+					if (record.getR57_qua_iii_qar() != null) {
+						R57Cell7.setCellValue(record.getR57_qua_iii_qar().doubleValue());
+						R57Cell7.setCellStyle(numberStyle);
+					} else {
+						R57Cell7.setCellValue("");
+						R57Cell7.setCellStyle(textStyle);
+					}
+
+// R57 Col K
+					Cell R57Cell8 = row.createCell(10);
+					if (record.getR57_qua_iii_inr() != null) {
+						R57Cell8.setCellValue(record.getR57_qua_iii_inr().doubleValue());
+						R57Cell8.setCellStyle(numberStyle);
+					} else {
+						R57Cell8.setCellValue("");
+						R57Cell8.setCellStyle(textStyle);
+					}
+
+// R57 Col L
+					Cell R57Cell9 = row.createCell(11);
+					if (record.getR57_qua_iv_lc() != null) {
+						R57Cell9.setCellValue(record.getR57_qua_iv_lc().doubleValue());
+						R57Cell9.setCellStyle(numberStyle);
+					} else {
+						R57Cell9.setCellValue("");
+						R57Cell9.setCellStyle(textStyle);
+					}
+
+// R57 Col M
+					Cell R57Cell10 = row.createCell(12);
+					if (record.getR57_qua_iv_qar() != null) {
+						R57Cell10.setCellValue(record.getR57_qua_iv_qar().doubleValue());
+						R57Cell10.setCellStyle(numberStyle);
+					} else {
+						R57Cell10.setCellValue("");
+						R57Cell10.setCellStyle(textStyle);
+					}
+
+// R57 Col N
+					Cell R57Cell11 = row.createCell(13);
+					if (record.getR57_qua_iv_inr() != null) {
+						R57Cell11.setCellValue(record.getR57_qua_iv_inr().doubleValue());
+						R57Cell11.setCellStyle(numberStyle);
+					} else {
+						R57Cell11.setCellValue("");
+						R57Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(57);
+// R58 Col C
+					Cell R58Cell = row.createCell(2);
+					if (record.getR58_qua_i_lc() != null) {
+						R58Cell.setCellValue(record.getR58_qua_i_lc().doubleValue());
+						R58Cell.setCellStyle(numberStyle);
+					} else {
+						R58Cell.setCellValue("");
+						R58Cell.setCellStyle(textStyle);
+					}
+
+// R58 Col D
+					Cell R58Cell1 = row.createCell(3);
+					if (record.getR58_qua_i_qar() != null) {
+						R58Cell1.setCellValue(record.getR58_qua_i_qar().doubleValue());
+						R58Cell1.setCellStyle(numberStyle);
+					} else {
+						R58Cell1.setCellValue("");
+						R58Cell1.setCellStyle(textStyle);
+					}
+
+// R58 Col E
+					Cell R58Cell2 = row.createCell(4);
+					if (record.getR58_qua_i_inr() != null) {
+						R58Cell2.setCellValue(record.getR58_qua_i_inr().doubleValue());
+						R58Cell2.setCellStyle(numberStyle);
+					} else {
+						R58Cell2.setCellValue("");
+						R58Cell2.setCellStyle(textStyle);
+					}
+
+// R58 Col F
+					Cell R58Cell3 = row.createCell(5);
+					if (record.getR58_qua_ii_lc() != null) {
+						R58Cell3.setCellValue(record.getR58_qua_ii_lc().doubleValue());
+						R58Cell3.setCellStyle(numberStyle);
+					} else {
+						R58Cell3.setCellValue("");
+						R58Cell3.setCellStyle(textStyle);
+					}
+
+// R58 Col G
+					Cell R58Cell4 = row.createCell(6);
+					if (record.getR58_qua_ii_qar() != null) {
+						R58Cell4.setCellValue(record.getR58_qua_ii_qar().doubleValue());
+						R58Cell4.setCellStyle(numberStyle);
+					} else {
+						R58Cell4.setCellValue("");
+						R58Cell4.setCellStyle(textStyle);
+					}
+
+// R58 Col H
+					Cell R58Cell5 = row.createCell(7);
+					if (record.getR58_qua_ii_inr() != null) {
+						R58Cell5.setCellValue(record.getR58_qua_ii_inr().doubleValue());
+						R58Cell5.setCellStyle(numberStyle);
+					} else {
+						R58Cell5.setCellValue("");
+						R58Cell5.setCellStyle(textStyle);
+					}
+
+// R58 Col I
+					Cell R58Cell6 = row.createCell(8);
+					if (record.getR58_qua_iii_lc() != null) {
+						R58Cell6.setCellValue(record.getR58_qua_iii_lc().doubleValue());
+						R58Cell6.setCellStyle(numberStyle);
+					} else {
+						R58Cell6.setCellValue("");
+						R58Cell6.setCellStyle(textStyle);
+					}
+
+// R58 Col J
+					Cell R58Cell7 = row.createCell(9);
+					if (record.getR58_qua_iii_qar() != null) {
+						R58Cell7.setCellValue(record.getR58_qua_iii_qar().doubleValue());
+						R58Cell7.setCellStyle(numberStyle);
+					} else {
+						R58Cell7.setCellValue("");
+						R58Cell7.setCellStyle(textStyle);
+					}
+
+// R58 Col K
+					Cell R58Cell8 = row.createCell(10);
+					if (record.getR58_qua_iii_inr() != null) {
+						R58Cell8.setCellValue(record.getR58_qua_iii_inr().doubleValue());
+						R58Cell8.setCellStyle(numberStyle);
+					} else {
+						R58Cell8.setCellValue("");
+						R58Cell8.setCellStyle(textStyle);
+					}
+
+// R58 Col L
+					Cell R58Cell9 = row.createCell(11);
+					if (record.getR58_qua_iv_lc() != null) {
+						R58Cell9.setCellValue(record.getR58_qua_iv_lc().doubleValue());
+						R58Cell9.setCellStyle(numberStyle);
+					} else {
+						R58Cell9.setCellValue("");
+						R58Cell9.setCellStyle(textStyle);
+					}
+
+// R58 Col M
+					Cell R58Cell10 = row.createCell(12);
+					if (record.getR58_qua_iv_qar() != null) {
+						R58Cell10.setCellValue(record.getR58_qua_iv_qar().doubleValue());
+						R58Cell10.setCellStyle(numberStyle);
+					} else {
+						R58Cell10.setCellValue("");
+						R58Cell10.setCellStyle(textStyle);
+					}
+
+// R58 Col N
+					Cell R58Cell11 = row.createCell(13);
+					if (record.getR58_qua_iv_inr() != null) {
+						R58Cell11.setCellValue(record.getR58_qua_iv_inr().doubleValue());
+						R58Cell11.setCellStyle(numberStyle);
+					} else {
+						R58Cell11.setCellValue("");
+						R58Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(58);
+// R59 Col C
+					Cell R59Cell = row.createCell(2);
+					if (record.getR59_qua_i_lc() != null) {
+						R59Cell.setCellValue(record.getR59_qua_i_lc().doubleValue());
+						R59Cell.setCellStyle(numberStyle);
+					} else {
+						R59Cell.setCellValue("");
+						R59Cell.setCellStyle(textStyle);
+					}
+
+// R59 Col D
+					Cell R59Cell1 = row.createCell(3);
+					if (record.getR59_qua_i_qar() != null) {
+						R59Cell1.setCellValue(record.getR59_qua_i_qar().doubleValue());
+						R59Cell1.setCellStyle(numberStyle);
+					} else {
+						R59Cell1.setCellValue("");
+						R59Cell1.setCellStyle(textStyle);
+					}
+
+// R59 Col E
+					Cell R59Cell2 = row.createCell(4);
+					if (record.getR59_qua_i_inr() != null) {
+						R59Cell2.setCellValue(record.getR59_qua_i_inr().doubleValue());
+						R59Cell2.setCellStyle(numberStyle);
+					} else {
+						R59Cell2.setCellValue("");
+						R59Cell2.setCellStyle(textStyle);
+					}
+
+// R59 Col F
+					Cell R59Cell3 = row.createCell(5);
+					if (record.getR59_qua_ii_lc() != null) {
+						R59Cell3.setCellValue(record.getR59_qua_ii_lc().doubleValue());
+						R59Cell3.setCellStyle(numberStyle);
+					} else {
+						R59Cell3.setCellValue("");
+						R59Cell3.setCellStyle(textStyle);
+					}
+
+// R59 Col G
+					Cell R59Cell4 = row.createCell(6);
+					if (record.getR59_qua_ii_qar() != null) {
+						R59Cell4.setCellValue(record.getR59_qua_ii_qar().doubleValue());
+						R59Cell4.setCellStyle(numberStyle);
+					} else {
+						R59Cell4.setCellValue("");
+						R59Cell4.setCellStyle(textStyle);
+					}
+
+// R59 Col H
+					Cell R59Cell5 = row.createCell(7);
+					if (record.getR59_qua_ii_inr() != null) {
+						R59Cell5.setCellValue(record.getR59_qua_ii_inr().doubleValue());
+						R59Cell5.setCellStyle(numberStyle);
+					} else {
+						R59Cell5.setCellValue("");
+						R59Cell5.setCellStyle(textStyle);
+					}
+
+// R59 Col I
+					Cell R59Cell6 = row.createCell(8);
+					if (record.getR59_qua_iii_lc() != null) {
+						R59Cell6.setCellValue(record.getR59_qua_iii_lc().doubleValue());
+						R59Cell6.setCellStyle(numberStyle);
+					} else {
+						R59Cell6.setCellValue("");
+						R59Cell6.setCellStyle(textStyle);
+					}
+
+// R59 Col J
+					Cell R59Cell7 = row.createCell(9);
+					if (record.getR59_qua_iii_qar() != null) {
+						R59Cell7.setCellValue(record.getR59_qua_iii_qar().doubleValue());
+						R59Cell7.setCellStyle(numberStyle);
+					} else {
+						R59Cell7.setCellValue("");
+						R59Cell7.setCellStyle(textStyle);
+					}
+
+// R59 Col K
+					Cell R59Cell8 = row.createCell(10);
+					if (record.getR59_qua_iii_inr() != null) {
+						R59Cell8.setCellValue(record.getR59_qua_iii_inr().doubleValue());
+						R59Cell8.setCellStyle(numberStyle);
+					} else {
+						R59Cell8.setCellValue("");
+						R59Cell8.setCellStyle(textStyle);
+					}
+
+// R59 Col L
+					Cell R59Cell9 = row.createCell(11);
+					if (record.getR59_qua_iv_lc() != null) {
+						R59Cell9.setCellValue(record.getR59_qua_iv_lc().doubleValue());
+						R59Cell9.setCellStyle(numberStyle);
+					} else {
+						R59Cell9.setCellValue("");
+						R59Cell9.setCellStyle(textStyle);
+					}
+
+// R59 Col M
+					Cell R59Cell10 = row.createCell(12);
+					if (record.getR59_qua_iv_qar() != null) {
+						R59Cell10.setCellValue(record.getR59_qua_iv_qar().doubleValue());
+						R59Cell10.setCellStyle(numberStyle);
+					} else {
+						R59Cell10.setCellValue("");
+						R59Cell10.setCellStyle(textStyle);
+					}
+
+// R59 Col N
+					Cell R59Cell11 = row.createCell(13);
+					if (record.getR59_qua_iv_inr() != null) {
+						R59Cell11.setCellValue(record.getR59_qua_iv_inr().doubleValue());
+						R59Cell11.setCellStyle(numberStyle);
+					} else {
+						R59Cell11.setCellValue("");
+						R59Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(59);
+// R60 Col C
+					Cell R60Cell = row.createCell(2);
+					if (record.getR60_qua_i_lc() != null) {
+						R60Cell.setCellValue(record.getR60_qua_i_lc().doubleValue());
+						R60Cell.setCellStyle(numberStyle);
+					} else {
+						R60Cell.setCellValue("");
+						R60Cell.setCellStyle(textStyle);
+					}
+
+// R60 Col D
+					Cell R60Cell1 = row.createCell(3);
+					if (record.getR60_qua_i_qar() != null) {
+						R60Cell1.setCellValue(record.getR60_qua_i_qar().doubleValue());
+						R60Cell1.setCellStyle(numberStyle);
+					} else {
+						R60Cell1.setCellValue("");
+						R60Cell1.setCellStyle(textStyle);
+					}
+
+// R60 Col E
+					Cell R60Cell2 = row.createCell(4);
+					if (record.getR60_qua_i_inr() != null) {
+						R60Cell2.setCellValue(record.getR60_qua_i_inr().doubleValue());
+						R60Cell2.setCellStyle(numberStyle);
+					} else {
+						R60Cell2.setCellValue("");
+						R60Cell2.setCellStyle(textStyle);
+					}
+
+// R60 Col F
+					Cell R60Cell3 = row.createCell(5);
+					if (record.getR60_qua_ii_lc() != null) {
+						R60Cell3.setCellValue(record.getR60_qua_ii_lc().doubleValue());
+						R60Cell3.setCellStyle(numberStyle);
+					} else {
+						R60Cell3.setCellValue("");
+						R60Cell3.setCellStyle(textStyle);
+					}
+
+// R60 Col G
+					Cell R60Cell4 = row.createCell(6);
+					if (record.getR60_qua_ii_qar() != null) {
+						R60Cell4.setCellValue(record.getR60_qua_ii_qar().doubleValue());
+						R60Cell4.setCellStyle(numberStyle);
+					} else {
+						R60Cell4.setCellValue("");
+						R60Cell4.setCellStyle(textStyle);
+					}
+
+// R60 Col H
+					Cell R60Cell5 = row.createCell(7);
+					if (record.getR60_qua_ii_inr() != null) {
+						R60Cell5.setCellValue(record.getR60_qua_ii_inr().doubleValue());
+						R60Cell5.setCellStyle(numberStyle);
+					} else {
+						R60Cell5.setCellValue("");
+						R60Cell5.setCellStyle(textStyle);
+					}
+
+// R60 Col I
+					Cell R60Cell6 = row.createCell(8);
+					if (record.getR60_qua_iii_lc() != null) {
+						R60Cell6.setCellValue(record.getR60_qua_iii_lc().doubleValue());
+						R60Cell6.setCellStyle(numberStyle);
+					} else {
+						R60Cell6.setCellValue("");
+						R60Cell6.setCellStyle(textStyle);
+					}
+
+// R60 Col J
+					Cell R60Cell7 = row.createCell(9);
+					if (record.getR60_qua_iii_qar() != null) {
+						R60Cell7.setCellValue(record.getR60_qua_iii_qar().doubleValue());
+						R60Cell7.setCellStyle(numberStyle);
+					} else {
+						R60Cell7.setCellValue("");
+						R60Cell7.setCellStyle(textStyle);
+					}
+
+// R60 Col K
+					Cell R60Cell8 = row.createCell(10);
+					if (record.getR60_qua_iii_inr() != null) {
+						R60Cell8.setCellValue(record.getR60_qua_iii_inr().doubleValue());
+						R60Cell8.setCellStyle(numberStyle);
+					} else {
+						R60Cell8.setCellValue("");
+						R60Cell8.setCellStyle(textStyle);
+					}
+
+// R60 Col L
+					Cell R60Cell9 = row.createCell(11);
+					if (record.getR60_qua_iv_lc() != null) {
+						R60Cell9.setCellValue(record.getR60_qua_iv_lc().doubleValue());
+						R60Cell9.setCellStyle(numberStyle);
+					} else {
+						R60Cell9.setCellValue("");
+						R60Cell9.setCellStyle(textStyle);
+					}
+
+// R60 Col M
+					Cell R60Cell10 = row.createCell(12);
+					if (record.getR60_qua_iv_qar() != null) {
+						R60Cell10.setCellValue(record.getR60_qua_iv_qar().doubleValue());
+						R60Cell10.setCellStyle(numberStyle);
+					} else {
+						R60Cell10.setCellValue("");
+						R60Cell10.setCellStyle(textStyle);
+					}
+
+// R60 Col N
+					Cell R60Cell11 = row.createCell(13);
+					if (record.getR60_qua_iv_inr() != null) {
+						R60Cell11.setCellValue(record.getR60_qua_iv_inr().doubleValue());
+						R60Cell11.setCellStyle(numberStyle);
+					} else {
+						R60Cell11.setCellValue("");
+						R60Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(60);
+// R61 Col C
+					Cell R61Cell = row.createCell(2);
+					if (record.getR61_qua_i_lc() != null) {
+						R61Cell.setCellValue(record.getR61_qua_i_lc().doubleValue());
+						R61Cell.setCellStyle(numberStyle);
+					} else {
+						R61Cell.setCellValue("");
+						R61Cell.setCellStyle(textStyle);
+					}
+
+// R61 Col D
+					Cell R61Cell1 = row.createCell(3);
+					if (record.getR61_qua_i_qar() != null) {
+						R61Cell1.setCellValue(record.getR61_qua_i_qar().doubleValue());
+						R61Cell1.setCellStyle(numberStyle);
+					} else {
+						R61Cell1.setCellValue("");
+						R61Cell1.setCellStyle(textStyle);
+					}
+
+// R61 Col E
+					Cell R61Cell2 = row.createCell(4);
+					if (record.getR61_qua_i_inr() != null) {
+						R61Cell2.setCellValue(record.getR61_qua_i_inr().doubleValue());
+						R61Cell2.setCellStyle(numberStyle);
+					} else {
+						R61Cell2.setCellValue("");
+						R61Cell2.setCellStyle(textStyle);
+					}
+
+// R61 Col F
+					Cell R61Cell3 = row.createCell(5);
+					if (record.getR61_qua_ii_lc() != null) {
+						R61Cell3.setCellValue(record.getR61_qua_ii_lc().doubleValue());
+						R61Cell3.setCellStyle(numberStyle);
+					} else {
+						R61Cell3.setCellValue("");
+						R61Cell3.setCellStyle(textStyle);
+					}
+
+// R61 Col G
+					Cell R61Cell4 = row.createCell(6);
+					if (record.getR61_qua_ii_qar() != null) {
+						R61Cell4.setCellValue(record.getR61_qua_ii_qar().doubleValue());
+						R61Cell4.setCellStyle(numberStyle);
+					} else {
+						R61Cell4.setCellValue("");
+						R61Cell4.setCellStyle(textStyle);
+					}
+
+// R61 Col H
+					Cell R61Cell5 = row.createCell(7);
+					if (record.getR61_qua_ii_inr() != null) {
+						R61Cell5.setCellValue(record.getR61_qua_ii_inr().doubleValue());
+						R61Cell5.setCellStyle(numberStyle);
+					} else {
+						R61Cell5.setCellValue("");
+						R61Cell5.setCellStyle(textStyle);
+					}
+
+// R61 Col I
+					Cell R61Cell6 = row.createCell(8);
+					if (record.getR61_qua_iii_lc() != null) {
+						R61Cell6.setCellValue(record.getR61_qua_iii_lc().doubleValue());
+						R61Cell6.setCellStyle(numberStyle);
+					} else {
+						R61Cell6.setCellValue("");
+						R61Cell6.setCellStyle(textStyle);
+					}
+
+// R61 Col J
+					Cell R61Cell7 = row.createCell(9);
+					if (record.getR61_qua_iii_qar() != null) {
+						R61Cell7.setCellValue(record.getR61_qua_iii_qar().doubleValue());
+						R61Cell7.setCellStyle(numberStyle);
+					} else {
+						R61Cell7.setCellValue("");
+						R61Cell7.setCellStyle(textStyle);
+					}
+
+// R61 Col K
+					Cell R61Cell8 = row.createCell(10);
+					if (record.getR61_qua_iii_inr() != null) {
+						R61Cell8.setCellValue(record.getR61_qua_iii_inr().doubleValue());
+						R61Cell8.setCellStyle(numberStyle);
+					} else {
+						R61Cell8.setCellValue("");
+						R61Cell8.setCellStyle(textStyle);
+					}
+
+// R61 Col L
+					Cell R61Cell9 = row.createCell(11);
+					if (record.getR61_qua_iv_lc() != null) {
+						R61Cell9.setCellValue(record.getR61_qua_iv_lc().doubleValue());
+						R61Cell9.setCellStyle(numberStyle);
+					} else {
+						R61Cell9.setCellValue("");
+						R61Cell9.setCellStyle(textStyle);
+					}
+
+// R61 Col M
+					Cell R61Cell10 = row.createCell(12);
+					if (record.getR61_qua_iv_qar() != null) {
+						R61Cell10.setCellValue(record.getR61_qua_iv_qar().doubleValue());
+						R61Cell10.setCellStyle(numberStyle);
+					} else {
+						R61Cell10.setCellValue("");
+						R61Cell10.setCellStyle(textStyle);
+					}
+
+// R61 Col N
+					Cell R61Cell11 = row.createCell(13);
+					if (record.getR61_qua_iv_inr() != null) {
+						R61Cell11.setCellValue(record.getR61_qua_iv_inr().doubleValue());
+						R61Cell11.setCellStyle(numberStyle);
+					} else {
+						R61Cell11.setCellValue("");
+						R61Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(61);
+// R62 Col C
+					Cell R62Cell = row.createCell(2);
+					if (record.getR62_qua_i_lc() != null) {
+						R62Cell.setCellValue(record.getR62_qua_i_lc().doubleValue());
+						R62Cell.setCellStyle(numberStyle);
+					} else {
+						R62Cell.setCellValue("");
+						R62Cell.setCellStyle(textStyle);
+					}
+
+// R62 Col D
+					Cell R62Cell1 = row.createCell(3);
+					if (record.getR62_qua_i_qar() != null) {
+						R62Cell1.setCellValue(record.getR62_qua_i_qar().doubleValue());
+						R62Cell1.setCellStyle(numberStyle);
+					} else {
+						R62Cell1.setCellValue("");
+						R62Cell1.setCellStyle(textStyle);
+					}
+
+// R62 Col E
+					Cell R62Cell2 = row.createCell(4);
+					if (record.getR62_qua_i_inr() != null) {
+						R62Cell2.setCellValue(record.getR62_qua_i_inr().doubleValue());
+						R62Cell2.setCellStyle(numberStyle);
+					} else {
+						R62Cell2.setCellValue("");
+						R62Cell2.setCellStyle(textStyle);
+					}
+
+// R62 Col F
+					Cell R62Cell3 = row.createCell(5);
+					if (record.getR62_qua_ii_lc() != null) {
+						R62Cell3.setCellValue(record.getR62_qua_ii_lc().doubleValue());
+						R62Cell3.setCellStyle(numberStyle);
+					} else {
+						R62Cell3.setCellValue("");
+						R62Cell3.setCellStyle(textStyle);
+					}
+
+// R62 Col G
+					Cell R62Cell4 = row.createCell(6);
+					if (record.getR62_qua_ii_qar() != null) {
+						R62Cell4.setCellValue(record.getR62_qua_ii_qar().doubleValue());
+						R62Cell4.setCellStyle(numberStyle);
+					} else {
+						R62Cell4.setCellValue("");
+						R62Cell4.setCellStyle(textStyle);
+					}
+
+// R62 Col H
+					Cell R62Cell5 = row.createCell(7);
+					if (record.getR62_qua_ii_inr() != null) {
+						R62Cell5.setCellValue(record.getR62_qua_ii_inr().doubleValue());
+						R62Cell5.setCellStyle(numberStyle);
+					} else {
+						R62Cell5.setCellValue("");
+						R62Cell5.setCellStyle(textStyle);
+					}
+
+// R62 Col I
+					Cell R62Cell6 = row.createCell(8);
+					if (record.getR62_qua_iii_lc() != null) {
+						R62Cell6.setCellValue(record.getR62_qua_iii_lc().doubleValue());
+						R62Cell6.setCellStyle(numberStyle);
+					} else {
+						R62Cell6.setCellValue("");
+						R62Cell6.setCellStyle(textStyle);
+					}
+
+// R62 Col J
+					Cell R62Cell7 = row.createCell(9);
+					if (record.getR62_qua_iii_qar() != null) {
+						R62Cell7.setCellValue(record.getR62_qua_iii_qar().doubleValue());
+						R62Cell7.setCellStyle(numberStyle);
+					} else {
+						R62Cell7.setCellValue("");
+						R62Cell7.setCellStyle(textStyle);
+					}
+
+// R62 Col K
+					Cell R62Cell8 = row.createCell(10);
+					if (record.getR62_qua_iii_inr() != null) {
+						R62Cell8.setCellValue(record.getR62_qua_iii_inr().doubleValue());
+						R62Cell8.setCellStyle(numberStyle);
+					} else {
+						R62Cell8.setCellValue("");
+						R62Cell8.setCellStyle(textStyle);
+					}
+
+// R62 Col L
+					Cell R62Cell9 = row.createCell(11);
+					if (record.getR62_qua_iv_lc() != null) {
+						R62Cell9.setCellValue(record.getR62_qua_iv_lc().doubleValue());
+						R62Cell9.setCellStyle(numberStyle);
+					} else {
+						R62Cell9.setCellValue("");
+						R62Cell9.setCellStyle(textStyle);
+					}
+
+// R62 Col M
+					Cell R62Cell10 = row.createCell(12);
+					if (record.getR62_qua_iv_qar() != null) {
+						R62Cell10.setCellValue(record.getR62_qua_iv_qar().doubleValue());
+						R62Cell10.setCellStyle(numberStyle);
+					} else {
+						R62Cell10.setCellValue("");
+						R62Cell10.setCellStyle(textStyle);
+					}
+
+// R62 Col N
+					Cell R62Cell11 = row.createCell(13);
+					if (record.getR62_qua_iv_inr() != null) {
+						R62Cell11.setCellValue(record.getR62_qua_iv_inr().doubleValue());
+						R62Cell11.setCellStyle(numberStyle);
+					} else {
+						R62Cell11.setCellValue("");
+						R62Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(62);
+// R63 Col C
+					Cell R63Cell = row.createCell(2);
+					if (record.getR63_qua_i_lc() != null) {
+						R63Cell.setCellValue(record.getR63_qua_i_lc().doubleValue());
+						R63Cell.setCellStyle(numberStyle);
+					} else {
+						R63Cell.setCellValue("");
+						R63Cell.setCellStyle(textStyle);
+					}
+
+// R63 Col D
+					Cell R63Cell1 = row.createCell(3);
+					if (record.getR63_qua_i_qar() != null) {
+						R63Cell1.setCellValue(record.getR63_qua_i_qar().doubleValue());
+						R63Cell1.setCellStyle(numberStyle);
+					} else {
+						R63Cell1.setCellValue("");
+						R63Cell1.setCellStyle(textStyle);
+					}
+
+// R63 Col E
+					Cell R63Cell2 = row.createCell(4);
+					if (record.getR63_qua_i_inr() != null) {
+						R63Cell2.setCellValue(record.getR63_qua_i_inr().doubleValue());
+						R63Cell2.setCellStyle(numberStyle);
+					} else {
+						R63Cell2.setCellValue("");
+						R63Cell2.setCellStyle(textStyle);
+					}
+
+// R63 Col F
+					Cell R63Cell3 = row.createCell(5);
+					if (record.getR63_qua_ii_lc() != null) {
+						R63Cell3.setCellValue(record.getR63_qua_ii_lc().doubleValue());
+						R63Cell3.setCellStyle(numberStyle);
+					} else {
+						R63Cell3.setCellValue("");
+						R63Cell3.setCellStyle(textStyle);
+					}
+
+// R63 Col G
+					Cell R63Cell4 = row.createCell(6);
+					if (record.getR63_qua_ii_qar() != null) {
+						R63Cell4.setCellValue(record.getR63_qua_ii_qar().doubleValue());
+						R63Cell4.setCellStyle(numberStyle);
+					} else {
+						R63Cell4.setCellValue("");
+						R63Cell4.setCellStyle(textStyle);
+					}
+
+// R63 Col H
+					Cell R63Cell5 = row.createCell(7);
+					if (record.getR63_qua_ii_inr() != null) {
+						R63Cell5.setCellValue(record.getR63_qua_ii_inr().doubleValue());
+						R63Cell5.setCellStyle(numberStyle);
+					} else {
+						R63Cell5.setCellValue("");
+						R63Cell5.setCellStyle(textStyle);
+					}
+
+// R63 Col I
+					Cell R63Cell6 = row.createCell(8);
+					if (record.getR63_qua_iii_lc() != null) {
+						R63Cell6.setCellValue(record.getR63_qua_iii_lc().doubleValue());
+						R63Cell6.setCellStyle(numberStyle);
+					} else {
+						R63Cell6.setCellValue("");
+						R63Cell6.setCellStyle(textStyle);
+					}
+
+// R63 Col J
+					Cell R63Cell7 = row.createCell(9);
+					if (record.getR63_qua_iii_qar() != null) {
+						R63Cell7.setCellValue(record.getR63_qua_iii_qar().doubleValue());
+						R63Cell7.setCellStyle(numberStyle);
+					} else {
+						R63Cell7.setCellValue("");
+						R63Cell7.setCellStyle(textStyle);
+					}
+
+// R63 Col K
+					Cell R63Cell8 = row.createCell(10);
+					if (record.getR63_qua_iii_inr() != null) {
+						R63Cell8.setCellValue(record.getR63_qua_iii_inr().doubleValue());
+						R63Cell8.setCellStyle(numberStyle);
+					} else {
+						R63Cell8.setCellValue("");
+						R63Cell8.setCellStyle(textStyle);
+					}
+
+// R63 Col L
+					Cell R63Cell9 = row.createCell(11);
+					if (record.getR63_qua_iv_lc() != null) {
+						R63Cell9.setCellValue(record.getR63_qua_iv_lc().doubleValue());
+						R63Cell9.setCellStyle(numberStyle);
+					} else {
+						R63Cell9.setCellValue("");
+						R63Cell9.setCellStyle(textStyle);
+					}
+
+// R63 Col M
+					Cell R63Cell10 = row.createCell(12);
+					if (record.getR63_qua_iv_qar() != null) {
+						R63Cell10.setCellValue(record.getR63_qua_iv_qar().doubleValue());
+						R63Cell10.setCellStyle(numberStyle);
+					} else {
+						R63Cell10.setCellValue("");
+						R63Cell10.setCellStyle(textStyle);
+					}
+
+// R63 Col N
+					Cell R63Cell11 = row.createCell(13);
+					if (record.getR63_qua_iv_inr() != null) {
+						R63Cell11.setCellValue(record.getR63_qua_iv_inr().doubleValue());
+						R63Cell11.setCellStyle(numberStyle);
+					} else {
+						R63Cell11.setCellValue("");
+						R63Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(63);
+// R64 Col C
+					Cell R64Cell = row.createCell(2);
+					if (record.getR64_qua_i_lc() != null) {
+						R64Cell.setCellValue(record.getR64_qua_i_lc().doubleValue());
+						R64Cell.setCellStyle(numberStyle);
+					} else {
+						R64Cell.setCellValue("");
+						R64Cell.setCellStyle(textStyle);
+					}
+
+// R64 Col D
+					Cell R64Cell1 = row.createCell(3);
+					if (record.getR64_qua_i_qar() != null) {
+						R64Cell1.setCellValue(record.getR64_qua_i_qar().doubleValue());
+						R64Cell1.setCellStyle(numberStyle);
+					} else {
+						R64Cell1.setCellValue("");
+						R64Cell1.setCellStyle(textStyle);
+					}
+
+// R64 Col E
+					Cell R64Cell2 = row.createCell(4);
+					if (record.getR64_qua_i_inr() != null) {
+						R64Cell2.setCellValue(record.getR64_qua_i_inr().doubleValue());
+						R64Cell2.setCellStyle(numberStyle);
+					} else {
+						R64Cell2.setCellValue("");
+						R64Cell2.setCellStyle(textStyle);
+					}
+
+// R64 Col F
+					Cell R64Cell3 = row.createCell(5);
+					if (record.getR64_qua_ii_lc() != null) {
+						R64Cell3.setCellValue(record.getR64_qua_ii_lc().doubleValue());
+						R64Cell3.setCellStyle(numberStyle);
+					} else {
+						R64Cell3.setCellValue("");
+						R64Cell3.setCellStyle(textStyle);
+					}
+
+// R64 Col G
+					Cell R64Cell4 = row.createCell(6);
+					if (record.getR64_qua_ii_qar() != null) {
+						R64Cell4.setCellValue(record.getR64_qua_ii_qar().doubleValue());
+						R64Cell4.setCellStyle(numberStyle);
+					} else {
+						R64Cell4.setCellValue("");
+						R64Cell4.setCellStyle(textStyle);
+					}
+
+// R64 Col H
+					Cell R64Cell5 = row.createCell(7);
+					if (record.getR64_qua_ii_inr() != null) {
+						R64Cell5.setCellValue(record.getR64_qua_ii_inr().doubleValue());
+						R64Cell5.setCellStyle(numberStyle);
+					} else {
+						R64Cell5.setCellValue("");
+						R64Cell5.setCellStyle(textStyle);
+					}
+
+// R64 Col I
+					Cell R64Cell6 = row.createCell(8);
+					if (record.getR64_qua_iii_lc() != null) {
+						R64Cell6.setCellValue(record.getR64_qua_iii_lc().doubleValue());
+						R64Cell6.setCellStyle(numberStyle);
+					} else {
+						R64Cell6.setCellValue("");
+						R64Cell6.setCellStyle(textStyle);
+					}
+
+// R64 Col J
+					Cell R64Cell7 = row.createCell(9);
+					if (record.getR64_qua_iii_qar() != null) {
+						R64Cell7.setCellValue(record.getR64_qua_iii_qar().doubleValue());
+						R64Cell7.setCellStyle(numberStyle);
+					} else {
+						R64Cell7.setCellValue("");
+						R64Cell7.setCellStyle(textStyle);
+					}
+
+// R64 Col K
+					Cell R64Cell8 = row.createCell(10);
+					if (record.getR64_qua_iii_inr() != null) {
+						R64Cell8.setCellValue(record.getR64_qua_iii_inr().doubleValue());
+						R64Cell8.setCellStyle(numberStyle);
+					} else {
+						R64Cell8.setCellValue("");
+						R64Cell8.setCellStyle(textStyle);
+					}
+
+// R64 Col L
+					Cell R64Cell9 = row.createCell(11);
+					if (record.getR64_qua_iv_lc() != null) {
+						R64Cell9.setCellValue(record.getR64_qua_iv_lc().doubleValue());
+						R64Cell9.setCellStyle(numberStyle);
+					} else {
+						R64Cell9.setCellValue("");
+						R64Cell9.setCellStyle(textStyle);
+					}
+
+// R64 Col M
+					Cell R64Cell10 = row.createCell(12);
+					if (record.getR64_qua_iv_qar() != null) {
+						R64Cell10.setCellValue(record.getR64_qua_iv_qar().doubleValue());
+						R64Cell10.setCellStyle(numberStyle);
+					} else {
+						R64Cell10.setCellValue("");
+						R64Cell10.setCellStyle(textStyle);
+					}
+
+// R64 Col N
+					Cell R64Cell11 = row.createCell(13);
+					if (record.getR64_qua_iv_inr() != null) {
+						R64Cell11.setCellValue(record.getR64_qua_iv_inr().doubleValue());
+						R64Cell11.setCellStyle(numberStyle);
+					} else {
+						R64Cell11.setCellValue("");
+						R64Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(64);
+// R65 Col C
+					Cell R65Cell = row.createCell(2);
+					if (record.getR65_qua_i_lc() != null) {
+						R65Cell.setCellValue(record.getR65_qua_i_lc().doubleValue());
+						R65Cell.setCellStyle(numberStyle);
+					} else {
+						R65Cell.setCellValue("");
+						R65Cell.setCellStyle(textStyle);
+					}
+
+// R65 Col D
+					Cell R65Cell1 = row.createCell(3);
+					if (record.getR65_qua_i_qar() != null) {
+						R65Cell1.setCellValue(record.getR65_qua_i_qar().doubleValue());
+						R65Cell1.setCellStyle(numberStyle);
+					} else {
+						R65Cell1.setCellValue("");
+						R65Cell1.setCellStyle(textStyle);
+					}
+
+// R65 Col E
+					Cell R65Cell2 = row.createCell(4);
+					if (record.getR65_qua_i_inr() != null) {
+						R65Cell2.setCellValue(record.getR65_qua_i_inr().doubleValue());
+						R65Cell2.setCellStyle(numberStyle);
+					} else {
+						R65Cell2.setCellValue("");
+						R65Cell2.setCellStyle(textStyle);
+					}
+
+// R65 Col F
+					Cell R65Cell3 = row.createCell(5);
+					if (record.getR65_qua_ii_lc() != null) {
+						R65Cell3.setCellValue(record.getR65_qua_ii_lc().doubleValue());
+						R65Cell3.setCellStyle(numberStyle);
+					} else {
+						R65Cell3.setCellValue("");
+						R65Cell3.setCellStyle(textStyle);
+					}
+
+// R65 Col G
+					Cell R65Cell4 = row.createCell(6);
+					if (record.getR65_qua_ii_qar() != null) {
+						R65Cell4.setCellValue(record.getR65_qua_ii_qar().doubleValue());
+						R65Cell4.setCellStyle(numberStyle);
+					} else {
+						R65Cell4.setCellValue("");
+						R65Cell4.setCellStyle(textStyle);
+					}
+
+// R65 Col H
+					Cell R65Cell5 = row.createCell(7);
+					if (record.getR65_qua_ii_inr() != null) {
+						R65Cell5.setCellValue(record.getR65_qua_ii_inr().doubleValue());
+						R65Cell5.setCellStyle(numberStyle);
+					} else {
+						R65Cell5.setCellValue("");
+						R65Cell5.setCellStyle(textStyle);
+					}
+
+// R65 Col I
+					Cell R65Cell6 = row.createCell(8);
+					if (record.getR65_qua_iii_lc() != null) {
+						R65Cell6.setCellValue(record.getR65_qua_iii_lc().doubleValue());
+						R65Cell6.setCellStyle(numberStyle);
+					} else {
+						R65Cell6.setCellValue("");
+						R65Cell6.setCellStyle(textStyle);
+					}
+
+// R65 Col J
+					Cell R65Cell7 = row.createCell(9);
+					if (record.getR65_qua_iii_qar() != null) {
+						R65Cell7.setCellValue(record.getR65_qua_iii_qar().doubleValue());
+						R65Cell7.setCellStyle(numberStyle);
+					} else {
+						R65Cell7.setCellValue("");
+						R65Cell7.setCellStyle(textStyle);
+					}
+
+// R65 Col K
+					Cell R65Cell8 = row.createCell(10);
+					if (record.getR65_qua_iii_inr() != null) {
+						R65Cell8.setCellValue(record.getR65_qua_iii_inr().doubleValue());
+						R65Cell8.setCellStyle(numberStyle);
+					} else {
+						R65Cell8.setCellValue("");
+						R65Cell8.setCellStyle(textStyle);
+					}
+
+// R65 Col L
+					Cell R65Cell9 = row.createCell(11);
+					if (record.getR65_qua_iv_lc() != null) {
+						R65Cell9.setCellValue(record.getR65_qua_iv_lc().doubleValue());
+						R65Cell9.setCellStyle(numberStyle);
+					} else {
+						R65Cell9.setCellValue("");
+						R65Cell9.setCellStyle(textStyle);
+					}
+
+// R65 Col M
+					Cell R65Cell10 = row.createCell(12);
+					if (record.getR65_qua_iv_qar() != null) {
+						R65Cell10.setCellValue(record.getR65_qua_iv_qar().doubleValue());
+						R65Cell10.setCellStyle(numberStyle);
+					} else {
+						R65Cell10.setCellValue("");
+						R65Cell10.setCellStyle(textStyle);
+					}
+
+// R65 Col N
+					Cell R65Cell11 = row.createCell(13);
+					if (record.getR65_qua_iv_inr() != null) {
+						R65Cell11.setCellValue(record.getR65_qua_iv_inr().doubleValue());
+						R65Cell11.setCellStyle(numberStyle);
+					} else {
+						R65Cell11.setCellValue("");
+						R65Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(66);
+					Cell R67Cell = row.createCell(2);
+					if (record.getR67_qua_i_lc() != null) {
+						R67Cell.setCellValue(record.getR67_qua_i_lc().doubleValue());
+						R67Cell.setCellStyle(numberStyle);
+					} else {
+						R67Cell.setCellValue("");
+						R67Cell.setCellStyle(textStyle);
+					}
+
+					Cell R67Cell1 = row.createCell(3);
+					if (record.getR67_qua_i_qar() != null) {
+						R67Cell1.setCellValue(record.getR67_qua_i_qar().doubleValue());
+						R67Cell1.setCellStyle(numberStyle);
+					} else {
+						R67Cell1.setCellValue("");
+						R67Cell1.setCellStyle(textStyle);
+					}
+
+					// R67 Col E
+					Cell R67Cell2 = row.createCell(4);
+					if (record.getR67_qua_i_inr() != null) {
+						R67Cell2.setCellValue(record.getR67_qua_i_inr().doubleValue());
+						R67Cell2.setCellStyle(numberStyle);
+					} else {
+						R67Cell2.setCellValue("");
+						R67Cell2.setCellStyle(textStyle);
+					}
+
+					// R67 Col F
+					Cell R67Cell3 = row.createCell(5);
+					if (record.getR67_qua_ii_lc() != null) {
+						R67Cell3.setCellValue(record.getR67_qua_ii_lc().doubleValue());
+						R67Cell3.setCellStyle(numberStyle);
+					} else {
+						R67Cell3.setCellValue("");
+						R67Cell3.setCellStyle(textStyle);
+					}
+					// R67 Col G
+					Cell R67Cell4 = row.createCell(6);
+					if (record.getR67_qua_ii_qar() != null) {
+						R67Cell4.setCellValue(record.getR67_qua_ii_qar().doubleValue());
+						R67Cell4.setCellStyle(numberStyle);
+					} else {
+						R67Cell4.setCellValue("");
+						R67Cell4.setCellStyle(textStyle);
+					}
+					// R67 Col H
+					Cell R67Cell5 = row.createCell(7);
+					if (record.getR67_qua_ii_inr() != null) {
+						R67Cell5.setCellValue(record.getR67_qua_ii_inr().doubleValue());
+						R67Cell5.setCellStyle(numberStyle);
+					} else {
+						R67Cell5.setCellValue("");
+						R67Cell5.setCellStyle(textStyle);
+					}
+					// R67 Col I
+					Cell R67Cell6 = row.createCell(8);
+					if (record.getR67_qua_iii_lc() != null) {
+						R67Cell6.setCellValue(record.getR67_qua_iii_lc().doubleValue());
+						R67Cell6.setCellStyle(numberStyle);
+					} else {
+						R67Cell6.setCellValue("");
+						R67Cell6.setCellStyle(textStyle);
+					}
+					// R67 Col J
+					Cell R67Cell7 = row.createCell(9);
+					if (record.getR67_qua_iii_qar() != null) {
+						R67Cell7.setCellValue(record.getR67_qua_iii_qar().doubleValue());
+						R67Cell7.setCellStyle(numberStyle);
+					} else {
+						R67Cell7.setCellValue("");
+						R67Cell7.setCellStyle(textStyle);
+					}
+					// R67 Col K
+					Cell R67Cell8 = row.createCell(10);
+					if (record.getR67_qua_iii_inr() != null) {
+						R67Cell8.setCellValue(record.getR67_qua_iii_inr().doubleValue());
+						R67Cell8.setCellStyle(numberStyle);
+					} else {
+						R67Cell8.setCellValue("");
+						R67Cell8.setCellStyle(textStyle);
+					}
+					// R67 Col L
+					Cell R67Cell9 = row.createCell(11);
+					if (record.getR67_qua_iv_lc() != null) {
+						R67Cell9.setCellValue(record.getR67_qua_iv_lc().doubleValue());
+						R67Cell9.setCellStyle(numberStyle);
+					} else {
+						R67Cell9.setCellValue("");
+						R67Cell9.setCellStyle(textStyle);
+					}
+					// R67 Col M
+					Cell R67Cell10 = row.createCell(12);
+					if (record.getR67_qua_iv_qar() != null) {
+						R67Cell10.setCellValue(record.getR67_qua_iv_qar().doubleValue());
+						R67Cell10.setCellStyle(numberStyle);
+					} else {
+						R67Cell10.setCellValue("");
+						R67Cell10.setCellStyle(textStyle);
+					}
+
+					// R67 Col N
+					Cell R67Cell11 = row.createCell(13);
+					if (record.getR67_qua_iv_inr() != null) {
+						R67Cell11.setCellValue(record.getR67_qua_iv_inr().doubleValue());
+						R67Cell11.setCellStyle(numberStyle);
+					} else {
+						R67Cell11.setCellValue("");
+						R67Cell11.setCellStyle(textStyle);
+					}
+					// R67 Col O
+					Cell R67Cell12 = row.createCell(14);
+					if (record.getR67_cumm_inr() != null) {
+						R67Cell12.setCellValue(record.getR67_cumm_inr().doubleValue());
+						R67Cell12.setCellStyle(numberStyle);
+					} else {
+						R67Cell12.setCellValue("");
+						R67Cell12.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(67);
+					Cell R68Cell = row.createCell(2);
+					if (record.getR68_qua_i_lc() != null) {
+						R68Cell.setCellValue(record.getR68_qua_i_lc().doubleValue());
+						R68Cell.setCellStyle(numberStyle);
+					} else {
+						R68Cell.setCellValue("");
+						R68Cell.setCellStyle(textStyle);
+					}
+
+					Cell R68Cell1 = row.createCell(3);
+					if (record.getR68_qua_i_qar() != null) {
+						R68Cell1.setCellValue(record.getR68_qua_i_qar().doubleValue());
+						R68Cell1.setCellStyle(numberStyle);
+					} else {
+						R68Cell1.setCellValue("");
+						R68Cell1.setCellStyle(textStyle);
+					}
+
+					// R68 Col E
+					Cell R68Cell2 = row.createCell(4);
+					if (record.getR68_qua_i_inr() != null) {
+						R68Cell2.setCellValue(record.getR68_qua_i_inr().doubleValue());
+						R68Cell2.setCellStyle(numberStyle);
+					} else {
+						R68Cell2.setCellValue("");
+						R68Cell2.setCellStyle(textStyle);
+					}
+
+					// R68 Col F
+					Cell R68Cell3 = row.createCell(5);
+					if (record.getR68_qua_ii_lc() != null) {
+						R68Cell3.setCellValue(record.getR68_qua_ii_lc().doubleValue());
+						R68Cell3.setCellStyle(numberStyle);
+					} else {
+						R68Cell3.setCellValue("");
+						R68Cell3.setCellStyle(textStyle);
+					}
+					// R68 Col G
+					Cell R68Cell4 = row.createCell(6);
+					if (record.getR68_qua_ii_qar() != null) {
+						R68Cell4.setCellValue(record.getR68_qua_ii_qar().doubleValue());
+						R68Cell4.setCellStyle(numberStyle);
+					} else {
+						R68Cell4.setCellValue("");
+						R68Cell4.setCellStyle(textStyle);
+					}
+					// R68 Col H
+					Cell R68Cell5 = row.createCell(7);
+					if (record.getR68_qua_ii_inr() != null) {
+						R68Cell5.setCellValue(record.getR68_qua_ii_inr().doubleValue());
+						R68Cell5.setCellStyle(numberStyle);
+					} else {
+						R68Cell5.setCellValue("");
+						R68Cell5.setCellStyle(textStyle);
+					}
+					// R68 Col I
+					Cell R68Cell6 = row.createCell(8);
+					if (record.getR68_qua_iii_lc() != null) {
+						R68Cell6.setCellValue(record.getR68_qua_iii_lc().doubleValue());
+						R68Cell6.setCellStyle(numberStyle);
+					} else {
+						R68Cell6.setCellValue("");
+						R68Cell6.setCellStyle(textStyle);
+					}
+					// R68 Col J
+					Cell R68Cell7 = row.createCell(9);
+					if (record.getR68_qua_iii_qar() != null) {
+						R68Cell7.setCellValue(record.getR68_qua_iii_qar().doubleValue());
+						R68Cell7.setCellStyle(numberStyle);
+					} else {
+						R68Cell7.setCellValue("");
+						R68Cell7.setCellStyle(textStyle);
+					}
+					// R68 Col K
+					Cell R68Cell8 = row.createCell(10);
+					if (record.getR68_qua_iii_inr() != null) {
+						R68Cell8.setCellValue(record.getR68_qua_iii_inr().doubleValue());
+						R68Cell8.setCellStyle(numberStyle);
+					} else {
+						R68Cell8.setCellValue("");
+						R68Cell8.setCellStyle(textStyle);
+					}
+					// R68 Col L
+					Cell R68Cell9 = row.createCell(11);
+					if (record.getR68_qua_iv_lc() != null) {
+						R68Cell9.setCellValue(record.getR68_qua_iv_lc().doubleValue());
+						R68Cell9.setCellStyle(numberStyle);
+					} else {
+						R68Cell9.setCellValue("");
+						R68Cell9.setCellStyle(textStyle);
+					}
+					// R68 Col M
+					Cell R68Cell10 = row.createCell(12);
+					if (record.getR68_qua_iv_qar() != null) {
+						R68Cell10.setCellValue(record.getR68_qua_iv_qar().doubleValue());
+						R68Cell10.setCellStyle(numberStyle);
+					} else {
+						R68Cell10.setCellValue("");
+						R68Cell10.setCellStyle(textStyle);
+					}
+
+					// R68 Col N
+					Cell R68Cell11 = row.createCell(13);
+					if (record.getR68_qua_iv_inr() != null) {
+						R68Cell11.setCellValue(record.getR68_qua_iv_inr().doubleValue());
+						R68Cell11.setCellStyle(numberStyle);
+					} else {
+						R68Cell11.setCellValue("");
+						R68Cell11.setCellStyle(textStyle);
+					}
+					// R68 Col O
+					Cell R68Cell12 = row.createCell(14);
+					if (record.getR68_cumm_inr() != null) {
+						R68Cell12.setCellValue(record.getR68_cumm_inr().doubleValue());
+						R68Cell12.setCellStyle(numberStyle);
+					} else {
+						R68Cell12.setCellValue("");
+						R68Cell12.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(68);
+					Cell R69Cell = row.createCell(2);
+					if (record.getR69_qua_i_lc() != null) {
+						R69Cell.setCellValue(record.getR69_qua_i_lc().doubleValue());
+						R69Cell.setCellStyle(numberStyle);
+					} else {
+						R69Cell.setCellValue("");
+						R69Cell.setCellStyle(textStyle);
+					}
+
+					Cell R69Cell1 = row.createCell(3);
+					if (record.getR69_qua_i_qar() != null) {
+						R69Cell1.setCellValue(record.getR69_qua_i_qar().doubleValue());
+						R69Cell1.setCellStyle(numberStyle);
+					} else {
+						R69Cell1.setCellValue("");
+						R69Cell1.setCellStyle(textStyle);
+					}
+
+					// R69 Col E
+					Cell R69Cell2 = row.createCell(4);
+					if (record.getR69_qua_i_inr() != null) {
+						R69Cell2.setCellValue(record.getR69_qua_i_inr().doubleValue());
+						R69Cell2.setCellStyle(numberStyle);
+					} else {
+						R69Cell2.setCellValue("");
+						R69Cell2.setCellStyle(textStyle);
+					}
+
+					// R69 Col F
+					Cell R69Cell3 = row.createCell(5);
+					if (record.getR69_qua_ii_lc() != null) {
+						R69Cell3.setCellValue(record.getR69_qua_ii_lc().doubleValue());
+						R69Cell3.setCellStyle(numberStyle);
+					} else {
+						R69Cell3.setCellValue("");
+						R69Cell3.setCellStyle(textStyle);
+					}
+					// R69 Col G
+					Cell R69Cell4 = row.createCell(6);
+					if (record.getR69_qua_ii_qar() != null) {
+						R69Cell4.setCellValue(record.getR69_qua_ii_qar().doubleValue());
+						R69Cell4.setCellStyle(numberStyle);
+					} else {
+						R69Cell4.setCellValue("");
+						R69Cell4.setCellStyle(textStyle);
+					}
+					// R69 Col H
+					Cell R69Cell5 = row.createCell(7);
+					if (record.getR69_qua_ii_inr() != null) {
+						R69Cell5.setCellValue(record.getR69_qua_ii_inr().doubleValue());
+						R69Cell5.setCellStyle(numberStyle);
+					} else {
+						R69Cell5.setCellValue("");
+						R69Cell5.setCellStyle(textStyle);
+					}
+					// R69 Col I
+					Cell R69Cell6 = row.createCell(8);
+					if (record.getR69_qua_iii_lc() != null) {
+						R69Cell6.setCellValue(record.getR69_qua_iii_lc().doubleValue());
+						R69Cell6.setCellStyle(numberStyle);
+					} else {
+						R69Cell6.setCellValue("");
+						R69Cell6.setCellStyle(textStyle);
+					}
+					// R69 Col J
+					Cell R69Cell7 = row.createCell(9);
+					if (record.getR69_qua_iii_qar() != null) {
+						R69Cell7.setCellValue(record.getR69_qua_iii_qar().doubleValue());
+						R69Cell7.setCellStyle(numberStyle);
+					} else {
+						R69Cell7.setCellValue("");
+						R69Cell7.setCellStyle(textStyle);
+					}
+					// R69 Col K
+					Cell R69Cell8 = row.createCell(10);
+					if (record.getR69_qua_iii_inr() != null) {
+						R69Cell8.setCellValue(record.getR69_qua_iii_inr().doubleValue());
+						R69Cell8.setCellStyle(numberStyle);
+					} else {
+						R69Cell8.setCellValue("");
+						R69Cell8.setCellStyle(textStyle);
+					}
+					// R69 Col L
+					Cell R69Cell9 = row.createCell(11);
+					if (record.getR69_qua_iv_lc() != null) {
+						R69Cell9.setCellValue(record.getR69_qua_iv_lc().doubleValue());
+						R69Cell9.setCellStyle(numberStyle);
+					} else {
+						R69Cell9.setCellValue("");
+						R69Cell9.setCellStyle(textStyle);
+					}
+					// R69 Col M
+					Cell R69Cell10 = row.createCell(12);
+					if (record.getR69_qua_iv_qar() != null) {
+						R69Cell10.setCellValue(record.getR69_qua_iv_qar().doubleValue());
+						R69Cell10.setCellStyle(numberStyle);
+					} else {
+						R69Cell10.setCellValue("");
+						R69Cell10.setCellStyle(textStyle);
+					}
+
+					// R69 Col N
+					Cell R69Cell11 = row.createCell(13);
+					if (record.getR69_qua_iv_inr() != null) {
+						R69Cell11.setCellValue(record.getR69_qua_iv_inr().doubleValue());
+						R69Cell11.setCellStyle(numberStyle);
+					} else {
+						R69Cell11.setCellValue("");
+						R69Cell11.setCellStyle(textStyle);
+					}
+
+					// R69 Col O
+					Cell R69Cell12 = row.createCell(14);
+					if (record.getR69_cumm_inr() != null) {
+						R69Cell12.setCellValue(record.getR69_cumm_inr().doubleValue());
+						R69Cell12.setCellStyle(numberStyle);
+					} else {
+						R69Cell12.setCellValue("");
+						R69Cell12.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(69);
+					Cell R70Cell = row.createCell(2);
+					if (record.getR70_qua_i_lc() != null) {
+						R70Cell.setCellValue(record.getR70_qua_i_lc().doubleValue());
+						R70Cell.setCellStyle(numberStyle);
+					} else {
+						R70Cell.setCellValue("");
+						R70Cell.setCellStyle(textStyle);
+					}
+
+					Cell R70Cell1 = row.createCell(3);
+					if (record.getR70_qua_i_qar() != null) {
+						R70Cell1.setCellValue(record.getR70_qua_i_qar().doubleValue());
+						R70Cell1.setCellStyle(numberStyle);
+					} else {
+						R70Cell1.setCellValue("");
+						R70Cell1.setCellStyle(textStyle);
+					}
+
+					// R70 Col E
+					Cell R70Cell2 = row.createCell(4);
+					if (record.getR70_qua_i_inr() != null) {
+						R70Cell2.setCellValue(record.getR70_qua_i_inr().doubleValue());
+						R70Cell2.setCellStyle(numberStyle);
+					} else {
+						R70Cell2.setCellValue("");
+						R70Cell2.setCellStyle(textStyle);
+					}
+
+					// R70 Col F
+					Cell R70Cell3 = row.createCell(5);
+					if (record.getR70_qua_ii_lc() != null) {
+						R70Cell3.setCellValue(record.getR70_qua_ii_lc().doubleValue());
+						R70Cell3.setCellStyle(numberStyle);
+					} else {
+						R70Cell3.setCellValue("");
+						R70Cell3.setCellStyle(textStyle);
+					}
+					// R70 Col G
+					Cell R70Cell4 = row.createCell(6);
+					if (record.getR70_qua_ii_qar() != null) {
+						R70Cell4.setCellValue(record.getR70_qua_ii_qar().doubleValue());
+						R70Cell4.setCellStyle(numberStyle);
+					} else {
+						R70Cell4.setCellValue("");
+						R70Cell4.setCellStyle(textStyle);
+					}
+					// R70 Col H
+					Cell R70Cell5 = row.createCell(7);
+					if (record.getR70_qua_ii_inr() != null) {
+						R70Cell5.setCellValue(record.getR70_qua_ii_inr().doubleValue());
+						R70Cell5.setCellStyle(numberStyle);
+					} else {
+						R70Cell5.setCellValue("");
+						R70Cell5.setCellStyle(textStyle);
+					}
+					// R70 Col I
+					Cell R70Cell6 = row.createCell(8);
+					if (record.getR70_qua_iii_lc() != null) {
+						R70Cell6.setCellValue(record.getR70_qua_iii_lc().doubleValue());
+						R70Cell6.setCellStyle(numberStyle);
+					} else {
+						R70Cell6.setCellValue("");
+						R70Cell6.setCellStyle(textStyle);
+					}
+					// R70 Col J
+					Cell R70Cell7 = row.createCell(9);
+					if (record.getR70_qua_iii_qar() != null) {
+						R70Cell7.setCellValue(record.getR70_qua_iii_qar().doubleValue());
+						R70Cell7.setCellStyle(numberStyle);
+					} else {
+						R70Cell7.setCellValue("");
+						R70Cell7.setCellStyle(textStyle);
+					}
+					// R70 Col K
+					Cell R70Cell8 = row.createCell(10);
+					if (record.getR70_qua_iii_inr() != null) {
+						R70Cell8.setCellValue(record.getR70_qua_iii_inr().doubleValue());
+						R70Cell8.setCellStyle(numberStyle);
+					} else {
+						R70Cell8.setCellValue("");
+						R70Cell8.setCellStyle(textStyle);
+					}
+					// R70 Col L
+					Cell R70Cell9 = row.createCell(11);
+					if (record.getR70_qua_iv_lc() != null) {
+						R70Cell9.setCellValue(record.getR70_qua_iv_lc().doubleValue());
+						R70Cell9.setCellStyle(numberStyle);
+					} else {
+						R70Cell9.setCellValue("");
+						R70Cell9.setCellStyle(textStyle);
+					}
+					// R70 Col M
+					Cell R70Cell10 = row.createCell(12);
+					if (record.getR70_qua_iv_qar() != null) {
+						R70Cell10.setCellValue(record.getR70_qua_iv_qar().doubleValue());
+						R70Cell10.setCellStyle(numberStyle);
+					} else {
+						R70Cell10.setCellValue("");
+						R70Cell10.setCellStyle(textStyle);
+					}
+
+					// R70 Col N
+					Cell R70Cell11 = row.createCell(13);
+					if (record.getR70_qua_iv_inr() != null) {
+						R70Cell11.setCellValue(record.getR70_qua_iv_inr().doubleValue());
+						R70Cell11.setCellStyle(numberStyle);
+					} else {
+						R70Cell11.setCellValue("");
+						R70Cell11.setCellStyle(textStyle);
+					}
+
+					// R70 Col O
+					Cell R70Cell12 = row.createCell(14);
+					if (record.getR70_cumm_inr() != null) {
+						R70Cell12.setCellValue(record.getR70_cumm_inr().doubleValue());
+						R70Cell12.setCellStyle(numberStyle);
+					} else {
+						R70Cell12.setCellValue("");
+						R70Cell12.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(70);
+					// R71 Col C
+					Cell R71Cell = row.createCell(2);
+					if (record.getR71_qua_i_lc() != null) {
+						R71Cell.setCellValue(record.getR71_qua_i_lc().doubleValue());
+						R71Cell.setCellStyle(numberStyle);
+					} else {
+						R71Cell.setCellValue("");
+						R71Cell.setCellStyle(textStyle);
+					}
+
+// R71 Col D
+					Cell R71Cell1 = row.createCell(3);
+					if (record.getR71_qua_i_qar() != null) {
+						R71Cell1.setCellValue(record.getR71_qua_i_qar().doubleValue());
+						R71Cell1.setCellStyle(numberStyle);
+					} else {
+						R71Cell1.setCellValue("");
+						R71Cell1.setCellStyle(textStyle);
+					}
+
+// R71 Col E
+					Cell R71Cell2 = row.createCell(4);
+					if (record.getR71_qua_i_inr() != null) {
+						R71Cell2.setCellValue(record.getR71_qua_i_inr().doubleValue());
+						R71Cell2.setCellStyle(numberStyle);
+					} else {
+						R71Cell2.setCellValue("");
+						R71Cell2.setCellStyle(textStyle);
+					}
+
+// R71 Col F
+					Cell R71Cell3 = row.createCell(5);
+					if (record.getR71_qua_ii_lc() != null) {
+						R71Cell3.setCellValue(record.getR71_qua_ii_lc().doubleValue());
+						R71Cell3.setCellStyle(numberStyle);
+					} else {
+						R71Cell3.setCellValue("");
+						R71Cell3.setCellStyle(textStyle);
+					}
+
+// R71 Col G
+					Cell R71Cell4 = row.createCell(6);
+					if (record.getR71_qua_ii_qar() != null) {
+						R71Cell4.setCellValue(record.getR71_qua_ii_qar().doubleValue());
+						R71Cell4.setCellStyle(numberStyle);
+					} else {
+						R71Cell4.setCellValue("");
+						R71Cell4.setCellStyle(textStyle);
+					}
+
+// R71 Col H
+					Cell R71Cell5 = row.createCell(7);
+					if (record.getR71_qua_ii_inr() != null) {
+						R71Cell5.setCellValue(record.getR71_qua_ii_inr().doubleValue());
+						R71Cell5.setCellStyle(numberStyle);
+					} else {
+						R71Cell5.setCellValue("");
+						R71Cell5.setCellStyle(textStyle);
+					}
+
+// R71 Col I
+					Cell R71Cell6 = row.createCell(8);
+					if (record.getR71_qua_iii_lc() != null) {
+						R71Cell6.setCellValue(record.getR71_qua_iii_lc().doubleValue());
+						R71Cell6.setCellStyle(numberStyle);
+					} else {
+						R71Cell6.setCellValue("");
+						R71Cell6.setCellStyle(textStyle);
+					}
+
+// R71 Col J
+					Cell R71Cell7 = row.createCell(9);
+					if (record.getR71_qua_iii_qar() != null) {
+						R71Cell7.setCellValue(record.getR71_qua_iii_qar().doubleValue());
+						R71Cell7.setCellStyle(numberStyle);
+					} else {
+						R71Cell7.setCellValue("");
+						R71Cell7.setCellStyle(textStyle);
+					}
+
+// R71 Col K
+					Cell R71Cell8 = row.createCell(10);
+					if (record.getR71_qua_iii_inr() != null) {
+						R71Cell8.setCellValue(record.getR71_qua_iii_inr().doubleValue());
+						R71Cell8.setCellStyle(numberStyle);
+					} else {
+						R71Cell8.setCellValue("");
+						R71Cell8.setCellStyle(textStyle);
+					}
+
+// R71 Col L
+					Cell R71Cell9 = row.createCell(11);
+					if (record.getR71_qua_iv_lc() != null) {
+						R71Cell9.setCellValue(record.getR71_qua_iv_lc().doubleValue());
+						R71Cell9.setCellStyle(numberStyle);
+					} else {
+						R71Cell9.setCellValue("");
+						R71Cell9.setCellStyle(textStyle);
+					}
+
+// R71 Col M
+					Cell R71Cell10 = row.createCell(12);
+					if (record.getR71_qua_iv_qar() != null) {
+						R71Cell10.setCellValue(record.getR71_qua_iv_qar().doubleValue());
+						R71Cell10.setCellStyle(numberStyle);
+					} else {
+						R71Cell10.setCellValue("");
+						R71Cell10.setCellStyle(textStyle);
+					}
+
+// R71 Col N
+					Cell R71Cell11 = row.createCell(13);
+					if (record.getR71_qua_iv_inr() != null) {
+						R71Cell11.setCellValue(record.getR71_qua_iv_inr().doubleValue());
+						R71Cell11.setCellStyle(numberStyle);
+					} else {
+						R71Cell11.setCellValue("");
+						R71Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(71);
+// R72 Col C
+					Cell R72Cell = row.createCell(2);
+					if (record.getR72_qua_i_lc() != null) {
+						R72Cell.setCellValue(record.getR72_qua_i_lc().doubleValue());
+						R72Cell.setCellStyle(numberStyle);
+					} else {
+						R72Cell.setCellValue("");
+						R72Cell.setCellStyle(textStyle);
+					}
+
+// R72 Col D
+					Cell R72Cell1 = row.createCell(3);
+					if (record.getR72_qua_i_qar() != null) {
+						R72Cell1.setCellValue(record.getR72_qua_i_qar().doubleValue());
+						R72Cell1.setCellStyle(numberStyle);
+					} else {
+						R72Cell1.setCellValue("");
+						R72Cell1.setCellStyle(textStyle);
+					}
+
+// R72 Col E
+					Cell R72Cell2 = row.createCell(4);
+					if (record.getR72_qua_i_inr() != null) {
+						R72Cell2.setCellValue(record.getR72_qua_i_inr().doubleValue());
+						R72Cell2.setCellStyle(numberStyle);
+					} else {
+						R72Cell2.setCellValue("");
+						R72Cell2.setCellStyle(textStyle);
+					}
+
+// R72 Col F
+					Cell R72Cell3 = row.createCell(5);
+					if (record.getR72_qua_ii_lc() != null) {
+						R72Cell3.setCellValue(record.getR72_qua_ii_lc().doubleValue());
+						R72Cell3.setCellStyle(numberStyle);
+					} else {
+						R72Cell3.setCellValue("");
+						R72Cell3.setCellStyle(textStyle);
+					}
+
+// R72 Col G
+					Cell R72Cell4 = row.createCell(6);
+					if (record.getR72_qua_ii_qar() != null) {
+						R72Cell4.setCellValue(record.getR72_qua_ii_qar().doubleValue());
+						R72Cell4.setCellStyle(numberStyle);
+					} else {
+						R72Cell4.setCellValue("");
+						R72Cell4.setCellStyle(textStyle);
+					}
+
+// R72 Col H
+					Cell R72Cell5 = row.createCell(7);
+					if (record.getR72_qua_ii_inr() != null) {
+						R72Cell5.setCellValue(record.getR72_qua_ii_inr().doubleValue());
+						R72Cell5.setCellStyle(numberStyle);
+					} else {
+						R72Cell5.setCellValue("");
+						R72Cell5.setCellStyle(textStyle);
+					}
+
+// R72 Col I
+					Cell R72Cell6 = row.createCell(8);
+					if (record.getR72_qua_iii_lc() != null) {
+						R72Cell6.setCellValue(record.getR72_qua_iii_lc().doubleValue());
+						R72Cell6.setCellStyle(numberStyle);
+					} else {
+						R72Cell6.setCellValue("");
+						R72Cell6.setCellStyle(textStyle);
+					}
+
+// R72 Col J
+					Cell R72Cell7 = row.createCell(9);
+					if (record.getR72_qua_iii_qar() != null) {
+						R72Cell7.setCellValue(record.getR72_qua_iii_qar().doubleValue());
+						R72Cell7.setCellStyle(numberStyle);
+					} else {
+						R72Cell7.setCellValue("");
+						R72Cell7.setCellStyle(textStyle);
+					}
+
+// R72 Col K
+					Cell R72Cell8 = row.createCell(10);
+					if (record.getR72_qua_iii_inr() != null) {
+						R72Cell8.setCellValue(record.getR72_qua_iii_inr().doubleValue());
+						R72Cell8.setCellStyle(numberStyle);
+					} else {
+						R72Cell8.setCellValue("");
+						R72Cell8.setCellStyle(textStyle);
+					}
+
+// R72 Col L
+					Cell R72Cell9 = row.createCell(11);
+					if (record.getR72_qua_iv_lc() != null) {
+						R72Cell9.setCellValue(record.getR72_qua_iv_lc().doubleValue());
+						R72Cell9.setCellStyle(numberStyle);
+					} else {
+						R72Cell9.setCellValue("");
+						R72Cell9.setCellStyle(textStyle);
+					}
+
+// R72 Col M
+					Cell R72Cell10 = row.createCell(12);
+					if (record.getR72_qua_iv_qar() != null) {
+						R72Cell10.setCellValue(record.getR72_qua_iv_qar().doubleValue());
+						R72Cell10.setCellStyle(numberStyle);
+					} else {
+						R72Cell10.setCellValue("");
+						R72Cell10.setCellStyle(textStyle);
+					}
+
+// R72 Col N
+					Cell R72Cell11 = row.createCell(13);
+					if (record.getR72_qua_iv_inr() != null) {
+						R72Cell11.setCellValue(record.getR72_qua_iv_inr().doubleValue());
+						R72Cell11.setCellStyle(numberStyle);
+					} else {
+						R72Cell11.setCellValue("");
+						R72Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(72);
+// R73 Col C
+					Cell R73Cell = row.createCell(2);
+					if (record.getR73_qua_i_lc() != null) {
+						R73Cell.setCellValue(record.getR73_qua_i_lc().doubleValue());
+						R73Cell.setCellStyle(numberStyle);
+					} else {
+						R73Cell.setCellValue("");
+						R73Cell.setCellStyle(textStyle);
+					}
+
+// R73 Col D
+					Cell R73Cell1 = row.createCell(3);
+					if (record.getR73_qua_i_qar() != null) {
+						R73Cell1.setCellValue(record.getR73_qua_i_qar().doubleValue());
+						R73Cell1.setCellStyle(numberStyle);
+					} else {
+						R73Cell1.setCellValue("");
+						R73Cell1.setCellStyle(textStyle);
+					}
+
+// R73 Col E
+					Cell R73Cell2 = row.createCell(4);
+					if (record.getR73_qua_i_inr() != null) {
+						R73Cell2.setCellValue(record.getR73_qua_i_inr().doubleValue());
+						R73Cell2.setCellStyle(numberStyle);
+					} else {
+						R73Cell2.setCellValue("");
+						R73Cell2.setCellStyle(textStyle);
+					}
+
+// R73 Col F
+					Cell R73Cell3 = row.createCell(5);
+					if (record.getR73_qua_ii_lc() != null) {
+						R73Cell3.setCellValue(record.getR73_qua_ii_lc().doubleValue());
+						R73Cell3.setCellStyle(numberStyle);
+					} else {
+						R73Cell3.setCellValue("");
+						R73Cell3.setCellStyle(textStyle);
+					}
+
+// R73 Col G
+					Cell R73Cell4 = row.createCell(6);
+					if (record.getR73_qua_ii_qar() != null) {
+						R73Cell4.setCellValue(record.getR73_qua_ii_qar().doubleValue());
+						R73Cell4.setCellStyle(numberStyle);
+					} else {
+						R73Cell4.setCellValue("");
+						R73Cell4.setCellStyle(textStyle);
+					}
+
+// R73 Col H
+					Cell R73Cell5 = row.createCell(7);
+					if (record.getR73_qua_ii_inr() != null) {
+						R73Cell5.setCellValue(record.getR73_qua_ii_inr().doubleValue());
+						R73Cell5.setCellStyle(numberStyle);
+					} else {
+						R73Cell5.setCellValue("");
+						R73Cell5.setCellStyle(textStyle);
+					}
+
+// R73 Col I
+					Cell R73Cell6 = row.createCell(8);
+					if (record.getR73_qua_iii_lc() != null) {
+						R73Cell6.setCellValue(record.getR73_qua_iii_lc().doubleValue());
+						R73Cell6.setCellStyle(numberStyle);
+					} else {
+						R73Cell6.setCellValue("");
+						R73Cell6.setCellStyle(textStyle);
+					}
+
+// R73 Col J
+					Cell R73Cell7 = row.createCell(9);
+					if (record.getR73_qua_iii_qar() != null) {
+						R73Cell7.setCellValue(record.getR73_qua_iii_qar().doubleValue());
+						R73Cell7.setCellStyle(numberStyle);
+					} else {
+						R73Cell7.setCellValue("");
+						R73Cell7.setCellStyle(textStyle);
+					}
+
+// R73 Col K
+					Cell R73Cell8 = row.createCell(10);
+					if (record.getR73_qua_iii_inr() != null) {
+						R73Cell8.setCellValue(record.getR73_qua_iii_inr().doubleValue());
+						R73Cell8.setCellStyle(numberStyle);
+					} else {
+						R73Cell8.setCellValue("");
+						R73Cell8.setCellStyle(textStyle);
+					}
+
+// R73 Col L
+					Cell R73Cell9 = row.createCell(11);
+					if (record.getR73_qua_iv_lc() != null) {
+						R73Cell9.setCellValue(record.getR73_qua_iv_lc().doubleValue());
+						R73Cell9.setCellStyle(numberStyle);
+					} else {
+						R73Cell9.setCellValue("");
+						R73Cell9.setCellStyle(textStyle);
+					}
+
+// R73 Col M
+					Cell R73Cell10 = row.createCell(12);
+					if (record.getR73_qua_iv_qar() != null) {
+						R73Cell10.setCellValue(record.getR73_qua_iv_qar().doubleValue());
+						R73Cell10.setCellStyle(numberStyle);
+					} else {
+						R73Cell10.setCellValue("");
+						R73Cell10.setCellStyle(textStyle);
+					}
+
+// R73 Col N
+					Cell R73Cell11 = row.createCell(13);
+					if (record.getR73_qua_iv_inr() != null) {
+						R73Cell11.setCellValue(record.getR73_qua_iv_inr().doubleValue());
+						R73Cell11.setCellStyle(numberStyle);
+					} else {
+						R73Cell11.setCellValue("");
+						R73Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(73);
+// R74 Col C
+					Cell R74Cell = row.createCell(2);
+					if (record.getR74_qua_i_lc() != null) {
+						R74Cell.setCellValue(record.getR74_qua_i_lc().doubleValue());
+						R74Cell.setCellStyle(numberStyle);
+					} else {
+						R74Cell.setCellValue("");
+						R74Cell.setCellStyle(textStyle);
+					}
+
+// R74 Col D
+					Cell R74Cell1 = row.createCell(3);
+					if (record.getR74_qua_i_qar() != null) {
+						R74Cell1.setCellValue(record.getR74_qua_i_qar().doubleValue());
+						R74Cell1.setCellStyle(numberStyle);
+					} else {
+						R74Cell1.setCellValue("");
+						R74Cell1.setCellStyle(textStyle);
+					}
+
+// R74 Col E
+					Cell R74Cell2 = row.createCell(4);
+					if (record.getR74_qua_i_inr() != null) {
+						R74Cell2.setCellValue(record.getR74_qua_i_inr().doubleValue());
+						R74Cell2.setCellStyle(numberStyle);
+					} else {
+						R74Cell2.setCellValue("");
+						R74Cell2.setCellStyle(textStyle);
+					}
+
+// R74 Col F
+					Cell R74Cell3 = row.createCell(5);
+					if (record.getR74_qua_ii_lc() != null) {
+						R74Cell3.setCellValue(record.getR74_qua_ii_lc().doubleValue());
+						R74Cell3.setCellStyle(numberStyle);
+					} else {
+						R74Cell3.setCellValue("");
+						R74Cell3.setCellStyle(textStyle);
+					}
+
+// R74 Col G
+					Cell R74Cell4 = row.createCell(6);
+					if (record.getR74_qua_ii_qar() != null) {
+						R74Cell4.setCellValue(record.getR74_qua_ii_qar().doubleValue());
+						R74Cell4.setCellStyle(numberStyle);
+					} else {
+						R74Cell4.setCellValue("");
+						R74Cell4.setCellStyle(textStyle);
+					}
+
+// R74 Col H
+					Cell R74Cell5 = row.createCell(7);
+					if (record.getR74_qua_ii_inr() != null) {
+						R74Cell5.setCellValue(record.getR74_qua_ii_inr().doubleValue());
+						R74Cell5.setCellStyle(numberStyle);
+					} else {
+						R74Cell5.setCellValue("");
+						R74Cell5.setCellStyle(textStyle);
+					}
+
+// R74 Col I
+					Cell R74Cell6 = row.createCell(8);
+					if (record.getR74_qua_iii_lc() != null) {
+						R74Cell6.setCellValue(record.getR74_qua_iii_lc().doubleValue());
+						R74Cell6.setCellStyle(numberStyle);
+					} else {
+						R74Cell6.setCellValue("");
+						R74Cell6.setCellStyle(textStyle);
+					}
+
+// R74 Col J
+					Cell R74Cell7 = row.createCell(9);
+					if (record.getR74_qua_iii_qar() != null) {
+						R74Cell7.setCellValue(record.getR74_qua_iii_qar().doubleValue());
+						R74Cell7.setCellStyle(numberStyle);
+					} else {
+						R74Cell7.setCellValue("");
+						R74Cell7.setCellStyle(textStyle);
+					}
+
+// R74 Col K
+					Cell R74Cell8 = row.createCell(10);
+					if (record.getR74_qua_iii_inr() != null) {
+						R74Cell8.setCellValue(record.getR74_qua_iii_inr().doubleValue());
+						R74Cell8.setCellStyle(numberStyle);
+					} else {
+						R74Cell8.setCellValue("");
+						R74Cell8.setCellStyle(textStyle);
+					}
+
+// R74 Col L
+					Cell R74Cell9 = row.createCell(11);
+					if (record.getR74_qua_iv_lc() != null) {
+						R74Cell9.setCellValue(record.getR74_qua_iv_lc().doubleValue());
+						R74Cell9.setCellStyle(numberStyle);
+					} else {
+						R74Cell9.setCellValue("");
+						R74Cell9.setCellStyle(textStyle);
+					}
+
+// R74 Col M
+					Cell R74Cell10 = row.createCell(12);
+					if (record.getR74_qua_iv_qar() != null) {
+						R74Cell10.setCellValue(record.getR74_qua_iv_qar().doubleValue());
+						R74Cell10.setCellStyle(numberStyle);
+					} else {
+						R74Cell10.setCellValue("");
+						R74Cell10.setCellStyle(textStyle);
+					}
+
+// R74 Col N
+					Cell R74Cell11 = row.createCell(13);
+					if (record.getR74_qua_iv_inr() != null) {
+						R74Cell11.setCellValue(record.getR74_qua_iv_inr().doubleValue());
+						R74Cell11.setCellStyle(numberStyle);
+					} else {
+						R74Cell11.setCellValue("");
+						R74Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(74);
+// R75 Col C
+					Cell R75Cell = row.createCell(2);
+					if (record.getR75_qua_i_lc() != null) {
+						R75Cell.setCellValue(record.getR75_qua_i_lc().doubleValue());
+						R75Cell.setCellStyle(numberStyle);
+					} else {
+						R75Cell.setCellValue("");
+						R75Cell.setCellStyle(textStyle);
+					}
+
+// R75 Col D
+					Cell R75Cell1 = row.createCell(3);
+					if (record.getR75_qua_i_qar() != null) {
+						R75Cell1.setCellValue(record.getR75_qua_i_qar().doubleValue());
+						R75Cell1.setCellStyle(numberStyle);
+					} else {
+						R75Cell1.setCellValue("");
+						R75Cell1.setCellStyle(textStyle);
+					}
+
+// R75 Col E
+					Cell R75Cell2 = row.createCell(4);
+					if (record.getR75_qua_i_inr() != null) {
+						R75Cell2.setCellValue(record.getR75_qua_i_inr().doubleValue());
+						R75Cell2.setCellStyle(numberStyle);
+					} else {
+						R75Cell2.setCellValue("");
+						R75Cell2.setCellStyle(textStyle);
+					}
+
+// R75 Col F
+					Cell R75Cell3 = row.createCell(5);
+					if (record.getR75_qua_ii_lc() != null) {
+						R75Cell3.setCellValue(record.getR75_qua_ii_lc().doubleValue());
+						R75Cell3.setCellStyle(numberStyle);
+					} else {
+						R75Cell3.setCellValue("");
+						R75Cell3.setCellStyle(textStyle);
+					}
+
+// R75 Col G
+					Cell R75Cell4 = row.createCell(6);
+					if (record.getR75_qua_ii_qar() != null) {
+						R75Cell4.setCellValue(record.getR75_qua_ii_qar().doubleValue());
+						R75Cell4.setCellStyle(numberStyle);
+					} else {
+						R75Cell4.setCellValue("");
+						R75Cell4.setCellStyle(textStyle);
+					}
+
+// R75 Col H
+					Cell R75Cell5 = row.createCell(7);
+					if (record.getR75_qua_ii_inr() != null) {
+						R75Cell5.setCellValue(record.getR75_qua_ii_inr().doubleValue());
+						R75Cell5.setCellStyle(numberStyle);
+					} else {
+						R75Cell5.setCellValue("");
+						R75Cell5.setCellStyle(textStyle);
+					}
+
+// R75 Col I
+					Cell R75Cell6 = row.createCell(8);
+					if (record.getR75_qua_iii_lc() != null) {
+						R75Cell6.setCellValue(record.getR75_qua_iii_lc().doubleValue());
+						R75Cell6.setCellStyle(numberStyle);
+					} else {
+						R75Cell6.setCellValue("");
+						R75Cell6.setCellStyle(textStyle);
+					}
+
+// R75 Col J
+					Cell R75Cell7 = row.createCell(9);
+					if (record.getR75_qua_iii_qar() != null) {
+						R75Cell7.setCellValue(record.getR75_qua_iii_qar().doubleValue());
+						R75Cell7.setCellStyle(numberStyle);
+					} else {
+						R75Cell7.setCellValue("");
+						R75Cell7.setCellStyle(textStyle);
+					}
+
+// R75 Col K
+					Cell R75Cell8 = row.createCell(10);
+					if (record.getR75_qua_iii_inr() != null) {
+						R75Cell8.setCellValue(record.getR75_qua_iii_inr().doubleValue());
+						R75Cell8.setCellStyle(numberStyle);
+					} else {
+						R75Cell8.setCellValue("");
+						R75Cell8.setCellStyle(textStyle);
+					}
+
+// R75 Col L
+					Cell R75Cell9 = row.createCell(11);
+					if (record.getR75_qua_iv_lc() != null) {
+						R75Cell9.setCellValue(record.getR75_qua_iv_lc().doubleValue());
+						R75Cell9.setCellStyle(numberStyle);
+					} else {
+						R75Cell9.setCellValue("");
+						R75Cell9.setCellStyle(textStyle);
+					}
+
+// R75 Col M
+					Cell R75Cell10 = row.createCell(12);
+					if (record.getR75_qua_iv_qar() != null) {
+						R75Cell10.setCellValue(record.getR75_qua_iv_qar().doubleValue());
+						R75Cell10.setCellStyle(numberStyle);
+					} else {
+						R75Cell10.setCellValue("");
+						R75Cell10.setCellStyle(textStyle);
+					}
+
+// R75 Col N
+					Cell R75Cell11 = row.createCell(13);
+					if (record.getR75_qua_iv_inr() != null) {
+						R75Cell11.setCellValue(record.getR75_qua_iv_inr().doubleValue());
+						R75Cell11.setCellStyle(numberStyle);
+					} else {
+						R75Cell11.setCellValue("");
+						R75Cell11.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(75);
+// R76 Col C
+					Cell R76Cell = row.createCell(2);
+					if (record.getR76_qua_i_lc() != null) {
+						R76Cell.setCellValue(record.getR76_qua_i_lc().doubleValue());
+						R76Cell.setCellStyle(numberStyle);
+					} else {
+						R76Cell.setCellValue("");
+						R76Cell.setCellStyle(textStyle);
+					}
+
+// R76 Col D
+					Cell R76Cell1 = row.createCell(3);
+					if (record.getR76_qua_i_qar() != null) {
+						R76Cell1.setCellValue(record.getR76_qua_i_qar().doubleValue());
+						R76Cell1.setCellStyle(numberStyle);
+					} else {
+						R76Cell1.setCellValue("");
+						R76Cell1.setCellStyle(textStyle);
+					}
+
+// R76 Col E
+					Cell R76Cell2 = row.createCell(4);
+					if (record.getR76_qua_i_inr() != null) {
+						R76Cell2.setCellValue(record.getR76_qua_i_inr().doubleValue());
+						R76Cell2.setCellStyle(numberStyle);
+					} else {
+						R76Cell2.setCellValue("");
+						R76Cell2.setCellStyle(textStyle);
+					}
+
+// R76 Col F
+					Cell R76Cell3 = row.createCell(5);
+					if (record.getR76_qua_ii_lc() != null) {
+						R76Cell3.setCellValue(record.getR76_qua_ii_lc().doubleValue());
+						R76Cell3.setCellStyle(numberStyle);
+					} else {
+						R76Cell3.setCellValue("");
+						R76Cell3.setCellStyle(textStyle);
+					}
+
+// R76 Col G
+					Cell R76Cell4 = row.createCell(6);
+					if (record.getR76_qua_ii_qar() != null) {
+						R76Cell4.setCellValue(record.getR76_qua_ii_qar().doubleValue());
+						R76Cell4.setCellStyle(numberStyle);
+					} else {
+						R76Cell4.setCellValue("");
+						R76Cell4.setCellStyle(textStyle);
+					}
+
+// R76 Col H
+					Cell R76Cell5 = row.createCell(7);
+					if (record.getR76_qua_ii_inr() != null) {
+						R76Cell5.setCellValue(record.getR76_qua_ii_inr().doubleValue());
+						R76Cell5.setCellStyle(numberStyle);
+					} else {
+						R76Cell5.setCellValue("");
+						R76Cell5.setCellStyle(textStyle);
+					}
+
+// R76 Col I
+					Cell R76Cell6 = row.createCell(8);
+					if (record.getR76_qua_iii_lc() != null) {
+						R76Cell6.setCellValue(record.getR76_qua_iii_lc().doubleValue());
+						R76Cell6.setCellStyle(numberStyle);
+					} else {
+						R76Cell6.setCellValue("");
+						R76Cell6.setCellStyle(textStyle);
+					}
+
+// R76 Col J
+					Cell R76Cell7 = row.createCell(9);
+					if (record.getR76_qua_iii_qar() != null) {
+						R76Cell7.setCellValue(record.getR76_qua_iii_qar().doubleValue());
+						R76Cell7.setCellStyle(numberStyle);
+					} else {
+						R76Cell7.setCellValue("");
+						R76Cell7.setCellStyle(textStyle);
+					}
+
+// R76 Col K
+					Cell R76Cell8 = row.createCell(10);
+					if (record.getR76_qua_iii_inr() != null) {
+						R76Cell8.setCellValue(record.getR76_qua_iii_inr().doubleValue());
+						R76Cell8.setCellStyle(numberStyle);
+					} else {
+						R76Cell8.setCellValue("");
+						R76Cell8.setCellStyle(textStyle);
+					}
+
+// R76 Col L
+					Cell R76Cell9 = row.createCell(11);
+					if (record.getR76_qua_iv_lc() != null) {
+						R76Cell9.setCellValue(record.getR76_qua_iv_lc().doubleValue());
+						R76Cell9.setCellStyle(numberStyle);
+					} else {
+						R76Cell9.setCellValue("");
+						R76Cell9.setCellStyle(textStyle);
+					}
+
+// R76 Col M
+					Cell R76Cell10 = row.createCell(12);
+					if (record.getR76_qua_iv_qar() != null) {
+						R76Cell10.setCellValue(record.getR76_qua_iv_qar().doubleValue());
+						R76Cell10.setCellStyle(numberStyle);
+					} else {
+						R76Cell10.setCellValue("");
+						R76Cell10.setCellStyle(textStyle);
+					}
+
+// R76 Col N
+					Cell R76Cell11 = row.createCell(13);
+					if (record.getR76_qua_iv_inr() != null) {
+						R76Cell11.setCellValue(record.getR76_qua_iv_inr().doubleValue());
+						R76Cell11.setCellStyle(numberStyle);
+					} else {
+						R76Cell11.setCellValue("");
+						R76Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(76);
+// R77 Col C
+					Cell R77Cell = row.createCell(2);
+					if (record.getR77_qua_i_lc() != null) {
+						R77Cell.setCellValue(record.getR77_qua_i_lc().doubleValue());
+						R77Cell.setCellStyle(numberStyle);
+					} else {
+						R77Cell.setCellValue("");
+						R77Cell.setCellStyle(textStyle);
+					}
+
+// R77 Col D
+					Cell R77Cell1 = row.createCell(3);
+					if (record.getR77_qua_i_qar() != null) {
+						R77Cell1.setCellValue(record.getR77_qua_i_qar().doubleValue());
+						R77Cell1.setCellStyle(numberStyle);
+					} else {
+						R77Cell1.setCellValue("");
+						R77Cell1.setCellStyle(textStyle);
+					}
+
+// R77 Col E
+					Cell R77Cell2 = row.createCell(4);
+					if (record.getR77_qua_i_inr() != null) {
+						R77Cell2.setCellValue(record.getR77_qua_i_inr().doubleValue());
+						R77Cell2.setCellStyle(numberStyle);
+					} else {
+						R77Cell2.setCellValue("");
+						R77Cell2.setCellStyle(textStyle);
+					}
+
+// R77 Col F
+					Cell R77Cell3 = row.createCell(5);
+					if (record.getR77_qua_ii_lc() != null) {
+						R77Cell3.setCellValue(record.getR77_qua_ii_lc().doubleValue());
+						R77Cell3.setCellStyle(numberStyle);
+					} else {
+						R77Cell3.setCellValue("");
+						R77Cell3.setCellStyle(textStyle);
+					}
+
+// R77 Col G
+					Cell R77Cell4 = row.createCell(6);
+					if (record.getR77_qua_ii_qar() != null) {
+						R77Cell4.setCellValue(record.getR77_qua_ii_qar().doubleValue());
+						R77Cell4.setCellStyle(numberStyle);
+					} else {
+						R77Cell4.setCellValue("");
+						R77Cell4.setCellStyle(textStyle);
+					}
+
+// R77 Col H
+					Cell R77Cell5 = row.createCell(7);
+					if (record.getR77_qua_ii_inr() != null) {
+						R77Cell5.setCellValue(record.getR77_qua_ii_inr().doubleValue());
+						R77Cell5.setCellStyle(numberStyle);
+					} else {
+						R77Cell5.setCellValue("");
+						R77Cell5.setCellStyle(textStyle);
+					}
+
+// R77 Col I
+					Cell R77Cell6 = row.createCell(8);
+					if (record.getR77_qua_iii_lc() != null) {
+						R77Cell6.setCellValue(record.getR77_qua_iii_lc().doubleValue());
+						R77Cell6.setCellStyle(numberStyle);
+					} else {
+						R77Cell6.setCellValue("");
+						R77Cell6.setCellStyle(textStyle);
+					}
+
+// R77 Col J
+					Cell R77Cell7 = row.createCell(9);
+					if (record.getR77_qua_iii_qar() != null) {
+						R77Cell7.setCellValue(record.getR77_qua_iii_qar().doubleValue());
+						R77Cell7.setCellStyle(numberStyle);
+					} else {
+						R77Cell7.setCellValue("");
+						R77Cell7.setCellStyle(textStyle);
+					}
+
+// R77 Col K
+					Cell R77Cell8 = row.createCell(10);
+					if (record.getR77_qua_iii_inr() != null) {
+						R77Cell8.setCellValue(record.getR77_qua_iii_inr().doubleValue());
+						R77Cell8.setCellStyle(numberStyle);
+					} else {
+						R77Cell8.setCellValue("");
+						R77Cell8.setCellStyle(textStyle);
+					}
+
+// R77 Col L
+					Cell R77Cell9 = row.createCell(11);
+					if (record.getR77_qua_iv_lc() != null) {
+						R77Cell9.setCellValue(record.getR77_qua_iv_lc().doubleValue());
+						R77Cell9.setCellStyle(numberStyle);
+					} else {
+						R77Cell9.setCellValue("");
+						R77Cell9.setCellStyle(textStyle);
+					}
+
+// R77 Col M
+					Cell R77Cell10 = row.createCell(12);
+					if (record.getR77_qua_iv_qar() != null) {
+						R77Cell10.setCellValue(record.getR77_qua_iv_qar().doubleValue());
+						R77Cell10.setCellStyle(numberStyle);
+					} else {
+						R77Cell10.setCellValue("");
+						R77Cell10.setCellStyle(textStyle);
+					}
+
+// R77 Col N
+					Cell R77Cell11 = row.createCell(13);
+					if (record.getR77_qua_iv_inr() != null) {
+						R77Cell11.setCellValue(record.getR77_qua_iv_inr().doubleValue());
+						R77Cell11.setCellStyle(numberStyle);
+					} else {
+						R77Cell11.setCellValue("");
+						R77Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(77);
+// R78 Col C
+					Cell R78Cell = row.createCell(2);
+					if (record.getR78_qua_i_lc() != null) {
+						R78Cell.setCellValue(record.getR78_qua_i_lc().doubleValue());
+						R78Cell.setCellStyle(numberStyle);
+					} else {
+						R78Cell.setCellValue("");
+						R78Cell.setCellStyle(textStyle);
+					}
+
+// R78 Col D
+					Cell R78Cell1 = row.createCell(3);
+					if (record.getR78_qua_i_qar() != null) {
+						R78Cell1.setCellValue(record.getR78_qua_i_qar().doubleValue());
+						R78Cell1.setCellStyle(numberStyle);
+					} else {
+						R78Cell1.setCellValue("");
+						R78Cell1.setCellStyle(textStyle);
+					}
+
+// R78 Col E
+					Cell R78Cell2 = row.createCell(4);
+					if (record.getR78_qua_i_inr() != null) {
+						R78Cell2.setCellValue(record.getR78_qua_i_inr().doubleValue());
+						R78Cell2.setCellStyle(numberStyle);
+					} else {
+						R78Cell2.setCellValue("");
+						R78Cell2.setCellStyle(textStyle);
+					}
+
+// R78 Col F
+					Cell R78Cell3 = row.createCell(5);
+					if (record.getR78_qua_ii_lc() != null) {
+						R78Cell3.setCellValue(record.getR78_qua_ii_lc().doubleValue());
+						R78Cell3.setCellStyle(numberStyle);
+					} else {
+						R78Cell3.setCellValue("");
+						R78Cell3.setCellStyle(textStyle);
+					}
+
+// R78 Col G
+					Cell R78Cell4 = row.createCell(6);
+					if (record.getR78_qua_ii_qar() != null) {
+						R78Cell4.setCellValue(record.getR78_qua_ii_qar().doubleValue());
+						R78Cell4.setCellStyle(numberStyle);
+					} else {
+						R78Cell4.setCellValue("");
+						R78Cell4.setCellStyle(textStyle);
+					}
+
+// R78 Col H
+					Cell R78Cell5 = row.createCell(7);
+					if (record.getR78_qua_ii_inr() != null) {
+						R78Cell5.setCellValue(record.getR78_qua_ii_inr().doubleValue());
+						R78Cell5.setCellStyle(numberStyle);
+					} else {
+						R78Cell5.setCellValue("");
+						R78Cell5.setCellStyle(textStyle);
+					}
+
+// R78 Col I
+					Cell R78Cell6 = row.createCell(8);
+					if (record.getR78_qua_iii_lc() != null) {
+						R78Cell6.setCellValue(record.getR78_qua_iii_lc().doubleValue());
+						R78Cell6.setCellStyle(numberStyle);
+					} else {
+						R78Cell6.setCellValue("");
+						R78Cell6.setCellStyle(textStyle);
+					}
+
+// R78 Col J
+					Cell R78Cell7 = row.createCell(9);
+					if (record.getR78_qua_iii_qar() != null) {
+						R78Cell7.setCellValue(record.getR78_qua_iii_qar().doubleValue());
+						R78Cell7.setCellStyle(numberStyle);
+					} else {
+						R78Cell7.setCellValue("");
+						R78Cell7.setCellStyle(textStyle);
+					}
+
+// R78 Col K
+					Cell R78Cell8 = row.createCell(10);
+					if (record.getR78_qua_iii_inr() != null) {
+						R78Cell8.setCellValue(record.getR78_qua_iii_inr().doubleValue());
+						R78Cell8.setCellStyle(numberStyle);
+					} else {
+						R78Cell8.setCellValue("");
+						R78Cell8.setCellStyle(textStyle);
+					}
+
+// R78 Col L
+					Cell R78Cell9 = row.createCell(11);
+					if (record.getR78_qua_iv_lc() != null) {
+						R78Cell9.setCellValue(record.getR78_qua_iv_lc().doubleValue());
+						R78Cell9.setCellStyle(numberStyle);
+					} else {
+						R78Cell9.setCellValue("");
+						R78Cell9.setCellStyle(textStyle);
+					}
+
+// R78 Col M
+					Cell R78Cell10 = row.createCell(12);
+					if (record.getR78_qua_iv_qar() != null) {
+						R78Cell10.setCellValue(record.getR78_qua_iv_qar().doubleValue());
+						R78Cell10.setCellStyle(numberStyle);
+					} else {
+						R78Cell10.setCellValue("");
+						R78Cell10.setCellStyle(textStyle);
+					}
+
+// R78 Col N
+					Cell R78Cell11 = row.createCell(13);
+					if (record.getR78_qua_iv_inr() != null) {
+						R78Cell11.setCellValue(record.getR78_qua_iv_inr().doubleValue());
+						R78Cell11.setCellStyle(numberStyle);
+					} else {
+						R78Cell11.setCellValue("");
+						R78Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(79);
+// R80 Col C
+					Cell R80Cell = row.createCell(2);
+					if (record.getR80_qua_i_lc() != null) {
+						R80Cell.setCellValue(record.getR80_qua_i_lc().doubleValue());
+						R80Cell.setCellStyle(numberStyle);
+					} else {
+						R80Cell.setCellValue("");
+						R80Cell.setCellStyle(textStyle);
+					}
+
+// R80 Col D
+					Cell R80Cell1 = row.createCell(3);
+					if (record.getR80_qua_i_qar() != null) {
+						R80Cell1.setCellValue(record.getR80_qua_i_qar().doubleValue());
+						R80Cell1.setCellStyle(numberStyle);
+					} else {
+						R80Cell1.setCellValue("");
+						R80Cell1.setCellStyle(textStyle);
+					}
+
+// R80 Col E
+					Cell R80Cell2 = row.createCell(4);
+					if (record.getR80_qua_i_inr() != null) {
+						R80Cell2.setCellValue(record.getR80_qua_i_inr().doubleValue());
+						R80Cell2.setCellStyle(numberStyle);
+					} else {
+						R80Cell2.setCellValue("");
+						R80Cell2.setCellStyle(textStyle);
+					}
+
+// R80 Col F
+					Cell R80Cell3 = row.createCell(5);
+					if (record.getR80_qua_ii_lc() != null) {
+						R80Cell3.setCellValue(record.getR80_qua_ii_lc().doubleValue());
+						R80Cell3.setCellStyle(numberStyle);
+					} else {
+						R80Cell3.setCellValue("");
+						R80Cell3.setCellStyle(textStyle);
+					}
+
+// R80 Col G
+					Cell R80Cell4 = row.createCell(6);
+					if (record.getR80_qua_ii_qar() != null) {
+						R80Cell4.setCellValue(record.getR80_qua_ii_qar().doubleValue());
+						R80Cell4.setCellStyle(numberStyle);
+					} else {
+						R80Cell4.setCellValue("");
+						R80Cell4.setCellStyle(textStyle);
+					}
+
+// R80 Col H
+					Cell R80Cell5 = row.createCell(7);
+					if (record.getR80_qua_ii_inr() != null) {
+						R80Cell5.setCellValue(record.getR80_qua_ii_inr().doubleValue());
+						R80Cell5.setCellStyle(numberStyle);
+					} else {
+						R80Cell5.setCellValue("");
+						R80Cell5.setCellStyle(textStyle);
+					}
+
+// R80 Col I
+					Cell R80Cell6 = row.createCell(8);
+					if (record.getR80_qua_iii_lc() != null) {
+						R80Cell6.setCellValue(record.getR80_qua_iii_lc().doubleValue());
+						R80Cell6.setCellStyle(numberStyle);
+					} else {
+						R80Cell6.setCellValue("");
+						R80Cell6.setCellStyle(textStyle);
+					}
+
+// R80 Col J
+					Cell R80Cell7 = row.createCell(9);
+					if (record.getR80_qua_iii_qar() != null) {
+						R80Cell7.setCellValue(record.getR80_qua_iii_qar().doubleValue());
+						R80Cell7.setCellStyle(numberStyle);
+					} else {
+						R80Cell7.setCellValue("");
+						R80Cell7.setCellStyle(textStyle);
+					}
+
+// R80 Col K
+					Cell R80Cell8 = row.createCell(10);
+					if (record.getR80_qua_iii_inr() != null) {
+						R80Cell8.setCellValue(record.getR80_qua_iii_inr().doubleValue());
+						R80Cell8.setCellStyle(numberStyle);
+					} else {
+						R80Cell8.setCellValue("");
+						R80Cell8.setCellStyle(textStyle);
+					}
+
+// R80 Col L
+					Cell R80Cell9 = row.createCell(11);
+					if (record.getR80_qua_iv_lc() != null) {
+						R80Cell9.setCellValue(record.getR80_qua_iv_lc().doubleValue());
+						R80Cell9.setCellStyle(numberStyle);
+					} else {
+						R80Cell9.setCellValue("");
+						R80Cell9.setCellStyle(textStyle);
+					}
+
+// R80 Col M
+					Cell R80Cell10 = row.createCell(12);
+					if (record.getR80_qua_iv_qar() != null) {
+						R80Cell10.setCellValue(record.getR80_qua_iv_qar().doubleValue());
+						R80Cell10.setCellStyle(numberStyle);
+					} else {
+						R80Cell10.setCellValue("");
+						R80Cell10.setCellStyle(textStyle);
+					}
+
+// R80 Col N
+					Cell R80Cell11 = row.createCell(13);
+					if (record.getR80_qua_iv_inr() != null) {
+						R80Cell11.setCellValue(record.getR80_qua_iv_inr().doubleValue());
+						R80Cell11.setCellStyle(numberStyle);
+					} else {
+						R80Cell11.setCellValue("");
+						R80Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(80);
+// R81 Col C
+					Cell R81Cell = row.createCell(2);
+					if (record.getR81_qua_i_lc() != null) {
+						R81Cell.setCellValue(record.getR81_qua_i_lc().doubleValue());
+						R81Cell.setCellStyle(numberStyle);
+					} else {
+						R81Cell.setCellValue("");
+						R81Cell.setCellStyle(textStyle);
+					}
+
+// R81 Col D
+					Cell R81Cell1 = row.createCell(3);
+					if (record.getR81_qua_i_qar() != null) {
+						R81Cell1.setCellValue(record.getR81_qua_i_qar().doubleValue());
+						R81Cell1.setCellStyle(numberStyle);
+					} else {
+						R81Cell1.setCellValue("");
+						R81Cell1.setCellStyle(textStyle);
+					}
+
+// R81 Col E
+					Cell R81Cell2 = row.createCell(4);
+					if (record.getR81_qua_i_inr() != null) {
+						R81Cell2.setCellValue(record.getR81_qua_i_inr().doubleValue());
+						R81Cell2.setCellStyle(numberStyle);
+					} else {
+						R81Cell2.setCellValue("");
+						R81Cell2.setCellStyle(textStyle);
+					}
+
+// R81 Col F
+					Cell R81Cell3 = row.createCell(5);
+					if (record.getR81_qua_ii_lc() != null) {
+						R81Cell3.setCellValue(record.getR81_qua_ii_lc().doubleValue());
+						R81Cell3.setCellStyle(numberStyle);
+					} else {
+						R81Cell3.setCellValue("");
+						R81Cell3.setCellStyle(textStyle);
+					}
+
+// R81 Col G
+					Cell R81Cell4 = row.createCell(6);
+					if (record.getR81_qua_ii_qar() != null) {
+						R81Cell4.setCellValue(record.getR81_qua_ii_qar().doubleValue());
+						R81Cell4.setCellStyle(numberStyle);
+					} else {
+						R81Cell4.setCellValue("");
+						R81Cell4.setCellStyle(textStyle);
+					}
+
+// R81 Col H
+					Cell R81Cell5 = row.createCell(7);
+					if (record.getR81_qua_ii_inr() != null) {
+						R81Cell5.setCellValue(record.getR81_qua_ii_inr().doubleValue());
+						R81Cell5.setCellStyle(numberStyle);
+					} else {
+						R81Cell5.setCellValue("");
+						R81Cell5.setCellStyle(textStyle);
+					}
+
+// R81 Col I
+					Cell R81Cell6 = row.createCell(8);
+					if (record.getR81_qua_iii_lc() != null) {
+						R81Cell6.setCellValue(record.getR81_qua_iii_lc().doubleValue());
+						R81Cell6.setCellStyle(numberStyle);
+					} else {
+						R81Cell6.setCellValue("");
+						R81Cell6.setCellStyle(textStyle);
+					}
+
+// R81 Col J
+					Cell R81Cell7 = row.createCell(9);
+					if (record.getR81_qua_iii_qar() != null) {
+						R81Cell7.setCellValue(record.getR81_qua_iii_qar().doubleValue());
+						R81Cell7.setCellStyle(numberStyle);
+					} else {
+						R81Cell7.setCellValue("");
+						R81Cell7.setCellStyle(textStyle);
+					}
+
+// R81 Col K
+					Cell R81Cell8 = row.createCell(10);
+					if (record.getR81_qua_iii_inr() != null) {
+						R81Cell8.setCellValue(record.getR81_qua_iii_inr().doubleValue());
+						R81Cell8.setCellStyle(numberStyle);
+					} else {
+						R81Cell8.setCellValue("");
+						R81Cell8.setCellStyle(textStyle);
+					}
+
+// R81 Col L
+					Cell R81Cell9 = row.createCell(11);
+					if (record.getR81_qua_iv_lc() != null) {
+						R81Cell9.setCellValue(record.getR81_qua_iv_lc().doubleValue());
+						R81Cell9.setCellStyle(numberStyle);
+					} else {
+						R81Cell9.setCellValue("");
+						R81Cell9.setCellStyle(textStyle);
+					}
+
+// R81 Col M
+					Cell R81Cell10 = row.createCell(12);
+					if (record.getR81_qua_iv_qar() != null) {
+						R81Cell10.setCellValue(record.getR81_qua_iv_qar().doubleValue());
+						R81Cell10.setCellStyle(numberStyle);
+					} else {
+						R81Cell10.setCellValue("");
+						R81Cell10.setCellStyle(textStyle);
+					}
+
+// R81 Col N
+					Cell R81Cell11 = row.createCell(13);
+					if (record.getR81_qua_iv_inr() != null) {
+						R81Cell11.setCellValue(record.getR81_qua_iv_inr().doubleValue());
+						R81Cell11.setCellStyle(numberStyle);
+					} else {
+						R81Cell11.setCellValue("");
+						R81Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(82);
+// R83 Col C
+					Cell R83Cell = row.createCell(2);
+					if (record.getR83_qua_i_lc() != null) {
+						R83Cell.setCellValue(record.getR83_qua_i_lc().doubleValue());
+						R83Cell.setCellStyle(numberStyle);
+					} else {
+						R83Cell.setCellValue("");
+						R83Cell.setCellStyle(textStyle);
+					}
+
+// R83 Col D
+					Cell R83Cell1 = row.createCell(3);
+					if (record.getR83_qua_i_qar() != null) {
+						R83Cell1.setCellValue(record.getR83_qua_i_qar().doubleValue());
+						R83Cell1.setCellStyle(numberStyle);
+					} else {
+						R83Cell1.setCellValue("");
+						R83Cell1.setCellStyle(textStyle);
+					}
+
+// R83 Col E
+					Cell R83Cell2 = row.createCell(4);
+					if (record.getR83_qua_i_inr() != null) {
+						R83Cell2.setCellValue(record.getR83_qua_i_inr().doubleValue());
+						R83Cell2.setCellStyle(numberStyle);
+					} else {
+						R83Cell2.setCellValue("");
+						R83Cell2.setCellStyle(textStyle);
+					}
+
+// R83 Col F
+					Cell R83Cell3 = row.createCell(5);
+					if (record.getR83_qua_ii_lc() != null) {
+						R83Cell3.setCellValue(record.getR83_qua_ii_lc().doubleValue());
+						R83Cell3.setCellStyle(numberStyle);
+					} else {
+						R83Cell3.setCellValue("");
+						R83Cell3.setCellStyle(textStyle);
+					}
+
+// R83 Col G
+					Cell R83Cell4 = row.createCell(6);
+					if (record.getR83_qua_ii_qar() != null) {
+						R83Cell4.setCellValue(record.getR83_qua_ii_qar().doubleValue());
+						R83Cell4.setCellStyle(numberStyle);
+					} else {
+						R83Cell4.setCellValue("");
+						R83Cell4.setCellStyle(textStyle);
+					}
+
+// R83 Col H
+					Cell R83Cell5 = row.createCell(7);
+					if (record.getR83_qua_ii_inr() != null) {
+						R83Cell5.setCellValue(record.getR83_qua_ii_inr().doubleValue());
+						R83Cell5.setCellStyle(numberStyle);
+					} else {
+						R83Cell5.setCellValue("");
+						R83Cell5.setCellStyle(textStyle);
+					}
+
+// R83 Col I
+					Cell R83Cell6 = row.createCell(8);
+					if (record.getR83_qua_iii_lc() != null) {
+						R83Cell6.setCellValue(record.getR83_qua_iii_lc().doubleValue());
+						R83Cell6.setCellStyle(numberStyle);
+					} else {
+						R83Cell6.setCellValue("");
+						R83Cell6.setCellStyle(textStyle);
+					}
+
+// R83 Col J
+					Cell R83Cell7 = row.createCell(9);
+					if (record.getR83_qua_iii_qar() != null) {
+						R83Cell7.setCellValue(record.getR83_qua_iii_qar().doubleValue());
+						R83Cell7.setCellStyle(numberStyle);
+					} else {
+						R83Cell7.setCellValue("");
+						R83Cell7.setCellStyle(textStyle);
+					}
+
+// R83 Col K
+					Cell R83Cell8 = row.createCell(10);
+					if (record.getR83_qua_iii_inr() != null) {
+						R83Cell8.setCellValue(record.getR83_qua_iii_inr().doubleValue());
+						R83Cell8.setCellStyle(numberStyle);
+					} else {
+						R83Cell8.setCellValue("");
+						R83Cell8.setCellStyle(textStyle);
+					}
+
+// R83 Col L
+					Cell R83Cell9 = row.createCell(11);
+					if (record.getR83_qua_iv_lc() != null) {
+						R83Cell9.setCellValue(record.getR83_qua_iv_lc().doubleValue());
+						R83Cell9.setCellStyle(numberStyle);
+					} else {
+						R83Cell9.setCellValue("");
+						R83Cell9.setCellStyle(textStyle);
+					}
+
+// R83 Col M
+					Cell R83Cell10 = row.createCell(12);
+					if (record.getR83_qua_iv_qar() != null) {
+						R83Cell10.setCellValue(record.getR83_qua_iv_qar().doubleValue());
+						R83Cell10.setCellStyle(numberStyle);
+					} else {
+						R83Cell10.setCellValue("");
+						R83Cell10.setCellStyle(textStyle);
+					}
+
+// R83 Col N
+					Cell R83Cell11 = row.createCell(13);
+					if (record.getR83_qua_iv_inr() != null) {
+						R83Cell11.setCellValue(record.getR83_qua_iv_inr().doubleValue());
+						R83Cell11.setCellStyle(numberStyle);
+					} else {
+						R83Cell11.setCellValue("");
+						R83Cell11.setCellStyle(textStyle);
+					}
+					Cell R83Cell12 = row.createCell(14);
+					if (record.getR83_cumm_inr() != null) {
+						R83Cell12.setCellValue(record.getR83_cumm_inr().doubleValue());
+						R83Cell12.setCellStyle(numberStyle);
+					} else {
+						R83Cell12.setCellValue("");
+						R83Cell12.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(83);
+// R84 Col C
+					Cell R84Cell = row.createCell(2);
+					if (record1.getR84_qua_i_lc() != null) {
+						R84Cell.setCellValue(record1.getR84_qua_i_lc().doubleValue());
+						R84Cell.setCellStyle(numberStyle);
+					} else {
+						R84Cell.setCellValue("");
+						R84Cell.setCellStyle(textStyle);
+					}
+
+// R84 Col D
+					Cell R84Cell1 = row.createCell(3);
+					if (record1.getR84_qua_i_qar() != null) {
+						R84Cell1.setCellValue(record1.getR84_qua_i_qar().doubleValue());
+						R84Cell1.setCellStyle(numberStyle);
+					} else {
+						R84Cell1.setCellValue("");
+						R84Cell1.setCellStyle(textStyle);
+					}
+
+// R84 Col E
+					Cell R84Cell2 = row.createCell(4);
+					if (record1.getR84_qua_i_inr() != null) {
+						R84Cell2.setCellValue(record1.getR84_qua_i_inr().doubleValue());
+						R84Cell2.setCellStyle(numberStyle);
+					} else {
+						R84Cell2.setCellValue("");
+						R84Cell2.setCellStyle(textStyle);
+					}
+
+// R84 Col F
+					Cell R84Cell3 = row.createCell(5);
+					if (record1.getR84_qua_ii_lc() != null) {
+						R84Cell3.setCellValue(record1.getR84_qua_ii_lc().doubleValue());
+						R84Cell3.setCellStyle(numberStyle);
+					} else {
+						R84Cell3.setCellValue("");
+						R84Cell3.setCellStyle(textStyle);
+					}
+
+// R84 Col G
+					Cell R84Cell4 = row.createCell(6);
+					if (record1.getR84_qua_ii_qar() != null) {
+						R84Cell4.setCellValue(record1.getR84_qua_ii_qar().doubleValue());
+						R84Cell4.setCellStyle(numberStyle);
+					} else {
+						R84Cell4.setCellValue("");
+						R84Cell4.setCellStyle(textStyle);
+					}
+
+// R84 Col H
+					Cell R84Cell5 = row.createCell(7);
+					if (record1.getR84_qua_ii_inr() != null) {
+						R84Cell5.setCellValue(record1.getR84_qua_ii_inr().doubleValue());
+						R84Cell5.setCellStyle(numberStyle);
+					} else {
+						R84Cell5.setCellValue("");
+						R84Cell5.setCellStyle(textStyle);
+					}
+
+// R84 Col I
+					Cell R84Cell6 = row.createCell(8);
+					if (record1.getR84_qua_iii_lc() != null) {
+						R84Cell6.setCellValue(record1.getR84_qua_iii_lc().doubleValue());
+						R84Cell6.setCellStyle(numberStyle);
+					} else {
+						R84Cell6.setCellValue("");
+						R84Cell6.setCellStyle(textStyle);
+					}
+
+// R84 Col J
+					Cell R84Cell7 = row.createCell(9);
+					if (record1.getR84_qua_iii_qar() != null) {
+						R84Cell7.setCellValue(record1.getR84_qua_iii_qar().doubleValue());
+						R84Cell7.setCellStyle(numberStyle);
+					} else {
+						R84Cell7.setCellValue("");
+						R84Cell7.setCellStyle(textStyle);
+					}
+
+// R84 Col K
+					Cell R84Cell8 = row.createCell(10);
+					if (record1.getR84_qua_iii_inr() != null) {
+						R84Cell8.setCellValue(record1.getR84_qua_iii_inr().doubleValue());
+						R84Cell8.setCellStyle(numberStyle);
+					} else {
+						R84Cell8.setCellValue("");
+						R84Cell8.setCellStyle(textStyle);
+					}
+
+// R84 Col L
+					Cell R84Cell9 = row.createCell(11);
+					if (record1.getR84_qua_iv_lc() != null) {
+						R84Cell9.setCellValue(record1.getR84_qua_iv_lc().doubleValue());
+						R84Cell9.setCellStyle(numberStyle);
+					} else {
+						R84Cell9.setCellValue("");
+						R84Cell9.setCellStyle(textStyle);
+					}
+
+// R84 Col M
+					Cell R84Cell10 = row.createCell(12);
+					if (record1.getR84_qua_iv_qar() != null) {
+						R84Cell10.setCellValue(record1.getR84_qua_iv_qar().doubleValue());
+						R84Cell10.setCellStyle(numberStyle);
+					} else {
+						R84Cell10.setCellValue("");
+						R84Cell10.setCellStyle(textStyle);
+					}
+
+// R84 Col N
+					Cell R84Cell11 = row.createCell(13);
+					if (record1.getR84_qua_iv_inr() != null) {
+						R84Cell11.setCellValue(record1.getR84_qua_iv_inr().doubleValue());
+						R84Cell11.setCellStyle(numberStyle);
+					} else {
+						R84Cell11.setCellValue("");
+						R84Cell11.setCellStyle(textStyle);
+					}
+					Cell R84Cell12 = row.createCell(14);
+					if (record1.getR84_cumm_inr() != null) {
+						R84Cell12.setCellValue(record1.getR84_cumm_inr().doubleValue());
+						R84Cell12.setCellStyle(numberStyle);
+					} else {
+						R84Cell12.setCellValue("");
+						R84Cell12.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(85);
+// R86 Col C
+					Cell R86Cell = row.createCell(2);
+					if (record1.getR86_qua_i_lc() != null) {
+						R86Cell.setCellValue(record1.getR86_qua_i_lc().doubleValue());
+						R86Cell.setCellStyle(numberStyle);
+					} else {
+						R86Cell.setCellValue("");
+						R86Cell.setCellStyle(textStyle);
+					}
+
+// R86 Col D
+					Cell R86Cell1 = row.createCell(3);
+					if (record1.getR86_qua_i_qar() != null) {
+						R86Cell1.setCellValue(record1.getR86_qua_i_qar().doubleValue());
+						R86Cell1.setCellStyle(numberStyle);
+					} else {
+						R86Cell1.setCellValue("");
+						R86Cell1.setCellStyle(textStyle);
+					}
+
+// R86 Col E
+					Cell R86Cell2 = row.createCell(4);
+					if (record1.getR86_qua_i_inr() != null) {
+						R86Cell2.setCellValue(record1.getR86_qua_i_inr().doubleValue());
+						R86Cell2.setCellStyle(numberStyle);
+					} else {
+						R86Cell2.setCellValue("");
+						R86Cell2.setCellStyle(textStyle);
+					}
+
+// R86 Col F
+					Cell R86Cell3 = row.createCell(5);
+					if (record1.getR86_qua_ii_lc() != null) {
+						R86Cell3.setCellValue(record1.getR86_qua_ii_lc().doubleValue());
+						R86Cell3.setCellStyle(numberStyle);
+					} else {
+						R86Cell3.setCellValue("");
+						R86Cell3.setCellStyle(textStyle);
+					}
+
+// R86 Col G
+					Cell R86Cell4 = row.createCell(6);
+					if (record1.getR86_qua_ii_qar() != null) {
+						R86Cell4.setCellValue(record1.getR86_qua_ii_qar().doubleValue());
+						R86Cell4.setCellStyle(numberStyle);
+					} else {
+						R86Cell4.setCellValue("");
+						R86Cell4.setCellStyle(textStyle);
+					}
+
+// R86 Col H
+					Cell R86Cell5 = row.createCell(7);
+					if (record1.getR86_qua_ii_inr() != null) {
+						R86Cell5.setCellValue(record1.getR86_qua_ii_inr().doubleValue());
+						R86Cell5.setCellStyle(numberStyle);
+					} else {
+						R86Cell5.setCellValue("");
+						R86Cell5.setCellStyle(textStyle);
+					}
+
+// R86 Col I
+					Cell R86Cell6 = row.createCell(8);
+					if (record1.getR86_qua_iii_lc() != null) {
+						R86Cell6.setCellValue(record1.getR86_qua_iii_lc().doubleValue());
+						R86Cell6.setCellStyle(numberStyle);
+					} else {
+						R86Cell6.setCellValue("");
+						R86Cell6.setCellStyle(textStyle);
+					}
+
+// R86 Col J
+					Cell R86Cell7 = row.createCell(9);
+					if (record1.getR86_qua_iii_qar() != null) {
+						R86Cell7.setCellValue(record1.getR86_qua_iii_qar().doubleValue());
+						R86Cell7.setCellStyle(numberStyle);
+					} else {
+						R86Cell7.setCellValue("");
+						R86Cell7.setCellStyle(textStyle);
+					}
+
+// R86 Col K
+					Cell R86Cell8 = row.createCell(10);
+					if (record1.getR86_qua_iii_inr() != null) {
+						R86Cell8.setCellValue(record1.getR86_qua_iii_inr().doubleValue());
+						R86Cell8.setCellStyle(numberStyle);
+					} else {
+						R86Cell8.setCellValue("");
+						R86Cell8.setCellStyle(textStyle);
+					}
+
+// R86 Col L
+					Cell R86Cell9 = row.createCell(11);
+					if (record1.getR86_qua_iv_lc() != null) {
+						R86Cell9.setCellValue(record1.getR86_qua_iv_lc().doubleValue());
+						R86Cell9.setCellStyle(numberStyle);
+					} else {
+						R86Cell9.setCellValue("");
+						R86Cell9.setCellStyle(textStyle);
+					}
+
+// R86 Col M
+					Cell R86Cell10 = row.createCell(12);
+					if (record1.getR86_qua_iv_qar() != null) {
+						R86Cell10.setCellValue(record1.getR86_qua_iv_qar().doubleValue());
+						R86Cell10.setCellStyle(numberStyle);
+					} else {
+						R86Cell10.setCellValue("");
+						R86Cell10.setCellStyle(textStyle);
+					}
+
+// R86 Col N
+					Cell R86Cell11 = row.createCell(13);
+					if (record1.getR86_qua_iv_inr() != null) {
+						R86Cell11.setCellValue(record1.getR86_qua_iv_inr().doubleValue());
+						R86Cell11.setCellStyle(numberStyle);
+					} else {
+						R86Cell11.setCellValue("");
+						R86Cell11.setCellStyle(textStyle);
+					}
+					Cell R86Cell12 = row.createCell(14);
+					if (record1.getR86_cumm_inr() != null) {
+						R86Cell12.setCellValue(record1.getR86_cumm_inr().doubleValue());
+						R86Cell12.setCellStyle(numberStyle);
+					} else {
+						R86Cell12.setCellValue("");
+						R86Cell12.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(86);
+// R87 Col C
+					Cell R87Cell = row.createCell(2);
+					if (record1.getR87_qua_i_lc() != null) {
+						R87Cell.setCellValue(record1.getR87_qua_i_lc().doubleValue());
+						R87Cell.setCellStyle(numberStyle);
+					} else {
+						R87Cell.setCellValue("");
+						R87Cell.setCellStyle(textStyle);
+					}
+
+// R87 Col D
+					Cell R87Cell1 = row.createCell(3);
+					if (record1.getR87_qua_i_qar() != null) {
+						R87Cell1.setCellValue(record1.getR87_qua_i_qar().doubleValue());
+						R87Cell1.setCellStyle(numberStyle);
+					} else {
+						R87Cell1.setCellValue("");
+						R87Cell1.setCellStyle(textStyle);
+					}
+
+// R87 Col E
+					Cell R87Cell2 = row.createCell(4);
+					if (record1.getR87_qua_i_inr() != null) {
+						R87Cell2.setCellValue(record1.getR87_qua_i_inr().doubleValue());
+						R87Cell2.setCellStyle(numberStyle);
+					} else {
+						R87Cell2.setCellValue("");
+						R87Cell2.setCellStyle(textStyle);
+					}
+
+// R87 Col F
+					Cell R87Cell3 = row.createCell(5);
+					if (record1.getR87_qua_ii_lc() != null) {
+						R87Cell3.setCellValue(record1.getR87_qua_ii_lc().doubleValue());
+						R87Cell3.setCellStyle(numberStyle);
+					} else {
+						R87Cell3.setCellValue("");
+						R87Cell3.setCellStyle(textStyle);
+					}
+
+// R87 Col G
+					Cell R87Cell4 = row.createCell(6);
+					if (record1.getR87_qua_ii_qar() != null) {
+						R87Cell4.setCellValue(record1.getR87_qua_ii_qar().doubleValue());
+						R87Cell4.setCellStyle(numberStyle);
+					} else {
+						R87Cell4.setCellValue("");
+						R87Cell4.setCellStyle(textStyle);
+					}
+
+// R87 Col H
+					Cell R87Cell5 = row.createCell(7);
+					if (record1.getR87_qua_ii_inr() != null) {
+						R87Cell5.setCellValue(record1.getR87_qua_ii_inr().doubleValue());
+						R87Cell5.setCellStyle(numberStyle);
+					} else {
+						R87Cell5.setCellValue("");
+						R87Cell5.setCellStyle(textStyle);
+					}
+
+// R87 Col I
+					Cell R87Cell6 = row.createCell(8);
+					if (record1.getR87_qua_iii_lc() != null) {
+						R87Cell6.setCellValue(record1.getR87_qua_iii_lc().doubleValue());
+						R87Cell6.setCellStyle(numberStyle);
+					} else {
+						R87Cell6.setCellValue("");
+						R87Cell6.setCellStyle(textStyle);
+					}
+
+// R87 Col J
+					Cell R87Cell7 = row.createCell(9);
+					if (record1.getR87_qua_iii_qar() != null) {
+						R87Cell7.setCellValue(record1.getR87_qua_iii_qar().doubleValue());
+						R87Cell7.setCellStyle(numberStyle);
+					} else {
+						R87Cell7.setCellValue("");
+						R87Cell7.setCellStyle(textStyle);
+					}
+
+// R87 Col K
+					Cell R87Cell8 = row.createCell(10);
+					if (record1.getR87_qua_iii_inr() != null) {
+						R87Cell8.setCellValue(record1.getR87_qua_iii_inr().doubleValue());
+						R87Cell8.setCellStyle(numberStyle);
+					} else {
+						R87Cell8.setCellValue("");
+						R87Cell8.setCellStyle(textStyle);
+					}
+
+// R87 Col L
+					Cell R87Cell9 = row.createCell(11);
+					if (record1.getR87_qua_iv_lc() != null) {
+						R87Cell9.setCellValue(record1.getR87_qua_iv_lc().doubleValue());
+						R87Cell9.setCellStyle(numberStyle);
+					} else {
+						R87Cell9.setCellValue("");
+						R87Cell9.setCellStyle(textStyle);
+					}
+
+// R87 Col M
+					Cell R87Cell10 = row.createCell(12);
+					if (record1.getR87_qua_iv_qar() != null) {
+						R87Cell10.setCellValue(record1.getR87_qua_iv_qar().doubleValue());
+						R87Cell10.setCellStyle(numberStyle);
+					} else {
+						R87Cell10.setCellValue("");
+						R87Cell10.setCellStyle(textStyle);
+					}
+
+// R87 Col N
+					Cell R87Cell11 = row.createCell(13);
+					if (record1.getR87_qua_iv_inr() != null) {
+						R87Cell11.setCellValue(record1.getR87_qua_iv_inr().doubleValue());
+						R87Cell11.setCellStyle(numberStyle);
+					} else {
+						R87Cell11.setCellValue("");
+						R87Cell11.setCellStyle(textStyle);
+					}
+					Cell R87Cell12 = row.createCell(14);
+					if (record1.getR87_cumm_inr() != null) {
+						R87Cell12.setCellValue(record1.getR87_cumm_inr().doubleValue());
+						R87Cell12.setCellStyle(numberStyle);
+					} else {
+						R87Cell12.setCellValue("");
+						R87Cell12.setCellStyle(textStyle);
+					}
+					row = sheet.getRow(87);
+// R88 Col C
+					Cell R88Cell = row.createCell(2);
+					if (record1.getR88_qua_i_lc() != null) {
+						R88Cell.setCellValue(record1.getR88_qua_i_lc().doubleValue());
+						R88Cell.setCellStyle(numberStyle);
+					} else {
+						R88Cell.setCellValue("");
+						R88Cell.setCellStyle(textStyle);
+					}
+
+// R88 Col D
+					Cell R88Cell1 = row.createCell(3);
+					if (record1.getR88_qua_i_qar() != null) {
+						R88Cell1.setCellValue(record1.getR88_qua_i_qar().doubleValue());
+						R88Cell1.setCellStyle(numberStyle);
+					} else {
+						R88Cell1.setCellValue("");
+						R88Cell1.setCellStyle(textStyle);
+					}
+
+// R88 Col E
+					Cell R88Cell2 = row.createCell(4);
+					if (record1.getR88_qua_i_inr() != null) {
+						R88Cell2.setCellValue(record1.getR88_qua_i_inr().doubleValue());
+						R88Cell2.setCellStyle(numberStyle);
+					} else {
+						R88Cell2.setCellValue("");
+						R88Cell2.setCellStyle(textStyle);
+					}
+
+// R88 Col F
+					Cell R88Cell3 = row.createCell(5);
+					if (record1.getR88_qua_ii_lc() != null) {
+						R88Cell3.setCellValue(record1.getR88_qua_ii_lc().doubleValue());
+						R88Cell3.setCellStyle(numberStyle);
+					} else {
+						R88Cell3.setCellValue("");
+						R88Cell3.setCellStyle(textStyle);
+					}
+
+// R88 Col G
+					Cell R88Cell4 = row.createCell(6);
+					if (record1.getR88_qua_ii_qar() != null) {
+						R88Cell4.setCellValue(record1.getR88_qua_ii_qar().doubleValue());
+						R88Cell4.setCellStyle(numberStyle);
+					} else {
+						R88Cell4.setCellValue("");
+						R88Cell4.setCellStyle(textStyle);
+					}
+
+// R88 Col H
+					Cell R88Cell5 = row.createCell(7);
+					if (record1.getR88_qua_ii_inr() != null) {
+						R88Cell5.setCellValue(record1.getR88_qua_ii_inr().doubleValue());
+						R88Cell5.setCellStyle(numberStyle);
+					} else {
+						R88Cell5.setCellValue("");
+						R88Cell5.setCellStyle(textStyle);
+					}
+
+// R88 Col I
+					Cell R88Cell6 = row.createCell(8);
+					if (record1.getR88_qua_iii_lc() != null) {
+						R88Cell6.setCellValue(record1.getR88_qua_iii_lc().doubleValue());
+						R88Cell6.setCellStyle(numberStyle);
+					} else {
+						R88Cell6.setCellValue("");
+						R88Cell6.setCellStyle(textStyle);
+					}
+
+// R88 Col J
+					Cell R88Cell7 = row.createCell(9);
+					if (record1.getR88_qua_iii_qar() != null) {
+						R88Cell7.setCellValue(record1.getR88_qua_iii_qar().doubleValue());
+						R88Cell7.setCellStyle(numberStyle);
+					} else {
+						R88Cell7.setCellValue("");
+						R88Cell7.setCellStyle(textStyle);
+					}
+
+// R88 Col K
+					Cell R88Cell8 = row.createCell(10);
+					if (record1.getR88_qua_iii_inr() != null) {
+						R88Cell8.setCellValue(record1.getR88_qua_iii_inr().doubleValue());
+						R88Cell8.setCellStyle(numberStyle);
+					} else {
+						R88Cell8.setCellValue("");
+						R88Cell8.setCellStyle(textStyle);
+					}
+
+// R88 Col L
+					Cell R88Cell9 = row.createCell(11);
+					if (record1.getR88_qua_iv_lc() != null) {
+						R88Cell9.setCellValue(record1.getR88_qua_iv_lc().doubleValue());
+						R88Cell9.setCellStyle(numberStyle);
+					} else {
+						R88Cell9.setCellValue("");
+						R88Cell9.setCellStyle(textStyle);
+					}
+
+// R88 Col M
+					Cell R88Cell10 = row.createCell(12);
+					if (record1.getR88_qua_iv_qar() != null) {
+						R88Cell10.setCellValue(record1.getR88_qua_iv_qar().doubleValue());
+						R88Cell10.setCellStyle(numberStyle);
+					} else {
+						R88Cell10.setCellValue("");
+						R88Cell10.setCellStyle(textStyle);
+					}
+
+// R88 Col N
+					Cell R88Cell11 = row.createCell(13);
+					if (record1.getR88_qua_iv_inr() != null) {
+						R88Cell11.setCellValue(record1.getR88_qua_iv_inr().doubleValue());
+						R88Cell11.setCellStyle(numberStyle);
+					} else {
+						R88Cell11.setCellValue("");
+						R88Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(88);
+// R89 Col C
+					Cell R89Cell = row.createCell(2);
+					if (record1.getR89_qua_i_lc() != null) {
+						R89Cell.setCellValue(record1.getR89_qua_i_lc().doubleValue());
+						R89Cell.setCellStyle(numberStyle);
+					} else {
+						R89Cell.setCellValue("");
+						R89Cell.setCellStyle(textStyle);
+					}
+
+// R89 Col D
+					Cell R89Cell1 = row.createCell(3);
+					if (record1.getR89_qua_i_qar() != null) {
+						R89Cell1.setCellValue(record1.getR89_qua_i_qar().doubleValue());
+						R89Cell1.setCellStyle(numberStyle);
+					} else {
+						R89Cell1.setCellValue("");
+						R89Cell1.setCellStyle(textStyle);
+					}
+
+// R89 Col E
+					Cell R89Cell2 = row.createCell(4);
+					if (record1.getR89_qua_i_inr() != null) {
+						R89Cell2.setCellValue(record1.getR89_qua_i_inr().doubleValue());
+						R89Cell2.setCellStyle(numberStyle);
+					} else {
+						R89Cell2.setCellValue("");
+						R89Cell2.setCellStyle(textStyle);
+					}
+
+// R89 Col F
+					Cell R89Cell3 = row.createCell(5);
+					if (record1.getR89_qua_ii_lc() != null) {
+						R89Cell3.setCellValue(record1.getR89_qua_ii_lc().doubleValue());
+						R89Cell3.setCellStyle(numberStyle);
+					} else {
+						R89Cell3.setCellValue("");
+						R89Cell3.setCellStyle(textStyle);
+					}
+
+// R89 Col G
+					Cell R89Cell4 = row.createCell(6);
+					if (record1.getR89_qua_ii_qar() != null) {
+						R89Cell4.setCellValue(record1.getR89_qua_ii_qar().doubleValue());
+						R89Cell4.setCellStyle(numberStyle);
+					} else {
+						R89Cell4.setCellValue("");
+						R89Cell4.setCellStyle(textStyle);
+					}
+
+// R89 Col H
+					Cell R89Cell5 = row.createCell(7);
+					if (record1.getR89_qua_ii_inr() != null) {
+						R89Cell5.setCellValue(record1.getR89_qua_ii_inr().doubleValue());
+						R89Cell5.setCellStyle(numberStyle);
+					} else {
+						R89Cell5.setCellValue("");
+						R89Cell5.setCellStyle(textStyle);
+					}
+
+// R89 Col I
+					Cell R89Cell6 = row.createCell(8);
+					if (record1.getR89_qua_iii_lc() != null) {
+						R89Cell6.setCellValue(record1.getR89_qua_iii_lc().doubleValue());
+						R89Cell6.setCellStyle(numberStyle);
+					} else {
+						R89Cell6.setCellValue("");
+						R89Cell6.setCellStyle(textStyle);
+					}
+
+// R89 Col J
+					Cell R89Cell7 = row.createCell(9);
+					if (record1.getR89_qua_iii_qar() != null) {
+						R89Cell7.setCellValue(record1.getR89_qua_iii_qar().doubleValue());
+						R89Cell7.setCellStyle(numberStyle);
+					} else {
+						R89Cell7.setCellValue("");
+						R89Cell7.setCellStyle(textStyle);
+					}
+
+// R89 Col K
+					Cell R89Cell8 = row.createCell(10);
+					if (record1.getR89_qua_iii_inr() != null) {
+						R89Cell8.setCellValue(record1.getR89_qua_iii_inr().doubleValue());
+						R89Cell8.setCellStyle(numberStyle);
+					} else {
+						R89Cell8.setCellValue("");
+						R89Cell8.setCellStyle(textStyle);
+					}
+
+// R89 Col L
+					Cell R89Cell9 = row.createCell(11);
+					if (record1.getR89_qua_iv_lc() != null) {
+						R89Cell9.setCellValue(record1.getR89_qua_iv_lc().doubleValue());
+						R89Cell9.setCellStyle(numberStyle);
+					} else {
+						R89Cell9.setCellValue("");
+						R89Cell9.setCellStyle(textStyle);
+					}
+
+// R89 Col M
+					Cell R89Cell10 = row.createCell(12);
+					if (record1.getR89_qua_iv_qar() != null) {
+						R89Cell10.setCellValue(record1.getR89_qua_iv_qar().doubleValue());
+						R89Cell10.setCellStyle(numberStyle);
+					} else {
+						R89Cell10.setCellValue("");
+						R89Cell10.setCellStyle(textStyle);
+					}
+
+// R89 Col N
+					Cell R89Cell11 = row.createCell(13);
+					if (record1.getR89_qua_iv_inr() != null) {
+						R89Cell11.setCellValue(record1.getR89_qua_iv_inr().doubleValue());
+						R89Cell11.setCellStyle(numberStyle);
+					} else {
+						R89Cell11.setCellValue("");
+						R89Cell11.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(89);
+					Cell R90Cell1 = row.createCell(3);
+					if (record1.getR90_qua_i_qar() != null) {
+						R90Cell1.setCellValue(record1.getR90_qua_i_qar().doubleValue());
+						R90Cell1.setCellStyle(numberStyle);
+					} else {
+						R90Cell1.setCellValue("");
+						R90Cell1.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(90);
+					Cell R91Cell1 = row.createCell(3);
+					if (record1.getR91_qua_i_qar() != null) {
+						R91Cell1.setCellValue(record1.getR91_qua_i_qar().doubleValue());
+						R91Cell1.setCellStyle(numberStyle);
+					} else {
+						R91Cell1.setCellValue("");
+						R91Cell1.setCellStyle(textStyle);
+					}
+
+				}
 				workbook.setForceFormulaRecalculation(true);
+
 			} else {
 
 			}
@@ -8297,488 +40713,64 @@ public class BRRS_AS_11_ReportService {
 
 	}
 
-	public byte[] getAS_11DetailExcel(String filename, String fromdate, String todate, String currency, String dtltype,
-			String type, String version) {
-		try {
-			logger.info("Generating Excel for AS_11 Details...");
-			System.out.println("came to Detail download service");
-
-			if (type.equals("ARCHIVAL") & version != null) {
-				byte[] ARCHIVALreport = getAS_11DetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type,
-						version);
-				return ARCHIVALreport;
-			}
-
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("AS_11Details");
-
-			// Common border style
-			BorderStyle border = BorderStyle.THIN;
-
-			// Header style (left aligned)
-			CellStyle headerStyle = workbook.createCellStyle();
-			Font headerFont = workbook.createFont();
-			headerFont.setBold(true);
-			headerFont.setFontHeightInPoints((short) 10);
-			headerStyle.setFont(headerFont);
-			headerStyle.setAlignment(HorizontalAlignment.LEFT);
-			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-			headerStyle.setBorderTop(border);
-			headerStyle.setBorderBottom(border);
-			headerStyle.setBorderLeft(border);
-			headerStyle.setBorderRight(border);
-
-			// Right-aligned header style for ACCT BALANCE
-			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
-			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
-			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-
-			// Default data style (left aligned)
-			CellStyle dataStyle = workbook.createCellStyle();
-			dataStyle.setAlignment(HorizontalAlignment.LEFT);
-			dataStyle.setBorderTop(border);
-			dataStyle.setBorderBottom(border);
-			dataStyle.setBorderLeft(border);
-			dataStyle.setBorderRight(border);
-
-			// ACCT BALANCE style (right aligned with 3 decimals)
-			CellStyle balanceStyle = workbook.createCellStyle();
-			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
-			balanceStyle.setBorderTop(border);
-			balanceStyle.setBorderBottom(border);
-			balanceStyle.setBorderLeft(border);
-			balanceStyle.setBorderRight(border);
-
-			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "AVERAGE", "REPORT LABLE",
-					"REPORT ADDL CRITERIA1", "REPORT_DATE" };
-
-			XSSFRow headerRow = sheet.createRow(0);
-			for (int i = 0; i < headers.length; i++) {
-				Cell cell = headerRow.createCell(i);
-				cell.setCellValue(headers[i]);
-
-				if (i == 3 || i == 4) {
-					cell.setCellStyle(rightAlignedHeaderStyle);
-				} else {
-					cell.setCellStyle(headerStyle);
-				}
-
-				sheet.setColumnWidth(i, 5000);
-			}
-
-			// Get data
-			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<AS_11_Detail_Entity> reportData = AS_11_detail_repo.getdatabydateList(parsedToDate);
-
-			if (reportData != null && !reportData.isEmpty()) {
-				int rowIndex = 1;
-				for (AS_11_Detail_Entity item : reportData) {
-					XSSFRow row = sheet.createRow(rowIndex++);
-
-					row.createCell(0).setCellValue(item.getCustId());
-					row.createCell(1).setCellValue(item.getAcctNumber());
-					row.createCell(2).setCellValue(item.getAcctName());
-
-					// ACCT BALANCE (right aligned, 3 decimal places)
-					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInpula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
-					} else {
-						balanceCell.setCellValue(0);
-					}
-					balanceCell.setCellStyle(balanceStyle);
-
-					// AVERAGE (right aligned, 3 decimal places)
-					balanceCell = row.createCell(4);
-					if (item.getAverage() != null) {
-						balanceCell.setCellValue(item.getAverage().doubleValue());
-					} else {
-						balanceCell.setCellValue(0);
-					}
-					balanceCell.setCellStyle(balanceStyle);
-
-					row.createCell(5).setCellValue(item.getReportLabel());
-					row.createCell(6).setCellValue(item.getReportAddlCriteria1());
-					row.createCell(7)
-							.setCellValue(item.getReportDate() != null
-									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
-									: "");
-
-					// Apply data style for all other cells
-					for (int j = 0; j < 8; j++) {
-						if (j != 3 && j != 4) {
-							row.getCell(j).setCellStyle(dataStyle);
-						}
-					}
-				}
-			} else {
-				logger.info("No data found for AS_11 — only header will be written.");
-			}
-
-			// Write to byte[]
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			workbook.write(bos);
-			workbook.close();
-
-			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
-			return bos.toByteArray();
-
-		} catch (Exception e) {
-			logger.error("Error generating AS_11 Excel", e);
-			return new byte[0];
-		}
-	}
-
-	public byte[] getAS_11DetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) {
-		try {
-			logger.info("Generating Excel for AS_11 ARCHIVAL Details...");
-			System.out.println("came to ARCHIVAL Detail download service");
-			if (type.equals("ARCHIVAL") & version != null) {
-
-			}
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("AS_11Detail");
-
-			// Common border style
-			BorderStyle border = BorderStyle.THIN;
-
-			// Header style (left aligned)
-			CellStyle headerStyle = workbook.createCellStyle();
-			Font headerFont = workbook.createFont();
-			headerFont.setBold(true);
-			headerFont.setFontHeightInPoints((short) 10);
-			headerStyle.setFont(headerFont);
-			headerStyle.setAlignment(HorizontalAlignment.LEFT);
-			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-			headerStyle.setBorderTop(border);
-			headerStyle.setBorderBottom(border);
-			headerStyle.setBorderLeft(border);
-			headerStyle.setBorderRight(border);
-
-			// Right-aligned header style for ACCT BALANCE
-			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
-			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
-			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-
-			// Default data style (left aligned)
-			CellStyle dataStyle = workbook.createCellStyle();
-			dataStyle.setAlignment(HorizontalAlignment.LEFT);
-			dataStyle.setBorderTop(border);
-			dataStyle.setBorderBottom(border);
-			dataStyle.setBorderLeft(border);
-			dataStyle.setBorderRight(border);
-
-			// ACCT BALANCE style (right aligned with 3 decimals)
-			CellStyle balanceStyle = workbook.createCellStyle();
-			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
-			balanceStyle.setBorderTop(border);
-			balanceStyle.setBorderBottom(border);
-			balanceStyle.setBorderLeft(border);
-			balanceStyle.setBorderRight(border);
-
-			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "AVERAGE", "REPORT LABLE",
-					"REPORT ADDL CRITERIA1", "REPORT_DATE" };
-
-			XSSFRow headerRow = sheet.createRow(0);
-			for (int i = 0; i < headers.length; i++) {
-				Cell cell = headerRow.createCell(i);
-				cell.setCellValue(headers[i]);
-
-				if (i == 3 || i == 4) {
-					cell.setCellStyle(rightAlignedHeaderStyle);
-				} else {
-					cell.setCellStyle(headerStyle);
-				}
-
-				sheet.setColumnWidth(i, 5000);
-			}
-
-			// Get data
-			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<AS_11_Archival_Detail_Entity> reportData = AS_11_Archival_Detail_Repo.getdatabydateList(parsedToDate,
-					version);
-
-			if (reportData != null && !reportData.isEmpty()) {
-				int rowIndex = 1;
-				for (AS_11_Archival_Detail_Entity item : reportData) {
-					XSSFRow row = sheet.createRow(rowIndex++);
-
-					row.createCell(0).setCellValue(item.getCustId());
-					row.createCell(1).setCellValue(item.getAcctNumber());
-					row.createCell(2).setCellValue(item.getAcctName());
-
-					// ACCT BALANCE (right aligned, 3 decimal places)
-					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInpula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
-					} else {
-						balanceCell.setCellValue(0);
-					}
-					balanceCell.setCellStyle(balanceStyle);
-
-					// AVERAGE (right aligned, 3 decimal places)
-					balanceCell = row.createCell(4);
-					if (item.getAverage() != null) {
-						balanceCell.setCellValue(item.getAverage().doubleValue());
-					} else {
-						balanceCell.setCellValue(0);
-					}
-					balanceCell.setCellStyle(balanceStyle);
-
-					row.createCell(5).setCellValue(item.getReportLabel());
-					row.createCell(6).setCellValue(item.getReportAddlCriteria1());
-					row.createCell(7)
-							.setCellValue(item.getReportDate() != null
-									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
-									: "");
-
-					// Apply data style for all other cells
-					for (int j = 0; j < 8; j++) {
-						if (j != 3 && j != 4) {
-							row.getCell(j).setCellStyle(dataStyle);
-						}
-					}
-				}
-			} else {
-				logger.info("No data found for AS_11 — only header will be written.");
-			}
-
-			// Write to byte[]
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			workbook.write(bos);
-			workbook.close();
-
-			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
-			return bos.toByteArray();
-
-		} catch (Exception e) {
-			logger.error("Error generating  AS_11 Excel", e);
-			return new byte[0];
-		}
-	}
-
-	// Archival View
-		public List<Object[]> getAS_11Archival() {
-			List<Object[]> archivalList = new ArrayList<>();
-
-			try {
-				List<AS_11_Archival_Summary_Entity1> repoData = AS_11_Archival_Summary_Repo1
-						.getdatabydateListWithVersion();
-
-				if (repoData != null && !repoData.isEmpty()) {
-					for (AS_11_Archival_Summary_Entity1 entity : repoData) {
-						Object[] row = new Object[] { entity.getReport_date(), entity.getReport_version(),
-								entity.getREPORT_RESUBDATE() };
-						archivalList.add(row);
-					}
-
-					System.out.println("Fetched " + archivalList.size() + " archival records");
-					AS_11_Archival_Summary_Entity1 first = repoData.get(0);
-					System.out.println("Latest archival version: " + first.getReport_version());
-				} else {
-					System.out.println("No archival data found.");
-				}
-
-			} catch (Exception e) {
-				System.err.println("Error fetching PL_SCHS Archival data: " + e.getMessage());
-				e.printStackTrace();
-			}
-
-			return archivalList;
-		}
-
-	@Autowired
-	BRRS_AS_11_Detail_Repo brrs_AS_11_detail_repo;
-
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
-
-	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
-		ModelAndView mv = new ModelAndView("BRRS/AS_11");
-
-		if (acctNo != null) {
-			AS_11_Detail_Entity AS_11Entity = brrs_AS_11_detail_repo.findByAcctnumber(acctNo);
-			if (AS_11Entity != null && AS_11Entity.getReportDate() != null) {
-				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(AS_11Entity.getReportDate());
-				mv.addObject("asondate", formattedDate);
-			}
-			mv.addObject("AS_11Data", AS_11Entity);
-		}
-
-		mv.addObject("displaymode", "edit");
-		mv.addObject("formmode", formMode != null ? formMode : "edit");
-		return mv;
-	}
-
 	@Transactional
-	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
-		try {
-			String acctNo = request.getParameter("acctNumber");
-			String acctBalanceInpula = request.getParameter("acctBalanceInpula");
-			String average = request.getParameter("average");
-			String acctName = request.getParameter("acctName");
-			String reportDateStr = request.getParameter("reportDate");
-
-			logger.info("Received update for ACCT_NO: {}", acctNo);
-
-			AS_11_Detail_Entity existing = brrs_AS_11_detail_repo.findByAcctnumber(acctNo);
-			if (existing == null) {
-				logger.warn("No record found for ACCT_NO: {}", acctNo);
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
-			}
-
-			boolean isChanged = false;
-
-			if (acctName != null && !acctName.isEmpty()) {
-				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
-					existing.setAcctName(acctName);
-					isChanged = true;
-					logger.info("Account name updated to {}", acctName);
-				}
-			}
-
-			if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
-				BigDecimal newacctBalanceInpula = new BigDecimal(acctBalanceInpula);
-				if (existing.getAcctBalanceInpula() == null
-						|| existing.getAcctBalanceInpula().compareTo(newacctBalanceInpula) != 0) {
-					existing.setAcctBalanceInpula(newacctBalanceInpula);
-					isChanged = true;
-					logger.info("Balance updated to {}", newacctBalanceInpula);
-				}
-			}
-			if (average != null && !average.isEmpty()) {
-				BigDecimal newaverage = new BigDecimal(average);
-				if (existing.getAverage() == null || existing.getAverage().compareTo(newaverage) != 0) {
-					existing.setAverage(newaverage);
-					isChanged = true;
-					logger.info("Balance updated to {}", newaverage);
-				}
-			}
-			if (isChanged) {
-				brrs_AS_11_detail_repo.save(existing);
-				logger.info("Record updated successfully for account {}", acctNo);
-
-				// Format date for procedure
-				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
-
-				// Run summary procedure after commit
-				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-					@Override
-					public void afterCommit() {
-						try {
-							logger.info("Transaction committed — calling BRRS_AS_11_SUMMARY_PROCEDURE({})",
-									formattedDate);
-							jdbcTemplate.update("BEGIN BRRS_AS_11_SUMMARY_PROCEDURE(?); END;", formattedDate);
-							logger.info("Procedure executed successfully after commit.");
-						} catch (Exception e) {
-							logger.error("Error executing procedure after commit", e);
-						}
-					}
-				});
-
-				return ResponseEntity.ok("Record updated successfully!");
-			} else {
-				logger.info("No changes detected for ACCT_NO: {}", acctNo);
-				return ResponseEntity.ok("No changes were made.");
-			}
-
-		} catch (Exception e) {
-			logger.error("Error updating AS_11 record", e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Error updating record: " + e.getMessage());
-		}
-	}
-
-//	public void updateReport(AS_11_Summary_Entity1 updatedEntity) {
-//
-//		AS_11_Summary_Entity1 existing = AS_11_summary_repo1.findById(updatedEntity.getReport_date()).orElseThrow(
-//				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
-//
-//		int[] rows = { 21, 22, 27, 28, 30, 31, 32, 33, 34, 35, 36, 37, 38, 40, 46,47, 57, 64, 66, 72, 73, 74, 77,
-//				78, 79, 80, 81, 82, 85, 90, 91 };
-//
-//		String[] fields = { "qua_i_lc", "qua_i_qar", "qua_i_inr", "qua_ii_lc", "qua_ii_qar", "qua_ii_inr", "qua_iii_lc",
-//				"qua_iii_qar", "qua_iii_inr", "qua_iv_lc", "qua_iv_qar", "qua_iv_inr", "cumm_inr", "cumm_bwp" };
-//
-//		try {
-//			for (int i : rows) {
-//				for (String field : fields) {
-//
-//					String getterName = "getR" + i + "_" + field;
-//					String setterName = "setR" + i + "_" + field;
-//
-//					try {
-//						Method getter = AS_11_Summary_Entity1.class.getMethod(getterName);
-//						Method setter = AS_11_Summary_Entity1.class.getMethod(setterName, getter.getReturnType());
-//
-//						Object newValue = getter.invoke(updatedEntity);
-//						setter.invoke(existing, newValue);
-//
-//					} catch (NoSuchMethodException e) {
-//						// Field not applicable for this row → skip safely
-//					}
-//				}
-//			}
-//		} catch (Exception e) {
-//			throw new RuntimeException("Error while updating report fields", e);
-//		}
-//
-//		AS_11_summary_repo1.save(existing);
-//	}
 	public void updateReport(AS_11_Summary_Entity1 updatedEntity) {
 
-	    AS_11_Summary_Entity1 existing = AS_11_summary_repo1
-	            .findById(updatedEntity.getReport_date())
-	            .orElseThrow(() -> new RuntimeException(
-	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+		System.out.println("Came to AS 11 Update");
+		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-	    int[] rows = { 21, 22, 27, 28, 30, 31, 32, 33, 34, 35, 36, 37, 38,
-	                   40, 46, 47, 57, 64, 66, 72, 73, 74,76, 77, 78, 79, 80,
-	                   81, 82, 85, 90, 91 };
+		// Allowed rows
+		int[] rows = { 21, 22, 27, 28, 30, 31, 32, 33, 34, 35, 36, 37, 38, 40, 46, 47, 57, 64, 66, 72, 73, 74, 76, 77,
+				78, 79, 80, 81, 82, 85, 90, 91 };
 
-	    String[] fields = {
-	            "qua_i_lc", "qua_i_qar", "qua_i_inr",
-	            "qua_ii_lc", "qua_ii_qar", "qua_ii_inr",
-	            "qua_iii_lc", "qua_iii_qar", "qua_iii_inr",
-	            "qua_iv_lc", "qua_iv_qar", "qua_iv_inr",
-	            "cumm_inr", "cumm_bwp"
-	    };
+		try {
 
-	    try {
-	        for (int i : rows) {
-	            for (String field : fields) {
+			// Loop rows
+			for (int r : rows) {
 
-	                String getterName = "getR" + i + "_" + field;
-	                String setterName = "setR" + i + "_" + field;
+				// Allowed fields
+				String[] fields = { "qua_i_lc", "qua_i_qar", "qua_i_inr", "qua_ii_lc", "qua_ii_qar", "qua_ii_inr",
+						"qua_iii_lc", "qua_iii_qar", "qua_iii_inr", "qua_iv_lc", "qua_iv_qar", "qua_iv_inr", "cumm_inr",
+						"cumm_bwp" };
+				;
 
-	                try {
-	                    Method getter = AS_11_Summary_Entity1.class.getMethod(getterName);
-	                    Method setter = AS_11_Summary_Entity1.class.getMethod(setterName, getter.getReturnType());
+				for (String field : fields) {
 
-	                    Object newValue = getter.invoke(updatedEntity);
+					String getterName = "getR" + r + "_" + field;
 
-	                    // ✅ IMPORTANT FIX
-	                    if (newValue != null) {
-	                        setter.invoke(existing, newValue);
-	                    }
+					try {
 
-	                } catch (NoSuchMethodException e) {
-	                    // skip
-	                }
-	            }
-	        }
-	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
+						Method getter = AS_11_Summary_Entity1.class.getMethod(getterName);
 
-	    AS_11_summary_repo1.save(existing);
+						Object value = getter.invoke(updatedEntity);
+
+						// Skip null values
+						if (value == null)
+							continue;
+
+						// DB Column Name
+						String columnName = "R" + r + "_" + field.toUpperCase();
+
+						String sql = "UPDATE BRRS_AS_11_SUMMARYTABLE1 " + "SET " + columnName + " = ? "
+								+ "WHERE REPORT_DATE = ?";
+
+						int updatedRows = jdbcTemplate.update(sql, value, updatedEntity.getREPORT_DATE());
+
+						System.out.println(columnName + " Updated -> " + value + " Rows : " + updatedRows);
+
+					} catch (NoSuchMethodException e) {
+						// Skip if getter not exists
+						continue;
+					}
+				}
+			}
+
+			System.out.println("AS 11 Update Completed");
+
+		} catch (Exception e) {
+
+			throw new RuntimeException("Error while updating AS 11 fields", e);
+		}
 	}
+
 }

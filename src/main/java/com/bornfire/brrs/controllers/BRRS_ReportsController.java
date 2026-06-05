@@ -47,6 +47,7 @@ import com.bornfire.brrs.entities.*;
 import com.bornfire.brrs.services.BRRS_ADISB1_ReportService;
 import com.bornfire.brrs.services.BRRS_ADISB1_ReportService.ADISB1_Manual_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_AS_11_ReportService;
+import com.bornfire.brrs.services.BRRS_AS_11_ReportService.AS_11_Summary_Entity1;
 import com.bornfire.brrs.services.BRRS_BASEL_III_COM_EQUITY_DISC_ReportService;
 import com.bornfire.brrs.services.BRRS_BDISB1_ReportService;
 import com.bornfire.brrs.services.BRRS_BDISB2_ReportService;
@@ -5339,7 +5340,7 @@ public class BRRS_ReportsController {
 			System.out.println("came to single controller");
 
 			// ✅ set the asondate into entity
-			request.setReport_date(asondate);
+			request.setREPORT_DATE(asondate);
 
 			// call services
 			BRRS_AS_11_ReportService.updateReport(request);
