@@ -7932,7 +7932,17 @@ case "MDISB3":
 				e.printStackTrace();
 			}
 			break;
+		case "COMMON_DISCLOSURE":
+			try {
+				List<Object[]> resubList = BRRS_Common_Disclosure_Reportservice.getCOMMON_DISCLOSUREResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for COMMON_DISCLOSURE: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for COMMON_DISCLOSURE: " + e.getMessage());
+				e.printStackTrace();
+			}
 
+			break;
 		default:
 			System.out.println("Unsupported report code: " + rptcode);
 		}
