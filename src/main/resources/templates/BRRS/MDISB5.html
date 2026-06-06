@@ -1031,38 +1031,70 @@ function cancelModify() {
 										<tbody id="entity" th:each="report: ${reportsummary}"
 											style="font-family: Arial;">
 											<tr>
-												<td id="ROW5"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255); ">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R5_NAME_OF_SHAREHOLDER, 'N/A')}"
-														id="R5_NAME_OF_SHAREHOLDER" name="R5_C1_NAME_OF_SHAREHOLDER"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW5"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255); ">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R5_PERCENTAGE_SHAREHOLDING != null ? #numbers.formatDecimal(report.R5_PERCENTAGE_SHAREHOLDING, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R5_PERCENTAGE_SHAREHOLDING"
-														name="R5_C2_PERCENTAGE_SHAREHOLDING"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R5_NAME_OF_SHAREHOLDER -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R5_NAME_OF_SHAREHOLDER, 'N/A')}"
+											               id="R5_NAME_OF_SHAREHOLDER"
+											               name="R5_NAME_OF_SHAREHOLDER"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW5"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255); ">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R5_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R5_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R5_NUMBER_OF_ACCOUNTS" name="R5_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R5_PERCENTAGE_SHAREHOLDING -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R5_PERCENTAGE_SHAREHOLDING != null ?
+											               #numbers.formatDecimal(report.R5_PERCENTAGE_SHAREHOLDING,1,'COMMA',0,'POINT') : '0'}"
+											               id="R5_PERCENTAGE_SHAREHOLDING"
+											               name="R5_PERCENTAGE_SHAREHOLDING"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW5"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255); ">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R5_AMOUNT != null ? #numbers.formatDecimal(report.R5_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R5_AMOUNT" name="R5_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R5_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R5_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R5_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R5_NUMBER_OF_ACCOUNTS"
+											               name="R5_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R5_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R5_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R5_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R5_AMOUNT"
+											               name="R5_AMOUNT"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
 
 
