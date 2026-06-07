@@ -1039,11 +1039,7 @@ function cancelModify() {
 											               th:value="${#strings.defaultString(report.R5_NAME_OF_SHAREHOLDER, 'N/A')}"
 											               id="R5_NAME_OF_SHAREHOLDER"
 											               name="R5_NAME_OF_SHAREHOLDER"
-											               style="background-color:#fff;
-											                      width:400px;
-											                      height:28px;
-											                      border-color:transparent;
-											                      text-align:left;"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:left;"
 											               readonly />
 											    </td>
 
@@ -1055,11 +1051,7 @@ function cancelModify() {
 											               #numbers.formatDecimal(report.R5_PERCENTAGE_SHAREHOLDING,1,'COMMA',0,'POINT') : '0'}"
 											               id="R5_PERCENTAGE_SHAREHOLDING"
 											               name="R5_PERCENTAGE_SHAREHOLDING"
-											               style="background-color:#fff;
-											                      width:400px;
-											                      height:28px;
-											                      border-color:transparent;
-											                      text-align:left;"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:left;"
 											               readonly />
 											    </td>
 
@@ -1071,11 +1063,7 @@ function cancelModify() {
 											               #numbers.formatDecimal(report.R5_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
 											               id="R5_NUMBER_OF_ACCOUNTS"
 											               name="R5_NUMBER_OF_ACCOUNTS"
-											               style="background-color:#fff;
-											                      width:400px;
-											                      height:28px;
-											                      border-color:transparent;
-											                      text-align:right;"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:right;"
 											               readonly />
 											    </td>
 
@@ -1087,382 +1075,488 @@ function cancelModify() {
 											               #numbers.formatDecimal(report.R5_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
 											               id="R5_AMOUNT"
 											               name="R5_AMOUNT"
-											               style="background-color:#fff;
-											                      width:400px;
-											                      height:28px;
-											                      border-color:transparent;
-											                      text-align:right;"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:right;"
 											               readonly />
 											    </td>
 
 											</tr>
-
-
 											<tr>
-												<td id="ROW6"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R6_NAME_OF_SHAREHOLDER, 'N/A')}"
-														id="R6_NAME_OF_SHAREHOLDER" name="R6_C1_NAME_OF_SHAREHOLDER"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW6"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R6_PERCENTAGE_SHAREHOLDING != null ? #numbers.formatDecimal(report.R6_PERCENTAGE_SHAREHOLDING, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R6_PERCENTAGE_SHAREHOLDING"
-														name="R6_C2_PERCENTAGE_SHAREHOLDING"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R6_NAME_OF_SHAREHOLDER -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R6_NAME_OF_SHAREHOLDER, 'N/A')}"
+											               id="R6_NAME_OF_SHAREHOLDER"
+											               name="R6_NAME_OF_SHAREHOLDER"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW6"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R6_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R6_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R6_NUMBER_OF_ACCOUNTS" name="R6_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R6_PERCENTAGE_SHAREHOLDING -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R6_PERCENTAGE_SHAREHOLDING != null ?
+											               #numbers.formatDecimal(report.R6_PERCENTAGE_SHAREHOLDING,1,'COMMA',0,'POINT') : '0'}"
+											               id="R6_PERCENTAGE_SHAREHOLDING"
+											               name="R6_PERCENTAGE_SHAREHOLDING"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW6"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R6_AMOUNT != null ? #numbers.formatDecimal(report.R6_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R6_AMOUNT" name="R6_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R6_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R6_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R6_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R6_NUMBER_OF_ACCOUNTS"
+											               name="R6_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R6_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R6_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R6_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R6_AMOUNT"
+											               name="R6_AMOUNT"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-
+											
 											<tr>
-												<td id="ROW7"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R7_NAME_OF_SHAREHOLDER, 'N/A')}"
-														id="R7_NAME_OF_SHAREHOLDER" name="R7_C1_NAME_OF_SHAREHOLDER"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW7"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R7_PERCENTAGE_SHAREHOLDING != null ? #numbers.formatDecimal(report.R7_PERCENTAGE_SHAREHOLDING, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R7_PERCENTAGE_SHAREHOLDING"
-														name="R7_C2_PERCENTAGE_SHAREHOLDING"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R7_NAME_OF_SHAREHOLDER, 'N/A')}"
+											               id="R7_NAME_OF_SHAREHOLDER"
+											               name="R7_NAME_OF_SHAREHOLDER"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW7"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R7_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R7_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R7_NUMBER_OF_ACCOUNTS" name="R7_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R7_PERCENTAGE_SHAREHOLDING != null ?
+											               #numbers.formatDecimal(report.R7_PERCENTAGE_SHAREHOLDING,1,'COMMA',0,'POINT') : '0'}"
+											               id="R7_PERCENTAGE_SHAREHOLDING"
+											               name="R7_PERCENTAGE_SHAREHOLDING"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW7"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R7_AMOUNT != null ? #numbers.formatDecimal(report.R7_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R7_AMOUNT" name="R7_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R7_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R7_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R7_NUMBER_OF_ACCOUNTS"
+											               name="R7_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:right;"
+											               readonly />
+											    </td>
+
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R7_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R7_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R7_AMOUNT"
+											               name="R7_AMOUNT"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-
+											
 											<tr>
-												<td id="ROW8"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R8_NAME_OF_SHAREHOLDER, 'N/A')}"
-														id="R8_NAME_OF_SHAREHOLDER" name="R8_C1_NAME_OF_SHAREHOLDER"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW8"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R8_PERCENTAGE_SHAREHOLDING != null ? #numbers.formatDecimal(report.R8_PERCENTAGE_SHAREHOLDING, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R8_PERCENTAGE_SHAREHOLDING"
-														name="R8_C2_PERCENTAGE_SHAREHOLDING"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input" type="text"
+											               th:value="${#strings.defaultString(report.R8_NAME_OF_SHAREHOLDER, 'N/A')}"
+											               id="R8_NAME_OF_SHAREHOLDER" name="R8_NAME_OF_SHAREHOLDER"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW8"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R8_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R8_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R8_NUMBER_OF_ACCOUNTS" name="R8_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input" type="text"
+											               th:value="${report.R8_PERCENTAGE_SHAREHOLDING != null ? #numbers.formatDecimal(report.R8_PERCENTAGE_SHAREHOLDING,1,'COMMA',0,'POINT') : '0'}"
+											               id="R8_PERCENTAGE_SHAREHOLDING" name="R8_PERCENTAGE_SHAREHOLDING"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW8"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R8_AMOUNT != null ? #numbers.formatDecimal(report.R8_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R8_AMOUNT" name="R8_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input" type="text"
+											               th:value="${report.R8_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R8_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R8_NUMBER_OF_ACCOUNTS" name="R8_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:right;"
+											               readonly />
+											    </td>
+
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input" type="text"
+											               th:value="${report.R8_AMOUNT != null ? #numbers.formatDecimal(report.R8_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R8_AMOUNT" name="R8_AMOUNT"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-
+											
 											<tr>
-												<td id="ROW9"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R9_NAME_OF_SHAREHOLDER, 'N/A')}"
-														id="R9_NAME_OF_SHAREHOLDER" name="R9_C1_NAME_OF_SHAREHOLDER"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+												<!-- R9_NAME_OF_SHAREHOLDER -->
+												<td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+												    <input class="display-input Show_input"
+												           type="text"
+												           th:value="${#strings.defaultString(report.R9_NAME_OF_SHAREHOLDER, 'N/A')}"
+												           id="R9_NAME_OF_SHAREHOLDER"
+												           name="R9_NAME_OF_SHAREHOLDER"
+												           style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:left;"
+												           readonly />
+												</td>
 
-												<td id="ROW9"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R9_PERCENTAGE_SHAREHOLDING != null ? #numbers.formatDecimal(report.R9_PERCENTAGE_SHAREHOLDING, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R9_PERCENTAGE_SHAREHOLDING"
-														name="R9_C2_PERCENTAGE_SHAREHOLDING"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input" type="text"
+											               th:value="${report.R9_PERCENTAGE_SHAREHOLDING != null ? #numbers.formatDecimal(report.R9_PERCENTAGE_SHAREHOLDING,1,'COMMA',0,'POINT') : '0'}"
+											               id="R9_PERCENTAGE_SHAREHOLDING" name="R9_PERCENTAGE_SHAREHOLDING"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW9"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R9_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R9_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R9_NUMBER_OF_ACCOUNTS" name="R9_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input" type="text"
+											               th:value="${report.R9_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R9_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R9_NUMBER_OF_ACCOUNTS" name="R9_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:right;"
+											               readonly />
+											    </td>
 
-												<td id="ROW9"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R9_AMOUNT != null ? #numbers.formatDecimal(report.R9_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R9_AMOUNT" name="R9_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input" type="text"
+											               th:value="${report.R9_AMOUNT != null ? #numbers.formatDecimal(report.R9_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R9_AMOUNT" name="R9_AMOUNT"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:right;"
+											               readonly />
+											    </td>
 											</tr>
-
-
+											
+											
 											<tr>
-												<td id="ROW10"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R10_NAME_OF_SHAREHOLDER, 'N/A')}"
-														id="R10_NAME_OF_SHAREHOLDER" name="R10_C1_NAME_OF_SHAREHOLDER"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW10"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R10_PERCENTAGE_SHAREHOLDING != null ? #numbers.formatDecimal(report.R10_PERCENTAGE_SHAREHOLDING, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R10_PERCENTAGE_SHAREHOLDING"
-														name="R10_C2_PERCENTAGE_SHAREHOLDING"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R10_NAME_OF_SHAREHOLDER -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R10_NAME_OF_SHAREHOLDER, 'N/A')}"
+											               id="R10_NAME_OF_SHAREHOLDER"
+											               name="R10_NAME_OF_SHAREHOLDER"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW10"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R10_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R10_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R10_NUMBER_OF_ACCOUNTS" name="R10_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R10_PERCENTAGE_SHAREHOLDING -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R10_PERCENTAGE_SHAREHOLDING != null ?
+											               #numbers.formatDecimal(report.R10_PERCENTAGE_SHAREHOLDING,1,'COMMA',0,'POINT') : '0'}"
+											               id="R10_PERCENTAGE_SHAREHOLDING"
+											               name="R10_PERCENTAGE_SHAREHOLDING"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW10"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R10_AMOUNT != null ? #numbers.formatDecimal(report.R10_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R10_AMOUNT" name="R10_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R10_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R10_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R10_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R10_NUMBER_OF_ACCOUNTS"
+											               name="R10_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R10_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R10_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R10_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R10_AMOUNT"
+											               name="R10_AMOUNT"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-
+											
 											<tr>
-												<td id="ROW11"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R11_NAME_OF_SHAREHOLDER, 'N/A')}"
-														id="R11_NAME_OF_SHAREHOLDER" name="R11_C1_NAME_OF_SHAREHOLDER"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW11"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R11_PERCENTAGE_SHAREHOLDING != null ? #numbers.formatDecimal(report.R11_PERCENTAGE_SHAREHOLDING, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R11_PERCENTAGE_SHAREHOLDING"
-														name="R11_C2_PERCENTAGE_SHAREHOLDING"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R11_NAME_OF_SHAREHOLDER -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R11_NAME_OF_SHAREHOLDER, 'N/A')}"
+											               id="R11_NAME_OF_SHAREHOLDER"
+											               name="R11_NAME_OF_SHAREHOLDER"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW11"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R11_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R11_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R11_NUMBER_OF_ACCOUNTS" name="R11_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R11_PERCENTAGE_SHAREHOLDING -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R11_PERCENTAGE_SHAREHOLDING != null ?
+											               #numbers.formatDecimal(report.R11_PERCENTAGE_SHAREHOLDING,1,'COMMA',0,'POINT') : '0'}"
+											               id="R11_PERCENTAGE_SHAREHOLDING"
+											               name="R11_PERCENTAGE_SHAREHOLDING"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW11"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R11_AMOUNT != null ? #numbers.formatDecimal(report.R11_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R11_AMOUNT" name="R11_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R11_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R11_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R11_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R11_NUMBER_OF_ACCOUNTS"
+											               name="R11_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R11_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R11_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R11_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R11_AMOUNT"
+											               name="R11_AMOUNT"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-
+											
 											<tr>
-												<td id="ROW12"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R12_NAME_OF_SHAREHOLDER, 'N/A')}"
-														id="R12_NAME_OF_SHAREHOLDER" name="R12_C1_NAME_OF_SHAREHOLDER"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW12"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R12_PERCENTAGE_SHAREHOLDING != null ? #numbers.formatDecimal(report.R12_PERCENTAGE_SHAREHOLDING, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R12_PERCENTAGE_SHAREHOLDING"
-														name="R12_C2_PERCENTAGE_SHAREHOLDING"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R12_NAME_OF_SHAREHOLDER -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R12_NAME_OF_SHAREHOLDER, 'N/A')}"
+											               id="R12_NAME_OF_SHAREHOLDER"
+											               name="R12_NAME_OF_SHAREHOLDER"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW12"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R12_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R12_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R12_NUMBER_OF_ACCOUNTS" name="R12_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R12_PERCENTAGE_SHAREHOLDING -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R12_PERCENTAGE_SHAREHOLDING != null ?
+											               #numbers.formatDecimal(report.R12_PERCENTAGE_SHAREHOLDING,1,'COMMA',0,'POINT') : '0'}"
+											               id="R12_PERCENTAGE_SHAREHOLDING"
+											               name="R12_PERCENTAGE_SHAREHOLDING"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW12"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R12_AMOUNT != null ? #numbers.formatDecimal(report.R12_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R12_AMOUNT" name="R12_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R12_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R12_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R12_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R12_NUMBER_OF_ACCOUNTS"
+											               name="R12_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R12_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R12_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R12_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R12_AMOUNT"
+											               name="R12_AMOUNT"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-
+											
 											<tr>
-												<td id="ROW13"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R13_NAME_OF_SHAREHOLDER, 'N/A')}"
-														id="R13_NAME_OF_SHAREHOLDER" name="R13_C1_NAME_OF_SHAREHOLDER"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW13"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R13_PERCENTAGE_SHAREHOLDING != null ? #numbers.formatDecimal(report.R13_PERCENTAGE_SHAREHOLDING, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R13_PERCENTAGE_SHAREHOLDING"
-														name="R13_C2_PERCENTAGE_SHAREHOLDING"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R13_NAME_OF_SHAREHOLDER -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R13_NAME_OF_SHAREHOLDER, 'N/A')}"
+											               id="R13_NAME_OF_SHAREHOLDER"
+											               name="R13_NAME_OF_SHAREHOLDER"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW13"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R13_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R13_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R13_NUMBER_OF_ACCOUNTS" name="R13_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R13_PERCENTAGE_SHAREHOLDING -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R13_PERCENTAGE_SHAREHOLDING != null ?
+											               #numbers.formatDecimal(report.R13_PERCENTAGE_SHAREHOLDING,1,'COMMA',0,'POINT') : '0'}"
+											               id="R13_PERCENTAGE_SHAREHOLDING"
+											               name="R13_PERCENTAGE_SHAREHOLDING"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW13"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R13_AMOUNT != null ? #numbers.formatDecimal(report.R13_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R13_AMOUNT" name="R13_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R13_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R13_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R13_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R13_NUMBER_OF_ACCOUNTS"
+											               name="R13_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R13_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R13_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R13_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R13_AMOUNT"
+											               name="R13_AMOUNT"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-
+											
 											<tr>
-												<td id="ROW14"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R14_NAME_OF_SHAREHOLDER, 'N/A')}"
-														id="R14_NAME_OF_SHAREHOLDER" name="R14_C1_NAME_OF_SHAREHOLDER"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW14"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R14_PERCENTAGE_SHAREHOLDING != null ? #numbers.formatDecimal(report.R14_PERCENTAGE_SHAREHOLDING, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R14_PERCENTAGE_SHAREHOLDING"
-														name="R14_C2_PERCENTAGE_SHAREHOLDING"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R14_NAME_OF_SHAREHOLDER -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R14_NAME_OF_SHAREHOLDER, 'N/A')}"
+											               id="R14_NAME_OF_SHAREHOLDER"
+											               name="R14_NAME_OF_SHAREHOLDER"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW14"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R14_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R14_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R14_NUMBER_OF_ACCOUNTS" name="R14_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R14_PERCENTAGE_SHAREHOLDING -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R14_PERCENTAGE_SHAREHOLDING != null ?
+											               #numbers.formatDecimal(report.R14_PERCENTAGE_SHAREHOLDING,1,'COMMA',0,'POINT') : '0'}"
+											               id="R14_PERCENTAGE_SHAREHOLDING"
+											               name="R14_PERCENTAGE_SHAREHOLDING"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW14"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R14_AMOUNT != null ? #numbers.formatDecimal(report.R14_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R14_AMOUNT" name="R14_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R14_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R14_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R14_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R14_NUMBER_OF_ACCOUNTS"
+											               name="R14_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R14_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R14_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R14_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R14_AMOUNT"
+											               name="R14_AMOUNT"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-
+											
 											<tr>
-												<td id="ROW15"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R15_NAME_OF_SHAREHOLDER, 'N/A')}"
-														id="R15_NAME_OF_SHAREHOLDER" name="R15_C1_NAME_OF_SHAREHOLDER"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW15"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R15_PERCENTAGE_SHAREHOLDING != null ? #numbers.formatDecimal(report.R15_PERCENTAGE_SHAREHOLDING, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R15_PERCENTAGE_SHAREHOLDING"
-														name="R15_C2_PERCENTAGE_SHAREHOLDING"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R15_NAME_OF_SHAREHOLDER -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R15_NAME_OF_SHAREHOLDER, 'N/A')}"
+											               id="R15_NAME_OF_SHAREHOLDER"
+											               name="R15_NAME_OF_SHAREHOLDER"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW15"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R15_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R15_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R15_NUMBER_OF_ACCOUNTS" name="R15_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R15_PERCENTAGE_SHAREHOLDING -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R15_PERCENTAGE_SHAREHOLDING != null ?
+											               #numbers.formatDecimal(report.R15_PERCENTAGE_SHAREHOLDING,1,'COMMA',0,'POINT') : '0'}"
+											               id="R15_PERCENTAGE_SHAREHOLDING"
+											               name="R15_PERCENTAGE_SHAREHOLDING"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW15"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R15_AMOUNT != null ? #numbers.formatDecimal(report.R15_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R15_AMOUNT" name="R15_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R15_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R15_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R15_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R15_NUMBER_OF_ACCOUNTS"
+											               name="R15_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R15_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R15_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R15_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R15_AMOUNT"
+											               name="R15_AMOUNT"
+											               style="background-color:#fff;width:400px;height:28px;border-color:transparent;text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-											<tr style="border: none !important;">
-												<td colspan="4" style="height: 50px; border: none !important;"></td>
-											</tr>
-
-
-
 										</tbody>
 
 
@@ -1500,523 +1594,930 @@ function cancelModify() {
 											style="font-family: Arial;">
 
 											<tr>
-												<td id="ROW20"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R20_NAME_OF_BOARD_MEMBERS, 'N/A')}"
-														id="R20_NAME_OF_BOARD_MEMBERS"
-														name="R20_C1_NAME_OF_BOARD_MEMBERS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW20"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R20_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
-														id="R20_EXECUTIVE_OR_NONEXECUTIVE"
-														name="R20_C2_EXECUTIVE_OR_NONEXECUTIVE"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R20_NAME_OF_BOARD_MEMBERS -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R20_NAME_OF_BOARD_MEMBERS, 'N/A')}"
+											               id="R20_NAME_OF_BOARD_MEMBERS"
+											               name="R20_NAME_OF_BOARD_MEMBERS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW20"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R20_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R20_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R20_NUMBER_OF_ACCOUNTS" name="R20_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R20_EXECUTIVE_OR_NONEXECUTIVE -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R20_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
+											               id="R20_EXECUTIVE_OR_NONEXECUTIVE"
+											               name="R20_EXECUTIVE_OR_NONEXECUTIVE"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW20"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R20_AMOUNT != null ? #numbers.formatDecimal(report.R20_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R20_AMOUNT" name="R20_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R20_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R20_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R20_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R20_NUMBER_OF_ACCOUNTS"
+											               name="R20_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R20_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R20_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R20_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R20_AMOUNT"
+											               name="R20_AMOUNT"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
 
 											<tr>
-												<td id="ROW21"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R21_NAME_OF_BOARD_MEMBERS, 'N/A')}"
-														id="R21_NAME_OF_BOARD_MEMBERS"
-														name="R21_C1_NAME_OF_BOARD_MEMBERS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW21"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R21_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
-														id="R21_EXECUTIVE_OR_NONEXECUTIVE"
-														name="R21_C2_EXECUTIVE_OR_NONEXECUTIVE"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R21_NAME_OF_BOARD_MEMBERS -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R21_NAME_OF_BOARD_MEMBERS, 'N/A')}"
+											               id="R21_NAME_OF_BOARD_MEMBERS"
+											               name="R21_NAME_OF_BOARD_MEMBERS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW21"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R21_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R21_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R21_NUMBER_OF_ACCOUNTS" name="R21_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R21_EXECUTIVE_OR_NONEXECUTIVE -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R21_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
+											               id="R21_EXECUTIVE_OR_NONEXECUTIVE"
+											               name="R21_EXECUTIVE_OR_NONEXECUTIVE"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW21"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R21_AMOUNT != null ? #numbers.formatDecimal(report.R21_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R21_AMOUNT" name="R21_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R21_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R21_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R21_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R21_NUMBER_OF_ACCOUNTS"
+											               name="R21_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R21_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R21_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R21_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R21_AMOUNT"
+											               name="R21_AMOUNT"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-
+											
 											<tr>
-												<td id="ROW22"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R22_NAME_OF_BOARD_MEMBERS, 'N/A')}"
-														id="R22_NAME_OF_BOARD_MEMBERS"
-														name="R22_C1_NAME_OF_BOARD_MEMBERS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW22"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R22_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
-														id="R22_EXECUTIVE_OR_NONEXECUTIVE"
-														name="R22_C2_EXECUTIVE_OR_NONEXECUTIVE"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R22_NAME_OF_BOARD_MEMBERS -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R22_NAME_OF_BOARD_MEMBERS, 'N/A')}"
+											               id="R22_NAME_OF_BOARD_MEMBERS"
+											               name="R22_NAME_OF_BOARD_MEMBERS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW22"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R22_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R22_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R22_NUMBER_OF_ACCOUNTS" name="R22_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R22_EXECUTIVE_OR_NONEXECUTIVE -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R22_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
+											               id="R22_EXECUTIVE_OR_NONEXECUTIVE"
+											               name="R22_EXECUTIVE_OR_NONEXECUTIVE"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW22"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R22_AMOUNT != null ? #numbers.formatDecimal(report.R22_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R22_AMOUNT" name="R22_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R22_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R22_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R22_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R22_NUMBER_OF_ACCOUNTS"
+											               name="R22_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R22_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R22_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R22_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R22_AMOUNT"
+											               name="R22_AMOUNT"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-
+											
 											<tr>
-												<td id="ROW23"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R23_NAME_OF_BOARD_MEMBERS, 'N/A')}"
-														id="R23_NAME_OF_BOARD_MEMBERS"
-														name="R23_C1_NAME_OF_BOARD_MEMBERS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW23"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R23_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
-														id="R23_EXECUTIVE_OR_NONEXECUTIVE"
-														name="R23_C2_EXECUTIVE_OR_NONEXECUTIVE"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R23_NAME_OF_BOARD_MEMBERS -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R23_NAME_OF_BOARD_MEMBERS, 'N/A')}"
+											               id="R23_NAME_OF_BOARD_MEMBERS"
+											               name="R23_NAME_OF_BOARD_MEMBERS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW23"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R23_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R23_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R23_NUMBER_OF_ACCOUNTS" name="R23_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R23_EXECUTIVE_OR_NONEXECUTIVE -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R23_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
+											               id="R23_EXECUTIVE_OR_NONEXECUTIVE"
+											               name="R23_EXECUTIVE_OR_NONEXECUTIVE"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW23"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R23_AMOUNT != null ? #numbers.formatDecimal(report.R23_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R23_AMOUNT" name="R23_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R23_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R23_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R23_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R23_NUMBER_OF_ACCOUNTS"
+											               name="R23_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R23_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R23_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R23_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R23_AMOUNT"
+											               name="R23_AMOUNT"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-
+											
 											<tr>
-												<td id="ROW24"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R24_NAME_OF_BOARD_MEMBERS, 'N/A')}"
-														id="R24_NAME_OF_BOARD_MEMBERS"
-														name="R24_C1_NAME_OF_BOARD_MEMBERS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW24"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R24_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
-														id="R24_EXECUTIVE_OR_NONEXECUTIVE"
-														name="R24_C2_EXECUTIVE_OR_NONEXECUTIVE"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R24_NAME_OF_BOARD_MEMBERS -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R24_NAME_OF_BOARD_MEMBERS, 'N/A')}"
+											               id="R24_NAME_OF_BOARD_MEMBERS"
+											               name="R24_NAME_OF_BOARD_MEMBERS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW24"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R24_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R24_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R24_NUMBER_OF_ACCOUNTS" name="R24_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R24_EXECUTIVE_OR_NONEXECUTIVE -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R24_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
+											               id="R24_EXECUTIVE_OR_NONEXECUTIVE"
+											               name="R24_EXECUTIVE_OR_NONEXECUTIVE"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW24"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R24_AMOUNT != null ? #numbers.formatDecimal(report.R24_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R24_AMOUNT" name="R24_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R24_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R24_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R24_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R24_NUMBER_OF_ACCOUNTS"
+											               name="R24_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R24_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R24_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R24_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R24_AMOUNT"
+											               name="R24_AMOUNT"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-
+											
 											<tr>
-												<td id="ROW25"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R25_NAME_OF_BOARD_MEMBERS, 'N/A')}"
-														id="R25_NAME_OF_BOARD_MEMBERS"
-														name="R25_C1_NAME_OF_BOARD_MEMBERS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW25"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R25_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
-														id="R25_EXECUTIVE_OR_NONEXECUTIVE"
-														name="R25_C2_EXECUTIVE_OR_NONEXECUTIVE"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R25_NAME_OF_BOARD_MEMBERS -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R25_NAME_OF_BOARD_MEMBERS, 'N/A')}"
+											               id="R25_NAME_OF_BOARD_MEMBERS"
+											               name="R25_NAME_OF_BOARD_MEMBERS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW25"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R25_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R25_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R25_NUMBER_OF_ACCOUNTS" name="R25_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R25_EXECUTIVE_OR_NONEXECUTIVE -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R25_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
+											               id="R25_EXECUTIVE_OR_NONEXECUTIVE"
+											               name="R25_EXECUTIVE_OR_NONEXECUTIVE"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW25"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R25_AMOUNT != null ? #numbers.formatDecimal(report.R25_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R25_AMOUNT" name="R25_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R25_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R25_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R25_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R25_NUMBER_OF_ACCOUNTS"
+											               name="R25_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R25_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R25_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R25_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R25_AMOUNT"
+											               name="R25_AMOUNT"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-
+											
 											<tr>
-												<td id="ROW26"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R26_NAME_OF_BOARD_MEMBERS, 'N/A')}"
-														id="R26_NAME_OF_BOARD_MEMBERS"
-														name="R26_C1_NAME_OF_BOARD_MEMBERS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW26"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R26_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
-														id="R26_EXECUTIVE_OR_NONEXECUTIVE"
-														name="R26_C2_EXECUTIVE_OR_NONEXECUTIVE"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R26_NAME_OF_BOARD_MEMBERS -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R26_NAME_OF_BOARD_MEMBERS, 'N/A')}"
+											               id="R26_NAME_OF_BOARD_MEMBERS"
+											               name="R26_NAME_OF_BOARD_MEMBERS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW26"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R26_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R26_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R26_NUMBER_OF_ACCOUNTS" name="R26_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R26_EXECUTIVE_OR_NONEXECUTIVE -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R26_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
+											               id="R26_EXECUTIVE_OR_NONEXECUTIVE"
+											               name="R26_EXECUTIVE_OR_NONEXECUTIVE"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW26"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R26_AMOUNT != null ? #numbers.formatDecimal(report.R26_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R26_AMOUNT" name="R26_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R26_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R26_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R26_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R26_NUMBER_OF_ACCOUNTS"
+											               name="R26_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R26_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R26_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R26_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R26_AMOUNT"
+											               name="R26_AMOUNT"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-
+											
 											<tr>
-												<td id="ROW27"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R27_NAME_OF_BOARD_MEMBERS, 'N/A')}"
-														id="R27_NAME_OF_BOARD_MEMBERS"
-														name="R27_C1_NAME_OF_BOARD_MEMBERS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW27"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R27_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
-														id="R27_EXECUTIVE_OR_NONEXECUTIVE"
-														name="R27_C2_EXECUTIVE_OR_NONEXECUTIVE"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R27_NAME_OF_BOARD_MEMBERS -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R27_NAME_OF_BOARD_MEMBERS, 'N/A')}"
+											               id="R27_NAME_OF_BOARD_MEMBERS"
+											               name="R27_NAME_OF_BOARD_MEMBERS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW27"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R27_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R27_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R27_NUMBER_OF_ACCOUNTS" name="R27_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R27_EXECUTIVE_OR_NONEXECUTIVE -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R27_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
+											               id="R27_EXECUTIVE_OR_NONEXECUTIVE"
+											               name="R27_EXECUTIVE_OR_NONEXECUTIVE"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW27"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R27_AMOUNT != null ? #numbers.formatDecimal(report.R27_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R27_AMOUNT" name="R27_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R27_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R27_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R27_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R27_NUMBER_OF_ACCOUNTS"
+											               name="R27_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R27_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R27_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R27_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R27_AMOUNT"
+											               name="R27_AMOUNT"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-
+											
 											<tr>
-												<td id="ROW28"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R28_NAME_OF_BOARD_MEMBERS, 'N/A')}"
-														id="R28_NAME_OF_BOARD_MEMBERS"
-														name="R28_C1_NAME_OF_BOARD_MEMBERS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW28"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R28_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
-														id="R28_EXECUTIVE_OR_NONEXECUTIVE"
-														name="R28_C2_EXECUTIVE_OR_NONEXECUTIVE"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R28_NAME_OF_BOARD_MEMBERS -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R28_NAME_OF_BOARD_MEMBERS, 'N/A')}"
+											               id="R28_NAME_OF_BOARD_MEMBERS"
+											               name="R28_NAME_OF_BOARD_MEMBERS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW28"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R28_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R28_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R28_NUMBER_OF_ACCOUNTS" name="R28_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R28_EXECUTIVE_OR_NONEXECUTIVE -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R28_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
+											               id="R28_EXECUTIVE_OR_NONEXECUTIVE"
+											               name="R28_EXECUTIVE_OR_NONEXECUTIVE"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW28"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R28_AMOUNT != null ? #numbers.formatDecimal(report.R28_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R28_AMOUNT" name="R28_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R28_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R28_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R28_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R28_NUMBER_OF_ACCOUNTS"
+											               name="R28_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R28_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R28_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R28_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R28_AMOUNT"
+											               name="R28_AMOUNT"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-
+											
 											<tr>
-												<td id="ROW29"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R29_NAME_OF_BOARD_MEMBERS, 'N/A')}"
-														id="R29_NAME_OF_BOARD_MEMBERS"
-														name="R29_C1_NAME_OF_BOARD_MEMBERS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW29"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R29_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
-														id="R29_EXECUTIVE_OR_NONEXECUTIVE"
-														name="R29_C2_EXECUTIVE_OR_NONEXECUTIVE"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R29_NAME_OF_BOARD_MEMBERS -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R29_NAME_OF_BOARD_MEMBERS, 'N/A')}"
+											               id="R29_NAME_OF_BOARD_MEMBERS"
+											               name="R29_NAME_OF_BOARD_MEMBERS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW29"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R29_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R29_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R29_NUMBER_OF_ACCOUNTS" name="R29_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R29_EXECUTIVE_OR_NONEXECUTIVE -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R29_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
+											               id="R29_EXECUTIVE_OR_NONEXECUTIVE"
+											               name="R29_EXECUTIVE_OR_NONEXECUTIVE"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW29"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R29_AMOUNT != null ? #numbers.formatDecimal(report.R29_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R29_AMOUNT" name="R29_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R29_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R29_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R29_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R29_NUMBER_OF_ACCOUNTS"
+											               name="R29_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R29_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R29_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R29_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R29_AMOUNT"
+											               name="R29_AMOUNT"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-
+											
 											<tr>
-												<td id="ROW30"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R30_NAME_OF_BOARD_MEMBERS, 'N/A')}"
-														id="R30_NAME_OF_BOARD_MEMBERS"
-														name="R30_C1_NAME_OF_BOARD_MEMBERS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW30"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R30_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
-														id="R30_EXECUTIVE_OR_NONEXECUTIVE"
-														name="R30_C2_EXECUTIVE_OR_NONEXECUTIVE"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R30_NAME_OF_BOARD_MEMBERS -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R30_NAME_OF_BOARD_MEMBERS, 'N/A')}"
+											               id="R30_NAME_OF_BOARD_MEMBERS"
+											               name="R30_NAME_OF_BOARD_MEMBERS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW30"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R30_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R30_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R30_NUMBER_OF_ACCOUNTS" name="R30_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R30_EXECUTIVE_OR_NONEXECUTIVE -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R30_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
+											               id="R30_EXECUTIVE_OR_NONEXECUTIVE"
+											               name="R30_EXECUTIVE_OR_NONEXECUTIVE"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW30"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R30_AMOUNT != null ? #numbers.formatDecimal(report.R30_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R30_AMOUNT" name="R30_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R30_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R30_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R30_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R30_NUMBER_OF_ACCOUNTS"
+											               name="R30_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R30_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R30_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R30_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R30_AMOUNT"
+											               name="R30_AMOUNT"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-
+											
 											<tr>
-												<td id="ROW31"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R31_NAME_OF_BOARD_MEMBERS, 'N/A')}"
-														id="R31_NAME_OF_BOARD_MEMBERS"
-														name="R31_C1_NAME_OF_BOARD_MEMBERS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW31"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R31_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
-														id="R31_EXECUTIVE_OR_NONEXECUTIVE"
-														name="R31_C2_EXECUTIVE_OR_NONEXECUTIVE"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R31_NAME_OF_BOARD_MEMBERS -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R31_NAME_OF_BOARD_MEMBERS, 'N/A')}"
+											               id="R31_NAME_OF_BOARD_MEMBERS"
+											               name="R31_NAME_OF_BOARD_MEMBERS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW31"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R31_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R31_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R31_NUMBER_OF_ACCOUNTS" name="R31_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R31_EXECUTIVE_OR_NONEXECUTIVE -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R31_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
+											               id="R31_EXECUTIVE_OR_NONEXECUTIVE"
+											               name="R31_EXECUTIVE_OR_NONEXECUTIVE"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW31"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R31_AMOUNT != null ? #numbers.formatDecimal(report.R31_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R31_AMOUNT" name="R31_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R31_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R31_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R31_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R31_NUMBER_OF_ACCOUNTS"
+											               name="R31_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R31_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R31_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R31_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R31_AMOUNT"
+											               name="R31_AMOUNT"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-
-
+											
 											<tr>
-												<td id="ROW32"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R32_NAME_OF_BOARD_MEMBERS, 'N/A')}"
-														id="R32_NAME_OF_BOARD_MEMBERS"
-														name="R32_C1_NAME_OF_BOARD_MEMBERS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW32"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R32_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
-														id="R32_EXECUTIVE_OR_NONEXECUTIVE"
-														name="R32_C2_EXECUTIVE_OR_NONEXECUTIVE"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R32_NAME_OF_BOARD_MEMBERS -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R32_NAME_OF_BOARD_MEMBERS, 'N/A')}"
+											               id="R32_NAME_OF_BOARD_MEMBERS"
+											               name="R32_NAME_OF_BOARD_MEMBERS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW32"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R32_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R32_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R32_NUMBER_OF_ACCOUNTS" name="R32_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R32_EXECUTIVE_OR_NONEXECUTIVE -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R32_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
+											               id="R32_EXECUTIVE_OR_NONEXECUTIVE"
+											               name="R32_EXECUTIVE_OR_NONEXECUTIVE"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW32"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R32_AMOUNT != null ? #numbers.formatDecimal(report.R32_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R32_AMOUNT" name="R32_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R32_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R32_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R32_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R32_NUMBER_OF_ACCOUNTS"
+											               name="R32_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R32_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R32_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R32_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R32_AMOUNT"
+											               name="R32_AMOUNT"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-
+											
 											<tr>
-												<td id="ROW33"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R33_NAME_OF_BOARD_MEMBERS, 'N/A')}"
-														id="R33_NAME_OF_BOARD_MEMBERS"
-														name="R33_C1_NAME_OF_BOARD_MEMBERS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW33"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R33_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
-														id="R33_EXECUTIVE_OR_NONEXECUTIVE"
-														name="R33_C2_EXECUTIVE_OR_NONEXECUTIVE"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R33_NAME_OF_BOARD_MEMBERS -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R33_NAME_OF_BOARD_MEMBERS, 'N/A')}"
+											               id="R33_NAME_OF_BOARD_MEMBERS"
+											               name="R33_NAME_OF_BOARD_MEMBERS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW33"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R33_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R33_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R33_NUMBER_OF_ACCOUNTS" name="R33_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R33_EXECUTIVE_OR_NONEXECUTIVE -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R33_EXECUTIVE_OR_NONEXECUTIVE, 'N/A')}"
+											               id="R33_EXECUTIVE_OR_NONEXECUTIVE"
+											               name="R33_EXECUTIVE_OR_NONEXECUTIVE"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW33"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R33_AMOUNT != null ? #numbers.formatDecimal(report.R33_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R33_AMOUNT" name="R33_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R33_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R33_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R33_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R33_NUMBER_OF_ACCOUNTS"
+											               name="R33_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R33_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R33_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R33_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R33_AMOUNT"
+											               name="R33_AMOUNT"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
 
+											
 
 											<tr style="border: none !important;">
 												<td colspan="4" style="height: 50px; border: none !important;"></td>
@@ -2053,290 +2554,532 @@ function cancelModify() {
 											style="font-family: Arial;">
 
 											<tr>
-												<td id="ROW37"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R37_NAME, 'N/A')}"
-														id="R37_NAME" name="R37_C1_NAME"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW37"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R37_DESIGNATION_OR_POSITION, 'N/A')}"
-														id="R37_DESIGNATION_OR_POSITION"
-														name="R37_C2_DESIGNATION_OR_POSITION"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R37_NAME -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R37_NAME, 'N/A')}"
+											               id="R37_NAME"
+											               name="R37_NAME"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW37"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R37_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R37_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R37_NUMBER_OF_ACCOUNTS" name="R37_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R37_DESIGNATION_OR_POSITION -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R37_DESIGNATION_OR_POSITION, 'N/A')}"
+											               id="R37_DESIGNATION_OR_POSITION"
+											               name="R37_DESIGNATION_OR_POSITION"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW37"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R37_AMOUNT != null ? #numbers.formatDecimal(report.R37_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R37_AMOUNT" name="R37_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R37_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R37_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R37_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R37_NUMBER_OF_ACCOUNTS"
+											               name="R37_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R37_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R37_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R37_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R37_AMOUNT"
+											               name="R37_AMOUNT"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
 
-
 											<tr>
-												<td id="ROW38"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R38_NAME, 'N/A')}"
-														id="R38_NAME" name="R38_C1_NAME"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW38"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R38_DESIGNATION_OR_POSITION, 'N/A')}"
-														id="R38_DESIGNATION_OR_POSITION"
-														name="R38_C2_DESIGNATION_OR_POSITION"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R38_NAME -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R38_NAME, 'N/A')}"
+											               id="R38_NAME"
+											               name="R38_NAME"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW38"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R38_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R38_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R38_NUMBER_OF_ACCOUNTS" name="R38_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R38_DESIGNATION_OR_POSITION -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R38_DESIGNATION_OR_POSITION, 'N/A')}"
+											               id="R38_DESIGNATION_OR_POSITION"
+											               name="R38_DESIGNATION_OR_POSITION"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW38"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R38_AMOUNT != null ? #numbers.formatDecimal(report.R38_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R38_AMOUNT" name="R38_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R38_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R38_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R38_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R38_NUMBER_OF_ACCOUNTS"
+											               name="R38_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R38_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R38_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R38_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R38_AMOUNT"
+											               name="R38_AMOUNT"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-
+											
+											
 											<tr>
-												<td id="ROW39"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R39_NAME, 'N/A')}"
-														id="R39_NAME" name="R39_C1_NAME"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW39"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R39_DESIGNATION_OR_POSITION, 'N/A')}"
-														id="R39_DESIGNATION_OR_POSITION"
-														name="R39_C2_DESIGNATION_OR_POSITION"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R39_NAME -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R39_NAME, 'N/A')}"
+											               id="R39_NAME"
+											               name="R39_NAME"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW39"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R39_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R39_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R39_NUMBER_OF_ACCOUNTS" name="R39_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R39_DESIGNATION_OR_POSITION -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R39_DESIGNATION_OR_POSITION, 'N/A')}"
+											               id="R39_DESIGNATION_OR_POSITION"
+											               name="R39_DESIGNATION_OR_POSITION"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW39"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R39_AMOUNT != null ? #numbers.formatDecimal(report.R39_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R39_AMOUNT" name="R39_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R39_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R39_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R39_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R39_NUMBER_OF_ACCOUNTS"
+											               name="R39_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R39_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R39_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R39_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R39_AMOUNT"
+											               name="R39_AMOUNT"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-
+											
 											<tr>
-												<td id="ROW40"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R40_NAME, 'N/A')}"
-														id="R40_NAME" name="R40_C1_NAME"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW40"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R40_DESIGNATION_OR_POSITION, 'N/A')}"
-														id="R40_DESIGNATION_OR_POSITION"
-														name="R40_C2_DESIGNATION_OR_POSITION"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R40_NAME -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R40_NAME, 'N/A')}"
+											               id="R40_NAME"
+											               name="R40_NAME"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW40"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R40_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R40_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R40_NUMBER_OF_ACCOUNTS" name="R40_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R40_DESIGNATION_OR_POSITION -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R40_DESIGNATION_OR_POSITION, 'N/A')}"
+											               id="R40_DESIGNATION_OR_POSITION"
+											               name="R40_DESIGNATION_OR_POSITION"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW40"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R40_AMOUNT != null ? #numbers.formatDecimal(report.R40_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R40_AMOUNT" name="R40_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R40_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R40_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R40_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R40_NUMBER_OF_ACCOUNTS"
+											               name="R40_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R40_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R40_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R40_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R40_AMOUNT"
+											               name="R40_AMOUNT"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-
+											
 											<tr>
-												<td id="ROW41"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R41_NAME, 'N/A')}"
-														id="R41_NAME" name="R41_C1_NAME"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW41"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R41_DESIGNATION_OR_POSITION, 'N/A')}"
-														id="R41_DESIGNATION_OR_POSITION"
-														name="R41_C2_DESIGNATION_OR_POSITION"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R41_NAME -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R41_NAME, 'N/A')}"
+											               id="R41_NAME"
+											               name="R41_NAME"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW41"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R41_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R41_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R41_NUMBER_OF_ACCOUNTS" name="R41_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R41_DESIGNATION_OR_POSITION -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R41_DESIGNATION_OR_POSITION, 'N/A')}"
+											               id="R41_DESIGNATION_OR_POSITION"
+											               name="R41_DESIGNATION_OR_POSITION"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW41"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R41_AMOUNT != null ? #numbers.formatDecimal(report.R41_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R41_AMOUNT" name="R41_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R41_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R41_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R41_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R41_NUMBER_OF_ACCOUNTS"
+											               name="R41_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R41_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R41_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R41_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R41_AMOUNT"
+											               name="R41_AMOUNT"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-
+											
 											<tr>
-												<td id="ROW42"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R42_NAME, 'N/A')}"
-														id="R42_NAME" name="R42_C1_NAME"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW42"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R42_DESIGNATION_OR_POSITION, 'N/A')}"
-														id="R42_DESIGNATION_OR_POSITION"
-														name="R42_C2_DESIGNATION_OR_POSITION"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R42_NAME -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R42_NAME, 'N/A')}"
+											               id="R42_NAME"
+											               name="R42_NAME"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW42"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R42_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R42_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R42_NUMBER_OF_ACCOUNTS" name="R42_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R42_DESIGNATION_OR_POSITION -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R42_DESIGNATION_OR_POSITION, 'N/A')}"
+											               id="R42_DESIGNATION_OR_POSITION"
+											               name="R42_DESIGNATION_OR_POSITION"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW42"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R42_AMOUNT != null ? #numbers.formatDecimal(report.R42_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R42_AMOUNT" name="R42_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R42_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R42_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R42_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R42_NUMBER_OF_ACCOUNTS"
+											               name="R42_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R42_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R42_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R42_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R42_AMOUNT"
+											               name="R42_AMOUNT"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-
+											
 											<tr>
-												<td id="ROW43"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R43_NAME, 'N/A')}"
-														id="R43_NAME" name="R43_C1_NAME"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW43"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R43_DESIGNATION_OR_POSITION, 'N/A')}"
-														id="R43_DESIGNATION_OR_POSITION"
-														name="R43_C2_DESIGNATION_OR_POSITION"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R43_NAME -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R43_NAME, 'N/A')}"
+											               id="R43_NAME"
+											               name="R43_NAME"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW43"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R43_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R43_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R43_NUMBER_OF_ACCOUNTS" name="R43_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R43_DESIGNATION_OR_POSITION -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R43_DESIGNATION_OR_POSITION, 'N/A')}"
+											               id="R43_DESIGNATION_OR_POSITION"
+											               name="R43_DESIGNATION_OR_POSITION"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW43"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R43_AMOUNT != null ? #numbers.formatDecimal(report.R43_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R43_AMOUNT" name="R43_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R43_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R43_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R43_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R43_NUMBER_OF_ACCOUNTS"
+											               name="R43_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R43_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R43_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R43_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R43_AMOUNT"
+											               name="R43_AMOUNT"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
-
-
+											
 											<tr>
-												<td id="ROW44"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R44_NAME, 'N/A')}"
-														id="R44_NAME" name="R44_C1_NAME"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
 
-												<td id="ROW44"
-													style="padding-right: 20px; font-weight: bold; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R44_DESIGNATION_OR_POSITION, 'N/A')}"
-														id="R44_DESIGNATION_OR_POSITION"
-														name="R44_C2_DESIGNATION_OR_POSITION"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+											    <!-- R44_NAME -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R44_NAME, 'N/A')}"
+											               id="R44_NAME"
+											               name="R44_NAME"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW44"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R44_NUMBER_OF_ACCOUNTS != null ? #numbers.formatDecimal(report.R44_NUMBER_OF_ACCOUNTS, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R44_NUMBER_OF_ACCOUNTS" name="R44_C3_NUMBER_OF_ACCOUNTS"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right !important;"
-														readonly /></td>
+											    <!-- R44_DESIGNATION_OR_POSITION -->
+											    <td style="padding-right:20px;font-weight:bold;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${#strings.defaultString(report.R44_DESIGNATION_OR_POSITION, 'N/A')}"
+											               id="R44_DESIGNATION_OR_POSITION"
+											               name="R44_DESIGNATION_OR_POSITION"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:left;"
+											               readonly />
+											    </td>
 
-												<td id="ROW44"
-													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(255, 255, 255);">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R44_AMOUNT != null ? #numbers.formatDecimal(report.R44_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R44_AMOUNT" name="R44_C4_AMOUNT"
-														style="background-color: rgb(255, 255, 255); width: 400px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+											    <!-- R44_NUMBER_OF_ACCOUNTS -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R44_NUMBER_OF_ACCOUNTS != null ?
+											               #numbers.formatDecimal(report.R44_NUMBER_OF_ACCOUNTS,1,'COMMA',0,'POINT') : '0'}"
+											               id="R44_NUMBER_OF_ACCOUNTS"
+											               name="R44_NUMBER_OF_ACCOUNTS"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
+											    <!-- R44_AMOUNT -->
+											    <td style="padding-left:20px;font-weight:bold;text-align:right;background-color:#fff;">
+											        <input class="display-input Show_input"
+											               type="text"
+											               th:value="${report.R44_AMOUNT != null ?
+											               #numbers.formatDecimal(report.R44_AMOUNT,1,'COMMA',0,'POINT') : '0'}"
+											               id="R44_AMOUNT"
+											               name="R44_AMOUNT"
+											               style="background-color:#fff;
+											                      width:400px;
+											                      height:28px;
+											                      border-color:transparent;
+											                      text-align:right;"
+											               readonly />
+											    </td>
+
 											</tr>
 
 										</tbody>
