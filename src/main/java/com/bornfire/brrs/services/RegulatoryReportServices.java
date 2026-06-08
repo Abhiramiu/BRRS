@@ -458,11 +458,7 @@ public class RegulatoryReportServices {
 					type, version);
 			break;
 		
-		case "BDISB2":
-			repsummary = BRRS_BDISB2_ReportService.getBDISB2View(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
-
-			break;
+		
 
 		case "BDISB3":
 			repsummary = brrs_bdisb3_reportservice.getM_BDISB3View(reportId, fromdate, todate, currency, dtltype,
@@ -1499,7 +1495,11 @@ public class RegulatoryReportServices {
 			break;
 
 			
-		
+		case "BDISB2":
+			repsummary = BRRS_BDISB2_ReportService.getBRRS_BDISB2View(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+
+			break;
 
 			
 		case "Q_SMME_LA_NEW":
@@ -2304,42 +2304,16 @@ public class RegulatoryReportServices {
 					dtltype, pageable, Filter, type, version);
 			break;
 
-		case "BDISB2":
+		
 
-			repdetail = BRRS_BDISB2_ReportService.getBDISB2currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
-
-		// case "M_SRWA_12F":
-
-		// repdetail = BRRS_M_SRWA_12F_reportservice.getM_SRWA12FcurrentDtl(reportId,
-		// fromdate, todate, currency,
-		// dtltype, pageable, Filter, type, version);
-		// break;
-		/*
-		 * case "M_OPTR":
-		 * 
-		 * repdetail = BRRS_M_OPTR_ReportService.getM_OPTRcurrentDtl(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, Filter, type, version); break;
-		 */
+		
 		case "M_OPTR_NEW":
 
 			repdetail = BRRS_M_OPTR_NEW_ReportService.getM_OPTRNEWcurrentDtl(reportId, fromdate, todate, currency,
 					dtltype, pageable, Filter, type, version);
 			break;
 
-		// case "Q_STAFF":
-
-		// repdetail = BRRS_Q_STAFF_report_service.getQ_STAFFcurrentDtl(reportId,
-		// fromdate, todate, currency, dtltype,
-		// pageable, Filter, type, version);
-		// break;
-		// case "Q_STAFF_NEW":
-
-		// repdetail =
-		// BRRS_Q_STAFF_New_report_service.getQ_STAFF_NewcurrentDtl(reportId,
-		// fromdate, todate, currency, dtltype, pageable, Filter, type, version);
-		// break;
+		
 		
 
 		case "M_P_L":
@@ -4719,10 +4693,7 @@ public class RegulatoryReportServices {
 					type, version);
 		}
 
-		else if ("BDISB2Detail".equals(filename)) {
-			return BRRS_BDISB2_ReportService.getBDISB2DetailExcel(filename, fromdate, todate, currency, dtltype, type,
-					version);
-		}
+		
 
 		else if ("BDISB3Detail".equals(filename)) {
 			return brrs_bdisb3_reportservice.getBDISB3DetailExcel(filename, fromdate, todate, currency, dtltype, type,
@@ -5776,7 +5747,11 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched BDISB1 archival data: " + BDISB1List.size());
 			break;
 			
-		
+		case "BDISB2":
+			List<Object[]> BDISB2List = BRRS_BDISB2_ReportService.getBRRS_BDISB2Archival();
+			archivalData.addAll(BDISB2List);
+			System.out.println("Fetched BDISB2 archival data: " + BDISB2List.size());
+			break;
 
 		case "BDISB3":
 			List<Object[]> bdisb3List = brrs_bdisb3_reportservice.getBDISB3Archival();
@@ -5885,17 +5860,9 @@ public class RegulatoryReportServices {
 			archivalData.addAll(pdList);
 			System.out.println("Fetched M_PD archival data: " + pdList.size());
 			break;
-		/*
-		 * case "M_PD": try { archivalData = BRRS_M_PD_ReportService.getM_PDArchival();
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 */
+		
 
-		case "BDISB2":
-			List<Object[]> bdisb2List = BRRS_BDISB2_ReportService.getBDISB2Archival();
-			archivalData.addAll(bdisb2List);
-			System.out.println("Fetched BDISB2 archival data: " + bdisb2List.size());
-			break;
+		
 
 		case "ADISB1":
 			List<Object[]> ADISB11List = BRRS_ADISB1_ReportService.getADISB1Archival();
@@ -6427,38 +6394,14 @@ case "MDISB3":
 					dtltype, type, version);
 		}
 
-		else if ("BDISB2Detail".equals(filename)) {
-
-			fileData = BRRS_BDISB2_ReportService.getBDISB2DetailExcel(filename, fromdate, todate, currency, dtltype,
-					type, version);
-		}
-		/*
-		 * else if ("M_OPTRDetail".equals(filename)) {
-		 * 
-		 * fileData = BRRS_M_OPTR_ReportService.getM_OPTRDetailExcel(filename, fromdate,
-		 * todate, currency, dtltype, type, version); }
-		 */
+		
 		else if ("M_OPTR_NEWDetail".equals(filename)) {
 
 			fileData = BRRS_M_OPTR_NEW_ReportService.getM_OPTR_NEWDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
 
-		/*
-		 * else if ("M_INTRATESFCADetail".equals(filename)) {
-		 * 
-		 * fileData =
-		 * BRRS_M_INT_RATES_FCA_ReportService.getM_INTRATESFCADetailExcel(filename,
-		 * fromdate, todate, currency, dtltype, type, version); }
-		 */
-
-		/*
-		 * else if ("M_INTRATESDetail".equals(filename)) {
-		 * 
-		 * fileData = brrs_m_int_rates_reportservice.getM_INT_RATESDetailExcel(filename,
-		 * fromdate, todate, currency, dtltype, type, version); }
-		 */
-
+		
 		else if ("M_INTRATESNEWDetail".equals(filename)) {
 
 			fileData = brrs_m_int_new_rates_reportservice.getM_INT_RATESNEWDetailExcel(filename, fromdate, todate,
@@ -6473,19 +6416,7 @@ case "MDISB3":
 
 		
 
-		// else if ("M_SRWA_12FDetail".equals(filename)) {
-
-		// fileData = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FDetailExcel(filename,
-		// fromdate, todate, currency,
-		// dtltype, type, version);
-		// }
-
-		/*
-		 * else if ("MDISB5Detail".equals(filename)) {
-		 * 
-		 * fileData = BRRS_MDISB5_ReportService.getMDISB5DetailExcel(filename, fromdate,
-		 * todate, currency, dtltype, type, version); }
-		 */
+		
 
 		if (fileData == null) {
 			// logger.warn("Excel generation failed or no data for jobId: {}", jobId);
@@ -7842,18 +7773,7 @@ case "MDISB3":
 			}
 			break;
 
-		case "BDISB2":
-			try {
-				List<Object[]> resubList = BRRS_BDISB2_ReportService.getBDISB2Resub();
-				resubmissionData.addAll(resubList);
-				System.out.println("Resubmission data fetched for BDISB2: " + resubList.size());
-			} catch (Exception e) {
-				System.err.println("Error fetching resubmission data for BDISB2: " + e.getMessage());
-				e.printStackTrace();
-			}
-
-			break;
-
+		
 		case "BDISB3":
 			try {
 				List<Object[]> resubList = brrs_bdisb3_reportservice.getBDISB3Resub();
