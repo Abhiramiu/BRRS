@@ -1,26 +1,31 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
-
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.CallableStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.persistence.Column;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -43,40 +48,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.bornfire.brrs.entities.BDISB1_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.BDISB1_Detail_Entity;
-import com.bornfire.brrs.entities.BRRS_BDISB1_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_BDISB1_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_BDISB1_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_BDISB1_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_SRWA_12F_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.M_SRWA_12F_Summary_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12G_Summary_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12H_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.BRRS_M_SRWA_12F_Summary_Repo;
-import com.bornfire.brrs.entities.BDISB1_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.BDISB1_Archival_Summary_PK;
-import com.bornfire.brrs.entities.BDISB1_Summary_Entity;
-import com.bornfire.brrs.entities.BDISB2_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.BDISB2_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.BDISB2_Detail_Entity;
-import com.bornfire.brrs.entities.BDISB2_Summary_Entity;
-import com.bornfire.brrs.entities.BDISB3_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.BDISB3_Detail_Entity;
-import com.bornfire.brrs.entities.M_CA5_Summary_Entity1;
-import com.bornfire.brrs.entities.M_SRWA_12F_Archival_Summary_Entity;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Component
 @Service
@@ -92,23 +74,10431 @@ public class BRRS_BDISB1_ReportService {
 
 	@Autowired
 	SessionFactory sessionFactory;
+	
+	// ENTITY MANAGER (Acts like Repository)
+    @PersistenceContext
+	private EntityManager entityManager;
+				
+				
+	// SUMMARY
+	// Fetch data by report date
+	public List<BDISB1_Summary_Entity> getDataByDate1(Date reportDate) {
 
-	@Autowired
-	BRRS_BDISB1_Summary_Repo BDISB1_Summary_Repo;
+		String sql = "SELECT * FROM BRRS_BDISB1_SUMMARYTABLE WHERE REPORT_DATE = ?";
 
-	@Autowired
-	BRRS_BDISB1_Archival_Summary_Repo BDISB1_Archival_Summary_Repo;
+		return jdbcTemplate.query(sql, new Object[] { reportDate }, new BDISB1_RowMapper_Summary());
+	}			
 
-	@Autowired
-	BRRS_BDISB1_Detail_Repo BDISB1_Detail_Repo;
+	
+	// ARCHIVAL
 
-	@Autowired
-	BRRS_BDISB1_Archival_Detail_Repo BDISB1_Archival_Detail_Repo;
+	// Fetch data by report date
+	public List<BDISB1_Archival_Summary_Entity> ArchivalgetDataByDate1(Date reportDate) {
+
+		String sql = "SELECT * FROM BRRS_BDISB1_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { reportDate }, new BDISB1_RowMapper_Archival());
+	}
+    
+	// RESUB
+
+	// Fetch data by report date
+	public List<BDISB1_RESUB_Summary_Entity> ResubgetDataByDate1(Date reportDate) {
+
+		String sql = "SELECT * FROM BRRS_BDISB1_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { reportDate }, new BDISB1_RowMapper_Resub());
+	}
+    
+	/*
+	 * // ARCHIVAL // GET REPORT_DATE + REPORT_VERSION
+	 * 
+	 * public List<Object[]> getBDISB1Archival() {
+	 * 
+	 * String sql = "SELECT REPORT_DATE, REPORT_VERSION " +
+	 * "FROM BRRS_BDISB1_ARCHIVALTABLE_SUMMARY" + "ORDER BY REPORT_VERSION";
+	 * 
+	 * return jdbcTemplate.query(sql, (rs, rowNum) -> new Object[] {
+	 * rs.getDate("REPORT_DATE"), rs.getBigDecimal("REPORT_VERSION") }); }
+	 */
+	
+	//GET ARCHIVAL FULL DATA BY DATE + VERSION
+
+	public List<BDISB1_Archival_Summary_Entity> getdatabydateListarchival1(Date REPORT_DATE,
+			BigDecimal REPORT_VERSION) {
+
+		String sql = "SELECT * FROM BRRS_BDISB1_ARCHIVALTABLE_SUMMARY " + "WHERE REPORT_DATE = ? "
+				+ "AND REPORT_VERSION = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { REPORT_DATE, REPORT_VERSION }, new BDISB1_RowMapper_Archival());
+	}
+    
+	//GET RESUB FULL DATA BY DATE + VERSION
+
+	public List<BDISB1_RESUB_Summary_Entity> getdatabydateListresub1(Date REPORT_DATE,
+			BigDecimal REPORT_VERSION) {
+
+		String sql = "SELECT * FROM BRRS_BDISB1_RESUB_SUMMARYTABLE " + "WHERE REPORT_DATE = ? "
+				+ "AND REPORT_VERSION = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { REPORT_DATE, REPORT_VERSION }, new BDISB1_RowMapper_Resub());
+	}
+	
+	//GET DETAIL FULL DATA BY DATE + VERSION
+
+	public List<BDISB1_Detail_Entity> getdatabydateListDetail1(Date REPORT_DATE,
+			BigDecimal REPORT_VERSION) {
+
+		String sql = "SELECT * FROM BRRS_BDISB1_DETAILTABLE" + "WHERE REPORT_DATE = ? "
+				+ "AND REPORT_VERSION = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { REPORT_DATE, REPORT_VERSION }, new BDISB1RowMapper_Detail());
+	}
+	
+	//GET ARCHIVAL DETAIL FULL DATA BY DATE + VERSION
+
+	public List<BDISB1_Archival_Detail_Entity> getdatabydateListArchivalDetail1(Date REPORT_DATE,
+			BigDecimal REPORT_VERSION) {
+
+		String sql = "SELECT * FROM BRRS_BDISB1_ARCHIVALTABLE_DETAIL " + "WHERE REPORT_DATE = ? "
+				+ "AND REPORT_VERSION = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { REPORT_DATE, REPORT_VERSION }, new BDISB1RowMapper_ArchivalDetail());
+	}
+	
+	
+	//GET RESUB DETAIL FULL DATA BY DATE + VERSION
+
+	public List<BDISB1_RESUB_Detail_Entity> getdatabydateListResubDetail1(Date REPORT_DATE,
+			BigDecimal REPORT_VERSION) {
+
+		String sql = "SELECT * FROM BRRS_BDISB1_RESUB_DETAILTABLE " + "WHERE REPORT_DATE = ? "
+				+ "AND REPORT_VERSION = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { REPORT_DATE, REPORT_VERSION }, new BDISB1RowMapper_ResubDetail());
+	}
+	
+	//GET ALL WITH VERSION
+
+	public List<BDISB1_Archival_Summary_Entity> getdatabydateListWithVersion1() {
+
+		String sql = "SELECT * FROM BRRS_BDISB1_ARCHIVALTABLE_SUMMARY " + "WHERE REPORT_VERSION IS NOT NULL "
+				+ "ORDER BY REPORT_VERSION ASC";
+
+		return jdbcTemplate.query(sql, new BDISB1_RowMapper_Archival());
+	}
+	
+	//GET RESUB ALL WITH VERSION
+
+	public List<BDISB1_RESUB_Summary_Entity> ResubgetdatabydateListWithVersion1() {
+
+		String sql = "SELECT * FROM BRRS_BDISB1_RESUB_SUMMARYTABLE " + "WHERE REPORT_VERSION IS NOT NULL "
+				+ "ORDER BY REPORT_VERSION ASC";
+
+		return jdbcTemplate.query(sql, new BDISB1_RowMapper_Resub());
+	}
+	
+	//GET ARCHIVAL MAX VERSION BY DATE
+
+	public BigDecimal findMaxVersion1(Date REPORT_DATE) {
+
+		String sql = "SELECT MAX(REPORT_VERSION) " + "FROM BRRS_BDISB1_ARCHIVALTABLE_SUMMARY"
+				+ "WHERE REPORT_DATE = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { REPORT_DATE }, BigDecimal.class);
+	}
+	
+	// GET RESUB MAX VERSION BY DATE
+
+	public BigDecimal RESUBfindMaxVersion1(Date REPORT_DATE) {
+
+		String sql = "SELECT MAX(REPORT_VERSION) " + "FROM BRRS_BDISB1_RESUBTABLE_SUMMARY "
+				+ "WHERE REPORT_DATE = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { REPORT_DATE }, BigDecimal.class);
+	}
+	
+	
+	//DETAIL TABLE 1
+	// 1. BY DATE + LABEL + CRITERIA
+
+	public List<BDISB1_Detail_Entity> findByDetailReportDateAndLabelAndCriteria1(Date reportDate, String reportLabel,
+			String reportAddlCriteria1) {
+
+		String sql = "SELECT * FROM BRRS_BDISB1_DETAILTABLE "
+				+ "WHERE REPORT_DATE = ? AND REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { reportDate, reportLabel, reportAddlCriteria1 },
+				new BDISB1RowMapper_Detail());
+	}	
+	
+	// 2. GET ALL (BY DATE - simple)
+
+	public List<BDISB1_Detail_Entity> getDetaildatabydateList1(Date reportdate) {
+
+		String sql = "SELECT * FROM BRRS_BDISB1_DETAILTABLE WHERE REPORT_DATE = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { reportdate }, new BDISB1RowMapper_Detail());
+	}
+
+// 3. PAGINATION
+
+	public List<BDISB1_Detail_Entity> getDetaildatabydateList1(Date reportdate, int offset, int limit) {
+
+		String sql = "SELECT * FROM BRRS_BDISB1_DETAILTABLE "
+				+ "WHERE REPORT_DATE = ? OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+		return jdbcTemplate.query(sql, new Object[] { reportdate, offset, limit }, new BDISB1RowMapper_Detail());
+	}
+
+	// 4. COUNT
+
+	public int getDetaildatacount1(Date reportdate) {
+
+		String sql = "SELECT COUNT(*) FROM BRRS_BDISB1_DETAILTABLE WHERE REPORT_DATE = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { reportdate }, Integer.class);
+	}
+
+// 5. BY LABEL + CRITERIA
+
+	public List<BDISB1_Detail_Entity> GetDetailDataByRowIdAndColumnId1(String reportLabel,
+			String reportAddlCriteria1, Date reportdate) {
+
+		String sql = "SELECT * FROM BRRS_BDISB1_DETAILTABLE "
+				+ "WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate },
+				new BDISB1RowMapper_Detail());
+	}
+	
+// 6. BY ACCOUNT NUMBER
+
+	public BDISB1_Detail_Entity findByAcctnumber1(String acctNumber) {
+
+		String sql = "SELECT * FROM BRRS_BDISB1_DETAILTABLE WHERE ACCT_NUMBER = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { acctNumber }, new BDISB1RowMapper_Detail());
+	}	
+	
+	
+	
+	//ARCHIVALTABLE_DETAIL 
+	// 1. BY DATE + LABEL + CRITERIA
+
+	public List<BDISB1_Archival_Detail_Entity> findByArchivalDetailReportDateAndLabelAndCriteria1(Date reportDate, String reportLabel,
+			String reportAddlCriteria1) {
+
+		String sql = "SELECT * FROM BRRS_BDISB1_ARCHIVALTABLE_DETAIL "
+				+ "WHERE REPORT_DATE = ? AND REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { reportDate, reportLabel, reportAddlCriteria1 },
+				new BDISB1RowMapper_ArchivalDetail());
+	}	
+	
+	// 2. GET ALL (BY DATE - simple)
+
+	public List<BDISB1_Archival_Detail_Entity> getArchivalDetaildatabydateList1(Date reportdate) {
+
+		String sql = "SELECT * FROM BRRS_BDISB1_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { reportdate }, new BDISB1RowMapper_ArchivalDetail());
+	}
+
+// 3. PAGINATION
+
+	public List<BDISB1_Archival_Detail_Entity> getArchivalDetaildatabydateList1(Date reportdate, int offset, int limit) {
+
+		String sql = "SELECT * FROM BRRS_BDISB1_ARCHIVALTABLE_DETAIL "
+				+ "WHERE REPORT_DATE = ? OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+		return jdbcTemplate.query(sql, new Object[] { reportdate, offset, limit }, new BDISB1RowMapper_ArchivalDetail());
+	}
+
+	// 4. COUNT
+
+	public int getArchivalDetaildatacount1(Date reportdate) {
+
+		String sql = "SELECT COUNT(*) FROM BRRS_BDISB1_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { reportdate }, Integer.class);
+	}
+
+// 5. BY LABEL + CRITERIA
+
+	public List<BDISB1_Archival_Detail_Entity> GetArchivalDetailDataByRowIdAndColumnId1(String reportLabel,
+			String reportAddlCriteria1, Date reportdate) {
+
+		String sql = "SELECT * FROM BRRS_BDISB1_ARCHIVALTABLE_DETAIL "
+				+ "WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate },
+				new BDISB1RowMapper_ArchivalDetail());
+	}
+// 6. BY ACCOUNT NUMBER
+
+	public BDISB1_Archival_Detail_Entity ArchivalfindByAcctnumber1(String acctNumber) {
+
+		String sql = "SELECT * FROM BRRS_BDISB1_ARCHIVALTABLE_DETAIL WHERE ACCT_NUMBER = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { acctNumber }, new BDISB1RowMapper_ArchivalDetail());
+	}	
+	
+	
+	
+	//RESUBTABLE_DETAIL 
+				// 1. BY DATE + LABEL + CRITERIA
+
+				public List<BDISB1_RESUB_Detail_Entity> findByResubReportDateAndLabelAndCriteria1(Date reportDate, String reportLabel,
+						String reportAddlCriteria1) {
+
+					String sql = "SELECT * FROM BRRS_BDISB1_RESUB_DETAILTABLE "
+							+ "WHERE REPORT_DATE = ? AND REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ?";
+
+					return jdbcTemplate.query(sql, new Object[] { reportDate, reportLabel, reportAddlCriteria1 },
+							new BDISB1RowMapper_ResubDetail());
+				}	
+				
+				// 2. GET ALL (BY DATE - simple)
+
+				public List<BDISB1_RESUB_Detail_Entity> getResubdatabydateList1(Date reportdate) {
+
+					String sql = "SELECT * FROM BRRS_BDISB1_RESUB_DETAILTABLE WHERE REPORT_DATE = ?";
+
+					return jdbcTemplate.query(sql, new Object[] { reportdate }, new BDISB1RowMapper_ResubDetail());
+				}
+
+			// 3. PAGINATION
+
+				public List<BDISB1_RESUB_Detail_Entity> getResubdatabydateList1(Date reportdate, int offset, int limit) {
+
+					String sql = "SELECT * FROM BRRS_BDISB1_RESUB_DETAILTABLE "
+							+ "WHERE REPORT_DATE = ? OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+					return jdbcTemplate.query(sql, new Object[] { reportdate, offset, limit }, new BDISB1RowMapper_ResubDetail());
+				}
+			
+				// 4. COUNT
+
+				public int getResubdatacount1(Date reportdate) {
+
+					String sql = "SELECT COUNT(*) FROM BRRS_BDISB1_RESUB_DETAILTABLE WHERE REPORT_DATE = ?";
+
+					return jdbcTemplate.queryForObject(sql, new Object[] { reportdate }, Integer.class);
+				}
+
+			// 5. BY LABEL + CRITERIA
+
+				public List<BDISB1_RESUB_Detail_Entity> GetResubDataByRowIdAndColumnId1(String reportLabel,
+						String reportAddlCriteria1, Date reportdate) {
+
+					String sql = "SELECT * FROM BRRS_BDISB1_RESUB_DETAILTABLE "
+							+ "WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ?";
+
+					return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate },
+							new BDISB1RowMapper_ResubDetail());
+				}
+			// 6. BY ACCOUNT NUMBER
+
+				public BDISB1_RESUB_Detail_Entity ResubfindByAcctnumber1(String acctNumber) {
+
+					String sql = "SELECT * FROM BRRS_BDISB1_RESUB_DETAILTABLE WHERE ACCT_NUMBER = ?";
+
+					return jdbcTemplate.queryForObject(sql, new Object[] { acctNumber }, new BDISB1RowMapper_ResubDetail());
+				}	
+				
+				
+				//findSummaryByReportDate
+				
+				@Transactional(readOnly = true)
+				public BDISB1_Summary_Entity findSummaryByReportDate(Date reportDate) {
+
+				    String sql =
+				            "SELECT * FROM BRRS_BDISB1_SUMMARYTABLE " +
+				            "WHERE REPORT_DATE = ?";
+
+				    List<BDISB1_Summary_Entity> list =
+				            jdbcTemplate.query(
+				                    sql,
+				                    new Object[] { reportDate },
+				                    new BDISB1_RowMapper_Summary());
+
+				    return list.isEmpty() ? null : list.get(0);
+				}
+				
+				@Transactional(readOnly = true)
+				public BDISB1_Detail_Entity findDetailByReportDate(Date reportDate) {
+
+				    String sql =
+				            "SELECT * FROM BRRS_BDISB1_DETAILTABLE " +
+				            "WHERE REPORT_DATE = ?";
+
+				    List<BDISB1_Detail_Entity> list =
+				            jdbcTemplate.query(
+				                    sql,
+				                    new Object[] { reportDate },
+				                    new BDISB1RowMapper_Detail());
+
+				    return list.isEmpty() ? null : list.get(0);
+				}
+							
+	
+				// ROW MAPPER SUMMARY
+
+				class BDISB1_RowMapper_Summary implements RowMapper<BDISB1_Summary_Entity> {
+
+					@Override
+					public BDISB1_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+						BDISB1_Summary_Entity obj = new BDISB1_Summary_Entity();	
+					
+	
+						obj.setR5_RECORD_NUMBER(rs.getString("R5_RECORD_NUMBER"));
+						obj.setR5_TITLE(rs.getString("R5_TITLE"));
+						obj.setR5_FIRST_NAME(rs.getString("R5_FIRST_NAME"));
+						obj.setR5_MIDDLE_NAME(rs.getString("R5_MIDDLE_NAME"));
+						obj.setR5_SURNAME(rs.getString("R5_SURNAME"));
+						obj.setR5_PREVIOUS_NAME(rs.getString("R5_PREVIOUS_NAME"));
+						obj.setR5_GENDER(rs.getString("R5_GENDER"));
+						obj.setR5_IDENTIFICATION_TYPE(rs.getString("R5_IDENTIFICATION_TYPE"));
+						obj.setR5_PASSPORT_NUMBER(rs.getString("R5_PASSPORT_NUMBER"));
+						obj.setR5_DATE_OF_BIRTH(rs.getDate("R5_DATE_OF_BIRTH"));
+						obj.setR5_HOME_ADDRESS(rs.getString("R5_HOME_ADDRESS"));
+						obj.setR5_POSTAL_ADDRESS(rs.getString("R5_POSTAL_ADDRESS"));
+						obj.setR5_RESIDENCE(rs.getString("R5_RESIDENCE"));
+						obj.setR5_EMAIL(rs.getString("R5_EMAIL"));
+						obj.setR5_LANDLINE(rs.getString("R5_LANDLINE"));
+						obj.setR5_MOBILE_PHONE_NUMBER(rs.getString("R5_MOBILE_PHONE_NUMBER"));
+						obj.setR5_MOBILE_MONEY_NUMBER(rs.getString("R5_MOBILE_MONEY_NUMBER"));
+						obj.setR5_PRODUCT_TYPE(rs.getString("R5_PRODUCT_TYPE"));
+						obj.setR5_ACCOUNT_BY_OWNERSHIP(rs.getString("R5_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR5_ACCOUNT_NUMBER(rs.getString("R5_ACCOUNT_NUMBER"));
+						obj.setR5_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R5_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR5_STATUS_OF_ACCOUNT(rs.getString("R5_STATUS_OF_ACCOUNT"));
+						obj.setR5_NOT_FIT_FOR_STP(rs.getString("R5_NOT_FIT_FOR_STP"));
+						obj.setR5_BRANCH_CODE_AND_NAME(rs.getString("R5_BRANCH_CODE_AND_NAME"));
+						obj.setR5_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R5_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR5_CURRENCY_OF_ACCOUNT(rs.getString("R5_CURRENCY_OF_ACCOUNT"));
+						obj.setR5_EXCHANGE_RATE(rs.getBigDecimal("R5_EXCHANGE_RATE"));
+						
+						obj.setR6_RECORD_NUMBER(rs.getString("R6_RECORD_NUMBER"));
+						obj.setR6_TITLE(rs.getString("R6_TITLE"));
+						obj.setR6_FIRST_NAME(rs.getString("R6_FIRST_NAME"));
+						obj.setR6_MIDDLE_NAME(rs.getString("R6_MIDDLE_NAME"));
+						obj.setR6_SURNAME(rs.getString("R6_SURNAME"));
+						obj.setR6_PREVIOUS_NAME(rs.getString("R6_PREVIOUS_NAME"));
+						obj.setR6_GENDER(rs.getString("R6_GENDER"));
+						obj.setR6_IDENTIFICATION_TYPE(rs.getString("R6_IDENTIFICATION_TYPE"));
+						obj.setR6_PASSPORT_NUMBER(rs.getString("R6_PASSPORT_NUMBER"));
+						obj.setR6_DATE_OF_BIRTH(rs.getDate("R6_DATE_OF_BIRTH"));
+						obj.setR6_HOME_ADDRESS(rs.getString("R6_HOME_ADDRESS"));
+						obj.setR6_POSTAL_ADDRESS(rs.getString("R6_POSTAL_ADDRESS"));
+						obj.setR6_RESIDENCE(rs.getString("R6_RESIDENCE"));
+						obj.setR6_EMAIL(rs.getString("R6_EMAIL"));
+						obj.setR6_LANDLINE(rs.getString("R6_LANDLINE"));
+						obj.setR6_MOBILE_PHONE_NUMBER(rs.getString("R6_MOBILE_PHONE_NUMBER"));
+						obj.setR6_MOBILE_MONEY_NUMBER(rs.getString("R6_MOBILE_MONEY_NUMBER"));
+						obj.setR6_PRODUCT_TYPE(rs.getString("R6_PRODUCT_TYPE"));
+						obj.setR6_ACCOUNT_BY_OWNERSHIP(rs.getString("R6_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR6_ACCOUNT_NUMBER(rs.getString("R6_ACCOUNT_NUMBER"));
+						obj.setR6_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R6_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR6_STATUS_OF_ACCOUNT(rs.getString("R6_STATUS_OF_ACCOUNT"));
+						obj.setR6_NOT_FIT_FOR_STP(rs.getString("R6_NOT_FIT_FOR_STP"));
+						obj.setR6_BRANCH_CODE_AND_NAME(rs.getString("R6_BRANCH_CODE_AND_NAME"));
+						obj.setR6_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R6_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR6_CURRENCY_OF_ACCOUNT(rs.getString("R6_CURRENCY_OF_ACCOUNT"));
+						obj.setR6_EXCHANGE_RATE(rs.getBigDecimal("R6_EXCHANGE_RATE"));
+						
+						obj.setR7_RECORD_NUMBER(rs.getString("R7_RECORD_NUMBER"));
+						obj.setR7_TITLE(rs.getString("R7_TITLE"));
+						obj.setR7_FIRST_NAME(rs.getString("R7_FIRST_NAME"));
+						obj.setR7_MIDDLE_NAME(rs.getString("R7_MIDDLE_NAME"));
+						obj.setR7_SURNAME(rs.getString("R7_SURNAME"));
+						obj.setR7_PREVIOUS_NAME(rs.getString("R7_PREVIOUS_NAME"));
+						obj.setR7_GENDER(rs.getString("R7_GENDER"));
+						obj.setR7_IDENTIFICATION_TYPE(rs.getString("R7_IDENTIFICATION_TYPE"));
+						obj.setR7_PASSPORT_NUMBER(rs.getString("R7_PASSPORT_NUMBER"));
+						obj.setR7_DATE_OF_BIRTH(rs.getDate("R7_DATE_OF_BIRTH"));
+						obj.setR7_HOME_ADDRESS(rs.getString("R7_HOME_ADDRESS"));
+						obj.setR7_POSTAL_ADDRESS(rs.getString("R7_POSTAL_ADDRESS"));
+						obj.setR7_RESIDENCE(rs.getString("R7_RESIDENCE"));
+						obj.setR7_EMAIL(rs.getString("R7_EMAIL"));
+						obj.setR7_LANDLINE(rs.getString("R7_LANDLINE"));
+						obj.setR7_MOBILE_PHONE_NUMBER(rs.getString("R7_MOBILE_PHONE_NUMBER"));
+						obj.setR7_MOBILE_MONEY_NUMBER(rs.getString("R7_MOBILE_MONEY_NUMBER"));
+						obj.setR7_PRODUCT_TYPE(rs.getString("R7_PRODUCT_TYPE"));
+						obj.setR7_ACCOUNT_BY_OWNERSHIP(rs.getString("R7_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR7_ACCOUNT_NUMBER(rs.getString("R7_ACCOUNT_NUMBER"));
+						obj.setR7_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R7_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR7_STATUS_OF_ACCOUNT(rs.getString("R7_STATUS_OF_ACCOUNT"));
+						obj.setR7_NOT_FIT_FOR_STP(rs.getString("R7_NOT_FIT_FOR_STP"));
+						obj.setR7_BRANCH_CODE_AND_NAME(rs.getString("R7_BRANCH_CODE_AND_NAME"));
+						obj.setR7_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R7_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR7_CURRENCY_OF_ACCOUNT(rs.getString("R7_CURRENCY_OF_ACCOUNT"));
+						obj.setR7_EXCHANGE_RATE(rs.getBigDecimal("R7_EXCHANGE_RATE"));
+						
+						obj.setR8_RECORD_NUMBER(rs.getString("R8_RECORD_NUMBER"));
+						obj.setR8_TITLE(rs.getString("R8_TITLE"));
+						obj.setR8_FIRST_NAME(rs.getString("R8_FIRST_NAME"));
+						obj.setR8_MIDDLE_NAME(rs.getString("R8_MIDDLE_NAME"));
+						obj.setR8_SURNAME(rs.getString("R8_SURNAME"));
+						obj.setR8_PREVIOUS_NAME(rs.getString("R8_PREVIOUS_NAME"));
+						obj.setR8_GENDER(rs.getString("R8_GENDER"));
+						obj.setR8_IDENTIFICATION_TYPE(rs.getString("R8_IDENTIFICATION_TYPE"));
+						obj.setR8_PASSPORT_NUMBER(rs.getString("R8_PASSPORT_NUMBER"));
+						obj.setR8_DATE_OF_BIRTH(rs.getDate("R8_DATE_OF_BIRTH"));
+						obj.setR8_HOME_ADDRESS(rs.getString("R8_HOME_ADDRESS"));
+						obj.setR8_POSTAL_ADDRESS(rs.getString("R8_POSTAL_ADDRESS"));
+						obj.setR8_RESIDENCE(rs.getString("R8_RESIDENCE"));
+						obj.setR8_EMAIL(rs.getString("R8_EMAIL"));
+						obj.setR8_LANDLINE(rs.getString("R8_LANDLINE"));
+						obj.setR8_MOBILE_PHONE_NUMBER(rs.getString("R8_MOBILE_PHONE_NUMBER"));
+						obj.setR8_MOBILE_MONEY_NUMBER(rs.getString("R8_MOBILE_MONEY_NUMBER"));
+						obj.setR8_PRODUCT_TYPE(rs.getString("R8_PRODUCT_TYPE"));
+						obj.setR8_ACCOUNT_BY_OWNERSHIP(rs.getString("R8_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR8_ACCOUNT_NUMBER(rs.getString("R8_ACCOUNT_NUMBER"));
+						obj.setR8_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R8_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR8_STATUS_OF_ACCOUNT(rs.getString("R8_STATUS_OF_ACCOUNT"));
+						obj.setR8_NOT_FIT_FOR_STP(rs.getString("R8_NOT_FIT_FOR_STP"));
+						obj.setR8_BRANCH_CODE_AND_NAME(rs.getString("R8_BRANCH_CODE_AND_NAME"));
+						obj.setR8_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R8_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR8_CURRENCY_OF_ACCOUNT(rs.getString("R8_CURRENCY_OF_ACCOUNT"));
+						obj.setR8_EXCHANGE_RATE(rs.getBigDecimal("R8_EXCHANGE_RATE"));
+						
+						obj.setR9_RECORD_NUMBER(rs.getString("R9_RECORD_NUMBER"));
+						obj.setR9_TITLE(rs.getString("R9_TITLE"));
+						obj.setR9_FIRST_NAME(rs.getString("R9_FIRST_NAME"));
+						obj.setR9_MIDDLE_NAME(rs.getString("R9_MIDDLE_NAME"));
+						obj.setR9_SURNAME(rs.getString("R9_SURNAME"));
+						obj.setR9_PREVIOUS_NAME(rs.getString("R9_PREVIOUS_NAME"));
+						obj.setR9_GENDER(rs.getString("R9_GENDER"));
+						obj.setR9_IDENTIFICATION_TYPE(rs.getString("R9_IDENTIFICATION_TYPE"));
+						obj.setR9_PASSPORT_NUMBER(rs.getString("R9_PASSPORT_NUMBER"));
+						obj.setR9_DATE_OF_BIRTH(rs.getDate("R9_DATE_OF_BIRTH"));
+						obj.setR9_HOME_ADDRESS(rs.getString("R9_HOME_ADDRESS"));
+						obj.setR9_POSTAL_ADDRESS(rs.getString("R9_POSTAL_ADDRESS"));
+						obj.setR9_RESIDENCE(rs.getString("R9_RESIDENCE"));
+						obj.setR9_EMAIL(rs.getString("R9_EMAIL"));
+						obj.setR9_LANDLINE(rs.getString("R9_LANDLINE"));
+						obj.setR9_MOBILE_PHONE_NUMBER(rs.getString("R9_MOBILE_PHONE_NUMBER"));
+						obj.setR9_MOBILE_MONEY_NUMBER(rs.getString("R9_MOBILE_MONEY_NUMBER"));
+						obj.setR9_PRODUCT_TYPE(rs.getString("R9_PRODUCT_TYPE"));
+						obj.setR9_ACCOUNT_BY_OWNERSHIP(rs.getString("R9_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR9_ACCOUNT_NUMBER(rs.getString("R9_ACCOUNT_NUMBER"));
+						obj.setR9_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R9_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR9_STATUS_OF_ACCOUNT(rs.getString("R9_STATUS_OF_ACCOUNT"));
+						obj.setR9_NOT_FIT_FOR_STP(rs.getString("R9_NOT_FIT_FOR_STP"));
+						obj.setR9_BRANCH_CODE_AND_NAME(rs.getString("R9_BRANCH_CODE_AND_NAME"));
+						obj.setR9_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R9_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR9_CURRENCY_OF_ACCOUNT(rs.getString("R9_CURRENCY_OF_ACCOUNT"));
+						obj.setR9_EXCHANGE_RATE(rs.getBigDecimal("R9_EXCHANGE_RATE"));
+						
+						obj.setR10_RECORD_NUMBER(rs.getString("R10_RECORD_NUMBER"));
+						obj.setR10_TITLE(rs.getString("R10_TITLE"));
+						obj.setR10_FIRST_NAME(rs.getString("R10_FIRST_NAME"));
+						obj.setR10_MIDDLE_NAME(rs.getString("R10_MIDDLE_NAME"));
+						obj.setR10_SURNAME(rs.getString("R10_SURNAME"));
+						obj.setR10_PREVIOUS_NAME(rs.getString("R10_PREVIOUS_NAME"));
+						obj.setR10_GENDER(rs.getString("R10_GENDER"));
+						obj.setR10_IDENTIFICATION_TYPE(rs.getString("R10_IDENTIFICATION_TYPE"));
+						obj.setR10_PASSPORT_NUMBER(rs.getString("R10_PASSPORT_NUMBER"));
+						obj.setR10_DATE_OF_BIRTH(rs.getDate("R10_DATE_OF_BIRTH"));
+						obj.setR10_HOME_ADDRESS(rs.getString("R10_HOME_ADDRESS"));
+						obj.setR10_POSTAL_ADDRESS(rs.getString("R10_POSTAL_ADDRESS"));
+						obj.setR10_RESIDENCE(rs.getString("R10_RESIDENCE"));
+						obj.setR10_EMAIL(rs.getString("R10_EMAIL"));
+						obj.setR10_LANDLINE(rs.getString("R10_LANDLINE"));
+						obj.setR10_MOBILE_PHONE_NUMBER(rs.getString("R10_MOBILE_PHONE_NUMBER"));
+						obj.setR10_MOBILE_MONEY_NUMBER(rs.getString("R10_MOBILE_MONEY_NUMBER"));
+						obj.setR10_PRODUCT_TYPE(rs.getString("R10_PRODUCT_TYPE"));
+						obj.setR10_ACCOUNT_BY_OWNERSHIP(rs.getString("R10_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR10_ACCOUNT_NUMBER(rs.getString("R10_ACCOUNT_NUMBER"));
+						obj.setR10_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R10_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR10_STATUS_OF_ACCOUNT(rs.getString("R10_STATUS_OF_ACCOUNT"));
+						obj.setR10_NOT_FIT_FOR_STP(rs.getString("R10_NOT_FIT_FOR_STP"));
+						obj.setR10_BRANCH_CODE_AND_NAME(rs.getString("R10_BRANCH_CODE_AND_NAME"));
+						obj.setR10_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R10_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR10_CURRENCY_OF_ACCOUNT(rs.getString("R10_CURRENCY_OF_ACCOUNT"));
+						obj.setR10_EXCHANGE_RATE(rs.getBigDecimal("R10_EXCHANGE_RATE"));
+						
+						obj.setR11_RECORD_NUMBER(rs.getString("R11_RECORD_NUMBER"));
+						obj.setR11_TITLE(rs.getString("R11_TITLE"));
+						obj.setR11_FIRST_NAME(rs.getString("R11_FIRST_NAME"));
+						obj.setR11_MIDDLE_NAME(rs.getString("R11_MIDDLE_NAME"));
+						obj.setR11_SURNAME(rs.getString("R11_SURNAME"));
+						obj.setR11_PREVIOUS_NAME(rs.getString("R11_PREVIOUS_NAME"));
+						obj.setR11_GENDER(rs.getString("R11_GENDER"));
+						obj.setR11_IDENTIFICATION_TYPE(rs.getString("R11_IDENTIFICATION_TYPE"));
+						obj.setR11_PASSPORT_NUMBER(rs.getString("R11_PASSPORT_NUMBER"));
+						obj.setR11_DATE_OF_BIRTH(rs.getDate("R11_DATE_OF_BIRTH"));
+						obj.setR11_HOME_ADDRESS(rs.getString("R11_HOME_ADDRESS"));
+						obj.setR11_POSTAL_ADDRESS(rs.getString("R11_POSTAL_ADDRESS"));
+						obj.setR11_RESIDENCE(rs.getString("R11_RESIDENCE"));
+						obj.setR11_EMAIL(rs.getString("R11_EMAIL"));
+						obj.setR11_LANDLINE(rs.getString("R11_LANDLINE"));
+						obj.setR11_MOBILE_PHONE_NUMBER(rs.getString("R11_MOBILE_PHONE_NUMBER"));
+						obj.setR11_MOBILE_MONEY_NUMBER(rs.getString("R11_MOBILE_MONEY_NUMBER"));
+						obj.setR11_PRODUCT_TYPE(rs.getString("R11_PRODUCT_TYPE"));
+						obj.setR11_ACCOUNT_BY_OWNERSHIP(rs.getString("R11_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR11_ACCOUNT_NUMBER(rs.getString("R11_ACCOUNT_NUMBER"));
+						obj.setR11_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R11_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR11_STATUS_OF_ACCOUNT(rs.getString("R11_STATUS_OF_ACCOUNT"));
+						obj.setR11_NOT_FIT_FOR_STP(rs.getString("R11_NOT_FIT_FOR_STP"));
+						obj.setR11_BRANCH_CODE_AND_NAME(rs.getString("R11_BRANCH_CODE_AND_NAME"));
+						obj.setR11_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R11_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR11_CURRENCY_OF_ACCOUNT(rs.getString("R11_CURRENCY_OF_ACCOUNT"));
+						obj.setR11_EXCHANGE_RATE(rs.getBigDecimal("R11_EXCHANGE_RATE"));
+						
+						// COMMON FIELDS
+						obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+						obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+						obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+						obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+						obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+						obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+						obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+						obj.setDEL_FLG(rs.getString("DEL_FLG"));
+						
+
+						return obj;
+					}
+				}
+				
+				public static class BDISB1_Summary_Entity {
+					
+					 private String R5_RECORD_NUMBER;
+					    private String R5_TITLE;
+					    private String R5_FIRST_NAME;
+					    private String R5_MIDDLE_NAME;
+					    private String R5_SURNAME;
+					    private String R5_PREVIOUS_NAME;
+					    private String R5_GENDER;
+					    private String R5_IDENTIFICATION_TYPE;
+					    private String R5_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R5_DATE_OF_BIRTH;
+					    private String R5_HOME_ADDRESS;
+					    private String R5_POSTAL_ADDRESS;
+					    private String R5_RESIDENCE;
+					    private String R5_EMAIL;
+					    private String R5_LANDLINE;
+					    private String R5_MOBILE_PHONE_NUMBER;
+					    private String R5_MOBILE_MONEY_NUMBER;
+					    private String R5_PRODUCT_TYPE;
+					    private String R5_ACCOUNT_BY_OWNERSHIP;
+					    private String R5_ACCOUNT_NUMBER;
+					    private BigDecimal R5_ACCOUNT_HOLDER_INDICATOR;
+					    private String R5_STATUS_OF_ACCOUNT;
+					    private String R5_NOT_FIT_FOR_STP;
+					    private String R5_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R5_ACCOUNT_BALANCE_IN_PULA;
+					    private String R5_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R5_EXCHANGE_RATE;
+
+					    // ===================== R6 =====================
+					    private String R6_RECORD_NUMBER;
+					    private String R6_TITLE;
+					    private String R6_FIRST_NAME;
+					    private String R6_MIDDLE_NAME;
+					    private String R6_SURNAME;
+					    private String R6_PREVIOUS_NAME;
+					    private String R6_GENDER;
+					    private String R6_IDENTIFICATION_TYPE;
+					    private String R6_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R6_DATE_OF_BIRTH;
+					    private String R6_HOME_ADDRESS;
+					    private String R6_POSTAL_ADDRESS;
+					    private String R6_RESIDENCE;
+					    private String R6_EMAIL;
+					    private String R6_LANDLINE;
+					    private String R6_MOBILE_PHONE_NUMBER;
+					    private String R6_MOBILE_MONEY_NUMBER;
+					    private String R6_PRODUCT_TYPE;
+					    private String R6_ACCOUNT_BY_OWNERSHIP;
+					    private String R6_ACCOUNT_NUMBER;
+					    private BigDecimal R6_ACCOUNT_HOLDER_INDICATOR;
+					    private String R6_STATUS_OF_ACCOUNT;
+					    private String R6_NOT_FIT_FOR_STP;
+					    private String R6_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R6_ACCOUNT_BALANCE_IN_PULA;
+					    private String R6_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R6_EXCHANGE_RATE;
+
+					    // ===================== R7 =====================
+					    private String R7_RECORD_NUMBER;
+					    private String R7_TITLE;
+					    private String R7_FIRST_NAME;
+					    private String R7_MIDDLE_NAME;
+					    private String R7_SURNAME;
+					    private String R7_PREVIOUS_NAME;
+					    private String R7_GENDER;
+					    private String R7_IDENTIFICATION_TYPE;
+					    private String R7_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R7_DATE_OF_BIRTH;
+					    private String R7_HOME_ADDRESS;
+					    private String R7_POSTAL_ADDRESS;
+					    private String R7_RESIDENCE;
+					    private String R7_EMAIL;
+					    private String R7_LANDLINE;
+					    private String R7_MOBILE_PHONE_NUMBER;
+					    private String R7_MOBILE_MONEY_NUMBER;
+					    private String R7_PRODUCT_TYPE;
+					    private String R7_ACCOUNT_BY_OWNERSHIP;
+					    private String R7_ACCOUNT_NUMBER;
+					    private BigDecimal R7_ACCOUNT_HOLDER_INDICATOR;
+					    private String R7_STATUS_OF_ACCOUNT;
+					    private String R7_NOT_FIT_FOR_STP;
+					    private String R7_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R7_ACCOUNT_BALANCE_IN_PULA;
+					    private String R7_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R7_EXCHANGE_RATE;
+
+					    // ===================== R8 =====================
+					    private String R8_RECORD_NUMBER;
+					    private String R8_TITLE;
+					    private String R8_FIRST_NAME;
+					    private String R8_MIDDLE_NAME;
+					    private String R8_SURNAME;
+					    private String R8_PREVIOUS_NAME;
+					    private String R8_GENDER;
+					    private String R8_IDENTIFICATION_TYPE;
+					    private String R8_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R8_DATE_OF_BIRTH;
+					    private String R8_HOME_ADDRESS;
+					    private String R8_POSTAL_ADDRESS;
+					    private String R8_RESIDENCE;
+					    private String R8_EMAIL;
+					    private String R8_LANDLINE;
+					    private String R8_MOBILE_PHONE_NUMBER;
+					    private String R8_MOBILE_MONEY_NUMBER;
+					    private String R8_PRODUCT_TYPE;
+					    private String R8_ACCOUNT_BY_OWNERSHIP;
+					    private String R8_ACCOUNT_NUMBER;
+					    private BigDecimal R8_ACCOUNT_HOLDER_INDICATOR;
+					    private String R8_STATUS_OF_ACCOUNT;
+					    private String R8_NOT_FIT_FOR_STP;
+					    private String R8_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R8_ACCOUNT_BALANCE_IN_PULA;
+					    private String R8_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R8_EXCHANGE_RATE;
+
+					    // ===================== R9 =====================
+					    private String R9_RECORD_NUMBER;
+					    private String R9_TITLE;
+					    private String R9_FIRST_NAME;
+					    private String R9_MIDDLE_NAME;
+					    private String R9_SURNAME;
+					    private String R9_PREVIOUS_NAME;
+					    private String R9_GENDER;
+					    private String R9_IDENTIFICATION_TYPE;
+					    private String R9_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R9_DATE_OF_BIRTH;
+					    private String R9_HOME_ADDRESS;
+					    private String R9_POSTAL_ADDRESS;
+					    private String R9_RESIDENCE;
+					    private String R9_EMAIL;
+					    private String R9_LANDLINE;
+					    private String R9_MOBILE_PHONE_NUMBER;
+					    private String R9_MOBILE_MONEY_NUMBER;
+					    private String R9_PRODUCT_TYPE;
+					    private String R9_ACCOUNT_BY_OWNERSHIP;
+					    private String R9_ACCOUNT_NUMBER;
+					    private BigDecimal R9_ACCOUNT_HOLDER_INDICATOR;
+					    private String R9_STATUS_OF_ACCOUNT;
+					    private String R9_NOT_FIT_FOR_STP;
+					    private String R9_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R9_ACCOUNT_BALANCE_IN_PULA;
+					    private String R9_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R9_EXCHANGE_RATE;
+
+					    // ===================== R10 =====================
+					    private String R10_RECORD_NUMBER;
+					    private String R10_TITLE;
+					    private String R10_FIRST_NAME;
+					    private String R10_MIDDLE_NAME;
+					    private String R10_SURNAME;
+					    private String R10_PREVIOUS_NAME;
+					    private String R10_GENDER;
+					    private String R10_IDENTIFICATION_TYPE;
+					    private String R10_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R10_DATE_OF_BIRTH;
+					    private String R10_HOME_ADDRESS;
+					    private String R10_POSTAL_ADDRESS;
+					    private String R10_RESIDENCE;
+					    private String R10_EMAIL;
+					    private String R10_LANDLINE;
+					    private String R10_MOBILE_PHONE_NUMBER;
+					    private String R10_MOBILE_MONEY_NUMBER;
+					    private String R10_PRODUCT_TYPE;
+					    private String R10_ACCOUNT_BY_OWNERSHIP;
+					    private String R10_ACCOUNT_NUMBER;
+					    private BigDecimal R10_ACCOUNT_HOLDER_INDICATOR;
+					    private String R10_STATUS_OF_ACCOUNT;
+					    private String R10_NOT_FIT_FOR_STP;
+					    private String R10_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R10_ACCOUNT_BALANCE_IN_PULA;
+					    private String R10_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R10_EXCHANGE_RATE;
+
+					    // ===================== R11 =====================
+					    private String R11_RECORD_NUMBER;
+					    private String R11_TITLE;
+					    private String R11_FIRST_NAME;
+					    private String R11_MIDDLE_NAME;
+					    private String R11_SURNAME;
+					    private String R11_PREVIOUS_NAME;
+					    private String R11_GENDER;
+					    private String R11_IDENTIFICATION_TYPE;
+					    private String R11_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R11_DATE_OF_BIRTH;
+					    private String R11_HOME_ADDRESS;
+					    private String R11_POSTAL_ADDRESS;
+					    private String R11_RESIDENCE;
+					    private String R11_EMAIL;
+					    private String R11_LANDLINE;
+					    private String R11_MOBILE_PHONE_NUMBER;
+					    private String R11_MOBILE_MONEY_NUMBER;
+					    private String R11_PRODUCT_TYPE;
+					    private String R11_ACCOUNT_BY_OWNERSHIP;
+					    private String R11_ACCOUNT_NUMBER;
+					    private BigDecimal R11_ACCOUNT_HOLDER_INDICATOR;
+					    private String R11_STATUS_OF_ACCOUNT;
+					    private String R11_NOT_FIT_FOR_STP;
+					    private String R11_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R11_ACCOUNT_BALANCE_IN_PULA;
+					    private String R11_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R11_EXCHANGE_RATE;
+					    
+					    @Id
+						@Temporal(TemporalType.DATE)
+						@Column(name = "REPORT_DATE")
+						private Date REPORT_DATE;
+
+						@Column(name = "REPORT_VERSION", length = 100)
+						private BigDecimal REPORT_VERSION;
+
+						@Column(name = "REPORT_FREQUENCY", length = 100)
+						private String REPORT_FREQUENCY;
+
+						@Column(name = "REPORT_CODE", length = 100)
+						private String REPORT_CODE;
+
+						@Column(name = "REPORT_DESC", length = 100)
+						private String REPORT_DESC;
+
+						@Column(name = "ENTITY_FLG", length = 1)
+						private String ENTITY_FLG;
+
+						@Column(name = "MODIFY_FLG", length = 1)
+						private String MODIFY_FLG;
+
+						@Column(name = "DEL_FLG", length = 1)
+						private String DEL_FLG;
+						
+						public String getR5_RECORD_NUMBER() {
+							return R5_RECORD_NUMBER;
+						}
+						public void setR5_RECORD_NUMBER(String r5_RECORD_NUMBER) {
+							R5_RECORD_NUMBER = r5_RECORD_NUMBER;
+						}
+						public String getR5_TITLE() {
+							return R5_TITLE;
+						}
+						public void setR5_TITLE(String r5_TITLE) {
+							R5_TITLE = r5_TITLE;
+						}
+						public String getR5_FIRST_NAME() {
+							return R5_FIRST_NAME;
+						}
+						public void setR5_FIRST_NAME(String r5_FIRST_NAME) {
+							R5_FIRST_NAME = r5_FIRST_NAME;
+						}
+						public String getR5_MIDDLE_NAME() {
+							return R5_MIDDLE_NAME;
+						}
+						public void setR5_MIDDLE_NAME(String r5_MIDDLE_NAME) {
+							R5_MIDDLE_NAME = r5_MIDDLE_NAME;
+						}
+						public String getR5_SURNAME() {
+							return R5_SURNAME;
+						}
+						public void setR5_SURNAME(String r5_SURNAME) {
+							R5_SURNAME = r5_SURNAME;
+						}
+						public String getR5_PREVIOUS_NAME() {
+							return R5_PREVIOUS_NAME;
+						}
+						public void setR5_PREVIOUS_NAME(String r5_PREVIOUS_NAME) {
+							R5_PREVIOUS_NAME = r5_PREVIOUS_NAME;
+						}
+						public String getR5_GENDER() {
+							return R5_GENDER;
+						}
+						public void setR5_GENDER(String r5_GENDER) {
+							R5_GENDER = r5_GENDER;
+						}
+						public String getR5_IDENTIFICATION_TYPE() {
+							return R5_IDENTIFICATION_TYPE;
+						}
+						public void setR5_IDENTIFICATION_TYPE(String r5_IDENTIFICATION_TYPE) {
+							R5_IDENTIFICATION_TYPE = r5_IDENTIFICATION_TYPE;
+						}
+						public String getR5_PASSPORT_NUMBER() {
+							return R5_PASSPORT_NUMBER;
+						}
+						public void setR5_PASSPORT_NUMBER(String r5_PASSPORT_NUMBER) {
+							R5_PASSPORT_NUMBER = r5_PASSPORT_NUMBER;
+						}
+						public Date getR5_DATE_OF_BIRTH() {
+							return R5_DATE_OF_BIRTH;
+						}
+						public void setR5_DATE_OF_BIRTH(Date r5_DATE_OF_BIRTH) {
+							R5_DATE_OF_BIRTH = r5_DATE_OF_BIRTH;
+						}
+						public String getR5_HOME_ADDRESS() {
+							return R5_HOME_ADDRESS;
+						}
+						public void setR5_HOME_ADDRESS(String r5_HOME_ADDRESS) {
+							R5_HOME_ADDRESS = r5_HOME_ADDRESS;
+						}
+						public String getR5_POSTAL_ADDRESS() {
+							return R5_POSTAL_ADDRESS;
+						}
+						public void setR5_POSTAL_ADDRESS(String r5_POSTAL_ADDRESS) {
+							R5_POSTAL_ADDRESS = r5_POSTAL_ADDRESS;
+						}
+						public String getR5_RESIDENCE() {
+							return R5_RESIDENCE;
+						}
+						public void setR5_RESIDENCE(String r5_RESIDENCE) {
+							R5_RESIDENCE = r5_RESIDENCE;
+						}
+						public String getR5_EMAIL() {
+							return R5_EMAIL;
+						}
+						public void setR5_EMAIL(String r5_EMAIL) {
+							R5_EMAIL = r5_EMAIL;
+						}
+						public String getR5_LANDLINE() {
+							return R5_LANDLINE;
+						}
+						public void setR5_LANDLINE(String r5_LANDLINE) {
+							R5_LANDLINE = r5_LANDLINE;
+						}
+						public String getR5_MOBILE_PHONE_NUMBER() {
+							return R5_MOBILE_PHONE_NUMBER;
+						}
+						public void setR5_MOBILE_PHONE_NUMBER(String r5_MOBILE_PHONE_NUMBER) {
+							R5_MOBILE_PHONE_NUMBER = r5_MOBILE_PHONE_NUMBER;
+						}
+						public String getR5_MOBILE_MONEY_NUMBER() {
+							return R5_MOBILE_MONEY_NUMBER;
+						}
+						public void setR5_MOBILE_MONEY_NUMBER(String r5_MOBILE_MONEY_NUMBER) {
+							R5_MOBILE_MONEY_NUMBER = r5_MOBILE_MONEY_NUMBER;
+						}
+						public String getR5_PRODUCT_TYPE() {
+							return R5_PRODUCT_TYPE;
+						}
+						public void setR5_PRODUCT_TYPE(String r5_PRODUCT_TYPE) {
+							R5_PRODUCT_TYPE = r5_PRODUCT_TYPE;
+						}
+						public String getR5_ACCOUNT_BY_OWNERSHIP() {
+							return R5_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR5_ACCOUNT_BY_OWNERSHIP(String r5_ACCOUNT_BY_OWNERSHIP) {
+							R5_ACCOUNT_BY_OWNERSHIP = r5_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR5_ACCOUNT_NUMBER() {
+							return R5_ACCOUNT_NUMBER;
+						}
+						public void setR5_ACCOUNT_NUMBER(String r5_ACCOUNT_NUMBER) {
+							R5_ACCOUNT_NUMBER = r5_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR5_ACCOUNT_HOLDER_INDICATOR() {
+							return R5_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR5_ACCOUNT_HOLDER_INDICATOR(BigDecimal r5_ACCOUNT_HOLDER_INDICATOR) {
+							R5_ACCOUNT_HOLDER_INDICATOR = r5_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR5_STATUS_OF_ACCOUNT() {
+							return R5_STATUS_OF_ACCOUNT;
+						}
+						public void setR5_STATUS_OF_ACCOUNT(String r5_STATUS_OF_ACCOUNT) {
+							R5_STATUS_OF_ACCOUNT = r5_STATUS_OF_ACCOUNT;
+						}
+						public String getR5_NOT_FIT_FOR_STP() {
+							return R5_NOT_FIT_FOR_STP;
+						}
+						public void setR5_NOT_FIT_FOR_STP(String r5_NOT_FIT_FOR_STP) {
+							R5_NOT_FIT_FOR_STP = r5_NOT_FIT_FOR_STP;
+						}
+						public String getR5_BRANCH_CODE_AND_NAME() {
+							return R5_BRANCH_CODE_AND_NAME;
+						}
+						public void setR5_BRANCH_CODE_AND_NAME(String r5_BRANCH_CODE_AND_NAME) {
+							R5_BRANCH_CODE_AND_NAME = r5_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR5_ACCOUNT_BALANCE_IN_PULA() {
+							return R5_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR5_ACCOUNT_BALANCE_IN_PULA(BigDecimal r5_ACCOUNT_BALANCE_IN_PULA) {
+							R5_ACCOUNT_BALANCE_IN_PULA = r5_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR5_CURRENCY_OF_ACCOUNT() {
+							return R5_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR5_CURRENCY_OF_ACCOUNT(String r5_CURRENCY_OF_ACCOUNT) {
+							R5_CURRENCY_OF_ACCOUNT = r5_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR5_EXCHANGE_RATE() {
+							return R5_EXCHANGE_RATE;
+						}
+						public void setR5_EXCHANGE_RATE(BigDecimal r5_EXCHANGE_RATE) {
+							R5_EXCHANGE_RATE = r5_EXCHANGE_RATE;
+						}
+						public String getR6_RECORD_NUMBER() {
+							return R6_RECORD_NUMBER;
+						}
+						public void setR6_RECORD_NUMBER(String r6_RECORD_NUMBER) {
+							R6_RECORD_NUMBER = r6_RECORD_NUMBER;
+						}
+						public String getR6_TITLE() {
+							return R6_TITLE;
+						}
+						public void setR6_TITLE(String r6_TITLE) {
+							R6_TITLE = r6_TITLE;
+						}
+						public String getR6_FIRST_NAME() {
+							return R6_FIRST_NAME;
+						}
+						public void setR6_FIRST_NAME(String r6_FIRST_NAME) {
+							R6_FIRST_NAME = r6_FIRST_NAME;
+						}
+						public String getR6_MIDDLE_NAME() {
+							return R6_MIDDLE_NAME;
+						}
+						public void setR6_MIDDLE_NAME(String r6_MIDDLE_NAME) {
+							R6_MIDDLE_NAME = r6_MIDDLE_NAME;
+						}
+						public String getR6_SURNAME() {
+							return R6_SURNAME;
+						}
+						public void setR6_SURNAME(String r6_SURNAME) {
+							R6_SURNAME = r6_SURNAME;
+						}
+						public String getR6_PREVIOUS_NAME() {
+							return R6_PREVIOUS_NAME;
+						}
+						public void setR6_PREVIOUS_NAME(String r6_PREVIOUS_NAME) {
+							R6_PREVIOUS_NAME = r6_PREVIOUS_NAME;
+						}
+						public String getR6_GENDER() {
+							return R6_GENDER;
+						}
+						public void setR6_GENDER(String r6_GENDER) {
+							R6_GENDER = r6_GENDER;
+						}
+						public String getR6_IDENTIFICATION_TYPE() {
+							return R6_IDENTIFICATION_TYPE;
+						}
+						public void setR6_IDENTIFICATION_TYPE(String r6_IDENTIFICATION_TYPE) {
+							R6_IDENTIFICATION_TYPE = r6_IDENTIFICATION_TYPE;
+						}
+						public String getR6_PASSPORT_NUMBER() {
+							return R6_PASSPORT_NUMBER;
+						}
+						public void setR6_PASSPORT_NUMBER(String r6_PASSPORT_NUMBER) {
+							R6_PASSPORT_NUMBER = r6_PASSPORT_NUMBER;
+						}
+						public Date getR6_DATE_OF_BIRTH() {
+							return R6_DATE_OF_BIRTH;
+						}
+						public void setR6_DATE_OF_BIRTH(Date r6_DATE_OF_BIRTH) {
+							R6_DATE_OF_BIRTH = r6_DATE_OF_BIRTH;
+						}
+						public String getR6_HOME_ADDRESS() {
+							return R6_HOME_ADDRESS;
+						}
+						public void setR6_HOME_ADDRESS(String r6_HOME_ADDRESS) {
+							R6_HOME_ADDRESS = r6_HOME_ADDRESS;
+						}
+						public String getR6_POSTAL_ADDRESS() {
+							return R6_POSTAL_ADDRESS;
+						}
+						public void setR6_POSTAL_ADDRESS(String r6_POSTAL_ADDRESS) {
+							R6_POSTAL_ADDRESS = r6_POSTAL_ADDRESS;
+						}
+						public String getR6_RESIDENCE() {
+							return R6_RESIDENCE;
+						}
+						public void setR6_RESIDENCE(String r6_RESIDENCE) {
+							R6_RESIDENCE = r6_RESIDENCE;
+						}
+						public String getR6_EMAIL() {
+							return R6_EMAIL;
+						}
+						public void setR6_EMAIL(String r6_EMAIL) {
+							R6_EMAIL = r6_EMAIL;
+						}
+						public String getR6_LANDLINE() {
+							return R6_LANDLINE;
+						}
+						public void setR6_LANDLINE(String r6_LANDLINE) {
+							R6_LANDLINE = r6_LANDLINE;
+						}
+						public String getR6_MOBILE_PHONE_NUMBER() {
+							return R6_MOBILE_PHONE_NUMBER;
+						}
+						public void setR6_MOBILE_PHONE_NUMBER(String r6_MOBILE_PHONE_NUMBER) {
+							R6_MOBILE_PHONE_NUMBER = r6_MOBILE_PHONE_NUMBER;
+						}
+						public String getR6_MOBILE_MONEY_NUMBER() {
+							return R6_MOBILE_MONEY_NUMBER;
+						}
+						public void setR6_MOBILE_MONEY_NUMBER(String r6_MOBILE_MONEY_NUMBER) {
+							R6_MOBILE_MONEY_NUMBER = r6_MOBILE_MONEY_NUMBER;
+						}
+						public String getR6_PRODUCT_TYPE() {
+							return R6_PRODUCT_TYPE;
+						}
+						public void setR6_PRODUCT_TYPE(String r6_PRODUCT_TYPE) {
+							R6_PRODUCT_TYPE = r6_PRODUCT_TYPE;
+						}
+						public String getR6_ACCOUNT_BY_OWNERSHIP() {
+							return R6_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR6_ACCOUNT_BY_OWNERSHIP(String r6_ACCOUNT_BY_OWNERSHIP) {
+							R6_ACCOUNT_BY_OWNERSHIP = r6_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR6_ACCOUNT_NUMBER() {
+							return R6_ACCOUNT_NUMBER;
+						}
+						public void setR6_ACCOUNT_NUMBER(String r6_ACCOUNT_NUMBER) {
+							R6_ACCOUNT_NUMBER = r6_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR6_ACCOUNT_HOLDER_INDICATOR() {
+							return R6_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR6_ACCOUNT_HOLDER_INDICATOR(BigDecimal r6_ACCOUNT_HOLDER_INDICATOR) {
+							R6_ACCOUNT_HOLDER_INDICATOR = r6_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR6_STATUS_OF_ACCOUNT() {
+							return R6_STATUS_OF_ACCOUNT;
+						}
+						public void setR6_STATUS_OF_ACCOUNT(String r6_STATUS_OF_ACCOUNT) {
+							R6_STATUS_OF_ACCOUNT = r6_STATUS_OF_ACCOUNT;
+						}
+						public String getR6_NOT_FIT_FOR_STP() {
+							return R6_NOT_FIT_FOR_STP;
+						}
+						public void setR6_NOT_FIT_FOR_STP(String r6_NOT_FIT_FOR_STP) {
+							R6_NOT_FIT_FOR_STP = r6_NOT_FIT_FOR_STP;
+						}
+						public String getR6_BRANCH_CODE_AND_NAME() {
+							return R6_BRANCH_CODE_AND_NAME;
+						}
+						public void setR6_BRANCH_CODE_AND_NAME(String r6_BRANCH_CODE_AND_NAME) {
+							R6_BRANCH_CODE_AND_NAME = r6_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR6_ACCOUNT_BALANCE_IN_PULA() {
+							return R6_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR6_ACCOUNT_BALANCE_IN_PULA(BigDecimal r6_ACCOUNT_BALANCE_IN_PULA) {
+							R6_ACCOUNT_BALANCE_IN_PULA = r6_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR6_CURRENCY_OF_ACCOUNT() {
+							return R6_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR6_CURRENCY_OF_ACCOUNT(String r6_CURRENCY_OF_ACCOUNT) {
+							R6_CURRENCY_OF_ACCOUNT = r6_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR6_EXCHANGE_RATE() {
+							return R6_EXCHANGE_RATE;
+						}
+						public void setR6_EXCHANGE_RATE(BigDecimal r6_EXCHANGE_RATE) {
+							R6_EXCHANGE_RATE = r6_EXCHANGE_RATE;
+						}
+						public String getR7_RECORD_NUMBER() {
+							return R7_RECORD_NUMBER;
+						}
+						public void setR7_RECORD_NUMBER(String r7_RECORD_NUMBER) {
+							R7_RECORD_NUMBER = r7_RECORD_NUMBER;
+						}
+						public String getR7_TITLE() {
+							return R7_TITLE;
+						}
+						public void setR7_TITLE(String r7_TITLE) {
+							R7_TITLE = r7_TITLE;
+						}
+						public String getR7_FIRST_NAME() {
+							return R7_FIRST_NAME;
+						}
+						public void setR7_FIRST_NAME(String r7_FIRST_NAME) {
+							R7_FIRST_NAME = r7_FIRST_NAME;
+						}
+						public String getR7_MIDDLE_NAME() {
+							return R7_MIDDLE_NAME;
+						}
+						public void setR7_MIDDLE_NAME(String r7_MIDDLE_NAME) {
+							R7_MIDDLE_NAME = r7_MIDDLE_NAME;
+						}
+						public String getR7_SURNAME() {
+							return R7_SURNAME;
+						}
+						public void setR7_SURNAME(String r7_SURNAME) {
+							R7_SURNAME = r7_SURNAME;
+						}
+						public String getR7_PREVIOUS_NAME() {
+							return R7_PREVIOUS_NAME;
+						}
+						public void setR7_PREVIOUS_NAME(String r7_PREVIOUS_NAME) {
+							R7_PREVIOUS_NAME = r7_PREVIOUS_NAME;
+						}
+						public String getR7_GENDER() {
+							return R7_GENDER;
+						}
+						public void setR7_GENDER(String r7_GENDER) {
+							R7_GENDER = r7_GENDER;
+						}
+						public String getR7_IDENTIFICATION_TYPE() {
+							return R7_IDENTIFICATION_TYPE;
+						}
+						public void setR7_IDENTIFICATION_TYPE(String r7_IDENTIFICATION_TYPE) {
+							R7_IDENTIFICATION_TYPE = r7_IDENTIFICATION_TYPE;
+						}
+						public String getR7_PASSPORT_NUMBER() {
+							return R7_PASSPORT_NUMBER;
+						}
+						public void setR7_PASSPORT_NUMBER(String r7_PASSPORT_NUMBER) {
+							R7_PASSPORT_NUMBER = r7_PASSPORT_NUMBER;
+						}
+						public Date getR7_DATE_OF_BIRTH() {
+							return R7_DATE_OF_BIRTH;
+						}
+						public void setR7_DATE_OF_BIRTH(Date r7_DATE_OF_BIRTH) {
+							R7_DATE_OF_BIRTH = r7_DATE_OF_BIRTH;
+						}
+						public String getR7_HOME_ADDRESS() {
+							return R7_HOME_ADDRESS;
+						}
+						public void setR7_HOME_ADDRESS(String r7_HOME_ADDRESS) {
+							R7_HOME_ADDRESS = r7_HOME_ADDRESS;
+						}
+						public String getR7_POSTAL_ADDRESS() {
+							return R7_POSTAL_ADDRESS;
+						}
+						public void setR7_POSTAL_ADDRESS(String r7_POSTAL_ADDRESS) {
+							R7_POSTAL_ADDRESS = r7_POSTAL_ADDRESS;
+						}
+						public String getR7_RESIDENCE() {
+							return R7_RESIDENCE;
+						}
+						public void setR7_RESIDENCE(String r7_RESIDENCE) {
+							R7_RESIDENCE = r7_RESIDENCE;
+						}
+						public String getR7_EMAIL() {
+							return R7_EMAIL;
+						}
+						public void setR7_EMAIL(String r7_EMAIL) {
+							R7_EMAIL = r7_EMAIL;
+						}
+						public String getR7_LANDLINE() {
+							return R7_LANDLINE;
+						}
+						public void setR7_LANDLINE(String r7_LANDLINE) {
+							R7_LANDLINE = r7_LANDLINE;
+						}
+						public String getR7_MOBILE_PHONE_NUMBER() {
+							return R7_MOBILE_PHONE_NUMBER;
+						}
+						public void setR7_MOBILE_PHONE_NUMBER(String r7_MOBILE_PHONE_NUMBER) {
+							R7_MOBILE_PHONE_NUMBER = r7_MOBILE_PHONE_NUMBER;
+						}
+						public String getR7_MOBILE_MONEY_NUMBER() {
+							return R7_MOBILE_MONEY_NUMBER;
+						}
+						public void setR7_MOBILE_MONEY_NUMBER(String r7_MOBILE_MONEY_NUMBER) {
+							R7_MOBILE_MONEY_NUMBER = r7_MOBILE_MONEY_NUMBER;
+						}
+						public String getR7_PRODUCT_TYPE() {
+							return R7_PRODUCT_TYPE;
+						}
+						public void setR7_PRODUCT_TYPE(String r7_PRODUCT_TYPE) {
+							R7_PRODUCT_TYPE = r7_PRODUCT_TYPE;
+						}
+						public String getR7_ACCOUNT_BY_OWNERSHIP() {
+							return R7_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR7_ACCOUNT_BY_OWNERSHIP(String r7_ACCOUNT_BY_OWNERSHIP) {
+							R7_ACCOUNT_BY_OWNERSHIP = r7_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR7_ACCOUNT_NUMBER() {
+							return R7_ACCOUNT_NUMBER;
+						}
+						public void setR7_ACCOUNT_NUMBER(String r7_ACCOUNT_NUMBER) {
+							R7_ACCOUNT_NUMBER = r7_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR7_ACCOUNT_HOLDER_INDICATOR() {
+							return R7_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR7_ACCOUNT_HOLDER_INDICATOR(BigDecimal r7_ACCOUNT_HOLDER_INDICATOR) {
+							R7_ACCOUNT_HOLDER_INDICATOR = r7_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR7_STATUS_OF_ACCOUNT() {
+							return R7_STATUS_OF_ACCOUNT;
+						}
+						public void setR7_STATUS_OF_ACCOUNT(String r7_STATUS_OF_ACCOUNT) {
+							R7_STATUS_OF_ACCOUNT = r7_STATUS_OF_ACCOUNT;
+						}
+						public String getR7_NOT_FIT_FOR_STP() {
+							return R7_NOT_FIT_FOR_STP;
+						}
+						public void setR7_NOT_FIT_FOR_STP(String r7_NOT_FIT_FOR_STP) {
+							R7_NOT_FIT_FOR_STP = r7_NOT_FIT_FOR_STP;
+						}
+						public String getR7_BRANCH_CODE_AND_NAME() {
+							return R7_BRANCH_CODE_AND_NAME;
+						}
+						public void setR7_BRANCH_CODE_AND_NAME(String r7_BRANCH_CODE_AND_NAME) {
+							R7_BRANCH_CODE_AND_NAME = r7_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR7_ACCOUNT_BALANCE_IN_PULA() {
+							return R7_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR7_ACCOUNT_BALANCE_IN_PULA(BigDecimal r7_ACCOUNT_BALANCE_IN_PULA) {
+							R7_ACCOUNT_BALANCE_IN_PULA = r7_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR7_CURRENCY_OF_ACCOUNT() {
+							return R7_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR7_CURRENCY_OF_ACCOUNT(String r7_CURRENCY_OF_ACCOUNT) {
+							R7_CURRENCY_OF_ACCOUNT = r7_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR7_EXCHANGE_RATE() {
+							return R7_EXCHANGE_RATE;
+						}
+						public void setR7_EXCHANGE_RATE(BigDecimal r7_EXCHANGE_RATE) {
+							R7_EXCHANGE_RATE = r7_EXCHANGE_RATE;
+						}
+						public String getR8_RECORD_NUMBER() {
+							return R8_RECORD_NUMBER;
+						}
+						public void setR8_RECORD_NUMBER(String r8_RECORD_NUMBER) {
+							R8_RECORD_NUMBER = r8_RECORD_NUMBER;
+						}
+						public String getR8_TITLE() {
+							return R8_TITLE;
+						}
+						public void setR8_TITLE(String r8_TITLE) {
+							R8_TITLE = r8_TITLE;
+						}
+						public String getR8_FIRST_NAME() {
+							return R8_FIRST_NAME;
+						}
+						public void setR8_FIRST_NAME(String r8_FIRST_NAME) {
+							R8_FIRST_NAME = r8_FIRST_NAME;
+						}
+						public String getR8_MIDDLE_NAME() {
+							return R8_MIDDLE_NAME;
+						}
+						public void setR8_MIDDLE_NAME(String r8_MIDDLE_NAME) {
+							R8_MIDDLE_NAME = r8_MIDDLE_NAME;
+						}
+						public String getR8_SURNAME() {
+							return R8_SURNAME;
+						}
+						public void setR8_SURNAME(String r8_SURNAME) {
+							R8_SURNAME = r8_SURNAME;
+						}
+						public String getR8_PREVIOUS_NAME() {
+							return R8_PREVIOUS_NAME;
+						}
+						public void setR8_PREVIOUS_NAME(String r8_PREVIOUS_NAME) {
+							R8_PREVIOUS_NAME = r8_PREVIOUS_NAME;
+						}
+						public String getR8_GENDER() {
+							return R8_GENDER;
+						}
+						public void setR8_GENDER(String r8_GENDER) {
+							R8_GENDER = r8_GENDER;
+						}
+						public String getR8_IDENTIFICATION_TYPE() {
+							return R8_IDENTIFICATION_TYPE;
+						}
+						public void setR8_IDENTIFICATION_TYPE(String r8_IDENTIFICATION_TYPE) {
+							R8_IDENTIFICATION_TYPE = r8_IDENTIFICATION_TYPE;
+						}
+						public String getR8_PASSPORT_NUMBER() {
+							return R8_PASSPORT_NUMBER;
+						}
+						public void setR8_PASSPORT_NUMBER(String r8_PASSPORT_NUMBER) {
+							R8_PASSPORT_NUMBER = r8_PASSPORT_NUMBER;
+						}
+						public Date getR8_DATE_OF_BIRTH() {
+							return R8_DATE_OF_BIRTH;
+						}
+						public void setR8_DATE_OF_BIRTH(Date r8_DATE_OF_BIRTH) {
+							R8_DATE_OF_BIRTH = r8_DATE_OF_BIRTH;
+						}
+						public String getR8_HOME_ADDRESS() {
+							return R8_HOME_ADDRESS;
+						}
+						public void setR8_HOME_ADDRESS(String r8_HOME_ADDRESS) {
+							R8_HOME_ADDRESS = r8_HOME_ADDRESS;
+						}
+						public String getR8_POSTAL_ADDRESS() {
+							return R8_POSTAL_ADDRESS;
+						}
+						public void setR8_POSTAL_ADDRESS(String r8_POSTAL_ADDRESS) {
+							R8_POSTAL_ADDRESS = r8_POSTAL_ADDRESS;
+						}
+						public String getR8_RESIDENCE() {
+							return R8_RESIDENCE;
+						}
+						public void setR8_RESIDENCE(String r8_RESIDENCE) {
+							R8_RESIDENCE = r8_RESIDENCE;
+						}
+						public String getR8_EMAIL() {
+							return R8_EMAIL;
+						}
+						public void setR8_EMAIL(String r8_EMAIL) {
+							R8_EMAIL = r8_EMAIL;
+						}
+						public String getR8_LANDLINE() {
+							return R8_LANDLINE;
+						}
+						public void setR8_LANDLINE(String r8_LANDLINE) {
+							R8_LANDLINE = r8_LANDLINE;
+						}
+						public String getR8_MOBILE_PHONE_NUMBER() {
+							return R8_MOBILE_PHONE_NUMBER;
+						}
+						public void setR8_MOBILE_PHONE_NUMBER(String r8_MOBILE_PHONE_NUMBER) {
+							R8_MOBILE_PHONE_NUMBER = r8_MOBILE_PHONE_NUMBER;
+						}
+						public String getR8_MOBILE_MONEY_NUMBER() {
+							return R8_MOBILE_MONEY_NUMBER;
+						}
+						public void setR8_MOBILE_MONEY_NUMBER(String r8_MOBILE_MONEY_NUMBER) {
+							R8_MOBILE_MONEY_NUMBER = r8_MOBILE_MONEY_NUMBER;
+						}
+						public String getR8_PRODUCT_TYPE() {
+							return R8_PRODUCT_TYPE;
+						}
+						public void setR8_PRODUCT_TYPE(String r8_PRODUCT_TYPE) {
+							R8_PRODUCT_TYPE = r8_PRODUCT_TYPE;
+						}
+						public String getR8_ACCOUNT_BY_OWNERSHIP() {
+							return R8_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR8_ACCOUNT_BY_OWNERSHIP(String r8_ACCOUNT_BY_OWNERSHIP) {
+							R8_ACCOUNT_BY_OWNERSHIP = r8_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR8_ACCOUNT_NUMBER() {
+							return R8_ACCOUNT_NUMBER;
+						}
+						public void setR8_ACCOUNT_NUMBER(String r8_ACCOUNT_NUMBER) {
+							R8_ACCOUNT_NUMBER = r8_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR8_ACCOUNT_HOLDER_INDICATOR() {
+							return R8_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR8_ACCOUNT_HOLDER_INDICATOR(BigDecimal r8_ACCOUNT_HOLDER_INDICATOR) {
+							R8_ACCOUNT_HOLDER_INDICATOR = r8_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR8_STATUS_OF_ACCOUNT() {
+							return R8_STATUS_OF_ACCOUNT;
+						}
+						public void setR8_STATUS_OF_ACCOUNT(String r8_STATUS_OF_ACCOUNT) {
+							R8_STATUS_OF_ACCOUNT = r8_STATUS_OF_ACCOUNT;
+						}
+						public String getR8_NOT_FIT_FOR_STP() {
+							return R8_NOT_FIT_FOR_STP;
+						}
+						public void setR8_NOT_FIT_FOR_STP(String r8_NOT_FIT_FOR_STP) {
+							R8_NOT_FIT_FOR_STP = r8_NOT_FIT_FOR_STP;
+						}
+						public String getR8_BRANCH_CODE_AND_NAME() {
+							return R8_BRANCH_CODE_AND_NAME;
+						}
+						public void setR8_BRANCH_CODE_AND_NAME(String r8_BRANCH_CODE_AND_NAME) {
+							R8_BRANCH_CODE_AND_NAME = r8_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR8_ACCOUNT_BALANCE_IN_PULA() {
+							return R8_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR8_ACCOUNT_BALANCE_IN_PULA(BigDecimal r8_ACCOUNT_BALANCE_IN_PULA) {
+							R8_ACCOUNT_BALANCE_IN_PULA = r8_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR8_CURRENCY_OF_ACCOUNT() {
+							return R8_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR8_CURRENCY_OF_ACCOUNT(String r8_CURRENCY_OF_ACCOUNT) {
+							R8_CURRENCY_OF_ACCOUNT = r8_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR8_EXCHANGE_RATE() {
+							return R8_EXCHANGE_RATE;
+						}
+						public void setR8_EXCHANGE_RATE(BigDecimal r8_EXCHANGE_RATE) {
+							R8_EXCHANGE_RATE = r8_EXCHANGE_RATE;
+						}
+						public String getR9_RECORD_NUMBER() {
+							return R9_RECORD_NUMBER;
+						}
+						public void setR9_RECORD_NUMBER(String r9_RECORD_NUMBER) {
+							R9_RECORD_NUMBER = r9_RECORD_NUMBER;
+						}
+						public String getR9_TITLE() {
+							return R9_TITLE;
+						}
+						public void setR9_TITLE(String r9_TITLE) {
+							R9_TITLE = r9_TITLE;
+						}
+						public String getR9_FIRST_NAME() {
+							return R9_FIRST_NAME;
+						}
+						public void setR9_FIRST_NAME(String r9_FIRST_NAME) {
+							R9_FIRST_NAME = r9_FIRST_NAME;
+						}
+						public String getR9_MIDDLE_NAME() {
+							return R9_MIDDLE_NAME;
+						}
+						public void setR9_MIDDLE_NAME(String r9_MIDDLE_NAME) {
+							R9_MIDDLE_NAME = r9_MIDDLE_NAME;
+						}
+						public String getR9_SURNAME() {
+							return R9_SURNAME;
+						}
+						public void setR9_SURNAME(String r9_SURNAME) {
+							R9_SURNAME = r9_SURNAME;
+						}
+						public String getR9_PREVIOUS_NAME() {
+							return R9_PREVIOUS_NAME;
+						}
+						public void setR9_PREVIOUS_NAME(String r9_PREVIOUS_NAME) {
+							R9_PREVIOUS_NAME = r9_PREVIOUS_NAME;
+						}
+						public String getR9_GENDER() {
+							return R9_GENDER;
+						}
+						public void setR9_GENDER(String r9_GENDER) {
+							R9_GENDER = r9_GENDER;
+						}
+						public String getR9_IDENTIFICATION_TYPE() {
+							return R9_IDENTIFICATION_TYPE;
+						}
+						public void setR9_IDENTIFICATION_TYPE(String r9_IDENTIFICATION_TYPE) {
+							R9_IDENTIFICATION_TYPE = r9_IDENTIFICATION_TYPE;
+						}
+						public String getR9_PASSPORT_NUMBER() {
+							return R9_PASSPORT_NUMBER;
+						}
+						public void setR9_PASSPORT_NUMBER(String r9_PASSPORT_NUMBER) {
+							R9_PASSPORT_NUMBER = r9_PASSPORT_NUMBER;
+						}
+						public Date getR9_DATE_OF_BIRTH() {
+							return R9_DATE_OF_BIRTH;
+						}
+						public void setR9_DATE_OF_BIRTH(Date r9_DATE_OF_BIRTH) {
+							R9_DATE_OF_BIRTH = r9_DATE_OF_BIRTH;
+						}
+						public String getR9_HOME_ADDRESS() {
+							return R9_HOME_ADDRESS;
+						}
+						public void setR9_HOME_ADDRESS(String r9_HOME_ADDRESS) {
+							R9_HOME_ADDRESS = r9_HOME_ADDRESS;
+						}
+						public String getR9_POSTAL_ADDRESS() {
+							return R9_POSTAL_ADDRESS;
+						}
+						public void setR9_POSTAL_ADDRESS(String r9_POSTAL_ADDRESS) {
+							R9_POSTAL_ADDRESS = r9_POSTAL_ADDRESS;
+						}
+						public String getR9_RESIDENCE() {
+							return R9_RESIDENCE;
+						}
+						public void setR9_RESIDENCE(String r9_RESIDENCE) {
+							R9_RESIDENCE = r9_RESIDENCE;
+						}
+						public String getR9_EMAIL() {
+							return R9_EMAIL;
+						}
+						public void setR9_EMAIL(String r9_EMAIL) {
+							R9_EMAIL = r9_EMAIL;
+						}
+						public String getR9_LANDLINE() {
+							return R9_LANDLINE;
+						}
+						public void setR9_LANDLINE(String r9_LANDLINE) {
+							R9_LANDLINE = r9_LANDLINE;
+						}
+						public String getR9_MOBILE_PHONE_NUMBER() {
+							return R9_MOBILE_PHONE_NUMBER;
+						}
+						public void setR9_MOBILE_PHONE_NUMBER(String r9_MOBILE_PHONE_NUMBER) {
+							R9_MOBILE_PHONE_NUMBER = r9_MOBILE_PHONE_NUMBER;
+						}
+						public String getR9_MOBILE_MONEY_NUMBER() {
+							return R9_MOBILE_MONEY_NUMBER;
+						}
+						public void setR9_MOBILE_MONEY_NUMBER(String r9_MOBILE_MONEY_NUMBER) {
+							R9_MOBILE_MONEY_NUMBER = r9_MOBILE_MONEY_NUMBER;
+						}
+						public String getR9_PRODUCT_TYPE() {
+							return R9_PRODUCT_TYPE;
+						}
+						public void setR9_PRODUCT_TYPE(String r9_PRODUCT_TYPE) {
+							R9_PRODUCT_TYPE = r9_PRODUCT_TYPE;
+						}
+						public String getR9_ACCOUNT_BY_OWNERSHIP() {
+							return R9_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR9_ACCOUNT_BY_OWNERSHIP(String r9_ACCOUNT_BY_OWNERSHIP) {
+							R9_ACCOUNT_BY_OWNERSHIP = r9_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR9_ACCOUNT_NUMBER() {
+							return R9_ACCOUNT_NUMBER;
+						}
+						public void setR9_ACCOUNT_NUMBER(String r9_ACCOUNT_NUMBER) {
+							R9_ACCOUNT_NUMBER = r9_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR9_ACCOUNT_HOLDER_INDICATOR() {
+							return R9_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR9_ACCOUNT_HOLDER_INDICATOR(BigDecimal r9_ACCOUNT_HOLDER_INDICATOR) {
+							R9_ACCOUNT_HOLDER_INDICATOR = r9_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR9_STATUS_OF_ACCOUNT() {
+							return R9_STATUS_OF_ACCOUNT;
+						}
+						public void setR9_STATUS_OF_ACCOUNT(String r9_STATUS_OF_ACCOUNT) {
+							R9_STATUS_OF_ACCOUNT = r9_STATUS_OF_ACCOUNT;
+						}
+						public String getR9_NOT_FIT_FOR_STP() {
+							return R9_NOT_FIT_FOR_STP;
+						}
+						public void setR9_NOT_FIT_FOR_STP(String r9_NOT_FIT_FOR_STP) {
+							R9_NOT_FIT_FOR_STP = r9_NOT_FIT_FOR_STP;
+						}
+						public String getR9_BRANCH_CODE_AND_NAME() {
+							return R9_BRANCH_CODE_AND_NAME;
+						}
+						public void setR9_BRANCH_CODE_AND_NAME(String r9_BRANCH_CODE_AND_NAME) {
+							R9_BRANCH_CODE_AND_NAME = r9_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR9_ACCOUNT_BALANCE_IN_PULA() {
+							return R9_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR9_ACCOUNT_BALANCE_IN_PULA(BigDecimal r9_ACCOUNT_BALANCE_IN_PULA) {
+							R9_ACCOUNT_BALANCE_IN_PULA = r9_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR9_CURRENCY_OF_ACCOUNT() {
+							return R9_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR9_CURRENCY_OF_ACCOUNT(String r9_CURRENCY_OF_ACCOUNT) {
+							R9_CURRENCY_OF_ACCOUNT = r9_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR9_EXCHANGE_RATE() {
+							return R9_EXCHANGE_RATE;
+						}
+						public void setR9_EXCHANGE_RATE(BigDecimal r9_EXCHANGE_RATE) {
+							R9_EXCHANGE_RATE = r9_EXCHANGE_RATE;
+						}
+						public String getR10_RECORD_NUMBER() {
+							return R10_RECORD_NUMBER;
+						}
+						public void setR10_RECORD_NUMBER(String r10_RECORD_NUMBER) {
+							R10_RECORD_NUMBER = r10_RECORD_NUMBER;
+						}
+						public String getR10_TITLE() {
+							return R10_TITLE;
+						}
+						public void setR10_TITLE(String r10_TITLE) {
+							R10_TITLE = r10_TITLE;
+						}
+						public String getR10_FIRST_NAME() {
+							return R10_FIRST_NAME;
+						}
+						public void setR10_FIRST_NAME(String r10_FIRST_NAME) {
+							R10_FIRST_NAME = r10_FIRST_NAME;
+						}
+						public String getR10_MIDDLE_NAME() {
+							return R10_MIDDLE_NAME;
+						}
+						public void setR10_MIDDLE_NAME(String r10_MIDDLE_NAME) {
+							R10_MIDDLE_NAME = r10_MIDDLE_NAME;
+						}
+						public String getR10_SURNAME() {
+							return R10_SURNAME;
+						}
+						public void setR10_SURNAME(String r10_SURNAME) {
+							R10_SURNAME = r10_SURNAME;
+						}
+						public String getR10_PREVIOUS_NAME() {
+							return R10_PREVIOUS_NAME;
+						}
+						public void setR10_PREVIOUS_NAME(String r10_PREVIOUS_NAME) {
+							R10_PREVIOUS_NAME = r10_PREVIOUS_NAME;
+						}
+						public String getR10_GENDER() {
+							return R10_GENDER;
+						}
+						public void setR10_GENDER(String r10_GENDER) {
+							R10_GENDER = r10_GENDER;
+						}
+						public String getR10_IDENTIFICATION_TYPE() {
+							return R10_IDENTIFICATION_TYPE;
+						}
+						public void setR10_IDENTIFICATION_TYPE(String r10_IDENTIFICATION_TYPE) {
+							R10_IDENTIFICATION_TYPE = r10_IDENTIFICATION_TYPE;
+						}
+						public String getR10_PASSPORT_NUMBER() {
+							return R10_PASSPORT_NUMBER;
+						}
+						public void setR10_PASSPORT_NUMBER(String r10_PASSPORT_NUMBER) {
+							R10_PASSPORT_NUMBER = r10_PASSPORT_NUMBER;
+						}
+						public Date getR10_DATE_OF_BIRTH() {
+							return R10_DATE_OF_BIRTH;
+						}
+						public void setR10_DATE_OF_BIRTH(Date r10_DATE_OF_BIRTH) {
+							R10_DATE_OF_BIRTH = r10_DATE_OF_BIRTH;
+						}
+						public String getR10_HOME_ADDRESS() {
+							return R10_HOME_ADDRESS;
+						}
+						public void setR10_HOME_ADDRESS(String r10_HOME_ADDRESS) {
+							R10_HOME_ADDRESS = r10_HOME_ADDRESS;
+						}
+						public String getR10_POSTAL_ADDRESS() {
+							return R10_POSTAL_ADDRESS;
+						}
+						public void setR10_POSTAL_ADDRESS(String r10_POSTAL_ADDRESS) {
+							R10_POSTAL_ADDRESS = r10_POSTAL_ADDRESS;
+						}
+						public String getR10_RESIDENCE() {
+							return R10_RESIDENCE;
+						}
+						public void setR10_RESIDENCE(String r10_RESIDENCE) {
+							R10_RESIDENCE = r10_RESIDENCE;
+						}
+						public String getR10_EMAIL() {
+							return R10_EMAIL;
+						}
+						public void setR10_EMAIL(String r10_EMAIL) {
+							R10_EMAIL = r10_EMAIL;
+						}
+						public String getR10_LANDLINE() {
+							return R10_LANDLINE;
+						}
+						public void setR10_LANDLINE(String r10_LANDLINE) {
+							R10_LANDLINE = r10_LANDLINE;
+						}
+						public String getR10_MOBILE_PHONE_NUMBER() {
+							return R10_MOBILE_PHONE_NUMBER;
+						}
+						public void setR10_MOBILE_PHONE_NUMBER(String r10_MOBILE_PHONE_NUMBER) {
+							R10_MOBILE_PHONE_NUMBER = r10_MOBILE_PHONE_NUMBER;
+						}
+						public String getR10_MOBILE_MONEY_NUMBER() {
+							return R10_MOBILE_MONEY_NUMBER;
+						}
+						public void setR10_MOBILE_MONEY_NUMBER(String r10_MOBILE_MONEY_NUMBER) {
+							R10_MOBILE_MONEY_NUMBER = r10_MOBILE_MONEY_NUMBER;
+						}
+						public String getR10_PRODUCT_TYPE() {
+							return R10_PRODUCT_TYPE;
+						}
+						public void setR10_PRODUCT_TYPE(String r10_PRODUCT_TYPE) {
+							R10_PRODUCT_TYPE = r10_PRODUCT_TYPE;
+						}
+						public String getR10_ACCOUNT_BY_OWNERSHIP() {
+							return R10_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR10_ACCOUNT_BY_OWNERSHIP(String r10_ACCOUNT_BY_OWNERSHIP) {
+							R10_ACCOUNT_BY_OWNERSHIP = r10_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR10_ACCOUNT_NUMBER() {
+							return R10_ACCOUNT_NUMBER;
+						}
+						public void setR10_ACCOUNT_NUMBER(String r10_ACCOUNT_NUMBER) {
+							R10_ACCOUNT_NUMBER = r10_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR10_ACCOUNT_HOLDER_INDICATOR() {
+							return R10_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR10_ACCOUNT_HOLDER_INDICATOR(BigDecimal r10_ACCOUNT_HOLDER_INDICATOR) {
+							R10_ACCOUNT_HOLDER_INDICATOR = r10_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR10_STATUS_OF_ACCOUNT() {
+							return R10_STATUS_OF_ACCOUNT;
+						}
+						public void setR10_STATUS_OF_ACCOUNT(String r10_STATUS_OF_ACCOUNT) {
+							R10_STATUS_OF_ACCOUNT = r10_STATUS_OF_ACCOUNT;
+						}
+						public String getR10_NOT_FIT_FOR_STP() {
+							return R10_NOT_FIT_FOR_STP;
+						}
+						public void setR10_NOT_FIT_FOR_STP(String r10_NOT_FIT_FOR_STP) {
+							R10_NOT_FIT_FOR_STP = r10_NOT_FIT_FOR_STP;
+						}
+						public String getR10_BRANCH_CODE_AND_NAME() {
+							return R10_BRANCH_CODE_AND_NAME;
+						}
+						public void setR10_BRANCH_CODE_AND_NAME(String r10_BRANCH_CODE_AND_NAME) {
+							R10_BRANCH_CODE_AND_NAME = r10_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR10_ACCOUNT_BALANCE_IN_PULA() {
+							return R10_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR10_ACCOUNT_BALANCE_IN_PULA(BigDecimal r10_ACCOUNT_BALANCE_IN_PULA) {
+							R10_ACCOUNT_BALANCE_IN_PULA = r10_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR10_CURRENCY_OF_ACCOUNT() {
+							return R10_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR10_CURRENCY_OF_ACCOUNT(String r10_CURRENCY_OF_ACCOUNT) {
+							R10_CURRENCY_OF_ACCOUNT = r10_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR10_EXCHANGE_RATE() {
+							return R10_EXCHANGE_RATE;
+						}
+						public void setR10_EXCHANGE_RATE(BigDecimal r10_EXCHANGE_RATE) {
+							R10_EXCHANGE_RATE = r10_EXCHANGE_RATE;
+						}
+						public String getR11_RECORD_NUMBER() {
+							return R11_RECORD_NUMBER;
+						}
+						public void setR11_RECORD_NUMBER(String r11_RECORD_NUMBER) {
+							R11_RECORD_NUMBER = r11_RECORD_NUMBER;
+						}
+						public String getR11_TITLE() {
+							return R11_TITLE;
+						}
+						public void setR11_TITLE(String r11_TITLE) {
+							R11_TITLE = r11_TITLE;
+						}
+						public String getR11_FIRST_NAME() {
+							return R11_FIRST_NAME;
+						}
+						public void setR11_FIRST_NAME(String r11_FIRST_NAME) {
+							R11_FIRST_NAME = r11_FIRST_NAME;
+						}
+						public String getR11_MIDDLE_NAME() {
+							return R11_MIDDLE_NAME;
+						}
+						public void setR11_MIDDLE_NAME(String r11_MIDDLE_NAME) {
+							R11_MIDDLE_NAME = r11_MIDDLE_NAME;
+						}
+						public String getR11_SURNAME() {
+							return R11_SURNAME;
+						}
+						public void setR11_SURNAME(String r11_SURNAME) {
+							R11_SURNAME = r11_SURNAME;
+						}
+						public String getR11_PREVIOUS_NAME() {
+							return R11_PREVIOUS_NAME;
+						}
+						public void setR11_PREVIOUS_NAME(String r11_PREVIOUS_NAME) {
+							R11_PREVIOUS_NAME = r11_PREVIOUS_NAME;
+						}
+						public String getR11_GENDER() {
+							return R11_GENDER;
+						}
+						public void setR11_GENDER(String r11_GENDER) {
+							R11_GENDER = r11_GENDER;
+						}
+						public String getR11_IDENTIFICATION_TYPE() {
+							return R11_IDENTIFICATION_TYPE;
+						}
+						public void setR11_IDENTIFICATION_TYPE(String r11_IDENTIFICATION_TYPE) {
+							R11_IDENTIFICATION_TYPE = r11_IDENTIFICATION_TYPE;
+						}
+						public String getR11_PASSPORT_NUMBER() {
+							return R11_PASSPORT_NUMBER;
+						}
+						public void setR11_PASSPORT_NUMBER(String r11_PASSPORT_NUMBER) {
+							R11_PASSPORT_NUMBER = r11_PASSPORT_NUMBER;
+						}
+						public Date getR11_DATE_OF_BIRTH() {
+							return R11_DATE_OF_BIRTH;
+						}
+						public void setR11_DATE_OF_BIRTH(Date r11_DATE_OF_BIRTH) {
+							R11_DATE_OF_BIRTH = r11_DATE_OF_BIRTH;
+						}
+						public String getR11_HOME_ADDRESS() {
+							return R11_HOME_ADDRESS;
+						}
+						public void setR11_HOME_ADDRESS(String r11_HOME_ADDRESS) {
+							R11_HOME_ADDRESS = r11_HOME_ADDRESS;
+						}
+						public String getR11_POSTAL_ADDRESS() {
+							return R11_POSTAL_ADDRESS;
+						}
+						public void setR11_POSTAL_ADDRESS(String r11_POSTAL_ADDRESS) {
+							R11_POSTAL_ADDRESS = r11_POSTAL_ADDRESS;
+						}
+						public String getR11_RESIDENCE() {
+							return R11_RESIDENCE;
+						}
+						public void setR11_RESIDENCE(String r11_RESIDENCE) {
+							R11_RESIDENCE = r11_RESIDENCE;
+						}
+						public String getR11_EMAIL() {
+							return R11_EMAIL;
+						}
+						public void setR11_EMAIL(String r11_EMAIL) {
+							R11_EMAIL = r11_EMAIL;
+						}
+						public String getR11_LANDLINE() {
+							return R11_LANDLINE;
+						}
+						public void setR11_LANDLINE(String r11_LANDLINE) {
+							R11_LANDLINE = r11_LANDLINE;
+						}
+						public String getR11_MOBILE_PHONE_NUMBER() {
+							return R11_MOBILE_PHONE_NUMBER;
+						}
+						public void setR11_MOBILE_PHONE_NUMBER(String r11_MOBILE_PHONE_NUMBER) {
+							R11_MOBILE_PHONE_NUMBER = r11_MOBILE_PHONE_NUMBER;
+						}
+						public String getR11_MOBILE_MONEY_NUMBER() {
+							return R11_MOBILE_MONEY_NUMBER;
+						}
+						public void setR11_MOBILE_MONEY_NUMBER(String r11_MOBILE_MONEY_NUMBER) {
+							R11_MOBILE_MONEY_NUMBER = r11_MOBILE_MONEY_NUMBER;
+						}
+						public String getR11_PRODUCT_TYPE() {
+							return R11_PRODUCT_TYPE;
+						}
+						public void setR11_PRODUCT_TYPE(String r11_PRODUCT_TYPE) {
+							R11_PRODUCT_TYPE = r11_PRODUCT_TYPE;
+						}
+						public String getR11_ACCOUNT_BY_OWNERSHIP() {
+							return R11_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR11_ACCOUNT_BY_OWNERSHIP(String r11_ACCOUNT_BY_OWNERSHIP) {
+							R11_ACCOUNT_BY_OWNERSHIP = r11_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR11_ACCOUNT_NUMBER() {
+							return R11_ACCOUNT_NUMBER;
+						}
+						public void setR11_ACCOUNT_NUMBER(String r11_ACCOUNT_NUMBER) {
+							R11_ACCOUNT_NUMBER = r11_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR11_ACCOUNT_HOLDER_INDICATOR() {
+							return R11_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR11_ACCOUNT_HOLDER_INDICATOR(BigDecimal r11_ACCOUNT_HOLDER_INDICATOR) {
+							R11_ACCOUNT_HOLDER_INDICATOR = r11_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR11_STATUS_OF_ACCOUNT() {
+							return R11_STATUS_OF_ACCOUNT;
+						}
+						public void setR11_STATUS_OF_ACCOUNT(String r11_STATUS_OF_ACCOUNT) {
+							R11_STATUS_OF_ACCOUNT = r11_STATUS_OF_ACCOUNT;
+						}
+						public String getR11_NOT_FIT_FOR_STP() {
+							return R11_NOT_FIT_FOR_STP;
+						}
+						public void setR11_NOT_FIT_FOR_STP(String r11_NOT_FIT_FOR_STP) {
+							R11_NOT_FIT_FOR_STP = r11_NOT_FIT_FOR_STP;
+						}
+						public String getR11_BRANCH_CODE_AND_NAME() {
+							return R11_BRANCH_CODE_AND_NAME;
+						}
+						public void setR11_BRANCH_CODE_AND_NAME(String r11_BRANCH_CODE_AND_NAME) {
+							R11_BRANCH_CODE_AND_NAME = r11_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR11_ACCOUNT_BALANCE_IN_PULA() {
+							return R11_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR11_ACCOUNT_BALANCE_IN_PULA(BigDecimal r11_ACCOUNT_BALANCE_IN_PULA) {
+							R11_ACCOUNT_BALANCE_IN_PULA = r11_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR11_CURRENCY_OF_ACCOUNT() {
+							return R11_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR11_CURRENCY_OF_ACCOUNT(String r11_CURRENCY_OF_ACCOUNT) {
+							R11_CURRENCY_OF_ACCOUNT = r11_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR11_EXCHANGE_RATE() {
+							return R11_EXCHANGE_RATE;
+						}
+						public void setR11_EXCHANGE_RATE(BigDecimal r11_EXCHANGE_RATE) {
+							R11_EXCHANGE_RATE = r11_EXCHANGE_RATE;
+						}
+						
+						public Date getREPORT_DATE() {
+							return REPORT_DATE;
+						}
+
+						public void setREPORT_DATE(Date REPORT_DATE) {
+							this.REPORT_DATE = REPORT_DATE;
+						}
+
+						public BigDecimal getREPORT_VERSION() {
+							return REPORT_VERSION;
+						}
+
+						public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
+							this.REPORT_VERSION = REPORT_VERSION;
+						}
+
+						public String getREPORT_FREQUENCY() {
+							return REPORT_FREQUENCY;
+						}
+
+						public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+							REPORT_FREQUENCY = rEPORT_FREQUENCY;
+						}
+
+						public String getREPORT_CODE() {
+							return REPORT_CODE;
+						}
+
+						public void setREPORT_CODE(String rEPORT_CODE) {
+							REPORT_CODE = rEPORT_CODE;
+						}
+
+						public String getREPORT_DESC() {
+							return REPORT_DESC;
+						}
+
+						public void setREPORT_DESC(String rEPORT_DESC) {
+							REPORT_DESC = rEPORT_DESC;
+						}
+
+						public String getENTITY_FLG() {
+							return ENTITY_FLG;
+						}
+
+						public void setENTITY_FLG(String eNTITY_FLG) {
+							ENTITY_FLG = eNTITY_FLG;
+						}
+
+						public String getMODIFY_FLG() {
+							return MODIFY_FLG;
+						}
+
+						public void setMODIFY_FLG(String mODIFY_FLG) {
+							MODIFY_FLG = mODIFY_FLG;
+						}
+
+						public String getDEL_FLG() {
+							return DEL_FLG;
+						}
+
+						public void setDEL_FLG(String dEL_FLG) {
+							DEL_FLG = dEL_FLG;
+						}
+
+					}
+					
+	
+				// ROW MAPPER DETAIL
+
+				class BDISB1RowMapper_Detail implements RowMapper<BDISB1_Detail_Entity> {
+
+					@Override
+					public BDISB1_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+						BDISB1_Detail_Entity obj = new BDISB1_Detail_Entity();	
+					
+	
+						obj.setR5_RECORD_NUMBER(rs.getString("R5_RECORD_NUMBER"));
+						obj.setR5_TITLE(rs.getString("R5_TITLE"));
+						obj.setR5_FIRST_NAME(rs.getString("R5_FIRST_NAME"));
+						obj.setR5_MIDDLE_NAME(rs.getString("R5_MIDDLE_NAME"));
+						obj.setR5_SURNAME(rs.getString("R5_SURNAME"));
+						obj.setR5_PREVIOUS_NAME(rs.getString("R5_PREVIOUS_NAME"));
+						obj.setR5_GENDER(rs.getString("R5_GENDER"));
+						obj.setR5_IDENTIFICATION_TYPE(rs.getString("R5_IDENTIFICATION_TYPE"));
+						obj.setR5_PASSPORT_NUMBER(rs.getString("R5_PASSPORT_NUMBER"));
+						obj.setR5_DATE_OF_BIRTH(rs.getDate("R5_DATE_OF_BIRTH"));
+						obj.setR5_HOME_ADDRESS(rs.getString("R5_HOME_ADDRESS"));
+						obj.setR5_POSTAL_ADDRESS(rs.getString("R5_POSTAL_ADDRESS"));
+						obj.setR5_RESIDENCE(rs.getString("R5_RESIDENCE"));
+						obj.setR5_EMAIL(rs.getString("R5_EMAIL"));
+						obj.setR5_LANDLINE(rs.getString("R5_LANDLINE"));
+						obj.setR5_MOBILE_PHONE_NUMBER(rs.getString("R5_MOBILE_PHONE_NUMBER"));
+						obj.setR5_MOBILE_MONEY_NUMBER(rs.getString("R5_MOBILE_MONEY_NUMBER"));
+						obj.setR5_PRODUCT_TYPE(rs.getString("R5_PRODUCT_TYPE"));
+						obj.setR5_ACCOUNT_BY_OWNERSHIP(rs.getString("R5_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR5_ACCOUNT_NUMBER(rs.getString("R5_ACCOUNT_NUMBER"));
+						obj.setR5_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R5_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR5_STATUS_OF_ACCOUNT(rs.getString("R5_STATUS_OF_ACCOUNT"));
+						obj.setR5_NOT_FIT_FOR_STP(rs.getString("R5_NOT_FIT_FOR_STP"));
+						obj.setR5_BRANCH_CODE_AND_NAME(rs.getString("R5_BRANCH_CODE_AND_NAME"));
+						obj.setR5_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R5_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR5_CURRENCY_OF_ACCOUNT(rs.getString("R5_CURRENCY_OF_ACCOUNT"));
+						obj.setR5_EXCHANGE_RATE(rs.getBigDecimal("R5_EXCHANGE_RATE"));
+						
+						obj.setR6_RECORD_NUMBER(rs.getString("R6_RECORD_NUMBER"));
+						obj.setR6_TITLE(rs.getString("R6_TITLE"));
+						obj.setR6_FIRST_NAME(rs.getString("R6_FIRST_NAME"));
+						obj.setR6_MIDDLE_NAME(rs.getString("R6_MIDDLE_NAME"));
+						obj.setR6_SURNAME(rs.getString("R6_SURNAME"));
+						obj.setR6_PREVIOUS_NAME(rs.getString("R6_PREVIOUS_NAME"));
+						obj.setR6_GENDER(rs.getString("R6_GENDER"));
+						obj.setR6_IDENTIFICATION_TYPE(rs.getString("R6_IDENTIFICATION_TYPE"));
+						obj.setR6_PASSPORT_NUMBER(rs.getString("R6_PASSPORT_NUMBER"));
+						obj.setR6_DATE_OF_BIRTH(rs.getDate("R6_DATE_OF_BIRTH"));
+						obj.setR6_HOME_ADDRESS(rs.getString("R6_HOME_ADDRESS"));
+						obj.setR6_POSTAL_ADDRESS(rs.getString("R6_POSTAL_ADDRESS"));
+						obj.setR6_RESIDENCE(rs.getString("R6_RESIDENCE"));
+						obj.setR6_EMAIL(rs.getString("R6_EMAIL"));
+						obj.setR6_LANDLINE(rs.getString("R6_LANDLINE"));
+						obj.setR6_MOBILE_PHONE_NUMBER(rs.getString("R6_MOBILE_PHONE_NUMBER"));
+						obj.setR6_MOBILE_MONEY_NUMBER(rs.getString("R6_MOBILE_MONEY_NUMBER"));
+						obj.setR6_PRODUCT_TYPE(rs.getString("R6_PRODUCT_TYPE"));
+						obj.setR6_ACCOUNT_BY_OWNERSHIP(rs.getString("R6_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR6_ACCOUNT_NUMBER(rs.getString("R6_ACCOUNT_NUMBER"));
+						obj.setR6_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R6_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR6_STATUS_OF_ACCOUNT(rs.getString("R6_STATUS_OF_ACCOUNT"));
+						obj.setR6_NOT_FIT_FOR_STP(rs.getString("R6_NOT_FIT_FOR_STP"));
+						obj.setR6_BRANCH_CODE_AND_NAME(rs.getString("R6_BRANCH_CODE_AND_NAME"));
+						obj.setR6_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R6_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR6_CURRENCY_OF_ACCOUNT(rs.getString("R6_CURRENCY_OF_ACCOUNT"));
+						obj.setR6_EXCHANGE_RATE(rs.getBigDecimal("R6_EXCHANGE_RATE"));
+						
+						obj.setR7_RECORD_NUMBER(rs.getString("R7_RECORD_NUMBER"));
+						obj.setR7_TITLE(rs.getString("R7_TITLE"));
+						obj.setR7_FIRST_NAME(rs.getString("R7_FIRST_NAME"));
+						obj.setR7_MIDDLE_NAME(rs.getString("R7_MIDDLE_NAME"));
+						obj.setR7_SURNAME(rs.getString("R7_SURNAME"));
+						obj.setR7_PREVIOUS_NAME(rs.getString("R7_PREVIOUS_NAME"));
+						obj.setR7_GENDER(rs.getString("R7_GENDER"));
+						obj.setR7_IDENTIFICATION_TYPE(rs.getString("R7_IDENTIFICATION_TYPE"));
+						obj.setR7_PASSPORT_NUMBER(rs.getString("R7_PASSPORT_NUMBER"));
+						obj.setR7_DATE_OF_BIRTH(rs.getDate("R7_DATE_OF_BIRTH"));
+						obj.setR7_HOME_ADDRESS(rs.getString("R7_HOME_ADDRESS"));
+						obj.setR7_POSTAL_ADDRESS(rs.getString("R7_POSTAL_ADDRESS"));
+						obj.setR7_RESIDENCE(rs.getString("R7_RESIDENCE"));
+						obj.setR7_EMAIL(rs.getString("R7_EMAIL"));
+						obj.setR7_LANDLINE(rs.getString("R7_LANDLINE"));
+						obj.setR7_MOBILE_PHONE_NUMBER(rs.getString("R7_MOBILE_PHONE_NUMBER"));
+						obj.setR7_MOBILE_MONEY_NUMBER(rs.getString("R7_MOBILE_MONEY_NUMBER"));
+						obj.setR7_PRODUCT_TYPE(rs.getString("R7_PRODUCT_TYPE"));
+						obj.setR7_ACCOUNT_BY_OWNERSHIP(rs.getString("R7_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR7_ACCOUNT_NUMBER(rs.getString("R7_ACCOUNT_NUMBER"));
+						obj.setR7_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R7_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR7_STATUS_OF_ACCOUNT(rs.getString("R7_STATUS_OF_ACCOUNT"));
+						obj.setR7_NOT_FIT_FOR_STP(rs.getString("R7_NOT_FIT_FOR_STP"));
+						obj.setR7_BRANCH_CODE_AND_NAME(rs.getString("R7_BRANCH_CODE_AND_NAME"));
+						obj.setR7_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R7_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR7_CURRENCY_OF_ACCOUNT(rs.getString("R7_CURRENCY_OF_ACCOUNT"));
+						obj.setR7_EXCHANGE_RATE(rs.getBigDecimal("R7_EXCHANGE_RATE"));
+						
+						obj.setR8_RECORD_NUMBER(rs.getString("R8_RECORD_NUMBER"));
+						obj.setR8_TITLE(rs.getString("R8_TITLE"));
+						obj.setR8_FIRST_NAME(rs.getString("R8_FIRST_NAME"));
+						obj.setR8_MIDDLE_NAME(rs.getString("R8_MIDDLE_NAME"));
+						obj.setR8_SURNAME(rs.getString("R8_SURNAME"));
+						obj.setR8_PREVIOUS_NAME(rs.getString("R8_PREVIOUS_NAME"));
+						obj.setR8_GENDER(rs.getString("R8_GENDER"));
+						obj.setR8_IDENTIFICATION_TYPE(rs.getString("R8_IDENTIFICATION_TYPE"));
+						obj.setR8_PASSPORT_NUMBER(rs.getString("R8_PASSPORT_NUMBER"));
+						obj.setR8_DATE_OF_BIRTH(rs.getDate("R8_DATE_OF_BIRTH"));
+						obj.setR8_HOME_ADDRESS(rs.getString("R8_HOME_ADDRESS"));
+						obj.setR8_POSTAL_ADDRESS(rs.getString("R8_POSTAL_ADDRESS"));
+						obj.setR8_RESIDENCE(rs.getString("R8_RESIDENCE"));
+						obj.setR8_EMAIL(rs.getString("R8_EMAIL"));
+						obj.setR8_LANDLINE(rs.getString("R8_LANDLINE"));
+						obj.setR8_MOBILE_PHONE_NUMBER(rs.getString("R8_MOBILE_PHONE_NUMBER"));
+						obj.setR8_MOBILE_MONEY_NUMBER(rs.getString("R8_MOBILE_MONEY_NUMBER"));
+						obj.setR8_PRODUCT_TYPE(rs.getString("R8_PRODUCT_TYPE"));
+						obj.setR8_ACCOUNT_BY_OWNERSHIP(rs.getString("R8_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR8_ACCOUNT_NUMBER(rs.getString("R8_ACCOUNT_NUMBER"));
+						obj.setR8_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R8_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR8_STATUS_OF_ACCOUNT(rs.getString("R8_STATUS_OF_ACCOUNT"));
+						obj.setR8_NOT_FIT_FOR_STP(rs.getString("R8_NOT_FIT_FOR_STP"));
+						obj.setR8_BRANCH_CODE_AND_NAME(rs.getString("R8_BRANCH_CODE_AND_NAME"));
+						obj.setR8_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R8_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR8_CURRENCY_OF_ACCOUNT(rs.getString("R8_CURRENCY_OF_ACCOUNT"));
+						obj.setR8_EXCHANGE_RATE(rs.getBigDecimal("R8_EXCHANGE_RATE"));
+						
+						obj.setR9_RECORD_NUMBER(rs.getString("R9_RECORD_NUMBER"));
+						obj.setR9_TITLE(rs.getString("R9_TITLE"));
+						obj.setR9_FIRST_NAME(rs.getString("R9_FIRST_NAME"));
+						obj.setR9_MIDDLE_NAME(rs.getString("R9_MIDDLE_NAME"));
+						obj.setR9_SURNAME(rs.getString("R9_SURNAME"));
+						obj.setR9_PREVIOUS_NAME(rs.getString("R9_PREVIOUS_NAME"));
+						obj.setR9_GENDER(rs.getString("R9_GENDER"));
+						obj.setR9_IDENTIFICATION_TYPE(rs.getString("R9_IDENTIFICATION_TYPE"));
+						obj.setR9_PASSPORT_NUMBER(rs.getString("R9_PASSPORT_NUMBER"));
+						obj.setR9_DATE_OF_BIRTH(rs.getDate("R9_DATE_OF_BIRTH"));
+						obj.setR9_HOME_ADDRESS(rs.getString("R9_HOME_ADDRESS"));
+						obj.setR9_POSTAL_ADDRESS(rs.getString("R9_POSTAL_ADDRESS"));
+						obj.setR9_RESIDENCE(rs.getString("R9_RESIDENCE"));
+						obj.setR9_EMAIL(rs.getString("R9_EMAIL"));
+						obj.setR9_LANDLINE(rs.getString("R9_LANDLINE"));
+						obj.setR9_MOBILE_PHONE_NUMBER(rs.getString("R9_MOBILE_PHONE_NUMBER"));
+						obj.setR9_MOBILE_MONEY_NUMBER(rs.getString("R9_MOBILE_MONEY_NUMBER"));
+						obj.setR9_PRODUCT_TYPE(rs.getString("R9_PRODUCT_TYPE"));
+						obj.setR9_ACCOUNT_BY_OWNERSHIP(rs.getString("R9_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR9_ACCOUNT_NUMBER(rs.getString("R9_ACCOUNT_NUMBER"));
+						obj.setR9_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R9_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR9_STATUS_OF_ACCOUNT(rs.getString("R9_STATUS_OF_ACCOUNT"));
+						obj.setR9_NOT_FIT_FOR_STP(rs.getString("R9_NOT_FIT_FOR_STP"));
+						obj.setR9_BRANCH_CODE_AND_NAME(rs.getString("R9_BRANCH_CODE_AND_NAME"));
+						obj.setR9_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R9_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR9_CURRENCY_OF_ACCOUNT(rs.getString("R9_CURRENCY_OF_ACCOUNT"));
+						obj.setR9_EXCHANGE_RATE(rs.getBigDecimal("R9_EXCHANGE_RATE"));
+						
+						obj.setR10_RECORD_NUMBER(rs.getString("R10_RECORD_NUMBER"));
+						obj.setR10_TITLE(rs.getString("R10_TITLE"));
+						obj.setR10_FIRST_NAME(rs.getString("R10_FIRST_NAME"));
+						obj.setR10_MIDDLE_NAME(rs.getString("R10_MIDDLE_NAME"));
+						obj.setR10_SURNAME(rs.getString("R10_SURNAME"));
+						obj.setR10_PREVIOUS_NAME(rs.getString("R10_PREVIOUS_NAME"));
+						obj.setR10_GENDER(rs.getString("R10_GENDER"));
+						obj.setR10_IDENTIFICATION_TYPE(rs.getString("R10_IDENTIFICATION_TYPE"));
+						obj.setR10_PASSPORT_NUMBER(rs.getString("R10_PASSPORT_NUMBER"));
+						obj.setR10_DATE_OF_BIRTH(rs.getDate("R10_DATE_OF_BIRTH"));
+						obj.setR10_HOME_ADDRESS(rs.getString("R10_HOME_ADDRESS"));
+						obj.setR10_POSTAL_ADDRESS(rs.getString("R10_POSTAL_ADDRESS"));
+						obj.setR10_RESIDENCE(rs.getString("R10_RESIDENCE"));
+						obj.setR10_EMAIL(rs.getString("R10_EMAIL"));
+						obj.setR10_LANDLINE(rs.getString("R10_LANDLINE"));
+						obj.setR10_MOBILE_PHONE_NUMBER(rs.getString("R10_MOBILE_PHONE_NUMBER"));
+						obj.setR10_MOBILE_MONEY_NUMBER(rs.getString("R10_MOBILE_MONEY_NUMBER"));
+						obj.setR10_PRODUCT_TYPE(rs.getString("R10_PRODUCT_TYPE"));
+						obj.setR10_ACCOUNT_BY_OWNERSHIP(rs.getString("R10_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR10_ACCOUNT_NUMBER(rs.getString("R10_ACCOUNT_NUMBER"));
+						obj.setR10_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R10_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR10_STATUS_OF_ACCOUNT(rs.getString("R10_STATUS_OF_ACCOUNT"));
+						obj.setR10_NOT_FIT_FOR_STP(rs.getString("R10_NOT_FIT_FOR_STP"));
+						obj.setR10_BRANCH_CODE_AND_NAME(rs.getString("R10_BRANCH_CODE_AND_NAME"));
+						obj.setR10_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R10_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR10_CURRENCY_OF_ACCOUNT(rs.getString("R10_CURRENCY_OF_ACCOUNT"));
+						obj.setR10_EXCHANGE_RATE(rs.getBigDecimal("R10_EXCHANGE_RATE"));
+						
+						obj.setR11_RECORD_NUMBER(rs.getString("R11_RECORD_NUMBER"));
+						obj.setR11_TITLE(rs.getString("R11_TITLE"));
+						obj.setR11_FIRST_NAME(rs.getString("R11_FIRST_NAME"));
+						obj.setR11_MIDDLE_NAME(rs.getString("R11_MIDDLE_NAME"));
+						obj.setR11_SURNAME(rs.getString("R11_SURNAME"));
+						obj.setR11_PREVIOUS_NAME(rs.getString("R11_PREVIOUS_NAME"));
+						obj.setR11_GENDER(rs.getString("R11_GENDER"));
+						obj.setR11_IDENTIFICATION_TYPE(rs.getString("R11_IDENTIFICATION_TYPE"));
+						obj.setR11_PASSPORT_NUMBER(rs.getString("R11_PASSPORT_NUMBER"));
+						obj.setR11_DATE_OF_BIRTH(rs.getDate("R11_DATE_OF_BIRTH"));
+						obj.setR11_HOME_ADDRESS(rs.getString("R11_HOME_ADDRESS"));
+						obj.setR11_POSTAL_ADDRESS(rs.getString("R11_POSTAL_ADDRESS"));
+						obj.setR11_RESIDENCE(rs.getString("R11_RESIDENCE"));
+						obj.setR11_EMAIL(rs.getString("R11_EMAIL"));
+						obj.setR11_LANDLINE(rs.getString("R11_LANDLINE"));
+						obj.setR11_MOBILE_PHONE_NUMBER(rs.getString("R11_MOBILE_PHONE_NUMBER"));
+						obj.setR11_MOBILE_MONEY_NUMBER(rs.getString("R11_MOBILE_MONEY_NUMBER"));
+						obj.setR11_PRODUCT_TYPE(rs.getString("R11_PRODUCT_TYPE"));
+						obj.setR11_ACCOUNT_BY_OWNERSHIP(rs.getString("R11_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR11_ACCOUNT_NUMBER(rs.getString("R11_ACCOUNT_NUMBER"));
+						obj.setR11_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R11_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR11_STATUS_OF_ACCOUNT(rs.getString("R11_STATUS_OF_ACCOUNT"));
+						obj.setR11_NOT_FIT_FOR_STP(rs.getString("R11_NOT_FIT_FOR_STP"));
+						obj.setR11_BRANCH_CODE_AND_NAME(rs.getString("R11_BRANCH_CODE_AND_NAME"));
+						obj.setR11_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R11_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR11_CURRENCY_OF_ACCOUNT(rs.getString("R11_CURRENCY_OF_ACCOUNT"));
+						obj.setR11_EXCHANGE_RATE(rs.getBigDecimal("R11_EXCHANGE_RATE"));
+						
+						// COMMON FIELDS
+						obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+						obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+						obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+						obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+						obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+						obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+						obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+						obj.setDEL_FLG(rs.getString("DEL_FLG"));
+						
+
+						return obj;
+					}
+				}
+				
+				public static class BDISB1_Detail_Entity {
+					
+					 private String R5_RECORD_NUMBER;
+					    private String R5_TITLE;
+					    private String R5_FIRST_NAME;
+					    private String R5_MIDDLE_NAME;
+					    private String R5_SURNAME;
+					    private String R5_PREVIOUS_NAME;
+					    private String R5_GENDER;
+					    private String R5_IDENTIFICATION_TYPE;
+					    private String R5_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R5_DATE_OF_BIRTH;
+					    private String R5_HOME_ADDRESS;
+					    private String R5_POSTAL_ADDRESS;
+					    private String R5_RESIDENCE;
+					    private String R5_EMAIL;
+					    private String R5_LANDLINE;
+					    private String R5_MOBILE_PHONE_NUMBER;
+					    private String R5_MOBILE_MONEY_NUMBER;
+					    private String R5_PRODUCT_TYPE;
+					    private String R5_ACCOUNT_BY_OWNERSHIP;
+					    private String R5_ACCOUNT_NUMBER;
+					    private BigDecimal R5_ACCOUNT_HOLDER_INDICATOR;
+					    private String R5_STATUS_OF_ACCOUNT;
+					    private String R5_NOT_FIT_FOR_STP;
+					    private String R5_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R5_ACCOUNT_BALANCE_IN_PULA;
+					    private String R5_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R5_EXCHANGE_RATE;
+
+					    // ===================== R6 =====================
+					    private String R6_RECORD_NUMBER;
+					    private String R6_TITLE;
+					    private String R6_FIRST_NAME;
+					    private String R6_MIDDLE_NAME;
+					    private String R6_SURNAME;
+					    private String R6_PREVIOUS_NAME;
+					    private String R6_GENDER;
+					    private String R6_IDENTIFICATION_TYPE;
+					    private String R6_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R6_DATE_OF_BIRTH;
+					    private String R6_HOME_ADDRESS;
+					    private String R6_POSTAL_ADDRESS;
+					    private String R6_RESIDENCE;
+					    private String R6_EMAIL;
+					    private String R6_LANDLINE;
+					    private String R6_MOBILE_PHONE_NUMBER;
+					    private String R6_MOBILE_MONEY_NUMBER;
+					    private String R6_PRODUCT_TYPE;
+					    private String R6_ACCOUNT_BY_OWNERSHIP;
+					    private String R6_ACCOUNT_NUMBER;
+					    private BigDecimal R6_ACCOUNT_HOLDER_INDICATOR;
+					    private String R6_STATUS_OF_ACCOUNT;
+					    private String R6_NOT_FIT_FOR_STP;
+					    private String R6_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R6_ACCOUNT_BALANCE_IN_PULA;
+					    private String R6_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R6_EXCHANGE_RATE;
+
+					    // ===================== R7 =====================
+					    private String R7_RECORD_NUMBER;
+					    private String R7_TITLE;
+					    private String R7_FIRST_NAME;
+					    private String R7_MIDDLE_NAME;
+					    private String R7_SURNAME;
+					    private String R7_PREVIOUS_NAME;
+					    private String R7_GENDER;
+					    private String R7_IDENTIFICATION_TYPE;
+					    private String R7_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R7_DATE_OF_BIRTH;
+					    private String R7_HOME_ADDRESS;
+					    private String R7_POSTAL_ADDRESS;
+					    private String R7_RESIDENCE;
+					    private String R7_EMAIL;
+					    private String R7_LANDLINE;
+					    private String R7_MOBILE_PHONE_NUMBER;
+					    private String R7_MOBILE_MONEY_NUMBER;
+					    private String R7_PRODUCT_TYPE;
+					    private String R7_ACCOUNT_BY_OWNERSHIP;
+					    private String R7_ACCOUNT_NUMBER;
+					    private BigDecimal R7_ACCOUNT_HOLDER_INDICATOR;
+					    private String R7_STATUS_OF_ACCOUNT;
+					    private String R7_NOT_FIT_FOR_STP;
+					    private String R7_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R7_ACCOUNT_BALANCE_IN_PULA;
+					    private String R7_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R7_EXCHANGE_RATE;
+
+					    // ===================== R8 =====================
+					    private String R8_RECORD_NUMBER;
+					    private String R8_TITLE;
+					    private String R8_FIRST_NAME;
+					    private String R8_MIDDLE_NAME;
+					    private String R8_SURNAME;
+					    private String R8_PREVIOUS_NAME;
+					    private String R8_GENDER;
+					    private String R8_IDENTIFICATION_TYPE;
+					    private String R8_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R8_DATE_OF_BIRTH;
+					    private String R8_HOME_ADDRESS;
+					    private String R8_POSTAL_ADDRESS;
+					    private String R8_RESIDENCE;
+					    private String R8_EMAIL;
+					    private String R8_LANDLINE;
+					    private String R8_MOBILE_PHONE_NUMBER;
+					    private String R8_MOBILE_MONEY_NUMBER;
+					    private String R8_PRODUCT_TYPE;
+					    private String R8_ACCOUNT_BY_OWNERSHIP;
+					    private String R8_ACCOUNT_NUMBER;
+					    private BigDecimal R8_ACCOUNT_HOLDER_INDICATOR;
+					    private String R8_STATUS_OF_ACCOUNT;
+					    private String R8_NOT_FIT_FOR_STP;
+					    private String R8_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R8_ACCOUNT_BALANCE_IN_PULA;
+					    private String R8_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R8_EXCHANGE_RATE;
+
+					    // ===================== R9 =====================
+					    private String R9_RECORD_NUMBER;
+					    private String R9_TITLE;
+					    private String R9_FIRST_NAME;
+					    private String R9_MIDDLE_NAME;
+					    private String R9_SURNAME;
+					    private String R9_PREVIOUS_NAME;
+					    private String R9_GENDER;
+					    private String R9_IDENTIFICATION_TYPE;
+					    private String R9_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R9_DATE_OF_BIRTH;
+					    private String R9_HOME_ADDRESS;
+					    private String R9_POSTAL_ADDRESS;
+					    private String R9_RESIDENCE;
+					    private String R9_EMAIL;
+					    private String R9_LANDLINE;
+					    private String R9_MOBILE_PHONE_NUMBER;
+					    private String R9_MOBILE_MONEY_NUMBER;
+					    private String R9_PRODUCT_TYPE;
+					    private String R9_ACCOUNT_BY_OWNERSHIP;
+					    private String R9_ACCOUNT_NUMBER;
+					    private BigDecimal R9_ACCOUNT_HOLDER_INDICATOR;
+					    private String R9_STATUS_OF_ACCOUNT;
+					    private String R9_NOT_FIT_FOR_STP;
+					    private String R9_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R9_ACCOUNT_BALANCE_IN_PULA;
+					    private String R9_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R9_EXCHANGE_RATE;
+
+					    // ===================== R10 =====================
+					    private String R10_RECORD_NUMBER;
+					    private String R10_TITLE;
+					    private String R10_FIRST_NAME;
+					    private String R10_MIDDLE_NAME;
+					    private String R10_SURNAME;
+					    private String R10_PREVIOUS_NAME;
+					    private String R10_GENDER;
+					    private String R10_IDENTIFICATION_TYPE;
+					    private String R10_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R10_DATE_OF_BIRTH;
+					    private String R10_HOME_ADDRESS;
+					    private String R10_POSTAL_ADDRESS;
+					    private String R10_RESIDENCE;
+					    private String R10_EMAIL;
+					    private String R10_LANDLINE;
+					    private String R10_MOBILE_PHONE_NUMBER;
+					    private String R10_MOBILE_MONEY_NUMBER;
+					    private String R10_PRODUCT_TYPE;
+					    private String R10_ACCOUNT_BY_OWNERSHIP;
+					    private String R10_ACCOUNT_NUMBER;
+					    private BigDecimal R10_ACCOUNT_HOLDER_INDICATOR;
+					    private String R10_STATUS_OF_ACCOUNT;
+					    private String R10_NOT_FIT_FOR_STP;
+					    private String R10_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R10_ACCOUNT_BALANCE_IN_PULA;
+					    private String R10_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R10_EXCHANGE_RATE;
+
+					    // ===================== R11 =====================
+					    private String R11_RECORD_NUMBER;
+					    private String R11_TITLE;
+					    private String R11_FIRST_NAME;
+					    private String R11_MIDDLE_NAME;
+					    private String R11_SURNAME;
+					    private String R11_PREVIOUS_NAME;
+					    private String R11_GENDER;
+					    private String R11_IDENTIFICATION_TYPE;
+					    private String R11_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R11_DATE_OF_BIRTH;
+					    private String R11_HOME_ADDRESS;
+					    private String R11_POSTAL_ADDRESS;
+					    private String R11_RESIDENCE;
+					    private String R11_EMAIL;
+					    private String R11_LANDLINE;
+					    private String R11_MOBILE_PHONE_NUMBER;
+					    private String R11_MOBILE_MONEY_NUMBER;
+					    private String R11_PRODUCT_TYPE;
+					    private String R11_ACCOUNT_BY_OWNERSHIP;
+					    private String R11_ACCOUNT_NUMBER;
+					    private BigDecimal R11_ACCOUNT_HOLDER_INDICATOR;
+					    private String R11_STATUS_OF_ACCOUNT;
+					    private String R11_NOT_FIT_FOR_STP;
+					    private String R11_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R11_ACCOUNT_BALANCE_IN_PULA;
+					    private String R11_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R11_EXCHANGE_RATE;
+					    
+					    @Id
+						@Temporal(TemporalType.DATE)
+						@Column(name = "REPORT_DATE")
+						private Date REPORT_DATE;
+
+						@Column(name = "REPORT_VERSION", length = 100)
+						private BigDecimal REPORT_VERSION;
+
+						@Column(name = "REPORT_FREQUENCY", length = 100)
+						private String REPORT_FREQUENCY;
+
+						@Column(name = "REPORT_CODE", length = 100)
+						private String REPORT_CODE;
+
+						@Column(name = "REPORT_DESC", length = 100)
+						private String REPORT_DESC;
+
+						@Column(name = "ENTITY_FLG", length = 1)
+						private String ENTITY_FLG;
+
+						@Column(name = "MODIFY_FLG", length = 1)
+						private String MODIFY_FLG;
+
+						@Column(name = "DEL_FLG", length = 1)
+						private String DEL_FLG;
+						
+						public String getR5_RECORD_NUMBER() {
+							return R5_RECORD_NUMBER;
+						}
+						public void setR5_RECORD_NUMBER(String r5_RECORD_NUMBER) {
+							R5_RECORD_NUMBER = r5_RECORD_NUMBER;
+						}
+						public String getR5_TITLE() {
+							return R5_TITLE;
+						}
+						public void setR5_TITLE(String r5_TITLE) {
+							R5_TITLE = r5_TITLE;
+						}
+						public String getR5_FIRST_NAME() {
+							return R5_FIRST_NAME;
+						}
+						public void setR5_FIRST_NAME(String r5_FIRST_NAME) {
+							R5_FIRST_NAME = r5_FIRST_NAME;
+						}
+						public String getR5_MIDDLE_NAME() {
+							return R5_MIDDLE_NAME;
+						}
+						public void setR5_MIDDLE_NAME(String r5_MIDDLE_NAME) {
+							R5_MIDDLE_NAME = r5_MIDDLE_NAME;
+						}
+						public String getR5_SURNAME() {
+							return R5_SURNAME;
+						}
+						public void setR5_SURNAME(String r5_SURNAME) {
+							R5_SURNAME = r5_SURNAME;
+						}
+						public String getR5_PREVIOUS_NAME() {
+							return R5_PREVIOUS_NAME;
+						}
+						public void setR5_PREVIOUS_NAME(String r5_PREVIOUS_NAME) {
+							R5_PREVIOUS_NAME = r5_PREVIOUS_NAME;
+						}
+						public String getR5_GENDER() {
+							return R5_GENDER;
+						}
+						public void setR5_GENDER(String r5_GENDER) {
+							R5_GENDER = r5_GENDER;
+						}
+						public String getR5_IDENTIFICATION_TYPE() {
+							return R5_IDENTIFICATION_TYPE;
+						}
+						public void setR5_IDENTIFICATION_TYPE(String r5_IDENTIFICATION_TYPE) {
+							R5_IDENTIFICATION_TYPE = r5_IDENTIFICATION_TYPE;
+						}
+						public String getR5_PASSPORT_NUMBER() {
+							return R5_PASSPORT_NUMBER;
+						}
+						public void setR5_PASSPORT_NUMBER(String r5_PASSPORT_NUMBER) {
+							R5_PASSPORT_NUMBER = r5_PASSPORT_NUMBER;
+						}
+						public Date getR5_DATE_OF_BIRTH() {
+							return R5_DATE_OF_BIRTH;
+						}
+						public void setR5_DATE_OF_BIRTH(Date r5_DATE_OF_BIRTH) {
+							R5_DATE_OF_BIRTH = r5_DATE_OF_BIRTH;
+						}
+						public String getR5_HOME_ADDRESS() {
+							return R5_HOME_ADDRESS;
+						}
+						public void setR5_HOME_ADDRESS(String r5_HOME_ADDRESS) {
+							R5_HOME_ADDRESS = r5_HOME_ADDRESS;
+						}
+						public String getR5_POSTAL_ADDRESS() {
+							return R5_POSTAL_ADDRESS;
+						}
+						public void setR5_POSTAL_ADDRESS(String r5_POSTAL_ADDRESS) {
+							R5_POSTAL_ADDRESS = r5_POSTAL_ADDRESS;
+						}
+						public String getR5_RESIDENCE() {
+							return R5_RESIDENCE;
+						}
+						public void setR5_RESIDENCE(String r5_RESIDENCE) {
+							R5_RESIDENCE = r5_RESIDENCE;
+						}
+						public String getR5_EMAIL() {
+							return R5_EMAIL;
+						}
+						public void setR5_EMAIL(String r5_EMAIL) {
+							R5_EMAIL = r5_EMAIL;
+						}
+						public String getR5_LANDLINE() {
+							return R5_LANDLINE;
+						}
+						public void setR5_LANDLINE(String r5_LANDLINE) {
+							R5_LANDLINE = r5_LANDLINE;
+						}
+						public String getR5_MOBILE_PHONE_NUMBER() {
+							return R5_MOBILE_PHONE_NUMBER;
+						}
+						public void setR5_MOBILE_PHONE_NUMBER(String r5_MOBILE_PHONE_NUMBER) {
+							R5_MOBILE_PHONE_NUMBER = r5_MOBILE_PHONE_NUMBER;
+						}
+						public String getR5_MOBILE_MONEY_NUMBER() {
+							return R5_MOBILE_MONEY_NUMBER;
+						}
+						public void setR5_MOBILE_MONEY_NUMBER(String r5_MOBILE_MONEY_NUMBER) {
+							R5_MOBILE_MONEY_NUMBER = r5_MOBILE_MONEY_NUMBER;
+						}
+						public String getR5_PRODUCT_TYPE() {
+							return R5_PRODUCT_TYPE;
+						}
+						public void setR5_PRODUCT_TYPE(String r5_PRODUCT_TYPE) {
+							R5_PRODUCT_TYPE = r5_PRODUCT_TYPE;
+						}
+						public String getR5_ACCOUNT_BY_OWNERSHIP() {
+							return R5_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR5_ACCOUNT_BY_OWNERSHIP(String r5_ACCOUNT_BY_OWNERSHIP) {
+							R5_ACCOUNT_BY_OWNERSHIP = r5_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR5_ACCOUNT_NUMBER() {
+							return R5_ACCOUNT_NUMBER;
+						}
+						public void setR5_ACCOUNT_NUMBER(String r5_ACCOUNT_NUMBER) {
+							R5_ACCOUNT_NUMBER = r5_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR5_ACCOUNT_HOLDER_INDICATOR() {
+							return R5_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR5_ACCOUNT_HOLDER_INDICATOR(BigDecimal r5_ACCOUNT_HOLDER_INDICATOR) {
+							R5_ACCOUNT_HOLDER_INDICATOR = r5_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR5_STATUS_OF_ACCOUNT() {
+							return R5_STATUS_OF_ACCOUNT;
+						}
+						public void setR5_STATUS_OF_ACCOUNT(String r5_STATUS_OF_ACCOUNT) {
+							R5_STATUS_OF_ACCOUNT = r5_STATUS_OF_ACCOUNT;
+						}
+						public String getR5_NOT_FIT_FOR_STP() {
+							return R5_NOT_FIT_FOR_STP;
+						}
+						public void setR5_NOT_FIT_FOR_STP(String r5_NOT_FIT_FOR_STP) {
+							R5_NOT_FIT_FOR_STP = r5_NOT_FIT_FOR_STP;
+						}
+						public String getR5_BRANCH_CODE_AND_NAME() {
+							return R5_BRANCH_CODE_AND_NAME;
+						}
+						public void setR5_BRANCH_CODE_AND_NAME(String r5_BRANCH_CODE_AND_NAME) {
+							R5_BRANCH_CODE_AND_NAME = r5_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR5_ACCOUNT_BALANCE_IN_PULA() {
+							return R5_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR5_ACCOUNT_BALANCE_IN_PULA(BigDecimal r5_ACCOUNT_BALANCE_IN_PULA) {
+							R5_ACCOUNT_BALANCE_IN_PULA = r5_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR5_CURRENCY_OF_ACCOUNT() {
+							return R5_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR5_CURRENCY_OF_ACCOUNT(String r5_CURRENCY_OF_ACCOUNT) {
+							R5_CURRENCY_OF_ACCOUNT = r5_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR5_EXCHANGE_RATE() {
+							return R5_EXCHANGE_RATE;
+						}
+						public void setR5_EXCHANGE_RATE(BigDecimal r5_EXCHANGE_RATE) {
+							R5_EXCHANGE_RATE = r5_EXCHANGE_RATE;
+						}
+						public String getR6_RECORD_NUMBER() {
+							return R6_RECORD_NUMBER;
+						}
+						public void setR6_RECORD_NUMBER(String r6_RECORD_NUMBER) {
+							R6_RECORD_NUMBER = r6_RECORD_NUMBER;
+						}
+						public String getR6_TITLE() {
+							return R6_TITLE;
+						}
+						public void setR6_TITLE(String r6_TITLE) {
+							R6_TITLE = r6_TITLE;
+						}
+						public String getR6_FIRST_NAME() {
+							return R6_FIRST_NAME;
+						}
+						public void setR6_FIRST_NAME(String r6_FIRST_NAME) {
+							R6_FIRST_NAME = r6_FIRST_NAME;
+						}
+						public String getR6_MIDDLE_NAME() {
+							return R6_MIDDLE_NAME;
+						}
+						public void setR6_MIDDLE_NAME(String r6_MIDDLE_NAME) {
+							R6_MIDDLE_NAME = r6_MIDDLE_NAME;
+						}
+						public String getR6_SURNAME() {
+							return R6_SURNAME;
+						}
+						public void setR6_SURNAME(String r6_SURNAME) {
+							R6_SURNAME = r6_SURNAME;
+						}
+						public String getR6_PREVIOUS_NAME() {
+							return R6_PREVIOUS_NAME;
+						}
+						public void setR6_PREVIOUS_NAME(String r6_PREVIOUS_NAME) {
+							R6_PREVIOUS_NAME = r6_PREVIOUS_NAME;
+						}
+						public String getR6_GENDER() {
+							return R6_GENDER;
+						}
+						public void setR6_GENDER(String r6_GENDER) {
+							R6_GENDER = r6_GENDER;
+						}
+						public String getR6_IDENTIFICATION_TYPE() {
+							return R6_IDENTIFICATION_TYPE;
+						}
+						public void setR6_IDENTIFICATION_TYPE(String r6_IDENTIFICATION_TYPE) {
+							R6_IDENTIFICATION_TYPE = r6_IDENTIFICATION_TYPE;
+						}
+						public String getR6_PASSPORT_NUMBER() {
+							return R6_PASSPORT_NUMBER;
+						}
+						public void setR6_PASSPORT_NUMBER(String r6_PASSPORT_NUMBER) {
+							R6_PASSPORT_NUMBER = r6_PASSPORT_NUMBER;
+						}
+						public Date getR6_DATE_OF_BIRTH() {
+							return R6_DATE_OF_BIRTH;
+						}
+						public void setR6_DATE_OF_BIRTH(Date r6_DATE_OF_BIRTH) {
+							R6_DATE_OF_BIRTH = r6_DATE_OF_BIRTH;
+						}
+						public String getR6_HOME_ADDRESS() {
+							return R6_HOME_ADDRESS;
+						}
+						public void setR6_HOME_ADDRESS(String r6_HOME_ADDRESS) {
+							R6_HOME_ADDRESS = r6_HOME_ADDRESS;
+						}
+						public String getR6_POSTAL_ADDRESS() {
+							return R6_POSTAL_ADDRESS;
+						}
+						public void setR6_POSTAL_ADDRESS(String r6_POSTAL_ADDRESS) {
+							R6_POSTAL_ADDRESS = r6_POSTAL_ADDRESS;
+						}
+						public String getR6_RESIDENCE() {
+							return R6_RESIDENCE;
+						}
+						public void setR6_RESIDENCE(String r6_RESIDENCE) {
+							R6_RESIDENCE = r6_RESIDENCE;
+						}
+						public String getR6_EMAIL() {
+							return R6_EMAIL;
+						}
+						public void setR6_EMAIL(String r6_EMAIL) {
+							R6_EMAIL = r6_EMAIL;
+						}
+						public String getR6_LANDLINE() {
+							return R6_LANDLINE;
+						}
+						public void setR6_LANDLINE(String r6_LANDLINE) {
+							R6_LANDLINE = r6_LANDLINE;
+						}
+						public String getR6_MOBILE_PHONE_NUMBER() {
+							return R6_MOBILE_PHONE_NUMBER;
+						}
+						public void setR6_MOBILE_PHONE_NUMBER(String r6_MOBILE_PHONE_NUMBER) {
+							R6_MOBILE_PHONE_NUMBER = r6_MOBILE_PHONE_NUMBER;
+						}
+						public String getR6_MOBILE_MONEY_NUMBER() {
+							return R6_MOBILE_MONEY_NUMBER;
+						}
+						public void setR6_MOBILE_MONEY_NUMBER(String r6_MOBILE_MONEY_NUMBER) {
+							R6_MOBILE_MONEY_NUMBER = r6_MOBILE_MONEY_NUMBER;
+						}
+						public String getR6_PRODUCT_TYPE() {
+							return R6_PRODUCT_TYPE;
+						}
+						public void setR6_PRODUCT_TYPE(String r6_PRODUCT_TYPE) {
+							R6_PRODUCT_TYPE = r6_PRODUCT_TYPE;
+						}
+						public String getR6_ACCOUNT_BY_OWNERSHIP() {
+							return R6_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR6_ACCOUNT_BY_OWNERSHIP(String r6_ACCOUNT_BY_OWNERSHIP) {
+							R6_ACCOUNT_BY_OWNERSHIP = r6_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR6_ACCOUNT_NUMBER() {
+							return R6_ACCOUNT_NUMBER;
+						}
+						public void setR6_ACCOUNT_NUMBER(String r6_ACCOUNT_NUMBER) {
+							R6_ACCOUNT_NUMBER = r6_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR6_ACCOUNT_HOLDER_INDICATOR() {
+							return R6_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR6_ACCOUNT_HOLDER_INDICATOR(BigDecimal r6_ACCOUNT_HOLDER_INDICATOR) {
+							R6_ACCOUNT_HOLDER_INDICATOR = r6_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR6_STATUS_OF_ACCOUNT() {
+							return R6_STATUS_OF_ACCOUNT;
+						}
+						public void setR6_STATUS_OF_ACCOUNT(String r6_STATUS_OF_ACCOUNT) {
+							R6_STATUS_OF_ACCOUNT = r6_STATUS_OF_ACCOUNT;
+						}
+						public String getR6_NOT_FIT_FOR_STP() {
+							return R6_NOT_FIT_FOR_STP;
+						}
+						public void setR6_NOT_FIT_FOR_STP(String r6_NOT_FIT_FOR_STP) {
+							R6_NOT_FIT_FOR_STP = r6_NOT_FIT_FOR_STP;
+						}
+						public String getR6_BRANCH_CODE_AND_NAME() {
+							return R6_BRANCH_CODE_AND_NAME;
+						}
+						public void setR6_BRANCH_CODE_AND_NAME(String r6_BRANCH_CODE_AND_NAME) {
+							R6_BRANCH_CODE_AND_NAME = r6_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR6_ACCOUNT_BALANCE_IN_PULA() {
+							return R6_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR6_ACCOUNT_BALANCE_IN_PULA(BigDecimal r6_ACCOUNT_BALANCE_IN_PULA) {
+							R6_ACCOUNT_BALANCE_IN_PULA = r6_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR6_CURRENCY_OF_ACCOUNT() {
+							return R6_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR6_CURRENCY_OF_ACCOUNT(String r6_CURRENCY_OF_ACCOUNT) {
+							R6_CURRENCY_OF_ACCOUNT = r6_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR6_EXCHANGE_RATE() {
+							return R6_EXCHANGE_RATE;
+						}
+						public void setR6_EXCHANGE_RATE(BigDecimal r6_EXCHANGE_RATE) {
+							R6_EXCHANGE_RATE = r6_EXCHANGE_RATE;
+						}
+						public String getR7_RECORD_NUMBER() {
+							return R7_RECORD_NUMBER;
+						}
+						public void setR7_RECORD_NUMBER(String r7_RECORD_NUMBER) {
+							R7_RECORD_NUMBER = r7_RECORD_NUMBER;
+						}
+						public String getR7_TITLE() {
+							return R7_TITLE;
+						}
+						public void setR7_TITLE(String r7_TITLE) {
+							R7_TITLE = r7_TITLE;
+						}
+						public String getR7_FIRST_NAME() {
+							return R7_FIRST_NAME;
+						}
+						public void setR7_FIRST_NAME(String r7_FIRST_NAME) {
+							R7_FIRST_NAME = r7_FIRST_NAME;
+						}
+						public String getR7_MIDDLE_NAME() {
+							return R7_MIDDLE_NAME;
+						}
+						public void setR7_MIDDLE_NAME(String r7_MIDDLE_NAME) {
+							R7_MIDDLE_NAME = r7_MIDDLE_NAME;
+						}
+						public String getR7_SURNAME() {
+							return R7_SURNAME;
+						}
+						public void setR7_SURNAME(String r7_SURNAME) {
+							R7_SURNAME = r7_SURNAME;
+						}
+						public String getR7_PREVIOUS_NAME() {
+							return R7_PREVIOUS_NAME;
+						}
+						public void setR7_PREVIOUS_NAME(String r7_PREVIOUS_NAME) {
+							R7_PREVIOUS_NAME = r7_PREVIOUS_NAME;
+						}
+						public String getR7_GENDER() {
+							return R7_GENDER;
+						}
+						public void setR7_GENDER(String r7_GENDER) {
+							R7_GENDER = r7_GENDER;
+						}
+						public String getR7_IDENTIFICATION_TYPE() {
+							return R7_IDENTIFICATION_TYPE;
+						}
+						public void setR7_IDENTIFICATION_TYPE(String r7_IDENTIFICATION_TYPE) {
+							R7_IDENTIFICATION_TYPE = r7_IDENTIFICATION_TYPE;
+						}
+						public String getR7_PASSPORT_NUMBER() {
+							return R7_PASSPORT_NUMBER;
+						}
+						public void setR7_PASSPORT_NUMBER(String r7_PASSPORT_NUMBER) {
+							R7_PASSPORT_NUMBER = r7_PASSPORT_NUMBER;
+						}
+						public Date getR7_DATE_OF_BIRTH() {
+							return R7_DATE_OF_BIRTH;
+						}
+						public void setR7_DATE_OF_BIRTH(Date r7_DATE_OF_BIRTH) {
+							R7_DATE_OF_BIRTH = r7_DATE_OF_BIRTH;
+						}
+						public String getR7_HOME_ADDRESS() {
+							return R7_HOME_ADDRESS;
+						}
+						public void setR7_HOME_ADDRESS(String r7_HOME_ADDRESS) {
+							R7_HOME_ADDRESS = r7_HOME_ADDRESS;
+						}
+						public String getR7_POSTAL_ADDRESS() {
+							return R7_POSTAL_ADDRESS;
+						}
+						public void setR7_POSTAL_ADDRESS(String r7_POSTAL_ADDRESS) {
+							R7_POSTAL_ADDRESS = r7_POSTAL_ADDRESS;
+						}
+						public String getR7_RESIDENCE() {
+							return R7_RESIDENCE;
+						}
+						public void setR7_RESIDENCE(String r7_RESIDENCE) {
+							R7_RESIDENCE = r7_RESIDENCE;
+						}
+						public String getR7_EMAIL() {
+							return R7_EMAIL;
+						}
+						public void setR7_EMAIL(String r7_EMAIL) {
+							R7_EMAIL = r7_EMAIL;
+						}
+						public String getR7_LANDLINE() {
+							return R7_LANDLINE;
+						}
+						public void setR7_LANDLINE(String r7_LANDLINE) {
+							R7_LANDLINE = r7_LANDLINE;
+						}
+						public String getR7_MOBILE_PHONE_NUMBER() {
+							return R7_MOBILE_PHONE_NUMBER;
+						}
+						public void setR7_MOBILE_PHONE_NUMBER(String r7_MOBILE_PHONE_NUMBER) {
+							R7_MOBILE_PHONE_NUMBER = r7_MOBILE_PHONE_NUMBER;
+						}
+						public String getR7_MOBILE_MONEY_NUMBER() {
+							return R7_MOBILE_MONEY_NUMBER;
+						}
+						public void setR7_MOBILE_MONEY_NUMBER(String r7_MOBILE_MONEY_NUMBER) {
+							R7_MOBILE_MONEY_NUMBER = r7_MOBILE_MONEY_NUMBER;
+						}
+						public String getR7_PRODUCT_TYPE() {
+							return R7_PRODUCT_TYPE;
+						}
+						public void setR7_PRODUCT_TYPE(String r7_PRODUCT_TYPE) {
+							R7_PRODUCT_TYPE = r7_PRODUCT_TYPE;
+						}
+						public String getR7_ACCOUNT_BY_OWNERSHIP() {
+							return R7_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR7_ACCOUNT_BY_OWNERSHIP(String r7_ACCOUNT_BY_OWNERSHIP) {
+							R7_ACCOUNT_BY_OWNERSHIP = r7_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR7_ACCOUNT_NUMBER() {
+							return R7_ACCOUNT_NUMBER;
+						}
+						public void setR7_ACCOUNT_NUMBER(String r7_ACCOUNT_NUMBER) {
+							R7_ACCOUNT_NUMBER = r7_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR7_ACCOUNT_HOLDER_INDICATOR() {
+							return R7_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR7_ACCOUNT_HOLDER_INDICATOR(BigDecimal r7_ACCOUNT_HOLDER_INDICATOR) {
+							R7_ACCOUNT_HOLDER_INDICATOR = r7_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR7_STATUS_OF_ACCOUNT() {
+							return R7_STATUS_OF_ACCOUNT;
+						}
+						public void setR7_STATUS_OF_ACCOUNT(String r7_STATUS_OF_ACCOUNT) {
+							R7_STATUS_OF_ACCOUNT = r7_STATUS_OF_ACCOUNT;
+						}
+						public String getR7_NOT_FIT_FOR_STP() {
+							return R7_NOT_FIT_FOR_STP;
+						}
+						public void setR7_NOT_FIT_FOR_STP(String r7_NOT_FIT_FOR_STP) {
+							R7_NOT_FIT_FOR_STP = r7_NOT_FIT_FOR_STP;
+						}
+						public String getR7_BRANCH_CODE_AND_NAME() {
+							return R7_BRANCH_CODE_AND_NAME;
+						}
+						public void setR7_BRANCH_CODE_AND_NAME(String r7_BRANCH_CODE_AND_NAME) {
+							R7_BRANCH_CODE_AND_NAME = r7_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR7_ACCOUNT_BALANCE_IN_PULA() {
+							return R7_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR7_ACCOUNT_BALANCE_IN_PULA(BigDecimal r7_ACCOUNT_BALANCE_IN_PULA) {
+							R7_ACCOUNT_BALANCE_IN_PULA = r7_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR7_CURRENCY_OF_ACCOUNT() {
+							return R7_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR7_CURRENCY_OF_ACCOUNT(String r7_CURRENCY_OF_ACCOUNT) {
+							R7_CURRENCY_OF_ACCOUNT = r7_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR7_EXCHANGE_RATE() {
+							return R7_EXCHANGE_RATE;
+						}
+						public void setR7_EXCHANGE_RATE(BigDecimal r7_EXCHANGE_RATE) {
+							R7_EXCHANGE_RATE = r7_EXCHANGE_RATE;
+						}
+						public String getR8_RECORD_NUMBER() {
+							return R8_RECORD_NUMBER;
+						}
+						public void setR8_RECORD_NUMBER(String r8_RECORD_NUMBER) {
+							R8_RECORD_NUMBER = r8_RECORD_NUMBER;
+						}
+						public String getR8_TITLE() {
+							return R8_TITLE;
+						}
+						public void setR8_TITLE(String r8_TITLE) {
+							R8_TITLE = r8_TITLE;
+						}
+						public String getR8_FIRST_NAME() {
+							return R8_FIRST_NAME;
+						}
+						public void setR8_FIRST_NAME(String r8_FIRST_NAME) {
+							R8_FIRST_NAME = r8_FIRST_NAME;
+						}
+						public String getR8_MIDDLE_NAME() {
+							return R8_MIDDLE_NAME;
+						}
+						public void setR8_MIDDLE_NAME(String r8_MIDDLE_NAME) {
+							R8_MIDDLE_NAME = r8_MIDDLE_NAME;
+						}
+						public String getR8_SURNAME() {
+							return R8_SURNAME;
+						}
+						public void setR8_SURNAME(String r8_SURNAME) {
+							R8_SURNAME = r8_SURNAME;
+						}
+						public String getR8_PREVIOUS_NAME() {
+							return R8_PREVIOUS_NAME;
+						}
+						public void setR8_PREVIOUS_NAME(String r8_PREVIOUS_NAME) {
+							R8_PREVIOUS_NAME = r8_PREVIOUS_NAME;
+						}
+						public String getR8_GENDER() {
+							return R8_GENDER;
+						}
+						public void setR8_GENDER(String r8_GENDER) {
+							R8_GENDER = r8_GENDER;
+						}
+						public String getR8_IDENTIFICATION_TYPE() {
+							return R8_IDENTIFICATION_TYPE;
+						}
+						public void setR8_IDENTIFICATION_TYPE(String r8_IDENTIFICATION_TYPE) {
+							R8_IDENTIFICATION_TYPE = r8_IDENTIFICATION_TYPE;
+						}
+						public String getR8_PASSPORT_NUMBER() {
+							return R8_PASSPORT_NUMBER;
+						}
+						public void setR8_PASSPORT_NUMBER(String r8_PASSPORT_NUMBER) {
+							R8_PASSPORT_NUMBER = r8_PASSPORT_NUMBER;
+						}
+						public Date getR8_DATE_OF_BIRTH() {
+							return R8_DATE_OF_BIRTH;
+						}
+						public void setR8_DATE_OF_BIRTH(Date r8_DATE_OF_BIRTH) {
+							R8_DATE_OF_BIRTH = r8_DATE_OF_BIRTH;
+						}
+						public String getR8_HOME_ADDRESS() {
+							return R8_HOME_ADDRESS;
+						}
+						public void setR8_HOME_ADDRESS(String r8_HOME_ADDRESS) {
+							R8_HOME_ADDRESS = r8_HOME_ADDRESS;
+						}
+						public String getR8_POSTAL_ADDRESS() {
+							return R8_POSTAL_ADDRESS;
+						}
+						public void setR8_POSTAL_ADDRESS(String r8_POSTAL_ADDRESS) {
+							R8_POSTAL_ADDRESS = r8_POSTAL_ADDRESS;
+						}
+						public String getR8_RESIDENCE() {
+							return R8_RESIDENCE;
+						}
+						public void setR8_RESIDENCE(String r8_RESIDENCE) {
+							R8_RESIDENCE = r8_RESIDENCE;
+						}
+						public String getR8_EMAIL() {
+							return R8_EMAIL;
+						}
+						public void setR8_EMAIL(String r8_EMAIL) {
+							R8_EMAIL = r8_EMAIL;
+						}
+						public String getR8_LANDLINE() {
+							return R8_LANDLINE;
+						}
+						public void setR8_LANDLINE(String r8_LANDLINE) {
+							R8_LANDLINE = r8_LANDLINE;
+						}
+						public String getR8_MOBILE_PHONE_NUMBER() {
+							return R8_MOBILE_PHONE_NUMBER;
+						}
+						public void setR8_MOBILE_PHONE_NUMBER(String r8_MOBILE_PHONE_NUMBER) {
+							R8_MOBILE_PHONE_NUMBER = r8_MOBILE_PHONE_NUMBER;
+						}
+						public String getR8_MOBILE_MONEY_NUMBER() {
+							return R8_MOBILE_MONEY_NUMBER;
+						}
+						public void setR8_MOBILE_MONEY_NUMBER(String r8_MOBILE_MONEY_NUMBER) {
+							R8_MOBILE_MONEY_NUMBER = r8_MOBILE_MONEY_NUMBER;
+						}
+						public String getR8_PRODUCT_TYPE() {
+							return R8_PRODUCT_TYPE;
+						}
+						public void setR8_PRODUCT_TYPE(String r8_PRODUCT_TYPE) {
+							R8_PRODUCT_TYPE = r8_PRODUCT_TYPE;
+						}
+						public String getR8_ACCOUNT_BY_OWNERSHIP() {
+							return R8_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR8_ACCOUNT_BY_OWNERSHIP(String r8_ACCOUNT_BY_OWNERSHIP) {
+							R8_ACCOUNT_BY_OWNERSHIP = r8_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR8_ACCOUNT_NUMBER() {
+							return R8_ACCOUNT_NUMBER;
+						}
+						public void setR8_ACCOUNT_NUMBER(String r8_ACCOUNT_NUMBER) {
+							R8_ACCOUNT_NUMBER = r8_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR8_ACCOUNT_HOLDER_INDICATOR() {
+							return R8_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR8_ACCOUNT_HOLDER_INDICATOR(BigDecimal r8_ACCOUNT_HOLDER_INDICATOR) {
+							R8_ACCOUNT_HOLDER_INDICATOR = r8_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR8_STATUS_OF_ACCOUNT() {
+							return R8_STATUS_OF_ACCOUNT;
+						}
+						public void setR8_STATUS_OF_ACCOUNT(String r8_STATUS_OF_ACCOUNT) {
+							R8_STATUS_OF_ACCOUNT = r8_STATUS_OF_ACCOUNT;
+						}
+						public String getR8_NOT_FIT_FOR_STP() {
+							return R8_NOT_FIT_FOR_STP;
+						}
+						public void setR8_NOT_FIT_FOR_STP(String r8_NOT_FIT_FOR_STP) {
+							R8_NOT_FIT_FOR_STP = r8_NOT_FIT_FOR_STP;
+						}
+						public String getR8_BRANCH_CODE_AND_NAME() {
+							return R8_BRANCH_CODE_AND_NAME;
+						}
+						public void setR8_BRANCH_CODE_AND_NAME(String r8_BRANCH_CODE_AND_NAME) {
+							R8_BRANCH_CODE_AND_NAME = r8_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR8_ACCOUNT_BALANCE_IN_PULA() {
+							return R8_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR8_ACCOUNT_BALANCE_IN_PULA(BigDecimal r8_ACCOUNT_BALANCE_IN_PULA) {
+							R8_ACCOUNT_BALANCE_IN_PULA = r8_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR8_CURRENCY_OF_ACCOUNT() {
+							return R8_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR8_CURRENCY_OF_ACCOUNT(String r8_CURRENCY_OF_ACCOUNT) {
+							R8_CURRENCY_OF_ACCOUNT = r8_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR8_EXCHANGE_RATE() {
+							return R8_EXCHANGE_RATE;
+						}
+						public void setR8_EXCHANGE_RATE(BigDecimal r8_EXCHANGE_RATE) {
+							R8_EXCHANGE_RATE = r8_EXCHANGE_RATE;
+						}
+						public String getR9_RECORD_NUMBER() {
+							return R9_RECORD_NUMBER;
+						}
+						public void setR9_RECORD_NUMBER(String r9_RECORD_NUMBER) {
+							R9_RECORD_NUMBER = r9_RECORD_NUMBER;
+						}
+						public String getR9_TITLE() {
+							return R9_TITLE;
+						}
+						public void setR9_TITLE(String r9_TITLE) {
+							R9_TITLE = r9_TITLE;
+						}
+						public String getR9_FIRST_NAME() {
+							return R9_FIRST_NAME;
+						}
+						public void setR9_FIRST_NAME(String r9_FIRST_NAME) {
+							R9_FIRST_NAME = r9_FIRST_NAME;
+						}
+						public String getR9_MIDDLE_NAME() {
+							return R9_MIDDLE_NAME;
+						}
+						public void setR9_MIDDLE_NAME(String r9_MIDDLE_NAME) {
+							R9_MIDDLE_NAME = r9_MIDDLE_NAME;
+						}
+						public String getR9_SURNAME() {
+							return R9_SURNAME;
+						}
+						public void setR9_SURNAME(String r9_SURNAME) {
+							R9_SURNAME = r9_SURNAME;
+						}
+						public String getR9_PREVIOUS_NAME() {
+							return R9_PREVIOUS_NAME;
+						}
+						public void setR9_PREVIOUS_NAME(String r9_PREVIOUS_NAME) {
+							R9_PREVIOUS_NAME = r9_PREVIOUS_NAME;
+						}
+						public String getR9_GENDER() {
+							return R9_GENDER;
+						}
+						public void setR9_GENDER(String r9_GENDER) {
+							R9_GENDER = r9_GENDER;
+						}
+						public String getR9_IDENTIFICATION_TYPE() {
+							return R9_IDENTIFICATION_TYPE;
+						}
+						public void setR9_IDENTIFICATION_TYPE(String r9_IDENTIFICATION_TYPE) {
+							R9_IDENTIFICATION_TYPE = r9_IDENTIFICATION_TYPE;
+						}
+						public String getR9_PASSPORT_NUMBER() {
+							return R9_PASSPORT_NUMBER;
+						}
+						public void setR9_PASSPORT_NUMBER(String r9_PASSPORT_NUMBER) {
+							R9_PASSPORT_NUMBER = r9_PASSPORT_NUMBER;
+						}
+						public Date getR9_DATE_OF_BIRTH() {
+							return R9_DATE_OF_BIRTH;
+						}
+						public void setR9_DATE_OF_BIRTH(Date r9_DATE_OF_BIRTH) {
+							R9_DATE_OF_BIRTH = r9_DATE_OF_BIRTH;
+						}
+						public String getR9_HOME_ADDRESS() {
+							return R9_HOME_ADDRESS;
+						}
+						public void setR9_HOME_ADDRESS(String r9_HOME_ADDRESS) {
+							R9_HOME_ADDRESS = r9_HOME_ADDRESS;
+						}
+						public String getR9_POSTAL_ADDRESS() {
+							return R9_POSTAL_ADDRESS;
+						}
+						public void setR9_POSTAL_ADDRESS(String r9_POSTAL_ADDRESS) {
+							R9_POSTAL_ADDRESS = r9_POSTAL_ADDRESS;
+						}
+						public String getR9_RESIDENCE() {
+							return R9_RESIDENCE;
+						}
+						public void setR9_RESIDENCE(String r9_RESIDENCE) {
+							R9_RESIDENCE = r9_RESIDENCE;
+						}
+						public String getR9_EMAIL() {
+							return R9_EMAIL;
+						}
+						public void setR9_EMAIL(String r9_EMAIL) {
+							R9_EMAIL = r9_EMAIL;
+						}
+						public String getR9_LANDLINE() {
+							return R9_LANDLINE;
+						}
+						public void setR9_LANDLINE(String r9_LANDLINE) {
+							R9_LANDLINE = r9_LANDLINE;
+						}
+						public String getR9_MOBILE_PHONE_NUMBER() {
+							return R9_MOBILE_PHONE_NUMBER;
+						}
+						public void setR9_MOBILE_PHONE_NUMBER(String r9_MOBILE_PHONE_NUMBER) {
+							R9_MOBILE_PHONE_NUMBER = r9_MOBILE_PHONE_NUMBER;
+						}
+						public String getR9_MOBILE_MONEY_NUMBER() {
+							return R9_MOBILE_MONEY_NUMBER;
+						}
+						public void setR9_MOBILE_MONEY_NUMBER(String r9_MOBILE_MONEY_NUMBER) {
+							R9_MOBILE_MONEY_NUMBER = r9_MOBILE_MONEY_NUMBER;
+						}
+						public String getR9_PRODUCT_TYPE() {
+							return R9_PRODUCT_TYPE;
+						}
+						public void setR9_PRODUCT_TYPE(String r9_PRODUCT_TYPE) {
+							R9_PRODUCT_TYPE = r9_PRODUCT_TYPE;
+						}
+						public String getR9_ACCOUNT_BY_OWNERSHIP() {
+							return R9_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR9_ACCOUNT_BY_OWNERSHIP(String r9_ACCOUNT_BY_OWNERSHIP) {
+							R9_ACCOUNT_BY_OWNERSHIP = r9_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR9_ACCOUNT_NUMBER() {
+							return R9_ACCOUNT_NUMBER;
+						}
+						public void setR9_ACCOUNT_NUMBER(String r9_ACCOUNT_NUMBER) {
+							R9_ACCOUNT_NUMBER = r9_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR9_ACCOUNT_HOLDER_INDICATOR() {
+							return R9_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR9_ACCOUNT_HOLDER_INDICATOR(BigDecimal r9_ACCOUNT_HOLDER_INDICATOR) {
+							R9_ACCOUNT_HOLDER_INDICATOR = r9_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR9_STATUS_OF_ACCOUNT() {
+							return R9_STATUS_OF_ACCOUNT;
+						}
+						public void setR9_STATUS_OF_ACCOUNT(String r9_STATUS_OF_ACCOUNT) {
+							R9_STATUS_OF_ACCOUNT = r9_STATUS_OF_ACCOUNT;
+						}
+						public String getR9_NOT_FIT_FOR_STP() {
+							return R9_NOT_FIT_FOR_STP;
+						}
+						public void setR9_NOT_FIT_FOR_STP(String r9_NOT_FIT_FOR_STP) {
+							R9_NOT_FIT_FOR_STP = r9_NOT_FIT_FOR_STP;
+						}
+						public String getR9_BRANCH_CODE_AND_NAME() {
+							return R9_BRANCH_CODE_AND_NAME;
+						}
+						public void setR9_BRANCH_CODE_AND_NAME(String r9_BRANCH_CODE_AND_NAME) {
+							R9_BRANCH_CODE_AND_NAME = r9_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR9_ACCOUNT_BALANCE_IN_PULA() {
+							return R9_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR9_ACCOUNT_BALANCE_IN_PULA(BigDecimal r9_ACCOUNT_BALANCE_IN_PULA) {
+							R9_ACCOUNT_BALANCE_IN_PULA = r9_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR9_CURRENCY_OF_ACCOUNT() {
+							return R9_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR9_CURRENCY_OF_ACCOUNT(String r9_CURRENCY_OF_ACCOUNT) {
+							R9_CURRENCY_OF_ACCOUNT = r9_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR9_EXCHANGE_RATE() {
+							return R9_EXCHANGE_RATE;
+						}
+						public void setR9_EXCHANGE_RATE(BigDecimal r9_EXCHANGE_RATE) {
+							R9_EXCHANGE_RATE = r9_EXCHANGE_RATE;
+						}
+						public String getR10_RECORD_NUMBER() {
+							return R10_RECORD_NUMBER;
+						}
+						public void setR10_RECORD_NUMBER(String r10_RECORD_NUMBER) {
+							R10_RECORD_NUMBER = r10_RECORD_NUMBER;
+						}
+						public String getR10_TITLE() {
+							return R10_TITLE;
+						}
+						public void setR10_TITLE(String r10_TITLE) {
+							R10_TITLE = r10_TITLE;
+						}
+						public String getR10_FIRST_NAME() {
+							return R10_FIRST_NAME;
+						}
+						public void setR10_FIRST_NAME(String r10_FIRST_NAME) {
+							R10_FIRST_NAME = r10_FIRST_NAME;
+						}
+						public String getR10_MIDDLE_NAME() {
+							return R10_MIDDLE_NAME;
+						}
+						public void setR10_MIDDLE_NAME(String r10_MIDDLE_NAME) {
+							R10_MIDDLE_NAME = r10_MIDDLE_NAME;
+						}
+						public String getR10_SURNAME() {
+							return R10_SURNAME;
+						}
+						public void setR10_SURNAME(String r10_SURNAME) {
+							R10_SURNAME = r10_SURNAME;
+						}
+						public String getR10_PREVIOUS_NAME() {
+							return R10_PREVIOUS_NAME;
+						}
+						public void setR10_PREVIOUS_NAME(String r10_PREVIOUS_NAME) {
+							R10_PREVIOUS_NAME = r10_PREVIOUS_NAME;
+						}
+						public String getR10_GENDER() {
+							return R10_GENDER;
+						}
+						public void setR10_GENDER(String r10_GENDER) {
+							R10_GENDER = r10_GENDER;
+						}
+						public String getR10_IDENTIFICATION_TYPE() {
+							return R10_IDENTIFICATION_TYPE;
+						}
+						public void setR10_IDENTIFICATION_TYPE(String r10_IDENTIFICATION_TYPE) {
+							R10_IDENTIFICATION_TYPE = r10_IDENTIFICATION_TYPE;
+						}
+						public String getR10_PASSPORT_NUMBER() {
+							return R10_PASSPORT_NUMBER;
+						}
+						public void setR10_PASSPORT_NUMBER(String r10_PASSPORT_NUMBER) {
+							R10_PASSPORT_NUMBER = r10_PASSPORT_NUMBER;
+						}
+						public Date getR10_DATE_OF_BIRTH() {
+							return R10_DATE_OF_BIRTH;
+						}
+						public void setR10_DATE_OF_BIRTH(Date r10_DATE_OF_BIRTH) {
+							R10_DATE_OF_BIRTH = r10_DATE_OF_BIRTH;
+						}
+						public String getR10_HOME_ADDRESS() {
+							return R10_HOME_ADDRESS;
+						}
+						public void setR10_HOME_ADDRESS(String r10_HOME_ADDRESS) {
+							R10_HOME_ADDRESS = r10_HOME_ADDRESS;
+						}
+						public String getR10_POSTAL_ADDRESS() {
+							return R10_POSTAL_ADDRESS;
+						}
+						public void setR10_POSTAL_ADDRESS(String r10_POSTAL_ADDRESS) {
+							R10_POSTAL_ADDRESS = r10_POSTAL_ADDRESS;
+						}
+						public String getR10_RESIDENCE() {
+							return R10_RESIDENCE;
+						}
+						public void setR10_RESIDENCE(String r10_RESIDENCE) {
+							R10_RESIDENCE = r10_RESIDENCE;
+						}
+						public String getR10_EMAIL() {
+							return R10_EMAIL;
+						}
+						public void setR10_EMAIL(String r10_EMAIL) {
+							R10_EMAIL = r10_EMAIL;
+						}
+						public String getR10_LANDLINE() {
+							return R10_LANDLINE;
+						}
+						public void setR10_LANDLINE(String r10_LANDLINE) {
+							R10_LANDLINE = r10_LANDLINE;
+						}
+						public String getR10_MOBILE_PHONE_NUMBER() {
+							return R10_MOBILE_PHONE_NUMBER;
+						}
+						public void setR10_MOBILE_PHONE_NUMBER(String r10_MOBILE_PHONE_NUMBER) {
+							R10_MOBILE_PHONE_NUMBER = r10_MOBILE_PHONE_NUMBER;
+						}
+						public String getR10_MOBILE_MONEY_NUMBER() {
+							return R10_MOBILE_MONEY_NUMBER;
+						}
+						public void setR10_MOBILE_MONEY_NUMBER(String r10_MOBILE_MONEY_NUMBER) {
+							R10_MOBILE_MONEY_NUMBER = r10_MOBILE_MONEY_NUMBER;
+						}
+						public String getR10_PRODUCT_TYPE() {
+							return R10_PRODUCT_TYPE;
+						}
+						public void setR10_PRODUCT_TYPE(String r10_PRODUCT_TYPE) {
+							R10_PRODUCT_TYPE = r10_PRODUCT_TYPE;
+						}
+						public String getR10_ACCOUNT_BY_OWNERSHIP() {
+							return R10_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR10_ACCOUNT_BY_OWNERSHIP(String r10_ACCOUNT_BY_OWNERSHIP) {
+							R10_ACCOUNT_BY_OWNERSHIP = r10_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR10_ACCOUNT_NUMBER() {
+							return R10_ACCOUNT_NUMBER;
+						}
+						public void setR10_ACCOUNT_NUMBER(String r10_ACCOUNT_NUMBER) {
+							R10_ACCOUNT_NUMBER = r10_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR10_ACCOUNT_HOLDER_INDICATOR() {
+							return R10_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR10_ACCOUNT_HOLDER_INDICATOR(BigDecimal r10_ACCOUNT_HOLDER_INDICATOR) {
+							R10_ACCOUNT_HOLDER_INDICATOR = r10_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR10_STATUS_OF_ACCOUNT() {
+							return R10_STATUS_OF_ACCOUNT;
+						}
+						public void setR10_STATUS_OF_ACCOUNT(String r10_STATUS_OF_ACCOUNT) {
+							R10_STATUS_OF_ACCOUNT = r10_STATUS_OF_ACCOUNT;
+						}
+						public String getR10_NOT_FIT_FOR_STP() {
+							return R10_NOT_FIT_FOR_STP;
+						}
+						public void setR10_NOT_FIT_FOR_STP(String r10_NOT_FIT_FOR_STP) {
+							R10_NOT_FIT_FOR_STP = r10_NOT_FIT_FOR_STP;
+						}
+						public String getR10_BRANCH_CODE_AND_NAME() {
+							return R10_BRANCH_CODE_AND_NAME;
+						}
+						public void setR10_BRANCH_CODE_AND_NAME(String r10_BRANCH_CODE_AND_NAME) {
+							R10_BRANCH_CODE_AND_NAME = r10_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR10_ACCOUNT_BALANCE_IN_PULA() {
+							return R10_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR10_ACCOUNT_BALANCE_IN_PULA(BigDecimal r10_ACCOUNT_BALANCE_IN_PULA) {
+							R10_ACCOUNT_BALANCE_IN_PULA = r10_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR10_CURRENCY_OF_ACCOUNT() {
+							return R10_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR10_CURRENCY_OF_ACCOUNT(String r10_CURRENCY_OF_ACCOUNT) {
+							R10_CURRENCY_OF_ACCOUNT = r10_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR10_EXCHANGE_RATE() {
+							return R10_EXCHANGE_RATE;
+						}
+						public void setR10_EXCHANGE_RATE(BigDecimal r10_EXCHANGE_RATE) {
+							R10_EXCHANGE_RATE = r10_EXCHANGE_RATE;
+						}
+						public String getR11_RECORD_NUMBER() {
+							return R11_RECORD_NUMBER;
+						}
+						public void setR11_RECORD_NUMBER(String r11_RECORD_NUMBER) {
+							R11_RECORD_NUMBER = r11_RECORD_NUMBER;
+						}
+						public String getR11_TITLE() {
+							return R11_TITLE;
+						}
+						public void setR11_TITLE(String r11_TITLE) {
+							R11_TITLE = r11_TITLE;
+						}
+						public String getR11_FIRST_NAME() {
+							return R11_FIRST_NAME;
+						}
+						public void setR11_FIRST_NAME(String r11_FIRST_NAME) {
+							R11_FIRST_NAME = r11_FIRST_NAME;
+						}
+						public String getR11_MIDDLE_NAME() {
+							return R11_MIDDLE_NAME;
+						}
+						public void setR11_MIDDLE_NAME(String r11_MIDDLE_NAME) {
+							R11_MIDDLE_NAME = r11_MIDDLE_NAME;
+						}
+						public String getR11_SURNAME() {
+							return R11_SURNAME;
+						}
+						public void setR11_SURNAME(String r11_SURNAME) {
+							R11_SURNAME = r11_SURNAME;
+						}
+						public String getR11_PREVIOUS_NAME() {
+							return R11_PREVIOUS_NAME;
+						}
+						public void setR11_PREVIOUS_NAME(String r11_PREVIOUS_NAME) {
+							R11_PREVIOUS_NAME = r11_PREVIOUS_NAME;
+						}
+						public String getR11_GENDER() {
+							return R11_GENDER;
+						}
+						public void setR11_GENDER(String r11_GENDER) {
+							R11_GENDER = r11_GENDER;
+						}
+						public String getR11_IDENTIFICATION_TYPE() {
+							return R11_IDENTIFICATION_TYPE;
+						}
+						public void setR11_IDENTIFICATION_TYPE(String r11_IDENTIFICATION_TYPE) {
+							R11_IDENTIFICATION_TYPE = r11_IDENTIFICATION_TYPE;
+						}
+						public String getR11_PASSPORT_NUMBER() {
+							return R11_PASSPORT_NUMBER;
+						}
+						public void setR11_PASSPORT_NUMBER(String r11_PASSPORT_NUMBER) {
+							R11_PASSPORT_NUMBER = r11_PASSPORT_NUMBER;
+						}
+						public Date getR11_DATE_OF_BIRTH() {
+							return R11_DATE_OF_BIRTH;
+						}
+						public void setR11_DATE_OF_BIRTH(Date r11_DATE_OF_BIRTH) {
+							R11_DATE_OF_BIRTH = r11_DATE_OF_BIRTH;
+						}
+						public String getR11_HOME_ADDRESS() {
+							return R11_HOME_ADDRESS;
+						}
+						public void setR11_HOME_ADDRESS(String r11_HOME_ADDRESS) {
+							R11_HOME_ADDRESS = r11_HOME_ADDRESS;
+						}
+						public String getR11_POSTAL_ADDRESS() {
+							return R11_POSTAL_ADDRESS;
+						}
+						public void setR11_POSTAL_ADDRESS(String r11_POSTAL_ADDRESS) {
+							R11_POSTAL_ADDRESS = r11_POSTAL_ADDRESS;
+						}
+						public String getR11_RESIDENCE() {
+							return R11_RESIDENCE;
+						}
+						public void setR11_RESIDENCE(String r11_RESIDENCE) {
+							R11_RESIDENCE = r11_RESIDENCE;
+						}
+						public String getR11_EMAIL() {
+							return R11_EMAIL;
+						}
+						public void setR11_EMAIL(String r11_EMAIL) {
+							R11_EMAIL = r11_EMAIL;
+						}
+						public String getR11_LANDLINE() {
+							return R11_LANDLINE;
+						}
+						public void setR11_LANDLINE(String r11_LANDLINE) {
+							R11_LANDLINE = r11_LANDLINE;
+						}
+						public String getR11_MOBILE_PHONE_NUMBER() {
+							return R11_MOBILE_PHONE_NUMBER;
+						}
+						public void setR11_MOBILE_PHONE_NUMBER(String r11_MOBILE_PHONE_NUMBER) {
+							R11_MOBILE_PHONE_NUMBER = r11_MOBILE_PHONE_NUMBER;
+						}
+						public String getR11_MOBILE_MONEY_NUMBER() {
+							return R11_MOBILE_MONEY_NUMBER;
+						}
+						public void setR11_MOBILE_MONEY_NUMBER(String r11_MOBILE_MONEY_NUMBER) {
+							R11_MOBILE_MONEY_NUMBER = r11_MOBILE_MONEY_NUMBER;
+						}
+						public String getR11_PRODUCT_TYPE() {
+							return R11_PRODUCT_TYPE;
+						}
+						public void setR11_PRODUCT_TYPE(String r11_PRODUCT_TYPE) {
+							R11_PRODUCT_TYPE = r11_PRODUCT_TYPE;
+						}
+						public String getR11_ACCOUNT_BY_OWNERSHIP() {
+							return R11_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR11_ACCOUNT_BY_OWNERSHIP(String r11_ACCOUNT_BY_OWNERSHIP) {
+							R11_ACCOUNT_BY_OWNERSHIP = r11_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR11_ACCOUNT_NUMBER() {
+							return R11_ACCOUNT_NUMBER;
+						}
+						public void setR11_ACCOUNT_NUMBER(String r11_ACCOUNT_NUMBER) {
+							R11_ACCOUNT_NUMBER = r11_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR11_ACCOUNT_HOLDER_INDICATOR() {
+							return R11_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR11_ACCOUNT_HOLDER_INDICATOR(BigDecimal r11_ACCOUNT_HOLDER_INDICATOR) {
+							R11_ACCOUNT_HOLDER_INDICATOR = r11_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR11_STATUS_OF_ACCOUNT() {
+							return R11_STATUS_OF_ACCOUNT;
+						}
+						public void setR11_STATUS_OF_ACCOUNT(String r11_STATUS_OF_ACCOUNT) {
+							R11_STATUS_OF_ACCOUNT = r11_STATUS_OF_ACCOUNT;
+						}
+						public String getR11_NOT_FIT_FOR_STP() {
+							return R11_NOT_FIT_FOR_STP;
+						}
+						public void setR11_NOT_FIT_FOR_STP(String r11_NOT_FIT_FOR_STP) {
+							R11_NOT_FIT_FOR_STP = r11_NOT_FIT_FOR_STP;
+						}
+						public String getR11_BRANCH_CODE_AND_NAME() {
+							return R11_BRANCH_CODE_AND_NAME;
+						}
+						public void setR11_BRANCH_CODE_AND_NAME(String r11_BRANCH_CODE_AND_NAME) {
+							R11_BRANCH_CODE_AND_NAME = r11_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR11_ACCOUNT_BALANCE_IN_PULA() {
+							return R11_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR11_ACCOUNT_BALANCE_IN_PULA(BigDecimal r11_ACCOUNT_BALANCE_IN_PULA) {
+							R11_ACCOUNT_BALANCE_IN_PULA = r11_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR11_CURRENCY_OF_ACCOUNT() {
+							return R11_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR11_CURRENCY_OF_ACCOUNT(String r11_CURRENCY_OF_ACCOUNT) {
+							R11_CURRENCY_OF_ACCOUNT = r11_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR11_EXCHANGE_RATE() {
+							return R11_EXCHANGE_RATE;
+						}
+						public void setR11_EXCHANGE_RATE(BigDecimal r11_EXCHANGE_RATE) {
+							R11_EXCHANGE_RATE = r11_EXCHANGE_RATE;
+						}
+						
+						public Date getREPORT_DATE() {
+							return REPORT_DATE;
+						}
+
+						public void setREPORT_DATE(Date REPORT_DATE) {
+							this.REPORT_DATE = REPORT_DATE;
+						}
+
+						public BigDecimal getREPORT_VERSION() {
+							return REPORT_VERSION;
+						}
+
+						public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
+							this.REPORT_VERSION = REPORT_VERSION;
+						}
+
+						public String getREPORT_FREQUENCY() {
+							return REPORT_FREQUENCY;
+						}
+
+						public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+							REPORT_FREQUENCY = rEPORT_FREQUENCY;
+						}
+
+						public String getREPORT_CODE() {
+							return REPORT_CODE;
+						}
+
+						public void setREPORT_CODE(String rEPORT_CODE) {
+							REPORT_CODE = rEPORT_CODE;
+						}
+
+						public String getREPORT_DESC() {
+							return REPORT_DESC;
+						}
+
+						public void setREPORT_DESC(String rEPORT_DESC) {
+							REPORT_DESC = rEPORT_DESC;
+						}
+
+						public String getENTITY_FLG() {
+							return ENTITY_FLG;
+						}
+
+						public void setENTITY_FLG(String eNTITY_FLG) {
+							ENTITY_FLG = eNTITY_FLG;
+						}
+
+						public String getMODIFY_FLG() {
+							return MODIFY_FLG;
+						}
+
+						public void setMODIFY_FLG(String mODIFY_FLG) {
+							MODIFY_FLG = mODIFY_FLG;
+						}
+
+						public String getDEL_FLG() {
+							return DEL_FLG;
+						}
+
+						public void setDEL_FLG(String dEL_FLG) {
+							DEL_FLG = dEL_FLG;
+						}
+
+					}
+					
+					
+				// ROW MAPPER ARCHIVAL
+
+				class BDISB1_RowMapper_Archival implements RowMapper<BDISB1_Archival_Summary_Entity> {
+
+					@Override
+					public BDISB1_Archival_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+						BDISB1_Archival_Summary_Entity obj = new BDISB1_Archival_Summary_Entity();	
+					
+	
+						obj.setR5_RECORD_NUMBER(rs.getString("R5_RECORD_NUMBER"));
+						obj.setR5_TITLE(rs.getString("R5_TITLE"));
+						obj.setR5_FIRST_NAME(rs.getString("R5_FIRST_NAME"));
+						obj.setR5_MIDDLE_NAME(rs.getString("R5_MIDDLE_NAME"));
+						obj.setR5_SURNAME(rs.getString("R5_SURNAME"));
+						obj.setR5_PREVIOUS_NAME(rs.getString("R5_PREVIOUS_NAME"));
+						obj.setR5_GENDER(rs.getString("R5_GENDER"));
+						obj.setR5_IDENTIFICATION_TYPE(rs.getString("R5_IDENTIFICATION_TYPE"));
+						obj.setR5_PASSPORT_NUMBER(rs.getString("R5_PASSPORT_NUMBER"));
+						obj.setR5_DATE_OF_BIRTH(rs.getDate("R5_DATE_OF_BIRTH"));
+						obj.setR5_HOME_ADDRESS(rs.getString("R5_HOME_ADDRESS"));
+						obj.setR5_POSTAL_ADDRESS(rs.getString("R5_POSTAL_ADDRESS"));
+						obj.setR5_RESIDENCE(rs.getString("R5_RESIDENCE"));
+						obj.setR5_EMAIL(rs.getString("R5_EMAIL"));
+						obj.setR5_LANDLINE(rs.getString("R5_LANDLINE"));
+						obj.setR5_MOBILE_PHONE_NUMBER(rs.getString("R5_MOBILE_PHONE_NUMBER"));
+						obj.setR5_MOBILE_MONEY_NUMBER(rs.getString("R5_MOBILE_MONEY_NUMBER"));
+						obj.setR5_PRODUCT_TYPE(rs.getString("R5_PRODUCT_TYPE"));
+						obj.setR5_ACCOUNT_BY_OWNERSHIP(rs.getString("R5_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR5_ACCOUNT_NUMBER(rs.getString("R5_ACCOUNT_NUMBER"));
+						obj.setR5_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R5_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR5_STATUS_OF_ACCOUNT(rs.getString("R5_STATUS_OF_ACCOUNT"));
+						obj.setR5_NOT_FIT_FOR_STP(rs.getString("R5_NOT_FIT_FOR_STP"));
+						obj.setR5_BRANCH_CODE_AND_NAME(rs.getString("R5_BRANCH_CODE_AND_NAME"));
+						obj.setR5_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R5_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR5_CURRENCY_OF_ACCOUNT(rs.getString("R5_CURRENCY_OF_ACCOUNT"));
+						obj.setR5_EXCHANGE_RATE(rs.getBigDecimal("R5_EXCHANGE_RATE"));
+						
+						obj.setR6_RECORD_NUMBER(rs.getString("R6_RECORD_NUMBER"));
+						obj.setR6_TITLE(rs.getString("R6_TITLE"));
+						obj.setR6_FIRST_NAME(rs.getString("R6_FIRST_NAME"));
+						obj.setR6_MIDDLE_NAME(rs.getString("R6_MIDDLE_NAME"));
+						obj.setR6_SURNAME(rs.getString("R6_SURNAME"));
+						obj.setR6_PREVIOUS_NAME(rs.getString("R6_PREVIOUS_NAME"));
+						obj.setR6_GENDER(rs.getString("R6_GENDER"));
+						obj.setR6_IDENTIFICATION_TYPE(rs.getString("R6_IDENTIFICATION_TYPE"));
+						obj.setR6_PASSPORT_NUMBER(rs.getString("R6_PASSPORT_NUMBER"));
+						obj.setR6_DATE_OF_BIRTH(rs.getDate("R6_DATE_OF_BIRTH"));
+						obj.setR6_HOME_ADDRESS(rs.getString("R6_HOME_ADDRESS"));
+						obj.setR6_POSTAL_ADDRESS(rs.getString("R6_POSTAL_ADDRESS"));
+						obj.setR6_RESIDENCE(rs.getString("R6_RESIDENCE"));
+						obj.setR6_EMAIL(rs.getString("R6_EMAIL"));
+						obj.setR6_LANDLINE(rs.getString("R6_LANDLINE"));
+						obj.setR6_MOBILE_PHONE_NUMBER(rs.getString("R6_MOBILE_PHONE_NUMBER"));
+						obj.setR6_MOBILE_MONEY_NUMBER(rs.getString("R6_MOBILE_MONEY_NUMBER"));
+						obj.setR6_PRODUCT_TYPE(rs.getString("R6_PRODUCT_TYPE"));
+						obj.setR6_ACCOUNT_BY_OWNERSHIP(rs.getString("R6_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR6_ACCOUNT_NUMBER(rs.getString("R6_ACCOUNT_NUMBER"));
+						obj.setR6_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R6_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR6_STATUS_OF_ACCOUNT(rs.getString("R6_STATUS_OF_ACCOUNT"));
+						obj.setR6_NOT_FIT_FOR_STP(rs.getString("R6_NOT_FIT_FOR_STP"));
+						obj.setR6_BRANCH_CODE_AND_NAME(rs.getString("R6_BRANCH_CODE_AND_NAME"));
+						obj.setR6_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R6_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR6_CURRENCY_OF_ACCOUNT(rs.getString("R6_CURRENCY_OF_ACCOUNT"));
+						obj.setR6_EXCHANGE_RATE(rs.getBigDecimal("R6_EXCHANGE_RATE"));
+						
+						obj.setR7_RECORD_NUMBER(rs.getString("R7_RECORD_NUMBER"));
+						obj.setR7_TITLE(rs.getString("R7_TITLE"));
+						obj.setR7_FIRST_NAME(rs.getString("R7_FIRST_NAME"));
+						obj.setR7_MIDDLE_NAME(rs.getString("R7_MIDDLE_NAME"));
+						obj.setR7_SURNAME(rs.getString("R7_SURNAME"));
+						obj.setR7_PREVIOUS_NAME(rs.getString("R7_PREVIOUS_NAME"));
+						obj.setR7_GENDER(rs.getString("R7_GENDER"));
+						obj.setR7_IDENTIFICATION_TYPE(rs.getString("R7_IDENTIFICATION_TYPE"));
+						obj.setR7_PASSPORT_NUMBER(rs.getString("R7_PASSPORT_NUMBER"));
+						obj.setR7_DATE_OF_BIRTH(rs.getDate("R7_DATE_OF_BIRTH"));
+						obj.setR7_HOME_ADDRESS(rs.getString("R7_HOME_ADDRESS"));
+						obj.setR7_POSTAL_ADDRESS(rs.getString("R7_POSTAL_ADDRESS"));
+						obj.setR7_RESIDENCE(rs.getString("R7_RESIDENCE"));
+						obj.setR7_EMAIL(rs.getString("R7_EMAIL"));
+						obj.setR7_LANDLINE(rs.getString("R7_LANDLINE"));
+						obj.setR7_MOBILE_PHONE_NUMBER(rs.getString("R7_MOBILE_PHONE_NUMBER"));
+						obj.setR7_MOBILE_MONEY_NUMBER(rs.getString("R7_MOBILE_MONEY_NUMBER"));
+						obj.setR7_PRODUCT_TYPE(rs.getString("R7_PRODUCT_TYPE"));
+						obj.setR7_ACCOUNT_BY_OWNERSHIP(rs.getString("R7_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR7_ACCOUNT_NUMBER(rs.getString("R7_ACCOUNT_NUMBER"));
+						obj.setR7_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R7_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR7_STATUS_OF_ACCOUNT(rs.getString("R7_STATUS_OF_ACCOUNT"));
+						obj.setR7_NOT_FIT_FOR_STP(rs.getString("R7_NOT_FIT_FOR_STP"));
+						obj.setR7_BRANCH_CODE_AND_NAME(rs.getString("R7_BRANCH_CODE_AND_NAME"));
+						obj.setR7_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R7_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR7_CURRENCY_OF_ACCOUNT(rs.getString("R7_CURRENCY_OF_ACCOUNT"));
+						obj.setR7_EXCHANGE_RATE(rs.getBigDecimal("R7_EXCHANGE_RATE"));
+						
+						obj.setR8_RECORD_NUMBER(rs.getString("R8_RECORD_NUMBER"));
+						obj.setR8_TITLE(rs.getString("R8_TITLE"));
+						obj.setR8_FIRST_NAME(rs.getString("R8_FIRST_NAME"));
+						obj.setR8_MIDDLE_NAME(rs.getString("R8_MIDDLE_NAME"));
+						obj.setR8_SURNAME(rs.getString("R8_SURNAME"));
+						obj.setR8_PREVIOUS_NAME(rs.getString("R8_PREVIOUS_NAME"));
+						obj.setR8_GENDER(rs.getString("R8_GENDER"));
+						obj.setR8_IDENTIFICATION_TYPE(rs.getString("R8_IDENTIFICATION_TYPE"));
+						obj.setR8_PASSPORT_NUMBER(rs.getString("R8_PASSPORT_NUMBER"));
+						obj.setR8_DATE_OF_BIRTH(rs.getDate("R8_DATE_OF_BIRTH"));
+						obj.setR8_HOME_ADDRESS(rs.getString("R8_HOME_ADDRESS"));
+						obj.setR8_POSTAL_ADDRESS(rs.getString("R8_POSTAL_ADDRESS"));
+						obj.setR8_RESIDENCE(rs.getString("R8_RESIDENCE"));
+						obj.setR8_EMAIL(rs.getString("R8_EMAIL"));
+						obj.setR8_LANDLINE(rs.getString("R8_LANDLINE"));
+						obj.setR8_MOBILE_PHONE_NUMBER(rs.getString("R8_MOBILE_PHONE_NUMBER"));
+						obj.setR8_MOBILE_MONEY_NUMBER(rs.getString("R8_MOBILE_MONEY_NUMBER"));
+						obj.setR8_PRODUCT_TYPE(rs.getString("R8_PRODUCT_TYPE"));
+						obj.setR8_ACCOUNT_BY_OWNERSHIP(rs.getString("R8_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR8_ACCOUNT_NUMBER(rs.getString("R8_ACCOUNT_NUMBER"));
+						obj.setR8_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R8_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR8_STATUS_OF_ACCOUNT(rs.getString("R8_STATUS_OF_ACCOUNT"));
+						obj.setR8_NOT_FIT_FOR_STP(rs.getString("R8_NOT_FIT_FOR_STP"));
+						obj.setR8_BRANCH_CODE_AND_NAME(rs.getString("R8_BRANCH_CODE_AND_NAME"));
+						obj.setR8_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R8_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR8_CURRENCY_OF_ACCOUNT(rs.getString("R8_CURRENCY_OF_ACCOUNT"));
+						obj.setR8_EXCHANGE_RATE(rs.getBigDecimal("R8_EXCHANGE_RATE"));
+						
+						obj.setR9_RECORD_NUMBER(rs.getString("R9_RECORD_NUMBER"));
+						obj.setR9_TITLE(rs.getString("R9_TITLE"));
+						obj.setR9_FIRST_NAME(rs.getString("R9_FIRST_NAME"));
+						obj.setR9_MIDDLE_NAME(rs.getString("R9_MIDDLE_NAME"));
+						obj.setR9_SURNAME(rs.getString("R9_SURNAME"));
+						obj.setR9_PREVIOUS_NAME(rs.getString("R9_PREVIOUS_NAME"));
+						obj.setR9_GENDER(rs.getString("R9_GENDER"));
+						obj.setR9_IDENTIFICATION_TYPE(rs.getString("R9_IDENTIFICATION_TYPE"));
+						obj.setR9_PASSPORT_NUMBER(rs.getString("R9_PASSPORT_NUMBER"));
+						obj.setR9_DATE_OF_BIRTH(rs.getDate("R9_DATE_OF_BIRTH"));
+						obj.setR9_HOME_ADDRESS(rs.getString("R9_HOME_ADDRESS"));
+						obj.setR9_POSTAL_ADDRESS(rs.getString("R9_POSTAL_ADDRESS"));
+						obj.setR9_RESIDENCE(rs.getString("R9_RESIDENCE"));
+						obj.setR9_EMAIL(rs.getString("R9_EMAIL"));
+						obj.setR9_LANDLINE(rs.getString("R9_LANDLINE"));
+						obj.setR9_MOBILE_PHONE_NUMBER(rs.getString("R9_MOBILE_PHONE_NUMBER"));
+						obj.setR9_MOBILE_MONEY_NUMBER(rs.getString("R9_MOBILE_MONEY_NUMBER"));
+						obj.setR9_PRODUCT_TYPE(rs.getString("R9_PRODUCT_TYPE"));
+						obj.setR9_ACCOUNT_BY_OWNERSHIP(rs.getString("R9_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR9_ACCOUNT_NUMBER(rs.getString("R9_ACCOUNT_NUMBER"));
+						obj.setR9_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R9_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR9_STATUS_OF_ACCOUNT(rs.getString("R9_STATUS_OF_ACCOUNT"));
+						obj.setR9_NOT_FIT_FOR_STP(rs.getString("R9_NOT_FIT_FOR_STP"));
+						obj.setR9_BRANCH_CODE_AND_NAME(rs.getString("R9_BRANCH_CODE_AND_NAME"));
+						obj.setR9_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R9_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR9_CURRENCY_OF_ACCOUNT(rs.getString("R9_CURRENCY_OF_ACCOUNT"));
+						obj.setR9_EXCHANGE_RATE(rs.getBigDecimal("R9_EXCHANGE_RATE"));
+						
+						obj.setR10_RECORD_NUMBER(rs.getString("R10_RECORD_NUMBER"));
+						obj.setR10_TITLE(rs.getString("R10_TITLE"));
+						obj.setR10_FIRST_NAME(rs.getString("R10_FIRST_NAME"));
+						obj.setR10_MIDDLE_NAME(rs.getString("R10_MIDDLE_NAME"));
+						obj.setR10_SURNAME(rs.getString("R10_SURNAME"));
+						obj.setR10_PREVIOUS_NAME(rs.getString("R10_PREVIOUS_NAME"));
+						obj.setR10_GENDER(rs.getString("R10_GENDER"));
+						obj.setR10_IDENTIFICATION_TYPE(rs.getString("R10_IDENTIFICATION_TYPE"));
+						obj.setR10_PASSPORT_NUMBER(rs.getString("R10_PASSPORT_NUMBER"));
+						obj.setR10_DATE_OF_BIRTH(rs.getDate("R10_DATE_OF_BIRTH"));
+						obj.setR10_HOME_ADDRESS(rs.getString("R10_HOME_ADDRESS"));
+						obj.setR10_POSTAL_ADDRESS(rs.getString("R10_POSTAL_ADDRESS"));
+						obj.setR10_RESIDENCE(rs.getString("R10_RESIDENCE"));
+						obj.setR10_EMAIL(rs.getString("R10_EMAIL"));
+						obj.setR10_LANDLINE(rs.getString("R10_LANDLINE"));
+						obj.setR10_MOBILE_PHONE_NUMBER(rs.getString("R10_MOBILE_PHONE_NUMBER"));
+						obj.setR10_MOBILE_MONEY_NUMBER(rs.getString("R10_MOBILE_MONEY_NUMBER"));
+						obj.setR10_PRODUCT_TYPE(rs.getString("R10_PRODUCT_TYPE"));
+						obj.setR10_ACCOUNT_BY_OWNERSHIP(rs.getString("R10_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR10_ACCOUNT_NUMBER(rs.getString("R10_ACCOUNT_NUMBER"));
+						obj.setR10_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R10_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR10_STATUS_OF_ACCOUNT(rs.getString("R10_STATUS_OF_ACCOUNT"));
+						obj.setR10_NOT_FIT_FOR_STP(rs.getString("R10_NOT_FIT_FOR_STP"));
+						obj.setR10_BRANCH_CODE_AND_NAME(rs.getString("R10_BRANCH_CODE_AND_NAME"));
+						obj.setR10_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R10_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR10_CURRENCY_OF_ACCOUNT(rs.getString("R10_CURRENCY_OF_ACCOUNT"));
+						obj.setR10_EXCHANGE_RATE(rs.getBigDecimal("R10_EXCHANGE_RATE"));
+						
+						obj.setR11_RECORD_NUMBER(rs.getString("R11_RECORD_NUMBER"));
+						obj.setR11_TITLE(rs.getString("R11_TITLE"));
+						obj.setR11_FIRST_NAME(rs.getString("R11_FIRST_NAME"));
+						obj.setR11_MIDDLE_NAME(rs.getString("R11_MIDDLE_NAME"));
+						obj.setR11_SURNAME(rs.getString("R11_SURNAME"));
+						obj.setR11_PREVIOUS_NAME(rs.getString("R11_PREVIOUS_NAME"));
+						obj.setR11_GENDER(rs.getString("R11_GENDER"));
+						obj.setR11_IDENTIFICATION_TYPE(rs.getString("R11_IDENTIFICATION_TYPE"));
+						obj.setR11_PASSPORT_NUMBER(rs.getString("R11_PASSPORT_NUMBER"));
+						obj.setR11_DATE_OF_BIRTH(rs.getDate("R11_DATE_OF_BIRTH"));
+						obj.setR11_HOME_ADDRESS(rs.getString("R11_HOME_ADDRESS"));
+						obj.setR11_POSTAL_ADDRESS(rs.getString("R11_POSTAL_ADDRESS"));
+						obj.setR11_RESIDENCE(rs.getString("R11_RESIDENCE"));
+						obj.setR11_EMAIL(rs.getString("R11_EMAIL"));
+						obj.setR11_LANDLINE(rs.getString("R11_LANDLINE"));
+						obj.setR11_MOBILE_PHONE_NUMBER(rs.getString("R11_MOBILE_PHONE_NUMBER"));
+						obj.setR11_MOBILE_MONEY_NUMBER(rs.getString("R11_MOBILE_MONEY_NUMBER"));
+						obj.setR11_PRODUCT_TYPE(rs.getString("R11_PRODUCT_TYPE"));
+						obj.setR11_ACCOUNT_BY_OWNERSHIP(rs.getString("R11_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR11_ACCOUNT_NUMBER(rs.getString("R11_ACCOUNT_NUMBER"));
+						obj.setR11_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R11_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR11_STATUS_OF_ACCOUNT(rs.getString("R11_STATUS_OF_ACCOUNT"));
+						obj.setR11_NOT_FIT_FOR_STP(rs.getString("R11_NOT_FIT_FOR_STP"));
+						obj.setR11_BRANCH_CODE_AND_NAME(rs.getString("R11_BRANCH_CODE_AND_NAME"));
+						obj.setR11_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R11_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR11_CURRENCY_OF_ACCOUNT(rs.getString("R11_CURRENCY_OF_ACCOUNT"));
+						obj.setR11_EXCHANGE_RATE(rs.getBigDecimal("R11_EXCHANGE_RATE"));
+						
+						// COMMON FIELDS
+						obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+						obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+						obj.setREPORT_RESUBDATE(rs.getDate("REPORT_RESUBDATE"));
+						obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+						obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+						obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+						obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+						obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+						obj.setDEL_FLG(rs.getString("DEL_FLG"));
+						
+
+						return obj;
+					}
+				}
+				
+				public static class BDISB1_Archival_Summary_Entity {
+					
+					 private String R5_RECORD_NUMBER;
+					    private String R5_TITLE;
+					    private String R5_FIRST_NAME;
+					    private String R5_MIDDLE_NAME;
+					    private String R5_SURNAME;
+					    private String R5_PREVIOUS_NAME;
+					    private String R5_GENDER;
+					    private String R5_IDENTIFICATION_TYPE;
+					    private String R5_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R5_DATE_OF_BIRTH;
+					    private String R5_HOME_ADDRESS;
+					    private String R5_POSTAL_ADDRESS;
+					    private String R5_RESIDENCE;
+					    private String R5_EMAIL;
+					    private String R5_LANDLINE;
+					    private String R5_MOBILE_PHONE_NUMBER;
+					    private String R5_MOBILE_MONEY_NUMBER;
+					    private String R5_PRODUCT_TYPE;
+					    private String R5_ACCOUNT_BY_OWNERSHIP;
+					    private String R5_ACCOUNT_NUMBER;
+					    private BigDecimal R5_ACCOUNT_HOLDER_INDICATOR;
+					    private String R5_STATUS_OF_ACCOUNT;
+					    private String R5_NOT_FIT_FOR_STP;
+					    private String R5_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R5_ACCOUNT_BALANCE_IN_PULA;
+					    private String R5_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R5_EXCHANGE_RATE;
+
+					    // ===================== R6 =====================
+					    private String R6_RECORD_NUMBER;
+					    private String R6_TITLE;
+					    private String R6_FIRST_NAME;
+					    private String R6_MIDDLE_NAME;
+					    private String R6_SURNAME;
+					    private String R6_PREVIOUS_NAME;
+					    private String R6_GENDER;
+					    private String R6_IDENTIFICATION_TYPE;
+					    private String R6_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R6_DATE_OF_BIRTH;
+					    private String R6_HOME_ADDRESS;
+					    private String R6_POSTAL_ADDRESS;
+					    private String R6_RESIDENCE;
+					    private String R6_EMAIL;
+					    private String R6_LANDLINE;
+					    private String R6_MOBILE_PHONE_NUMBER;
+					    private String R6_MOBILE_MONEY_NUMBER;
+					    private String R6_PRODUCT_TYPE;
+					    private String R6_ACCOUNT_BY_OWNERSHIP;
+					    private String R6_ACCOUNT_NUMBER;
+					    private BigDecimal R6_ACCOUNT_HOLDER_INDICATOR;
+					    private String R6_STATUS_OF_ACCOUNT;
+					    private String R6_NOT_FIT_FOR_STP;
+					    private String R6_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R6_ACCOUNT_BALANCE_IN_PULA;
+					    private String R6_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R6_EXCHANGE_RATE;
+
+					    // ===================== R7 =====================
+					    private String R7_RECORD_NUMBER;
+					    private String R7_TITLE;
+					    private String R7_FIRST_NAME;
+					    private String R7_MIDDLE_NAME;
+					    private String R7_SURNAME;
+					    private String R7_PREVIOUS_NAME;
+					    private String R7_GENDER;
+					    private String R7_IDENTIFICATION_TYPE;
+					    private String R7_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R7_DATE_OF_BIRTH;
+					    private String R7_HOME_ADDRESS;
+					    private String R7_POSTAL_ADDRESS;
+					    private String R7_RESIDENCE;
+					    private String R7_EMAIL;
+					    private String R7_LANDLINE;
+					    private String R7_MOBILE_PHONE_NUMBER;
+					    private String R7_MOBILE_MONEY_NUMBER;
+					    private String R7_PRODUCT_TYPE;
+					    private String R7_ACCOUNT_BY_OWNERSHIP;
+					    private String R7_ACCOUNT_NUMBER;
+					    private BigDecimal R7_ACCOUNT_HOLDER_INDICATOR;
+					    private String R7_STATUS_OF_ACCOUNT;
+					    private String R7_NOT_FIT_FOR_STP;
+					    private String R7_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R7_ACCOUNT_BALANCE_IN_PULA;
+					    private String R7_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R7_EXCHANGE_RATE;
+
+					    // ===================== R8 =====================
+					    private String R8_RECORD_NUMBER;
+					    private String R8_TITLE;
+					    private String R8_FIRST_NAME;
+					    private String R8_MIDDLE_NAME;
+					    private String R8_SURNAME;
+					    private String R8_PREVIOUS_NAME;
+					    private String R8_GENDER;
+					    private String R8_IDENTIFICATION_TYPE;
+					    private String R8_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R8_DATE_OF_BIRTH;
+					    private String R8_HOME_ADDRESS;
+					    private String R8_POSTAL_ADDRESS;
+					    private String R8_RESIDENCE;
+					    private String R8_EMAIL;
+					    private String R8_LANDLINE;
+					    private String R8_MOBILE_PHONE_NUMBER;
+					    private String R8_MOBILE_MONEY_NUMBER;
+					    private String R8_PRODUCT_TYPE;
+					    private String R8_ACCOUNT_BY_OWNERSHIP;
+					    private String R8_ACCOUNT_NUMBER;
+					    private BigDecimal R8_ACCOUNT_HOLDER_INDICATOR;
+					    private String R8_STATUS_OF_ACCOUNT;
+					    private String R8_NOT_FIT_FOR_STP;
+					    private String R8_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R8_ACCOUNT_BALANCE_IN_PULA;
+					    private String R8_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R8_EXCHANGE_RATE;
+
+					    // ===================== R9 =====================
+					    private String R9_RECORD_NUMBER;
+					    private String R9_TITLE;
+					    private String R9_FIRST_NAME;
+					    private String R9_MIDDLE_NAME;
+					    private String R9_SURNAME;
+					    private String R9_PREVIOUS_NAME;
+					    private String R9_GENDER;
+					    private String R9_IDENTIFICATION_TYPE;
+					    private String R9_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R9_DATE_OF_BIRTH;
+					    private String R9_HOME_ADDRESS;
+					    private String R9_POSTAL_ADDRESS;
+					    private String R9_RESIDENCE;
+					    private String R9_EMAIL;
+					    private String R9_LANDLINE;
+					    private String R9_MOBILE_PHONE_NUMBER;
+					    private String R9_MOBILE_MONEY_NUMBER;
+					    private String R9_PRODUCT_TYPE;
+					    private String R9_ACCOUNT_BY_OWNERSHIP;
+					    private String R9_ACCOUNT_NUMBER;
+					    private BigDecimal R9_ACCOUNT_HOLDER_INDICATOR;
+					    private String R9_STATUS_OF_ACCOUNT;
+					    private String R9_NOT_FIT_FOR_STP;
+					    private String R9_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R9_ACCOUNT_BALANCE_IN_PULA;
+					    private String R9_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R9_EXCHANGE_RATE;
+
+					    // ===================== R10 =====================
+					    private String R10_RECORD_NUMBER;
+					    private String R10_TITLE;
+					    private String R10_FIRST_NAME;
+					    private String R10_MIDDLE_NAME;
+					    private String R10_SURNAME;
+					    private String R10_PREVIOUS_NAME;
+					    private String R10_GENDER;
+					    private String R10_IDENTIFICATION_TYPE;
+					    private String R10_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R10_DATE_OF_BIRTH;
+					    private String R10_HOME_ADDRESS;
+					    private String R10_POSTAL_ADDRESS;
+					    private String R10_RESIDENCE;
+					    private String R10_EMAIL;
+					    private String R10_LANDLINE;
+					    private String R10_MOBILE_PHONE_NUMBER;
+					    private String R10_MOBILE_MONEY_NUMBER;
+					    private String R10_PRODUCT_TYPE;
+					    private String R10_ACCOUNT_BY_OWNERSHIP;
+					    private String R10_ACCOUNT_NUMBER;
+					    private BigDecimal R10_ACCOUNT_HOLDER_INDICATOR;
+					    private String R10_STATUS_OF_ACCOUNT;
+					    private String R10_NOT_FIT_FOR_STP;
+					    private String R10_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R10_ACCOUNT_BALANCE_IN_PULA;
+					    private String R10_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R10_EXCHANGE_RATE;
+
+					    // ===================== R11 =====================
+					    private String R11_RECORD_NUMBER;
+					    private String R11_TITLE;
+					    private String R11_FIRST_NAME;
+					    private String R11_MIDDLE_NAME;
+					    private String R11_SURNAME;
+					    private String R11_PREVIOUS_NAME;
+					    private String R11_GENDER;
+					    private String R11_IDENTIFICATION_TYPE;
+					    private String R11_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R11_DATE_OF_BIRTH;
+					    private String R11_HOME_ADDRESS;
+					    private String R11_POSTAL_ADDRESS;
+					    private String R11_RESIDENCE;
+					    private String R11_EMAIL;
+					    private String R11_LANDLINE;
+					    private String R11_MOBILE_PHONE_NUMBER;
+					    private String R11_MOBILE_MONEY_NUMBER;
+					    private String R11_PRODUCT_TYPE;
+					    private String R11_ACCOUNT_BY_OWNERSHIP;
+					    private String R11_ACCOUNT_NUMBER;
+					    private BigDecimal R11_ACCOUNT_HOLDER_INDICATOR;
+					    private String R11_STATUS_OF_ACCOUNT;
+					    private String R11_NOT_FIT_FOR_STP;
+					    private String R11_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R11_ACCOUNT_BALANCE_IN_PULA;
+					    private String R11_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R11_EXCHANGE_RATE;
+					    
+					    @Id
+						@Temporal(TemporalType.DATE)
+						@Column(name = "REPORT_DATE")
+						private Date REPORT_DATE;
+
+						@Column(name = "REPORT_VERSION", length = 100)
+						private BigDecimal REPORT_VERSION;
+						
+						@Column(name = "REPORT_RESUBDATE")
+						private Date REPORT_RESUBDATE;
+
+						@Column(name = "REPORT_FREQUENCY", length = 100)
+						private String REPORT_FREQUENCY;
+
+						@Column(name = "REPORT_CODE", length = 100)
+						private String REPORT_CODE;
+
+						@Column(name = "REPORT_DESC", length = 100)
+						private String REPORT_DESC;
+
+						@Column(name = "ENTITY_FLG", length = 1)
+						private String ENTITY_FLG;
+
+						@Column(name = "MODIFY_FLG", length = 1)
+						private String MODIFY_FLG;
+
+						@Column(name = "DEL_FLG", length = 1)
+						private String DEL_FLG;
+						
+						public String getR5_RECORD_NUMBER() {
+							return R5_RECORD_NUMBER;
+						}
+						public void setR5_RECORD_NUMBER(String r5_RECORD_NUMBER) {
+							R5_RECORD_NUMBER = r5_RECORD_NUMBER;
+						}
+						public String getR5_TITLE() {
+							return R5_TITLE;
+						}
+						public void setR5_TITLE(String r5_TITLE) {
+							R5_TITLE = r5_TITLE;
+						}
+						public String getR5_FIRST_NAME() {
+							return R5_FIRST_NAME;
+						}
+						public void setR5_FIRST_NAME(String r5_FIRST_NAME) {
+							R5_FIRST_NAME = r5_FIRST_NAME;
+						}
+						public String getR5_MIDDLE_NAME() {
+							return R5_MIDDLE_NAME;
+						}
+						public void setR5_MIDDLE_NAME(String r5_MIDDLE_NAME) {
+							R5_MIDDLE_NAME = r5_MIDDLE_NAME;
+						}
+						public String getR5_SURNAME() {
+							return R5_SURNAME;
+						}
+						public void setR5_SURNAME(String r5_SURNAME) {
+							R5_SURNAME = r5_SURNAME;
+						}
+						public String getR5_PREVIOUS_NAME() {
+							return R5_PREVIOUS_NAME;
+						}
+						public void setR5_PREVIOUS_NAME(String r5_PREVIOUS_NAME) {
+							R5_PREVIOUS_NAME = r5_PREVIOUS_NAME;
+						}
+						public String getR5_GENDER() {
+							return R5_GENDER;
+						}
+						public void setR5_GENDER(String r5_GENDER) {
+							R5_GENDER = r5_GENDER;
+						}
+						public String getR5_IDENTIFICATION_TYPE() {
+							return R5_IDENTIFICATION_TYPE;
+						}
+						public void setR5_IDENTIFICATION_TYPE(String r5_IDENTIFICATION_TYPE) {
+							R5_IDENTIFICATION_TYPE = r5_IDENTIFICATION_TYPE;
+						}
+						public String getR5_PASSPORT_NUMBER() {
+							return R5_PASSPORT_NUMBER;
+						}
+						public void setR5_PASSPORT_NUMBER(String r5_PASSPORT_NUMBER) {
+							R5_PASSPORT_NUMBER = r5_PASSPORT_NUMBER;
+						}
+						public Date getR5_DATE_OF_BIRTH() {
+							return R5_DATE_OF_BIRTH;
+						}
+						public void setR5_DATE_OF_BIRTH(Date r5_DATE_OF_BIRTH) {
+							R5_DATE_OF_BIRTH = r5_DATE_OF_BIRTH;
+						}
+						public String getR5_HOME_ADDRESS() {
+							return R5_HOME_ADDRESS;
+						}
+						public void setR5_HOME_ADDRESS(String r5_HOME_ADDRESS) {
+							R5_HOME_ADDRESS = r5_HOME_ADDRESS;
+						}
+						public String getR5_POSTAL_ADDRESS() {
+							return R5_POSTAL_ADDRESS;
+						}
+						public void setR5_POSTAL_ADDRESS(String r5_POSTAL_ADDRESS) {
+							R5_POSTAL_ADDRESS = r5_POSTAL_ADDRESS;
+						}
+						public String getR5_RESIDENCE() {
+							return R5_RESIDENCE;
+						}
+						public void setR5_RESIDENCE(String r5_RESIDENCE) {
+							R5_RESIDENCE = r5_RESIDENCE;
+						}
+						public String getR5_EMAIL() {
+							return R5_EMAIL;
+						}
+						public void setR5_EMAIL(String r5_EMAIL) {
+							R5_EMAIL = r5_EMAIL;
+						}
+						public String getR5_LANDLINE() {
+							return R5_LANDLINE;
+						}
+						public void setR5_LANDLINE(String r5_LANDLINE) {
+							R5_LANDLINE = r5_LANDLINE;
+						}
+						public String getR5_MOBILE_PHONE_NUMBER() {
+							return R5_MOBILE_PHONE_NUMBER;
+						}
+						public void setR5_MOBILE_PHONE_NUMBER(String r5_MOBILE_PHONE_NUMBER) {
+							R5_MOBILE_PHONE_NUMBER = r5_MOBILE_PHONE_NUMBER;
+						}
+						public String getR5_MOBILE_MONEY_NUMBER() {
+							return R5_MOBILE_MONEY_NUMBER;
+						}
+						public void setR5_MOBILE_MONEY_NUMBER(String r5_MOBILE_MONEY_NUMBER) {
+							R5_MOBILE_MONEY_NUMBER = r5_MOBILE_MONEY_NUMBER;
+						}
+						public String getR5_PRODUCT_TYPE() {
+							return R5_PRODUCT_TYPE;
+						}
+						public void setR5_PRODUCT_TYPE(String r5_PRODUCT_TYPE) {
+							R5_PRODUCT_TYPE = r5_PRODUCT_TYPE;
+						}
+						public String getR5_ACCOUNT_BY_OWNERSHIP() {
+							return R5_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR5_ACCOUNT_BY_OWNERSHIP(String r5_ACCOUNT_BY_OWNERSHIP) {
+							R5_ACCOUNT_BY_OWNERSHIP = r5_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR5_ACCOUNT_NUMBER() {
+							return R5_ACCOUNT_NUMBER;
+						}
+						public void setR5_ACCOUNT_NUMBER(String r5_ACCOUNT_NUMBER) {
+							R5_ACCOUNT_NUMBER = r5_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR5_ACCOUNT_HOLDER_INDICATOR() {
+							return R5_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR5_ACCOUNT_HOLDER_INDICATOR(BigDecimal r5_ACCOUNT_HOLDER_INDICATOR) {
+							R5_ACCOUNT_HOLDER_INDICATOR = r5_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR5_STATUS_OF_ACCOUNT() {
+							return R5_STATUS_OF_ACCOUNT;
+						}
+						public void setR5_STATUS_OF_ACCOUNT(String r5_STATUS_OF_ACCOUNT) {
+							R5_STATUS_OF_ACCOUNT = r5_STATUS_OF_ACCOUNT;
+						}
+						public String getR5_NOT_FIT_FOR_STP() {
+							return R5_NOT_FIT_FOR_STP;
+						}
+						public void setR5_NOT_FIT_FOR_STP(String r5_NOT_FIT_FOR_STP) {
+							R5_NOT_FIT_FOR_STP = r5_NOT_FIT_FOR_STP;
+						}
+						public String getR5_BRANCH_CODE_AND_NAME() {
+							return R5_BRANCH_CODE_AND_NAME;
+						}
+						public void setR5_BRANCH_CODE_AND_NAME(String r5_BRANCH_CODE_AND_NAME) {
+							R5_BRANCH_CODE_AND_NAME = r5_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR5_ACCOUNT_BALANCE_IN_PULA() {
+							return R5_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR5_ACCOUNT_BALANCE_IN_PULA(BigDecimal r5_ACCOUNT_BALANCE_IN_PULA) {
+							R5_ACCOUNT_BALANCE_IN_PULA = r5_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR5_CURRENCY_OF_ACCOUNT() {
+							return R5_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR5_CURRENCY_OF_ACCOUNT(String r5_CURRENCY_OF_ACCOUNT) {
+							R5_CURRENCY_OF_ACCOUNT = r5_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR5_EXCHANGE_RATE() {
+							return R5_EXCHANGE_RATE;
+						}
+						public void setR5_EXCHANGE_RATE(BigDecimal r5_EXCHANGE_RATE) {
+							R5_EXCHANGE_RATE = r5_EXCHANGE_RATE;
+						}
+						public String getR6_RECORD_NUMBER() {
+							return R6_RECORD_NUMBER;
+						}
+						public void setR6_RECORD_NUMBER(String r6_RECORD_NUMBER) {
+							R6_RECORD_NUMBER = r6_RECORD_NUMBER;
+						}
+						public String getR6_TITLE() {
+							return R6_TITLE;
+						}
+						public void setR6_TITLE(String r6_TITLE) {
+							R6_TITLE = r6_TITLE;
+						}
+						public String getR6_FIRST_NAME() {
+							return R6_FIRST_NAME;
+						}
+						public void setR6_FIRST_NAME(String r6_FIRST_NAME) {
+							R6_FIRST_NAME = r6_FIRST_NAME;
+						}
+						public String getR6_MIDDLE_NAME() {
+							return R6_MIDDLE_NAME;
+						}
+						public void setR6_MIDDLE_NAME(String r6_MIDDLE_NAME) {
+							R6_MIDDLE_NAME = r6_MIDDLE_NAME;
+						}
+						public String getR6_SURNAME() {
+							return R6_SURNAME;
+						}
+						public void setR6_SURNAME(String r6_SURNAME) {
+							R6_SURNAME = r6_SURNAME;
+						}
+						public String getR6_PREVIOUS_NAME() {
+							return R6_PREVIOUS_NAME;
+						}
+						public void setR6_PREVIOUS_NAME(String r6_PREVIOUS_NAME) {
+							R6_PREVIOUS_NAME = r6_PREVIOUS_NAME;
+						}
+						public String getR6_GENDER() {
+							return R6_GENDER;
+						}
+						public void setR6_GENDER(String r6_GENDER) {
+							R6_GENDER = r6_GENDER;
+						}
+						public String getR6_IDENTIFICATION_TYPE() {
+							return R6_IDENTIFICATION_TYPE;
+						}
+						public void setR6_IDENTIFICATION_TYPE(String r6_IDENTIFICATION_TYPE) {
+							R6_IDENTIFICATION_TYPE = r6_IDENTIFICATION_TYPE;
+						}
+						public String getR6_PASSPORT_NUMBER() {
+							return R6_PASSPORT_NUMBER;
+						}
+						public void setR6_PASSPORT_NUMBER(String r6_PASSPORT_NUMBER) {
+							R6_PASSPORT_NUMBER = r6_PASSPORT_NUMBER;
+						}
+						public Date getR6_DATE_OF_BIRTH() {
+							return R6_DATE_OF_BIRTH;
+						}
+						public void setR6_DATE_OF_BIRTH(Date r6_DATE_OF_BIRTH) {
+							R6_DATE_OF_BIRTH = r6_DATE_OF_BIRTH;
+						}
+						public String getR6_HOME_ADDRESS() {
+							return R6_HOME_ADDRESS;
+						}
+						public void setR6_HOME_ADDRESS(String r6_HOME_ADDRESS) {
+							R6_HOME_ADDRESS = r6_HOME_ADDRESS;
+						}
+						public String getR6_POSTAL_ADDRESS() {
+							return R6_POSTAL_ADDRESS;
+						}
+						public void setR6_POSTAL_ADDRESS(String r6_POSTAL_ADDRESS) {
+							R6_POSTAL_ADDRESS = r6_POSTAL_ADDRESS;
+						}
+						public String getR6_RESIDENCE() {
+							return R6_RESIDENCE;
+						}
+						public void setR6_RESIDENCE(String r6_RESIDENCE) {
+							R6_RESIDENCE = r6_RESIDENCE;
+						}
+						public String getR6_EMAIL() {
+							return R6_EMAIL;
+						}
+						public void setR6_EMAIL(String r6_EMAIL) {
+							R6_EMAIL = r6_EMAIL;
+						}
+						public String getR6_LANDLINE() {
+							return R6_LANDLINE;
+						}
+						public void setR6_LANDLINE(String r6_LANDLINE) {
+							R6_LANDLINE = r6_LANDLINE;
+						}
+						public String getR6_MOBILE_PHONE_NUMBER() {
+							return R6_MOBILE_PHONE_NUMBER;
+						}
+						public void setR6_MOBILE_PHONE_NUMBER(String r6_MOBILE_PHONE_NUMBER) {
+							R6_MOBILE_PHONE_NUMBER = r6_MOBILE_PHONE_NUMBER;
+						}
+						public String getR6_MOBILE_MONEY_NUMBER() {
+							return R6_MOBILE_MONEY_NUMBER;
+						}
+						public void setR6_MOBILE_MONEY_NUMBER(String r6_MOBILE_MONEY_NUMBER) {
+							R6_MOBILE_MONEY_NUMBER = r6_MOBILE_MONEY_NUMBER;
+						}
+						public String getR6_PRODUCT_TYPE() {
+							return R6_PRODUCT_TYPE;
+						}
+						public void setR6_PRODUCT_TYPE(String r6_PRODUCT_TYPE) {
+							R6_PRODUCT_TYPE = r6_PRODUCT_TYPE;
+						}
+						public String getR6_ACCOUNT_BY_OWNERSHIP() {
+							return R6_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR6_ACCOUNT_BY_OWNERSHIP(String r6_ACCOUNT_BY_OWNERSHIP) {
+							R6_ACCOUNT_BY_OWNERSHIP = r6_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR6_ACCOUNT_NUMBER() {
+							return R6_ACCOUNT_NUMBER;
+						}
+						public void setR6_ACCOUNT_NUMBER(String r6_ACCOUNT_NUMBER) {
+							R6_ACCOUNT_NUMBER = r6_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR6_ACCOUNT_HOLDER_INDICATOR() {
+							return R6_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR6_ACCOUNT_HOLDER_INDICATOR(BigDecimal r6_ACCOUNT_HOLDER_INDICATOR) {
+							R6_ACCOUNT_HOLDER_INDICATOR = r6_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR6_STATUS_OF_ACCOUNT() {
+							return R6_STATUS_OF_ACCOUNT;
+						}
+						public void setR6_STATUS_OF_ACCOUNT(String r6_STATUS_OF_ACCOUNT) {
+							R6_STATUS_OF_ACCOUNT = r6_STATUS_OF_ACCOUNT;
+						}
+						public String getR6_NOT_FIT_FOR_STP() {
+							return R6_NOT_FIT_FOR_STP;
+						}
+						public void setR6_NOT_FIT_FOR_STP(String r6_NOT_FIT_FOR_STP) {
+							R6_NOT_FIT_FOR_STP = r6_NOT_FIT_FOR_STP;
+						}
+						public String getR6_BRANCH_CODE_AND_NAME() {
+							return R6_BRANCH_CODE_AND_NAME;
+						}
+						public void setR6_BRANCH_CODE_AND_NAME(String r6_BRANCH_CODE_AND_NAME) {
+							R6_BRANCH_CODE_AND_NAME = r6_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR6_ACCOUNT_BALANCE_IN_PULA() {
+							return R6_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR6_ACCOUNT_BALANCE_IN_PULA(BigDecimal r6_ACCOUNT_BALANCE_IN_PULA) {
+							R6_ACCOUNT_BALANCE_IN_PULA = r6_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR6_CURRENCY_OF_ACCOUNT() {
+							return R6_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR6_CURRENCY_OF_ACCOUNT(String r6_CURRENCY_OF_ACCOUNT) {
+							R6_CURRENCY_OF_ACCOUNT = r6_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR6_EXCHANGE_RATE() {
+							return R6_EXCHANGE_RATE;
+						}
+						public void setR6_EXCHANGE_RATE(BigDecimal r6_EXCHANGE_RATE) {
+							R6_EXCHANGE_RATE = r6_EXCHANGE_RATE;
+						}
+						public String getR7_RECORD_NUMBER() {
+							return R7_RECORD_NUMBER;
+						}
+						public void setR7_RECORD_NUMBER(String r7_RECORD_NUMBER) {
+							R7_RECORD_NUMBER = r7_RECORD_NUMBER;
+						}
+						public String getR7_TITLE() {
+							return R7_TITLE;
+						}
+						public void setR7_TITLE(String r7_TITLE) {
+							R7_TITLE = r7_TITLE;
+						}
+						public String getR7_FIRST_NAME() {
+							return R7_FIRST_NAME;
+						}
+						public void setR7_FIRST_NAME(String r7_FIRST_NAME) {
+							R7_FIRST_NAME = r7_FIRST_NAME;
+						}
+						public String getR7_MIDDLE_NAME() {
+							return R7_MIDDLE_NAME;
+						}
+						public void setR7_MIDDLE_NAME(String r7_MIDDLE_NAME) {
+							R7_MIDDLE_NAME = r7_MIDDLE_NAME;
+						}
+						public String getR7_SURNAME() {
+							return R7_SURNAME;
+						}
+						public void setR7_SURNAME(String r7_SURNAME) {
+							R7_SURNAME = r7_SURNAME;
+						}
+						public String getR7_PREVIOUS_NAME() {
+							return R7_PREVIOUS_NAME;
+						}
+						public void setR7_PREVIOUS_NAME(String r7_PREVIOUS_NAME) {
+							R7_PREVIOUS_NAME = r7_PREVIOUS_NAME;
+						}
+						public String getR7_GENDER() {
+							return R7_GENDER;
+						}
+						public void setR7_GENDER(String r7_GENDER) {
+							R7_GENDER = r7_GENDER;
+						}
+						public String getR7_IDENTIFICATION_TYPE() {
+							return R7_IDENTIFICATION_TYPE;
+						}
+						public void setR7_IDENTIFICATION_TYPE(String r7_IDENTIFICATION_TYPE) {
+							R7_IDENTIFICATION_TYPE = r7_IDENTIFICATION_TYPE;
+						}
+						public String getR7_PASSPORT_NUMBER() {
+							return R7_PASSPORT_NUMBER;
+						}
+						public void setR7_PASSPORT_NUMBER(String r7_PASSPORT_NUMBER) {
+							R7_PASSPORT_NUMBER = r7_PASSPORT_NUMBER;
+						}
+						public Date getR7_DATE_OF_BIRTH() {
+							return R7_DATE_OF_BIRTH;
+						}
+						public void setR7_DATE_OF_BIRTH(Date r7_DATE_OF_BIRTH) {
+							R7_DATE_OF_BIRTH = r7_DATE_OF_BIRTH;
+						}
+						public String getR7_HOME_ADDRESS() {
+							return R7_HOME_ADDRESS;
+						}
+						public void setR7_HOME_ADDRESS(String r7_HOME_ADDRESS) {
+							R7_HOME_ADDRESS = r7_HOME_ADDRESS;
+						}
+						public String getR7_POSTAL_ADDRESS() {
+							return R7_POSTAL_ADDRESS;
+						}
+						public void setR7_POSTAL_ADDRESS(String r7_POSTAL_ADDRESS) {
+							R7_POSTAL_ADDRESS = r7_POSTAL_ADDRESS;
+						}
+						public String getR7_RESIDENCE() {
+							return R7_RESIDENCE;
+						}
+						public void setR7_RESIDENCE(String r7_RESIDENCE) {
+							R7_RESIDENCE = r7_RESIDENCE;
+						}
+						public String getR7_EMAIL() {
+							return R7_EMAIL;
+						}
+						public void setR7_EMAIL(String r7_EMAIL) {
+							R7_EMAIL = r7_EMAIL;
+						}
+						public String getR7_LANDLINE() {
+							return R7_LANDLINE;
+						}
+						public void setR7_LANDLINE(String r7_LANDLINE) {
+							R7_LANDLINE = r7_LANDLINE;
+						}
+						public String getR7_MOBILE_PHONE_NUMBER() {
+							return R7_MOBILE_PHONE_NUMBER;
+						}
+						public void setR7_MOBILE_PHONE_NUMBER(String r7_MOBILE_PHONE_NUMBER) {
+							R7_MOBILE_PHONE_NUMBER = r7_MOBILE_PHONE_NUMBER;
+						}
+						public String getR7_MOBILE_MONEY_NUMBER() {
+							return R7_MOBILE_MONEY_NUMBER;
+						}
+						public void setR7_MOBILE_MONEY_NUMBER(String r7_MOBILE_MONEY_NUMBER) {
+							R7_MOBILE_MONEY_NUMBER = r7_MOBILE_MONEY_NUMBER;
+						}
+						public String getR7_PRODUCT_TYPE() {
+							return R7_PRODUCT_TYPE;
+						}
+						public void setR7_PRODUCT_TYPE(String r7_PRODUCT_TYPE) {
+							R7_PRODUCT_TYPE = r7_PRODUCT_TYPE;
+						}
+						public String getR7_ACCOUNT_BY_OWNERSHIP() {
+							return R7_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR7_ACCOUNT_BY_OWNERSHIP(String r7_ACCOUNT_BY_OWNERSHIP) {
+							R7_ACCOUNT_BY_OWNERSHIP = r7_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR7_ACCOUNT_NUMBER() {
+							return R7_ACCOUNT_NUMBER;
+						}
+						public void setR7_ACCOUNT_NUMBER(String r7_ACCOUNT_NUMBER) {
+							R7_ACCOUNT_NUMBER = r7_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR7_ACCOUNT_HOLDER_INDICATOR() {
+							return R7_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR7_ACCOUNT_HOLDER_INDICATOR(BigDecimal r7_ACCOUNT_HOLDER_INDICATOR) {
+							R7_ACCOUNT_HOLDER_INDICATOR = r7_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR7_STATUS_OF_ACCOUNT() {
+							return R7_STATUS_OF_ACCOUNT;
+						}
+						public void setR7_STATUS_OF_ACCOUNT(String r7_STATUS_OF_ACCOUNT) {
+							R7_STATUS_OF_ACCOUNT = r7_STATUS_OF_ACCOUNT;
+						}
+						public String getR7_NOT_FIT_FOR_STP() {
+							return R7_NOT_FIT_FOR_STP;
+						}
+						public void setR7_NOT_FIT_FOR_STP(String r7_NOT_FIT_FOR_STP) {
+							R7_NOT_FIT_FOR_STP = r7_NOT_FIT_FOR_STP;
+						}
+						public String getR7_BRANCH_CODE_AND_NAME() {
+							return R7_BRANCH_CODE_AND_NAME;
+						}
+						public void setR7_BRANCH_CODE_AND_NAME(String r7_BRANCH_CODE_AND_NAME) {
+							R7_BRANCH_CODE_AND_NAME = r7_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR7_ACCOUNT_BALANCE_IN_PULA() {
+							return R7_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR7_ACCOUNT_BALANCE_IN_PULA(BigDecimal r7_ACCOUNT_BALANCE_IN_PULA) {
+							R7_ACCOUNT_BALANCE_IN_PULA = r7_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR7_CURRENCY_OF_ACCOUNT() {
+							return R7_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR7_CURRENCY_OF_ACCOUNT(String r7_CURRENCY_OF_ACCOUNT) {
+							R7_CURRENCY_OF_ACCOUNT = r7_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR7_EXCHANGE_RATE() {
+							return R7_EXCHANGE_RATE;
+						}
+						public void setR7_EXCHANGE_RATE(BigDecimal r7_EXCHANGE_RATE) {
+							R7_EXCHANGE_RATE = r7_EXCHANGE_RATE;
+						}
+						public String getR8_RECORD_NUMBER() {
+							return R8_RECORD_NUMBER;
+						}
+						public void setR8_RECORD_NUMBER(String r8_RECORD_NUMBER) {
+							R8_RECORD_NUMBER = r8_RECORD_NUMBER;
+						}
+						public String getR8_TITLE() {
+							return R8_TITLE;
+						}
+						public void setR8_TITLE(String r8_TITLE) {
+							R8_TITLE = r8_TITLE;
+						}
+						public String getR8_FIRST_NAME() {
+							return R8_FIRST_NAME;
+						}
+						public void setR8_FIRST_NAME(String r8_FIRST_NAME) {
+							R8_FIRST_NAME = r8_FIRST_NAME;
+						}
+						public String getR8_MIDDLE_NAME() {
+							return R8_MIDDLE_NAME;
+						}
+						public void setR8_MIDDLE_NAME(String r8_MIDDLE_NAME) {
+							R8_MIDDLE_NAME = r8_MIDDLE_NAME;
+						}
+						public String getR8_SURNAME() {
+							return R8_SURNAME;
+						}
+						public void setR8_SURNAME(String r8_SURNAME) {
+							R8_SURNAME = r8_SURNAME;
+						}
+						public String getR8_PREVIOUS_NAME() {
+							return R8_PREVIOUS_NAME;
+						}
+						public void setR8_PREVIOUS_NAME(String r8_PREVIOUS_NAME) {
+							R8_PREVIOUS_NAME = r8_PREVIOUS_NAME;
+						}
+						public String getR8_GENDER() {
+							return R8_GENDER;
+						}
+						public void setR8_GENDER(String r8_GENDER) {
+							R8_GENDER = r8_GENDER;
+						}
+						public String getR8_IDENTIFICATION_TYPE() {
+							return R8_IDENTIFICATION_TYPE;
+						}
+						public void setR8_IDENTIFICATION_TYPE(String r8_IDENTIFICATION_TYPE) {
+							R8_IDENTIFICATION_TYPE = r8_IDENTIFICATION_TYPE;
+						}
+						public String getR8_PASSPORT_NUMBER() {
+							return R8_PASSPORT_NUMBER;
+						}
+						public void setR8_PASSPORT_NUMBER(String r8_PASSPORT_NUMBER) {
+							R8_PASSPORT_NUMBER = r8_PASSPORT_NUMBER;
+						}
+						public Date getR8_DATE_OF_BIRTH() {
+							return R8_DATE_OF_BIRTH;
+						}
+						public void setR8_DATE_OF_BIRTH(Date r8_DATE_OF_BIRTH) {
+							R8_DATE_OF_BIRTH = r8_DATE_OF_BIRTH;
+						}
+						public String getR8_HOME_ADDRESS() {
+							return R8_HOME_ADDRESS;
+						}
+						public void setR8_HOME_ADDRESS(String r8_HOME_ADDRESS) {
+							R8_HOME_ADDRESS = r8_HOME_ADDRESS;
+						}
+						public String getR8_POSTAL_ADDRESS() {
+							return R8_POSTAL_ADDRESS;
+						}
+						public void setR8_POSTAL_ADDRESS(String r8_POSTAL_ADDRESS) {
+							R8_POSTAL_ADDRESS = r8_POSTAL_ADDRESS;
+						}
+						public String getR8_RESIDENCE() {
+							return R8_RESIDENCE;
+						}
+						public void setR8_RESIDENCE(String r8_RESIDENCE) {
+							R8_RESIDENCE = r8_RESIDENCE;
+						}
+						public String getR8_EMAIL() {
+							return R8_EMAIL;
+						}
+						public void setR8_EMAIL(String r8_EMAIL) {
+							R8_EMAIL = r8_EMAIL;
+						}
+						public String getR8_LANDLINE() {
+							return R8_LANDLINE;
+						}
+						public void setR8_LANDLINE(String r8_LANDLINE) {
+							R8_LANDLINE = r8_LANDLINE;
+						}
+						public String getR8_MOBILE_PHONE_NUMBER() {
+							return R8_MOBILE_PHONE_NUMBER;
+						}
+						public void setR8_MOBILE_PHONE_NUMBER(String r8_MOBILE_PHONE_NUMBER) {
+							R8_MOBILE_PHONE_NUMBER = r8_MOBILE_PHONE_NUMBER;
+						}
+						public String getR8_MOBILE_MONEY_NUMBER() {
+							return R8_MOBILE_MONEY_NUMBER;
+						}
+						public void setR8_MOBILE_MONEY_NUMBER(String r8_MOBILE_MONEY_NUMBER) {
+							R8_MOBILE_MONEY_NUMBER = r8_MOBILE_MONEY_NUMBER;
+						}
+						public String getR8_PRODUCT_TYPE() {
+							return R8_PRODUCT_TYPE;
+						}
+						public void setR8_PRODUCT_TYPE(String r8_PRODUCT_TYPE) {
+							R8_PRODUCT_TYPE = r8_PRODUCT_TYPE;
+						}
+						public String getR8_ACCOUNT_BY_OWNERSHIP() {
+							return R8_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR8_ACCOUNT_BY_OWNERSHIP(String r8_ACCOUNT_BY_OWNERSHIP) {
+							R8_ACCOUNT_BY_OWNERSHIP = r8_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR8_ACCOUNT_NUMBER() {
+							return R8_ACCOUNT_NUMBER;
+						}
+						public void setR8_ACCOUNT_NUMBER(String r8_ACCOUNT_NUMBER) {
+							R8_ACCOUNT_NUMBER = r8_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR8_ACCOUNT_HOLDER_INDICATOR() {
+							return R8_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR8_ACCOUNT_HOLDER_INDICATOR(BigDecimal r8_ACCOUNT_HOLDER_INDICATOR) {
+							R8_ACCOUNT_HOLDER_INDICATOR = r8_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR8_STATUS_OF_ACCOUNT() {
+							return R8_STATUS_OF_ACCOUNT;
+						}
+						public void setR8_STATUS_OF_ACCOUNT(String r8_STATUS_OF_ACCOUNT) {
+							R8_STATUS_OF_ACCOUNT = r8_STATUS_OF_ACCOUNT;
+						}
+						public String getR8_NOT_FIT_FOR_STP() {
+							return R8_NOT_FIT_FOR_STP;
+						}
+						public void setR8_NOT_FIT_FOR_STP(String r8_NOT_FIT_FOR_STP) {
+							R8_NOT_FIT_FOR_STP = r8_NOT_FIT_FOR_STP;
+						}
+						public String getR8_BRANCH_CODE_AND_NAME() {
+							return R8_BRANCH_CODE_AND_NAME;
+						}
+						public void setR8_BRANCH_CODE_AND_NAME(String r8_BRANCH_CODE_AND_NAME) {
+							R8_BRANCH_CODE_AND_NAME = r8_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR8_ACCOUNT_BALANCE_IN_PULA() {
+							return R8_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR8_ACCOUNT_BALANCE_IN_PULA(BigDecimal r8_ACCOUNT_BALANCE_IN_PULA) {
+							R8_ACCOUNT_BALANCE_IN_PULA = r8_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR8_CURRENCY_OF_ACCOUNT() {
+							return R8_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR8_CURRENCY_OF_ACCOUNT(String r8_CURRENCY_OF_ACCOUNT) {
+							R8_CURRENCY_OF_ACCOUNT = r8_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR8_EXCHANGE_RATE() {
+							return R8_EXCHANGE_RATE;
+						}
+						public void setR8_EXCHANGE_RATE(BigDecimal r8_EXCHANGE_RATE) {
+							R8_EXCHANGE_RATE = r8_EXCHANGE_RATE;
+						}
+						public String getR9_RECORD_NUMBER() {
+							return R9_RECORD_NUMBER;
+						}
+						public void setR9_RECORD_NUMBER(String r9_RECORD_NUMBER) {
+							R9_RECORD_NUMBER = r9_RECORD_NUMBER;
+						}
+						public String getR9_TITLE() {
+							return R9_TITLE;
+						}
+						public void setR9_TITLE(String r9_TITLE) {
+							R9_TITLE = r9_TITLE;
+						}
+						public String getR9_FIRST_NAME() {
+							return R9_FIRST_NAME;
+						}
+						public void setR9_FIRST_NAME(String r9_FIRST_NAME) {
+							R9_FIRST_NAME = r9_FIRST_NAME;
+						}
+						public String getR9_MIDDLE_NAME() {
+							return R9_MIDDLE_NAME;
+						}
+						public void setR9_MIDDLE_NAME(String r9_MIDDLE_NAME) {
+							R9_MIDDLE_NAME = r9_MIDDLE_NAME;
+						}
+						public String getR9_SURNAME() {
+							return R9_SURNAME;
+						}
+						public void setR9_SURNAME(String r9_SURNAME) {
+							R9_SURNAME = r9_SURNAME;
+						}
+						public String getR9_PREVIOUS_NAME() {
+							return R9_PREVIOUS_NAME;
+						}
+						public void setR9_PREVIOUS_NAME(String r9_PREVIOUS_NAME) {
+							R9_PREVIOUS_NAME = r9_PREVIOUS_NAME;
+						}
+						public String getR9_GENDER() {
+							return R9_GENDER;
+						}
+						public void setR9_GENDER(String r9_GENDER) {
+							R9_GENDER = r9_GENDER;
+						}
+						public String getR9_IDENTIFICATION_TYPE() {
+							return R9_IDENTIFICATION_TYPE;
+						}
+						public void setR9_IDENTIFICATION_TYPE(String r9_IDENTIFICATION_TYPE) {
+							R9_IDENTIFICATION_TYPE = r9_IDENTIFICATION_TYPE;
+						}
+						public String getR9_PASSPORT_NUMBER() {
+							return R9_PASSPORT_NUMBER;
+						}
+						public void setR9_PASSPORT_NUMBER(String r9_PASSPORT_NUMBER) {
+							R9_PASSPORT_NUMBER = r9_PASSPORT_NUMBER;
+						}
+						public Date getR9_DATE_OF_BIRTH() {
+							return R9_DATE_OF_BIRTH;
+						}
+						public void setR9_DATE_OF_BIRTH(Date r9_DATE_OF_BIRTH) {
+							R9_DATE_OF_BIRTH = r9_DATE_OF_BIRTH;
+						}
+						public String getR9_HOME_ADDRESS() {
+							return R9_HOME_ADDRESS;
+						}
+						public void setR9_HOME_ADDRESS(String r9_HOME_ADDRESS) {
+							R9_HOME_ADDRESS = r9_HOME_ADDRESS;
+						}
+						public String getR9_POSTAL_ADDRESS() {
+							return R9_POSTAL_ADDRESS;
+						}
+						public void setR9_POSTAL_ADDRESS(String r9_POSTAL_ADDRESS) {
+							R9_POSTAL_ADDRESS = r9_POSTAL_ADDRESS;
+						}
+						public String getR9_RESIDENCE() {
+							return R9_RESIDENCE;
+						}
+						public void setR9_RESIDENCE(String r9_RESIDENCE) {
+							R9_RESIDENCE = r9_RESIDENCE;
+						}
+						public String getR9_EMAIL() {
+							return R9_EMAIL;
+						}
+						public void setR9_EMAIL(String r9_EMAIL) {
+							R9_EMAIL = r9_EMAIL;
+						}
+						public String getR9_LANDLINE() {
+							return R9_LANDLINE;
+						}
+						public void setR9_LANDLINE(String r9_LANDLINE) {
+							R9_LANDLINE = r9_LANDLINE;
+						}
+						public String getR9_MOBILE_PHONE_NUMBER() {
+							return R9_MOBILE_PHONE_NUMBER;
+						}
+						public void setR9_MOBILE_PHONE_NUMBER(String r9_MOBILE_PHONE_NUMBER) {
+							R9_MOBILE_PHONE_NUMBER = r9_MOBILE_PHONE_NUMBER;
+						}
+						public String getR9_MOBILE_MONEY_NUMBER() {
+							return R9_MOBILE_MONEY_NUMBER;
+						}
+						public void setR9_MOBILE_MONEY_NUMBER(String r9_MOBILE_MONEY_NUMBER) {
+							R9_MOBILE_MONEY_NUMBER = r9_MOBILE_MONEY_NUMBER;
+						}
+						public String getR9_PRODUCT_TYPE() {
+							return R9_PRODUCT_TYPE;
+						}
+						public void setR9_PRODUCT_TYPE(String r9_PRODUCT_TYPE) {
+							R9_PRODUCT_TYPE = r9_PRODUCT_TYPE;
+						}
+						public String getR9_ACCOUNT_BY_OWNERSHIP() {
+							return R9_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR9_ACCOUNT_BY_OWNERSHIP(String r9_ACCOUNT_BY_OWNERSHIP) {
+							R9_ACCOUNT_BY_OWNERSHIP = r9_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR9_ACCOUNT_NUMBER() {
+							return R9_ACCOUNT_NUMBER;
+						}
+						public void setR9_ACCOUNT_NUMBER(String r9_ACCOUNT_NUMBER) {
+							R9_ACCOUNT_NUMBER = r9_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR9_ACCOUNT_HOLDER_INDICATOR() {
+							return R9_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR9_ACCOUNT_HOLDER_INDICATOR(BigDecimal r9_ACCOUNT_HOLDER_INDICATOR) {
+							R9_ACCOUNT_HOLDER_INDICATOR = r9_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR9_STATUS_OF_ACCOUNT() {
+							return R9_STATUS_OF_ACCOUNT;
+						}
+						public void setR9_STATUS_OF_ACCOUNT(String r9_STATUS_OF_ACCOUNT) {
+							R9_STATUS_OF_ACCOUNT = r9_STATUS_OF_ACCOUNT;
+						}
+						public String getR9_NOT_FIT_FOR_STP() {
+							return R9_NOT_FIT_FOR_STP;
+						}
+						public void setR9_NOT_FIT_FOR_STP(String r9_NOT_FIT_FOR_STP) {
+							R9_NOT_FIT_FOR_STP = r9_NOT_FIT_FOR_STP;
+						}
+						public String getR9_BRANCH_CODE_AND_NAME() {
+							return R9_BRANCH_CODE_AND_NAME;
+						}
+						public void setR9_BRANCH_CODE_AND_NAME(String r9_BRANCH_CODE_AND_NAME) {
+							R9_BRANCH_CODE_AND_NAME = r9_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR9_ACCOUNT_BALANCE_IN_PULA() {
+							return R9_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR9_ACCOUNT_BALANCE_IN_PULA(BigDecimal r9_ACCOUNT_BALANCE_IN_PULA) {
+							R9_ACCOUNT_BALANCE_IN_PULA = r9_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR9_CURRENCY_OF_ACCOUNT() {
+							return R9_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR9_CURRENCY_OF_ACCOUNT(String r9_CURRENCY_OF_ACCOUNT) {
+							R9_CURRENCY_OF_ACCOUNT = r9_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR9_EXCHANGE_RATE() {
+							return R9_EXCHANGE_RATE;
+						}
+						public void setR9_EXCHANGE_RATE(BigDecimal r9_EXCHANGE_RATE) {
+							R9_EXCHANGE_RATE = r9_EXCHANGE_RATE;
+						}
+						public String getR10_RECORD_NUMBER() {
+							return R10_RECORD_NUMBER;
+						}
+						public void setR10_RECORD_NUMBER(String r10_RECORD_NUMBER) {
+							R10_RECORD_NUMBER = r10_RECORD_NUMBER;
+						}
+						public String getR10_TITLE() {
+							return R10_TITLE;
+						}
+						public void setR10_TITLE(String r10_TITLE) {
+							R10_TITLE = r10_TITLE;
+						}
+						public String getR10_FIRST_NAME() {
+							return R10_FIRST_NAME;
+						}
+						public void setR10_FIRST_NAME(String r10_FIRST_NAME) {
+							R10_FIRST_NAME = r10_FIRST_NAME;
+						}
+						public String getR10_MIDDLE_NAME() {
+							return R10_MIDDLE_NAME;
+						}
+						public void setR10_MIDDLE_NAME(String r10_MIDDLE_NAME) {
+							R10_MIDDLE_NAME = r10_MIDDLE_NAME;
+						}
+						public String getR10_SURNAME() {
+							return R10_SURNAME;
+						}
+						public void setR10_SURNAME(String r10_SURNAME) {
+							R10_SURNAME = r10_SURNAME;
+						}
+						public String getR10_PREVIOUS_NAME() {
+							return R10_PREVIOUS_NAME;
+						}
+						public void setR10_PREVIOUS_NAME(String r10_PREVIOUS_NAME) {
+							R10_PREVIOUS_NAME = r10_PREVIOUS_NAME;
+						}
+						public String getR10_GENDER() {
+							return R10_GENDER;
+						}
+						public void setR10_GENDER(String r10_GENDER) {
+							R10_GENDER = r10_GENDER;
+						}
+						public String getR10_IDENTIFICATION_TYPE() {
+							return R10_IDENTIFICATION_TYPE;
+						}
+						public void setR10_IDENTIFICATION_TYPE(String r10_IDENTIFICATION_TYPE) {
+							R10_IDENTIFICATION_TYPE = r10_IDENTIFICATION_TYPE;
+						}
+						public String getR10_PASSPORT_NUMBER() {
+							return R10_PASSPORT_NUMBER;
+						}
+						public void setR10_PASSPORT_NUMBER(String r10_PASSPORT_NUMBER) {
+							R10_PASSPORT_NUMBER = r10_PASSPORT_NUMBER;
+						}
+						public Date getR10_DATE_OF_BIRTH() {
+							return R10_DATE_OF_BIRTH;
+						}
+						public void setR10_DATE_OF_BIRTH(Date r10_DATE_OF_BIRTH) {
+							R10_DATE_OF_BIRTH = r10_DATE_OF_BIRTH;
+						}
+						public String getR10_HOME_ADDRESS() {
+							return R10_HOME_ADDRESS;
+						}
+						public void setR10_HOME_ADDRESS(String r10_HOME_ADDRESS) {
+							R10_HOME_ADDRESS = r10_HOME_ADDRESS;
+						}
+						public String getR10_POSTAL_ADDRESS() {
+							return R10_POSTAL_ADDRESS;
+						}
+						public void setR10_POSTAL_ADDRESS(String r10_POSTAL_ADDRESS) {
+							R10_POSTAL_ADDRESS = r10_POSTAL_ADDRESS;
+						}
+						public String getR10_RESIDENCE() {
+							return R10_RESIDENCE;
+						}
+						public void setR10_RESIDENCE(String r10_RESIDENCE) {
+							R10_RESIDENCE = r10_RESIDENCE;
+						}
+						public String getR10_EMAIL() {
+							return R10_EMAIL;
+						}
+						public void setR10_EMAIL(String r10_EMAIL) {
+							R10_EMAIL = r10_EMAIL;
+						}
+						public String getR10_LANDLINE() {
+							return R10_LANDLINE;
+						}
+						public void setR10_LANDLINE(String r10_LANDLINE) {
+							R10_LANDLINE = r10_LANDLINE;
+						}
+						public String getR10_MOBILE_PHONE_NUMBER() {
+							return R10_MOBILE_PHONE_NUMBER;
+						}
+						public void setR10_MOBILE_PHONE_NUMBER(String r10_MOBILE_PHONE_NUMBER) {
+							R10_MOBILE_PHONE_NUMBER = r10_MOBILE_PHONE_NUMBER;
+						}
+						public String getR10_MOBILE_MONEY_NUMBER() {
+							return R10_MOBILE_MONEY_NUMBER;
+						}
+						public void setR10_MOBILE_MONEY_NUMBER(String r10_MOBILE_MONEY_NUMBER) {
+							R10_MOBILE_MONEY_NUMBER = r10_MOBILE_MONEY_NUMBER;
+						}
+						public String getR10_PRODUCT_TYPE() {
+							return R10_PRODUCT_TYPE;
+						}
+						public void setR10_PRODUCT_TYPE(String r10_PRODUCT_TYPE) {
+							R10_PRODUCT_TYPE = r10_PRODUCT_TYPE;
+						}
+						public String getR10_ACCOUNT_BY_OWNERSHIP() {
+							return R10_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR10_ACCOUNT_BY_OWNERSHIP(String r10_ACCOUNT_BY_OWNERSHIP) {
+							R10_ACCOUNT_BY_OWNERSHIP = r10_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR10_ACCOUNT_NUMBER() {
+							return R10_ACCOUNT_NUMBER;
+						}
+						public void setR10_ACCOUNT_NUMBER(String r10_ACCOUNT_NUMBER) {
+							R10_ACCOUNT_NUMBER = r10_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR10_ACCOUNT_HOLDER_INDICATOR() {
+							return R10_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR10_ACCOUNT_HOLDER_INDICATOR(BigDecimal r10_ACCOUNT_HOLDER_INDICATOR) {
+							R10_ACCOUNT_HOLDER_INDICATOR = r10_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR10_STATUS_OF_ACCOUNT() {
+							return R10_STATUS_OF_ACCOUNT;
+						}
+						public void setR10_STATUS_OF_ACCOUNT(String r10_STATUS_OF_ACCOUNT) {
+							R10_STATUS_OF_ACCOUNT = r10_STATUS_OF_ACCOUNT;
+						}
+						public String getR10_NOT_FIT_FOR_STP() {
+							return R10_NOT_FIT_FOR_STP;
+						}
+						public void setR10_NOT_FIT_FOR_STP(String r10_NOT_FIT_FOR_STP) {
+							R10_NOT_FIT_FOR_STP = r10_NOT_FIT_FOR_STP;
+						}
+						public String getR10_BRANCH_CODE_AND_NAME() {
+							return R10_BRANCH_CODE_AND_NAME;
+						}
+						public void setR10_BRANCH_CODE_AND_NAME(String r10_BRANCH_CODE_AND_NAME) {
+							R10_BRANCH_CODE_AND_NAME = r10_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR10_ACCOUNT_BALANCE_IN_PULA() {
+							return R10_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR10_ACCOUNT_BALANCE_IN_PULA(BigDecimal r10_ACCOUNT_BALANCE_IN_PULA) {
+							R10_ACCOUNT_BALANCE_IN_PULA = r10_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR10_CURRENCY_OF_ACCOUNT() {
+							return R10_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR10_CURRENCY_OF_ACCOUNT(String r10_CURRENCY_OF_ACCOUNT) {
+							R10_CURRENCY_OF_ACCOUNT = r10_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR10_EXCHANGE_RATE() {
+							return R10_EXCHANGE_RATE;
+						}
+						public void setR10_EXCHANGE_RATE(BigDecimal r10_EXCHANGE_RATE) {
+							R10_EXCHANGE_RATE = r10_EXCHANGE_RATE;
+						}
+						public String getR11_RECORD_NUMBER() {
+							return R11_RECORD_NUMBER;
+						}
+						public void setR11_RECORD_NUMBER(String r11_RECORD_NUMBER) {
+							R11_RECORD_NUMBER = r11_RECORD_NUMBER;
+						}
+						public String getR11_TITLE() {
+							return R11_TITLE;
+						}
+						public void setR11_TITLE(String r11_TITLE) {
+							R11_TITLE = r11_TITLE;
+						}
+						public String getR11_FIRST_NAME() {
+							return R11_FIRST_NAME;
+						}
+						public void setR11_FIRST_NAME(String r11_FIRST_NAME) {
+							R11_FIRST_NAME = r11_FIRST_NAME;
+						}
+						public String getR11_MIDDLE_NAME() {
+							return R11_MIDDLE_NAME;
+						}
+						public void setR11_MIDDLE_NAME(String r11_MIDDLE_NAME) {
+							R11_MIDDLE_NAME = r11_MIDDLE_NAME;
+						}
+						public String getR11_SURNAME() {
+							return R11_SURNAME;
+						}
+						public void setR11_SURNAME(String r11_SURNAME) {
+							R11_SURNAME = r11_SURNAME;
+						}
+						public String getR11_PREVIOUS_NAME() {
+							return R11_PREVIOUS_NAME;
+						}
+						public void setR11_PREVIOUS_NAME(String r11_PREVIOUS_NAME) {
+							R11_PREVIOUS_NAME = r11_PREVIOUS_NAME;
+						}
+						public String getR11_GENDER() {
+							return R11_GENDER;
+						}
+						public void setR11_GENDER(String r11_GENDER) {
+							R11_GENDER = r11_GENDER;
+						}
+						public String getR11_IDENTIFICATION_TYPE() {
+							return R11_IDENTIFICATION_TYPE;
+						}
+						public void setR11_IDENTIFICATION_TYPE(String r11_IDENTIFICATION_TYPE) {
+							R11_IDENTIFICATION_TYPE = r11_IDENTIFICATION_TYPE;
+						}
+						public String getR11_PASSPORT_NUMBER() {
+							return R11_PASSPORT_NUMBER;
+						}
+						public void setR11_PASSPORT_NUMBER(String r11_PASSPORT_NUMBER) {
+							R11_PASSPORT_NUMBER = r11_PASSPORT_NUMBER;
+						}
+						public Date getR11_DATE_OF_BIRTH() {
+							return R11_DATE_OF_BIRTH;
+						}
+						public void setR11_DATE_OF_BIRTH(Date r11_DATE_OF_BIRTH) {
+							R11_DATE_OF_BIRTH = r11_DATE_OF_BIRTH;
+						}
+						public String getR11_HOME_ADDRESS() {
+							return R11_HOME_ADDRESS;
+						}
+						public void setR11_HOME_ADDRESS(String r11_HOME_ADDRESS) {
+							R11_HOME_ADDRESS = r11_HOME_ADDRESS;
+						}
+						public String getR11_POSTAL_ADDRESS() {
+							return R11_POSTAL_ADDRESS;
+						}
+						public void setR11_POSTAL_ADDRESS(String r11_POSTAL_ADDRESS) {
+							R11_POSTAL_ADDRESS = r11_POSTAL_ADDRESS;
+						}
+						public String getR11_RESIDENCE() {
+							return R11_RESIDENCE;
+						}
+						public void setR11_RESIDENCE(String r11_RESIDENCE) {
+							R11_RESIDENCE = r11_RESIDENCE;
+						}
+						public String getR11_EMAIL() {
+							return R11_EMAIL;
+						}
+						public void setR11_EMAIL(String r11_EMAIL) {
+							R11_EMAIL = r11_EMAIL;
+						}
+						public String getR11_LANDLINE() {
+							return R11_LANDLINE;
+						}
+						public void setR11_LANDLINE(String r11_LANDLINE) {
+							R11_LANDLINE = r11_LANDLINE;
+						}
+						public String getR11_MOBILE_PHONE_NUMBER() {
+							return R11_MOBILE_PHONE_NUMBER;
+						}
+						public void setR11_MOBILE_PHONE_NUMBER(String r11_MOBILE_PHONE_NUMBER) {
+							R11_MOBILE_PHONE_NUMBER = r11_MOBILE_PHONE_NUMBER;
+						}
+						public String getR11_MOBILE_MONEY_NUMBER() {
+							return R11_MOBILE_MONEY_NUMBER;
+						}
+						public void setR11_MOBILE_MONEY_NUMBER(String r11_MOBILE_MONEY_NUMBER) {
+							R11_MOBILE_MONEY_NUMBER = r11_MOBILE_MONEY_NUMBER;
+						}
+						public String getR11_PRODUCT_TYPE() {
+							return R11_PRODUCT_TYPE;
+						}
+						public void setR11_PRODUCT_TYPE(String r11_PRODUCT_TYPE) {
+							R11_PRODUCT_TYPE = r11_PRODUCT_TYPE;
+						}
+						public String getR11_ACCOUNT_BY_OWNERSHIP() {
+							return R11_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR11_ACCOUNT_BY_OWNERSHIP(String r11_ACCOUNT_BY_OWNERSHIP) {
+							R11_ACCOUNT_BY_OWNERSHIP = r11_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR11_ACCOUNT_NUMBER() {
+							return R11_ACCOUNT_NUMBER;
+						}
+						public void setR11_ACCOUNT_NUMBER(String r11_ACCOUNT_NUMBER) {
+							R11_ACCOUNT_NUMBER = r11_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR11_ACCOUNT_HOLDER_INDICATOR() {
+							return R11_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR11_ACCOUNT_HOLDER_INDICATOR(BigDecimal r11_ACCOUNT_HOLDER_INDICATOR) {
+							R11_ACCOUNT_HOLDER_INDICATOR = r11_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR11_STATUS_OF_ACCOUNT() {
+							return R11_STATUS_OF_ACCOUNT;
+						}
+						public void setR11_STATUS_OF_ACCOUNT(String r11_STATUS_OF_ACCOUNT) {
+							R11_STATUS_OF_ACCOUNT = r11_STATUS_OF_ACCOUNT;
+						}
+						public String getR11_NOT_FIT_FOR_STP() {
+							return R11_NOT_FIT_FOR_STP;
+						}
+						public void setR11_NOT_FIT_FOR_STP(String r11_NOT_FIT_FOR_STP) {
+							R11_NOT_FIT_FOR_STP = r11_NOT_FIT_FOR_STP;
+						}
+						public String getR11_BRANCH_CODE_AND_NAME() {
+							return R11_BRANCH_CODE_AND_NAME;
+						}
+						public void setR11_BRANCH_CODE_AND_NAME(String r11_BRANCH_CODE_AND_NAME) {
+							R11_BRANCH_CODE_AND_NAME = r11_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR11_ACCOUNT_BALANCE_IN_PULA() {
+							return R11_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR11_ACCOUNT_BALANCE_IN_PULA(BigDecimal r11_ACCOUNT_BALANCE_IN_PULA) {
+							R11_ACCOUNT_BALANCE_IN_PULA = r11_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR11_CURRENCY_OF_ACCOUNT() {
+							return R11_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR11_CURRENCY_OF_ACCOUNT(String r11_CURRENCY_OF_ACCOUNT) {
+							R11_CURRENCY_OF_ACCOUNT = r11_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR11_EXCHANGE_RATE() {
+							return R11_EXCHANGE_RATE;
+						}
+						public void setR11_EXCHANGE_RATE(BigDecimal r11_EXCHANGE_RATE) {
+							R11_EXCHANGE_RATE = r11_EXCHANGE_RATE;
+						}
+						
+						public Date getREPORT_DATE() {
+							return REPORT_DATE;
+						}
+
+						public void setREPORT_DATE(Date REPORT_DATE) {
+							this.REPORT_DATE = REPORT_DATE;
+						}
+
+						public BigDecimal getREPORT_VERSION() {
+							return REPORT_VERSION;
+						}
+
+						public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
+							this.REPORT_VERSION = REPORT_VERSION;
+						}
+						
+						public Date getREPORT_RESUBDATE() {
+							return REPORT_RESUBDATE;
+						}
+
+						public void setREPORT_RESUBDATE(Date REPORT_RESUBDATE) {
+							this.REPORT_RESUBDATE = REPORT_RESUBDATE;
+						}
+
+						public String getREPORT_FREQUENCY() {
+							return REPORT_FREQUENCY;
+						}
+
+						public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+							REPORT_FREQUENCY = rEPORT_FREQUENCY;
+						}
+
+						public String getREPORT_CODE() {
+							return REPORT_CODE;
+						}
+
+						public void setREPORT_CODE(String rEPORT_CODE) {
+							REPORT_CODE = rEPORT_CODE;
+						}
+
+						public String getREPORT_DESC() {
+							return REPORT_DESC;
+						}
+
+						public void setREPORT_DESC(String rEPORT_DESC) {
+							REPORT_DESC = rEPORT_DESC;
+						}
+
+						public String getENTITY_FLG() {
+							return ENTITY_FLG;
+						}
+
+						public void setENTITY_FLG(String eNTITY_FLG) {
+							ENTITY_FLG = eNTITY_FLG;
+						}
+
+						public String getMODIFY_FLG() {
+							return MODIFY_FLG;
+						}
+
+						public void setMODIFY_FLG(String mODIFY_FLG) {
+							MODIFY_FLG = mODIFY_FLG;
+						}
+
+						public String getDEL_FLG() {
+							return DEL_FLG;
+						}
+
+						public void setDEL_FLG(String dEL_FLG) {
+							DEL_FLG = dEL_FLG;
+						}
+
+					}
+					
+					
+				// ROW MAPPER ARCHIVAL DETAIL
+
+				class BDISB1RowMapper_ArchivalDetail implements RowMapper<BDISB1_Archival_Detail_Entity> {
+
+					@Override
+					public BDISB1_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+						BDISB1_Archival_Detail_Entity obj = new BDISB1_Archival_Detail_Entity();	
+					
+	
+						obj.setR5_RECORD_NUMBER(rs.getString("R5_RECORD_NUMBER"));
+						obj.setR5_TITLE(rs.getString("R5_TITLE"));
+						obj.setR5_FIRST_NAME(rs.getString("R5_FIRST_NAME"));
+						obj.setR5_MIDDLE_NAME(rs.getString("R5_MIDDLE_NAME"));
+						obj.setR5_SURNAME(rs.getString("R5_SURNAME"));
+						obj.setR5_PREVIOUS_NAME(rs.getString("R5_PREVIOUS_NAME"));
+						obj.setR5_GENDER(rs.getString("R5_GENDER"));
+						obj.setR5_IDENTIFICATION_TYPE(rs.getString("R5_IDENTIFICATION_TYPE"));
+						obj.setR5_PASSPORT_NUMBER(rs.getString("R5_PASSPORT_NUMBER"));
+						obj.setR5_DATE_OF_BIRTH(rs.getDate("R5_DATE_OF_BIRTH"));
+						obj.setR5_HOME_ADDRESS(rs.getString("R5_HOME_ADDRESS"));
+						obj.setR5_POSTAL_ADDRESS(rs.getString("R5_POSTAL_ADDRESS"));
+						obj.setR5_RESIDENCE(rs.getString("R5_RESIDENCE"));
+						obj.setR5_EMAIL(rs.getString("R5_EMAIL"));
+						obj.setR5_LANDLINE(rs.getString("R5_LANDLINE"));
+						obj.setR5_MOBILE_PHONE_NUMBER(rs.getString("R5_MOBILE_PHONE_NUMBER"));
+						obj.setR5_MOBILE_MONEY_NUMBER(rs.getString("R5_MOBILE_MONEY_NUMBER"));
+						obj.setR5_PRODUCT_TYPE(rs.getString("R5_PRODUCT_TYPE"));
+						obj.setR5_ACCOUNT_BY_OWNERSHIP(rs.getString("R5_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR5_ACCOUNT_NUMBER(rs.getString("R5_ACCOUNT_NUMBER"));
+						obj.setR5_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R5_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR5_STATUS_OF_ACCOUNT(rs.getString("R5_STATUS_OF_ACCOUNT"));
+						obj.setR5_NOT_FIT_FOR_STP(rs.getString("R5_NOT_FIT_FOR_STP"));
+						obj.setR5_BRANCH_CODE_AND_NAME(rs.getString("R5_BRANCH_CODE_AND_NAME"));
+						obj.setR5_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R5_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR5_CURRENCY_OF_ACCOUNT(rs.getString("R5_CURRENCY_OF_ACCOUNT"));
+						obj.setR5_EXCHANGE_RATE(rs.getBigDecimal("R5_EXCHANGE_RATE"));
+						
+						obj.setR6_RECORD_NUMBER(rs.getString("R6_RECORD_NUMBER"));
+						obj.setR6_TITLE(rs.getString("R6_TITLE"));
+						obj.setR6_FIRST_NAME(rs.getString("R6_FIRST_NAME"));
+						obj.setR6_MIDDLE_NAME(rs.getString("R6_MIDDLE_NAME"));
+						obj.setR6_SURNAME(rs.getString("R6_SURNAME"));
+						obj.setR6_PREVIOUS_NAME(rs.getString("R6_PREVIOUS_NAME"));
+						obj.setR6_GENDER(rs.getString("R6_GENDER"));
+						obj.setR6_IDENTIFICATION_TYPE(rs.getString("R6_IDENTIFICATION_TYPE"));
+						obj.setR6_PASSPORT_NUMBER(rs.getString("R6_PASSPORT_NUMBER"));
+						obj.setR6_DATE_OF_BIRTH(rs.getDate("R6_DATE_OF_BIRTH"));
+						obj.setR6_HOME_ADDRESS(rs.getString("R6_HOME_ADDRESS"));
+						obj.setR6_POSTAL_ADDRESS(rs.getString("R6_POSTAL_ADDRESS"));
+						obj.setR6_RESIDENCE(rs.getString("R6_RESIDENCE"));
+						obj.setR6_EMAIL(rs.getString("R6_EMAIL"));
+						obj.setR6_LANDLINE(rs.getString("R6_LANDLINE"));
+						obj.setR6_MOBILE_PHONE_NUMBER(rs.getString("R6_MOBILE_PHONE_NUMBER"));
+						obj.setR6_MOBILE_MONEY_NUMBER(rs.getString("R6_MOBILE_MONEY_NUMBER"));
+						obj.setR6_PRODUCT_TYPE(rs.getString("R6_PRODUCT_TYPE"));
+						obj.setR6_ACCOUNT_BY_OWNERSHIP(rs.getString("R6_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR6_ACCOUNT_NUMBER(rs.getString("R6_ACCOUNT_NUMBER"));
+						obj.setR6_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R6_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR6_STATUS_OF_ACCOUNT(rs.getString("R6_STATUS_OF_ACCOUNT"));
+						obj.setR6_NOT_FIT_FOR_STP(rs.getString("R6_NOT_FIT_FOR_STP"));
+						obj.setR6_BRANCH_CODE_AND_NAME(rs.getString("R6_BRANCH_CODE_AND_NAME"));
+						obj.setR6_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R6_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR6_CURRENCY_OF_ACCOUNT(rs.getString("R6_CURRENCY_OF_ACCOUNT"));
+						obj.setR6_EXCHANGE_RATE(rs.getBigDecimal("R6_EXCHANGE_RATE"));
+						
+						obj.setR7_RECORD_NUMBER(rs.getString("R7_RECORD_NUMBER"));
+						obj.setR7_TITLE(rs.getString("R7_TITLE"));
+						obj.setR7_FIRST_NAME(rs.getString("R7_FIRST_NAME"));
+						obj.setR7_MIDDLE_NAME(rs.getString("R7_MIDDLE_NAME"));
+						obj.setR7_SURNAME(rs.getString("R7_SURNAME"));
+						obj.setR7_PREVIOUS_NAME(rs.getString("R7_PREVIOUS_NAME"));
+						obj.setR7_GENDER(rs.getString("R7_GENDER"));
+						obj.setR7_IDENTIFICATION_TYPE(rs.getString("R7_IDENTIFICATION_TYPE"));
+						obj.setR7_PASSPORT_NUMBER(rs.getString("R7_PASSPORT_NUMBER"));
+						obj.setR7_DATE_OF_BIRTH(rs.getDate("R7_DATE_OF_BIRTH"));
+						obj.setR7_HOME_ADDRESS(rs.getString("R7_HOME_ADDRESS"));
+						obj.setR7_POSTAL_ADDRESS(rs.getString("R7_POSTAL_ADDRESS"));
+						obj.setR7_RESIDENCE(rs.getString("R7_RESIDENCE"));
+						obj.setR7_EMAIL(rs.getString("R7_EMAIL"));
+						obj.setR7_LANDLINE(rs.getString("R7_LANDLINE"));
+						obj.setR7_MOBILE_PHONE_NUMBER(rs.getString("R7_MOBILE_PHONE_NUMBER"));
+						obj.setR7_MOBILE_MONEY_NUMBER(rs.getString("R7_MOBILE_MONEY_NUMBER"));
+						obj.setR7_PRODUCT_TYPE(rs.getString("R7_PRODUCT_TYPE"));
+						obj.setR7_ACCOUNT_BY_OWNERSHIP(rs.getString("R7_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR7_ACCOUNT_NUMBER(rs.getString("R7_ACCOUNT_NUMBER"));
+						obj.setR7_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R7_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR7_STATUS_OF_ACCOUNT(rs.getString("R7_STATUS_OF_ACCOUNT"));
+						obj.setR7_NOT_FIT_FOR_STP(rs.getString("R7_NOT_FIT_FOR_STP"));
+						obj.setR7_BRANCH_CODE_AND_NAME(rs.getString("R7_BRANCH_CODE_AND_NAME"));
+						obj.setR7_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R7_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR7_CURRENCY_OF_ACCOUNT(rs.getString("R7_CURRENCY_OF_ACCOUNT"));
+						obj.setR7_EXCHANGE_RATE(rs.getBigDecimal("R7_EXCHANGE_RATE"));
+						
+						obj.setR8_RECORD_NUMBER(rs.getString("R8_RECORD_NUMBER"));
+						obj.setR8_TITLE(rs.getString("R8_TITLE"));
+						obj.setR8_FIRST_NAME(rs.getString("R8_FIRST_NAME"));
+						obj.setR8_MIDDLE_NAME(rs.getString("R8_MIDDLE_NAME"));
+						obj.setR8_SURNAME(rs.getString("R8_SURNAME"));
+						obj.setR8_PREVIOUS_NAME(rs.getString("R8_PREVIOUS_NAME"));
+						obj.setR8_GENDER(rs.getString("R8_GENDER"));
+						obj.setR8_IDENTIFICATION_TYPE(rs.getString("R8_IDENTIFICATION_TYPE"));
+						obj.setR8_PASSPORT_NUMBER(rs.getString("R8_PASSPORT_NUMBER"));
+						obj.setR8_DATE_OF_BIRTH(rs.getDate("R8_DATE_OF_BIRTH"));
+						obj.setR8_HOME_ADDRESS(rs.getString("R8_HOME_ADDRESS"));
+						obj.setR8_POSTAL_ADDRESS(rs.getString("R8_POSTAL_ADDRESS"));
+						obj.setR8_RESIDENCE(rs.getString("R8_RESIDENCE"));
+						obj.setR8_EMAIL(rs.getString("R8_EMAIL"));
+						obj.setR8_LANDLINE(rs.getString("R8_LANDLINE"));
+						obj.setR8_MOBILE_PHONE_NUMBER(rs.getString("R8_MOBILE_PHONE_NUMBER"));
+						obj.setR8_MOBILE_MONEY_NUMBER(rs.getString("R8_MOBILE_MONEY_NUMBER"));
+						obj.setR8_PRODUCT_TYPE(rs.getString("R8_PRODUCT_TYPE"));
+						obj.setR8_ACCOUNT_BY_OWNERSHIP(rs.getString("R8_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR8_ACCOUNT_NUMBER(rs.getString("R8_ACCOUNT_NUMBER"));
+						obj.setR8_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R8_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR8_STATUS_OF_ACCOUNT(rs.getString("R8_STATUS_OF_ACCOUNT"));
+						obj.setR8_NOT_FIT_FOR_STP(rs.getString("R8_NOT_FIT_FOR_STP"));
+						obj.setR8_BRANCH_CODE_AND_NAME(rs.getString("R8_BRANCH_CODE_AND_NAME"));
+						obj.setR8_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R8_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR8_CURRENCY_OF_ACCOUNT(rs.getString("R8_CURRENCY_OF_ACCOUNT"));
+						obj.setR8_EXCHANGE_RATE(rs.getBigDecimal("R8_EXCHANGE_RATE"));
+						
+						obj.setR9_RECORD_NUMBER(rs.getString("R9_RECORD_NUMBER"));
+						obj.setR9_TITLE(rs.getString("R9_TITLE"));
+						obj.setR9_FIRST_NAME(rs.getString("R9_FIRST_NAME"));
+						obj.setR9_MIDDLE_NAME(rs.getString("R9_MIDDLE_NAME"));
+						obj.setR9_SURNAME(rs.getString("R9_SURNAME"));
+						obj.setR9_PREVIOUS_NAME(rs.getString("R9_PREVIOUS_NAME"));
+						obj.setR9_GENDER(rs.getString("R9_GENDER"));
+						obj.setR9_IDENTIFICATION_TYPE(rs.getString("R9_IDENTIFICATION_TYPE"));
+						obj.setR9_PASSPORT_NUMBER(rs.getString("R9_PASSPORT_NUMBER"));
+						obj.setR9_DATE_OF_BIRTH(rs.getDate("R9_DATE_OF_BIRTH"));
+						obj.setR9_HOME_ADDRESS(rs.getString("R9_HOME_ADDRESS"));
+						obj.setR9_POSTAL_ADDRESS(rs.getString("R9_POSTAL_ADDRESS"));
+						obj.setR9_RESIDENCE(rs.getString("R9_RESIDENCE"));
+						obj.setR9_EMAIL(rs.getString("R9_EMAIL"));
+						obj.setR9_LANDLINE(rs.getString("R9_LANDLINE"));
+						obj.setR9_MOBILE_PHONE_NUMBER(rs.getString("R9_MOBILE_PHONE_NUMBER"));
+						obj.setR9_MOBILE_MONEY_NUMBER(rs.getString("R9_MOBILE_MONEY_NUMBER"));
+						obj.setR9_PRODUCT_TYPE(rs.getString("R9_PRODUCT_TYPE"));
+						obj.setR9_ACCOUNT_BY_OWNERSHIP(rs.getString("R9_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR9_ACCOUNT_NUMBER(rs.getString("R9_ACCOUNT_NUMBER"));
+						obj.setR9_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R9_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR9_STATUS_OF_ACCOUNT(rs.getString("R9_STATUS_OF_ACCOUNT"));
+						obj.setR9_NOT_FIT_FOR_STP(rs.getString("R9_NOT_FIT_FOR_STP"));
+						obj.setR9_BRANCH_CODE_AND_NAME(rs.getString("R9_BRANCH_CODE_AND_NAME"));
+						obj.setR9_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R9_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR9_CURRENCY_OF_ACCOUNT(rs.getString("R9_CURRENCY_OF_ACCOUNT"));
+						obj.setR9_EXCHANGE_RATE(rs.getBigDecimal("R9_EXCHANGE_RATE"));
+						
+						obj.setR10_RECORD_NUMBER(rs.getString("R10_RECORD_NUMBER"));
+						obj.setR10_TITLE(rs.getString("R10_TITLE"));
+						obj.setR10_FIRST_NAME(rs.getString("R10_FIRST_NAME"));
+						obj.setR10_MIDDLE_NAME(rs.getString("R10_MIDDLE_NAME"));
+						obj.setR10_SURNAME(rs.getString("R10_SURNAME"));
+						obj.setR10_PREVIOUS_NAME(rs.getString("R10_PREVIOUS_NAME"));
+						obj.setR10_GENDER(rs.getString("R10_GENDER"));
+						obj.setR10_IDENTIFICATION_TYPE(rs.getString("R10_IDENTIFICATION_TYPE"));
+						obj.setR10_PASSPORT_NUMBER(rs.getString("R10_PASSPORT_NUMBER"));
+						obj.setR10_DATE_OF_BIRTH(rs.getDate("R10_DATE_OF_BIRTH"));
+						obj.setR10_HOME_ADDRESS(rs.getString("R10_HOME_ADDRESS"));
+						obj.setR10_POSTAL_ADDRESS(rs.getString("R10_POSTAL_ADDRESS"));
+						obj.setR10_RESIDENCE(rs.getString("R10_RESIDENCE"));
+						obj.setR10_EMAIL(rs.getString("R10_EMAIL"));
+						obj.setR10_LANDLINE(rs.getString("R10_LANDLINE"));
+						obj.setR10_MOBILE_PHONE_NUMBER(rs.getString("R10_MOBILE_PHONE_NUMBER"));
+						obj.setR10_MOBILE_MONEY_NUMBER(rs.getString("R10_MOBILE_MONEY_NUMBER"));
+						obj.setR10_PRODUCT_TYPE(rs.getString("R10_PRODUCT_TYPE"));
+						obj.setR10_ACCOUNT_BY_OWNERSHIP(rs.getString("R10_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR10_ACCOUNT_NUMBER(rs.getString("R10_ACCOUNT_NUMBER"));
+						obj.setR10_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R10_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR10_STATUS_OF_ACCOUNT(rs.getString("R10_STATUS_OF_ACCOUNT"));
+						obj.setR10_NOT_FIT_FOR_STP(rs.getString("R10_NOT_FIT_FOR_STP"));
+						obj.setR10_BRANCH_CODE_AND_NAME(rs.getString("R10_BRANCH_CODE_AND_NAME"));
+						obj.setR10_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R10_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR10_CURRENCY_OF_ACCOUNT(rs.getString("R10_CURRENCY_OF_ACCOUNT"));
+						obj.setR10_EXCHANGE_RATE(rs.getBigDecimal("R10_EXCHANGE_RATE"));
+						
+						obj.setR11_RECORD_NUMBER(rs.getString("R11_RECORD_NUMBER"));
+						obj.setR11_TITLE(rs.getString("R11_TITLE"));
+						obj.setR11_FIRST_NAME(rs.getString("R11_FIRST_NAME"));
+						obj.setR11_MIDDLE_NAME(rs.getString("R11_MIDDLE_NAME"));
+						obj.setR11_SURNAME(rs.getString("R11_SURNAME"));
+						obj.setR11_PREVIOUS_NAME(rs.getString("R11_PREVIOUS_NAME"));
+						obj.setR11_GENDER(rs.getString("R11_GENDER"));
+						obj.setR11_IDENTIFICATION_TYPE(rs.getString("R11_IDENTIFICATION_TYPE"));
+						obj.setR11_PASSPORT_NUMBER(rs.getString("R11_PASSPORT_NUMBER"));
+						obj.setR11_DATE_OF_BIRTH(rs.getDate("R11_DATE_OF_BIRTH"));
+						obj.setR11_HOME_ADDRESS(rs.getString("R11_HOME_ADDRESS"));
+						obj.setR11_POSTAL_ADDRESS(rs.getString("R11_POSTAL_ADDRESS"));
+						obj.setR11_RESIDENCE(rs.getString("R11_RESIDENCE"));
+						obj.setR11_EMAIL(rs.getString("R11_EMAIL"));
+						obj.setR11_LANDLINE(rs.getString("R11_LANDLINE"));
+						obj.setR11_MOBILE_PHONE_NUMBER(rs.getString("R11_MOBILE_PHONE_NUMBER"));
+						obj.setR11_MOBILE_MONEY_NUMBER(rs.getString("R11_MOBILE_MONEY_NUMBER"));
+						obj.setR11_PRODUCT_TYPE(rs.getString("R11_PRODUCT_TYPE"));
+						obj.setR11_ACCOUNT_BY_OWNERSHIP(rs.getString("R11_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR11_ACCOUNT_NUMBER(rs.getString("R11_ACCOUNT_NUMBER"));
+						obj.setR11_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R11_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR11_STATUS_OF_ACCOUNT(rs.getString("R11_STATUS_OF_ACCOUNT"));
+						obj.setR11_NOT_FIT_FOR_STP(rs.getString("R11_NOT_FIT_FOR_STP"));
+						obj.setR11_BRANCH_CODE_AND_NAME(rs.getString("R11_BRANCH_CODE_AND_NAME"));
+						obj.setR11_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R11_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR11_CURRENCY_OF_ACCOUNT(rs.getString("R11_CURRENCY_OF_ACCOUNT"));
+						obj.setR11_EXCHANGE_RATE(rs.getBigDecimal("R11_EXCHANGE_RATE"));
+						
+						// COMMON FIELDS
+						obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+						obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+						obj.setREPORT_RESUBDATE(rs.getDate("REPORT_RESUBDATE"));
+						obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+						obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+						obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+						obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+						obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+						obj.setDEL_FLG(rs.getString("DEL_FLG"));
+						
+
+						return obj;
+					}
+				}
+				
+				public static class BDISB1_Archival_Detail_Entity {
+					
+					 private String R5_RECORD_NUMBER;
+					    private String R5_TITLE;
+					    private String R5_FIRST_NAME;
+					    private String R5_MIDDLE_NAME;
+					    private String R5_SURNAME;
+					    private String R5_PREVIOUS_NAME;
+					    private String R5_GENDER;
+					    private String R5_IDENTIFICATION_TYPE;
+					    private String R5_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R5_DATE_OF_BIRTH;
+					    private String R5_HOME_ADDRESS;
+					    private String R5_POSTAL_ADDRESS;
+					    private String R5_RESIDENCE;
+					    private String R5_EMAIL;
+					    private String R5_LANDLINE;
+					    private String R5_MOBILE_PHONE_NUMBER;
+					    private String R5_MOBILE_MONEY_NUMBER;
+					    private String R5_PRODUCT_TYPE;
+					    private String R5_ACCOUNT_BY_OWNERSHIP;
+					    private String R5_ACCOUNT_NUMBER;
+					    private BigDecimal R5_ACCOUNT_HOLDER_INDICATOR;
+					    private String R5_STATUS_OF_ACCOUNT;
+					    private String R5_NOT_FIT_FOR_STP;
+					    private String R5_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R5_ACCOUNT_BALANCE_IN_PULA;
+					    private String R5_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R5_EXCHANGE_RATE;
+
+					    // ===================== R6 =====================
+					    private String R6_RECORD_NUMBER;
+					    private String R6_TITLE;
+					    private String R6_FIRST_NAME;
+					    private String R6_MIDDLE_NAME;
+					    private String R6_SURNAME;
+					    private String R6_PREVIOUS_NAME;
+					    private String R6_GENDER;
+					    private String R6_IDENTIFICATION_TYPE;
+					    private String R6_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R6_DATE_OF_BIRTH;
+					    private String R6_HOME_ADDRESS;
+					    private String R6_POSTAL_ADDRESS;
+					    private String R6_RESIDENCE;
+					    private String R6_EMAIL;
+					    private String R6_LANDLINE;
+					    private String R6_MOBILE_PHONE_NUMBER;
+					    private String R6_MOBILE_MONEY_NUMBER;
+					    private String R6_PRODUCT_TYPE;
+					    private String R6_ACCOUNT_BY_OWNERSHIP;
+					    private String R6_ACCOUNT_NUMBER;
+					    private BigDecimal R6_ACCOUNT_HOLDER_INDICATOR;
+					    private String R6_STATUS_OF_ACCOUNT;
+					    private String R6_NOT_FIT_FOR_STP;
+					    private String R6_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R6_ACCOUNT_BALANCE_IN_PULA;
+					    private String R6_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R6_EXCHANGE_RATE;
+
+					    // ===================== R7 =====================
+					    private String R7_RECORD_NUMBER;
+					    private String R7_TITLE;
+					    private String R7_FIRST_NAME;
+					    private String R7_MIDDLE_NAME;
+					    private String R7_SURNAME;
+					    private String R7_PREVIOUS_NAME;
+					    private String R7_GENDER;
+					    private String R7_IDENTIFICATION_TYPE;
+					    private String R7_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R7_DATE_OF_BIRTH;
+					    private String R7_HOME_ADDRESS;
+					    private String R7_POSTAL_ADDRESS;
+					    private String R7_RESIDENCE;
+					    private String R7_EMAIL;
+					    private String R7_LANDLINE;
+					    private String R7_MOBILE_PHONE_NUMBER;
+					    private String R7_MOBILE_MONEY_NUMBER;
+					    private String R7_PRODUCT_TYPE;
+					    private String R7_ACCOUNT_BY_OWNERSHIP;
+					    private String R7_ACCOUNT_NUMBER;
+					    private BigDecimal R7_ACCOUNT_HOLDER_INDICATOR;
+					    private String R7_STATUS_OF_ACCOUNT;
+					    private String R7_NOT_FIT_FOR_STP;
+					    private String R7_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R7_ACCOUNT_BALANCE_IN_PULA;
+					    private String R7_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R7_EXCHANGE_RATE;
+
+					    // ===================== R8 =====================
+					    private String R8_RECORD_NUMBER;
+					    private String R8_TITLE;
+					    private String R8_FIRST_NAME;
+					    private String R8_MIDDLE_NAME;
+					    private String R8_SURNAME;
+					    private String R8_PREVIOUS_NAME;
+					    private String R8_GENDER;
+					    private String R8_IDENTIFICATION_TYPE;
+					    private String R8_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R8_DATE_OF_BIRTH;
+					    private String R8_HOME_ADDRESS;
+					    private String R8_POSTAL_ADDRESS;
+					    private String R8_RESIDENCE;
+					    private String R8_EMAIL;
+					    private String R8_LANDLINE;
+					    private String R8_MOBILE_PHONE_NUMBER;
+					    private String R8_MOBILE_MONEY_NUMBER;
+					    private String R8_PRODUCT_TYPE;
+					    private String R8_ACCOUNT_BY_OWNERSHIP;
+					    private String R8_ACCOUNT_NUMBER;
+					    private BigDecimal R8_ACCOUNT_HOLDER_INDICATOR;
+					    private String R8_STATUS_OF_ACCOUNT;
+					    private String R8_NOT_FIT_FOR_STP;
+					    private String R8_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R8_ACCOUNT_BALANCE_IN_PULA;
+					    private String R8_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R8_EXCHANGE_RATE;
+
+					    // ===================== R9 =====================
+					    private String R9_RECORD_NUMBER;
+					    private String R9_TITLE;
+					    private String R9_FIRST_NAME;
+					    private String R9_MIDDLE_NAME;
+					    private String R9_SURNAME;
+					    private String R9_PREVIOUS_NAME;
+					    private String R9_GENDER;
+					    private String R9_IDENTIFICATION_TYPE;
+					    private String R9_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R9_DATE_OF_BIRTH;
+					    private String R9_HOME_ADDRESS;
+					    private String R9_POSTAL_ADDRESS;
+					    private String R9_RESIDENCE;
+					    private String R9_EMAIL;
+					    private String R9_LANDLINE;
+					    private String R9_MOBILE_PHONE_NUMBER;
+					    private String R9_MOBILE_MONEY_NUMBER;
+					    private String R9_PRODUCT_TYPE;
+					    private String R9_ACCOUNT_BY_OWNERSHIP;
+					    private String R9_ACCOUNT_NUMBER;
+					    private BigDecimal R9_ACCOUNT_HOLDER_INDICATOR;
+					    private String R9_STATUS_OF_ACCOUNT;
+					    private String R9_NOT_FIT_FOR_STP;
+					    private String R9_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R9_ACCOUNT_BALANCE_IN_PULA;
+					    private String R9_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R9_EXCHANGE_RATE;
+
+					    // ===================== R10 =====================
+					    private String R10_RECORD_NUMBER;
+					    private String R10_TITLE;
+					    private String R10_FIRST_NAME;
+					    private String R10_MIDDLE_NAME;
+					    private String R10_SURNAME;
+					    private String R10_PREVIOUS_NAME;
+					    private String R10_GENDER;
+					    private String R10_IDENTIFICATION_TYPE;
+					    private String R10_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R10_DATE_OF_BIRTH;
+					    private String R10_HOME_ADDRESS;
+					    private String R10_POSTAL_ADDRESS;
+					    private String R10_RESIDENCE;
+					    private String R10_EMAIL;
+					    private String R10_LANDLINE;
+					    private String R10_MOBILE_PHONE_NUMBER;
+					    private String R10_MOBILE_MONEY_NUMBER;
+					    private String R10_PRODUCT_TYPE;
+					    private String R10_ACCOUNT_BY_OWNERSHIP;
+					    private String R10_ACCOUNT_NUMBER;
+					    private BigDecimal R10_ACCOUNT_HOLDER_INDICATOR;
+					    private String R10_STATUS_OF_ACCOUNT;
+					    private String R10_NOT_FIT_FOR_STP;
+					    private String R10_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R10_ACCOUNT_BALANCE_IN_PULA;
+					    private String R10_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R10_EXCHANGE_RATE;
+
+					    // ===================== R11 =====================
+					    private String R11_RECORD_NUMBER;
+					    private String R11_TITLE;
+					    private String R11_FIRST_NAME;
+					    private String R11_MIDDLE_NAME;
+					    private String R11_SURNAME;
+					    private String R11_PREVIOUS_NAME;
+					    private String R11_GENDER;
+					    private String R11_IDENTIFICATION_TYPE;
+					    private String R11_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R11_DATE_OF_BIRTH;
+					    private String R11_HOME_ADDRESS;
+					    private String R11_POSTAL_ADDRESS;
+					    private String R11_RESIDENCE;
+					    private String R11_EMAIL;
+					    private String R11_LANDLINE;
+					    private String R11_MOBILE_PHONE_NUMBER;
+					    private String R11_MOBILE_MONEY_NUMBER;
+					    private String R11_PRODUCT_TYPE;
+					    private String R11_ACCOUNT_BY_OWNERSHIP;
+					    private String R11_ACCOUNT_NUMBER;
+					    private BigDecimal R11_ACCOUNT_HOLDER_INDICATOR;
+					    private String R11_STATUS_OF_ACCOUNT;
+					    private String R11_NOT_FIT_FOR_STP;
+					    private String R11_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R11_ACCOUNT_BALANCE_IN_PULA;
+					    private String R11_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R11_EXCHANGE_RATE;
+					    
+					    @Id
+						@Temporal(TemporalType.DATE)
+						@Column(name = "REPORT_DATE")
+						private Date REPORT_DATE;
+
+						@Column(name = "REPORT_VERSION", length = 100)
+						private BigDecimal REPORT_VERSION;
+						
+						@Column(name = "REPORT_RESUBDATE")
+						private Date REPORT_RESUBDATE;
+
+						@Column(name = "REPORT_FREQUENCY", length = 100)
+						private String REPORT_FREQUENCY;
+
+						@Column(name = "REPORT_CODE", length = 100)
+						private String REPORT_CODE;
+
+						@Column(name = "REPORT_DESC", length = 100)
+						private String REPORT_DESC;
+
+						@Column(name = "ENTITY_FLG", length = 1)
+						private String ENTITY_FLG;
+
+						@Column(name = "MODIFY_FLG", length = 1)
+						private String MODIFY_FLG;
+
+						@Column(name = "DEL_FLG", length = 1)
+						private String DEL_FLG;
+						
+						public String getR5_RECORD_NUMBER() {
+							return R5_RECORD_NUMBER;
+						}
+						public void setR5_RECORD_NUMBER(String r5_RECORD_NUMBER) {
+							R5_RECORD_NUMBER = r5_RECORD_NUMBER;
+						}
+						public String getR5_TITLE() {
+							return R5_TITLE;
+						}
+						public void setR5_TITLE(String r5_TITLE) {
+							R5_TITLE = r5_TITLE;
+						}
+						public String getR5_FIRST_NAME() {
+							return R5_FIRST_NAME;
+						}
+						public void setR5_FIRST_NAME(String r5_FIRST_NAME) {
+							R5_FIRST_NAME = r5_FIRST_NAME;
+						}
+						public String getR5_MIDDLE_NAME() {
+							return R5_MIDDLE_NAME;
+						}
+						public void setR5_MIDDLE_NAME(String r5_MIDDLE_NAME) {
+							R5_MIDDLE_NAME = r5_MIDDLE_NAME;
+						}
+						public String getR5_SURNAME() {
+							return R5_SURNAME;
+						}
+						public void setR5_SURNAME(String r5_SURNAME) {
+							R5_SURNAME = r5_SURNAME;
+						}
+						public String getR5_PREVIOUS_NAME() {
+							return R5_PREVIOUS_NAME;
+						}
+						public void setR5_PREVIOUS_NAME(String r5_PREVIOUS_NAME) {
+							R5_PREVIOUS_NAME = r5_PREVIOUS_NAME;
+						}
+						public String getR5_GENDER() {
+							return R5_GENDER;
+						}
+						public void setR5_GENDER(String r5_GENDER) {
+							R5_GENDER = r5_GENDER;
+						}
+						public String getR5_IDENTIFICATION_TYPE() {
+							return R5_IDENTIFICATION_TYPE;
+						}
+						public void setR5_IDENTIFICATION_TYPE(String r5_IDENTIFICATION_TYPE) {
+							R5_IDENTIFICATION_TYPE = r5_IDENTIFICATION_TYPE;
+						}
+						public String getR5_PASSPORT_NUMBER() {
+							return R5_PASSPORT_NUMBER;
+						}
+						public void setR5_PASSPORT_NUMBER(String r5_PASSPORT_NUMBER) {
+							R5_PASSPORT_NUMBER = r5_PASSPORT_NUMBER;
+						}
+						public Date getR5_DATE_OF_BIRTH() {
+							return R5_DATE_OF_BIRTH;
+						}
+						public void setR5_DATE_OF_BIRTH(Date r5_DATE_OF_BIRTH) {
+							R5_DATE_OF_BIRTH = r5_DATE_OF_BIRTH;
+						}
+						public String getR5_HOME_ADDRESS() {
+							return R5_HOME_ADDRESS;
+						}
+						public void setR5_HOME_ADDRESS(String r5_HOME_ADDRESS) {
+							R5_HOME_ADDRESS = r5_HOME_ADDRESS;
+						}
+						public String getR5_POSTAL_ADDRESS() {
+							return R5_POSTAL_ADDRESS;
+						}
+						public void setR5_POSTAL_ADDRESS(String r5_POSTAL_ADDRESS) {
+							R5_POSTAL_ADDRESS = r5_POSTAL_ADDRESS;
+						}
+						public String getR5_RESIDENCE() {
+							return R5_RESIDENCE;
+						}
+						public void setR5_RESIDENCE(String r5_RESIDENCE) {
+							R5_RESIDENCE = r5_RESIDENCE;
+						}
+						public String getR5_EMAIL() {
+							return R5_EMAIL;
+						}
+						public void setR5_EMAIL(String r5_EMAIL) {
+							R5_EMAIL = r5_EMAIL;
+						}
+						public String getR5_LANDLINE() {
+							return R5_LANDLINE;
+						}
+						public void setR5_LANDLINE(String r5_LANDLINE) {
+							R5_LANDLINE = r5_LANDLINE;
+						}
+						public String getR5_MOBILE_PHONE_NUMBER() {
+							return R5_MOBILE_PHONE_NUMBER;
+						}
+						public void setR5_MOBILE_PHONE_NUMBER(String r5_MOBILE_PHONE_NUMBER) {
+							R5_MOBILE_PHONE_NUMBER = r5_MOBILE_PHONE_NUMBER;
+						}
+						public String getR5_MOBILE_MONEY_NUMBER() {
+							return R5_MOBILE_MONEY_NUMBER;
+						}
+						public void setR5_MOBILE_MONEY_NUMBER(String r5_MOBILE_MONEY_NUMBER) {
+							R5_MOBILE_MONEY_NUMBER = r5_MOBILE_MONEY_NUMBER;
+						}
+						public String getR5_PRODUCT_TYPE() {
+							return R5_PRODUCT_TYPE;
+						}
+						public void setR5_PRODUCT_TYPE(String r5_PRODUCT_TYPE) {
+							R5_PRODUCT_TYPE = r5_PRODUCT_TYPE;
+						}
+						public String getR5_ACCOUNT_BY_OWNERSHIP() {
+							return R5_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR5_ACCOUNT_BY_OWNERSHIP(String r5_ACCOUNT_BY_OWNERSHIP) {
+							R5_ACCOUNT_BY_OWNERSHIP = r5_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR5_ACCOUNT_NUMBER() {
+							return R5_ACCOUNT_NUMBER;
+						}
+						public void setR5_ACCOUNT_NUMBER(String r5_ACCOUNT_NUMBER) {
+							R5_ACCOUNT_NUMBER = r5_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR5_ACCOUNT_HOLDER_INDICATOR() {
+							return R5_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR5_ACCOUNT_HOLDER_INDICATOR(BigDecimal r5_ACCOUNT_HOLDER_INDICATOR) {
+							R5_ACCOUNT_HOLDER_INDICATOR = r5_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR5_STATUS_OF_ACCOUNT() {
+							return R5_STATUS_OF_ACCOUNT;
+						}
+						public void setR5_STATUS_OF_ACCOUNT(String r5_STATUS_OF_ACCOUNT) {
+							R5_STATUS_OF_ACCOUNT = r5_STATUS_OF_ACCOUNT;
+						}
+						public String getR5_NOT_FIT_FOR_STP() {
+							return R5_NOT_FIT_FOR_STP;
+						}
+						public void setR5_NOT_FIT_FOR_STP(String r5_NOT_FIT_FOR_STP) {
+							R5_NOT_FIT_FOR_STP = r5_NOT_FIT_FOR_STP;
+						}
+						public String getR5_BRANCH_CODE_AND_NAME() {
+							return R5_BRANCH_CODE_AND_NAME;
+						}
+						public void setR5_BRANCH_CODE_AND_NAME(String r5_BRANCH_CODE_AND_NAME) {
+							R5_BRANCH_CODE_AND_NAME = r5_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR5_ACCOUNT_BALANCE_IN_PULA() {
+							return R5_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR5_ACCOUNT_BALANCE_IN_PULA(BigDecimal r5_ACCOUNT_BALANCE_IN_PULA) {
+							R5_ACCOUNT_BALANCE_IN_PULA = r5_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR5_CURRENCY_OF_ACCOUNT() {
+							return R5_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR5_CURRENCY_OF_ACCOUNT(String r5_CURRENCY_OF_ACCOUNT) {
+							R5_CURRENCY_OF_ACCOUNT = r5_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR5_EXCHANGE_RATE() {
+							return R5_EXCHANGE_RATE;
+						}
+						public void setR5_EXCHANGE_RATE(BigDecimal r5_EXCHANGE_RATE) {
+							R5_EXCHANGE_RATE = r5_EXCHANGE_RATE;
+						}
+						public String getR6_RECORD_NUMBER() {
+							return R6_RECORD_NUMBER;
+						}
+						public void setR6_RECORD_NUMBER(String r6_RECORD_NUMBER) {
+							R6_RECORD_NUMBER = r6_RECORD_NUMBER;
+						}
+						public String getR6_TITLE() {
+							return R6_TITLE;
+						}
+						public void setR6_TITLE(String r6_TITLE) {
+							R6_TITLE = r6_TITLE;
+						}
+						public String getR6_FIRST_NAME() {
+							return R6_FIRST_NAME;
+						}
+						public void setR6_FIRST_NAME(String r6_FIRST_NAME) {
+							R6_FIRST_NAME = r6_FIRST_NAME;
+						}
+						public String getR6_MIDDLE_NAME() {
+							return R6_MIDDLE_NAME;
+						}
+						public void setR6_MIDDLE_NAME(String r6_MIDDLE_NAME) {
+							R6_MIDDLE_NAME = r6_MIDDLE_NAME;
+						}
+						public String getR6_SURNAME() {
+							return R6_SURNAME;
+						}
+						public void setR6_SURNAME(String r6_SURNAME) {
+							R6_SURNAME = r6_SURNAME;
+						}
+						public String getR6_PREVIOUS_NAME() {
+							return R6_PREVIOUS_NAME;
+						}
+						public void setR6_PREVIOUS_NAME(String r6_PREVIOUS_NAME) {
+							R6_PREVIOUS_NAME = r6_PREVIOUS_NAME;
+						}
+						public String getR6_GENDER() {
+							return R6_GENDER;
+						}
+						public void setR6_GENDER(String r6_GENDER) {
+							R6_GENDER = r6_GENDER;
+						}
+						public String getR6_IDENTIFICATION_TYPE() {
+							return R6_IDENTIFICATION_TYPE;
+						}
+						public void setR6_IDENTIFICATION_TYPE(String r6_IDENTIFICATION_TYPE) {
+							R6_IDENTIFICATION_TYPE = r6_IDENTIFICATION_TYPE;
+						}
+						public String getR6_PASSPORT_NUMBER() {
+							return R6_PASSPORT_NUMBER;
+						}
+						public void setR6_PASSPORT_NUMBER(String r6_PASSPORT_NUMBER) {
+							R6_PASSPORT_NUMBER = r6_PASSPORT_NUMBER;
+						}
+						public Date getR6_DATE_OF_BIRTH() {
+							return R6_DATE_OF_BIRTH;
+						}
+						public void setR6_DATE_OF_BIRTH(Date r6_DATE_OF_BIRTH) {
+							R6_DATE_OF_BIRTH = r6_DATE_OF_BIRTH;
+						}
+						public String getR6_HOME_ADDRESS() {
+							return R6_HOME_ADDRESS;
+						}
+						public void setR6_HOME_ADDRESS(String r6_HOME_ADDRESS) {
+							R6_HOME_ADDRESS = r6_HOME_ADDRESS;
+						}
+						public String getR6_POSTAL_ADDRESS() {
+							return R6_POSTAL_ADDRESS;
+						}
+						public void setR6_POSTAL_ADDRESS(String r6_POSTAL_ADDRESS) {
+							R6_POSTAL_ADDRESS = r6_POSTAL_ADDRESS;
+						}
+						public String getR6_RESIDENCE() {
+							return R6_RESIDENCE;
+						}
+						public void setR6_RESIDENCE(String r6_RESIDENCE) {
+							R6_RESIDENCE = r6_RESIDENCE;
+						}
+						public String getR6_EMAIL() {
+							return R6_EMAIL;
+						}
+						public void setR6_EMAIL(String r6_EMAIL) {
+							R6_EMAIL = r6_EMAIL;
+						}
+						public String getR6_LANDLINE() {
+							return R6_LANDLINE;
+						}
+						public void setR6_LANDLINE(String r6_LANDLINE) {
+							R6_LANDLINE = r6_LANDLINE;
+						}
+						public String getR6_MOBILE_PHONE_NUMBER() {
+							return R6_MOBILE_PHONE_NUMBER;
+						}
+						public void setR6_MOBILE_PHONE_NUMBER(String r6_MOBILE_PHONE_NUMBER) {
+							R6_MOBILE_PHONE_NUMBER = r6_MOBILE_PHONE_NUMBER;
+						}
+						public String getR6_MOBILE_MONEY_NUMBER() {
+							return R6_MOBILE_MONEY_NUMBER;
+						}
+						public void setR6_MOBILE_MONEY_NUMBER(String r6_MOBILE_MONEY_NUMBER) {
+							R6_MOBILE_MONEY_NUMBER = r6_MOBILE_MONEY_NUMBER;
+						}
+						public String getR6_PRODUCT_TYPE() {
+							return R6_PRODUCT_TYPE;
+						}
+						public void setR6_PRODUCT_TYPE(String r6_PRODUCT_TYPE) {
+							R6_PRODUCT_TYPE = r6_PRODUCT_TYPE;
+						}
+						public String getR6_ACCOUNT_BY_OWNERSHIP() {
+							return R6_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR6_ACCOUNT_BY_OWNERSHIP(String r6_ACCOUNT_BY_OWNERSHIP) {
+							R6_ACCOUNT_BY_OWNERSHIP = r6_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR6_ACCOUNT_NUMBER() {
+							return R6_ACCOUNT_NUMBER;
+						}
+						public void setR6_ACCOUNT_NUMBER(String r6_ACCOUNT_NUMBER) {
+							R6_ACCOUNT_NUMBER = r6_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR6_ACCOUNT_HOLDER_INDICATOR() {
+							return R6_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR6_ACCOUNT_HOLDER_INDICATOR(BigDecimal r6_ACCOUNT_HOLDER_INDICATOR) {
+							R6_ACCOUNT_HOLDER_INDICATOR = r6_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR6_STATUS_OF_ACCOUNT() {
+							return R6_STATUS_OF_ACCOUNT;
+						}
+						public void setR6_STATUS_OF_ACCOUNT(String r6_STATUS_OF_ACCOUNT) {
+							R6_STATUS_OF_ACCOUNT = r6_STATUS_OF_ACCOUNT;
+						}
+						public String getR6_NOT_FIT_FOR_STP() {
+							return R6_NOT_FIT_FOR_STP;
+						}
+						public void setR6_NOT_FIT_FOR_STP(String r6_NOT_FIT_FOR_STP) {
+							R6_NOT_FIT_FOR_STP = r6_NOT_FIT_FOR_STP;
+						}
+						public String getR6_BRANCH_CODE_AND_NAME() {
+							return R6_BRANCH_CODE_AND_NAME;
+						}
+						public void setR6_BRANCH_CODE_AND_NAME(String r6_BRANCH_CODE_AND_NAME) {
+							R6_BRANCH_CODE_AND_NAME = r6_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR6_ACCOUNT_BALANCE_IN_PULA() {
+							return R6_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR6_ACCOUNT_BALANCE_IN_PULA(BigDecimal r6_ACCOUNT_BALANCE_IN_PULA) {
+							R6_ACCOUNT_BALANCE_IN_PULA = r6_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR6_CURRENCY_OF_ACCOUNT() {
+							return R6_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR6_CURRENCY_OF_ACCOUNT(String r6_CURRENCY_OF_ACCOUNT) {
+							R6_CURRENCY_OF_ACCOUNT = r6_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR6_EXCHANGE_RATE() {
+							return R6_EXCHANGE_RATE;
+						}
+						public void setR6_EXCHANGE_RATE(BigDecimal r6_EXCHANGE_RATE) {
+							R6_EXCHANGE_RATE = r6_EXCHANGE_RATE;
+						}
+						public String getR7_RECORD_NUMBER() {
+							return R7_RECORD_NUMBER;
+						}
+						public void setR7_RECORD_NUMBER(String r7_RECORD_NUMBER) {
+							R7_RECORD_NUMBER = r7_RECORD_NUMBER;
+						}
+						public String getR7_TITLE() {
+							return R7_TITLE;
+						}
+						public void setR7_TITLE(String r7_TITLE) {
+							R7_TITLE = r7_TITLE;
+						}
+						public String getR7_FIRST_NAME() {
+							return R7_FIRST_NAME;
+						}
+						public void setR7_FIRST_NAME(String r7_FIRST_NAME) {
+							R7_FIRST_NAME = r7_FIRST_NAME;
+						}
+						public String getR7_MIDDLE_NAME() {
+							return R7_MIDDLE_NAME;
+						}
+						public void setR7_MIDDLE_NAME(String r7_MIDDLE_NAME) {
+							R7_MIDDLE_NAME = r7_MIDDLE_NAME;
+						}
+						public String getR7_SURNAME() {
+							return R7_SURNAME;
+						}
+						public void setR7_SURNAME(String r7_SURNAME) {
+							R7_SURNAME = r7_SURNAME;
+						}
+						public String getR7_PREVIOUS_NAME() {
+							return R7_PREVIOUS_NAME;
+						}
+						public void setR7_PREVIOUS_NAME(String r7_PREVIOUS_NAME) {
+							R7_PREVIOUS_NAME = r7_PREVIOUS_NAME;
+						}
+						public String getR7_GENDER() {
+							return R7_GENDER;
+						}
+						public void setR7_GENDER(String r7_GENDER) {
+							R7_GENDER = r7_GENDER;
+						}
+						public String getR7_IDENTIFICATION_TYPE() {
+							return R7_IDENTIFICATION_TYPE;
+						}
+						public void setR7_IDENTIFICATION_TYPE(String r7_IDENTIFICATION_TYPE) {
+							R7_IDENTIFICATION_TYPE = r7_IDENTIFICATION_TYPE;
+						}
+						public String getR7_PASSPORT_NUMBER() {
+							return R7_PASSPORT_NUMBER;
+						}
+						public void setR7_PASSPORT_NUMBER(String r7_PASSPORT_NUMBER) {
+							R7_PASSPORT_NUMBER = r7_PASSPORT_NUMBER;
+						}
+						public Date getR7_DATE_OF_BIRTH() {
+							return R7_DATE_OF_BIRTH;
+						}
+						public void setR7_DATE_OF_BIRTH(Date r7_DATE_OF_BIRTH) {
+							R7_DATE_OF_BIRTH = r7_DATE_OF_BIRTH;
+						}
+						public String getR7_HOME_ADDRESS() {
+							return R7_HOME_ADDRESS;
+						}
+						public void setR7_HOME_ADDRESS(String r7_HOME_ADDRESS) {
+							R7_HOME_ADDRESS = r7_HOME_ADDRESS;
+						}
+						public String getR7_POSTAL_ADDRESS() {
+							return R7_POSTAL_ADDRESS;
+						}
+						public void setR7_POSTAL_ADDRESS(String r7_POSTAL_ADDRESS) {
+							R7_POSTAL_ADDRESS = r7_POSTAL_ADDRESS;
+						}
+						public String getR7_RESIDENCE() {
+							return R7_RESIDENCE;
+						}
+						public void setR7_RESIDENCE(String r7_RESIDENCE) {
+							R7_RESIDENCE = r7_RESIDENCE;
+						}
+						public String getR7_EMAIL() {
+							return R7_EMAIL;
+						}
+						public void setR7_EMAIL(String r7_EMAIL) {
+							R7_EMAIL = r7_EMAIL;
+						}
+						public String getR7_LANDLINE() {
+							return R7_LANDLINE;
+						}
+						public void setR7_LANDLINE(String r7_LANDLINE) {
+							R7_LANDLINE = r7_LANDLINE;
+						}
+						public String getR7_MOBILE_PHONE_NUMBER() {
+							return R7_MOBILE_PHONE_NUMBER;
+						}
+						public void setR7_MOBILE_PHONE_NUMBER(String r7_MOBILE_PHONE_NUMBER) {
+							R7_MOBILE_PHONE_NUMBER = r7_MOBILE_PHONE_NUMBER;
+						}
+						public String getR7_MOBILE_MONEY_NUMBER() {
+							return R7_MOBILE_MONEY_NUMBER;
+						}
+						public void setR7_MOBILE_MONEY_NUMBER(String r7_MOBILE_MONEY_NUMBER) {
+							R7_MOBILE_MONEY_NUMBER = r7_MOBILE_MONEY_NUMBER;
+						}
+						public String getR7_PRODUCT_TYPE() {
+							return R7_PRODUCT_TYPE;
+						}
+						public void setR7_PRODUCT_TYPE(String r7_PRODUCT_TYPE) {
+							R7_PRODUCT_TYPE = r7_PRODUCT_TYPE;
+						}
+						public String getR7_ACCOUNT_BY_OWNERSHIP() {
+							return R7_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR7_ACCOUNT_BY_OWNERSHIP(String r7_ACCOUNT_BY_OWNERSHIP) {
+							R7_ACCOUNT_BY_OWNERSHIP = r7_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR7_ACCOUNT_NUMBER() {
+							return R7_ACCOUNT_NUMBER;
+						}
+						public void setR7_ACCOUNT_NUMBER(String r7_ACCOUNT_NUMBER) {
+							R7_ACCOUNT_NUMBER = r7_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR7_ACCOUNT_HOLDER_INDICATOR() {
+							return R7_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR7_ACCOUNT_HOLDER_INDICATOR(BigDecimal r7_ACCOUNT_HOLDER_INDICATOR) {
+							R7_ACCOUNT_HOLDER_INDICATOR = r7_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR7_STATUS_OF_ACCOUNT() {
+							return R7_STATUS_OF_ACCOUNT;
+						}
+						public void setR7_STATUS_OF_ACCOUNT(String r7_STATUS_OF_ACCOUNT) {
+							R7_STATUS_OF_ACCOUNT = r7_STATUS_OF_ACCOUNT;
+						}
+						public String getR7_NOT_FIT_FOR_STP() {
+							return R7_NOT_FIT_FOR_STP;
+						}
+						public void setR7_NOT_FIT_FOR_STP(String r7_NOT_FIT_FOR_STP) {
+							R7_NOT_FIT_FOR_STP = r7_NOT_FIT_FOR_STP;
+						}
+						public String getR7_BRANCH_CODE_AND_NAME() {
+							return R7_BRANCH_CODE_AND_NAME;
+						}
+						public void setR7_BRANCH_CODE_AND_NAME(String r7_BRANCH_CODE_AND_NAME) {
+							R7_BRANCH_CODE_AND_NAME = r7_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR7_ACCOUNT_BALANCE_IN_PULA() {
+							return R7_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR7_ACCOUNT_BALANCE_IN_PULA(BigDecimal r7_ACCOUNT_BALANCE_IN_PULA) {
+							R7_ACCOUNT_BALANCE_IN_PULA = r7_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR7_CURRENCY_OF_ACCOUNT() {
+							return R7_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR7_CURRENCY_OF_ACCOUNT(String r7_CURRENCY_OF_ACCOUNT) {
+							R7_CURRENCY_OF_ACCOUNT = r7_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR7_EXCHANGE_RATE() {
+							return R7_EXCHANGE_RATE;
+						}
+						public void setR7_EXCHANGE_RATE(BigDecimal r7_EXCHANGE_RATE) {
+							R7_EXCHANGE_RATE = r7_EXCHANGE_RATE;
+						}
+						public String getR8_RECORD_NUMBER() {
+							return R8_RECORD_NUMBER;
+						}
+						public void setR8_RECORD_NUMBER(String r8_RECORD_NUMBER) {
+							R8_RECORD_NUMBER = r8_RECORD_NUMBER;
+						}
+						public String getR8_TITLE() {
+							return R8_TITLE;
+						}
+						public void setR8_TITLE(String r8_TITLE) {
+							R8_TITLE = r8_TITLE;
+						}
+						public String getR8_FIRST_NAME() {
+							return R8_FIRST_NAME;
+						}
+						public void setR8_FIRST_NAME(String r8_FIRST_NAME) {
+							R8_FIRST_NAME = r8_FIRST_NAME;
+						}
+						public String getR8_MIDDLE_NAME() {
+							return R8_MIDDLE_NAME;
+						}
+						public void setR8_MIDDLE_NAME(String r8_MIDDLE_NAME) {
+							R8_MIDDLE_NAME = r8_MIDDLE_NAME;
+						}
+						public String getR8_SURNAME() {
+							return R8_SURNAME;
+						}
+						public void setR8_SURNAME(String r8_SURNAME) {
+							R8_SURNAME = r8_SURNAME;
+						}
+						public String getR8_PREVIOUS_NAME() {
+							return R8_PREVIOUS_NAME;
+						}
+						public void setR8_PREVIOUS_NAME(String r8_PREVIOUS_NAME) {
+							R8_PREVIOUS_NAME = r8_PREVIOUS_NAME;
+						}
+						public String getR8_GENDER() {
+							return R8_GENDER;
+						}
+						public void setR8_GENDER(String r8_GENDER) {
+							R8_GENDER = r8_GENDER;
+						}
+						public String getR8_IDENTIFICATION_TYPE() {
+							return R8_IDENTIFICATION_TYPE;
+						}
+						public void setR8_IDENTIFICATION_TYPE(String r8_IDENTIFICATION_TYPE) {
+							R8_IDENTIFICATION_TYPE = r8_IDENTIFICATION_TYPE;
+						}
+						public String getR8_PASSPORT_NUMBER() {
+							return R8_PASSPORT_NUMBER;
+						}
+						public void setR8_PASSPORT_NUMBER(String r8_PASSPORT_NUMBER) {
+							R8_PASSPORT_NUMBER = r8_PASSPORT_NUMBER;
+						}
+						public Date getR8_DATE_OF_BIRTH() {
+							return R8_DATE_OF_BIRTH;
+						}
+						public void setR8_DATE_OF_BIRTH(Date r8_DATE_OF_BIRTH) {
+							R8_DATE_OF_BIRTH = r8_DATE_OF_BIRTH;
+						}
+						public String getR8_HOME_ADDRESS() {
+							return R8_HOME_ADDRESS;
+						}
+						public void setR8_HOME_ADDRESS(String r8_HOME_ADDRESS) {
+							R8_HOME_ADDRESS = r8_HOME_ADDRESS;
+						}
+						public String getR8_POSTAL_ADDRESS() {
+							return R8_POSTAL_ADDRESS;
+						}
+						public void setR8_POSTAL_ADDRESS(String r8_POSTAL_ADDRESS) {
+							R8_POSTAL_ADDRESS = r8_POSTAL_ADDRESS;
+						}
+						public String getR8_RESIDENCE() {
+							return R8_RESIDENCE;
+						}
+						public void setR8_RESIDENCE(String r8_RESIDENCE) {
+							R8_RESIDENCE = r8_RESIDENCE;
+						}
+						public String getR8_EMAIL() {
+							return R8_EMAIL;
+						}
+						public void setR8_EMAIL(String r8_EMAIL) {
+							R8_EMAIL = r8_EMAIL;
+						}
+						public String getR8_LANDLINE() {
+							return R8_LANDLINE;
+						}
+						public void setR8_LANDLINE(String r8_LANDLINE) {
+							R8_LANDLINE = r8_LANDLINE;
+						}
+						public String getR8_MOBILE_PHONE_NUMBER() {
+							return R8_MOBILE_PHONE_NUMBER;
+						}
+						public void setR8_MOBILE_PHONE_NUMBER(String r8_MOBILE_PHONE_NUMBER) {
+							R8_MOBILE_PHONE_NUMBER = r8_MOBILE_PHONE_NUMBER;
+						}
+						public String getR8_MOBILE_MONEY_NUMBER() {
+							return R8_MOBILE_MONEY_NUMBER;
+						}
+						public void setR8_MOBILE_MONEY_NUMBER(String r8_MOBILE_MONEY_NUMBER) {
+							R8_MOBILE_MONEY_NUMBER = r8_MOBILE_MONEY_NUMBER;
+						}
+						public String getR8_PRODUCT_TYPE() {
+							return R8_PRODUCT_TYPE;
+						}
+						public void setR8_PRODUCT_TYPE(String r8_PRODUCT_TYPE) {
+							R8_PRODUCT_TYPE = r8_PRODUCT_TYPE;
+						}
+						public String getR8_ACCOUNT_BY_OWNERSHIP() {
+							return R8_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR8_ACCOUNT_BY_OWNERSHIP(String r8_ACCOUNT_BY_OWNERSHIP) {
+							R8_ACCOUNT_BY_OWNERSHIP = r8_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR8_ACCOUNT_NUMBER() {
+							return R8_ACCOUNT_NUMBER;
+						}
+						public void setR8_ACCOUNT_NUMBER(String r8_ACCOUNT_NUMBER) {
+							R8_ACCOUNT_NUMBER = r8_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR8_ACCOUNT_HOLDER_INDICATOR() {
+							return R8_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR8_ACCOUNT_HOLDER_INDICATOR(BigDecimal r8_ACCOUNT_HOLDER_INDICATOR) {
+							R8_ACCOUNT_HOLDER_INDICATOR = r8_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR8_STATUS_OF_ACCOUNT() {
+							return R8_STATUS_OF_ACCOUNT;
+						}
+						public void setR8_STATUS_OF_ACCOUNT(String r8_STATUS_OF_ACCOUNT) {
+							R8_STATUS_OF_ACCOUNT = r8_STATUS_OF_ACCOUNT;
+						}
+						public String getR8_NOT_FIT_FOR_STP() {
+							return R8_NOT_FIT_FOR_STP;
+						}
+						public void setR8_NOT_FIT_FOR_STP(String r8_NOT_FIT_FOR_STP) {
+							R8_NOT_FIT_FOR_STP = r8_NOT_FIT_FOR_STP;
+						}
+						public String getR8_BRANCH_CODE_AND_NAME() {
+							return R8_BRANCH_CODE_AND_NAME;
+						}
+						public void setR8_BRANCH_CODE_AND_NAME(String r8_BRANCH_CODE_AND_NAME) {
+							R8_BRANCH_CODE_AND_NAME = r8_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR8_ACCOUNT_BALANCE_IN_PULA() {
+							return R8_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR8_ACCOUNT_BALANCE_IN_PULA(BigDecimal r8_ACCOUNT_BALANCE_IN_PULA) {
+							R8_ACCOUNT_BALANCE_IN_PULA = r8_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR8_CURRENCY_OF_ACCOUNT() {
+							return R8_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR8_CURRENCY_OF_ACCOUNT(String r8_CURRENCY_OF_ACCOUNT) {
+							R8_CURRENCY_OF_ACCOUNT = r8_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR8_EXCHANGE_RATE() {
+							return R8_EXCHANGE_RATE;
+						}
+						public void setR8_EXCHANGE_RATE(BigDecimal r8_EXCHANGE_RATE) {
+							R8_EXCHANGE_RATE = r8_EXCHANGE_RATE;
+						}
+						public String getR9_RECORD_NUMBER() {
+							return R9_RECORD_NUMBER;
+						}
+						public void setR9_RECORD_NUMBER(String r9_RECORD_NUMBER) {
+							R9_RECORD_NUMBER = r9_RECORD_NUMBER;
+						}
+						public String getR9_TITLE() {
+							return R9_TITLE;
+						}
+						public void setR9_TITLE(String r9_TITLE) {
+							R9_TITLE = r9_TITLE;
+						}
+						public String getR9_FIRST_NAME() {
+							return R9_FIRST_NAME;
+						}
+						public void setR9_FIRST_NAME(String r9_FIRST_NAME) {
+							R9_FIRST_NAME = r9_FIRST_NAME;
+						}
+						public String getR9_MIDDLE_NAME() {
+							return R9_MIDDLE_NAME;
+						}
+						public void setR9_MIDDLE_NAME(String r9_MIDDLE_NAME) {
+							R9_MIDDLE_NAME = r9_MIDDLE_NAME;
+						}
+						public String getR9_SURNAME() {
+							return R9_SURNAME;
+						}
+						public void setR9_SURNAME(String r9_SURNAME) {
+							R9_SURNAME = r9_SURNAME;
+						}
+						public String getR9_PREVIOUS_NAME() {
+							return R9_PREVIOUS_NAME;
+						}
+						public void setR9_PREVIOUS_NAME(String r9_PREVIOUS_NAME) {
+							R9_PREVIOUS_NAME = r9_PREVIOUS_NAME;
+						}
+						public String getR9_GENDER() {
+							return R9_GENDER;
+						}
+						public void setR9_GENDER(String r9_GENDER) {
+							R9_GENDER = r9_GENDER;
+						}
+						public String getR9_IDENTIFICATION_TYPE() {
+							return R9_IDENTIFICATION_TYPE;
+						}
+						public void setR9_IDENTIFICATION_TYPE(String r9_IDENTIFICATION_TYPE) {
+							R9_IDENTIFICATION_TYPE = r9_IDENTIFICATION_TYPE;
+						}
+						public String getR9_PASSPORT_NUMBER() {
+							return R9_PASSPORT_NUMBER;
+						}
+						public void setR9_PASSPORT_NUMBER(String r9_PASSPORT_NUMBER) {
+							R9_PASSPORT_NUMBER = r9_PASSPORT_NUMBER;
+						}
+						public Date getR9_DATE_OF_BIRTH() {
+							return R9_DATE_OF_BIRTH;
+						}
+						public void setR9_DATE_OF_BIRTH(Date r9_DATE_OF_BIRTH) {
+							R9_DATE_OF_BIRTH = r9_DATE_OF_BIRTH;
+						}
+						public String getR9_HOME_ADDRESS() {
+							return R9_HOME_ADDRESS;
+						}
+						public void setR9_HOME_ADDRESS(String r9_HOME_ADDRESS) {
+							R9_HOME_ADDRESS = r9_HOME_ADDRESS;
+						}
+						public String getR9_POSTAL_ADDRESS() {
+							return R9_POSTAL_ADDRESS;
+						}
+						public void setR9_POSTAL_ADDRESS(String r9_POSTAL_ADDRESS) {
+							R9_POSTAL_ADDRESS = r9_POSTAL_ADDRESS;
+						}
+						public String getR9_RESIDENCE() {
+							return R9_RESIDENCE;
+						}
+						public void setR9_RESIDENCE(String r9_RESIDENCE) {
+							R9_RESIDENCE = r9_RESIDENCE;
+						}
+						public String getR9_EMAIL() {
+							return R9_EMAIL;
+						}
+						public void setR9_EMAIL(String r9_EMAIL) {
+							R9_EMAIL = r9_EMAIL;
+						}
+						public String getR9_LANDLINE() {
+							return R9_LANDLINE;
+						}
+						public void setR9_LANDLINE(String r9_LANDLINE) {
+							R9_LANDLINE = r9_LANDLINE;
+						}
+						public String getR9_MOBILE_PHONE_NUMBER() {
+							return R9_MOBILE_PHONE_NUMBER;
+						}
+						public void setR9_MOBILE_PHONE_NUMBER(String r9_MOBILE_PHONE_NUMBER) {
+							R9_MOBILE_PHONE_NUMBER = r9_MOBILE_PHONE_NUMBER;
+						}
+						public String getR9_MOBILE_MONEY_NUMBER() {
+							return R9_MOBILE_MONEY_NUMBER;
+						}
+						public void setR9_MOBILE_MONEY_NUMBER(String r9_MOBILE_MONEY_NUMBER) {
+							R9_MOBILE_MONEY_NUMBER = r9_MOBILE_MONEY_NUMBER;
+						}
+						public String getR9_PRODUCT_TYPE() {
+							return R9_PRODUCT_TYPE;
+						}
+						public void setR9_PRODUCT_TYPE(String r9_PRODUCT_TYPE) {
+							R9_PRODUCT_TYPE = r9_PRODUCT_TYPE;
+						}
+						public String getR9_ACCOUNT_BY_OWNERSHIP() {
+							return R9_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR9_ACCOUNT_BY_OWNERSHIP(String r9_ACCOUNT_BY_OWNERSHIP) {
+							R9_ACCOUNT_BY_OWNERSHIP = r9_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR9_ACCOUNT_NUMBER() {
+							return R9_ACCOUNT_NUMBER;
+						}
+						public void setR9_ACCOUNT_NUMBER(String r9_ACCOUNT_NUMBER) {
+							R9_ACCOUNT_NUMBER = r9_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR9_ACCOUNT_HOLDER_INDICATOR() {
+							return R9_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR9_ACCOUNT_HOLDER_INDICATOR(BigDecimal r9_ACCOUNT_HOLDER_INDICATOR) {
+							R9_ACCOUNT_HOLDER_INDICATOR = r9_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR9_STATUS_OF_ACCOUNT() {
+							return R9_STATUS_OF_ACCOUNT;
+						}
+						public void setR9_STATUS_OF_ACCOUNT(String r9_STATUS_OF_ACCOUNT) {
+							R9_STATUS_OF_ACCOUNT = r9_STATUS_OF_ACCOUNT;
+						}
+						public String getR9_NOT_FIT_FOR_STP() {
+							return R9_NOT_FIT_FOR_STP;
+						}
+						public void setR9_NOT_FIT_FOR_STP(String r9_NOT_FIT_FOR_STP) {
+							R9_NOT_FIT_FOR_STP = r9_NOT_FIT_FOR_STP;
+						}
+						public String getR9_BRANCH_CODE_AND_NAME() {
+							return R9_BRANCH_CODE_AND_NAME;
+						}
+						public void setR9_BRANCH_CODE_AND_NAME(String r9_BRANCH_CODE_AND_NAME) {
+							R9_BRANCH_CODE_AND_NAME = r9_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR9_ACCOUNT_BALANCE_IN_PULA() {
+							return R9_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR9_ACCOUNT_BALANCE_IN_PULA(BigDecimal r9_ACCOUNT_BALANCE_IN_PULA) {
+							R9_ACCOUNT_BALANCE_IN_PULA = r9_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR9_CURRENCY_OF_ACCOUNT() {
+							return R9_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR9_CURRENCY_OF_ACCOUNT(String r9_CURRENCY_OF_ACCOUNT) {
+							R9_CURRENCY_OF_ACCOUNT = r9_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR9_EXCHANGE_RATE() {
+							return R9_EXCHANGE_RATE;
+						}
+						public void setR9_EXCHANGE_RATE(BigDecimal r9_EXCHANGE_RATE) {
+							R9_EXCHANGE_RATE = r9_EXCHANGE_RATE;
+						}
+						public String getR10_RECORD_NUMBER() {
+							return R10_RECORD_NUMBER;
+						}
+						public void setR10_RECORD_NUMBER(String r10_RECORD_NUMBER) {
+							R10_RECORD_NUMBER = r10_RECORD_NUMBER;
+						}
+						public String getR10_TITLE() {
+							return R10_TITLE;
+						}
+						public void setR10_TITLE(String r10_TITLE) {
+							R10_TITLE = r10_TITLE;
+						}
+						public String getR10_FIRST_NAME() {
+							return R10_FIRST_NAME;
+						}
+						public void setR10_FIRST_NAME(String r10_FIRST_NAME) {
+							R10_FIRST_NAME = r10_FIRST_NAME;
+						}
+						public String getR10_MIDDLE_NAME() {
+							return R10_MIDDLE_NAME;
+						}
+						public void setR10_MIDDLE_NAME(String r10_MIDDLE_NAME) {
+							R10_MIDDLE_NAME = r10_MIDDLE_NAME;
+						}
+						public String getR10_SURNAME() {
+							return R10_SURNAME;
+						}
+						public void setR10_SURNAME(String r10_SURNAME) {
+							R10_SURNAME = r10_SURNAME;
+						}
+						public String getR10_PREVIOUS_NAME() {
+							return R10_PREVIOUS_NAME;
+						}
+						public void setR10_PREVIOUS_NAME(String r10_PREVIOUS_NAME) {
+							R10_PREVIOUS_NAME = r10_PREVIOUS_NAME;
+						}
+						public String getR10_GENDER() {
+							return R10_GENDER;
+						}
+						public void setR10_GENDER(String r10_GENDER) {
+							R10_GENDER = r10_GENDER;
+						}
+						public String getR10_IDENTIFICATION_TYPE() {
+							return R10_IDENTIFICATION_TYPE;
+						}
+						public void setR10_IDENTIFICATION_TYPE(String r10_IDENTIFICATION_TYPE) {
+							R10_IDENTIFICATION_TYPE = r10_IDENTIFICATION_TYPE;
+						}
+						public String getR10_PASSPORT_NUMBER() {
+							return R10_PASSPORT_NUMBER;
+						}
+						public void setR10_PASSPORT_NUMBER(String r10_PASSPORT_NUMBER) {
+							R10_PASSPORT_NUMBER = r10_PASSPORT_NUMBER;
+						}
+						public Date getR10_DATE_OF_BIRTH() {
+							return R10_DATE_OF_BIRTH;
+						}
+						public void setR10_DATE_OF_BIRTH(Date r10_DATE_OF_BIRTH) {
+							R10_DATE_OF_BIRTH = r10_DATE_OF_BIRTH;
+						}
+						public String getR10_HOME_ADDRESS() {
+							return R10_HOME_ADDRESS;
+						}
+						public void setR10_HOME_ADDRESS(String r10_HOME_ADDRESS) {
+							R10_HOME_ADDRESS = r10_HOME_ADDRESS;
+						}
+						public String getR10_POSTAL_ADDRESS() {
+							return R10_POSTAL_ADDRESS;
+						}
+						public void setR10_POSTAL_ADDRESS(String r10_POSTAL_ADDRESS) {
+							R10_POSTAL_ADDRESS = r10_POSTAL_ADDRESS;
+						}
+						public String getR10_RESIDENCE() {
+							return R10_RESIDENCE;
+						}
+						public void setR10_RESIDENCE(String r10_RESIDENCE) {
+							R10_RESIDENCE = r10_RESIDENCE;
+						}
+						public String getR10_EMAIL() {
+							return R10_EMAIL;
+						}
+						public void setR10_EMAIL(String r10_EMAIL) {
+							R10_EMAIL = r10_EMAIL;
+						}
+						public String getR10_LANDLINE() {
+							return R10_LANDLINE;
+						}
+						public void setR10_LANDLINE(String r10_LANDLINE) {
+							R10_LANDLINE = r10_LANDLINE;
+						}
+						public String getR10_MOBILE_PHONE_NUMBER() {
+							return R10_MOBILE_PHONE_NUMBER;
+						}
+						public void setR10_MOBILE_PHONE_NUMBER(String r10_MOBILE_PHONE_NUMBER) {
+							R10_MOBILE_PHONE_NUMBER = r10_MOBILE_PHONE_NUMBER;
+						}
+						public String getR10_MOBILE_MONEY_NUMBER() {
+							return R10_MOBILE_MONEY_NUMBER;
+						}
+						public void setR10_MOBILE_MONEY_NUMBER(String r10_MOBILE_MONEY_NUMBER) {
+							R10_MOBILE_MONEY_NUMBER = r10_MOBILE_MONEY_NUMBER;
+						}
+						public String getR10_PRODUCT_TYPE() {
+							return R10_PRODUCT_TYPE;
+						}
+						public void setR10_PRODUCT_TYPE(String r10_PRODUCT_TYPE) {
+							R10_PRODUCT_TYPE = r10_PRODUCT_TYPE;
+						}
+						public String getR10_ACCOUNT_BY_OWNERSHIP() {
+							return R10_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR10_ACCOUNT_BY_OWNERSHIP(String r10_ACCOUNT_BY_OWNERSHIP) {
+							R10_ACCOUNT_BY_OWNERSHIP = r10_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR10_ACCOUNT_NUMBER() {
+							return R10_ACCOUNT_NUMBER;
+						}
+						public void setR10_ACCOUNT_NUMBER(String r10_ACCOUNT_NUMBER) {
+							R10_ACCOUNT_NUMBER = r10_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR10_ACCOUNT_HOLDER_INDICATOR() {
+							return R10_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR10_ACCOUNT_HOLDER_INDICATOR(BigDecimal r10_ACCOUNT_HOLDER_INDICATOR) {
+							R10_ACCOUNT_HOLDER_INDICATOR = r10_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR10_STATUS_OF_ACCOUNT() {
+							return R10_STATUS_OF_ACCOUNT;
+						}
+						public void setR10_STATUS_OF_ACCOUNT(String r10_STATUS_OF_ACCOUNT) {
+							R10_STATUS_OF_ACCOUNT = r10_STATUS_OF_ACCOUNT;
+						}
+						public String getR10_NOT_FIT_FOR_STP() {
+							return R10_NOT_FIT_FOR_STP;
+						}
+						public void setR10_NOT_FIT_FOR_STP(String r10_NOT_FIT_FOR_STP) {
+							R10_NOT_FIT_FOR_STP = r10_NOT_FIT_FOR_STP;
+						}
+						public String getR10_BRANCH_CODE_AND_NAME() {
+							return R10_BRANCH_CODE_AND_NAME;
+						}
+						public void setR10_BRANCH_CODE_AND_NAME(String r10_BRANCH_CODE_AND_NAME) {
+							R10_BRANCH_CODE_AND_NAME = r10_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR10_ACCOUNT_BALANCE_IN_PULA() {
+							return R10_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR10_ACCOUNT_BALANCE_IN_PULA(BigDecimal r10_ACCOUNT_BALANCE_IN_PULA) {
+							R10_ACCOUNT_BALANCE_IN_PULA = r10_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR10_CURRENCY_OF_ACCOUNT() {
+							return R10_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR10_CURRENCY_OF_ACCOUNT(String r10_CURRENCY_OF_ACCOUNT) {
+							R10_CURRENCY_OF_ACCOUNT = r10_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR10_EXCHANGE_RATE() {
+							return R10_EXCHANGE_RATE;
+						}
+						public void setR10_EXCHANGE_RATE(BigDecimal r10_EXCHANGE_RATE) {
+							R10_EXCHANGE_RATE = r10_EXCHANGE_RATE;
+						}
+						public String getR11_RECORD_NUMBER() {
+							return R11_RECORD_NUMBER;
+						}
+						public void setR11_RECORD_NUMBER(String r11_RECORD_NUMBER) {
+							R11_RECORD_NUMBER = r11_RECORD_NUMBER;
+						}
+						public String getR11_TITLE() {
+							return R11_TITLE;
+						}
+						public void setR11_TITLE(String r11_TITLE) {
+							R11_TITLE = r11_TITLE;
+						}
+						public String getR11_FIRST_NAME() {
+							return R11_FIRST_NAME;
+						}
+						public void setR11_FIRST_NAME(String r11_FIRST_NAME) {
+							R11_FIRST_NAME = r11_FIRST_NAME;
+						}
+						public String getR11_MIDDLE_NAME() {
+							return R11_MIDDLE_NAME;
+						}
+						public void setR11_MIDDLE_NAME(String r11_MIDDLE_NAME) {
+							R11_MIDDLE_NAME = r11_MIDDLE_NAME;
+						}
+						public String getR11_SURNAME() {
+							return R11_SURNAME;
+						}
+						public void setR11_SURNAME(String r11_SURNAME) {
+							R11_SURNAME = r11_SURNAME;
+						}
+						public String getR11_PREVIOUS_NAME() {
+							return R11_PREVIOUS_NAME;
+						}
+						public void setR11_PREVIOUS_NAME(String r11_PREVIOUS_NAME) {
+							R11_PREVIOUS_NAME = r11_PREVIOUS_NAME;
+						}
+						public String getR11_GENDER() {
+							return R11_GENDER;
+						}
+						public void setR11_GENDER(String r11_GENDER) {
+							R11_GENDER = r11_GENDER;
+						}
+						public String getR11_IDENTIFICATION_TYPE() {
+							return R11_IDENTIFICATION_TYPE;
+						}
+						public void setR11_IDENTIFICATION_TYPE(String r11_IDENTIFICATION_TYPE) {
+							R11_IDENTIFICATION_TYPE = r11_IDENTIFICATION_TYPE;
+						}
+						public String getR11_PASSPORT_NUMBER() {
+							return R11_PASSPORT_NUMBER;
+						}
+						public void setR11_PASSPORT_NUMBER(String r11_PASSPORT_NUMBER) {
+							R11_PASSPORT_NUMBER = r11_PASSPORT_NUMBER;
+						}
+						public Date getR11_DATE_OF_BIRTH() {
+							return R11_DATE_OF_BIRTH;
+						}
+						public void setR11_DATE_OF_BIRTH(Date r11_DATE_OF_BIRTH) {
+							R11_DATE_OF_BIRTH = r11_DATE_OF_BIRTH;
+						}
+						public String getR11_HOME_ADDRESS() {
+							return R11_HOME_ADDRESS;
+						}
+						public void setR11_HOME_ADDRESS(String r11_HOME_ADDRESS) {
+							R11_HOME_ADDRESS = r11_HOME_ADDRESS;
+						}
+						public String getR11_POSTAL_ADDRESS() {
+							return R11_POSTAL_ADDRESS;
+						}
+						public void setR11_POSTAL_ADDRESS(String r11_POSTAL_ADDRESS) {
+							R11_POSTAL_ADDRESS = r11_POSTAL_ADDRESS;
+						}
+						public String getR11_RESIDENCE() {
+							return R11_RESIDENCE;
+						}
+						public void setR11_RESIDENCE(String r11_RESIDENCE) {
+							R11_RESIDENCE = r11_RESIDENCE;
+						}
+						public String getR11_EMAIL() {
+							return R11_EMAIL;
+						}
+						public void setR11_EMAIL(String r11_EMAIL) {
+							R11_EMAIL = r11_EMAIL;
+						}
+						public String getR11_LANDLINE() {
+							return R11_LANDLINE;
+						}
+						public void setR11_LANDLINE(String r11_LANDLINE) {
+							R11_LANDLINE = r11_LANDLINE;
+						}
+						public String getR11_MOBILE_PHONE_NUMBER() {
+							return R11_MOBILE_PHONE_NUMBER;
+						}
+						public void setR11_MOBILE_PHONE_NUMBER(String r11_MOBILE_PHONE_NUMBER) {
+							R11_MOBILE_PHONE_NUMBER = r11_MOBILE_PHONE_NUMBER;
+						}
+						public String getR11_MOBILE_MONEY_NUMBER() {
+							return R11_MOBILE_MONEY_NUMBER;
+						}
+						public void setR11_MOBILE_MONEY_NUMBER(String r11_MOBILE_MONEY_NUMBER) {
+							R11_MOBILE_MONEY_NUMBER = r11_MOBILE_MONEY_NUMBER;
+						}
+						public String getR11_PRODUCT_TYPE() {
+							return R11_PRODUCT_TYPE;
+						}
+						public void setR11_PRODUCT_TYPE(String r11_PRODUCT_TYPE) {
+							R11_PRODUCT_TYPE = r11_PRODUCT_TYPE;
+						}
+						public String getR11_ACCOUNT_BY_OWNERSHIP() {
+							return R11_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR11_ACCOUNT_BY_OWNERSHIP(String r11_ACCOUNT_BY_OWNERSHIP) {
+							R11_ACCOUNT_BY_OWNERSHIP = r11_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR11_ACCOUNT_NUMBER() {
+							return R11_ACCOUNT_NUMBER;
+						}
+						public void setR11_ACCOUNT_NUMBER(String r11_ACCOUNT_NUMBER) {
+							R11_ACCOUNT_NUMBER = r11_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR11_ACCOUNT_HOLDER_INDICATOR() {
+							return R11_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR11_ACCOUNT_HOLDER_INDICATOR(BigDecimal r11_ACCOUNT_HOLDER_INDICATOR) {
+							R11_ACCOUNT_HOLDER_INDICATOR = r11_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR11_STATUS_OF_ACCOUNT() {
+							return R11_STATUS_OF_ACCOUNT;
+						}
+						public void setR11_STATUS_OF_ACCOUNT(String r11_STATUS_OF_ACCOUNT) {
+							R11_STATUS_OF_ACCOUNT = r11_STATUS_OF_ACCOUNT;
+						}
+						public String getR11_NOT_FIT_FOR_STP() {
+							return R11_NOT_FIT_FOR_STP;
+						}
+						public void setR11_NOT_FIT_FOR_STP(String r11_NOT_FIT_FOR_STP) {
+							R11_NOT_FIT_FOR_STP = r11_NOT_FIT_FOR_STP;
+						}
+						public String getR11_BRANCH_CODE_AND_NAME() {
+							return R11_BRANCH_CODE_AND_NAME;
+						}
+						public void setR11_BRANCH_CODE_AND_NAME(String r11_BRANCH_CODE_AND_NAME) {
+							R11_BRANCH_CODE_AND_NAME = r11_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR11_ACCOUNT_BALANCE_IN_PULA() {
+							return R11_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR11_ACCOUNT_BALANCE_IN_PULA(BigDecimal r11_ACCOUNT_BALANCE_IN_PULA) {
+							R11_ACCOUNT_BALANCE_IN_PULA = r11_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR11_CURRENCY_OF_ACCOUNT() {
+							return R11_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR11_CURRENCY_OF_ACCOUNT(String r11_CURRENCY_OF_ACCOUNT) {
+							R11_CURRENCY_OF_ACCOUNT = r11_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR11_EXCHANGE_RATE() {
+							return R11_EXCHANGE_RATE;
+						}
+						public void setR11_EXCHANGE_RATE(BigDecimal r11_EXCHANGE_RATE) {
+							R11_EXCHANGE_RATE = r11_EXCHANGE_RATE;
+						}
+						
+						public Date getREPORT_DATE() {
+							return REPORT_DATE;
+						}
+
+						public void setREPORT_DATE(Date REPORT_DATE) {
+							this.REPORT_DATE = REPORT_DATE;
+						}
+
+						public BigDecimal getREPORT_VERSION() {
+							return REPORT_VERSION;
+						}
+
+						public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
+							this.REPORT_VERSION = REPORT_VERSION;
+						}
+						
+						public Date getREPORT_RESUBDATE() {
+							return REPORT_RESUBDATE;
+						}
+
+						public void setREPORT_RESUBDATE(Date REPORT_RESUBDATE) {
+							this.REPORT_RESUBDATE = REPORT_RESUBDATE;
+						}
+
+						public String getREPORT_FREQUENCY() {
+							return REPORT_FREQUENCY;
+						}
+
+						public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+							REPORT_FREQUENCY = rEPORT_FREQUENCY;
+						}
+
+						public String getREPORT_CODE() {
+							return REPORT_CODE;
+						}
+
+						public void setREPORT_CODE(String rEPORT_CODE) {
+							REPORT_CODE = rEPORT_CODE;
+						}
+
+						public String getREPORT_DESC() {
+							return REPORT_DESC;
+						}
+
+						public void setREPORT_DESC(String rEPORT_DESC) {
+							REPORT_DESC = rEPORT_DESC;
+						}
+
+						public String getENTITY_FLG() {
+							return ENTITY_FLG;
+						}
+
+						public void setENTITY_FLG(String eNTITY_FLG) {
+							ENTITY_FLG = eNTITY_FLG;
+						}
+
+						public String getMODIFY_FLG() {
+							return MODIFY_FLG;
+						}
+
+						public void setMODIFY_FLG(String mODIFY_FLG) {
+							MODIFY_FLG = mODIFY_FLG;
+						}
+
+						public String getDEL_FLG() {
+							return DEL_FLG;
+						}
+
+						public void setDEL_FLG(String dEL_FLG) {
+							DEL_FLG = dEL_FLG;
+						}
+
+					}
+					
+					
+				// ROW MAPPER RESUB
+
+				class BDISB1_RowMapper_Resub implements RowMapper<BDISB1_RESUB_Summary_Entity> {
+
+					@Override
+					public BDISB1_RESUB_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+						BDISB1_RESUB_Summary_Entity obj = new BDISB1_RESUB_Summary_Entity();	
+					
+	
+						obj.setR5_RECORD_NUMBER(rs.getString("R5_RECORD_NUMBER"));
+						obj.setR5_TITLE(rs.getString("R5_TITLE"));
+						obj.setR5_FIRST_NAME(rs.getString("R5_FIRST_NAME"));
+						obj.setR5_MIDDLE_NAME(rs.getString("R5_MIDDLE_NAME"));
+						obj.setR5_SURNAME(rs.getString("R5_SURNAME"));
+						obj.setR5_PREVIOUS_NAME(rs.getString("R5_PREVIOUS_NAME"));
+						obj.setR5_GENDER(rs.getString("R5_GENDER"));
+						obj.setR5_IDENTIFICATION_TYPE(rs.getString("R5_IDENTIFICATION_TYPE"));
+						obj.setR5_PASSPORT_NUMBER(rs.getString("R5_PASSPORT_NUMBER"));
+						obj.setR5_DATE_OF_BIRTH(rs.getDate("R5_DATE_OF_BIRTH"));
+						obj.setR5_HOME_ADDRESS(rs.getString("R5_HOME_ADDRESS"));
+						obj.setR5_POSTAL_ADDRESS(rs.getString("R5_POSTAL_ADDRESS"));
+						obj.setR5_RESIDENCE(rs.getString("R5_RESIDENCE"));
+						obj.setR5_EMAIL(rs.getString("R5_EMAIL"));
+						obj.setR5_LANDLINE(rs.getString("R5_LANDLINE"));
+						obj.setR5_MOBILE_PHONE_NUMBER(rs.getString("R5_MOBILE_PHONE_NUMBER"));
+						obj.setR5_MOBILE_MONEY_NUMBER(rs.getString("R5_MOBILE_MONEY_NUMBER"));
+						obj.setR5_PRODUCT_TYPE(rs.getString("R5_PRODUCT_TYPE"));
+						obj.setR5_ACCOUNT_BY_OWNERSHIP(rs.getString("R5_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR5_ACCOUNT_NUMBER(rs.getString("R5_ACCOUNT_NUMBER"));
+						obj.setR5_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R5_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR5_STATUS_OF_ACCOUNT(rs.getString("R5_STATUS_OF_ACCOUNT"));
+						obj.setR5_NOT_FIT_FOR_STP(rs.getString("R5_NOT_FIT_FOR_STP"));
+						obj.setR5_BRANCH_CODE_AND_NAME(rs.getString("R5_BRANCH_CODE_AND_NAME"));
+						obj.setR5_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R5_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR5_CURRENCY_OF_ACCOUNT(rs.getString("R5_CURRENCY_OF_ACCOUNT"));
+						obj.setR5_EXCHANGE_RATE(rs.getBigDecimal("R5_EXCHANGE_RATE"));
+						
+						obj.setR6_RECORD_NUMBER(rs.getString("R6_RECORD_NUMBER"));
+						obj.setR6_TITLE(rs.getString("R6_TITLE"));
+						obj.setR6_FIRST_NAME(rs.getString("R6_FIRST_NAME"));
+						obj.setR6_MIDDLE_NAME(rs.getString("R6_MIDDLE_NAME"));
+						obj.setR6_SURNAME(rs.getString("R6_SURNAME"));
+						obj.setR6_PREVIOUS_NAME(rs.getString("R6_PREVIOUS_NAME"));
+						obj.setR6_GENDER(rs.getString("R6_GENDER"));
+						obj.setR6_IDENTIFICATION_TYPE(rs.getString("R6_IDENTIFICATION_TYPE"));
+						obj.setR6_PASSPORT_NUMBER(rs.getString("R6_PASSPORT_NUMBER"));
+						obj.setR6_DATE_OF_BIRTH(rs.getDate("R6_DATE_OF_BIRTH"));
+						obj.setR6_HOME_ADDRESS(rs.getString("R6_HOME_ADDRESS"));
+						obj.setR6_POSTAL_ADDRESS(rs.getString("R6_POSTAL_ADDRESS"));
+						obj.setR6_RESIDENCE(rs.getString("R6_RESIDENCE"));
+						obj.setR6_EMAIL(rs.getString("R6_EMAIL"));
+						obj.setR6_LANDLINE(rs.getString("R6_LANDLINE"));
+						obj.setR6_MOBILE_PHONE_NUMBER(rs.getString("R6_MOBILE_PHONE_NUMBER"));
+						obj.setR6_MOBILE_MONEY_NUMBER(rs.getString("R6_MOBILE_MONEY_NUMBER"));
+						obj.setR6_PRODUCT_TYPE(rs.getString("R6_PRODUCT_TYPE"));
+						obj.setR6_ACCOUNT_BY_OWNERSHIP(rs.getString("R6_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR6_ACCOUNT_NUMBER(rs.getString("R6_ACCOUNT_NUMBER"));
+						obj.setR6_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R6_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR6_STATUS_OF_ACCOUNT(rs.getString("R6_STATUS_OF_ACCOUNT"));
+						obj.setR6_NOT_FIT_FOR_STP(rs.getString("R6_NOT_FIT_FOR_STP"));
+						obj.setR6_BRANCH_CODE_AND_NAME(rs.getString("R6_BRANCH_CODE_AND_NAME"));
+						obj.setR6_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R6_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR6_CURRENCY_OF_ACCOUNT(rs.getString("R6_CURRENCY_OF_ACCOUNT"));
+						obj.setR6_EXCHANGE_RATE(rs.getBigDecimal("R6_EXCHANGE_RATE"));
+						
+						obj.setR7_RECORD_NUMBER(rs.getString("R7_RECORD_NUMBER"));
+						obj.setR7_TITLE(rs.getString("R7_TITLE"));
+						obj.setR7_FIRST_NAME(rs.getString("R7_FIRST_NAME"));
+						obj.setR7_MIDDLE_NAME(rs.getString("R7_MIDDLE_NAME"));
+						obj.setR7_SURNAME(rs.getString("R7_SURNAME"));
+						obj.setR7_PREVIOUS_NAME(rs.getString("R7_PREVIOUS_NAME"));
+						obj.setR7_GENDER(rs.getString("R7_GENDER"));
+						obj.setR7_IDENTIFICATION_TYPE(rs.getString("R7_IDENTIFICATION_TYPE"));
+						obj.setR7_PASSPORT_NUMBER(rs.getString("R7_PASSPORT_NUMBER"));
+						obj.setR7_DATE_OF_BIRTH(rs.getDate("R7_DATE_OF_BIRTH"));
+						obj.setR7_HOME_ADDRESS(rs.getString("R7_HOME_ADDRESS"));
+						obj.setR7_POSTAL_ADDRESS(rs.getString("R7_POSTAL_ADDRESS"));
+						obj.setR7_RESIDENCE(rs.getString("R7_RESIDENCE"));
+						obj.setR7_EMAIL(rs.getString("R7_EMAIL"));
+						obj.setR7_LANDLINE(rs.getString("R7_LANDLINE"));
+						obj.setR7_MOBILE_PHONE_NUMBER(rs.getString("R7_MOBILE_PHONE_NUMBER"));
+						obj.setR7_MOBILE_MONEY_NUMBER(rs.getString("R7_MOBILE_MONEY_NUMBER"));
+						obj.setR7_PRODUCT_TYPE(rs.getString("R7_PRODUCT_TYPE"));
+						obj.setR7_ACCOUNT_BY_OWNERSHIP(rs.getString("R7_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR7_ACCOUNT_NUMBER(rs.getString("R7_ACCOUNT_NUMBER"));
+						obj.setR7_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R7_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR7_STATUS_OF_ACCOUNT(rs.getString("R7_STATUS_OF_ACCOUNT"));
+						obj.setR7_NOT_FIT_FOR_STP(rs.getString("R7_NOT_FIT_FOR_STP"));
+						obj.setR7_BRANCH_CODE_AND_NAME(rs.getString("R7_BRANCH_CODE_AND_NAME"));
+						obj.setR7_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R7_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR7_CURRENCY_OF_ACCOUNT(rs.getString("R7_CURRENCY_OF_ACCOUNT"));
+						obj.setR7_EXCHANGE_RATE(rs.getBigDecimal("R7_EXCHANGE_RATE"));
+						
+						obj.setR8_RECORD_NUMBER(rs.getString("R8_RECORD_NUMBER"));
+						obj.setR8_TITLE(rs.getString("R8_TITLE"));
+						obj.setR8_FIRST_NAME(rs.getString("R8_FIRST_NAME"));
+						obj.setR8_MIDDLE_NAME(rs.getString("R8_MIDDLE_NAME"));
+						obj.setR8_SURNAME(rs.getString("R8_SURNAME"));
+						obj.setR8_PREVIOUS_NAME(rs.getString("R8_PREVIOUS_NAME"));
+						obj.setR8_GENDER(rs.getString("R8_GENDER"));
+						obj.setR8_IDENTIFICATION_TYPE(rs.getString("R8_IDENTIFICATION_TYPE"));
+						obj.setR8_PASSPORT_NUMBER(rs.getString("R8_PASSPORT_NUMBER"));
+						obj.setR8_DATE_OF_BIRTH(rs.getDate("R8_DATE_OF_BIRTH"));
+						obj.setR8_HOME_ADDRESS(rs.getString("R8_HOME_ADDRESS"));
+						obj.setR8_POSTAL_ADDRESS(rs.getString("R8_POSTAL_ADDRESS"));
+						obj.setR8_RESIDENCE(rs.getString("R8_RESIDENCE"));
+						obj.setR8_EMAIL(rs.getString("R8_EMAIL"));
+						obj.setR8_LANDLINE(rs.getString("R8_LANDLINE"));
+						obj.setR8_MOBILE_PHONE_NUMBER(rs.getString("R8_MOBILE_PHONE_NUMBER"));
+						obj.setR8_MOBILE_MONEY_NUMBER(rs.getString("R8_MOBILE_MONEY_NUMBER"));
+						obj.setR8_PRODUCT_TYPE(rs.getString("R8_PRODUCT_TYPE"));
+						obj.setR8_ACCOUNT_BY_OWNERSHIP(rs.getString("R8_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR8_ACCOUNT_NUMBER(rs.getString("R8_ACCOUNT_NUMBER"));
+						obj.setR8_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R8_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR8_STATUS_OF_ACCOUNT(rs.getString("R8_STATUS_OF_ACCOUNT"));
+						obj.setR8_NOT_FIT_FOR_STP(rs.getString("R8_NOT_FIT_FOR_STP"));
+						obj.setR8_BRANCH_CODE_AND_NAME(rs.getString("R8_BRANCH_CODE_AND_NAME"));
+						obj.setR8_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R8_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR8_CURRENCY_OF_ACCOUNT(rs.getString("R8_CURRENCY_OF_ACCOUNT"));
+						obj.setR8_EXCHANGE_RATE(rs.getBigDecimal("R8_EXCHANGE_RATE"));
+						
+						obj.setR9_RECORD_NUMBER(rs.getString("R9_RECORD_NUMBER"));
+						obj.setR9_TITLE(rs.getString("R9_TITLE"));
+						obj.setR9_FIRST_NAME(rs.getString("R9_FIRST_NAME"));
+						obj.setR9_MIDDLE_NAME(rs.getString("R9_MIDDLE_NAME"));
+						obj.setR9_SURNAME(rs.getString("R9_SURNAME"));
+						obj.setR9_PREVIOUS_NAME(rs.getString("R9_PREVIOUS_NAME"));
+						obj.setR9_GENDER(rs.getString("R9_GENDER"));
+						obj.setR9_IDENTIFICATION_TYPE(rs.getString("R9_IDENTIFICATION_TYPE"));
+						obj.setR9_PASSPORT_NUMBER(rs.getString("R9_PASSPORT_NUMBER"));
+						obj.setR9_DATE_OF_BIRTH(rs.getDate("R9_DATE_OF_BIRTH"));
+						obj.setR9_HOME_ADDRESS(rs.getString("R9_HOME_ADDRESS"));
+						obj.setR9_POSTAL_ADDRESS(rs.getString("R9_POSTAL_ADDRESS"));
+						obj.setR9_RESIDENCE(rs.getString("R9_RESIDENCE"));
+						obj.setR9_EMAIL(rs.getString("R9_EMAIL"));
+						obj.setR9_LANDLINE(rs.getString("R9_LANDLINE"));
+						obj.setR9_MOBILE_PHONE_NUMBER(rs.getString("R9_MOBILE_PHONE_NUMBER"));
+						obj.setR9_MOBILE_MONEY_NUMBER(rs.getString("R9_MOBILE_MONEY_NUMBER"));
+						obj.setR9_PRODUCT_TYPE(rs.getString("R9_PRODUCT_TYPE"));
+						obj.setR9_ACCOUNT_BY_OWNERSHIP(rs.getString("R9_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR9_ACCOUNT_NUMBER(rs.getString("R9_ACCOUNT_NUMBER"));
+						obj.setR9_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R9_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR9_STATUS_OF_ACCOUNT(rs.getString("R9_STATUS_OF_ACCOUNT"));
+						obj.setR9_NOT_FIT_FOR_STP(rs.getString("R9_NOT_FIT_FOR_STP"));
+						obj.setR9_BRANCH_CODE_AND_NAME(rs.getString("R9_BRANCH_CODE_AND_NAME"));
+						obj.setR9_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R9_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR9_CURRENCY_OF_ACCOUNT(rs.getString("R9_CURRENCY_OF_ACCOUNT"));
+						obj.setR9_EXCHANGE_RATE(rs.getBigDecimal("R9_EXCHANGE_RATE"));
+						
+						obj.setR10_RECORD_NUMBER(rs.getString("R10_RECORD_NUMBER"));
+						obj.setR10_TITLE(rs.getString("R10_TITLE"));
+						obj.setR10_FIRST_NAME(rs.getString("R10_FIRST_NAME"));
+						obj.setR10_MIDDLE_NAME(rs.getString("R10_MIDDLE_NAME"));
+						obj.setR10_SURNAME(rs.getString("R10_SURNAME"));
+						obj.setR10_PREVIOUS_NAME(rs.getString("R10_PREVIOUS_NAME"));
+						obj.setR10_GENDER(rs.getString("R10_GENDER"));
+						obj.setR10_IDENTIFICATION_TYPE(rs.getString("R10_IDENTIFICATION_TYPE"));
+						obj.setR10_PASSPORT_NUMBER(rs.getString("R10_PASSPORT_NUMBER"));
+						obj.setR10_DATE_OF_BIRTH(rs.getDate("R10_DATE_OF_BIRTH"));
+						obj.setR10_HOME_ADDRESS(rs.getString("R10_HOME_ADDRESS"));
+						obj.setR10_POSTAL_ADDRESS(rs.getString("R10_POSTAL_ADDRESS"));
+						obj.setR10_RESIDENCE(rs.getString("R10_RESIDENCE"));
+						obj.setR10_EMAIL(rs.getString("R10_EMAIL"));
+						obj.setR10_LANDLINE(rs.getString("R10_LANDLINE"));
+						obj.setR10_MOBILE_PHONE_NUMBER(rs.getString("R10_MOBILE_PHONE_NUMBER"));
+						obj.setR10_MOBILE_MONEY_NUMBER(rs.getString("R10_MOBILE_MONEY_NUMBER"));
+						obj.setR10_PRODUCT_TYPE(rs.getString("R10_PRODUCT_TYPE"));
+						obj.setR10_ACCOUNT_BY_OWNERSHIP(rs.getString("R10_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR10_ACCOUNT_NUMBER(rs.getString("R10_ACCOUNT_NUMBER"));
+						obj.setR10_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R10_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR10_STATUS_OF_ACCOUNT(rs.getString("R10_STATUS_OF_ACCOUNT"));
+						obj.setR10_NOT_FIT_FOR_STP(rs.getString("R10_NOT_FIT_FOR_STP"));
+						obj.setR10_BRANCH_CODE_AND_NAME(rs.getString("R10_BRANCH_CODE_AND_NAME"));
+						obj.setR10_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R10_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR10_CURRENCY_OF_ACCOUNT(rs.getString("R10_CURRENCY_OF_ACCOUNT"));
+						obj.setR10_EXCHANGE_RATE(rs.getBigDecimal("R10_EXCHANGE_RATE"));
+						
+						obj.setR11_RECORD_NUMBER(rs.getString("R11_RECORD_NUMBER"));
+						obj.setR11_TITLE(rs.getString("R11_TITLE"));
+						obj.setR11_FIRST_NAME(rs.getString("R11_FIRST_NAME"));
+						obj.setR11_MIDDLE_NAME(rs.getString("R11_MIDDLE_NAME"));
+						obj.setR11_SURNAME(rs.getString("R11_SURNAME"));
+						obj.setR11_PREVIOUS_NAME(rs.getString("R11_PREVIOUS_NAME"));
+						obj.setR11_GENDER(rs.getString("R11_GENDER"));
+						obj.setR11_IDENTIFICATION_TYPE(rs.getString("R11_IDENTIFICATION_TYPE"));
+						obj.setR11_PASSPORT_NUMBER(rs.getString("R11_PASSPORT_NUMBER"));
+						obj.setR11_DATE_OF_BIRTH(rs.getDate("R11_DATE_OF_BIRTH"));
+						obj.setR11_HOME_ADDRESS(rs.getString("R11_HOME_ADDRESS"));
+						obj.setR11_POSTAL_ADDRESS(rs.getString("R11_POSTAL_ADDRESS"));
+						obj.setR11_RESIDENCE(rs.getString("R11_RESIDENCE"));
+						obj.setR11_EMAIL(rs.getString("R11_EMAIL"));
+						obj.setR11_LANDLINE(rs.getString("R11_LANDLINE"));
+						obj.setR11_MOBILE_PHONE_NUMBER(rs.getString("R11_MOBILE_PHONE_NUMBER"));
+						obj.setR11_MOBILE_MONEY_NUMBER(rs.getString("R11_MOBILE_MONEY_NUMBER"));
+						obj.setR11_PRODUCT_TYPE(rs.getString("R11_PRODUCT_TYPE"));
+						obj.setR11_ACCOUNT_BY_OWNERSHIP(rs.getString("R11_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR11_ACCOUNT_NUMBER(rs.getString("R11_ACCOUNT_NUMBER"));
+						obj.setR11_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R11_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR11_STATUS_OF_ACCOUNT(rs.getString("R11_STATUS_OF_ACCOUNT"));
+						obj.setR11_NOT_FIT_FOR_STP(rs.getString("R11_NOT_FIT_FOR_STP"));
+						obj.setR11_BRANCH_CODE_AND_NAME(rs.getString("R11_BRANCH_CODE_AND_NAME"));
+						obj.setR11_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R11_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR11_CURRENCY_OF_ACCOUNT(rs.getString("R11_CURRENCY_OF_ACCOUNT"));
+						obj.setR11_EXCHANGE_RATE(rs.getBigDecimal("R11_EXCHANGE_RATE"));
+						
+						// COMMON FIELDS
+						obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+						obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+						obj.setREPORT_RESUBDATE(rs.getDate("REPORT_RESUBDATE"));
+						obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+						obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+						obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+						obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+						obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+						obj.setDEL_FLG(rs.getString("DEL_FLG"));
+						
+
+						return obj;
+					}
+				}
+				
+				public static class BDISB1_RESUB_Summary_Entity {
+					
+					 private String R5_RECORD_NUMBER;
+					    private String R5_TITLE;
+					    private String R5_FIRST_NAME;
+					    private String R5_MIDDLE_NAME;
+					    private String R5_SURNAME;
+					    private String R5_PREVIOUS_NAME;
+					    private String R5_GENDER;
+					    private String R5_IDENTIFICATION_TYPE;
+					    private String R5_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R5_DATE_OF_BIRTH;
+					    private String R5_HOME_ADDRESS;
+					    private String R5_POSTAL_ADDRESS;
+					    private String R5_RESIDENCE;
+					    private String R5_EMAIL;
+					    private String R5_LANDLINE;
+					    private String R5_MOBILE_PHONE_NUMBER;
+					    private String R5_MOBILE_MONEY_NUMBER;
+					    private String R5_PRODUCT_TYPE;
+					    private String R5_ACCOUNT_BY_OWNERSHIP;
+					    private String R5_ACCOUNT_NUMBER;
+					    private BigDecimal R5_ACCOUNT_HOLDER_INDICATOR;
+					    private String R5_STATUS_OF_ACCOUNT;
+					    private String R5_NOT_FIT_FOR_STP;
+					    private String R5_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R5_ACCOUNT_BALANCE_IN_PULA;
+					    private String R5_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R5_EXCHANGE_RATE;
+
+					    // ===================== R6 =====================
+					    private String R6_RECORD_NUMBER;
+					    private String R6_TITLE;
+					    private String R6_FIRST_NAME;
+					    private String R6_MIDDLE_NAME;
+					    private String R6_SURNAME;
+					    private String R6_PREVIOUS_NAME;
+					    private String R6_GENDER;
+					    private String R6_IDENTIFICATION_TYPE;
+					    private String R6_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R6_DATE_OF_BIRTH;
+					    private String R6_HOME_ADDRESS;
+					    private String R6_POSTAL_ADDRESS;
+					    private String R6_RESIDENCE;
+					    private String R6_EMAIL;
+					    private String R6_LANDLINE;
+					    private String R6_MOBILE_PHONE_NUMBER;
+					    private String R6_MOBILE_MONEY_NUMBER;
+					    private String R6_PRODUCT_TYPE;
+					    private String R6_ACCOUNT_BY_OWNERSHIP;
+					    private String R6_ACCOUNT_NUMBER;
+					    private BigDecimal R6_ACCOUNT_HOLDER_INDICATOR;
+					    private String R6_STATUS_OF_ACCOUNT;
+					    private String R6_NOT_FIT_FOR_STP;
+					    private String R6_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R6_ACCOUNT_BALANCE_IN_PULA;
+					    private String R6_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R6_EXCHANGE_RATE;
+
+					    // ===================== R7 =====================
+					    private String R7_RECORD_NUMBER;
+					    private String R7_TITLE;
+					    private String R7_FIRST_NAME;
+					    private String R7_MIDDLE_NAME;
+					    private String R7_SURNAME;
+					    private String R7_PREVIOUS_NAME;
+					    private String R7_GENDER;
+					    private String R7_IDENTIFICATION_TYPE;
+					    private String R7_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R7_DATE_OF_BIRTH;
+					    private String R7_HOME_ADDRESS;
+					    private String R7_POSTAL_ADDRESS;
+					    private String R7_RESIDENCE;
+					    private String R7_EMAIL;
+					    private String R7_LANDLINE;
+					    private String R7_MOBILE_PHONE_NUMBER;
+					    private String R7_MOBILE_MONEY_NUMBER;
+					    private String R7_PRODUCT_TYPE;
+					    private String R7_ACCOUNT_BY_OWNERSHIP;
+					    private String R7_ACCOUNT_NUMBER;
+					    private BigDecimal R7_ACCOUNT_HOLDER_INDICATOR;
+					    private String R7_STATUS_OF_ACCOUNT;
+					    private String R7_NOT_FIT_FOR_STP;
+					    private String R7_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R7_ACCOUNT_BALANCE_IN_PULA;
+					    private String R7_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R7_EXCHANGE_RATE;
+
+					    // ===================== R8 =====================
+					    private String R8_RECORD_NUMBER;
+					    private String R8_TITLE;
+					    private String R8_FIRST_NAME;
+					    private String R8_MIDDLE_NAME;
+					    private String R8_SURNAME;
+					    private String R8_PREVIOUS_NAME;
+					    private String R8_GENDER;
+					    private String R8_IDENTIFICATION_TYPE;
+					    private String R8_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R8_DATE_OF_BIRTH;
+					    private String R8_HOME_ADDRESS;
+					    private String R8_POSTAL_ADDRESS;
+					    private String R8_RESIDENCE;
+					    private String R8_EMAIL;
+					    private String R8_LANDLINE;
+					    private String R8_MOBILE_PHONE_NUMBER;
+					    private String R8_MOBILE_MONEY_NUMBER;
+					    private String R8_PRODUCT_TYPE;
+					    private String R8_ACCOUNT_BY_OWNERSHIP;
+					    private String R8_ACCOUNT_NUMBER;
+					    private BigDecimal R8_ACCOUNT_HOLDER_INDICATOR;
+					    private String R8_STATUS_OF_ACCOUNT;
+					    private String R8_NOT_FIT_FOR_STP;
+					    private String R8_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R8_ACCOUNT_BALANCE_IN_PULA;
+					    private String R8_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R8_EXCHANGE_RATE;
+
+					    // ===================== R9 =====================
+					    private String R9_RECORD_NUMBER;
+					    private String R9_TITLE;
+					    private String R9_FIRST_NAME;
+					    private String R9_MIDDLE_NAME;
+					    private String R9_SURNAME;
+					    private String R9_PREVIOUS_NAME;
+					    private String R9_GENDER;
+					    private String R9_IDENTIFICATION_TYPE;
+					    private String R9_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R9_DATE_OF_BIRTH;
+					    private String R9_HOME_ADDRESS;
+					    private String R9_POSTAL_ADDRESS;
+					    private String R9_RESIDENCE;
+					    private String R9_EMAIL;
+					    private String R9_LANDLINE;
+					    private String R9_MOBILE_PHONE_NUMBER;
+					    private String R9_MOBILE_MONEY_NUMBER;
+					    private String R9_PRODUCT_TYPE;
+					    private String R9_ACCOUNT_BY_OWNERSHIP;
+					    private String R9_ACCOUNT_NUMBER;
+					    private BigDecimal R9_ACCOUNT_HOLDER_INDICATOR;
+					    private String R9_STATUS_OF_ACCOUNT;
+					    private String R9_NOT_FIT_FOR_STP;
+					    private String R9_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R9_ACCOUNT_BALANCE_IN_PULA;
+					    private String R9_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R9_EXCHANGE_RATE;
+
+					    // ===================== R10 =====================
+					    private String R10_RECORD_NUMBER;
+					    private String R10_TITLE;
+					    private String R10_FIRST_NAME;
+					    private String R10_MIDDLE_NAME;
+					    private String R10_SURNAME;
+					    private String R10_PREVIOUS_NAME;
+					    private String R10_GENDER;
+					    private String R10_IDENTIFICATION_TYPE;
+					    private String R10_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R10_DATE_OF_BIRTH;
+					    private String R10_HOME_ADDRESS;
+					    private String R10_POSTAL_ADDRESS;
+					    private String R10_RESIDENCE;
+					    private String R10_EMAIL;
+					    private String R10_LANDLINE;
+					    private String R10_MOBILE_PHONE_NUMBER;
+					    private String R10_MOBILE_MONEY_NUMBER;
+					    private String R10_PRODUCT_TYPE;
+					    private String R10_ACCOUNT_BY_OWNERSHIP;
+					    private String R10_ACCOUNT_NUMBER;
+					    private BigDecimal R10_ACCOUNT_HOLDER_INDICATOR;
+					    private String R10_STATUS_OF_ACCOUNT;
+					    private String R10_NOT_FIT_FOR_STP;
+					    private String R10_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R10_ACCOUNT_BALANCE_IN_PULA;
+					    private String R10_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R10_EXCHANGE_RATE;
+
+					    // ===================== R11 =====================
+					    private String R11_RECORD_NUMBER;
+					    private String R11_TITLE;
+					    private String R11_FIRST_NAME;
+					    private String R11_MIDDLE_NAME;
+					    private String R11_SURNAME;
+					    private String R11_PREVIOUS_NAME;
+					    private String R11_GENDER;
+					    private String R11_IDENTIFICATION_TYPE;
+					    private String R11_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R11_DATE_OF_BIRTH;
+					    private String R11_HOME_ADDRESS;
+					    private String R11_POSTAL_ADDRESS;
+					    private String R11_RESIDENCE;
+					    private String R11_EMAIL;
+					    private String R11_LANDLINE;
+					    private String R11_MOBILE_PHONE_NUMBER;
+					    private String R11_MOBILE_MONEY_NUMBER;
+					    private String R11_PRODUCT_TYPE;
+					    private String R11_ACCOUNT_BY_OWNERSHIP;
+					    private String R11_ACCOUNT_NUMBER;
+					    private BigDecimal R11_ACCOUNT_HOLDER_INDICATOR;
+					    private String R11_STATUS_OF_ACCOUNT;
+					    private String R11_NOT_FIT_FOR_STP;
+					    private String R11_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R11_ACCOUNT_BALANCE_IN_PULA;
+					    private String R11_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R11_EXCHANGE_RATE;
+					    
+					    @Id
+						@Temporal(TemporalType.DATE)
+						@Column(name = "REPORT_DATE")
+						private Date REPORT_DATE;
+
+						@Column(name = "REPORT_VERSION", length = 100)
+						private BigDecimal REPORT_VERSION;
+						
+						@Column(name = "REPORT_RESUBDATE")
+						private Date REPORT_RESUBDATE;
+
+						@Column(name = "REPORT_FREQUENCY", length = 100)
+						private String REPORT_FREQUENCY;
+
+						@Column(name = "REPORT_CODE", length = 100)
+						private String REPORT_CODE;
+
+						@Column(name = "REPORT_DESC", length = 100)
+						private String REPORT_DESC;
+
+						@Column(name = "ENTITY_FLG", length = 1)
+						private String ENTITY_FLG;
+
+						@Column(name = "MODIFY_FLG", length = 1)
+						private String MODIFY_FLG;
+
+						@Column(name = "DEL_FLG", length = 1)
+						private String DEL_FLG;
+						
+						public String getR5_RECORD_NUMBER() {
+							return R5_RECORD_NUMBER;
+						}
+						public void setR5_RECORD_NUMBER(String r5_RECORD_NUMBER) {
+							R5_RECORD_NUMBER = r5_RECORD_NUMBER;
+						}
+						public String getR5_TITLE() {
+							return R5_TITLE;
+						}
+						public void setR5_TITLE(String r5_TITLE) {
+							R5_TITLE = r5_TITLE;
+						}
+						public String getR5_FIRST_NAME() {
+							return R5_FIRST_NAME;
+						}
+						public void setR5_FIRST_NAME(String r5_FIRST_NAME) {
+							R5_FIRST_NAME = r5_FIRST_NAME;
+						}
+						public String getR5_MIDDLE_NAME() {
+							return R5_MIDDLE_NAME;
+						}
+						public void setR5_MIDDLE_NAME(String r5_MIDDLE_NAME) {
+							R5_MIDDLE_NAME = r5_MIDDLE_NAME;
+						}
+						public String getR5_SURNAME() {
+							return R5_SURNAME;
+						}
+						public void setR5_SURNAME(String r5_SURNAME) {
+							R5_SURNAME = r5_SURNAME;
+						}
+						public String getR5_PREVIOUS_NAME() {
+							return R5_PREVIOUS_NAME;
+						}
+						public void setR5_PREVIOUS_NAME(String r5_PREVIOUS_NAME) {
+							R5_PREVIOUS_NAME = r5_PREVIOUS_NAME;
+						}
+						public String getR5_GENDER() {
+							return R5_GENDER;
+						}
+						public void setR5_GENDER(String r5_GENDER) {
+							R5_GENDER = r5_GENDER;
+						}
+						public String getR5_IDENTIFICATION_TYPE() {
+							return R5_IDENTIFICATION_TYPE;
+						}
+						public void setR5_IDENTIFICATION_TYPE(String r5_IDENTIFICATION_TYPE) {
+							R5_IDENTIFICATION_TYPE = r5_IDENTIFICATION_TYPE;
+						}
+						public String getR5_PASSPORT_NUMBER() {
+							return R5_PASSPORT_NUMBER;
+						}
+						public void setR5_PASSPORT_NUMBER(String r5_PASSPORT_NUMBER) {
+							R5_PASSPORT_NUMBER = r5_PASSPORT_NUMBER;
+						}
+						public Date getR5_DATE_OF_BIRTH() {
+							return R5_DATE_OF_BIRTH;
+						}
+						public void setR5_DATE_OF_BIRTH(Date r5_DATE_OF_BIRTH) {
+							R5_DATE_OF_BIRTH = r5_DATE_OF_BIRTH;
+						}
+						public String getR5_HOME_ADDRESS() {
+							return R5_HOME_ADDRESS;
+						}
+						public void setR5_HOME_ADDRESS(String r5_HOME_ADDRESS) {
+							R5_HOME_ADDRESS = r5_HOME_ADDRESS;
+						}
+						public String getR5_POSTAL_ADDRESS() {
+							return R5_POSTAL_ADDRESS;
+						}
+						public void setR5_POSTAL_ADDRESS(String r5_POSTAL_ADDRESS) {
+							R5_POSTAL_ADDRESS = r5_POSTAL_ADDRESS;
+						}
+						public String getR5_RESIDENCE() {
+							return R5_RESIDENCE;
+						}
+						public void setR5_RESIDENCE(String r5_RESIDENCE) {
+							R5_RESIDENCE = r5_RESIDENCE;
+						}
+						public String getR5_EMAIL() {
+							return R5_EMAIL;
+						}
+						public void setR5_EMAIL(String r5_EMAIL) {
+							R5_EMAIL = r5_EMAIL;
+						}
+						public String getR5_LANDLINE() {
+							return R5_LANDLINE;
+						}
+						public void setR5_LANDLINE(String r5_LANDLINE) {
+							R5_LANDLINE = r5_LANDLINE;
+						}
+						public String getR5_MOBILE_PHONE_NUMBER() {
+							return R5_MOBILE_PHONE_NUMBER;
+						}
+						public void setR5_MOBILE_PHONE_NUMBER(String r5_MOBILE_PHONE_NUMBER) {
+							R5_MOBILE_PHONE_NUMBER = r5_MOBILE_PHONE_NUMBER;
+						}
+						public String getR5_MOBILE_MONEY_NUMBER() {
+							return R5_MOBILE_MONEY_NUMBER;
+						}
+						public void setR5_MOBILE_MONEY_NUMBER(String r5_MOBILE_MONEY_NUMBER) {
+							R5_MOBILE_MONEY_NUMBER = r5_MOBILE_MONEY_NUMBER;
+						}
+						public String getR5_PRODUCT_TYPE() {
+							return R5_PRODUCT_TYPE;
+						}
+						public void setR5_PRODUCT_TYPE(String r5_PRODUCT_TYPE) {
+							R5_PRODUCT_TYPE = r5_PRODUCT_TYPE;
+						}
+						public String getR5_ACCOUNT_BY_OWNERSHIP() {
+							return R5_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR5_ACCOUNT_BY_OWNERSHIP(String r5_ACCOUNT_BY_OWNERSHIP) {
+							R5_ACCOUNT_BY_OWNERSHIP = r5_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR5_ACCOUNT_NUMBER() {
+							return R5_ACCOUNT_NUMBER;
+						}
+						public void setR5_ACCOUNT_NUMBER(String r5_ACCOUNT_NUMBER) {
+							R5_ACCOUNT_NUMBER = r5_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR5_ACCOUNT_HOLDER_INDICATOR() {
+							return R5_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR5_ACCOUNT_HOLDER_INDICATOR(BigDecimal r5_ACCOUNT_HOLDER_INDICATOR) {
+							R5_ACCOUNT_HOLDER_INDICATOR = r5_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR5_STATUS_OF_ACCOUNT() {
+							return R5_STATUS_OF_ACCOUNT;
+						}
+						public void setR5_STATUS_OF_ACCOUNT(String r5_STATUS_OF_ACCOUNT) {
+							R5_STATUS_OF_ACCOUNT = r5_STATUS_OF_ACCOUNT;
+						}
+						public String getR5_NOT_FIT_FOR_STP() {
+							return R5_NOT_FIT_FOR_STP;
+						}
+						public void setR5_NOT_FIT_FOR_STP(String r5_NOT_FIT_FOR_STP) {
+							R5_NOT_FIT_FOR_STP = r5_NOT_FIT_FOR_STP;
+						}
+						public String getR5_BRANCH_CODE_AND_NAME() {
+							return R5_BRANCH_CODE_AND_NAME;
+						}
+						public void setR5_BRANCH_CODE_AND_NAME(String r5_BRANCH_CODE_AND_NAME) {
+							R5_BRANCH_CODE_AND_NAME = r5_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR5_ACCOUNT_BALANCE_IN_PULA() {
+							return R5_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR5_ACCOUNT_BALANCE_IN_PULA(BigDecimal r5_ACCOUNT_BALANCE_IN_PULA) {
+							R5_ACCOUNT_BALANCE_IN_PULA = r5_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR5_CURRENCY_OF_ACCOUNT() {
+							return R5_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR5_CURRENCY_OF_ACCOUNT(String r5_CURRENCY_OF_ACCOUNT) {
+							R5_CURRENCY_OF_ACCOUNT = r5_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR5_EXCHANGE_RATE() {
+							return R5_EXCHANGE_RATE;
+						}
+						public void setR5_EXCHANGE_RATE(BigDecimal r5_EXCHANGE_RATE) {
+							R5_EXCHANGE_RATE = r5_EXCHANGE_RATE;
+						}
+						public String getR6_RECORD_NUMBER() {
+							return R6_RECORD_NUMBER;
+						}
+						public void setR6_RECORD_NUMBER(String r6_RECORD_NUMBER) {
+							R6_RECORD_NUMBER = r6_RECORD_NUMBER;
+						}
+						public String getR6_TITLE() {
+							return R6_TITLE;
+						}
+						public void setR6_TITLE(String r6_TITLE) {
+							R6_TITLE = r6_TITLE;
+						}
+						public String getR6_FIRST_NAME() {
+							return R6_FIRST_NAME;
+						}
+						public void setR6_FIRST_NAME(String r6_FIRST_NAME) {
+							R6_FIRST_NAME = r6_FIRST_NAME;
+						}
+						public String getR6_MIDDLE_NAME() {
+							return R6_MIDDLE_NAME;
+						}
+						public void setR6_MIDDLE_NAME(String r6_MIDDLE_NAME) {
+							R6_MIDDLE_NAME = r6_MIDDLE_NAME;
+						}
+						public String getR6_SURNAME() {
+							return R6_SURNAME;
+						}
+						public void setR6_SURNAME(String r6_SURNAME) {
+							R6_SURNAME = r6_SURNAME;
+						}
+						public String getR6_PREVIOUS_NAME() {
+							return R6_PREVIOUS_NAME;
+						}
+						public void setR6_PREVIOUS_NAME(String r6_PREVIOUS_NAME) {
+							R6_PREVIOUS_NAME = r6_PREVIOUS_NAME;
+						}
+						public String getR6_GENDER() {
+							return R6_GENDER;
+						}
+						public void setR6_GENDER(String r6_GENDER) {
+							R6_GENDER = r6_GENDER;
+						}
+						public String getR6_IDENTIFICATION_TYPE() {
+							return R6_IDENTIFICATION_TYPE;
+						}
+						public void setR6_IDENTIFICATION_TYPE(String r6_IDENTIFICATION_TYPE) {
+							R6_IDENTIFICATION_TYPE = r6_IDENTIFICATION_TYPE;
+						}
+						public String getR6_PASSPORT_NUMBER() {
+							return R6_PASSPORT_NUMBER;
+						}
+						public void setR6_PASSPORT_NUMBER(String r6_PASSPORT_NUMBER) {
+							R6_PASSPORT_NUMBER = r6_PASSPORT_NUMBER;
+						}
+						public Date getR6_DATE_OF_BIRTH() {
+							return R6_DATE_OF_BIRTH;
+						}
+						public void setR6_DATE_OF_BIRTH(Date r6_DATE_OF_BIRTH) {
+							R6_DATE_OF_BIRTH = r6_DATE_OF_BIRTH;
+						}
+						public String getR6_HOME_ADDRESS() {
+							return R6_HOME_ADDRESS;
+						}
+						public void setR6_HOME_ADDRESS(String r6_HOME_ADDRESS) {
+							R6_HOME_ADDRESS = r6_HOME_ADDRESS;
+						}
+						public String getR6_POSTAL_ADDRESS() {
+							return R6_POSTAL_ADDRESS;
+						}
+						public void setR6_POSTAL_ADDRESS(String r6_POSTAL_ADDRESS) {
+							R6_POSTAL_ADDRESS = r6_POSTAL_ADDRESS;
+						}
+						public String getR6_RESIDENCE() {
+							return R6_RESIDENCE;
+						}
+						public void setR6_RESIDENCE(String r6_RESIDENCE) {
+							R6_RESIDENCE = r6_RESIDENCE;
+						}
+						public String getR6_EMAIL() {
+							return R6_EMAIL;
+						}
+						public void setR6_EMAIL(String r6_EMAIL) {
+							R6_EMAIL = r6_EMAIL;
+						}
+						public String getR6_LANDLINE() {
+							return R6_LANDLINE;
+						}
+						public void setR6_LANDLINE(String r6_LANDLINE) {
+							R6_LANDLINE = r6_LANDLINE;
+						}
+						public String getR6_MOBILE_PHONE_NUMBER() {
+							return R6_MOBILE_PHONE_NUMBER;
+						}
+						public void setR6_MOBILE_PHONE_NUMBER(String r6_MOBILE_PHONE_NUMBER) {
+							R6_MOBILE_PHONE_NUMBER = r6_MOBILE_PHONE_NUMBER;
+						}
+						public String getR6_MOBILE_MONEY_NUMBER() {
+							return R6_MOBILE_MONEY_NUMBER;
+						}
+						public void setR6_MOBILE_MONEY_NUMBER(String r6_MOBILE_MONEY_NUMBER) {
+							R6_MOBILE_MONEY_NUMBER = r6_MOBILE_MONEY_NUMBER;
+						}
+						public String getR6_PRODUCT_TYPE() {
+							return R6_PRODUCT_TYPE;
+						}
+						public void setR6_PRODUCT_TYPE(String r6_PRODUCT_TYPE) {
+							R6_PRODUCT_TYPE = r6_PRODUCT_TYPE;
+						}
+						public String getR6_ACCOUNT_BY_OWNERSHIP() {
+							return R6_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR6_ACCOUNT_BY_OWNERSHIP(String r6_ACCOUNT_BY_OWNERSHIP) {
+							R6_ACCOUNT_BY_OWNERSHIP = r6_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR6_ACCOUNT_NUMBER() {
+							return R6_ACCOUNT_NUMBER;
+						}
+						public void setR6_ACCOUNT_NUMBER(String r6_ACCOUNT_NUMBER) {
+							R6_ACCOUNT_NUMBER = r6_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR6_ACCOUNT_HOLDER_INDICATOR() {
+							return R6_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR6_ACCOUNT_HOLDER_INDICATOR(BigDecimal r6_ACCOUNT_HOLDER_INDICATOR) {
+							R6_ACCOUNT_HOLDER_INDICATOR = r6_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR6_STATUS_OF_ACCOUNT() {
+							return R6_STATUS_OF_ACCOUNT;
+						}
+						public void setR6_STATUS_OF_ACCOUNT(String r6_STATUS_OF_ACCOUNT) {
+							R6_STATUS_OF_ACCOUNT = r6_STATUS_OF_ACCOUNT;
+						}
+						public String getR6_NOT_FIT_FOR_STP() {
+							return R6_NOT_FIT_FOR_STP;
+						}
+						public void setR6_NOT_FIT_FOR_STP(String r6_NOT_FIT_FOR_STP) {
+							R6_NOT_FIT_FOR_STP = r6_NOT_FIT_FOR_STP;
+						}
+						public String getR6_BRANCH_CODE_AND_NAME() {
+							return R6_BRANCH_CODE_AND_NAME;
+						}
+						public void setR6_BRANCH_CODE_AND_NAME(String r6_BRANCH_CODE_AND_NAME) {
+							R6_BRANCH_CODE_AND_NAME = r6_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR6_ACCOUNT_BALANCE_IN_PULA() {
+							return R6_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR6_ACCOUNT_BALANCE_IN_PULA(BigDecimal r6_ACCOUNT_BALANCE_IN_PULA) {
+							R6_ACCOUNT_BALANCE_IN_PULA = r6_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR6_CURRENCY_OF_ACCOUNT() {
+							return R6_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR6_CURRENCY_OF_ACCOUNT(String r6_CURRENCY_OF_ACCOUNT) {
+							R6_CURRENCY_OF_ACCOUNT = r6_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR6_EXCHANGE_RATE() {
+							return R6_EXCHANGE_RATE;
+						}
+						public void setR6_EXCHANGE_RATE(BigDecimal r6_EXCHANGE_RATE) {
+							R6_EXCHANGE_RATE = r6_EXCHANGE_RATE;
+						}
+						public String getR7_RECORD_NUMBER() {
+							return R7_RECORD_NUMBER;
+						}
+						public void setR7_RECORD_NUMBER(String r7_RECORD_NUMBER) {
+							R7_RECORD_NUMBER = r7_RECORD_NUMBER;
+						}
+						public String getR7_TITLE() {
+							return R7_TITLE;
+						}
+						public void setR7_TITLE(String r7_TITLE) {
+							R7_TITLE = r7_TITLE;
+						}
+						public String getR7_FIRST_NAME() {
+							return R7_FIRST_NAME;
+						}
+						public void setR7_FIRST_NAME(String r7_FIRST_NAME) {
+							R7_FIRST_NAME = r7_FIRST_NAME;
+						}
+						public String getR7_MIDDLE_NAME() {
+							return R7_MIDDLE_NAME;
+						}
+						public void setR7_MIDDLE_NAME(String r7_MIDDLE_NAME) {
+							R7_MIDDLE_NAME = r7_MIDDLE_NAME;
+						}
+						public String getR7_SURNAME() {
+							return R7_SURNAME;
+						}
+						public void setR7_SURNAME(String r7_SURNAME) {
+							R7_SURNAME = r7_SURNAME;
+						}
+						public String getR7_PREVIOUS_NAME() {
+							return R7_PREVIOUS_NAME;
+						}
+						public void setR7_PREVIOUS_NAME(String r7_PREVIOUS_NAME) {
+							R7_PREVIOUS_NAME = r7_PREVIOUS_NAME;
+						}
+						public String getR7_GENDER() {
+							return R7_GENDER;
+						}
+						public void setR7_GENDER(String r7_GENDER) {
+							R7_GENDER = r7_GENDER;
+						}
+						public String getR7_IDENTIFICATION_TYPE() {
+							return R7_IDENTIFICATION_TYPE;
+						}
+						public void setR7_IDENTIFICATION_TYPE(String r7_IDENTIFICATION_TYPE) {
+							R7_IDENTIFICATION_TYPE = r7_IDENTIFICATION_TYPE;
+						}
+						public String getR7_PASSPORT_NUMBER() {
+							return R7_PASSPORT_NUMBER;
+						}
+						public void setR7_PASSPORT_NUMBER(String r7_PASSPORT_NUMBER) {
+							R7_PASSPORT_NUMBER = r7_PASSPORT_NUMBER;
+						}
+						public Date getR7_DATE_OF_BIRTH() {
+							return R7_DATE_OF_BIRTH;
+						}
+						public void setR7_DATE_OF_BIRTH(Date r7_DATE_OF_BIRTH) {
+							R7_DATE_OF_BIRTH = r7_DATE_OF_BIRTH;
+						}
+						public String getR7_HOME_ADDRESS() {
+							return R7_HOME_ADDRESS;
+						}
+						public void setR7_HOME_ADDRESS(String r7_HOME_ADDRESS) {
+							R7_HOME_ADDRESS = r7_HOME_ADDRESS;
+						}
+						public String getR7_POSTAL_ADDRESS() {
+							return R7_POSTAL_ADDRESS;
+						}
+						public void setR7_POSTAL_ADDRESS(String r7_POSTAL_ADDRESS) {
+							R7_POSTAL_ADDRESS = r7_POSTAL_ADDRESS;
+						}
+						public String getR7_RESIDENCE() {
+							return R7_RESIDENCE;
+						}
+						public void setR7_RESIDENCE(String r7_RESIDENCE) {
+							R7_RESIDENCE = r7_RESIDENCE;
+						}
+						public String getR7_EMAIL() {
+							return R7_EMAIL;
+						}
+						public void setR7_EMAIL(String r7_EMAIL) {
+							R7_EMAIL = r7_EMAIL;
+						}
+						public String getR7_LANDLINE() {
+							return R7_LANDLINE;
+						}
+						public void setR7_LANDLINE(String r7_LANDLINE) {
+							R7_LANDLINE = r7_LANDLINE;
+						}
+						public String getR7_MOBILE_PHONE_NUMBER() {
+							return R7_MOBILE_PHONE_NUMBER;
+						}
+						public void setR7_MOBILE_PHONE_NUMBER(String r7_MOBILE_PHONE_NUMBER) {
+							R7_MOBILE_PHONE_NUMBER = r7_MOBILE_PHONE_NUMBER;
+						}
+						public String getR7_MOBILE_MONEY_NUMBER() {
+							return R7_MOBILE_MONEY_NUMBER;
+						}
+						public void setR7_MOBILE_MONEY_NUMBER(String r7_MOBILE_MONEY_NUMBER) {
+							R7_MOBILE_MONEY_NUMBER = r7_MOBILE_MONEY_NUMBER;
+						}
+						public String getR7_PRODUCT_TYPE() {
+							return R7_PRODUCT_TYPE;
+						}
+						public void setR7_PRODUCT_TYPE(String r7_PRODUCT_TYPE) {
+							R7_PRODUCT_TYPE = r7_PRODUCT_TYPE;
+						}
+						public String getR7_ACCOUNT_BY_OWNERSHIP() {
+							return R7_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR7_ACCOUNT_BY_OWNERSHIP(String r7_ACCOUNT_BY_OWNERSHIP) {
+							R7_ACCOUNT_BY_OWNERSHIP = r7_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR7_ACCOUNT_NUMBER() {
+							return R7_ACCOUNT_NUMBER;
+						}
+						public void setR7_ACCOUNT_NUMBER(String r7_ACCOUNT_NUMBER) {
+							R7_ACCOUNT_NUMBER = r7_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR7_ACCOUNT_HOLDER_INDICATOR() {
+							return R7_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR7_ACCOUNT_HOLDER_INDICATOR(BigDecimal r7_ACCOUNT_HOLDER_INDICATOR) {
+							R7_ACCOUNT_HOLDER_INDICATOR = r7_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR7_STATUS_OF_ACCOUNT() {
+							return R7_STATUS_OF_ACCOUNT;
+						}
+						public void setR7_STATUS_OF_ACCOUNT(String r7_STATUS_OF_ACCOUNT) {
+							R7_STATUS_OF_ACCOUNT = r7_STATUS_OF_ACCOUNT;
+						}
+						public String getR7_NOT_FIT_FOR_STP() {
+							return R7_NOT_FIT_FOR_STP;
+						}
+						public void setR7_NOT_FIT_FOR_STP(String r7_NOT_FIT_FOR_STP) {
+							R7_NOT_FIT_FOR_STP = r7_NOT_FIT_FOR_STP;
+						}
+						public String getR7_BRANCH_CODE_AND_NAME() {
+							return R7_BRANCH_CODE_AND_NAME;
+						}
+						public void setR7_BRANCH_CODE_AND_NAME(String r7_BRANCH_CODE_AND_NAME) {
+							R7_BRANCH_CODE_AND_NAME = r7_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR7_ACCOUNT_BALANCE_IN_PULA() {
+							return R7_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR7_ACCOUNT_BALANCE_IN_PULA(BigDecimal r7_ACCOUNT_BALANCE_IN_PULA) {
+							R7_ACCOUNT_BALANCE_IN_PULA = r7_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR7_CURRENCY_OF_ACCOUNT() {
+							return R7_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR7_CURRENCY_OF_ACCOUNT(String r7_CURRENCY_OF_ACCOUNT) {
+							R7_CURRENCY_OF_ACCOUNT = r7_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR7_EXCHANGE_RATE() {
+							return R7_EXCHANGE_RATE;
+						}
+						public void setR7_EXCHANGE_RATE(BigDecimal r7_EXCHANGE_RATE) {
+							R7_EXCHANGE_RATE = r7_EXCHANGE_RATE;
+						}
+						public String getR8_RECORD_NUMBER() {
+							return R8_RECORD_NUMBER;
+						}
+						public void setR8_RECORD_NUMBER(String r8_RECORD_NUMBER) {
+							R8_RECORD_NUMBER = r8_RECORD_NUMBER;
+						}
+						public String getR8_TITLE() {
+							return R8_TITLE;
+						}
+						public void setR8_TITLE(String r8_TITLE) {
+							R8_TITLE = r8_TITLE;
+						}
+						public String getR8_FIRST_NAME() {
+							return R8_FIRST_NAME;
+						}
+						public void setR8_FIRST_NAME(String r8_FIRST_NAME) {
+							R8_FIRST_NAME = r8_FIRST_NAME;
+						}
+						public String getR8_MIDDLE_NAME() {
+							return R8_MIDDLE_NAME;
+						}
+						public void setR8_MIDDLE_NAME(String r8_MIDDLE_NAME) {
+							R8_MIDDLE_NAME = r8_MIDDLE_NAME;
+						}
+						public String getR8_SURNAME() {
+							return R8_SURNAME;
+						}
+						public void setR8_SURNAME(String r8_SURNAME) {
+							R8_SURNAME = r8_SURNAME;
+						}
+						public String getR8_PREVIOUS_NAME() {
+							return R8_PREVIOUS_NAME;
+						}
+						public void setR8_PREVIOUS_NAME(String r8_PREVIOUS_NAME) {
+							R8_PREVIOUS_NAME = r8_PREVIOUS_NAME;
+						}
+						public String getR8_GENDER() {
+							return R8_GENDER;
+						}
+						public void setR8_GENDER(String r8_GENDER) {
+							R8_GENDER = r8_GENDER;
+						}
+						public String getR8_IDENTIFICATION_TYPE() {
+							return R8_IDENTIFICATION_TYPE;
+						}
+						public void setR8_IDENTIFICATION_TYPE(String r8_IDENTIFICATION_TYPE) {
+							R8_IDENTIFICATION_TYPE = r8_IDENTIFICATION_TYPE;
+						}
+						public String getR8_PASSPORT_NUMBER() {
+							return R8_PASSPORT_NUMBER;
+						}
+						public void setR8_PASSPORT_NUMBER(String r8_PASSPORT_NUMBER) {
+							R8_PASSPORT_NUMBER = r8_PASSPORT_NUMBER;
+						}
+						public Date getR8_DATE_OF_BIRTH() {
+							return R8_DATE_OF_BIRTH;
+						}
+						public void setR8_DATE_OF_BIRTH(Date r8_DATE_OF_BIRTH) {
+							R8_DATE_OF_BIRTH = r8_DATE_OF_BIRTH;
+						}
+						public String getR8_HOME_ADDRESS() {
+							return R8_HOME_ADDRESS;
+						}
+						public void setR8_HOME_ADDRESS(String r8_HOME_ADDRESS) {
+							R8_HOME_ADDRESS = r8_HOME_ADDRESS;
+						}
+						public String getR8_POSTAL_ADDRESS() {
+							return R8_POSTAL_ADDRESS;
+						}
+						public void setR8_POSTAL_ADDRESS(String r8_POSTAL_ADDRESS) {
+							R8_POSTAL_ADDRESS = r8_POSTAL_ADDRESS;
+						}
+						public String getR8_RESIDENCE() {
+							return R8_RESIDENCE;
+						}
+						public void setR8_RESIDENCE(String r8_RESIDENCE) {
+							R8_RESIDENCE = r8_RESIDENCE;
+						}
+						public String getR8_EMAIL() {
+							return R8_EMAIL;
+						}
+						public void setR8_EMAIL(String r8_EMAIL) {
+							R8_EMAIL = r8_EMAIL;
+						}
+						public String getR8_LANDLINE() {
+							return R8_LANDLINE;
+						}
+						public void setR8_LANDLINE(String r8_LANDLINE) {
+							R8_LANDLINE = r8_LANDLINE;
+						}
+						public String getR8_MOBILE_PHONE_NUMBER() {
+							return R8_MOBILE_PHONE_NUMBER;
+						}
+						public void setR8_MOBILE_PHONE_NUMBER(String r8_MOBILE_PHONE_NUMBER) {
+							R8_MOBILE_PHONE_NUMBER = r8_MOBILE_PHONE_NUMBER;
+						}
+						public String getR8_MOBILE_MONEY_NUMBER() {
+							return R8_MOBILE_MONEY_NUMBER;
+						}
+						public void setR8_MOBILE_MONEY_NUMBER(String r8_MOBILE_MONEY_NUMBER) {
+							R8_MOBILE_MONEY_NUMBER = r8_MOBILE_MONEY_NUMBER;
+						}
+						public String getR8_PRODUCT_TYPE() {
+							return R8_PRODUCT_TYPE;
+						}
+						public void setR8_PRODUCT_TYPE(String r8_PRODUCT_TYPE) {
+							R8_PRODUCT_TYPE = r8_PRODUCT_TYPE;
+						}
+						public String getR8_ACCOUNT_BY_OWNERSHIP() {
+							return R8_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR8_ACCOUNT_BY_OWNERSHIP(String r8_ACCOUNT_BY_OWNERSHIP) {
+							R8_ACCOUNT_BY_OWNERSHIP = r8_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR8_ACCOUNT_NUMBER() {
+							return R8_ACCOUNT_NUMBER;
+						}
+						public void setR8_ACCOUNT_NUMBER(String r8_ACCOUNT_NUMBER) {
+							R8_ACCOUNT_NUMBER = r8_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR8_ACCOUNT_HOLDER_INDICATOR() {
+							return R8_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR8_ACCOUNT_HOLDER_INDICATOR(BigDecimal r8_ACCOUNT_HOLDER_INDICATOR) {
+							R8_ACCOUNT_HOLDER_INDICATOR = r8_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR8_STATUS_OF_ACCOUNT() {
+							return R8_STATUS_OF_ACCOUNT;
+						}
+						public void setR8_STATUS_OF_ACCOUNT(String r8_STATUS_OF_ACCOUNT) {
+							R8_STATUS_OF_ACCOUNT = r8_STATUS_OF_ACCOUNT;
+						}
+						public String getR8_NOT_FIT_FOR_STP() {
+							return R8_NOT_FIT_FOR_STP;
+						}
+						public void setR8_NOT_FIT_FOR_STP(String r8_NOT_FIT_FOR_STP) {
+							R8_NOT_FIT_FOR_STP = r8_NOT_FIT_FOR_STP;
+						}
+						public String getR8_BRANCH_CODE_AND_NAME() {
+							return R8_BRANCH_CODE_AND_NAME;
+						}
+						public void setR8_BRANCH_CODE_AND_NAME(String r8_BRANCH_CODE_AND_NAME) {
+							R8_BRANCH_CODE_AND_NAME = r8_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR8_ACCOUNT_BALANCE_IN_PULA() {
+							return R8_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR8_ACCOUNT_BALANCE_IN_PULA(BigDecimal r8_ACCOUNT_BALANCE_IN_PULA) {
+							R8_ACCOUNT_BALANCE_IN_PULA = r8_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR8_CURRENCY_OF_ACCOUNT() {
+							return R8_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR8_CURRENCY_OF_ACCOUNT(String r8_CURRENCY_OF_ACCOUNT) {
+							R8_CURRENCY_OF_ACCOUNT = r8_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR8_EXCHANGE_RATE() {
+							return R8_EXCHANGE_RATE;
+						}
+						public void setR8_EXCHANGE_RATE(BigDecimal r8_EXCHANGE_RATE) {
+							R8_EXCHANGE_RATE = r8_EXCHANGE_RATE;
+						}
+						public String getR9_RECORD_NUMBER() {
+							return R9_RECORD_NUMBER;
+						}
+						public void setR9_RECORD_NUMBER(String r9_RECORD_NUMBER) {
+							R9_RECORD_NUMBER = r9_RECORD_NUMBER;
+						}
+						public String getR9_TITLE() {
+							return R9_TITLE;
+						}
+						public void setR9_TITLE(String r9_TITLE) {
+							R9_TITLE = r9_TITLE;
+						}
+						public String getR9_FIRST_NAME() {
+							return R9_FIRST_NAME;
+						}
+						public void setR9_FIRST_NAME(String r9_FIRST_NAME) {
+							R9_FIRST_NAME = r9_FIRST_NAME;
+						}
+						public String getR9_MIDDLE_NAME() {
+							return R9_MIDDLE_NAME;
+						}
+						public void setR9_MIDDLE_NAME(String r9_MIDDLE_NAME) {
+							R9_MIDDLE_NAME = r9_MIDDLE_NAME;
+						}
+						public String getR9_SURNAME() {
+							return R9_SURNAME;
+						}
+						public void setR9_SURNAME(String r9_SURNAME) {
+							R9_SURNAME = r9_SURNAME;
+						}
+						public String getR9_PREVIOUS_NAME() {
+							return R9_PREVIOUS_NAME;
+						}
+						public void setR9_PREVIOUS_NAME(String r9_PREVIOUS_NAME) {
+							R9_PREVIOUS_NAME = r9_PREVIOUS_NAME;
+						}
+						public String getR9_GENDER() {
+							return R9_GENDER;
+						}
+						public void setR9_GENDER(String r9_GENDER) {
+							R9_GENDER = r9_GENDER;
+						}
+						public String getR9_IDENTIFICATION_TYPE() {
+							return R9_IDENTIFICATION_TYPE;
+						}
+						public void setR9_IDENTIFICATION_TYPE(String r9_IDENTIFICATION_TYPE) {
+							R9_IDENTIFICATION_TYPE = r9_IDENTIFICATION_TYPE;
+						}
+						public String getR9_PASSPORT_NUMBER() {
+							return R9_PASSPORT_NUMBER;
+						}
+						public void setR9_PASSPORT_NUMBER(String r9_PASSPORT_NUMBER) {
+							R9_PASSPORT_NUMBER = r9_PASSPORT_NUMBER;
+						}
+						public Date getR9_DATE_OF_BIRTH() {
+							return R9_DATE_OF_BIRTH;
+						}
+						public void setR9_DATE_OF_BIRTH(Date r9_DATE_OF_BIRTH) {
+							R9_DATE_OF_BIRTH = r9_DATE_OF_BIRTH;
+						}
+						public String getR9_HOME_ADDRESS() {
+							return R9_HOME_ADDRESS;
+						}
+						public void setR9_HOME_ADDRESS(String r9_HOME_ADDRESS) {
+							R9_HOME_ADDRESS = r9_HOME_ADDRESS;
+						}
+						public String getR9_POSTAL_ADDRESS() {
+							return R9_POSTAL_ADDRESS;
+						}
+						public void setR9_POSTAL_ADDRESS(String r9_POSTAL_ADDRESS) {
+							R9_POSTAL_ADDRESS = r9_POSTAL_ADDRESS;
+						}
+						public String getR9_RESIDENCE() {
+							return R9_RESIDENCE;
+						}
+						public void setR9_RESIDENCE(String r9_RESIDENCE) {
+							R9_RESIDENCE = r9_RESIDENCE;
+						}
+						public String getR9_EMAIL() {
+							return R9_EMAIL;
+						}
+						public void setR9_EMAIL(String r9_EMAIL) {
+							R9_EMAIL = r9_EMAIL;
+						}
+						public String getR9_LANDLINE() {
+							return R9_LANDLINE;
+						}
+						public void setR9_LANDLINE(String r9_LANDLINE) {
+							R9_LANDLINE = r9_LANDLINE;
+						}
+						public String getR9_MOBILE_PHONE_NUMBER() {
+							return R9_MOBILE_PHONE_NUMBER;
+						}
+						public void setR9_MOBILE_PHONE_NUMBER(String r9_MOBILE_PHONE_NUMBER) {
+							R9_MOBILE_PHONE_NUMBER = r9_MOBILE_PHONE_NUMBER;
+						}
+						public String getR9_MOBILE_MONEY_NUMBER() {
+							return R9_MOBILE_MONEY_NUMBER;
+						}
+						public void setR9_MOBILE_MONEY_NUMBER(String r9_MOBILE_MONEY_NUMBER) {
+							R9_MOBILE_MONEY_NUMBER = r9_MOBILE_MONEY_NUMBER;
+						}
+						public String getR9_PRODUCT_TYPE() {
+							return R9_PRODUCT_TYPE;
+						}
+						public void setR9_PRODUCT_TYPE(String r9_PRODUCT_TYPE) {
+							R9_PRODUCT_TYPE = r9_PRODUCT_TYPE;
+						}
+						public String getR9_ACCOUNT_BY_OWNERSHIP() {
+							return R9_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR9_ACCOUNT_BY_OWNERSHIP(String r9_ACCOUNT_BY_OWNERSHIP) {
+							R9_ACCOUNT_BY_OWNERSHIP = r9_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR9_ACCOUNT_NUMBER() {
+							return R9_ACCOUNT_NUMBER;
+						}
+						public void setR9_ACCOUNT_NUMBER(String r9_ACCOUNT_NUMBER) {
+							R9_ACCOUNT_NUMBER = r9_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR9_ACCOUNT_HOLDER_INDICATOR() {
+							return R9_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR9_ACCOUNT_HOLDER_INDICATOR(BigDecimal r9_ACCOUNT_HOLDER_INDICATOR) {
+							R9_ACCOUNT_HOLDER_INDICATOR = r9_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR9_STATUS_OF_ACCOUNT() {
+							return R9_STATUS_OF_ACCOUNT;
+						}
+						public void setR9_STATUS_OF_ACCOUNT(String r9_STATUS_OF_ACCOUNT) {
+							R9_STATUS_OF_ACCOUNT = r9_STATUS_OF_ACCOUNT;
+						}
+						public String getR9_NOT_FIT_FOR_STP() {
+							return R9_NOT_FIT_FOR_STP;
+						}
+						public void setR9_NOT_FIT_FOR_STP(String r9_NOT_FIT_FOR_STP) {
+							R9_NOT_FIT_FOR_STP = r9_NOT_FIT_FOR_STP;
+						}
+						public String getR9_BRANCH_CODE_AND_NAME() {
+							return R9_BRANCH_CODE_AND_NAME;
+						}
+						public void setR9_BRANCH_CODE_AND_NAME(String r9_BRANCH_CODE_AND_NAME) {
+							R9_BRANCH_CODE_AND_NAME = r9_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR9_ACCOUNT_BALANCE_IN_PULA() {
+							return R9_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR9_ACCOUNT_BALANCE_IN_PULA(BigDecimal r9_ACCOUNT_BALANCE_IN_PULA) {
+							R9_ACCOUNT_BALANCE_IN_PULA = r9_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR9_CURRENCY_OF_ACCOUNT() {
+							return R9_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR9_CURRENCY_OF_ACCOUNT(String r9_CURRENCY_OF_ACCOUNT) {
+							R9_CURRENCY_OF_ACCOUNT = r9_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR9_EXCHANGE_RATE() {
+							return R9_EXCHANGE_RATE;
+						}
+						public void setR9_EXCHANGE_RATE(BigDecimal r9_EXCHANGE_RATE) {
+							R9_EXCHANGE_RATE = r9_EXCHANGE_RATE;
+						}
+						public String getR10_RECORD_NUMBER() {
+							return R10_RECORD_NUMBER;
+						}
+						public void setR10_RECORD_NUMBER(String r10_RECORD_NUMBER) {
+							R10_RECORD_NUMBER = r10_RECORD_NUMBER;
+						}
+						public String getR10_TITLE() {
+							return R10_TITLE;
+						}
+						public void setR10_TITLE(String r10_TITLE) {
+							R10_TITLE = r10_TITLE;
+						}
+						public String getR10_FIRST_NAME() {
+							return R10_FIRST_NAME;
+						}
+						public void setR10_FIRST_NAME(String r10_FIRST_NAME) {
+							R10_FIRST_NAME = r10_FIRST_NAME;
+						}
+						public String getR10_MIDDLE_NAME() {
+							return R10_MIDDLE_NAME;
+						}
+						public void setR10_MIDDLE_NAME(String r10_MIDDLE_NAME) {
+							R10_MIDDLE_NAME = r10_MIDDLE_NAME;
+						}
+						public String getR10_SURNAME() {
+							return R10_SURNAME;
+						}
+						public void setR10_SURNAME(String r10_SURNAME) {
+							R10_SURNAME = r10_SURNAME;
+						}
+						public String getR10_PREVIOUS_NAME() {
+							return R10_PREVIOUS_NAME;
+						}
+						public void setR10_PREVIOUS_NAME(String r10_PREVIOUS_NAME) {
+							R10_PREVIOUS_NAME = r10_PREVIOUS_NAME;
+						}
+						public String getR10_GENDER() {
+							return R10_GENDER;
+						}
+						public void setR10_GENDER(String r10_GENDER) {
+							R10_GENDER = r10_GENDER;
+						}
+						public String getR10_IDENTIFICATION_TYPE() {
+							return R10_IDENTIFICATION_TYPE;
+						}
+						public void setR10_IDENTIFICATION_TYPE(String r10_IDENTIFICATION_TYPE) {
+							R10_IDENTIFICATION_TYPE = r10_IDENTIFICATION_TYPE;
+						}
+						public String getR10_PASSPORT_NUMBER() {
+							return R10_PASSPORT_NUMBER;
+						}
+						public void setR10_PASSPORT_NUMBER(String r10_PASSPORT_NUMBER) {
+							R10_PASSPORT_NUMBER = r10_PASSPORT_NUMBER;
+						}
+						public Date getR10_DATE_OF_BIRTH() {
+							return R10_DATE_OF_BIRTH;
+						}
+						public void setR10_DATE_OF_BIRTH(Date r10_DATE_OF_BIRTH) {
+							R10_DATE_OF_BIRTH = r10_DATE_OF_BIRTH;
+						}
+						public String getR10_HOME_ADDRESS() {
+							return R10_HOME_ADDRESS;
+						}
+						public void setR10_HOME_ADDRESS(String r10_HOME_ADDRESS) {
+							R10_HOME_ADDRESS = r10_HOME_ADDRESS;
+						}
+						public String getR10_POSTAL_ADDRESS() {
+							return R10_POSTAL_ADDRESS;
+						}
+						public void setR10_POSTAL_ADDRESS(String r10_POSTAL_ADDRESS) {
+							R10_POSTAL_ADDRESS = r10_POSTAL_ADDRESS;
+						}
+						public String getR10_RESIDENCE() {
+							return R10_RESIDENCE;
+						}
+						public void setR10_RESIDENCE(String r10_RESIDENCE) {
+							R10_RESIDENCE = r10_RESIDENCE;
+						}
+						public String getR10_EMAIL() {
+							return R10_EMAIL;
+						}
+						public void setR10_EMAIL(String r10_EMAIL) {
+							R10_EMAIL = r10_EMAIL;
+						}
+						public String getR10_LANDLINE() {
+							return R10_LANDLINE;
+						}
+						public void setR10_LANDLINE(String r10_LANDLINE) {
+							R10_LANDLINE = r10_LANDLINE;
+						}
+						public String getR10_MOBILE_PHONE_NUMBER() {
+							return R10_MOBILE_PHONE_NUMBER;
+						}
+						public void setR10_MOBILE_PHONE_NUMBER(String r10_MOBILE_PHONE_NUMBER) {
+							R10_MOBILE_PHONE_NUMBER = r10_MOBILE_PHONE_NUMBER;
+						}
+						public String getR10_MOBILE_MONEY_NUMBER() {
+							return R10_MOBILE_MONEY_NUMBER;
+						}
+						public void setR10_MOBILE_MONEY_NUMBER(String r10_MOBILE_MONEY_NUMBER) {
+							R10_MOBILE_MONEY_NUMBER = r10_MOBILE_MONEY_NUMBER;
+						}
+						public String getR10_PRODUCT_TYPE() {
+							return R10_PRODUCT_TYPE;
+						}
+						public void setR10_PRODUCT_TYPE(String r10_PRODUCT_TYPE) {
+							R10_PRODUCT_TYPE = r10_PRODUCT_TYPE;
+						}
+						public String getR10_ACCOUNT_BY_OWNERSHIP() {
+							return R10_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR10_ACCOUNT_BY_OWNERSHIP(String r10_ACCOUNT_BY_OWNERSHIP) {
+							R10_ACCOUNT_BY_OWNERSHIP = r10_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR10_ACCOUNT_NUMBER() {
+							return R10_ACCOUNT_NUMBER;
+						}
+						public void setR10_ACCOUNT_NUMBER(String r10_ACCOUNT_NUMBER) {
+							R10_ACCOUNT_NUMBER = r10_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR10_ACCOUNT_HOLDER_INDICATOR() {
+							return R10_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR10_ACCOUNT_HOLDER_INDICATOR(BigDecimal r10_ACCOUNT_HOLDER_INDICATOR) {
+							R10_ACCOUNT_HOLDER_INDICATOR = r10_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR10_STATUS_OF_ACCOUNT() {
+							return R10_STATUS_OF_ACCOUNT;
+						}
+						public void setR10_STATUS_OF_ACCOUNT(String r10_STATUS_OF_ACCOUNT) {
+							R10_STATUS_OF_ACCOUNT = r10_STATUS_OF_ACCOUNT;
+						}
+						public String getR10_NOT_FIT_FOR_STP() {
+							return R10_NOT_FIT_FOR_STP;
+						}
+						public void setR10_NOT_FIT_FOR_STP(String r10_NOT_FIT_FOR_STP) {
+							R10_NOT_FIT_FOR_STP = r10_NOT_FIT_FOR_STP;
+						}
+						public String getR10_BRANCH_CODE_AND_NAME() {
+							return R10_BRANCH_CODE_AND_NAME;
+						}
+						public void setR10_BRANCH_CODE_AND_NAME(String r10_BRANCH_CODE_AND_NAME) {
+							R10_BRANCH_CODE_AND_NAME = r10_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR10_ACCOUNT_BALANCE_IN_PULA() {
+							return R10_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR10_ACCOUNT_BALANCE_IN_PULA(BigDecimal r10_ACCOUNT_BALANCE_IN_PULA) {
+							R10_ACCOUNT_BALANCE_IN_PULA = r10_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR10_CURRENCY_OF_ACCOUNT() {
+							return R10_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR10_CURRENCY_OF_ACCOUNT(String r10_CURRENCY_OF_ACCOUNT) {
+							R10_CURRENCY_OF_ACCOUNT = r10_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR10_EXCHANGE_RATE() {
+							return R10_EXCHANGE_RATE;
+						}
+						public void setR10_EXCHANGE_RATE(BigDecimal r10_EXCHANGE_RATE) {
+							R10_EXCHANGE_RATE = r10_EXCHANGE_RATE;
+						}
+						public String getR11_RECORD_NUMBER() {
+							return R11_RECORD_NUMBER;
+						}
+						public void setR11_RECORD_NUMBER(String r11_RECORD_NUMBER) {
+							R11_RECORD_NUMBER = r11_RECORD_NUMBER;
+						}
+						public String getR11_TITLE() {
+							return R11_TITLE;
+						}
+						public void setR11_TITLE(String r11_TITLE) {
+							R11_TITLE = r11_TITLE;
+						}
+						public String getR11_FIRST_NAME() {
+							return R11_FIRST_NAME;
+						}
+						public void setR11_FIRST_NAME(String r11_FIRST_NAME) {
+							R11_FIRST_NAME = r11_FIRST_NAME;
+						}
+						public String getR11_MIDDLE_NAME() {
+							return R11_MIDDLE_NAME;
+						}
+						public void setR11_MIDDLE_NAME(String r11_MIDDLE_NAME) {
+							R11_MIDDLE_NAME = r11_MIDDLE_NAME;
+						}
+						public String getR11_SURNAME() {
+							return R11_SURNAME;
+						}
+						public void setR11_SURNAME(String r11_SURNAME) {
+							R11_SURNAME = r11_SURNAME;
+						}
+						public String getR11_PREVIOUS_NAME() {
+							return R11_PREVIOUS_NAME;
+						}
+						public void setR11_PREVIOUS_NAME(String r11_PREVIOUS_NAME) {
+							R11_PREVIOUS_NAME = r11_PREVIOUS_NAME;
+						}
+						public String getR11_GENDER() {
+							return R11_GENDER;
+						}
+						public void setR11_GENDER(String r11_GENDER) {
+							R11_GENDER = r11_GENDER;
+						}
+						public String getR11_IDENTIFICATION_TYPE() {
+							return R11_IDENTIFICATION_TYPE;
+						}
+						public void setR11_IDENTIFICATION_TYPE(String r11_IDENTIFICATION_TYPE) {
+							R11_IDENTIFICATION_TYPE = r11_IDENTIFICATION_TYPE;
+						}
+						public String getR11_PASSPORT_NUMBER() {
+							return R11_PASSPORT_NUMBER;
+						}
+						public void setR11_PASSPORT_NUMBER(String r11_PASSPORT_NUMBER) {
+							R11_PASSPORT_NUMBER = r11_PASSPORT_NUMBER;
+						}
+						public Date getR11_DATE_OF_BIRTH() {
+							return R11_DATE_OF_BIRTH;
+						}
+						public void setR11_DATE_OF_BIRTH(Date r11_DATE_OF_BIRTH) {
+							R11_DATE_OF_BIRTH = r11_DATE_OF_BIRTH;
+						}
+						public String getR11_HOME_ADDRESS() {
+							return R11_HOME_ADDRESS;
+						}
+						public void setR11_HOME_ADDRESS(String r11_HOME_ADDRESS) {
+							R11_HOME_ADDRESS = r11_HOME_ADDRESS;
+						}
+						public String getR11_POSTAL_ADDRESS() {
+							return R11_POSTAL_ADDRESS;
+						}
+						public void setR11_POSTAL_ADDRESS(String r11_POSTAL_ADDRESS) {
+							R11_POSTAL_ADDRESS = r11_POSTAL_ADDRESS;
+						}
+						public String getR11_RESIDENCE() {
+							return R11_RESIDENCE;
+						}
+						public void setR11_RESIDENCE(String r11_RESIDENCE) {
+							R11_RESIDENCE = r11_RESIDENCE;
+						}
+						public String getR11_EMAIL() {
+							return R11_EMAIL;
+						}
+						public void setR11_EMAIL(String r11_EMAIL) {
+							R11_EMAIL = r11_EMAIL;
+						}
+						public String getR11_LANDLINE() {
+							return R11_LANDLINE;
+						}
+						public void setR11_LANDLINE(String r11_LANDLINE) {
+							R11_LANDLINE = r11_LANDLINE;
+						}
+						public String getR11_MOBILE_PHONE_NUMBER() {
+							return R11_MOBILE_PHONE_NUMBER;
+						}
+						public void setR11_MOBILE_PHONE_NUMBER(String r11_MOBILE_PHONE_NUMBER) {
+							R11_MOBILE_PHONE_NUMBER = r11_MOBILE_PHONE_NUMBER;
+						}
+						public String getR11_MOBILE_MONEY_NUMBER() {
+							return R11_MOBILE_MONEY_NUMBER;
+						}
+						public void setR11_MOBILE_MONEY_NUMBER(String r11_MOBILE_MONEY_NUMBER) {
+							R11_MOBILE_MONEY_NUMBER = r11_MOBILE_MONEY_NUMBER;
+						}
+						public String getR11_PRODUCT_TYPE() {
+							return R11_PRODUCT_TYPE;
+						}
+						public void setR11_PRODUCT_TYPE(String r11_PRODUCT_TYPE) {
+							R11_PRODUCT_TYPE = r11_PRODUCT_TYPE;
+						}
+						public String getR11_ACCOUNT_BY_OWNERSHIP() {
+							return R11_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR11_ACCOUNT_BY_OWNERSHIP(String r11_ACCOUNT_BY_OWNERSHIP) {
+							R11_ACCOUNT_BY_OWNERSHIP = r11_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR11_ACCOUNT_NUMBER() {
+							return R11_ACCOUNT_NUMBER;
+						}
+						public void setR11_ACCOUNT_NUMBER(String r11_ACCOUNT_NUMBER) {
+							R11_ACCOUNT_NUMBER = r11_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR11_ACCOUNT_HOLDER_INDICATOR() {
+							return R11_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR11_ACCOUNT_HOLDER_INDICATOR(BigDecimal r11_ACCOUNT_HOLDER_INDICATOR) {
+							R11_ACCOUNT_HOLDER_INDICATOR = r11_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR11_STATUS_OF_ACCOUNT() {
+							return R11_STATUS_OF_ACCOUNT;
+						}
+						public void setR11_STATUS_OF_ACCOUNT(String r11_STATUS_OF_ACCOUNT) {
+							R11_STATUS_OF_ACCOUNT = r11_STATUS_OF_ACCOUNT;
+						}
+						public String getR11_NOT_FIT_FOR_STP() {
+							return R11_NOT_FIT_FOR_STP;
+						}
+						public void setR11_NOT_FIT_FOR_STP(String r11_NOT_FIT_FOR_STP) {
+							R11_NOT_FIT_FOR_STP = r11_NOT_FIT_FOR_STP;
+						}
+						public String getR11_BRANCH_CODE_AND_NAME() {
+							return R11_BRANCH_CODE_AND_NAME;
+						}
+						public void setR11_BRANCH_CODE_AND_NAME(String r11_BRANCH_CODE_AND_NAME) {
+							R11_BRANCH_CODE_AND_NAME = r11_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR11_ACCOUNT_BALANCE_IN_PULA() {
+							return R11_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR11_ACCOUNT_BALANCE_IN_PULA(BigDecimal r11_ACCOUNT_BALANCE_IN_PULA) {
+							R11_ACCOUNT_BALANCE_IN_PULA = r11_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR11_CURRENCY_OF_ACCOUNT() {
+							return R11_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR11_CURRENCY_OF_ACCOUNT(String r11_CURRENCY_OF_ACCOUNT) {
+							R11_CURRENCY_OF_ACCOUNT = r11_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR11_EXCHANGE_RATE() {
+							return R11_EXCHANGE_RATE;
+						}
+						public void setR11_EXCHANGE_RATE(BigDecimal r11_EXCHANGE_RATE) {
+							R11_EXCHANGE_RATE = r11_EXCHANGE_RATE;
+						}
+						
+						public Date getREPORT_DATE() {
+							return REPORT_DATE;
+						}
+
+						public void setREPORT_DATE(Date REPORT_DATE) {
+							this.REPORT_DATE = REPORT_DATE;
+						}
+
+						public BigDecimal getREPORT_VERSION() {
+							return REPORT_VERSION;
+						}
+
+						public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
+							this.REPORT_VERSION = REPORT_VERSION;
+						}
+						
+						public Date getREPORT_RESUBDATE() {
+							return REPORT_RESUBDATE;
+						}
+
+						public void setREPORT_RESUBDATE(Date REPORT_RESUBDATE) {
+							this.REPORT_RESUBDATE = REPORT_RESUBDATE;
+						}
+
+						public String getREPORT_FREQUENCY() {
+							return REPORT_FREQUENCY;
+						}
+
+						public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+							REPORT_FREQUENCY = rEPORT_FREQUENCY;
+						}
+
+						public String getREPORT_CODE() {
+							return REPORT_CODE;
+						}
+
+						public void setREPORT_CODE(String rEPORT_CODE) {
+							REPORT_CODE = rEPORT_CODE;
+						}
+
+						public String getREPORT_DESC() {
+							return REPORT_DESC;
+						}
+
+						public void setREPORT_DESC(String rEPORT_DESC) {
+							REPORT_DESC = rEPORT_DESC;
+						}
+
+						public String getENTITY_FLG() {
+							return ENTITY_FLG;
+						}
+
+						public void setENTITY_FLG(String eNTITY_FLG) {
+							ENTITY_FLG = eNTITY_FLG;
+						}
+
+						public String getMODIFY_FLG() {
+							return MODIFY_FLG;
+						}
+
+						public void setMODIFY_FLG(String mODIFY_FLG) {
+							MODIFY_FLG = mODIFY_FLG;
+						}
+
+						public String getDEL_FLG() {
+							return DEL_FLG;
+						}
+
+						public void setDEL_FLG(String dEL_FLG) {
+							DEL_FLG = dEL_FLG;
+						}
+
+					}
+					
+					
+				// ROW MAPPER RESUB Detail
+
+				class BDISB1RowMapper_ResubDetail implements RowMapper<BDISB1_RESUB_Detail_Entity> {
+
+					@Override
+					public BDISB1_RESUB_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+						BDISB1_RESUB_Detail_Entity obj = new BDISB1_RESUB_Detail_Entity();	
+					
+	
+						obj.setR5_RECORD_NUMBER(rs.getString("R5_RECORD_NUMBER"));
+						obj.setR5_TITLE(rs.getString("R5_TITLE"));
+						obj.setR5_FIRST_NAME(rs.getString("R5_FIRST_NAME"));
+						obj.setR5_MIDDLE_NAME(rs.getString("R5_MIDDLE_NAME"));
+						obj.setR5_SURNAME(rs.getString("R5_SURNAME"));
+						obj.setR5_PREVIOUS_NAME(rs.getString("R5_PREVIOUS_NAME"));
+						obj.setR5_GENDER(rs.getString("R5_GENDER"));
+						obj.setR5_IDENTIFICATION_TYPE(rs.getString("R5_IDENTIFICATION_TYPE"));
+						obj.setR5_PASSPORT_NUMBER(rs.getString("R5_PASSPORT_NUMBER"));
+						obj.setR5_DATE_OF_BIRTH(rs.getDate("R5_DATE_OF_BIRTH"));
+						obj.setR5_HOME_ADDRESS(rs.getString("R5_HOME_ADDRESS"));
+						obj.setR5_POSTAL_ADDRESS(rs.getString("R5_POSTAL_ADDRESS"));
+						obj.setR5_RESIDENCE(rs.getString("R5_RESIDENCE"));
+						obj.setR5_EMAIL(rs.getString("R5_EMAIL"));
+						obj.setR5_LANDLINE(rs.getString("R5_LANDLINE"));
+						obj.setR5_MOBILE_PHONE_NUMBER(rs.getString("R5_MOBILE_PHONE_NUMBER"));
+						obj.setR5_MOBILE_MONEY_NUMBER(rs.getString("R5_MOBILE_MONEY_NUMBER"));
+						obj.setR5_PRODUCT_TYPE(rs.getString("R5_PRODUCT_TYPE"));
+						obj.setR5_ACCOUNT_BY_OWNERSHIP(rs.getString("R5_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR5_ACCOUNT_NUMBER(rs.getString("R5_ACCOUNT_NUMBER"));
+						obj.setR5_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R5_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR5_STATUS_OF_ACCOUNT(rs.getString("R5_STATUS_OF_ACCOUNT"));
+						obj.setR5_NOT_FIT_FOR_STP(rs.getString("R5_NOT_FIT_FOR_STP"));
+						obj.setR5_BRANCH_CODE_AND_NAME(rs.getString("R5_BRANCH_CODE_AND_NAME"));
+						obj.setR5_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R5_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR5_CURRENCY_OF_ACCOUNT(rs.getString("R5_CURRENCY_OF_ACCOUNT"));
+						obj.setR5_EXCHANGE_RATE(rs.getBigDecimal("R5_EXCHANGE_RATE"));
+						
+						obj.setR6_RECORD_NUMBER(rs.getString("R6_RECORD_NUMBER"));
+						obj.setR6_TITLE(rs.getString("R6_TITLE"));
+						obj.setR6_FIRST_NAME(rs.getString("R6_FIRST_NAME"));
+						obj.setR6_MIDDLE_NAME(rs.getString("R6_MIDDLE_NAME"));
+						obj.setR6_SURNAME(rs.getString("R6_SURNAME"));
+						obj.setR6_PREVIOUS_NAME(rs.getString("R6_PREVIOUS_NAME"));
+						obj.setR6_GENDER(rs.getString("R6_GENDER"));
+						obj.setR6_IDENTIFICATION_TYPE(rs.getString("R6_IDENTIFICATION_TYPE"));
+						obj.setR6_PASSPORT_NUMBER(rs.getString("R6_PASSPORT_NUMBER"));
+						obj.setR6_DATE_OF_BIRTH(rs.getDate("R6_DATE_OF_BIRTH"));
+						obj.setR6_HOME_ADDRESS(rs.getString("R6_HOME_ADDRESS"));
+						obj.setR6_POSTAL_ADDRESS(rs.getString("R6_POSTAL_ADDRESS"));
+						obj.setR6_RESIDENCE(rs.getString("R6_RESIDENCE"));
+						obj.setR6_EMAIL(rs.getString("R6_EMAIL"));
+						obj.setR6_LANDLINE(rs.getString("R6_LANDLINE"));
+						obj.setR6_MOBILE_PHONE_NUMBER(rs.getString("R6_MOBILE_PHONE_NUMBER"));
+						obj.setR6_MOBILE_MONEY_NUMBER(rs.getString("R6_MOBILE_MONEY_NUMBER"));
+						obj.setR6_PRODUCT_TYPE(rs.getString("R6_PRODUCT_TYPE"));
+						obj.setR6_ACCOUNT_BY_OWNERSHIP(rs.getString("R6_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR6_ACCOUNT_NUMBER(rs.getString("R6_ACCOUNT_NUMBER"));
+						obj.setR6_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R6_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR6_STATUS_OF_ACCOUNT(rs.getString("R6_STATUS_OF_ACCOUNT"));
+						obj.setR6_NOT_FIT_FOR_STP(rs.getString("R6_NOT_FIT_FOR_STP"));
+						obj.setR6_BRANCH_CODE_AND_NAME(rs.getString("R6_BRANCH_CODE_AND_NAME"));
+						obj.setR6_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R6_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR6_CURRENCY_OF_ACCOUNT(rs.getString("R6_CURRENCY_OF_ACCOUNT"));
+						obj.setR6_EXCHANGE_RATE(rs.getBigDecimal("R6_EXCHANGE_RATE"));
+						
+						obj.setR7_RECORD_NUMBER(rs.getString("R7_RECORD_NUMBER"));
+						obj.setR7_TITLE(rs.getString("R7_TITLE"));
+						obj.setR7_FIRST_NAME(rs.getString("R7_FIRST_NAME"));
+						obj.setR7_MIDDLE_NAME(rs.getString("R7_MIDDLE_NAME"));
+						obj.setR7_SURNAME(rs.getString("R7_SURNAME"));
+						obj.setR7_PREVIOUS_NAME(rs.getString("R7_PREVIOUS_NAME"));
+						obj.setR7_GENDER(rs.getString("R7_GENDER"));
+						obj.setR7_IDENTIFICATION_TYPE(rs.getString("R7_IDENTIFICATION_TYPE"));
+						obj.setR7_PASSPORT_NUMBER(rs.getString("R7_PASSPORT_NUMBER"));
+						obj.setR7_DATE_OF_BIRTH(rs.getDate("R7_DATE_OF_BIRTH"));
+						obj.setR7_HOME_ADDRESS(rs.getString("R7_HOME_ADDRESS"));
+						obj.setR7_POSTAL_ADDRESS(rs.getString("R7_POSTAL_ADDRESS"));
+						obj.setR7_RESIDENCE(rs.getString("R7_RESIDENCE"));
+						obj.setR7_EMAIL(rs.getString("R7_EMAIL"));
+						obj.setR7_LANDLINE(rs.getString("R7_LANDLINE"));
+						obj.setR7_MOBILE_PHONE_NUMBER(rs.getString("R7_MOBILE_PHONE_NUMBER"));
+						obj.setR7_MOBILE_MONEY_NUMBER(rs.getString("R7_MOBILE_MONEY_NUMBER"));
+						obj.setR7_PRODUCT_TYPE(rs.getString("R7_PRODUCT_TYPE"));
+						obj.setR7_ACCOUNT_BY_OWNERSHIP(rs.getString("R7_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR7_ACCOUNT_NUMBER(rs.getString("R7_ACCOUNT_NUMBER"));
+						obj.setR7_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R7_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR7_STATUS_OF_ACCOUNT(rs.getString("R7_STATUS_OF_ACCOUNT"));
+						obj.setR7_NOT_FIT_FOR_STP(rs.getString("R7_NOT_FIT_FOR_STP"));
+						obj.setR7_BRANCH_CODE_AND_NAME(rs.getString("R7_BRANCH_CODE_AND_NAME"));
+						obj.setR7_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R7_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR7_CURRENCY_OF_ACCOUNT(rs.getString("R7_CURRENCY_OF_ACCOUNT"));
+						obj.setR7_EXCHANGE_RATE(rs.getBigDecimal("R7_EXCHANGE_RATE"));
+						
+						obj.setR8_RECORD_NUMBER(rs.getString("R8_RECORD_NUMBER"));
+						obj.setR8_TITLE(rs.getString("R8_TITLE"));
+						obj.setR8_FIRST_NAME(rs.getString("R8_FIRST_NAME"));
+						obj.setR8_MIDDLE_NAME(rs.getString("R8_MIDDLE_NAME"));
+						obj.setR8_SURNAME(rs.getString("R8_SURNAME"));
+						obj.setR8_PREVIOUS_NAME(rs.getString("R8_PREVIOUS_NAME"));
+						obj.setR8_GENDER(rs.getString("R8_GENDER"));
+						obj.setR8_IDENTIFICATION_TYPE(rs.getString("R8_IDENTIFICATION_TYPE"));
+						obj.setR8_PASSPORT_NUMBER(rs.getString("R8_PASSPORT_NUMBER"));
+						obj.setR8_DATE_OF_BIRTH(rs.getDate("R8_DATE_OF_BIRTH"));
+						obj.setR8_HOME_ADDRESS(rs.getString("R8_HOME_ADDRESS"));
+						obj.setR8_POSTAL_ADDRESS(rs.getString("R8_POSTAL_ADDRESS"));
+						obj.setR8_RESIDENCE(rs.getString("R8_RESIDENCE"));
+						obj.setR8_EMAIL(rs.getString("R8_EMAIL"));
+						obj.setR8_LANDLINE(rs.getString("R8_LANDLINE"));
+						obj.setR8_MOBILE_PHONE_NUMBER(rs.getString("R8_MOBILE_PHONE_NUMBER"));
+						obj.setR8_MOBILE_MONEY_NUMBER(rs.getString("R8_MOBILE_MONEY_NUMBER"));
+						obj.setR8_PRODUCT_TYPE(rs.getString("R8_PRODUCT_TYPE"));
+						obj.setR8_ACCOUNT_BY_OWNERSHIP(rs.getString("R8_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR8_ACCOUNT_NUMBER(rs.getString("R8_ACCOUNT_NUMBER"));
+						obj.setR8_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R8_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR8_STATUS_OF_ACCOUNT(rs.getString("R8_STATUS_OF_ACCOUNT"));
+						obj.setR8_NOT_FIT_FOR_STP(rs.getString("R8_NOT_FIT_FOR_STP"));
+						obj.setR8_BRANCH_CODE_AND_NAME(rs.getString("R8_BRANCH_CODE_AND_NAME"));
+						obj.setR8_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R8_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR8_CURRENCY_OF_ACCOUNT(rs.getString("R8_CURRENCY_OF_ACCOUNT"));
+						obj.setR8_EXCHANGE_RATE(rs.getBigDecimal("R8_EXCHANGE_RATE"));
+						
+						obj.setR9_RECORD_NUMBER(rs.getString("R9_RECORD_NUMBER"));
+						obj.setR9_TITLE(rs.getString("R9_TITLE"));
+						obj.setR9_FIRST_NAME(rs.getString("R9_FIRST_NAME"));
+						obj.setR9_MIDDLE_NAME(rs.getString("R9_MIDDLE_NAME"));
+						obj.setR9_SURNAME(rs.getString("R9_SURNAME"));
+						obj.setR9_PREVIOUS_NAME(rs.getString("R9_PREVIOUS_NAME"));
+						obj.setR9_GENDER(rs.getString("R9_GENDER"));
+						obj.setR9_IDENTIFICATION_TYPE(rs.getString("R9_IDENTIFICATION_TYPE"));
+						obj.setR9_PASSPORT_NUMBER(rs.getString("R9_PASSPORT_NUMBER"));
+						obj.setR9_DATE_OF_BIRTH(rs.getDate("R9_DATE_OF_BIRTH"));
+						obj.setR9_HOME_ADDRESS(rs.getString("R9_HOME_ADDRESS"));
+						obj.setR9_POSTAL_ADDRESS(rs.getString("R9_POSTAL_ADDRESS"));
+						obj.setR9_RESIDENCE(rs.getString("R9_RESIDENCE"));
+						obj.setR9_EMAIL(rs.getString("R9_EMAIL"));
+						obj.setR9_LANDLINE(rs.getString("R9_LANDLINE"));
+						obj.setR9_MOBILE_PHONE_NUMBER(rs.getString("R9_MOBILE_PHONE_NUMBER"));
+						obj.setR9_MOBILE_MONEY_NUMBER(rs.getString("R9_MOBILE_MONEY_NUMBER"));
+						obj.setR9_PRODUCT_TYPE(rs.getString("R9_PRODUCT_TYPE"));
+						obj.setR9_ACCOUNT_BY_OWNERSHIP(rs.getString("R9_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR9_ACCOUNT_NUMBER(rs.getString("R9_ACCOUNT_NUMBER"));
+						obj.setR9_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R9_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR9_STATUS_OF_ACCOUNT(rs.getString("R9_STATUS_OF_ACCOUNT"));
+						obj.setR9_NOT_FIT_FOR_STP(rs.getString("R9_NOT_FIT_FOR_STP"));
+						obj.setR9_BRANCH_CODE_AND_NAME(rs.getString("R9_BRANCH_CODE_AND_NAME"));
+						obj.setR9_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R9_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR9_CURRENCY_OF_ACCOUNT(rs.getString("R9_CURRENCY_OF_ACCOUNT"));
+						obj.setR9_EXCHANGE_RATE(rs.getBigDecimal("R9_EXCHANGE_RATE"));
+						
+						obj.setR10_RECORD_NUMBER(rs.getString("R10_RECORD_NUMBER"));
+						obj.setR10_TITLE(rs.getString("R10_TITLE"));
+						obj.setR10_FIRST_NAME(rs.getString("R10_FIRST_NAME"));
+						obj.setR10_MIDDLE_NAME(rs.getString("R10_MIDDLE_NAME"));
+						obj.setR10_SURNAME(rs.getString("R10_SURNAME"));
+						obj.setR10_PREVIOUS_NAME(rs.getString("R10_PREVIOUS_NAME"));
+						obj.setR10_GENDER(rs.getString("R10_GENDER"));
+						obj.setR10_IDENTIFICATION_TYPE(rs.getString("R10_IDENTIFICATION_TYPE"));
+						obj.setR10_PASSPORT_NUMBER(rs.getString("R10_PASSPORT_NUMBER"));
+						obj.setR10_DATE_OF_BIRTH(rs.getDate("R10_DATE_OF_BIRTH"));
+						obj.setR10_HOME_ADDRESS(rs.getString("R10_HOME_ADDRESS"));
+						obj.setR10_POSTAL_ADDRESS(rs.getString("R10_POSTAL_ADDRESS"));
+						obj.setR10_RESIDENCE(rs.getString("R10_RESIDENCE"));
+						obj.setR10_EMAIL(rs.getString("R10_EMAIL"));
+						obj.setR10_LANDLINE(rs.getString("R10_LANDLINE"));
+						obj.setR10_MOBILE_PHONE_NUMBER(rs.getString("R10_MOBILE_PHONE_NUMBER"));
+						obj.setR10_MOBILE_MONEY_NUMBER(rs.getString("R10_MOBILE_MONEY_NUMBER"));
+						obj.setR10_PRODUCT_TYPE(rs.getString("R10_PRODUCT_TYPE"));
+						obj.setR10_ACCOUNT_BY_OWNERSHIP(rs.getString("R10_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR10_ACCOUNT_NUMBER(rs.getString("R10_ACCOUNT_NUMBER"));
+						obj.setR10_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R10_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR10_STATUS_OF_ACCOUNT(rs.getString("R10_STATUS_OF_ACCOUNT"));
+						obj.setR10_NOT_FIT_FOR_STP(rs.getString("R10_NOT_FIT_FOR_STP"));
+						obj.setR10_BRANCH_CODE_AND_NAME(rs.getString("R10_BRANCH_CODE_AND_NAME"));
+						obj.setR10_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R10_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR10_CURRENCY_OF_ACCOUNT(rs.getString("R10_CURRENCY_OF_ACCOUNT"));
+						obj.setR10_EXCHANGE_RATE(rs.getBigDecimal("R10_EXCHANGE_RATE"));
+						
+						obj.setR11_RECORD_NUMBER(rs.getString("R11_RECORD_NUMBER"));
+						obj.setR11_TITLE(rs.getString("R11_TITLE"));
+						obj.setR11_FIRST_NAME(rs.getString("R11_FIRST_NAME"));
+						obj.setR11_MIDDLE_NAME(rs.getString("R11_MIDDLE_NAME"));
+						obj.setR11_SURNAME(rs.getString("R11_SURNAME"));
+						obj.setR11_PREVIOUS_NAME(rs.getString("R11_PREVIOUS_NAME"));
+						obj.setR11_GENDER(rs.getString("R11_GENDER"));
+						obj.setR11_IDENTIFICATION_TYPE(rs.getString("R11_IDENTIFICATION_TYPE"));
+						obj.setR11_PASSPORT_NUMBER(rs.getString("R11_PASSPORT_NUMBER"));
+						obj.setR11_DATE_OF_BIRTH(rs.getDate("R11_DATE_OF_BIRTH"));
+						obj.setR11_HOME_ADDRESS(rs.getString("R11_HOME_ADDRESS"));
+						obj.setR11_POSTAL_ADDRESS(rs.getString("R11_POSTAL_ADDRESS"));
+						obj.setR11_RESIDENCE(rs.getString("R11_RESIDENCE"));
+						obj.setR11_EMAIL(rs.getString("R11_EMAIL"));
+						obj.setR11_LANDLINE(rs.getString("R11_LANDLINE"));
+						obj.setR11_MOBILE_PHONE_NUMBER(rs.getString("R11_MOBILE_PHONE_NUMBER"));
+						obj.setR11_MOBILE_MONEY_NUMBER(rs.getString("R11_MOBILE_MONEY_NUMBER"));
+						obj.setR11_PRODUCT_TYPE(rs.getString("R11_PRODUCT_TYPE"));
+						obj.setR11_ACCOUNT_BY_OWNERSHIP(rs.getString("R11_ACCOUNT_BY_OWNERSHIP"));
+						obj.setR11_ACCOUNT_NUMBER(rs.getString("R11_ACCOUNT_NUMBER"));
+						obj.setR11_ACCOUNT_HOLDER_INDICATOR(rs.getBigDecimal("R11_ACCOUNT_HOLDER_INDICATOR"));
+						obj.setR11_STATUS_OF_ACCOUNT(rs.getString("R11_STATUS_OF_ACCOUNT"));
+						obj.setR11_NOT_FIT_FOR_STP(rs.getString("R11_NOT_FIT_FOR_STP"));
+						obj.setR11_BRANCH_CODE_AND_NAME(rs.getString("R11_BRANCH_CODE_AND_NAME"));
+						obj.setR11_ACCOUNT_BALANCE_IN_PULA(rs.getBigDecimal("R11_ACCOUNT_BALANCE_IN_PULA"));
+						obj.setR11_CURRENCY_OF_ACCOUNT(rs.getString("R11_CURRENCY_OF_ACCOUNT"));
+						obj.setR11_EXCHANGE_RATE(rs.getBigDecimal("R11_EXCHANGE_RATE"));
+						
+						// COMMON FIELDS
+						obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+						obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+						obj.setREPORT_RESUBDATE(rs.getDate("REPORT_RESUBDATE"));
+						obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+						obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+						obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+						obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+						obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+						obj.setDEL_FLG(rs.getString("DEL_FLG"));
+						
+
+						return obj;
+					}
+				}
+				
+				public static class BDISB1_RESUB_Detail_Entity {
+					
+					 private String R5_RECORD_NUMBER;
+					    private String R5_TITLE;
+					    private String R5_FIRST_NAME;
+					    private String R5_MIDDLE_NAME;
+					    private String R5_SURNAME;
+					    private String R5_PREVIOUS_NAME;
+					    private String R5_GENDER;
+					    private String R5_IDENTIFICATION_TYPE;
+					    private String R5_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R5_DATE_OF_BIRTH;
+					    private String R5_HOME_ADDRESS;
+					    private String R5_POSTAL_ADDRESS;
+					    private String R5_RESIDENCE;
+					    private String R5_EMAIL;
+					    private String R5_LANDLINE;
+					    private String R5_MOBILE_PHONE_NUMBER;
+					    private String R5_MOBILE_MONEY_NUMBER;
+					    private String R5_PRODUCT_TYPE;
+					    private String R5_ACCOUNT_BY_OWNERSHIP;
+					    private String R5_ACCOUNT_NUMBER;
+					    private BigDecimal R5_ACCOUNT_HOLDER_INDICATOR;
+					    private String R5_STATUS_OF_ACCOUNT;
+					    private String R5_NOT_FIT_FOR_STP;
+					    private String R5_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R5_ACCOUNT_BALANCE_IN_PULA;
+					    private String R5_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R5_EXCHANGE_RATE;
+
+					    // ===================== R6 =====================
+					    private String R6_RECORD_NUMBER;
+					    private String R6_TITLE;
+					    private String R6_FIRST_NAME;
+					    private String R6_MIDDLE_NAME;
+					    private String R6_SURNAME;
+					    private String R6_PREVIOUS_NAME;
+					    private String R6_GENDER;
+					    private String R6_IDENTIFICATION_TYPE;
+					    private String R6_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R6_DATE_OF_BIRTH;
+					    private String R6_HOME_ADDRESS;
+					    private String R6_POSTAL_ADDRESS;
+					    private String R6_RESIDENCE;
+					    private String R6_EMAIL;
+					    private String R6_LANDLINE;
+					    private String R6_MOBILE_PHONE_NUMBER;
+					    private String R6_MOBILE_MONEY_NUMBER;
+					    private String R6_PRODUCT_TYPE;
+					    private String R6_ACCOUNT_BY_OWNERSHIP;
+					    private String R6_ACCOUNT_NUMBER;
+					    private BigDecimal R6_ACCOUNT_HOLDER_INDICATOR;
+					    private String R6_STATUS_OF_ACCOUNT;
+					    private String R6_NOT_FIT_FOR_STP;
+					    private String R6_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R6_ACCOUNT_BALANCE_IN_PULA;
+					    private String R6_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R6_EXCHANGE_RATE;
+
+					    // ===================== R7 =====================
+					    private String R7_RECORD_NUMBER;
+					    private String R7_TITLE;
+					    private String R7_FIRST_NAME;
+					    private String R7_MIDDLE_NAME;
+					    private String R7_SURNAME;
+					    private String R7_PREVIOUS_NAME;
+					    private String R7_GENDER;
+					    private String R7_IDENTIFICATION_TYPE;
+					    private String R7_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R7_DATE_OF_BIRTH;
+					    private String R7_HOME_ADDRESS;
+					    private String R7_POSTAL_ADDRESS;
+					    private String R7_RESIDENCE;
+					    private String R7_EMAIL;
+					    private String R7_LANDLINE;
+					    private String R7_MOBILE_PHONE_NUMBER;
+					    private String R7_MOBILE_MONEY_NUMBER;
+					    private String R7_PRODUCT_TYPE;
+					    private String R7_ACCOUNT_BY_OWNERSHIP;
+					    private String R7_ACCOUNT_NUMBER;
+					    private BigDecimal R7_ACCOUNT_HOLDER_INDICATOR;
+					    private String R7_STATUS_OF_ACCOUNT;
+					    private String R7_NOT_FIT_FOR_STP;
+					    private String R7_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R7_ACCOUNT_BALANCE_IN_PULA;
+					    private String R7_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R7_EXCHANGE_RATE;
+
+					    // ===================== R8 =====================
+					    private String R8_RECORD_NUMBER;
+					    private String R8_TITLE;
+					    private String R8_FIRST_NAME;
+					    private String R8_MIDDLE_NAME;
+					    private String R8_SURNAME;
+					    private String R8_PREVIOUS_NAME;
+					    private String R8_GENDER;
+					    private String R8_IDENTIFICATION_TYPE;
+					    private String R8_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R8_DATE_OF_BIRTH;
+					    private String R8_HOME_ADDRESS;
+					    private String R8_POSTAL_ADDRESS;
+					    private String R8_RESIDENCE;
+					    private String R8_EMAIL;
+					    private String R8_LANDLINE;
+					    private String R8_MOBILE_PHONE_NUMBER;
+					    private String R8_MOBILE_MONEY_NUMBER;
+					    private String R8_PRODUCT_TYPE;
+					    private String R8_ACCOUNT_BY_OWNERSHIP;
+					    private String R8_ACCOUNT_NUMBER;
+					    private BigDecimal R8_ACCOUNT_HOLDER_INDICATOR;
+					    private String R8_STATUS_OF_ACCOUNT;
+					    private String R8_NOT_FIT_FOR_STP;
+					    private String R8_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R8_ACCOUNT_BALANCE_IN_PULA;
+					    private String R8_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R8_EXCHANGE_RATE;
+
+					    // ===================== R9 =====================
+					    private String R9_RECORD_NUMBER;
+					    private String R9_TITLE;
+					    private String R9_FIRST_NAME;
+					    private String R9_MIDDLE_NAME;
+					    private String R9_SURNAME;
+					    private String R9_PREVIOUS_NAME;
+					    private String R9_GENDER;
+					    private String R9_IDENTIFICATION_TYPE;
+					    private String R9_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R9_DATE_OF_BIRTH;
+					    private String R9_HOME_ADDRESS;
+					    private String R9_POSTAL_ADDRESS;
+					    private String R9_RESIDENCE;
+					    private String R9_EMAIL;
+					    private String R9_LANDLINE;
+					    private String R9_MOBILE_PHONE_NUMBER;
+					    private String R9_MOBILE_MONEY_NUMBER;
+					    private String R9_PRODUCT_TYPE;
+					    private String R9_ACCOUNT_BY_OWNERSHIP;
+					    private String R9_ACCOUNT_NUMBER;
+					    private BigDecimal R9_ACCOUNT_HOLDER_INDICATOR;
+					    private String R9_STATUS_OF_ACCOUNT;
+					    private String R9_NOT_FIT_FOR_STP;
+					    private String R9_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R9_ACCOUNT_BALANCE_IN_PULA;
+					    private String R9_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R9_EXCHANGE_RATE;
+
+					    // ===================== R10 =====================
+					    private String R10_RECORD_NUMBER;
+					    private String R10_TITLE;
+					    private String R10_FIRST_NAME;
+					    private String R10_MIDDLE_NAME;
+					    private String R10_SURNAME;
+					    private String R10_PREVIOUS_NAME;
+					    private String R10_GENDER;
+					    private String R10_IDENTIFICATION_TYPE;
+					    private String R10_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R10_DATE_OF_BIRTH;
+					    private String R10_HOME_ADDRESS;
+					    private String R10_POSTAL_ADDRESS;
+					    private String R10_RESIDENCE;
+					    private String R10_EMAIL;
+					    private String R10_LANDLINE;
+					    private String R10_MOBILE_PHONE_NUMBER;
+					    private String R10_MOBILE_MONEY_NUMBER;
+					    private String R10_PRODUCT_TYPE;
+					    private String R10_ACCOUNT_BY_OWNERSHIP;
+					    private String R10_ACCOUNT_NUMBER;
+					    private BigDecimal R10_ACCOUNT_HOLDER_INDICATOR;
+					    private String R10_STATUS_OF_ACCOUNT;
+					    private String R10_NOT_FIT_FOR_STP;
+					    private String R10_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R10_ACCOUNT_BALANCE_IN_PULA;
+					    private String R10_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R10_EXCHANGE_RATE;
+
+					    // ===================== R11 =====================
+					    private String R11_RECORD_NUMBER;
+					    private String R11_TITLE;
+					    private String R11_FIRST_NAME;
+					    private String R11_MIDDLE_NAME;
+					    private String R11_SURNAME;
+					    private String R11_PREVIOUS_NAME;
+					    private String R11_GENDER;
+					    private String R11_IDENTIFICATION_TYPE;
+					    private String R11_PASSPORT_NUMBER;
+					    @Temporal(TemporalType.DATE)
+					    @DateTimeFormat(pattern = "yyyy-MM-dd")
+					    private Date R11_DATE_OF_BIRTH;
+					    private String R11_HOME_ADDRESS;
+					    private String R11_POSTAL_ADDRESS;
+					    private String R11_RESIDENCE;
+					    private String R11_EMAIL;
+					    private String R11_LANDLINE;
+					    private String R11_MOBILE_PHONE_NUMBER;
+					    private String R11_MOBILE_MONEY_NUMBER;
+					    private String R11_PRODUCT_TYPE;
+					    private String R11_ACCOUNT_BY_OWNERSHIP;
+					    private String R11_ACCOUNT_NUMBER;
+					    private BigDecimal R11_ACCOUNT_HOLDER_INDICATOR;
+					    private String R11_STATUS_OF_ACCOUNT;
+					    private String R11_NOT_FIT_FOR_STP;
+					    private String R11_BRANCH_CODE_AND_NAME;
+					    private BigDecimal R11_ACCOUNT_BALANCE_IN_PULA;
+					    private String R11_CURRENCY_OF_ACCOUNT;
+					    private BigDecimal R11_EXCHANGE_RATE;
+					    
+					    @Id
+						@Temporal(TemporalType.DATE)
+						@Column(name = "REPORT_DATE")
+						private Date REPORT_DATE;
+
+						@Column(name = "REPORT_VERSION", length = 100)
+						private BigDecimal REPORT_VERSION;
+						
+						@Column(name = "REPORT_RESUBDATE")
+						private Date REPORT_RESUBDATE;
+
+						@Column(name = "REPORT_FREQUENCY", length = 100)
+						private String REPORT_FREQUENCY;
+
+						@Column(name = "REPORT_CODE", length = 100)
+						private String REPORT_CODE;
+
+						@Column(name = "REPORT_DESC", length = 100)
+						private String REPORT_DESC;
+
+						@Column(name = "ENTITY_FLG", length = 1)
+						private String ENTITY_FLG;
+
+						@Column(name = "MODIFY_FLG", length = 1)
+						private String MODIFY_FLG;
+
+						@Column(name = "DEL_FLG", length = 1)
+						private String DEL_FLG;
+						
+						public String getR5_RECORD_NUMBER() {
+							return R5_RECORD_NUMBER;
+						}
+						public void setR5_RECORD_NUMBER(String r5_RECORD_NUMBER) {
+							R5_RECORD_NUMBER = r5_RECORD_NUMBER;
+						}
+						public String getR5_TITLE() {
+							return R5_TITLE;
+						}
+						public void setR5_TITLE(String r5_TITLE) {
+							R5_TITLE = r5_TITLE;
+						}
+						public String getR5_FIRST_NAME() {
+							return R5_FIRST_NAME;
+						}
+						public void setR5_FIRST_NAME(String r5_FIRST_NAME) {
+							R5_FIRST_NAME = r5_FIRST_NAME;
+						}
+						public String getR5_MIDDLE_NAME() {
+							return R5_MIDDLE_NAME;
+						}
+						public void setR5_MIDDLE_NAME(String r5_MIDDLE_NAME) {
+							R5_MIDDLE_NAME = r5_MIDDLE_NAME;
+						}
+						public String getR5_SURNAME() {
+							return R5_SURNAME;
+						}
+						public void setR5_SURNAME(String r5_SURNAME) {
+							R5_SURNAME = r5_SURNAME;
+						}
+						public String getR5_PREVIOUS_NAME() {
+							return R5_PREVIOUS_NAME;
+						}
+						public void setR5_PREVIOUS_NAME(String r5_PREVIOUS_NAME) {
+							R5_PREVIOUS_NAME = r5_PREVIOUS_NAME;
+						}
+						public String getR5_GENDER() {
+							return R5_GENDER;
+						}
+						public void setR5_GENDER(String r5_GENDER) {
+							R5_GENDER = r5_GENDER;
+						}
+						public String getR5_IDENTIFICATION_TYPE() {
+							return R5_IDENTIFICATION_TYPE;
+						}
+						public void setR5_IDENTIFICATION_TYPE(String r5_IDENTIFICATION_TYPE) {
+							R5_IDENTIFICATION_TYPE = r5_IDENTIFICATION_TYPE;
+						}
+						public String getR5_PASSPORT_NUMBER() {
+							return R5_PASSPORT_NUMBER;
+						}
+						public void setR5_PASSPORT_NUMBER(String r5_PASSPORT_NUMBER) {
+							R5_PASSPORT_NUMBER = r5_PASSPORT_NUMBER;
+						}
+						public Date getR5_DATE_OF_BIRTH() {
+							return R5_DATE_OF_BIRTH;
+						}
+						public void setR5_DATE_OF_BIRTH(Date r5_DATE_OF_BIRTH) {
+							R5_DATE_OF_BIRTH = r5_DATE_OF_BIRTH;
+						}
+						public String getR5_HOME_ADDRESS() {
+							return R5_HOME_ADDRESS;
+						}
+						public void setR5_HOME_ADDRESS(String r5_HOME_ADDRESS) {
+							R5_HOME_ADDRESS = r5_HOME_ADDRESS;
+						}
+						public String getR5_POSTAL_ADDRESS() {
+							return R5_POSTAL_ADDRESS;
+						}
+						public void setR5_POSTAL_ADDRESS(String r5_POSTAL_ADDRESS) {
+							R5_POSTAL_ADDRESS = r5_POSTAL_ADDRESS;
+						}
+						public String getR5_RESIDENCE() {
+							return R5_RESIDENCE;
+						}
+						public void setR5_RESIDENCE(String r5_RESIDENCE) {
+							R5_RESIDENCE = r5_RESIDENCE;
+						}
+						public String getR5_EMAIL() {
+							return R5_EMAIL;
+						}
+						public void setR5_EMAIL(String r5_EMAIL) {
+							R5_EMAIL = r5_EMAIL;
+						}
+						public String getR5_LANDLINE() {
+							return R5_LANDLINE;
+						}
+						public void setR5_LANDLINE(String r5_LANDLINE) {
+							R5_LANDLINE = r5_LANDLINE;
+						}
+						public String getR5_MOBILE_PHONE_NUMBER() {
+							return R5_MOBILE_PHONE_NUMBER;
+						}
+						public void setR5_MOBILE_PHONE_NUMBER(String r5_MOBILE_PHONE_NUMBER) {
+							R5_MOBILE_PHONE_NUMBER = r5_MOBILE_PHONE_NUMBER;
+						}
+						public String getR5_MOBILE_MONEY_NUMBER() {
+							return R5_MOBILE_MONEY_NUMBER;
+						}
+						public void setR5_MOBILE_MONEY_NUMBER(String r5_MOBILE_MONEY_NUMBER) {
+							R5_MOBILE_MONEY_NUMBER = r5_MOBILE_MONEY_NUMBER;
+						}
+						public String getR5_PRODUCT_TYPE() {
+							return R5_PRODUCT_TYPE;
+						}
+						public void setR5_PRODUCT_TYPE(String r5_PRODUCT_TYPE) {
+							R5_PRODUCT_TYPE = r5_PRODUCT_TYPE;
+						}
+						public String getR5_ACCOUNT_BY_OWNERSHIP() {
+							return R5_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR5_ACCOUNT_BY_OWNERSHIP(String r5_ACCOUNT_BY_OWNERSHIP) {
+							R5_ACCOUNT_BY_OWNERSHIP = r5_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR5_ACCOUNT_NUMBER() {
+							return R5_ACCOUNT_NUMBER;
+						}
+						public void setR5_ACCOUNT_NUMBER(String r5_ACCOUNT_NUMBER) {
+							R5_ACCOUNT_NUMBER = r5_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR5_ACCOUNT_HOLDER_INDICATOR() {
+							return R5_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR5_ACCOUNT_HOLDER_INDICATOR(BigDecimal r5_ACCOUNT_HOLDER_INDICATOR) {
+							R5_ACCOUNT_HOLDER_INDICATOR = r5_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR5_STATUS_OF_ACCOUNT() {
+							return R5_STATUS_OF_ACCOUNT;
+						}
+						public void setR5_STATUS_OF_ACCOUNT(String r5_STATUS_OF_ACCOUNT) {
+							R5_STATUS_OF_ACCOUNT = r5_STATUS_OF_ACCOUNT;
+						}
+						public String getR5_NOT_FIT_FOR_STP() {
+							return R5_NOT_FIT_FOR_STP;
+						}
+						public void setR5_NOT_FIT_FOR_STP(String r5_NOT_FIT_FOR_STP) {
+							R5_NOT_FIT_FOR_STP = r5_NOT_FIT_FOR_STP;
+						}
+						public String getR5_BRANCH_CODE_AND_NAME() {
+							return R5_BRANCH_CODE_AND_NAME;
+						}
+						public void setR5_BRANCH_CODE_AND_NAME(String r5_BRANCH_CODE_AND_NAME) {
+							R5_BRANCH_CODE_AND_NAME = r5_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR5_ACCOUNT_BALANCE_IN_PULA() {
+							return R5_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR5_ACCOUNT_BALANCE_IN_PULA(BigDecimal r5_ACCOUNT_BALANCE_IN_PULA) {
+							R5_ACCOUNT_BALANCE_IN_PULA = r5_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR5_CURRENCY_OF_ACCOUNT() {
+							return R5_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR5_CURRENCY_OF_ACCOUNT(String r5_CURRENCY_OF_ACCOUNT) {
+							R5_CURRENCY_OF_ACCOUNT = r5_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR5_EXCHANGE_RATE() {
+							return R5_EXCHANGE_RATE;
+						}
+						public void setR5_EXCHANGE_RATE(BigDecimal r5_EXCHANGE_RATE) {
+							R5_EXCHANGE_RATE = r5_EXCHANGE_RATE;
+						}
+						public String getR6_RECORD_NUMBER() {
+							return R6_RECORD_NUMBER;
+						}
+						public void setR6_RECORD_NUMBER(String r6_RECORD_NUMBER) {
+							R6_RECORD_NUMBER = r6_RECORD_NUMBER;
+						}
+						public String getR6_TITLE() {
+							return R6_TITLE;
+						}
+						public void setR6_TITLE(String r6_TITLE) {
+							R6_TITLE = r6_TITLE;
+						}
+						public String getR6_FIRST_NAME() {
+							return R6_FIRST_NAME;
+						}
+						public void setR6_FIRST_NAME(String r6_FIRST_NAME) {
+							R6_FIRST_NAME = r6_FIRST_NAME;
+						}
+						public String getR6_MIDDLE_NAME() {
+							return R6_MIDDLE_NAME;
+						}
+						public void setR6_MIDDLE_NAME(String r6_MIDDLE_NAME) {
+							R6_MIDDLE_NAME = r6_MIDDLE_NAME;
+						}
+						public String getR6_SURNAME() {
+							return R6_SURNAME;
+						}
+						public void setR6_SURNAME(String r6_SURNAME) {
+							R6_SURNAME = r6_SURNAME;
+						}
+						public String getR6_PREVIOUS_NAME() {
+							return R6_PREVIOUS_NAME;
+						}
+						public void setR6_PREVIOUS_NAME(String r6_PREVIOUS_NAME) {
+							R6_PREVIOUS_NAME = r6_PREVIOUS_NAME;
+						}
+						public String getR6_GENDER() {
+							return R6_GENDER;
+						}
+						public void setR6_GENDER(String r6_GENDER) {
+							R6_GENDER = r6_GENDER;
+						}
+						public String getR6_IDENTIFICATION_TYPE() {
+							return R6_IDENTIFICATION_TYPE;
+						}
+						public void setR6_IDENTIFICATION_TYPE(String r6_IDENTIFICATION_TYPE) {
+							R6_IDENTIFICATION_TYPE = r6_IDENTIFICATION_TYPE;
+						}
+						public String getR6_PASSPORT_NUMBER() {
+							return R6_PASSPORT_NUMBER;
+						}
+						public void setR6_PASSPORT_NUMBER(String r6_PASSPORT_NUMBER) {
+							R6_PASSPORT_NUMBER = r6_PASSPORT_NUMBER;
+						}
+						public Date getR6_DATE_OF_BIRTH() {
+							return R6_DATE_OF_BIRTH;
+						}
+						public void setR6_DATE_OF_BIRTH(Date r6_DATE_OF_BIRTH) {
+							R6_DATE_OF_BIRTH = r6_DATE_OF_BIRTH;
+						}
+						public String getR6_HOME_ADDRESS() {
+							return R6_HOME_ADDRESS;
+						}
+						public void setR6_HOME_ADDRESS(String r6_HOME_ADDRESS) {
+							R6_HOME_ADDRESS = r6_HOME_ADDRESS;
+						}
+						public String getR6_POSTAL_ADDRESS() {
+							return R6_POSTAL_ADDRESS;
+						}
+						public void setR6_POSTAL_ADDRESS(String r6_POSTAL_ADDRESS) {
+							R6_POSTAL_ADDRESS = r6_POSTAL_ADDRESS;
+						}
+						public String getR6_RESIDENCE() {
+							return R6_RESIDENCE;
+						}
+						public void setR6_RESIDENCE(String r6_RESIDENCE) {
+							R6_RESIDENCE = r6_RESIDENCE;
+						}
+						public String getR6_EMAIL() {
+							return R6_EMAIL;
+						}
+						public void setR6_EMAIL(String r6_EMAIL) {
+							R6_EMAIL = r6_EMAIL;
+						}
+						public String getR6_LANDLINE() {
+							return R6_LANDLINE;
+						}
+						public void setR6_LANDLINE(String r6_LANDLINE) {
+							R6_LANDLINE = r6_LANDLINE;
+						}
+						public String getR6_MOBILE_PHONE_NUMBER() {
+							return R6_MOBILE_PHONE_NUMBER;
+						}
+						public void setR6_MOBILE_PHONE_NUMBER(String r6_MOBILE_PHONE_NUMBER) {
+							R6_MOBILE_PHONE_NUMBER = r6_MOBILE_PHONE_NUMBER;
+						}
+						public String getR6_MOBILE_MONEY_NUMBER() {
+							return R6_MOBILE_MONEY_NUMBER;
+						}
+						public void setR6_MOBILE_MONEY_NUMBER(String r6_MOBILE_MONEY_NUMBER) {
+							R6_MOBILE_MONEY_NUMBER = r6_MOBILE_MONEY_NUMBER;
+						}
+						public String getR6_PRODUCT_TYPE() {
+							return R6_PRODUCT_TYPE;
+						}
+						public void setR6_PRODUCT_TYPE(String r6_PRODUCT_TYPE) {
+							R6_PRODUCT_TYPE = r6_PRODUCT_TYPE;
+						}
+						public String getR6_ACCOUNT_BY_OWNERSHIP() {
+							return R6_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR6_ACCOUNT_BY_OWNERSHIP(String r6_ACCOUNT_BY_OWNERSHIP) {
+							R6_ACCOUNT_BY_OWNERSHIP = r6_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR6_ACCOUNT_NUMBER() {
+							return R6_ACCOUNT_NUMBER;
+						}
+						public void setR6_ACCOUNT_NUMBER(String r6_ACCOUNT_NUMBER) {
+							R6_ACCOUNT_NUMBER = r6_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR6_ACCOUNT_HOLDER_INDICATOR() {
+							return R6_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR6_ACCOUNT_HOLDER_INDICATOR(BigDecimal r6_ACCOUNT_HOLDER_INDICATOR) {
+							R6_ACCOUNT_HOLDER_INDICATOR = r6_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR6_STATUS_OF_ACCOUNT() {
+							return R6_STATUS_OF_ACCOUNT;
+						}
+						public void setR6_STATUS_OF_ACCOUNT(String r6_STATUS_OF_ACCOUNT) {
+							R6_STATUS_OF_ACCOUNT = r6_STATUS_OF_ACCOUNT;
+						}
+						public String getR6_NOT_FIT_FOR_STP() {
+							return R6_NOT_FIT_FOR_STP;
+						}
+						public void setR6_NOT_FIT_FOR_STP(String r6_NOT_FIT_FOR_STP) {
+							R6_NOT_FIT_FOR_STP = r6_NOT_FIT_FOR_STP;
+						}
+						public String getR6_BRANCH_CODE_AND_NAME() {
+							return R6_BRANCH_CODE_AND_NAME;
+						}
+						public void setR6_BRANCH_CODE_AND_NAME(String r6_BRANCH_CODE_AND_NAME) {
+							R6_BRANCH_CODE_AND_NAME = r6_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR6_ACCOUNT_BALANCE_IN_PULA() {
+							return R6_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR6_ACCOUNT_BALANCE_IN_PULA(BigDecimal r6_ACCOUNT_BALANCE_IN_PULA) {
+							R6_ACCOUNT_BALANCE_IN_PULA = r6_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR6_CURRENCY_OF_ACCOUNT() {
+							return R6_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR6_CURRENCY_OF_ACCOUNT(String r6_CURRENCY_OF_ACCOUNT) {
+							R6_CURRENCY_OF_ACCOUNT = r6_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR6_EXCHANGE_RATE() {
+							return R6_EXCHANGE_RATE;
+						}
+						public void setR6_EXCHANGE_RATE(BigDecimal r6_EXCHANGE_RATE) {
+							R6_EXCHANGE_RATE = r6_EXCHANGE_RATE;
+						}
+						public String getR7_RECORD_NUMBER() {
+							return R7_RECORD_NUMBER;
+						}
+						public void setR7_RECORD_NUMBER(String r7_RECORD_NUMBER) {
+							R7_RECORD_NUMBER = r7_RECORD_NUMBER;
+						}
+						public String getR7_TITLE() {
+							return R7_TITLE;
+						}
+						public void setR7_TITLE(String r7_TITLE) {
+							R7_TITLE = r7_TITLE;
+						}
+						public String getR7_FIRST_NAME() {
+							return R7_FIRST_NAME;
+						}
+						public void setR7_FIRST_NAME(String r7_FIRST_NAME) {
+							R7_FIRST_NAME = r7_FIRST_NAME;
+						}
+						public String getR7_MIDDLE_NAME() {
+							return R7_MIDDLE_NAME;
+						}
+						public void setR7_MIDDLE_NAME(String r7_MIDDLE_NAME) {
+							R7_MIDDLE_NAME = r7_MIDDLE_NAME;
+						}
+						public String getR7_SURNAME() {
+							return R7_SURNAME;
+						}
+						public void setR7_SURNAME(String r7_SURNAME) {
+							R7_SURNAME = r7_SURNAME;
+						}
+						public String getR7_PREVIOUS_NAME() {
+							return R7_PREVIOUS_NAME;
+						}
+						public void setR7_PREVIOUS_NAME(String r7_PREVIOUS_NAME) {
+							R7_PREVIOUS_NAME = r7_PREVIOUS_NAME;
+						}
+						public String getR7_GENDER() {
+							return R7_GENDER;
+						}
+						public void setR7_GENDER(String r7_GENDER) {
+							R7_GENDER = r7_GENDER;
+						}
+						public String getR7_IDENTIFICATION_TYPE() {
+							return R7_IDENTIFICATION_TYPE;
+						}
+						public void setR7_IDENTIFICATION_TYPE(String r7_IDENTIFICATION_TYPE) {
+							R7_IDENTIFICATION_TYPE = r7_IDENTIFICATION_TYPE;
+						}
+						public String getR7_PASSPORT_NUMBER() {
+							return R7_PASSPORT_NUMBER;
+						}
+						public void setR7_PASSPORT_NUMBER(String r7_PASSPORT_NUMBER) {
+							R7_PASSPORT_NUMBER = r7_PASSPORT_NUMBER;
+						}
+						public Date getR7_DATE_OF_BIRTH() {
+							return R7_DATE_OF_BIRTH;
+						}
+						public void setR7_DATE_OF_BIRTH(Date r7_DATE_OF_BIRTH) {
+							R7_DATE_OF_BIRTH = r7_DATE_OF_BIRTH;
+						}
+						public String getR7_HOME_ADDRESS() {
+							return R7_HOME_ADDRESS;
+						}
+						public void setR7_HOME_ADDRESS(String r7_HOME_ADDRESS) {
+							R7_HOME_ADDRESS = r7_HOME_ADDRESS;
+						}
+						public String getR7_POSTAL_ADDRESS() {
+							return R7_POSTAL_ADDRESS;
+						}
+						public void setR7_POSTAL_ADDRESS(String r7_POSTAL_ADDRESS) {
+							R7_POSTAL_ADDRESS = r7_POSTAL_ADDRESS;
+						}
+						public String getR7_RESIDENCE() {
+							return R7_RESIDENCE;
+						}
+						public void setR7_RESIDENCE(String r7_RESIDENCE) {
+							R7_RESIDENCE = r7_RESIDENCE;
+						}
+						public String getR7_EMAIL() {
+							return R7_EMAIL;
+						}
+						public void setR7_EMAIL(String r7_EMAIL) {
+							R7_EMAIL = r7_EMAIL;
+						}
+						public String getR7_LANDLINE() {
+							return R7_LANDLINE;
+						}
+						public void setR7_LANDLINE(String r7_LANDLINE) {
+							R7_LANDLINE = r7_LANDLINE;
+						}
+						public String getR7_MOBILE_PHONE_NUMBER() {
+							return R7_MOBILE_PHONE_NUMBER;
+						}
+						public void setR7_MOBILE_PHONE_NUMBER(String r7_MOBILE_PHONE_NUMBER) {
+							R7_MOBILE_PHONE_NUMBER = r7_MOBILE_PHONE_NUMBER;
+						}
+						public String getR7_MOBILE_MONEY_NUMBER() {
+							return R7_MOBILE_MONEY_NUMBER;
+						}
+						public void setR7_MOBILE_MONEY_NUMBER(String r7_MOBILE_MONEY_NUMBER) {
+							R7_MOBILE_MONEY_NUMBER = r7_MOBILE_MONEY_NUMBER;
+						}
+						public String getR7_PRODUCT_TYPE() {
+							return R7_PRODUCT_TYPE;
+						}
+						public void setR7_PRODUCT_TYPE(String r7_PRODUCT_TYPE) {
+							R7_PRODUCT_TYPE = r7_PRODUCT_TYPE;
+						}
+						public String getR7_ACCOUNT_BY_OWNERSHIP() {
+							return R7_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR7_ACCOUNT_BY_OWNERSHIP(String r7_ACCOUNT_BY_OWNERSHIP) {
+							R7_ACCOUNT_BY_OWNERSHIP = r7_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR7_ACCOUNT_NUMBER() {
+							return R7_ACCOUNT_NUMBER;
+						}
+						public void setR7_ACCOUNT_NUMBER(String r7_ACCOUNT_NUMBER) {
+							R7_ACCOUNT_NUMBER = r7_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR7_ACCOUNT_HOLDER_INDICATOR() {
+							return R7_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR7_ACCOUNT_HOLDER_INDICATOR(BigDecimal r7_ACCOUNT_HOLDER_INDICATOR) {
+							R7_ACCOUNT_HOLDER_INDICATOR = r7_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR7_STATUS_OF_ACCOUNT() {
+							return R7_STATUS_OF_ACCOUNT;
+						}
+						public void setR7_STATUS_OF_ACCOUNT(String r7_STATUS_OF_ACCOUNT) {
+							R7_STATUS_OF_ACCOUNT = r7_STATUS_OF_ACCOUNT;
+						}
+						public String getR7_NOT_FIT_FOR_STP() {
+							return R7_NOT_FIT_FOR_STP;
+						}
+						public void setR7_NOT_FIT_FOR_STP(String r7_NOT_FIT_FOR_STP) {
+							R7_NOT_FIT_FOR_STP = r7_NOT_FIT_FOR_STP;
+						}
+						public String getR7_BRANCH_CODE_AND_NAME() {
+							return R7_BRANCH_CODE_AND_NAME;
+						}
+						public void setR7_BRANCH_CODE_AND_NAME(String r7_BRANCH_CODE_AND_NAME) {
+							R7_BRANCH_CODE_AND_NAME = r7_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR7_ACCOUNT_BALANCE_IN_PULA() {
+							return R7_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR7_ACCOUNT_BALANCE_IN_PULA(BigDecimal r7_ACCOUNT_BALANCE_IN_PULA) {
+							R7_ACCOUNT_BALANCE_IN_PULA = r7_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR7_CURRENCY_OF_ACCOUNT() {
+							return R7_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR7_CURRENCY_OF_ACCOUNT(String r7_CURRENCY_OF_ACCOUNT) {
+							R7_CURRENCY_OF_ACCOUNT = r7_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR7_EXCHANGE_RATE() {
+							return R7_EXCHANGE_RATE;
+						}
+						public void setR7_EXCHANGE_RATE(BigDecimal r7_EXCHANGE_RATE) {
+							R7_EXCHANGE_RATE = r7_EXCHANGE_RATE;
+						}
+						public String getR8_RECORD_NUMBER() {
+							return R8_RECORD_NUMBER;
+						}
+						public void setR8_RECORD_NUMBER(String r8_RECORD_NUMBER) {
+							R8_RECORD_NUMBER = r8_RECORD_NUMBER;
+						}
+						public String getR8_TITLE() {
+							return R8_TITLE;
+						}
+						public void setR8_TITLE(String r8_TITLE) {
+							R8_TITLE = r8_TITLE;
+						}
+						public String getR8_FIRST_NAME() {
+							return R8_FIRST_NAME;
+						}
+						public void setR8_FIRST_NAME(String r8_FIRST_NAME) {
+							R8_FIRST_NAME = r8_FIRST_NAME;
+						}
+						public String getR8_MIDDLE_NAME() {
+							return R8_MIDDLE_NAME;
+						}
+						public void setR8_MIDDLE_NAME(String r8_MIDDLE_NAME) {
+							R8_MIDDLE_NAME = r8_MIDDLE_NAME;
+						}
+						public String getR8_SURNAME() {
+							return R8_SURNAME;
+						}
+						public void setR8_SURNAME(String r8_SURNAME) {
+							R8_SURNAME = r8_SURNAME;
+						}
+						public String getR8_PREVIOUS_NAME() {
+							return R8_PREVIOUS_NAME;
+						}
+						public void setR8_PREVIOUS_NAME(String r8_PREVIOUS_NAME) {
+							R8_PREVIOUS_NAME = r8_PREVIOUS_NAME;
+						}
+						public String getR8_GENDER() {
+							return R8_GENDER;
+						}
+						public void setR8_GENDER(String r8_GENDER) {
+							R8_GENDER = r8_GENDER;
+						}
+						public String getR8_IDENTIFICATION_TYPE() {
+							return R8_IDENTIFICATION_TYPE;
+						}
+						public void setR8_IDENTIFICATION_TYPE(String r8_IDENTIFICATION_TYPE) {
+							R8_IDENTIFICATION_TYPE = r8_IDENTIFICATION_TYPE;
+						}
+						public String getR8_PASSPORT_NUMBER() {
+							return R8_PASSPORT_NUMBER;
+						}
+						public void setR8_PASSPORT_NUMBER(String r8_PASSPORT_NUMBER) {
+							R8_PASSPORT_NUMBER = r8_PASSPORT_NUMBER;
+						}
+						public Date getR8_DATE_OF_BIRTH() {
+							return R8_DATE_OF_BIRTH;
+						}
+						public void setR8_DATE_OF_BIRTH(Date r8_DATE_OF_BIRTH) {
+							R8_DATE_OF_BIRTH = r8_DATE_OF_BIRTH;
+						}
+						public String getR8_HOME_ADDRESS() {
+							return R8_HOME_ADDRESS;
+						}
+						public void setR8_HOME_ADDRESS(String r8_HOME_ADDRESS) {
+							R8_HOME_ADDRESS = r8_HOME_ADDRESS;
+						}
+						public String getR8_POSTAL_ADDRESS() {
+							return R8_POSTAL_ADDRESS;
+						}
+						public void setR8_POSTAL_ADDRESS(String r8_POSTAL_ADDRESS) {
+							R8_POSTAL_ADDRESS = r8_POSTAL_ADDRESS;
+						}
+						public String getR8_RESIDENCE() {
+							return R8_RESIDENCE;
+						}
+						public void setR8_RESIDENCE(String r8_RESIDENCE) {
+							R8_RESIDENCE = r8_RESIDENCE;
+						}
+						public String getR8_EMAIL() {
+							return R8_EMAIL;
+						}
+						public void setR8_EMAIL(String r8_EMAIL) {
+							R8_EMAIL = r8_EMAIL;
+						}
+						public String getR8_LANDLINE() {
+							return R8_LANDLINE;
+						}
+						public void setR8_LANDLINE(String r8_LANDLINE) {
+							R8_LANDLINE = r8_LANDLINE;
+						}
+						public String getR8_MOBILE_PHONE_NUMBER() {
+							return R8_MOBILE_PHONE_NUMBER;
+						}
+						public void setR8_MOBILE_PHONE_NUMBER(String r8_MOBILE_PHONE_NUMBER) {
+							R8_MOBILE_PHONE_NUMBER = r8_MOBILE_PHONE_NUMBER;
+						}
+						public String getR8_MOBILE_MONEY_NUMBER() {
+							return R8_MOBILE_MONEY_NUMBER;
+						}
+						public void setR8_MOBILE_MONEY_NUMBER(String r8_MOBILE_MONEY_NUMBER) {
+							R8_MOBILE_MONEY_NUMBER = r8_MOBILE_MONEY_NUMBER;
+						}
+						public String getR8_PRODUCT_TYPE() {
+							return R8_PRODUCT_TYPE;
+						}
+						public void setR8_PRODUCT_TYPE(String r8_PRODUCT_TYPE) {
+							R8_PRODUCT_TYPE = r8_PRODUCT_TYPE;
+						}
+						public String getR8_ACCOUNT_BY_OWNERSHIP() {
+							return R8_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR8_ACCOUNT_BY_OWNERSHIP(String r8_ACCOUNT_BY_OWNERSHIP) {
+							R8_ACCOUNT_BY_OWNERSHIP = r8_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR8_ACCOUNT_NUMBER() {
+							return R8_ACCOUNT_NUMBER;
+						}
+						public void setR8_ACCOUNT_NUMBER(String r8_ACCOUNT_NUMBER) {
+							R8_ACCOUNT_NUMBER = r8_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR8_ACCOUNT_HOLDER_INDICATOR() {
+							return R8_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR8_ACCOUNT_HOLDER_INDICATOR(BigDecimal r8_ACCOUNT_HOLDER_INDICATOR) {
+							R8_ACCOUNT_HOLDER_INDICATOR = r8_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR8_STATUS_OF_ACCOUNT() {
+							return R8_STATUS_OF_ACCOUNT;
+						}
+						public void setR8_STATUS_OF_ACCOUNT(String r8_STATUS_OF_ACCOUNT) {
+							R8_STATUS_OF_ACCOUNT = r8_STATUS_OF_ACCOUNT;
+						}
+						public String getR8_NOT_FIT_FOR_STP() {
+							return R8_NOT_FIT_FOR_STP;
+						}
+						public void setR8_NOT_FIT_FOR_STP(String r8_NOT_FIT_FOR_STP) {
+							R8_NOT_FIT_FOR_STP = r8_NOT_FIT_FOR_STP;
+						}
+						public String getR8_BRANCH_CODE_AND_NAME() {
+							return R8_BRANCH_CODE_AND_NAME;
+						}
+						public void setR8_BRANCH_CODE_AND_NAME(String r8_BRANCH_CODE_AND_NAME) {
+							R8_BRANCH_CODE_AND_NAME = r8_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR8_ACCOUNT_BALANCE_IN_PULA() {
+							return R8_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR8_ACCOUNT_BALANCE_IN_PULA(BigDecimal r8_ACCOUNT_BALANCE_IN_PULA) {
+							R8_ACCOUNT_BALANCE_IN_PULA = r8_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR8_CURRENCY_OF_ACCOUNT() {
+							return R8_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR8_CURRENCY_OF_ACCOUNT(String r8_CURRENCY_OF_ACCOUNT) {
+							R8_CURRENCY_OF_ACCOUNT = r8_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR8_EXCHANGE_RATE() {
+							return R8_EXCHANGE_RATE;
+						}
+						public void setR8_EXCHANGE_RATE(BigDecimal r8_EXCHANGE_RATE) {
+							R8_EXCHANGE_RATE = r8_EXCHANGE_RATE;
+						}
+						public String getR9_RECORD_NUMBER() {
+							return R9_RECORD_NUMBER;
+						}
+						public void setR9_RECORD_NUMBER(String r9_RECORD_NUMBER) {
+							R9_RECORD_NUMBER = r9_RECORD_NUMBER;
+						}
+						public String getR9_TITLE() {
+							return R9_TITLE;
+						}
+						public void setR9_TITLE(String r9_TITLE) {
+							R9_TITLE = r9_TITLE;
+						}
+						public String getR9_FIRST_NAME() {
+							return R9_FIRST_NAME;
+						}
+						public void setR9_FIRST_NAME(String r9_FIRST_NAME) {
+							R9_FIRST_NAME = r9_FIRST_NAME;
+						}
+						public String getR9_MIDDLE_NAME() {
+							return R9_MIDDLE_NAME;
+						}
+						public void setR9_MIDDLE_NAME(String r9_MIDDLE_NAME) {
+							R9_MIDDLE_NAME = r9_MIDDLE_NAME;
+						}
+						public String getR9_SURNAME() {
+							return R9_SURNAME;
+						}
+						public void setR9_SURNAME(String r9_SURNAME) {
+							R9_SURNAME = r9_SURNAME;
+						}
+						public String getR9_PREVIOUS_NAME() {
+							return R9_PREVIOUS_NAME;
+						}
+						public void setR9_PREVIOUS_NAME(String r9_PREVIOUS_NAME) {
+							R9_PREVIOUS_NAME = r9_PREVIOUS_NAME;
+						}
+						public String getR9_GENDER() {
+							return R9_GENDER;
+						}
+						public void setR9_GENDER(String r9_GENDER) {
+							R9_GENDER = r9_GENDER;
+						}
+						public String getR9_IDENTIFICATION_TYPE() {
+							return R9_IDENTIFICATION_TYPE;
+						}
+						public void setR9_IDENTIFICATION_TYPE(String r9_IDENTIFICATION_TYPE) {
+							R9_IDENTIFICATION_TYPE = r9_IDENTIFICATION_TYPE;
+						}
+						public String getR9_PASSPORT_NUMBER() {
+							return R9_PASSPORT_NUMBER;
+						}
+						public void setR9_PASSPORT_NUMBER(String r9_PASSPORT_NUMBER) {
+							R9_PASSPORT_NUMBER = r9_PASSPORT_NUMBER;
+						}
+						public Date getR9_DATE_OF_BIRTH() {
+							return R9_DATE_OF_BIRTH;
+						}
+						public void setR9_DATE_OF_BIRTH(Date r9_DATE_OF_BIRTH) {
+							R9_DATE_OF_BIRTH = r9_DATE_OF_BIRTH;
+						}
+						public String getR9_HOME_ADDRESS() {
+							return R9_HOME_ADDRESS;
+						}
+						public void setR9_HOME_ADDRESS(String r9_HOME_ADDRESS) {
+							R9_HOME_ADDRESS = r9_HOME_ADDRESS;
+						}
+						public String getR9_POSTAL_ADDRESS() {
+							return R9_POSTAL_ADDRESS;
+						}
+						public void setR9_POSTAL_ADDRESS(String r9_POSTAL_ADDRESS) {
+							R9_POSTAL_ADDRESS = r9_POSTAL_ADDRESS;
+						}
+						public String getR9_RESIDENCE() {
+							return R9_RESIDENCE;
+						}
+						public void setR9_RESIDENCE(String r9_RESIDENCE) {
+							R9_RESIDENCE = r9_RESIDENCE;
+						}
+						public String getR9_EMAIL() {
+							return R9_EMAIL;
+						}
+						public void setR9_EMAIL(String r9_EMAIL) {
+							R9_EMAIL = r9_EMAIL;
+						}
+						public String getR9_LANDLINE() {
+							return R9_LANDLINE;
+						}
+						public void setR9_LANDLINE(String r9_LANDLINE) {
+							R9_LANDLINE = r9_LANDLINE;
+						}
+						public String getR9_MOBILE_PHONE_NUMBER() {
+							return R9_MOBILE_PHONE_NUMBER;
+						}
+						public void setR9_MOBILE_PHONE_NUMBER(String r9_MOBILE_PHONE_NUMBER) {
+							R9_MOBILE_PHONE_NUMBER = r9_MOBILE_PHONE_NUMBER;
+						}
+						public String getR9_MOBILE_MONEY_NUMBER() {
+							return R9_MOBILE_MONEY_NUMBER;
+						}
+						public void setR9_MOBILE_MONEY_NUMBER(String r9_MOBILE_MONEY_NUMBER) {
+							R9_MOBILE_MONEY_NUMBER = r9_MOBILE_MONEY_NUMBER;
+						}
+						public String getR9_PRODUCT_TYPE() {
+							return R9_PRODUCT_TYPE;
+						}
+						public void setR9_PRODUCT_TYPE(String r9_PRODUCT_TYPE) {
+							R9_PRODUCT_TYPE = r9_PRODUCT_TYPE;
+						}
+						public String getR9_ACCOUNT_BY_OWNERSHIP() {
+							return R9_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR9_ACCOUNT_BY_OWNERSHIP(String r9_ACCOUNT_BY_OWNERSHIP) {
+							R9_ACCOUNT_BY_OWNERSHIP = r9_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR9_ACCOUNT_NUMBER() {
+							return R9_ACCOUNT_NUMBER;
+						}
+						public void setR9_ACCOUNT_NUMBER(String r9_ACCOUNT_NUMBER) {
+							R9_ACCOUNT_NUMBER = r9_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR9_ACCOUNT_HOLDER_INDICATOR() {
+							return R9_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR9_ACCOUNT_HOLDER_INDICATOR(BigDecimal r9_ACCOUNT_HOLDER_INDICATOR) {
+							R9_ACCOUNT_HOLDER_INDICATOR = r9_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR9_STATUS_OF_ACCOUNT() {
+							return R9_STATUS_OF_ACCOUNT;
+						}
+						public void setR9_STATUS_OF_ACCOUNT(String r9_STATUS_OF_ACCOUNT) {
+							R9_STATUS_OF_ACCOUNT = r9_STATUS_OF_ACCOUNT;
+						}
+						public String getR9_NOT_FIT_FOR_STP() {
+							return R9_NOT_FIT_FOR_STP;
+						}
+						public void setR9_NOT_FIT_FOR_STP(String r9_NOT_FIT_FOR_STP) {
+							R9_NOT_FIT_FOR_STP = r9_NOT_FIT_FOR_STP;
+						}
+						public String getR9_BRANCH_CODE_AND_NAME() {
+							return R9_BRANCH_CODE_AND_NAME;
+						}
+						public void setR9_BRANCH_CODE_AND_NAME(String r9_BRANCH_CODE_AND_NAME) {
+							R9_BRANCH_CODE_AND_NAME = r9_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR9_ACCOUNT_BALANCE_IN_PULA() {
+							return R9_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR9_ACCOUNT_BALANCE_IN_PULA(BigDecimal r9_ACCOUNT_BALANCE_IN_PULA) {
+							R9_ACCOUNT_BALANCE_IN_PULA = r9_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR9_CURRENCY_OF_ACCOUNT() {
+							return R9_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR9_CURRENCY_OF_ACCOUNT(String r9_CURRENCY_OF_ACCOUNT) {
+							R9_CURRENCY_OF_ACCOUNT = r9_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR9_EXCHANGE_RATE() {
+							return R9_EXCHANGE_RATE;
+						}
+						public void setR9_EXCHANGE_RATE(BigDecimal r9_EXCHANGE_RATE) {
+							R9_EXCHANGE_RATE = r9_EXCHANGE_RATE;
+						}
+						public String getR10_RECORD_NUMBER() {
+							return R10_RECORD_NUMBER;
+						}
+						public void setR10_RECORD_NUMBER(String r10_RECORD_NUMBER) {
+							R10_RECORD_NUMBER = r10_RECORD_NUMBER;
+						}
+						public String getR10_TITLE() {
+							return R10_TITLE;
+						}
+						public void setR10_TITLE(String r10_TITLE) {
+							R10_TITLE = r10_TITLE;
+						}
+						public String getR10_FIRST_NAME() {
+							return R10_FIRST_NAME;
+						}
+						public void setR10_FIRST_NAME(String r10_FIRST_NAME) {
+							R10_FIRST_NAME = r10_FIRST_NAME;
+						}
+						public String getR10_MIDDLE_NAME() {
+							return R10_MIDDLE_NAME;
+						}
+						public void setR10_MIDDLE_NAME(String r10_MIDDLE_NAME) {
+							R10_MIDDLE_NAME = r10_MIDDLE_NAME;
+						}
+						public String getR10_SURNAME() {
+							return R10_SURNAME;
+						}
+						public void setR10_SURNAME(String r10_SURNAME) {
+							R10_SURNAME = r10_SURNAME;
+						}
+						public String getR10_PREVIOUS_NAME() {
+							return R10_PREVIOUS_NAME;
+						}
+						public void setR10_PREVIOUS_NAME(String r10_PREVIOUS_NAME) {
+							R10_PREVIOUS_NAME = r10_PREVIOUS_NAME;
+						}
+						public String getR10_GENDER() {
+							return R10_GENDER;
+						}
+						public void setR10_GENDER(String r10_GENDER) {
+							R10_GENDER = r10_GENDER;
+						}
+						public String getR10_IDENTIFICATION_TYPE() {
+							return R10_IDENTIFICATION_TYPE;
+						}
+						public void setR10_IDENTIFICATION_TYPE(String r10_IDENTIFICATION_TYPE) {
+							R10_IDENTIFICATION_TYPE = r10_IDENTIFICATION_TYPE;
+						}
+						public String getR10_PASSPORT_NUMBER() {
+							return R10_PASSPORT_NUMBER;
+						}
+						public void setR10_PASSPORT_NUMBER(String r10_PASSPORT_NUMBER) {
+							R10_PASSPORT_NUMBER = r10_PASSPORT_NUMBER;
+						}
+						public Date getR10_DATE_OF_BIRTH() {
+							return R10_DATE_OF_BIRTH;
+						}
+						public void setR10_DATE_OF_BIRTH(Date r10_DATE_OF_BIRTH) {
+							R10_DATE_OF_BIRTH = r10_DATE_OF_BIRTH;
+						}
+						public String getR10_HOME_ADDRESS() {
+							return R10_HOME_ADDRESS;
+						}
+						public void setR10_HOME_ADDRESS(String r10_HOME_ADDRESS) {
+							R10_HOME_ADDRESS = r10_HOME_ADDRESS;
+						}
+						public String getR10_POSTAL_ADDRESS() {
+							return R10_POSTAL_ADDRESS;
+						}
+						public void setR10_POSTAL_ADDRESS(String r10_POSTAL_ADDRESS) {
+							R10_POSTAL_ADDRESS = r10_POSTAL_ADDRESS;
+						}
+						public String getR10_RESIDENCE() {
+							return R10_RESIDENCE;
+						}
+						public void setR10_RESIDENCE(String r10_RESIDENCE) {
+							R10_RESIDENCE = r10_RESIDENCE;
+						}
+						public String getR10_EMAIL() {
+							return R10_EMAIL;
+						}
+						public void setR10_EMAIL(String r10_EMAIL) {
+							R10_EMAIL = r10_EMAIL;
+						}
+						public String getR10_LANDLINE() {
+							return R10_LANDLINE;
+						}
+						public void setR10_LANDLINE(String r10_LANDLINE) {
+							R10_LANDLINE = r10_LANDLINE;
+						}
+						public String getR10_MOBILE_PHONE_NUMBER() {
+							return R10_MOBILE_PHONE_NUMBER;
+						}
+						public void setR10_MOBILE_PHONE_NUMBER(String r10_MOBILE_PHONE_NUMBER) {
+							R10_MOBILE_PHONE_NUMBER = r10_MOBILE_PHONE_NUMBER;
+						}
+						public String getR10_MOBILE_MONEY_NUMBER() {
+							return R10_MOBILE_MONEY_NUMBER;
+						}
+						public void setR10_MOBILE_MONEY_NUMBER(String r10_MOBILE_MONEY_NUMBER) {
+							R10_MOBILE_MONEY_NUMBER = r10_MOBILE_MONEY_NUMBER;
+						}
+						public String getR10_PRODUCT_TYPE() {
+							return R10_PRODUCT_TYPE;
+						}
+						public void setR10_PRODUCT_TYPE(String r10_PRODUCT_TYPE) {
+							R10_PRODUCT_TYPE = r10_PRODUCT_TYPE;
+						}
+						public String getR10_ACCOUNT_BY_OWNERSHIP() {
+							return R10_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR10_ACCOUNT_BY_OWNERSHIP(String r10_ACCOUNT_BY_OWNERSHIP) {
+							R10_ACCOUNT_BY_OWNERSHIP = r10_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR10_ACCOUNT_NUMBER() {
+							return R10_ACCOUNT_NUMBER;
+						}
+						public void setR10_ACCOUNT_NUMBER(String r10_ACCOUNT_NUMBER) {
+							R10_ACCOUNT_NUMBER = r10_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR10_ACCOUNT_HOLDER_INDICATOR() {
+							return R10_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR10_ACCOUNT_HOLDER_INDICATOR(BigDecimal r10_ACCOUNT_HOLDER_INDICATOR) {
+							R10_ACCOUNT_HOLDER_INDICATOR = r10_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR10_STATUS_OF_ACCOUNT() {
+							return R10_STATUS_OF_ACCOUNT;
+						}
+						public void setR10_STATUS_OF_ACCOUNT(String r10_STATUS_OF_ACCOUNT) {
+							R10_STATUS_OF_ACCOUNT = r10_STATUS_OF_ACCOUNT;
+						}
+						public String getR10_NOT_FIT_FOR_STP() {
+							return R10_NOT_FIT_FOR_STP;
+						}
+						public void setR10_NOT_FIT_FOR_STP(String r10_NOT_FIT_FOR_STP) {
+							R10_NOT_FIT_FOR_STP = r10_NOT_FIT_FOR_STP;
+						}
+						public String getR10_BRANCH_CODE_AND_NAME() {
+							return R10_BRANCH_CODE_AND_NAME;
+						}
+						public void setR10_BRANCH_CODE_AND_NAME(String r10_BRANCH_CODE_AND_NAME) {
+							R10_BRANCH_CODE_AND_NAME = r10_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR10_ACCOUNT_BALANCE_IN_PULA() {
+							return R10_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR10_ACCOUNT_BALANCE_IN_PULA(BigDecimal r10_ACCOUNT_BALANCE_IN_PULA) {
+							R10_ACCOUNT_BALANCE_IN_PULA = r10_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR10_CURRENCY_OF_ACCOUNT() {
+							return R10_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR10_CURRENCY_OF_ACCOUNT(String r10_CURRENCY_OF_ACCOUNT) {
+							R10_CURRENCY_OF_ACCOUNT = r10_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR10_EXCHANGE_RATE() {
+							return R10_EXCHANGE_RATE;
+						}
+						public void setR10_EXCHANGE_RATE(BigDecimal r10_EXCHANGE_RATE) {
+							R10_EXCHANGE_RATE = r10_EXCHANGE_RATE;
+						}
+						public String getR11_RECORD_NUMBER() {
+							return R11_RECORD_NUMBER;
+						}
+						public void setR11_RECORD_NUMBER(String r11_RECORD_NUMBER) {
+							R11_RECORD_NUMBER = r11_RECORD_NUMBER;
+						}
+						public String getR11_TITLE() {
+							return R11_TITLE;
+						}
+						public void setR11_TITLE(String r11_TITLE) {
+							R11_TITLE = r11_TITLE;
+						}
+						public String getR11_FIRST_NAME() {
+							return R11_FIRST_NAME;
+						}
+						public void setR11_FIRST_NAME(String r11_FIRST_NAME) {
+							R11_FIRST_NAME = r11_FIRST_NAME;
+						}
+						public String getR11_MIDDLE_NAME() {
+							return R11_MIDDLE_NAME;
+						}
+						public void setR11_MIDDLE_NAME(String r11_MIDDLE_NAME) {
+							R11_MIDDLE_NAME = r11_MIDDLE_NAME;
+						}
+						public String getR11_SURNAME() {
+							return R11_SURNAME;
+						}
+						public void setR11_SURNAME(String r11_SURNAME) {
+							R11_SURNAME = r11_SURNAME;
+						}
+						public String getR11_PREVIOUS_NAME() {
+							return R11_PREVIOUS_NAME;
+						}
+						public void setR11_PREVIOUS_NAME(String r11_PREVIOUS_NAME) {
+							R11_PREVIOUS_NAME = r11_PREVIOUS_NAME;
+						}
+						public String getR11_GENDER() {
+							return R11_GENDER;
+						}
+						public void setR11_GENDER(String r11_GENDER) {
+							R11_GENDER = r11_GENDER;
+						}
+						public String getR11_IDENTIFICATION_TYPE() {
+							return R11_IDENTIFICATION_TYPE;
+						}
+						public void setR11_IDENTIFICATION_TYPE(String r11_IDENTIFICATION_TYPE) {
+							R11_IDENTIFICATION_TYPE = r11_IDENTIFICATION_TYPE;
+						}
+						public String getR11_PASSPORT_NUMBER() {
+							return R11_PASSPORT_NUMBER;
+						}
+						public void setR11_PASSPORT_NUMBER(String r11_PASSPORT_NUMBER) {
+							R11_PASSPORT_NUMBER = r11_PASSPORT_NUMBER;
+						}
+						public Date getR11_DATE_OF_BIRTH() {
+							return R11_DATE_OF_BIRTH;
+						}
+						public void setR11_DATE_OF_BIRTH(Date r11_DATE_OF_BIRTH) {
+							R11_DATE_OF_BIRTH = r11_DATE_OF_BIRTH;
+						}
+						public String getR11_HOME_ADDRESS() {
+							return R11_HOME_ADDRESS;
+						}
+						public void setR11_HOME_ADDRESS(String r11_HOME_ADDRESS) {
+							R11_HOME_ADDRESS = r11_HOME_ADDRESS;
+						}
+						public String getR11_POSTAL_ADDRESS() {
+							return R11_POSTAL_ADDRESS;
+						}
+						public void setR11_POSTAL_ADDRESS(String r11_POSTAL_ADDRESS) {
+							R11_POSTAL_ADDRESS = r11_POSTAL_ADDRESS;
+						}
+						public String getR11_RESIDENCE() {
+							return R11_RESIDENCE;
+						}
+						public void setR11_RESIDENCE(String r11_RESIDENCE) {
+							R11_RESIDENCE = r11_RESIDENCE;
+						}
+						public String getR11_EMAIL() {
+							return R11_EMAIL;
+						}
+						public void setR11_EMAIL(String r11_EMAIL) {
+							R11_EMAIL = r11_EMAIL;
+						}
+						public String getR11_LANDLINE() {
+							return R11_LANDLINE;
+						}
+						public void setR11_LANDLINE(String r11_LANDLINE) {
+							R11_LANDLINE = r11_LANDLINE;
+						}
+						public String getR11_MOBILE_PHONE_NUMBER() {
+							return R11_MOBILE_PHONE_NUMBER;
+						}
+						public void setR11_MOBILE_PHONE_NUMBER(String r11_MOBILE_PHONE_NUMBER) {
+							R11_MOBILE_PHONE_NUMBER = r11_MOBILE_PHONE_NUMBER;
+						}
+						public String getR11_MOBILE_MONEY_NUMBER() {
+							return R11_MOBILE_MONEY_NUMBER;
+						}
+						public void setR11_MOBILE_MONEY_NUMBER(String r11_MOBILE_MONEY_NUMBER) {
+							R11_MOBILE_MONEY_NUMBER = r11_MOBILE_MONEY_NUMBER;
+						}
+						public String getR11_PRODUCT_TYPE() {
+							return R11_PRODUCT_TYPE;
+						}
+						public void setR11_PRODUCT_TYPE(String r11_PRODUCT_TYPE) {
+							R11_PRODUCT_TYPE = r11_PRODUCT_TYPE;
+						}
+						public String getR11_ACCOUNT_BY_OWNERSHIP() {
+							return R11_ACCOUNT_BY_OWNERSHIP;
+						}
+						public void setR11_ACCOUNT_BY_OWNERSHIP(String r11_ACCOUNT_BY_OWNERSHIP) {
+							R11_ACCOUNT_BY_OWNERSHIP = r11_ACCOUNT_BY_OWNERSHIP;
+						}
+						public String getR11_ACCOUNT_NUMBER() {
+							return R11_ACCOUNT_NUMBER;
+						}
+						public void setR11_ACCOUNT_NUMBER(String r11_ACCOUNT_NUMBER) {
+							R11_ACCOUNT_NUMBER = r11_ACCOUNT_NUMBER;
+						}
+						public BigDecimal getR11_ACCOUNT_HOLDER_INDICATOR() {
+							return R11_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public void setR11_ACCOUNT_HOLDER_INDICATOR(BigDecimal r11_ACCOUNT_HOLDER_INDICATOR) {
+							R11_ACCOUNT_HOLDER_INDICATOR = r11_ACCOUNT_HOLDER_INDICATOR;
+						}
+						public String getR11_STATUS_OF_ACCOUNT() {
+							return R11_STATUS_OF_ACCOUNT;
+						}
+						public void setR11_STATUS_OF_ACCOUNT(String r11_STATUS_OF_ACCOUNT) {
+							R11_STATUS_OF_ACCOUNT = r11_STATUS_OF_ACCOUNT;
+						}
+						public String getR11_NOT_FIT_FOR_STP() {
+							return R11_NOT_FIT_FOR_STP;
+						}
+						public void setR11_NOT_FIT_FOR_STP(String r11_NOT_FIT_FOR_STP) {
+							R11_NOT_FIT_FOR_STP = r11_NOT_FIT_FOR_STP;
+						}
+						public String getR11_BRANCH_CODE_AND_NAME() {
+							return R11_BRANCH_CODE_AND_NAME;
+						}
+						public void setR11_BRANCH_CODE_AND_NAME(String r11_BRANCH_CODE_AND_NAME) {
+							R11_BRANCH_CODE_AND_NAME = r11_BRANCH_CODE_AND_NAME;
+						}
+						public BigDecimal getR11_ACCOUNT_BALANCE_IN_PULA() {
+							return R11_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public void setR11_ACCOUNT_BALANCE_IN_PULA(BigDecimal r11_ACCOUNT_BALANCE_IN_PULA) {
+							R11_ACCOUNT_BALANCE_IN_PULA = r11_ACCOUNT_BALANCE_IN_PULA;
+						}
+						public String getR11_CURRENCY_OF_ACCOUNT() {
+							return R11_CURRENCY_OF_ACCOUNT;
+						}
+						public void setR11_CURRENCY_OF_ACCOUNT(String r11_CURRENCY_OF_ACCOUNT) {
+							R11_CURRENCY_OF_ACCOUNT = r11_CURRENCY_OF_ACCOUNT;
+						}
+						public BigDecimal getR11_EXCHANGE_RATE() {
+							return R11_EXCHANGE_RATE;
+						}
+						public void setR11_EXCHANGE_RATE(BigDecimal r11_EXCHANGE_RATE) {
+							R11_EXCHANGE_RATE = r11_EXCHANGE_RATE;
+						}
+						
+						public Date getREPORT_DATE() {
+							return REPORT_DATE;
+						}
+
+						public void setREPORT_DATE(Date REPORT_DATE) {
+							this.REPORT_DATE = REPORT_DATE;
+						}
+
+						public BigDecimal getREPORT_VERSION() {
+							return REPORT_VERSION;
+						}
+
+						public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
+							this.REPORT_VERSION = REPORT_VERSION;
+						}
+						
+						public Date getREPORT_RESUBDATE() {
+							return REPORT_RESUBDATE;
+						}
+
+						public void setREPORT_RESUBDATE(Date REPORT_RESUBDATE) {
+							this.REPORT_RESUBDATE = REPORT_RESUBDATE;
+						}
+
+						public String getREPORT_FREQUENCY() {
+							return REPORT_FREQUENCY;
+						}
+
+						public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+							REPORT_FREQUENCY = rEPORT_FREQUENCY;
+						}
+
+						public String getREPORT_CODE() {
+							return REPORT_CODE;
+						}
+
+						public void setREPORT_CODE(String rEPORT_CODE) {
+							REPORT_CODE = rEPORT_CODE;
+						}
+
+						public String getREPORT_DESC() {
+							return REPORT_DESC;
+						}
+
+						public void setREPORT_DESC(String rEPORT_DESC) {
+							REPORT_DESC = rEPORT_DESC;
+						}
+
+						public String getENTITY_FLG() {
+							return ENTITY_FLG;
+						}
+
+						public void setENTITY_FLG(String eNTITY_FLG) {
+							ENTITY_FLG = eNTITY_FLG;
+						}
+
+						public String getMODIFY_FLG() {
+							return MODIFY_FLG;
+						}
+
+						public void setMODIFY_FLG(String mODIFY_FLG) {
+							MODIFY_FLG = mODIFY_FLG;
+						}
+
+						public String getDEL_FLG() {
+							return DEL_FLG;
+						}
+
+						public void setDEL_FLG(String dEL_FLG) {
+							DEL_FLG = dEL_FLG;
+						}
+
+					}
+					
+					
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getBDISB1View(String reportId, String fromdate, String todate, String currency, String dtltype,
+	public ModelAndView getBRRS_BDISB1View(String reportId, String fromdate, String todate, String currency, String dtltype,
 			Pageable pageable, String type, BigDecimal version) {
+
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
 
@@ -117,29 +10507,78 @@ public class BRRS_BDISB1_ReportService {
 		int startItem = currentPage * pageSize;
 
 		try {
-			Date d1 = dateformat.parse(todate);
+			Date dt = dateformat.parse(todate);
+
+			System.out.println("======= VIEW DEBUG =======");
+			System.out.println("TYPE      : " + type);
+			System.out.println("DTLTYPE   : " + dtltype);
+			System.out.println("DATE      : " + dt);
+			System.out.println("VERSION   : " + version);
+			System.out.println("==========================");
+
+			// ===========================================================
+			// SUMMARY SECTION
+			// ===========================================================
 
 			// ---------- CASE 1: ARCHIVAL ----------
 			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
-				List<BDISB1_Archival_Summary_Entity> T1Master = BDISB1_Archival_Summary_Repo
-						.getdatabydateListarchival(d1, version);
 
+				List<BDISB1_Archival_Summary_Entity> T1Master = getdatabydateListarchival1(dt, version);
+				
 				mv.addObject("reportsummary", T1Master);
-			}
+				mv.addObject("displaymode", "summary");
 
+			}
 			// ---------- CASE 2: RESUB ----------
 			else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-				List<BDISB1_Archival_Summary_Entity> T1Master = BDISB1_Archival_Summary_Repo
-						.getdatabydateListarchival(d1, version);
 
+				List<BDISB1_RESUB_Summary_Entity> T1Master = getdatabydateListresub1(dt, version);
+				
 				mv.addObject("reportsummary", T1Master);
+				mv.addObject("displaymode", "resubSummary");
 			}
 
 			// ---------- CASE 3: NORMAL ----------
 			else {
-				List<BDISB1_Summary_Entity> T1Master = BDISB1_Summary_Repo.getdatabydateList(dateformat.parse(todate));
-				System.out.println("T1Master Size " + T1Master.size());
+
+				List<BDISB1_Summary_Entity> T1Master = getDataByDate1(dt);
+				
+				System.out.println("T1Master Size: " + T1Master.size());
+
 				mv.addObject("reportsummary", T1Master);
+				mv.addObject("displaymode", "summary");
+			}
+
+			// ---------- CASE 4: DETAIL (NEW, ONLY ADDITION) ----------
+			if ("detail".equalsIgnoreCase(dtltype)) {
+
+				// DETAIL + ARCHIVAL
+				if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+
+					List<BDISB1_Archival_Detail_Entity> T1Master = getdatabydateListArchivalDetail1(dt, version);
+
+					mv.addObject("displaymode", "Details");
+					mv.addObject("reportsummary", T1Master);
+				}
+				// ---------- RESUB DETAIL ----------
+				else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+
+					List<BDISB1_RESUB_Detail_Entity> T1Master = getdatabydateListResubDetail1(dt, version);
+
+					System.out.println("Resub Detail Size : " + T1Master.size());
+
+					mv.addObject("displaymode", "resubDetail");
+					mv.addObject("reportsummary", T1Master);
+
+				}
+				// DETAIL + NORMAL
+				else {
+
+					List<BDISB1_Detail_Entity> T1Master = getDetaildatabydateList1(dt);
+
+					mv.addObject("displaymode", "Details");
+					mv.addObject("reportsummary", T1Master);
+				}
 			}
 
 		} catch (ParseException e) {
@@ -147,272 +10586,238 @@ public class BRRS_BDISB1_ReportService {
 		}
 
 		mv.setViewName("BRRS/BDISB1");
-		mv.addObject("displaymode", "summary");
+
 		System.out.println("View set to: " + mv.getViewName());
+
 		return mv;
 	}
+	
 
-	public ModelAndView getBDISB1currentDtl(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String Filter, String type, String version) {
+	
+	public void updateResubReport(
+	        BDISB1_RESUB_Summary_Entity updatedEntity1) {
 
-		int pageSize = pageable != null ? pageable.getPageSize() : 10;
-		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
-		int totalPages = 0;
+	    // ====================================================
+	    // 1️⃣ GET REPORT DATE
+	    // ====================================================
 
-		ModelAndView mv = new ModelAndView();
-		Session hs = sessionFactory.getCurrentSession();
+	    Date reportDate1 = updatedEntity1.getREPORT_DATE();
 
+	    if (reportDate1 == null ) {
+	        throw new RuntimeException("Report date cannot be null");
+	    }
+
+	    // ====================================================
+	    // 2️⃣ FETCH MAX VERSION
+	    // ====================================================
+
+	    BigDecimal maxVer1 = RESUBfindMaxVersion1(reportDate1);
+
+	    if (maxVer1 == null)
+	        maxVer1 = BigDecimal.ZERO;
+
+	   
+
+	    BigDecimal currentMax = maxVer1;
+	    BigDecimal newVersion = currentMax.add(BigDecimal.ONE);
+
+	    Date now = new Date();
+
+	    // ====================================================
+	    // 3️⃣ RESUB SUMMARY
+	    // ====================================================
+
+	    BDISB1_RESUB_Summary_Entity resubSummary1 = new BDISB1_RESUB_Summary_Entity();
+
+	    BeanUtils.copyProperties(updatedEntity1, resubSummary1);
+
+	    resubSummary1.setREPORT_DATE(reportDate1);
+	    resubSummary1.setREPORT_VERSION(newVersion);
+	    resubSummary1.setREPORT_RESUBDATE(now);
+
+	    // ====================================================
+	    // 4️⃣ RESUB DETAIL
+	    // ====================================================
+
+	    BDISB1_RESUB_Detail_Entity resubDetail1 = new BDISB1_RESUB_Detail_Entity();
+
+	    BeanUtils.copyProperties(updatedEntity1, resubDetail1);
+
+	    resubDetail1.setREPORT_DATE(reportDate1);
+	    resubDetail1.setREPORT_VERSION(newVersion);
+	    resubDetail1.setREPORT_RESUBDATE(now);
+
+	    // ====================================================
+	    // 5️⃣ ARCHIVAL SUMMARY
+	    // ====================================================
+
+	    BDISB1_Archival_Summary_Entity archSummary1 = new BDISB1_Archival_Summary_Entity();
+
+	    BeanUtils.copyProperties(updatedEntity1, archSummary1);
+
+	    archSummary1.setREPORT_DATE(reportDate1);
+	    archSummary1.setREPORT_VERSION(newVersion);
+	    archSummary1.setREPORT_RESUBDATE(now);
+
+
+	    // ====================================================
+	    // 6️⃣ ARCHIVAL DETAIL
+	    // ====================================================
+
+	    BDISB1_Archival_Detail_Entity archDetail1 = new BDISB1_Archival_Detail_Entity();
+
+	    BeanUtils.copyProperties(updatedEntity1, archDetail1);
+
+	    archDetail1.setREPORT_DATE(reportDate1);
+	    archDetail1.setREPORT_VERSION(newVersion);
+	    archDetail1.setREPORT_RESUBDATE(now);
+
+	   
+
+	    // ====================================================
+	    // 7️⃣ SAVE ALL
+	    // ====================================================
+
+	    sessionFactory.getCurrentSession().merge(resubSummary1);
+
+	    sessionFactory.getCurrentSession().merge(resubDetail1);
+
+	    sessionFactory.getCurrentSession().merge(archSummary1);
+
+	    sessionFactory.getCurrentSession().merge(archDetail1);
+	}
+
+	@Transactional
+	public void updateReport(BDISB1_Summary_Entity request1) {
+
+	    try {
+
+	        StringBuilder sql = new StringBuilder(
+	            "UPDATE BRRS_BDISB1_SUMMARYTABLE SET ");
+
+	        List<Object> params = new ArrayList<>();
+
+	        for (int i = 5; i <= 11; i++) {
+
+	            sql.append("R").append(i).append("_RECORD_NUMBER=?,")
+	               .append("R").append(i).append("_TITLE=?,")
+	               .append("R").append(i).append("_FIRST_NAME=?,")
+	               .append("R").append(i).append("_MIDDLE_NAME=?,")
+	               .append("R").append(i).append("_SURNAME=?,")
+	               .append("R").append(i).append("_PREVIOUS_NAME=?,")
+	               .append("R").append(i).append("_GENDER=?,")
+	               .append("R").append(i).append("_IDENTIFICATION_TYPE=?,")
+	               .append("R").append(i).append("_PASSPORT_NUMBER=?,")
+	               .append("R").append(i).append("_DATE_OF_BIRTH=?,")
+	               .append("R").append(i).append("_HOME_ADDRESS=?,")
+	               .append("R").append(i).append("_POSTAL_ADDRESS=?,")
+	               .append("R").append(i).append("_RESIDENCE=?,")
+	               .append("R").append(i).append("_EMAIL=?,")
+	               .append("R").append(i).append("_LANDLINE=?,")
+	               .append("R").append(i).append("_MOBILE_PHONE_NUMBER=?,")
+	               .append("R").append(i).append("_MOBILE_MONEY_NUMBER=?,")
+	               .append("R").append(i).append("_PRODUCT_TYPE=?,")
+	               .append("R").append(i).append("_ACCOUNT_BY_OWNERSHIP=?,")
+	               .append("R").append(i).append("_ACCOUNT_NUMBER=?,")
+	               .append("R").append(i).append("_ACCOUNT_HOLDER_INDICATOR=?,")
+	               .append("R").append(i).append("_STATUS_OF_ACCOUNT=?,")
+	               .append("R").append(i).append("_NOT_FIT_FOR_STP=?,")
+	               .append("R").append(i).append("_BRANCH_CODE_AND_NAME=?,")
+	               .append("R").append(i).append("_ACCOUNT_BALANCE_IN_PULA=?,")
+	               .append("R").append(i).append("_CURRENCY_OF_ACCOUNT=?,")
+	               .append("R").append(i).append("_EXCHANGE_RATE=?,");
+
+	            params.add(getValue(request1, "getR" + i + "_RECORD_NUMBER"));
+	            params.add(getValue(request1, "getR" + i + "_TITLE"));
+	            params.add(getValue(request1, "getR" + i + "_FIRST_NAME"));
+	            params.add(getValue(request1, "getR" + i + "_MIDDLE_NAME"));
+	            params.add(getValue(request1, "getR" + i + "_SURNAME"));
+	            params.add(getValue(request1, "getR" + i + "_PREVIOUS_NAME"));
+	            params.add(getValue(request1, "getR" + i + "_GENDER"));
+	            params.add(getValue(request1, "getR" + i + "_IDENTIFICATION_TYPE"));
+	            params.add(getValue(request1, "getR" + i + "_PASSPORT_NUMBER"));
+	            params.add(getValue(request1, "getR" + i + "_DATE_OF_BIRTH"));
+	            params.add(getValue(request1, "getR" + i + "_HOME_ADDRESS"));
+	            params.add(getValue(request1, "getR" + i + "_POSTAL_ADDRESS"));
+	            params.add(getValue(request1, "getR" + i + "_RESIDENCE"));
+	            params.add(getValue(request1, "getR" + i + "_EMAIL"));
+	            params.add(getValue(request1, "getR" + i + "_LANDLINE"));
+	            params.add(getValue(request1, "getR" + i + "_MOBILE_PHONE_NUMBER"));
+	            params.add(getValue(request1, "getR" + i + "_MOBILE_MONEY_NUMBER"));
+	            params.add(getValue(request1, "getR" + i + "_PRODUCT_TYPE"));
+	            params.add(getValue(request1, "getR" + i + "_ACCOUNT_BY_OWNERSHIP"));
+	            params.add(getValue(request1, "getR" + i + "_ACCOUNT_NUMBER"));
+	            params.add(getValue(request1, "getR" + i + "_ACCOUNT_HOLDER_INDICATOR"));
+	            params.add(getValue(request1, "getR" + i + "_STATUS_OF_ACCOUNT"));
+	            params.add(getValue(request1, "getR" + i + "_NOT_FIT_FOR_STP"));
+	            params.add(getValue(request1, "getR" + i + "_BRANCH_CODE_AND_NAME"));
+	            params.add(getValue(request1, "getR" + i + "_ACCOUNT_BALANCE_IN_PULA"));
+	            params.add(getValue(request1, "getR" + i + "_CURRENCY_OF_ACCOUNT"));
+	            params.add(getValue(request1, "getR" + i + "_EXCHANGE_RATE"));
+	        }
+
+	        sql.deleteCharAt(sql.length() - 1);
+
+	        sql.append(" WHERE REPORT_DATE=?");
+
+	        params.add(request1.getREPORT_DATE());
+
+	        int count = jdbcTemplate.update(sql.toString(), params.toArray());
+
+	        System.out.println("Rows Updated = " + count);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        throw new RuntimeException("Error while updating BRRS_BDISB1 Report", e);
+	    }
+	}
+
+	private Object getValue(Object obj, String methodName) {
+	    try {
+	        return obj.getClass().getMethod(methodName).invoke(obj);
+	    } catch (Exception e) {
+	        throw new RuntimeException(e);
+	    }
+	}
+	
+
+//////////////////////////////////////////RESUBMISSION///////////////////////////////////////////////////////////////////
+/// Report Date | Report Version | Domain
+/// RESUB VIEW
+
+	public List<Object[]> getBRRS_BDISB1Resub() {
+		List<Object[]> resubList = new ArrayList<>();
 		try {
-			Date parsedDate = null;
-			if (todate != null && !todate.isEmpty()) {
-				parsedDate = dateformat.parse(todate);
-			}
+			List<BDISB1_Archival_Summary_Entity> latestArchivalList = getdatabydateListWithVersion1();
 
-			String rowId = null;
-			String columnId = null;
-
-			// ✅ Split filter string into rowId & columnId
-			if (Filter != null && Filter.contains(",")) {
-				String[] parts = Filter.split(",");
-				if (parts.length >= 2) {
-					rowId = parts[0];
-					columnId = parts[1];
+			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+				for (BDISB1_Archival_Summary_Entity entity : latestArchivalList) {
+					resubList.add(new Object[] { entity.getREPORT_DATE(), entity.getREPORT_VERSION(),
+							entity.getREPORT_RESUBDATE() });
 				}
-			}
-			System.out.println(type);
-			if ("ARCHIVAL".equals(type) && version != null) {
-				System.out.println(type);
-				// 🔹 Archival branch
-				List<BDISB1_Archival_Detail_Entity> T1Dt1;
-				if (rowId != null && columnId != null) {
-					T1Dt1 = BDISB1_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
-				} else {
-					T1Dt1 = BDISB1_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
-				}
-
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
-
+				System.out.println("Fetched " + resubList.size() + " record(s)");
 			} else {
-				// 🔹 Current branch
-				List<BDISB1_Detail_Entity> T1Dt1;
-				if (rowId != null && columnId != null) {
-					T1Dt1 = BDISB1_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
-				} else {
-					T1Dt1 = BDISB1_Detail_Repo.getdatabydateList(parsedDate);
-					System.out.println("bdisb2 size is : " + T1Dt1.size());
-					totalPages = BDISB1_Detail_Repo.getdatacount(parsedDate);
-					mv.addObject("pagination", "YES");
-				}
-
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+				System.out.println("No archival data found.");
 			}
 
-		} catch (ParseException e) {
-			e.printStackTrace();
-			mv.addObject("errorMessage", "Invalid date format: " + todate);
 		} catch (Exception e) {
+			System.err.println("Error fetching BRRS_BDISB1 Resub data: " + e.getMessage());
 			e.printStackTrace();
-			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
 		}
-
-		// ✅ Common attributes
-		mv.setViewName("BRRS/BDISB1");
-		mv.addObject("displaymode", "Details");
-		mv.addObject("currentPage", currentPage);
-		System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
-		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
-		mv.addObject("reportsflag", "reportsflag");
-		mv.addObject("menu", reportId);
-
-		return mv;
+		return resubList;
 	}
 
-	public void updateDetailFromForm(Date reportDate, Map<String, String> params) {
+	public List<Object[]> getBRRS_BDISB1Archival() {
 
-		System.out.println("Updating BDISB1 detail table");
+		String sql = "SELECT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE " + "FROM BRRS_BDISB1_ARCHIVALTABLE_SUMMARY "
+				+ "ORDER BY REPORT_VERSION";
 
-		List<BDISB1_Detail_Entity> allModifiedRows = new ArrayList<>();
-
-		for (Map.Entry<String, String> entry : params.entrySet()) {
-
-			String key = entry.getKey();
-			String value = entry.getValue();
-
-			// ✅ Allow only valid BDISB1 keys
-			if (!key.matches("R\\d+_C\\d+_(" + "RECORD_NUMBER|" + "TITLE|" + "FIRST_NAME|" + "MIDDLE_NAME|" + "SURNAME|"
-					+ "PREVIOUS_NAME|" + "GENDER|" + "IDENTIFICATION_TYPE|" + "PASSPORT_NUMBER|" + "DATE_OF_BIRTH|"
-					+ "HOME_ADDRESS|" + "POSTAL_ADDRESS|" + "RESIDENCE|" + "EMAIL|" + "LANDLINE|"
-					+ "MOBILE_PHONE_NUMBER|" + "MOBILE_MONEY_NUMBER|" + "PRODUCT_TYPE|" + "ACCOUNT_BY_OWNERSHIP|"
-					+ "ACCOUNT_NUMBER|" + "ACCOUNT_HOLDER_INDICATOR|" + "STATUS_OF_ACCOUNT|" + "NOT_FIT_FOR_STP|"
-					+ "BRANCH_CODE_AND_NAME|" + "ACCOUNT_BALANCE_IN_PULA|" + "CURRENCY_OF_ACCOUNT|" + "EXCHANGE_RATE"
-					+ ")")) {
-				continue;
-			}
-
-			// 🔹 Parse key parts
-			String[] parts = key.split("_");
-			String reportLable = parts[0]; // R5, R6...
-			String addlCriteria = parts[1]; // C1, C2...
-			String columnName = key.replaceFirst("R\\d+_C\\d+_", "");
-
-			// 🔹 Fetch rows
-			List<BDISB1_Detail_Entity> rows = BDISB1_Detail_Repo
-					.findByReportDateAndReportLableAndReportAddlCriteria1(reportDate, reportLable, addlCriteria);
-
-			for (BDISB1_Detail_Entity row : rows) {
-
-				/*
-				 * ======================= NUMERIC COLUMNS =======================
-				 */
-
-				if ("ACCOUNT_HOLDER_INDICATOR".equals(columnName)) {
-
-					BigDecimal num = (value == null || value.trim().isEmpty()) ? BigDecimal.ZERO
-							: new BigDecimal(value.replace(",", ""));
-					row.setACCOUNT_HOLDER_INDICATOR(num);
-
-				} else if ("ACCOUNT_BALANCE_IN_PULA".equals(columnName)) {
-
-					BigDecimal num = (value == null || value.trim().isEmpty()) ? BigDecimal.ZERO
-							: new BigDecimal(value.replace(",", ""));
-					row.setACCOUNT_BALANCE_IN_PULA(num);
-
-				} else if ("EXCHANGE_RATE".equals(columnName)) {
-
-					BigDecimal num = (value == null || value.trim().isEmpty()) ? BigDecimal.ZERO
-							: new BigDecimal(value.replace(",", ""));
-					row.setEXCHANGE_RATE(num);
-				}
-
-				/*
-				 * ======================= DATE COLUMN =======================
-				 */
-				else if ("DATE_OF_BIRTH".equals(columnName)) {
-
-					if (value == null || value.trim().isEmpty()) {
-						row.setDATE_OF_BIRTH(null);
-					} else {
-						try {
-							LocalDate localDate = LocalDate.parse(value);
-							row.setDATE_OF_BIRTH(java.sql.Date.valueOf(localDate));
-						} catch (Exception e) {
-							row.setDATE_OF_BIRTH(null); // ❗ do not crash entire submission
-						}
-					}
-				}
-
-				/*
-				 * ======================= STRING COLUMNS =======================
-				 */
-				else if ("RECORD_NUMBER".equals(columnName)) {
-					row.setRECORD_NUMBER(value);
-
-				} else if ("TITLE".equals(columnName)) {
-					row.setTITLE(value);
-
-				} else if ("FIRST_NAME".equals(columnName)) {
-					row.setFIRST_NAME(value);
-
-				} else if ("MIDDLE_NAME".equals(columnName)) {
-					row.setMIDDLE_NAME(value);
-
-				} else if ("SURNAME".equals(columnName)) {
-					row.setSURNAME(value);
-
-				} else if ("PREVIOUS_NAME".equals(columnName)) {
-					row.setPREVIOUS_NAME(value);
-
-				} else if ("GENDER".equals(columnName)) {
-					row.setGENDER(value);
-
-				} else if ("IDENTIFICATION_TYPE".equals(columnName)) {
-					row.setIDENTIFICATION_TYPE(value);
-
-				} else if ("PASSPORT_NUMBER".equals(columnName)) {
-					row.setPASSPORT_NUMBER(value);
-
-				} else if ("HOME_ADDRESS".equals(columnName)) {
-					row.setHOME_ADDRESS(value);
-
-				} else if ("POSTAL_ADDRESS".equals(columnName)) {
-					row.setPOSTAL_ADDRESS(value);
-
-				} else if ("RESIDENCE".equals(columnName)) {
-					row.setRESIDENCE(value);
-
-				} else if ("EMAIL".equals(columnName)) {
-					row.setEMAIL(value);
-
-				} else if ("LANDLINE".equals(columnName)) {
-					row.setLANDLINE(value);
-
-				} else if ("MOBILE_PHONE_NUMBER".equals(columnName)) {
-					row.setMOBILE_PHONE_NUMBER(value);
-
-				} else if ("MOBILE_MONEY_NUMBER".equals(columnName)) {
-					row.setMOBILE_MONEY_NUMBER(value);
-
-				} else if ("PRODUCT_TYPE".equals(columnName)) {
-					row.setPRODUCT_TYPE(value);
-
-				} else if ("ACCOUNT_BY_OWNERSHIP".equals(columnName)) {
-					row.setACCOUNT_BY_OWNERSHIP(value);
-
-				} else if ("ACCOUNT_NUMBER".equals(columnName)) {
-					row.setACCOUNT_NUMBER(value);
-
-				} else if ("STATUS_OF_ACCOUNT".equals(columnName)) {
-					row.setSTATUS_OF_ACCOUNT(value);
-
-				} else if ("NOT_FIT_FOR_STP".equals(columnName)) {
-					row.setNOT_FIT_FOR_STP(value);
-
-				} else if ("BRANCH_CODE_AND_NAME".equals(columnName)) {
-					row.setBRANCH_CODE_AND_NAME(value);
-
-				} else if ("CURRENCY_OF_ACCOUNT".equals(columnName)) {
-					row.setCURRENCY_OF_ACCOUNT(value);
-				}
-
-				// 🔹 Mark modified
-				row.setModifyFlg("Y");
-			}
-
-			allModifiedRows.addAll(rows);
-		}
-
-		if (!allModifiedRows.isEmpty()) {
-			BDISB1_Detail_Repo.saveAll(allModifiedRows);
-		}
-
-		callSummaryProcedure(reportDate);
+		return jdbcTemplate.query(sql, (rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"),
+				rs.getBigDecimal("REPORT_VERSION"), rs.getDate("REPORT_RESUBDATE") });
 	}
 
-	private void callSummaryProcedure(Date reportDate) {
-
-		String sql = "{ call BRRS_BDISB1_SUMMARY_PROCEDURE(?) }";
-
-		jdbcTemplate.update(connection -> {
-			CallableStatement cs = connection.prepareCall(sql);
-
-			// Force exact format expected by procedure
-			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-			sdf.setLenient(false);
-
-			String formattedDate = sdf.format(reportDate);
-
-			cs.setString(1, formattedDate); // 🔥 THIS IS MANDATORY
-			return cs;
-		});
-
-		System.out.println(
-				"✅ Summary procedure executed for date: " + new SimpleDateFormat("dd-MM-yyyy").format(reportDate));
-	}
-
+	//normal excel
+	
 	public byte[] getBDISB1Excel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
@@ -430,15 +10835,14 @@ public class BRRS_BDISB1_ReportService {
 		else if ("RESUB".equalsIgnoreCase(type) && version != null ) {
 			logger.info("Service: Generating RESUB report for version {}", version);
 
-			List<BDISB1_Archival_Summary_Entity> T1Master = BDISB1_Archival_Summary_Repo
-					.getdatabydateListarchival(reportDate, version);
+			List<BDISB1_Archival_Summary_Entity> T1Master =getdatabydateListarchival1(dateformat.parse(todate), version);
 
 // Generate Excel for RESUB
 			return BRRSBDISB1ResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
 
 // Default (LIVE) case
-		List<BDISB1_Summary_Entity> dataList1 = BDISB1_Summary_Repo.getdatabydateList(reportDate);
+		List<BDISB1_Summary_Entity> dataList1 = getDataByDate1(reportDate);
 
 		String templateDir = env.getProperty("output.exportpathtemp");
 		String templateFileName = filename;
@@ -2435,8 +12839,7 @@ public class BRRS_BDISB1_ReportService {
 		logger.info("Service: Starting Excel generation process in memory.");
 		if ("ARCHIVAL".equals(type) && version != null) {
 		}
-		List<BDISB1_Archival_Summary_Entity> dataList1 = BDISB1_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<BDISB1_Archival_Summary_Entity> dataList1 = getdatabydateListarchival1(dateformat.parse(todate), version);
 
 		if (dataList1.isEmpty()) {
 			logger.warn("Service: No data found for M_BDISB1 report. Returning empty result.");
@@ -4430,752 +14833,9 @@ public class BRRS_BDISB1_ReportService {
 		}
 	}
 
-//////////////////////////////////////////RESUBMISSION///////////////////////////////////////////////////////////////////	
-/// Report Date | Report Version | Domain
-/// RESUB VIEW
-	public List<Object[]> getBDISB1Resub() {
-		List<Object[]> resubList = new ArrayList<>();
-		try {
-			List<BDISB1_Archival_Summary_Entity> latestArchivalList = BDISB1_Archival_Summary_Repo
-					.getdatabydateListWithVersionAll();
 
-			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
-				for (BDISB1_Archival_Summary_Entity entity : latestArchivalList) {
-					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion() };
-					resubList.add(row);
-				}
-				System.out.println("Fetched " + resubList.size() + " record(s)");
-			} else {
-				System.out.println("No archival data found.");
-			}
-		} catch (Exception e) {
-			System.err.println("Error fetching BDISB1 Resub data: " + e.getMessage());
-			e.printStackTrace();
-		}
-		return resubList;
-	}
 
-// Archival View
-	public List<Object[]> getBDISB1Archival() {
-		List<Object[]> archivalList = new ArrayList<>();
 
-		try {
-			List<BDISB1_Archival_Summary_Entity> repoData = BDISB1_Archival_Summary_Repo
-					.getdatabydateListWithVersionAll();
-
-			if (repoData != null && !repoData.isEmpty()) {
-				for (BDISB1_Archival_Summary_Entity entity : repoData) {
-					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion() };
-					archivalList.add(row);
-				}
-
-				System.out.println("Fetched " + archivalList.size() + " archival records");
-				BDISB1_Archival_Summary_Entity first = repoData.get(0);
-				System.out.println("Latest archival version: " + first.getReportVersion());
-			} else {
-				System.out.println("No archival data found.");
-			}
-
-		} catch (Exception e) {
-			System.err.println("Error fetching BDISB1 Archival data: " + e.getMessage());
-			e.printStackTrace();
-		}
-
-		return archivalList;
-	}
-
-	@Transactional
-	public void updateReportReSub(BDISB1_Summary_Entity updatedEntity) {
-
-		System.out.println("Came to Resub Service");
-
-		Date reportDate = updatedEntity.getReportDate();
-		System.out.println("Report Date: " + reportDate);
-
-		try {
-
-			/*
-			 * ========================================================= 1️⃣ FETCH LATEST
-			 * ARCHIVAL VERSION =========================================================
-			 */
-			Optional<BDISB1_Archival_Summary_Entity> latestArchivalOpt = BDISB1_Archival_Summary_Repo
-					.getLatestArchivalVersionByDate(reportDate);
-
-			BigDecimal newVersion = BigDecimal.ONE;
-
-			if (latestArchivalOpt.isPresent()) {
-				BigDecimal latestVersion = latestArchivalOpt.get().getReportVersion();
-				newVersion = (latestVersion != null) ? latestVersion.add(BigDecimal.ONE) : BigDecimal.ONE;
-			}
-
-			boolean exists = BDISB1_Archival_Summary_Repo.findByReportDateAndReportVersion(reportDate, newVersion)
-					.isPresent();
-
-			if (exists) {
-				throw new RuntimeException("Version " + newVersion + " already exists for report date " + reportDate);
-			}
-
-			/*
-			 * ========================================================= 2️⃣ CREATE NEW
-			 * ARCHIVAL ENTITY (BASE COPY)
-			 * =========================================================
-			 */
-			BDISB1_Archival_Summary_Entity archivalEntity = new BDISB1_Archival_Summary_Entity();
-
-			if (latestArchivalOpt.isPresent()) {
-				BeanUtils.copyProperties(latestArchivalOpt.get(), archivalEntity);
-			}
-
-			archivalEntity.setReportDate(reportDate);
-			archivalEntity.setReportVersion(newVersion);
-			archivalEntity.setModify_flg("Y");
-
-			/*
-			 * ========================================================= 3️⃣ READ RAW
-			 * REQUEST PARAMETERS =========================================================
-			 */
-			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
-					.getRequest();
-
-			Map<String, String[]> parameterMap = request.getParameterMap();
-
-			for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
-
-				String key = entry.getKey(); // R5_C11_FIRST_NAME
-				String value = entry.getValue()[0];
-
-				// Ignore non-data params
-				if ("asondate".equalsIgnoreCase(key) || "type".equalsIgnoreCase(key)) {
-					continue;
-				}
-
-				// Normalize: R5_C11_FIRST_NAME → R5_FIRST_NAME
-				String normalizedKey = key.replaceFirst("_C\\d+_", "_");
-
-				/*
-				 * ===================================================== 4️⃣ APPLY VALUES
-				 * (EXPLICIT MAPPING) =====================================================
-				 */
-
-				// ======================= R5 =======================
-
-				if ("R5_RECORD_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR5_RECORD_NUMBER(value);
-
-				} else if ("R5_TITLE".equals(normalizedKey)) {
-					archivalEntity.setR5_TITLE(value);
-
-				} else if ("R5_FIRST_NAME".equals(normalizedKey)) {
-					archivalEntity.setR5_FIRST_NAME(value);
-
-				} else if ("R5_MIDDLE_NAME".equals(normalizedKey)) {
-					archivalEntity.setR5_MIDDLE_NAME(value);
-
-				} else if ("R5_SURNAME".equals(normalizedKey)) {
-					archivalEntity.setR5_SURNAME(value);
-
-				} else if ("R5_PREVIOUS_NAME".equals(normalizedKey)) {
-					archivalEntity.setR5_PREVIOUS_NAME(value);
-
-				} else if ("R5_GENDER".equals(normalizedKey)) {
-					archivalEntity.setR5_GENDER(value);
-
-				} else if ("R5_IDENTIFICATION_TYPE".equals(normalizedKey)) {
-					archivalEntity.setR5_IDENTIFICATION_TYPE(value);
-
-				} else if ("R5_PASSPORT_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR5_PASSPORT_NUMBER(value);
-
-				} else if ("R5_DATE_OF_BIRTH".equals(normalizedKey)) {
-					archivalEntity.setR5_DATE_OF_BIRTH(Date(value));
-
-				} else if ("R5_HOME_ADDRESS".equals(normalizedKey)) {
-					archivalEntity.setR5_HOME_ADDRESS(value);
-
-				} else if ("R5_POSTAL_ADDRESS".equals(normalizedKey)) {
-					archivalEntity.setR5_POSTAL_ADDRESS(value);
-
-				} else if ("R5_RESIDENCE".equals(normalizedKey)) {
-					archivalEntity.setR5_RESIDENCE(value);
-
-				} else if ("R5_EMAIL".equals(normalizedKey)) {
-					archivalEntity.setR5_EMAIL(value);
-
-				} else if ("R5_LANDLINE".equals(normalizedKey)) {
-					archivalEntity.setR5_LANDLINE(value);
-
-				} else if ("R5_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR5_MOBILE_PHONE_NUMBER(value);
-
-				} else if ("R5_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR5_MOBILE_MONEY_NUMBER(value);
-
-				} else if ("R5_PRODUCT_TYPE".equals(normalizedKey)) {
-					archivalEntity.setR5_PRODUCT_TYPE(value);
-
-				} else if ("R5_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
-					archivalEntity.setR5_ACCOUNT_BY_OWNERSHIP(value);
-
-				} else if ("R5_ACCOUNT_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR5_ACCOUNT_NUMBER(value);
-
-				} else if ("R5_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
-					archivalEntity.setR5_ACCOUNT_HOLDER_INDICATOR(parseBigDecimal(value));
-
-				} else if ("R5_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
-					archivalEntity.setR5_STATUS_OF_ACCOUNT(value);
-
-				} else if ("R5_NOT_FIT_FOR_STP".equals(normalizedKey)) {
-					archivalEntity.setR5_NOT_FIT_FOR_STP(value);
-
-				} else if ("R5_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
-					archivalEntity.setR5_BRANCH_CODE_AND_NAME(value);
-
-				} else if ("R5_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
-					archivalEntity.setR5_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
-
-				} else if ("R5_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
-					archivalEntity.setR5_CURRENCY_OF_ACCOUNT(value);
-
-				} else if ("R5_EXCHANGE_RATE".equals(normalizedKey)) {
-					archivalEntity.setR5_EXCHANGE_RATE(parseBigDecimal(value));
-				}
-
-				else if ("R6_RECORD_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR6_RECORD_NUMBER(value);
-
-				} else if ("R6_TITLE".equals(normalizedKey)) {
-					archivalEntity.setR6_TITLE(value);
-
-				} else if ("R6_FIRST_NAME".equals(normalizedKey)) {
-					archivalEntity.setR6_FIRST_NAME(value);
-
-				} else if ("R6_MIDDLE_NAME".equals(normalizedKey)) {
-					archivalEntity.setR6_MIDDLE_NAME(value);
-
-				} else if ("R6_SURNAME".equals(normalizedKey)) {
-					archivalEntity.setR6_SURNAME(value);
-
-				} else if ("R6_PREVIOUS_NAME".equals(normalizedKey)) {
-					archivalEntity.setR6_PREVIOUS_NAME(value);
-
-				} else if ("R6_GENDER".equals(normalizedKey)) {
-					archivalEntity.setR6_GENDER(value);
-
-				} else if ("R6_IDENTIFICATION_TYPE".equals(normalizedKey)) {
-					archivalEntity.setR6_IDENTIFICATION_TYPE(value);
-
-				} else if ("R6_PASSPORT_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR6_PASSPORT_NUMBER(value);
-
-				} else if ("R6_DATE_OF_BIRTH".equals(normalizedKey)) {
-					archivalEntity.setR6_DATE_OF_BIRTH(Date(value));
-
-				} else if ("R6_HOME_ADDRESS".equals(normalizedKey)) {
-					archivalEntity.setR6_HOME_ADDRESS(value);
-
-				} else if ("R6_POSTAL_ADDRESS".equals(normalizedKey)) {
-					archivalEntity.setR6_POSTAL_ADDRESS(value);
-
-				} else if ("R6_RESIDENCE".equals(normalizedKey)) {
-					archivalEntity.setR6_RESIDENCE(value);
-
-				} else if ("R6_EMAIL".equals(normalizedKey)) {
-					archivalEntity.setR6_EMAIL(value);
-
-				} else if ("R6_LANDLINE".equals(normalizedKey)) {
-					archivalEntity.setR6_LANDLINE(value);
-
-				} else if ("R6_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR6_MOBILE_PHONE_NUMBER(value);
-
-				} else if ("R6_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR6_MOBILE_MONEY_NUMBER(value);
-
-				} else if ("R6_PRODUCT_TYPE".equals(normalizedKey)) {
-					archivalEntity.setR6_PRODUCT_TYPE(value);
-
-				} else if ("R6_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
-					archivalEntity.setR6_ACCOUNT_BY_OWNERSHIP(value);
-
-				} else if ("R6_ACCOUNT_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR6_ACCOUNT_NUMBER(value);
-
-				} else if ("R6_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
-					archivalEntity.setR6_ACCOUNT_HOLDER_INDICATOR(parseBigDecimal(value));
-
-				} else if ("R6_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
-					archivalEntity.setR6_STATUS_OF_ACCOUNT(value);
-
-				} else if ("R6_NOT_FIT_FOR_STP".equals(normalizedKey)) {
-					archivalEntity.setR6_NOT_FIT_FOR_STP(value);
-
-				} else if ("R6_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
-					archivalEntity.setR6_BRANCH_CODE_AND_NAME(value);
-
-				} else if ("R6_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
-					archivalEntity.setR6_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
-
-				} else if ("R6_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
-					archivalEntity.setR6_CURRENCY_OF_ACCOUNT(value);
-
-				} else if ("R6_EXCHANGE_RATE".equals(normalizedKey)) {
-					archivalEntity.setR6_EXCHANGE_RATE(parseBigDecimal(value));
-				}
-
-				else if ("R7_RECORD_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR7_RECORD_NUMBER(value);
-
-				} else if ("R7_TITLE".equals(normalizedKey)) {
-					archivalEntity.setR7_TITLE(value);
-
-				} else if ("R7_FIRST_NAME".equals(normalizedKey)) {
-					archivalEntity.setR7_FIRST_NAME(value);
-
-				} else if ("R7_MIDDLE_NAME".equals(normalizedKey)) {
-					archivalEntity.setR7_MIDDLE_NAME(value);
-
-				} else if ("R7_SURNAME".equals(normalizedKey)) {
-					archivalEntity.setR7_SURNAME(value);
-
-				} else if ("R7_PREVIOUS_NAME".equals(normalizedKey)) {
-					archivalEntity.setR7_PREVIOUS_NAME(value);
-
-				} else if ("R7_GENDER".equals(normalizedKey)) {
-					archivalEntity.setR7_GENDER(value);
-
-				} else if ("R7_IDENTIFICATION_TYPE".equals(normalizedKey)) {
-					archivalEntity.setR7_IDENTIFICATION_TYPE(value);
-
-				} else if ("R7_PASSPORT_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR7_PASSPORT_NUMBER(value);
-
-				} else if ("R7_DATE_OF_BIRTH".equals(normalizedKey)) {
-					archivalEntity.setR7_DATE_OF_BIRTH(Date(value));
-
-				} else if ("R7_HOME_ADDRESS".equals(normalizedKey)) {
-					archivalEntity.setR7_HOME_ADDRESS(value);
-
-				} else if ("R7_POSTAL_ADDRESS".equals(normalizedKey)) {
-					archivalEntity.setR7_POSTAL_ADDRESS(value);
-
-				} else if ("R7_RESIDENCE".equals(normalizedKey)) {
-					archivalEntity.setR7_RESIDENCE(value);
-
-				} else if ("R7_EMAIL".equals(normalizedKey)) {
-					archivalEntity.setR7_EMAIL(value);
-
-				} else if ("R7_LANDLINE".equals(normalizedKey)) {
-					archivalEntity.setR7_LANDLINE(value);
-
-				} else if ("R7_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR7_MOBILE_PHONE_NUMBER(value);
-
-				} else if ("R7_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR7_MOBILE_MONEY_NUMBER(value);
-
-				} else if ("R7_PRODUCT_TYPE".equals(normalizedKey)) {
-					archivalEntity.setR7_PRODUCT_TYPE(value);
-
-				} else if ("R7_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
-					archivalEntity.setR7_ACCOUNT_BY_OWNERSHIP(value);
-
-				} else if ("R7_ACCOUNT_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR7_ACCOUNT_NUMBER(value);
-
-				} else if ("R7_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
-					archivalEntity.setR7_ACCOUNT_HOLDER_INDICATOR(parseBigDecimal(value));
-
-				} else if ("R7_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
-					archivalEntity.setR7_STATUS_OF_ACCOUNT(value);
-
-				} else if ("R7_NOT_FIT_FOR_STP".equals(normalizedKey)) {
-					archivalEntity.setR7_NOT_FIT_FOR_STP(value);
-
-				} else if ("R7_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
-					archivalEntity.setR7_BRANCH_CODE_AND_NAME(value);
-
-				} else if ("R7_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
-					archivalEntity.setR7_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
-
-				} else if ("R7_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
-					archivalEntity.setR7_CURRENCY_OF_ACCOUNT(value);
-
-				} else if ("R7_EXCHANGE_RATE".equals(normalizedKey)) {
-					archivalEntity.setR7_EXCHANGE_RATE(parseBigDecimal(value));
-				}
-
-				else if ("R8_RECORD_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR8_RECORD_NUMBER(value);
-
-				} else if ("R8_TITLE".equals(normalizedKey)) {
-					archivalEntity.setR8_TITLE(value);
-
-				} else if ("R8_FIRST_NAME".equals(normalizedKey)) {
-					archivalEntity.setR8_FIRST_NAME(value);
-
-				} else if ("R8_MIDDLE_NAME".equals(normalizedKey)) {
-					archivalEntity.setR8_MIDDLE_NAME(value);
-
-				} else if ("R8_SURNAME".equals(normalizedKey)) {
-					archivalEntity.setR8_SURNAME(value);
-
-				} else if ("R8_PREVIOUS_NAME".equals(normalizedKey)) {
-					archivalEntity.setR8_PREVIOUS_NAME(value);
-
-				} else if ("R8_GENDER".equals(normalizedKey)) {
-					archivalEntity.setR8_GENDER(value);
-
-				} else if ("R8_IDENTIFICATION_TYPE".equals(normalizedKey)) {
-					archivalEntity.setR8_IDENTIFICATION_TYPE(value);
-
-				} else if ("R8_PASSPORT_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR8_PASSPORT_NUMBER(value);
-
-				} else if ("R8_DATE_OF_BIRTH".equals(normalizedKey)) {
-					archivalEntity.setR8_DATE_OF_BIRTH(Date(value));
-
-				} else if ("R8_HOME_ADDRESS".equals(normalizedKey)) {
-					archivalEntity.setR8_HOME_ADDRESS(value);
-
-				} else if ("R8_POSTAL_ADDRESS".equals(normalizedKey)) {
-					archivalEntity.setR8_POSTAL_ADDRESS(value);
-
-				} else if ("R8_RESIDENCE".equals(normalizedKey)) {
-					archivalEntity.setR8_RESIDENCE(value);
-
-				} else if ("R8_EMAIL".equals(normalizedKey)) {
-					archivalEntity.setR8_EMAIL(value);
-
-				} else if ("R8_LANDLINE".equals(normalizedKey)) {
-					archivalEntity.setR8_LANDLINE(value);
-
-				} else if ("R8_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR8_MOBILE_PHONE_NUMBER(value);
-
-				} else if ("R8_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR8_MOBILE_MONEY_NUMBER(value);
-
-				} else if ("R8_PRODUCT_TYPE".equals(normalizedKey)) {
-					archivalEntity.setR8_PRODUCT_TYPE(value);
-
-				} else if ("R8_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
-					archivalEntity.setR8_ACCOUNT_BY_OWNERSHIP(value);
-
-				} else if ("R8_ACCOUNT_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR8_ACCOUNT_NUMBER(value);
-
-				} else if ("R8_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
-					archivalEntity.setR8_ACCOUNT_HOLDER_INDICATOR(parseBigDecimal(value));
-
-				} else if ("R8_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
-					archivalEntity.setR8_STATUS_OF_ACCOUNT(value);
-
-				} else if ("R8_NOT_FIT_FOR_STP".equals(normalizedKey)) {
-					archivalEntity.setR8_NOT_FIT_FOR_STP(value);
-
-				} else if ("R8_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
-					archivalEntity.setR8_BRANCH_CODE_AND_NAME(value);
-
-				} else if ("R8_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
-					archivalEntity.setR8_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
-
-				} else if ("R8_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
-					archivalEntity.setR8_CURRENCY_OF_ACCOUNT(value);
-
-				} else if ("R8_EXCHANGE_RATE".equals(normalizedKey)) {
-					archivalEntity.setR8_EXCHANGE_RATE(parseBigDecimal(value));
-				}
-
-				else if ("R9_RECORD_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR9_RECORD_NUMBER(value);
-
-				} else if ("R9_TITLE".equals(normalizedKey)) {
-					archivalEntity.setR9_TITLE(value);
-
-				} else if ("R9_FIRST_NAME".equals(normalizedKey)) {
-					archivalEntity.setR9_FIRST_NAME(value);
-
-				} else if ("R9_MIDDLE_NAME".equals(normalizedKey)) {
-					archivalEntity.setR9_MIDDLE_NAME(value);
-
-				} else if ("R9_SURNAME".equals(normalizedKey)) {
-					archivalEntity.setR9_SURNAME(value);
-
-				} else if ("R9_PREVIOUS_NAME".equals(normalizedKey)) {
-					archivalEntity.setR9_PREVIOUS_NAME(value);
-
-				} else if ("R9_GENDER".equals(normalizedKey)) {
-					archivalEntity.setR9_GENDER(value);
-
-				} else if ("R9_IDENTIFICATION_TYPE".equals(normalizedKey)) {
-					archivalEntity.setR9_IDENTIFICATION_TYPE(value);
-
-				} else if ("R9_PASSPORT_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR9_PASSPORT_NUMBER(value);
-
-				} else if ("R9_DATE_OF_BIRTH".equals(normalizedKey)) {
-					archivalEntity.setR9_DATE_OF_BIRTH(Date(value));
-
-				} else if ("R9_HOME_ADDRESS".equals(normalizedKey)) {
-					archivalEntity.setR9_HOME_ADDRESS(value);
-
-				} else if ("R9_POSTAL_ADDRESS".equals(normalizedKey)) {
-					archivalEntity.setR9_POSTAL_ADDRESS(value);
-
-				} else if ("R9_RESIDENCE".equals(normalizedKey)) {
-					archivalEntity.setR9_RESIDENCE(value);
-
-				} else if ("R9_EMAIL".equals(normalizedKey)) {
-					archivalEntity.setR9_EMAIL(value);
-
-				} else if ("R9_LANDLINE".equals(normalizedKey)) {
-					archivalEntity.setR9_LANDLINE(value);
-
-				} else if ("R9_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR9_MOBILE_PHONE_NUMBER(value);
-
-				} else if ("R9_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR9_MOBILE_MONEY_NUMBER(value);
-
-				} else if ("R9_PRODUCT_TYPE".equals(normalizedKey)) {
-					archivalEntity.setR9_PRODUCT_TYPE(value);
-
-				} else if ("R9_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
-					archivalEntity.setR9_ACCOUNT_BY_OWNERSHIP(value);
-
-				} else if ("R9_ACCOUNT_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR9_ACCOUNT_NUMBER(value);
-
-				} else if ("R9_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
-					archivalEntity.setR9_ACCOUNT_HOLDER_INDICATOR(parseBigDecimal(value));
-
-				} else if ("R9_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
-					archivalEntity.setR9_STATUS_OF_ACCOUNT(value);
-
-				} else if ("R9_NOT_FIT_FOR_STP".equals(normalizedKey)) {
-					archivalEntity.setR9_NOT_FIT_FOR_STP(value);
-
-				} else if ("R9_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
-					archivalEntity.setR9_BRANCH_CODE_AND_NAME(value);
-
-				} else if ("R9_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
-					archivalEntity.setR9_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
-
-				} else if ("R9_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
-					archivalEntity.setR9_CURRENCY_OF_ACCOUNT(value);
-
-				} else if ("R9_EXCHANGE_RATE".equals(normalizedKey)) {
-					archivalEntity.setR9_EXCHANGE_RATE(parseBigDecimal(value));
-				}
-
-				else if ("R10_RECORD_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR10_RECORD_NUMBER(value);
-
-				} else if ("R10_TITLE".equals(normalizedKey)) {
-					archivalEntity.setR10_TITLE(value);
-
-				} else if ("R10_FIRST_NAME".equals(normalizedKey)) {
-					archivalEntity.setR10_FIRST_NAME(value);
-
-				} else if ("R10_MIDDLE_NAME".equals(normalizedKey)) {
-					archivalEntity.setR10_MIDDLE_NAME(value);
-
-				} else if ("R10_SURNAME".equals(normalizedKey)) {
-					archivalEntity.setR10_SURNAME(value);
-
-				} else if ("R10_PREVIOUS_NAME".equals(normalizedKey)) {
-					archivalEntity.setR10_PREVIOUS_NAME(value);
-
-				} else if ("R10_GENDER".equals(normalizedKey)) {
-					archivalEntity.setR10_GENDER(value);
-
-				} else if ("R10_IDENTIFICATION_TYPE".equals(normalizedKey)) {
-					archivalEntity.setR10_IDENTIFICATION_TYPE(value);
-
-				} else if ("R10_PASSPORT_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR10_PASSPORT_NUMBER(value);
-
-				} else if ("R10_DATE_OF_BIRTH".equals(normalizedKey)) {
-					archivalEntity.setR10_DATE_OF_BIRTH(Date(value));
-
-				} else if ("R10_HOME_ADDRESS".equals(normalizedKey)) {
-					archivalEntity.setR10_HOME_ADDRESS(value);
-
-				} else if ("R10_POSTAL_ADDRESS".equals(normalizedKey)) {
-					archivalEntity.setR10_POSTAL_ADDRESS(value);
-
-				} else if ("R10_RESIDENCE".equals(normalizedKey)) {
-					archivalEntity.setR10_RESIDENCE(value);
-
-				} else if ("R10_EMAIL".equals(normalizedKey)) {
-					archivalEntity.setR10_EMAIL(value);
-
-				} else if ("R10_LANDLINE".equals(normalizedKey)) {
-					archivalEntity.setR10_LANDLINE(value);
-
-				} else if ("R10_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR10_MOBILE_PHONE_NUMBER(value);
-
-				} else if ("R10_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR10_MOBILE_MONEY_NUMBER(value);
-
-				} else if ("R10_PRODUCT_TYPE".equals(normalizedKey)) {
-					archivalEntity.setR10_PRODUCT_TYPE(value);
-
-				} else if ("R10_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
-					archivalEntity.setR10_ACCOUNT_BY_OWNERSHIP(value);
-
-				} else if ("R10_ACCOUNT_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR10_ACCOUNT_NUMBER(value);
-
-				} else if ("R10_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
-					archivalEntity.setR10_ACCOUNT_HOLDER_INDICATOR(parseBigDecimal(value));
-
-				} else if ("R10_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
-					archivalEntity.setR10_STATUS_OF_ACCOUNT(value);
-
-				} else if ("R10_NOT_FIT_FOR_STP".equals(normalizedKey)) {
-					archivalEntity.setR10_NOT_FIT_FOR_STP(value);
-
-				} else if ("R10_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
-					archivalEntity.setR10_BRANCH_CODE_AND_NAME(value);
-
-				} else if ("R10_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
-					archivalEntity.setR10_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
-
-				} else if ("R10_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
-					archivalEntity.setR10_CURRENCY_OF_ACCOUNT(value);
-
-				} else if ("R10_EXCHANGE_RATE".equals(normalizedKey)) {
-					archivalEntity.setR10_EXCHANGE_RATE(parseBigDecimal(value));
-				}
-
-				else if ("R11_RECORD_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR11_RECORD_NUMBER(value);
-
-				} else if ("R11_TITLE".equals(normalizedKey)) {
-					archivalEntity.setR11_TITLE(value);
-
-				} else if ("R11_FIRST_NAME".equals(normalizedKey)) {
-					archivalEntity.setR11_FIRST_NAME(value);
-
-				} else if ("R11_MIDDLE_NAME".equals(normalizedKey)) {
-					archivalEntity.setR11_MIDDLE_NAME(value);
-
-				} else if ("R11_SURNAME".equals(normalizedKey)) {
-					archivalEntity.setR11_SURNAME(value);
-
-				} else if ("R11_PREVIOUS_NAME".equals(normalizedKey)) {
-					archivalEntity.setR11_PREVIOUS_NAME(value);
-
-				} else if ("R11_GENDER".equals(normalizedKey)) {
-					archivalEntity.setR11_GENDER(value);
-
-				} else if ("R11_IDENTIFICATION_TYPE".equals(normalizedKey)) {
-					archivalEntity.setR11_IDENTIFICATION_TYPE(value);
-
-				} else if ("R11_PASSPORT_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR11_PASSPORT_NUMBER(value);
-
-				} else if ("R11_DATE_OF_BIRTH".equals(normalizedKey)) {
-					archivalEntity.setR11_DATE_OF_BIRTH(Date(value));
-
-				} else if ("R11_HOME_ADDRESS".equals(normalizedKey)) {
-					archivalEntity.setR11_HOME_ADDRESS(value);
-
-				} else if ("R11_POSTAL_ADDRESS".equals(normalizedKey)) {
-					archivalEntity.setR11_POSTAL_ADDRESS(value);
-
-				} else if ("R11_RESIDENCE".equals(normalizedKey)) {
-					archivalEntity.setR11_RESIDENCE(value);
-
-				} else if ("R11_EMAIL".equals(normalizedKey)) {
-					archivalEntity.setR11_EMAIL(value);
-
-				} else if ("R11_LANDLINE".equals(normalizedKey)) {
-					archivalEntity.setR11_LANDLINE(value);
-
-				} else if ("R11_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR11_MOBILE_PHONE_NUMBER(value);
-
-				} else if ("R11_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR11_MOBILE_MONEY_NUMBER(value);
-
-				} else if ("R11_PRODUCT_TYPE".equals(normalizedKey)) {
-					archivalEntity.setR11_PRODUCT_TYPE(value);
-
-				} else if ("R11_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
-					archivalEntity.setR11_ACCOUNT_BY_OWNERSHIP(value);
-
-				} else if ("R11_ACCOUNT_NUMBER".equals(normalizedKey)) {
-					archivalEntity.setR11_ACCOUNT_NUMBER(value);
-
-				} else if ("R11_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
-					archivalEntity.setR11_ACCOUNT_HOLDER_INDICATOR(parseBigDecimal(value));
-
-				} else if ("R11_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
-					archivalEntity.setR11_STATUS_OF_ACCOUNT(value);
-
-				} else if ("R11_NOT_FIT_FOR_STP".equals(normalizedKey)) {
-					archivalEntity.setR11_NOT_FIT_FOR_STP(value);
-
-				} else if ("R11_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
-					archivalEntity.setR11_BRANCH_CODE_AND_NAME(value);
-
-				} else if ("R11_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
-					archivalEntity.setR11_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
-
-				} else if ("R11_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
-					archivalEntity.setR11_CURRENCY_OF_ACCOUNT(value);
-
-				} else if ("R11_EXCHANGE_RATE".equals(normalizedKey)) {
-					archivalEntity.setR11_EXCHANGE_RATE(parseBigDecimal(value));
-				}
-
-			}
-
-			/*
-			 * ========================================================= 5️⃣ SET RESUB
-			 * METADATA =========================================================
-			 */
-			archivalEntity.setReportDate(reportDate);
-			archivalEntity.setReportVersion(newVersion);
-			archivalEntity.setReportResubDate(new Date());
-
-			/*
-			 * ========================================================= 6️⃣ SAVE NEW
-			 * ARCHIVAL VERSION =========================================================
-			 */
-			BDISB1_Archival_Summary_Repo.save(archivalEntity);
-
-			System.out.println("✅ RESUB saved successfully. Version = " + newVersion);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException("Error while creating archival resubmission record", e);
-		}
-	}
-
-	private BigDecimal parseBigDecimal(String value) {
-		return (value == null || value.trim().isEmpty()) ? BigDecimal.ZERO : new BigDecimal(value.replace(",", ""));
-	}
-
-	private Date Date(String value) {
-
-		if (value == null || value.trim().isEmpty()) {
-			return null;
-		}
-
-		try {
-			// HTML <input type="date"> sends yyyy-MM-dd
-			LocalDate localDate = LocalDate.parse(value);
-			return java.sql.Date.valueOf(localDate);
-
-		} catch (Exception e) {
-			throw new RuntimeException("Invalid DATE_OF_BIRTH: " + value, e);
-		}
-	}
 
 /// Downloaded for Archival & Resub
 	public byte[] BRRSBDISB1ResubExcel(String filename, String reportId, String fromdate, String todate,
@@ -5187,8 +14847,7 @@ public class BRRS_BDISB1_ReportService {
 
 		}
 
-		List<BDISB1_Archival_Summary_Entity> dataList1 = BDISB1_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<BDISB1_Archival_Summary_Entity> dataList1 = getdatabydateListarchival1(dateformat.parse(todate), version);
 
 		if (dataList1.isEmpty()) {
 			logger.warn("Service: No data found for M_BDISB1 report. Returning empty result.");
@@ -7183,285 +16842,8 @@ public class BRRS_BDISB1_ReportService {
 		}
 	}
 
-	public byte[] getBDISB1DetailExcel(String filename, String fromdate, String todate, String currency, String dtltype,
-			String type, String version) {
 
-		try {
-			logger.info("Generating Excel for BDISB1 Details...");
-			System.out.println("came to Detail download service");
+	
 
-			// ================= ARCHIVAL HANDLING =================
-			if ("ARCHIVAL".equals(type) && version != null) {
-				return getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type, version);
-			}
-
-			// ================= WORKBOOK & SHEET =================
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("BDISB1Detail");
-
-			BorderStyle border = BorderStyle.THIN;
-
-			// ================= HEADER STYLE =================
-			CellStyle headerStyle = workbook.createCellStyle();
-			Font headerFont = workbook.createFont();
-			headerFont.setBold(true);
-			headerFont.setFontHeightInPoints((short) 10);
-			headerStyle.setFont(headerFont);
-			headerStyle.setAlignment(HorizontalAlignment.LEFT);
-			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-			headerStyle.setBorderTop(border);
-			headerStyle.setBorderBottom(border);
-			headerStyle.setBorderLeft(border);
-			headerStyle.setBorderRight(border);
-
-			CellStyle rightHeaderStyle = workbook.createCellStyle();
-			rightHeaderStyle.cloneStyleFrom(headerStyle);
-			rightHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-
-			// ================= DATA STYLES =================
-			CellStyle textStyle = workbook.createCellStyle();
-			textStyle.setAlignment(HorizontalAlignment.LEFT);
-			textStyle.setBorderTop(border);
-			textStyle.setBorderBottom(border);
-			textStyle.setBorderLeft(border);
-			textStyle.setBorderRight(border);
-
-			CellStyle amountStyle = workbook.createCellStyle();
-			amountStyle.setAlignment(HorizontalAlignment.RIGHT);
-			amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
-			amountStyle.setBorderTop(border);
-			amountStyle.setBorderBottom(border);
-			amountStyle.setBorderLeft(border);
-			amountStyle.setBorderRight(border);
-
-			// ================= HEADER ROW =================
-			String[] headers = { "FIRST NAME", "MIDDLE NAME", "SURNAME", "ACCOUNT NUMBER", "ACCOUNT BALANCE IN PULA",
-					"REPORT LABEL", "REPORT ADDL CRITERIA1", "REPORT DATE" };
-
-			XSSFRow headerRow = sheet.createRow(0);
-			for (int i = 0; i < headers.length; i++) {
-				Cell cell = headerRow.createCell(i);
-				cell.setCellValue(headers[i]);
-				cell.setCellStyle((i == 4) ? rightHeaderStyle : headerStyle);
-				sheet.setColumnWidth(i, 6000);
-			}
-
-			// ================= DATA FETCH =================
-			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<BDISB1_Detail_Entity> reportData = BDISB1_Detail_Repo.getdatabydateList(parsedToDate);
-
-			// ================= DATA ROWS =================
-			int rowIndex = 1;
-
-			if (reportData != null && !reportData.isEmpty()) {
-				for (BDISB1_Detail_Entity item : reportData) {
-
-					XSSFRow row = sheet.createRow(rowIndex++);
-
-					// Column 0 - FIRST NAME
-					Cell c0 = row.createCell(0);
-					c0.setCellValue(item.getFIRST_NAME());
-					c0.setCellStyle(textStyle);
-
-					// Column 1 - MIDDLE NAME
-					Cell c5 = row.createCell(1);
-					c5.setCellValue(item.getMIDDLE_NAME());
-					c5.setCellStyle(textStyle);
-
-					// Column 2 - SURNAME
-					Cell c6 = row.createCell(2);
-					c6.setCellValue(item.getSURNAME());
-					c6.setCellStyle(textStyle);
-
-					// Column 3 - ACCOUNT NUMBER
-					Cell c7 = row.createCell(3);
-					c7.setCellValue(item.getACCOUNT_NUMBER());
-					c7.setCellStyle(textStyle);
-
-					// Column 4 - ACCOUNT BALANCE IN PULA
-					Cell c1 = row.createCell(4);
-
-					if (item.getACCOUNT_BALANCE_IN_PULA() != null) {
-						c1.setCellValue(item.getACCOUNT_BALANCE_IN_PULA().toPlainString());
-					} else {
-						c1.setCellValue("0");
-					}
-
-					c1.setCellStyle(amountStyle);
-					// Column 5 - REPORT LABEL
-					Cell c2 = row.createCell(5);
-					c2.setCellValue(item.getReportLable());
-					c2.setCellStyle(textStyle);
-
-					// Column 6 - REPORT ADDL CRITERIA 1
-					Cell c3 = row.createCell(6);
-					c3.setCellValue(item.getReportAddlCriteria1());
-					c3.setCellStyle(textStyle);
-
-					// Column 7 - REPORT DATE
-					Cell c4 = row.createCell(7);
-					c4.setCellValue(item.getReportDate() != null
-							? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
-							: "");
-					c4.setCellStyle(textStyle);
-				}
-			} else {
-				logger.info("No data found for BDISB1 — only header written.");
-			}
-
-			// ================= WRITE FILE =================
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			workbook.write(bos);
-			workbook.close();
-
-			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
-
-			return bos.toByteArray();
-
-		} catch (Exception e) {
-			logger.error("Error generating BDISB1 Excel", e);
-			return new byte[0];
-		}
-	}
-
-	public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) {
-
-		try {
-			logger.info("Generating Excel for BRRS_BDISB1 ARCHIVAL Details...");
-			System.out.println("came to Detail download service");
-
-			// ================= WORKBOOK & SHEET =================
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("BDISB1Detail");
-
-			BorderStyle border = BorderStyle.THIN;
-
-			// ================= HEADER STYLE =================
-			CellStyle headerStyle = workbook.createCellStyle();
-			Font headerFont = workbook.createFont();
-			headerFont.setBold(true);
-			headerFont.setFontHeightInPoints((short) 10);
-			headerStyle.setFont(headerFont);
-			headerStyle.setAlignment(HorizontalAlignment.LEFT);
-			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-			headerStyle.setBorderTop(border);
-			headerStyle.setBorderBottom(border);
-			headerStyle.setBorderLeft(border);
-			headerStyle.setBorderRight(border);
-
-			CellStyle rightHeaderStyle = workbook.createCellStyle();
-			rightHeaderStyle.cloneStyleFrom(headerStyle);
-			rightHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-
-			// ================= DATA STYLES =================
-			CellStyle textStyle = workbook.createCellStyle();
-			textStyle.setAlignment(HorizontalAlignment.LEFT);
-			textStyle.setBorderTop(border);
-			textStyle.setBorderBottom(border);
-			textStyle.setBorderLeft(border);
-			textStyle.setBorderRight(border);
-
-			CellStyle amountStyle = workbook.createCellStyle();
-			amountStyle.setAlignment(HorizontalAlignment.RIGHT);
-			amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
-			amountStyle.setBorderTop(border);
-			amountStyle.setBorderBottom(border);
-			amountStyle.setBorderLeft(border);
-			amountStyle.setBorderRight(border);
-
-			// ================= HEADER ROW =================
-			String[] headers = { "FIRST NAME", "MIDDLE NAME", "SURNAME", "ACCOUNT NUMBER", "ACCOUNT BALANCE IN PULA",
-					"REPORT LABEL", "REPORT ADDL CRITERIA1", "REPORT DATE" };
-
-			XSSFRow headerRow = sheet.createRow(0);
-			for (int i = 0; i < headers.length; i++) {
-				Cell cell = headerRow.createCell(i);
-				cell.setCellValue(headers[i]);
-				cell.setCellStyle((i == 4) ? rightHeaderStyle : headerStyle);
-				sheet.setColumnWidth(i, 6000);
-			}
-
-			// ================= DATA FETCH =================
-			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<BDISB1_Archival_Detail_Entity> reportData = BDISB1_Archival_Detail_Repo.getdatabydateList(parsedToDate,
-					version);
-
-			// ================= DATA ROWS =================
-			int rowIndex = 1;
-
-			if (reportData != null && !reportData.isEmpty()) {
-				for (BDISB1_Archival_Detail_Entity item : reportData) {
-
-					XSSFRow row = sheet.createRow(rowIndex++);
-
-					// Column 0 - FIRST NAME
-					Cell c0 = row.createCell(0);
-					c0.setCellValue(item.getFIRST_NAME());
-					c0.setCellStyle(textStyle);
-
-					// Column 1 - MIDDLE NAME
-					Cell c5 = row.createCell(1);
-					c5.setCellValue(item.getMIDDLE_NAME());
-					c5.setCellStyle(textStyle);
-
-					// Column 2 - SURNAME
-					Cell c6 = row.createCell(2);
-					c6.setCellValue(item.getSURNAME());
-					c6.setCellStyle(textStyle);
-
-					// Column 3 - ACCOUNT NUMBER
-					Cell c7 = row.createCell(3);
-					c7.setCellValue(item.getACCOUNT_NUMBER());
-					c7.setCellStyle(textStyle);
-
-					// Column 4 - ACCOUNT BALANCE IN PULA
-					Cell c1 = row.createCell(4);
-
-					if (item.getACCOUNT_BALANCE_IN_PULA() != null) {
-						c1.setCellValue(item.getACCOUNT_BALANCE_IN_PULA().toPlainString());
-					} else {
-						c1.setCellValue("0");
-					}
-
-					c1.setCellStyle(amountStyle);
-					// Column 5 - REPORT LABEL
-					Cell c2 = row.createCell(5);
-					c2.setCellValue(item.getReportLable());
-					c2.setCellStyle(textStyle);
-
-					// Column 6 - REPORT ADDL CRITERIA 1
-					Cell c3 = row.createCell(6);
-					c3.setCellValue(item.getReportAddlCriteria1());
-					c3.setCellStyle(textStyle);
-
-					// Column 7 - REPORT DATE
-					Cell c4 = row.createCell(7);
-					c4.setCellValue(item.getReportDate() != null
-							? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
-							: "");
-					c4.setCellStyle(textStyle);
-				}
-			} else {
-				logger.info("No archival data found for BDISB1 — only header written.");
-			}
-
-			// ================= WRITE FILE =================
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			workbook.write(bos);
-			workbook.close();
-
-			logger.info("ARCHIVAL Excel generation completed with {} row(s).",
-					reportData != null ? reportData.size() : 0);
-
-			return bos.toByteArray();
-
-		} catch (Exception e) {
-			logger.error("Error generating BDISB1 ARCHIVAL Excel", e);
-			return new byte[0];
-		}
-	}
 
 }

@@ -24,7 +24,6 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -52,19 +51,14 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BDISB1_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.BDISB1_Summary_Entity;
-import com.bornfire.brrs.entities.BDISB2_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.BDISB3_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.BDISB3_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.BDISB3_Detail_Entity;
-import com.bornfire.brrs.entities.BDISB3_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.BDISB3_Detail_Repo;
 import com.bornfire.brrs.entities.BDISB3_Detail_Repo_Archival;
 import com.bornfire.brrs.entities.BDISB3_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_BDISB3_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_BDISB3_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_CA2_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.M_CA2_Archival_Detail_Entity;
 
 @Component
 @Service

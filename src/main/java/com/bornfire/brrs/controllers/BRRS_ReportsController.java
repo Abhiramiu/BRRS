@@ -1335,54 +1335,75 @@ public class BRRS_ReportsController {
 	 * .body("M_FXR Resubmission Update Failed: " + e.getMessage()); } }
 	 */
 	@Autowired
-	BRRS_BDISB1_ReportService BDISB1reportService;
+	private BRRS_BDISB1_ReportService BDISB1reportService;
 
-	@PostMapping("/BDISB1updateAll")
+	@RequestMapping(value = "/BDISB1updateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public ResponseEntity<String> updateBDISB1AllReports(
-			@RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@RequestParam Map<String, String> allParams) {
-		try {
-			System.out.println("Came to BDISB1 controller");
+	public ResponseEntity<String> updateAllReports(
 
-			BDISB1reportService.updateDetailFromForm(asondate, allParams);
+	        @RequestParam(required = false)
+	        @DateTimeFormat(pattern = "dd/MM/yyyy")
+	        Date asondate,
 
-			return ResponseEntity.ok("Modified Successfully.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
+	        @ModelAttribute BRRS_BDISB1_ReportService.BDISB1_Summary_Entity request) {
+
+	    try {
+
+	        if (asondate != null) {
+	            request.setREPORT_DATE(asondate);
+	        }
+
+	        BDISB1reportService.updateReport(request);
+
+	        return ResponseEntity.ok("Modified Successfully.");
+
+	    } catch (Exception e) {
+
+	        e.printStackTrace();
+
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Update Failed : " + e.getMessage());
+	    }
 	}
-
+	
+	
 	@RequestMapping(value = "/UpdateBDISB1_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute BDISB1_Summary_Entity request, HttpServletRequest req) {
 
-		try {
-			System.out.println("Came to Resub Controller");
+	        @RequestParam(required = false)
+	        @DateTimeFormat(pattern = "dd/MM/yyyy")
+	        Date asondate,
 
-			if (asondate != null) {
-				// Set the asondate into the entity
-				request.setReportDate(asondate);
-				System.out.println("Set Report Date: " + asondate);
-			} else {
-				System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
-			}
+	        @RequestParam(required = false)
+	        String type,
 
-			// Call service to create a new versioned row
-			BDISB1reportService.updateReportReSub(request);
+	        @ModelAttribute BRRS_BDISB1_ReportService.BDISB1_RESUB_Summary_Entity request1,
 
-			return ResponseEntity.ok("Resubmission Updated Successfully");
+	        HttpServletRequest req) {
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Resubmission Update Failed: " + e.getMessage());
-		}
+	    try {
+
+	        System.out.println("Came to BDISB1 Resub Controller");
+
+	        if (asondate != null) {
+	            request1.setREPORT_DATE(asondate);
+	        }
+
+	        BDISB1reportService.updateResubReport(request1);
+
+	        return ResponseEntity.ok("Resubmission Updated Successfully");
+
+	    } catch (Exception e) {
+
+	        e.printStackTrace();
+
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("BDISB1 Resubmission Update Failed : " + e.getMessage());
+	    }
 	}
-
+	
+	
 	/*
 	 * @Autowired BRRS_M_INT_RATES_FCA_ReportService INT_RATES_FCAreportService;
 	 * 

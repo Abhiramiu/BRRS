@@ -1,5 +1,6 @@
 package com.bornfire.brrs.services;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.math.BigDecimal;
@@ -9,16 +10,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.io.ByteArrayInputStream;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-import org.apache.poi.ss.usermodel.Font;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
@@ -458,11 +457,7 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_M_PLL_reportservice.getM_PLLView(reportId, fromdate, todate, currency, dtltype, pageable,
 					type, version);
 			break;
-		case "BDISB1":
-			repsummary = brrs_bdisb1_reportservice.getBDISB1View(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
-			break;
-
+		
 		case "BDISB2":
 			repsummary = BRRS_BDISB2_ReportService.getBDISB2View(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
@@ -1496,7 +1491,17 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_MDISB5_ReportService.getBRRS_MDISB5View(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
+			
+		case "BDISB1":
 
+			repsummary = brrs_bdisb1_reportservice.getBRRS_BDISB1View(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
+
+			
+		
+
+			
 		case "Q_SMME_LA_NEW":
 
 			repsummary = BRRS_Q_SMME_Loans_Advances_New_ReportService.getBRRS_Q_SMMEView(reportId, fromdate, todate,
@@ -2335,10 +2340,7 @@ public class RegulatoryReportServices {
 		// BRRS_Q_STAFF_New_report_service.getQ_STAFF_NewcurrentDtl(reportId,
 		// fromdate, todate, currency, dtltype, pageable, Filter, type, version);
 		// break;
-		case "BDISB1":
-			repdetail = brrs_bdisb1_reportservice.getBDISB1currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
+		
 
 		case "M_P_L":
 
@@ -2559,6 +2561,8 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		
 
 		case "Q_SMME_LA":
 			try {
@@ -4725,10 +4729,7 @@ public class RegulatoryReportServices {
 					version);
 		}
 
-		else if ("BDISB1Detail".equals(filename)) {
-			return brrs_bdisb1_reportservice.getBDISB1DetailExcel(filename, fromdate, todate, currency, dtltype, type,
-					version);
-		}
+		
 
 		// else if ("M_SRWA_12FDetail".equals(filename)) {
 		// return BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FDetailExcel(filename,
@@ -5770,10 +5771,12 @@ public class RegulatoryReportServices {
 			break;
 
 		case "BDISB1":
-			List<Object[]> bdisb1List = brrs_bdisb1_reportservice.getBDISB1Archival();
-			archivalData.addAll(bdisb1List);
-			System.out.println("Fetched M_C archival data: " + bdisb1List.size());
+			List<Object[]> BDISB1List = brrs_bdisb1_reportservice.getBRRS_BDISB1Archival();
+			archivalData.addAll(BDISB1List);
+			System.out.println("Fetched BDISB1 archival data: " + BDISB1List.size());
 			break;
+			
+		
 
 		case "BDISB3":
 			List<Object[]> bdisb3List = brrs_bdisb3_reportservice.getBDISB3Archival();
@@ -6468,11 +6471,7 @@ case "MDISB3":
 					type, version);
 		}
 
-		else if ("BDISB1Detail".equals(filename)) {
-
-			fileData = brrs_bdisb1_reportservice.getBDISB1DetailExcel(filename, fromdate, todate, currency, dtltype,
-					type, version);
-		}
+		
 
 		// else if ("M_SRWA_12FDetail".equals(filename)) {
 
@@ -7660,16 +7659,16 @@ case "MDISB3":
 			try {
 				List<Object[]> resubList = BRRS_MDISB5_ReportService.getBRRS_MDISB5Resub();
 				resubmissionData.addAll(resubList);
-				System.out.println("Resubmission data fetched for CA5: " + resubList.size());
+				System.out.println("Resubmission data fetched for MDISB5: " + resubList.size());
 			} catch (Exception e) {
-				System.err.println("Error fetching resubmission data for CA5: " + e.getMessage());
+				System.err.println("Error fetching resubmission data for MDISB5: " + e.getMessage());
 				e.printStackTrace();
 			}
 			break;
 
 		case "BDISB1":
 			try {
-				List<Object[]> resubList = brrs_bdisb1_reportservice.getBDISB1Resub();
+				List<Object[]> resubList = brrs_bdisb1_reportservice.getBRRS_BDISB1Resub();
 				resubmissionData.addAll(resubList);
 				System.out.println("Resubmission data fetched for M_BDISB1: " + resubList.size());
 			} catch (Exception e) {

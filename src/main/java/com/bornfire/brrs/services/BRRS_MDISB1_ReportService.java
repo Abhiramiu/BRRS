@@ -61,7 +61,7 @@ import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_MDISB1_Detail_Repo_OLD;
+
 @Component
 @Service
 
@@ -32676,9 +32676,7 @@ public class BRRS_MDISB1_ReportService {
 		}
 	}
 
-	@Autowired
-	private BRRS_MDISB1_Detail_Repo_OLD MDISB1_Detail_Repo;
-
+	
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
