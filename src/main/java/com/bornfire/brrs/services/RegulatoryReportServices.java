@@ -6751,7 +6751,7 @@ case "MDISB3":
 				break;
 			case "COMMON_DISCLOSURE":
 			    modelAndView = BRRS_Common_Disclosure_Reportservice.getViewOrEditPage(
-			            request.getParameter("acctNo"),
+			            request.getParameter("SNO"),
 			            request.getParameter("formmode"),
 			            request.getParameter("type"),
 			            request.getParameter("version"));

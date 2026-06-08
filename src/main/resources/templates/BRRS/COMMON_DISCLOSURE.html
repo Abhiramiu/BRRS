@@ -627,11 +627,15 @@ PURPOSE		: BRRSREPORT
 			}
 
 			const acctNo = elem.getAttribute("data-acctNo");
+			const SNO = elem.getAttribute("data-SNo");
 			const asondate = elem.getAttribute("data-asondate");
 
 			location.href =
-				`/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}&type=${type}`;
+				`/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&SNO=${SNO}&asondate=${asondate}&type=${type}`;
+				
+				
 		}
+		
 		function downloadDetailfile(jobId, filename) {
 
 			$.ajax({
@@ -1239,7 +1243,7 @@ PURPOSE		: BRRSREPORT
 								<tr th:each="report, srlno : ${reportdetails}">
 									<td>
 										<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
-											<i class="fas fa-edit" th:attr="data-acctNo=${report.acctNumber},
+											<i class="fas fa-edit" th:attr="data-SNo=${report.sno},
 											            data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},
 											            data-type=${type}" onclick="openCommon_DisclosureDetail(this, 'edit')">
 											</i>
@@ -1345,6 +1349,13 @@ PURPOSE		: BRRSREPORT
 						<div class="col-sm-3">
 							<input type="date" name="reportDate" class="form-control form-control-sm" readonly
 								th:value="${#dates.format(Common_DisclosureData.reportDate, 'yyyy-MM-dd')}" />
+						</div>
+
+						<div class="col-sm-1"></div>
+
+						<div class="col-sm-3">
+							<input type="hidden" th:field="*{sno}"
+								class="form-control form-control-sm" readonly />
 						</div>
 					</div>
 

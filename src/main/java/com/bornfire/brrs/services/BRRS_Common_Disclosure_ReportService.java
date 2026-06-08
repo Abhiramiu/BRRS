@@ -198,21 +198,33 @@ public class BRRS_Common_Disclosure_ReportService {
 	}
 // 6. BY ACCOUNT NUMBER
 
-	public Common_Disclosure_Detail_Entity findByAcctnumber(String acctNumber) {
+//	public Common_Disclosure_Detail_Entity findByAcctnumber(String acctNumber) {
+//
+//		String sql = "SELECT * FROM BRRS_COMMON_DISCLOSURE_DETAILTABLE WHERE ACCT_NUMBER = ?";
+//
+//		return jdbcTemplate.queryForObject(sql, new Object[] { acctNumber }, new CommonDisclosureDetailRowMapper());
+//	}
+//
+//	public Common_Disclosure_Resub_Detail_Entity findByAcctnumber1(String acctNumber) {
+//
+//		String sql = "SELECT * FROM BRRS_COMMON_DISCLOSURE_RESUBTABLE_DETAIL WHERE ACCT_NUMBER = ?";
+//
+//		return jdbcTemplate.queryForObject(sql, new Object[] { acctNumber },
+//				new CommonDisclosureResubDetailRowMapper());
+//	}
+	public Common_Disclosure_Detail_Entity findBySno(String sno) {
 
-		String sql = "SELECT * FROM BRRS_COMMON_DISCLOSURE_DETAILTABLE WHERE ACCT_NUMBER = ?";
+		String sql = "SELECT * FROM BRRS_COMMON_DISCLOSURE_DETAILTABLE WHERE SNO = ?";
 
-		return jdbcTemplate.queryForObject(sql, new Object[] { acctNumber }, new CommonDisclosureDetailRowMapper());
+		return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new CommonDisclosureDetailRowMapper());
 	}
 
-	public Common_Disclosure_Resub_Detail_Entity findByAcctnumber1(String acctNumber) {
+	public Common_Disclosure_Resub_Detail_Entity findBySno1(String sno) {
 
-		String sql = "SELECT * FROM BRRS_COMMON_DISCLOSURE_RESUBTABLE_DETAIL WHERE ACCT_NUMBER = ?";
+		String sql = "SELECT * FROM BRRS_COMMON_DISCLOSURE_RESUBTABLE_DETAIL WHERE SNO = ?";
 
-		return jdbcTemplate.queryForObject(sql, new Object[] { acctNumber },
-				new CommonDisclosureResubDetailRowMapper());
+		return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new CommonDisclosureResubDetailRowMapper());
 	}
-
 // 1. GET BY DATE + VERSION
 
 	public List<Common_Disclosure_Archival_Detail_Entity> getArchivalDetaildatabydateList(Date reportdate,
@@ -436,7 +448,7 @@ public class BRRS_Common_Disclosure_ReportService {
 		}
 
 		public void setREPORT_DATE(Date REPORT_DATE) {
-			REPORT_DATE = REPORT_DATE;
+			this.REPORT_DATE = REPORT_DATE;
 		}
 
 		public String getR7_PRODUCT() {
@@ -636,7 +648,7 @@ public class BRRS_Common_Disclosure_ReportService {
 		}
 
 		public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
-			REPORT_VERSION = REPORT_VERSION;
+			this.REPORT_VERSION = REPORT_VERSION;
 		}
 
 		public String getREPORT_FREQUENCY() {
@@ -1599,9 +1611,10 @@ public class BRRS_Common_Disclosure_ReportService {
 
 	public class Common_Disclosure_Detail_Entity {
 
+		private Long sno;
 		@Column(name = "CUST_ID")
 		private String custId;
-		@Id
+
 		@Column(name = "ACCT_NUMBER")
 		private String acctNumber;
 
@@ -1668,6 +1681,14 @@ public class BRRS_Common_Disclosure_ReportService {
 
 		@Column(name = "DEL_FLG")
 		private char delFlg;
+
+		public Long getSno() {
+			return sno;
+		}
+
+		public void setSno(Long sno) {
+			this.sno = sno;
+		}
 
 		public String getCustId() {
 			return custId;
@@ -1852,7 +1873,7 @@ public class BRRS_Common_Disclosure_ReportService {
 		public Common_Disclosure_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
 
 			Common_Disclosure_Detail_Entity obj = new Common_Disclosure_Detail_Entity();
-
+			obj.setSno(rs.getLong("SNO"));
 			obj.setCustId(rs.getString("CUST_ID"));
 			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
 			obj.setAcctName(rs.getString("ACCT_NAME"));
@@ -1888,7 +1909,7 @@ public class BRRS_Common_Disclosure_ReportService {
 		public Common_Disclosure_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
 
 			Common_Disclosure_Archival_Detail_Entity obj = new Common_Disclosure_Archival_Detail_Entity();
-
+			obj.setSno(rs.getLong("SNO"));
 			obj.setCustId(rs.getString("CUST_ID"));
 			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
 			obj.setAcctName(rs.getString("ACCT_NAME"));
@@ -1919,10 +1940,10 @@ public class BRRS_Common_Disclosure_ReportService {
 	}
 
 	public class Common_Disclosure_Archival_Detail_Entity {
-
+		private Long sno;
 		@Column(name = "CUST_ID")
 		private String custId;
-		@Id
+
 		@Column(name = "ACCT_NUMBER")
 		private String acctNumber;
 
@@ -1989,6 +2010,14 @@ public class BRRS_Common_Disclosure_ReportService {
 
 		@Column(name = "DEL_FLG")
 		private char delFlg;
+
+		public Long getSno() {
+			return sno;
+		}
+
+		public void setSno(Long sno) {
+			this.sno = sno;
+		}
 
 		public String getCustId() {
 			return custId;
@@ -2173,7 +2202,7 @@ public class BRRS_Common_Disclosure_ReportService {
 		public Common_Disclosure_Resub_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
 
 			Common_Disclosure_Resub_Detail_Entity obj = new Common_Disclosure_Resub_Detail_Entity();
-
+			obj.setSno(rs.getLong("SNO"));
 			obj.setCustId(rs.getString("CUST_ID"));
 			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
 			obj.setAcctName(rs.getString("ACCT_NAME"));
@@ -2204,10 +2233,10 @@ public class BRRS_Common_Disclosure_ReportService {
 	}
 
 	public class Common_Disclosure_Resub_Detail_Entity {
-
+		private Long sno;
 		@Column(name = "CUST_ID")
 		private String custId;
-		@Id
+
 		@Column(name = "ACCT_NUMBER")
 		private String acctNumber;
 
@@ -2274,6 +2303,14 @@ public class BRRS_Common_Disclosure_ReportService {
 
 		@Column(name = "DEL_FLG")
 		private char delFlg;
+
+		public Long getSno() {
+			return sno;
+		}
+
+		public void setSno(Long sno) {
+			this.sno = sno;
+		}
 
 		public String getCustId() {
 			return custId;
@@ -2674,15 +2711,15 @@ public class BRRS_Common_Disclosure_ReportService {
 		return archivalList;
 	}
 
-	public ModelAndView getViewOrEditPage(String acctNumber, String formMode, String type, String version) {
+	public ModelAndView getViewOrEditPage(String SNO, String formMode, String type, String version) {
 
 		ModelAndView mv = new ModelAndView("BRRS/Common_Disclosure");
 
-		if (acctNumber != null) {
+		if (SNO != null) {
 
 			if ("RESUB".equalsIgnoreCase(type)) {
 
-				Common_Disclosure_Resub_Detail_Entity resubEntity = findByAcctnumber1(acctNumber);
+				Common_Disclosure_Resub_Detail_Entity resubEntity = findBySno1(SNO);
 				if (resubEntity != null && resubEntity.getReportDate() != null) {
 					String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(resubEntity.getReportDate());
 					mv.addObject("asondate", formattedDate);
@@ -2692,7 +2729,7 @@ public class BRRS_Common_Disclosure_ReportService {
 
 			} else {
 
-				Common_Disclosure_Detail_Entity commonDisclosureEntity = findByAcctnumber(acctNumber);
+				Common_Disclosure_Detail_Entity commonDisclosureEntity = findBySno(SNO);
 
 				if (commonDisclosureEntity != null && commonDisclosureEntity.getReportDate() != null) {
 
@@ -2719,106 +2756,87 @@ public class BRRS_Common_Disclosure_ReportService {
 
 		try {
 
-			String acctNo = request.getParameter("acctNumber");
+			String Sno = request.getParameter("sno");
 			String acctBalanceInpulaStr = request.getParameter("acctBalanceInpula");
 			String averageStr = request.getParameter("average");
 			String acctName = request.getParameter("acctName");
 			String reportDateStr = request.getParameter("reportDate");
 			String type = request.getParameter("type");
 
-			// Fetch existing record from normal table
-			Common_Disclosure_Detail_Entity existing = findByAcctnumber(acctNo);
+			// =====================================================
+			// RESUB UPDATE
+			// =====================================================
+			if ("RESUB".equalsIgnoreCase(type)) {
 
-			if (existing == null) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
-			}
+				Common_Disclosure_Resub_Detail_Entity existing = findBySno1(Sno);
 
-			boolean isChanged = false;
+				if (existing == null) {
+					return ResponseEntity.status(HttpStatus.NOT_FOUND).body("RESUB record not found.");
+				}
 
-			if (acctName != null && !acctName.isEmpty()) {
-				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
+				boolean isChanged = false;
 
+				if (acctName != null && !acctName.isEmpty()) {
 					existing.setAcctName(acctName);
 					isChanged = true;
 				}
-			}
 
-			if (acctBalanceInpulaStr != null && !acctBalanceInpulaStr.isEmpty()) {
-
-				BigDecimal newBalance = new BigDecimal(acctBalanceInpulaStr);
-
-				if (existing.getAcctBalanceInpula() == null
-						|| existing.getAcctBalanceInpula().compareTo(newBalance) != 0) {
-
-					existing.setAcctBalanceInpula(newBalance);
+				if (acctBalanceInpulaStr != null && !acctBalanceInpulaStr.isEmpty()) {
+					existing.setAcctBalanceInpula(new BigDecimal(acctBalanceInpulaStr));
 					isChanged = true;
 				}
-			}
 
-			if (averageStr != null && !averageStr.isEmpty()) {
-
-				BigDecimal newAverage = new BigDecimal(averageStr);
-
-				if (existing.getAverage() == null || existing.getAverage().compareTo(newAverage) != 0) {
-
-					existing.setAverage(newAverage);
+				if (averageStr != null && !averageStr.isEmpty()) {
+					existing.setAverage(new BigDecimal(averageStr));
 					isChanged = true;
 				}
-			}
-			if (reportDateStr != null && !reportDateStr.isEmpty()) {
 
-				Date newReportDate = new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr);
-
-				if (existing.getReportDate() == null || !existing.getReportDate().equals(newReportDate)) {
-
-					existing.setReportDate(newReportDate);
+				if (reportDateStr != null && !reportDateStr.isEmpty()) {
+					existing.setReportDate(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
 					isChanged = true;
 				}
-			}
-			if (isChanged) {
 
-				String tableName = "BRRS_COMMON_DISCLOSURE_DETAILTABLE";
+				if (isChanged) {
 
-				if ("RESUB".equalsIgnoreCase(type)) {
-					tableName = "BRRS_COMMON_DISCLOSURE_RESUBTABLE_DETAIL";
+					Integer nextVersion = jdbcTemplate.queryForObject(
+							"SELECT NVL(MAX(DATA_ENTRY_VERSION),0)+1 "
+									+ "FROM BRRS_COMMON_DISCLOSURE_RESUBTABLE_DETAIL " + "WHERE ACCT_NUMBER=?",
+							Integer.class, existing.getAcctNumber());
+
+					String insertResub = "INSERT INTO BRRS_COMMON_DISCLOSURE_RESUBTABLE_DETAIL "
+							+ "(SNO,CUST_ID,ACCT_NUMBER,ACCT_NAME,REPORT_NAME,"
+							+ "REPORT_LABEL,REPORT_ADDL_CRITERIA_1,REPORT_REMARKS,"
+							+ "DATA_ENTRY_VERSION,ACCT_BALANCE_IN_PULA,AVERAGE,"
+							+ "REPORT_DATE,ENTITY_FLG,MODIFY_FLG,DEL_FLG)" + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+
+					jdbcTemplate.update(insertResub, Sno, existing.getCustId(), existing.getAcctNumber(),
+							existing.getAcctName(), existing.getReportName(), existing.getReportLabel(),
+							existing.getReportAddlCriteria1(), existing.getReportRemarks(), nextVersion,
+							existing.getAcctBalanceInpula(), existing.getAverage(),
+							new java.sql.Date(existing.getReportDate().getTime()), "Y", "Y", "N");
+
+					return ResponseEntity.ok("RESUB Record updated successfully!");
 				}
 
-				String updateSql = "UPDATE " + tableName + " SET ACCT_NAME = ?, " + " ACCT_BALANCE_IN_PULA = ?, "
-						+ " AVERAGE = ?, " + " REPORT_DATE = ? " + " WHERE ACCT_NUMBER = ?";
-
-				jdbcTemplate.update(updateSql, existing.getAcctName(), existing.getAcctBalanceInpula(),
-						existing.getAverage(), new java.sql.Date(existing.getReportDate().getTime()), acctNo);
-
-				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
-
-				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-
-					@Override
-					public void afterCommit() {
-
-						try {
-
-							if ("RESUB".equalsIgnoreCase(type)) {
-
-								jdbcTemplate.update("BEGIN BRRS_COMMON_DISCLOSURE_SUMMARY_PROCEDURE(?); END;",
-										formattedDate);
-							} else {
-
-								jdbcTemplate.update("BEGIN BRRS_COMMON_DISCLOSURE_SUMMARY_PROCEDURE(?); END;",
-										formattedDate);
-							}
-
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-				});
-
-				return ResponseEntity.ok("Record updated successfully!");
+				return ResponseEntity.ok("No changes were made.");
 			}
 
-			return ResponseEntity.ok("No changes were made.");
+			// =====================================================
+			// NORMAL UPDATE
+			// =====================================================
+			Common_Disclosure_Detail_Entity existing = findBySno(Sno);
+
+			if (existing == null) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found.");
+			}
+
+			String updateSql = "UPDATE BRRS_COMMON_DISCLOSURE_DETAILTABLE "
+					+ "SET ACCT_NAME=?, ACCT_BALANCE_IN_PULA=?, " + "AVERAGE=?, REPORT_DATE=? " + "WHERE SNO=?";
+
+			jdbcTemplate.update(updateSql, acctName, new BigDecimal(acctBalanceInpulaStr), new BigDecimal(averageStr),
+					java.sql.Date.valueOf(reportDateStr), Sno);
+
+			return ResponseEntity.ok("Record updated successfully!");
 
 		} catch (Exception e) {
 
@@ -2839,8 +2857,13 @@ public class BRRS_Common_Disclosure_ReportService {
 				byte[] ARCHIVALreport = getCommon_DisclosureDetailNewExcelARCHIVAL(filename, fromdate, todate, currency,
 						dtltype, type, version);
 				return ARCHIVALreport;
-			}
+			} else if ("RESUB".equalsIgnoreCase(type) && version != null) {
 
+				byte[] resubReport = getCommon_DisclosureDetailExcelRESUB(filename, fromdate, todate, currency, dtltype,
+						type, version);
+
+				return resubReport;
+			}
 			XSSFWorkbook workbook = new XSSFWorkbook();
 			XSSFSheet sheet = workbook.createSheet("Common_DisclosureDetailsDetail");
 
@@ -3041,6 +3064,137 @@ public class BRRS_Common_Disclosure_ReportService {
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
 				for (Common_Disclosure_Archival_Detail_Entity item : reportData) {
+					XSSFRow row = sheet.createRow(rowIndex++);
+
+					row.createCell(0).setCellValue(item.getCustId());
+					row.createCell(1).setCellValue(item.getAcctNumber());
+					row.createCell(2).setCellValue(item.getAcctName());
+
+					// ACCT BALANCE (right aligned, 3 decimal places)
+					Cell balanceCell = row.createCell(3);
+					if (item.getAcctBalanceInpula() != null) {
+						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
+					} else {
+						balanceCell.setCellValue(0);
+					}
+					balanceCell.setCellStyle(balanceStyle);
+
+					// AVERAGE (right aligned, 3 decimal places)
+					Cell balanceCell1 = row.createCell(4);
+					if (item.getAverage() != null) {
+						balanceCell1.setCellValue(item.getAverage().doubleValue());
+					} else {
+						balanceCell1.setCellValue(0);
+					}
+					balanceCell1.setCellStyle(balanceStyle);
+
+					row.createCell(5).setCellValue(item.getReportLabel());
+					row.createCell(6).setCellValue(item.getReportAddlCriteria1());
+					row.createCell(7)
+							.setCellValue(item.getReportDate() != null
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+									: "");
+
+					// Apply data style for all other cells
+					for (int j = 0; j < 8; j++) {
+						if (j != 3) {
+							row.getCell(j).setCellStyle(dataStyle);
+						}
+					}
+				}
+			} else {
+				logger.info("No data found for Common_Disclosure — only header will be written.");
+			}
+
+			// Write to byte[]
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			workbook.write(bos);
+			workbook.close();
+
+			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
+			return bos.toByteArray();
+
+		} catch (Exception e) {
+			logger.error("Error generating Common_Disclosure NEW Excel", e);
+			return new byte[0];
+		}
+	}
+
+	public byte[] getCommon_DisclosureDetailExcelRESUB(String filename, String fromdate, String todate, String currency,
+			String dtltype, String type, String version) {
+		try {
+			logger.info("Generating Excel for Common_Disclosure Resub Details...");
+			System.out.println("came to Resub Detail download service");
+			if (type.equals("RESUB") & version != null) {
+
+			}
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			XSSFSheet sheet = workbook.createSheet("Common_Disclosure Detail NEW");
+
+			// Common border style
+			BorderStyle border = BorderStyle.THIN;
+
+			// Header style (left aligned)
+			CellStyle headerStyle = workbook.createCellStyle();
+			Font headerFont = workbook.createFont();
+			headerFont.setBold(true);
+			headerFont.setFontHeightInPoints((short) 10);
+			headerStyle.setFont(headerFont);
+			headerStyle.setAlignment(HorizontalAlignment.LEFT);
+			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+			headerStyle.setBorderTop(border);
+			headerStyle.setBorderBottom(border);
+			headerStyle.setBorderLeft(border);
+			headerStyle.setBorderRight(border);
+
+			// Right-aligned header style for ACCT BALANCE
+			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
+			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
+			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+			// Default data style (left aligned)
+			CellStyle dataStyle = workbook.createCellStyle();
+			dataStyle.setAlignment(HorizontalAlignment.LEFT);
+			dataStyle.setBorderTop(border);
+			dataStyle.setBorderBottom(border);
+			dataStyle.setBorderLeft(border);
+			dataStyle.setBorderRight(border);
+
+			// ACCT BALANCE style (right aligned with 3 decimals)
+			CellStyle balanceStyle = workbook.createCellStyle();
+			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
+			balanceStyle.setBorderTop(border);
+			balanceStyle.setBorderBottom(border);
+			balanceStyle.setBorderLeft(border);
+			balanceStyle.setBorderRight(border);
+
+			// Header row
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "AVERAGE", "REPORT LABEL",
+					"REPORT ADDL CRITERIA1", "REPORT_DATE" };
+			XSSFRow headerRow = sheet.createRow(0);
+			for (int i = 0; i < headers.length; i++) {
+				Cell cell = headerRow.createCell(i);
+				cell.setCellValue(headers[i]);
+
+				if (i == 3 || i == 4) {
+					cell.setCellStyle(rightAlignedHeaderStyle);
+				} else {
+					cell.setCellStyle(headerStyle);
+				}
+
+				sheet.setColumnWidth(i, 5000);
+			}
+
+			// Get data
+			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+			List<Common_Disclosure_Resub_Detail_Entity> reportData = getResubDetaildatabydateList(parsedToDate,
+					version);
+
+			if (reportData != null && !reportData.isEmpty()) {
+				int rowIndex = 1;
+				for (Common_Disclosure_Resub_Detail_Entity item : reportData) {
 					XSSFRow row = sheet.createRow(rowIndex++);
 
 					row.createCell(0).setCellValue(item.getCustId());
