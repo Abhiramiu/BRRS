@@ -2809,11 +2809,30 @@ public class BRRS_Common_Disclosure_ReportService {
 							+ "DATA_ENTRY_VERSION,ACCT_BALANCE_IN_PULA,AVERAGE,"
 							+ "REPORT_DATE,ENTITY_FLG,MODIFY_FLG,DEL_FLG)" + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
+					// Insert into RESUB table
 					jdbcTemplate.update(insertResub, Sno, existing.getCustId(), existing.getAcctNumber(),
 							existing.getAcctName(), existing.getReportName(), existing.getReportLabel(),
 							existing.getReportAddlCriteria1(), existing.getReportRemarks(), nextVersion,
 							existing.getAcctBalanceInpula(), existing.getAverage(),
 							new java.sql.Date(existing.getReportDate().getTime()), "Y", "Y", "N");
+
+					// Insert same record into ARCHIVAL table
+					String insertArchival = "INSERT INTO BRRS_COMMON_DISCLOSURE_ARCHIVALTABLE_DETAIL "
+							+ "(SNO,CUST_ID,ACCT_NUMBER,ACCT_NAME,REPORT_NAME,"
+							+ "REPORT_LABEL,REPORT_ADDL_CRITERIA_1,REPORT_REMARKS,"
+							+ "DATA_ENTRY_VERSION,ACCT_BALANCE_IN_PULA,AVERAGE,"
+							+ "REPORT_DATE,ENTITY_FLG,MODIFY_FLG,DEL_FLG)" + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+
+					jdbcTemplate.update(insertArchival, Sno, existing.getCustId(), existing.getAcctNumber(),
+							existing.getAcctName(), existing.getReportName(), existing.getReportLabel(),
+							existing.getReportAddlCriteria1(), existing.getReportRemarks(), nextVersion,
+							existing.getAcctBalanceInpula(), existing.getAverage(),
+							new java.sql.Date(existing.getReportDate().getTime()), "Y", "Y", "N");
+
+					// CALL PROCEDURE
+					String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(existing.getReportDate());
+
+					jdbcTemplate.update("BEGIN BRRS_COMMON_DISCLOSURE_SUMMARY_PROCEDURE(?); END;", formattedDate);
 
 					return ResponseEntity.ok("RESUB Record updated successfully!");
 				}
@@ -2835,6 +2854,11 @@ public class BRRS_Common_Disclosure_ReportService {
 
 			jdbcTemplate.update(updateSql, acctName, new BigDecimal(acctBalanceInpulaStr), new BigDecimal(averageStr),
 					java.sql.Date.valueOf(reportDateStr), Sno);
+
+			// CALL PROCEDURE
+			String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(java.sql.Date.valueOf(reportDateStr));
+
+			jdbcTemplate.update("BEGIN BRRS_COMMON_DISCLOSURE_SUMMARY_PROCEDURE(?); END;", formattedDate);
 
 			return ResponseEntity.ok("Record updated successfully!");
 
