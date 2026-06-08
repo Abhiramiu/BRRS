@@ -2565,7 +2565,7 @@ public class BRRS_Common_Disclosure_ReportService {
 			mv.addObject("reportsummary", T1Master);
 		}
 
-		mv.setViewName("BRRS/Common_Disclosure");
+		mv.setViewName("BRRS/COMMON_DISCLOSURE");
 		mv.addObject("displaymode", "summary");
 
 		System.out.println("View Loaded: " + mv.getViewName());
@@ -2672,7 +2672,7 @@ public class BRRS_Common_Disclosure_ReportService {
 			mv.addObject("errorMessage", e.getMessage());
 		}
 
-		mv.setViewName("BRRS/Common_Disclosure");
+		mv.setViewName("BRRS/COMMON_DISCLOSURE");
 		mv.addObject("displaymode", "Details");
 		mv.addObject("menu", reportId);
 		mv.addObject("currency", currency);
@@ -2713,7 +2713,7 @@ public class BRRS_Common_Disclosure_ReportService {
 
 	public ModelAndView getViewOrEditPage(String SNO, String formMode, String type, String version) {
 
-		ModelAndView mv = new ModelAndView("BRRS/Common_Disclosure");
+		ModelAndView mv = new ModelAndView("BRRS/COMMON_DISCLOSURE");
 
 		if (SNO != null) {
 
