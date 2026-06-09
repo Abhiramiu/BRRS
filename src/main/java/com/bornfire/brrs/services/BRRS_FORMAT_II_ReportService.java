@@ -3213,6 +3213,8 @@ public class FORMAT_II_Archival_Detail_Entity {
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
+							
+						
 
    // ROW 13
 					// Column E - 
@@ -3844,6 +3846,20 @@ public class FORMAT_II_Archival_Detail_Entity {
 					} else {
 					    cellH.setCellValue("");
 					    cellH.setCellStyle(textStyle);
+					}
+					
+					//ROW 34
+					row = sheet.getRow(33);
+					
+					//row34
+					// Column B
+					Cell cellBdate = row.createCell(2);
+					if (record.getReport_date() != null) {
+						cellBdate.setCellValue(record.getReport_date());
+						cellBdate.setCellStyle(dateStyle);
+					} else {
+						cellBdate.setCellValue("");
+						cellBdate.setCellStyle(textStyle);
 					}
 				
 					
@@ -4587,6 +4603,22 @@ public class FORMAT_II_Archival_Detail_Entity {
 									    cellH.setCellValue("");
 									    cellH.setCellStyle(textStyle);
 									}
+									
+									
+									//ROW 34
+									row = sheet.getRow(33);
+									
+									//row34
+									// Column B
+									Cell cellBdate = row.createCell(2);
+									if (record.getReport_date() != null) {
+										cellBdate.setCellValue(record.getReport_date());
+										cellBdate.setCellStyle(dateStyle);
+									} else {
+										cellBdate.setCellValue("");
+										cellBdate.setCellStyle(textStyle);
+									}
+								
 
 						
 						
