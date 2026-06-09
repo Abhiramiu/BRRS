@@ -460,10 +460,7 @@ public class RegulatoryReportServices {
 		
 		
 
-		case "BDISB3":
-			repsummary = brrs_bdisb3_reportservice.getM_BDISB3View(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
-			break;
+		
 
 		case "M_SRWA_12A_New":
 
@@ -1500,6 +1497,11 @@ public class RegulatoryReportServices {
 					pageable, type, version);
 
 			break;
+			
+		case "BDISB3":
+			repsummary = brrs_bdisb3_reportservice.getBRRS_BDISB3View(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
 
 			
 		case "Q_SMME_LA_NEW":
@@ -1896,10 +1898,7 @@ public class RegulatoryReportServices {
 					pageable, Filter, type, version);
 			break;
 
-		case "BDISB3":
-			repdetail = brrs_bdisb3_reportservice.getBDISB3currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
+		
 
 		case "M_OR1":
 			repdetail = brrs_m_or1_reportservice.getM_OR1currentDtl(reportId, fromdate, todate, currency, dtltype,
@@ -1911,11 +1910,7 @@ public class RegulatoryReportServices {
 					pageable, Filter, type, version);
 			break;
 
-		/*
-		 * case "M_CA5": repdetail =
-		 * BRRS_M_CA5_reportservice.getM_CA5currentDtl(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, Filter, type, version); break;
-		 */
+		
 
 		case "M_SP":
 			repdetail = BRRS_M_SP_reportservice.getM_SPcurrentDtl(reportId, fromdate, todate, currency, dtltype,
@@ -4694,57 +4689,18 @@ public class RegulatoryReportServices {
 		}
 
 		
-
-		else if ("BDISB3Detail".equals(filename)) {
-			return brrs_bdisb3_reportservice.getBDISB3DetailExcel(filename, fromdate, todate, currency, dtltype, type,
-					version);
-		}
-
-		
-
-		// else if ("M_SRWA_12FDetail".equals(filename)) {
-		// return BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FDetailExcel(filename,
-		// fromdate, todate, currency, dtltype,
-		// type, version);
-		// }
-		/*
-		 * else if ("M_OPTRDetail".equals(filename)) { return
-		 * BRRS_M_OPTR_ReportService.getM_OPTRDetailExcel(filename, fromdate, todate,
-		 * currency, dtltype, type, version); }
-		 */
 		else if ("M_OPTR_NEWDetail".equals(filename)) {
 			return BRRS_M_OPTR_NEW_ReportService.getM_OPTR_NEWDetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 		}
 
-		// else if ("Q_STAFFDetail".equals(filename)) {
-		// return BRRS_Q_STAFF_report_service.getQ_STAFFDetailExcel(filename, fromdate,
-		// todate, currency,
-		// dtltype, type, version);
-		// }
-
-		/*
-		 * else if ("M_INTRATESFCADetailExcel".equals(filename)) { return
-		 * BRRS_M_INT_RATES_FCA_ReportService.getM_INTRATESFCADetailExcel(filename,
-		 * fromdate, todate, currency, dtltype, type, version); }
-		 */
-
-		/*
-		 * else if ("M_INTRATESDetail".equals(filename)) { return
-		 * brrs_m_int_rates_reportservice.getM_INT_RATESDetailExcel(filename, fromdate,
-		 * todate, currency, dtltype, type, version); }
-		 */
+		
 
 		else if ("M_INTRATESNEWDetail".equals(filename)) {
 			return brrs_m_int_new_rates_reportservice.getM_INT_RATESNEWDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
 
-		/*
-		 * else if ("MDISB5Detail".equals(filename)) { return
-		 * BRRS_MDISB5_ReportService.getMDISB5DetailExcel(filename, fromdate, todate,
-		 * currency, dtltype, type, version); }
-		 */
 
 		return new byte[0];
 	}
@@ -5754,7 +5710,7 @@ public class RegulatoryReportServices {
 			break;
 
 		case "BDISB3":
-			List<Object[]> bdisb3List = brrs_bdisb3_reportservice.getBDISB3Archival();
+			List<Object[]> bdisb3List = brrs_bdisb3_reportservice.getBRRS_BDISB3Archival();
 			archivalData.addAll(bdisb3List);
 			System.out.println("Fetched M_C archival data: " + bdisb3List.size());
 			break;
@@ -6408,15 +6364,6 @@ case "MDISB3":
 					currency, dtltype, type, version);
 		}
 
-		else if ("BDISB3Detail".equals(filename)) {
-
-			fileData = brrs_bdisb3_reportservice.getBDISB3DetailExcel(filename, fromdate, todate, currency, dtltype,
-					type, version);
-		}
-
-		
-
-		
 
 		if (fileData == null) {
 			// logger.warn("Excel generation failed or no data for jobId: {}", jobId);
@@ -7607,6 +7554,30 @@ case "MDISB3":
 				e.printStackTrace();
 			}
 			break;
+			
+		case "BDISB2":
+			try {
+				List<Object[]> resubList = BRRS_BDISB2_ReportService.getBRRS_BDISB2Resub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for BDISB2: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for BDISB2: " + e.getMessage());
+				e.printStackTrace();
+			}
+
+			break;
+			
+		case "BDISB3":
+			try {
+				List<Object[]> resubList = brrs_bdisb3_reportservice.getBRRS_BDISB3Resub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for BDISB3: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for BDISB3: " + e.getMessage());
+				e.printStackTrace();
+			}
+
+			break;
 
 		case "M_OR2":
 			try {
@@ -7774,17 +7745,7 @@ case "MDISB3":
 			break;
 
 		
-		case "BDISB3":
-			try {
-				List<Object[]> resubList = brrs_bdisb3_reportservice.getBDISB3Resub();
-				resubmissionData.addAll(resubList);
-				System.out.println("Resubmission data fetched for BDISB2: " + resubList.size());
-			} catch (Exception e) {
-				System.err.println("Error fetching resubmission data for BDISB2: " + e.getMessage());
-				e.printStackTrace();
-			}
-
-			break;
+		
 
 		case "M_OPTR_NEW":
 			try {

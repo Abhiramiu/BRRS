@@ -3,38 +3,33 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.CallableStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.persistence.Column;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -42,23 +37,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BDISB3_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.BDISB3_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.BDISB3_Detail_Entity;
-import com.bornfire.brrs.entities.BDISB3_Detail_Repo;
-import com.bornfire.brrs.entities.BDISB3_Detail_Repo_Archival;
-import com.bornfire.brrs.entities.BDISB3_Summary_Entity;
-import com.bornfire.brrs.entities.BRRS_BDISB3_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_BDISB3_Summary_Repo;
 
 @Component
 @Service
@@ -73,24 +61,2157 @@ public class BRRS_BDISB3_ReportService {
 	SessionFactory sessionFactory;
 
 	@Autowired
-	BRRS_BDISB3_Summary_Repo BDISB3_Summary_Repo;
-
-	@Autowired
-	private BDISB3_Detail_Repo repo;
-
-	@Autowired
-	BRRS_BDISB3_Archival_Summary_Repo BDISB3_Archival_Summary_Repo;
-
-	@Autowired
-	BDISB3_Detail_Repo_Archival BDISB3_Detail_Repo_Archival;
-
-	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
+
+	// ENTITY MANAGER (Acts like Repository)
+    @PersistenceContext
+	private EntityManager entityManager;
+
+    
+ // SUMMARY
+ 	// Fetch data by report date
+ 	public List<BDISB3_Summary_Entity> getDataByDate1(Date reportDate) {
+
+ 		String sql = "SELECT * FROM BRRS_BDISB3_SUMMARYTABLE WHERE REPORT_DATE = ?";
+
+ 		return jdbcTemplate.query(sql, new Object[] { reportDate }, new BDISB3_RowMapper_Summary());
+ 	}			
+
+ 	
+ 	// ARCHIVAL
+
+ 	// Fetch data by report date
+ 	public List<BDISB3_Archival_Summary_Entity> ArchivalgetDataByDate1(Date reportDate) {
+
+ 		String sql = "SELECT * FROM BRRS_BDISB3_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ?";
+
+ 		return jdbcTemplate.query(sql, new Object[] { reportDate }, new BDISB3_RowMapper_Archival());
+ 	}
+     
+ 	// RESUB
+
+ 	// Fetch data by report date
+ 	public List<BDISB3_RESUB_Summary_Entity> ResubgetDataByDate1(Date reportDate) {
+
+ 		String sql = "SELECT * FROM BRRS_BDISB3_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ?";
+
+ 		return jdbcTemplate.query(sql, new Object[] { reportDate }, new BDISB3_RowMapper_Resub());
+ 	}
+     
+ 	/*
+ 	 * // ARCHIVAL // GET REPORT_DATE + REPORT_VERSION
+ 	 * 
+ 	 * public List<Object[]> getBDISB3Archival() {
+ 	 * 
+ 	 * String sql = "SELECT REPORT_DATE, REPORT_VERSION " +
+ 	 * "FROM BRRS_BDISB3_ARCHIVALTABLE_SUMMARY" + "ORDER BY REPORT_VERSION";
+ 	 * 
+ 	 * return jdbcTemplate.query(sql, (rs, rowNum) -> new Object[] {
+ 	 * rs.getDate("REPORT_DATE"), rs.getBigDecimal("REPORT_VERSION") }); }
+ 	 */
+ 	
+ 	//GET ARCHIVAL FULL DATA BY DATE + VERSION
+
+ 	public List<BDISB3_Archival_Summary_Entity> getdatabydateListarchival1(Date REPORT_DATE,
+ 			BigDecimal REPORT_VERSION) {
+
+ 		String sql = "SELECT * FROM BRRS_BDISB3_ARCHIVALTABLE_SUMMARY " + "WHERE REPORT_DATE = ? "
+ 				+ "AND REPORT_VERSION = ?";
+
+ 		return jdbcTemplate.query(sql, new Object[] { REPORT_DATE, REPORT_VERSION }, new BDISB3_RowMapper_Archival());
+ 	}
+     
+ 	//GET RESUB FULL DATA BY DATE + VERSION
+
+ 	public List<BDISB3_RESUB_Summary_Entity> getdatabydateListresub1(Date REPORT_DATE,
+ 			BigDecimal REPORT_VERSION) {
+
+ 		String sql = "SELECT * FROM BRRS_BDISB3_RESUB_SUMMARYTABLE " + "WHERE REPORT_DATE = ? "
+ 				+ "AND REPORT_VERSION = ?";
+
+ 		return jdbcTemplate.query(sql, new Object[] { REPORT_DATE, REPORT_VERSION }, new BDISB3_RowMapper_Resub());
+ 	}
+ 	
+ 	//GET DETAIL FULL DATA BY DATE + VERSION
+
+ 	public List<BDISB3_Detail_Entity> getdatabydateListDetail1(Date REPORT_DATE,
+ 			BigDecimal REPORT_VERSION) {
+
+ 		String sql = "SELECT * FROM BRRS_BDISB3_DETAILTABLE" + "WHERE REPORT_DATE = ? "
+ 				+ "AND REPORT_VERSION = ?";
+
+ 		return jdbcTemplate.query(sql, new Object[] { REPORT_DATE, REPORT_VERSION }, new BDISB3RowMapper_Detail());
+ 	}
+ 	
+ 	//GET ARCHIVAL DETAIL FULL DATA BY DATE + VERSION
+
+ 	public List<BDISB3_Archival_Detail_Entity> getdatabydateListArchivalDetail1(Date REPORT_DATE,
+ 			BigDecimal REPORT_VERSION) {
+
+ 		String sql = "SELECT * FROM BRRS_BDISB3_ARCHIVALTABLE_DETAIL " + "WHERE REPORT_DATE = ? "
+ 				+ "AND REPORT_VERSION = ?";
+
+ 		return jdbcTemplate.query(sql, new Object[] { REPORT_DATE, REPORT_VERSION }, new BDISB3RowMapper_ArchivalDetail());
+ 	}
+ 	
+ 	
+ 	//GET RESUB DETAIL FULL DATA BY DATE + VERSION
+
+ 	public List<BDISB3_RESUB_Detail_Entity> getdatabydateListResubDetail1(Date REPORT_DATE,
+ 			BigDecimal REPORT_VERSION) {
+
+ 		String sql = "SELECT * FROM BRRS_BDISB3_RESUB_DETAILTABLE " + "WHERE REPORT_DATE = ? "
+ 				+ "AND REPORT_VERSION = ?";
+
+ 		return jdbcTemplate.query(sql, new Object[] { REPORT_DATE, REPORT_VERSION }, new BDISB3RowMapper_ResubDetail());
+ 	}
+ 	
+ 	//GET ALL WITH VERSION
+
+ 	public List<BDISB3_Archival_Summary_Entity> getdatabydateListWithVersion1() {
+
+ 		String sql = "SELECT * FROM BRRS_BDISB3_ARCHIVALTABLE_SUMMARY " + "WHERE REPORT_VERSION IS NOT NULL "
+ 				+ "ORDER BY REPORT_VERSION ASC";
+
+ 		return jdbcTemplate.query(sql, new BDISB3_RowMapper_Archival());
+ 	}
+ 	
+ 	//GET RESUB ALL WITH VERSION
+
+ 	public List<BDISB3_RESUB_Summary_Entity> ResubgetdatabydateListWithVersion1() {
+
+ 		String sql = "SELECT * FROM BRRS_BDISB3_RESUB_SUMMARYTABLE " + "WHERE REPORT_VERSION IS NOT NULL "
+ 				+ "ORDER BY REPORT_VERSION ASC";
+
+ 		return jdbcTemplate.query(sql, new BDISB3_RowMapper_Resub());
+ 	}
+ 	
+ 	//GET ARCHIVAL MAX VERSION BY DATE
+
+ 	public BigDecimal findMaxVersion1(Date REPORT_DATE) {
+
+ 		String sql = "SELECT MAX(REPORT_VERSION) " + "FROM BRRS_BDISB3_ARCHIVALTABLE_SUMMARY"
+ 				+ "WHERE REPORT_DATE = ?";
+
+ 		return jdbcTemplate.queryForObject(sql, new Object[] { REPORT_DATE }, BigDecimal.class);
+ 	}
+ 	
+ 	// GET RESUB MAX VERSION BY DATE
+
+ 	public BigDecimal RESUBfindMaxVersion1(Date REPORT_DATE) {
+
+ 		String sql = "SELECT MAX(REPORT_VERSION) " + "FROM BRRS_BDISB3_RESUBTABLE_SUMMARY "
+ 				+ "WHERE REPORT_DATE = ?";
+
+ 		return jdbcTemplate.queryForObject(sql, new Object[] { REPORT_DATE }, BigDecimal.class);
+ 	}
+ 	
+ 	
+ 	//DETAIL TABLE 1
+ 	// 1. BY DATE + LABEL + CRITERIA
+
+ 	public List<BDISB3_Detail_Entity> findByDetailReportDateAndLabelAndCriteria1(Date reportDate, String reportLabel,
+ 			String reportAddlCriteria1) {
+
+ 		String sql = "SELECT * FROM BRRS_BDISB3_DETAILTABLE "
+ 				+ "WHERE REPORT_DATE = ? AND REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ?";
+
+ 		return jdbcTemplate.query(sql, new Object[] { reportDate, reportLabel, reportAddlCriteria1 },
+ 				new BDISB3RowMapper_Detail());
+ 	}	
+ 	
+ 	// 2. GET ALL (BY DATE - simple)
+
+ 	public List<BDISB3_Detail_Entity> getDetaildatabydateList1(Date reportdate) {
+
+ 		String sql = "SELECT * FROM BRRS_BDISB3_DETAILTABLE WHERE REPORT_DATE = ?";
+
+ 		return jdbcTemplate.query(sql, new Object[] { reportdate }, new BDISB3RowMapper_Detail());
+ 	}
+
+ // 3. PAGINATION
+
+ 	public List<BDISB3_Detail_Entity> getDetaildatabydateList1(Date reportdate, int offset, int limit) {
+
+ 		String sql = "SELECT * FROM BRRS_BDISB3_DETAILTABLE "
+ 				+ "WHERE REPORT_DATE = ? OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+ 		return jdbcTemplate.query(sql, new Object[] { reportdate, offset, limit }, new BDISB3RowMapper_Detail());
+ 	}
+
+ 	// 4. COUNT
+
+ 	public int getDetaildatacount1(Date reportdate) {
+
+ 		String sql = "SELECT COUNT(*) FROM BRRS_BDISB3_DETAILTABLE WHERE REPORT_DATE = ?";
+
+ 		return jdbcTemplate.queryForObject(sql, new Object[] { reportdate }, Integer.class);
+ 	}
+
+ // 5. BY LABEL + CRITERIA
+
+ 	public List<BDISB3_Detail_Entity> GetDetailDataByRowIdAndColumnId1(String reportLabel,
+ 			String reportAddlCriteria1, Date reportdate) {
+
+ 		String sql = "SELECT * FROM BRRS_BDISB3_DETAILTABLE "
+ 				+ "WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ?";
+
+ 		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate },
+ 				new BDISB3RowMapper_Detail());
+ 	}
+ 	
+ // 6. BY ACCOUNT NUMBER
+
+ 	public BDISB3_Detail_Entity findByAcctnumber1(String acctNumber) {
+
+ 		String sql = "SELECT * FROM BRRS_BDISB3_DETAILTABLE WHERE ACCT_NUMBER = ?";
+
+ 		return jdbcTemplate.queryForObject(sql, new Object[] { acctNumber }, new BDISB3RowMapper_Detail());
+ 	}	
+ 	
+ 	
+ 	
+ 	//ARCHIVALTABLE_DETAIL 
+ 	// 1. BY DATE + LABEL + CRITERIA
+
+ 	public List<BDISB3_Archival_Detail_Entity> findByArchivalDetailReportDateAndLabelAndCriteria1(Date reportDate, String reportLabel,
+ 			String reportAddlCriteria1) {
+
+ 		String sql = "SELECT * FROM BRRS_BDISB3_ARCHIVALTABLE_DETAIL "
+ 				+ "WHERE REPORT_DATE = ? AND REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ?";
+
+ 		return jdbcTemplate.query(sql, new Object[] { reportDate, reportLabel, reportAddlCriteria1 },
+ 				new BDISB3RowMapper_ArchivalDetail());
+ 	}	
+ 	
+ 	// 2. GET ALL (BY DATE - simple)
+
+ 	public List<BDISB3_Archival_Detail_Entity> getArchivalDetaildatabydateList1(Date reportdate) {
+
+ 		String sql = "SELECT * FROM BRRS_BDISB3_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ?";
+
+ 		return jdbcTemplate.query(sql, new Object[] { reportdate }, new BDISB3RowMapper_ArchivalDetail());
+ 	}
+
+ // 3. PAGINATION
+
+ 	public List<BDISB3_Archival_Detail_Entity> getArchivalDetaildatabydateList1(Date reportdate, int offset, int limit) {
+
+ 		String sql = "SELECT * FROM BRRS_BDISB3_ARCHIVALTABLE_DETAIL "
+ 				+ "WHERE REPORT_DATE = ? OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+ 		return jdbcTemplate.query(sql, new Object[] { reportdate, offset, limit }, new BDISB3RowMapper_ArchivalDetail());
+ 	}
+
+ 	// 4. COUNT
+
+ 	public int getArchivalDetaildatacount1(Date reportdate) {
+
+ 		String sql = "SELECT COUNT(*) FROM BRRS_BDISB3_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ?";
+
+ 		return jdbcTemplate.queryForObject(sql, new Object[] { reportdate }, Integer.class);
+ 	}
+
+ // 5. BY LABEL + CRITERIA
+
+ 	public List<BDISB3_Archival_Detail_Entity> GetArchivalDetailDataByRowIdAndColumnId1(String reportLabel,
+ 			String reportAddlCriteria1, Date reportdate) {
+
+ 		String sql = "SELECT * FROM BRRS_BDISB3_ARCHIVALTABLE_DETAIL "
+ 				+ "WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ?";
+
+ 		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate },
+ 				new BDISB3RowMapper_ArchivalDetail());
+ 	}
+ // 6. BY ACCOUNT NUMBER
+
+ 	public BDISB3_Archival_Detail_Entity ArchivalfindByAcctnumber1(String acctNumber) {
+
+ 		String sql = "SELECT * FROM BRRS_BDISB3_ARCHIVALTABLE_DETAIL WHERE ACCT_NUMBER = ?";
+
+ 		return jdbcTemplate.queryForObject(sql, new Object[] { acctNumber }, new BDISB3RowMapper_ArchivalDetail());
+ 	}	
+ 	
+ 	
+ 	
+ 	//RESUBTABLE_DETAIL 
+ 				// 1. BY DATE + LABEL + CRITERIA
+
+ 				public List<BDISB3_RESUB_Detail_Entity> findByResubReportDateAndLabelAndCriteria1(Date reportDate, String reportLabel,
+ 						String reportAddlCriteria1) {
+
+ 					String sql = "SELECT * FROM BRRS_BDISB3_RESUB_DETAILTABLE "
+ 							+ "WHERE REPORT_DATE = ? AND REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ?";
+
+ 					return jdbcTemplate.query(sql, new Object[] { reportDate, reportLabel, reportAddlCriteria1 },
+ 							new BDISB3RowMapper_ResubDetail());
+ 				}	
+ 				
+ 				// 2. GET ALL (BY DATE - simple)
+
+ 				public List<BDISB3_RESUB_Detail_Entity> getResubdatabydateList1(Date reportdate) {
+
+ 					String sql = "SELECT * FROM BRRS_BDISB3_RESUB_DETAILTABLE WHERE REPORT_DATE = ?";
+
+ 					return jdbcTemplate.query(sql, new Object[] { reportdate }, new BDISB3RowMapper_ResubDetail());
+ 				}
+
+ 			// 3. PAGINATION
+
+ 				public List<BDISB3_RESUB_Detail_Entity> getResubdatabydateList1(Date reportdate, int offset, int limit) {
+
+ 					String sql = "SELECT * FROM BRRS_BDISB3_RESUB_DETAILTABLE "
+ 							+ "WHERE REPORT_DATE = ? OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+ 					return jdbcTemplate.query(sql, new Object[] { reportdate, offset, limit }, new BDISB3RowMapper_ResubDetail());
+ 				}
+ 			
+ 				// 4. COUNT
+
+ 				public int getResubdatacount1(Date reportdate) {
+
+ 					String sql = "SELECT COUNT(*) FROM BRRS_BDISB3_RESUB_DETAILTABLE WHERE REPORT_DATE = ?";
+
+ 					return jdbcTemplate.queryForObject(sql, new Object[] { reportdate }, Integer.class);
+ 				}
+
+ 			// 5. BY LABEL + CRITERIA
+
+ 				public List<BDISB3_RESUB_Detail_Entity> GetResubDataByRowIdAndColumnId1(String reportLabel,
+ 						String reportAddlCriteria1, Date reportdate) {
+
+ 					String sql = "SELECT * FROM BRRS_BDISB3_RESUB_DETAILTABLE "
+ 							+ "WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ?";
+
+ 					return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate },
+ 							new BDISB3RowMapper_ResubDetail());
+ 				}
+ 			// 6. BY ACCOUNT NUMBER
+
+ 				public BDISB3_RESUB_Detail_Entity ResubfindByAcctnumber1(String acctNumber) {
+
+ 					String sql = "SELECT * FROM BRRS_BDISB3_RESUB_DETAILTABLE WHERE ACCT_NUMBER = ?";
+
+ 					return jdbcTemplate.queryForObject(sql, new Object[] { acctNumber }, new BDISB3RowMapper_ResubDetail());
+ 				}	
+ 				
+ 				
+ 				//findSummaryByReportDate
+ 				
+ 				@Transactional(readOnly = true)
+ 				public BDISB3_Summary_Entity findSummaryByReportDate(Date reportDate) {
+
+ 				    String sql =
+ 				            "SELECT * FROM BRRS_BDISB3_SUMMARYTABLE " +
+ 				            "WHERE REPORT_DATE = ?";
+
+ 				    List<BDISB3_Summary_Entity> list =
+ 				            jdbcTemplate.query(
+ 				                    sql,
+ 				                    new Object[] { reportDate },
+ 				                    new BDISB3_RowMapper_Summary());
+
+ 				    return list.isEmpty() ? null : list.get(0);
+ 				}
+ 				
+ 				@Transactional(readOnly = true)
+ 				public BDISB3_Detail_Entity findDetailByReportDate(Date reportDate) {
+
+ 				    String sql =
+ 				            "SELECT * FROM BRRS_BDISB3_DETAILTABLE " +
+ 				            "WHERE REPORT_DATE = ?";
+
+ 				    List<BDISB3_Detail_Entity> list =
+ 				            jdbcTemplate.query(
+ 				                    sql,
+ 				                    new Object[] { reportDate },
+ 				                    new BDISB3RowMapper_Detail());
+
+ 				    return list.isEmpty() ? null : list.get(0);
+ 				}
+ 							
+ 			// ROW MAPPER SUMMARY
+
+				class BDISB3_RowMapper_Summary implements RowMapper<BDISB3_Summary_Entity> {
+
+					@Override
+					public BDISB3_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+						BDISB3_Summary_Entity obj = new BDISB3_Summary_Entity();	
+						
+						// -------- R5 --------
+						obj.setR5_SCVRN(rs.getString("R5_SCVRN"));
+						obj.setR5_AGGREGATE_BALANCE(rs.getBigDecimal("R5_AGGREGATE_BALANCE"));
+						obj.setR5_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R5_COMPENSATABLE_AMOUNT"));
+
+						// -------- R6 --------
+						obj.setR6_SCVRN(rs.getString("R6_SCVRN"));
+						obj.setR6_AGGREGATE_BALANCE(rs.getBigDecimal("R6_AGGREGATE_BALANCE"));
+						obj.setR6_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R6_COMPENSATABLE_AMOUNT"));
+
+						// -------- R7 --------
+						obj.setR7_SCVRN(rs.getString("R7_SCVRN"));
+						obj.setR7_AGGREGATE_BALANCE(rs.getBigDecimal("R7_AGGREGATE_BALANCE"));
+						obj.setR7_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R7_COMPENSATABLE_AMOUNT"));
+
+						// -------- R8 --------
+						obj.setR8_SCVRN(rs.getString("R8_SCVRN"));
+						obj.setR8_AGGREGATE_BALANCE(rs.getBigDecimal("R8_AGGREGATE_BALANCE"));
+						obj.setR8_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R8_COMPENSATABLE_AMOUNT"));
+
+						// -------- R9 --------
+						obj.setR9_SCVRN(rs.getString("R9_SCVRN"));
+						obj.setR9_AGGREGATE_BALANCE(rs.getBigDecimal("R9_AGGREGATE_BALANCE"));
+						obj.setR9_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R9_COMPENSATABLE_AMOUNT"));
+
+						// -------- R10 --------
+						obj.setR10_SCVRN(rs.getString("R10_SCVRN"));
+						obj.setR10_AGGREGATE_BALANCE(rs.getBigDecimal("R10_AGGREGATE_BALANCE"));
+						obj.setR10_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R10_COMPENSATABLE_AMOUNT"));
+						
+						// COMMON FIELDS
+						obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+						obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+						obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+						obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+						obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+						obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+						obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+						obj.setDEL_FLG(rs.getString("DEL_FLG"));
+						
+
+						return obj;
+					}
+				}
+				
+				public static class BDISB3_Summary_Entity {
+					
+					public String R5_SCVRN;
+				    public BigDecimal R5_AGGREGATE_BALANCE;
+				    public BigDecimal R5_COMPENSATABLE_AMOUNT;
+
+				    // -------- R6 --------
+				    public String R6_SCVRN;
+				    public BigDecimal R6_AGGREGATE_BALANCE;
+				    public BigDecimal R6_COMPENSATABLE_AMOUNT;
+
+				    // -------- R7 --------
+				    public String R7_SCVRN;
+				    public BigDecimal R7_AGGREGATE_BALANCE;
+				    public BigDecimal R7_COMPENSATABLE_AMOUNT;
+
+				    // -------- R8 --------
+				    public String R8_SCVRN;
+				    public BigDecimal R8_AGGREGATE_BALANCE;
+				    public BigDecimal R8_COMPENSATABLE_AMOUNT;
+
+				    // -------- R9 --------
+				    public String R9_SCVRN;
+				    public BigDecimal R9_AGGREGATE_BALANCE;
+				    public BigDecimal R9_COMPENSATABLE_AMOUNT;
+
+				    // -------- R10 --------
+				    public String R10_SCVRN;
+				    public BigDecimal R10_AGGREGATE_BALANCE;
+				    public BigDecimal R10_COMPENSATABLE_AMOUNT;
+				    
+				    @Id
+					@Temporal(TemporalType.DATE)
+					@Column(name = "REPORT_DATE")
+					private Date REPORT_DATE;
+
+					@Column(name = "REPORT_VERSION", length = 100)
+					private BigDecimal REPORT_VERSION;
+
+					@Column(name = "REPORT_FREQUENCY", length = 100)
+					private String REPORT_FREQUENCY;
+
+					@Column(name = "REPORT_CODE", length = 100)
+					private String REPORT_CODE;
+
+					@Column(name = "REPORT_DESC", length = 100)
+					private String REPORT_DESC;
+
+					@Column(name = "ENTITY_FLG", length = 1)
+					private String ENTITY_FLG;
+
+					@Column(name = "MODIFY_FLG", length = 1)
+					private String MODIFY_FLG;
+
+					@Column(name = "DEL_FLG", length = 1)
+					private String DEL_FLG;
+					
+					public String getR5_SCVRN() {
+						return R5_SCVRN;
+					}
+					public void setR5_SCVRN(String r5_SCVRN) {
+						R5_SCVRN = r5_SCVRN;
+					}
+					public BigDecimal getR5_AGGREGATE_BALANCE() {
+						return R5_AGGREGATE_BALANCE;
+					}
+					public void setR5_AGGREGATE_BALANCE(BigDecimal r5_AGGREGATE_BALANCE) {
+						R5_AGGREGATE_BALANCE = r5_AGGREGATE_BALANCE;
+					}
+					public BigDecimal getR5_COMPENSATABLE_AMOUNT() {
+						return R5_COMPENSATABLE_AMOUNT;
+					}
+					public void setR5_COMPENSATABLE_AMOUNT(BigDecimal r5_COMPENSATABLE_AMOUNT) {
+						R5_COMPENSATABLE_AMOUNT = r5_COMPENSATABLE_AMOUNT;
+					}
+					public String getR6_SCVRN() {
+						return R6_SCVRN;
+					}
+					public void setR6_SCVRN(String r6_SCVRN) {
+						R6_SCVRN = r6_SCVRN;
+					}
+					public BigDecimal getR6_AGGREGATE_BALANCE() {
+						return R6_AGGREGATE_BALANCE;
+					}
+					public void setR6_AGGREGATE_BALANCE(BigDecimal r6_AGGREGATE_BALANCE) {
+						R6_AGGREGATE_BALANCE = r6_AGGREGATE_BALANCE;
+					}
+					public BigDecimal getR6_COMPENSATABLE_AMOUNT() {
+						return R6_COMPENSATABLE_AMOUNT;
+					}
+					public void setR6_COMPENSATABLE_AMOUNT(BigDecimal r6_COMPENSATABLE_AMOUNT) {
+						R6_COMPENSATABLE_AMOUNT = r6_COMPENSATABLE_AMOUNT;
+					}
+					public String getR7_SCVRN() {
+						return R7_SCVRN;
+					}
+					public void setR7_SCVRN(String r7_SCVRN) {
+						R7_SCVRN = r7_SCVRN;
+					}
+					public BigDecimal getR7_AGGREGATE_BALANCE() {
+						return R7_AGGREGATE_BALANCE;
+					}
+					public void setR7_AGGREGATE_BALANCE(BigDecimal r7_AGGREGATE_BALANCE) {
+						R7_AGGREGATE_BALANCE = r7_AGGREGATE_BALANCE;
+					}
+					public BigDecimal getR7_COMPENSATABLE_AMOUNT() {
+						return R7_COMPENSATABLE_AMOUNT;
+					}
+					public void setR7_COMPENSATABLE_AMOUNT(BigDecimal r7_COMPENSATABLE_AMOUNT) {
+						R7_COMPENSATABLE_AMOUNT = r7_COMPENSATABLE_AMOUNT;
+					}
+					public String getR8_SCVRN() {
+						return R8_SCVRN;
+					}
+					public void setR8_SCVRN(String r8_SCVRN) {
+						R8_SCVRN = r8_SCVRN;
+					}
+					public BigDecimal getR8_AGGREGATE_BALANCE() {
+						return R8_AGGREGATE_BALANCE;
+					}
+					public void setR8_AGGREGATE_BALANCE(BigDecimal r8_AGGREGATE_BALANCE) {
+						R8_AGGREGATE_BALANCE = r8_AGGREGATE_BALANCE;
+					}
+					public BigDecimal getR8_COMPENSATABLE_AMOUNT() {
+						return R8_COMPENSATABLE_AMOUNT;
+					}
+					public void setR8_COMPENSATABLE_AMOUNT(BigDecimal r8_COMPENSATABLE_AMOUNT) {
+						R8_COMPENSATABLE_AMOUNT = r8_COMPENSATABLE_AMOUNT;
+					}
+					public String getR9_SCVRN() {
+						return R9_SCVRN;
+					}
+					public void setR9_SCVRN(String r9_SCVRN) {
+						R9_SCVRN = r9_SCVRN;
+					}
+					public BigDecimal getR9_AGGREGATE_BALANCE() {
+						return R9_AGGREGATE_BALANCE;
+					}
+					public void setR9_AGGREGATE_BALANCE(BigDecimal r9_AGGREGATE_BALANCE) {
+						R9_AGGREGATE_BALANCE = r9_AGGREGATE_BALANCE;
+					}
+					public BigDecimal getR9_COMPENSATABLE_AMOUNT() {
+						return R9_COMPENSATABLE_AMOUNT;
+					}
+					public void setR9_COMPENSATABLE_AMOUNT(BigDecimal r9_COMPENSATABLE_AMOUNT) {
+						R9_COMPENSATABLE_AMOUNT = r9_COMPENSATABLE_AMOUNT;
+					}
+					public String getR10_SCVRN() {
+						return R10_SCVRN;
+					}
+					public void setR10_SCVRN(String r10_SCVRN) {
+						R10_SCVRN = r10_SCVRN;
+					}
+					public BigDecimal getR10_AGGREGATE_BALANCE() {
+						return R10_AGGREGATE_BALANCE;
+					}
+					public void setR10_AGGREGATE_BALANCE(BigDecimal r10_AGGREGATE_BALANCE) {
+						R10_AGGREGATE_BALANCE = r10_AGGREGATE_BALANCE;
+					}
+					public BigDecimal getR10_COMPENSATABLE_AMOUNT() {
+						return R10_COMPENSATABLE_AMOUNT;
+					}
+					public void setR10_COMPENSATABLE_AMOUNT(BigDecimal r10_COMPENSATABLE_AMOUNT) {
+						R10_COMPENSATABLE_AMOUNT = r10_COMPENSATABLE_AMOUNT;
+					}
+					public Date getREPORT_DATE() {
+						return REPORT_DATE;
+					}
+
+					public void setREPORT_DATE(Date REPORT_DATE) {
+						this.REPORT_DATE = REPORT_DATE;
+					}
+
+					public BigDecimal getREPORT_VERSION() {
+						return REPORT_VERSION;
+					}
+
+					public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
+						this.REPORT_VERSION = REPORT_VERSION;
+					}
+
+					public String getREPORT_FREQUENCY() {
+						return REPORT_FREQUENCY;
+					}
+
+					public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+						REPORT_FREQUENCY = rEPORT_FREQUENCY;
+					}
+
+					public String getREPORT_CODE() {
+						return REPORT_CODE;
+					}
+
+					public void setREPORT_CODE(String rEPORT_CODE) {
+						REPORT_CODE = rEPORT_CODE;
+					}
+
+					public String getREPORT_DESC() {
+						return REPORT_DESC;
+					}
+
+					public void setREPORT_DESC(String rEPORT_DESC) {
+						REPORT_DESC = rEPORT_DESC;
+					}
+
+					public String getENTITY_FLG() {
+						return ENTITY_FLG;
+					}
+
+					public void setENTITY_FLG(String eNTITY_FLG) {
+						ENTITY_FLG = eNTITY_FLG;
+					}
+
+					public String getMODIFY_FLG() {
+						return MODIFY_FLG;
+					}
+
+					public void setMODIFY_FLG(String mODIFY_FLG) {
+						MODIFY_FLG = mODIFY_FLG;
+					}
+
+					public String getDEL_FLG() {
+						return DEL_FLG;
+					}
+
+					public void setDEL_FLG(String dEL_FLG) {
+						DEL_FLG = dEL_FLG;
+					}
+
+				}
+				
+				
+				
+	 			// ROW MAPPER DETAIL
+
+					class BDISB3RowMapper_Detail implements RowMapper<BDISB3_Detail_Entity> {
+
+						@Override
+						public BDISB3_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+							BDISB3_Detail_Entity obj = new BDISB3_Detail_Entity();	
+							
+							// -------- R5 --------
+							obj.setR5_SCVRN(rs.getString("R5_SCVRN"));
+							obj.setR5_AGGREGATE_BALANCE(rs.getBigDecimal("R5_AGGREGATE_BALANCE"));
+							obj.setR5_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R5_COMPENSATABLE_AMOUNT"));
+
+							// -------- R6 --------
+							obj.setR6_SCVRN(rs.getString("R6_SCVRN"));
+							obj.setR6_AGGREGATE_BALANCE(rs.getBigDecimal("R6_AGGREGATE_BALANCE"));
+							obj.setR6_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R6_COMPENSATABLE_AMOUNT"));
+
+							// -------- R7 --------
+							obj.setR7_SCVRN(rs.getString("R7_SCVRN"));
+							obj.setR7_AGGREGATE_BALANCE(rs.getBigDecimal("R7_AGGREGATE_BALANCE"));
+							obj.setR7_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R7_COMPENSATABLE_AMOUNT"));
+
+							// -------- R8 --------
+							obj.setR8_SCVRN(rs.getString("R8_SCVRN"));
+							obj.setR8_AGGREGATE_BALANCE(rs.getBigDecimal("R8_AGGREGATE_BALANCE"));
+							obj.setR8_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R8_COMPENSATABLE_AMOUNT"));
+
+							// -------- R9 --------
+							obj.setR9_SCVRN(rs.getString("R9_SCVRN"));
+							obj.setR9_AGGREGATE_BALANCE(rs.getBigDecimal("R9_AGGREGATE_BALANCE"));
+							obj.setR9_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R9_COMPENSATABLE_AMOUNT"));
+
+							// -------- R10 --------
+							obj.setR10_SCVRN(rs.getString("R10_SCVRN"));
+							obj.setR10_AGGREGATE_BALANCE(rs.getBigDecimal("R10_AGGREGATE_BALANCE"));
+							obj.setR10_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R10_COMPENSATABLE_AMOUNT"));
+							
+							// COMMON FIELDS
+							obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+							obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+							obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+							obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+							obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+							obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+							obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+							obj.setDEL_FLG(rs.getString("DEL_FLG"));
+							
+
+							return obj;
+						}
+					}
+					
+					public static class BDISB3_Detail_Entity {
+						
+						public String R5_SCVRN;
+					    public BigDecimal R5_AGGREGATE_BALANCE;
+					    public BigDecimal R5_COMPENSATABLE_AMOUNT;
+
+					    // -------- R6 --------
+					    public String R6_SCVRN;
+					    public BigDecimal R6_AGGREGATE_BALANCE;
+					    public BigDecimal R6_COMPENSATABLE_AMOUNT;
+
+					    // -------- R7 --------
+					    public String R7_SCVRN;
+					    public BigDecimal R7_AGGREGATE_BALANCE;
+					    public BigDecimal R7_COMPENSATABLE_AMOUNT;
+
+					    // -------- R8 --------
+					    public String R8_SCVRN;
+					    public BigDecimal R8_AGGREGATE_BALANCE;
+					    public BigDecimal R8_COMPENSATABLE_AMOUNT;
+
+					    // -------- R9 --------
+					    public String R9_SCVRN;
+					    public BigDecimal R9_AGGREGATE_BALANCE;
+					    public BigDecimal R9_COMPENSATABLE_AMOUNT;
+
+					    // -------- R10 --------
+					    public String R10_SCVRN;
+					    public BigDecimal R10_AGGREGATE_BALANCE;
+					    public BigDecimal R10_COMPENSATABLE_AMOUNT;
+					    
+					    @Id
+						@Temporal(TemporalType.DATE)
+						@Column(name = "REPORT_DATE")
+						private Date REPORT_DATE;
+
+						@Column(name = "REPORT_VERSION", length = 100)
+						private BigDecimal REPORT_VERSION;
+
+						@Column(name = "REPORT_FREQUENCY", length = 100)
+						private String REPORT_FREQUENCY;
+
+						@Column(name = "REPORT_CODE", length = 100)
+						private String REPORT_CODE;
+
+						@Column(name = "REPORT_DESC", length = 100)
+						private String REPORT_DESC;
+
+						@Column(name = "ENTITY_FLG", length = 1)
+						private String ENTITY_FLG;
+
+						@Column(name = "MODIFY_FLG", length = 1)
+						private String MODIFY_FLG;
+
+						@Column(name = "DEL_FLG", length = 1)
+						private String DEL_FLG;
+						
+						public String getR5_SCVRN() {
+							return R5_SCVRN;
+						}
+						public void setR5_SCVRN(String r5_SCVRN) {
+							R5_SCVRN = r5_SCVRN;
+						}
+						
+						public BigDecimal getR5_AGGREGATE_BALANCE() {
+							return R5_AGGREGATE_BALANCE;
+						}
+						public void setR5_AGGREGATE_BALANCE(BigDecimal r5_AGGREGATE_BALANCE) {
+							R5_AGGREGATE_BALANCE = r5_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR5_COMPENSATABLE_AMOUNT() {
+							return R5_COMPENSATABLE_AMOUNT;
+						}
+						public void setR5_COMPENSATABLE_AMOUNT(BigDecimal r5_COMPENSATABLE_AMOUNT) {
+							R5_COMPENSATABLE_AMOUNT = r5_COMPENSATABLE_AMOUNT;
+						}
+						public String getR6_SCVRN() {
+							return R6_SCVRN;
+						}
+						public void setR6_SCVRN(String r6_SCVRN) {
+							R6_SCVRN = r6_SCVRN;
+						}
+						public BigDecimal getR6_AGGREGATE_BALANCE() {
+							return R6_AGGREGATE_BALANCE;
+						}
+						public void setR6_AGGREGATE_BALANCE(BigDecimal r6_AGGREGATE_BALANCE) {
+							R6_AGGREGATE_BALANCE = r6_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR6_COMPENSATABLE_AMOUNT() {
+							return R6_COMPENSATABLE_AMOUNT;
+						}
+						public void setR6_COMPENSATABLE_AMOUNT(BigDecimal r6_COMPENSATABLE_AMOUNT) {
+							R6_COMPENSATABLE_AMOUNT = r6_COMPENSATABLE_AMOUNT;
+						}
+						public String getR7_SCVRN() {
+							return R7_SCVRN;
+						}
+						public void setR7_SCVRN(String r7_SCVRN) {
+							R7_SCVRN = r7_SCVRN;
+						}
+						public BigDecimal getR7_AGGREGATE_BALANCE() {
+							return R7_AGGREGATE_BALANCE;
+						}
+						public void setR7_AGGREGATE_BALANCE(BigDecimal r7_AGGREGATE_BALANCE) {
+							R7_AGGREGATE_BALANCE = r7_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR7_COMPENSATABLE_AMOUNT() {
+							return R7_COMPENSATABLE_AMOUNT;
+						}
+						public void setR7_COMPENSATABLE_AMOUNT(BigDecimal r7_COMPENSATABLE_AMOUNT) {
+							R7_COMPENSATABLE_AMOUNT = r7_COMPENSATABLE_AMOUNT;
+						}
+						public String getR8_SCVRN() {
+							return R8_SCVRN;
+						}
+						public void setR8_SCVRN(String r8_SCVRN) {
+							R8_SCVRN = r8_SCVRN;
+						}
+						public BigDecimal getR8_AGGREGATE_BALANCE() {
+							return R8_AGGREGATE_BALANCE;
+						}
+						public void setR8_AGGREGATE_BALANCE(BigDecimal r8_AGGREGATE_BALANCE) {
+							R8_AGGREGATE_BALANCE = r8_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR8_COMPENSATABLE_AMOUNT() {
+							return R8_COMPENSATABLE_AMOUNT;
+						}
+						public void setR8_COMPENSATABLE_AMOUNT(BigDecimal r8_COMPENSATABLE_AMOUNT) {
+							R8_COMPENSATABLE_AMOUNT = r8_COMPENSATABLE_AMOUNT;
+						}
+						public String getR9_SCVRN() {
+							return R9_SCVRN;
+						}
+						public void setR9_SCVRN(String r9_SCVRN) {
+							R9_SCVRN = r9_SCVRN;
+						}
+						public BigDecimal getR9_AGGREGATE_BALANCE() {
+							return R9_AGGREGATE_BALANCE;
+						}
+						public void setR9_AGGREGATE_BALANCE(BigDecimal r9_AGGREGATE_BALANCE) {
+							R9_AGGREGATE_BALANCE = r9_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR9_COMPENSATABLE_AMOUNT() {
+							return R9_COMPENSATABLE_AMOUNT;
+						}
+						public void setR9_COMPENSATABLE_AMOUNT(BigDecimal r9_COMPENSATABLE_AMOUNT) {
+							R9_COMPENSATABLE_AMOUNT = r9_COMPENSATABLE_AMOUNT;
+						}
+						public String getR10_SCVRN() {
+							return R10_SCVRN;
+						}
+						public void setR10_SCVRN(String r10_SCVRN) {
+							R10_SCVRN = r10_SCVRN;
+						}
+						public BigDecimal getR10_AGGREGATE_BALANCE() {
+							return R10_AGGREGATE_BALANCE;
+						}
+						public void setR10_AGGREGATE_BALANCE(BigDecimal r10_AGGREGATE_BALANCE) {
+							R10_AGGREGATE_BALANCE = r10_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR10_COMPENSATABLE_AMOUNT() {
+							return R10_COMPENSATABLE_AMOUNT;
+						}
+						public void setR10_COMPENSATABLE_AMOUNT(BigDecimal r10_COMPENSATABLE_AMOUNT) {
+							R10_COMPENSATABLE_AMOUNT = r10_COMPENSATABLE_AMOUNT;
+						}
+						public Date getREPORT_DATE() {
+							return REPORT_DATE;
+						}
+
+						public void setREPORT_DATE(Date REPORT_DATE) {
+							this.REPORT_DATE = REPORT_DATE;
+						}
+
+						public BigDecimal getREPORT_VERSION() {
+							return REPORT_VERSION;
+						}
+
+						public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
+							this.REPORT_VERSION = REPORT_VERSION;
+						}
+
+						public String getREPORT_FREQUENCY() {
+							return REPORT_FREQUENCY;
+						}
+
+						public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+							REPORT_FREQUENCY = rEPORT_FREQUENCY;
+						}
+
+						public String getREPORT_CODE() {
+							return REPORT_CODE;
+						}
+
+						public void setREPORT_CODE(String rEPORT_CODE) {
+							REPORT_CODE = rEPORT_CODE;
+						}
+
+						public String getREPORT_DESC() {
+							return REPORT_DESC;
+						}
+
+						public void setREPORT_DESC(String rEPORT_DESC) {
+							REPORT_DESC = rEPORT_DESC;
+						}
+
+						public String getENTITY_FLG() {
+							return ENTITY_FLG;
+						}
+
+						public void setENTITY_FLG(String eNTITY_FLG) {
+							ENTITY_FLG = eNTITY_FLG;
+						}
+
+						public String getMODIFY_FLG() {
+							return MODIFY_FLG;
+						}
+
+						public void setMODIFY_FLG(String mODIFY_FLG) {
+							MODIFY_FLG = mODIFY_FLG;
+						}
+
+						public String getDEL_FLG() {
+							return DEL_FLG;
+						}
+
+						public void setDEL_FLG(String dEL_FLG) {
+							DEL_FLG = dEL_FLG;
+						}
+
+					}
+					
+					
+		 			// ROW MAPPER ARCHIVAL SUMMARY
+
+					class BDISB3_RowMapper_Archival implements RowMapper<BDISB3_Archival_Summary_Entity> {
+
+						@Override
+						public BDISB3_Archival_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+							BDISB3_Archival_Summary_Entity obj = new BDISB3_Archival_Summary_Entity();	
+							
+							// -------- R5 --------
+							obj.setR5_SCVRN(rs.getString("R5_SCVRN"));
+							obj.setR5_AGGREGATE_BALANCE(rs.getBigDecimal("R5_AGGREGATE_BALANCE"));
+							obj.setR5_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R5_COMPENSATABLE_AMOUNT"));
+
+							// -------- R6 --------
+							obj.setR6_SCVRN(rs.getString("R6_SCVRN"));
+							obj.setR6_AGGREGATE_BALANCE(rs.getBigDecimal("R6_AGGREGATE_BALANCE"));
+							obj.setR6_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R6_COMPENSATABLE_AMOUNT"));
+
+							// -------- R7 --------
+							obj.setR7_SCVRN(rs.getString("R7_SCVRN"));
+							obj.setR7_AGGREGATE_BALANCE(rs.getBigDecimal("R7_AGGREGATE_BALANCE"));
+							obj.setR7_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R7_COMPENSATABLE_AMOUNT"));
+
+							// -------- R8 --------
+							obj.setR8_SCVRN(rs.getString("R8_SCVRN"));
+							obj.setR8_AGGREGATE_BALANCE(rs.getBigDecimal("R8_AGGREGATE_BALANCE"));
+							obj.setR8_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R8_COMPENSATABLE_AMOUNT"));
+
+							// -------- R9 --------
+							obj.setR9_SCVRN(rs.getString("R9_SCVRN"));
+							obj.setR9_AGGREGATE_BALANCE(rs.getBigDecimal("R9_AGGREGATE_BALANCE"));
+							obj.setR9_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R9_COMPENSATABLE_AMOUNT"));
+
+							// -------- R10 --------
+							obj.setR10_SCVRN(rs.getString("R10_SCVRN"));
+							obj.setR10_AGGREGATE_BALANCE(rs.getBigDecimal("R10_AGGREGATE_BALANCE"));
+							obj.setR10_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R10_COMPENSATABLE_AMOUNT"));
+							
+							// COMMON FIELDS
+							obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+							obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+							obj.setREPORT_RESUBDATE(rs.getDate("REPORT_RESUBDATE"));
+							obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+							obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+							obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+							obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+							obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+							obj.setDEL_FLG(rs.getString("DEL_FLG"));
+							
+
+							return obj;
+						}
+					}
+					
+					public static class BDISB3_Archival_Summary_Entity {
+						
+						public String R5_SCVRN;
+					    public BigDecimal R5_AGGREGATE_BALANCE;
+					    public BigDecimal R5_COMPENSATABLE_AMOUNT;
+
+					    // -------- R6 --------
+					    public String R6_SCVRN;
+					    public BigDecimal R6_AGGREGATE_BALANCE;
+					    public BigDecimal R6_COMPENSATABLE_AMOUNT;
+
+					    // -------- R7 --------
+					    public String R7_SCVRN;
+					    public BigDecimal R7_AGGREGATE_BALANCE;
+					    public BigDecimal R7_COMPENSATABLE_AMOUNT;
+
+					    // -------- R8 --------
+					    public String R8_SCVRN;
+					    public BigDecimal R8_AGGREGATE_BALANCE;
+					    public BigDecimal R8_COMPENSATABLE_AMOUNT;
+
+					    // -------- R9 --------
+					    public String R9_SCVRN;
+					    public BigDecimal R9_AGGREGATE_BALANCE;
+					    public BigDecimal R9_COMPENSATABLE_AMOUNT;
+
+					    // -------- R10 --------
+					    public String R10_SCVRN;
+					    public BigDecimal R10_AGGREGATE_BALANCE;
+					    public BigDecimal R10_COMPENSATABLE_AMOUNT;
+					    
+					    @Id
+						@Temporal(TemporalType.DATE)
+						@Column(name = "REPORT_DATE")
+						private Date REPORT_DATE;
+
+						@Column(name = "REPORT_VERSION", length = 100)
+						private BigDecimal REPORT_VERSION;
+						
+						@Column(name = "REPORT_RESUBDATE")
+						private Date REPORT_RESUBDATE;
+
+						@Column(name = "REPORT_FREQUENCY", length = 100)
+						private String REPORT_FREQUENCY;
+
+						@Column(name = "REPORT_CODE", length = 100)
+						private String REPORT_CODE;
+
+						@Column(name = "REPORT_DESC", length = 100)
+						private String REPORT_DESC;
+
+						@Column(name = "ENTITY_FLG", length = 1)
+						private String ENTITY_FLG;
+
+						@Column(name = "MODIFY_FLG", length = 1)
+						private String MODIFY_FLG;
+
+						@Column(name = "DEL_FLG", length = 1)
+						private String DEL_FLG;
+						
+						
+						public String getR5_SCVRN() {
+							return R5_SCVRN;
+						}
+						public void setR5_SCVRN(String r5_SCVRN) {
+							R5_SCVRN = r5_SCVRN;
+						}
+						public BigDecimal getR5_AGGREGATE_BALANCE() {
+							return R5_AGGREGATE_BALANCE;
+						}
+						public void setR5_AGGREGATE_BALANCE(BigDecimal r5_AGGREGATE_BALANCE) {
+							R5_AGGREGATE_BALANCE = r5_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR5_COMPENSATABLE_AMOUNT() {
+							return R5_COMPENSATABLE_AMOUNT;
+						}
+						public void setR5_COMPENSATABLE_AMOUNT(BigDecimal r5_COMPENSATABLE_AMOUNT) {
+							R5_COMPENSATABLE_AMOUNT = r5_COMPENSATABLE_AMOUNT;
+						}
+						public String getR6_SCVRN() {
+							return R6_SCVRN;
+						}
+						public void setR6_SCVRN(String r6_SCVRN) {
+							R6_SCVRN = r6_SCVRN;
+						}
+						public BigDecimal getR6_AGGREGATE_BALANCE() {
+							return R6_AGGREGATE_BALANCE;
+						}
+						public void setR6_AGGREGATE_BALANCE(BigDecimal r6_AGGREGATE_BALANCE) {
+							R6_AGGREGATE_BALANCE = r6_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR6_COMPENSATABLE_AMOUNT() {
+							return R6_COMPENSATABLE_AMOUNT;
+						}
+						public void setR6_COMPENSATABLE_AMOUNT(BigDecimal r6_COMPENSATABLE_AMOUNT) {
+							R6_COMPENSATABLE_AMOUNT = r6_COMPENSATABLE_AMOUNT;
+						}
+						public String getR7_SCVRN() {
+							return R7_SCVRN;
+						}
+						public void setR7_SCVRN(String r7_SCVRN) {
+							R7_SCVRN = r7_SCVRN;
+						}
+						public BigDecimal getR7_AGGREGATE_BALANCE() {
+							return R7_AGGREGATE_BALANCE;
+						}
+						public void setR7_AGGREGATE_BALANCE(BigDecimal r7_AGGREGATE_BALANCE) {
+							R7_AGGREGATE_BALANCE = r7_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR7_COMPENSATABLE_AMOUNT() {
+							return R7_COMPENSATABLE_AMOUNT;
+						}
+						public void setR7_COMPENSATABLE_AMOUNT(BigDecimal r7_COMPENSATABLE_AMOUNT) {
+							R7_COMPENSATABLE_AMOUNT = r7_COMPENSATABLE_AMOUNT;
+						}
+						public String getR8_SCVRN() {
+							return R8_SCVRN;
+						}
+						public void setR8_SCVRN(String r8_SCVRN) {
+							R8_SCVRN = r8_SCVRN;
+						}
+						public BigDecimal getR8_AGGREGATE_BALANCE() {
+							return R8_AGGREGATE_BALANCE;
+						}
+						public void setR8_AGGREGATE_BALANCE(BigDecimal r8_AGGREGATE_BALANCE) {
+							R8_AGGREGATE_BALANCE = r8_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR8_COMPENSATABLE_AMOUNT() {
+							return R8_COMPENSATABLE_AMOUNT;
+						}
+						public void setR8_COMPENSATABLE_AMOUNT(BigDecimal r8_COMPENSATABLE_AMOUNT) {
+							R8_COMPENSATABLE_AMOUNT = r8_COMPENSATABLE_AMOUNT;
+						}
+						public String getR9_SCVRN() {
+							return R9_SCVRN;
+						}
+						public void setR9_SCVRN(String r9_SCVRN) {
+							R9_SCVRN = r9_SCVRN;
+						}
+						public BigDecimal getR9_AGGREGATE_BALANCE() {
+							return R9_AGGREGATE_BALANCE;
+						}
+						public void setR9_AGGREGATE_BALANCE(BigDecimal r9_AGGREGATE_BALANCE) {
+							R9_AGGREGATE_BALANCE = r9_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR9_COMPENSATABLE_AMOUNT() {
+							return R9_COMPENSATABLE_AMOUNT;
+						}
+						public void setR9_COMPENSATABLE_AMOUNT(BigDecimal r9_COMPENSATABLE_AMOUNT) {
+							R9_COMPENSATABLE_AMOUNT = r9_COMPENSATABLE_AMOUNT;
+						}
+						public String getR10_SCVRN() {
+							return R10_SCVRN;
+						}
+						public void setR10_SCVRN(String r10_SCVRN) {
+							R10_SCVRN = r10_SCVRN;
+						}
+						public BigDecimal getR10_AGGREGATE_BALANCE() {
+							return R10_AGGREGATE_BALANCE;
+						}
+						public void setR10_AGGREGATE_BALANCE(BigDecimal r10_AGGREGATE_BALANCE) {
+							R10_AGGREGATE_BALANCE = r10_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR10_COMPENSATABLE_AMOUNT() {
+							return R10_COMPENSATABLE_AMOUNT;
+						}
+						public void setR10_COMPENSATABLE_AMOUNT(BigDecimal r10_COMPENSATABLE_AMOUNT) {
+							R10_COMPENSATABLE_AMOUNT = r10_COMPENSATABLE_AMOUNT;
+						}
+						public Date getREPORT_DATE() {
+							return REPORT_DATE;
+						}
+
+						public void setREPORT_DATE(Date REPORT_DATE) {
+							this.REPORT_DATE = REPORT_DATE;
+						}
+
+						public BigDecimal getREPORT_VERSION() {
+							return REPORT_VERSION;
+						}
+
+						public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
+							this.REPORT_VERSION = REPORT_VERSION;
+						}
+
+						public Date getREPORT_RESUBDATE() {
+							return REPORT_RESUBDATE;
+						}
+
+						public void setREPORT_RESUBDATE(Date REPORT_RESUBDATE) {
+							this.REPORT_RESUBDATE = REPORT_RESUBDATE;
+						}
+
+						public String getREPORT_FREQUENCY() {
+							return REPORT_FREQUENCY;
+						}
+
+						public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+							REPORT_FREQUENCY = rEPORT_FREQUENCY;
+						}
+
+						public String getREPORT_CODE() {
+							return REPORT_CODE;
+						}
+
+						public void setREPORT_CODE(String rEPORT_CODE) {
+							REPORT_CODE = rEPORT_CODE;
+						}
+
+						public String getREPORT_DESC() {
+							return REPORT_DESC;
+						}
+
+						public void setREPORT_DESC(String rEPORT_DESC) {
+							REPORT_DESC = rEPORT_DESC;
+						}
+
+						public String getENTITY_FLG() {
+							return ENTITY_FLG;
+						}
+
+						public void setENTITY_FLG(String eNTITY_FLG) {
+							ENTITY_FLG = eNTITY_FLG;
+						}
+
+						public String getMODIFY_FLG() {
+							return MODIFY_FLG;
+						}
+
+						public void setMODIFY_FLG(String mODIFY_FLG) {
+							MODIFY_FLG = mODIFY_FLG;
+						}
+
+						public String getDEL_FLG() {
+							return DEL_FLG;
+						}
+
+						public void setDEL_FLG(String dEL_FLG) {
+							DEL_FLG = dEL_FLG;
+						}
+
+					}
+						
+    
+					
+					
+		 			// ROW MAPPER ARCHIVAL DETAIL
+
+					class BDISB3RowMapper_ArchivalDetail implements RowMapper<BDISB3_Archival_Detail_Entity> {
+
+						@Override
+						public BDISB3_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+							BDISB3_Archival_Detail_Entity obj = new BDISB3_Archival_Detail_Entity();	
+							
+							// -------- R5 --------
+							obj.setR5_SCVRN(rs.getString("R5_SCVRN"));
+							obj.setR5_AGGREGATE_BALANCE(rs.getBigDecimal("R5_AGGREGATE_BALANCE"));
+							obj.setR5_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R5_COMPENSATABLE_AMOUNT"));
+
+							// -------- R6 --------
+							obj.setR6_SCVRN(rs.getString("R6_SCVRN"));
+							obj.setR6_AGGREGATE_BALANCE(rs.getBigDecimal("R6_AGGREGATE_BALANCE"));
+							obj.setR6_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R6_COMPENSATABLE_AMOUNT"));
+
+							// -------- R7 --------
+							obj.setR7_SCVRN(rs.getString("R7_SCVRN"));
+							obj.setR7_AGGREGATE_BALANCE(rs.getBigDecimal("R7_AGGREGATE_BALANCE"));
+							obj.setR7_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R7_COMPENSATABLE_AMOUNT"));
+
+							// -------- R8 --------
+							obj.setR8_SCVRN(rs.getString("R8_SCVRN"));
+							obj.setR8_AGGREGATE_BALANCE(rs.getBigDecimal("R8_AGGREGATE_BALANCE"));
+							obj.setR8_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R8_COMPENSATABLE_AMOUNT"));
+
+							// -------- R9 --------
+							obj.setR9_SCVRN(rs.getString("R9_SCVRN"));
+							obj.setR9_AGGREGATE_BALANCE(rs.getBigDecimal("R9_AGGREGATE_BALANCE"));
+							obj.setR9_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R9_COMPENSATABLE_AMOUNT"));
+
+							// -------- R10 --------
+							obj.setR10_SCVRN(rs.getString("R10_SCVRN"));
+							obj.setR10_AGGREGATE_BALANCE(rs.getBigDecimal("R10_AGGREGATE_BALANCE"));
+							obj.setR10_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R10_COMPENSATABLE_AMOUNT"));
+							
+							// COMMON FIELDS
+							obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+							obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+							obj.setREPORT_RESUBDATE(rs.getDate("REPORT_RESUBDATE"));
+							obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+							obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+							obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+							obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+							obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+							obj.setDEL_FLG(rs.getString("DEL_FLG"));
+							
+
+							return obj;
+						}
+					}
+					
+					public static class BDISB3_Archival_Detail_Entity {
+						
+						public String R5_SCVRN;
+					    public BigDecimal R5_AGGREGATE_BALANCE;
+					    public BigDecimal R5_COMPENSATABLE_AMOUNT;
+
+					    // -------- R6 --------
+					    public String R6_SCVRN;
+					    public BigDecimal R6_AGGREGATE_BALANCE;
+					    public BigDecimal R6_COMPENSATABLE_AMOUNT;
+
+					    // -------- R7 --------
+					    public String R7_SCVRN;
+					    public BigDecimal R7_AGGREGATE_BALANCE;
+					    public BigDecimal R7_COMPENSATABLE_AMOUNT;
+
+					    // -------- R8 --------
+					    public String R8_SCVRN;
+					    public BigDecimal R8_AGGREGATE_BALANCE;
+					    public BigDecimal R8_COMPENSATABLE_AMOUNT;
+
+					    // -------- R9 --------
+					    public String R9_SCVRN;
+					    public BigDecimal R9_AGGREGATE_BALANCE;
+					    public BigDecimal R9_COMPENSATABLE_AMOUNT;
+
+					    // -------- R10 --------
+					    public String R10_SCVRN;
+					    public BigDecimal R10_AGGREGATE_BALANCE;
+					    public BigDecimal R10_COMPENSATABLE_AMOUNT;
+					    
+					    @Id
+						@Temporal(TemporalType.DATE)
+						@Column(name = "REPORT_DATE")
+						private Date REPORT_DATE;
+
+						@Column(name = "REPORT_VERSION", length = 100)
+						private BigDecimal REPORT_VERSION;
+						
+						@Column(name = "REPORT_RESUBDATE")
+						private Date REPORT_RESUBDATE;
+
+						@Column(name = "REPORT_FREQUENCY", length = 100)
+						private String REPORT_FREQUENCY;
+
+						@Column(name = "REPORT_CODE", length = 100)
+						private String REPORT_CODE;
+
+						@Column(name = "REPORT_DESC", length = 100)
+						private String REPORT_DESC;
+
+						@Column(name = "ENTITY_FLG", length = 1)
+						private String ENTITY_FLG;
+
+						@Column(name = "MODIFY_FLG", length = 1)
+						private String MODIFY_FLG;
+
+						@Column(name = "DEL_FLG", length = 1)
+						private String DEL_FLG;
+						
+						public String getR5_SCVRN() {
+							return R5_SCVRN;
+						}
+						public void setR5_SCVRN(String r5_SCVRN) {
+							R5_SCVRN = r5_SCVRN;
+						}
+						
+						public BigDecimal getR5_AGGREGATE_BALANCE() {
+							return R5_AGGREGATE_BALANCE;
+						}
+						public void setR5_AGGREGATE_BALANCE(BigDecimal r5_AGGREGATE_BALANCE) {
+							R5_AGGREGATE_BALANCE = r5_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR5_COMPENSATABLE_AMOUNT() {
+							return R5_COMPENSATABLE_AMOUNT;
+						}
+						public void setR5_COMPENSATABLE_AMOUNT(BigDecimal r5_COMPENSATABLE_AMOUNT) {
+							R5_COMPENSATABLE_AMOUNT = r5_COMPENSATABLE_AMOUNT;
+						}
+						public String getR6_SCVRN() {
+							return R6_SCVRN;
+						}
+						public void setR6_SCVRN(String r6_SCVRN) {
+							R6_SCVRN = r6_SCVRN;
+						}
+						public BigDecimal getR6_AGGREGATE_BALANCE() {
+							return R6_AGGREGATE_BALANCE;
+						}
+						public void setR6_AGGREGATE_BALANCE(BigDecimal r6_AGGREGATE_BALANCE) {
+							R6_AGGREGATE_BALANCE = r6_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR6_COMPENSATABLE_AMOUNT() {
+							return R6_COMPENSATABLE_AMOUNT;
+						}
+						public void setR6_COMPENSATABLE_AMOUNT(BigDecimal r6_COMPENSATABLE_AMOUNT) {
+							R6_COMPENSATABLE_AMOUNT = r6_COMPENSATABLE_AMOUNT;
+						}
+						public String getR7_SCVRN() {
+							return R7_SCVRN;
+						}
+						public void setR7_SCVRN(String r7_SCVRN) {
+							R7_SCVRN = r7_SCVRN;
+						}
+						public BigDecimal getR7_AGGREGATE_BALANCE() {
+							return R7_AGGREGATE_BALANCE;
+						}
+						public void setR7_AGGREGATE_BALANCE(BigDecimal r7_AGGREGATE_BALANCE) {
+							R7_AGGREGATE_BALANCE = r7_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR7_COMPENSATABLE_AMOUNT() {
+							return R7_COMPENSATABLE_AMOUNT;
+						}
+						public void setR7_COMPENSATABLE_AMOUNT(BigDecimal r7_COMPENSATABLE_AMOUNT) {
+							R7_COMPENSATABLE_AMOUNT = r7_COMPENSATABLE_AMOUNT;
+						}
+						public String getR8_SCVRN() {
+							return R8_SCVRN;
+						}
+						public void setR8_SCVRN(String r8_SCVRN) {
+							R8_SCVRN = r8_SCVRN;
+						}
+						public BigDecimal getR8_AGGREGATE_BALANCE() {
+							return R8_AGGREGATE_BALANCE;
+						}
+						public void setR8_AGGREGATE_BALANCE(BigDecimal r8_AGGREGATE_BALANCE) {
+							R8_AGGREGATE_BALANCE = r8_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR8_COMPENSATABLE_AMOUNT() {
+							return R8_COMPENSATABLE_AMOUNT;
+						}
+						public void setR8_COMPENSATABLE_AMOUNT(BigDecimal r8_COMPENSATABLE_AMOUNT) {
+							R8_COMPENSATABLE_AMOUNT = r8_COMPENSATABLE_AMOUNT;
+						}
+						public String getR9_SCVRN() {
+							return R9_SCVRN;
+						}
+						public void setR9_SCVRN(String r9_SCVRN) {
+							R9_SCVRN = r9_SCVRN;
+						}
+						public BigDecimal getR9_AGGREGATE_BALANCE() {
+							return R9_AGGREGATE_BALANCE;
+						}
+						public void setR9_AGGREGATE_BALANCE(BigDecimal r9_AGGREGATE_BALANCE) {
+							R9_AGGREGATE_BALANCE = r9_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR9_COMPENSATABLE_AMOUNT() {
+							return R9_COMPENSATABLE_AMOUNT;
+						}
+						public void setR9_COMPENSATABLE_AMOUNT(BigDecimal r9_COMPENSATABLE_AMOUNT) {
+							R9_COMPENSATABLE_AMOUNT = r9_COMPENSATABLE_AMOUNT;
+						}
+						public String getR10_SCVRN() {
+							return R10_SCVRN;
+						}
+						public void setR10_SCVRN(String r10_SCVRN) {
+							R10_SCVRN = r10_SCVRN;
+						}
+						public BigDecimal getR10_AGGREGATE_BALANCE() {
+							return R10_AGGREGATE_BALANCE;
+						}
+						public void setR10_AGGREGATE_BALANCE(BigDecimal r10_AGGREGATE_BALANCE) {
+							R10_AGGREGATE_BALANCE = r10_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR10_COMPENSATABLE_AMOUNT() {
+							return R10_COMPENSATABLE_AMOUNT;
+						}
+						public void setR10_COMPENSATABLE_AMOUNT(BigDecimal r10_COMPENSATABLE_AMOUNT) {
+							R10_COMPENSATABLE_AMOUNT = r10_COMPENSATABLE_AMOUNT;
+						}
+						public Date getREPORT_DATE() {
+							return REPORT_DATE;
+						}
+
+						public void setREPORT_DATE(Date REPORT_DATE) {
+							this.REPORT_DATE = REPORT_DATE;
+						}
+
+						public BigDecimal getREPORT_VERSION() {
+							return REPORT_VERSION;
+						}
+
+						public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
+							this.REPORT_VERSION = REPORT_VERSION;
+						}
+
+						public Date getREPORT_RESUBDATE() {
+							return REPORT_RESUBDATE;
+						}
+
+						public void setREPORT_RESUBDATE(Date REPORT_RESUBDATE) {
+							this.REPORT_RESUBDATE = REPORT_RESUBDATE;
+						}
+
+						public String getREPORT_FREQUENCY() {
+							return REPORT_FREQUENCY;
+						}
+
+						public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+							REPORT_FREQUENCY = rEPORT_FREQUENCY;
+						}
+
+						public String getREPORT_CODE() {
+							return REPORT_CODE;
+						}
+
+						public void setREPORT_CODE(String rEPORT_CODE) {
+							REPORT_CODE = rEPORT_CODE;
+						}
+
+						public String getREPORT_DESC() {
+							return REPORT_DESC;
+						}
+
+						public void setREPORT_DESC(String rEPORT_DESC) {
+							REPORT_DESC = rEPORT_DESC;
+						}
+
+						public String getENTITY_FLG() {
+							return ENTITY_FLG;
+						}
+
+						public void setENTITY_FLG(String eNTITY_FLG) {
+							ENTITY_FLG = eNTITY_FLG;
+						}
+
+						public String getMODIFY_FLG() {
+							return MODIFY_FLG;
+						}
+
+						public void setMODIFY_FLG(String mODIFY_FLG) {
+							MODIFY_FLG = mODIFY_FLG;
+						}
+
+						public String getDEL_FLG() {
+							return DEL_FLG;
+						}
+
+						public void setDEL_FLG(String dEL_FLG) {
+							DEL_FLG = dEL_FLG;
+						}
+
+					}
+					
+					
+		 			// ROW MAPPER RESUB SUMMARY
+
+					class BDISB3_RowMapper_Resub implements RowMapper<BDISB3_RESUB_Summary_Entity> {
+
+						@Override
+						public BDISB3_RESUB_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+							BDISB3_RESUB_Summary_Entity obj = new BDISB3_RESUB_Summary_Entity();	
+							
+							// -------- R5 --------
+							obj.setR5_SCVRN(rs.getString("R5_SCVRN"));
+							obj.setR5_AGGREGATE_BALANCE(rs.getBigDecimal("R5_AGGREGATE_BALANCE"));
+							obj.setR5_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R5_COMPENSATABLE_AMOUNT"));
+
+							// -------- R6 --------
+							obj.setR6_SCVRN(rs.getString("R6_SCVRN"));
+							obj.setR6_AGGREGATE_BALANCE(rs.getBigDecimal("R6_AGGREGATE_BALANCE"));
+							obj.setR6_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R6_COMPENSATABLE_AMOUNT"));
+
+							// -------- R7 --------
+							obj.setR7_SCVRN(rs.getString("R7_SCVRN"));
+							obj.setR7_AGGREGATE_BALANCE(rs.getBigDecimal("R7_AGGREGATE_BALANCE"));
+							obj.setR7_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R7_COMPENSATABLE_AMOUNT"));
+
+							// -------- R8 --------
+							obj.setR8_SCVRN(rs.getString("R8_SCVRN"));
+							obj.setR8_AGGREGATE_BALANCE(rs.getBigDecimal("R8_AGGREGATE_BALANCE"));
+							obj.setR8_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R8_COMPENSATABLE_AMOUNT"));
+
+							// -------- R9 --------
+							obj.setR9_SCVRN(rs.getString("R9_SCVRN"));
+							obj.setR9_AGGREGATE_BALANCE(rs.getBigDecimal("R9_AGGREGATE_BALANCE"));
+							obj.setR9_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R9_COMPENSATABLE_AMOUNT"));
+
+							// -------- R10 --------
+							obj.setR10_SCVRN(rs.getString("R10_SCVRN"));
+							obj.setR10_AGGREGATE_BALANCE(rs.getBigDecimal("R10_AGGREGATE_BALANCE"));
+							obj.setR10_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R10_COMPENSATABLE_AMOUNT"));
+							
+							// COMMON FIELDS
+							obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+							obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+							obj.setREPORT_RESUBDATE(rs.getDate("REPORT_RESUBDATE"));
+							obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+							obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+							obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+							obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+							obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+							obj.setDEL_FLG(rs.getString("DEL_FLG"));
+							
+
+							return obj;
+						}
+					}
+					
+					public static class BDISB3_RESUB_Summary_Entity {
+						
+						public String R5_SCVRN;
+					    public BigDecimal R5_AGGREGATE_BALANCE;
+					    public BigDecimal R5_COMPENSATABLE_AMOUNT;
+
+					    // -------- R6 --------
+					    public String R6_SCVRN;
+					    public BigDecimal R6_AGGREGATE_BALANCE;
+					    public BigDecimal R6_COMPENSATABLE_AMOUNT;
+
+					    // -------- R7 --------
+					    public String R7_SCVRN;
+					    public BigDecimal R7_AGGREGATE_BALANCE;
+					    public BigDecimal R7_COMPENSATABLE_AMOUNT;
+
+					    // -------- R8 --------
+					    public String R8_SCVRN;
+					    public BigDecimal R8_AGGREGATE_BALANCE;
+					    public BigDecimal R8_COMPENSATABLE_AMOUNT;
+
+					    // -------- R9 --------
+					    public String R9_SCVRN;
+					    public BigDecimal R9_AGGREGATE_BALANCE;
+					    public BigDecimal R9_COMPENSATABLE_AMOUNT;
+
+					    // -------- R10 --------
+					    public String R10_SCVRN;
+					    public BigDecimal R10_AGGREGATE_BALANCE;
+					    public BigDecimal R10_COMPENSATABLE_AMOUNT;
+					    
+					    @Id
+						@Temporal(TemporalType.DATE)
+						@Column(name = "REPORT_DATE")
+						private Date REPORT_DATE;
+
+						@Column(name = "REPORT_VERSION", length = 100)
+						private BigDecimal REPORT_VERSION;
+						
+						@Column(name = "REPORT_RESUBDATE")
+						private Date REPORT_RESUBDATE;
+
+						@Column(name = "REPORT_FREQUENCY", length = 100)
+						private String REPORT_FREQUENCY;
+
+						@Column(name = "REPORT_CODE", length = 100)
+						private String REPORT_CODE;
+
+						@Column(name = "REPORT_DESC", length = 100)
+						private String REPORT_DESC;
+
+						@Column(name = "ENTITY_FLG", length = 1)
+						private String ENTITY_FLG;
+
+						@Column(name = "MODIFY_FLG", length = 1)
+						private String MODIFY_FLG;
+
+						@Column(name = "DEL_FLG", length = 1)
+						private String DEL_FLG;
+						
+						public String getR5_SCVRN() {
+							return R5_SCVRN;
+						}
+						public void setR5_SCVRN(String r5_SCVRN) {
+							R5_SCVRN = r5_SCVRN;
+						}
+						
+						public BigDecimal getR5_AGGREGATE_BALANCE() {
+							return R5_AGGREGATE_BALANCE;
+						}
+						public void setR5_AGGREGATE_BALANCE(BigDecimal r5_AGGREGATE_BALANCE) {
+							R5_AGGREGATE_BALANCE = r5_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR5_COMPENSATABLE_AMOUNT() {
+							return R5_COMPENSATABLE_AMOUNT;
+						}
+						public void setR5_COMPENSATABLE_AMOUNT(BigDecimal r5_COMPENSATABLE_AMOUNT) {
+							R5_COMPENSATABLE_AMOUNT = r5_COMPENSATABLE_AMOUNT;
+						}
+						public String getR6_SCVRN() {
+							return R6_SCVRN;
+						}
+						public void setR6_SCVRN(String r6_SCVRN) {
+							R6_SCVRN = r6_SCVRN;
+						}
+						public BigDecimal getR6_AGGREGATE_BALANCE() {
+							return R6_AGGREGATE_BALANCE;
+						}
+						public void setR6_AGGREGATE_BALANCE(BigDecimal r6_AGGREGATE_BALANCE) {
+							R6_AGGREGATE_BALANCE = r6_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR6_COMPENSATABLE_AMOUNT() {
+							return R6_COMPENSATABLE_AMOUNT;
+						}
+						public void setR6_COMPENSATABLE_AMOUNT(BigDecimal r6_COMPENSATABLE_AMOUNT) {
+							R6_COMPENSATABLE_AMOUNT = r6_COMPENSATABLE_AMOUNT;
+						}
+						public String getR7_SCVRN() {
+							return R7_SCVRN;
+						}
+						public void setR7_SCVRN(String r7_SCVRN) {
+							R7_SCVRN = r7_SCVRN;
+						}
+						public BigDecimal getR7_AGGREGATE_BALANCE() {
+							return R7_AGGREGATE_BALANCE;
+						}
+						public void setR7_AGGREGATE_BALANCE(BigDecimal r7_AGGREGATE_BALANCE) {
+							R7_AGGREGATE_BALANCE = r7_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR7_COMPENSATABLE_AMOUNT() {
+							return R7_COMPENSATABLE_AMOUNT;
+						}
+						public void setR7_COMPENSATABLE_AMOUNT(BigDecimal r7_COMPENSATABLE_AMOUNT) {
+							R7_COMPENSATABLE_AMOUNT = r7_COMPENSATABLE_AMOUNT;
+						}
+						public String getR8_SCVRN() {
+							return R8_SCVRN;
+						}
+						public void setR8_SCVRN(String r8_SCVRN) {
+							R8_SCVRN = r8_SCVRN;
+						}
+						public BigDecimal getR8_AGGREGATE_BALANCE() {
+							return R8_AGGREGATE_BALANCE;
+						}
+						public void setR8_AGGREGATE_BALANCE(BigDecimal r8_AGGREGATE_BALANCE) {
+							R8_AGGREGATE_BALANCE = r8_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR8_COMPENSATABLE_AMOUNT() {
+							return R8_COMPENSATABLE_AMOUNT;
+						}
+						public void setR8_COMPENSATABLE_AMOUNT(BigDecimal r8_COMPENSATABLE_AMOUNT) {
+							R8_COMPENSATABLE_AMOUNT = r8_COMPENSATABLE_AMOUNT;
+						}
+						public String getR9_SCVRN() {
+							return R9_SCVRN;
+						}
+						public void setR9_SCVRN(String r9_SCVRN) {
+							R9_SCVRN = r9_SCVRN;
+						}
+						public BigDecimal getR9_AGGREGATE_BALANCE() {
+							return R9_AGGREGATE_BALANCE;
+						}
+						public void setR9_AGGREGATE_BALANCE(BigDecimal r9_AGGREGATE_BALANCE) {
+							R9_AGGREGATE_BALANCE = r9_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR9_COMPENSATABLE_AMOUNT() {
+							return R9_COMPENSATABLE_AMOUNT;
+						}
+						public void setR9_COMPENSATABLE_AMOUNT(BigDecimal r9_COMPENSATABLE_AMOUNT) {
+							R9_COMPENSATABLE_AMOUNT = r9_COMPENSATABLE_AMOUNT;
+						}
+						public String getR10_SCVRN() {
+							return R10_SCVRN;
+						}
+						public void setR10_SCVRN(String r10_SCVRN) {
+							R10_SCVRN = r10_SCVRN;
+						}
+						public BigDecimal getR10_AGGREGATE_BALANCE() {
+							return R10_AGGREGATE_BALANCE;
+						}
+						public void setR10_AGGREGATE_BALANCE(BigDecimal r10_AGGREGATE_BALANCE) {
+							R10_AGGREGATE_BALANCE = r10_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR10_COMPENSATABLE_AMOUNT() {
+							return R10_COMPENSATABLE_AMOUNT;
+						}
+						public void setR10_COMPENSATABLE_AMOUNT(BigDecimal r10_COMPENSATABLE_AMOUNT) {
+							R10_COMPENSATABLE_AMOUNT = r10_COMPENSATABLE_AMOUNT;
+						}
+						public Date getREPORT_DATE() {
+							return REPORT_DATE;
+						}
+
+						public void setREPORT_DATE(Date REPORT_DATE) {
+							this.REPORT_DATE = REPORT_DATE;
+						}
+
+						public BigDecimal getREPORT_VERSION() {
+							return REPORT_VERSION;
+						}
+
+						public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
+							this.REPORT_VERSION = REPORT_VERSION;
+						}
+
+						public Date getREPORT_RESUBDATE() {
+							return REPORT_RESUBDATE;
+						}
+
+						public void setREPORT_RESUBDATE(Date REPORT_RESUBDATE) {
+							this.REPORT_RESUBDATE = REPORT_RESUBDATE;
+						}
+
+						public String getREPORT_FREQUENCY() {
+							return REPORT_FREQUENCY;
+						}
+
+						public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+							REPORT_FREQUENCY = rEPORT_FREQUENCY;
+						}
+
+						public String getREPORT_CODE() {
+							return REPORT_CODE;
+						}
+
+						public void setREPORT_CODE(String rEPORT_CODE) {
+							REPORT_CODE = rEPORT_CODE;
+						}
+
+						public String getREPORT_DESC() {
+							return REPORT_DESC;
+						}
+
+						public void setREPORT_DESC(String rEPORT_DESC) {
+							REPORT_DESC = rEPORT_DESC;
+						}
+
+						public String getENTITY_FLG() {
+							return ENTITY_FLG;
+						}
+
+						public void setENTITY_FLG(String eNTITY_FLG) {
+							ENTITY_FLG = eNTITY_FLG;
+						}
+
+						public String getMODIFY_FLG() {
+							return MODIFY_FLG;
+						}
+
+						public void setMODIFY_FLG(String mODIFY_FLG) {
+							MODIFY_FLG = mODIFY_FLG;
+						}
+
+						public String getDEL_FLG() {
+							return DEL_FLG;
+						}
+
+						public void setDEL_FLG(String dEL_FLG) {
+							DEL_FLG = dEL_FLG;
+						}
+
+					}
+					
+					
+		 			// ROW MAPPER RESUB DETAIL
+
+					class BDISB3RowMapper_ResubDetail implements RowMapper<BDISB3_RESUB_Detail_Entity> {
+
+						@Override
+						public BDISB3_RESUB_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+							BDISB3_RESUB_Detail_Entity obj = new BDISB3_RESUB_Detail_Entity();	
+							
+							// -------- R5 --------
+							obj.setR5_SCVRN(rs.getString("R5_SCVRN"));
+							obj.setR5_AGGREGATE_BALANCE(rs.getBigDecimal("R5_AGGREGATE_BALANCE"));
+							obj.setR5_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R5_COMPENSATABLE_AMOUNT"));
+
+							// -------- R6 --------
+							obj.setR6_SCVRN(rs.getString("R6_SCVRN"));
+							obj.setR6_AGGREGATE_BALANCE(rs.getBigDecimal("R6_AGGREGATE_BALANCE"));
+							obj.setR6_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R6_COMPENSATABLE_AMOUNT"));
+
+							// -------- R7 --------
+							obj.setR7_SCVRN(rs.getString("R7_SCVRN"));
+							obj.setR7_AGGREGATE_BALANCE(rs.getBigDecimal("R7_AGGREGATE_BALANCE"));
+							obj.setR7_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R7_COMPENSATABLE_AMOUNT"));
+
+							// -------- R8 --------
+							obj.setR8_SCVRN(rs.getString("R8_SCVRN"));
+							obj.setR8_AGGREGATE_BALANCE(rs.getBigDecimal("R8_AGGREGATE_BALANCE"));
+							obj.setR8_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R8_COMPENSATABLE_AMOUNT"));
+
+							// -------- R9 --------
+							obj.setR9_SCVRN(rs.getString("R9_SCVRN"));
+							obj.setR9_AGGREGATE_BALANCE(rs.getBigDecimal("R9_AGGREGATE_BALANCE"));
+							obj.setR9_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R9_COMPENSATABLE_AMOUNT"));
+
+							// -------- R10 --------
+							obj.setR10_SCVRN(rs.getString("R10_SCVRN"));
+							obj.setR10_AGGREGATE_BALANCE(rs.getBigDecimal("R10_AGGREGATE_BALANCE"));
+							obj.setR10_COMPENSATABLE_AMOUNT(rs.getBigDecimal("R10_COMPENSATABLE_AMOUNT"));
+							
+							// COMMON FIELDS
+							obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+							obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+							obj.setREPORT_RESUBDATE(rs.getDate("REPORT_RESUBDATE"));
+							obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+							obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+							obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+							obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+							obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+							obj.setDEL_FLG(rs.getString("DEL_FLG"));
+							
+
+							return obj;
+						}
+					}
+					
+					public static class BDISB3_RESUB_Detail_Entity {
+						
+						public String R5_SCVRN;
+					    public BigDecimal R5_AGGREGATE_BALANCE;
+					    public BigDecimal R5_COMPENSATABLE_AMOUNT;
+
+					    // -------- R6 --------
+					    public String R6_SCVRN;
+					    public BigDecimal R6_AGGREGATE_BALANCE;
+					    public BigDecimal R6_COMPENSATABLE_AMOUNT;
+
+					    // -------- R7 --------
+					    public String R7_SCVRN;
+					    public BigDecimal R7_AGGREGATE_BALANCE;
+					    public BigDecimal R7_COMPENSATABLE_AMOUNT;
+
+					    // -------- R8 --------
+					    public String R8_SCVRN;
+					    public BigDecimal R8_AGGREGATE_BALANCE;
+					    public BigDecimal R8_COMPENSATABLE_AMOUNT;
+
+					    // -------- R9 --------
+					    public String R9_SCVRN;
+					    public BigDecimal R9_AGGREGATE_BALANCE;
+					    public BigDecimal R9_COMPENSATABLE_AMOUNT;
+
+					    // -------- R10 --------
+					    public String R10_SCVRN;
+					    public BigDecimal R10_AGGREGATE_BALANCE;
+					    public BigDecimal R10_COMPENSATABLE_AMOUNT;
+					    
+					    @Id
+						@Temporal(TemporalType.DATE)
+						@Column(name = "REPORT_DATE")
+						private Date REPORT_DATE;
+
+						@Column(name = "REPORT_VERSION", length = 100)
+						private BigDecimal REPORT_VERSION;
+						
+						@Column(name = "REPORT_RESUBDATE")
+						private Date REPORT_RESUBDATE;
+
+						@Column(name = "REPORT_FREQUENCY", length = 100)
+						private String REPORT_FREQUENCY;
+
+						@Column(name = "REPORT_CODE", length = 100)
+						private String REPORT_CODE;
+
+						@Column(name = "REPORT_DESC", length = 100)
+						private String REPORT_DESC;
+
+						@Column(name = "ENTITY_FLG", length = 1)
+						private String ENTITY_FLG;
+
+						@Column(name = "MODIFY_FLG", length = 1)
+						private String MODIFY_FLG;
+
+						@Column(name = "DEL_FLG", length = 1)
+						private String DEL_FLG;
+						
+						public String getR5_SCVRN() {
+							return R5_SCVRN;
+						}
+						public void setR5_SCVRN(String r5_SCVRN) {
+							R5_SCVRN = r5_SCVRN;
+						}
+						
+						public BigDecimal getR5_AGGREGATE_BALANCE() {
+							return R5_AGGREGATE_BALANCE;
+						}
+						public void setR5_AGGREGATE_BALANCE(BigDecimal r5_AGGREGATE_BALANCE) {
+							R5_AGGREGATE_BALANCE = r5_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR5_COMPENSATABLE_AMOUNT() {
+							return R5_COMPENSATABLE_AMOUNT;
+						}
+						public void setR5_COMPENSATABLE_AMOUNT(BigDecimal r5_COMPENSATABLE_AMOUNT) {
+							R5_COMPENSATABLE_AMOUNT = r5_COMPENSATABLE_AMOUNT;
+						}
+						public String getR6_SCVRN() {
+							return R6_SCVRN;
+						}
+						public void setR6_SCVRN(String r6_SCVRN) {
+							R6_SCVRN = r6_SCVRN;
+						}
+						public BigDecimal getR6_AGGREGATE_BALANCE() {
+							return R6_AGGREGATE_BALANCE;
+						}
+						public void setR6_AGGREGATE_BALANCE(BigDecimal r6_AGGREGATE_BALANCE) {
+							R6_AGGREGATE_BALANCE = r6_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR6_COMPENSATABLE_AMOUNT() {
+							return R6_COMPENSATABLE_AMOUNT;
+						}
+						public void setR6_COMPENSATABLE_AMOUNT(BigDecimal r6_COMPENSATABLE_AMOUNT) {
+							R6_COMPENSATABLE_AMOUNT = r6_COMPENSATABLE_AMOUNT;
+						}
+						public String getR7_SCVRN() {
+							return R7_SCVRN;
+						}
+						public void setR7_SCVRN(String r7_SCVRN) {
+							R7_SCVRN = r7_SCVRN;
+						}
+						public BigDecimal getR7_AGGREGATE_BALANCE() {
+							return R7_AGGREGATE_BALANCE;
+						}
+						public void setR7_AGGREGATE_BALANCE(BigDecimal r7_AGGREGATE_BALANCE) {
+							R7_AGGREGATE_BALANCE = r7_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR7_COMPENSATABLE_AMOUNT() {
+							return R7_COMPENSATABLE_AMOUNT;
+						}
+						public void setR7_COMPENSATABLE_AMOUNT(BigDecimal r7_COMPENSATABLE_AMOUNT) {
+							R7_COMPENSATABLE_AMOUNT = r7_COMPENSATABLE_AMOUNT;
+						}
+						public String getR8_SCVRN() {
+							return R8_SCVRN;
+						}
+						public void setR8_SCVRN(String r8_SCVRN) {
+							R8_SCVRN = r8_SCVRN;
+						}
+						public BigDecimal getR8_AGGREGATE_BALANCE() {
+							return R8_AGGREGATE_BALANCE;
+						}
+						public void setR8_AGGREGATE_BALANCE(BigDecimal r8_AGGREGATE_BALANCE) {
+							R8_AGGREGATE_BALANCE = r8_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR8_COMPENSATABLE_AMOUNT() {
+							return R8_COMPENSATABLE_AMOUNT;
+						}
+						public void setR8_COMPENSATABLE_AMOUNT(BigDecimal r8_COMPENSATABLE_AMOUNT) {
+							R8_COMPENSATABLE_AMOUNT = r8_COMPENSATABLE_AMOUNT;
+						}
+						public String getR9_SCVRN() {
+							return R9_SCVRN;
+						}
+						public void setR9_SCVRN(String r9_SCVRN) {
+							R9_SCVRN = r9_SCVRN;
+						}
+						public BigDecimal getR9_AGGREGATE_BALANCE() {
+							return R9_AGGREGATE_BALANCE;
+						}
+						public void setR9_AGGREGATE_BALANCE(BigDecimal r9_AGGREGATE_BALANCE) {
+							R9_AGGREGATE_BALANCE = r9_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR9_COMPENSATABLE_AMOUNT() {
+							return R9_COMPENSATABLE_AMOUNT;
+						}
+						public void setR9_COMPENSATABLE_AMOUNT(BigDecimal r9_COMPENSATABLE_AMOUNT) {
+							R9_COMPENSATABLE_AMOUNT = r9_COMPENSATABLE_AMOUNT;
+						}
+						public String getR10_SCVRN() {
+							return R10_SCVRN;
+						}
+						public void setR10_SCVRN(String r10_SCVRN) {
+							R10_SCVRN = r10_SCVRN;
+						}
+						public BigDecimal getR10_AGGREGATE_BALANCE() {
+							return R10_AGGREGATE_BALANCE;
+						}
+						public void setR10_AGGREGATE_BALANCE(BigDecimal r10_AGGREGATE_BALANCE) {
+							R10_AGGREGATE_BALANCE = r10_AGGREGATE_BALANCE;
+						}
+						public BigDecimal getR10_COMPENSATABLE_AMOUNT() {
+							return R10_COMPENSATABLE_AMOUNT;
+						}
+						public void setR10_COMPENSATABLE_AMOUNT(BigDecimal r10_COMPENSATABLE_AMOUNT) {
+							R10_COMPENSATABLE_AMOUNT = r10_COMPENSATABLE_AMOUNT;
+						}
+						public Date getREPORT_DATE() {
+							return REPORT_DATE;
+						}
+
+						public void setREPORT_DATE(Date REPORT_DATE) {
+							this.REPORT_DATE = REPORT_DATE;
+						}
+
+						public BigDecimal getREPORT_VERSION() {
+							return REPORT_VERSION;
+						}
+
+						public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
+							this.REPORT_VERSION = REPORT_VERSION;
+						}
+
+						public Date getREPORT_RESUBDATE() {
+							return REPORT_RESUBDATE;
+						}
+
+						public void setREPORT_RESUBDATE(Date REPORT_RESUBDATE) {
+							this.REPORT_RESUBDATE = REPORT_RESUBDATE;
+						}
+
+						public String getREPORT_FREQUENCY() {
+							return REPORT_FREQUENCY;
+						}
+
+						public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+							REPORT_FREQUENCY = rEPORT_FREQUENCY;
+						}
+
+						public String getREPORT_CODE() {
+							return REPORT_CODE;
+						}
+
+						public void setREPORT_CODE(String rEPORT_CODE) {
+							REPORT_CODE = rEPORT_CODE;
+						}
+
+						public String getREPORT_DESC() {
+							return REPORT_DESC;
+						}
+
+						public void setREPORT_DESC(String rEPORT_DESC) {
+							REPORT_DESC = rEPORT_DESC;
+						}
+
+						public String getENTITY_FLG() {
+							return ENTITY_FLG;
+						}
+
+						public void setENTITY_FLG(String eNTITY_FLG) {
+							ENTITY_FLG = eNTITY_FLG;
+						}
+
+						public String getMODIFY_FLG() {
+							return MODIFY_FLG;
+						}
+
+						public void setMODIFY_FLG(String mODIFY_FLG) {
+							MODIFY_FLG = mODIFY_FLG;
+						}
+
+						public String getDEL_FLG() {
+							return DEL_FLG;
+						}
+
+						public void setDEL_FLG(String dEL_FLG) {
+							DEL_FLG = dEL_FLG;
+						}
+
+					}
+						
+     
+    
+    
+    
+    
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getM_BDISB3View(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type,  BigDecimal version) {
+	public ModelAndView getBRRS_BDISB3View(String reportId, String fromdate, String todate, String currency, String dtltype,
+			Pageable pageable, String type, BigDecimal version) {
+
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
 
@@ -99,29 +2220,78 @@ public class BRRS_BDISB3_ReportService {
 		int startItem = currentPage * pageSize;
 
 		try {
-			Date d1 = dateformat.parse(todate);
+			Date dt = dateformat.parse(todate);
+
+			System.out.println("======= VIEW DEBUG =======");
+			System.out.println("TYPE      : " + type);
+			System.out.println("DTLTYPE   : " + dtltype);
+			System.out.println("DATE      : " + dt);
+			System.out.println("VERSION   : " + version);
+			System.out.println("==========================");
+
+			// ===========================================================
+			// SUMMARY SECTION
+			// ===========================================================
 
 			// ---------- CASE 1: ARCHIVAL ----------
 			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
-				List<BDISB3_Archival_Summary_Entity> T1Master = BDISB3_Archival_Summary_Repo
-						.getdatabydateListarchival(d1, version);
 
+				List<BDISB3_Archival_Summary_Entity> T1Master = getdatabydateListarchival1(dt, version);
+				
 				mv.addObject("reportsummary", T1Master);
-			}
+				mv.addObject("displaymode", "summary");
 
+			}
 			// ---------- CASE 2: RESUB ----------
 			else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-				List<BDISB3_Archival_Summary_Entity> T1Master = BDISB3_Archival_Summary_Repo
-						.getdatabydateListarchival(d1, version);
 
+				List<BDISB3_RESUB_Summary_Entity> T1Master = getdatabydateListresub1(dt, version);
+				
 				mv.addObject("reportsummary", T1Master);
+				mv.addObject("displaymode", "resubSummary");
 			}
 
 			// ---------- CASE 3: NORMAL ----------
 			else {
-				List<BDISB3_Summary_Entity> T1Master = BDISB3_Summary_Repo.getdatabydateListWithVersion(todate);
-				System.out.println("T1Master Size " + T1Master.size());
+
+				List<BDISB3_Summary_Entity> T1Master = getDataByDate1(dt);
+				
+				System.out.println("T1Master Size: " + T1Master.size());
+
 				mv.addObject("reportsummary", T1Master);
+				mv.addObject("displaymode", "summary");
+			}
+
+			// ---------- CASE 4: DETAIL (NEW, ONLY ADDITION) ----------
+			if ("detail".equalsIgnoreCase(dtltype)) {
+
+				// DETAIL + ARCHIVAL
+				if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+
+					List<BDISB3_Archival_Detail_Entity> T1Master = getdatabydateListArchivalDetail1(dt, version);
+
+					mv.addObject("displaymode", "Details");
+					mv.addObject("reportsummary", T1Master);
+				}
+				// ---------- RESUB DETAIL ----------
+				else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+
+					List<BDISB3_RESUB_Detail_Entity> T1Master = getdatabydateListResubDetail1(dt, version);
+
+					System.out.println("Resub Detail Size : " + T1Master.size());
+
+					mv.addObject("displaymode", "resubDetail");
+					mv.addObject("reportsummary", T1Master);
+
+				}
+				// DETAIL + NORMAL
+				else {
+
+					List<BDISB3_Detail_Entity> T1Master = getDetaildatabydateList1(dt);
+
+					mv.addObject("displaymode", "Details");
+					mv.addObject("reportsummary", T1Master);
+				}
 			}
 
 		} catch (ParseException e) {
@@ -129,220 +2299,189 @@ public class BRRS_BDISB3_ReportService {
 		}
 
 		mv.setViewName("BRRS/BDISB3");
-		mv.addObject("displaymode", "summary");
+
 		System.out.println("View set to: " + mv.getViewName());
+
 		return mv;
 	}
+	
 
-	public ModelAndView getBDISB3currentDtl(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String Filter, String type, String version) {
+	
+	public void updateResubReport(
+	        BDISB3_RESUB_Summary_Entity updatedEntity1) {
 
-		int pageSize = pageable != null ? pageable.getPageSize() : 10;
-		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
-		int totalPages = 0;
+	    // ====================================================
+	    // 1️⃣ GET REPORT DATE
+	    // ====================================================
 
-		ModelAndView mv = new ModelAndView();
-		// Session hs = sessionFactory.getCurrentSession();
+	    Date reportDate1 = updatedEntity1.getREPORT_DATE();
 
+	    if (reportDate1 == null ) {
+	        throw new RuntimeException("Report date cannot be null");
+	    }
+
+	    // ====================================================
+	    // 2️⃣ FETCH MAX VERSION
+	    // ====================================================
+
+	    BigDecimal maxVer1 = RESUBfindMaxVersion1(reportDate1);
+
+	    if (maxVer1 == null)
+	        maxVer1 = BigDecimal.ZERO;
+
+	   
+
+	    BigDecimal currentMax = maxVer1;
+	    BigDecimal newVersion = currentMax.add(BigDecimal.ONE);
+
+	    Date now = new Date();
+
+	    // ====================================================
+	    // 3️⃣ RESUB SUMMARY
+	    // ====================================================
+
+	    BDISB3_RESUB_Summary_Entity resubSummary1 = new BDISB3_RESUB_Summary_Entity();
+
+	    BeanUtils.copyProperties(updatedEntity1, resubSummary1);
+
+	    resubSummary1.setREPORT_DATE(reportDate1);
+	    resubSummary1.setREPORT_VERSION(newVersion);
+	    resubSummary1.setREPORT_RESUBDATE(now);
+
+	    // ====================================================
+	    // 4️⃣ RESUB DETAIL
+	    // ====================================================
+
+	    BDISB3_RESUB_Detail_Entity resubDetail1 = new BDISB3_RESUB_Detail_Entity();
+
+	    BeanUtils.copyProperties(updatedEntity1, resubDetail1);
+
+	    resubDetail1.setREPORT_DATE(reportDate1);
+	    resubDetail1.setREPORT_VERSION(newVersion);
+	    resubDetail1.setREPORT_RESUBDATE(now);
+
+	    // ====================================================
+	    // 5️⃣ ARCHIVAL SUMMARY
+	    // ====================================================
+
+	    BDISB3_Archival_Summary_Entity archSummary1 = new BDISB3_Archival_Summary_Entity();
+
+	    BeanUtils.copyProperties(updatedEntity1, archSummary1);
+
+	    archSummary1.setREPORT_DATE(reportDate1);
+	    archSummary1.setREPORT_VERSION(newVersion);
+	    archSummary1.setREPORT_RESUBDATE(now);
+
+
+	    // ====================================================
+	    // 6️⃣ ARCHIVAL DETAIL
+	    // ====================================================
+
+	    BDISB3_Archival_Detail_Entity archDetail1 = new BDISB3_Archival_Detail_Entity();
+
+	    BeanUtils.copyProperties(updatedEntity1, archDetail1);
+
+	    archDetail1.setREPORT_DATE(reportDate1);
+	    archDetail1.setREPORT_VERSION(newVersion);
+	    archDetail1.setREPORT_RESUBDATE(now);
+
+	   
+
+	    // ====================================================
+	    // 7️⃣ SAVE ALL
+	    // ====================================================
+
+	    sessionFactory.getCurrentSession().merge(resubSummary1);
+
+	    sessionFactory.getCurrentSession().merge(resubDetail1);
+
+	    sessionFactory.getCurrentSession().merge(archSummary1);
+
+	    sessionFactory.getCurrentSession().merge(archDetail1);
+	}
+	
+	@Transactional
+	public void updateReport(BDISB3_Summary_Entity request) {
+
+	    try {
+
+	        StringBuilder sql = new StringBuilder(
+	                "UPDATE BRRS_BDISB3_SUMMARYTABLE SET ");
+
+	        List<Object> params = new ArrayList<>();
+
+	        for (int i = 5; i <= 10; i++) {
+
+	            sql.append("R").append(i).append("_SCVRN=?,")
+	               .append("R").append(i).append("_AGGREGATE_BALANCE=?,")
+	               .append("R").append(i).append("_COMPENSATABLE_AMOUNT=?,");
+
+	            params.add(getValue(request, "getR" + i + "_SCVRN"));
+	            params.add(getValue(request, "getR" + i + "_AGGREGATE_BALANCE"));
+	            params.add(getValue(request, "getR" + i + "_COMPENSATABLE_AMOUNT"));
+	        }
+
+	        // Remove last comma
+	        sql.deleteCharAt(sql.length() - 1);
+
+	        sql.append(" WHERE REPORT_DATE=?");
+
+	        params.add(request.getREPORT_DATE());
+
+	        int count = jdbcTemplate.update(sql.toString(), params.toArray());
+
+	        System.out.println("Rows Updated = " + count);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        throw new RuntimeException("Error while updating BRRS_BDISB3 Report", e);
+	    }
+	}
+
+	private Object getValue(Object obj, String methodName) {
+	    try {
+	        return obj.getClass().getMethod(methodName).invoke(obj);
+	    } catch (Exception e) {
+	        throw new RuntimeException(e);
+	    }
+	}
+	
+//////////////////////////////////////////RESUBMISSION///////////////////////////////////////////////////////////////////
+/// Report Date | Report Version | Domain
+/// RESUB VIEW
+
+	public List<Object[]> getBRRS_BDISB3Resub() {
+		List<Object[]> resubList = new ArrayList<>();
 		try {
-			Date parsedDate = null;
-			if (todate != null && !todate.isEmpty()) {
-				parsedDate = dateformat.parse(todate);
-			}
+			List<BDISB3_Archival_Summary_Entity> latestArchivalList = getdatabydateListWithVersion1();
 
-			String rowId = null;
-			String columnId = null;
-
-			// ✅ Split filter string into rowId & columnId
-			if (Filter != null && Filter.contains(",")) {
-				String[] parts = Filter.split(",");
-				if (parts.length >= 2) {
-					rowId = parts[0];
-					columnId = parts[1];
+			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+				for (BDISB3_Archival_Summary_Entity entity : latestArchivalList) {
+					resubList.add(new Object[] { entity.getREPORT_DATE(), entity.getREPORT_VERSION(),
+							entity.getREPORT_RESUBDATE() });
 				}
-			}
-			System.out.println(type);
-			if ("ARCHIVAL".equals(type) && version != null) {
-				System.out.println(type);
-				// 🔹 Archival branch
-				List<BDISB3_Archival_Detail_Entity> T1Dt1;
-				if (rowId != null && columnId != null) {
-					T1Dt1 = BDISB3_Detail_Repo_Archival.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
-				} else {
-					T1Dt1 = BDISB3_Detail_Repo_Archival.getdatabydateList(parsedDate, version);
-				}
-
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
-
+				System.out.println("Fetched " + resubList.size() + " record(s)");
 			} else {
-				System.out.println(
-						"row id is: " + rowId + " column id is : " + columnId + " date parsed is : " + parsedDate);
-				// 🔹 Current branch
-				List<BDISB3_Detail_Entity> T1Dt1;
-				if (rowId != null && columnId != null) {
-					T1Dt1 = repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
-				} else {
-					T1Dt1 = repo.getdatabydateList(parsedDate, currentPage, pageSize);
-					totalPages = repo.getdatacount(parsedDate);
-					mv.addObject("pagination", "YES");
-				}
-
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
-			}
-
-		} catch (ParseException e) {
-			e.printStackTrace();
-			mv.addObject("errorMessage", "Invalid date format: " + todate);
-		} catch (Exception e) {
-			e.printStackTrace();
-			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
-		}
-
-		// ✅ Common attributes
-		mv.setViewName("BRRS/BDISB3");
-		mv.addObject("displaymode", "Details");
-		mv.addObject("currentPage", currentPage);
-		System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
-		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
-		mv.addObject("reportsflag", "reportsflag");
-		mv.addObject("menu", reportId);
-
-		return mv;
-	}
-
-	public void updateDetailFromForm(Date reportDate, Map<String, String> params) {
-
-		System.out.println("came to service for update ");
-
-		for (Map.Entry<String, String> entry : params.entrySet()) {
-
-			String key = entry.getKey();
-			String value = entry.getValue();
-
-			if (!key.matches("R\\d+_C\\d+_(AGGREGATE_BALANCE|COMPENSATABLE_AMOUNT)")) {
-				continue;
-			}
-
-			String[] parts = key.split("_");
-			String reportLabel = parts[0];
-			String addlCriteria = parts[1];
-			String column = String.join("_", Arrays.copyOfRange(parts, 2, parts.length));
-
-			BigDecimal amount = new BigDecimal(value);
-
-			List<BDISB3_Detail_Entity> rows = repo.findByReportDateAndReportLableAndReportAddlCriteria1(reportDate,
-					reportLabel, addlCriteria);
-
-			for (BDISB3_Detail_Entity row : rows) {
-				if ("AGGREGATE_BALANCE".equals(column)) {
-					row.setAGGREGATE_BALANCE(amount);
-				} else if ("COMPENSATABLE_AMOUNT".equals(column)) {
-					row.setCOMPENSATABLE_AMOUNT(amount);
-				}
-			}
-
-			repo.saveAll(rows);
-		}
-
-		// ✅ CALL ORACLE PROCEDURE AFTER ALL UPDATES
-		callSummaryProcedure(reportDate);
-	}
-
-	private void callSummaryProcedure(Date reportDate) {
-
-		String sql = "{ call BRRS_BDISB3_SUMMARY_PROCEDURE(?) }";
-
-		jdbcTemplate.update(connection -> {
-			CallableStatement cs = connection.prepareCall(sql);
-
-			// Force exact format expected by procedure
-			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-			sdf.setLenient(false);
-
-			String formattedDate = sdf.format(reportDate);
-
-			cs.setString(1, formattedDate); // 🔥 THIS IS MANDATORY
-			return cs;
-		});
-
-		System.out.println(
-				"✅ Summary procedure executed for date: " + new SimpleDateFormat("dd-MM-yyyy").format(reportDate));
-	}
-
-	public void updateReport(BDISB3_Summary_Entity updatedEntity) {
-
-		System.out.println("Came to services");
-		System.out.println("Report Date: " + updatedEntity.getReportDate());
-
-		BDISB3_Summary_Entity existing = BDISB3_Summary_Repo
-				.findTopByReportDateOrderByReportVersionDesc(updatedEntity.getReportDate())
-				.orElseThrow(() -> new RuntimeException(
-						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
-
-		try {
-			// 1️⃣ Update R14 to R36 (based on your loop)
-			for (int i = 5; i <= 10; i++) {
-				String prefix = "R" + i + "_";
-
-				String[] fields = { "AGGREGATE_BALANCE", "COMPENSATABLE_AMOUNT" };
-
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-						Method getter = BDISB3_Summary_Entity.class.getMethod(getterName);
-						Method setter = BDISB3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-						Object newValue = getter.invoke(updatedEntity);
-
-						// ✔ Prevent null overwriting if updatedEntity does not send the field
-						if (newValue != null) {
-							setter.invoke(existing, newValue);
-						}
-
-					} catch (NoSuchMethodException e) {
-						System.out.println("Skipping missing field: " + setterName);
-					}
-				}
-			}
-
-			// 2️⃣ Handle R37 TOTAL
-			String prefix = "R10_";
-			String[] totalFields = { "AGGREGATE_BALANCE", "COMPENSATABLE_AMOUNT" };
-
-			for (String field : totalFields) {
-
-				String getterName = "get" + prefix + field;
-				String setterName = "set" + prefix + field;
-
-				try {
-					Method getter = BDISB3_Summary_Entity.class.getMethod(getterName);
-					Method setter = BDISB3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-					Object newValue = getter.invoke(updatedEntity);
-
-					if (newValue != null) {
-						setter.invoke(existing, newValue);
-					}
-
-				} catch (NoSuchMethodException e) {
-					System.out.println("Skipping missing total field: " + setterName);
-				}
+				System.out.println("No archival data found.");
 			}
 
 		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
+			System.err.println("Error fetching BRRS_BDISB3 Resub data: " + e.getMessage());
+			e.printStackTrace();
 		}
-
-		System.out.println("Saving updated entity");
-		BDISB3_Summary_Repo.save(existing);
+		return resubList;
 	}
 
+	public List<Object[]> getBRRS_BDISB3Archival() {
+
+		String sql = "SELECT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE " + "FROM BRRS_BDISB3_ARCHIVALTABLE_SUMMARY "
+				+ "ORDER BY REPORT_VERSION";
+
+		return jdbcTemplate.query(sql, (rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"),
+				rs.getBigDecimal("REPORT_VERSION"), rs.getDate("REPORT_RESUBDATE") });
+	}
+	
+	
 	public byte[] getBDISB3Excel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
@@ -360,15 +2499,15 @@ public class BRRS_BDISB3_ReportService {
 		else if ("RESUB".equalsIgnoreCase(type) && version != null ) {
 			logger.info("Service: Generating RESUB report for version {}", version);
 
-			List<BDISB3_Archival_Summary_Entity> T1Master = BDISB3_Archival_Summary_Repo
-					.getdatabydateListarchival(reportDate, version);
+			List<BDISB3_Archival_Summary_Entity> T1Master = getdatabydateListarchival1(dateformat.parse(todate), version);
+
 
 // Generate Excel for RESUB
 			return BRRS_BDISB3ResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
 
 // Default (LIVE) case
-		List<BDISB3_Summary_Entity> dataList1 = BDISB3_Summary_Repo.getdatabydateList(reportDate);
+		List<BDISB3_Summary_Entity> dataList1 = getDataByDate1(reportDate);
 
 		String templateDir = env.getProperty("output.exportpathtemp");
 		String templateFileName = filename;
@@ -577,8 +2716,7 @@ public class BRRS_BDISB3_ReportService {
 		logger.info("Service: Starting Excel generation process in memory.");
 		if ("ARCHIVAL".equals(type) && version != null) {
 		}
-		List<BDISB3_Archival_Summary_Entity> dataList1 = BDISB3_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<BDISB3_Archival_Summary_Entity> dataList1 = getdatabydateListarchival1(dateformat.parse(todate), version);
 
 		if (dataList1.isEmpty()) {
 			logger.warn("Service: No data found for BDISB3 report. Returning empty result.");
@@ -784,198 +2922,7 @@ public class BRRS_BDISB3_ReportService {
 		}
 	}
 
-//////////////////////////////////////////RESUBMISSION///////////////////////////////////////////////////////////////////	
-/// Report Date | Report Version | Domain
-/// RESUB VIEW
-	public List<Object[]> getBDISB3Resub() {
-		List<Object[]> resubList = new ArrayList<>();
-		try {
-			List<BDISB3_Archival_Summary_Entity> latestArchivalList = BDISB3_Archival_Summary_Repo
-					.getdatabydateListWithVersionAll();
 
-			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
-				for (BDISB3_Archival_Summary_Entity entity : latestArchivalList) {
-					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion() };
-					resubList.add(row);
-				}
-				System.out.println("Fetched " + resubList.size() + " record(s)");
-			} else {
-				System.out.println("No archival data found.");
-			}
-		} catch (Exception e) {
-			System.err.println("Error fetching BDISB1 Resub data: " + e.getMessage());
-			e.printStackTrace();
-		}
-		return resubList;
-	}
-
-//Archival View
-	public List<Object[]> getBDISB3Archival() {
-		List<Object[]> archivalList = new ArrayList<>();
-
-		try {
-			List<BDISB3_Archival_Summary_Entity> repoData = BDISB3_Archival_Summary_Repo
-					.getdatabydateListWithVersionAll();
-
-			if (repoData != null && !repoData.isEmpty()) {
-				for (BDISB3_Archival_Summary_Entity entity : repoData) {
-					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion() };
-					archivalList.add(row);
-				}
-
-				System.out.println("Fetched " + archivalList.size() + " archival records");
-				BDISB3_Archival_Summary_Entity first = repoData.get(0);
-				System.out.println("Latest archival version: " + first.getReportVersion());
-			} else {
-				System.out.println("No archival data found.");
-			}
-
-		} catch (Exception e) {
-			System.err.println("Error fetching BDISB3 Archival data: " + e.getMessage());
-			e.printStackTrace();
-		}
-
-		return archivalList;
-	}
-
-	@Transactional
-	public void updateReportReSub(BDISB3_Summary_Entity updatedEntity) {
-
-		System.out.println("Came to Resub Service");
-
-		Date reportDate = updatedEntity.getReportDate();
-		System.out.println("Report Date: " + reportDate);
-
-		try {
-			/*
-			 * ========================================================= 1️⃣ FETCH LATEST
-			 * ARCHIVAL VERSION =========================================================
-			 */
-			Optional<BDISB3_Archival_Summary_Entity> latestArchivalOpt = BDISB3_Archival_Summary_Repo
-					.getLatestArchivalVersionByDate(reportDate);
-
-			BigDecimal newVersion = BigDecimal.ONE;
-
-			if (latestArchivalOpt.isPresent()) {
-			    BigDecimal latestVersion = latestArchivalOpt.get().getReportVersion();
-			    newVersion = (latestVersion != null)
-			            ? latestVersion.add(BigDecimal.ONE)
-			            : BigDecimal.ONE;
-			}
-
-
-			boolean exists = BDISB3_Archival_Summary_Repo
-					.findByReportDateAndReportVersion(reportDate,newVersion).isPresent();
-
-			if (exists) {
-				throw new RuntimeException("Version " + newVersion + " already exists for report date " + reportDate);
-			}
-
-			/*
-			 * ========================================================= 2️⃣ CREATE NEW
-			 * ARCHIVAL ENTITY (BASE COPY)
-			 * =========================================================
-			 */
-			BDISB3_Archival_Summary_Entity archivalEntity = new BDISB3_Archival_Summary_Entity();
-
-			if (latestArchivalOpt.isPresent()) {
-				BeanUtils.copyProperties(latestArchivalOpt.get(), archivalEntity);
-			}
-
-			/*
-			 * ========================================================= 3️⃣ READ RAW
-			 * REQUEST PARAMETERS (CRITICAL FIX)
-			 * =========================================================
-			 */
-			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
-					.getRequest();
-
-			Map<String, String[]> parameterMap = request.getParameterMap();
-
-			for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
-
-				String key = entry.getKey(); // R6_C11_ACCT_NUM
-				String value = entry.getValue()[0];
-
-//Ignore non-field params
-				if ("asondate".equalsIgnoreCase(key) || "type".equalsIgnoreCase(key)) {
-					continue;
-				}
-
-//Normalize: R6_C11_ACCT_NUM → R6_ACCT_NUM
-				String normalizedKey = key.replaceFirst("_C\\d+_", "_");
-
-				/*
-				 * ===================================================== 4️⃣ APPLY VALUES
-				 * (EXPLICIT, SAFE, NO REFLECTION)
-				 * =====================================================
-				 */
-//======================= R5 – R11 =======================
-
-				if ("R5_AGGREGATE_BALANCE".equals(normalizedKey)) {
-					archivalEntity.setR5_AGGREGATE_BALANCE(parseBigDecimal(value));
-
-				} else if ("R5_COMPENSATABLE_AMOUNT".equals(normalizedKey)) {
-					archivalEntity.setR5_COMPENSATABLE_AMOUNT(parseBigDecimal(value));
-
-				} else if ("R6_AGGREGATE_BALANCE".equals(normalizedKey)) {
-					archivalEntity.setR6_AGGREGATE_BALANCE(parseBigDecimal(value));
-
-				} else if ("R6_COMPENSATABLE_AMOUNT".equals(normalizedKey)) {
-					archivalEntity.setR6_COMPENSATABLE_AMOUNT(parseBigDecimal(value));
-
-				} else if ("R7_AGGREGATE_BALANCE".equals(normalizedKey)) {
-					archivalEntity.setR7_AGGREGATE_BALANCE(parseBigDecimal(value));
-
-				} else if ("R7_COMPENSATABLE_AMOUNT".equals(normalizedKey)) {
-					archivalEntity.setR7_COMPENSATABLE_AMOUNT(parseBigDecimal(value));
-
-				} else if ("R8_AGGREGATE_BALANCE".equals(normalizedKey)) {
-					archivalEntity.setR8_AGGREGATE_BALANCE(parseBigDecimal(value));
-
-				} else if ("R8_COMPENSATABLE_AMOUNT".equals(normalizedKey)) {
-					archivalEntity.setR8_COMPENSATABLE_AMOUNT(parseBigDecimal(value));
-
-				} else if ("R9_AGGREGATE_BALANCE".equals(normalizedKey)) {
-					archivalEntity.setR9_AGGREGATE_BALANCE(parseBigDecimal(value));
-
-				} else if ("R9_COMPENSATABLE_AMOUNT".equals(normalizedKey)) {
-					archivalEntity.setR9_COMPENSATABLE_AMOUNT(parseBigDecimal(value));
-
-				} else if ("R10_AGGREGATE_BALANCE".equals(normalizedKey)) {
-					archivalEntity.setR10_AGGREGATE_BALANCE(parseBigDecimal(value));
-
-				} else if ("R10_COMPENSATABLE_AMOUNT".equals(normalizedKey)) {
-					archivalEntity.setR10_COMPENSATABLE_AMOUNT(parseBigDecimal(value));
-				}
-
-			}
-
-			/*
-			 * ========================================================= 5️⃣ SET RESUB
-			 * METADATA =========================================================
-			 */
-			archivalEntity.setReportDate(reportDate);
-			archivalEntity.setReportVersion(newVersion);
-			archivalEntity.setReportResubDate(new Date());
-
-			/*
-			 * ========================================================= 6️⃣ SAVE NEW
-			 * ARCHIVAL VERSION =========================================================
-			 */
-			BDISB3_Archival_Summary_Repo.save(archivalEntity);
-
-			System.out.println("✅ RESUB saved successfully. Version = " + newVersion);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException("Error while creating archival resubmission record", e);
-		}
-	}
-
-	private BigDecimal parseBigDecimal(String value) {
-		return (value == null || value.trim().isEmpty()) ? BigDecimal.ZERO : new BigDecimal(value.replace(",", ""));
-	}
 
 /// Downloaded for Archival & Resub
 	public byte[] BRRS_BDISB3ResubExcel(String filename, String reportId, String fromdate, String todate,
@@ -987,8 +2934,7 @@ public class BRRS_BDISB3_ReportService {
 
 		}
 
-		List<BDISB3_Archival_Summary_Entity> dataList1 = BDISB3_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<BDISB3_Archival_Summary_Entity> dataList1 = getdatabydateListarchival1(dateformat.parse(todate), version);
 
 		if (dataList1.isEmpty()) {
 			logger.warn("Service: No data found for BDISB3 report. Returning empty result.");
@@ -1197,256 +3143,6 @@ public class BRRS_BDISB3_ReportService {
 		}
 	}
 
-	public byte[] getBDISB3DetailExcel(String filename, String fromdate, String todate, String currency, String dtltype,
-			String type, String version) {
-
-		try {
-			logger.info("Generating Excel for BDISB3 Details...");
-			System.out.println("came to Detail download service");
-
-			// ================= ARCHIVAL HANDLING =================
-			if ("ARCHIVAL".equals(type) && version != null) {
-				return getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type, version);
-			}
-
-			// ================= WORKBOOK & SHEET =================
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("BDISB3Detail");
-
-			BorderStyle border = BorderStyle.THIN;
-
-			// ================= HEADER STYLE =================
-			CellStyle headerStyle = workbook.createCellStyle();
-			Font headerFont = workbook.createFont();
-			headerFont.setBold(true);
-			headerFont.setFontHeightInPoints((short) 10);
-			headerStyle.setFont(headerFont);
-			headerStyle.setAlignment(HorizontalAlignment.LEFT);
-			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-			headerStyle.setBorderTop(border);
-			headerStyle.setBorderBottom(border);
-			headerStyle.setBorderLeft(border);
-			headerStyle.setBorderRight(border);
-
-			CellStyle rightHeaderStyle = workbook.createCellStyle();
-			rightHeaderStyle.cloneStyleFrom(headerStyle);
-			rightHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-
-			// ================= DATA STYLES =================
-			CellStyle textStyle = workbook.createCellStyle();
-			textStyle.setAlignment(HorizontalAlignment.LEFT);
-			textStyle.setBorderTop(border);
-			textStyle.setBorderBottom(border);
-			textStyle.setBorderLeft(border);
-			textStyle.setBorderRight(border);
-
-			CellStyle amountStyle = workbook.createCellStyle();
-			amountStyle.setAlignment(HorizontalAlignment.RIGHT);
-			amountStyle.setDataFormat(
-				    workbook.createDataFormat().getFormat("#,##0")
-				);
-			amountStyle.setBorderTop(border);
-			amountStyle.setBorderBottom(border);
-			amountStyle.setBorderLeft(border);
-			amountStyle.setBorderRight(border);
-
-			// ================= HEADER ROW =================
-			String[] headers = { "AGGREGATE BALANCE", "COMPENSATABLE AMOUNT", "REPORT LABEL", "REPORT ADDL CRITERIA1",
-					"REPORT DATE" };
-
-			XSSFRow headerRow = sheet.createRow(0);
-			for (int i = 0; i < headers.length; i++) {
-				Cell cell = headerRow.createCell(i);
-				cell.setCellValue(headers[i]);
-				cell.setCellStyle((i == 0 || i == 1) ? rightHeaderStyle : headerStyle);
-				sheet.setColumnWidth(i, 6000);
-			}
-
-			// ================= DATA FETCH =================
-			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<BDISB3_Detail_Entity> reportData = repo.getdatabydateList(parsedToDate);
-
-			// ================= DATA ROWS =================
-			int rowIndex = 1;
-
-			if (reportData != null && !reportData.isEmpty()) {
-				for (BDISB3_Detail_Entity item : reportData) {
-
-					XSSFRow row = sheet.createRow(rowIndex++);
-
-					// Column 0 - AGGREGATE BALANCE
-					// Column 0 - AGGREGATE BALANCE
-					Cell c0 = row.createCell(0);
-					c0.setCellValue(safeAmount(item.getAGGREGATE_BALANCE()));
-					c0.setCellStyle(amountStyle);
-
-					// Column 1 - COMPENSATABLE AMOUNT
-					Cell c1 = row.createCell(1);
-					c1.setCellValue(safeAmount(item.getCOMPENSATABLE_AMOUNT()));
-					c1.setCellStyle(amountStyle);
-
-
-					// Column 2 - REPORT LABEL
-					Cell c2 = row.createCell(2);
-					c2.setCellValue(item.getReportLable());
-					c2.setCellStyle(textStyle);
-
-					// Column 3 - REPORT ADDL CRITERIA 1
-					Cell c3 = row.createCell(3);
-					c3.setCellValue(item.getReportAddlCriteria1());
-					c3.setCellStyle(textStyle);
-
-					// Column 4 - REPORT DATE
-					Cell c4 = row.createCell(4);
-					c4.setCellValue(item.getReportDate() != null
-							? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
-							: "");
-					c4.setCellStyle(textStyle);
-				}
-			} else {
-				logger.info("No data found for BDISB3 — only header written.");
-			}
-
-			// ================= WRITE FILE =================
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			workbook.write(bos);
-			workbook.close();
-
-			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
-
-			return bos.toByteArray();
-
-		} catch (Exception e) {
-			logger.error("Error generating BDISB3 Excel", e);
-			return new byte[0];
-		}
-	}
-
-	public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) {
-
-		try {
-			logger.info("Generating Excel for BRRS_BDISB3 ARCHIVAL Details...");
-			System.out.println("came to Detail download service");
-
-			// ================= WORKBOOK & SHEET =================
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("BDISB3Detail");
-
-			BorderStyle border = BorderStyle.THIN;
-
-			// ================= HEADER STYLE =================
-			CellStyle headerStyle = workbook.createCellStyle();
-			Font headerFont = workbook.createFont();
-			headerFont.setBold(true);
-			headerFont.setFontHeightInPoints((short) 10);
-			headerStyle.setFont(headerFont);
-			headerStyle.setAlignment(HorizontalAlignment.LEFT);
-			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-			headerStyle.setBorderTop(border);
-			headerStyle.setBorderBottom(border);
-			headerStyle.setBorderLeft(border);
-			headerStyle.setBorderRight(border);
-
-			CellStyle rightHeaderStyle = workbook.createCellStyle();
-			rightHeaderStyle.cloneStyleFrom(headerStyle);
-			rightHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-
-			// ================= DATA STYLES =================
-			CellStyle textStyle = workbook.createCellStyle();
-			textStyle.setAlignment(HorizontalAlignment.LEFT);
-			textStyle.setBorderTop(border);
-			textStyle.setBorderBottom(border);
-			textStyle.setBorderLeft(border);
-			textStyle.setBorderRight(border);
-
-			CellStyle amountStyle = workbook.createCellStyle();
-			amountStyle.setAlignment(HorizontalAlignment.RIGHT);
-			amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
-			amountStyle.setBorderTop(border);
-			amountStyle.setBorderBottom(border);
-			amountStyle.setBorderLeft(border);
-			amountStyle.setBorderRight(border);
-
-			// ================= HEADER ROW =================
-			String[] headers = { "AGGREGATE BALANCE", "COMPENSATABLE AMOUNT", "REPORT LABEL", "REPORT ADDL CRITERIA1",
-					"REPORT DATE" };
-
-			XSSFRow headerRow = sheet.createRow(0);
-			for (int i = 0; i < headers.length; i++) {
-				Cell cell = headerRow.createCell(i);
-				cell.setCellValue(headers[i]);
-				cell.setCellStyle((i == 0 || i == 1) ? rightHeaderStyle : headerStyle);
-				sheet.setColumnWidth(i, 6000);
-			}
-
-			// ================= DATA FETCH =================
-			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<BDISB3_Archival_Detail_Entity> reportData = BDISB3_Detail_Repo_Archival.getdatabydateList(parsedToDate,
-					version);
-
-			// ================= DATA ROWS =================
-			int rowIndex = 1;
-
-			if (reportData != null && !reportData.isEmpty()) {
-				for (BDISB3_Archival_Detail_Entity item : reportData) {
-
-					XSSFRow row = sheet.createRow(rowIndex++);
-
-					// Column 0 - AGGREGATE BALANCE
-					// Column 0 - AGGREGATE BALANCE
-					Cell c0 = row.createCell(0);
-					c0.setCellValue(safeAmount(item.getAGGREGATE_BALANCE()));
-					c0.setCellStyle(amountStyle);
-
-					// Column 1 - COMPENSATABLE AMOUNT
-					Cell c1 = row.createCell(1);
-					c1.setCellValue(safeAmount(item.getCOMPENSATABLE_AMOUNT()));
-					c1.setCellStyle(amountStyle);
-
-
-					// Column 2 - REPORT LABEL
-					Cell c2 = row.createCell(2);
-					c2.setCellValue(item.getReportLable());
-					c2.setCellStyle(textStyle);
-
-					// Column 3 - REPORT ADDL CRITERIA 1
-					Cell c3 = row.createCell(3);
-					c3.setCellValue(item.getReportAddlCriteria1());
-					c3.setCellStyle(textStyle);
-
-					// Column 4 - REPORT DATE
-					Cell c4 = row.createCell(4);
-					c4.setCellValue(item.getReportDate() != null
-							? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
-							: "");
-					c4.setCellStyle(textStyle);
-				}
-			} else {
-				logger.info("No archival data found for BDISB3 — only header written.");
-			}
-
-			// ================= WRITE FILE =================
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			workbook.write(bos);
-			workbook.close();
-
-			logger.info("ARCHIVAL Excel generation completed with {} row(s).",
-					reportData != null ? reportData.size() : 0);
-
-			return bos.toByteArray();
-
-		} catch (Exception e) {
-			logger.error("Error generating BDISB3 ARCHIVAL Excel", e);
-			return new byte[0];
-		}
-	}
-	
-	private double safeAmount(BigDecimal value) {
-	    return value == null ? 0d : value.doubleValue();
-	}
 
 
 }
