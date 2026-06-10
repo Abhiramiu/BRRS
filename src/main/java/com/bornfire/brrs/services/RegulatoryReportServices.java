@@ -1672,6 +1672,20 @@ public class RegulatoryReportServices {
 					type, version);
 
 			break;
+			
+			
+		case "AML":
+			repsummary = brrs_aml_reportservice.getAMLView(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version);
+
+			break;
+			
+		case "CPR_STRUCT_LIQ":
+			repsummary = BRRS_CPR_STRUCT_LIQ_ReportService.getCPR_STRUCT_LIQView(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version);
+
+			break;
+			
 		/*
 		 * case "AML":
 		 * 
@@ -3675,6 +3689,25 @@ public class RegulatoryReportServices {
 		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
 		 */
 
+		case "AML":
+			try {
+				repfile = brrs_aml_reportservice.getAMLExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "CPR_STRUCT_LIQ":
+			try {
+				repfile = BRRS_CPR_STRUCT_LIQ_ReportService.getCPR_STRUCT_LIQExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+			
 		case "M_LA1":
 			try {
 				repfile = BRRS_M_LA1_reportservice.BRRS_M_LA1Excel(filename, reportId, fromdate, todate, currency,
@@ -5417,16 +5450,22 @@ public class RegulatoryReportServices {
 //				e.printStackTrace();
 //			}
 //			break;
-
-
+			
 		case "AML":
-			try {
-				archivalData = brrs_aml_reportservice.getAMLArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> amlList = brrs_aml_reportservice.getAMLArchival();
+			archivalData.addAll(amlList);
+			System.out.println("Fetched SCOPE_OF_APP archival data: " + amlList.size());
 			break;
+
+
+//		case "AML":
+//			try {
+//				archivalData = brrs_aml_reportservice.getAMLArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
 		case "EXPANDED_REGU_BS":
 			List<Object[]> EXPANDED_REGU_BSList = BRRS_Expanded_Regu_BS_ReportService.getExpanded_Regu_BSArchival();
 			archivalData.addAll(EXPANDED_REGU_BSList);
@@ -5850,14 +5889,7 @@ public class RegulatoryReportServices {
 //			}
 //			break;
 
-		case "CPR_STRUCT_LIQ":
-			try {
-				archivalData = BRRS_CPR_STRUCT_LIQ_ReportService.getCPR_STRUCT_LIQArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+	
 
 		case "EXPOSURES":
 			try {
@@ -5917,6 +5949,23 @@ case "MDISB3":
 //				e.printStackTrace();
 //			}
 //			break;
+			
+			
+//		case "CPR_STRUCT_LIQ":
+//			try {
+//				archivalData = BRRS_CPR_STRUCT_LIQ_ReportService.getCPR_STRUCT_LIQArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
+			
+
+		case "CPR_STRUCT_LIQ":
+			List<Object[]> cslList = BRRS_CPR_STRUCT_LIQ_ReportService.getCPR_STRUCT_LIQArchival();
+			archivalData.addAll(cslList);
+			System.out.println("Fetched rwaList archival data: " + cslList.size());
+			break;
 
 		case "RWA":
 			List<Object[]> rwaList = BRRS_RWA_ReportService.getRWAArchival();
