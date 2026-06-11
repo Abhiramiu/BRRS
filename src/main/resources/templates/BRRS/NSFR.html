@@ -7,7 +7,7 @@ PURPOSE  : BRRSREPORT
 -->
 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"
-   xmlns:th="http://www.thymeleaf.org">
+   xmlns:th="http://www.thymeleaf.org"><html>
 <head>
  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
  <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -74,8 +74,8 @@ PURPOSE  : BRRSREPORT
  border-color: #0c0c0c;
 }
 
-.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
-  (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+.btn-primary:not(:disabled ):not(.disabled ).active,
+.btn-primary:not(:disabled ):not(.disabled ):active, .show>.btn-primary.dropdown-toggle
  {
  color: #fff;
  background-color: #cc000000;
@@ -358,8 +358,8 @@ label.error {
      overflow: hidden;
      white-space: nowrap;
      flex: 1; /* ✅ makes it take available space dynamically */
-     min-width: 190px;
-     box-shadow: 0 0 10px rgb(107, 122, 143);
+     min-width: 270px;
+     box-shadow: 10 0 10px rgb(107, 122, 143);
      position: relative;
    }
 
@@ -692,13 +692,13 @@ label.error {
      <script th:inline="javascript">
   function showdetailsbyRowAndColumn(a) {
    var reportLable = a.getAttribute('reportLable');
-   var reportAddlCriteria1 = a.getAttribute('reportAddlCriteria1');
+   var reportAddlCriteria_1 = a.getAttribute('reportAddlCriteria_1');
    var cellValue = a.textContent || a.innerText;
 
    if (cellValue !== '0') {
     // Set dynamic message in modal (instead of confirm)
     document.getElementById("cellresultModalLabel").innerText =
-     "Do you want to open details for Report Lable: " + reportLable + " and Report Addl Criteria1: " + reportAddlCriteria1 + "?";
+     "Do you want to open details for Report Lable: " + reportLable + " and Report Addl Criteria1: " + reportAddlCriteria_1 + "?";
 
     // Show custom Bootstrap modal
     $('#cellresultModal').modal('show');
@@ -716,7 +716,7 @@ label.error {
 
      // Build dynamic URL
      var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
-     Callurl += "&filter=" + encodeURIComponent(reportLable + "," + reportAddlCriteria1);
+     Callurl += "&filter=" + encodeURIComponent(reportLable + "," + reportAddlCriteria_1);
 
      location.href = Callurl;
     };
@@ -1033,7 +1033,7 @@ function cancelModify() {
 
 
 
-<title>BRRS</title>
+<title>NSFR</title>
 <body> 
 <div class="container-fluid" style="padding-left:10px; padding-right:0px;">
   <div class="row">
@@ -1052,12 +1052,12 @@ function cancelModify() {
 
        <!-- Title -->
        <h5 class="header-title">
-         Net Stable Funding Ratio
+         Net Stable Funding Ratio                    
        </h5>
 
        <!-- 🚌 Bus display box -->
        <div class="boards">
-         <p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
+         <p class="scrolling-text">   Bank of Baroda(Botswana)Ltd</p>
        </div>
      </div>
 
@@ -1199,16 +1199,16 @@ function cancelModify() {
        <td id="R12_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R12_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R12', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R12', reportAddlCriteria_1='C2'">
        </td>
        <td id="R12_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R12_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R12', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R12', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R12_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R12_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R12', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R12', reportAddlCriteria_1='C4'">
        </td>
    </tr>
     <!-- R13 -->
@@ -1220,16 +1220,16 @@ function cancelModify() {
        <td id="R13_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R13_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R13', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R13', reportAddlCriteria_1='C2'">
        </td>
        <td id="R13_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R13_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R13', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R13', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R13_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R13_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R13', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R13', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R14 -->
@@ -1241,16 +1241,16 @@ function cancelModify() {
        <td id="R14_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R14_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R14', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R14', reportAddlCriteria_1='C2'">
        </td>
        <td id="R14_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R14_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R14', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R14', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R14_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R14_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R14', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R14', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R15 -->
@@ -1262,16 +1262,16 @@ function cancelModify() {
        <td id="R15_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R15_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R15', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R15', reportAddlCriteria_1='C2'">
        </td>
        <td id="R15_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R15_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R15', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R15', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R15_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R15_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R15', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R15', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R16 -->
@@ -1282,16 +1282,16 @@ function cancelModify() {
        <td id="R16_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R16_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R16', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R16', reportAddlCriteria_1='C2'">
        </td>
        <td id="R16_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R16_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R16', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R16', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R16_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R16_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R16', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R16', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R17 -->
@@ -1302,16 +1302,16 @@ function cancelModify() {
        <td id="R17_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R17_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R17', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R17', reportAddlCriteria_1='C2'">
        </td>
        <td id="R17_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R17_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R17', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R17', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R17_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R17_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R17', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R17', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R18 -->
@@ -1323,16 +1323,16 @@ function cancelModify() {
        <td id="R18_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R18_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R18', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R18', reportAddlCriteria_1='C2'">
        </td>
        <td id="R18_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R18_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R18', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R18', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R18_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R18_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R18', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R18', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R19 -->
@@ -1344,16 +1344,16 @@ function cancelModify() {
        <td id="R19_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R19_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R19', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R19', reportAddlCriteria_1='C2'">
        </td>
        <td id="R19_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R19_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R19', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R19', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R19_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R19_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R19', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R19', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R20 -->
@@ -1365,16 +1365,16 @@ function cancelModify() {
        <td id="R20_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R20_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R20', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R20', reportAddlCriteria_1='C2'">
        </td>
        <td id="R20_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R20_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R20', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R20', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R20_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R20_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R20', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R20', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R21 -->
@@ -1385,16 +1385,16 @@ function cancelModify() {
        <td id="R21_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R21_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R21', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R21', reportAddlCriteria_1='C2'">
        </td>
        <td id="R21_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R21_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R21', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R21', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R21_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R21_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R21', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R21', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R22 -->
@@ -1405,16 +1405,16 @@ function cancelModify() {
        <td id="R22_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R22_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R22', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R22', reportAddlCriteria_1='C2'">
        </td>
        <td id="R22_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R22_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R22', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R22', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R22_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R22_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R22', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R22', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R23 -->
@@ -1428,11 +1428,11 @@ function cancelModify() {
        </td>
        <td id="R23_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R23_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom;font-weight:bold; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R23', reportAddlCriteria1='C3'">
+         th:attr="reportLable='R23', reportAddlCriteria_1='C3'">
        </td>
        <td id="R23_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R23_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom;font-weight:bold; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R23', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R23', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R24 -->
@@ -1461,16 +1461,16 @@ function cancelModify() {
        <td id="R26_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R26_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R26', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R26', reportAddlCriteria_1='C2'">
        </td>
        <td id="R26_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R26_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R26', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R26', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R26_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R26_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R26', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R26', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R27 -->
@@ -1481,16 +1481,16 @@ function cancelModify() {
        <td id="R27_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R27_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R27', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R27', reportAddlCriteria_1='C2'">
        </td>
        <td id="R27_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R27_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R27', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R27', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R27_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R27_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R27', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R27', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R28 -->
@@ -1501,16 +1501,16 @@ function cancelModify() {
        <td id="R28_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R28_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R28', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R28', reportAddlCriteria_1='C2'">
        </td>
        <td id="R28_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R28_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R28', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R28', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R28_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R28_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R28', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R28', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R29 -->
@@ -1521,16 +1521,16 @@ function cancelModify() {
        <td id="R29_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R29_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R29', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R29', reportAddlCriteria_1='C2'">
        </td>
        <td id="R29_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R29_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R29', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R29', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R29_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R29_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R29', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R29', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R30 -->
@@ -1541,16 +1541,16 @@ function cancelModify() {
        <td id="R30_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R30_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R30', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R30', reportAddlCriteria_1='C2'">
        </td>
        <td id="R30_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R30_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R30', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R30', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R30_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R30_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R30', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R30', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R31 -->
@@ -1563,16 +1563,16 @@ function cancelModify() {
        <td id="R31_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R31_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R31', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R31', reportAddlCriteria_1='C2'">
        </td>
        <td id="R31_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R31_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R31', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R31', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R31_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R31_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R31', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R31', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R32 -->
@@ -1583,16 +1583,16 @@ function cancelModify() {
        <td id="R32_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R32_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R32', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R32', reportAddlCriteria_1='C2'">
        </td>
        <td id="R32_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R32_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R32', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R32', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R32_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R32_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R32', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R32', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R33 -->
@@ -1603,16 +1603,16 @@ function cancelModify() {
        <td id="R33_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R33_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R33', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R33', reportAddlCriteria_1='C2'">
        </td>
        <td id="R33_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R33_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R33', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R33', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R33_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R33_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R33', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R33', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R34 -->
@@ -1623,16 +1623,16 @@ function cancelModify() {
        <td id="R34_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R34_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R34', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R34', reportAddlCriteria_1='C2'">
        </td>
        <td id="R34_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R34_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R34', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R34', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R34_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R34_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R34', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R34', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R35 -->
@@ -1643,16 +1643,16 @@ function cancelModify() {
        <td id="R35_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R35_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R35', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R35', reportAddlCriteria_1='C2'">
        </td>
        <td id="R35_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R35_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R35', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R35', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R35_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R35_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R35', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R35', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R36 -->
@@ -1663,16 +1663,16 @@ function cancelModify() {
        <td id="R36_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R36_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R36', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R36', reportAddlCriteria_1='C2'">
        </td>
        <td id="R36_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R36_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R36', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R36', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R36_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R36_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R36', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R36', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R37 -->
@@ -1686,16 +1686,16 @@ function cancelModify() {
        <td id="R37_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R37_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R37', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R37', reportAddlCriteria_1='C2'">
        </td>
        <td id="R37_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R37_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R37', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R37', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R37_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R37_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R37', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R37', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R38 -->
@@ -1706,16 +1706,16 @@ function cancelModify() {
        <td id="R38_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R38_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R38', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R38', reportAddlCriteria_1='C2'">
        </td>
        <td id="R38_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R38_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R38', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R38', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R38_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R38_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R38', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R38', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R39 -->
@@ -1728,16 +1728,16 @@ function cancelModify() {
        <td id="R39_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R39_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R39', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R39', reportAddlCriteria_1='C2'">
        </td>
        <td id="R39_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R39_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R39', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R39', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R39_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R39_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R39', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R39', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R40 -->
@@ -1749,16 +1749,16 @@ function cancelModify() {
        <td id="R40_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R40_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R40', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R40', reportAddlCriteria_1='C2'">
        </td>
        <td id="R40_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R40_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R40', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R40', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R40_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R40_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R40', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R40', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R41 -->
@@ -1770,16 +1770,16 @@ function cancelModify() {
        <td id="R41_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R41_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R41', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R41', reportAddlCriteria_1='C2'">
        </td>
        <td id="R41_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R41_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R41', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R41', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R41_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R41_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R41', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R41', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R42 -->
@@ -1790,16 +1790,16 @@ function cancelModify() {
        <td id="R42_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R42_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R42', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R42', reportAddlCriteria_1='C2'">
        </td>
        <td id="R42_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R42_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R42', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R42', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R42_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R42_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R42', reportAddlCriteria1='C4'"
+         th:attr="reportLable='R42', reportAddlCriteria_1='C4'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
    </tr>
@@ -1811,16 +1811,16 @@ function cancelModify() {
        <td id="R43_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R43_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R43', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R43', reportAddlCriteria_1='C2'">
        </td>
        <td id="R43_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R43_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R43', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R43', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R43_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R43_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R43', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R43', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R44 -->
@@ -1831,16 +1831,16 @@ function cancelModify() {
        <td id="R44_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R44_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R44', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R44', reportAddlCriteria_1='C2'">
        </td>
        <td id="R44_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R44_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R44', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R44', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R44_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R44_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R44', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R44', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R45 -->
@@ -1851,16 +1851,16 @@ function cancelModify() {
        <td id="R45_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R45_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R45', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R45', reportAddlCriteria_1='C2'">
        </td>
        <td id="R45_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R45_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R45', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R45', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R45_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R45_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R45', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R45', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R46 -->
@@ -1871,16 +1871,16 @@ function cancelModify() {
        <td id="R46_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R46_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R46', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R46', reportAddlCriteria_1='C2'">
        </td>
        <td id="R46_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R46_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R46', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R46', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R46_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R46_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R46', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R46', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R47 -->
@@ -1895,16 +1895,16 @@ function cancelModify() {
        <td id="R47_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R47_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R47', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R47', reportAddlCriteria_1='C2'">
        </td>
        <td id="R47_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R47_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R47', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R47', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R47_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R47_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R47', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R47', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R48 -->
@@ -1918,11 +1918,11 @@ function cancelModify() {
        </td>
        <td id="R48_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R48_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom;font-weight:bold; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R48', reportAddlCriteria1='C3'">
+         th:attr="reportLable='R48', reportAddlCriteria_1='C3'">
        </td>
        <td id="R48_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R48_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom;font-weight:bold; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R48', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R48', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R49 -->
@@ -1933,16 +1933,16 @@ function cancelModify() {
        <td id="R49_FACTOR_BOB" style="text-align: right;vertical-align:bottom; width: 200px;">
          <!-- th:text="${#numbers.formatDecimal(reportsummary.R49_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          
-         th:attr="reportLable='R49', reportAddlCriteria1='C2'"> -->
+         th:attr="reportLable='R49', reportAddlCriteria_1='C2'"> -->
        </td>
        <td id="R49_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R49_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R49', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R49', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R49_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R49_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R49', reportAddlCriteria1='C4'"
+         th:attr="reportLable='R49', reportAddlCriteria_1='C4'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
    </tr>
@@ -1954,16 +1954,16 @@ function cancelModify() {
        <td id="R50_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R50_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R50', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R50', reportAddlCriteria_1='C2'">
        </td>
        <td id="R50_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R50_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R50', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R50', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R50_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R50_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R50', reportAddlCriteria1='C4'"
+         th:attr="reportLable='R50', reportAddlCriteria_1='C4'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
    </tr>
@@ -1975,16 +1975,16 @@ function cancelModify() {
        <td id="R51_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R51_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R51', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R51', reportAddlCriteria_1='C2'">
        </td>
        <td id="R51_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R51_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R51', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R51', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R51_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R51_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R51', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R51', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R52 -->
@@ -1995,16 +1995,16 @@ function cancelModify() {
        <td id="R52_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R52_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R52', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R52', reportAddlCriteria_1='C2'">
        </td>
        <td id="R52_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R52_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R52', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R52', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R52_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R52_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R52', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R52', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R53 -->
@@ -2015,16 +2015,16 @@ function cancelModify() {
        <td id="R53_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R53_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R53', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R53', reportAddlCriteria_1='C2'">
        </td>
        <td id="R53_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R53_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R53', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R53', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R53_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R53_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R53', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R53', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R54 -->
@@ -2035,16 +2035,16 @@ function cancelModify() {
        <td id="R54_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R54_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R54', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R54', reportAddlCriteria_1='C2'">
        </td>
        <td id="R54_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R54_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R54', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R54', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R54_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R54_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R54', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R54', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R55 -->
@@ -2055,16 +2055,16 @@ function cancelModify() {
        <td id="R55_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R55_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R55', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R55', reportAddlCriteria_1='C2'">
        </td>
        <td id="R55_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R55_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R55', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R55', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R55_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R55_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R55', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R55', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R56 -->
@@ -2075,16 +2075,16 @@ function cancelModify() {
        <td id="R56_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R56_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R56', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R56', reportAddlCriteria_1='C2'">
        </td>
        <td id="R56_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R56_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R56', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R56', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R56_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R56_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R56', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R56', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R57 -->
@@ -2095,16 +2095,16 @@ function cancelModify() {
        <td id="R57_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R57_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R57', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R57', reportAddlCriteria_1='C2'">
        </td>
        <td id="R57_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R57_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R57', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R57', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R57_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R57_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R57', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R57', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R58 -->
@@ -2115,16 +2115,16 @@ function cancelModify() {
        <td id="R58_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R58_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R58', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R58', reportAddlCriteria_1='C2'">
        </td>
        <td id="R58_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R58_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R58', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R58', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R58_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R58_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R58', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R58', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R59 -->
@@ -2135,16 +2135,16 @@ function cancelModify() {
        <td id="R59_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R59_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R59', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R59', reportAddlCriteria_1='C2'">
        </td>
        <td id="R59_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R59_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R59', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R59', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R59_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R59_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R59', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R59', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R60 -->
@@ -2155,16 +2155,16 @@ function cancelModify() {
        <td id="R60_FACTOR_BOB"
          th:text="${#numbers.formatDecimal(reportsummary.R60_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R60', reportAddlCriteria1='C2'">
+         th:attr="reportLable='R60', reportAddlCriteria_1='C2'">
        </td>
        <td id="R60_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R60_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R60', reportAddlCriteria1='C3'"
+         th:attr="reportLable='R60', reportAddlCriteria_1='C3'"
          onclick="showdetailsbyRowAndColumn(this)">
        </td>
        <td id="R60_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R60_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R60', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R60', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R61 -->
@@ -2175,15 +2175,15 @@ function cancelModify() {
        <td id="R61_FACTOR_BOB" style="text-align: right;vertical-align:bottom; width: 200px;">
          <!-- th:text="${#numbers.formatDecimal(reportsummary.R61_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R61', reportAddlCriteria1='C2'"> -->
+         th:attr="reportLable='R61', reportAddlCriteria_1='C2'"> -->
        </td>
        <td id="R61_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R61_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom;font-weight:bold; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R61', reportAddlCriteria1='C3'">
+         th:attr="reportLable='R61', reportAddlCriteria_1='C3'">
        </td>
        <td id="R61_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R61_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom;font-weight:bold;color:red; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R61', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R61', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R62 -->
@@ -2194,15 +2194,15 @@ function cancelModify() {
        <td id="R62_FACTOR_BOB" style="text-align: right;vertical-align:bottom; width: 200px;">
          <!-- th:text="${#numbers.formatDecimal(reportsummary.R62_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
          style="text-align: right;vertical-align:bottom; width: 200px;"
-         th:attr="reportLable='R62', reportAddlCriteria1='C2'"> -->
+         th:attr="reportLable='R62', reportAddlCriteria_1='C2'"> -->
        </td>
        <td id="R62_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R62_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom;font-weight:bold;color:red; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R62', reportAddlCriteria1='C3'">
+         th:attr="reportLable='R62', reportAddlCriteria_1='C3'">
        </td>
        <td id="R62_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R62_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom;font-weight:bold;color:red; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R62', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R62', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R63 -->
@@ -2224,11 +2224,11 @@ function cancelModify() {
        </td>
        <td id="R64_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R64_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom;font-weight:bold; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R64', reportAddlCriteria1='C3'">
+         th:attr="reportLable='R64', reportAddlCriteria_1='C3'">
        </td>
        <td id="R64_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R64_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom;font-weight:bold; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R64', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R64', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R65 -->
@@ -2243,11 +2243,11 @@ function cancelModify() {
        </td>
        <td id="R65_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R65_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom;font-weight:bold; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R65', reportAddlCriteria1='C3'">
+         th:attr="reportLable='R65', reportAddlCriteria_1='C3'">
        </td>
        <td id="R65_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R65_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom;font-weight:bold; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R65', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R65', reportAddlCriteria_1='C4'">
        </td>
    </tr>
    <!-- R66 -->
@@ -2263,7 +2263,7 @@ function cancelModify() {
        </td>
        <td id="R66_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R66_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
          style="text-align: right;vertical-align:bottom;font-weight:bold; width: 200px;background-color: rgb(107, 122, 143);color: white;"
-         th:attr="reportLable='R66', reportAddlCriteria1='C4'">
+         th:attr="reportLable='R66', reportAddlCriteria_1='C4'">
        </td>
    </tr>
 
@@ -2337,7 +2337,7 @@ function cancelModify() {
                    <td style="text-align:left;" th:text="${report.reportLable != null ? report.reportLable : '-'}">
                    </td>
                    <td
-                    th:text="${report.reportAddlCriteria1 != null ? report.reportAddlCriteria1 : '-'}">
+                    th:text="${report.reportAddlCriteria_1 != null ? report.reportAddlCriteria_1 : '-'}">
                    </td>
                    <td th:text="${report.reportDate != null ? #dates.format(report.reportDate, 'dd-MM-yyyy') : '-'}"></td>
                   </tr>
@@ -2404,7 +2404,7 @@ function cancelModify() {
 
            <label class="col-sm-2">Report Addl Criteria 1</label>
            <div class="col-sm-3">
-             <input type="text" th:field="*{reportAddlCriteria1}" class="form-control form-control-sm" readonly />
+             <input type="text" th:field="*{reportAddlCriteria_1}" class="form-control form-control-sm" readonly />
            </div>
          </div>
 
@@ -2636,22 +2636,7 @@ div.dataTables_wrapper div.dataTables_info {
   .empty-row td {
     height: 30px;
 }
-/* 1. Force table to obey colgroup */
-/* #reports {
-    table-layout: fixed !important;
-     position: sticky;
- top: 0;
- background-color: #b3b6b9;
-}
-
-/* 2. Make header cells follow colgroup width */
-/* #reports th {
-    width: inherit !important;
-    background-color: #D8D8D8; /* set header color */
-    
-}
- */
- */  
+  
 </style>
 
 </html>

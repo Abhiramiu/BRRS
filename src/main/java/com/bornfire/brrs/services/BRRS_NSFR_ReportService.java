@@ -2,10 +2,12 @@ package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -13,10 +15,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.io.InputStream;
-import org.apache.poi.ss.usermodel.Row;
 
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
@@ -26,25 +24,25 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Sheet;
+
 import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
@@ -57,27 +55,11 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.NSFR_Summary_Entity_old;
-import com.bornfire.brrs.services.BRRS_SCH_17_New_Service.SCH_17_Archival_Detail_Entity1;
-import com.bornfire.brrs.services.BRRS_SCH_17_New_Service.SCH_17_Detail_Entity1;
-import com.bornfire.brrs.services.BRRS_SCH_17_New_Service.SCH_17_PK;
 
-
-/*import com.bornfire.brrs.entities.ADISB2_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.ADISB2_Summary_Entity;
-import com.bornfire.brrs.entities.BRRS_NSFR_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_NSFR_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_NSFR_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_NSFR_Summary_Repo;
-import com.bornfire.brrs.entities.NSFR_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.NSFR_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.NSFR_Detail_Entity;
-import com.bornfire.brrs.entities.NSFR_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_SCH_17_New_Service.SCH17RowMapper;
-import com.bornfire.brrs.services.BRRS_SCH_17_New_Service.SCH_17_Summary_Entity1;
-*/
 @Service
 @Transactional
 public class BRRS_NSFR_ReportService {
@@ -85,6 +67,9 @@ public class BRRS_NSFR_ReportService {
 
 	@Autowired
 	private Environment env;
+	
+	@Autowired
+	AuditService auditService;
 
 	@Autowired
 	SessionFactory sessionFactory;
@@ -119,7 +104,7 @@ public class BRRS_NSFR_ReportService {
 
         String sql =
             "SELECT REPORT_DATE, REPORT_VERSION " +
-            "FROM BRRS_NFSR_ARCHIVALTABLE_SUMMARY " +
+            "FROM BRRS_NSFR_ARCHIVALTABLE_SUMMARY " +
             "ORDER BY REPORT_VERSION";
 
         return jdbcTemplate.query(
@@ -140,7 +125,7 @@ public class BRRS_NSFR_ReportService {
     		      BigDecimal reportVersion) {
 
     		  String sql =
-    		      "SELECT * FROM BRRS_NFSR_ARCHIVALTABLE_SUMMARY " +
+    		      "SELECT * FROM BRRS_NSFR_ARCHIVALTABLE_SUMMARY " +
     		      "WHERE REPORT_DATE = ? " +
     		      "AND REPORT_VERSION = ?";
 
@@ -150,7 +135,7 @@ public class BRRS_NSFR_ReportService {
     		                  reportDate,
     		                  reportVersion
     		          },
-    		          new NFSRArchivalRowMapper()
+    		          new NSFRArchivalRowMapper()
     		  );
     		}
     		
@@ -162,13 +147,13 @@ public class BRRS_NSFR_ReportService {
     		getdatabydateListWithVersion() {
 
     		 String sql =
-    		     "SELECT * FROM BRRS_NFSR_ARCHIVALTABLE_SUMMARY " +
+    		     "SELECT * FROM BRRS_NSFR_ARCHIVALTABLE_SUMMARY " +
     		     "WHERE REPORT_VERSION IS NOT NULL " +
     		     "ORDER BY REPORT_VERSION ASC";
 
     		 return jdbcTemplate.query(
     		         sql,
-    		         new NFSRArchivalRowMapper()
+    		         new NSFRArchivalRowMapper()
     		 );
     		}
 
@@ -180,7 +165,7 @@ public class BRRS_NSFR_ReportService {
 
     		 String sql =
     		     "SELECT MAX(REPORT_VERSION) " +
-    		     "FROM BRRS_NFSR_ARCHIVALTABLE_SUMMARY " +
+    		     "FROM BRRS_NSFR_ARCHIVALTABLE_SUMMARY " +
     		     "WHERE REPORT_DATE = ?";
 
     		 return jdbcTemplate.queryForObject(
@@ -193,37 +178,34 @@ public class BRRS_NSFR_ReportService {
     		// =========================================================
     		// 1. BY DATE + LABEL + CRITERIA
     		// =========================================================
-    		public List<NSFR_Detail_Entity> findByDetailReportDateAndLabelAndCriteria(
-    		        Date reportDate,
-    		        String reportLabel,
-    		        String reportAddlCriteria1) {
+    		
+    		public List<NSFR_Detail_Entity> findByDetailReportDateAndLabelAndCriteria(Date reportDate, String ReportLable,
+    				String reportAddlCriteria_1) {
 
-    		    String sql =
-    		        "SELECT * FROM BRRS_NFSR_DETAILTABLE " +
-    		        "WHERE REPORT_DATE = ? AND REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ?";
+    			String sql = "SELECT * FROM BRRS_NSFR_DETAILTABLE "
+    					+ "WHERE REPORT_DATE = ? AND REPORT_LABLE = ? AND REPORT_ADDL_CRITERIA_1 = ?";
 
-    		    return jdbcTemplate.query(
-    		            sql,
-    		            new Object[]{reportDate, reportLabel, reportAddlCriteria1},
-    		            new NSFRDetailRowMapper()
-    		    );
+    			return jdbcTemplate.query(sql, new Object[] { reportDate, ReportLable, reportAddlCriteria_1 },
+    					new NSFRDetailRowMapper());
     		}
 
+    		
+    		
     		
     		// =========================================================
     		// 2. GET ALL (BY DATE - simple)
     		// =========================================================
-    		public List<NSFR_Detail_Entity> getDetaildatabydateList(Date reportdate) {
+    		public List<NSFR_Detail_Entity> getDetaildatabydateList(Date reportDate) {
 
-    		    String sql = "SELECT * FROM BRRS_NFSR_DETAILTABLE WHERE REPORT_DATE = ?";
+    		    
+    		    String sql = "SELECT * FROM BRRS_NSFR_DETAILTABLE WHERE REPORT_DATE = ?";
 
     		    return jdbcTemplate.query(
     		            sql,
-    		            new Object[]{reportdate},
-    		            new NSFRDetailRowMapper()
-    		    );
+    		            new Object[] { reportDate },
+    		            new NSFRDetailRowMapper());
     		}
-    	
+    		
     		// =========================================================
     		// 3. PAGINATION
     		// =========================================================
@@ -260,17 +242,17 @@ public class BRRS_NSFR_ReportService {
     		// 5. BY LABEL + CRITERIA
     		// =========================================================
     		public List<NSFR_Detail_Entity> GetDetailDataByRowIdAndColumnId(
-    		        String reportLabel,
-    		        String reportAddlCriteria1,
+    		        String ReportLable,
+    		        String reportAddlCriteria_1,
     		        Date reportdate) {
 
     		    String sql =
     		        "SELECT * FROM BRRS_NSFR_DETAILTABLE " +
-    		        "WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ?";
+    		        "WHERE REPORT_LABLE = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ?";
 
     		    return jdbcTemplate.query(
     		            sql,
-    		            new Object[]{reportLabel, reportAddlCriteria1, reportdate},
+    		            new Object[]{ReportLable, reportAddlCriteria_1, reportdate},
     		            new NSFRDetailRowMapper()
     		    );
     		}
@@ -327,21 +309,21 @@ public class BRRS_NSFR_ReportService {
     		// 2. FILTER BY LABEL + CRITERIA + DATE + VERSION
     		// =========================================================
     		public List<NSFR_Archival_Detail_Entity> GetArchivalDataByRowIdAndColumnId(
-    		        String reportLabel,
-    		        String reportAddlCriteria1,
+    		        String ReportLable,
+    		        String reportAddlCriteria_1,
     		        Date reportdate,
     		        String dataEntryVersion) {
 
     		    String sql =
     		        "SELECT * FROM BRRS_NSFR_ARCHIVALTABLE_DETAIL " +
-    		        "WHERE REPORT_LABEL = ? " +
+    		        "WHERE REPORT_LABLE = ? " +
     		        "AND REPORT_ADDL_CRITERIA_1 = ? " +
     		        "AND REPORT_DATE = ? " +
     		        "AND DATA_ENTRY_VERSION = ?";
 
     		    return jdbcTemplate.query(
     		            sql,
-    		            new Object[]{reportLabel, reportAddlCriteria1, reportdate, dataEntryVersion},
+    		            new Object[]{ReportLable, reportAddlCriteria_1, reportdate, dataEntryVersion},
     		            new NSFRArchivalDetailRowMapper()
     		    );
     		}
@@ -1186,7 +1168,7 @@ public class BRRS_NSFR_ReportService {
     	  //ARCHIVAL ROW MAPPER
     	  //=========================================================
 
-    	  class NFSRArchivalRowMapper implements RowMapper<NSFR_Archival_Summary_Entity> {
+    	  class NSFRArchivalRowMapper implements RowMapper<NSFR_Archival_Summary_Entity> {
 
     	   @Override
     	   public NSFR_Archival_Summary_Entity mapRow(ResultSet rs, int rowNum)
@@ -2095,13 +2077,13 @@ public class BRRS_NSFR_ReportService {
 
     public class NSFR_Detail_Entity {
 
-        private Long sno;
+        private String sno;
         private String custId;
         private String acctNumber;
         private String acctName;
         private String dataType;
         private String reportName;
-        private String reportLabel;
+        private String ReportLable;
         private String reportAddlCriteria_1;
         private String reportRemarks;
         private String modificationRemarks;
@@ -2126,8 +2108,8 @@ public class BRRS_NSFR_ReportService {
 
         // ================= GETTERS & SETTERS =================
 
-        public Long getSno() { return sno; }
-        public void setSno(Long sno) { this.sno = sno; }
+        public String getSno() { return sno; }
+        public void setSno(String sno) { this.sno = sno; }
 
         public String getCustId() { return custId; }
         public void setCustId(String custId) { this.custId = custId; }
@@ -2144,8 +2126,8 @@ public class BRRS_NSFR_ReportService {
         public String getReportName() { return reportName; }
         public void setReportName(String reportName) { this.reportName = reportName; }
 
-        public String getReportLabel() { return reportLabel; }
-        public void setReportLabel(String reportLabel) { this.reportLabel = reportLabel; }
+        public String getReportLable() { return ReportLable; }
+        public void setReportLable(String ReportLable) { this.ReportLable = ReportLable; }
 
         public String getReportAddlCriteria_1() { return reportAddlCriteria_1; }
         public void setReportAddlCriteria_1(String reportAddlCriteria_1) { this.reportAddlCriteria_1 = reportAddlCriteria_1; }
@@ -2202,14 +2184,14 @@ class NSFRDetailRowMapper implements RowMapper<NSFR_Detail_Entity> {
 
     	NSFR_Detail_Entity obj = new NSFR_Detail_Entity();
 
-        obj.setSno(rs.getLong("SNO"));
+        obj.setSno(rs.getString("SNO"));
         obj.setCustId(rs.getString("CUST_ID"));
         obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
         obj.setAcctName(rs.getString("ACCT_NAME"));
 
         obj.setDataType(rs.getString("DATA_TYPE"));
         obj.setReportName(rs.getString("REPORT_NAME"));
-        obj.setReportLabel(rs.getString("REPORT_LABEL"));
+        obj.setReportLable(rs.getString("REPORT_LABLE"));
         obj.setReportAddlCriteria_1(rs.getString("REPORT_ADDL_CRITERIA_1"));
 
         obj.setReportRemarks(rs.getString("REPORT_REMARKS"));
@@ -2245,13 +2227,13 @@ class NSFRArchivalDetailRowMapper implements RowMapper<NSFR_Archival_Detail_Enti
 
        NSFR_Archival_Detail_Entity obj = new NSFR_Archival_Detail_Entity();
 
-        obj.setSno(rs.getLong("SNO"));
+        obj.setSno(rs.getString("SNO"));
         obj.setCustId(rs.getString("CUST_ID"));
         obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
         obj.setAcctName(rs.getString("ACCT_NAME"));
         obj.setDataType(rs.getString("DATA_TYPE"));
         obj.setReportName(rs.getString("REPORT_NAME"));
-        obj.setReportLabel(rs.getString("REPORT_LABEL"));
+        obj.setReportLable(rs.getString("REPORT_LABLE"));
         obj.setReportAddlCriteria_1(rs.getString("REPORT_ADDL_CRITERIA_1"));
         obj.setReportRemarks(rs.getString("REPORT_REMARKS"));
         obj.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
@@ -2288,7 +2270,7 @@ class NSFRArchivalDetailRowMapper implements RowMapper<NSFR_Archival_Detail_Enti
 
 public class NSFR_Archival_Detail_Entity {
 
-    private Long sno;
+    private String sno;
 
     private String custId;
     private String acctNumber;
@@ -2296,7 +2278,7 @@ public class NSFR_Archival_Detail_Entity {
     private String dataType;
     private String reportName;
 
-    private String reportLabel;
+    private String ReportLable;
     private String reportAddlCriteria_1;
     private String reportRemarks;
     private String modificationRemarks;
@@ -2322,8 +2304,8 @@ public class NSFR_Archival_Detail_Entity {
 
     // ================= GETTERS & SETTERS =================
 
-    public Long getSno() { return sno; }
-    public void setSno(Long sno) { this.sno = sno; }
+    public String getSno() { return sno; }
+    public void setSno(String sno) { this.sno = sno; }
 
     public String getCustId() { return custId; }
     public void setCustId(String custId) { this.custId = custId; }
@@ -2340,8 +2322,8 @@ public class NSFR_Archival_Detail_Entity {
     public String getReportName() { return reportName; }
     public void setReportName(String reportName) { this.reportName = reportName; }
 
-    public String getReportLabel() { return reportLabel; }
-    public void setReportLabel(String reportLabel) { this.reportLabel = reportLabel; }
+    public String getReportLable() { return ReportLable; }
+    public void setReportLable(String ReportLable) { this.ReportLable = ReportLable; }
 
     public String getReportAddlCriteria_1() { return reportAddlCriteria_1; }
     public void setReportAddlCriteria_1(String v) { this.reportAddlCriteria_1 = v; }
@@ -2397,10 +2379,6 @@ public class NSFR_Archival_Detail_Entity {
 	public ModelAndView getNSFRView(String reportId, String fromdate, String todate, String currency, String dtltype,
 			Pageable pageable, String type,  BigDecimal version) {
 		ModelAndView mv = new ModelAndView();
-//		Session hs = sessionFactory.getCurrentSession();
-//		int pageSize = pageable.getPageSize();
-//		int currentPage = pageable.getPageNumber();
-//		int startItem = currentPage * pageSize;
 
 		if (type.equals("ARCHIVAL") & version != null) {
 			List<NSFR_Archival_Summary_Entity> T1Master = new ArrayList();
@@ -2443,144 +2421,113 @@ public class NSFR_Archival_Detail_Entity {
 
 
 
-	public ModelAndView getNSFRcurrentDtl(String reportId, String fromdate, String todate, String currency,
-			  String dtltype, Pageable pageable, String Filter, String type, String version) {
+	public ModelAndView getNSFRcurrentDtl(String reportId, String fromdate, String todate,
+	        String currency, String dtltype, Pageable pageable,
+	        String filter, String type, String version) {
 
-	int pageSize = pageable != null ? pageable.getPageSize() : 10;
-	int currentPage = pageable != null ? pageable.getPageNumber() : 0;
-	int totalPages = 0;
+	    int pageSize = pageable != null ? pageable.getPageSize() : 10;
+	    int currentPage = pageable != null ? pageable.getPageNumber() : 0;
+	    int totalPages = 0;
 
-	ModelAndView mv = new ModelAndView();
-//	Session hs = sessionFactory.getCurrentSession();
+	    ModelAndView mv = new ModelAndView();
 
-	try {
-		Date parsedDate = null;
-		if (todate != null && !todate.isEmpty()) {
-			parsedDate = dateformat.parse(todate);
-		}
+	    try {
 
-		 String reportLabel = null;
-	        String reportAddlCriteria1 = null;
+	        Date parsedDate = null;
+
+	        if (todate != null && !todate.isEmpty()) {
+				parsedDate = dateformat.parse(todate);
+			}
+
+
+	        String ReportLable = null;
+	        String reportAddlCriteria_1 = null;
+
+	        // Split Filter into REPORT_LABLE and REPORT_ADDL_CRITERIA_1
+	        if (filter != null && filter.contains(",")) {
+				String[] parts = filter.split(",");
+				if (parts.length >= 2) {
+					ReportLable = parts[0];
+					reportAddlCriteria_1 = parts[1];
+				}
+			}
 	        
-		// ✅ Split filter string into rowId & columnId
-		if (Filter != null && Filter.contains(",")) {
-			String[] parts = Filter.split(",");
-			if (parts.length >= 2) {
-				 reportLabel = parts[0];
-	                reportAddlCriteria1 = parts[1];
-			}
-		}
-	
-		if ("ARCHIVAL".equals(type) && version != null) {
-			// 🔹 Archival branch
-			List<NSFR_Archival_Detail_Entity> archivalDetailList;
-			if (reportLabel != null && reportAddlCriteria1 != null) {
-				 archivalDetailList =
-	                      GetArchivalDataByRowIdAndColumnId(
-	                                reportLabel,
-	                                reportAddlCriteria1,
-	                                parsedDate,
-	                                version
-	                        );
-				 } else {
-					  archivalDetailList =
-		                       getArchivalDetaildatabydateList(
-		                                parsedDate,
-		                                version
-		                        );
-		            }
-			
+	     // ARCHIVAL MODE
 
-			mv.addObject("reportdetails", archivalDetailList);
-			mv.addObject("reportmaster12", archivalDetailList);
-			System.out.println("ARCHIVAL COUNT: " + (archivalDetailList != null ? archivalDetailList.size() : 0));
+	        if ("ARCHIVAL".equals(type) && version != null) {
 
-		} else {
-			// 🔹 Current branch
-			List<NSFR_Detail_Entity> currentDetailList;
-			 if (reportLabel != null && reportAddlCriteria1 != null) {
-
-				currentDetailList =   GetDetailDataByRowIdAndColumnId(
-                        reportLabel,
-                        reportAddlCriteria1,
-                        parsedDate
-                );
-			} else {
-				currentDetailList =
-	                       getDetaildatabydateList(parsedDate);
+				System.out.println("ARCHIVAL DETAIL MODE");
 				
-				
+	            // ARCHIVAL DETAILS
+	            List<NSFR_Archival_Detail_Entity> archivalDetailList;
+
+	            if (ReportLable != null && reportAddlCriteria_1 != null) {
+
+	                archivalDetailList = GetArchivalDataByRowIdAndColumnId(
+	                        ReportLable,
+	                        reportAddlCriteria_1,
+	                        parsedDate,
+	                        version);
+
+	            } else {
+
+	                archivalDetailList = getArchivalDetaildatabydateList(
+	                        parsedDate,
+	                        version);
+	            }
+
+	            mv.addObject("reportdetails", archivalDetailList);
+	            mv.addObject("reportmaster12", archivalDetailList);
+
+	            totalPages = archivalDetailList != null
+	                    ? archivalDetailList.size()
+	                    : 0;
+
+	            System.out.println("ARCHIVAL COUNT : " + totalPages);
+
+	        } else {
+
+	            // CURRENT DETAILS
+	            List<NSFR_Detail_Entity> currentDetailList;
+
+	            if (ReportLable != null && reportAddlCriteria_1 != null) {
+
+	                currentDetailList =
+	                		GetDetailDataByRowIdAndColumnId(ReportLable, reportAddlCriteria_1, parsedDate);
+
+
+	            } else {
+
+	                currentDetailList =
+	                        getDetaildatabydateList(parsedDate);
+	            }
+
+	            mv.addObject("reportdetails", currentDetailList);
+	            mv.addObject("reportmaster12", currentDetailList);
+
+	            System.out.println("CURRENT DETAIL COUNT: " + currentDetailList.size());
 			}
 
-			mv.addObject("reportdetails", currentDetailList);
-			mv.addObject("reportmaster12", currentDetailList);
-			System.out.println("LISTCOUNT: " + (currentDetailList != null ? currentDetailList.size() : 0));
-		}
+	    } catch (Exception e) {
 
-	} catch (Exception e) {
-		e.printStackTrace();
-		mv.addObject("errorMessage", "Invalid date format: " + todate);
-	} 
+	        e.printStackTrace();
+	        mv.addObject("errorMessage", e.getMessage());
+	    }
 
-	// ✅ Common attributes
-	mv.setViewName("BRRS/NSFR");
-	mv.addObject("displaymode", "Details");
-	mv.addObject("currentPage", currentPage);
-	System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
-	mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
-	mv.addObject("reportsflag", "reportsflag");
-	mv.addObject("menu", reportId);
+	    // Common Attributes
+	    mv.setViewName("BRRS/NSFR");
+	    mv.addObject("displaymode", "Details");
+		mv.addObject("menu", reportId);
+		mv.addObject("currency", currency);
+		mv.addObject("reportId", reportId);
 
-	return mv;
-}
+		return mv;
+	}
+	
 
 	
-//	public void updateReport(NSFR_Manual_Summary_Entity updatedEntity) {
-//	    System.out.println("Came to services1");
-//	    System.out.println("Report Date: " + updatedEntity.getReport_date());
-//
-//	    NSFR_Manual_Summary_Entity existing = BRRS_NSFR_Manual_Summary_Repo.findById(updatedEntity.getReport_date())
-//	            .orElseThrow(() -> new RuntimeException(
-//	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
-//
-//	    try {
-//	        // ✅ Loop for fields
-//	        int[] Rows = {23,25,26,30,34,35,42,43,44,46};
-//	        for (int i : Rows) {
-//	            String prefix = "R" + i + "_";
-//	            String[] fields = {"total_no_of_acct", "total_value"};
-//
-//	            for (String field : fields) {
-//	                try {
-//	                    String getterName = "get" + prefix + field;
-//	                    String setterName = "set" + prefix + field;
-//
-//	                    Method getter = NSFR_Manual_Summary_Entity.class.getMethod(getterName);
-//	                    Method setter = NSFR_Manual_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-//
-//	                    Object newValue = getter.invoke(updatedEntity);
-//	                    setter.invoke(existing, newValue);
-//
-//	                } catch (NoSuchMethodException e) {
-//	                    // Skip missing getter/setter gracefully
-//	                    continue;
-//	                }
-//	            }
-//	        }
-//
-//
-//	        // ✅ Save after all updates
-//	        BRRS_NSFR_Manual_Summary_Repo.save(existing);
-//
-//	    } catch (Exception e) {
-//	        throw new RuntimeException("Error while updating report fields", e);
-//	    }
-//	}
 
-	
-	
-	
-	public byte[] getNSFRDetailExcel(String filename, String fromdate, String todate, String currency,
+public byte[] getNSFRDetailExcel(String filename, String fromdate, String todate, String currency,
 			   String dtltype, String type, String version) {
 try {
 logger.info("Generating Excel for NSFR Details...");
@@ -2682,7 +2629,7 @@ balanceCell.setCellValue(0);
 }
 balanceCell.setCellStyle(balanceStyle);
 
-		row.createCell(4).setCellValue(item.getReportLabel());
+		row.createCell(4).setCellValue(item.getReportLable());
 		row.createCell(5).setCellValue(item.getReportAddlCriteria_1());
 		row.createCell(6)
 				.setCellValue(item.getReportDate() != null
@@ -2728,12 +2675,6 @@ if ("ARCHIVAL".equalsIgnoreCase(type)   && version != null
 logger.info("Service: Generating ARCHIVAL report for version {}", version);
 return getExcelNSFRARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 }
-/*
- * //RESUB check else if ("RESUB".equalsIgnoreCase(type) && version != null &&
- * !version.trim().isEmpty()) {
- * logger.info("Service: Generating RESUB report for version {}", version);
- */
-
 
 
 
@@ -2743,7 +2684,7 @@ List<NSFR_Summary_Entity> dataList1 = getDataByDate(dateformat.parse(todate));
 
 System.out.println("DATA SIZE IS : "+dataList1.size());
 if (dataList1.isEmpty()) {
-	logger.warn("Service: No data found for  NFSR report. Returning empty result.");
+	logger.warn("Service: No data found for  NSFR report. Returning empty result.");
 	return new byte[0];
 }
 
@@ -3327,6 +3268,12 @@ workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
 // Write the final workbook content to the in-memory stream.
 workbook.write(out);
 logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+if (attrs != null) {
+	HttpServletRequest request = attrs.getRequest();
+	String userid = (String) request.getSession().getAttribute("USERID");
+	auditService.createBusinessAudit(userid, "DOWNLOAD", "NSFR SUMMARY", null, "BRRS_NSFR_SUMMARYTABLE");
+}
 return out.toByteArray();
 }
 }
@@ -3478,7 +3425,7 @@ balanceCell.setCellValue(0);
  * balanceCell.setCellStyle(balanceStyle);
  */
 
-row.createCell(4).setCellValue(item.getReportLabel());
+row.createCell(4).setCellValue(item.getReportLable());
 row.createCell(5).setCellValue(item.getReportAddlCriteria_1());
 row.createCell(6).setCellValue(
 item.getReportDate() != null ?
@@ -4125,25 +4072,6 @@ if (record.getR60_TOTAL_AMOUNT_BOB() != null) {
 
 
 
-
-	public ModelAndView updateDetailEdit(String SNO, String formMode) {
-	    ModelAndView mv = new ModelAndView("BRRS/NSFR"); // ✅ match the report name
-
-	    if (SNO != null) {
-	        NSFR_Detail_Entity nsfrEntity =  findBySno(SNO);
-	        if (nsfrEntity != null && nsfrEntity.getReportDate() != null) {
-	            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(nsfrEntity.getReportDate());
-	            mv.addObject("asondate", formattedDate);
-	            System.out.println(formattedDate);
-	        }
-	        mv.addObject("Data", nsfrEntity);
-	    }
-
-	    mv.addObject("displaymode", "edit");
-	    mv.addObject("formmode", formMode != null ? formMode : "edit");
-	    return mv;
-	}
-
 	@Transactional
 	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
 	    try {
@@ -4155,16 +4083,19 @@ if (record.getR60_TOTAL_AMOUNT_BOB() != null) {
 
 	        logger.info("Received update for ACCT_NO: {}", acctNo);
 
-	        NSFR_Detail_Entity existing =  findBySno(Sno);
+	        NSFR_Detail_Entity existing = findBySno(Sno);
 	        if (existing == null) {
 	            logger.warn("No record found for ACCT_NO: {}", acctNo);
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	                    .body("Record not found for update.");
 	        }
 
 	        boolean isChanged = false;
 
 	        if (acctName != null && !acctName.isEmpty()) {
-	            if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
+	            if (existing.getAcctName() == null ||
+	                    !existing.getAcctName().equals(acctName)) {
+
 	                existing.setAcctName(acctName);
 	                isChanged = true;
 	                logger.info("Account name updated to {}", acctName);
@@ -4172,28 +4103,25 @@ if (record.getR60_TOTAL_AMOUNT_BOB() != null) {
 	        }
 
 	        if (provisionStr != null && !provisionStr.isEmpty()) {
+
 	            BigDecimal newProvision = new BigDecimal(provisionStr);
+
 	            if (existing.getAcctBalanceInpula() == null ||
-	                existing.getAcctBalanceInpula().compareTo(newProvision) != 0) {
+	                    existing.getAcctBalanceInpula().compareTo(newProvision) != 0) {
+
 	                existing.setAcctBalanceInpula(newProvision);
 	                isChanged = true;
 	                logger.info("Balance updated to {}", newProvision);
 	            }
 	        }
-	        
-	        
 
-	        /*if (isChanged) {
-	        	BRRS_NSFR_Detail_Repo.save(existing);
-	            logger.info("Record updated successfully for account {}", acctNo);
-*/
 	        if (isChanged) {
 
 	            String sql =
-	                "UPDATE BRRS_NSFR_DETAILTABLE " +
-	                "SET ACCT_NAME = ?, " +
-	                "ACCT_BALANCE_IN_PULA = ? " +
-	                "WHERE SNO = ?";
+	                    "UPDATE BRRS_NSFR_DETAILTABLE " +
+	                    "SET ACCT_NAME = ?, " +
+	                    "ACCT_BALANCE_IN_PULA = ? " +
+	                    "WHERE SNO = ?";
 
 	            jdbcTemplate.update(
 	                    sql,
@@ -4202,41 +4130,76 @@ if (record.getR60_TOTAL_AMOUNT_BOB() != null) {
 	                    existing.getSno()
 	            );
 
-	            System.out.println(
-	                    "Record updated using JDBC");
-	        
+	            logger.info("Record updated successfully using JDBC");
+
+	            /* ===== AUDIT CODE ===== */
+	            ServletRequestAttributes attrs =
+	                    (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+
+	            if (attrs != null) {
+	                HttpServletRequest req = attrs.getRequest();
+	                String userid =
+	                        (String) req.getSession().getAttribute("USERID");
+
+	                auditService.createBusinessAudit(
+	                        userid,
+	                        "EDIT",
+	                        "NSFR DETAIL",
+	                        existing.getSno().toString(),
+	                        "BRRS_NSFR_DETAILTABLE"
+	                );
+
+	                logger.info("Audit record created successfully for user {}", userid);
+	            }
+	            /* ===== END AUDIT CODE ===== */
+
 	            // Format date for procedure
 	            String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-	                    .format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+	                    .format(new SimpleDateFormat("yyyy-MM-dd")
+	                            .parse(reportDateStr));
 
 	            // Run summary procedure after commit
-	            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-	                @Override
-	                public void afterCommit() {
-	                    try {
-	                        logger.info("Transaction committed — calling BRRS_NSFR_SUMMARY_PROCEDURE({})",
-	                                formattedDate);
-	                        jdbcTemplate.update("BEGIN BRRS_NSFR_SUMMARY_PROCEDURE(?); END;", formattedDate);
-	                        logger.info("Procedure executed successfully after commit.");
-	                    } catch (Exception e) {
-	                        logger.error("Error executing procedure after commit", e);
-	                    }
-	                }
-	            });
+	            TransactionSynchronizationManager.registerSynchronization(
+	                    new TransactionSynchronizationAdapter() {
+
+	                        @Override
+	                        public void afterCommit() {
+	                            try {
+	                                logger.info(
+	                                        "Transaction committed — calling BRRS_NSFR_SUMMARY_PROCEDURE({})",
+	                                        formattedDate);
+
+	                                jdbcTemplate.update(
+	                                        "BEGIN BRRS_NSFR_SUMMARY_PROCEDURE(?); END;",
+	                                        formattedDate);
+
+	                                logger.info(
+	                                        "Procedure executed successfully after commit.");
+
+	                            } catch (Exception e) {
+	                                logger.error(
+	                                        "Error executing procedure after commit", e);
+	                            }
+	                        }
+	                    });
 
 	            return ResponseEntity.ok("Record updated successfully!");
+
 	        } else {
+
 	            logger.info("No changes detected for ACCT_NO: {}", acctNo);
+
 	            return ResponseEntity.ok("No changes were made.");
 	        }
 
 	    } catch (Exception e) {
+
 	        logger.error("Error updating NSFR record", e);
+
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 	                .body("Error updating record: " + e.getMessage());
 	    }
 	}
-	
 	
 	
 	
