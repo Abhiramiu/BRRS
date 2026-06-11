@@ -2501,39 +2501,18 @@ public class BRRS_Common_Disclosure_ReportService {
 		System.out.println("Type = " + type);
 		System.out.println("Version = " + version);
 
-		// ARCHIVAL MODE
-		if ("ARCHIVAL".equals(type) && version != null) {
+		// ARCHIVAL + RESUB MODE
+		if (("ARCHIVAL".equals(type) || "RESUB".equals(type)) && version != null) {
 
 			List<Common_Disclosure_Archival_Summary_Entity> T1Master = new ArrayList<>();
 
 			try {
+
 				Date dt = dateformat.parse(todate);
 
 				T1Master = getdatabydateListarchival(dt, version);
 
-				System.out.println("Archival Summary size = " + T1Master.size());
-
-				mv.addObject("REPORT_DATE", dateformat.format(dt));
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			mv.addObject("reportsummary", T1Master);
-		}
-
-		// RESUBMISSION MODE
-		else if ("RESUB".equals(type) && version != null) {
-
-			List<Common_Disclosure_Resub_Summary_Entity> T1Master = new ArrayList<>();
-
-			try {
-				Date dt = dateformat.parse(todate);
-
-				// Fetch Resubmission Data
-				T1Master = getdatabydateListResub(dt, version);
-
-				System.out.println("Resub Summary size = " + T1Master.size());
+				System.out.println(type + " Summary size = " + T1Master.size());
 
 				mv.addObject("REPORT_DATE", dateformat.format(dt));
 
@@ -2550,6 +2529,7 @@ public class BRRS_Common_Disclosure_ReportService {
 			List<Common_Disclosure_Summary_Entity> T1Master = new ArrayList<>();
 
 			try {
+
 				Date dt = dateformat.parse(todate);
 
 				T1Master = getDataByDate(dt);
@@ -2601,50 +2581,27 @@ public class BRRS_Common_Disclosure_ReportService {
 				}
 			}
 
-			// ARCHIVAL MODE
-			if ("ARCHIVAL".equals(type) && version != null) {
+			// ARCHIVAL / RESUB MODE
+			if (("ARCHIVAL".equals(type) || "RESUB".equals(type)) && version != null) {
 
-				System.out.println("ARCHIVAL DETAIL MODE");
+				System.out.println(type + " DETAIL MODE");
 
-				List<Common_Disclosure_Archival_Detail_Entity> archivalDetailList;
+				List<Common_Disclosure_Archival_Detail_Entity> detailList;
 
 				if (reportLabel != null && reportAddlCriteria1 != null) {
 
-					archivalDetailList = GetArchivalDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1, parsedDate,
+					detailList = GetArchivalDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1, parsedDate,
 							version);
 
 				} else {
 
-					archivalDetailList = getArchivalDetaildatabydateList(parsedDate, version);
+					detailList = getArchivalDetaildatabydateList(parsedDate, version);
 				}
 
-				mv.addObject("reportdetails", archivalDetailList);
-				mv.addObject("reportmaster12", archivalDetailList);
+				mv.addObject("reportdetails", detailList);
+				mv.addObject("reportmaster12", detailList);
 
-				System.out.println("ARCHIVAL DETAIL COUNT: " + archivalDetailList.size());
-			}
-
-			// RESUB MODE
-			else if ("RESUB".equals(type) && version != null) {
-
-				System.out.println("RESUB DETAIL MODE");
-
-				List<Common_Disclosure_Resub_Detail_Entity> resubDetailList;
-
-				if (reportLabel != null && reportAddlCriteria1 != null) {
-
-					resubDetailList = GetResubDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1, parsedDate,
-							version);
-
-				} else {
-
-					resubDetailList = getResubDetaildatabydateList(parsedDate, version);
-				}
-
-				mv.addObject("reportdetails", resubDetailList);
-				mv.addObject("reportmaster12", resubDetailList);
-
-				System.out.println("RESUB DETAIL COUNT: " + resubDetailList.size());
+				System.out.println(type + " DETAIL COUNT: " + detailList.size());
 			}
 
 			// CURRENT MODE
@@ -2711,43 +2668,22 @@ public class BRRS_Common_Disclosure_ReportService {
 		return archivalList;
 	}
 
-	public ModelAndView getViewOrEditPage(String SNO, String formMode, String type, String version) {
-
+	public ModelAndView getViewOrEditPage(String SNO, String formMode) {
 		ModelAndView mv = new ModelAndView("BRRS/COMMON_DISCLOSURE");
 
+		System.out.println("sno is : " + SNO);
 		if (SNO != null) {
-
-			if ("RESUB".equalsIgnoreCase(type)) {
-
-				Common_Disclosure_Resub_Detail_Entity resubEntity = findBySno1(SNO);
-				if (resubEntity != null && resubEntity.getReportDate() != null) {
-					String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(resubEntity.getReportDate());
-					mv.addObject("asondate", formattedDate);
-				}
-
-				mv.addObject("Common_DisclosureData", resubEntity);
-
-			} else {
-
-				Common_Disclosure_Detail_Entity commonDisclosureEntity = findBySno(SNO);
-
-				if (commonDisclosureEntity != null && commonDisclosureEntity.getReportDate() != null) {
-
-					String formattedDate = new SimpleDateFormat("dd/MM/yyyy")
-							.format(commonDisclosureEntity.getReportDate());
-
-					mv.addObject("asondate", formattedDate);
-				}
-
-				mv.addObject("Common_DisclosureData", commonDisclosureEntity);
+			Common_Disclosure_Detail_Entity commonDisclosureEntity = findBySno(SNO);
+			if (commonDisclosureEntity != null && commonDisclosureEntity.getReportDate() != null) {
+				String formattedDate = new SimpleDateFormat("dd/MM/yyyy")
+						.format(commonDisclosureEntity.getReportDate());
+				mv.addObject("asondate", formattedDate);
 			}
+			mv.addObject("Common_DisclosureData", commonDisclosureEntity);
 		}
 
 		mv.addObject("displaymode", "edit");
-		mv.addObject("type", type);
-		mv.addObject("version", version);
 		mv.addObject("formmode", formMode != null ? formMode : "edit");
-
 		return mv;
 	}
 
@@ -2757,112 +2693,111 @@ public class BRRS_Common_Disclosure_ReportService {
 		try {
 
 			String Sno = request.getParameter("sno");
-			String acctBalanceInpulaStr = request.getParameter("acctBalanceInpula");
+
+			String acctBalanceInpula = request.getParameter("acctBalanceInpula");
+
 			String averageStr = request.getParameter("average");
+
 			String acctName = request.getParameter("acctName");
+
 			String reportDateStr = request.getParameter("reportDate");
-			String type = request.getParameter("type");
 
-			// =====================================================
-			// RESUB UPDATE
-			// =====================================================
-			if ("RESUB".equalsIgnoreCase(type)) {
+			System.out.println("Sno is : " + Sno);
 
-				Common_Disclosure_Resub_Detail_Entity existing = findBySno1(Sno);
+			// Load Existing Record
+			Common_Disclosure_Detail_Entity existing = findBySno(Sno);
 
-				if (existing == null) {
-					return ResponseEntity.status(HttpStatus.NOT_FOUND).body("RESUB record not found.");
-				}
+			if (existing == null) {
 
-				boolean isChanged = false;
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+			}
 
-				if (acctName != null && !acctName.isEmpty()) {
+			boolean isChanged = false;
+
+			// Update Name
+			if (acctName != null && !acctName.isEmpty()) {
+
+				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
+
 					existing.setAcctName(acctName);
+
 					isChanged = true;
 				}
+			}
 
-				if (acctBalanceInpulaStr != null && !acctBalanceInpulaStr.isEmpty()) {
-					existing.setAcctBalanceInpula(new BigDecimal(acctBalanceInpulaStr));
+			// Update Balance
+			if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
+
+				BigDecimal newBalance = new BigDecimal(acctBalanceInpula);
+
+				if (existing.getAcctBalanceInpula() == null
+						|| existing.getAcctBalanceInpula().compareTo(newBalance) != 0) {
+
+					existing.setAcctBalanceInpula(newBalance);
+
 					isChanged = true;
 				}
+			}
+// AVERAGE
+			if (averageStr != null && !averageStr.isEmpty()) {
 
-				if (averageStr != null && !averageStr.isEmpty()) {
-					existing.setAverage(new BigDecimal(averageStr));
+				BigDecimal newAverage = new BigDecimal(averageStr);
+
+				if (existing.getAverage() == null || existing.getAverage().compareTo(newAverage) != 0) {
+
+					existing.setAverage(newAverage);
+
 					isChanged = true;
 				}
+			}
+			// Save using JDBC
+			if (isChanged) {
 
-				if (reportDateStr != null && !reportDateStr.isEmpty()) {
-					existing.setReportDate(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
-					isChanged = true;
-				}
+				String sql = "UPDATE BRRS_COMMON_DISCLOSURE_DETAILTABLE " + "SET ACCT_NAME = ?, "
+						+ "ACCT_BALANCE_IN_PULA = ?, " + // ✅ comma added
+						"AVERAGE = ? " + // ✅ proper concatenation
+						"WHERE SNO = ?";
 
-				if (isChanged) {
+				jdbcTemplate.update(sql, existing.getAcctName(), existing.getAcctBalanceInpula(), existing.getAverage(),
+						Sno);
 
-					Integer nextVersion = jdbcTemplate.queryForObject(
-							"SELECT NVL(MAX(DATA_ENTRY_VERSION),0)+1 "
-									+ "FROM BRRS_COMMON_DISCLOSURE_RESUBTABLE_DETAIL " + "WHERE ACCT_NUMBER=?",
-							Integer.class, existing.getAcctNumber());
+				System.out.println("Record updated using JDBC");
 
-					String insertResub = "INSERT INTO BRRS_COMMON_DISCLOSURE_RESUBTABLE_DETAIL "
-							+ "(SNO,CUST_ID,ACCT_NUMBER,ACCT_NAME,REPORT_NAME,"
-							+ "REPORT_LABEL,REPORT_ADDL_CRITERIA_1,REPORT_REMARKS,"
-							+ "DATA_ENTRY_VERSION,ACCT_BALANCE_IN_PULA,AVERAGE,"
-							+ "REPORT_DATE,ENTITY_FLG,MODIFY_FLG,DEL_FLG)" + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				// Format Date
+				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
 
-					// Insert into RESUB table
-					jdbcTemplate.update(insertResub, Sno, existing.getCustId(), existing.getAcctNumber(),
-							existing.getAcctName(), existing.getReportName(), existing.getReportLabel(),
-							existing.getReportAddlCriteria1(), existing.getReportRemarks(), nextVersion,
-							existing.getAcctBalanceInpula(), existing.getAverage(),
-							new java.sql.Date(existing.getReportDate().getTime()), "Y", "Y", "N");
+				// Call Procedure After Commit
+				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
 
-					// Insert same record into ARCHIVAL table
-					String insertArchival = "INSERT INTO BRRS_COMMON_DISCLOSURE_ARCHIVALTABLE_DETAIL "
-							+ "(SNO,CUST_ID,ACCT_NUMBER,ACCT_NAME,REPORT_NAME,"
-							+ "REPORT_LABEL,REPORT_ADDL_CRITERIA_1,REPORT_REMARKS,"
-							+ "DATA_ENTRY_VERSION,ACCT_BALANCE_IN_PULA,AVERAGE,"
-							+ "REPORT_DATE,ENTITY_FLG,MODIFY_FLG,DEL_FLG)" + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+					@Override
+					public void afterCommit() {
 
-					jdbcTemplate.update(insertArchival, Sno, existing.getCustId(), existing.getAcctNumber(),
-							existing.getAcctName(), existing.getReportName(), existing.getReportLabel(),
-							existing.getReportAddlCriteria1(), existing.getReportRemarks(), nextVersion,
-							existing.getAcctBalanceInpula(), existing.getAverage(),
-							new java.sql.Date(existing.getReportDate().getTime()), "Y", "Y", "N");
+						try {
 
-					// CALL PROCEDURE
-					String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(existing.getReportDate());
+							jdbcTemplate.update("BEGIN BRRS_COMMON_DISCLOSURE_SUMMARY_PROCEDURE(?); END;",
+									formattedDate);
 
-					jdbcTemplate.update("BEGIN BRRS_COMMON_DISCLOSURE_SUMMARY_PROCEDURE(?); END;", formattedDate);
+							System.out.println("Procedure executed");
 
-					return ResponseEntity.ok("RESUB Record updated successfully!");
-				}
+						} catch (Exception e) {
+
+							e.printStackTrace();
+						}
+					}
+				});
+
+				return ResponseEntity.ok("Record updated successfully!");
+			}
+
+			else {
 
 				return ResponseEntity.ok("No changes were made.");
 			}
 
-			// =====================================================
-			// NORMAL UPDATE
-			// =====================================================
-			Common_Disclosure_Detail_Entity existing = findBySno(Sno);
+		}
 
-			if (existing == null) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found.");
-			}
-
-			String updateSql = "UPDATE BRRS_COMMON_DISCLOSURE_DETAILTABLE "
-					+ "SET ACCT_NAME=?, ACCT_BALANCE_IN_PULA=?, " + "AVERAGE=?, REPORT_DATE=? " + "WHERE SNO=?";
-
-			jdbcTemplate.update(updateSql, acctName, new BigDecimal(acctBalanceInpulaStr), new BigDecimal(averageStr),
-					java.sql.Date.valueOf(reportDateStr), Sno);
-
-			// CALL PROCEDURE
-			String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(java.sql.Date.valueOf(reportDateStr));
-
-			jdbcTemplate.update("BEGIN BRRS_COMMON_DISCLOSURE_SUMMARY_PROCEDURE(?); END;", formattedDate);
-
-			return ResponseEntity.ok("Record updated successfully!");
-
-		} catch (Exception e) {
+		catch (Exception e) {
 
 			e.printStackTrace();
 
