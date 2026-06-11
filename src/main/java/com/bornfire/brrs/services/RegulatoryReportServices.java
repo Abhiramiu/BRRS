@@ -1686,6 +1686,19 @@ public class RegulatoryReportServices {
 
 			break;
 			
+			
+		case "EXPOSURES":
+			repsummary = BRRS_EXPOSURES_ReportService.getEXPOSURESView(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version);
+
+			break;
+			
+		case "FORMAT_NEW_CPR":
+			repsummary = BRRS_FORMAT_NEW_CPR_ReportService.getFORMAT_NEW_CPRView(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version);
+
+			break;
+			
 		/*
 		 * case "AML":
 		 * 
@@ -2210,6 +2223,7 @@ public class RegulatoryReportServices {
 			repdetail = BRRS_EXPOSURES_ReportService.getEXPOSUREScurrentDtl(reportId, fromdate, todate, currency,
 					dtltype, pageable, Filter, type, version);
 			break;
+			
 
 		case "FORMAT_NEW_CPR":
 
@@ -3688,6 +3702,26 @@ public class RegulatoryReportServices {
 		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
 		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
 		 */
+			
+			
+		case "FORMAT_NEW_CPR":
+			try {
+				repfile = BRRS_FORMAT_NEW_CPR_ReportService.getFORMAT_NEW_CPRExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "EXPOSURES":
+			try {
+				repfile = BRRS_EXPOSURES_ReportService.getEXPOSURESExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
 
 		case "AML":
 			try {
@@ -5891,22 +5925,36 @@ public class RegulatoryReportServices {
 
 	
 
-		case "EXPOSURES":
-			try {
-				archivalData = BRRS_EXPOSURES_ReportService.getEXPOSURESArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-
+//		case "EXPOSURES":
+//			try {
+//				archivalData = BRRS_EXPOSURES_ReportService.getEXPOSURESArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
+//
+//		case "FORMAT_NEW_CPR":
+//			try {
+//				archivalData = BRRS_FORMAT_NEW_CPR_ReportService.getFNCArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
+			
+			
+			
 		case "FORMAT_NEW_CPR":
-			try {
-				archivalData = BRRS_FORMAT_NEW_CPR_ReportService.getFNCArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> fnaList = BRRS_FORMAT_NEW_CPR_ReportService.getFORMAT_NEW_CPRArchival();
+			archivalData.addAll(fnaList);
+			System.out.println("Fetched rwaList archival data: " + fnaList.size());
+			break;
+			
+		case "EXPOSURES":
+			List<Object[]> expoList = BRRS_EXPOSURES_ReportService.getEXPOSURESArchival();
+			archivalData.addAll(expoList);
+			System.out.println("Fetched rwaList archival data: " + expoList.size());
 			break;
 
 		case "MDISB1":

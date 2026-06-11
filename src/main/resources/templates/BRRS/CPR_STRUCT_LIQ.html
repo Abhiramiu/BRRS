@@ -5023,7 +5023,7 @@ Reverse Repos} </td>
                    <th>ACCT NAME</th>
                    <th>ACCT BALANCE IN PULA</th>
                    
-                   <th style="text-align:left;">REPORT LABLE</th>
+                   <th style="text-align:left;">REPORT LABEL</th>
                    <th>REPORT ADDL CRITERIA 1</th>
                    <th>REPORT DATE</th>
                   </tr>
@@ -5049,7 +5049,7 @@ Reverse Repos} </td>
                    
                    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.acctBalanceInpula,1,'COMMA',0,'POINT')}"></td>
                    
-                   <td style="text-align:left;" th:text="${report.reportLable != null ? report.reportLable : '-'}">
+                   <td style="text-align:left;" th:text="${report.reportLabel != null ? report.reportLabel : '-'}">
                    </td>
                    <td
                     th:text="${report.reportAddlCriteria1 != null ? report.reportAddlCriteria1 : '-'}">
@@ -5112,7 +5112,7 @@ Reverse Repos} </td>
          <div class="row formline" style="margin-top:10px;">
            <label class="col-sm-2">Report Lable</label>
            <div class="col-sm-3">
-             <input type="text" th:field="*{reportLable}" class="form-control form-control-sm" readonly />
+             <input type="text" th:field="*{reportLabel}" class="form-control form-control-sm" readonly />
            </div>
 
            <div class="col-sm-1"></div>

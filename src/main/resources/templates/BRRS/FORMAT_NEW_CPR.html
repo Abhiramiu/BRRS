@@ -1686,7 +1686,7 @@ function cancelModify() {
                    
                    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.acctBalanceInpula,1,'COMMA',0,'POINT')}"></td>
                    
-                   <td style="text-align:left;" th:text="${report.reportLable != null ? report.reportLable : '-'}">
+                   <td style="text-align:left;" th:text="${report.reportLabel != null ? report.reportLabel : '-'}">
                    </td>
                    <td
                     th:text="${report.reportAddlCriteria1 != null ? report.reportAddlCriteria1 : '-'}">
@@ -1747,9 +1747,9 @@ function cancelModify() {
 
          <!-- Row 3 -->
          <div class="row formline" style="margin-top:10px;">
-           <label class="col-sm-2">Report Lable</label>
+           <label class="col-sm-2">Report Label</label>
            <div class="col-sm-3">
-             <input type="text" th:field="*{reportLable}" class="form-control form-control-sm" readonly />
+             <input type="text" th:field="*{reportLabel}" class="form-control form-control-sm" readonly />
            </div>
 
            <div class="col-sm-1"></div>
