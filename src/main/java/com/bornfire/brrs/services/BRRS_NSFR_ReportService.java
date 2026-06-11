@@ -4072,6 +4072,25 @@ if (record.getR60_TOTAL_AMOUNT_BOB() != null) {
 
 
 
+
+	public ModelAndView updateDetailEdit(String SNO, String formMode) {
+	    ModelAndView mv = new ModelAndView("BRRS/NSFR"); // ✅ match the report name
+
+	    if (SNO != null) {
+	        NSFR_Detail_Entity nsfrEntity =  findBySno(SNO);
+	        if (nsfrEntity != null && nsfrEntity.getReportDate() != null) {
+	            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(nsfrEntity.getReportDate());
+	            mv.addObject("asondate", formattedDate);
+	            System.out.println(formattedDate);
+	        }
+	        mv.addObject("Data", nsfrEntity);
+	    }
+
+	    mv.addObject("displaymode", "edit");
+	    mv.addObject("formmode", formMode != null ? formMode : "edit");
+	    return mv;
+	}
+
 	@Transactional
 	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
 	    try {
@@ -4083,19 +4102,16 @@ if (record.getR60_TOTAL_AMOUNT_BOB() != null) {
 
 	        logger.info("Received update for ACCT_NO: {}", acctNo);
 
-	        NSFR_Detail_Entity existing = findBySno(Sno);
+	        NSFR_Detail_Entity existing =  findBySno(Sno);
 	        if (existing == null) {
 	            logger.warn("No record found for ACCT_NO: {}", acctNo);
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-	                    .body("Record not found for update.");
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
 	        }
 
 	        boolean isChanged = false;
 
 	        if (acctName != null && !acctName.isEmpty()) {
-	            if (existing.getAcctName() == null ||
-	                    !existing.getAcctName().equals(acctName)) {
-
+	            if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
 	                existing.setAcctName(acctName);
 	                isChanged = true;
 	                logger.info("Account name updated to {}", acctName);
@@ -4103,25 +4119,28 @@ if (record.getR60_TOTAL_AMOUNT_BOB() != null) {
 	        }
 
 	        if (provisionStr != null && !provisionStr.isEmpty()) {
-
 	            BigDecimal newProvision = new BigDecimal(provisionStr);
-
 	            if (existing.getAcctBalanceInpula() == null ||
-	                    existing.getAcctBalanceInpula().compareTo(newProvision) != 0) {
-
+	                existing.getAcctBalanceInpula().compareTo(newProvision) != 0) {
 	                existing.setAcctBalanceInpula(newProvision);
 	                isChanged = true;
 	                logger.info("Balance updated to {}", newProvision);
 	            }
 	        }
+	        
+	        
 
+	        /*if (isChanged) {
+	        	BRRS_NSFR_Detail_Repo.save(existing);
+	            logger.info("Record updated successfully for account {}", acctNo);
+*/
 	        if (isChanged) {
 
 	            String sql =
-	                    "UPDATE BRRS_NSFR_DETAILTABLE " +
-	                    "SET ACCT_NAME = ?, " +
-	                    "ACCT_BALANCE_IN_PULA = ? " +
-	                    "WHERE SNO = ?";
+	                "UPDATE BRRS_NSFR_DETAILTABLE " +
+	                "SET ACCT_NAME = ?, " +
+	                "ACCT_BALANCE_IN_PULA = ? " +
+	                "WHERE SNO = ?";
 
 	            jdbcTemplate.update(
 	                    sql,
@@ -4130,76 +4149,41 @@ if (record.getR60_TOTAL_AMOUNT_BOB() != null) {
 	                    existing.getSno()
 	            );
 
-	            logger.info("Record updated successfully using JDBC");
-
-	            /* ===== AUDIT CODE ===== */
-	            ServletRequestAttributes attrs =
-	                    (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-
-	            if (attrs != null) {
-	                HttpServletRequest req = attrs.getRequest();
-	                String userid =
-	                        (String) req.getSession().getAttribute("USERID");
-
-	                auditService.createBusinessAudit(
-	                        userid,
-	                        "EDIT",
-	                        "NSFR DETAIL",
-	                        existing.getSno().toString(),
-	                        "BRRS_NSFR_DETAILTABLE"
-	                );
-
-	                logger.info("Audit record created successfully for user {}", userid);
-	            }
-	            /* ===== END AUDIT CODE ===== */
-
+	            System.out.println(
+	                    "Record updated using JDBC");
+	        
 	            // Format date for procedure
 	            String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-	                    .format(new SimpleDateFormat("yyyy-MM-dd")
-	                            .parse(reportDateStr));
+	                    .format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
 
 	            // Run summary procedure after commit
-	            TransactionSynchronizationManager.registerSynchronization(
-	                    new TransactionSynchronizationAdapter() {
-
-	                        @Override
-	                        public void afterCommit() {
-	                            try {
-	                                logger.info(
-	                                        "Transaction committed — calling BRRS_NSFR_SUMMARY_PROCEDURE({})",
-	                                        formattedDate);
-
-	                                jdbcTemplate.update(
-	                                        "BEGIN BRRS_NSFR_SUMMARY_PROCEDURE(?); END;",
-	                                        formattedDate);
-
-	                                logger.info(
-	                                        "Procedure executed successfully after commit.");
-
-	                            } catch (Exception e) {
-	                                logger.error(
-	                                        "Error executing procedure after commit", e);
-	                            }
-	                        }
-	                    });
+	            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+	                @Override
+	                public void afterCommit() {
+	                    try {
+	                        logger.info("Transaction committed — calling BRRS_NSFR_SUMMARY_PROCEDURE({})",
+	                                formattedDate);
+	                        jdbcTemplate.update("BEGIN BRRS_NSFR_SUMMARY_PROCEDURE(?); END;", formattedDate);
+	                        logger.info("Procedure executed successfully after commit.");
+	                    } catch (Exception e) {
+	                        logger.error("Error executing procedure after commit", e);
+	                    }
+	                }
+	            });
 
 	            return ResponseEntity.ok("Record updated successfully!");
-
 	        } else {
-
 	            logger.info("No changes detected for ACCT_NO: {}", acctNo);
-
 	            return ResponseEntity.ok("No changes were made.");
 	        }
 
 	    } catch (Exception e) {
-
 	        logger.error("Error updating NSFR record", e);
-
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 	                .body("Error updating record: " + e.getMessage());
 	    }
 	}
+	
 	
 	
 	
