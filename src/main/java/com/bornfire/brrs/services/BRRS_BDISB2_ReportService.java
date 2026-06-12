@@ -20,6 +20,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -45,6 +46,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 @Component
@@ -14717,7 +14720,12 @@ public class BRRS_BDISB2_ReportService {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "BDISB2 SUMMARY", null, "BRRS_BDISB2_SUMMARYTABLE");
+			}
 			return out.toByteArray();
 		}
 	}
@@ -16344,7 +16352,12 @@ public class BRRS_BDISB2_ReportService {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "BDISB2 ARCHIVAL SUMMARY", null, "BRRS_BDISB2_ARCHIVALTABLE_SUMMARY");
+			}
 			return out.toByteArray();
 		}
 	}
@@ -17980,7 +17993,12 @@ public class BRRS_BDISB2_ReportService {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "BDISB2 RESUB SUMMARY", null, "BRRS_BDISB2_RESUB_SUMMARYTABLE");
+			}
 			return out.toByteArray();
 		}
 	}

@@ -58,6 +58,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -73,6 +75,9 @@ public class BRRS_MDISB4_ReportService {
 
 	@Autowired
 	SessionFactory sessionFactory;
+	
+	@Autowired
+	AuditService auditService;
 	
 	// ENTITY MANAGER (Acts like Repository)
 		@PersistenceContext
@@ -2610,7 +2615,12 @@ public class BRRS_MDISB4_ReportService {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "MDISB4 SUMMARY", null, "BRRS_MDISB4_SUMMARYTABLE");
+			}
 			return out.toByteArray();
 		}
 	}
@@ -3326,7 +3336,12 @@ public class BRRS_MDISB4_ReportService {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "MDISB4 ARCHIVAL SUMMARY", null, "BRRS_MDISB4_ARCHIVALTABLE_SUMMARY");
+			}
 			return out.toByteArray();
 		}
 	}
