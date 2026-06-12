@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -33,6 +35,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_LA2_Archival_Detail_Repo;
@@ -59,6 +63,9 @@ public class BRRS_M_LA2_ReportService {
 
 	@Autowired
 	SessionFactory sessionFactory;
+	
+	@Autowired
+	AuditService auditService;
 
 	@Autowired
 	BRRS_M_LA2_Summary_Repo brrs_M_LA2_summary_repo;
@@ -668,7 +675,12 @@ public class BRRS_M_LA2_ReportService {
 					workbook.write(out);
 
 					logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+					if (attrs != null) {
+						HttpServletRequest request = attrs.getRequest();
+						String userid = (String) request.getSession().getAttribute("USERID");
+						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_LA2 SUMMARY", null, "BRRS_M_LA2_SUMMARYTABLE");
+					}
 					return out.toByteArray();
 				}
 			}
@@ -983,6 +995,12 @@ public class BRRS_M_LA2_ReportService {
 
 			// Write the final workbook content to the in-memory stream.
 			workbook.write(out);
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_LA2 EMAIL SUMMARY", null, "BRRS_M_LA2_SUMMARYTABLE");
+			}
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
 
@@ -1290,7 +1308,12 @@ public class BRRS_M_LA2_ReportService {
 
 // Write the final workbook content to the in-memory stream.
 			workbook.write(out);
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_LA2 ARCHIVAL SUMMARY", null, "BRRS_M_LA2_ARCHIVALTABLE_SUMMARY");
+			}
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
 
 			return out.toByteArray();
@@ -1586,7 +1609,12 @@ public class BRRS_M_LA2_ReportService {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_LA2 EMAIL ARCHIVALSUMMARY", null, "BRRS_M_LA2_ARCHIVALTABLE_SUMMARY");
+			}
 			return out.toByteArray();
 		}
 	}
@@ -1894,7 +1922,12 @@ public class BRRS_M_LA2_ReportService {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_LA2 RESUB SUMMARY", null, "BRRS_M_LA2_RESUB_SUMMARYTABLE");
+			}
 			return out.toByteArray();
 		}
 
@@ -2188,7 +2221,12 @@ public class BRRS_M_LA2_ReportService {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_LA2 EMAIL RESUBSUMMARY", null, "BRRS_M_LA2_RESUB_SUMMARYTABLE");
+			}
 			return out.toByteArray();
 		}
 	}

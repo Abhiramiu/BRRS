@@ -3151,6 +3151,12 @@ public class BRRS_M_SFINP1_ReportService {
 
 				logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
 
+				ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+				if (attrs != null) {
+					HttpServletRequest request = attrs.getRequest();
+					String userid = (String) request.getSession().getAttribute("USERID");
+					auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SFINP1 EMAIL SUMMARY", null, "BRRS_M_SFINP1_SUMMARYTABLE");
+				}
 				return out.toByteArray();
 			}
 		}
@@ -5053,6 +5059,12 @@ public class BRRS_M_SFINP1_ReportService {
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
 
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SFINP1 EMAIL ARCHIVALSUMMARY", null, "BRRS_M_SFINP1_ARCHIVALTABLE_SUMMARY");
+			}
 			return out.toByteArray();
 		}
 	}
