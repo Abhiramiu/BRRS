@@ -2814,9 +2814,12 @@ public class BRRS_Common_Disclosure_ReportService {
 				}
 				jdbcTemplate.update(sql, existing.getAcctName(), existing.getAcctBalanceInpula(), existing.getAverage(),
 						Sno);
-
-				//auditService.compareEntities(oldcopy, existing, "Common Disclosure Archival Screen","BRRS_COMMON_DISCLOSURE_ARCHIVALTABLE_DETAIL");
-				
+				if  ((type == "RESUB") || (type.equals("RESUB"))) {
+				auditService.compareEntitiesmanual(oldcopy, existing,Sno, "Common Disclosure Archival Screen","BRRS_COMMON_DISCLOSURE_ARCHIVALTABLE_DETAIL");
+				}
+				else {
+					auditService.compareEntitiesmanual(oldcopy, existing,Sno, "Common Disclosure Screen","BRRS_COMMON_DISCLOSURE_DETAILTABLE");
+				}
 				System.out.println("Record updated using JDBC");
 				
 				Run_Common_Disclosure_Procudure(reportDateStr, type, entry);
