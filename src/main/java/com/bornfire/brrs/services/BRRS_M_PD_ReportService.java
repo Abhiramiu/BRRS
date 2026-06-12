@@ -45,6 +45,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_PD_Archival_Detail_Repo;
@@ -77,6 +79,9 @@ public class BRRS_M_PD_ReportService {
 
 	@Autowired
 	SessionFactory sessionFactory;
+	
+	@Autowired
+	AuditService auditService;
 
 
 
@@ -6841,6 +6846,15 @@ workbook.write(out);
 
 logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
 
+//audit service summary format
+
+ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+							if (attrs != null) {
+								HttpServletRequest request = attrs.getRequest();
+								String userid = (String) request.getSession().getAttribute("USERID");
+								auditService.createBusinessAudit(userid, "DOWNLOAD", "M_PD SUMMARY", null, "BRRS_M_PD_SUMMARYTABLE");
+							}
+
 return out.toByteArray();
 }	
 }
@@ -13543,6 +13557,16 @@ workbook.write(out);
 
 logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
 
+
+//audit service summary email
+
+ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+					if (attrs != null) {
+						HttpServletRequest request = attrs.getRequest();
+						String userid = (String) request.getSession().getAttribute("USERID");
+						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_PD EMAIL SUMMARY", null, "BRRS_M_PD_SUMMARYTABLE");
+					}
+
 return out.toByteArray();
 }
 }
@@ -19403,6 +19427,16 @@ workbook.setForceFormulaRecalculation(true);
 workbook.write(out);
 
 logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+
+//audit service archival summary format
+
+ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+					if (attrs != null) {
+						HttpServletRequest request = attrs.getRequest();
+						String userid = (String) request.getSession().getAttribute("USERID");
+						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_PD ARCHIVAL SUMMARY", null, "BRRS_M_PD_ARCHIVALTABLE_SUMMARY");
+					}
 
 return out.toByteArray();
 }
@@ -26089,6 +26123,16 @@ workbook.write(out);
 
 logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
 
+//audit service archival summary email
+
+
+	ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+					if (attrs != null) {
+						HttpServletRequest request = attrs.getRequest();
+						String userid = (String) request.getSession().getAttribute("USERID");
+						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_PD EMAIL ARCHIVAL SUMMARY", null, "BRRS_M_PD_ARCHIVALTABLE_SUMMARY");
+					}
+
 return out.toByteArray();
 }
 }
@@ -31927,6 +31971,17 @@ workbook.setForceFormulaRecalculation(true);
 workbook.write(out);
 
 logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+
+//audit service summary resub format
+
+
+ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+					if (attrs != null) {
+						HttpServletRequest request = attrs.getRequest();
+						String userid = (String) request.getSession().getAttribute("USERID");
+						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_PD RESUB SUMMARY", null, "BRRS_M_PD_RESUB_SUMMARYTABLE");
+					}
 
 return out.toByteArray();
 }
@@ -38609,6 +38664,16 @@ workbook.setForceFormulaRecalculation(true);
 workbook.write(out);
 
 logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+
+//audit service summary resub email
+
+		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+						if (attrs != null) {
+							HttpServletRequest request = attrs.getRequest();
+							String userid = (String) request.getSession().getAttribute("USERID");
+							auditService.createBusinessAudit(userid, "DOWNLOAD", "M_PD EMAIL RESUB SUMMARY", null, "BRRS_M_PD_RESUB_SUMMARYTABLE");
+						}
 
 return out.toByteArray();
 }
