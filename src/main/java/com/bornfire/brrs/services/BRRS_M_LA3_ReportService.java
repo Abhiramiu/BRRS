@@ -1976,6 +1976,12 @@ public class BRRS_M_LA3_ReportService {
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
 
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_LA3 ARCHIVAL SUMMARY", null, "BRRS_M_LA4_ARCHIVALTABLE_SUMMARY");
+			}
 			return out.toByteArray();
 		}
 	}

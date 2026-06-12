@@ -47,6 +47,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_LA4_Archival_Detail_Repo;
@@ -2409,7 +2411,12 @@ public class BRRS_M_LA4_ReportService {
 					workbook.write(out);
 
 					logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+					if (attrs != null) {
+						HttpServletRequest request = attrs.getRequest();
+						String userid = (String) request.getSession().getAttribute("USERID");
+						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_LA4 SUMMARY", null, "BRRS_M_LA4_SUMMARYTABLE");
+					}
 					return out.toByteArray();
 				}
 			}
@@ -2431,19 +2438,7 @@ public class BRRS_M_LA4_ReportService {
 				logger.error("Invalid report date format: {}", fromdate, e);
 				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
 			}
-//		} else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-//			logger.info("Service: Generating RESUB report for version {}", version);
-//
-//			try {
-//				// ✅ Redirecting to Resub Excel
-//				return BRRS_M_LA4ResubEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
-//						version);
-//
-//			} catch (ParseException e) {
-//				logger.error("Invalid report date format: {}", fromdate, e);
-//				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
-//			}
-		} else {
+	} else {
 			List<M_LA4_Summary_Entity1> dataList = M_LA4_Summary_Repo.getdatabydateList(dateformat.parse(todate));
 			List<M_LA4_Summary_Entity2> dataList1 = M_LA4_Summary_Repo2.getdatabydateList(dateformat.parse(todate));
 			if (dataList.isEmpty()) {
@@ -4082,7 +4077,12 @@ public class BRRS_M_LA4_ReportService {
 				workbook.write(out);
 
 				logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+				ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+				if (attrs != null) {
+					HttpServletRequest request = attrs.getRequest();
+					String userid = (String) request.getSession().getAttribute("USERID");
+					auditService.createBusinessAudit(userid, "DOWNLOAD", "M_LA4 EMAIL SUMMARY", null, "BRRS_M_LA4_SUMMARYTABLE");
+				}
 				return out.toByteArray();
 			}
 		}
@@ -5757,7 +5757,12 @@ public class BRRS_M_LA4_ReportService {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_LA4 ARCHIVAL SUMMARY", null, "BRRS_M_LA4_ARCHIVALTABLE_SUMMARY");
+			}
 			return out.toByteArray();
 		}
 
@@ -7407,7 +7412,12 @@ public class BRRS_M_LA4_ReportService {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_LA4 EMAIL ARCHIVAL SUMMARY", null, "BRRS_M_LA4_ARCHIVALTABLE_SUMMARY");
+			}
 			return out.toByteArray();
 		}
 	}
