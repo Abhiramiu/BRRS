@@ -6706,7 +6706,7 @@ case "MDISB3":
 			case "COMMON_DISCLOSURE":
 			    modelAndView = BRRS_Common_Disclosure_Reportservice.getViewOrEditPage(
 			            request.getParameter("SNO"),
-			            request.getParameter("formmode"));
+			            request.getParameter("formmode"), request.getParameter("type"));
 			    break;
 
 			case "Market_Risk":
@@ -6885,6 +6885,33 @@ case "MDISB3":
 		return modelAndView;
 	}
 
+	public ResponseEntity<?> regenprocedure(String reportId, HttpServletRequest request) {
+		logger.info("Routing POST update request for Report ID: {}", reportId);
+
+		ResponseEntity<?> response;
+
+		try {
+			switch (reportId) {
+			case "COMMON_DISCLOSURE":
+				response=BRRS_Common_Disclosure_Reportservice.callregenprocedure(request);
+				break;
+
+			default:
+				logger.warn("Unsupported report ID: {}", reportId);
+				response = ResponseEntity.badRequest()
+						.body("Regenerate functionality is not implemented for this report ID: " + reportId);
+				break;
+			}
+
+		} catch (Exception e) {
+			logger.error("Error processing Regeneration for reportId: {}", reportId, e);
+			response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("An internal server error occurred during the update: " + e.getMessage());
+		}
+
+		return response;
+	}
+				
 	public ResponseEntity<?> updateReportDetails(String reportId, HttpServletRequest request) {
 		logger.info("Routing POST update request for Report ID: {}", reportId);
 

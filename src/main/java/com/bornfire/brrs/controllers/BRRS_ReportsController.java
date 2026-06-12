@@ -2954,6 +2954,12 @@ public class BRRS_ReportsController {
 	public ResponseEntity<?> updateDetail(@PathVariable("reportid") String reportid, HttpServletRequest request) {
 		return regulatoryReportServices.updateReportDetails(reportid, request);
 	}
+	
+	@RequestMapping(value = "/{reportid}/regenprocedure", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<?> regenprocedure(@PathVariable("reportid") String reportid, HttpServletRequest request) {
+		return regulatoryReportServices.regenprocedure(reportid, request);
+	}
 
 	@Autowired
 	private BRRS_M_SRWA_12B_ReportService brrs_m_srwa_12b_reportservice;

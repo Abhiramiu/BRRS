@@ -368,7 +368,7 @@ PURPOSE		: ARCHIVAL
 				$('#loader').modal('show');
 
 				const d = window.reportActionData;
-				alert("Report id = " + d.reportid)
+				//alert("Report id = " + d.reportid)
 				location.href =
 					"Reports/" + d.reportid +
 					"?dtltype=report&fromdate=" + d.fromdate +
@@ -482,7 +482,8 @@ PURPOSE		: ARCHIVAL
 										<th>Report Date</th>
 										<th>Report Version</th>
 										<th>Report Resubdate</th>
-										<th>Resubmission</th>
+										<!-- <th>Resubmission</th> -->
+										<th>Domain</th>
 									</tr>
 								</thead>
 								<tbody style="font-family: Arial;">
@@ -496,15 +497,15 @@ PURPOSE		: ARCHIVAL
 										<!--✅ Resub Date-->
 										<td th:text="${#dates.format(archival[2], 'dd-MM-yyyy')}"
 											style="color: #08a6f1;"></td>
-										<td style="text-align:left;">
+										<!-- <td style="text-align:left;">
 											<button class="run-btn" th:attr="
 												            data-rptcode=${rptcode},
 												            data-todate=${#dates.format(archival[0],'dd/MM/yyyy')},
 												            data-version=${archival[1]}" onclick="runProcedure(this)">
 												▶
 											</button>
-										</td>
-
+										</td> -->
+ <td th:text="${domain}"></td> 
 									</tr>
 
 									<!-- <tr th:each="userProfile : ${reportlist}"

@@ -44,6 +44,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
@@ -76,6 +77,9 @@ public class BRRS_Common_Disclosure_ReportService {
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
+	
+	@Autowired
+	AuditService auditService;	
 
 	// Fetch data by report date
 	public List<Common_Disclosure_Summary_Entity> getDataByDate(Date reportDate) {
@@ -106,6 +110,14 @@ public class BRRS_Common_Disclosure_ReportService {
 
 		return jdbcTemplate.query(sql, new Object[] { REPORT_DATE, REPORT_VERSION },
 				new CommonDisclosureArchivalRowMapper());
+	}
+	public String getishighestversion(Date REPORT_DATE,
+			BigDecimal REPORT_VERSION) {
+		String sql = "SELECT CASE WHEN ? = MAX(REPORT_VERSION) THEN 'YES' ELSE 'NO' END AS is_highest " +
+	             "FROM BRRS_COMMON_DISCLOSURE_ARCHIVALTABLE_SUMMARY " +
+	             "WHERE REPORT_DATE = ?";
+		return jdbcTemplate.queryForObject(sql, new Object[] { REPORT_VERSION, REPORT_DATE }, String.class);
+
 	}
 //GET ALL WITH VERSION
 
@@ -219,6 +231,13 @@ public class BRRS_Common_Disclosure_ReportService {
 		return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new CommonDisclosureDetailRowMapper());
 	}
 
+	public Common_Disclosure_Detail_Entity findBySnoArch(String sno) {
+
+		String sql = "SELECT * FROM BRRS_COMMON_DISCLOSURE_ARCHIVALTABLE_DETAIL WHERE SNO = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new CommonDisclosureDetailRowMapper());
+	}
+	
 	public Common_Disclosure_Resub_Detail_Entity findBySno1(String sno) {
 
 		String sql = "SELECT * FROM BRRS_COMMON_DISCLOSURE_RESUBTABLE_DETAIL WHERE SNO = ?";
@@ -227,25 +246,24 @@ public class BRRS_Common_Disclosure_ReportService {
 	}
 // 1. GET BY DATE + VERSION
 
-	public List<Common_Disclosure_Archival_Detail_Entity> getArchivalDetaildatabydateList(Date reportdate,
-			String dataEntryVersion) {
+	public List<Common_Disclosure_Archival_Detail_Entity> getArchivalDetaildatabydateList(Date reportdate) {
 
 		String sql = "SELECT * FROM BRRS_COMMON_DISCLOSURE_ARCHIVALTABLE_DETAIL "
-				+ "WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
+				+ "WHERE REPORT_DATE = ?  ";
 
-		return jdbcTemplate.query(sql, new Object[] { reportdate, dataEntryVersion },
+		return jdbcTemplate.query(sql, new Object[] { reportdate},
 				new CommonDisclosureArchivalDetailRowMapper());
 	}
 
 // 2. FILTER BY LABEL + CRITERIA + DATE + VERSION
 
 	public List<Common_Disclosure_Archival_Detail_Entity> GetArchivalDataByRowIdAndColumnId(String reportLabel,
-			String reportAddlCriteria1, Date reportdate, String dataEntryVersion) {
+			String reportAddlCriteria1, Date reportdate) {
 
 		String sql = "SELECT * FROM BRRS_COMMON_DISCLOSURE_ARCHIVALTABLE_DETAIL " + "WHERE REPORT_LABEL = ? "
-				+ "AND REPORT_ADDL_CRITERIA_1 = ? " + "AND DATA_ENTRY_VERSION = ? " + "AND DATA_ENTRY_VERSION = ?";
+				+ "AND REPORT_ADDL_CRITERIA_1 = ? " + "AND DATA_ENTRY_VERSION = ? " ;
 
-		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate, dataEntryVersion },
+		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate },
 				new CommonDisclosureArchivalDetailRowMapper());
 	}
 
@@ -2515,6 +2533,8 @@ public class BRRS_Common_Disclosure_ReportService {
 				System.out.println(type + " Summary size = " + T1Master.size());
 
 				mv.addObject("REPORT_DATE", dateformat.format(dt));
+				System.out.println("getishighestversion(dt, version) : "+getishighestversion(dt, version));
+				mv.addObject("allowdetail",getishighestversion(dt, version));
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -2590,12 +2610,12 @@ public class BRRS_Common_Disclosure_ReportService {
 
 				if (reportLabel != null && reportAddlCriteria1 != null) {
 
-					detailList = GetArchivalDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1, parsedDate,
-							version);
+					detailList = GetArchivalDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1, parsedDate
+							);
 
 				} else {
 
-					detailList = getArchivalDetaildatabydateList(parsedDate, version);
+					detailList = getArchivalDetaildatabydateList(parsedDate);
 				}
 
 				mv.addObject("reportdetails", detailList);
@@ -2668,11 +2688,23 @@ public class BRRS_Common_Disclosure_ReportService {
 		return archivalList;
 	}
 
-	public ModelAndView getViewOrEditPage(String SNO, String formMode) {
+	public ModelAndView getViewOrEditPage(String SNO, String formMode,String type) {
 		ModelAndView mv = new ModelAndView("BRRS/COMMON_DISCLOSURE");
 
 		System.out.println("sno is : " + SNO);
+		System.out.println("Type: "+type);
 		if (SNO != null) {
+			if(type=="RESUB" || type.equals("RESUB")) {
+				System.out.println("Inside RESUB FETCH");
+				Common_Disclosure_Detail_Entity commonDisclosureEntity = findBySnoArch(SNO);
+				if (commonDisclosureEntity != null && commonDisclosureEntity.getReportDate() != null) {
+					String formattedDate = new SimpleDateFormat("dd/MM/yyyy")
+							.format(commonDisclosureEntity.getReportDate());
+					mv.addObject("asondate", formattedDate);
+				}
+				mv.addObject("Common_DisclosureData", commonDisclosureEntity);
+			}
+			else {
 			Common_Disclosure_Detail_Entity commonDisclosureEntity = findBySno(SNO);
 			if (commonDisclosureEntity != null && commonDisclosureEntity.getReportDate() != null) {
 				String formattedDate = new SimpleDateFormat("dd/MM/yyyy")
@@ -2680,8 +2712,9 @@ public class BRRS_Common_Disclosure_ReportService {
 				mv.addObject("asondate", formattedDate);
 			}
 			mv.addObject("Common_DisclosureData", commonDisclosureEntity);
+			}
 		}
-
+		mv.addObject("type",type);
 		mv.addObject("displaymode", "edit");
 		mv.addObject("formmode", formMode != null ? formMode : "edit");
 		return mv;
@@ -2703,10 +2736,22 @@ public class BRRS_Common_Disclosure_ReportService {
 			String reportDateStr = request.getParameter("reportDate");
 
 			System.out.println("Sno is : " + Sno);
+			String type = request.getParameter("type");
+			String entry = (request.getParameter("entry") != null) ? request.getParameter("entry") : "YES";
 
 			// Load Existing Record
-			Common_Disclosure_Detail_Entity existing = findBySno(Sno);
+			Common_Disclosure_Detail_Entity existing = null;
 
+			System.out.println("type is : " + type);
+			if  ((type == "RESUB") || (type.equals("RESUB"))) {
+				 existing = findBySnoArch(Sno);
+			}
+			else{
+			 existing = findBySno(Sno);
+			}
+			Common_Disclosure_Detail_Entity oldcopy = new Common_Disclosure_Detail_Entity();
+			BeanUtils.copyProperties(existing, oldcopy);
+	        
 			if (existing == null) {
 
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
@@ -2752,46 +2797,38 @@ public class BRRS_Common_Disclosure_ReportService {
 			}
 			// Save using JDBC
 			if (isChanged) {
-
-				String sql = "UPDATE BRRS_COMMON_DISCLOSURE_DETAILTABLE " + "SET ACCT_NAME = ?, "
+				String sql;
+				System.out.println("Type in update block : "+type);
+				if(type=="RESUB" || type.equals("RESUB")) {
+					System.out.println("Inside RESUB UPDATE");
+					sql = "UPDATE BRRS_COMMON_DISCLOSURE_ARCHIVALTABLE_DETAIL " + "SET ACCT_NAME = ?, "
+							+ "ACCT_BALANCE_IN_PULA = ?, " + // ✅ comma added
+							"AVERAGE = ? " + // ✅ proper concatenation
+							"WHERE SNO = ?";
+				}
+				else {
+				sql = "UPDATE BRRS_COMMON_DISCLOSURE_DETAILTABLE " + "SET ACCT_NAME = ?, "
 						+ "ACCT_BALANCE_IN_PULA = ?, " + // ✅ comma added
 						"AVERAGE = ? " + // ✅ proper concatenation
 						"WHERE SNO = ?";
-
+				}
 				jdbcTemplate.update(sql, existing.getAcctName(), existing.getAcctBalanceInpula(), existing.getAverage(),
 						Sno);
 
+				//auditService.compareEntities(oldcopy, existing, "Common Disclosure Archival Screen","BRRS_COMMON_DISCLOSURE_ARCHIVALTABLE_DETAIL");
+				
 				System.out.println("Record updated using JDBC");
-
-				// Format Date
-				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
-
-				// Call Procedure After Commit
-				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-
-					@Override
-					public void afterCommit() {
-
-						try {
-
-							jdbcTemplate.update("BEGIN BRRS_COMMON_DISCLOSURE_SUMMARY_PROCEDURE(?); END;",
-									formattedDate);
-
-							System.out.println("Procedure executed");
-
-						} catch (Exception e) {
-
-							e.printStackTrace();
-						}
-					}
-				});
-
+				
+				Run_Common_Disclosure_Procudure(reportDateStr, type, entry);
+				
+				
+				if ((type == "RESUB" || type.equals("RESUB"))
+						&& (entry == "NO" || entry.equals("NO"))) {
+					return ResponseEntity.ok("Record updated and Report Regenerated successfully!");
+				}
 				return ResponseEntity.ok("Record updated successfully!");
 			}
-
 			else {
-
 				return ResponseEntity.ok("No changes were made.");
 			}
 
@@ -2806,6 +2843,87 @@ public class BRRS_Common_Disclosure_ReportService {
 		}
 	}
 
+	@Transactional
+	public ResponseEntity<?> callregenprocedure(HttpServletRequest request) {
+		try {			 
+			Run_Common_Disclosure_Procudure(request.getParameter("reportDate"), request.getParameter("type"),
+					request.getParameter("entry"));
+			return ResponseEntity.ok("Resubmitted successfully!");
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error updating record: " + e.getMessage());
+
+		}
+	}
+	private void Run_Common_Disclosure_Procudure(String reportDateStr, String type, String entry) {
+	    
+	    String formattedDate;
+	    try {
+	        formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+	                .format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+	    } catch (Exception e) {
+	        System.out.println("Error parsing date. Post-commit logic aborted.");
+	        e.printStackTrace();
+	        return;
+	    }
+
+	    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+	        
+	        @Override
+	        public void afterCommit() {
+	            try {
+	                boolean isResubNoEntry = "RESUB".equals(type) && "NO".equals(entry);
+	                boolean shouldExecuteProcedure = !"RESUB".equals(type) || isResubNoEntry;
+
+	                if (isResubNoEntry) {
+	                    String bdsql = "DELETE FROM BRRS_COMMON_DISCLOSURE_DETAILTABLE WHERE REPORT_DATE = ?";
+	                    int rowsDeleted = jdbcTemplate.update(bdsql, formattedDate);
+	                    System.out.println("Successfully deleted before executing procedure " + rowsDeleted + " rows.");
+
+	                    String sqltransfer = "INSERT INTO BRRS_COMMON_DISCLOSURE_DETAILTABLE "
+	                            + " (SNO, GL_CODE, GLSH_CODE, ACCT_NUMBER, CUST_ID, ACCT_BALANCE_IN_PULA, AVERAGE, REPORT_LABEL, REPORT_ADDL_CRITERIA_1, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION) "
+	                            + "SELECT SNO, GL_CODE, GLSH_CODE, ACCT_NUMBER, CUST_ID, ACCT_BALANCE_IN_PULA, AVERAGE, REPORT_LABEL, REPORT_ADDL_CRITERIA_1, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION "
+	                            + "FROM BRRS_COMMON_DISCLOSURE_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ?";
+	                    int rowsInserted = jdbcTemplate.update(sqltransfer, formattedDate);
+	                    System.out.println("Successfully transferred " + rowsInserted + " rows.");
+	                }
+
+	                if (shouldExecuteProcedure) {
+	                    jdbcTemplate.update("BEGIN BRRS_COMMON_DISCLOSURE_SUMMARY_PROCEDURE(?); END;", formattedDate);
+	                    System.out.println("Procedure executed");
+	                }
+
+	                if (isResubNoEntry) {
+	                    String adsql = "DELETE FROM BRRS_COMMON_DISCLOSURE_DETAILTABLE WHERE REPORT_DATE = ?";
+	                    int rowsDeleted = jdbcTemplate.update(adsql, formattedDate);
+	                    System.out.println("Successfully deleted after executing procedure " + rowsDeleted + " rows.");
+
+	                    String ins_sum_sql = "SELECT MAX(REPORT_VERSION) FROM BRRS_COMMON_DISCLOSURE_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ?";
+	                    Integer maxVersion = jdbcTemplate.queryForObject(ins_sum_sql, Integer.class, formattedDate);
+	                    int highestValue = (maxVersion != null ? maxVersion : 0) + 1;
+
+	                    String finalsql = "INSERT INTO BRRS_COMMON_DISCLOSURE_ARCHIVALTABLE_SUMMARY (R7_PRODUCT , R7_COMPONENT_OF_REGU ,R7_SOURCE_REF ,R8_PRODUCT ,R8_COMPONENT_OF_REGU ,R8_SOURCE_REF ,R9_PRODUCT ,R9_COMPONENT_OF_REGU ,R9_SOURCE_REF ,"
+	                            + "R10_PRODUCT , R10_COMPONENT_OF_REGU ,R10_SOURCE_REF ,R11_PRODUCT , R11_COMPONENT_OF_REGU ,R11_SOURCE_REF ,R12_PRODUCT ,R12_COMPONENT_OF_REGU ,R12_SOURCE_REF ,R13_PRODUCT ,R13_COMPONENT_OF_REGU ,R13_SOURCE_REF ,"
+	                            + "R14_PRODUCT ,R14_COMPONENT_OF_REGU , R14_SOURCE_REF ,REPORT_DATE , REPORT_VERSION ,REPORT_FREQUENCY ,REPORT_CODE ,REPORT_DESC ,ENTITY_FLG ,MODIFY_FLG ,DEL_FLG ,REPORT_RESUBDATE) "
+	                            + "SELECT R7_PRODUCT , R7_COMPONENT_OF_REGU ,R7_SOURCE_REF ,R8_PRODUCT ,R8_COMPONENT_OF_REGU ,R8_SOURCE_REF ,R9_PRODUCT ,R9_COMPONENT_OF_REGU ,R9_SOURCE_REF ,R10_PRODUCT , R10_COMPONENT_OF_REGU ,R10_SOURCE_REF ,"
+	                            + "R11_PRODUCT , R11_COMPONENT_OF_REGU ,R11_SOURCE_REF ,R12_PRODUCT ,R12_COMPONENT_OF_REGU ,R12_SOURCE_REF ,R13_PRODUCT ,R13_COMPONENT_OF_REGU ,R13_SOURCE_REF ,R14_PRODUCT ,R14_COMPONENT_OF_REGU , R14_SOURCE_REF ,"
+	                            + "REPORT_DATE, ? ,REPORT_FREQUENCY ,REPORT_CODE ,REPORT_DESC ,ENTITY_FLG ,MODIFY_FLG ,DEL_FLG ,SYSDATE FROM BRRS_COMMON_DISCLOSURE_SUMMARYTABLE WHERE REPORT_DATE = ?";
+	                    int rowsInsertedSum = jdbcTemplate.update(finalsql, highestValue, formattedDate);
+	                    System.out.println("Successfully transferred " + rowsInsertedSum + " rows.");
+
+	                    String adsumsql = "DELETE FROM BRRS_COMMON_DISCLOSURE_SUMMARYTABLE WHERE REPORT_DATE = ?";
+	                    int rowsDeletedSum = jdbcTemplate.update(adsumsql, formattedDate);
+	                    System.out.println("Deleted from summary " + rowsDeletedSum + " rows after transfering.");
+	                }
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+	        }
+	    });
+	}
 	public byte[] getCommon_DisclosureDetailExcel(String filename, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) {
 		try {
@@ -3017,8 +3135,8 @@ public class BRRS_Common_Disclosure_ReportService {
 
 			// Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<Common_Disclosure_Archival_Detail_Entity> reportData = getArchivalDetaildatabydateList(parsedToDate,
-					version);
+			List<Common_Disclosure_Archival_Detail_Entity> reportData = getArchivalDetaildatabydateList(parsedToDate
+					);
 
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
