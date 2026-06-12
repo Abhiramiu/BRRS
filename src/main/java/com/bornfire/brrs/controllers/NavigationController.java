@@ -306,12 +306,14 @@ public class NavigationController {
 		String WORKCLASSAC = (String) req.getSession().getAttribute("WORKCLASS");
 		String ROLEIDAC = (String) req.getSession().getAttribute("ROLEID");
 		md.addAttribute("RuleIDType", accessandrolesrepository.roleidtype());
+		System.out.println("loginuserid"+loginuserid);
+		md.addAttribute("loginuserid", loginuserid);
 
 		System.out.println("work class is : " + WORKCLASSAC);
 		// Logging Navigation
-		loginServices.SessionLogging("USERPROFILE", "M2", req.getSession().getId(), loginuserid, req.getRemoteAddr(),
-				"ACTIVE");
-		Session hs1 = sessionFactory.getCurrentSession();
+//		loginServices.SessionLogging("USERPROFILE", "M2", req.getSession().getId(), loginuserid, req.getRemoteAddr(),
+//				"ACTIVE");
+		//Session hs1 = sessionFactory.getCurrentSession();
 		md.addAttribute("menu", "USER PROFILE"); // To highlight the menu
 
 		if (formmode == null || formmode.equals("list")) {

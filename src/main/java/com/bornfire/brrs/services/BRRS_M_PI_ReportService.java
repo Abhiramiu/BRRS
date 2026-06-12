@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -47,6 +48,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.ui.Model;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_PI_Archival_Detail_Repo;
@@ -61,6 +63,8 @@ import com.bornfire.brrs.entities.M_PI_Detail_Entity;
 import com.bornfire.brrs.entities.M_PI_Manual_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_PI_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.M_PI_Summary_Entity;
+import com.bornfire.brrs.entities.UserProfile;
+import com.bornfire.brrs.entities.UserProfileRep;
 
 @Component
 @Service
@@ -91,13 +95,26 @@ public class BRRS_M_PI_ReportService {
 	
 	@Autowired
 	BRRS_M_PI_Manual_Archival_Summary_Repo M_PI_Manual_Archival_Summary_Repo;
+	
+	@Autowired
+	UserProfileRep userProfileRep;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
+
 	public ModelAndView getM_PIView(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, BigDecimal version) {
+			String dtltype, Pageable pageable, String type, BigDecimal version,HttpServletRequest req1,Model md) {
 
 
+		String userid = (String) req1.getSession().getAttribute("USERID");
+
+		System.out.println("User Id Maker and Checker: " + userid);
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("Role: " + role);
+		
+		
+		
 		ModelAndView mv = new ModelAndView();
 //		Session hs = sessionFactory.getCurrentSession();
 		int pageSize = pageable.getPageSize();

@@ -249,7 +249,7 @@ public class BRRS_ReportsController {
 
 		ModelAndView mv = new ModelAndView();
 		mv = regreportServices.getReportView(reportid, asondate, fromdate, todate, currency, dtltype, subreportid,
-				secid, reportingTime, PageRequest.of(currentPage, pageSize), srl_no, userid, type, version);
+				secid, reportingTime, PageRequest.of(currentPage, pageSize), srl_no, userid, type, version,req,md);
 
 		return mv;
 
