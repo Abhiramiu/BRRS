@@ -28,4 +28,7 @@ public interface UserProfileRep extends CrudRepository<UserProfile,String>{
 	
 	@Query(value = "select * from BOTS_USER_PROFILE_TABLE", nativeQuery = true)
 	List<UserProfile> getallbranches();
+	
+	@Query(value = "SELECT work_class FROM BOTS_USER_PROFILE_TABLE WHERE USER_ID = ?1", nativeQuery = true)
+	String getUserRole(String userid);
 }

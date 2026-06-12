@@ -13,7 +13,7 @@ public interface BRRS_M_SRWA_12C_Detail_Repo extends JpaRepository<M_SRWA_12C_De
 
 	// ✅ Fetch record(s) by specific REPORT_DATE
 	@Query(value = "SELECT * FROM BRRS_M_SRWA_12C_DETAILTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(:rpt_code)", nativeQuery = true)
-	List<M_SRWA_12C_Detail_Entity> getdatabydateList(@Param("rpt_code") Date rpt_code);
+	List<M_SRWA_12C_Detail_Entity> getdatabydateList(@Param("rpt_code") Date rpt_Date);
 
 	@Query(value = "SELECT *  FROM BRRS_M_SRWA_12C_DETAILTABLE WHERE REPORT_DATE = ?1   AND REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
 	List<M_SRWA_12C_Detail_Entity> getdatabydateListWithVersion(String todate);

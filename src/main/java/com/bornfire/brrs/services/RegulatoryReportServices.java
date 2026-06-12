@@ -37,6 +37,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.dto.ReportLineItemDTO;
@@ -429,7 +430,7 @@ public class RegulatoryReportServices {
 
 	public ModelAndView getReportView(String reportId, String reportDate, String fromdate, String todate,
 			String currency, String dtltype, String subreportid, String secid, String reportingTime, Pageable pageable,
-			BigDecimal srl_no, String req, String type, BigDecimal version) throws ParseException {
+			BigDecimal srl_no, String userid, String type, BigDecimal version,HttpServletRequest req,Model md) throws ParseException {
 
 		ModelAndView repsummary = new ModelAndView();
 
@@ -1399,7 +1400,7 @@ public class RegulatoryReportServices {
 		case "M_PI":
 
 			repsummary = BRRS_M_PI_reportservice.getM_PIView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
+					type, version,req,md);
 
 			break;
 
