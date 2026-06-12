@@ -4814,11 +4814,7 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched MDISB4 archival data: " + MDISB4List.size());
 			break;
 
-		case "M_P_L":
-			List<Object[]> M_P_LList = BRRS_M_P_L_ReportService.getM_P_LArchival();
-			archivalData.addAll(M_P_LList);
-			System.out.println("Fetched M_P_L archival data: " + M_P_LList.size());
-			break;
+		
 
 		case "M_DEP4":
 			List<Object[]> M_DEP4List = BRRS_M_DEP4_ReportService.getM_DEP4Archival();
@@ -5595,15 +5591,17 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-
-//		case "M_GP":
-//			try {
-//				archivalData = BRRS_M_GP_ReportService.getM_GPArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
+			
+		case "M_P_L":
+			
+			try {
+				archivalData = BRRS_M_P_L_ReportService.getM_P_LArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
 
 		case "M_GP":
 			List<Object[]> gpList = BRRS_M_GP_ReportService.getM_GPArchival();
@@ -5617,25 +5615,6 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched M_OR2 archival data: " + or2List.size());
 			break;
 
-//		case "M_OR2":
-//			try {
-//				archivalData = brrs_m_or2_reportservice.getM_OR2Archival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
-
-//		// New Archival
-//
-//		case "M_SRWA_12F":
-//			try {
-//				archivalData = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
 		case "M_SRWA_12F":
 			List<Object[]> srwFList1 = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FArchival();
 			archivalData.addAll(srwFList1);
@@ -6801,6 +6780,11 @@ case "MDISB3":
 						request.getParameter("formmode"));
 				break;
 
+			case "M_P_L":
+				modelAndView = BRRS_M_P_L_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
+						request.getParameter("formmode"));
+				break;
+				
 			case "FSI":
 				modelAndView = BRRS_FSI_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 						request.getParameter("formmode"));
@@ -6868,10 +6852,7 @@ case "MDISB3":
 						request.getParameter("formmode"));
 				break;
 
-			case "M_P_L":
-				modelAndView = BRRS_M_P_L_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
-				break;
+			
 
 			case "GL_SCH":
 				modelAndView = brrs_gl_sch_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
