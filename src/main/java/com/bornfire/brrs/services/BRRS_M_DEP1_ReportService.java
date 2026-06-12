@@ -44,6 +44,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_DEP1_Archival_Detail_Repo;
@@ -67,6 +69,8 @@ public class BRRS_M_DEP1_ReportService {
 	@Autowired
 	SessionFactory sessionFactory;
 
+	@Autowired
+	AuditService auditService;
 	
 	@Autowired
 	BRRS_M_DEP1_Summary_Repo BRRS_M_DEP1_Summary_Repo;
@@ -5529,7 +5533,12 @@ public class BRRS_M_DEP1_ReportService {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_DEP1 SUMMARY", null, "BRRS_M_DEP1_SUMMARYTABLE");
+			}
 			return out.toByteArray();
 		}
 	}
@@ -10962,7 +10971,12 @@ public class BRRS_M_DEP1_ReportService {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_DEP1 ARCHIVAL SUMMARY", null, "BRRS_M_DEP1_ARCHIVALTABLE_SUMMARY");
+			}
 			return out.toByteArray();
 		}
 	}

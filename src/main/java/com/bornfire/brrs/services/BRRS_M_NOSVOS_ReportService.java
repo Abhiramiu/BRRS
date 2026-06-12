@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -38,6 +40,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_NOSVOS_Summary_PK;
@@ -1013,7 +1017,12 @@ public byte[] getM_NOSVOSExcel(String filename, String reportId, String fromdate
 	workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
 	workbook.write(out);
 	logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-	
+	 ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		if (attrs != null) {
+			HttpServletRequest request = attrs.getRequest();
+			String userid = (String) request.getSession().getAttribute("USERID");
+			auditService.createBusinessAudit(userid, "DOWNLOAD", "M_NOSVOS SUMMARY", null, "BRRS_M_NOSVOS_SUMMARYTABLE");
+		}
 	return out.toByteArray();
 	}
 }
@@ -10186,7 +10195,12 @@ public byte[] getM_NOSVOSExcel(String filename, String reportId, String fromdate
 		workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
 		workbook.write(out);
 		logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-		
+		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		if (attrs != null) {
+			HttpServletRequest request = attrs.getRequest();
+			String userid = (String) request.getSession().getAttribute("USERID");
+			auditService.createBusinessAudit(userid, "DOWNLOAD", "M_NOSVOS RESUB SUMMARY", null, "BRRS_M_NOSVOS_RESUB_SUMMARYTABLE");
+		}
 		return out.toByteArray();
 		
 	}
@@ -10437,7 +10451,12 @@ public byte[] getM_NOSVOSExcel(String filename, String reportId, String fromdate
 		workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
 		workbook.write(out);
 		logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-		
+		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		if (attrs != null) {
+			HttpServletRequest request = attrs.getRequest();
+			String userid = (String) request.getSession().getAttribute("USERID");
+			auditService.createBusinessAudit(userid, "DOWNLOAD", "M_NOSVOS ARCHIVAL SUMMARY", null, "BRRS_M_NOSVOS_ARCHIVALTABLE_SUMMARY");
+		}
 		return out.toByteArray();
 		
 	}

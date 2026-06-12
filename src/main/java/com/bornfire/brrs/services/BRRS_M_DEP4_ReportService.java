@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -37,6 +39,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_DEP4_Archival_Detail_Repo;
@@ -71,6 +75,8 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_DEP4_ReportS
 	@Autowired
 	SessionFactory sessionFactory;
 	
+	@Autowired
+	AuditService auditService;
 
 	@Autowired
 	BRRS_M_DEP4_Detail_Repo M_DEP4_detail_Repo;
@@ -3503,7 +3509,12 @@ logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, 
 		workbook.write(out);
 
 		logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		if (attrs != null) {
+			HttpServletRequest request = attrs.getRequest();
+			String userid = (String) request.getSession().getAttribute("USERID");
+			auditService.createBusinessAudit(userid, "DOWNLOAD", "M_DEP4 SUMMARY", null, "BRRS_M_DEP4_SUMMARYTABLE");
+		}
 		return out.toByteArray();
 	}
 }
@@ -12756,7 +12767,12 @@ public byte[] getExcelM_DEP4ARCHIVAL(String filename, String reportId, String fr
 		workbook.write(out);
 
 		logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		if (attrs != null) {
+			HttpServletRequest request = attrs.getRequest();
+			String userid = (String) request.getSession().getAttribute("USERID");
+			auditService.createBusinessAudit(userid, "DOWNLOAD", "M_DEP4 ARCHIVAL SUMMARY", null, "BRRS_M_DEP4_ARCHIVALTABLE_SUMMARY");
+		}
 		return out.toByteArray();
 	}
 }
@@ -37319,7 +37335,12 @@ public void emailnext201_1(Sheet sheet,M_DEP4_Summary_Entity3 record3,CellStyle 
 				workbook.write(out);
 
 				logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+				ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+				if (attrs != null) {
+					HttpServletRequest request = attrs.getRequest();
+					String userid = (String) request.getSession().getAttribute("USERID");
+					auditService.createBusinessAudit(userid, "DOWNLOAD", "M_DEP4 EMAIL ARCHIVALSUMMARY", null, "BRRS_M_DEP4_ARCHIVALTABLE_SUMMARY");
+				}
 				return out.toByteArray();
 			}
 		}
