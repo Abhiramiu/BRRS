@@ -45,6 +45,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_CALOC_Archival_Detail_Repo;
@@ -75,6 +77,9 @@ public class BRRS_M_CALOC_ReportService {
 
 	@Autowired
 	SessionFactory sessionFactory;
+	
+	@Autowired
+	AuditService auditService;
 
 	@Autowired
 	BRRS_M_CALOC_Detail_Repo M_CALOC_Detail_Repo;
@@ -368,7 +373,12 @@ public class BRRS_M_CALOC_ReportService {
 			workbook.write(out);
 
 			logger.info("Excel generated successfully. Size: {} bytes", out.size());
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_CALOC SUMMARY", null, "M_CALOC_SUMMARYTABLE");
+			}
 			return out.toByteArray();
 		}
 	}
@@ -18838,6 +18848,12 @@ public class BRRS_M_CALOC_ReportService {
 			workbook.setForceFormulaRecalculation(true);
 			workbook.write(out);
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_CALOC ARCHIVAL SUMMARY", null, "M_CALOC_ARCHIVALTABLE_SUMMARY");
+			}
 			return out.toByteArray();
 
 		}
@@ -37473,7 +37489,12 @@ public class BRRS_M_CALOC_ReportService {
 			workbook.write(out);
 
 			logger.info("Email Excel generated successfully ({} bytes).", out.size());
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_CALOC EMAIL SUMMARY", null, "M_CALOC_SUMMARYTABLE");
+			}
 			return out.toByteArray();
 		}
 	}
@@ -44943,7 +44964,12 @@ public class BRRS_M_CALOC_ReportService {
 			workbook.write(out);
 
 			logger.info("Archival Email Excel generated successfully ({} bytes).", out.size());
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_CALOC EMAIL ARCHIVAL SUMMARY", null, "M_CALOC_ARCHIVALTABLE_SUMMARY");
+			}
 			return out.toByteArray();
 		}
 	}
