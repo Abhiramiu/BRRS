@@ -55,6 +55,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 @Service
@@ -68,6 +70,9 @@ public class BRRS_FORMAT_III_ReportService {
 
 	@Autowired
 	SessionFactory sessionFactory;
+	
+	@Autowired
+	AuditService auditService;
 
 	// ENTITY MANAGER (Acts like Repository)
 	@PersistenceContext
@@ -2461,7 +2466,12 @@ public class BRRS_FORMAT_III_ReportService {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "FORMAT_III  SUMMARY", null, "BRRS_FORMAT_III_SUMMARYTABLE");
+			}
 			return out.toByteArray();
 		}
 
@@ -2690,7 +2700,12 @@ public class BRRS_FORMAT_III_ReportService {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "FORMAT_III ARCHIVAL SUMMARY", null, "BRRS_FORMAT_III_ARCHIVALTABLE_SUMMARY");
+			}
 			return out.toByteArray();
 		}
 
