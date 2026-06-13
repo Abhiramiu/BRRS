@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -34,6 +35,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_Q_RLFA2_Archival_Detail_Repo;
@@ -60,6 +63,9 @@ public class BRRS_Q_RLFA2_ReportService {
 
 	@Autowired
 	SessionFactory sessionFactory;
+	
+	@Autowired
+	AuditService auditService;
 
 
 	@Autowired
@@ -2171,6 +2177,17 @@ public class BRRS_Q_RLFA2_ReportService {
 						workbook.write(out);
 
 						logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+						
+						// audit service summary format
+
+						ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+													if (attrs != null) {
+														HttpServletRequest request = attrs.getRequest();
+														String userid = (String) request.getSession().getAttribute("USERID");
+														auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_RLFA2 SUMMARY", null, "BRRS_Q_RLFA2_SUMMARYTABLE");
+													}
+						
+						
 
 						return out.toByteArray();
 					}	
@@ -4220,6 +4237,15 @@ public class BRRS_Q_RLFA2_ReportService {
 				workbook.write(out);
 
 				logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+				
+				// audit service summary email
+
+				ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+									if (attrs != null) {
+										HttpServletRequest request = attrs.getRequest();
+										String userid = (String) request.getSession().getAttribute("USERID");
+										auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_RLFA2 EMAIL SUMMARY", null, "BRRS_Q_RLFA2_SUMMARYTABLE");
+									}
 
 				return out.toByteArray();
 			}
@@ -5939,6 +5965,17 @@ public class BRRS_Q_RLFA2_ReportService {
 				workbook.write(out);
 
 				logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+				
+				
+
+				// audit service archival summary format
+
+				ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+									if (attrs != null) {
+										HttpServletRequest request = attrs.getRequest();
+										String userid = (String) request.getSession().getAttribute("USERID");
+										auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_RLFA2 ARCHIVAL SUMMARY", null, "BRRS_Q_RLFA2_ARCHIVALTABLE_SUMMARY");
+									}
 
 				return out.toByteArray();
 			}
@@ -7967,6 +8004,17 @@ public class BRRS_Q_RLFA2_ReportService {
 				workbook.write(out);
 
 				logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+				
+
+				// audit service archival summary email
+
+
+					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+									if (attrs != null) {
+										HttpServletRequest request = attrs.getRequest();
+										String userid = (String) request.getSession().getAttribute("USERID");
+										auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_RLFA2 EMAIL ARCHIVAL SUMMARY", null, "BRRS_Q_RLFA2_ARCHIVALTABLE_SUMMARY");
+									}
 
 				return out.toByteArray();
 			}
@@ -9687,6 +9735,17 @@ public class BRRS_Q_RLFA2_ReportService {
 				workbook.write(out);
 
 				logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+				
+				
+				// audit service summary resub format
+
+
+				ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+									if (attrs != null) {
+										HttpServletRequest request = attrs.getRequest();
+										String userid = (String) request.getSession().getAttribute("USERID");
+										auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_RLFA2 RESUB SUMMARY", null, "BRRS_Q_RLFA2_RESUB_SUMMARYTABLE");
+									}
 
 				return out.toByteArray();
 			}
@@ -11715,6 +11774,15 @@ public class BRRS_Q_RLFA2_ReportService {
 				workbook.write(out);
 
 				logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+				
+				// audit service summary resub email
+
+				ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+								if (attrs != null) {
+									HttpServletRequest request = attrs.getRequest();
+									String userid = (String) request.getSession().getAttribute("USERID");
+									auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_RLFA2 EMAIL RESUB SUMMARY", null, "BRRS_Q_RLFA2_RESUB_SUMMARYTABLE");
+								}
 
 				return out.toByteArray();
 			}
