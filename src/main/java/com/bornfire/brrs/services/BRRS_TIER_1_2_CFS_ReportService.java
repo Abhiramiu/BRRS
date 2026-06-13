@@ -52,6 +52,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -65,6 +67,9 @@ public class BRRS_TIER_1_2_CFS_ReportService {
 
 	@Autowired
 	SessionFactory sessionFactory;
+	
+	@Autowired
+	AuditService auditService;
 
   
     @PersistenceContext
@@ -4504,6 +4509,15 @@ if (record.getR53_FOREIGN_RISK_ASSETS() != null) {
 				workbook.write(out);
 
 				logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+				
+				// audit service summary format
+
+				ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+											if (attrs != null) {
+												HttpServletRequest request = attrs.getRequest();
+												String userid = (String) request.getSession().getAttribute("USERID");
+												auditService.createBusinessAudit(userid, "DOWNLOAD", "TIER_1_2_CFS  SUMMARY", null, "BRRS_TIER_1_2_CFS_SUMMARYTABLE");
+											}
 
 				return out.toByteArray();
 			}
@@ -4946,6 +4960,16 @@ if (record.getR53_FOREIGN_RISK_ASSETS() != null) {
 				workbook.write(out);
 
 				logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+				
+				
+				// audit service archival summary format
+
+ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		if (attrs != null) {
+			HttpServletRequest request = attrs.getRequest();
+			String userid = (String) request.getSession().getAttribute("USERID");
+			auditService.createBusinessAudit(userid, "DOWNLOAD", "TIER_1_2_CFS ARCHIVAL SUMMARY", null, "BRRS_TIER_1_2_CFS_ARCHIVALTABLE_SUMMARY");
+		}
 
 				return out.toByteArray();
 			}

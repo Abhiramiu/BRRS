@@ -52,6 +52,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -63,6 +65,9 @@ public class BRRS_CAP_ADEQ_ReportService {
 	
 	@Autowired
 	private Environment env;
+	
+	@Autowired
+	AuditService auditService;
 
 	@Autowired
 	SessionFactory sessionFactory;
@@ -2051,6 +2056,15 @@ row.createCell(0).setCellValue(item.getCustId());
 				workbook.write(out);
 
 				logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+				
+				// audit service summary format
+
+				ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+											if (attrs != null) {
+												HttpServletRequest request = attrs.getRequest();
+												String userid = (String) request.getSession().getAttribute("USERID");
+												auditService.createBusinessAudit(userid, "DOWNLOAD", "CAP_ADEQ  SUMMARY", null, "BRRS_CAP_ADEQ_SUMMARYTABLE");
+											}
 
 				return out.toByteArray();
 			}
@@ -2210,6 +2224,15 @@ row.createCell(0).setCellValue(item.getCustId());
 				workbook.write(out);
 
 				logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+				
+				// audit service archival summary format
+
+				ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+									if (attrs != null) {
+										HttpServletRequest request = attrs.getRequest();
+										String userid = (String) request.getSession().getAttribute("USERID");
+										auditService.createBusinessAudit(userid, "DOWNLOAD", "CAP_ADEQ ARCHIVAL SUMMARY", null, "BRRS_CAP_ADEQ_ARCHIVALTABLE_SUMMARY");
+									}
 
 				return out.toByteArray();
 			}

@@ -5,49 +5,43 @@ package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-import java.io.Serializable;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.io.InputStream;
-import org.apache.poi.ss.usermodel.Row;
 
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
-import javax.persistence.IdClass;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Sheet;
+
 import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
@@ -60,6 +54,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -71,6 +67,10 @@ public class BRRS_GL_SCH_ReportService {
 	
 	@Autowired
 	private Environment env;
+	
+
+	@Autowired
+	AuditService auditService;
 
 	@Autowired
 	SessionFactory sessionFactory;
@@ -54615,6 +54615,17 @@ row.createCell(0).setCellValue(item.getCustId());
 				workbook.setForceFormulaRecalculation(true);
 			workbook.write(out);
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+			
+			// audit service summary format
+
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+										if (attrs != null) {
+											HttpServletRequest request = attrs.getRequest();
+											String userid = (String) request.getSession().getAttribute("USERID");
+											auditService.createBusinessAudit(userid, "DOWNLOAD", "GL_SCH  SUMMARY", null, "BRRS_GL_SCH_SUMMARYTABLE");
+										}
+										
+										
 			return out.toByteArray();
 			}
 
@@ -71326,6 +71337,16 @@ row.createCell(0).setCellValue(item.getCustId());
 			workbook.setForceFormulaRecalculation(true);
 			workbook.write(out);
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+			
+			// audit service archival summary format
+
+ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+	if (attrs != null) {
+		HttpServletRequest request = attrs.getRequest();
+		String userid = (String) request.getSession().getAttribute("USERID");
+		auditService.createBusinessAudit(userid, "DOWNLOAD", "GL_SCH ARCHIVAL SUMMARY", null, "BRRS_GL_SCH_ARCHIVALTABLE_SUMMARY");
+	}
+			
 			return out.toByteArray();
 
 		}
