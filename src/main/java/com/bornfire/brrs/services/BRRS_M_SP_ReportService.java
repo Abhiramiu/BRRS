@@ -1,5 +1,7 @@
 package com.bornfire.brrs.services;
 
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -79,6 +81,9 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SP_ReportSer
 	
 	@Autowired
 	SessionFactory sessionFactory;
+	
+	@Autowired
+	AuditService auditService;
 	
 	@Autowired
 	BRRS_M_SP_Detail_Repo BRRS_M_SP_Detail_Repo;
@@ -1464,7 +1469,12 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SP_ReportSer
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SP SUMMARY", null, "BRRS_M_SP_SUMMARYTABLE");
+			}
 			return out.toByteArray();
 		}
 	}
@@ -2849,7 +2859,12 @@ public List<Object> getM_SPArchival() {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SP ARCHIVAL SUMMARY", null, "BRRS_M_SP_ARCHIVALTABLE_SUMMARY");
+			}
 			return out.toByteArray();
 		}
 	}

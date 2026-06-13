@@ -49,6 +49,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.ui.Model;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_PI_Archival_Detail_Repo;
@@ -78,9 +80,12 @@ public class BRRS_M_PI_ReportService {
 	@Autowired
 	SessionFactory sessionFactory;
 
+	@Autowired
+	AuditService auditService;
 	
 	@Autowired
 	BRRS_M_PI_Summary_Repo BRRS_M_PI_Summary_Repo;
+	
 	@Autowired
 	BRRS_M_PI_Manual_Summary_Repo BRRS_M_PI_Manual_Summary_Repo;
 
@@ -951,7 +956,12 @@ public class BRRS_M_PI_ReportService {
 		        workbook.write(out);
 
 		        logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+				ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+				if (attrs != null) {
+					HttpServletRequest request = attrs.getRequest();
+					String userid = (String) request.getSession().getAttribute("USERID");
+					auditService.createBusinessAudit(userid, "DOWNLOAD", "M_PI SUMMARY", null, "BRRS_M_PI_SUMMARYTABLE");
+				}
 		        return out.toByteArray();
 		    }
 		}
@@ -1816,7 +1826,12 @@ return new byte[0];
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_PI ARCHIVAL SUMMARY", null, "BRRS_M_PI_ARCHIVALTABLE_SUMMARY");
+			}
 			return out.toByteArray();
 		}
 	}
@@ -2725,7 +2740,12 @@ return new byte[0];
 					workbook.write(out);
 
 					logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+					if (attrs != null) {
+						HttpServletRequest request = attrs.getRequest();
+						String userid = (String) request.getSession().getAttribute("USERID");
+						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_PI EMAIL ARCHIVAL SUMMARY", null, "BRRS_M_PI_ARCHIVALTABLE_SUMMARY");
+					}
 					return out.toByteArray();
 				}
 			}
@@ -3386,7 +3406,12 @@ return new byte[0];
 					workbook.write(out);
 
 					logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+					if (attrs != null) {
+						HttpServletRequest request = attrs.getRequest();
+						String userid = (String) request.getSession().getAttribute("USERID");
+						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_PI EMAIL SUMMARY", null, "BRRS_M_PI_SUMMARYTABLE");
+					}
 					return out.toByteArray();
 				}
 			}

@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -36,6 +38,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_CA4_Archival_Detail_Repo;
@@ -68,6 +72,9 @@ public class BRRS_M_CA4_ReportService {
 
 	@Autowired
 	SessionFactory sessionFactory;
+	
+	@Autowired
+	AuditService auditService;
 
 	@Autowired
 	BRRS_M_CA4_Summary_Repo brrs_m_ca4_summary_repo;
@@ -3044,7 +3051,12 @@ public class BRRS_M_CA4_ReportService {
 					workbook.write(out);
 
 					logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+					if (attrs != null) {
+						HttpServletRequest request = attrs.getRequest();
+						String userid = (String) request.getSession().getAttribute("USERID");
+						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_CA4 SUMMARY", null, "BRRS_M_CA4_SUMMARYTABLE");
+					}
 					return out.toByteArray();
 				}
 			}
@@ -5287,7 +5299,12 @@ public class BRRS_M_CA4_ReportService {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_CA4 EMAIL SUMMARY", null, "BRRS_M_CA4_SUMMARYTABLE");
+			}
 			return out.toByteArray();
 		}
 		}
@@ -7614,7 +7631,12 @@ public class BRRS_M_CA4_ReportService {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_CA4 ARCHIVAL SUMMARY", null, "BRRS_M_CA4_ARCHIVALTABLE_SUMMARY");
+			}
 			return out.toByteArray();
 		}
 
@@ -9835,7 +9857,12 @@ public class BRRS_M_CA4_ReportService {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_CA4 EMAIL ARCHIVAL SUMMARY", null, "BRRS_M_CA4_ARCHIVALTABLE_SUMMARY");
+			}
 			return out.toByteArray();
 		}
 	}
@@ -12185,7 +12212,12 @@ public class BRRS_M_CA4_ReportService {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_CA4 RESUB SUMMARY", null, "BRRS_M_CA4_RESUB_SUMMARYTABLE");
+			}
 			return out.toByteArray();
 		}
 
@@ -14407,7 +14439,12 @@ public class BRRS_M_CA4_ReportService {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_CA4 EMAIL RESUB SUMMARY", null, "BRRS_M_CA4_RESUB_SUMMARYTABLE");
+			}
 			return out.toByteArray();
 		}
 	}

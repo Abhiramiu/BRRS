@@ -85,6 +85,9 @@ public class BRRS_M_SECA_ReportService {
 
 	@Autowired
 	SessionFactory sessionFactory;
+	
+	@Autowired
+	AuditService auditService;
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -5032,7 +5035,12 @@ System.out.println("✅ SECA Summary and Detail updated and COMMITTED");
 			workbook.write(out);
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
 			
-			
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SECA SUMMARY", null, "BRRS_M_SECA_SUMMARYTABLE");
+			}
 			return out.toByteArray();
 		}
 	}
@@ -9583,7 +9591,12 @@ public byte[] getExcelM_SECA_EMAIL(String filename, String reportId, String from
 		workbook.write(out);
 
 		logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		if (attrs != null) {
+			HttpServletRequest request = attrs.getRequest();
+			String userid = (String) request.getSession().getAttribute("USERID");
+			auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SECA EMAIL SUMMARY", null, "BRRS_M_SECA_SUMMARYTABLE");
+		}
 		return out.toByteArray();
 	
 	}
@@ -14094,7 +14107,12 @@ public byte[] getExcelM_SECARESUB_EMAIL(String filename, String reportId, String
 		workbook.write(out);
 
 		logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		if (attrs != null) {
+			HttpServletRequest request = attrs.getRequest();
+			String userid = (String) request.getSession().getAttribute("USERID");
+			auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SECA EMAIL RESUB SUMMARY", null, "BRRS_M_SECA_RESUB_SUMMARYTABLE");
+		}
 		return out.toByteArray();
 	
 	}
@@ -18602,7 +18620,12 @@ public byte[] getExcelM_SECAARCHIVAL_EMAIL(String filename, String reportId, Str
 		workbook.write(out);
 
 		logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		if (attrs != null) {
+			HttpServletRequest request = attrs.getRequest();
+			String userid = (String) request.getSession().getAttribute("USERID");
+			auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SECA EMAIL ARCHIVAL SUMMARY", null, "BRRS_M_SECA_ARCHIVALTABLE_SUMMARY");
+		}
 		return out.toByteArray();
 	
 	}
@@ -23117,7 +23140,12 @@ public byte[] getExcelM_SECARESUB(String filename, String reportId, String fromd
 		workbook.write(out);
 
 		logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		if (attrs != null) {
+			HttpServletRequest request = attrs.getRequest();
+			String userid = (String) request.getSession().getAttribute("USERID");
+			auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SECA RESUB SUMMARY", null, "BRRS_M_SECA_RESUB_SUMMARYTABLE");
+		}
 		return out.toByteArray();
 	}
 }
@@ -27630,7 +27658,12 @@ public byte[] getExcelM_SECARESUB(String filename, String reportId, String fromd
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SECA ARCHIVAL SUMMARY", null, "BRRS_M_SECA_ARCHIVALTABLE_SUMMARY");
+			}
 			return out.toByteArray();
 		}
 	}
