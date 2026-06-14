@@ -171,6 +171,20 @@ GeneralMasterEntity getdataBybfbl(String account_no, Date reportDate);
     
     @Query(value = "SELECT TO_CHAR(REPORT_DATE,'DD-MM-YYYY') FROM GENERAL_MASTER_TABLE WHERE REPORT_CODE IN ('MCBL','DEPB','DEPG','LOANB') GROUP BY REPORT_DATE HAVING COUNT(DISTINCT REPORT_CODE)=4 ORDER BY REPORT_DATE DESC FETCH FIRST 1 ROW ONLY", nativeQuery = true)
     String findLastUploadedReportDate();
+    
+    
+    @Query(value ="SELECT COUNT(*) FROM GENERAL_MASTER_TABLE WHERE TRUNC(REPORT_DATE)=TRUNC(:reportDate)",nativeQuery = true)
+    Long getTotalCount(@Param("reportDate") Date reportDate);
+    
+    @Query(value ="SELECT COUNT(*) FROM GENERAL_MASTER_TABLE WHERE TRUNC(REPORT_DATE)=TRUNC(:reportDate) AND REPORT_CODE='MCBL'",nativeQuery = true)
+    Long getMcblCount(@Param("reportDate") Date reportDate);
+    
+    @Query(value ="SELECT COUNT(*) FROM GENERAL_MASTER_TABLE WHERE TRUNC(REPORT_DATE)=TRUNC(:reportDate) AND REPORT_CODE='DEPB'",nativeQuery = true)
+    Long getDepositBookCount(@Param("reportDate") Date reportDate);
 
+    @Query(value ="SELECT COUNT(*) FROM GENERAL_MASTER_TABLE WHERE TRUNC(REPORT_DATE)=TRUNC(:reportDate) AND REPORT_CODE='DEPG'",nativeQuery = true)
+    Long getDepositGeneralCount(@Param("reportDate") Date reportDate);
 
+    @Query(value ="SELECT COUNT(*) FROM GENERAL_MASTER_TABLE WHERE TRUNC(REPORT_DATE)=TRUNC(:reportDate) AND REPORT_CODE='LOANB'",nativeQuery = true)
+    Long getLoanBookCount(@Param("reportDate") Date reportDate);
 }

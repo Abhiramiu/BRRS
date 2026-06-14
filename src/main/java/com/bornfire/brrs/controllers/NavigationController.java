@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -171,6 +173,9 @@ public class NavigationController {
 
 	@Autowired
 	BRRS_Validation_Services BRRSValidationServices;
+	
+
+	
 	
 	
 	private String pagesize;
@@ -2372,5 +2377,26 @@ System.out.println("Enter into navigation controller");
         }
 
         return "RBRConsolidatedReport"; // HTML name
+    }
+    
+    @GetMapping("dashboardChartData")
+    @ResponseBody
+    public Map<String, Object> getDashboardChartData(
+            @RequestParam("lastUploadedDate") String lastUploadedDate) throws Exception {
+
+        System.out.println("Last Uploaded Date : " + lastUploadedDate);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        Date reportDate = sdf.parse(lastUploadedDate);
+
+        Map<String, Object> map = new HashMap();
+
+        map.put("totalCount", GeneralMasterRepos.getTotalCount(reportDate));
+        map.put("mcblCount", GeneralMasterRepos.getMcblCount(reportDate));
+        map.put("depositBookCount", GeneralMasterRepos.getDepositBookCount(reportDate));
+        map.put("depositGeneralCount", GeneralMasterRepos.getDepositGeneralCount(reportDate));
+        map.put("loanBookCount", GeneralMasterRepos.getLoanBookCount(reportDate));
+
+        return map;
     }
 }

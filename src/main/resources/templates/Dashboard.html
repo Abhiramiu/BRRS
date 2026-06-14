@@ -13,8 +13,21 @@
 		th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
 	<link rel="stylesheet" type="text/css" href="/webjars/datatables/1.10.19/css/dataTables.bootstrap4.min.css"
 		th:href="@{/webjars/datatables/1.10.19/css/dataTables.bootstrap4.min.css}">
-	<link rel="stylesheet" type="text/css" href="/webjars/chartjs/2.8.0/Chart.min.css"
-		th:href="@{/webjars/chartjs/2.8.0/Chart.min.css}">
+	
+	<script src="js/chart.umd.min.js"></script>
+<!-- Webjars JS -->
+			<script src="/webjars/jquery/3.4.1/jquery.min.js" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+			<script src="/webjars/popper.js/1.14.7/umd/popper.min.js"
+				th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+			<script src="/webjars/bootstrap/4.3.1/js/bootstrap.min.js"
+				th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+			<!-- jQuery UI is often not needed if not using its specific widgets
+		    <script src="/webjars/jquery-ui/1.12.1/jquery-ui.min.js" th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script> -->
+			<script src="/webjars/datatables/1.10.19/js/jquery.dataTables.min.js"
+				th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+			<script src="/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js"
+				th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
 
 	<style type="text/css">
 		:root {
@@ -483,8 +496,7 @@
 
 		.chart-container,
 		.asl-card .table-responsive {
-			opacity: 0;
-			transition: opacity 0.4s ease-in-out 0.1s;
+		    opacity: 1 !important;
 		}
 
 		.loaded {
@@ -527,9 +539,14 @@
 	</style>
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
-			document.getElementById('ASL_DATA_filter').style.display = 'none';
-		});
 
+		    let filter = document.getElementById('ASL_DATA_filter');
+
+		    if (filter) {
+		        filter.style.display = 'none';
+		    }
+
+		});
 
 	</script>
 
@@ -576,19 +593,7 @@
 	</style>
 
 
-	<!-- Webjars JS -->
-	<script src="/webjars/jquery/3.4.1/jquery.min.js" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
-	<script src="/webjars/popper.js/1.14.7/umd/popper.min.js"
-		th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
-	<script src="/webjars/bootstrap/4.3.1/js/bootstrap.min.js"
-		th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
-	<!-- jQuery UI is often not needed if not using its specific widgets
-    <script src="/webjars/jquery-ui/1.12.1/jquery-ui.min.js" th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script> -->
-	<script src="/webjars/datatables/1.10.19/js/jquery.dataTables.min.js"
-		th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
-	<script src="/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js"
-		th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
-	<script src="/webjars/chartjs/2.8.0/Chart.min.js" th:src="@{/webjars/chartjs/2.8.0/Chart.min.js}"></script>
+	
 
 	<style>
 		.dashboard-row {
@@ -669,12 +674,7 @@
 		}
 	</style>
 	<style>
-		.table-container {
-			padding-top: 40px;
-			width: 100%;
-			border-radius: 10%;
-
-		}
+		
 
 		table {
 			width: 100%;
@@ -739,8 +739,55 @@
 				"https://mail.google.com/mail/?view=cm&fs=1&to=" + email;
 			window.open(gmailUrl, "_blank");
 		}
+		
 	</script>
+	
+	<style>
+		
+		.dashboard-content {
+		    display: flex;
+		    align-items: flex-start;
+		    gap: 20px;
+		    margin-top: 20px;
+		}
 
+		
+		/* Table Area */
+		.table-container {
+		    width:1400px;
+		    max-height: 350px;
+		    overflow: auto;
+		    border: 1px solid #ddd;
+		    border-radius: 8px;
+		    background: #fff;
+		}
+
+		/* Table Styling */
+		.table-container table {
+		    width: 100%;
+		    border-collapse: collapse;
+		}
+
+		.table-container th,
+		.table-container td {
+		    padding: 10px;
+		    border: 1px solid #ddd;
+		    text-align: left;
+		}
+
+		.table-container th {
+		    background-color: #003366;
+		    color: white;
+		    position: sticky;
+		    top: 0;
+		}
+
+		.Hover:hover {
+		    background-color: #f5f5f5;
+		}
+	</style>
+	
+	
 </head>
 
 <body>
@@ -761,7 +808,7 @@
 					<!-- LEFT -->
 					<td>
 						<span class="report-label">Source File Uploaded Date</span>
-						<span class="report-date" th:text="${LastUploadedDate}"></span>
+						<span class="report-date"id="lastUploadedDate" th:text="${LastUploadedDate}"></span>
 					</td>
 
 					<!-- RIGHT -->
@@ -779,105 +826,198 @@
 				</tr>
 			</table>
 		</div>
+		
+		<!--<div class="dashboard-content">
+			
+			<div class="stats-grid">
+			  <div class="stat-card"><p class="stat-label">Total</p><p class="stat-value" id="s-total"></p></div>
+			  <div class="stat-card"><p class="stat-label">MCBL</p><p class="stat-value" id="s-mcbl"></p></div>
+			  <div class="stat-card"><p class="stat-label">Deposit Book</p><p class="stat-value" id="s-db"></p></div>
+			  <div class="stat-card"><p class="stat-label">Deposit Gen.</p><p class="stat-value" id="s-dg"></p></div>
+			  <div class="stat-card"><p class="stat-label">Loan Book</p><p class="stat-value" id="s-lb"></p></div>
+			</div>
 
-		<div class="table-container">
+		     Left Side - Pie Chart 
+			<div class="chart-wrap">
+			  <canvas id="myPieChart"></canvas>
+			  <div class="center-label">
+			    <div class="center-total" id="center-num"></div>
+			    <div class="center-sub">total</div>
+			  </div>
+			</div>
+			<div class="legend-wrap" id="legend-wrap"></div>
 
-			<table>
-
-				<thead>
-					<tr>
-						<th>S.No</th>
-						<th>Name of Resource</th>
-						<th>Email Id</th>
-						<th>Contact No</th>
-						<th>Designation </th>
-					</tr>
-				</thead>
-
-				<tbody>
-
-					<tr class="Hover">
-						<td>1</td>
-
-						<td>Krishnapandi M G</td>
-
-						<td>
-							<a href="#" onclick="openMail('krishnapandi.mg@bornfire.co.in')">
-								krishnapandi.mg@bornfire.co.in
-							</a>
-						</td>
-
-						<td>
-							<a href="tel:+916383101337">
-								+91 63831 01337
-							</a>
-						</td>
-						<td>Technical Lead</td>
-					</tr>
-
-					<tr class="Hover">
-						<td>2</td>
-
-						<td>Abhirami Ulaganathan</td>
-
-						<td>
-							<a href="#" onclick="openMail('abhirami.u@bornfire.co.in')">
-								abhirami.u@bornfire.co.in
-							</a>
-
-						</td>
-
-						<td>
-							<a href="tel:+919686419627">
-								+91 96864 19627
-							</a>
-						</td>
-						<td>Project Manager</td>
-					</tr>
-					<tr class="Hover">
-						<td>3</td>
-
-						<td>Nandhini J</td>
-						<td>
-							<a href="#" onclick="openMail('ramkumar.tr@bornfire.in')">
-								nandhini.j@bornfire.co.in
-							</a>
-
-						</td>
-
-
-						<td>
-							<a href="tel:+918675556868">
-								+91 86755 56868
-							</a>
-						</td>
-						<td>Functional Consultant </td>
-					</tr>
-
-					<tr class="Hover">
-						<td>4</td>
-
-						<td>Ramkumar T R</td>
-						<td>
-							<a href="#" onclick="openMail('ramkumar.tr@bornfire.in')">
-								ramkumar.tr@bornfire.in
-							</a>
-
-						</td>
-
-
-						<td>
-							<a href="tel:+919840920338">
-								+91 98409 20338
-							</a>
-						</td>
-						<td>Director</td>
-					</tr>
-				</tbody>
-
+			<p class="section-title">Record breakdown</p>
+			<table class="rec-table">
+			  <thead>
+			    <tr><th>#</th><th>Category</th><th>Count</th><th>Share</th><th>Status</th></tr>
+			  </thead>
+			  <tbody id="rec-tbody"></tbody>
 			</table>
 
-		</div>
+		     Right Side - Table 
+		    <div class="table-container">
+		        <table>
+		            <thead>
+		                <tr>
+		                    <th>S.No</th>
+		                    <th>Name of Resource</th>
+		                    <th>Email Id</th>
+		                    <th>Contact No</th>
+		                    <th>Designation</th>
+		                </tr>
+		            </thead>
+
+		            <tbody>
+		                <tr class="Hover">
+		                    <td>1</td>
+		                    <td>Krishnapandi M G</td>
+		                    <td>
+		                        <a href="#" onclick="openMail('krishnapandi.mg@bornfire.co.in')">
+		                            krishnapandi.mg@bornfire.co.in
+		                        </a>
+		                    </td>
+		                    <td>
+		                        <a href="tel:+916383101337">+91 63831 01337</a>
+		                    </td>
+		                    <td>Technical Lead</td>
+		                </tr>
+
+		                <tr class="Hover">
+		                    <td>2</td>
+		                    <td>Abhirami Ulaganathan</td>
+		                    <td>
+		                        <a href="#" onclick="openMail('abhirami.u@bornfire.co.in')">
+		                            abhirami.u@bornfire.co.in
+		                        </a>
+		                    </td>
+		                    <td>
+		                        <a href="tel:+919686419627">+91 96864 19627</a>
+		                    </td>
+		                    <td>Project Manager</td>
+		                </tr>
+
+		                <tr class="Hover">
+		                    <td>3</td>
+		                    <td>Nandhini J</td>
+		                    <td>
+		                        <a href="#" onclick="openMail('nandhini.j@bornfire.co.in')">
+		                            nandhini.j@bornfire.co.in
+		                        </a>
+		                    </td>
+		                    <td>
+		                        <a href="tel:+918675556868">+91 86755 56868</a>
+		                    </td>
+		                    <td>Functional Consultant</td>
+		                </tr>
+
+		                <tr class="Hover">
+		                    <td>4</td>
+		                    <td>Ramkumar T R</td>
+		                    <td>
+		                        <a href="#" onclick="openMail('ramkumar.tr@bornfire.in')">
+		                            ramkumar.tr@bornfire.in
+		                        </a>
+		                    </td>
+		                    <td>
+		                        <a href="tel:+919840920338">+91 98409 20338</a>
+		                    </td>
+		                    <td>Director</td>
+		                </tr>
+		            </tbody>
+		        </table>
+		    </div>
+
+		</div>-->
+		
+		<div class="dashboard-content">
+
+		    <!-- Top Stats Grid -->
+		    <div class="stats-grid">
+		        <div class="stat-card"><p class="stat-label">Total</p><p class="stat-value" id="s-total"></p></div>
+		        <div class="stat-card"><p class="stat-label">MCBL</p><p class="stat-value" id="s-mcbl"></p></div>
+		        <div class="stat-card"><p class="stat-label">Deposit Book</p><p class="stat-value" id="s-db"></p></div>
+		        <div class="stat-card"><p class="stat-label">Deposit Gen.</p><p class="stat-value" id="s-dg"></p></div>
+		        <div class="stat-card"><p class="stat-label">Loan Book</p><p class="stat-value" id="s-lb"></p></div>
+		    </div>
+
+		    <!-- Main Row: Pie Chart (Left) + Resource Table (Right) -->
+		    <div class="main-row">
+
+		        <!-- Left Side - Pie Chart -->
+		        <div class="chart-container">
+		            <div class="chart-wrap">
+		                <canvas id="myPieChart"></canvas>
+		                <div class="center-label">
+		                    <div class="center-total" id="center-num"></div>
+		                    <div class="center-sub">total</div>
+		                </div>
+		            </div>
+		            <div class="legend-wrap" id="legend-wrap"></div>
+
+		            <p class="section-title">Record breakdown</p>
+		            <table class="rec-table">
+		                <thead>
+		                    <tr>
+		                        <th>#</th>
+		                        <th>Category</th>
+		                        <th>Count</th>
+		                        <th>Share</th>
+		                        <th>Status</th>
+		                    </tr>
+		                </thead>
+		                <tbody id="rec-tbody"></tbody>
+		            </table>
+		        </div>
+
+		        <!-- Right Side - Resource Table -->
+		        <div class="table-container">
+		            <table>
+		                <thead>
+		                    <tr>
+		                        <th>S.No</th>
+		                        <th>Name of Resource</th>
+		                        <th>Email Id</th>
+		                        <th>Contact No</th>
+		                        <th>Designation</th>
+		                    </tr>
+		                </thead>
+		                <tbody>
+		                    <tr class="Hover">
+		                        <td>1</td>
+		                        <td>Krishnapandi M G</td>
+		                        <td><a href="#" onclick="openMail('krishnapandi.mg@bornfire.co.in')">krishnapandi.mg@bornfire.co.in</a></td>
+		                        <td><a href="tel:+916383101337">+91 63831 01337</a></td>
+		                        <td>Technical Lead</td>
+		                    </tr>
+		                    <tr class="Hover">
+		                        <td>2</td>
+		                        <td>Abhirami Ulaganathan</td>
+		                        <td><a href="#" onclick="openMail('abhirami.u@bornfire.co.in')">abhirami.u@bornfire.co.in</a></td>
+		                        <td><a href="tel:+919686419627">+91 96864 19627</a></td>
+		                        <td>Project Manager</td>
+		                    </tr>
+		                    <tr class="Hover">
+		                        <td>3</td>
+		                        <td>Nandhini J</td>
+		                        <td><a href="#" onclick="openMail('nandhini.j@bornfire.co.in')">nandhini.j@bornfire.co.in</a></td>
+		                        <td><a href="tel:+918675556868">+91 86755 56868</a></td>
+		                        <td>Functional Consultant</td>
+		                    </tr>
+		                    <tr class="Hover">
+		                        <td>4</td>
+		                        <td>Ramkumar T R</td>
+		                        <td><a href="#" onclick="openMail('ramkumar.tr@bornfire.in')">ramkumar.tr@bornfire.in</a></td>
+		                        <td><a href="tel:+919840920338">+91 98409 20338</a></td>
+		                        <td>Director</td>
+		                    </tr>
+		                </tbody>
+		            </table>
+		        </div>
+
+		    </div><!-- end .main-row -->
+
+		</div><!-- end .dashboard-content -->
 
 		<div class="modal fade" id="alert">
 			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -898,46 +1038,312 @@
 
 	</div>
 
-	<script>
-		function runProcedure(button) {
-
-			var reportDate = button.getAttribute('data-reportdate');
-
-
-			var url = '/BRRS/TriggerProcedure?reportDate=' + reportDate;
-
-			// Show loader
-			$('#loader').modal("toggle");
-
-			$.ajax({
-				url: url,
-				type: 'POST',
-
-				success: function (response) {
-					$('#alertmsg').text(response);
-					$('#alert').modal('show');
-				},
-
-				error: function (jqXHR) {
-					let msg = '❌ Error while running procedure';
-
-					if (jqXHR.responseText) {
-						msg = jqXHR.responseText;
-					}
-
-					$('#alertmsg').text(msg);
-					$('#alert').modal('show');
-				}
-			});
-		}
-
-		function reloadPage() {
-			window.location.reload();
-		}
-
-
-	</script>
-
+	
 </body>
 
+
+<script>
+	
+	
+	$(document).ready(function() {
+
+	    var lastUploadedDate =
+	        document.getElementById("lastUploadedDate").textContent.trim();
+
+	    console.log("Last Uploaded Date =", lastUploadedDate);
+
+	    $.ajax({
+	        url: '/BRRS/dashboardChartData',
+	        type: 'GET',
+	        data: {
+	            lastUploadedDate: lastUploadedDate
+	        },
+	        success: function(response) {
+
+	            console.log("Response =", response);
+
+	            const DATA = [
+	                {
+	                    label: 'MCBL Records',
+	                    count: response.mcblCount,
+	                    color: '#90D5FF',
+	                    pill: '#EEEDFE',
+	                    pillText: '#3C3489'
+	                },
+	                {
+	                    label: 'Deposit Book',
+	                    count: response.depositBookCount,
+	                    color: '#0F6E56',
+	                    pill: '#E1F5EE',
+	                    pillText: '#085041'
+	                },
+	                {
+	                    label: 'Deposit General',
+	                    count: response.depositGeneralCount,
+	                    color: '#D85A30',
+	                    pill: '#FAECE7',
+	                    pillText: '#712B13'
+	                },
+	                {
+	                    label: 'Loan Book',
+	                    count: response.loanBookCount,
+	                    color: '#185FA5',
+	                    pill: '#E6F1FB',
+	                    pillText: '#0C447C'
+	                }
+	            ];
+
+	            const TOTAL = response.totalCount;
+
+	            // KPI Values
+	            document.getElementById('s-total').textContent = TOTAL;
+	            document.getElementById('s-mcbl').textContent =
+	                response.mcblCount;
+	            document.getElementById('s-db').textContent =
+	                response.depositBookCount;
+	            document.getElementById('s-dg').textContent =
+	                response.depositGeneralCount;
+	            document.getElementById('s-lb').textContent =
+	                response.loanBookCount;
+
+	            // Center Label
+	            const centerNum =
+	                document.getElementById('center-num');
+
+	            if(centerNum){
+	                centerNum.textContent = TOTAL;
+	            }
+
+	            // Legend
+	            const legendWrap =
+	                document.getElementById('legend-wrap');
+
+	            legendWrap.innerHTML = '';
+
+	            DATA.forEach(d => {
+
+	                const pct =
+	                    ((d.count / TOTAL) * 100).toFixed(1);
+
+	                legendWrap.innerHTML +=
+	                    `<span class="legend-item">
+	                        <span class="legend-dot"
+	                            style="background:${d.color}">
+	                        </span>
+	                        ${d.label} — ${pct}%
+	                    </span>`;
+	            });
+
+	            // Table
+	            const tbody =
+	                document.getElementById('rec-tbody');
+
+	            tbody.innerHTML = '';
+
+	            DATA.forEach((d, i) => {
+
+	                const pct =
+	                    ((d.count / TOTAL) * 100).toFixed(1);
+
+	                tbody.innerHTML += `
+	                    <tr>
+	                        <td style="color:#aaa">${i+1}</td>
+	                        <td style="font-weight:500">
+	                            ${d.label}
+	                        </td>
+	                        <td>${d.count}</td>
+	                        <td>${pct}%</td>
+	                        <td>
+	                            <span class="pill"
+	                                style="
+	                                    background:${d.pill};
+	                                    color:${d.pillText}">
+	                                Active
+	                            </span>
+	                        </td>
+	                    </tr>`;
+	            });
+
+	            // Chart
+	            const canvas =
+	                document.getElementById("myPieChart");
+
+	            new Chart(canvas, {
+	                type: 'doughnut',
+	                data: {
+	                    labels: DATA.map(d => d.label),
+	                    datasets: [{
+	                        data: DATA.map(d => d.count),
+	                        backgroundColor:
+	                            DATA.map(d => d.color),
+	                        borderColor: '#ffffff',
+	                        borderWidth: 4,
+	                        hoverOffset: 15
+	                    }]
+	                },
+	                options: {
+	                    responsive: true,
+	                    maintainAspectRatio: false,
+	                    cutout: '70%',
+	                    animation: {
+	                        animateRotate: true,
+	                        animateScale: true,
+	                        duration: 2500,
+	                        easing: 'easeOutBounce'
+	                    },
+	                    plugins: {
+	                        legend: {
+	                            display: false
+	                        }
+	                    }
+	                }
+	            });
+
+	            console.log("Chart Created Successfully");
+	        },
+	        error: function(xhr) {
+	            console.log(xhr.responseText);
+	        }
+	    });
+
+	});
+			</script>
+			
+			<script>
+			    console.log("Page Loaded");
+			</script>
+			
+			<style>
+			  .pie-section { padding: 1rem 0; }
+			  .chart-wrap { position: relative; width: 260px; height: 260px; margin: 0 auto; }
+			  .legend-wrap { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 20px; margin: 16px 0 0; }
+			  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #555; }
+			  .legend-dot { width: 11px; height: 11px; border-radius: 2px; flex-shrink: 0; }
+			  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin: 0 0 20px; }
+			  .stat-card { background: #f5f5f5; border-radius: 8px; padding: 12px 10px; text-align: center; }
+			  .stat-label { font-size: 11px; color: #888; margin: 0 0 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+			  .stat-value { font-size: 22px; font-weight: 500; color: #222; margin: 0; }
+			  .center-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; }
+			  .center-total { font-size: 26px; font-weight: 600; color: #222; line-height: 1.1; }
+			  .center-sub { font-size: 11px; color: #aaa; }
+			  .section-title { font-size: 12px; font-weight: 600; color: #888; margin: 22px 0 8px; text-transform: uppercase; letter-spacing: 0.04em; }
+			  .rec-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+			  .rec-table thead tr { border-bottom: 1px solid #ddd; }
+			  .rec-table th { padding: 7px 8px; text-align: left; font-weight: 600; color: #888; font-size: 11px; text-transform: uppercase; }
+			  .rec-table td { padding: 9px 8px; color: #333; border-bottom: 0.5px solid #eee; }
+			  .rec-table tbody tr:hover td { background: #fafafa; }
+			  .pill { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 500; background: #eee; color: #555; }
+			</style>
+
+			<style>
+				.main-row {
+				    display: flex;
+				    gap: 24px;
+				    align-items: flex-start;
+				    margin-top: 20px;
+				}
+
+				.chart-container {
+				    min-width: 800px;
+				    width: 500px;
+				    flex-shrink: 0;
+				}
+
+				.table-container {
+				    flex: 1;
+				    overflow-x: auto;
+				}
+				
+				.chart-wrap {
+				    position: relative;
+				    width: 260px;
+				    height: 260px;
+				    margin: auto;
+				}
+
+				.legend-item {
+				    color: white !important;
+				}
+				#myPieChart {
+				    border: 5px solid red !important;
+				    background: yellow !important;
+				}
+				
+				.center-label{
+				    position:absolute;
+				    top:50%;
+				    left:50%;
+				    transform:translate(-50%,-50%);
+				    text-align:center;
+				    pointer-events:none;
+				}
+
+				.center-total{
+				    font-size:32px;
+				    font-weight:700;
+				    color:white;
+				}
+
+				.center-sub{
+				    font-size:12px;
+				    color:#cbd5e1;
+				    letter-spacing:2px;
+				}
+				
+				.chart-wrap{
+				    position:relative;
+				    width:320px;
+				    height:320px;
+				    margin:auto;
+				    padding:20px;
+				    border-radius:50%;
+				}
+
+				#myPieChart{
+				    border:none !important;
+				    background:transparent !important;
+				    filter:drop-shadow(0 0 15px rgba(144,213,255,.35));
+				}
+			</style>
+<script>
+			function runProcedure(button) {
+
+				var reportDate = button.getAttribute('data-reportdate');
+
+
+				var url = '/BRRS/TriggerProcedure?reportDate=' + reportDate;
+
+				// Show loader
+				$('#loader').modal("toggle");
+
+				$.ajax({
+					url: url,
+					type: 'POST',
+
+					success: function (response) {
+						$('#alertmsg').text(response);
+						$('#alert').modal('show');
+					},
+
+					error: function (jqXHR) {
+						let msg = '❌ Error while running procedure';
+
+						if (jqXHR.responseText) {
+							msg = jqXHR.responseText;
+						}
+
+						$('#alertmsg').text(msg);
+						$('#alert').modal('show');
+					}
+				});
+			}
+
+			function reloadPage() {
+				window.location.reload();
+			}
+
+
+		</script>
+		
+		
 </html>
