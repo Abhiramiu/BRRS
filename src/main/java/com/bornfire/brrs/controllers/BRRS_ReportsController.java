@@ -359,6 +359,119 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
+	
+	@RequestMapping(value = "/{reportId}/downloadSummaryPdf", method = RequestMethod.GET)
+	public void downloadSummaryPdf(
+	        HttpServletResponse response,
+	        @PathVariable("reportId") String reportId,
+	        @RequestParam("todate")   String todate,
+	        @RequestParam("fromdate") String fromdate) {
+
+	    logger.info("{} downloadSummaryPdf called — todate={} fromdate={}",reportId, todate, fromdate);
+
+	    try {
+	        // Convert dates from dd/MM/yyyy → dd-MMM-yyyy if needed
+	        try {
+	            fromdate = dateFormat.format(new SimpleDateFormat("dd/MM/yyyy").parse(fromdate));
+	            todate   = dateFormat.format(new SimpleDateFormat("dd/MM/yyyy").parse(todate));
+	        } catch (ParseException e) {
+	            logger.info("{} dates already in correct format, keeping as-is: {}", reportId, todate);
+	        }
+	        String templateName = reportId + ".xlsx";
+	        // Step 1: Get PDF bytes via centralized service
+	        byte[] pdfBytes = regreportServices.getPdfDownloadFile(
+	        		reportId,        // reportId — matches case "M_IS" in getPdfDownloadFile
+	                templateName,   // template filename
+	                null,          // asondate
+	                fromdate,
+	                todate,
+	                "PULA",         // currency
+	                null,          // subreportid
+	                null,          // secid
+	                null,          // dtltype
+	                null,          // reportingTime
+	                null,          // instancecode
+	                null           // filter
+	        );
+
+	        if (pdfBytes == null || pdfBytes.length == 0) {
+	            logger.warn("{} downloadSummaryPdf: no data / PDF generation returned empty", reportId);
+	            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+	            return;
+	        }
+
+	        // Step 2: Stream PDF to browser
+	        response.setContentType("application/pdf");
+	        response.setHeader("Content-Disposition", "attachment; filename=\"" + reportId + ".pdf\"");
+	        response.setContentLength(pdfBytes.length);
+
+	        try (ServletOutputStream out = response.getOutputStream()) {
+	            out.write(pdfBytes);
+	            out.flush();
+	        }
+
+	    } catch (Exception e) {
+	        logger.error(reportId + "downloadSummaryPdf ERROR", e);
+	        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	    }
+	}
+	
+	@RequestMapping(value = "/{reportId}/emailDownloadSummaryPdf", method = RequestMethod.GET)
+	public void emailDownloadSummaryPdf(
+	        HttpServletResponse response,
+	        @PathVariable("reportId") String reportId,
+	        @RequestParam("todate")   String todate,
+	        @RequestParam("fromdate") String fromdate) {
+
+	    logger.info("{} emailDownloadSummaryPdf called — todate={} fromdate={}",reportId, todate, fromdate);
+
+	    try {
+	        // Convert dates from dd/MM/yyyy → dd-MMM-yyyy if needed
+	        try {
+	            fromdate = dateFormat.format(new SimpleDateFormat("dd/MM/yyyy").parse(fromdate));
+	            todate   = dateFormat.format(new SimpleDateFormat("dd/MM/yyyy").parse(todate));
+	        } catch (ParseException e) {
+	            logger.info("{} dates already in correct format, keeping as-is: {}", reportId, todate);
+	        }
+	        String templateName ="EMAIL_"+ reportId + ".xlsx";
+	        // Step 1: Get PDF bytes via centralized service
+	        byte[] pdfBytes = regreportServices.getEmailPdfDownloadFile(
+	        		reportId,        // reportId — matches case "M_IS" in getPdfDownloadFile
+	                templateName,   // template filename
+	                null,          // asondate
+	                fromdate,
+	                todate,
+	                "PULA",         // currency
+	                null,          // subreportid
+	                null,          // secid
+	                null,          // dtltype
+	                null,          // reportingTime
+	                null,          // instancecode
+	                null           // filter
+	        );
+
+	        if (pdfBytes == null || pdfBytes.length == 0) {
+	            logger.warn("EMAIL_{} downloadSummaryPdf: no data / PDF generation returned empty", reportId);
+	            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+	            return;
+	        }
+
+	        // Step 2: Stream PDF to browser
+	        response.setContentType("application/pdf");
+	        response.setHeader("Content-Disposition", "attachment; filename=\"EMAIL_"+ reportId + ".pdf\"");
+	        response.setContentLength(pdfBytes.length);
+
+	        try (ServletOutputStream out = response.getOutputStream()) {
+	            out.write(pdfBytes);
+	            out.flush();
+	        }
+
+	    } catch (Exception e) {
+	        logger.error(reportId + "emailDownloadSummaryPdf ERROR", e);
+	        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	    }
+	}
+	
 
 	@RequestMapping(value = "downloaddetailExcel", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
@@ -4722,7 +4835,7 @@ public class BRRS_ReportsController {
 
 		try {
 			byte[] pdfBytes = regreportServices.getPdfDownloadFile(reportid, filename, asondate, fromdate, todate,
-					currency, subreportid, secid, dtltype, reportingTime, instancecode, filter, type, version);
+					currency, subreportid, secid, dtltype,type, version);
 
 			// Write PDF to response
 			response.setContentType("application/pdf");
