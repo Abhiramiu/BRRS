@@ -2,6 +2,7 @@ package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
 
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -195,59 +196,70 @@ public class BRRS_M_CA4_ReportService {
 		return mv;
 	}
 
+	
 	public void updateReport(M_CA4_Summary_Entity updatedEntity) {
-		System.out.println("Came to services");
-		System.out.println("Report Date: " + updatedEntity.getReport_date());
+	    System.out.println("Came to services");
+	    System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-		M_CA4_Summary_Entity existing = brrs_m_ca4_summary_repo.findById(updatedEntity.getReport_date()).orElseThrow(
-				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+	    M_CA4_Summary_Entity existing = brrs_m_ca4_summary_repo
+	            .findById(updatedEntity.getReport_date())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
-		M_CA4_Detail_Entity existingDetail = brrs_m_ca4_detail_repo.findById(updatedEntity.getReport_date())
-				.orElseGet(() -> {
-					M_CA4_Detail_Entity d = new M_CA4_Detail_Entity();
-					d.setReport_date(updatedEntity.getReport_date());
-					return d;
-				});
+	    // Audit old copy
+	    M_CA4_Summary_Entity oldcopy = new M_CA4_Summary_Entity();
+	    BeanUtils.copyProperties(existing, oldcopy);
+	    
+	    try {
+	        // 1️⃣ Loop from R10 to R58 and copy fields
+	    	
+	        for (int i = 10; i <= 58; i++) {
+				
+	        	 String prefix = "R" + i + "_";
 
-		try {
-			// 1️⃣ Loop from R10 to R58 and copy fields
+	            String[] fields = {"item","amt_name_of_sub1", "amt_name_of_sub2", "amt_name_of_sub3", "amt_name_of_sub4","amt_name_of_sub5","tot_amt" };
 
-			for (int i = 10; i <= 58; i++) {
+	            for (String field : fields) {
+	            	   String getterName = "get" + prefix + field; // e.g., getR10_item
+	                   String setterName = "set" + prefix + field; // e.g., setR10_item
 
-				String prefix = "R" + i + "_";
+	                try {
+	                    Method getter = M_CA4_Summary_Entity.class.getMethod(getterName);
+	                    Method setter = M_CA4_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
-				String[] fields = { "item", "amt_name_of_sub1", "amt_name_of_sub2", "amt_name_of_sub3",
-						"amt_name_of_sub4", "amt_name_of_sub5", "tot_amt" };
+	                    Object newValue = getter.invoke(updatedEntity);
+	                    setter.invoke(existing, newValue);
 
-				for (String field : fields) {
-					String getterName = "get" + prefix + field; // e.g., getR10_item
-					String setterName = "set" + prefix + field; // e.g., setR10_item
+	                } catch (NoSuchMethodException e) {
+	                    // Skip missing fields
+	                    continue;
+	                }
+	            }
+	        }
 
-					try {
-						Method getter = M_CA4_Summary_Entity.class.getMethod(getterName);
-						Method setter = M_CA4_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+	       
 
-						Method detailSetter = M_CA4_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating report fields", e);
+	    }
 
-						Object newValue = getter.invoke(updatedEntity);
-						setter.invoke(existing, newValue);
-						detailSetter.invoke(existingDetail, newValue);
+	    // 3️⃣ Save updated entity
+	    String changes = auditService.getChanges(oldcopy, existing);
 
-					} catch (NoSuchMethodException e) {
-						// Skip missing fields
-						continue;
-					}
-				}
-			}
+	    if (!changes.isEmpty()) {
 
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
-		}
+	        brrs_m_ca4_summary_repo.save(existing);
 
-		// 3️⃣ Save updated entity
-		brrs_m_ca4_detail_repo.save(existingDetail);
-		brrs_m_ca4_summary_repo.save(existing);
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existing,
+	                updatedEntity.getReport_date().toString(),
+	                "M CA4 Summary Screen",
+	                "BRRS_M_CA4_SUMMARY"
+	        );
+	    }
 	}
+
 
 	public void updateResubReport(M_CA4_Resub_Summary_Entity updatedEntity) {
 

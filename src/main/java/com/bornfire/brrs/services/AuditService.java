@@ -1192,4 +1192,40 @@ public class AuditService {
 		return obj1.equals(obj2);
 	}
 
+	public <T> String getChanges(T oldEntity, T newEntity) {
+
+	    StringBuilder changes = new StringBuilder();
+
+	    Class<?> clazz = oldEntity.getClass();
+	    Field[] fields = clazz.getDeclaredFields();
+
+	    for (Field field : fields) {
+
+	        field.setAccessible(true);
+
+	        try {
+	            Object oldValue = field.get(oldEntity);
+	            Object newValue = field.get(newEntity);
+
+	            if (!areEqual(oldValue, newValue)) {
+
+	                if (changes.length() > 0) {
+	                    changes.append("|||");
+	                }
+
+	                changes.append(field.getName())
+	                       .append(": OldValue: ")
+	                       .append(oldValue)
+	                       .append(", NewValue: ")
+	                       .append(newValue);
+	            }
+
+	        } catch (IllegalAccessException e) {
+	            throw new RuntimeException(e);
+	        }
+	    }
+
+	    return changes.toString();
+	}
+	
 }

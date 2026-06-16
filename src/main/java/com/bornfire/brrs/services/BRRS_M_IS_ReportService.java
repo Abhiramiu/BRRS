@@ -1,7 +1,6 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
-
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -38,6 +37,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
@@ -50,8 +50,6 @@ import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.services.AuditService;
-import com.bornfire.brrs.services.BRRS_M_IS_ReportService;
 import com.bornfire.brrs.entities.BRRS_M_IS_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_IS_Archival_Summary_Repo1;
 import com.bornfire.brrs.entities.BRRS_M_IS_Archival_Summary_Repo2;
@@ -3969,10 +3967,15 @@ public class BRRS_M_IS_ReportService {
 	        logger.info("Received update for ACCT_NO: {}", acctNo);
 
 	        M_IS_Detail_Entity existing = M_IS_Detail_Repo.findBySno(SNO);
+
 	        if (existing == null) {
 	            logger.warn("No record found for ACCT_NO: {}", acctNo);
 	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
 	        }
+
+	        // Create old copy for audit comparison
+	        M_IS_Detail_Entity oldcopy = new M_IS_Detail_Entity();
+	        BeanUtils.copyProperties(existing, oldcopy);
 
 	        boolean isChanged = false;
 
@@ -3997,28 +4000,42 @@ public class BRRS_M_IS_ReportService {
 	        
 	        
 
-	        if (isChanged) {
-	        	M_IS_Detail_Repo.save(existing);
+	       if (isChanged) {
+
+	            M_IS_Detail_Repo.save(existing);
+
+	            auditService.compareEntitiesmanual(
+	                    oldcopy,
+	                    existing,
+	                    SNO,
+	                    "M IS Detail Screen",
+	                    "BRRS_M_IS_DETAIL"
+	            );
+
 	            logger.info("Record updated successfully for account {}", acctNo);
 
-	            // Format date for procedure
 	            String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
 	                    .format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
 
-	            // Run summary procedure after commit
-	            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-	                @Override
-	                public void afterCommit() {
-	                    try {
-	                        logger.info("Transaction committed — calling BRRS_M_IS_SUMMARY_PROCEDURE({})",
-	                                formattedDate);
-	                        jdbcTemplate.update("BEGIN BRRS_M_IS_SUMMARY_PROCEDURE(?); END;", formattedDate);
-	                        logger.info("Procedure executed successfully after commit.");
-	                    } catch (Exception e) {
-	                        logger.error("Error executing procedure after commit", e);
-	                    }
-	                }
-	            });
+	            TransactionSynchronizationManager.registerSynchronization(
+	                    new TransactionSynchronizationAdapter() {
+	                        @Override
+	                        public void afterCommit() {
+	                            try {
+	                                logger.info(
+	                                        "Transaction committed — calling BRRS_M_IS_SUMMARY_PROCEDURE({})",
+	                                        formattedDate);
+
+	                                jdbcTemplate.update(
+	                                        "BEGIN BRRS_M_IS_SUMMARY_PROCEDURE(?); END;",
+	                                        formattedDate);
+
+	                                logger.info("Procedure executed successfully after commit.");
+	                            } catch (Exception e) {
+	                                logger.error("Error executing procedure after commit", e);
+	                            }
+	                        }
+	                    });
 
 	            return ResponseEntity.ok("Record updated successfully!");
 	        } else {
