@@ -40,6 +40,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
@@ -4131,87 +4132,129 @@ public class BRRS_M_LA1_ReportService {
 	    return mv;
 	}
 
-	@Transactional
-	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
-	    try {
-	        String acctNo = request.getParameter("acct_number");
-	        String provisionStr = request.getParameter("acct_balance_in_pula");
-	        String sanction_limit = request.getParameter("sanction_limit");
-	        String acctName = request.getParameter("acct_name");
-	        String reportDateStr = request.getParameter("report_Date");
+	
+		@Transactional
+		public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
+		    try {
 
-	        logger.info("Received update for ACCT_NO: {}", acctNo);
+		        String acctNo = request.getParameter("acct_number");
+		        String provisionStr = request.getParameter("acct_balance_in_pula");
+		        String sanctionLimitStr = request.getParameter("sanction_limit");
+		        String acctName = request.getParameter("acct_name");
+		        String reportDateStr = request.getParameter("report_Date");
 
-	        M_LA1_Detail_Entity existing = M_LA1_Detail_Repo.findByAcctnumber(acctNo);
-	        if (existing == null) {
-	            logger.warn("No record found for ACCT_NO: {}", acctNo);
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
-	        }
+		        logger.info("Received update for ACCT_NO: {}", acctNo);
 
-	        boolean isChanged = false;
+		        M_LA1_Detail_Entity existing = M_LA1_Detail_Repo.findByAcctnumber(acctNo);
 
-	        if (acctName != null && !acctName.isEmpty()) {
-	            if (existing.getAcct_name() == null || !existing.getAcct_name().equals(acctName)) {
-	                existing.setAcct_name(acctName);
-	                isChanged = true;
-	                logger.info("Account name updated to {}", acctName);
-	            }
-	        }
+		        if (existing == null) {
+		            logger.warn("No record found for ACCT_NO: {}", acctNo);
+		            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+		                    .body("Record not found for update.");
+		        }
 
-	        if (provisionStr != null && !provisionStr.isEmpty()) {
-	            BigDecimal newProvision = new BigDecimal(provisionStr);
-	            if (existing.getAcct_balance_in_pula() == null ||
-	                existing.getAcct_balance_in_pula().compareTo(newProvision) != 0) {
-	                existing.setAcct_balance_in_pula(newProvision);
-	                isChanged = true;
-	                logger.info("Provision updated to {}", newProvision);
-	            }
-	        }
-	        
-	        if (sanction_limit != null && !sanction_limit.isEmpty()) {
-	            BigDecimal newSanctionLimit = new BigDecimal(sanction_limit);
-	            if (existing.getSanction_limit() == null ||
-	                existing.getSanction_limit().compareTo(newSanctionLimit) != 0) {
-	                existing.setSanction_limit(newSanctionLimit);
-	                isChanged = true;
-	                logger.info("Sanction limit updated to {}", newSanctionLimit);
-	            }
-	        }
+		        // Create old copy for audit comparison
+		        M_LA1_Detail_Entity oldcopy = new M_LA1_Detail_Entity();
+		        BeanUtils.copyProperties(existing, oldcopy);
 
-	        if (isChanged) {
-	            M_LA1_Detail_Repo.save(existing);
-	            logger.info("Record updated successfully for account {}", acctNo);
+		        boolean isChanged = false;
 
-	            // Format date for procedure
-	            String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-	                    .format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+		        if (acctName != null && !acctName.isEmpty()) {
+		            if (existing.getAcct_name() == null ||
+		                    !existing.getAcct_name().equals(acctName)) {
 
-	            // Run summary procedure after commit
-	            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-	                @Override
-	                public void afterCommit() {
-	                    try {
-	                        logger.info("Transaction committed — calling BRRS_M_LA1_SUMMARY_PROCEDURE({})",
-	                                formattedDate);
-	                        jdbcTemplate.update("BEGIN BRRS_M_LA1_SUMMARY_PROCEDURE(?); END;", formattedDate);
-	                        logger.info("Procedure executed successfully after commit.");
-	                    } catch (Exception e) {
-	                        logger.error("Error executing procedure after commit", e);
-	                    }
-	                }
-	            });
+		                existing.setAcct_name(acctName);
+		                isChanged = true;
 
-	            return ResponseEntity.ok("Record updated successfully!");
-	        } else {
-	            logger.info("No changes detected for ACCT_NO: {}", acctNo);
-	            return ResponseEntity.ok("No changes were made.");
-	        }
+		                logger.info("Account name updated to {}", acctName);
+		            }
+		        }
 
-	    } catch (Exception e) {
-	        logger.error("Error updating M_LA1 record", e);
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Error updating record: " + e.getMessage());
-	    }
-	}
+		        if (provisionStr != null && !provisionStr.isEmpty()) {
+
+		            BigDecimal newProvision = new BigDecimal(provisionStr);
+
+		            if (existing.getAcct_balance_in_pula() == null ||
+		                    existing.getAcct_balance_in_pula().compareTo(newProvision) != 0) {
+
+		                existing.setAcct_balance_in_pula(newProvision);
+		                isChanged = true;
+
+		                logger.info("Balance updated to {}", newProvision);
+		            }
+		        }
+
+		        if (sanctionLimitStr != null && !sanctionLimitStr.isEmpty()) {
+
+		            BigDecimal newSanctionLimit = new BigDecimal(sanctionLimitStr);
+
+		            if (existing.getSanction_limit() == null ||
+		                    existing.getSanction_limit().compareTo(newSanctionLimit) != 0) {
+
+		                existing.setSanction_limit(newSanctionLimit);
+		                isChanged = true;
+
+		                logger.info("Sanction limit updated to {}", newSanctionLimit);
+		            }
+		        }
+
+		        if (isChanged) {
+
+		            M_LA1_Detail_Repo.save(existing);
+
+		            // Audit comparison
+		            auditService.compareEntitiesmanual(
+		                    oldcopy,
+		                    existing,
+		                    acctNo,
+		                    "M LA1 Detail Screen",
+		                    "BRRS_M_LA1_DETAIL"
+		            );
+
+		            logger.info("Record updated successfully for account {}", acctNo);
+
+		            String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+		                    .format(new SimpleDateFormat("yyyy-MM-dd")
+		                    .parse(reportDateStr));
+
+		            TransactionSynchronizationManager.registerSynchronization(
+		                    new TransactionSynchronizationAdapter() {
+
+		                        @Override
+		                        public void afterCommit() {
+		                            try {
+
+		                                logger.info(
+		                                        "Transaction committed — calling BRRS_M_LA1_SUMMARY_PROCEDURE({})",
+		                                        formattedDate);
+
+		                                jdbcTemplate.update(
+		                                        "BEGIN BRRS_M_LA1_SUMMARY_PROCEDURE(?); END;",
+		                                        formattedDate);
+
+		                                logger.info("Procedure executed successfully after commit.");
+
+		                            } catch (Exception e) {
+		                                logger.error("Error executing procedure after commit", e);
+		                            }
+		                        }
+		                    });
+
+		            return ResponseEntity.ok("Record updated successfully!");
+
+		        } else {
+
+		            logger.info("No changes detected for ACCT_NO: {}", acctNo);
+		            return ResponseEntity.ok("No changes were made.");
+		        }
+
+		    } catch (Exception e) {
+
+		        logger.error("Error updating M_LA1 record", e);
+
+		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+		                .body("Error updating record: " + e.getMessage());
+		    }
+		}
 
 }
