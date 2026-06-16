@@ -18,9 +18,10 @@ public interface AuditServicesRep extends JpaRepository<AuditServicesEntity , St
 	List<AuditServicesEntity> getauditService();
 
 		
-		@Query(value = "SELECT * FROM BRRS_AUDIT WHERE FUNC_CODE  != 'Login'", nativeQuery = true)
-		List<AuditServicesEntity> getServiceAudit();
-		@Query(value = "SELECT * FROM BRRS_AUDIT WHERE FUNC_CODE  = 'Login'", nativeQuery = true)
+	@Query(value = "SELECT * FROM BRRS_AUDIT WHERE FUNC_CODE  != 'Login' order by AUDIT_DATE DESC", nativeQuery = true)
+	List<AuditServicesEntity> getServiceAudit();
+	
+	@Query(value = "SELECT * FROM BRRS_AUDIT WHERE FUNC_CODE  = 'Login'", nativeQuery = true)
 		List<AuditServicesEntity> getUserAudit();
 
 		@Query(value = "SELECT change_details FROM BRRS_AUDIT  WHERE audit_ref_no = ?1", nativeQuery = true)

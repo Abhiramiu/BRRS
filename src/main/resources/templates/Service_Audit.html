@@ -321,7 +321,7 @@
 	    console.log(audit_ref_no);
 
 	
-	    $.ajax({
+	    $.ajax({	
 	        url: './getchanges',
 	        type: 'GET',
 	        data: {
@@ -534,7 +534,7 @@
 									<th>Entry Time</th>
 									<th>Authorizer</th>
 									<th>Authorizer Time</th>
-									<th style="width: 250px;">Modified Data</th>
+									<th style="width: 250px;">Status</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -556,9 +556,13 @@
 									<td
 										th:text="${auditdata.auth_time != null ? #dates.format(auditdata.auth_time, 'dd-MM-yyyy') : 'N/A'}">
 									</td>
-									<td th:text="${auditdata.change_details!=null ?auditdata.change_details : 'No details available'}"
-										class="truncate-text" style="white-space: nowrap;"></td>
-								</tr>
+									<td class="truncate-text" style="white-space: nowrap;"
+									    th:text="${auditdata.func_code == 'DOWNLOAD' ? 'Report Downloaded' :
+									             (auditdata.func_code == 'MODIFY' ?
+									             (auditdata.modi_details != null ? auditdata.modi_details : 'No details available') :
+									             (auditdata.change_details != null ? auditdata.change_details : 'No details available'))}">
+									</td>
+									</tr>
 
 							</tbody>
 						</table>
