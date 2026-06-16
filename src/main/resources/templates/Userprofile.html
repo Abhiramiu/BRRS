@@ -36,10 +36,7 @@
 	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
 
 	<style>
-		label,
-		table {
-			font-family: verdana;
-		}
+	
 
 		.container-fluid {
 
@@ -85,14 +82,14 @@
 			border-color: #0c0c0c;
 		}
 
-		.custom-tab-btn-primary:not (:disabled):not (.disabled).active,
+		/* .custom-tab-btn-primary:not (:disabled):not (.disabled).active,
 		.custom-tab-btn-primary:not (:disabled):not (.disabled):active,
 		.show>.custom-tab-btn-primary.dropdown-toggle {
 			color: #fff;
 			background-color: #cc000000;
 			border-color: #161617;
 		}
-
+*/
 		#finusertb {
 			width: 460px;
 		}
@@ -729,7 +726,7 @@
 						<div class="card-header">
 							<div class="float-left" style="color: white;">
 								<h5 th:text="${menu}"
-									style="font-family: verdana;  font-size: 20px; font-weight: bold; padding-top: 10px; ">
+									style="  font-size: 20px; font-weight: bold; padding-top: 10px; ">
 								</h5>
 							</div>
 							<div class="custom-tab-btn-group nav-buttons float-right">
@@ -745,7 +742,7 @@
 							<div class="col-sm-12">
 								<div class="table-container" style="max-height: 720px; ">
 									<table class="table table-striped table-bordered table-hover" id="usertable">
-										<thead style="background-color:#e9ecf0; font-family: verdana;">
+										<thead style="background-color:#e9ecf0; ">
 											<tr>
 												<!-- <th></th> -->
 												<th>User Id</th>
@@ -757,7 +754,7 @@
 												<th>Action</th>
 											</tr>
 										</thead>
-										<tbody style="font-family: verdana;">
+										<tbody >
 											<tr th:each="userProfile : ${userProfiles}"
 												th:attr="data-userid=${userProfile.userid},data-WORKCLASS=${WORKCLASSAC}"
 												th:id="${loginuserid}" class="userlist" onmouseover=""
@@ -838,19 +835,19 @@
 
 											<!-- Dynamic Title -->
 											<h3 th:if="${formmode}=='add'"
-												style="font-family: verdana; font-size: 20px; color:white !important; font-weight: bold; padding-top: 10px; margin:0;">
+												style=" font-size: 20px; color:white !important; font-weight: bold; padding-top: 10px; margin:0;">
 												USER PROFILE - ADD
 											</h3>
 											<h3 th:if="${formmode}=='view'"
-												style="font-family: verdana; font-size: 20px; color:white !important; font-weight: bold; padding-top: 10px; margin:0;">
+												style=" font-size: 20px; color:white !important; font-weight: bold; padding-top: 10px; margin:0;">
 												USER PROFILE - VIEW
 											</h3>
 											<h3 th:if="${formmode}=='edit'"
-												style="font-family: verdana; font-size: 20px; color:white !important; font-weight: bold; padding-top: 10px; margin:0;">
+												style=" font-size: 20px; color:white !important; font-weight: bold; padding-top: 10px; margin:0;">
 												USER PROFILE - EDIT
 											</h3>
 											<h3 th:if="${formmode}=='delete'"
-												style="font-family: verdana; font-size: 20px; color:white !important; font-weight: bold; padding-top: 10px; margin:0;">
+												style="font-size: 20px; color:white !important; font-weight: bold; padding-top: 10px; margin:0;">
 												USER PROFILE - DELETE
 											</h3>
 										</div>
@@ -1262,8 +1259,8 @@
 
 
 											<div class="row"
-												style="background-color: #6B7A8F; color: white; height: 44px; border-radius: .20rem; padding: 11px 10px; top: 10px;">
-												<h4 style="color: white;">Role and Rights</h4>
+												style="background-color: #6B7A8F; color: white; height: 44px; border-radius: .20rem; padding-top: 10px; top: 10px;">
+												<h4 style="color: white;font-weight: bold;font-size: 20px;">Role and Rights</h4>
 											</div>
 											<br>
 
@@ -1444,7 +1441,7 @@
 
 											<!-- Title -->
 											<h3
-												style="font-family: verdana; font-size: 20px; color:white !important; font-weight: bold; padding-top: 10px; margin:0;">
+												style="font-size: 20px; color:white !important; font-weight: bold; padding-top: 10px; margin:0;">
 												USER PROFILE - VERIFY
 											</h3>
 										</div>
@@ -1657,7 +1654,7 @@
 
 
 											<div class="row formline">
-												<h3 class="col-sm-2" style="font-family: verdana; 
+												<h3 class="col-sm-2" style="
 									font-size:large;">Role and Rights</h3>
 											</div>
 

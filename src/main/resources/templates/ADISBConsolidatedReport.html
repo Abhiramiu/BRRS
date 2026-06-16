@@ -1,137 +1,141 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>ADISB Consolidated Download</title>
 
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}" />
-    <script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
-    <script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+<head>
+	<title>ADISB Consolidated Download</title>
+
+	<link rel="stylesheet" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}" />
+	<link rel="icon" th:href="@{/images/client_Logo_bkp.png}"
+		type="image/x-icon">
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
 </head>
 
 <body>
 
-<div th:insert="HeaderMenu :: header" class="fixed-top"></div>
+	<div th:insert="HeaderMenu :: header" class="fixed-top"></div>
 
-<div class="container-fluid" style="margin-top:80px">
+	<div class="container-fluid" style="margin-top:80px">
 
-    <div class="card">
-        <div class="card-header">
-            <h5>ADISB Consolidated Report - Download</h5>
-        </div>
+		<div class="card">
+			<div class="card-header">
+				<h5 style="font-weight: bold ;padding-top: 10px;font-size:20px;">ADISB Consolidated Report - Download</h5>
+			</div>
 
-        <div class="card-body">
+			<div class="card-body">
 
-            <!-- Report Date -->
-            <div class="form-group row justify-content-center">
-                <label class="col-sm-2 col-form-label">Report Date</label>
-                <div class="col-sm-3">
-					<input type="date"
-							 id="report_date"
-							 name="report_date"
-							class="form-control form-control-sm month-end-date-picker"
-							th:value="${LastUploadedDate}" readonly />								</div>
-										
-                </div>
-            </div>
+				<!-- Report Date -->
+				<div class="form-group row justify-content-center">
+					<label class="col-sm-2 col-form-label">Report Date</label>
+					<div class="col-sm-3">
+						<input type="date" id="report_date" name="report_date"
+							class="form-control form-control-sm month-end-date-picker" th:value="${LastUploadedDate}"
+							readonly />
+					</div>
 
-            <!-- Submit -->
-            <div class="text-center">
-                <button class="btn btn-primary" onclick="downloadADISB()">Download</button>
-            </div>
+				</div>
 
-        </div>
-    </div>
-</div>
 
-<!-- Loader -->
-<div class="modal fade" id="loader">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="background:none;border:none">
-            <div class="modal-body text-center">
-                <h5>Loading...</h5>
-            </div>
-        </div>
-    </div>
-</div>
+				<!-- Submit -->
+				<div class="text-center">
+					<button class="btn btn-primary" onclick="downloadADISB()"
+						style="text-align: center;background-color: #6B7A8F ;border-radius: 10px;padding: 10px;color: white;border: none;">Download</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
 
-<script>
+	<!-- Loader -->
+	<div class="modal fade" id="loader">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content" style="background:none;border:none">
+				<div class="modal-body text-center">
+					<h5>Loading...</h5>
+				</div>
+			</div>
+		</div>
+	</div>
 
-function downloadADISB() {
+	<script>
 
-    var rawDate = document.getElementById("report_date").value;
+		function downloadADISB() {
 
-    if (!rawDate) {
-        alert("Please select Report Date");
-        return;
-    }
+			var rawDate = document.getElementById("report_date").value;
 
-    var asondate = formatDate(rawDate);
-    var todate = formatDate(rawDate);
+			if (!rawDate) {
+				alert("Please select Report Date");
+				return;
+			}
 
-    var filename = "ADISB_Consolidated_Report";
-    var type = "BRRS";
+			var asondate = formatDate(rawDate);
+			var todate = formatDate(rawDate);
 
-    $('#loader').modal('show');
-    
-    console.log(rawDate);
-    console.log(asondate);
-    console.log(todate);
+			var filename = "ADISB_Consolidated_Report";
+			var type = "BRRS";
 
-    $.ajax({
-        url: './Reports/downloadADISBConsolidatedExcel', // ✅ FIXED (absolute path)
-        type: 'GET',
-        data: {
-            asondate: asondate,
-            todate: todate,
-            type: type,
-            filename: filename
-        },
-        xhrFields: {
-            responseType: 'blob'
-        },
-        success: function(data) {
+			$('#loader').modal('show');
 
-            $('#loader').modal('hide');
+			console.log(rawDate);
+			console.log(asondate);
+			console.log(todate);
 
-            if (data && data.size > 100) {
+			$.ajax({
+				url: './Reports/downloadADISBConsolidatedExcel', // ✅ FIXED (absolute path)
+				type: 'GET',
+				data: {
+					asondate: asondate,
+					todate: todate,
+					type: type,
+					filename: filename
+				},
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
 
-                const blob = new Blob([data], {
-                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                });
+					$('#loader').modal('hide');
 
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
+					if (data && data.size > 100) {
 
-                a.href = url;
-                a.download = filename + '.xlsx';
+						const blob = new Blob([data], {
+							type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+						});
 
-                document.body.appendChild(a);
-                a.click();
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
 
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
+						a.href = url;
+						a.download = filename + '.xlsx';
 
-                alert("Downloaded successfully");
+						document.body.appendChild(a);
+						a.click();
 
-            } else {
-                alert("No data available");
-            }
-        },
-        error: function() {
-            $('#loader').modal('hide');
-            alert("Download failed");
-        }
-    });
-}
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
 
-function formatDate(dateStr) {
-    let d = dateStr.split("-");
-    let monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    let month = monthNames[parseInt(d[1]) - 1];
-    return d[2] + "-" + month + "-" + d[0]; // ✅ FIXED FORMAT (31-Oct-2025)
-}
+						alert("Downloaded successfully");
 
-</script>
+					} else {
+						alert("No data available");
+					}
+				},
+				error: function () {
+					$('#loader').modal('hide');
+					alert("Download failed");
+				}
+			});
+		}
+
+		function formatDate(dateStr) {
+			let d = dateStr.split("-");
+			let monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+			let month = monthNames[parseInt(d[1]) - 1];
+			return d[2] + "-" + month + "-" + d[0]; // ✅ FIXED FORMAT (31-Oct-2025)
+		}
+
+	</script>
 
 </body>
+
 </html>

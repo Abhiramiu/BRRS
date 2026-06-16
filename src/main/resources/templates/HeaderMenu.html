@@ -5,13 +5,11 @@
 	<meta charset="UTF-8">
 	<title>BRRS</title>
 
-	<!-- CSS Dependencies -->
 	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
 	<link rel="stylesheet" th:href="@{/css/datatables.min.css}">
 
 	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
-
-	<!-- JS Dependencies -->
+	<link rel="icon" th:href="@{/images/client_Logo_bkp.png}" type="image/x-icon">
 	<script th:src="@{/js/datatables.min.js}"></script>
 	<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 
@@ -29,12 +27,14 @@
 			display: flex;
 			max-width: 1500px;
 			position: relative;
+			overflow: visible !important;
 		}
 
 		.btn-container {
 			display: flex;
 			gap: 8px;
-			overflow-x: hidden;
+			overflow-x: auto;
+			overflow-y: visible !important;
 			padding-bottom: 500px;
 			margin-bottom: -500px;
 			pointer-events: none;
@@ -174,7 +174,7 @@
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-			/*  padding: 10px 20px;
+			/* padding: 10px 20px;
     border-bottom: 2px solid #ddd; */
 		}
 
@@ -210,26 +210,31 @@
 			margin-left: -215px;
 		}
 
-
-
+		/* Main menu item */
 		.nav-item {
 			position: relative;
 		}
 
-		.nav-item a {
+		/* Main button */
+		.nav-item>a {
+			display: block;
+			padding: 10px 18px;
+			background: #fff;
+			border: 1px solid #6b7c93;
+			border-radius: 20px;
+			color: #000;
 			text-decoration: none;
-			color: #333;
-			font-weight: bold;
+			font-weight: 500;
 		}
 	</style>
 
 
 	<style>
-		.nav-links a {
-			/* color: #354a5f !important; */
-			font-weight: bold;
-
-			/* color: black !important; */
+		.nav-links {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			white-space: nowrap;
 		}
 
 		label {
@@ -249,6 +254,21 @@
 			color: #354a5f !important;
 			font-weight: bold;
 			/* color: black !important; */
+		}
+
+		.nav-item.dropdown {
+			position: relative;
+		}
+
+		.nav-item.dropdown .dropdown-menu {
+			position: absolute;
+			top: 100%;
+			left: 0;
+		}
+
+		.nav-item.dropdown:last-child .dropdown-menu {
+			right: 0;
+			left: auto;
 		}
 	</style>
 
@@ -299,17 +319,22 @@
 				});
 			});
 
-			// Handle submenus inside dropdown 
+			// Handle submenus inside dropdowns cleanly without conflicting layout positions
 			const submenus = document.querySelectorAll('.dropdown-submenu');
 			submenus.forEach(submenu => {
-				submenu.addEventListener("mouseenter", function () {
+				submenu.addEventListener("mouseenter", function (e) {
+					e.stopPropagation();
 					const subMenuElement = this.querySelector(".dropdown-menu");
-					if (subMenuElement) showMenu(subMenuElement);
+					if (subMenuElement) {
+						subMenuElement.style.setProperty('display', 'block', 'important');
+					}
 				});
 
-				submenu.addEventListener("mouseleave", function () {
+				submenu.addEventListener("mouseleave", function (e) {
 					const subMenuElement = this.querySelector(".dropdown-menu");
-					if (subMenuElement) hideMenu(subMenuElement);
+					if (subMenuElement) {
+						subMenuElement.style.setProperty('display', 'none', 'important');
+					}
 				});
 			});
 
@@ -326,9 +351,6 @@
 
 
 	</script>
-
-
-
 
 	<style>
 		body {
@@ -472,22 +494,18 @@
 		}
 
 
-		/* Dropdown Menu - Keep Original Positioning */
 		.dropdown-menu {
+			display: none;
 			position: absolute;
 			top: 100%;
 			left: 0;
-			background: rgba(255, 255, 255, 0.98);
-			backdrop-filter: blur(10px);
-			border: 2px solid rgb(107, 122, 143);
-			border-radius: 12px;
-			padding: 8px 0;
-			margin-top: 5px;
-			min-width: 200px;
-			display: none;
-
-			z-index: 1000;
-			list-style: none;
+			min-width: 250px;
+			background: #fff;
+			border: 1px solid #ccc;
+			border-radius: 6px;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+			z-index: 99999;
+			padding: 5px 0;
 		}
 
 		/* Dropdown Animation When Shown */
@@ -609,6 +627,11 @@
 				margin-top: 3px;
 			}
 		}
+
+		.dropdown-toggle,
+		a.dropdown-toggle {
+			font-weight: 550 !important;
+		}
 	</style>
 
 
@@ -627,7 +650,6 @@
 					if (parentItem) {
 						const parentToggle = parentItem.querySelector('.dropdown-toggle, .nav-link');
 						if (parentToggle) {
-							parentToggle.classList.add("active");
 						}
 					}
 					parentMenu = parentMenu.parentElement.closest('.dropdown-menu');
@@ -710,9 +732,6 @@
 			align-items: center;
 		}
 
-		.nav-item {
-			position: relative;
-		}
 
 		.nav-link {
 			text-decoration: none;
@@ -813,15 +832,32 @@
 			color: white;
 		}
 
+		/* Show dropdown on hover */
+		.nav-item.dropdown:hover>.dropdown-menu,
+		.dropdown-submenu:hover>.dropdown-menu {
+			display: block;
+		}
 
-
-
-		/* Add spacing between dropdown items */
+		/* Dropdown items */
 		.dropdown-menu li {
-			padding: -8px 12px;
-			/* Adjust vertical and horizontal padding */
-			margin-bottom: 5px;
-			/* Space between items */
+			list-style: none;
+		}
+
+		.dropdown-menu li a {
+			display: block;
+			padding: 8px 15px;
+			color: #333;
+			text-decoration: none;
+			white-space: nowrap;
+		}
+
+		.dropdown-menu li a:hover {
+			background: #f5f5f5;
+		}
+
+		/* Position nested submenu */
+		.dropdown-submenu {
+			position: relative !important;
 		}
 
 		/* Remove bottom margin for the last item to avoid extra space */
@@ -847,37 +883,33 @@
 			position: relative;
 		}
 
-		/* Black arrow with proper alignment */
-		.dropdown-submenu>a::after {
-			content: "";
-			/* Thicker right arrow */
-			font-size: 16px;
-			/* Bigger size */
-			color: #354a5f;
-			/* Black color */
-			font-weight: bold;
-			position: absolute;
-			right: 10px;
-			top: 50%;
-			transform: translateY(-50%) rotate(-90deg);
-		}
-
-		/* Position the second-level (submenu) */
-		.dropdown-submenu {
-			position: relative;
-		}
-
+		/* Right-side aligned nested submenu fixes */
 		.dropdown-submenu>.dropdown-menu {
 			display: none;
-			position: absolute;
-			left: 100%;
-			top: 0;
-			margin-top: -12px;
+			position: absolute !important;
+			left: 100% !important;
+			top: 0 !important;
+			margin-top: -5px !important;
+			margin-left: -2px !important;
+			animation: none !important;
+			transform: none !important;
 		}
 
 		/* Show only the relevant submenu on hover */
 		.dropdown-submenu:hover>.dropdown-menu {
-			display: block;
+			display: block !important;
+		}
+
+		/* Black arrow with proper alignment */
+		.dropdown-submenu>a::after {
+			content: " ›" !important;
+			font-size: 16px !important;
+			color: #354a5f !important;
+			font-weight: bold !important;
+			float: right !important;
+			margin-left: auto !important;
+			border: none !important;
+			transform: none !important;
 		}
 
 		/* Ensure the top-level menu dropdowns show on hover */
@@ -930,24 +962,6 @@
 		}
 	</style>
 	<style>
-		/* Position nested submenu */
-		.dropdown-submenu {
-			position: relative;
-		}
-
-		.dropdown-submenu>.dropdown-menu {
-			top: 0;
-			left: 100%;
-			/* Show to the right */
-			margin-top: -1px;
-		}
-
-		/* Show submenu on hover */
-		.dropdown-submenu:hover>.dropdown-menu {
-			display: block;
-		}
-
-
 		.two-column-dropdown {
 			width: 420px;
 			/* adjust if needed */
@@ -1130,20 +1144,15 @@
 	<nav class="navbar full-navbar">
 		<div class="navbar-container d-flex" style="width:100%">
 
-			<!-- Logo -->
 			<div class="logo-container">
 				<img th:src="@{/images/botswana-logo.png}" alt="Bornfire" class="logo-img"
 					style="width: 200px; height: 60px;">
 			</div>
 
-			<!-- Right content -->
 			<div class="right-content flex-grow-1">
-				<!-- Top row -->
-
 				<div class=" d-flex justify-content-end align-items-center px-2 py-1 position-relative"
 					th:style="'background-image: url(' + @{/images/rtbg.jpg} + '); background-size: cover; background-position: center; min-height: 35px;'">
 
-					<!-- Bottom row: Menu -->
 					<div class="px-5 py-1" style="height:40px;padding-right: 0px; ">
 						<div class="btn-wrapper">
 							<button class="nav-arrow left" onclick="scrollBtns(-1)"><span
@@ -1151,7 +1160,8 @@
 							<div class="btn-container" id="btnContainer">
 								<ul class="nav-links d-flex gap-4">
 									<li class="nav-item"><a class="nav-link" th:href="@{/Dashboard}" id="Dashboard"
-											onclick="contentLoad(this)" style=" text-align: center;">Home</a>
+											onclick="contentLoad(this)"
+											style=" text-align: center;font-weight: 550 !important;">Home</a>
 									</li>
 									<li class="nav-item dropdown" style="text-align: center;"
 										th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'admin')}">
@@ -1174,7 +1184,6 @@
 											</li>
 
 
-											<!-- New Submenu: Report Parameter -->
 											<li class="dropdown-submenu">
 												<a href="#" class="nav-link">Report Parameter</a>
 												<ul class="dropdown-menu">
@@ -1205,21 +1214,6 @@
 
 										<a href="#" class="dropdown-toggle" id="MCBL" onclick="contentLoad(this)">File
 											Upload</a>
-										<!-- <ul class="dropdown-menu">
-								
-								<li>
-								<a  href="#" class="nav-link" id="MCBL"  onclick="contentLoad(this)">File Upload</a>
-								</li>
-								<li>
-								<a  href="#" class="nav-link" id="BDGF"  onclick="contentLoad(this)">BDGF</a>
-								</li>
-								<li>
-								<a  href="#" class="nav-link" id="BFDB"  onclick="contentLoad(this)">BFDB</a>
-								</li>
-								<li>
-								<a  href="#" class="nav-link" id="BLBF"  onclick="contentLoad(this)">BLBF</a>
-								</li>
-							</ul> -->
 									</li>
 
 
@@ -1229,7 +1223,6 @@
 										<a href="#" class="dropdown-toggle">BRRS Reports</a>
 										<ul class="dropdown-menu">
 
-											<!-- BRRS Reports Submenu -->
 											<li class="dropdown-submenu">
 												<a href="#" class="nav-link">Basel Returns</a>
 												<ul class="dropdown-menu">
@@ -1333,32 +1326,6 @@
 
 										</ul>
 									</li>
-
-
-
-
-									<!---
-<li class="nav-item dropdown" style=" text-align: center;" 
-th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'BRRS_Reports')}">
- <a href="#" class="dropdown-toggle">Basel_Returns</a>
-  <ul class="dropdown-menu"> <li><a href="#" class="nav-link" id="BRRS" onclick="contentLoad(this)">Basel Monthly Returns</a></li>
-	 <li><a href="#" class="nav-link" id="Quarterly" onclick="contentLoad(this)">Basel Quarterly Returns</a></li> </ul> </li>
--->
-
-									<!-- <li class="nav-item dropdown" style=" text-align: center;">
-								<a href="#" class="dropdown-toggle">Resubmission</a>
-								<ul class="dropdown-menu">
-									<li>
-										<a href="#" class="nav-link" id="BRRS" onclick="contentLoad(this)">Monthly
-											Reports</a>
-									</li>
-									<li>
-										<a href="#" class="nav-link" id="Quarterly"
-											onclick="contentLoad(this)">Quarterly Reports</a>
-									</li>
-								</ul>
-							</li> -->
-
 
 
 									<li class="nav-item dropdown" style=" text-align: center;"
@@ -1583,69 +1550,50 @@ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAIN
 									</li>
 
 
+									<li class="nav-item"><a class="nav-link" id="CONSOLIDATED_REPORT"
+											onclick="contentLoad(this)"
+											style=" text-align: center;font-weight: 550 !important;"> Basel Return
+											Download</a>
+									</li>
+
+									<li class="nav-item dropdown" style=" text-align: center;">
+
+										<a href="#" class="dropdown-toggle" id="CONSOLIDATED_REPORT1">Consolidated
+											Download</a>
 
 
-									<!--  this list is for download option -->
-									<!--<li class="nav-item" style=" text-align: center;"	
-								th:if="${true}">
- th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'BRRS_Reports')}"> 
-								<a href="#" class="dropdown-toggle" id="downloadbtn" onclick="downloadFile()">Download</a>
-
-
-							</li>-->
-									<a href="#" class="dropdown-toggle" id="CONSOLIDATED_REPORT"
-										onclick="contentLoad(this)">
-										BASEL RETURN DOWNLOAD</a>
-
-									<li class="nav-item dropdown">
-
-										<!-- Main Menu -->
-										<a href="#" class="nav-link dropdown-toggle" id="CONSOLIDATED_REPORT1"
-											role="button" data-bs-toggle="dropdown" aria-expanded="false">
-											CONSOLIDATED DOWNLOAD
-										</a>
-
-										<!-- Dropdown Menu -->
 										<ul class="dropdown-menu">
 
 
+											<li><a href="#" class="nav-link" id="MDISB_CONSOLIDATED_REPORT"
+													onclick="contentLoad(this)">MDISB</a></li>
+
+											<li><a href="#" class="nav-link" id="ADISB_CONSOLIDATED_REPORT"
+													onclick="contentLoad(this)">ADISB</a></li>
+
 											<li>
-												<a href="#" class="dropdown-item" id="MDISB_CONSOLIDATED_REPORT"
-													onclick="contentLoad(this)">
-													MDISB
-												</a>
-											</li>
-											<li>
-												<a href="#" class="dropdown-item" id="ADISB_CONSOLIDATED_REPORT"
-													onclick="contentLoad(this)">
-													ADISB
-												</a>
+												<a href="#" class="nav-link" id="BDISB_CONSOLIDATED_REPORT"
+													onclick="contentLoad(this)">BDISB</a>
 											</li>
 
 											<li>
-												<a href="#" class="dropdown-item" id="BDISB_CONSOLIDATED_REPORT"
-													onclick="contentLoad(this)">
-													BDISB
-												</a>
-											</li>
-
-											<li>
-												<a href="#" class="dropdown-item" id="RBR_CONSOLIDATED_REPORT"
-													onclick="contentLoad(this)">
-													PULA_CFS
-												</a>
+												<a href="#" class="nav-link" id="RBR_CONSOLIDATED_REPORT"
+													onclick="contentLoad(this)">PULA CFS</a>
 											</li>
 
 										</ul>
 									</li>
 
 
-									<li class="nav-item dropdown" style=" text-align: center;"
+
+
+
+
+									<li class="nav-item dropdown" style="text-align: center;"
 										th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'AUDIT_US')}">
 
 										<a href="#" class="dropdown-toggle">Audit</a>
 										<ul class="dropdown-menu">
-
 											<li>
 												<a href="#" class="nav-link" id="User_Audit"
 													onclick="contentLoad(this)">User
@@ -1657,33 +1605,14 @@ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAIN
 											</li>
 										</ul>
 									</li>
-									<!-- <li class="nav-item dropdown" style=" text-align: center;">
-							<a href="#" class="dropdown-toggle">BRRS Reports</a>
-								<ul class="dropdown-menu">
-								
-								<li class="dropdown-submenu">
-                            		<a href="#" class="nav-link">Fortnightly</a>
-			                            <ul class="dropdown-menu">
-			                                <li><a class="nav-link" >BRF1.12</a></li>
-			                            </ul>
-                        		</li>
-								
-								<li class="dropdown-submenu">
-                            		<a href="#" class="nav-link">Monthly-1</a>
-			                            <ul class="dropdown-menu">
-			                                <li><a class="nav-link" th:href="@{/BRFValidations}" >BRF 1.1</a></li>
-			                                <li><a class="nav-link" >BRF 1.2</a></li>
-			                            </ul>
-                        		</li>
-								
+
+
+
+
 								</ul>
-								
-								
-						</li> -->
-
-
-
-
+								</li>
+								</ul>
+								</li>
 								</ul>
 							</div>
 
@@ -1692,29 +1621,13 @@ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAIN
 						</div>
 					</div>
 
-					<!-- Centered Title -->
-					<!--<h3 class="company-title position-absolute translate-middle-x"
-			    style="top: 50%; left: 40%; font-weight: bold; font-family: 'Arial', cursive; font-size: 1.3rem;">
-			    BCBUAE
-			  </h3> -->
-
-					<!-- User info -->
 					<div class="user-section d-flex flex-column align-items-end ms-auto" style="width: fit-content;">
-						<!-- <div class="company-small-title text-end" style="font-size: 0.75rem; font-weight: 600; color: #000; margin-right:40px;">
-			      Bornfire Innovations Pvt Ltd
-			    </div> -->
 						<div class="d-flex align-items-center gap-1" style="font-size: 0.75rem;">
 							<div class="user-details text-end">
 								<strong>&nbsp;</strong> <img th:src="@{/images/Bornfire.png}" style="height:50px"
 									alt="Bornfire">
 							</div>
-							<!-- <form th:action="@{/logout}" method="post" class="logout-btn m-0">
-			        <button class="custom-tab-btn btn-outline-danger py-0 px-2" type="submit" style="font-size: 0.75rem;">
-			          <i class="fas fa-sign-out-alt"></i> Logout
-			        </button>
-			      </form> -->
 
-							<!-- Three-dot User Menu -->
 							<div class="dropdown user-menu ms-3">
 								<div class="three-dots" id="userMenuToggle">⋮</div>
 								<div class="dropdown-menu user-dropdown-menu">
@@ -1807,7 +1720,6 @@ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAIN
 				</div>
 
 
-				<!-- Error Modal -->
 				<div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true">
 					<div class="modal-dialog modal-dialog-centered">
 						<div class="modal-content" style="border-radius: 10px;">
@@ -1817,7 +1729,6 @@ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAIN
 									aria-label="Close"></button>
 							</div>
 							<div class="modal-body" id="errorModalBody">
-								<!-- Error message will be injected here -->
 							</div>
 							<div class="modal-footer">
 								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -1869,6 +1780,11 @@ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAIN
 		position: relative;
 		overflow: visible !important;
 		z-index: auto;
+	}
+
+	.btn-container {
+		overflow-x: auto;
+		overflow-y: visible !important;
 	}
 </style>
 <script>

@@ -6845,7 +6845,15 @@ public class RegulatoryReportServices {
 			case "COMMON_DISCLOSURE":
 				response = BRRS_Common_Disclosure_Reportservice.callregenprocedure(request);
 				break;
-
+			case "Recon_Of_FS":
+				response = BRRS_RECON_OF_FS_ReportService.callregenprocedure(request);
+				break;
+			case "CASH_FLOW":
+				response = BRRS_CASH_FLOW_ReportService.callregenprocedure(request);
+				break;
+			case "ADISB2":
+				response = BRRS_ADISB2_ReportService.callregenprocedure(request);
+				break;
 			default:
 				logger.warn("Unsupported report ID: {}", reportId);
 				response = ResponseEntity.badRequest()

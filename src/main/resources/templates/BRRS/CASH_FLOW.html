@@ -387,8 +387,8 @@ PURPOSE		: BRRSREPORT
 		}
 
 		//to fetch summary from the database - called from the summary button
-		function showdetails() {
-			if ((type === "RESUB" || type === "ARCHIVAL") && allowdetail === "NO") {
+			function showdetails() {
+			if ((type === "RESUB" || type === "ARCHIVAL" )&& allowdetail === "NO") { 
 				alert("Detail page is only available for highest report version only ");
 				return;
 			}
@@ -398,7 +398,26 @@ PURPOSE		: BRRSREPORT
 			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
 				location.href = Callurl;
 			console.log(Callurl);
-
+			/*  $.ajax({
+			   type: 'get',
+			   url: Callurl,
+			   beforeSend: function () {
+				 $('#loader').modal('show'); // 🔄 Show loader
+			   },
+			   success: function (data) {
+				 $('.content').html(data);
+				 //$("#detailsbtn").addClass("active");
+				 //tablepagination();
+			   },
+			   complete: function () {
+				 $('#loader').modal('hide');
+			   },
+			   error: function () {
+					$('#loader').modal('hide');
+				 alert("Something went wrongss. Please try again.");
+			    
+			   }
+			 }); */
 		}
 
 		function showsummary() {
@@ -681,7 +700,7 @@ PURPOSE		: BRRSREPORT
 		let previousUrl = document.referrer;
 
 		function submitCASH_FLOWUpdate() {
-			let formData = $('#Common_DisclosureDetailForm').serialize();
+			let formData = $('#CASH_FLOWDetailForm').serialize();
 			let userAnswer = null;
 
 			if (new URLSearchParams(formData).get('type') === 'RESUB' && !$('#confirmModal').data('answered')) {

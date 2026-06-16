@@ -26,7 +26,8 @@ PURPOSE		: Access the Modules by Role
 		th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}" />
 
 	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
-
+	<link rel="icon" th:href="@{/images/client_Logo_bkp.png}"
+		type="image/x-icon">
 	<script src="https://cdn.jsdelivr.net/jquery.validation/1.19.5/jquery.validate.min.js"></script>
 
 	<!-- Favicon -->
@@ -392,7 +393,7 @@ PURPOSE		: Access the Modules by Role
         </div>
         <!-- Dynamic Title -->
         <h5 th:text="${menu}" 
-            style="font-family: verdana; font-size: 20px; font-weight: bold; color: white; margin: 0 0 0 10px;">
+            style=" font-size: 20px; font-weight: bold; color: white; margin: 0 0 0 10px;">
         </h5>
     </div>
 
@@ -408,7 +409,7 @@ PURPOSE		: Access the Modules by Role
   <div class="col-12">
     <div class="table-container" style="max-height: 620px; overflow-y: auto;">
       <table class="table table-striped table-bordered table-hover" id="usertable">
-        <thead class="thead-light" style="background-color:#e9ecf0; font-family: verdana; font-size: 14px;">
+        <thead class="thead-light" style="background-color:#e9ecf0; font-size: 14px;">
           <tr>
             <th style="width: 10%">Role Id</th>
             <th style="width: 20%">Role Description</th>
