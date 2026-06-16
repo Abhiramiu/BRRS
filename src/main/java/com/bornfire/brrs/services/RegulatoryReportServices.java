@@ -9505,6 +9505,147 @@ public class RegulatoryReportServices {
 				return new byte[0];
 			}
 			
+		case "M_DEP4":
+			try {
+				excelBytes = BRRS_M_DEP4_ReportService.BRRS_M_DEP4Excel(filename, reportId, fromdate,
+						todate, currency, dtltype, null, "excel", null);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_DEP4: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("M_DEP4: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 302 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_DEP4: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_DEP4: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_DEP4: PDF generation failed", e);
+				return new byte[0];
+			}
+			
+		case "M_SP":
+			try {
+				excelBytes = BRRS_M_SP_reportservice.getM_SPExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, null,  null);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_SP: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("M_SP: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 61});
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_SP: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_SP: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_SP: PDF generation failed", e);
+				return new byte[0];
+			}
+			
+		case "M_SIR":
+			try {
+				excelBytes = 	BRRS_M_SIR_ReportService.BRRS_M_SIRExcel(filename, reportId, fromdate, todate, currency,
+						dtltype,"excel", null,  null);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_SIR: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("M_SIR: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 40});
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_SIR: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_SIR: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_SIR: PDF generation failed", e);
+				return new byte[0];
+			}
+			
+		case "M_SRWA_12F":
+			try {
+				excelBytes = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, null,"excel",  null);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_SRWA_12B: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("M_SRWA_12F: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 36 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_SRWA_12F: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_SRWA_12F: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_SRWA_12F: PDF generation failed", e);
+				return new byte[0];
+			}
+			
+		case "M_SRWA_12G":
+			try {
+				excelBytes = BRRS_M_SRWA_12G_reportservice.getBRRS_M_SRWA_12GExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, null,"excel",  null);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_SRWA_12G: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("M_SRWA_12G: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 60 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_SRWA_12G: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_SRWA_12G: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_SRWA_12G: PDF generation failed", e);
+				return new byte[0];
+			}
+			
+			
 		}
 		return pdfBytes;
 	}
@@ -10180,6 +10321,90 @@ public class RegulatoryReportServices {
 
 			} catch (Exception e) {
 				logger.error("M_OPTR: PDF generation failed", e);
+				return new byte[0];
+			}
+			
+		case "M_SIR":
+			try {
+				excelBytes = BRRS_M_SIR_ReportService.BRRS_M_SIREmailExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, null, null);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_SIR: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("M_SIR: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 135 }, new int[] { 135, 255 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_SIR: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_SIR: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_SIR: PDF generation failed", e);
+				return new byte[0];
+			}	
+			
+		case "M_SRWA_12F":
+			try {
+				excelBytes = BRRS_M_SRWA_12F_reportservice.BRRS_M_SRWA_12FEmailExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, null, null);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_SRWA_12F: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("M_SRWA_12F: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 36 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_SRWA_12F: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_SRWA_12F: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_SRWA_12F: PDF generation failed", e);
+				return new byte[0];
+			}
+			
+		case "M_SRWA_12G":
+			try {
+				excelBytes = BRRS_M_SRWA_12G_reportservice.BRRS_M_SRWA_12GEmailExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, null, null);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_SRWA_12G: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("M_SRWA_12G: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 60});
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_SRWA_12G: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_SRWA_12G: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_SRWA_12G: PDF generation failed", e);
 				return new byte[0];
 			}
 
