@@ -9272,6 +9272,91 @@ public class RegulatoryReportServices {
 				logger.error("M_CA6: PDF generation failed", e);
 				return new byte[0];
 			}
+			
+		case "M_CA7":
+			try {
+				excelBytes = BRRS_M_CA7_reportservice.getM_CA7Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, null, "excel", null);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_CA7: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("M_CA7: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 11 }, new int[] { 15, 27 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_CA7: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_CA7: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_CA7: PDF generation failed", e);
+				return new byte[0];
+			}
+			
+		case "M_AIDP":
+			try {
+				excelBytes = BRRS_M_AIDP_ReportService.getM_AIDPExcel(filename, reportId, fromdate,
+						todate, currency, dtltype, null, null);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_AIDP: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("M_AIDP: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 50 }, new int[] { 53, 95 }, new int[] { 98, 141 }, new int[] { 144, 193 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_AIDP: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_AIDP: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_AIDP: PDF generation failed", e);
+				return new byte[0];
+			}
+			
+		case "M_LIQGAP": 
+			try {
+				excelBytes = brrs_m_liqgap_reportservice.getBRRS_M_LIQGAPExcel(filename, reportId, fromdate,
+						todate, currency, dtltype, null, "excel", null);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_LIQGAP: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("M_LIQGAP: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 49 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_LIQGAP: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_LIQGAP: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_LIQGAP: PDF generation failed", e);
+				return new byte[0];
+			}
+			
 		}
 		return pdfBytes;
 	}
@@ -9780,13 +9865,91 @@ public class RegulatoryReportServices {
 			} catch (Exception e) {
 				logger.error("EMAIL_M_CA6: PDF generation failed", e);
 				return new byte[0];
+			}	
+			
+		case "M_CA7":
+			try {
+				excelBytes = BRRS_M_CA7_reportservice.getEmail_M_CA7Excel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, null);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("EMAIL_M_CA7: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("M_CA7: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 11 }, new int[] { 15, 27 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("EMAIL_M_CA7: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("EMAIL_M_CA7: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("EMAIL_M_CA7: PDF generation failed", e);
+				return new byte[0];
 			}
-		
 			
-		
+		case "M_AIDP":
+			try {
+				excelBytes = BRRS_M_AIDP_ReportService.getM_AIDPExcel(filename, reportId, fromdate,
+						todate, currency, dtltype, null, null);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_AIDP: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("M_AIDP: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 20 }, new int[] { 23, 31 }, new int[] { 34, 43 }, new int[] { 46, 55 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_AIDP: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_AIDP: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_AIDP: PDF generation failed", e);
+				return new byte[0];
+			}
 			
-			
-			
+		case "M_LIQGAP": 
+			try {
+				excelBytes = brrs_m_liqgap_reportservice.BRRS_M_LIQGAPEmailExcel(filename, reportId, fromdate,
+						todate, currency, dtltype, null, null);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_LIQGAP: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("M_LIQGAP: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 49 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_LIQGAP: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_LIQGAP: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_LIQGAP: PDF generation failed", e);
+				return new byte[0];
+			}
 
 		}
 
